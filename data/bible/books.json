@@ -1,0 +1,541 @@
+[
+  {
+    "slug": "genesis",
+    "name": "Genesis",
+    "testament": "OT",
+    "chapters": 50,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "exodus",
+    "name": "Exodus",
+    "testament": "OT",
+    "chapters": 40,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "leviticus",
+    "name": "Leviticus",
+    "testament": "OT",
+    "chapters": 27,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "numbers",
+    "name": "Numbers",
+    "testament": "OT",
+    "chapters": 36,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "deuteronomy",
+    "name": "Deuteronomy",
+    "testament": "OT",
+    "chapters": 34,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "joshua",
+    "name": "Joshua",
+    "testament": "OT",
+    "chapters": 24,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "judges",
+    "name": "Judges",
+    "testament": "OT",
+    "chapters": 21,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "ruth",
+    "name": "Ruth",
+    "testament": "OT",
+    "chapters": 4,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "1-samuel",
+    "name": "1 Samuel",
+    "testament": "OT",
+    "chapters": 31,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "2-samuel",
+    "name": "2 Samuel",
+    "testament": "OT",
+    "chapters": 24,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "1-kings",
+    "name": "1 Kings",
+    "testament": "OT",
+    "chapters": 22,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "2-kings",
+    "name": "2 Kings",
+    "testament": "OT",
+    "chapters": 25,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "1-chronicles",
+    "name": "1 Chronicles",
+    "testament": "OT",
+    "chapters": 29,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "2-chronicles",
+    "name": "2 Chronicles",
+    "testament": "OT",
+    "chapters": 36,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "1-esdras",
+    "name": "1 Esdras",
+    "testament": "OT",
+    "chapters": 9,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "ezra",
+    "name": "Ezra",
+    "testament": "OT",
+    "chapters": 10,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "nehemiah",
+    "name": "Nehemiah",
+    "testament": "OT",
+    "chapters": 13,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "tobit",
+    "name": "Tobit",
+    "testament": "OT",
+    "chapters": 14,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "judith",
+    "name": "Judith",
+    "testament": "OT",
+    "chapters": 16,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "esther",
+    "name": "Esther",
+    "testament": "OT",
+    "chapters": 10,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "1-maccabees",
+    "name": "1 Maccabees",
+    "testament": "OT",
+    "chapters": 16,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "2-maccabees",
+    "name": "2 Maccabees",
+    "testament": "OT",
+    "chapters": 15,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "3-maccabees",
+    "name": "3 Maccabees",
+    "testament": "OT",
+    "chapters": 7,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "job",
+    "name": "Job",
+    "testament": "OT",
+    "chapters": 42,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "psalms",
+    "name": "Psalms",
+    "testament": "OT",
+    "chapters": 151,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "proverbs",
+    "name": "Proverbs",
+    "testament": "OT",
+    "chapters": 31,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "ecclesiastes",
+    "name": "Ecclesiastes",
+    "testament": "OT",
+    "chapters": 12,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "song-of-solomon",
+    "name": "Song of Solomon",
+    "testament": "OT",
+    "chapters": 8,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "wisdom",
+    "name": "Wisdom of Solomon",
+    "testament": "OT",
+    "chapters": 19,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "sirach",
+    "name": "Sirach",
+    "testament": "OT",
+    "chapters": 51,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "hosea",
+    "name": "Hosea",
+    "testament": "OT",
+    "chapters": 14,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "amos",
+    "name": "Amos",
+    "testament": "OT",
+    "chapters": 9,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "micah",
+    "name": "Micah",
+    "testament": "OT",
+    "chapters": 7,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "joel",
+    "name": "Joel",
+    "testament": "OT",
+    "chapters": 3,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "obadiah",
+    "name": "Obadiah",
+    "testament": "OT",
+    "chapters": 1,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "jonah",
+    "name": "Jonah",
+    "testament": "OT",
+    "chapters": 4,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "nahum",
+    "name": "Nahum",
+    "testament": "OT",
+    "chapters": 3,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "habakkuk",
+    "name": "Habakkuk",
+    "testament": "OT",
+    "chapters": 3,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "zephaniah",
+    "name": "Zephaniah",
+    "testament": "OT",
+    "chapters": 3,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "haggai",
+    "name": "Haggai",
+    "testament": "OT",
+    "chapters": 2,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "zechariah",
+    "name": "Zechariah",
+    "testament": "OT",
+    "chapters": 14,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "malachi",
+    "name": "Malachi",
+    "testament": "OT",
+    "chapters": 4,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "isaiah",
+    "name": "Isaiah",
+    "testament": "OT",
+    "chapters": 66,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "jeremiah",
+    "name": "Jeremiah",
+    "testament": "OT",
+    "chapters": 52,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "baruch",
+    "name": "Baruch",
+    "testament": "OT",
+    "chapters": 5,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "lamentations",
+    "name": "Lamentations",
+    "testament": "OT",
+    "chapters": 5,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "epistle-of-jeremiah",
+    "name": "Epistle of Jeremiah",
+    "testament": "OT",
+    "chapters": 1,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "ezekiel",
+    "name": "Ezekiel",
+    "testament": "OT",
+    "chapters": 48,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "daniel",
+    "name": "Daniel",
+    "testament": "OT",
+    "chapters": 12,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "prayer-of-manasseh",
+    "name": "Prayer of Manasseh",
+    "testament": "OT",
+    "chapters": 1,
+    "source": "brenton-lxx-pd"
+  },
+  {
+    "slug": "matthew",
+    "name": "Matthew",
+    "testament": "NT",
+    "chapters": 28,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "mark",
+    "name": "Mark",
+    "testament": "NT",
+    "chapters": 16,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "luke",
+    "name": "Luke",
+    "testament": "NT",
+    "chapters": 24,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "john",
+    "name": "John",
+    "testament": "NT",
+    "chapters": 21,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "acts",
+    "name": "Acts",
+    "testament": "NT",
+    "chapters": 28,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "romans",
+    "name": "Romans",
+    "testament": "NT",
+    "chapters": 16,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "1-corinthians",
+    "name": "1 Corinthians",
+    "testament": "NT",
+    "chapters": 16,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "2-corinthians",
+    "name": "2 Corinthians",
+    "testament": "NT",
+    "chapters": 13,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "galatians",
+    "name": "Galatians",
+    "testament": "NT",
+    "chapters": 6,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "ephesians",
+    "name": "Ephesians",
+    "testament": "NT",
+    "chapters": 6,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "philippians",
+    "name": "Philippians",
+    "testament": "NT",
+    "chapters": 4,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "colossians",
+    "name": "Colossians",
+    "testament": "NT",
+    "chapters": 4,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "1-thessalonians",
+    "name": "1 Thessalonians",
+    "testament": "NT",
+    "chapters": 5,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "2-thessalonians",
+    "name": "2 Thessalonians",
+    "testament": "NT",
+    "chapters": 3,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "1-timothy",
+    "name": "1 Timothy",
+    "testament": "NT",
+    "chapters": 6,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "2-timothy",
+    "name": "2 Timothy",
+    "testament": "NT",
+    "chapters": 4,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "titus",
+    "name": "Titus",
+    "testament": "NT",
+    "chapters": 3,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "philemon",
+    "name": "Philemon",
+    "testament": "NT",
+    "chapters": 1,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "hebrews",
+    "name": "Hebrews",
+    "testament": "NT",
+    "chapters": 13,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "james",
+    "name": "James",
+    "testament": "NT",
+    "chapters": 5,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "1-peter",
+    "name": "1 Peter",
+    "testament": "NT",
+    "chapters": 5,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "2-peter",
+    "name": "2 Peter",
+    "testament": "NT",
+    "chapters": 3,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "1-john",
+    "name": "1 John",
+    "testament": "NT",
+    "chapters": 5,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "2-john",
+    "name": "2 John",
+    "testament": "NT",
+    "chapters": 1,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "3-john",
+    "name": "3 John",
+    "testament": "NT",
+    "chapters": 1,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "jude",
+    "name": "Jude",
+    "testament": "NT",
+    "chapters": 1,
+    "source": "kjv-pd"
+  },
+  {
+    "slug": "revelation",
+    "name": "Revelation",
+    "testament": "NT",
+    "chapters": 22,
+    "source": "kjv-pd"
+  }
+]
