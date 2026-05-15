@@ -1,15 +1,34 @@
-import { FeatureShell } from "@/components/feature/FeatureShell";
+import { SAINTS } from "@/lib/saints/saints";
+import { SaintCard } from "@/components/saints/SaintCard";
 
-export const metadata = { title: "Saints - Purify" };
+export const metadata = {
+  title: "Saints - Purify",
+  description:
+    "Lives and writings of the Eastern Orthodox saints.",
+};
 
 export default function SaintsPage() {
   return (
-    <FeatureShell
-      eyebrow="Saints"
-      title="Saints' Works"
-      body="Lives, writings, and sayings of the saints - Desert Fathers, Athonites, modern elders, and the great teachers of the Church."
-      tierBadge="Free"
-      ctaLabel="Browse saints"
-    />
+    <section className="bg-night px-5 md:px-8 py-16 md:py-24">
+      <div className="mx-auto max-w-[1200px] w-full">
+        <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
+          Saints
+        </p>
+        <h1 className="font-sans text-[40px] md:text-[56px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
+          Lives and writings of the saints
+        </h1>
+        <p className="mt-5 max-w-[640px] font-sans text-[17px] text-paper/75">
+          The teachers, ascetics, and wonderworkers of the Eastern Orthodox
+          Church. Each profile gathers a brief life, a list of writings, and
+          the works themselves.
+        </p>
+
+        <div className="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {SAINTS.map((s) => (
+            <SaintCard key={s.slug} saint={s} />
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
