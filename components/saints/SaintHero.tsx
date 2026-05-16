@@ -1,4 +1,5 @@
 import type { Saint } from "@/lib/saints/saints";
+import { SaintIcon } from "./SaintIcon";
 
 export function SaintHero({ saint }: { saint: Saint }) {
   const facts: { label: string; value: string }[] = [];
@@ -9,18 +10,23 @@ export function SaintHero({ saint }: { saint: Saint }) {
 
   return (
     <header className="pt-12 md:pt-16 pb-10 border-b border-paper/8">
-      <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+      <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-6">
         Saints
       </p>
-      <h1 className="font-sans text-[40px] md:text-[56px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
-        {saint.name}
-      </h1>
-      <p className="mt-3 font-serif text-[20px] md:text-[24px] text-paper/75 italic">
-        {saint.epithet}
-      </p>
-      <p className="mt-7 max-w-[680px] font-sans text-[17px] text-paper/80 leading-relaxed">
-        {saint.shortBio}
-      </p>
+      <div className="flex flex-col md:flex-row md:items-start gap-8">
+        <SaintIcon saint={saint} size="lg" />
+        <div className="min-w-0 flex-1">
+          <h1 className="font-sans text-[40px] md:text-[56px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
+            {saint.name}
+          </h1>
+          <p className="mt-3 font-serif text-[20px] md:text-[24px] text-paper/75 italic">
+            {saint.epithet}
+          </p>
+          <p className="mt-6 max-w-[640px] font-sans text-[17px] text-paper/80 leading-relaxed">
+            {saint.shortBio}
+          </p>
+        </div>
+      </div>
       <dl className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-5">
         {facts.map((f) => (
           <div key={f.label}>

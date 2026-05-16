@@ -1,5 +1,5 @@
 import { SAINTS } from "@/lib/saints/saints";
-import { SaintCard } from "@/components/saints/SaintCard";
+import { SaintsBrowser } from "@/components/saints/SaintsBrowser";
 
 export const metadata = {
   title: "Saints - Purify",
@@ -23,11 +23,7 @@ export default function SaintsPage() {
           the works themselves.
         </p>
 
-        <div className="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {SAINTS.map((s) => (
-            <SaintCard key={s.slug} saint={s} />
-          ))}
-        </div>
+        <SaintsBrowser saints={SAINTS} />
       </div>
     </section>
   );

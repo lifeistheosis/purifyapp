@@ -1,6 +1,6 @@
 // Browser-side Supabase client.
 // Safe to import from Client Components ("use client").
-// Uses the anon (public) key — RLS policies determine what the user can read/write.
+// Uses the anon (public) key, RLS policies determine what the user can read/write.
 
 import { createBrowserClient } from "@supabase/ssr";
 

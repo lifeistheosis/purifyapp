@@ -1,8 +1,8 @@
 // Server-side Supabase client for Server Components, Route Handlers, and Server Actions.
 // Reads/writes the auth cookies so the session follows the user across SSR requests.
-// Uses the anon key — RLS still applies; this is NOT an admin client.
+// Uses the anon key, RLS still applies; this is NOT an admin client.
 //
-// Next 16: cookies() is async — must be awaited before use.
+// Next 16: cookies() is async, must be awaited before use.
 
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";

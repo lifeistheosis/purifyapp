@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { SAINTS, getSaint } from "@/lib/saints/saints";
 import { SaintHero } from "@/components/saints/SaintHero";
 import { LifeSection } from "@/components/saints/LifeSection";
-import { WritingsList } from "@/components/saints/WritingsList";
+import { SaintWorksBrowser } from "@/components/saints/SaintWorksBrowser";
 
 type Params = Promise<{ slug: string }>;
 
@@ -30,7 +30,7 @@ export default async function SaintPage({ params }: { params: Params }) {
       <div className="mx-auto max-w-[1100px] w-full">
         <SaintHero saint={saint} />
         <LifeSection paragraphs={saint.life} />
-        <WritingsList saint={saint} />
+        <SaintWorksBrowser saint={saint} />
       </div>
     </section>
   );

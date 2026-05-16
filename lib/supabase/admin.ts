@@ -1,4 +1,4 @@
-// ⚠️ ADMIN CLIENT — SERVER ONLY ⚠️
+// ⚠️ ADMIN CLIENT, SERVER ONLY ⚠️
 // Uses the service_role key, which BYPASSES Row Level Security.
 //
 // Import only from:
