@@ -8,7 +8,8 @@
 //
 // Pascha = the Orthodox date (Meeus's algorithm), converted to Gregorian.
 
-import { SAINTS, type Saint } from "@/lib/saints/saints";
+import { SAINTS, getSaint, type Saint } from "@/lib/saints/saints";
+import dailyCommemorations from "@/data/calendar/daily-saints.json";
 
 // ----- Pascha -----
 
@@ -303,6 +304,62 @@ export function feastsOn(date: Date): Saint[] {
   return FEAST_INDEX.get(key) ?? [];
 }
 
+// ----- Daily commemorations (the full corpus, ~366 days) -----
+
+export type Commemoration = {
+  /** Display name, e.g. "St. Nicholas the Wonderworker of Myra". */
+  name: string;
+  /** Brief one-line description. */
+  note?: string;
+  /** "feast" for major Lord/Theotokos feasts and events. Default "saint". */
+  kind?: "feast" | "saint";
+  /** Slug of a Saint record in our registry. When present, the registry
+   *  saint can be looked up and shown with its icon and bio. */
+  slug?: string;
+  /** Resolved Saint record when `slug` matches an entry in SAINTS. */
+  saint?: Saint;
+};
+
+// Type the JSON import. The keys are "MM-DD" strings.
+const DAILY: Record<string, Commemoration[]> = dailyCommemorations as Record<
+  string,
+  Commemoration[]
+>;
+
+function mmdd(date: Date): string {
+  const d = startOfDayUtc(date);
+  return `${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
+}
+
+/**
+ * Every commemoration we list for the given calendar date: major feasts,
+ * named saints, plus any registry saints whose feast day matches. Items
+ * with a `slug` that resolves to a registry saint carry the full Saint
+ * record so the UI can show icon + bio.
+ */
+export function commemorationsOn(date: Date): Commemoration[] {
+  const entries = (DAILY[mmdd(date)] ?? []).map((c) => {
+    const saint = c.slug ? getSaint(c.slug) ?? undefined : undefined;
+    return { ...c, saint };
+  });
+
+  // Fold in any registry saints whose feast day matches but are not already
+  // in the daily JSON (rare safety net — the JSON should cover the major ones).
+  const inJson = new Set(entries.map((e) => e.slug).filter(Boolean));
+  for (const s of feastsOn(date)) {
+    if (!inJson.has(s.slug)) {
+      entries.push({
+        name: s.name,
+        note: s.epithet,
+        slug: s.slug,
+        saint: s,
+        kind: "saint",
+      });
+    }
+  }
+  return entries;
+}
+
 // ----- Month grid -----
 
 export type MonthCell = {
@@ -310,7 +367,15 @@ export type MonthCell = {
   day: number;
   inMonth: boolean;
   isToday: boolean;
+  /** Registry saints (rich Saint records) commemorated this day. */
   saints: Saint[];
+  /** Every commemoration listed for this day (feasts + saints). */
+  commemorations: Commemoration[];
+  /** Is at least one of the commemorations a major feast? */
+  hasFeast: boolean;
+  /** Headline commemoration to show in the cell (a major feast if any, else
+   *  the first commemoration in the JSON for the day). */
+  headline?: Commemoration;
   fast: FastKind;
 };
 
@@ -322,12 +387,17 @@ export function monthGrid(year: number, month: number, today: Date): MonthCell[]
   const cells: MonthCell[] = [];
   for (let i = 0; i < 42; i++) {
     const d = addDays(gridStart, i);
+    const commemorations = commemorationsOn(d);
+    const feast = commemorations.find((c) => c.kind === "feast");
     cells.push({
       date: d,
       day: d.getUTCDate(),
       inMonth: d.getUTCMonth() === month,
       isToday: sameDay(d, today),
       saints: feastsOn(d),
+      commemorations,
+      hasFeast: !!feast,
+      headline: feast ?? commemorations[0],
       fast: fastingStatus(d).kind,
     });
   }
