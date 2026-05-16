@@ -249,15 +249,22 @@ export function VerseRow({
           {hasEnglishTokens
             ? englishTokens!.map((tk, i) => {
                 const matched = !!hoverStrong && tk.s === hoverStrong;
+                const me = renderedHL.has(i);
+                const prev = i > 0 && renderedHL.has(i - 1);
+                const next =
+                  i < englishTokens!.length - 1 && renderedHL.has(i + 1);
                 return (
                   <Fragment key={i}>
                     <span
                       data-word-idx={i}
                       data-s={tk.s}
                       className={cn(
-                        "cursor-pointer rounded-[3px] px-[1px] -mx-[1px] transition-colors duration-100",
-                        renderedHL.has(i) &&
-                          "bg-[#d4af37]/30",
+                        "cursor-pointer transition-colors duration-100",
+                        me && "bg-[#d4af37]/30",
+                        // Round + extend only on the outer ends of a run, so
+                        // adjacent highlighted words look like one bar.
+                        me && !prev && "rounded-l-[3px] pl-[1px] -ml-[1px]",
+                        me && !next && "rounded-r-[3px] pr-[1px] -mr-[1px]",
                       )}
                       style={
                         matched
@@ -271,25 +278,39 @@ export function VerseRow({
                     >
                       {tk.w}
                     </span>
-                    {i < englishTokens!.length - 1 ? " " : ""}
+                    {i < englishTokens!.length - 1 && (
+                      <span className={me && next ? "bg-[#d4af37]/30" : ""}>
+                        {" "}
+                      </span>
+                    )}
                   </Fragment>
                 );
               })
-            : words.map((w, i) => (
-                <Fragment key={i}>
-                  <span
-                    data-word-idx={i}
-                    className={cn(
-                      "cursor-pointer transition-colors",
-                      renderedHL.has(i) &&
-                        "bg-[#d4af37]/30 rounded-[3px] px-[1px] -mx-[1px]",
+            : words.map((w, i) => {
+                const me = renderedHL.has(i);
+                const prev = i > 0 && renderedHL.has(i - 1);
+                const next = i < words.length - 1 && renderedHL.has(i + 1);
+                return (
+                  <Fragment key={i}>
+                    <span
+                      data-word-idx={i}
+                      className={cn(
+                        "cursor-pointer transition-colors",
+                        me && "bg-[#d4af37]/30",
+                        me && !prev && "rounded-l-[3px] pl-[1px] -ml-[1px]",
+                        me && !next && "rounded-r-[3px] pr-[1px] -mr-[1px]",
+                      )}
+                    >
+                      {w}
+                    </span>
+                    {i < words.length - 1 && (
+                      <span className={me && next ? "bg-[#d4af37]/30" : ""}>
+                        {" "}
+                      </span>
                     )}
-                  >
-                    {w}
-                  </span>
-                  {i < words.length - 1 ? " " : ""}
-                </Fragment>
-              ))}
+                  </Fragment>
+                );
+              })}
         </p>
 
         {hasInterlinear && (

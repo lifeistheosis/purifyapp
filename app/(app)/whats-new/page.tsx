@@ -16,145 +16,51 @@ export default function WhatsNewPage() {
             What&rsquo;s new
           </p>
           <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
-            v1.5 &middot; Beta &middot; John &amp; the Fathers
+            v2.0 &middot; Beta &middot; Calendar
           </p>
         </div>
 
         <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
-          A first letter to our readers.
+          The day, on the page.
         </h1>
 
         <p className="mt-8 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-          Welcome to Purify. This is the first public version of the site. It
-          is still small and rough in places, but everything you see has been
-          built with one purpose: to make the Orthodox Christian life of
-          prayer, scripture, and the saints easier to enter, day by day.
+          Welcome back. v2.0 is the first release where the site tells you
+          what today is: which saint the Church remembers, whether the day is
+          a fast, and how many days remain until Pascha. A small thing, but a
+          real one. The Orthodox day is not abstract; it has a shape.
         </p>
 
         <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-          Below is what is here today, and what is coming. If you find a saint
-          we have not added, a writing we should include, a verse that should
-          have a note, or a place where the design feels heavy, please tell us.
-          We are reading every message.
+          Beneath that one-line answer there is now a real calendar: the
+          month at a glance, with saint dots and fasting colour-codes on
+          each day, and a click-through to any other day for its
+          commemorations and rule. The reckoning we follow is the New
+          (Revised Julian) calendar used by the Ecumenical Patriarchate and
+          the majority of Orthodox jurisdictions; an Old Calendar toggle
+          for the Russian, Serbian, Jerusalem, and Athonite traditions is
+          on the roadmap.
         </p>
 
-        {/* What's here */}
-        <h2 className="mt-14 font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
-          What&rsquo;s here today
-        </h2>
-        <ul className="space-y-4 font-sans text-[16px] text-paper/85 leading-[1.65]">
-          <li>
-            <strong className="text-paper">The Orthodox Bible.</strong>{" "}
-            The full canon: Brenton&rsquo;s English Septuagint (1851) for the
-            Old Testament, including the deuterocanon, paired with the King
-            James New Testament. Over 1,300 chapters, each with cross-
-            references and patristic commentary from the Ante-Nicene and
-            Nicene Fathers.
-          </li>
-          <li>
-            <strong className="text-paper">A search that knows what you mean.</strong>{" "}
-            Type a book, a chapter, or an exact verse. &ldquo;John 3:16&rdquo;,
-            &ldquo;1 Cor 13&rdquo;, &ldquo;Ps 23&rdquo; all work.
-            Common abbreviations are recognized.
-          </li>
-          <li>
-            <strong className="text-paper">Highlight and annotate.</strong>{" "}
-            Highlight any verse and write your own notes. They live on your
-            device for now; cross-device sync is on the way.
-          </li>
-          <li>
-            <strong className="text-paper">Lives and writings of the saints.</strong>{" "}
-            Six founding fathers and wonderworkers to start: Athanasius the
-            Great, Basil the Great, Gregory the Theologian, John Chrysostom,
-            John of Damascus, and Seraphim of Sarov. Each profile carries a
-            short life, a list of works, and the works themselves with
-            editorial marginalia.
-          </li>
-          <li>
-            <strong className="text-paper">Filters that fit how you read.</strong>{" "}
-            Browse saints by century. Filter a saint&rsquo;s writings by topic
-            (Trinity, Prayer, Pride, Essence and Energies, and others).
-          </li>
-          <li>
-            <strong className="text-paper">A reading experience that doesn&rsquo;t shout.</strong>{" "}
-            Dark, calm typography. Smooth section-to-section scrolling. No
-            adverts on the reading pages, no notifications, no streaks to
-            chase.
-          </li>
-        </ul>
+        <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+          What is still missing is much. Daily prayer is not yet built.
+          Audio is not yet built. Accounts and cross-device sync are not
+          yet built. We are working in order of what is most-asked-for. If
+          your request is not on the list, write to us; the order can
+          change.
+        </p>
 
-        {/* What's coming */}
-        <h2 className="mt-14 font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
-          What is coming
-        </h2>
-        <ul className="space-y-4 font-sans text-[16px] text-paper/85 leading-[1.65]">
-          <li>
-            <strong className="text-paper">Accounts.</strong>{" "}
-            Sign in with email, and your highlights and notes follow you across
-            phone, laptop, and tablet.
-          </li>
-          <li>
-            <strong className="text-paper">Daily prayer.</strong>{" "}
-            Morning and evening prayers, the Akathists, the Jesus Prayer rope
-            companion. Begin and end the day with the Church.
-          </li>
-          <li>
-            <strong className="text-paper">The Orthodox calendar.</strong>{" "}
-            Feasts, fasts, and the appointed readings of the day, on both the
-            New and Old Calendars.
-          </li>
-          <li>
-            <strong className="text-paper">More saints, more writings.</strong>{" "}
-            Maximus the Confessor, Symeon the New Theologian, Gregory Palamas,
-            Ignatius of Antioch, Nektarios of Aegina, and many more, with full
-            corpora rather than excerpts.
-          </li>
-          <li>
-            <strong className="text-paper">Prayer plans and campaigns.</strong>{" "}
-            Walk a 40-day Lenten journey with the Fathers. Pray together with
-            other Orthodox Christians around the world for an intention or a
-            person.
-          </li>
-          <li>
-            <strong className="text-paper">A marketplace for the Church.</strong>{" "}
-            Icons, books, incense, and storefronts for monasteries, with the
-            ability to request paid blessings from real clergy.
-          </li>
-          <li>
-            <strong className="text-paper">Audio.</strong>{" "}
-            Read-aloud scripture, the Paschal Canon chanted, sample tones from
-            the Octoechos. So you can pray with the site even when your eyes
-            are tired.
-          </li>
-          <li>
-            <strong className="text-paper">Native apps.</strong>{" "}
-            iOS and Android, with offline reading.
-          </li>
-        </ul>
-
-        {/* How you can help */}
-        <h2 className="mt-14 font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
-          How you can help
-        </h2>
-        <ul className="space-y-4 font-sans text-[16px] text-paper/85 leading-[1.65]">
-          <li>
-            Use it. Read a chapter today. Open one saint. Tell us what was
-            confusing or what was missing.
-          </li>
-          <li>
-            Send us writings or icons we should include, especially in the
-            public domain or with the rights cleared.
-          </li>
-          <li>
-            Pray for the work, and for the people who will read it.
-          </li>
-        </ul>
+        <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+          The full release-by-release log lives below, with the small
+          things this round (three more saint icons, smoother highlight
+          bars, a date that no longer claims tomorrow is today).
+        </p>
 
         {/* Closing + signature */}
         <div className="mt-16 pt-10 border-t border-paper/10">
           <p className="font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-            More than anything, thank you for being here at the start. Glory to
-            God for all things.
+            Thank you for staying with us through two majors. Glory to God for
+            all things.
           </p>
 
           <p
@@ -165,7 +71,7 @@ export default function WhatsNewPage() {
           </p>
         </div>
 
-        {/* Changelog — accumulates per release. Big patches bump the major
+        {/* Changelog, accumulates per release. Big patches bump the major
             number and rewrite the letter above; small patches keep the
             letter and append an entry here. */}
         <section className="mt-20 pt-10 border-t border-paper/10">
@@ -179,15 +85,31 @@ export default function WhatsNewPage() {
           </p>
 
           <ChangelogEntry
+            version="v2.0"
+            kind="Calendar"
+            date="May 16, 2026"
+            blurb="The first standalone calendar lands. Today's saint, today's fasting status, a Pascha countdown, and a full month grid with each day's commemorations and fast colour-coded. Plus three new saint icons, smoother highlight bars, and the version label finally catches up to itself."
+            items={[
+              "New /calendar route. Hero shows today's date, today's saint(s) drawn from the saints index, the day's fasting rule with a colour-coded badge, and the days remaining until Pascha.",
+              "Full month grid (Sun to Sat) with today tinted gold, every saint feast day dotted in gold, and the fasting rule for each day colour-coded (red strict, gold wine and oil, sage fish allowed, green fast-free). Click any day to pin it.",
+              "Fasting helper covers the year-round Wednesday/Friday fast, all four major fasts (Great Lent, Apostles, Dormition, Nativity), and the four fast-free weeks (Bright Week, Trinity Week, the Twelve Days of Christmas, the Publican and Pharisee week).",
+              "Pascha is computed by the Julian-based algorithm shared by all canonical Orthodox churches; fixed feasts use the New (Revised Julian) calendar of the Ecumenical Patriarchate.",
+              "Three more saint icons sourced from Wikimedia Commons: Augustine of Hippo, Cyril of Alexandria, Irenaeus of Lyons.",
+              "Word highlights now extend across the space between adjacent highlighted words. No more gappy two-pill look when you highlight a phrase like 'for God so loved'.",
+              "Date and version-label drift fixed: changelog dates corrected to May 16, home banner now matches the /whats-new header.",
+            ]}
+          />
+
+          <ChangelogEntry
             version="v1.5"
-            kind="John & the Fathers"
-            date="May 17, 2026"
+            kind="John and the Fathers"
+            date="May 16, 2026"
             blurb="A patch dedicated to the Gospel of John. Three of the great early commentators on the Fourth Gospel are added to the Saints section. Patristic commentary expands from one chapter of John to nine. The letter above is unchanged; this is a content bump, not a direction change."
             items={[
               "Three new saints in the registry: Augustine of Hippo (Doctor of Grace), Cyril of Alexandria (Seal of the Fathers), and Irenaeus of Lyons (Disciple of the Disciple, who heard Polycarp who heard John).",
               "Each new saint ships with a curated selection from his commentary on John: Augustine's Tractates on John, Cyril's Commentary on John, and Irenaeus' Against Heresies on the Fourth Gospel.",
-              "St. John Chrysostom gains a third work, Homilies on the Gospel of John, with selections from the eighty-eight homilies he preached at Antioch in the early 390s — the longest patristic treatment of any New Testament book.",
-              "Patristic commentary on John expands from one chapter to nine. New verse-level entries on John 1:3, 1:12, 1:18, 1:29, 3:3, 3:5, 3:16, 6:51, 6:53, 10:11, 10:30, 14:6, 14:9, 17:21, 19:34, 20:22, 20:28 — the most-cited verses of the Gospel.",
+              "St. John Chrysostom gains a third work, Homilies on the Gospel of John, with selections from the eighty-eight homilies he preached at Antioch in the early 390s, the longest patristic treatment of any New Testament book.",
+              "Patristic commentary on John expands from one chapter to nine. New verse-level entries on John 1:3, 1:12, 1:18, 1:29, 3:3, 3:5, 3:16, 6:51, 6:53, 10:11, 10:30, 14:6, 14:9, 17:21, 19:34, 20:22, 20:28, the most-cited verses of the Gospel.",
               "Commentary now draws on ten Fathers across the patristic age: Athanasius, Augustine, Basil, Chrysostom, Cyril of Alexandria, Gregory the Theologian, Ignatius of Antioch, Irenaeus, John of Damascus, and Maximus the Confessor.",
               "Saint icons for Augustine, Cyril, and Irenaeus render as deterministic-initials circles until JPGs are uploaded; both icon maps (profile and commentary-rail) are wired with the correct paths.",
             ]}
@@ -196,7 +118,7 @@ export default function WhatsNewPage() {
           <ChangelogEntry
             version="v1.4.1"
             kind="Bible fixes"
-            date="May 17, 2026"
+            date="May 16, 2026"
             blurb="A correctness patch for the Interlinear column and word lookups. No new features; just clean text where there used to be ingestion debris."
             items={[
               "Fixed: literal <em>of</em>, <em>is</em>, and friends appearing inside the English column of the New Testament when Interlinear was on. The KJV's italicized supplied-words markers had been surviving as HTML through the ingest. 2,444 stray tags removed across 197 chapter files.",
@@ -213,11 +135,11 @@ export default function WhatsNewPage() {
             date="May 16, 2026"
             blurb="With Interlinear on, every Greek word in the New Testament is now clickable. Tap a word to see its dictionary form, a short definition, the part of speech, and its Strong's number. Letter above unchanged."
             items={[
-              "New WordPopover anchored to the clicked word — flips above if it would run off the bottom of the screen.",
+              "New WordPopover anchored to the clicked word, flips above if it would run off the bottom of the screen.",
               "Popover shows: the word itself, the lemma (dictionary form) with transliteration, a concise Strong's definition, a friendly parse string (e.g. 'verb · aorist · active · indicative · 3rd sing.'), and the Strong's number badge.",
-              "1,200+ Greek words and 5,500+ Strong's entries packed into a slim per-chapter lexicon — only the entries used in the chapter ship to the browser (~5-20 KB per page).",
+              "1,200+ Greek words and 5,500+ Strong's entries packed into a slim per-chapter lexicon, only the entries used in the chapter ship to the browser (~5-20 KB per page).",
               "NT text now sourced from the Robinson-Pierpont Byzantine Majority Text with Strong's tagging (PD). Same Textus Receptus tradition as the previous Stephanus rendering; accents are not shown so the words can be tagged precisely.",
-              "OT (Greek LXX) keeps its accented text and shows a small 'word lookups coming' marker — OT tagging is planned for a future patch.",
+              "OT (Greek LXX) keeps its accented text and shows a small 'word lookups coming' marker, OT tagging is planned for a future patch.",
               "Esc, click outside, or the × in the corner all close the popover.",
             ]}
           />
@@ -230,7 +152,7 @@ export default function WhatsNewPage() {
             items={[
               "New Interlinear button in the chapter header, next to the search bar. Toggle persists across chapters and reloads.",
               "Original-language coverage: KJV New Testament paired with Stephanus 1550 (Textus Receptus) Greek; Brenton Old Testament paired with the Septuagint Greek that Brenton translated from. 1,325 chapters total.",
-              "Cardo serif loaded for the Greek column — polytonic accents and breathings render correctly.",
+              "Cardo serif loaded for the Greek column, polytonic accents and breathings render correctly.",
               "Mobile (under md): Greek wraps below the English instead of beside, so verses stay readable on phones.",
               "Verse highlights and notes still work with Interlinear on. The English column owns the toolbar and word-drag highlighting.",
             ]}

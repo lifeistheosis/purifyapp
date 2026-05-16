@@ -1,0 +1,97 @@
+// One-off: fetch the icons that lib/saints/saints.ts already references
+// but that are missing from public/saints/icons/. Uses Wikimedia Commons
+// MediaWiki API search → picks first single-saint candidate → downloads
+// → resizes via sharp to max 800px JPEG q85.
+//
+// Usage: node scripts/fetch-missing-icons.mjs
+
+import fs from "node:fs/promises";
+import fssync from "node:fs";
+import path from "node:path";
+import https from "node:https";
+import sharp from "sharp";
+
+const TARGETS = [
+  { slug: "augustine-of-hippo", q: "Augustine of Hippo icon" },
+  { slug: "cyril-of-alexandria", q: "Cyril of Alexandria icon" },
+  { slug: "irenaeus-of-lyons", q: "Irenaeus of Lyons icon" },
+];
+
+const OUT = path.join(process.cwd(), "public", "saints", "icons");
+
+function get(url) {
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, {
+        headers: {
+          "User-Agent":
+            "PurifyApp/1.0 (https://purifyapp.com; lifeistheosis@users.noreply.github.com)",
+        },
+      }, (res) => {
+        if (
+          [301, 302, 303, 307, 308].includes(res.statusCode) &&
+          res.headers.location
+        )
+          return get(res.headers.location).then(resolve).catch(reject);
+        const chunks = [];
+        res.on("data", (c) => chunks.push(c));
+        res.on("end", () =>
+          resolve({
+            status: res.statusCode,
+            body: Buffer.concat(chunks),
+            type: res.headers["content-type"],
+          }),
+        );
+      })
+      .on("error", reject);
+  });
+}
+
+async function searchCommons(query) {
+  const r = await get(
+    `https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&srnamespace=6&format=json&srlimit=10`,
+  );
+  const json = JSON.parse(r.body.toString());
+  return (json.query?.search || [])
+    .map((x) => x.title)
+    .filter((t) => /\.(jpg|jpeg|png)$/i.test(t));
+}
+
+async function fileUrl(title) {
+  const r = await get(
+    `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=imageinfo&iiprop=url&format=json`,
+  );
+  const json = JSON.parse(r.body.toString());
+  return Object.values(json.query?.pages || {})[0]?.imageinfo?.[0]?.url ?? null;
+}
+
+(async () => {
+  await fs.mkdir(OUT, { recursive: true });
+  for (const { slug, q } of TARGETS) {
+    const candidates = await searchCommons(q);
+    console.log(`\n${slug}:`);
+    for (const c of candidates.slice(0, 4)) console.log("  cand:", c);
+    let saved = false;
+    for (const cand of candidates) {
+      const url = await fileUrl(cand);
+      if (!url) continue;
+      const r = await get(url);
+      if (r.status !== 200 || !r.type?.startsWith("image/")) continue;
+      const dest = path.join(OUT, `${slug}.jpg`);
+      const tmp = dest + ".tmp";
+      const resized = await sharp(r.body)
+        .resize({ width: 800, height: 800, fit: "inside" })
+        .jpeg({ quality: 85, mozjpeg: true })
+        .toBuffer();
+      await fs.writeFile(tmp, resized);
+      await fs.rename(tmp, dest);
+      console.log(
+        `  → saved (${(resized.length / 1024).toFixed(0)} KB) from`,
+        cand,
+      );
+      saved = true;
+      break;
+    }
+    if (!saved) console.warn(`  NO IMAGE downloaded for ${slug}`);
+  }
+})();

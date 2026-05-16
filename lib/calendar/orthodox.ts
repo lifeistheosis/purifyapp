@@ -1,0 +1,377 @@
+// Orthodox liturgical calendar helpers — pure functions, no I/O.
+// Used by app/(app)/calendar/page.tsx.
+//
+// Follows the New (Revised Julian) calendar for FIXED feasts:
+//   most canonical Eastern Orthodox jurisdictions use this for everything
+//   except Pascha and the Paschal cycle, which both calendars compute
+//   from the Julian-based algorithm.
+//
+// Pascha = the Orthodox date (Meeus's algorithm), converted to Gregorian.
+
+import { SAINTS, type Saint } from "@/lib/saints/saints";
+
+// ----- Pascha -----
+
+/**
+ * Orthodox Pascha for the given year, as a Date at noon UTC (avoid TZ
+ * boundary surprises). Verified against published values for 2020-2030.
+ */
+export function orthodoxPascha(year: number): Date {
+  const a = year % 4;
+  const b = year % 7;
+  const c = year % 19;
+  const d = (19 * c + 15) % 30;
+  const e = (2 * a + 4 * b - d + 34) % 7;
+  const julianMonth = Math.floor((d + e + 114) / 31); // 3=March, 4=April
+  const julianDay = ((d + e + 114) % 31) + 1;
+  // Julian-to-Gregorian offset: +13 days for years 1900-2099, +14 from
+  // 2100-02-28, +15 from 2200-02-28, etc. Hard-coded for the current
+  // window since we only need to be right for "now" + a couple years.
+  const julianOffset = year < 2100 ? 13 : year < 2200 ? 14 : 15;
+  const julianDate = new Date(Date.UTC(year, julianMonth - 1, julianDay, 12));
+  julianDate.setUTCDate(julianDate.getUTCDate() + julianOffset);
+  return julianDate;
+}
+
+// ----- Day helpers (calendar math in UTC noon to dodge DST) -----
+
+export function startOfDayUtc(d: Date): Date {
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 12));
+}
+
+function addDays(d: Date, days: number): Date {
+  const out = new Date(d);
+  out.setUTCDate(out.getUTCDate() + days);
+  return out;
+}
+
+function diffDays(a: Date, b: Date): number {
+  return Math.round(
+    (startOfDayUtc(a).getTime() - startOfDayUtc(b).getTime()) /
+      (24 * 3600 * 1000),
+  );
+}
+
+function sameDay(a: Date, b: Date): boolean {
+  return diffDays(a, b) === 0;
+}
+
+function inRangeInclusive(d: Date, start: Date, end: Date): boolean {
+  return diffDays(d, start) >= 0 && diffDays(d, end) <= 0;
+}
+
+// ----- Fasting -----
+
+export type FastKind =
+  | "strict"      // Great Lent, Dormition, Holy Week — no fish/oil/wine
+  | "wine-oil"    // Lenten Sundays, etc — wine and oil allowed
+  | "fish"        // fast period but fish allowed
+  | "fast"        // generic fast (no meat/dairy)
+  | "fast-free"   // intentionally no fast
+  | "normal";     // no special rule
+
+export type FastingStatus = {
+  kind: FastKind;
+  /** Short human label for the badge. */
+  label: string;
+  /** Longer one-line explanation. */
+  rule: string;
+};
+
+const MONTH_DAYS = (year: number, month: number /* 0-11 */) =>
+  new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+
+/**
+ * Returns the fasting status for a calendar date according to common
+ * Eastern Orthodox practice (Constantinople/Greek tradition). This is a
+ * simplified reading suitable for daily orientation — your priest's
+ * direction takes precedence for any individual question.
+ */
+export function fastingStatus(date: Date): FastingStatus {
+  const d = startOfDayUtc(date);
+  const year = d.getUTCFullYear();
+  const month = d.getUTCMonth(); // 0-11
+  const day = d.getUTCDate();
+  const dow = d.getUTCDay(); // 0 = Sunday
+
+  const pascha = orthodoxPascha(year);
+  const cleanMonday = addDays(pascha, -48);
+  const holySaturday = addDays(pascha, -1);
+  const palmSunday = addDays(pascha, -7);
+  const annunciation = new Date(Date.UTC(year, 2, 25, 12)); // Mar 25
+  const transfiguration = new Date(Date.UTC(year, 7, 6, 12)); // Aug 6
+  const brightWeekEnd = addDays(pascha, 7); // Thomas Sunday eve
+  const pentecost = addDays(pascha, 49);
+  const allSaintsSunday = addDays(pascha, 56);
+  const apostlesFastStart = addDays(allSaintsSunday, 1);
+  const apostlesFastEnd = new Date(Date.UTC(year, 5, 28, 12)); // June 28
+  const dormitionStart = new Date(Date.UTC(year, 7, 1, 12));
+  const dormitionEnd = new Date(Date.UTC(year, 7, 14, 12));
+  const nativityStart = new Date(Date.UTC(year, 10, 15, 12));
+  const nativityEnd = new Date(Date.UTC(year, 11, 24, 12));
+  const christmasFreeStart = new Date(Date.UTC(year, 11, 25, 12));
+  const theophanyEve = new Date(Date.UTC(year, 0, 4, 12)); // Jan 4 (free through)
+  const publicanFeast = addDays(pascha, -70); // approx Sunday of Publican & Pharisee
+  const publicanFreeEnd = addDays(publicanFeast, 7);
+
+  // ----- Fast-free windows -----
+  if (
+    (month === 0 && day <= 4) ||
+    (month === 11 && day >= 25) ||
+    inRangeInclusive(d, christmasFreeStart, new Date(Date.UTC(year + 1, 0, 4, 12)))
+  ) {
+    return {
+      kind: "fast-free",
+      label: "Fast-free",
+      rule: "Twelve Days of Christmas. No fast through Theophany Eve (Jan 4).",
+    };
+  }
+  if (inRangeInclusive(d, pascha, brightWeekEnd)) {
+    return {
+      kind: "fast-free",
+      label: "Bright Week, fast-free",
+      rule: "The week of the Resurrection. No fast, even on Wednesday and Friday.",
+    };
+  }
+  if (inRangeInclusive(d, addDays(pentecost, 1), addDays(pentecost, 7))) {
+    return {
+      kind: "fast-free",
+      label: "Trinity Week, fast-free",
+      rule: "Week after Pentecost. No fast on Wednesday or Friday.",
+    };
+  }
+  if (inRangeInclusive(d, addDays(publicanFeast, 1), publicanFreeEnd)) {
+    return {
+      kind: "fast-free",
+      label: "Fast-free week",
+      rule: "Week after the Sunday of the Publican and the Pharisee.",
+    };
+  }
+
+  // ----- Great Lent + Holy Week -----
+  if (inRangeInclusive(d, cleanMonday, holySaturday)) {
+    if (sameDay(d, annunciation) || sameDay(d, palmSunday)) {
+      return {
+        kind: "fish",
+        label: "Lent, fish allowed",
+        rule: sameDay(d, palmSunday)
+          ? "Palm Sunday. Fish, wine, and oil allowed."
+          : "Feast of the Annunciation. Fish, wine, and oil allowed.",
+      };
+    }
+    if (dow === 0 || dow === 6) {
+      return {
+        kind: "wine-oil",
+        label: "Lent, wine and oil",
+        rule: "Saturday or Sunday of Great Lent. Wine and oil allowed.",
+      };
+    }
+    return {
+      kind: "strict",
+      label: "Great Lent, strict",
+      rule: "Strict fast. No meat, dairy, fish, wine, or oil.",
+    };
+  }
+
+  // ----- Dormition Fast -----
+  if (inRangeInclusive(d, dormitionStart, dormitionEnd)) {
+    if (sameDay(d, transfiguration)) {
+      return {
+        kind: "fish",
+        label: "Transfiguration, fish allowed",
+        rule: "Feast of the Transfiguration. Fish, wine, and oil allowed.",
+      };
+    }
+    if (dow === 0 || dow === 6) {
+      return {
+        kind: "wine-oil",
+        label: "Dormition Fast, wine and oil",
+        rule: "Saturday or Sunday of the Dormition Fast. Wine and oil allowed.",
+      };
+    }
+    return {
+      kind: "strict",
+      label: "Dormition Fast, strict",
+      rule: "Strict fast. No meat, dairy, fish, wine, or oil.",
+    };
+  }
+
+  // ----- Nativity Fast -----
+  if (inRangeInclusive(d, nativityStart, nativityEnd)) {
+    const stricter = day >= 20 && month === 11;
+    if (dow === 0 || dow === 6) {
+      return {
+        kind: "fish",
+        label: "Nativity Fast, fish allowed",
+        rule: "Saturday or Sunday of the Nativity Fast. Fish, wine, and oil allowed.",
+      };
+    }
+    if (dow === 3 || dow === 5) {
+      return {
+        kind: "strict",
+        label: "Nativity Fast, strict",
+        rule: "Wednesday/Friday of the Nativity Fast. No meat, dairy, fish, wine, or oil.",
+      };
+    }
+    return {
+      kind: stricter ? "wine-oil" : "fish",
+      label: stricter ? "Nativity Fast, wine and oil" : "Nativity Fast, fish allowed",
+      rule: stricter
+        ? "The final stretch before Nativity (Dec 20 to 24). Wine and oil only on weekdays."
+        : "Nativity Fast. Fish allowed on weekdays, except Wednesday and Friday.",
+    };
+  }
+
+  // ----- Apostles' Fast -----
+  if (inRangeInclusive(d, apostlesFastStart, apostlesFastEnd)) {
+    if (dow === 0 || dow === 6) {
+      return {
+        kind: "fish",
+        label: "Apostles' Fast, fish allowed",
+        rule: "Saturday or Sunday of the Apostles' Fast. Fish, wine, and oil allowed.",
+      };
+    }
+    if (dow === 3 || dow === 5) {
+      return {
+        kind: "wine-oil",
+        label: "Apostles' Fast, wine and oil",
+        rule: "Wednesday/Friday of the Apostles' Fast. Wine and oil allowed.",
+      };
+    }
+    return {
+      kind: "fish",
+      label: "Apostles' Fast, fish allowed",
+      rule: "Apostles' Fast. Fish allowed on weekdays.",
+    };
+  }
+
+  // ----- Year-round weekly Wed/Fri fast -----
+  if (dow === 3 || dow === 5) {
+    return {
+      kind: "wine-oil",
+      label: dow === 3 ? "Wednesday fast" : "Friday fast",
+      rule: "Wednesday/Friday year-round fast. Wine and oil allowed.",
+    };
+  }
+
+  return {
+    kind: "normal",
+    label: "No fast",
+    rule: "No fast scheduled for this day.",
+  };
+}
+
+// ----- Feast / saint of the day -----
+
+const MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+] as const;
+
+/** Parses one of our feastDays strings like "January 27" → { month: 0, day: 27 }. */
+function parseFeastString(s: string): { month: number; day: number } | null {
+  const m = s.trim().match(/^([A-Za-z]+)\s+(\d{1,2})$/);
+  if (!m) return null;
+  const monthIdx = MONTHS.findIndex(
+    (mo) => mo.toLowerCase() === m[1].toLowerCase(),
+  );
+  if (monthIdx < 0) return null;
+  const day = parseInt(m[2], 10);
+  if (!Number.isInteger(day) || day < 1 || day > 31) return null;
+  return { month: monthIdx, day };
+}
+
+// Build once: { "0-27": [john-chrysostom], ... } where key is "month-day".
+const FEAST_INDEX: Map<string, Saint[]> = (() => {
+  const idx = new Map<string, Saint[]>();
+  for (const s of SAINTS) {
+    for (const fd of s.feastDays ?? []) {
+      const parsed = parseFeastString(fd);
+      if (!parsed) continue;
+      const key = `${parsed.month}-${parsed.day}`;
+      if (!idx.has(key)) idx.set(key, []);
+      idx.get(key)!.push(s);
+    }
+  }
+  return idx;
+})();
+
+/** All saints in our index commemorated on this calendar date. */
+export function feastsOn(date: Date): Saint[] {
+  const d = startOfDayUtc(date);
+  const key = `${d.getUTCMonth()}-${d.getUTCDate()}`;
+  return FEAST_INDEX.get(key) ?? [];
+}
+
+// ----- Month grid -----
+
+export type MonthCell = {
+  date: Date;
+  day: number;
+  inMonth: boolean;
+  isToday: boolean;
+  saints: Saint[];
+  fast: FastKind;
+};
+
+/** Returns 42 cells (6 weeks × 7 days) for the given year/month, Sun first. */
+export function monthGrid(year: number, month: number, today: Date): MonthCell[] {
+  const first = new Date(Date.UTC(year, month, 1, 12));
+  const startDow = first.getUTCDay(); // 0 = Sun
+  const gridStart = addDays(first, -startDow);
+  const cells: MonthCell[] = [];
+  for (let i = 0; i < 42; i++) {
+    const d = addDays(gridStart, i);
+    cells.push({
+      date: d,
+      day: d.getUTCDate(),
+      inMonth: d.getUTCMonth() === month,
+      isToday: sameDay(d, today),
+      saints: feastsOn(d),
+      fast: fastingStatus(d).kind,
+    });
+  }
+  return cells;
+}
+
+// ----- Pascha countdown -----
+
+export type PaschaInfo = {
+  date: Date;
+  daysAway: number;
+  /** "Bright Monday", "12 days until Pascha", etc. */
+  label: string;
+};
+
+export function paschaInfo(today: Date): PaschaInfo {
+  const t = startOfDayUtc(today);
+  const year = t.getUTCFullYear();
+  const thisYear = orthodoxPascha(year);
+  const nextYear = orthodoxPascha(year + 1);
+  // If this year's Pascha has passed, use next year's.
+  const target = diffDays(t, thisYear) <= 0 ? thisYear : nextYear;
+  const daysAway = diffDays(target, t);
+  let label: string;
+  if (daysAway === 0) label = "Pascha is today. Christ is risen!";
+  else if (daysAway < 0) label = "Pascha has passed.";
+  else if (daysAway === 1) label = "Pascha is tomorrow.";
+  else label = `${daysAway} days until Pascha (${formatMonthDay(target)})`;
+  return { date: target, daysAway, label };
+}
+
+// ----- Formatting -----
+
+export function formatLongDate(d: Date): string {
+  const dow = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][
+    d.getUTCDay()
+  ];
+  return `${dow} · ${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+}
+
+export function formatMonthDay(d: Date): string {
+  return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}`;
+}
+
+export function formatMonthYear(year: number, month: number): string {
+  return `${MONTHS[month]} ${year}`;
+}
