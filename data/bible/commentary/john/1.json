@@ -4,13 +4,13 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Gospel of St. John, Homily 2",
       "citation": "NPNF1-14",
-      "text": "What sayest thou, O blessed John? wishing to speak of the Father, didst thou make mention of the Son? Why dost thou not tell us of the Father first? Because, he replies, He could not be made known to us unless made known by His Son. 'No man hath seen God at any time; the only-begotten Son, which is in the bosom of the Father, He hath declared Him.' Therefore I lead you straight to His Son, that you may learn through Him concerning the Father. 'In the beginning was the Word.' What sayest thou? The Word was. As also concerning the Father he saith, 'God is.' Even so here, 'In the beginning was the Word.'"
+      "text": "Chrysostom asks why John, wishing to speak of the Father, begins with the Son. His answer is that the Father can be made known to us only through the Son. The evangelist therefore leads the reader straight to the Word, that the reader may learn through Him concerning the Father. The careful tense of 'In the beginning was the Word' echoes the language used of the Father Himself: 'God is.' Just so, here, 'the Word was.' Whatever the mind tries to push back behind that 'was,' the Word is already there."
     },
     {
       "author": "St. Augustine",
       "work": "Tractates on the Gospel of John, Tractate 1",
       "citation": "NPNF1-07",
-      "text": "What does 'In the beginning was the Word' mean? A house also is said in a similar way to be in the heart of the builder. The builder bears the house in his art; if he did not bear it in his art, how could he produce it by building? But the house which is in art is not the house which appears to our eyes. It exists invisibly in art, it will exist visibly in fabric. Behold, it is made; has it ceased to exist in art? The thing made in fabric is one thing, that which exists in art is another; the house abides in art."
+      "text": "Augustine reaches for an analogy from craftsmanship. A house is in the heart of the builder before it is ever built. The builder bears the house in his art, and if he did not bear it in his art, how could he produce it by building? The house in art is invisible; the house in fabric appears to the eyes. When the visible house is made, the house in art does not cease to be. So the Word abides eternally in the Father, and through Him the visible creation comes to be."
     },
     {
       "author": "St. Gregory the Theologian",
@@ -19,12 +19,50 @@
       "text": "Gregory the Theologian makes the eternal Word the heart of his trinitarian preaching. In the Five Theological Orations he insists that the Son is begotten of the Father timelessly, neither created nor inferior, sharing the one divine essence undividedly. There never was a moment, Gregory teaches, when the Son was not, and so the Arian formula is decisively rejected. The Word's eternal generation grounds everything else the Church says about Christ: He saves because He truly is God, and He reveals the Father because He shares the Father's very nature."
     }
   ],
+  "3": [
+    {
+      "author": "St. Athanasius the Great",
+      "work": "Against the Arians, Orations 1-2",
+      "citation": "NPNF2-04",
+      "text": "Athanasius reads 'all things were made through Him' as the decisive answer to the Arian claim that the Son is a creature. If everything that came into being came through the Word, then the Word Himself cannot have come into being; otherwise He would have to have made Himself, which is absurd. The verse therefore places the Son outside the order of creation altogether: He is not the first of the things made but the One through whom all things were made. Without Him not one thing exists — including, the Council of Nicaea concluded, the categories of time and being themselves."
+    }
+  ],
+  "12": [
+    {
+      "author": "St. Irenaeus of Lyons",
+      "work": "Against Heresies, Book III",
+      "citation": "ANF01",
+      "text": "Irenaeus reads 'as many as received Him, to them gave He power to become children of God' against the Gnostic teachers who claimed that only a chosen elite, born of a higher seed, could be saved. The verse, he insists, is universal in its offer: it speaks of those who receive Him, of those who believe on His Name, without restriction by birth, race, or station. To become a child of God is not a matter of innate spiritual nature but of the Word's gift, freely given to all who receive Him."
+    }
+  ],
   "14": [
     {
       "author": "St. Cyril of Alexandria",
       "work": "Commentary on the Gospel of John, Book 1",
       "citation": "LFC 43",
-      "text": "'And the Word became flesh.' He did not change His own nature, but truly became Man, being God by nature, and putting on the flesh of man. He took to Himself what He was not, remaining what He was. For the Word, being God, became Man without ceasing to be God; that, in becoming Man, He might raise our nature with Himself."
+      "text": "Cyril teaches that the Word did not change His own nature when He became flesh, but truly became Man — being God by nature and putting on the flesh of man. He took to Himself what He was not, remaining what He was. The Word, being God, became Man without ceasing to be God, that in becoming Man He might raise our nature with Himself. This is the foundation of all later Orthodox Christology: one Person, two natures, undivided and unconfused."
+    },
+    {
+      "author": "St. Irenaeus of Lyons",
+      "work": "Against Heresies, Book V",
+      "citation": "ANF01",
+      "text": "Irenaeus reads the Incarnation as recapitulation. The Word became what we are that He might make us what He is. By passing through every age of human life — infant, child, youth, full-grown — He sanctified each in His own Person, and undid in Himself the disobedience of Adam at every point. The Gospel's 'and the Word became flesh' is therefore not only the beginning of Christ's descent for us, but the beginning of our ascent in Him."
+    }
+  ],
+  "18": [
+    {
+      "author": "St. Augustine of Hippo",
+      "work": "Tractates on the Gospel of John, Tractate 3",
+      "citation": "NPNF1-07",
+      "text": "Augustine takes 'no one has seen God at any time' as a deliberate boundary the evangelist sets. Whatever has been seen, by Moses or the prophets or the patriarchs, was a glimpse mediated through created form — angel, fire, cloud, voice. The Father in His own essence remains invisible to the creature. The Only-Begotten Son, in the bosom of the Father, He has declared Him. To see Christ is to see what can be seen of God; what cannot, we receive as gift from the One who alone sees the Father face to face."
+    }
+  ],
+  "29": [
+    {
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on the Gospel of John, Book 2",
+      "citation": "LFC 43",
+      "text": "Cyril sees in the Forerunner's cry, 'Behold the Lamb of God,' the gathering of the whole Old Testament into a single sentence. The Passover lamb of Egypt, the lamb of Isaiah 53 led silent to the slaughter, the daily sacrifices of the Temple — all of them have pointed to this one Person. John the Baptist names what they only foreshadowed. The Lamb is not one more sacrifice in a long series; He is the sacrifice the others were waiting to become true in."
     }
   ]
 }

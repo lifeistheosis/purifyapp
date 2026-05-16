@@ -16,7 +16,7 @@ export default function WhatsNewPage() {
             What&rsquo;s new
           </p>
           <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
-            v1.4.1 &middot; Beta &middot; Bible fixes
+            v1.5 &middot; Beta &middot; John &amp; the Fathers
           </p>
         </div>
 
@@ -177,6 +177,21 @@ export default function WhatsNewPage() {
             and represent a substantial direction change. Minor bumps (1.0 to
             1.1) keep the letter and add a release note here.
           </p>
+
+          <ChangelogEntry
+            version="v1.5"
+            kind="John & the Fathers"
+            date="May 17, 2026"
+            blurb="A patch dedicated to the Gospel of John. Three of the great early commentators on the Fourth Gospel are added to the Saints section. Patristic commentary expands from one chapter of John to nine. The letter above is unchanged; this is a content bump, not a direction change."
+            items={[
+              "Three new saints in the registry: Augustine of Hippo (Doctor of Grace), Cyril of Alexandria (Seal of the Fathers), and Irenaeus of Lyons (Disciple of the Disciple, who heard Polycarp who heard John).",
+              "Each new saint ships with a curated selection from his commentary on John: Augustine's Tractates on John, Cyril's Commentary on John, and Irenaeus' Against Heresies on the Fourth Gospel.",
+              "St. John Chrysostom gains a third work, Homilies on the Gospel of John, with selections from the eighty-eight homilies he preached at Antioch in the early 390s — the longest patristic treatment of any New Testament book.",
+              "Patristic commentary on John expands from one chapter to nine. New verse-level entries on John 1:3, 1:12, 1:18, 1:29, 3:3, 3:5, 3:16, 6:51, 6:53, 10:11, 10:30, 14:6, 14:9, 17:21, 19:34, 20:22, 20:28 — the most-cited verses of the Gospel.",
+              "Commentary now draws on ten Fathers across the patristic age: Athanasius, Augustine, Basil, Chrysostom, Cyril of Alexandria, Gregory the Theologian, Ignatius of Antioch, Irenaeus, John of Damascus, and Maximus the Confessor.",
+              "Saint icons for Augustine, Cyril, and Irenaeus render as deterministic-initials circles until JPGs are uploaded; both icon maps (profile and commentary-rail) are wired with the correct paths.",
+            ]}
+          />
 
           <ChangelogEntry
             version="v1.4.1"

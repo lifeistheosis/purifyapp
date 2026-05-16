@@ -12,6 +12,14 @@ export const AUTHOR_ICONS: Record<string, string> = {
   "St. Gregory the Theologian": "/icons/saints/gregory-the-theologian.jpg",
   "St. Gregory of Nazianzus": "/icons/saints/gregory-the-theologian.jpg",
   "St. Gregory of Nyssa": "/icons/saints/gregory-of-nyssa.jpg",
+  // Major early commentators on the Gospel of John (v1.5).
+  // Drop matching JPG/PNG files into the same folder to make these render.
+  "St. Augustine of Hippo": "/icons/saints/augustine-of-hippo.jpg",
+  "St. Augustine": "/icons/saints/augustine-of-hippo.jpg",
+  "Blessed Augustine of Hippo": "/icons/saints/augustine-of-hippo.jpg",
+  "St. Cyril of Alexandria": "/icons/saints/cyril-of-alexandria.jpg",
+  "St. Irenaeus of Lyons": "/icons/saints/irenaeus-of-lyons.jpg",
+  "St. Irenaeus": "/icons/saints/irenaeus-of-lyons.jpg",
 };
 
 export function authorIcon(author: string): string | null {

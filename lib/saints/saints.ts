@@ -111,6 +111,15 @@ export const SAINTS: Saint[] = [
           "The weight of the priesthood, the manner of those who would bear it, and why the young Chrysostom fled ordination.",
         topics: ["Priesthood", "Humility", "Pride", "Eucharist", "Vocation"],
       },
+      {
+        slug: "homilies-on-john",
+        title: "Homilies on the Gospel of John",
+        subtitle: "Selections from the eighty-eight homilies",
+        year: "c. 391",
+        blurb:
+          "Chrysostom's verse-by-verse preaching through the Fourth Gospel, the longest patristic treatment of any New Testament book.",
+        topics: ["Logos", "Incarnation", "Trinity", "Eucharist", "Scripture", "Theology"],
+      },
     ],
   },
   {
@@ -320,6 +329,96 @@ export const SAINTS: Saint[] = [
         blurb:
           "Symeon's account of the divine light he saw at prayer, and his insistence that the same vision is offered to every Christian who seeks it.",
         topics: ["Holy Spirit", "Light", "Repentance", "Mysticism"],
+      },
+    ],
+  },
+  {
+    slug: "augustine-of-hippo",
+    byname: "Doctor of Grace",
+    iconUrl: "/saints/icons/augustine-of-hippo.jpg",
+    name: "St. Augustine of Hippo",
+    epithet: "Bishop of Hippo · Blessed Augustine",
+    born: "November 13, 354 (Tagaste, North Africa)",
+    reposed: "August 28, 430",
+    feastDays: ["June 15", "August 28"],
+    see: "Hippo Regius",
+    shortBio:
+      "The North African bishop whose long Tractates on the Gospel of John gave the Latin Church its deepest reading of the Fourth Gospel.",
+    life: [
+      "Augustine was born in Tagaste in Roman North Africa to a pagan father, Patricius, and a Christian mother, Monica, whose prayers and tears the Church remembers as the model of every persevering parent. He was educated in rhetoric at Carthage and grew into a brilliant teacher of pagan letters before his conversion.",
+      "For nine years he followed the Manichaean sect, then briefly Neoplatonism, restless and divided in himself. The decisive turn came in 386 in a garden in Milan, where he heard a child's voice and opened Paul's epistle to the Romans. He was baptized by Ambrose of Milan at the Paschal Vigil of 387, his mother present, then sailed home to Africa.",
+      "Ordained priest at Hippo Regius almost against his will, he was consecrated bishop there in 395 and held that small African see for thirty-five years. He preached without rest, wrote without rest, and answered every controversy of his age, from the Donatists to the Pelagians to the pagan accusation that the sack of Rome in 410 was Christianity's fault.",
+      "His Confessions are the first interior autobiography in Christian literature. His City of God reframes history. His one hundred twenty-four Tractates on John, delivered as a homiletic series to his African flock, walk the entire Gospel verse by verse. He reposed at Hippo on August 28, 430, while the Vandals besieged the city, with the penitential Psalms pinned to the wall above his bed.",
+    ],
+    works: [
+      {
+        slug: "tractates-on-john",
+        title: "Tractates on the Gospel of John",
+        subtitle: "Selections from the one hundred twenty-four homilies",
+        year: "406-420",
+        blurb:
+          "Augustine's verse-by-verse reading of the Fourth Gospel, the longest Latin commentary on John from the early Church.",
+        topics: ["Logos", "Incarnation", "Trinity", "Eucharist", "Scripture", "Theology"],
+      },
+    ],
+  },
+  {
+    slug: "cyril-of-alexandria",
+    byname: "Seal of the Fathers",
+    iconUrl: "/saints/icons/cyril-of-alexandria.jpg",
+    name: "St. Cyril of Alexandria",
+    epithet: "Patriarch of Alexandria · Seal of the Fathers",
+    born: "c. 376 (Alexandria or its surrounds)",
+    reposed: "June 27, 444",
+    feastDays: ["June 9", "January 18"],
+    see: "Alexandria",
+    shortBio:
+      "The patriarch whose Christology defeated Nestorianism at the Council of Ephesus and whose commentary on John defends the eternal divinity of the Word.",
+    life: [
+      "Cyril was born about 376 to a notable Alexandrian family and trained from his youth in Scripture and the writings of Athanasius, his predecessor by two generations on the throne of St. Mark. As a young man he spent five years among the monks of the Egyptian desert before returning to the city to assist his uncle, the patriarch Theophilus.",
+      "He succeeded Theophilus in 412 and would govern the Church of Alexandria for thirty-two years. His earliest works are exegetical: a long commentary on John, a parallel commentary on Luke, a treatise on the Trinity in dialogue form. He read every line of Scripture against the question that mattered to him most: who is Christ?",
+      "In 428 Nestorius, archbishop of Constantinople, denied that the Virgin Mary should be called Theotokos, the God-bearer, on the grounds that Christ had two persons. Cyril answered with twelve anathemas and rallied the Church. At the Third Ecumenical Council at Ephesus in 431, the title Theotokos was vindicated and Nestorius was deposed.",
+      "Cyril spent his last years defending and refining the Christology that the Council had received, and is honored to this day as the Seal of the Fathers for the precision and authority of his teaching. He reposed in Alexandria on June 27, 444.",
+    ],
+    works: [
+      {
+        slug: "commentary-on-john",
+        title: "Commentary on the Gospel of John",
+        subtitle: "Selections from the twelve books",
+        year: "c. 425",
+        blurb:
+          "Cyril's reading of the Fourth Gospel, ordered by the question who is Christ, given to the Church before the Nestorian crisis erupted.",
+        topics: ["Christology", "Trinity", "Logos", "Incarnation", "Theotokos", "Scripture"],
+      },
+    ],
+  },
+  {
+    slug: "irenaeus-of-lyons",
+    byname: "Disciple of the Disciple",
+    iconUrl: "/saints/icons/irenaeus-of-lyons.jpg",
+    name: "St. Irenaeus of Lyons",
+    epithet: "Bishop of Lugdunum · Disciple of Polycarp",
+    born: "c. 130 (Smyrna)",
+    reposed: "c. 202",
+    feastDays: ["August 23"],
+    see: "Lugdunum (Lyons)",
+    shortBio:
+      "The second-century bishop who heard Polycarp who heard John, and whose Against Heresies preserved the apostolic faith against the Gnostic teachers of his age.",
+    life: [
+      "Irenaeus was born in Asia Minor, probably in Smyrna, around the year 130. As a boy he heard the elder Polycarp, bishop and martyr, who had himself been a disciple of John the Theologian. The continuity from the Apostle to Polycarp to Irenaeus is one of the visible threads by which the early Church guarded the deposit of faith.",
+      "He travelled west to Gaul as a priest of the Christian community at Lyons. When the persecution of 177 cut down the bishop Pothinus and a great company of the faithful, Irenaeus was away in Rome bearing a letter; on his return he was consecrated to the empty see.",
+      "His Against Heresies, written about 180, was the first systematic refutation of the Gnostic sects, especially the school of Valentinus. He answered them, paradoxically, by going through their own writings and showing how completely they had abandoned the apostolic preaching, particularly the testimony of the Fourth Gospel.",
+      "Irenaeus is the earliest extant Father to cite all four Gospels together as a single canonical witness, and the first to develop in detail the doctrine of recapitulation: that Christ, by becoming what we are, sums up the whole of human nature and restores in Himself what Adam lost. He is honored as a martyr, though the manner of his repose around 202 is not certainly known.",
+    ],
+    works: [
+      {
+        slug: "against-heresies-on-john",
+        title: "Against Heresies: On the Fourth Gospel",
+        subtitle: "Selections from Books III and V",
+        year: "c. 180",
+        blurb:
+          "Irenaeus on why the Church reads four Gospels and how the Word who was with the Father became flesh to recapitulate the whole of humanity.",
+        topics: ["Logos", "Incarnation", "Recapitulation", "Gospel", "Tradition", "Theology"],
       },
     ],
   },
