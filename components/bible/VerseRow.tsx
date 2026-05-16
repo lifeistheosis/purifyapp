@@ -217,7 +217,7 @@ export function VerseRow({
           ))}
         </p>
 
-        {/* Toolbar — visible on hover, or when verse already has annotations */}
+        {/* Toolbar — always visible on touch, hover-revealed at md+ */}
         <div
           className={
             "flex items-center gap-1 shrink-0 -mt-1 transition-opacity duration-150 " +
@@ -226,7 +226,7 @@ export function VerseRow({
             editing ||
             (ann.highlightedWords && ann.highlightedWords.length > 0)
               ? "opacity-100"
-              : "opacity-0 group-hover:opacity-100 focus-within:opacity-100")
+              : "opacity-100 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100")
           }
         >
           <button
@@ -236,7 +236,7 @@ export function VerseRow({
             aria-pressed={!!ann.highlighted}
             title={ann.highlighted ? "Remove highlight" : "Highlight verse"}
             className={
-              "h-7 w-7 rounded-full border flex items-center justify-center text-[12px] transition-colors duration-150 " +
+              "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-[14px] md:text-[12px] transition-colors duration-150 " +
               (ann.highlighted
                 ? "bg-[#d4af37]/30 border-[#d4af37]/60 text-[#d4af37]"
                 : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper")
@@ -250,7 +250,7 @@ export function VerseRow({
               onClick={ann.clearWords}
               aria-label="Clear word highlights"
               title="Clear word highlights"
-              className="h-7 w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-[12px] transition-colors duration-150"
+              className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-[14px] md:text-[12px] transition-colors duration-150"
             >
               ⌫
             </button>
@@ -265,7 +265,7 @@ export function VerseRow({
             aria-pressed={editing}
             title={ann.note ? "Edit note" : "Add note"}
             className={
-              "h-7 w-7 rounded-full border flex items-center justify-center text-[12px] transition-colors duration-150 " +
+              "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-[14px] md:text-[12px] transition-colors duration-150 " +
               (ann.note
                 ? "bg-paper/15 border-paper/30 text-paper"
                 : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper")

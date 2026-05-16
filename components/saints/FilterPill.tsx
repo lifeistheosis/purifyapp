@@ -18,7 +18,7 @@ export function FilterPill({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-pill border px-4 py-2 font-sans text-[13px] font-medium transition-colors duration-150 inline-flex items-center gap-2",
+        "rounded-pill border px-4 py-2.5 md:py-2 min-h-[40px] font-sans text-[13px] font-medium transition-colors duration-150 inline-flex items-center gap-2",
         "focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-[3px]",
         active
           ? "bg-paper text-night border-paper"
