@@ -15,7 +15,7 @@ const cols = [
     links: [
       { label: "Saints", href: "/saints" },
       { label: "Calendar", href: "/calendar" },
-      { label: "Pricing", href: "/pricing" },
+      { label: "What's new", href: "/whats-new" },
       { label: "Account", href: "/account" },
     ],
   },

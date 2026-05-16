@@ -7,7 +7,11 @@ const navItems = [
   { label: "Saints", href: "/saints" },
   { label: "Calendar", href: "/calendar" },
   { label: "Marketplace", href: "/marketplace" },
+];
+
+const secondary = [
   { label: "Pricing", href: "/pricing" },
+  { label: "Account", href: "/account" },
 ];
 
 export function Navbar() {
@@ -31,9 +35,20 @@ export function Navbar() {
             </Link>
           ))}
         </nav>
-        <Button variant="inverse" className="hidden sm:inline-flex !py-2.5 !px-5 text-[14px]">
-          Try Free
-        </Button>
+        <div className="hidden sm:flex items-center gap-5">
+          {secondary.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="font-sans text-[14px] font-medium text-paper/85 hover:text-paper transition-colors duration-150"
+            >
+              {item.label}
+            </Link>
+          ))}
+          <Button variant="inverse" className="!py-2.5 !px-5 text-[14px]">
+            Try Free
+          </Button>
+        </div>
       </div>
     </header>
   );

@@ -16,7 +16,7 @@ export default function WhatsNewPage() {
             What&rsquo;s new
           </p>
           <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
-            v1.0 &middot; Beta &middot; First release
+            v1.1 &middot; Beta &middot; Polish patch
           </p>
         </div>
 
@@ -164,7 +164,88 @@ export default function WhatsNewPage() {
             From Edgar, the Purify Team.
           </p>
         </div>
+
+        {/* Changelog — accumulates per release. Big patches bump the major
+            number and rewrite the letter above; small patches keep the
+            letter and append an entry here. */}
+        <section className="mt-20 pt-10 border-t border-paper/10">
+          <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-6">
+            Release notes
+          </p>
+          <p className="font-sans text-[13px] text-paper/45 mb-10 leading-[1.65]">
+            Versioning. Major bumps (1.0 to 2.0) come with a new letter above
+            and represent a substantial direction change. Minor bumps (1.0 to
+            1.1) keep the letter and add a release note here.
+          </p>
+
+          <ChangelogEntry
+            version="v1.1"
+            kind="Polish patch"
+            date="May 16, 2026"
+            blurb="A polish-and-fill pass before any new feature work. The letter above is unchanged."
+            items={[
+              "Three new saints: Ignatius of Antioch, Maximus the Confessor, Symeon the New Theologian, each with a representative work and a real icon.",
+              "Verse highlight tint now applies cleanly with the gold inset bar.",
+              "Top navigation harmonized between the marketing site and the app: same five primary items, same Pricing and Account links, same Try Free pill.",
+              "Footer: removed the duplicate Pricing link and surfaced What's new in the Discover column.",
+              "Saint icons resized: total weight dropped from 4.7 MB to ~440 KB, with no visible quality loss.",
+              "Focus rings on filter pills are now visible against the dark background.",
+            ]}
+          />
+
+          <ChangelogEntry
+            version="v1.0"
+            kind="First release"
+            date="May 15, 2026"
+            blurb="The first public version. See Edgar's letter above for the full picture."
+            items={[
+              "The Orthodox Bible: Brenton Septuagint plus KJV, with cross-references and patristic commentary.",
+              "Saints: six founding fathers with lives, writings, marginalia, century filter, topic filter.",
+              "Smart search across books, chapters, and verses (John 3:16, 1 Cor 13, Ps 23).",
+              "Verse highlights and notes saved to your device.",
+              "Dark, calm reading typography. Section-snap scrolling.",
+            ]}
+          />
+        </section>
       </article>
     </section>
+  );
+}
+
+function ChangelogEntry({
+  version,
+  kind,
+  date,
+  blurb,
+  items,
+}: {
+  version: string;
+  kind: string;
+  date: string;
+  blurb: string;
+  items: string[];
+}) {
+  return (
+    <article className="mb-12 last:mb-0">
+      <div className="flex items-baseline gap-3 flex-wrap mb-3">
+        <h3 className="font-sans text-[22px] font-bold text-paper tracking-[-0.01em]">
+          {version}
+        </h3>
+        <span className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/45">
+          {kind}
+        </span>
+        <span className="font-sans text-[12px] text-paper/35 ml-auto">
+          {date}
+        </span>
+      </div>
+      <p className="font-sans text-[15px] text-paper/70 mb-4 leading-[1.6]">
+        {blurb}
+      </p>
+      <ul className="space-y-2 font-sans text-[15px] text-paper/85 leading-[1.6] list-disc pl-5 marker:text-paper/30">
+        {items.map((it) => (
+          <li key={it}>{it}</li>
+        ))}
+      </ul>
+    </article>
   );
 }

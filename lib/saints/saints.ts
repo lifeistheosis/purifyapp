@@ -233,6 +233,96 @@ export const SAINTS: Saint[] = [
       },
     ],
   },
+  {
+    slug: "ignatius-of-antioch",
+    byname: "The God-bearer",
+    iconUrl: "/saints/icons/ignatius-of-antioch.jpg",
+    name: "St. Ignatius of Antioch",
+    epithet: "Bishop of Antioch · Apostolic Father",
+    born: "c. 35",
+    reposed: "c. 108 (Rome)",
+    feastDays: ["December 20"],
+    see: "Antioch",
+    shortBio:
+      "A disciple of the Apostle John and second bishop of Antioch, who was taken in chains to Rome to be killed by wild beasts in the Colosseum, and wrote seven letters along the road that have shaped the Church ever since.",
+    life: [
+      "Tradition names Ignatius as a disciple of the Apostle John and identifies him with the child whom the Lord set in the midst of the disciples and said, 'Whosoever shall humble himself as this little child, the same is greatest in the kingdom of heaven.' From this comes his second name, Theophorus, the God-bearer.",
+      "He succeeded the Apostle Peter and Evodius as bishop of Antioch, the city where the disciples were first called Christians. For some forty years he led the Antiochene church through the last decades of the apostolic generation.",
+      "In the persecution under the emperor Trajan he was condemned to die at Rome. Bound and guarded by ten soldiers whom he called 'ten leopards', he was taken overland through Asia Minor. At each stop the local churches sent delegations to comfort him, and he wrote to them in return: to the Ephesians, the Magnesians, the Trallians, the Romans, the Philadelphians, the Smyrneans, and to Polycarp of Smyrna.",
+      "He was martyred in the Colosseum, devoured by lions. The seven letters are the earliest patristic writings outside the New Testament, and witness to the eucharistic theology, the threefold ministry of bishop, presbyter, and deacon, and the unity of the Church around her bishop.",
+    ],
+    works: [
+      {
+        slug: "epistle-to-the-romans",
+        title: "Epistle to the Romans",
+        subtitle: "Written on the road to martyrdom",
+        year: "c. 107",
+        blurb:
+          "The fiercest of the seven letters: Ignatius begs the Roman Christians not to intervene to spare him from the wild beasts.",
+        topics: ["Martyrdom", "Eucharist", "Bishopric", "Unity"],
+      },
+    ],
+  },
+  {
+    slug: "maximus-the-confessor",
+    byname: "The Confessor",
+    iconUrl: "/saints/icons/maximus-the-confessor.jpg",
+    name: "St. Maximus the Confessor",
+    epithet: "Monk · Theologian of the Two Wills of Christ",
+    born: "c. 580 (Constantinople)",
+    reposed: "August 13, 662",
+    feastDays: ["January 21", "August 13"],
+    see: "Constantinople (lay)",
+    shortBio:
+      "The monk who almost alone defended the Orthodox confession that Christ has two natural wills, divine and human, against the imperial monothelite party, and was tortured and exiled for it; called 'the Confessor' for the witness of his maimed body.",
+    life: [
+      "Born in Constantinople of a noble family, Maximus rose to become first secretary to the emperor Heraclius. In his early thirties he resigned all worldly office and entered the monastery of Chrysopolis across the Bosphorus, where he was tonsured and took up the strict ascetic life.",
+      "When the empire and patriarchate adopted monothelitism, the doctrine that Christ had only one will, Maximus left the East and travelled to North Africa and Rome, persuading bishops and councils that the doctrine was a betrayal of Chalcedon. At the Lateran Council of 649, called at his urging, monothelitism was condemned.",
+      "For this he was arrested and brought back to Constantinople. He was tried, exiled, brought back, tried again, and finally, when he refused to recant, his tongue was cut out and his right hand cut off, that he might neither speak nor write the truth he confessed.",
+      "He was exiled to the Caucasus, where he died on August 13, 662. Twenty years later the Sixth Ecumenical Council of 681 affirmed everything he had taught and condemned everything he had opposed. The Church gave him the name 'Confessor' for the witness of his maimed body and silent tongue.",
+    ],
+    works: [
+      {
+        slug: "four-hundred-chapters-on-love",
+        title: "Four Hundred Chapters on Love",
+        subtitle: "First Century",
+        year: "c. 626",
+        blurb:
+          "Maximus's most-read work: a ladder of short maxims on the ascetic life, organized in four centuries of one hundred chapters each.",
+        topics: ["Love", "Asceticism", "Theology", "Will"],
+      },
+    ],
+  },
+  {
+    slug: "symeon-the-new-theologian",
+    byname: "The New Theologian",
+    iconUrl: "/saints/icons/symeon-the-new-theologian.jpg",
+    name: "St. Symeon the New Theologian",
+    epithet: "Abbot of St. Mamas · Father of Hesychasm",
+    born: "949 (Galatia)",
+    reposed: "March 12, 1022",
+    feastDays: ["March 12", "October 12"],
+    see: "Constantinople",
+    shortBio:
+      "One of only three saints surnamed 'the Theologian' in the Orthodox Church, who insisted, against the academic theology of his day, that the same gifts of the Holy Spirit given to the apostles are available to every Christian who seeks them.",
+    life: [
+      "Symeon entered the imperial service in Constantinople, but at the age of twenty-seven he abandoned the world to become a monk under the elder Symeon the Studite, whose name and discipleship he afterwards bore.",
+      "Some years into his monastic life, while at prayer in his cell, he was visited by an experience of the uncreated divine light. He saw himself filled with light, and within the light he saw Christ Himself. The experience was repeated many times throughout his life and became the central theme of his preaching: that the vision of God is not reserved for the apostles or for the great fathers, but is offered to every Christian who repents and prays.",
+      "Made abbot of the monastery of St. Mamas in Constantinople, he reformed it and shepherded it for twenty-five years. His insistence that the gifts of the Spirit are still given drew opposition from churchmen who considered it presumptuous; he was eventually exiled to a small abandoned chapel across the Bosphorus, where his disciples followed him and a new monastery grew up around him.",
+      "His Hymns of Divine Love, his Catechetical Discourses, and the Practical and Theological Chapters became the foundation of the hesychast tradition that flowered three centuries later under Gregory Palamas. He reposed in his hermitage on March 12, 1022.",
+    ],
+    works: [
+      {
+        slug: "discourse-on-faith",
+        title: "Discourse on Faith",
+        subtitle: "From the Catechetical Discourses",
+        year: "Late 10th c.",
+        blurb:
+          "Symeon's account of the divine light he saw at prayer, and his insistence that the same vision is offered to every Christian who seeks it.",
+        topics: ["Holy Spirit", "Light", "Repentance", "Mysticism"],
+      },
+    ],
+  },
 ];
 
 export function getSaint(slug: string): Saint | null {

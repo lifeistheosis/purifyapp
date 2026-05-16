@@ -68,7 +68,7 @@ export default function Home() {
                 New
               </span>
               <span className="font-sans text-[13px] text-paper/85 group-hover:text-paper transition-colors">
-                Beta v1.0 · read the first letter
+                Beta v1.1 · 3 new saints, polish patch
               </span>
               <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
                 →

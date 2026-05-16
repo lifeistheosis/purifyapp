@@ -1,0 +1,39 @@
+{
+  "saint": "ignatius-of-antioch",
+  "slug": "epistle-to-the-romans",
+  "title": "Epistle to the Romans",
+  "subtitle": "Sections 1 to 4",
+  "source": "Roberts-Donaldson translation, Ante-Nicene Fathers Vol. 1 (1885). Public domain.",
+  "sections": [
+    {
+      "n": 1,
+      "title": "Greeting",
+      "paragraphs": [
+        "Ignatius, who is also called Theophorus, to the Church which has obtained mercy, through the majesty of the Most High Father, and Jesus Christ, His only-begotten Son; the Church which is beloved and enlightened by the will of Him that wills all things which are according to the love of Jesus Christ our God, which also presides in the place of the region of the Romans, worthy of God, worthy of honour, worthy of the highest happiness, worthy of praise, worthy of obtaining her every desire, worthy of being deemed holy, and which presides in love, named from Christ, and from the Father, which I also salute in the name of Jesus Christ, the Son of the Father.",
+        "To those who are united, both according to the flesh and spirit, to every one of His commandments; who are filled inseparably with the grace of God, and are purified from every strange taint, abundant happiness in Jesus Christ, our God."
+      ],
+      "notes": [
+        "Theophorus, the God-bearer, is Ignatius's own name for himself. Tradition holds it was given him because he was the child Christ took into His arms."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "Pray Not That I Be Spared",
+      "paragraphs": [
+        "I write to the Churches, and impress on them all that I shall willingly die for God, unless you hinder me. I beseech of you not to show an unseasonable goodwill towards me. Allow me to be food for the wild beasts, through whose instrumentality it will be granted me to attain to God.",
+        "I am the wheat of God, and let me be ground by the teeth of the wild beasts, that I may be found the pure bread of Christ. Pray to the Lord for me, that by these instruments I may be made a sacrifice acceptable to God."
+      ],
+      "notes": [
+        "Written on the road to Rome, where Ignatius expects to be martyred. He writes ahead so the Roman Christians will not intervene to save him."
+      ]
+    },
+    {
+      "n": 3,
+      "title": "The Things That Are Seen",
+      "paragraphs": [
+        "Nothing visible is good. For our God, Jesus Christ, now that He is with the Father, is all the more revealed. Christianity is not a thing of silence only, but also of manifest greatness.",
+        "Suffer me to be eaten by the beasts, through whom I can attain to God. I am God's wheat, and I am ground by the teeth of wild beasts, that I may be found pure bread of Christ. Rather, entice the wild beasts, that they may become my tomb, and may leave nothing of my body, that, when I have fallen asleep, I may not be a burden to any one. Then shall I truly be a disciple of Christ, when the world shall not see so much as my body."
+      ]
+    }
+  ]
+}
