@@ -16,7 +16,7 @@ export default function WhatsNewPage() {
             What&rsquo;s new
           </p>
           <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
-            v1.3 &middot; Beta &middot; Click any Greek word
+            v1.4.1 &middot; Beta &middot; Bible fixes
           </p>
         </div>
 
@@ -177,6 +177,20 @@ export default function WhatsNewPage() {
             and represent a substantial direction change. Minor bumps (1.0 to
             1.1) keep the letter and add a release note here.
           </p>
+
+          <ChangelogEntry
+            version="v1.4.1"
+            kind="Bible fixes"
+            date="May 17, 2026"
+            blurb="A correctness patch for the Interlinear column and word lookups. No new features; just clean text where there used to be ingestion debris."
+            items={[
+              "Fixed: literal <em>of</em>, <em>is</em>, and friends appearing inside the English column of the New Testament when Interlinear was on. The KJV's italicized supplied-words markers had been surviving as HTML through the ingest. 2,444 stray tags removed across 197 chapter files.",
+              "Fixed: clicking certain words in the English column landed on a garbage token like G3756] instead of a real word. 3,655 orphan Strong's-bracket fragments scrubbed.",
+              "The ingest script now strips italic markers before tokenizing, drops orphan Strong's fragments, and runs a sanity check that fails the build if a <em> or G####] artifact ever reappears.",
+              "The loader also defensively scrubs tokens at read time, so a stale data file can't put garbage on screen.",
+              "No effect on the regular (non-Interlinear) Bible reader. The OT (Greek LXX) column is unchanged; this fix is NT-only.",
+            ]}
+          />
 
           <ChangelogEntry
             version="v1.3"

@@ -59,10 +59,18 @@ function get(url) {
 //     {w:"of",s:"2424"}, {w:"Jesus",s:"2424"}, ... ]
 //
 // Words that don't precede any [G####] marker get no `s` (untagged).
-// Removes the directional-arrow glyph and any extra italics markers.
+// Strips italic markers (<em>/</em>) the source uses for KJV supplied words,
+// the directional-arrow glyph, and any stray Strong's-bracket fragments.
 function parseVerse(en) {
-  // Strip helper marks the source uses (➔ marks word-order swaps; we ignore).
-  const text = en.replace(/➔/g, " ").replace(/\s+/g, " ").trim();
+  const text = en
+    // Strip helper marks the source uses (➔ marks word-order swaps; we ignore).
+    .replace(/➔/g, " ")
+    // Strip KJV-supplied-word italics. Both whole-token (<em>of</em>) and
+    // split-token (<em>the ... son</em>) cases are handled because we strip
+    // the substrings before tokenizing.
+    .replace(/<\/?em>/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
   const out = [];
   // Match: any non-bracket run, optionally followed by [G####].
   const re = /([^\[]+?)\s*\[G(\d+)\]/g;
@@ -79,6 +87,24 @@ function parseVerse(en) {
   const trail = text.slice(lastEnd).trim();
   if (trail) {
     for (const w of trail.split(/\s+/)) out.push({ w });
+  }
+  return cleanTokens(out);
+}
+
+// Post-process tokens to drop ingestion artifacts that can survive the
+// bracket-tokenizer when the upstream source has malformed Strong's markers
+// (mid-text `]` without matching `[`) or stray angle brackets.
+function cleanTokens(tokens) {
+  const out = [];
+  for (const t of tokens) {
+    let w = (t.w ?? "").trim();
+    // Drop residual Strong's-bracket fragments like "G3756]" or "[G3756".
+    w = w.replace(/\[G\d+\]?/g, "").replace(/G\d+\]/g, "");
+    // Drop any residual angle brackets (extra safety in case <em> stripping above missed something).
+    w = w.replace(/<\/?[a-zA-Z][^>]*>/g, "").replace(/[<>]/g, "");
+    w = w.trim();
+    if (!w) continue;
+    out.push(t.s ? { w, s: t.s } : { w });
   }
   return out;
 }
@@ -138,7 +164,50 @@ async function buildNT() {
   return total;
 }
 
+// Sanity-check every written file. Fails loudly if any token still carries
+// an ingestion artifact, so the next ingest can't silently regress.
+async function assertCleanOutput() {
+  const stack = [OUT];
+  const bad = [];
+  while (stack.length) {
+    const dir = stack.pop();
+    let entries;
+    try {
+      entries = await fs.readdir(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const e of entries) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) {
+        stack.push(full);
+      } else if (e.name.endsWith(".json")) {
+        const raw = await fs.readFile(full, "utf8");
+        const data = JSON.parse(raw);
+        for (const v of data.verses ?? []) {
+          for (const t of v.tokens ?? []) {
+            const w = t.w ?? "";
+            if (/[<>]/.test(w) || /^G\d+\]/.test(w) || /\[G\d+/.test(w)) {
+              bad.push(`${full} v${v.n}: ${JSON.stringify(t)}`);
+            }
+          }
+        }
+      }
+    }
+  }
+  if (bad.length > 0) {
+    console.error(
+      `Sanity check failed: ${bad.length} dirty token(s) survived the ingest.`,
+    );
+    for (const line of bad.slice(0, 20)) console.error("  " + line);
+    if (bad.length > 20) console.error(`  ...and ${bad.length - 20} more`);
+    process.exit(1);
+  }
+  console.log(`Sanity check passed: no <em>, no G####] fragments.`);
+}
+
 (async () => {
   const n = await buildNT();
   console.log(`English tagged chapters written: ${n}`);
+  await assertCleanOutput();
 })();

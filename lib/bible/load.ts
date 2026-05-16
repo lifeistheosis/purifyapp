@@ -76,6 +76,10 @@ export type EnglishTaggedChapter = {
  * Loads KJV English with Strong's tags per word. Used by the Interlinear
  * column to highlight the English word that maps to the hovered Greek word.
  * Returns null when no tagged English file exists (currently NT only).
+ *
+ * Defensively scrubs ingestion artifacts (`<em>` italic markers, orphan
+ * `G####]` Strong's-bracket fragments) so the UI is robust even if a stale
+ * data file slips through.
  */
 export async function loadEnglishTagged(
   bookSlug: string,
@@ -89,10 +93,28 @@ export async function loadEnglishTagged(
       `${chapter}.json`,
     );
     const raw = await fs.readFile(file, "utf8");
-    return JSON.parse(raw) as EnglishTaggedChapter;
+    const parsed = JSON.parse(raw) as EnglishTaggedChapter;
+    parsed.verses = parsed.verses.map((v) => ({
+      n: v.n,
+      tokens: scrubTokens(v.tokens),
+    }));
+    return parsed;
   } catch {
     return null;
   }
+}
+
+function scrubTokens(tokens: Token[]): Token[] {
+  const out: Token[] = [];
+  for (const t of tokens ?? []) {
+    let w = (t.w ?? "").trim();
+    w = w.replace(/<\/?[a-zA-Z][^>]*>/g, "");
+    w = w.replace(/\[G\d+\]?/g, "").replace(/G\d+\]/g, "");
+    w = w.replace(/[<>]/g, "").trim();
+    if (!w) continue;
+    out.push(t.s ? { w, s: t.s, ...(t.p ? { p: t.p } : {}) } : { w });
+  }
+  return out;
 }
 
 export type CrossRef = { display: string; votes: number };
