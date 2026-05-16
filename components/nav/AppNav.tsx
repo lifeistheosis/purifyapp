@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/cn";
 import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
+import { useScrolled } from "@/lib/useScrolled";
 
 const NAV = [
   { label: "Bible", href: "/bible" },
@@ -22,13 +23,24 @@ const SECONDARY = [
 export function AppNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const scrolled = useScrolled();
 
   function isActive(href: string) {
     return pathname === href || pathname.startsWith(href + "/");
   }
 
+  // Always show the bg when the mobile menu is open, even at the very top.
+  const showBg = scrolled || open;
+
   return (
-    <header className="sticky top-0 z-40 bg-night/85 backdrop-blur border-b border-white/8 h-[72px]">
+    <header
+      className={cn(
+        "sticky top-0 z-40 h-[72px] transition-[background-color,border-color,backdrop-filter] duration-200",
+        showBg
+          ? "bg-night/85 backdrop-blur border-b border-white/8"
+          : "bg-transparent border-b border-transparent",
+      )}
+    >
       <div className="mx-auto max-w-[1240px] h-full flex items-center justify-between gap-6 px-5 md:px-8">
         <Link
           href="/"

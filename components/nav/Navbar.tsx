@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
+import { useScrolled } from "@/lib/useScrolled";
+import { cn } from "@/lib/cn";
 
 const navItems = [
   { label: "Bible", href: "/bible" },
@@ -15,8 +19,17 @@ const secondary = [
 ];
 
 export function Navbar() {
+  const scrolled = useScrolled();
+
   return (
-    <header className="sticky top-0 z-40 bg-night/85 backdrop-blur border-b border-white/8 h-[72px]">
+    <header
+      className={cn(
+        "sticky top-0 z-40 h-[72px] transition-[background-color,border-color,backdrop-filter] duration-200",
+        scrolled
+          ? "bg-night/85 backdrop-blur border-b border-white/8"
+          : "bg-transparent border-b border-transparent",
+      )}
+    >
       <div className="mx-auto max-w-[1240px] h-full flex items-center justify-between px-5 md:px-8">
         <Link
           href="/"
