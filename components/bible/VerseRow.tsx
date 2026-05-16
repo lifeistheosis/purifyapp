@@ -26,6 +26,7 @@ export function VerseRow({
   hasCommentary = false,
   originalText,
   originalTokens,
+  englishTokens,
   strongs,
 }: {
   book: string;
@@ -34,8 +35,12 @@ export function VerseRow({
   hasCommentary?: boolean;
   /** Greek NT / Greek LXX text for this verse, when Interlinear is on. */
   originalText?: string;
-  /** Word-by-word tokens (NT only). */
+  /** Word-by-word Greek tokens with Strong's. */
   originalTokens?: Token[];
+  /** Word-by-word KJV English tokens with Strong's (NT only). When provided
+   *  and Interlinear is on, the English column re-renders as tokens so
+   *  hovering a Greek word can highlight the matching English word(s). */
+  englishTokens?: { w: string; s?: string }[];
   /** Chapter-scoped Strong's lexicon — only entries for this chapter's tokens. */
   strongs?: Record<string, StrongsEntry>;
 }) {
@@ -44,6 +49,8 @@ export function VerseRow({
   const hasInterlinear =
     showInterlinear && (!!originalText || (originalTokens?.length ?? 0) > 0);
   const hasTokens = (originalTokens?.length ?? 0) > 0;
+  const hasEnglishTokens =
+    hasInterlinear && (englishTokens?.length ?? 0) > 0;
 
   // Open popover state: which token index in this verse is selected, plus
   // the anchor rect so the popover knows where to render.
@@ -57,6 +64,9 @@ export function VerseRow({
     setPopoverIdx(null);
     setAnchorRect(null);
   }
+
+  // Greek-hover -> highlight matching English word(s) via Strong's number.
+  const [hoverStrong, setHoverStrong] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(ann.note ?? "");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -236,21 +246,50 @@ export function VerseRow({
               {verse.n}
             </sup>
           )}
-          {words.map((w, i) => (
-            <Fragment key={i}>
-              <span
-                data-word-idx={i}
-                className={cn(
-                  "cursor-pointer transition-colors",
-                  renderedHL.has(i) &&
-                    "bg-[#d4af37]/30 rounded-[3px] px-[1px] -mx-[1px]",
-                )}
-              >
-                {w}
-              </span>
-              {i < words.length - 1 ? " " : ""}
-            </Fragment>
-          ))}
+          {hasEnglishTokens
+            ? englishTokens!.map((tk, i) => {
+                const matched = !!hoverStrong && tk.s === hoverStrong;
+                return (
+                  <Fragment key={i}>
+                    <span
+                      data-word-idx={i}
+                      data-s={tk.s}
+                      className={cn(
+                        "cursor-pointer rounded-[3px] px-[1px] -mx-[1px] transition-colors duration-100",
+                        renderedHL.has(i) &&
+                          "bg-[#d4af37]/30",
+                      )}
+                      style={
+                        matched
+                          ? {
+                              backgroundColor: "rgba(212,175,55,0.45)",
+                              color: "#fff",
+                              boxShadow: "0 0 10px rgba(212,175,55,0.55)",
+                            }
+                          : undefined
+                      }
+                    >
+                      {tk.w}
+                    </span>
+                    {i < englishTokens!.length - 1 ? " " : ""}
+                  </Fragment>
+                );
+              })
+            : words.map((w, i) => (
+                <Fragment key={i}>
+                  <span
+                    data-word-idx={i}
+                    className={cn(
+                      "cursor-pointer transition-colors",
+                      renderedHL.has(i) &&
+                        "bg-[#d4af37]/30 rounded-[3px] px-[1px] -mx-[1px]",
+                    )}
+                  >
+                    {w}
+                  </span>
+                  {i < words.length - 1 ? " " : ""}
+                </Fragment>
+              ))}
         </p>
 
         {hasInterlinear && (
@@ -276,6 +315,10 @@ export function VerseRow({
                         <button
                           type="button"
                           onClick={(e) => openPopover(i, e.currentTarget)}
+                          onMouseEnter={() => setHoverStrong(tk.s ?? null)}
+                          onMouseLeave={() => setHoverStrong(null)}
+                          onFocus={() => setHoverStrong(tk.s ?? null)}
+                          onBlur={() => setHoverStrong(null)}
                           className="font-[inherit] inline border-b border-dotted border-paper/25 hover:border-paper/70 hover:text-paper transition-colors duration-150 cursor-pointer text-left"
                           aria-label={`Look up ${tk.w}`}
                         >

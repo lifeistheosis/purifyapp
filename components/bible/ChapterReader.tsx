@@ -17,6 +17,7 @@ export function ChapterReader({
   commentaryVerses,
   originalByNum,
   tokensByNum,
+  englishTokensByNum,
   strongs,
 }: {
   book: string;
@@ -27,6 +28,9 @@ export function ChapterReader({
   originalByNum?: Record<number, string>;
   /** Verse number -> tokenized original-language words (NT only, Strong's-tagged). */
   tokensByNum?: Record<number, Token[]>;
+  /** Verse number -> tokenized English words with Strong's (NT only).
+   *  Used for Greek-hover-highlights-English. */
+  englishTokensByNum?: Record<number, { w: string; s?: string }[]>;
   /** Strong's mini-lexicon: only entries used in this chapter. */
   strongs?: Record<string, StrongsEntry>;
 }) {
@@ -50,6 +54,7 @@ export function ChapterReader({
             hasCommentary={has.has(v.n)}
             originalText={originalByNum?.[v.n]}
             originalTokens={tokensByNum?.[v.n]}
+            englishTokens={englishTokensByNum?.[v.n]}
             strongs={strongs}
           />
         ))}

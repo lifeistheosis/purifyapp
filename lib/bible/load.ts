@@ -66,6 +66,35 @@ export async function loadOriginal(
   }
 }
 
+export type EnglishTaggedChapter = {
+  book: string;
+  chapter: number;
+  verses: { n: number; tokens: Token[] }[];
+};
+
+/**
+ * Loads KJV English with Strong's tags per word. Used by the Interlinear
+ * column to highlight the English word that maps to the hovered Greek word.
+ * Returns null when no tagged English file exists (currently NT only).
+ */
+export async function loadEnglishTagged(
+  bookSlug: string,
+  chapter: number,
+): Promise<EnglishTaggedChapter | null> {
+  try {
+    const file = path.join(
+      DATA_DIR,
+      "english-tagged",
+      bookSlug,
+      `${chapter}.json`,
+    );
+    const raw = await fs.readFile(file, "utf8");
+    return JSON.parse(raw) as EnglishTaggedChapter;
+  } catch {
+    return null;
+  }
+}
+
 export type CrossRef = { display: string; votes: number };
 export type ChapterCrossRefs = Record<string, CrossRef[]>;
 

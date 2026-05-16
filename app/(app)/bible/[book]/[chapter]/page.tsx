@@ -19,6 +19,7 @@ import {
   loadIntro,
   loadCommentary,
   loadOriginal,
+  loadEnglishTagged,
 } from "@/lib/bible/load";
 import { strongsMap } from "@/lib/bible/strongs";
 
@@ -42,11 +43,12 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
   if (!b || !Number.isInteger(chapterNum) || chapterNum < 1 || chapterNum > b.chapters) {
     notFound();
   }
-  const [data, intro, commentary, original] = await Promise.all([
+  const [data, intro, commentary, original, englishTagged] = await Promise.all([
     loadChapter(book, chapterNum),
     chapterNum === 1 ? loadIntro(book) : Promise.resolve(null),
     loadCommentary(book, chapterNum),
     loadOriginal(book, chapterNum),
+    loadEnglishTagged(book, chapterNum),
   ]);
   if (!data) notFound();
 
@@ -66,6 +68,16 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
   // Per-chapter Strong's mini-lexicon (only the entries this chapter uses).
   // Keeps the prop payload at a few KB instead of shipping the whole 557 KB.
   const strongs = strongsMap(Array.from(usedStrongs));
+
+  // English-side tokens (NT only). Each token has a Strong's number that
+  // matches the Greek token's number — used for hover sync.
+  const englishTokensByNum: Record<
+    number,
+    { w: string; s?: string }[]
+  > = {};
+  for (const v of englishTagged?.verses ?? []) {
+    if (v.tokens?.length) englishTokensByNum[v.n] = v.tokens;
+  }
 
   const commentaryVerses = Object.keys(commentary)
     .map(Number)
@@ -123,6 +135,7 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
                 commentaryVerses={commentaryVerses}
                 originalByNum={originalByNum}
                 tokensByNum={tokensByNum}
+                englishTokensByNum={englishTokensByNum}
                 strongs={strongs}
               />
 
