@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/Button";
+import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
 
 const navItems = [
   { label: "Bible", href: "/bible" },
@@ -45,9 +45,9 @@ export function Navbar() {
               {item.label}
             </Link>
           ))}
-          <Button variant="inverse" className="!py-2.5 !px-5 text-[14px]">
+          <ComingSoonCTA variant="inverse" className="!py-2.5 !px-5 text-[14px]">
             Try Free
-          </Button>
+          </ComingSoonCTA>
         </div>
       </div>
     </header>

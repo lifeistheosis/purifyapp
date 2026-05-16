@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
 import { Navbar } from "@/components/nav/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SectionScroller } from "@/components/SectionScroller";
@@ -85,13 +86,15 @@ export default function Home() {
               and quiet reflection, all in one place.
             </p>
             <div className="mt-7 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-              <Button variant="inverse">Try Purify for Free</Button>
-              <Button
+              <ComingSoonCTA variant="inverse">
+                Try Purify for Free
+              </ComingSoonCTA>
+              <ComingSoonCTA
                 variant="tertiary"
                 className="!text-paper hover:!text-paper/80"
               >
                 Watch the trailer →
-              </Button>
+              </ComingSoonCTA>
             </div>
           </div>
           <div className="hidden xl:flex justify-center items-center">
@@ -207,12 +210,12 @@ export default function Home() {
                 <h3 className="font-sans text-[24px] font-semibold text-paper mb-5">
                   {ch.title}
                 </h3>
-                <Button
+                <ComingSoonCTA
                   variant="tertiary"
                   className="!text-paper hover:!text-paper/80"
                 >
                   Join challenge →
-                </Button>
+                </ComingSoonCTA>
               </div>
             ))}
           </div>
@@ -226,9 +229,9 @@ export default function Home() {
             Start your prayer journey today!
           </h2>
           <div className="mt-10">
-            <Button variant="inverse" className="text-[16px]">
+            <ComingSoonCTA variant="inverse" className="text-[16px]">
               Try Purify for Free
-            </Button>
+            </ComingSoonCTA>
           </div>
         </div>
       </section>
