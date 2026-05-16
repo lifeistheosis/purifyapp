@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 
-// Apple touch icon — same Purify mark, sized for iOS home-screen.
+// Apple touch icon — same Orthodox-cross mark sized for iOS home-screen.
 export default function AppleIcon() {
   return new ImageResponse(
     (
@@ -19,15 +19,69 @@ export default function AppleIcon() {
       >
         <div
           style={{
-            fontSize: 130,
-            fontWeight: 700,
-            color: "#d4af37",
-            letterSpacing: "-0.04em",
-            lineHeight: 1,
-            fontFamily: "Georgia, serif",
+            width: "82%",
+            height: "82%",
+            borderRadius: "50%",
+            background: "#0a0a0a",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
           }}
         >
-          P
+          <div
+            style={{
+              position: "relative",
+              width: "60%",
+              height: "76%",
+              display: "flex",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "8%",
+                transform: "translateX(-50%)",
+                width: "16%",
+                height: "84%",
+                background: "#fff",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "16%",
+                transform: "translateX(-50%)",
+                width: "44%",
+                height: "9%",
+                background: "#fff",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "33%",
+                transform: "translateX(-50%)",
+                width: "72%",
+                height: "11%",
+                background: "#fff",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "66%",
+                transform: "translateX(-50%) rotate(-18deg)",
+                width: "54%",
+                height: "9%",
+                background: "#fff",
+              }}
+            />
+          </div>
         </div>
       </div>
     ),
