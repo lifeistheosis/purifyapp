@@ -1,6 +1,7 @@
 "use client";
 
-import type { Verse } from "@/lib/bible/load";
+import type { Verse, Token } from "@/lib/bible/load";
+import type { StrongsEntry } from "@/lib/bible/strongs";
 import { VerseRow } from "./VerseRow";
 import {
   FONT_CLASSES,
@@ -15,6 +16,8 @@ export function ChapterReader({
   verses,
   commentaryVerses,
   originalByNum,
+  tokensByNum,
+  strongs,
 }: {
   book: string;
   chapter: number;
@@ -22,6 +25,10 @@ export function ChapterReader({
   commentaryVerses?: number[];
   /** Verse number -> original-language text (Greek NT or Greek LXX OT). */
   originalByNum?: Record<number, string>;
+  /** Verse number -> tokenized original-language words (NT only, Strong's-tagged). */
+  tokensByNum?: Record<number, Token[]>;
+  /** Strong's mini-lexicon: only entries used in this chapter. */
+  strongs?: Record<string, StrongsEntry>;
 }) {
   const { size, font } = useReaderPrefs();
   const has = new Set(commentaryVerses ?? []);
@@ -42,6 +49,8 @@ export function ChapterReader({
             verse={v}
             hasCommentary={has.has(v.n)}
             originalText={originalByNum?.[v.n]}
+            originalTokens={tokensByNum?.[v.n]}
+            strongs={strongs}
           />
         ))}
       </div>

@@ -69,8 +69,8 @@ export default function Home() {
                 New
               </span>
               <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
-                <span className="sm:hidden">Beta v1.2 · Interlinear</span>
-                <span className="hidden sm:inline">Beta v1.2 · read the Greek alongside the English</span>
+                <span className="sm:hidden">Beta v1.3 · Click any Greek word</span>
+                <span className="hidden sm:inline">Beta v1.3 · Click any Greek word for its meaning</span>
               </span>
               <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
                 →

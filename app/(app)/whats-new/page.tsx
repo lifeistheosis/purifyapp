@@ -16,7 +16,7 @@ export default function WhatsNewPage() {
             What&rsquo;s new
           </p>
           <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
-            v1.2 &middot; Beta &middot; Interlinear
+            v1.3 &middot; Beta &middot; Click any Greek word
           </p>
         </div>
 
@@ -177,6 +177,21 @@ export default function WhatsNewPage() {
             and represent a substantial direction change. Minor bumps (1.0 to
             1.1) keep the letter and add a release note here.
           </p>
+
+          <ChangelogEntry
+            version="v1.3"
+            kind="Click any Greek word"
+            date="May 16, 2026"
+            blurb="With Interlinear on, every Greek word in the New Testament is now clickable. Tap a word to see its dictionary form, a short definition, the part of speech, and its Strong's number. Letter above unchanged."
+            items={[
+              "New WordPopover anchored to the clicked word — flips above if it would run off the bottom of the screen.",
+              "Popover shows: the word itself, the lemma (dictionary form) with transliteration, a concise Strong's definition, a friendly parse string (e.g. 'verb · aorist · active · indicative · 3rd sing.'), and the Strong's number badge.",
+              "1,200+ Greek words and 5,500+ Strong's entries packed into a slim per-chapter lexicon — only the entries used in the chapter ship to the browser (~5-20 KB per page).",
+              "NT text now sourced from the Robinson-Pierpont Byzantine Majority Text with Strong's tagging (PD). Same Textus Receptus tradition as the previous Stephanus rendering; accents are not shown so the words can be tagged precisely.",
+              "OT (Greek LXX) keeps its accented text and shows a small 'word lookups coming' marker — OT tagging is planned for a future patch.",
+              "Esc, click outside, or the × in the corner all close the popover.",
+            ]}
+          />
 
           <ChangelogEntry
             version="v1.2"

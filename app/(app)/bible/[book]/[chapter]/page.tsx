@@ -20,6 +20,7 @@ import {
   loadCommentary,
   loadOriginal,
 } from "@/lib/bible/load";
+import { strongsMap } from "@/lib/bible/strongs";
 
 type Params = Promise<{ book: string; chapter: string }>;
 
@@ -50,7 +51,18 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
   if (!data) notFound();
 
   const originalByNum: Record<number, string> = {};
-  for (const v of original?.verses ?? []) originalByNum[v.n] = v.text;
+  const tokensByNum: Record<number, { w: string; s: string; p: string }[]> = {};
+  const usedStrongs = new Set<string>();
+  for (const v of original?.verses ?? []) {
+    originalByNum[v.n] = v.text;
+    if (v.tokens?.length) {
+      tokensByNum[v.n] = v.tokens;
+      for (const t of v.tokens) usedStrongs.add(t.s);
+    }
+  }
+  // Per-chapter Strong's mini-lexicon (only the entries this chapter uses).
+  // Keeps the prop payload at a few KB instead of shipping the whole 557 KB.
+  const strongs = strongsMap(Array.from(usedStrongs));
 
   const commentaryVerses = Object.keys(commentary)
     .map(Number)
@@ -107,6 +119,8 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
                 verses={data!.verses}
                 commentaryVerses={commentaryVerses}
                 originalByNum={originalByNum}
+                tokensByNum={tokensByNum}
+                strongs={strongs}
               />
 
               <ChapterPager slug={book} chapter={chapterNum} />

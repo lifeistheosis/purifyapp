@@ -1,9 +1,11 @@
 "use client";
 
 import { Fragment, useEffect, useRef, useState } from "react";
-import type { Verse } from "@/lib/bible/load";
+import type { Verse, Token } from "@/lib/bible/load";
+import type { StrongsEntry } from "@/lib/bible/strongs";
 import { useVerseAnnotation } from "@/lib/bible/annotations";
 import { useInterlinear } from "@/lib/bible/interlinear";
+import { WordPopover } from "./WordPopover";
 import { cn } from "@/lib/cn";
 
 function tokenize(text: string): string[] {
@@ -23,18 +25,38 @@ export function VerseRow({
   verse,
   hasCommentary = false,
   originalText,
+  originalTokens,
+  strongs,
 }: {
   book: string;
   chapter: number;
   verse: Verse;
   hasCommentary?: boolean;
-  /** Optional Greek NT / Greek LXX text for this verse. Shown when the
-   *  Interlinear toggle is ON. */
+  /** Greek NT / Greek LXX text for this verse, when Interlinear is on. */
   originalText?: string;
+  /** Word-by-word tokens (NT only). */
+  originalTokens?: Token[];
+  /** Chapter-scoped Strong's lexicon — only entries for this chapter's tokens. */
+  strongs?: Record<string, StrongsEntry>;
 }) {
   const ann = useVerseAnnotation(book, chapter, verse.n);
   const { on: showInterlinear } = useInterlinear();
-  const hasInterlinear = showInterlinear && !!originalText;
+  const hasInterlinear =
+    showInterlinear && (!!originalText || (originalTokens?.length ?? 0) > 0);
+  const hasTokens = (originalTokens?.length ?? 0) > 0;
+
+  // Open popover state: which token index in this verse is selected, plus
+  // the anchor rect so the popover knows where to render.
+  const [popoverIdx, setPopoverIdx] = useState<number | null>(null);
+  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+  function openPopover(idx: number, el: HTMLElement) {
+    setPopoverIdx(idx);
+    setAnchorRect(el.getBoundingClientRect());
+  }
+  function closePopover() {
+    setPopoverIdx(null);
+    setAnchorRect(null);
+  }
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(ann.note ?? "");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -231,7 +253,7 @@ export function VerseRow({
           ))}
         </p>
 
-        {hasInterlinear && originalText && (
+        {hasInterlinear && (
           <p
             lang="grc"
             style={{ fontFamily: "var(--font-greek), serif" }}
@@ -240,8 +262,38 @@ export function VerseRow({
             <sup className="font-sans text-[10px] font-medium text-paper/30 tracking-[0.05em] mr-1.5 align-super">
               {verse.n}
             </sup>
-            {originalText}
+            {hasTokens
+              ? originalTokens!.map((tk, i) => (
+                  <Fragment key={i}>
+                    <button
+                      type="button"
+                      onClick={(e) =>
+                        openPopover(i, e.currentTarget)
+                      }
+                      className="font-[inherit] inline border-b border-dotted border-paper/25 hover:border-paper/70 hover:text-paper transition-colors duration-150 cursor-pointer text-left"
+                      aria-label={`Look up ${tk.w}`}
+                    >
+                      {tk.w}
+                    </button>
+                    {i < originalTokens!.length - 1 ? " " : ""}
+                  </Fragment>
+                ))
+              : originalText}
+            {hasInterlinear && !hasTokens && (
+              <span className="ml-2 font-sans text-[11px] font-medium uppercase tracking-[1px] text-paper/40">
+                · word lookups coming
+              </span>
+            )}
           </p>
+        )}
+
+        {popoverIdx !== null && anchorRect && originalTokens && (
+          <WordPopover
+            token={originalTokens[popoverIdx]}
+            entry={strongs?.[originalTokens[popoverIdx].s] ?? null}
+            anchorRect={anchorRect}
+            onClose={closePopover}
+          />
         )}
         </div>
 

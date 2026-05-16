@@ -2,7 +2,21 @@ import "server-only";
 import fs from "node:fs/promises";
 import path from "node:path";
 
-export type Verse = { n: number; text: string };
+export type Token = {
+  /** Lowercase Greek word (no diacritics in BMT). */
+  w: string;
+  /** Strong's number, e.g. "25" for ἀγαπάω. */
+  s: string;
+  /** Morphology code, e.g. "V-AAI-3S" (verb, aorist active indicative 3 sing). */
+  p: string;
+};
+export type Verse = {
+  n: number;
+  text: string;
+  /** Word-by-word tokens with Strong's + parse. Present on tagged NT chapters,
+   *  absent on untagged OT (Greek LXX) chapters. */
+  tokens?: Token[];
+};
 export type Chapter = {
   book: string;
   name: string;
