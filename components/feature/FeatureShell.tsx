@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button } from "@/components/ui/Button";
+import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
 import { Badge } from "@/components/ui/Badge";
 
 type FeatureShellProps = {
@@ -43,13 +43,15 @@ export function FeatureShell({
               This is a paid-tier feature. Upgrade to unlock.
             </p>
             <div className="mt-4">
-              <Button variant="primary">{ctaLabel ?? "Upgrade to Paid"}</Button>
+              <ComingSoonCTA variant="primary">
+                {ctaLabel ?? "Upgrade to Paid"}
+              </ComingSoonCTA>
             </div>
           </div>
         )}
         {!isPaid && ctaLabel && (
           <div className="mt-8">
-            <Button variant="inverse">{ctaLabel}</Button>
+            <ComingSoonCTA variant="inverse">{ctaLabel}</ComingSoonCTA>
           </div>
         )}
         {children && <div className="mt-12">{children}</div>}
