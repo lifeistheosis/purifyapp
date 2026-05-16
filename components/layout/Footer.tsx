@@ -31,6 +31,7 @@ const cols = [
   {
     heading: "Company",
     links: [
+      { label: "What's new", href: "/whats-new" },
       { label: "Pricing", href: "/pricing" },
       { label: "Account", href: "/account" },
     ],

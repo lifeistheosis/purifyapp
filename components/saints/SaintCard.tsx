@@ -11,6 +11,11 @@ export function SaintCard({ saint }: { saint: Saint }) {
       <div className="flex gap-5">
         <SaintIcon saint={saint} size="md" />
         <div className="min-w-0 flex flex-col">
+          {saint.byname && (
+            <p className="font-serif text-[13px] italic text-[#d4af37]/90 mb-1 line-clamp-1">
+              &ldquo;{saint.byname}&rdquo;
+            </p>
+          )}
           <h3 className="font-sans text-[18px] font-semibold text-paper leading-tight">
             {saint.name}
           </h3>

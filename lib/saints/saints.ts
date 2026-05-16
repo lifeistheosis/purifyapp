@@ -22,6 +22,12 @@ export type Saint = {
   slug: string;
   name: string;
   epithet: string;
+  /**
+   * Short popular byname. Shown prominently on the saints index card and
+   * the profile hero. Examples: "The Theologian", "Golden-Mouth",
+   * "Pillar of Orthodoxy", "The Forerunner".
+   */
+  byname?: string;
   born?: string;
   reposed?: string;
   feastDays: string[];
@@ -40,6 +46,7 @@ export type Saint = {
 export const SAINTS: Saint[] = [
   {
     slug: "athanasius-the-great",
+    byname: "Pillar of Orthodoxy",
     iconUrl: "/saints/icons/athanasius-the-great.jpg",
     name: "St. Athanasius the Great",
     epithet: "Patriarch of Alexandria · Pillar of Orthodoxy",
@@ -69,6 +76,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "john-chrysostom",
+    byname: "Golden-Mouth",
     iconUrl: "/saints/icons/john-chrysostom.jpg",
     name: "St. John Chrysostom",
     epithet: "Archbishop of Constantinople · Golden-Mouth",
@@ -107,6 +115,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "basil-the-great",
+    byname: "Father of Monasticism",
     iconUrl: "/saints/icons/basil-the-great.jpg",
     name: "St. Basil the Great",
     epithet: "Archbishop of Caesarea · Father of Monasticism",
@@ -136,6 +145,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "gregory-theologian",
+    byname: "The Theologian",
     iconUrl: "/saints/icons/gregory-theologian.jpg",
     name: "St. Gregory the Theologian",
     epithet: "Archbishop of Constantinople · The Theologian",
@@ -165,6 +175,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "john-of-damascus",
+    byname: "Defender of the Holy Icons",
     iconUrl: "/saints/icons/john-of-damascus.jpg",
     name: "St. John of Damascus",
     epithet: "Hymnographer · Defender of the Holy Icons",
@@ -194,6 +205,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "seraphim-of-sarov",
+    byname: "Acquirer of the Holy Spirit",
     iconUrl: "/saints/icons/seraphim-of-sarov.jpg",
     name: "St. Seraphim of Sarov",
     epithet: "Wonderworker · Acquirer of the Holy Spirit",

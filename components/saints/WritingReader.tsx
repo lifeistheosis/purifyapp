@@ -43,30 +43,57 @@ export function WritingReader({
         )}
       </header>
 
-      <div className="max-w-[680px] py-10 space-y-14">
+      <div className="py-10 space-y-16">
         {content.sections.map((sec) => (
-          <section key={sec.n} aria-labelledby={`s-${sec.n}`}>
-            <div className="mb-6 flex items-baseline gap-4">
-              <span className="font-sans text-[12px] font-semibold uppercase tracking-[1.2px] text-paper/40 tabular-nums">
-                {String(sec.n).padStart(2, "0")}
-              </span>
-              <h2
-                id={`s-${sec.n}`}
-                className="font-sans text-[22px] md:text-[26px] font-semibold text-paper tracking-[-0.01em]"
-              >
-                {sec.title}
-              </h2>
-            </div>
-            <div className="space-y-5">
-              {sec.paragraphs.map((p, i) => (
-                <p
-                  key={i}
-                  className="font-serif text-[19px] md:text-[20px] text-paper/90 leading-[1.7]"
+          <section
+            key={sec.n}
+            aria-labelledby={`s-${sec.n}`}
+            className="grid grid-cols-1 lg:grid-cols-[minmax(0,680px)_minmax(0,1fr)] gap-x-12 gap-y-8"
+          >
+            <div className="min-w-0">
+              <div className="mb-6 flex items-baseline gap-4">
+                <span className="font-sans text-[12px] font-semibold uppercase tracking-[1.2px] text-paper/40 tabular-nums">
+                  {String(sec.n).padStart(2, "0")}
+                </span>
+                <h2
+                  id={`s-${sec.n}`}
+                  className="font-sans text-[22px] md:text-[26px] font-semibold text-paper tracking-[-0.01em]"
                 >
-                  {p}
-                </p>
-              ))}
+                  {sec.title}
+                </h2>
+              </div>
+              <div className="space-y-5">
+                {sec.paragraphs.map((p, i) => (
+                  <p
+                    key={i}
+                    className="font-serif text-[19px] md:text-[20px] text-paper/90 leading-[1.7]"
+                  >
+                    {p}
+                  </p>
+                ))}
+              </div>
             </div>
+
+            {sec.notes?.length ? (
+              <aside
+                aria-label={`Notes on ${sec.title}`}
+                className="lg:pt-1 lg:border-l lg:border-paper/10 lg:pl-8"
+              >
+                <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45 mb-4">
+                  Notes
+                </p>
+                <ul className="space-y-4">
+                  {sec.notes.map((note, i) => (
+                    <li
+                      key={i}
+                      className="font-sans text-[14px] text-paper/70 leading-[1.55]"
+                    >
+                      {note}
+                    </li>
+                  ))}
+                </ul>
+              </aside>
+            ) : null}
           </section>
         ))}
       </div>

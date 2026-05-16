@@ -1,0 +1,71 @@
+[
+  {
+    "id": "beta-1-0",
+    "version": "Beta 1.0",
+    "date": "2026-05-15",
+    "title": "Hello, faithful",
+    "intro": "Glory to Jesus Christ. This is the first public look at Purify, the Orthodox companion app I have been building. Everything you see is the work of one person; God willing, the team will grow. Thank you for being here at the beginning.\n\nPurify is meant to be a single home for the Orthodox spiritual life: the Scriptures, the prayers, the saints, the seasons of the Church year, and a marketplace that supports those who carry the Faith. The free tier is broad and complete; the paid tier exists to keep the lights on, fund patristic commentary curation, and support priests through paid blessings.",
+    "sections": [
+      {
+        "heading": "The Orthodox Bible",
+        "body": "The full Orthodox canon, all 77 books, end to end. Old Testament from Brenton's English Septuagint of 1851, including the deuterocanonical books that most modern English Bibles omit. New Testament from the King James Version. Both are public domain. Brenton in particular is the English form of the Greek Septuagint, the version of the Old Testament read by the Apostles themselves and still used by the Orthodox Church.\n\nYou can switch books from anywhere with a search-friendly dropdown. Arrow keys move between chapters. Books are grouped by their traditional sections: Pentateuch, Historical, Wisdom, Prophets, Gospels, Acts, Pauline Epistles, Catholic Epistles, Revelation. Twelve of the most-read books carry short Orthodox introductions; the rest will follow."
+      },
+      {
+        "heading": "Patristic commentary",
+        "body": "Brief commentary from the Fathers appears in a side rail next to the verses they wrote on. The current corpus includes Basil the Great, John Chrysostom, Augustine, Cyril of Alexandria, Jerome, Gregory of Nyssa, and Gregory the Theologian. The two Gregories and Basil, the three Cappadocians, are the heart of fourth-century Orthodox theology, and their voices will only grow louder in future patches.\n\nClicking a verse with commentary scrolls the rail to that verse. Clicking a commentary card expands the quote inline. Saint icons appear as the photos themselves where available, and as deterministic initials in colored circles where they are not yet uploaded."
+      },
+      {
+        "heading": "Reader controls",
+        "body": "Cycle text size through four presets: Small, Medium, Large, X-Large. Swap between three font families: Serif, Display, Sans. Highlight verses with a single click on the toolbar, or highlight individual words by clicking, or stretch the highlight across as many words as you like with a drag. Add a personal note to any verse. Everything saves locally to your device for now; cloud sync arrives with accounts."
+      },
+      {
+        "heading": "Learn to pray",
+        "body": "A six-lesson beginner path for anyone new to Orthodox prayer: what prayer is, the Sign of the Cross, the Jesus Prayer, the Trisagion, and a simple morning and evening rule. Each lesson is about five minutes, with the full text of the prayer and a short 'try this' application."
+      },
+      {
+        "heading": "The rest of the app",
+        "body": "Pricing tier, account scaffolding, prayer campaigns, the Orthodox calendar, saints' works, the marketplace, and monastery directory are all real routes. They are currently stubs and waiting for the features that fill them in next. Mobile responsiveness, a PWA manifest, and the dark Hallow-style design are in across the whole app."
+      }
+    ],
+    "future": [
+      {
+        "title": "More patristic commentary",
+        "body": "The Cappadocians have hundreds of pages of Bible commentary. So do Chrysostom, Maximus the Confessor, and John of Damascus. Careful ingestion from public-domain sources, mapped to specific verses, with brief modern summaries written for readers new to the Fathers."
+      },
+      {
+        "title": "The Orthodox calendar",
+        "body": "Feasts, fasts, saints of the day, in both the New (Revised Julian) and Old (Julian) calendars, plus jurisdictional options for those who follow Antiochian, Greek, Russian, Serbian, or other traditional cycles."
+      },
+      {
+        "title": "NKJV and the Orthodox Study Bible",
+        "body": "Licensing outreach is open to Thomas Nelson / HarperCollins Christian Publishing for the NKJV text and the published Orthodox Study Bible notes. Until they say yes, the Brenton + KJV public-domain edition is what we ship. The infrastructure to drop NKJV in is already built and waiting."
+      },
+      {
+        "title": "Daily readings",
+        "body": "The lectionary, the appointed Gospel, Epistle, and Old Testament for each day of the Church year, pulled directly into the Bible reader so you can pray with the Church wherever you are."
+      },
+      {
+        "title": "Accounts and cloud sync",
+        "body": "Optional sign-in so your highlights, notes, and prayer-plan progress travel with you across devices. Local-only is fine for now; nothing of yours leaves your device today."
+      },
+      {
+        "title": "Full prayer plans",
+        "body": "Morning and evening rules from the standard prayer books, akathists, the canon to the Theotokos, Holy Week services, and seasonal plans for Great Lent and Pascha. Personal plan-building for the paid tier."
+      },
+      {
+        "title": "The Marketplace",
+        "body": "Verified monastery storefronts, independent iconographers, prayer rope makers, Orthodox booksellers, and paid blessings that fund priests directly. Stripe Connect for sellers and donations."
+      },
+      {
+        "title": "Audio",
+        "body": "Reading the Scriptures aloud, the akathists, the prayer rules, and the lives of saints, so you can pray while walking or driving."
+      },
+      {
+        "title": "Native mobile apps",
+        "body": "iOS and Android, with offline reading of the Bible, prayer book, and lives of saints. The web app is the foundation; the native shells follow once the web feels right."
+      }
+    ],
+    "closing": "This is a beta. Things will break. The web font sometimes flashes before swapping to your preferred size. Highlights live in your browser, not in the cloud, until accounts ship. Some chapters do not yet have patristic commentary; those that do are the ones the Fathers wrote on most.\n\nI am building this in the evenings while running other work. If something is wrong, or there is a feature you wish existed, please write to me at lifeistheosis@gmail.com. I read every email.\n\nMay the Lord bless this small offering.",
+    "signOff": "From Edgar, the Purify Team"
+  }
+]

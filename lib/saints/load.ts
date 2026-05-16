@@ -6,6 +6,11 @@ export type Section = {
   n: number;
   title: string;
   paragraphs: string[];
+  /**
+   * Editorial marginalia — short reading notes shown in the right column.
+   * Each entry is one note (1-2 sentences). Optional.
+   */
+  notes?: string[];
 };
 
 export type WritingContent = {

@@ -16,6 +16,11 @@ export function SaintHero({ saint }: { saint: Saint }) {
       <div className="flex flex-col md:flex-row md:items-start gap-8">
         <SaintIcon saint={saint} size="lg" />
         <div className="min-w-0 flex-1">
+          {saint.byname && (
+            <p className="font-serif text-[16px] md:text-[18px] italic text-[#d4af37]/90 mb-3 tracking-wide">
+              &ldquo;{saint.byname}&rdquo;
+            </p>
+          )}
           <h1 className="font-sans text-[40px] md:text-[56px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
             {saint.name}
           </h1>

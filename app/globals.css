@@ -27,7 +27,9 @@
 
   --font-sans: var(--font-dm-sans), system-ui, -apple-system, "Segoe UI",
     sans-serif;
-  --font-serif: var(--font-dm-serif), Georgia, serif;
+  --font-serif: var(--font-lora), Georgia, serif;
+  /* Available as `font-display-serif` for big ornate headings if needed. */
+  --font-display-serif: var(--font-dm-serif), Georgia, serif;
 
   --text-h1: 56px;
   --text-h1--line-height: 1.08;
@@ -101,4 +103,19 @@
 *:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
+}
+
+/* Verse highlight tint (gold). Tailwind arbitrary rgba was inconsistent here. */
+div[data-hl="true"] {
+  background-color: rgba(212, 175, 55, 0.12) !important;
+}
+
+/* Pulse the study-rail section when its hash is the URL target. */
+.rail-section:target {
+  animation: rail-pulse 1.4s ease-out;
+}
+@keyframes rail-pulse {
+  0%   { background-color: rgba(220, 55, 45, 0.22); }
+  60%  { background-color: rgba(220, 55, 45, 0.10); }
+  100% { background-color: transparent; }
 }

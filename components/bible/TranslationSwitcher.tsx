@@ -1,0 +1,190 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/cn";
+import { getBook } from "@/lib/bible/books";
+
+type Translation = {
+  id: string;
+  shortLabel: string;
+  fullLabel: string;
+  testament: "OT" | "NT" | "BOTH";
+  available: boolean;
+  note?: string;
+};
+
+// Single canonical list of translations the app cares about.
+// New translations get added here once their text is licensed/ingested.
+const TRANSLATIONS: Translation[] = [
+  {
+    id: "lxx-brenton",
+    shortLabel: "Brenton LXX",
+    fullLabel: "Brenton's English Septuagint (1851)",
+    testament: "OT",
+    available: true,
+    note: "Public domain. The Greek Old Testament used by the Apostles.",
+  },
+  {
+    id: "kjv",
+    shortLabel: "KJV",
+    fullLabel: "King James Version (1611)",
+    testament: "NT",
+    available: true,
+    note: "Public domain.",
+  },
+  {
+    id: "web",
+    shortLabel: "WEB",
+    fullLabel: "World English Bible",
+    testament: "BOTH",
+    available: false,
+    note: "Public domain modern English. Coming soon.",
+  },
+  {
+    id: "nkjv",
+    shortLabel: "NKJV",
+    fullLabel: "New King James Version",
+    testament: "BOTH",
+    available: false,
+    note: "Licensing in progress.",
+  },
+  {
+    id: "niv",
+    shortLabel: "NIV",
+    fullLabel: "New International Version",
+    testament: "BOTH",
+    available: false,
+    note: "Licensing in progress.",
+  },
+];
+
+function currentForTestament(testament: "OT" | "NT"): Translation {
+  return (
+    TRANSLATIONS.find(
+      (t) => t.available && (t.testament === testament || t.testament === "BOTH"),
+    ) ?? TRANSLATIONS[0]
+  );
+}
+
+export function TranslationSwitcher({ currentSlug }: { currentSlug: string }) {
+  const book = getBook(currentSlug);
+  const testament = (book?.testament ?? "OT") as "OT" | "NT";
+  const current = currentForTestament(testament);
+
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onDown(e: MouseEvent) {
+      if (!rootRef.current) return;
+      if (!rootRef.current.contains(e.target as Node)) setOpen(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  // Show: applicable translations first (for this testament), then "both", then others.
+  const visible = TRANSLATIONS.filter(
+    (t) => t.testament === testament || t.testament === "BOTH",
+  );
+
+  return (
+    <div ref={rootRef} className="relative inline-block">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-[13px] font-medium text-paper transition-colors"
+      >
+        <span className="font-sans text-[10.5px] font-semibold uppercase tracking-[1.2px] text-paper/50">
+          Translation
+        </span>
+        <span className="font-sans text-[13px] font-medium text-paper">
+          {current.shortLabel}
+        </span>
+        <span
+          aria-hidden
+          className={cn(
+            "text-[10px] text-paper/55 transition-transform duration-200",
+            open && "rotate-180",
+          )}
+        >
+          ▾
+        </span>
+      </button>
+
+      {open && (
+        <div
+          role="dialog"
+          aria-label="Switch translation"
+          className="absolute left-0 top-[calc(100%+8px)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-lg border border-paper/15 bg-night shadow-[0_24px_48px_rgba(0,0,0,0.6)] overflow-hidden"
+        >
+          <div className="px-4 pt-3 pb-2 border-b border-paper/10">
+            <p className="font-sans text-[10.5px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+              {testament === "OT" ? "Old Testament" : "New Testament"}
+            </p>
+          </div>
+          <ul role="listbox" className="p-2 max-h-[60vh] overflow-y-auto">
+            {visible.map((t) => {
+              const isCurrent = t.id === current.id;
+              return (
+                <li key={t.id}>
+                  <div
+                    role="option"
+                    aria-selected={isCurrent}
+                    aria-disabled={!t.available}
+                    className={cn(
+                      "rounded-md px-3 py-2.5 transition-colors",
+                      isCurrent
+                        ? "bg-accent/12"
+                        : t.available
+                          ? "hover:bg-paper/[0.06]"
+                          : "opacity-55",
+                    )}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-sans text-[13.5px] font-medium text-paper">
+                          {t.fullLabel}
+                        </p>
+                        {t.note && (
+                          <p className="mt-0.5 font-sans text-[11.5px] text-paper/50">
+                            {t.note}
+                          </p>
+                        )}
+                      </div>
+                      <span
+                        className={cn(
+                          "font-sans text-[10.5px] uppercase tracking-[1px] shrink-0 px-2 py-0.5 rounded-full border",
+                          isCurrent
+                            ? "border-accent/40 text-accent bg-accent/8"
+                            : t.available
+                              ? "border-paper/20 text-paper/65"
+                              : "border-paper/10 text-paper/35",
+                        )}
+                      >
+                        {isCurrent ? "Current" : t.available ? "Free" : "Soon"}
+                      </span>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="border-t border-paper/10 px-3 py-2 font-sans text-[10.5px] text-paper/40">
+            More translations coming as licensing lands.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
