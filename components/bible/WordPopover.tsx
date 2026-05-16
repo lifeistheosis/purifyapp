@@ -227,11 +227,13 @@ export function WordPopover({
       {/* Parse (small, scholar-friendly) + Strong's badge */}
       <div className="mt-4 flex items-center justify-between gap-2 pt-3 border-t border-paper/10">
         <p className="font-sans text-[12px] text-paper/55 leading-tight">
-          {friendlyParse(token.p)}
+          {token.p ? friendlyParse(token.p) : " "}
         </p>
-        <span className="shrink-0 font-sans text-[11px] font-semibold uppercase tracking-[1px] rounded-pill bg-paper/10 text-paper/80 px-2 py-0.5">
-          Strong&rsquo;s G{token.s}
-        </span>
+        {token.s && (
+          <span className="shrink-0 font-sans text-[11px] font-semibold uppercase tracking-[1px] rounded-pill bg-paper/10 text-paper/80 px-2 py-0.5">
+            Strong&rsquo;s G{token.s}
+          </span>
+        )}
       </div>
 
       {!entry && (

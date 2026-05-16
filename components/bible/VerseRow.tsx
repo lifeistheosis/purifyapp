@@ -263,34 +263,43 @@ export function VerseRow({
               {verse.n}
             </sup>
             {hasTokens
-              ? originalTokens!.map((tk, i) => (
-                  <Fragment key={i}>
-                    <button
-                      type="button"
-                      onClick={(e) =>
-                        openPopover(i, e.currentTarget)
-                      }
-                      className="font-[inherit] inline border-b border-dotted border-paper/25 hover:border-paper/70 hover:text-paper transition-colors duration-150 cursor-pointer text-left"
-                      aria-label={`Look up ${tk.w}`}
-                    >
-                      {tk.w}
-                    </button>
-                    {i < originalTokens!.length - 1 ? " " : ""}
-                  </Fragment>
-                ))
+              ? originalTokens!.map((tk, i) => {
+                  // Tokens with a Strong's number become clickable buttons.
+                  // Plain punctuation / unmatched LXX words render as text.
+                  const clickable = !!tk.s;
+                  const isWord = /\p{L}/u.test(tk.w);
+                  const needsSpaceBefore = i > 0 && isWord;
+                  return (
+                    <Fragment key={i}>
+                      {needsSpaceBefore ? " " : ""}
+                      {clickable ? (
+                        <button
+                          type="button"
+                          onClick={(e) => openPopover(i, e.currentTarget)}
+                          className="font-[inherit] inline border-b border-dotted border-paper/25 hover:border-paper/70 hover:text-paper transition-colors duration-150 cursor-pointer text-left"
+                          aria-label={`Look up ${tk.w}`}
+                        >
+                          {tk.w}
+                        </button>
+                      ) : (
+                        <span className="text-paper/70">{tk.w}</span>
+                      )}
+                    </Fragment>
+                  );
+                })
               : originalText}
-            {hasInterlinear && !hasTokens && (
-              <span className="ml-2 font-sans text-[11px] font-medium uppercase tracking-[1px] text-paper/40">
-                · word lookups coming
-              </span>
-            )}
           </p>
         )}
 
         {popoverIdx !== null && anchorRect && originalTokens && (
           <WordPopover
             token={originalTokens[popoverIdx]}
-            entry={strongs?.[originalTokens[popoverIdx].s] ?? null}
+            entry={
+              (() => {
+                const s = originalTokens[popoverIdx].s;
+                return s ? (strongs?.[s] ?? null) : null;
+              })()
+            }
             anchorRect={anchorRect}
             onClose={closePopover}
           />

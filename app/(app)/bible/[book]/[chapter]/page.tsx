@@ -51,13 +51,16 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
   if (!data) notFound();
 
   const originalByNum: Record<number, string> = {};
-  const tokensByNum: Record<number, { w: string; s: string; p: string }[]> = {};
+  const tokensByNum: Record<
+    number,
+    { w: string; s?: string; p?: string }[]
+  > = {};
   const usedStrongs = new Set<string>();
   for (const v of original?.verses ?? []) {
     originalByNum[v.n] = v.text;
     if (v.tokens?.length) {
       tokensByNum[v.n] = v.tokens;
-      for (const t of v.tokens) usedStrongs.add(t.s);
+      for (const t of v.tokens) if (t.s) usedStrongs.add(t.s);
     }
   }
   // Per-chapter Strong's mini-lexicon (only the entries this chapter uses).

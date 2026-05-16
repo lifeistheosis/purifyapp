@@ -3,12 +3,14 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 export type Token = {
-  /** Lowercase Greek word (no diacritics in BMT). */
+  /** Greek word as it appears in the source text. */
   w: string;
-  /** Strong's number, e.g. "25" for ἀγαπάω. */
-  s: string;
-  /** Morphology code, e.g. "V-AAI-3S" (verb, aorist active indicative 3 sing). */
-  p: string;
+  /** Strong's number (e.g. "25" for ἀγαπάω). Absent on punctuation or LXX
+   *  words not in the shared NT-derived index. */
+  s?: string;
+  /** Morphology code (e.g. "V-AAI-3S"). NT tokens have this. LXX tokens
+   *  don't yet (parse data is harder to source for the Septuagint). */
+  p?: string;
 };
 export type Verse = {
   n: number;
