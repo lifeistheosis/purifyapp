@@ -7,13 +7,19 @@ import { BookSwitcher } from "@/components/bible/BookSwitcher";
 import { ChapterKeyNav } from "@/components/bible/ChapterKeyNav";
 import { StudyRail } from "@/components/bible/StudyRail";
 import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
+import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
 import {
   ReaderFontFamilyButton,
   ReaderFontSizeButton,
   ReaderPrefsProvider,
 } from "@/components/reader/ReaderPrefs";
 import { allChapterParams, getBook } from "@/lib/bible/books";
-import { loadChapter, loadIntro, loadCommentary } from "@/lib/bible/load";
+import {
+  loadChapter,
+  loadIntro,
+  loadCommentary,
+  loadOriginal,
+} from "@/lib/bible/load";
 
 type Params = Promise<{ book: string; chapter: string }>;
 
@@ -35,12 +41,16 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
   if (!b || !Number.isInteger(chapterNum) || chapterNum < 1 || chapterNum > b.chapters) {
     notFound();
   }
-  const [data, intro, commentary] = await Promise.all([
+  const [data, intro, commentary, original] = await Promise.all([
     loadChapter(book, chapterNum),
     chapterNum === 1 ? loadIntro(book) : Promise.resolve(null),
     loadCommentary(book, chapterNum),
+    loadOriginal(book, chapterNum),
   ]);
   if (!data) notFound();
+
+  const originalByNum: Record<number, string> = {};
+  for (const v of original?.verses ?? []) originalByNum[v.n] = v.text;
 
   const commentaryVerses = Object.keys(commentary)
     .map(Number)
@@ -60,8 +70,11 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
             <ReaderFontSizeButton />
             <ReaderFontFamilyButton />
           </div>
-          <div className="mb-8 max-w-[640px]">
-            <BibleSearch />
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex-1 min-w-0 max-w-[640px]">
+              <BibleSearch />
+            </div>
+            <InterlinearToggle />
           </div>
 
           <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
@@ -93,6 +106,7 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
                 chapter={chapterNum}
                 verses={data!.verses}
                 commentaryVerses={commentaryVerses}
+                originalByNum={originalByNum}
               />
 
               <ChapterPager slug={book} chapter={chapterNum} />

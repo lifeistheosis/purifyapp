@@ -26,6 +26,30 @@ export async function loadChapter(
   }
 }
 
+/**
+ * Loads the original-language (Greek NT or Greek LXX OT) text for a chapter.
+ * Returns null if the chapter has no original-language file (e.g. a few
+ * deuterocanonical sections like Susanna or Bel that weren't shipped in v1).
+ * Same shape as loadChapter so the reader can treat it interchangeably.
+ */
+export async function loadOriginal(
+  bookSlug: string,
+  chapter: number,
+): Promise<Chapter | null> {
+  try {
+    const file = path.join(
+      DATA_DIR,
+      "original",
+      bookSlug,
+      `${chapter}.json`,
+    );
+    const raw = await fs.readFile(file, "utf8");
+    return JSON.parse(raw) as Chapter;
+  } catch {
+    return null;
+  }
+}
+
 export type CrossRef = { display: string; votes: number };
 export type ChapterCrossRefs = Record<string, CrossRef[]>;
 

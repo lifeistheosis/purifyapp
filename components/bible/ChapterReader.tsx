@@ -14,11 +14,14 @@ export function ChapterReader({
   chapter,
   verses,
   commentaryVerses,
+  originalByNum,
 }: {
   book: string;
   chapter: number;
   verses: Verse[];
   commentaryVerses?: number[];
+  /** Verse number -> original-language text (Greek NT or Greek LXX OT). */
+  originalByNum?: Record<number, string>;
 }) {
   const { size, font } = useReaderPrefs();
   const has = new Set(commentaryVerses ?? []);
@@ -38,6 +41,7 @@ export function ChapterReader({
             chapter={chapter}
             verse={v}
             hasCommentary={has.has(v.n)}
+            originalText={originalByNum?.[v.n]}
           />
         ))}
       </div>

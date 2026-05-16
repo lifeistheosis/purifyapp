@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import type { Verse } from "@/lib/bible/load";
 import { useVerseAnnotation } from "@/lib/bible/annotations";
+import { useInterlinear } from "@/lib/bible/interlinear";
 import { cn } from "@/lib/cn";
 
 function tokenize(text: string): string[] {
@@ -21,13 +22,19 @@ export function VerseRow({
   chapter,
   verse,
   hasCommentary = false,
+  originalText,
 }: {
   book: string;
   chapter: number;
   verse: Verse;
   hasCommentary?: boolean;
+  /** Optional Greek NT / Greek LXX text for this verse. Shown when the
+   *  Interlinear toggle is ON. */
+  originalText?: string;
 }) {
   const ann = useVerseAnnotation(book, chapter, verse.n);
+  const { on: showInterlinear } = useInterlinear();
+  const hasInterlinear = showInterlinear && !!originalText;
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(ann.note ?? "");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -169,9 +176,16 @@ export function VerseRow({
       data-hl={ann.highlighted ? "true" : undefined}
     >
       <div className="flex items-start gap-2">
+        <div
+          className={cn(
+            "flex-1 min-w-0",
+            hasInterlinear &&
+              "grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2",
+          )}
+        >
         <p
           className={cn(
-            "indent-0 flex-1 min-w-0",
+            "indent-0 min-w-0",
             dragging && "select-none",
           )}
           onMouseDown={onWordsMouseDown}
@@ -216,6 +230,20 @@ export function VerseRow({
             </Fragment>
           ))}
         </p>
+
+        {hasInterlinear && originalText && (
+          <p
+            lang="grc"
+            style={{ fontFamily: "var(--font-greek), serif" }}
+            className="indent-0 min-w-0 text-paper/85"
+          >
+            <sup className="font-sans text-[10px] font-medium text-paper/30 tracking-[0.05em] mr-1.5 align-super">
+              {verse.n}
+            </sup>
+            {originalText}
+          </p>
+        )}
+        </div>
 
         {/* Toolbar — always visible on touch, hover-revealed at md+ */}
         <div

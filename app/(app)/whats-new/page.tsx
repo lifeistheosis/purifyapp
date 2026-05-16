@@ -16,7 +16,7 @@ export default function WhatsNewPage() {
             What&rsquo;s new
           </p>
           <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
-            v1.1 &middot; Beta &middot; Polish patch
+            v1.2 &middot; Beta &middot; Interlinear
           </p>
         </div>
 
@@ -177,6 +177,20 @@ export default function WhatsNewPage() {
             and represent a substantial direction change. Minor bumps (1.0 to
             1.1) keep the letter and add a release note here.
           </p>
+
+          <ChangelogEntry
+            version="v1.2"
+            kind="Interlinear"
+            date="May 16, 2026"
+            blurb="The Bible reader now has an Interlinear toggle. Click it on any chapter and the original Greek appears beside the English. Letter above unchanged."
+            items={[
+              "New Interlinear button in the chapter header, next to the search bar. Toggle persists across chapters and reloads.",
+              "Original-language coverage: KJV New Testament paired with Stephanus 1550 (Textus Receptus) Greek; Brenton Old Testament paired with the Septuagint Greek that Brenton translated from. 1,325 chapters total.",
+              "Cardo serif loaded for the Greek column — polytonic accents and breathings render correctly.",
+              "Mobile (under md): Greek wraps below the English instead of beside, so verses stay readable on phones.",
+              "Verse highlights and notes still work with Interlinear on. The English column owns the toolbar and word-drag highlighting.",
+            ]}
+          />
 
           <ChangelogEntry
             version="v1.1"
