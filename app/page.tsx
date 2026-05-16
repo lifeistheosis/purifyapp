@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Navbar } from "@/components/nav/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -56,6 +57,23 @@ export default function Home() {
       >
         <div className="mx-auto max-w-[1240px] w-full grid grid-cols-1 xl:grid-cols-2 gap-12 items-center">
           <div className="text-paper">
+            <Link
+              href="/whats-new"
+              className="group inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.06] px-3 py-1.5 mb-5 hover:bg-paper/10 hover:border-paper/35 transition-colors duration-150"
+            >
+              <span
+                className="font-sans text-[10px] font-semibold uppercase tracking-[1.5px] px-2 py-0.5 rounded-pill"
+                style={{ color: "#161219", backgroundColor: "#d4af37" }}
+              >
+                New
+              </span>
+              <span className="font-sans text-[13px] text-paper/85 group-hover:text-paper transition-colors">
+                Beta v1.0 · read the first letter
+              </span>
+              <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
+                →
+              </span>
+            </Link>
             <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/70 mb-4">
               The #1 Orthodox prayer app
             </p>
