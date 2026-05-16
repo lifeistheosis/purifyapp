@@ -145,35 +145,40 @@ export function WordPopover({
     function onDocClick(e: MouseEvent) {
       if (!ref.current?.contains(e.target as Node)) onClose();
     }
+    // Close on scroll — the anchor point would otherwise be wrong.
+    function onScroll() {
+      onClose();
+    }
     document.addEventListener("keydown", onKey);
     // Defer so the click that opened it doesn't immediately close it.
     const t = setTimeout(
       () => document.addEventListener("mousedown", onDocClick),
       50,
     );
+    window.addEventListener("scroll", onScroll, { passive: true, capture: true });
     return () => {
       clearTimeout(t);
       document.removeEventListener("keydown", onKey);
       document.removeEventListener("mousedown", onDocClick);
+      window.removeEventListener("scroll", onScroll, { capture: true });
     };
   }, [onClose]);
 
-  // Place below the word; flip above if it would go off-screen.
+  // position: fixed → viewport-relative coordinates straight from
+  // getBoundingClientRect (no scroll offsets needed). This sidesteps the
+  // bug where `position: absolute` was being computed against the nearest
+  // positioned ancestor (the VerseRow div) instead of the page.
   const POPOVER_W = 300;
   const PAD = 8;
   let left =
-    anchorRect.left + anchorRect.width / 2 + window.scrollX - POPOVER_W / 2;
-  left = Math.max(
-    PAD,
-    Math.min(left, window.innerWidth - POPOVER_W - PAD + window.scrollX),
-  );
-  // Estimate height for flip logic.
+    anchorRect.left + anchorRect.width / 2 - POPOVER_W / 2;
+  left = Math.max(PAD, Math.min(left, window.innerWidth - POPOVER_W - PAD));
   const ESTIMATED_H = 160;
-  const aboveTop = anchorRect.top + window.scrollY - ESTIMATED_H - 8;
-  const belowTop = anchorRect.bottom + window.scrollY + 8;
+  const aboveTop = anchorRect.top - ESTIMATED_H - 8;
+  const belowTop = anchorRect.bottom + 8;
   const flipAbove =
     anchorRect.bottom + ESTIMATED_H + 16 > window.innerHeight &&
-    aboveTop > window.scrollY + PAD;
+    aboveTop > PAD;
   const top = flipAbove ? aboveTop : belowTop;
 
   return (
@@ -181,7 +186,7 @@ export function WordPopover({
       ref={ref}
       role="dialog"
       aria-label={`Word details: ${token.w}`}
-      className="absolute z-50 rounded-lg border border-paper/20 bg-night-soft shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4"
+      className="fixed z-50 rounded-lg border border-paper/20 bg-night-soft shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4"
       style={{ width: POPOVER_W, left, top }}
     >
       <button
