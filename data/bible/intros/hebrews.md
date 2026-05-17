@@ -1,0 +1,5 @@
+The Epistle to the Hebrews is the most carefully constructed sermon in the New Testament. Its author is unnamed; the Eastern Church received it as Paul's, while acknowledging that the Greek is unlike his other letters. The letter was written to Jewish Christians under pressure to return to the synagogue and the Temple, possibly before the Temple's fall in 70.
+
+Hebrews answers them by showing that everything in the old worship was a shadow of Christ, who is greater than the angels, greater than Moses, the merciful and faithful High Priest who has entered the true sanctuary not made with hands and offered Himself once for all. The great chapter eleven, the cloud of witnesses of faith from Abel to the prophets, is read on the Sunday of the Holy Forefathers before the Nativity.
+
+For the Orthodox Church, Hebrews is the standard reading at Liturgies of bishops and confessors, and at every memorial service. Saint John Chrysostom preached 34 homilies on it. The epistle's confidence in Christ as both sacrifice and priest is the foundation of Orthodox eucharistic theology.

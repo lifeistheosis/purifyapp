@@ -1,0 +1,5 @@
+Paul's Epistle to the Galatians is the apostle's most pointed defense of the gospel of grace. Written around the year 49 to the churches of Asia Minor he had himself planted, it answers Judaizing teachers who insisted that Gentile believers must first become Jews, observe the law, and be circumcised. Paul refuses the demand, not because the law is bad, but because Christ alone is the saving boundary of the Church.
+
+The letter is short and white-hot. Paul tells the story of his own conversion and his quarrel with Peter at Antioch. He sets forth justification by faith, the work of the Spirit who cries out Abba, Father in the hearts of the baptized, and the fruit of the Spirit against which there is no law. For Orthodox readers it is the apostolic charter of Christian freedom, not freedom for the flesh, but freedom for love.
+
+Galatians is read at Liturgy in the weeks before Great Lent and at several feasts of the Theotokos and the saints, including the verse Saint Paul gives them, that as many of us as were baptized into Christ have put on Christ.

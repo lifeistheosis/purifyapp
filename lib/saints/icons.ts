@@ -32,6 +32,23 @@ export const AUTHOR_ICONS: Record<string, string> = {
   "St. Symeon": "/saints/icons/symeon-the-new-theologian.jpg",
   "St. Seraphim of Sarov": "/saints/icons/seraphim-of-sarov.jpg",
   "St. Seraphim": "/saints/icons/seraphim-of-sarov.jpg",
+
+  // v2.5: Apostle Paul, Mary of Egypt, Nicholas the Wonderworker.
+  "Holy Apostle Paul": "/saints/icons/apostle-paul.jpg",
+  "St. Paul the Apostle": "/saints/icons/apostle-paul.jpg",
+  "Apostle Paul": "/saints/icons/apostle-paul.jpg",
+  "St. Paul": "/saints/icons/apostle-paul.jpg",
+  "St. Mary of Egypt": "/saints/icons/mary-of-egypt.jpg",
+  "St. Mary": "/saints/icons/mary-of-egypt.jpg",
+  "St. Nicholas the Wonderworker": "/saints/icons/nicholas-the-wonderworker.jpg",
+  "St. Nicholas of Myra": "/saints/icons/nicholas-the-wonderworker.jpg",
+  "St. Nicholas": "/saints/icons/nicholas-the-wonderworker.jpg",
+
+  // Other Fathers cited in commentary cards but not in the registry yet.
+  "St. Cyprian of Carthage": "/saints/icons/cyprian-of-carthage.jpg",
+  "St. Cyprian": "/saints/icons/cyprian-of-carthage.jpg",
+  "St. Gregory of Nyssa": "/saints/icons/gregory-of-nyssa.jpg",
+  "St. Jerome": "/saints/icons/jerome.jpg",
 };
 
 export function authorIcon(author: string): string | null {

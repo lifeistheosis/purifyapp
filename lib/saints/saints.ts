@@ -431,6 +431,96 @@ export const SAINTS: Saint[] = [
       },
     ],
   },
+  {
+    slug: "apostle-paul",
+    byname: "The Apostle to the Nations",
+    iconUrl: "/saints/icons/apostle-paul.jpg",
+    name: "Holy Apostle Paul",
+    epithet: "Apostle to the Nations · Chosen Vessel",
+    born: "c. AD 5 (Tarsus in Cilicia)",
+    reposed: "c. AD 67 (Rome)",
+    feastDays: ["June 29", "June 30"],
+    see: "Apostle at large; preached from Damascus to Rome",
+    shortBio:
+      "The Pharisee from Tarsus who hunted the Church until the risen Christ stopped him on the road to Damascus, and who from that day to his beheading at Rome traveled the empire planting the Gospel.",
+    life: [
+      "Saul was born around the year five in Tarsus of Cilicia to a family of Roman citizens. He was educated at the feet of Gamaliel, the leading rabbi of his generation, and grew into a zealous Pharisee. He held the cloaks of those who stoned the first martyr Stephen, and was on the road to Damascus to arrest Christians when the Lord Himself appeared to him in light and called him by name.",
+      "The blinding of Saul became the opening of the Apostle Paul. After three days of prayer in Damascus he was baptized by Ananias, and after a season in Arabia he began the work that would fill the rest of his life. Three missionary journeys, more than ten thousand miles by land and sea, planted the Gospel in cities from Antioch to Corinth to Rome.",
+      "His epistles, more than any other writing, gave the early Church the words by which it learned to speak of Christ. Romans, the two letters to Corinth, Galatians, Ephesians, Philippians, Colossians, the letters to Thessalonica, Timothy, and Titus, the letter to Philemon, and the long sermon to the Hebrews together fill the second half of the New Testament.",
+      "Paul wrote his last letter from a Roman prison, awaiting execution under Nero. He was beheaded on the Ostian Way, traditionally on the same day Peter was crucified, around the year sixty-seven. The Church keeps their feast together on June 29, and his alone on June 30 with the Synaxis of the Twelve Apostles.",
+    ],
+    works: [
+      {
+        slug: "letter-from-the-prison",
+        title: "Final Words from Prison",
+        subtitle: "Selected passages from 2 Timothy and Philippians",
+        year: "c. 64-67",
+        blurb:
+          "Paul's last surviving letters, written in chains, on contentment, the good fight, and the crown of righteousness laid up for those who love His appearing.",
+        topics: ["Apostle", "Suffering", "Hope", "Mission", "Scripture"],
+      },
+    ],
+  },
+  {
+    slug: "mary-of-egypt",
+    byname: "The Desert Penitent",
+    iconUrl: "/saints/icons/mary-of-egypt.jpg",
+    name: "St. Mary of Egypt",
+    epithet: "Ascetic of the Jordan · Mother of all penitents",
+    born: "c. 344 (Alexandria)",
+    reposed: "c. 421 (the Trans-Jordanian desert)",
+    feastDays: ["April 1", "Fifth Sunday of Great Lent"],
+    see: "Hermitess beyond the Jordan",
+    shortBio:
+      "The Alexandrian who lived in dissolution for seventeen years, was halted at the doors of the Holy Sepulchre by an unseen hand, and spent forty-seven years alone in the desert weeping for her sins until the Theotokos sent the priest Zosimas to find her.",
+    life: [
+      "Mary was born in Egypt around the year three hundred and forty-four. At twelve she ran from her parents to Alexandria, where for seventeen years she lived by begging and prostitution, not so much for money as for the pleasure of sin. With a band of pilgrims sailing for Jerusalem to venerate the Cross she crossed the sea, paying her passage as she paid for everything, with her body.",
+      "On the feast of the Exaltation she tried to enter the church of the Holy Sepulchre with the crowd, and an unseen power held her back at the doors. After three failed attempts she understood. She went outside, prayed before an icon of the Theotokos, vowed to leave her life, and returned: this time the doors opened.",
+      "Hearing within her heart the voice that said, 'Cross the Jordan, and there you will find rest,' she bought three small loaves and walked into the desert, where she lived for forty-seven years alone with no one but God. Toward the end of her life the priest Zosimas, fasting in the same desert during Great Lent, found her and learned her story. She received Communion from him the following year on Holy Thursday, beside the Jordan, and was dead and buried in the sand when he came back a year later.",
+      "Her life, written by Saint Sophronius of Jerusalem, is read in full in Orthodox monasteries at Matins of the Thursday of the fifth week of Great Lent, the Great Canon of St. Andrew of Crete sung throughout. She is the patroness of every penitent who has thought it too late to turn.",
+    ],
+    works: [
+      {
+        slug: "life-by-sophronius",
+        title: "The Life of St. Mary of Egypt",
+        subtitle: "Selections from the Life by St. Sophronius of Jerusalem",
+        year: "c. 638",
+        blurb:
+          "The astonishing account of Mary's encounter at the doors of the Sepulchre, her forty-seven years in the desert, and her last Communion at the hands of Zosimas.",
+        topics: ["Repentance", "Asceticism", "Theotokos", "Forgiveness", "Lent"],
+      },
+    ],
+  },
+  {
+    slug: "nicholas-the-wonderworker",
+    byname: "The Wonderworker",
+    iconUrl: "/saints/icons/nicholas-the-wonderworker.jpg",
+    name: "St. Nicholas the Wonderworker",
+    epithet: "Archbishop of Myra in Lycia · The Wonderworker",
+    born: "c. 270 (Patara in Lycia)",
+    reposed: "December 6, 343",
+    feastDays: ["December 6", "May 9"],
+    see: "Myra in Lycia",
+    shortBio:
+      "The fourth-century bishop of Myra whose secret almsgiving, deliverances at sea, and reckless love for the poor have made him the most universally honored saint of the Christian world.",
+    life: [
+      "Nicholas was born around the year two hundred and seventy at Patara, the son of devout Christian parents who left him their estate when he was still a young man. He spent the inheritance not on himself but on those in need, most famously on three sisters whose father had no dowry for them and was preparing to sell them into prostitution. Three nights in a row Nicholas threw a bag of gold through their window, the last time being caught by the father as he ran away.",
+      "He was ordained reader, deacon, and presbyter while still very young, and after a pilgrimage to the Holy Land was chosen by direct revelation to succeed the dead archbishop of Myra. He governed that see through the last great persecution under Diocletian, was imprisoned and tortured for the Faith, and emerged at the peace of Constantine to attend the First Ecumenical Council at Nicaea in 325, where he is said to have struck Arius across the face for his blasphemy.",
+      "The wonders worked through him filled the synaxaria of every Orthodox nation. He calmed storms at sea, raised the drowned, fed the starving in a famine year, struck down corrupt officials and softened cruel ones. The sailors of every Mediterranean port took him for their patron, and the children of every Christian household keep his feast still.",
+      "He reposed in Myra on December the sixth, 343. His relics were translated to Bari in southern Italy in 1087, where they myrrh still flows from them. He is honored everywhere: in Russia his icon hangs in every home, in Greece his troparion is sung at every Liturgy, in the West his memory is the seed of the Father Christmas of the modern world. The Orthodox Church does not let the figure be sentimentalized; he remains a wonderworker, an iconoclast of injustice, and the swift help of all who call on him.",
+    ],
+    works: [
+      {
+        slug: "stories-and-prayers",
+        title: "Stories and Prayers of St. Nicholas",
+        subtitle: "Selected episodes from the Life and a prayer for sailors",
+        year: "Compiled from sources of the 4th-9th centuries",
+        blurb:
+          "The three bags of gold, the famine in Myra, the rescue of the unjustly condemned officers, and the Orthodox troparion still sung at his Liturgy.",
+        topics: ["Almsgiving", "Justice", "Hospitality", "Prayer", "Wonders"],
+      },
+    ],
+  },
 ];
 
 export function getSaint(slug: string): Saint | null {

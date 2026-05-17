@@ -1,0 +1,5 @@
+The Epistle of James, brother of the Lord and first bishop of Jerusalem, is the most practical letter in the New Testament. Where Paul argues, James commands; where Paul reasons about salvation, James points to its visible shape in daily life. Faith, the apostle insists, is dead apart from works, not because works save apart from faith, but because faith that has not changed how a man speaks, gives, and treats the poor is not yet faith at all.
+
+The letter speaks of the trial of suffering, the wisdom that comes from above, the danger of the tongue, the wickedness of partiality toward the rich, and the prayer that lifts up the sick. The chapter five passage on calling the priests, anointing with oil, and confessing sins is the apostolic foundation of the sacrament of Holy Unction, which the Orthodox Church still serves with the prayers James prescribes.
+
+James is read at Liturgy after Pentecost and throughout the year. Saint Bede the Venerable wrote one of the earliest patristic commentaries on this letter; the Eastern Fathers cite it constantly in their teaching on works of mercy and the discipline of speech.

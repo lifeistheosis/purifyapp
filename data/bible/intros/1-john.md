@@ -1,0 +1,5 @@
+The First Epistle of John, written by the Apostle and Evangelist in his old age at Ephesus, is the most concentrated meditation on love in the New Testament. It is short, repetitive in a deliberate way, and unmistakably the same voice as the Fourth Gospel.
+
+John writes against an early form of the heresy later called Docetism, which denied that the Son of God had come in true flesh. He answers with the opening verses, that which we have heard, which we have seen with our eyes, which we have looked upon, and our hands have handled, of the Word of life. The Incarnation is something his own senses can testify to.
+
+From this fact John draws the test of true Christian life: God is love, and the one who does not love his brother whom he has seen cannot love God whom he has not seen. The letter is read at Liturgy in the weeks after Pentecost and at feasts of love and mercy. Saint Augustine's Tractates on this epistle, ten short homilies, are among the most beloved patristic readings in both East and West.
