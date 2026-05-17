@@ -43,6 +43,23 @@ export async function loadChapter(
 }
 
 /**
+ * Loads a contiguous verse range from a chapter. Used by the daily readings
+ * panel on the calendar to render the appointed Epistle and Gospel inline.
+ * The book name is returned for display alongside the verses.
+ */
+export async function loadVerseRange(
+  bookSlug: string,
+  chapter: number,
+  from: number,
+  to: number,
+): Promise<{ name: string; verses: Verse[] } | null> {
+  const ch = await loadChapter(bookSlug, chapter);
+  if (!ch) return null;
+  const verses = ch.verses.filter((v) => v.n >= from && v.n <= to);
+  return { name: ch.name, verses };
+}
+
+/**
  * Loads the original-language (Greek NT or Greek LXX OT) text for a chapter.
  * Returns null if the chapter has no original-language file (e.g. a few
  * deuterocanonical sections like Susanna or Bel that weren't shipped in v1).

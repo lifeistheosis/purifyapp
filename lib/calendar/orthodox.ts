@@ -10,6 +10,7 @@
 
 import { SAINTS, getSaint, type Saint } from "@/lib/saints/saints";
 import dailyCommemorations from "@/data/calendar/daily-saints.json";
+import dailyReadings from "@/data/calendar/daily-readings.json";
 
 // ----- Pascha -----
 
@@ -358,6 +359,38 @@ export function commemorationsOn(date: Date): Commemoration[] {
     }
   }
   return entries;
+}
+
+// ----- Daily readings (lectionary references) -----
+
+export type ReadingKind = "epistle" | "gospel" | "ot";
+
+export type ReadingRef = {
+  kind: ReadingKind;
+  /** Bible book slug, matches /bible/<book>/<chapter>. */
+  book: string;
+  chapter: number;
+  /** First verse of the passage (inclusive). */
+  from: number;
+  /** Last verse of the passage (inclusive). */
+  to: number;
+  /** Human-readable reference, e.g. "Matthew 11:27-30". */
+  label: string;
+};
+
+const READINGS: Record<string, ReadingRef[]> = dailyReadings as Record<
+  string,
+  ReadingRef[]
+>;
+
+/**
+ * Returns the lectionary references (Epistle and Gospel, occasionally OT)
+ * appointed for a given calendar date. Readings are paired thematically with
+ * the day's commemoration; major fixed feasts carry their proper Liturgy
+ * readings. The full Pascha-relative cycle is not encoded here.
+ */
+export function readingsOn(date: Date): ReadingRef[] {
+  return READINGS[mmdd(date)] ?? [];
 }
 
 // ----- Month grid -----

@@ -7,12 +7,15 @@ import {
   formatMonthYear,
   monthGrid,
   paschaInfo,
+  readingsOn,
   startOfDayUtc,
   type Commemoration,
   type FastKind,
+  type ReadingRef,
 } from "@/lib/calendar/orthodox";
 import { SaintIcon } from "@/components/saints/SaintIcon";
 import { getSaint } from "@/lib/saints/saints";
+import { loadVerseRange, type Verse } from "@/lib/bible/load";
 
 export const metadata = {
   title: "Orthodox Calendar - Purify",
@@ -85,6 +88,73 @@ function shortName(name: string): string {
     .replace(/^Prophet\s+/i, "")
     .replace(/^Apostle\s+/i, "")
     .replace(/^Apostles\s+/i, "");
+}
+
+type ResolvedReading = {
+  ref: ReadingRef;
+  passage: { name: string; verses: Verse[] } | null;
+};
+
+async function resolveReadings(refs: ReadingRef[]): Promise<ResolvedReading[]> {
+  return Promise.all(
+    refs.map(async (ref) => ({
+      ref,
+      passage: await loadVerseRange(ref.book, ref.chapter, ref.from, ref.to),
+    })),
+  );
+}
+
+function ReadingPanel({
+  reading,
+  size = "md",
+}: {
+  reading: ResolvedReading;
+  size?: "sm" | "md";
+}) {
+  const { ref, passage } = reading;
+  const kindLabel = ref.kind === "epistle" ? "Epistle" : ref.kind === "ot" ? "Old Testament" : "Gospel";
+  const accent =
+    ref.kind === "gospel"
+      ? "border-[#d4af37]/30 bg-[#d4af37]/[0.05]"
+      : ref.kind === "epistle"
+        ? "border-paper/15 bg-paper/[0.04]"
+        : "border-paper/12 bg-paper/[0.04]";
+  const verseText = size === "sm" ? "text-[13.5px]" : "text-[15.5px] md:text-[16px]";
+  const verseLeading = size === "sm" ? "leading-[1.5]" : "leading-[1.65]";
+  return (
+    <div className={`rounded-lg border p-5 ${accent}`}>
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-paper/55">
+          {kindLabel}
+        </p>
+        <Link
+          href={`/bible/${ref.book}/${ref.chapter}#v${ref.from}`}
+          className="font-sans text-[11px] uppercase tracking-[1.2px] text-paper/55 hover:text-paper transition-colors"
+        >
+          Open chapter →
+        </Link>
+      </div>
+      <p className="font-sans text-[14px] font-semibold text-paper mb-3">
+        {ref.label}
+      </p>
+      {passage && passage.verses.length > 0 ? (
+        <div className={`font-serif text-paper/85 ${verseText} ${verseLeading} space-y-1.5`}>
+          {passage.verses.map((v) => (
+            <p key={v.n} className="indent-0">
+              <sup className="font-sans text-[10px] font-medium text-paper/40 tracking-[0.05em] mr-1.5 align-super">
+                {v.n}
+              </sup>
+              {v.text}
+            </p>
+          ))}
+        </div>
+      ) : (
+        <p className="font-sans text-[13px] text-paper/45 italic">
+          Verse text unavailable.
+        </p>
+      )}
+    </div>
+  );
 }
 
 function CommemorationRow({ c }: { c: Commemoration }) {
@@ -160,6 +230,12 @@ export default async function CalendarPage({
     todayCommemorations.find((c) => c.kind === "feast") ?? todayCommemorations[0];
   const headlineSaint =
     headline?.saint ?? (headline?.slug ? getSaint(headline.slug) : null);
+
+  // Resolve today's and the selected day's lectionary readings in parallel.
+  const [todayReadings, selectedReadings] = await Promise.all([
+    resolveReadings(readingsOn(today)),
+    resolveReadings(readingsOn(selectedDay)),
+  ]);
 
   return (
     <div className="bg-night min-h-screen">
@@ -288,6 +364,33 @@ export default async function CalendarPage({
           </div>
         </div>
       </section>
+
+      {/* TODAY'S READINGS */}
+      {todayReadings.length > 0 && (
+        <section className="px-5 md:px-8 py-10 md:py-12 border-b border-white/8 bg-night-soft">
+          <div className="mx-auto max-w-[1280px] w-full">
+            <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
+              <div>
+                <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+                  Today&rsquo;s readings
+                </p>
+                <h2 className="mt-1 font-sans text-[22px] md:text-[28px] font-bold text-paper tracking-[-0.02em]">
+                  The Word for {formatMonthDay(today)}
+                </h2>
+              </div>
+              <p className="font-sans text-[12px] text-paper/45 max-w-[420px]">
+                Paired with the day&rsquo;s commemoration. Major fixed feasts carry
+                their proper liturgical readings.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {todayReadings.map((r, i) => (
+                <ReadingPanel key={i} reading={r} size="md" />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* GRID + DAY DETAIL */}
       <section className="px-5 md:px-8 py-10 md:py-14">
@@ -453,6 +556,21 @@ export default async function CalendarPage({
                   <p className="font-sans text-[13px] text-paper/55">
                     No commemoration listed for this day.
                   </p>
+                )}
+
+                {selectedReadings.length > 0 && (
+                  <>
+                    <p className="mt-5 font-sans text-[11px] uppercase tracking-[1.5px] text-paper/55 mb-3">
+                      Readings
+                    </p>
+                    <ul className="space-y-2">
+                      {selectedReadings.map((r, i) => (
+                        <li key={i}>
+                          <ReadingPanel reading={r} size="sm" />
+                        </li>
+                      ))}
+                    </ul>
+                  </>
                 )}
               </div>
             </aside>
