@@ -43,12 +43,16 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
   if (!b || !Number.isInteger(chapterNum) || chapterNum < 1 || chapterNum > b.chapters) {
     notFound();
   }
+  // Interlinear (Greek + English Strong's tags) is NT-only. The OT was
+  // originally Hebrew; the Septuagint is a Greek translation, but the
+  // user wants the interlinear scoped to the New Testament only.
+  const isNT = b!.testament === "NT";
   const [data, intro, commentary, original, englishTagged] = await Promise.all([
     loadChapter(book, chapterNum),
     chapterNum === 1 ? loadIntro(book) : Promise.resolve(null),
     loadCommentary(book, chapterNum),
-    loadOriginal(book, chapterNum),
-    loadEnglishTagged(book, chapterNum),
+    isNT ? loadOriginal(book, chapterNum) : Promise.resolve(null),
+    isNT ? loadEnglishTagged(book, chapterNum) : Promise.resolve(null),
   ]);
   if (!data) notFound();
 
@@ -101,7 +105,7 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
             <div className="flex-1 min-w-0 max-w-[640px]">
               <BibleSearch />
             </div>
-            <InterlinearToggle />
+            {isNT && <InterlinearToggle />}
           </div>
 
           <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">

@@ -119,40 +119,39 @@ function ReadingPanel({
       : ref.kind === "epistle"
         ? "border-paper/15 bg-paper/[0.04]"
         : "border-paper/12 bg-paper/[0.04]";
-  const verseText = size === "sm" ? "text-[13.5px]" : "text-[15.5px] md:text-[16px]";
-  const verseLeading = size === "sm" ? "leading-[1.5]" : "leading-[1.65]";
+  const firstVerse = passage?.verses?.[0];
+  const moreVerses = (passage?.verses?.length ?? 0) > 1;
+  const verseText = size === "sm" ? "text-[13.5px]" : "text-[14.5px] md:text-[15px]";
+  const verseLeading = size === "sm" ? "leading-[1.5]" : "leading-[1.6]";
   return (
-    <div className={`rounded-lg border p-5 ${accent}`}>
-      <div className="flex items-center justify-between gap-3 mb-3">
+    <div className={`rounded-lg border p-4 md:p-5 ${accent}`}>
+      <div className="flex items-baseline justify-between gap-3 mb-1.5">
         <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-paper/55">
           {kindLabel}
         </p>
-        <Link
-          href={`/bible/${ref.book}/${ref.chapter}#v${ref.from}`}
-          className="font-sans text-[11px] uppercase tracking-[1.2px] text-paper/55 hover:text-paper transition-colors"
-        >
-          Open chapter →
-        </Link>
+        <p className="font-sans text-[14px] font-semibold text-paper">
+          {ref.label}
+        </p>
       </div>
-      <p className="font-sans text-[14px] font-semibold text-paper mb-3">
-        {ref.label}
-      </p>
-      {passage && passage.verses.length > 0 ? (
-        <div className={`font-serif text-paper/85 ${verseText} ${verseLeading} space-y-1.5`}>
-          {passage.verses.map((v) => (
-            <p key={v.n} className="indent-0">
-              <sup className="font-sans text-[10px] font-medium text-paper/40 tracking-[0.05em] mr-1.5 align-super">
-                {v.n}
-              </sup>
-              {v.text}
-            </p>
-          ))}
-        </div>
+      {firstVerse ? (
+        <p className={`font-serif text-paper/80 ${verseText} ${verseLeading} mt-2`}>
+          <sup className="font-sans text-[10px] font-medium text-paper/40 tracking-[0.05em] mr-1.5 align-super">
+            {firstVerse.n}
+          </sup>
+          {firstVerse.text}
+          {moreVerses && <span className="text-paper/40">{" "}…</span>}
+        </p>
       ) : (
-        <p className="font-sans text-[13px] text-paper/45 italic">
+        <p className="font-sans text-[13px] text-paper/45 italic mt-2">
           Verse text unavailable.
         </p>
       )}
+      <Link
+        href={`/bible/${ref.book}/${ref.chapter}#v${ref.from}`}
+        className="mt-3 inline-block font-sans text-[12px] font-medium text-paper/70 hover:text-paper transition-colors"
+      >
+        Read full passage →
+      </Link>
     </div>
   );
 }
@@ -248,7 +247,7 @@ export default async function CalendarPage({
 
           <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-8 lg:gap-12 items-start">
             {/* Headline saint card */}
-            <div className="rounded-lg border border-paper/12 bg-paper/[0.03] p-6 md:p-8">
+            <div className="rounded-lg border border-paper/12 bg-paper/[0.03] p-5 md:p-6">
               <p className="font-sans text-[13px] uppercase tracking-[1.2px] text-paper/55 mb-1">
                 {formatLongDate(today)}
               </p>
@@ -275,7 +274,7 @@ export default async function CalendarPage({
                       <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-[#d4af37]/85 mb-1">
                         Commemorated today
                       </p>
-                      <h1 className="font-sans text-[24px] md:text-[32px] font-bold text-paper leading-[1.1] tracking-[-0.015em]">
+                      <h1 className="font-sans text-[20px] md:text-[26px] lg:text-[30px] font-bold text-paper leading-[1.1] tracking-[-0.015em]">
                         {headlineSaint ? (
                           <Link
                             href={`/saints/${headlineSaint.slug}`}
@@ -336,7 +335,7 @@ export default async function CalendarPage({
                 <p className="font-sans text-[11px] uppercase tracking-[1.5px] opacity-75 mb-1">
                   Today&rsquo;s fast
                 </p>
-                <p className="font-sans text-[18px] font-semibold leading-tight">
+                <p className="font-sans text-[16px] md:text-[18px] font-semibold leading-tight">
                   {todayFast.label}
                 </p>
                 <p className="mt-2 font-sans text-[12.5px] opacity-90 leading-[1.55]">
@@ -347,7 +346,7 @@ export default async function CalendarPage({
                 <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-paper/55 mb-1">
                   Pascha
                 </p>
-                <p className="font-sans text-[18px] font-semibold text-paper leading-tight">
+                <p className="font-sans text-[16px] md:text-[18px] font-semibold text-paper leading-tight">
                   {pascha.daysAway === 0
                     ? "Today"
                     : pascha.daysAway > 0
@@ -374,7 +373,7 @@ export default async function CalendarPage({
                 <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55">
                   Today&rsquo;s readings
                 </p>
-                <h2 className="mt-1 font-sans text-[22px] md:text-[28px] font-bold text-paper tracking-[-0.02em]">
+                <h2 className="mt-1 font-sans text-[18px] md:text-[22px] font-bold text-paper tracking-[-0.02em]">
                   The Word for {formatMonthDay(today)}
                 </h2>
               </div>
@@ -396,7 +395,7 @@ export default async function CalendarPage({
       <section className="px-5 md:px-8 py-10 md:py-14">
         <div className="mx-auto max-w-[1280px] w-full">
           <header className="flex items-center justify-between mb-6 gap-4 flex-wrap">
-            <h2 className="font-sans text-[22px] md:text-[28px] font-bold text-paper tracking-[-0.02em]">
+            <h2 className="font-sans text-[20px] md:text-[26px] font-bold text-paper tracking-[-0.02em]">
               {formatMonthYear(year, month)}
             </h2>
             <nav className="flex items-center gap-2">

@@ -16,7 +16,7 @@ export default function WhatsNewPage() {
             What&rsquo;s new
           </p>
           <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
-            v2.0 &middot; Beta &middot; Calendar
+            v2.1 &middot; Beta &middot; Calendar
           </p>
         </div>
 
@@ -83,6 +83,19 @@ export default function WhatsNewPage() {
             and represent a substantial direction change. Minor bumps (1.0 to
             1.1) keep the letter and add a release note here.
           </p>
+
+          <ChangelogEntry
+            version="v2.1"
+            kind="Calendar polish, Koine accuracy"
+            date="May 16, 2026"
+            blurb="Three small fixes that matter: the calendar reads cleaner, the interlinear is now New Testament only, and the New Testament Greek finally has its accents back."
+            items={[
+              "Calendar readings now show citation plus the first verse with a 'Read full passage' link, instead of two full Gospel and Epistle blocks dominating the page.",
+              "Calendar hero and section headings scale down on mobile so the saint of the day fits a phone screen.",
+              "Interlinear toggle and Greek column are now hidden on Old Testament chapters. The Septuagint is a Greek translation, but the Old Testament was originally Hebrew; New-Testament-only interlinear matches how most readers think about the text.",
+              "New Testament Greek re-sourced as Nestle 1904 with full polytonic accents (smooth and rough breathings, circumflex, iota subscript). 'Bíblos genéseōs' rendered as 'Βίβλος γενέσεως' instead of 'βιβλος γενεσεως', proper Koine the way the Fathers read it.",
+            ]}
+          />
 
           <ChangelogEntry
             version="v2.0"
