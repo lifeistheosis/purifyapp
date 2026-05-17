@@ -255,7 +255,7 @@ export function VerseRow({
   return (
     <div
       id={`v${verse.n}`}
-      className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-colors duration-200 data-[hl=true]:shadow-[inset_3px_0_0_#d4af37]"
+      className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out data-[hl=true]:shadow-[inset_3px_0_0_#d4af37] data-[focus=true]:bg-[#d4af37]/12 data-[focus=true]:shadow-[0_0_0_2px_rgba(212,175,55,0.55),0_0_24px_rgba(212,175,55,0.35)]"
       data-hl={ann.highlighted ? "true" : undefined}
     >
       <div className="flex items-start gap-2">

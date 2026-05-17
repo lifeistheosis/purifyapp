@@ -12,6 +12,7 @@ import { ReadingProgressBar } from "@/components/bible/ReadingProgressBar";
 import { MobileChapterStrip } from "@/components/bible/MobileChapterStrip";
 import { MobileNextChapterFab } from "@/components/bible/MobileNextChapterFab";
 import { ReaderSettingsMenu } from "@/components/bible/ReaderSettingsMenu";
+import { VerseFocusFlash } from "@/components/bible/VerseFocusFlash";
 import {
   ReaderFontFamilyButton,
   ReaderFontSizeButton,
@@ -96,6 +97,7 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
     <ReaderPrefsProvider>
     <div className="bg-night flex">
       <ChapterKeyNav slug={book} chapter={chapterNum} />
+      <VerseFocusFlash />
       <ReadingProgressBar
         bookName={b!.name}
         chapter={chapterNum}
