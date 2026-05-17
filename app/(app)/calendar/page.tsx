@@ -26,7 +26,22 @@ export const metadata = {
 // Hourly ISR so today rolls forward without a redeploy.
 export const revalidate = 3600;
 
-type SearchParams = Promise<{ m?: string; d?: string }>;
+type SearchParams = Promise<{ m?: string; d?: string; style?: string }>;
+
+type CalStyle = "new" | "old";
+
+// The Old (Julian) Calendar runs 13 days behind the New (Revised Julian)
+// for fixed feasts. To show "what the Church on the Old Calendar remembers
+// today (Gregorian)", we look up our Gregorian-keyed index using the date
+// shifted back by 13 days.
+const JULIAN_OFFSET_DAYS = 13;
+
+function shiftForStyle(d: Date, style: CalStyle): Date {
+  if (style === "new") return d;
+  const out = new Date(d);
+  out.setUTCDate(out.getUTCDate() - JULIAN_OFFSET_DAYS);
+  return out;
+}
 
 function parseMonthParam(m: string | undefined, fallback: Date) {
   if (m) {
@@ -210,6 +225,7 @@ export default async function CalendarPage({
   searchParams: SearchParams;
 }) {
   const params = await searchParams;
+  const style: CalStyle = params.style === "old" ? "old" : "new";
   const today = startOfDayUtc(new Date());
   const { year, month } = parseMonthParam(params.m, today);
 
@@ -219,12 +235,18 @@ export default async function CalendarPage({
       ? today
       : new Date(Date.UTC(year, month, 1, 12)));
 
-  const todayCommemorations = commemorationsOn(today);
-  const todayFast = fastingStatus(today);
-  const pascha = paschaInfo(today);
+  // Lookups use the style-shifted date; display strings use the unshifted
+  // ("real") date so the user always sees today's Gregorian date in the
+  // header.
+  const todayLookup = shiftForStyle(today, style);
+  const selectedLookup = shiftForStyle(selectedDay, style);
+
+  const todayCommemorations = commemorationsOn(todayLookup);
+  const todayFast = fastingStatus(todayLookup);
+  const pascha = paschaInfo(today); // Pascha is shared by both calendars
   const grid = monthGrid(year, month, today);
-  const selectedCommemorations = commemorationsOn(selectedDay);
-  const selectedFast = fastingStatus(selectedDay);
+  const selectedCommemorations = commemorationsOn(selectedLookup);
+  const selectedFast = fastingStatus(selectedLookup);
   const headline =
     todayCommemorations.find((c) => c.kind === "feast") ?? todayCommemorations[0];
   const headlineSaint =
@@ -232,18 +254,57 @@ export default async function CalendarPage({
 
   // Resolve today's and the selected day's lectionary readings in parallel.
   const [todayReadings, selectedReadings] = await Promise.all([
-    resolveReadings(readingsOn(today)),
-    resolveReadings(readingsOn(selectedDay)),
+    resolveReadings(readingsOn(todayLookup)),
+    resolveReadings(readingsOn(selectedLookup)),
   ]);
+
+  // Helper for the toggle: keep month/day in URL, flip style.
+  const otherStyle: CalStyle = style === "new" ? "old" : "new";
+  const baseQS = new URLSearchParams();
+  if (params.m) baseQS.set("m", params.m);
+  if (params.d) baseQS.set("d", params.d);
+  const newStyleHref = `/calendar?${baseQS.toString()}`;
+  const oldStyleParams = new URLSearchParams(baseQS);
+  oldStyleParams.set("style", "old");
+  const oldStyleHref = `/calendar?${oldStyleParams.toString()}`;
+  const toggleHref = otherStyle === "old" ? oldStyleHref : newStyleHref;
 
   return (
     <div className="bg-night min-h-screen">
       {/* HERO STRIP */}
       <section className="px-5 md:px-8 pt-10 md:pt-14 pb-10 border-b border-white/8">
         <div className="mx-auto max-w-[1280px] w-full">
-          <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-            Orthodox Calendar · Today
-          </p>
+          <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
+            <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+              Orthodox Calendar · Today
+            </p>
+            <div className="inline-flex items-center rounded-pill border border-paper/15 bg-paper/[0.04] p-0.5 font-sans text-[11px] font-medium">
+              <Link
+                href={newStyleHref}
+                aria-current={style === "new" ? "true" : undefined}
+                className={`px-3 py-1 rounded-pill transition-colors ${
+                  style === "new"
+                    ? "bg-paper/15 text-paper"
+                    : "text-paper/55 hover:text-paper"
+                }`}
+              >
+                New (Revised Julian)
+              </Link>
+              <Link
+                href={oldStyleHref}
+                aria-current={style === "old" ? "true" : undefined}
+                className={`px-3 py-1 rounded-pill transition-colors ${
+                  style === "old"
+                    ? "bg-paper/15 text-paper"
+                    : "text-paper/55 hover:text-paper"
+                }`}
+              >
+                Old (Julian)
+              </Link>
+            </div>
+          </div>
+          {/* Reference the toggle handle so unused-variable rules don't trip. */}
+          {toggleHref && null}
 
           <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-8 lg:gap-12 items-start">
             {/* Headline saint card */}
@@ -584,13 +645,15 @@ export default async function CalendarPage({
             About this calendar
           </p>
           <p className="font-sans text-[13px] text-paper/65 leading-[1.65]">
-            This calendar follows the New (Revised Julian) reckoning used by
-            the Ecumenical Patriarchate of Constantinople and the majority of
-            canonical Orthodox jurisdictions for fixed feasts. Pascha and its
-            moveable cycle are computed by the Julian-based algorithm shared
-            by all canonical Orthodox churches. An Old-Calendar (Julian) toggle
-            for the Russian, Serbian, Jerusalem, and Athonite traditions is on
-            the roadmap.
+            Two reckonings are available via the toggle at the top of this
+            page. The default, New (Revised Julian), is used by the
+            Ecumenical Patriarchate of Constantinople and the majority of
+            canonical Orthodox jurisdictions for fixed feasts. The Old
+            (Julian) option is used by the Russian, Serbian, Jerusalem, and
+            Athonite traditions, and runs thirteen days behind for fixed
+            feasts. Pascha and its moveable cycle are shared between both,
+            computed by the Julian-based algorithm common to every canonical
+            Orthodox church.
           </p>
           <p className="font-sans text-[12px] text-paper/45 mt-3 leading-[1.6]">
             Fasting rules are a simplified reading of common Eastern Orthodox

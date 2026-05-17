@@ -19,6 +19,26 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
   {
+    version: "v3.0",
+    kind: "Daily prayer",
+    date: "May 17, 2026",
+    blurb:
+      "Daily prayer lands. /prayers/today gathers the date, the saint, the fast, and the readings into one screen; the morning and evening rules read as proper prayer-by-prayer rules with a progress strip and a streak counter; the Jesus Prayer gets its own counter with an optional breath cue. Plus the foundation work the site has been missing: custom 404, error boundary, loading skeleton, sitemap, robots, an Open Graph image, an Old Calendar toggle, and a sweep of small fits and finishes.",
+    items: [
+      "/prayers/today gathers the date, the saint, the fast, today's Gospel and Epistle teasers, and one-tap links into morning rule, evening rule, and the Jesus Prayer.",
+      "/prayers/morning and /prayers/evening: the full Orthodox rules split into individual prayers with check-off boxes, a progress strip, and a per-rule streak counter saved to the device.",
+      "/prayers/jesus-prayer: guided counter with goal presets (33, 50, 100, 150, 300), optional breath-cue pulse, today total, and a day-streak when you pray at least 33 in a calendar day.",
+      "Calendar now has an Old (Julian) Calendar toggle, used by the Russian, Serbian, Jerusalem, and Athonite traditions. Defaults to New (Revised Julian).",
+      "Custom 404 page, error boundary, and Bible-chapter loading skeleton replace the generic Next defaults.",
+      "Sitemap and robots ship so the site is properly indexable.",
+      "Open Graph image generated at the edge, so link previews on Slack, Discord, and X now show the gold Purify card.",
+      "Font display set to swap on every face (DM Sans, DM Serif Display, Lora, Cardo) so text appears immediately instead of blocking.",
+      "Home page category pills now link to real routes (Morning prayers, Psalter, Jesus Prayer, etc.) instead of dead anchors.",
+      "Saint cards on /saints show the count of works available alongside the feast day.",
+      "Root metadata expanded: Open Graph, Twitter card, canonical, application name, color scheme.",
+    ],
+  },
+  {
     version: "v2.5",
     kind: "Massive content patch",
     date: "May 17, 2026",
@@ -220,38 +240,63 @@ export default function WhatsNewPage() {
             What&rsquo;s new
           </p>
           <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
-            v2.5 &middot; Beta &middot; Massive content patch
+            v3.0 &middot; Beta &middot; Daily prayer
           </p>
         </div>
 
         <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
-          The day, on the page.
+          Pray with the Church, every day.
         </h1>
 
         <p className="mt-8 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-          Welcome back. v2.0 is the first release where the site tells you
-          what today is: which saint the Church remembers, whether the day is
-          a fast, and how many days remain until Pascha. A small thing, but a
-          real one. The Orthodox day is not abstract; it has a shape.
+          The line that has stood at the bottom of every letter since v1.0
+          finally goes away: daily prayer is now built. v3.0 lands the
+          Morning Rule, the Evening Rule, and a guided Jesus Prayer
+          counter; and it ties them together with a Today screen that
+          gathers the date, the saint, the fast, and the appointed readings
+          into one place. Open it when you wake. Open it again before
+          sleep. That is the whole shape.
         </p>
 
         <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-          Beneath that one-line answer there is now a real calendar: the
-          month at a glance, with saint dots and fasting colour-codes on
-          each day, and a click-through to any other day for its
-          commemorations and rule. The reckoning we follow is the New
-          (Revised Julian) calendar used by the Ecumenical Patriarchate and
-          the majority of Orthodox jurisdictions; an Old Calendar toggle
-          for the Russian, Serbian, Jerusalem, and Athonite traditions is
-          on the roadmap.
+          The prayer texts are the ones the Church has handed down: O
+          Heavenly King, the Trisagion, the Lord&rsquo;s Prayer, Rising
+          from Sleep, Into Thy hands, the Theotokos hymn. They are the
+          same prayers your priest prays in his cell, the same prayers
+          your grandmother said in front of her icons. The English
+          translation matches the form carried in the common Orthodox
+          prayer books for at least a century. Each prayer is its own
+          collapsible block, with a small checkbox so you can keep your
+          place; the rule remembers what you prayed today, and a quiet
+          gold counter tracks how many days in a row you have stood with
+          the Church.
         </p>
 
         <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-          What is still missing is much. Daily prayer is not yet built.
-          Audio is not yet built. Accounts and cross-device sync are not
-          yet built. We are working in order of what is most-asked-for. If
-          your request is not on the list, write to us; the order can
-          change.
+          The Jesus Prayer gets its own room. Tap to advance the count;
+          choose a goal from 33 to 300; if it helps you, turn on the breath
+          cue and let the pulse carry your inhale and your exhale. The
+          Fathers say the bringing-back is half the work. The counter is
+          there only to free your hands and your mind to do the work.
+        </p>
+
+        <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+          Alongside the prayer feature, v3.0 finishes a long list of
+          quieter things the site has owed itself: a proper 404 page that
+          does not lose people, a loading skeleton on the Bible reader,
+          a sitemap and robots so search engines can read us, a link
+          preview card so the site looks like itself when you share it,
+          and the Old Calendar toggle on the calendar page (used by the
+          Russian, Serbian, Jerusalem, and Athonite churches; thirteen
+          days behind the New for fixed feasts, the same Pascha as
+          everyone). Still missing: akathists, audio, accounts and
+          cross-device sync. We will get there.
+        </p>
+
+        <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+          For now, the most important thing the site can ask of you it
+          now actually offers. Open it when you rise. Open it when you
+          lie down. Stand in the presence of God, even for a moment.
         </p>
 
         <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
@@ -262,8 +307,8 @@ export default function WhatsNewPage() {
         {/* Closing + signature */}
         <div className="mt-16 pt-10 border-t border-paper/10">
           <p className="font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-            Thank you for staying with us through two majors. Glory to God for
-            all things.
+            Thank you for staying with us through three majors. Glory to God
+            for all things.
           </p>
 
           <p

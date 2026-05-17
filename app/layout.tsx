@@ -5,17 +5,20 @@ import "./globals.css";
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const dmSerif = DM_Serif_Display({
   variable: "--font-dm-serif",
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const lora = Lora({
   variable: "--font-lora",
   subsets: ["latin"],
+  display: "swap",
   // Variable font — pulls 400 / 500 / 600 / 700 + italics.
 });
 
@@ -30,13 +33,49 @@ const cardo = Cardo({
 });
 
 export const metadata: Metadata = {
-  title: "Purify",
-  description: "Find God's peace in prayer.",
+  metadataBase: new URL("https://purify.app"),
+  title: {
+    default: "Purify, Orthodox prayer, calendar, and Scripture",
+    template: "%s | Purify",
+  },
+  description:
+    "Daily prayer, the saint of the day, fasting status, and the Septuagint plus KJV with patristic commentary.",
   manifest: "/manifest.webmanifest",
+  applicationName: "Purify",
+  keywords: [
+    "Orthodox",
+    "prayer",
+    "Bible",
+    "Septuagint",
+    "patristic",
+    "saints",
+    "fasting",
+    "calendar",
+    "Jesus Prayer",
+  ],
+  authors: [{ name: "Purify Team" }],
+  openGraph: {
+    type: "website",
+    siteName: "Purify",
+    title: "Purify, Orthodox prayer, calendar, and Scripture",
+    description:
+      "Daily prayer, the saint of the day, fasting status, and the Septuagint plus KJV with patristic commentary.",
+    url: "/",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Purify",
+    description: "Find God's peace in prayer.",
+  },
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export const viewport: Viewport = {
   themeColor: "#161219",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({

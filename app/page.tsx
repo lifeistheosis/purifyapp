@@ -20,15 +20,15 @@ const features = [
   },
 ];
 
-const categories = [
-  "Morning prayers",
-  "Evening prayers",
-  "Akathists",
-  "The Jesus Prayer",
-  "Daily Gospel",
-  "Lives of saints",
-  "Psalter",
-  "Great Lent",
+const categories: { label: string; href: string }[] = [
+  { label: "Morning prayers", href: "/prayers/morning" },
+  { label: "Evening prayers", href: "/prayers/evening" },
+  { label: "Akathists", href: "/prayers" },
+  { label: "The Jesus Prayer", href: "/prayers/jesus-prayer" },
+  { label: "Daily Gospel", href: "/calendar" },
+  { label: "Lives of saints", href: "/saints" },
+  { label: "Psalter", href: "/bible/psalms/1" },
+  { label: "Great Lent", href: "/calendar" },
 ];
 
 const challenges = [
@@ -69,8 +69,8 @@ export default function Home() {
                 New
               </span>
               <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
-                <span className="sm:hidden">Beta v2.4 · Saints</span>
-                <span className="hidden sm:inline">Beta v2.4 · Saint icons fixed, Confessions Book I lands</span>
+                <span className="sm:hidden">Beta v3.0 · Daily prayer</span>
+                <span className="hidden sm:inline">Beta v3.0 · Daily prayer, Old Calendar, foundation polish</span>
               </span>
               <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
                 →
@@ -168,13 +168,13 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {categories.map((c) => (
-              <a
-                key={c}
-                href="#"
+              <Link
+                key={c.label}
+                href={c.href}
                 className="block rounded-pill border border-paper/15 bg-paper/[0.04] px-5 py-4 font-sans text-[15px] font-medium text-paper text-center hover:bg-paper/10 hover:border-paper/30 transition-colors duration-150"
               >
-                {c}
-              </a>
+                {c.label}
+              </Link>
             ))}
           </div>
         </div>
