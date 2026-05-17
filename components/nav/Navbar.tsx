@@ -7,15 +7,15 @@ import { useScrolled } from "@/lib/useScrolled";
 import { cn } from "@/lib/cn";
 
 const navItems = [
+  { label: "Today", href: "/prayers/today" },
   { label: "Bible", href: "/bible" },
   { label: "Prayers", href: "/prayers" },
   { label: "Saints", href: "/saints" },
   { label: "Calendar", href: "/calendar" },
-  { label: "Marketplace", href: "/marketplace" },
 ];
 
 const secondary = [
-  { label: "Pricing", href: "/pricing" },
+  { label: "Support", href: "/support" },
   { label: "Account", href: "/account" },
 ];
 

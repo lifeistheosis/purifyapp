@@ -478,3 +478,264 @@ export function formatMonthDay(d: Date): string {
 export function formatMonthYear(year: number, month: number): string {
   return `${MONTHS[month]} ${year}`;
 }
+
+// ----- Liturgical greeting for the home-page eyebrow -----
+
+/**
+ * Returns the appropriate Orthodox liturgical greeting for the given
+ * date, e.g. "Christ is risen!" during the Paschal season, "Christ is
+ * born!" during the Twelve Days of Christmas, "Open to me the doors of
+ * repentance" in Great Lent. Falls back to the standard everyday
+ * Orthodox greeting in ordinary time.
+ */
+export function liturgicalGreeting(date: Date): string {
+  const d = startOfDayUtc(date);
+  const year = d.getUTCFullYear();
+  const month = d.getUTCMonth();
+  const day = d.getUTCDate();
+
+  const pascha = orthodoxPascha(year);
+  const previousPascha = orthodoxPascha(year - 1);
+  const ascension = addDays(pascha, 39);
+  const pentecost = addDays(pascha, 49);
+  const palmSunday = addDays(pascha, -7);
+  const cleanMonday = addDays(pascha, -48);
+
+  // Paschal season: from Pascha through Ascension (Greek tradition
+  // greets each other this way for forty days).
+  if (inRangeInclusive(d, pascha, ascension)) {
+    return "Christ is risen! Truly He is risen!";
+  }
+  // Ascension to Pentecost — still in the Pentecostarion but past
+  // Ascension itself.
+  if (inRangeInclusive(d, addDays(ascension, 1), pentecost)) {
+    return "Christ is ascended! Glorify Him!";
+  }
+  // Holy Week (between Palm Sunday and Pascha).
+  if (inRangeInclusive(d, addDays(palmSunday, 1), addDays(pascha, -1))) {
+    return "Behold, the Bridegroom comes.";
+  }
+  // Great Lent (Clean Monday through Palm Sunday).
+  if (inRangeInclusive(d, cleanMonday, palmSunday)) {
+    return "Open to me the doors of repentance.";
+  }
+  // The Twelve Days (Dec 25 through Jan 6 either year).
+  if (
+    (month === 11 && day >= 25) ||
+    (month === 0 && day <= 6)
+  ) {
+    return "Christ is born! Glorify Him!";
+  }
+
+  // Check whether we're inside the previous year's Pentecostarion (if
+  // someone visits in early-year Pascha 2027 from Jan 2027, the above
+  // year check uses 2027's Pascha, not 2026's — so we cross-check the
+  // previous-year window for January overlap.)
+  const prevAscension = addDays(previousPascha, 39);
+  if (inRangeInclusive(d, previousPascha, prevAscension)) {
+    return "Christ is risen! Truly He is risen!";
+  }
+
+  // Ordinary time.
+  return "Glory to Jesus Christ. Glory forever.";
+}
+
+// ----- Named Orthodox seasons (for the home-page season banner) -----
+
+export type SeasonInfo = {
+  label: string;
+  subtheme?: string;
+  blurb: string;
+  href: string;
+};
+
+/**
+ * Classifies the given date into a named Orthodox season (Great Lent,
+ * Holy Week, Bright Week, Pre-Lent, Apostles' Fast, Dormition Fast,
+ * Nativity Fast, Twelve Days of Christmas) and returns label + subtheme
+ * for surface display. Returns null in ordinary time.
+ */
+export function currentSeason(date: Date): SeasonInfo | null {
+  const d = startOfDayUtc(date);
+  const year = d.getUTCFullYear();
+  const month = d.getUTCMonth();
+  const day = d.getUTCDate();
+  const dow = d.getUTCDay();
+
+  const pascha = orthodoxPascha(year);
+  const previousPascha = orthodoxPascha(year - 1);
+  const palmSunday = addDays(pascha, -7);
+  const cleanMonday = addDays(pascha, -48);
+  const holySaturday = addDays(pascha, -1);
+  const brightWeekEnd = addDays(pascha, 7);
+  const pentecost = addDays(pascha, 49);
+  const allSaintsSunday = addDays(pascha, 56);
+  const apostlesFastStart = addDays(allSaintsSunday, 1);
+  const apostlesFastEnd = new Date(Date.UTC(year, 5, 28, 12));
+  const dormitionStart = new Date(Date.UTC(year, 7, 1, 12));
+  const dormitionEnd = new Date(Date.UTC(year, 7, 14, 12));
+  const nativityStart = new Date(Date.UTC(year, 10, 15, 12));
+  const nativityEnd = new Date(Date.UTC(year, 11, 24, 12));
+
+  const SUNDAYS_OF_LENT = [
+    "Sunday of Orthodoxy",
+    "St. Gregory Palamas",
+    "Veneration of the Cross",
+    "St. John Climacus",
+    "St. Mary of Egypt",
+  ];
+
+  // Holy Week (Palm Sunday's Monday through Holy Saturday).
+  if (inRangeInclusive(d, addDays(palmSunday, 1), holySaturday)) {
+    const daysIntoHolyWeek = diffDays(d, palmSunday);
+    const dayLabel = [
+      null,
+      "Bridegroom Monday",
+      "Bridegroom Tuesday",
+      "Bridegroom Wednesday",
+      "Holy Thursday",
+      "Holy Friday",
+      "Holy Saturday",
+    ][daysIntoHolyWeek];
+    return {
+      label: "Holy Week",
+      subtheme: dayLabel ?? undefined,
+      blurb:
+        "The final week of Great Lent. The Church walks with Christ from the Bridegroom services through the Passion to the empty tomb.",
+      href: "/calendar",
+    };
+  }
+
+  // Palm Sunday itself.
+  if (sameDay(d, palmSunday)) {
+    return {
+      label: "Palm Sunday",
+      subtheme: "Entry into Jerusalem",
+      blurb: "The Lord enters Jerusalem on a colt. The crowds spread branches and cry Hosanna. Holy Week begins this evening.",
+      href: "/calendar",
+    };
+  }
+
+  // Bright Week (Pascha through following Sunday).
+  if (inRangeInclusive(d, pascha, brightWeekEnd)) {
+    const daysIntoBright = diffDays(d, pascha);
+    const dayLabel = [
+      "Pascha",
+      "Bright Monday",
+      "Bright Tuesday",
+      "Bright Wednesday",
+      "Bright Thursday",
+      "Bright Friday",
+      "Bright Saturday",
+      "Thomas Sunday",
+    ][daysIntoBright];
+    return {
+      label: "Bright Week",
+      subtheme: dayLabel,
+      blurb:
+        "The week of the Resurrection. The Royal Doors of the iconostasis stay open all week; the fast is set aside.",
+      href: "/calendar",
+    };
+  }
+
+  // Great Lent (Clean Monday through Holy Saturday eve, but Holy Week
+  // matched first above; Palm Sunday matched above; so this catches
+  // Clean Monday through the Friday before Palm Sunday).
+  if (inRangeInclusive(d, cleanMonday, addDays(palmSunday, -1))) {
+    // Which Sunday of Lent are we in or approaching?
+    const weeksIn = Math.floor(diffDays(d, cleanMonday) / 7);
+    const sundayName = SUNDAYS_OF_LENT[Math.min(weeksIn, SUNDAYS_OF_LENT.length - 1)];
+    return {
+      label: "Great Lent",
+      subtheme: dow === 0 ? `Sunday of ${sundayName}` : `Week of ${sundayName}`,
+      blurb:
+        "The forty days of preparation before Holy Week and Pascha. A season for fasting, prayer, almsgiving, and the lengthened services of the Church.",
+      href: "/calendar",
+    };
+  }
+
+  // Pre-Lent (the three Sundays before Lent: Publican & Pharisee,
+  // Prodigal Son, Last Judgment, Forgiveness Sunday).
+  const publicanSunday = addDays(pascha, -70);
+  const prodigalSunday = addDays(pascha, -63);
+  const meatfareSunday = addDays(pascha, -56);
+  const forgivenessSunday = addDays(pascha, -49);
+  if (inRangeInclusive(d, publicanSunday, addDays(cleanMonday, -1))) {
+    let sub: string;
+    if (diffDays(d, publicanSunday) <= 6) sub = "Publican and Pharisee";
+    else if (diffDays(d, prodigalSunday) <= 6) sub = "Prodigal Son";
+    else if (diffDays(d, meatfareSunday) <= 6) sub = "Last Judgment (Meatfare)";
+    else sub = "Forgiveness Sunday (Cheesefare)";
+    return {
+      label: "Pre-Lent",
+      subtheme: sub,
+      blurb:
+        "The three weeks of preparation before Great Lent. The Church reads the parables that frame the coming fast.",
+      href: "/calendar",
+    };
+  }
+
+  // Apostles' Fast (Monday after All Saints Sunday → June 28).
+  if (inRangeInclusive(d, apostlesFastStart, apostlesFastEnd)) {
+    const remaining = diffDays(apostlesFastEnd, d) + 1;
+    return {
+      label: "Apostles' Fast",
+      subtheme: `${remaining} day${remaining === 1 ? "" : "s"} until the feast of Sts. Peter and Paul`,
+      blurb:
+        "Preparation for the feast of the Holy Apostles Peter and Paul (June 29). Length varies with the date of Pascha.",
+      href: "/calendar",
+    };
+  }
+
+  // Dormition Fast (Aug 1-14).
+  if (inRangeInclusive(d, dormitionStart, dormitionEnd)) {
+    const remaining = diffDays(dormitionEnd, d) + 1;
+    return {
+      label: "Dormition Fast",
+      subtheme: `${remaining} day${remaining === 1 ? "" : "s"} until the Dormition of the Theotokos`,
+      blurb:
+        "Two weeks of preparation before the Dormition (the falling-asleep) of the Theotokos on August 15.",
+      href: "/calendar",
+    };
+  }
+
+  // Nativity Fast (Nov 15 - Dec 24).
+  if (inRangeInclusive(d, nativityStart, nativityEnd)) {
+    const remaining = diffDays(nativityEnd, d) + 1;
+    return {
+      label: "Nativity Fast",
+      subtheme: `${remaining} day${remaining === 1 ? "" : "s"} until the Nativity of Christ`,
+      blurb:
+        "Forty days of preparation before the Nativity of Christ on December 25. A quieter Lent, looking toward the manger.",
+      href: "/calendar",
+    };
+  }
+
+  // Twelve Days of Christmas (Dec 25 - Jan 6).
+  if (
+    (month === 11 && day >= 25) ||
+    (month === 0 && day <= 6)
+  ) {
+    return {
+      label: "The Twelve Days",
+      subtheme: "Christmas through Theophany",
+      blurb:
+        "The fast-free days between the Nativity of Christ (Dec 25) and the Theophany (Jan 6). The Church celebrates the Incarnation.",
+      href: "/calendar",
+    };
+  }
+
+  // Cross-year Pentecostarion edge case.
+  const prevAscension = addDays(previousPascha, 39);
+  if (inRangeInclusive(d, previousPascha, prevAscension)) {
+    return {
+      label: "Paschal season",
+      subtheme: "The Pentecostarion",
+      blurb:
+        "The forty days from Pascha to the Ascension. Christians greet one another with Christ is risen.",
+      href: "/calendar",
+    };
+  }
+
+  return null;
+}
