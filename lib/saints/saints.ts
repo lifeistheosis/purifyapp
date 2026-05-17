@@ -352,6 +352,15 @@ export const SAINTS: Saint[] = [
     ],
     works: [
       {
+        slug: "confessions",
+        title: "Confessions",
+        subtitle: "Book I, complete (Pusey translation)",
+        year: "c. 397-400",
+        blurb:
+          "The first interior autobiography in Christian literature. Book I covers Augustine's infancy and earliest boyhood as he reflects on God's presence from his first breath.",
+        topics: ["Autobiography", "Prayer", "Sin", "Grace", "Memory", "Theology"],
+      },
+      {
         slug: "tractates-on-john",
         title: "Tractates on the Gospel of John",
         subtitle: "Selections from the one hundred twenty-four homilies",

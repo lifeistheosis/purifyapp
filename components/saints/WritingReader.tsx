@@ -43,12 +43,50 @@ export function WritingReader({
         )}
       </header>
 
+      {/* Table of contents — only for longer works (4+ sections). */}
+      {content.sections.length >= 4 && (
+        <details className="mt-8 group rounded-md border border-paper/12 bg-paper/[0.02] open:bg-paper/[0.04] transition-colors">
+          <summary className="cursor-pointer list-none px-5 py-3.5 flex items-center justify-between">
+            <span className="flex items-baseline gap-3">
+              <span className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+                Contents
+              </span>
+              <span className="font-sans text-[12px] text-paper/40">
+                {content.sections.length} sections
+              </span>
+            </span>
+            <span
+              aria-hidden
+              className="text-paper/40 group-open:rotate-180 transition-transform duration-200 text-[12px]"
+            >
+              ▾
+            </span>
+          </summary>
+          <ol className="px-5 pb-4 pt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 font-sans text-[13.5px]">
+            {content.sections.map((sec) => (
+              <li key={sec.n}>
+                <a
+                  href={`#s${sec.n}`}
+                  className="group/toc inline-flex items-baseline gap-2.5 py-1 text-paper/70 hover:text-paper transition-colors"
+                >
+                  <span className="font-semibold tabular-nums text-paper/40 group-hover/toc:text-paper/65 w-6 text-right">
+                    {sec.n}
+                  </span>
+                  <span className="truncate">{sec.title}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </details>
+      )}
+
       <div className="py-10 space-y-16">
         {content.sections.map((sec) => (
           <section
             key={sec.n}
+            id={`s${sec.n}`}
             aria-labelledby={`s-${sec.n}`}
-            className="grid grid-cols-1 lg:grid-cols-[minmax(0,680px)_minmax(0,1fr)] gap-x-12 gap-y-8"
+            className="scroll-mt-24 grid grid-cols-1 lg:grid-cols-[minmax(0,680px)_minmax(0,1fr)] gap-x-12 gap-y-8"
           >
             <div className="min-w-0">
               <div className="mb-6 flex items-baseline gap-4">

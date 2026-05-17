@@ -90,7 +90,7 @@ export function SaintIcon({
           if (e.currentTarget.naturalWidth === 0) setFailed(true);
         }}
         className={cn(
-          "rounded-full object-cover bg-paper/5 ring-1 ring-paper/15 shrink-0",
+          "rounded-full object-cover object-top bg-paper/5 ring-1 ring-paper/15 shrink-0",
           sizeCls,
           className,
         )}

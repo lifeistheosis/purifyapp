@@ -40,7 +40,10 @@ export function SaintIcon({
           alt={`Icon of ${saint.name}`}
           fill
           sizes={`${d.w}px`}
-          className="object-cover"
+          // object-top keeps the face in frame for tall full-body
+          // portraits (Wikimedia Commons icons are typically 1:3
+          // bust-or-full-body crops where the face sits in the top third).
+          className="object-cover object-top"
         />
       </div>
     );
