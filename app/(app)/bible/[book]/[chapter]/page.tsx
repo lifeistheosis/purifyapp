@@ -8,6 +8,10 @@ import { ChapterKeyNav } from "@/components/bible/ChapterKeyNav";
 import { StudyRail } from "@/components/bible/StudyRail";
 import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
 import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
+import { ReadingProgressBar } from "@/components/bible/ReadingProgressBar";
+import { MobileChapterStrip } from "@/components/bible/MobileChapterStrip";
+import { MobileNextChapterFab } from "@/components/bible/MobileNextChapterFab";
+import { ReaderSettingsMenu } from "@/components/bible/ReaderSettingsMenu";
 import {
   ReaderFontFamilyButton,
   ReaderFontSizeButton,
@@ -92,21 +96,43 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
     <ReaderPrefsProvider>
     <div className="bg-night flex">
       <ChapterKeyNav slug={book} chapter={chapterNum} />
+      <ReadingProgressBar
+        bookName={b!.name}
+        chapter={chapterNum}
+        totalVerses={data!.verses.length}
+      />
+      <MobileNextChapterFab slug={book} chapter={chapterNum} />
       <BookChapterSidebar book={b!} current={chapterNum} />
-      <section className="flex-1 px-5 md:px-10 py-10 md:py-16 min-w-0">
+      {/* Extra mobile top padding accounts for the fixed ReadingProgressBar
+          context strip (~28px) sitting under the 72px sticky navbar. */}
+      <section className="flex-1 px-5 md:px-10 pt-14 md:pt-16 pb-10 md:pb-16 min-w-0">
         <div className="mx-auto max-w-[1200px] w-full">
           <div className="mb-6 flex flex-wrap items-center gap-3">
             <TranslationSwitcher currentSlug={book} />
             <BookSwitcher currentSlug={book} />
-            <ReaderFontSizeButton />
-            <ReaderFontFamilyButton />
+            {/* Desktop: font controls inline */}
+            <div className="hidden md:flex items-center gap-3">
+              <ReaderFontSizeButton />
+              <ReaderFontFamilyButton />
+            </div>
+            {/* Mobile: collapse font + interlinear into a single Reader menu */}
+            <div className="md:hidden">
+              <ReaderSettingsMenu showInterlinear={isNT} />
+            </div>
           </div>
-          <div className="mb-8 flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="flex-1 min-w-0 max-w-[640px]">
               <BibleSearch />
             </div>
-            {isNT && <InterlinearToggle />}
+            {/* Interlinear toggle stays inline on desktop only; the mobile
+                version lives inside ReaderSettingsMenu above. */}
+            {isNT && (
+              <div className="hidden md:block">
+                <InterlinearToggle />
+              </div>
+            )}
           </div>
+          <MobileChapterStrip book={b!} current={chapterNum} />
 
           <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
             {/* Reader column */}
@@ -145,7 +171,11 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
 
               <ChapterPager slug={book} chapter={chapterNum} />
 
-              <p className="mt-10 font-sans text-[11px] text-paper/35 leading-[1.6]">
+              <p className="hidden md:block mt-10 mb-3 font-sans text-[11px] text-paper/40 leading-[1.6]">
+                ← → chapters · drag across words to highlight a phrase · click any Greek word for definition · Cmd+Enter to save a note
+              </p>
+
+              <p className="mt-6 md:mt-3 font-sans text-[11px] text-paper/35 leading-[1.6]">
                 Old Testament: Brenton&rsquo;s English Septuagint (1851, public domain).
                 New Testament: King James Version (public domain). Patristic
                 commentary from Schaff&rsquo;s Ante-Nicene and Nicene Fathers

@@ -168,8 +168,12 @@ export function WordPopover({
   // getBoundingClientRect (no scroll offsets needed). This sidesteps the
   // bug where `position: absolute` was being computed against the nearest
   // positioned ancestor (the VerseRow div) instead of the page.
-  const POPOVER_W = 300;
   const PAD = 8;
+  // Responsive width: prefer 300px, shrink to fit ultra-narrow viewports.
+  const POPOVER_W = Math.min(
+    300,
+    Math.max(240, window.innerWidth - PAD * 2 - 16),
+  );
   let left =
     anchorRect.left + anchorRect.width / 2 - POPOVER_W / 2;
   left = Math.max(PAD, Math.min(left, window.innerWidth - POPOVER_W - PAD));

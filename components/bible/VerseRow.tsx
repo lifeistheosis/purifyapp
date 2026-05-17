@@ -75,7 +75,19 @@ export function VerseRow({
   } | null>(null);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(ann.note ?? "");
+  const [copied, setCopied] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  async function copyVerseLink() {
+    try {
+      const url = `${window.location.origin}/bible/${book}/${chapter}#v${verse.n}`;
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1400);
+    } catch {
+      /* clipboard unavailable; silently ignore */
+    }
+  }
 
   // Drag selection state for word-level highlighting.
   const [dragStart, setDragStart] = useState<number | null>(null);
@@ -268,16 +280,16 @@ export function VerseRow({
           {hasCommentary ? (
             <a
               href={`#rail-v${verse.n}`}
-              className="inline-flex items-baseline mr-1.5 align-super text-accent/70 hover:text-accent transition-colors"
+              className="group/cmt inline-flex items-baseline mr-1.5 align-super text-accent/75 hover:text-accent transition-colors"
               aria-label={`Open commentary on verse ${verse.n}`}
               title="Open commentary"
             >
-              <sup className="font-sans text-[10px] font-semibold tracking-[0.05em]">
+              <sup className="font-sans text-[10px] font-semibold tracking-[0.05em] group-hover/cmt:underline underline-offset-2">
                 {verse.n}
               </sup>
               <span
                 aria-hidden
-                className="ml-[2px] inline-block h-[5px] w-[5px] rounded-full bg-accent/70"
+                className="ml-[2px] inline-block h-[5px] w-[5px] rounded-full bg-accent/75 group-hover/cmt:bg-accent transition-colors"
               />
             </a>
           ) : (
@@ -463,6 +475,20 @@ export function VerseRow({
               ⌫
             </button>
           )}
+          <button
+            type="button"
+            onClick={copyVerseLink}
+            aria-label={copied ? "Verse link copied" : "Copy verse link"}
+            title={copied ? "Copied" : "Copy verse link"}
+            className={cn(
+              "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-[14px] md:text-[12px] transition-colors duration-150",
+              copied
+                ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-300"
+                : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
+            )}
+          >
+            {copied ? "✓" : "🔗"}
+          </button>
           <button
             type="button"
             onClick={() => {

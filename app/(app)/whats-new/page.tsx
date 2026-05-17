@@ -16,7 +16,7 @@ export default function WhatsNewPage() {
             What&rsquo;s new
           </p>
           <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
-            v2.1 &middot; Beta &middot; Calendar
+            v2.2 &middot; Beta &middot; Bible polish
           </p>
         </div>
 
@@ -83,6 +83,23 @@ export default function WhatsNewPage() {
             and represent a substantial direction change. Minor bumps (1.0 to
             1.1) keep the letter and add a release note here.
           </p>
+
+          <ChangelogEntry
+            version="v2.2"
+            kind="Bible reader polish"
+            date="May 16, 2026"
+            blurb="Eight quiet improvements so the Bible reads well on a phone: reading progress, a chapter quick-jump strip, copy-verse-link, a floating next-chapter button, and a consolidated reader settings menu."
+            items={[
+              "Reading progress bar at the top of every chapter, with a mobile-only context strip showing where you are ('John 3, v12 of 35').",
+              "Mobile chapter quick-jump strip below the chrome, a horizontal row of chapter pills so you can hop chapters without the desktop sidebar.",
+              "Per-verse copy-link button in the verse toolbar. One tap copies a deep link to the clipboard for sharing.",
+              "Floating Next chapter button on mobile, appearing once you have read past the halfway mark. Hidden on the last chapter of Revelation.",
+              "Reader font size, font family, and interlinear toggle now consolidate into a single Reader menu on mobile. Translation and book switchers stay inline.",
+              "Keyboard shortcuts hint at the bottom of desktop chapters so the arrow-key chapter nav, drag-to-highlight, and save-with-Cmd+Enter are not invisible.",
+              "Greek word popover sizes itself to the viewport on narrow screens, no more 300px popover overflowing a 360px phone.",
+              "Verse-number-to-commentary link gets a brighter hover state so the affordance reads.",
+            ]}
+          />
 
           <ChangelogEntry
             version="v2.1"
