@@ -1,5 +1,6 @@
 import { CategorizedBookList } from "@/components/bible/CategorizedBookList";
 import { BibleSearch } from "@/components/bible/BibleSearch";
+import { StartHereStrip } from "@/components/bible/StartHereStrip";
 import {
   getOldTestamentCategories,
   getNewTestamentCategories,
@@ -11,42 +12,35 @@ export const metadata = {
     "Read the Orthodox canon. Brenton's Septuagint and the King James Version with cross-references.",
 };
 
-const SECTION = "px-5 md:px-8 py-20 md:py-28";
+const HERO = "px-5 md:px-8 pt-14 md:pt-20 pb-8 md:pb-12";
+const SECTION = "px-5 md:px-8 py-16 md:py-20";
 
 export default function BiblePage() {
   return (
     <>
       {/* Hero */}
-      <section className={SECTION + " bg-night"}>
+      <section className={HERO + " bg-night"}>
         <div className="mx-auto max-w-[860px] w-full text-center">
           <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
             Scripture
           </p>
-          <h1 className="font-sans text-[44px] md:text-[64px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+          <h1 className="font-sans text-[36px] md:text-[52px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
             The Orthodox Bible
           </h1>
           <p className="mt-5 font-sans text-[17px] text-paper/70 max-w-[560px] mx-auto">
             The full Orthodox canon. Septuagint Old Testament, King James New
             Testament, with cross-references and book introductions.
           </p>
-          <div className="mt-10 max-w-[640px] mx-auto">
+          <div className="mt-8 max-w-[640px] mx-auto">
             <BibleSearch />
           </div>
-          <nav className="mt-12 flex items-center justify-center gap-6 font-sans text-[12px] uppercase tracking-[1.5px] text-paper/55">
-            <a href="#ot" className="hover:text-paper transition-colors">
-              Old Testament
-            </a>
-            <span className="text-paper/25">·</span>
-            <a href="#nt" className="hover:text-paper transition-colors">
-              New Testament
-            </a>
-            <span className="text-paper/25">·</span>
-            <a href="#sources" className="hover:text-paper transition-colors">
-              Sources
-            </a>
-          </nav>
+          <p className="mt-3 font-sans italic text-[12px] text-paper/40">
+            Try: &lsquo;John 3:16&rsquo; · &lsquo;1 Cor 13&rsquo; · &lsquo;Psalm 23&rsquo;
+          </p>
         </div>
       </section>
+
+      <StartHereStrip />
 
       <section
         id="ot"
@@ -78,7 +72,7 @@ export default function BiblePage() {
       >
         <div className="mx-auto max-w-[860px] w-full">
           <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/50 mb-4">
-            Sources & notes
+            Sources &amp; notes
           </p>
           <ul className="space-y-2 font-sans text-[13px] text-paper/55 leading-[1.65]">
             <li>

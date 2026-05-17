@@ -150,14 +150,22 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
               <hr className="mb-8 border-0 h-px bg-white/10" />
 
               {intro && (
-                <div className="mb-10 rounded-md border border-paper/10 bg-paper/[0.03] p-6">
-                  <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/50 mb-3">
-                    About this book
-                  </p>
-                  <div className="font-serif text-[16px] leading-[1.7] text-paper/80 whitespace-pre-line">
+                <details className="mb-10 group rounded-md border border-paper/10 bg-paper/[0.03] open:bg-paper/[0.05] transition-colors">
+                  <summary className="cursor-pointer list-none px-6 py-4 flex items-center justify-between">
+                    <span className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 group-open:text-paper/75 transition-colors">
+                      About this book
+                    </span>
+                    <span
+                      aria-hidden
+                      className="text-paper/40 group-open:rotate-180 transition-transform duration-200 text-[12px]"
+                    >
+                      ▾
+                    </span>
+                  </summary>
+                  <div className="px-6 pb-6 -mt-1 font-serif text-[16px] leading-[1.7] text-paper/80 whitespace-pre-line">
                     {intro}
                   </div>
-                </div>
+                </details>
               )}
 
               <ChapterReader
@@ -206,7 +214,7 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
             {/* Desktop study rail */}
             {hasCommentary && (
               <aside className="hidden lg:block">
-                <div className="sticky top-[88px] max-h-[calc(100dvh-104px)] overflow-y-auto pr-2 -mr-2">
+                <div className="sticky top-[88px] max-h-[calc(100dvh-104px)] overflow-y-auto scrollbar-thin pr-2 -mr-2">
                   <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
                     Patristic commentary
                   </p>

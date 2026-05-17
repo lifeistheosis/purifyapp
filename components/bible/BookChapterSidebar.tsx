@@ -14,7 +14,7 @@ export function BookChapterSidebar({
 
   return (
     <aside className="hidden md:block w-[240px] shrink-0 border-r border-white/8 self-stretch">
-      <div className="sticky top-[72px] px-5 py-8 max-h-[calc(100dvh-72px)] overflow-y-auto">
+      <div className="sticky top-[72px] px-5 py-8 max-h-[calc(100dvh-72px)] overflow-y-auto scrollbar-thin">
         <Link
           href="/bible"
           className="inline-flex items-center font-sans text-[11px] uppercase tracking-[1.5px] text-paper/45 hover:text-paper transition-colors mb-4"
