@@ -65,8 +65,14 @@ export function VerseRow({
     setAnchorRect(null);
   }
 
-  // Greek-hover -> highlight matching English word(s) via Strong's number.
-  const [hoverStrong, setHoverStrong] = useState<string | null>(null);
+  // Greek-hover -> highlight the matching English word.
+  // We track both the Strong's number AND the occurrence index within
+  // the verse, so e.g. the 2nd ἐγέννησεν lights only the 2nd "begat"
+  // — not all three.
+  const [hoverStrong, setHoverStrong] = useState<{
+    s: string;
+    occ: number;
+  } | null>(null);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(ann.note ?? "");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -201,6 +207,39 @@ export function VerseRow({
   const words = tokenize(verse.text);
   const dragging = dragStart !== null;
 
+  // Precompute occurrence indices per Strong's number for both sides of
+  // the interlinear. Used to align "Nth Greek with this Strong's" to
+  // "Nth English with this Strong's" — so repeated words (begat / ἐγέννησεν)
+  // don't all light up at once when one is hovered.
+  const greekOccByIdx: number[] = [];
+  if (originalTokens) {
+    const counts = new Map<string, number>();
+    for (let i = 0; i < originalTokens.length; i++) {
+      const s = originalTokens[i].s;
+      if (!s) {
+        greekOccByIdx.push(-1);
+        continue;
+      }
+      const n = counts.get(s) ?? 0;
+      greekOccByIdx.push(n);
+      counts.set(s, n + 1);
+    }
+  }
+  const englishOccByIdx: number[] = [];
+  if (englishTokens) {
+    const counts = new Map<string, number>();
+    for (let i = 0; i < englishTokens.length; i++) {
+      const s = englishTokens[i].s;
+      if (!s) {
+        englishOccByIdx.push(-1);
+        continue;
+      }
+      const n = counts.get(s) ?? 0;
+      englishOccByIdx.push(n);
+      counts.set(s, n + 1);
+    }
+  }
+
   return (
     <div
       id={`v${verse.n}`}
@@ -248,7 +287,11 @@ export function VerseRow({
           )}
           {hasEnglishTokens
             ? englishTokens!.map((tk, i) => {
-                const matched = !!hoverStrong && tk.s === hoverStrong;
+                const matched =
+                  !!hoverStrong &&
+                  !!tk.s &&
+                  tk.s === hoverStrong.s &&
+                  englishOccByIdx[i] === hoverStrong.occ;
                 const me = renderedHL.has(i);
                 const prev = i > 0 && renderedHL.has(i - 1);
                 const next =
@@ -336,9 +379,21 @@ export function VerseRow({
                         <button
                           type="button"
                           onClick={(e) => openPopover(i, e.currentTarget)}
-                          onMouseEnter={() => setHoverStrong(tk.s ?? null)}
+                          onMouseEnter={() =>
+                            setHoverStrong(
+                              tk.s
+                                ? { s: tk.s, occ: greekOccByIdx[i] ?? 0 }
+                                : null,
+                            )
+                          }
                           onMouseLeave={() => setHoverStrong(null)}
-                          onFocus={() => setHoverStrong(tk.s ?? null)}
+                          onFocus={() =>
+                            setHoverStrong(
+                              tk.s
+                                ? { s: tk.s, occ: greekOccByIdx[i] ?? 0 }
+                                : null,
+                            )
+                          }
                           onBlur={() => setHoverStrong(null)}
                           className="font-[inherit] inline border-b border-dotted border-paper/25 hover:border-paper/70 hover:text-paper transition-colors duration-150 cursor-pointer text-left"
                           aria-label={`Look up ${tk.w}`}
