@@ -237,18 +237,33 @@ export function VerseRow({
       counts.set(s, n + 1);
     }
   }
+  // English occurrence indexing is span-aware: consecutive English tokens that
+  // share a Strong's number form one "translation span" of a single Greek
+  // word and therefore share the same occurrence index. The data tags an
+  // English phrase like "the book" with the head Greek word's number on
+  // every token; without this, the Nth Greek υἱοῦ would map to the Nth
+  // *token* tagged 5207 instead of the Nth *phrase*, which mis-aligns when
+  // articles or prepositions are tagged with their following content word.
   const englishOccByIdx: number[] = [];
   if (englishTokens) {
     const counts = new Map<string, number>();
+    let prevS: string | undefined;
     for (let i = 0; i < englishTokens.length; i++) {
       const s = englishTokens[i].s;
       if (!s) {
         englishOccByIdx.push(-1);
+        prevS = undefined;
         continue;
       }
-      const n = counts.get(s) ?? 0;
-      englishOccByIdx.push(n);
-      counts.set(s, n + 1);
+      if (s === prevS) {
+        // Continuation of the current span — reuse the most recent occ.
+        englishOccByIdx.push((counts.get(s) ?? 1) - 1);
+      } else {
+        const n = counts.get(s) ?? 0;
+        englishOccByIdx.push(n);
+        counts.set(s, n + 1);
+      }
+      prevS = s;
     }
   }
 
