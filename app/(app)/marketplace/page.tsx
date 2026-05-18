@@ -1,7 +1,11 @@
 import { FeatureShell } from "@/components/feature/FeatureShell";
 import { ComingSoonLink } from "@/components/marketing/ComingSoonLink";
 
-export const metadata = { title: "Marketplace - Purify" };
+export const metadata = {
+  title: "Marketplace",
+  description:
+    "Faithful Orthodox makers — icons, books, beeswax candles, prayer ropes — in one curated shelf. Coming soon.",
+};
 
 const sections = [
   {

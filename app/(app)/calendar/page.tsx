@@ -18,7 +18,7 @@ import { getSaint } from "@/lib/saints/saints";
 import { loadVerseRange, type Verse } from "@/lib/bible/load";
 
 export const metadata = {
-  title: "Orthodox Calendar - Purify",
+  title: "Orthodox Calendar",
   description:
     "Today's saint, today's fast, and the month at a glance, following the New (Revised Julian) calendar.",
 };

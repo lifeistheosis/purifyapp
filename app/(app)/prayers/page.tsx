@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/Badge";
 import { LESSONS } from "@/lib/prayers/learning";
 
 export const metadata = {
-  title: "Prayer - Purify",
+  title: "Prayer",
   description:
     "Daily prayer in the Orthodox tradition: today's rule, morning and evening rules, the Jesus Prayer counter, and a beginner's path.",
 };

@@ -1,7 +1,7 @@
 import { ChangelogControls } from "@/components/whats-new/ChangelogControls";
 
 export const metadata = {
-  title: "What's new - Purify",
+  title: "What's new",
   description:
     "Patch notes and a message from the Purify team about what the site offers today and what's coming next.",
 };

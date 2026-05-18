@@ -1,6 +1,10 @@
 import { FeatureShell } from "@/components/feature/FeatureShell";
 
-export const metadata = { title: "Paid Blessings - Purify" };
+export const metadata = {
+  title: "Paid blessings",
+  description:
+    "Request a moleben, a panikhida, or commemoration at the proskomedia from a priest or monastic. Coming soon.",
+};
 
 export default function BlessingsPage() {
   return (

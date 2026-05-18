@@ -1,6 +1,10 @@
 import { FeatureShell } from "@/components/feature/FeatureShell";
 
-export const metadata = { title: "Sell on Purify - Purify" };
+export const metadata = {
+  title: "Sell your work",
+  description:
+    "Sell your Orthodox work on Purify — application, terms, and what we look for in a listing. Coming soon.",
+};
 
 export default function SellPage() {
   return (

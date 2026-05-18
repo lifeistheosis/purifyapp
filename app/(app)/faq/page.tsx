@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "FAQ - Purify",
+  title: "FAQ",
   description:
     "Twelve common questions about Purify: Orthodox alignment, Bible translations, calendar styles, prayer book sources, privacy, and the roadmap.",
 };

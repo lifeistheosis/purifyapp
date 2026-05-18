@@ -1,6 +1,10 @@
 import { PricingTable } from "@/components/marketing/PricingTable";
 
-export const metadata = { title: "Pricing - Purify" };
+export const metadata = {
+  title: "Pricing",
+  description:
+    "What Purify costs, and why. Everything that ships free today stays free; an optional supporter tier funds heavier features.",
+};
 
 export default function PricingPage() {
   return (

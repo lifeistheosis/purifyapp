@@ -14,9 +14,9 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug, work } = await params;
   const found = getWork(slug, work);
-  if (!found) return { title: "Writing - Purify" };
+  if (!found) return { title: "Writing" };
   return {
-    title: `${found.work.title} - ${found.saint.name} - Purify`,
+    title: `${found.work.title} — ${found.saint.name}`,
     description: found.work.blurb,
   };
 }

@@ -13,7 +13,7 @@ import { getSaint } from "@/lib/saints/saints";
 import { JesusPrayerTodayBadge } from "@/components/prayers/JesusPrayerTodayBadge";
 
 export const metadata = {
-  title: "Today's prayer - Purify",
+  title: "Today's prayer",
   description:
     "Daily prayer: today's date, saint, fast, the appointed readings, and one-tap links into the morning rule, evening rule, and Jesus Prayer.",
 };

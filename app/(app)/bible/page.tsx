@@ -7,7 +7,7 @@ import {
 } from "@/lib/bible/books";
 
 export const metadata = {
-  title: "The Orthodox Bible - Purify",
+  title: "The Orthodox Bible",
   description:
     "Read the Orthodox canon. Brenton's Septuagint and the King James Version with cross-references.",
 };

@@ -15,9 +15,9 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Params }) {
   const { lessonId } = await params;
   const l = getLesson(lessonId);
-  if (!l) return { title: "Learn to pray - Purify" };
+  if (!l) return { title: "Learn to pray" };
   return {
-    title: `${l.title} - Purify`,
+    title: l.title,
     description: l.summary,
   };
 }

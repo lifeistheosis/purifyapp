@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "About Purify",
+  title: "About",
   description:
     "What Purify is, what it is made of, what it is not. The mission, the sources, the privacy promise.",
 };

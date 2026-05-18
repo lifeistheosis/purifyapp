@@ -2,7 +2,7 @@ import { PrayerRuleReader, type Rule } from "@/components/prayers/PrayerRuleRead
 import eveningRule from "@/data/prayers/rules/evening.json";
 
 export const metadata = {
-  title: "Evening Rule - Purify",
+  title: "Evening Rule",
   description:
     "A short Orthodox evening prayer rule with examination of the day, prayer by prayer with a streak counter.",
 };

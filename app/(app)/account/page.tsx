@@ -1,6 +1,10 @@
 import { FeatureShell } from "@/components/feature/FeatureShell";
 
-export const metadata = { title: "Account - Purify" };
+export const metadata = {
+  title: "Account",
+  description:
+    "Your Purify account. Sign in, preferences, and subscription. Accounts are not required to use the site.",
+};
 
 export default function AccountPage() {
   return (

@@ -37,8 +37,8 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Params }) {
   const { book, chapter } = await params;
   const b = getBook(book);
-  if (!b) return { title: "The Orthodox Bible - Purify" };
-  return { title: `${b.name} ${chapter} - Purify` };
+  if (!b) return { title: "The Orthodox Bible" };
+  return { title: `${b.name} ${chapter}` };
 }
 
 export default async function BibleChapterPage({ params }: { params: Params }) {

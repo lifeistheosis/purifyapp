@@ -2,7 +2,7 @@ import { SAINTS } from "@/lib/saints/saints";
 import { SaintsBrowser } from "@/components/saints/SaintsBrowser";
 
 export const metadata = {
-  title: "Saints - Purify",
+  title: "Saints",
   description:
     "Lives and writings of the Eastern Orthodox saints.",
 };

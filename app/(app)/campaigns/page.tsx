@@ -1,6 +1,10 @@
 import { FeatureShell } from "@/components/feature/FeatureShell";
 
-export const metadata = { title: "Prayer Campaigns - Purify" };
+export const metadata = {
+  title: "Prayer Campaigns",
+  description:
+    "Joining a community prayer campaign — a coordinated period of intercession for a person, a parish, or a need. Coming soon.",
+};
 
 export default function CampaignsPage() {
   return (

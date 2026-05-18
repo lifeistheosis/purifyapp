@@ -3,7 +3,7 @@ import { LESSONS } from "@/lib/prayers/learning";
 import { Badge } from "@/components/ui/Badge";
 
 export const metadata = {
-  title: "Learn to pray - Purify",
+  title: "Learn to pray",
   description:
     "An Orthodox beginner's path to prayer: the Sign of the Cross, the Jesus Prayer, the Trisagion, and a simple morning and evening rule.",
 };

@@ -1,7 +1,7 @@
 import { JesusPrayerCounter } from "@/components/prayers/JesusPrayerCounter";
 
 export const metadata = {
-  title: "The Jesus Prayer - Purify",
+  title: "The Jesus Prayer",
   description:
     "Guided counter for the Jesus Prayer with goal presets, optional breath cue, today total, and a day-streak.",
 };

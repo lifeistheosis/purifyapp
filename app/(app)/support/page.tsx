@@ -2,7 +2,7 @@ import Link from "next/link";
 import { SUPPORT } from "@/data/support/support";
 
 export const metadata = {
-  title: "Support Purify",
+  title: "Support",
   description:
     "How the project is funded, what the money goes toward, and how to help. Free now. Transparent goal. No paywall on what is shipped.",
 };
