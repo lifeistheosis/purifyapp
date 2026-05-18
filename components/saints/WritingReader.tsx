@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { WritingContent } from "@/lib/saints/load";
 import type { Saint } from "@/lib/saints/saints";
+import { ParagraphRow } from "./ParagraphRow";
+import { SectionBookmarkButton } from "./SectionBookmarkButton";
 
 export function WritingReader({
   saint,
@@ -95,10 +97,18 @@ export function WritingReader({
                 </span>
                 <h2
                   id={`s-${sec.n}`}
-                  className="font-sans text-[22px] md:text-[26px] font-semibold text-paper tracking-[-0.01em]"
+                  className="font-sans text-[22px] md:text-[26px] font-semibold text-paper tracking-[-0.01em] flex-1 min-w-0"
                 >
                   {sec.title}
                 </h2>
+                <SectionBookmarkButton
+                  saintSlug={saint.slug}
+                  saintName={saint.name}
+                  workSlug={content.slug}
+                  workTitle={content.title}
+                  sectionN={sec.n}
+                  sectionTitle={sec.title}
+                />
               </div>
 
               {/* Editor's framing — shown only when present. Visually
@@ -129,12 +139,17 @@ export function WritingReader({
 
               <div className="space-y-5">
                 {sec.paragraphs.map((p, i) => (
-                  <p
+                  <ParagraphRow
                     key={i}
-                    className="font-serif text-[19px] md:text-[20px] text-paper/90 leading-[1.7]"
-                  >
-                    {p}
-                  </p>
+                    saintSlug={saint.slug}
+                    saintName={saint.name}
+                    workSlug={content.slug}
+                    workTitle={content.title}
+                    sectionN={sec.n}
+                    sectionTitle={sec.title}
+                    paragraphIdx={i}
+                    text={p}
+                  />
                 ))}
               </div>
             </div>

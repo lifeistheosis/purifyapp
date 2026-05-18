@@ -77,10 +77,13 @@ export default function AboutPage() {
             for us.
           </li>
           <li>
-            Not an account product. You don&rsquo;t sign up. Your
-            highlights, notes, prayer-rule check-offs, and Jesus Prayer
-            counts live on your own device, in your browser&rsquo;s local
-            storage. Clear them and they are gone; we have no copy.
+            Not an engagement-driven account product. You don&rsquo;t
+            have to sign up to use anything. Accounts are optional &mdash;
+            create one to sync your highlights, notes, prayer-rule
+            check-offs, and bookmarks across devices. Without one,
+            everything lives in your browser&rsquo;s local storage on this
+            device alone. Your choice. We do not run analytics or sell
+            anything, either way.
           </li>
         </ul>
 
@@ -118,8 +121,8 @@ export default function AboutPage() {
           </Link>{" "}
           (transparent goal + monthly expense breakdown). A supporter
           tier is on the roadmap for features that genuinely cost more
-          to run (audio recordings, optional account-and-sync, custom
-          prayer plans). Everything in v3.1 will stay free.
+          to run (audio recordings, custom prayer plans). Everything in
+          v3.3 will stay free, accounts and sync included.
         </p>
 
         {/* Closing */}

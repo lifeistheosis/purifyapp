@@ -1,0 +1,330 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useParagraphAnnotation } from "@/lib/saints/annotations";
+import { useBookmarks } from "@/lib/bookmarks";
+import {
+  VerseContextMenu,
+  type ContextMenuGroup,
+} from "@/components/bible/VerseContextMenu";
+import { cn } from "@/lib/cn";
+
+/**
+ * One paragraph inside a saint's writing. Mirrors the affordances of the
+ * Bible VerseRow at paragraph scale: a gold left-bar highlight, an inline
+ * note editor, a hover-revealed toolbar (highlight / copy-link / note), and
+ * a right-click context menu. The section-level Bookmark item is added via
+ * the menu (paragraphs are too granular to save individually; readers want
+ * to come back to "the third section of Augustine's Confessions Book I,"
+ * not a single paragraph in it).
+ */
+export function ParagraphRow({
+  saintSlug,
+  saintName,
+  workSlug,
+  workTitle,
+  sectionN,
+  sectionTitle,
+  paragraphIdx,
+  text,
+}: {
+  saintSlug: string;
+  saintName: string;
+  workSlug: string;
+  workTitle: string;
+  sectionN: number;
+  sectionTitle: string;
+  paragraphIdx: number;
+  text: string;
+}) {
+  const ann = useParagraphAnnotation(
+    saintSlug,
+    workSlug,
+    sectionN,
+    paragraphIdx,
+  );
+  const bookmarks = useBookmarks();
+  const sectionLocator = {
+    kind: "writing-section" as const,
+    saintSlug,
+    workSlug,
+    sectionN,
+  };
+  const sectionBookmarked = bookmarks.isBookmarked(sectionLocator);
+
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(ann.note ?? "");
+  const [copied, setCopied] = useState(false);
+  const [ctxAnchor, setCtxAnchor] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Re-sync the draft when localStorage hydration finishes.
+  useEffect(() => {
+    setDraft(ann.note ?? "");
+  }, [ann.note]);
+
+  useEffect(() => {
+    if (!editing) return;
+    const el = textareaRef.current;
+    if (!el) return;
+    el.focus();
+    el.setSelectionRange(el.value.length, el.value.length);
+  }, [editing]);
+
+  async function copyToClipboard(value: string) {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1400);
+    } catch {
+      /* clipboard unavailable */
+    }
+  }
+  function reference() {
+    return `${saintName} — ${workTitle} — ${sectionTitle}`;
+  }
+  function copyParagraphLink() {
+    return copyToClipboard(
+      `${window.location.origin}/saints/${saintSlug}/${workSlug}#p-${sectionN}-${paragraphIdx}`,
+    );
+  }
+  function copyParagraphText() {
+    return copyToClipboard(text);
+  }
+  function copyAsQuote() {
+    return copyToClipboard(`"${text}" — ${reference()}`);
+  }
+  function copyReference() {
+    return copyToClipboard(reference());
+  }
+
+  function openContextMenu(e: React.MouseEvent) {
+    // Let the browser handle a right-click on a non-empty selection so the
+    // native "Copy" works for selected text.
+    const sel = window.getSelection();
+    if (sel && !sel.isCollapsed) return;
+    e.preventDefault();
+    setCtxAnchor({ x: e.clientX, y: e.clientY });
+  }
+  function closeContextMenu() {
+    setCtxAnchor(null);
+  }
+
+  function saveNote() {
+    ann.setNote(draft);
+    setEditing(false);
+  }
+  function cancelEdit() {
+    setDraft(ann.note ?? "");
+    setEditing(false);
+  }
+
+  function toggleSectionBookmark() {
+    bookmarks.toggle({
+      kind: "writing-section",
+      saintSlug,
+      saintName,
+      workSlug,
+      workTitle,
+      sectionN,
+      sectionTitle,
+      label: `${saintName} — ${workTitle} — ${sectionTitle}`,
+    });
+  }
+
+  return (
+    <div
+      id={`p-${sectionN}-${paragraphIdx}`}
+      data-paragraph-idx={paragraphIdx}
+      data-hl={ann.highlighted ? "true" : undefined}
+      className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out data-[hl=true]:shadow-[inset_3px_0_0_#d4af37]"
+    >
+      <div className="flex items-start gap-2">
+        <p
+          className="font-serif text-[19px] md:text-[20px] text-paper/90 leading-[1.7] flex-1 min-w-0"
+          onContextMenu={openContextMenu}
+        >
+          {text}
+        </p>
+
+        {/* Toolbar — touch always shows; md+ shows on hover. Matches the
+            VerseRow toolbar opacity logic so the saint reader feels like
+            an extension of the Bible reader. */}
+        <div
+          className={cn(
+            "flex items-center gap-1 shrink-0 transition-opacity duration-150",
+            ann.highlighted || ann.note || editing
+              ? "opacity-100"
+              : "opacity-100 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100",
+          )}
+        >
+          <button
+            type="button"
+            onClick={ann.toggleHighlight}
+            aria-label={
+              ann.highlighted ? "Remove highlight" : "Highlight paragraph"
+            }
+            aria-pressed={!!ann.highlighted}
+            title={ann.highlighted ? "Remove highlight" : "Highlight paragraph"}
+            className={cn(
+              "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-[14px] md:text-[12px] transition-colors duration-150",
+              ann.highlighted
+                ? "bg-[#d4af37]/30 border-[#d4af37]/60 text-[#d4af37]"
+                : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
+            )}
+          >
+            ✦
+          </button>
+          <button
+            type="button"
+            onClick={copyParagraphLink}
+            aria-label={copied ? "Link copied" : "Copy paragraph link"}
+            title={copied ? "Copied" : "Copy paragraph link"}
+            className={cn(
+              "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-[14px] md:text-[12px] transition-colors duration-150",
+              copied
+                ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-300"
+                : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
+            )}
+          >
+            {copied ? "✓" : "🔗"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setDraft(ann.note ?? "");
+              setEditing((v) => !v);
+            }}
+            aria-label={ann.note ? "Edit note" : "Add note"}
+            aria-pressed={editing}
+            title={ann.note ? "Edit note" : "Add note"}
+            className={cn(
+              "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-[14px] md:text-[12px] transition-colors duration-150",
+              ann.note
+                ? "bg-paper/15 border-paper/30 text-paper"
+                : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
+            )}
+          >
+            ✎
+          </button>
+        </div>
+      </div>
+
+      {/* Saved user note */}
+      {ann.note && !editing && (
+        <div className="mt-2 rounded-md border border-paper/15 bg-paper/[0.04] px-3 py-2">
+          <p className="font-sans text-[10px] uppercase tracking-[1.2px] text-paper/45 mb-1">
+            Your note
+          </p>
+          <p className="font-sans text-[13px] text-paper/85 leading-[1.55] whitespace-pre-wrap">
+            {ann.note}
+          </p>
+        </div>
+      )}
+
+      {/* Note editor */}
+      {editing && (
+        <div className="mt-2 rounded-md border border-paper/25 bg-paper/[0.05] p-3">
+          <textarea
+            ref={textareaRef}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                saveNote();
+              } else if (e.key === "Escape") {
+                e.preventDefault();
+                cancelEdit();
+              }
+            }}
+            placeholder="Add a note for this paragraph…"
+            rows={3}
+            className="w-full bg-transparent border-0 outline-none resize-y font-sans text-[14px] text-paper placeholder:text-paper/40 leading-[1.55]"
+          />
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <span className="font-sans text-[11px] text-paper/40">
+              {draft.length > 0
+                ? "⌘+Enter to save · Esc to cancel"
+                : "Esc to close"}
+            </span>
+            <div className="flex items-center gap-2">
+              {ann.note && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    ann.setNote("");
+                    setDraft("");
+                    setEditing(false);
+                  }}
+                  className="font-sans text-[12px] text-paper/55 hover:text-paper transition-colors px-2 py-1"
+                >
+                  Delete
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={cancelEdit}
+                className="font-sans text-[12px] text-paper/55 hover:text-paper transition-colors px-2 py-1"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={saveNote}
+                className="font-sans text-[12px] font-medium bg-paper text-night rounded-pill px-3 py-1 hover:bg-paper/90 transition-colors"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {ctxAnchor && (
+        <VerseContextMenu
+          x={ctxAnchor.x}
+          y={ctxAnchor.y}
+          onClose={closeContextMenu}
+          groups={
+            [
+              [
+                { label: "Copy paragraph", onClick: copyParagraphText },
+                { label: "Copy as quote", onClick: copyAsQuote },
+                { label: "Copy reference", onClick: copyReference },
+                { label: "Copy link", onClick: copyParagraphLink },
+              ],
+              [
+                {
+                  label: ann.highlighted
+                    ? "Remove highlight"
+                    : "Highlight paragraph",
+                  onClick: ann.toggleHighlight,
+                  destructive: !!ann.highlighted,
+                },
+                {
+                  label: ann.note ? "Edit note" : "Add note",
+                  onClick: () => {
+                    setDraft(ann.note ?? "");
+                    setEditing(true);
+                  },
+                },
+              ],
+              [
+                {
+                  label: sectionBookmarked
+                    ? "Remove section bookmark"
+                    : "Bookmark this section",
+                  onClick: toggleSectionBookmark,
+                  destructive: sectionBookmarked,
+                },
+              ],
+            ] as ContextMenuGroup[]
+          }
+        />
+      )}
+    </div>
+  );
+}

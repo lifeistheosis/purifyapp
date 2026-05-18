@@ -166,14 +166,26 @@ const QUESTIONS: QA[] = [
     a: (
       <>
         <p>
-          Yes, in roughly that order. Akathists (the Theotokos, Christ, the
-          most-asked-for saints) are the next major content drop. Audio
-          recordings of the Morning Rule, the Evening Rule, and the Hours are
-          on the roadmap but they require either commissioning readers or
-          licensing existing recordings; expect a longer wait. Accounts and
-          cross-device sync are the largest open question; they would solve a
-          real problem (highlights stuck on one device) but they would break
-          the privacy promise. If we build them, they will be opt-in.
+          Accounts and cross-device sync landed in v3.3. Sign-in is by an
+          emailed magic link &mdash; you never make a password. Without an
+          account, every highlight, note, bookmark, and prayer-rule streak
+          stays in your browser on this device. With an account, the same
+          things follow you across devices. You can delete the account, and
+          all of the server-side rows it created, from your{" "}
+          <a
+            href="/account"
+            className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
+          >
+            account page
+          </a>{" "}
+          at any time.
+        </p>
+        <p>
+          Akathists (the Theotokos, Christ, the most-asked-for saints) are
+          the next major content drop. Audio recordings of the Morning Rule,
+          the Evening Rule, and the Hours are on the roadmap but they require
+          either commissioning readers or licensing existing recordings;
+          expect a longer wait.
         </p>
       </>
     ),
@@ -183,16 +195,24 @@ const QUESTIONS: QA[] = [
     a: (
       <>
         <p>
-          No analytics, no third-party scripts, no cookies that identify you.
-          Your highlights, notes, prayer-rule completions, and Jesus Prayer
-          counts live in your browser&rsquo;s localStorage, on your device.
-          Clear them, and they are gone. We have no copy.
+          <strong>Without an account:</strong> no analytics, no third-party
+          scripts, no cookies that identify you. Your highlights, notes,
+          bookmarks, prayer-rule completions, and Jesus Prayer counts live in
+          your browser&rsquo;s localStorage, on your device. Clear them and
+          they are gone. We have no copy.
         </p>
         <p>
-          Our hosting provider (Render) sees the standard request data any
-          web server sees: IP address, user-agent, requested URL, response
-          time. That is the minimum needed to deliver the page; we do not
-          aggregate it, sell it, or correlate it across sessions.
+          <strong>With an account:</strong> the same items are also stored on
+          Supabase under a row-level-security policy that lets only you read
+          them. We do not run analytics on this data. We do not share or sell
+          it. Delete your account from your account page and every row is
+          dropped via cascade.
+        </p>
+        <p>
+          In both cases, our hosting provider (Render) sees the standard
+          request data any web server sees: IP address, user-agent, requested
+          URL, response time. That is the minimum needed to deliver the page;
+          we do not aggregate it, sell it, or correlate it across sessions.
         </p>
       </>
     ),

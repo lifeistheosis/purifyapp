@@ -5,6 +5,7 @@ import type { Verse, Token } from "@/lib/bible/load";
 import type { StrongsEntry } from "@/lib/bible/strongs";
 import { useVerseAnnotation } from "@/lib/bible/annotations";
 import { useInterlinear } from "@/lib/bible/interlinear";
+import { useBookmarks } from "@/lib/bookmarks";
 import { WordPopover } from "./WordPopover";
 import {
   VerseContextMenu,
@@ -53,6 +54,24 @@ export function VerseRow({
   strongs?: Record<string, StrongsEntry>;
 }) {
   const ann = useVerseAnnotation(book, chapter, verse.n);
+  const bookmarks = useBookmarks();
+  const verseLocator = {
+    kind: "bible-verse" as const,
+    book,
+    chapter,
+    verse: verse.n,
+  };
+  const isVerseBookmarked = bookmarks.isBookmarked(verseLocator);
+  function toggleVerseBookmark() {
+    bookmarks.toggle({
+      kind: "bible-verse",
+      book,
+      bookName,
+      chapter,
+      verse: verse.n,
+      label: `${bookName} ${chapter}:${verse.n}`,
+    });
+  }
   const { on: showInterlinear } = useInterlinear();
   const hasInterlinear =
     showInterlinear && (!!originalText || (originalTokens?.length ?? 0) > 0);
@@ -562,7 +581,18 @@ export function VerseRow({
                   },
                 },
               ];
-              const groups: ContextMenuGroup[] = [copyGroup, annotateGroup];
+              const bookmarkGroup: ContextMenuGroup = [
+                {
+                  label: isVerseBookmarked ? "Remove bookmark" : "Bookmark verse",
+                  onClick: toggleVerseBookmark,
+                  destructive: isVerseBookmarked,
+                },
+              ];
+              const groups: ContextMenuGroup[] = [
+                copyGroup,
+                annotateGroup,
+                bookmarkGroup,
+              ];
               if (hasCommentary) {
                 groups.push([
                   {
@@ -586,6 +616,7 @@ export function VerseRow({
             (ann.highlighted ||
             ann.note ||
             editing ||
+            isVerseBookmarked ||
             (ann.highlightedWords && ann.highlightedWords.length > 0)
               ? "opacity-100"
               : "opacity-100 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100")
@@ -630,6 +661,23 @@ export function VerseRow({
             )}
           >
             {copied ? "✓" : "🔗"}
+          </button>
+          <button
+            type="button"
+            onClick={toggleVerseBookmark}
+            aria-label={
+              isVerseBookmarked ? "Remove bookmark" : "Bookmark verse"
+            }
+            aria-pressed={isVerseBookmarked}
+            title={isVerseBookmarked ? "Remove bookmark" : "Bookmark verse"}
+            className={cn(
+              "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-[14px] md:text-[12px] transition-colors duration-150",
+              isVerseBookmarked
+                ? "bg-[#d4af37]/25 border-[#d4af37]/55 text-[#d4af37]"
+                : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
+            )}
+          >
+            {isVerseBookmarked ? "★" : "☆"}
           </button>
           <button
             type="button"

@@ -20,8 +20,8 @@ const ITEMS: { title: string; body: string }[] = [
     body: "New (Revised Julian) of the Ecumenical Patriarchate by default; an Old (Julian) toggle for the Russian, Serbian, Athonite, and Jerusalem traditions. Pascha is shared.",
   },
   {
-    title: "No tracking. No accounts. No advertising.",
-    body: "Your highlights, notes, and prayer streaks live on your own device. We don't run analytics or sell ad placement. Built for the praying life, not for engagement.",
+    title: "No tracking. No advertising. Optional account.",
+    body: "Your highlights, notes, bookmarks, and prayer streaks live on your device by default. Sign in to sync them across devices. We don't run analytics or sell ad placement, either way. Built for the praying life, not for engagement.",
   },
 ];
 

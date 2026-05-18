@@ -98,8 +98,8 @@ export default function Home() {
                 New
               </span>
               <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
-                <span className="sm:hidden">Beta v3.1 · The icon corner</span>
-                <span className="hidden sm:inline">Beta v3.1 · The icon corner, the season banner, real challenges</span>
+                <span className="sm:hidden">Beta v3.3 · Accounts, saved, highlighted writings</span>
+                <span className="hidden sm:inline">Beta v3.3 · Accounts, saved, and highlighted writings</span>
               </span>
               <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
                 →
@@ -121,7 +121,7 @@ export default function Home() {
               A quiet place to begin and end the day: the Morning and Evening
               Rules, the Jesus Prayer, the saint and fast of the day, the
               Septuagint and the King James with the Fathers. Free. No
-              tracking. No account required.
+              tracking. Yours to keep.
             </p>
             <div className="mt-7 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
               <ComingSoonCTA variant="inverse">
