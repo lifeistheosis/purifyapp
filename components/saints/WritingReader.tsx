@@ -100,6 +100,33 @@ export function WritingReader({
                   {sec.title}
                 </h2>
               </div>
+
+              {/* Editor's framing — shown only when present. Visually
+                  separates editorial commentary from the saint's own text:
+                  smaller, sans-serif, indented behind a left-rule, with a
+                  clear "Editor's note" eyebrow. */}
+              {sec.framing && (
+                <div className="mb-8 pl-4 border-l-2 border-paper/15">
+                  <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45 mb-2">
+                    Editor&rsquo;s note
+                  </p>
+                  <p className="font-sans text-[15px] md:text-[16px] text-paper/70 leading-[1.65] italic">
+                    {sec.framing}
+                  </p>
+                </div>
+              )}
+
+              {/* Citation eyebrow — when set, marks the paragraphs below as
+                  drawn from a specific source (e.g. a KJV reference, a
+                  liturgical hymn). Absence means the paragraphs are either
+                  the saint's own text (no framing) or a faithful retelling
+                  (framing acknowledges it). */}
+              {sec.citation && (
+                <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-[#d4af37]/85 mb-4">
+                  {sec.citation}
+                </p>
+              )}
+
               <div className="space-y-5">
                 {sec.paragraphs.map((p, i) => (
                   <p
