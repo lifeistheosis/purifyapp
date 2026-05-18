@@ -362,10 +362,30 @@ export function VerseRow({
                   !!tk.s &&
                   tk.s === hoverStrong.s &&
                   englishOccByIdx[i] === hoverStrong.occ;
+                const prevTk = i > 0 ? englishTokens![i - 1] : null;
+                const nextTk =
+                  i < englishTokens!.length - 1 ? englishTokens![i + 1] : null;
+                const matchedPrev =
+                  !!hoverStrong &&
+                  !!prevTk?.s &&
+                  prevTk.s === hoverStrong.s &&
+                  englishOccByIdx[i - 1] === hoverStrong.occ;
+                const matchedNext =
+                  !!hoverStrong &&
+                  !!nextTk?.s &&
+                  nextTk.s === hoverStrong.s &&
+                  englishOccByIdx[i + 1] === hoverStrong.occ;
                 const me = renderedHL.has(i);
-                const prev = i > 0 && renderedHL.has(i - 1);
-                const next =
+                const mePrev = i > 0 && renderedHL.has(i - 1);
+                const meNext =
                   i < englishTokens!.length - 1 && renderedHL.has(i + 1);
+                // Bridge the inter-word space when current AND next word
+                // share the same kind of highlight. matched (Greek-hover)
+                // takes precedence over me (user drag) — its tint is
+                // brighter — so a word that's both matched and me lets the
+                // matched bridge through.
+                const bridgeMatched = matched && matchedNext;
+                const bridgeMe = me && meNext;
                 return (
                   <Fragment key={i}>
                     <span
@@ -376,8 +396,16 @@ export function VerseRow({
                         me && "bg-[#d4af37]/30",
                         // Round + extend only on the outer ends of a run, so
                         // adjacent highlighted words look like one bar.
-                        me && !prev && "rounded-l-[3px] pl-[1px] -ml-[1px]",
-                        me && !next && "rounded-r-[3px] pr-[1px] -mr-[1px]",
+                        me && !mePrev && "rounded-l-[3px] pl-[1px] -ml-[1px]",
+                        me && !meNext && "rounded-r-[3px] pr-[1px] -mr-[1px]",
+                        // Same outer-edge rounding for the Greek-hover match
+                        // span, so a multi-word match reads as one gold pill.
+                        matched &&
+                          !matchedPrev &&
+                          "rounded-l-[3px] pl-[1px] -ml-[1px]",
+                        matched &&
+                          !matchedNext &&
+                          "rounded-r-[3px] pr-[1px] -mr-[1px]",
                       )}
                       style={
                         matched
@@ -392,7 +420,16 @@ export function VerseRow({
                       {tk.w}
                     </span>
                     {i < englishTokens!.length - 1 && (
-                      <span className={me && next ? "bg-[#d4af37]/30" : ""}>
+                      <span
+                        className={
+                          bridgeMe && !bridgeMatched ? "bg-[#d4af37]/30" : ""
+                        }
+                        style={
+                          bridgeMatched
+                            ? { backgroundColor: "rgba(212,175,55,0.45)" }
+                            : undefined
+                        }
+                      >
                         {" "}
                       </span>
                     )}
