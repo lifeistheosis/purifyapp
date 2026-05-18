@@ -65,7 +65,14 @@ export function prevBook(slug: string): BibleBook | null {
 export type SearchHit =
   | { kind: "book"; book: BibleBook }
   | { kind: "chapter"; book: BibleBook; chapter: number }
-  | { kind: "verse"; book: BibleBook; chapter: number; verse: number };
+  | { kind: "verse"; book: BibleBook; chapter: number; verse: number }
+  | {
+      kind: "range";
+      book: BibleBook;
+      chapter: number;
+      verseFrom: number;
+      verseTo: number;
+    };
 
 const ALIASES: Record<string, string> = {
   ps: "psalms",
@@ -110,13 +117,19 @@ export function searchBible(rawQuery: string, limit = 8): SearchHit[] {
   if (!q) return [];
 
   // Pull a trailing reference off the end:
-  //   "john 3"     -> chapter 3
-  //   "john 3:16"  -> chapter 3, verse 16
-  //   "1 cor 13"   -> chapter 13
-  const m = q.match(/^(.*?)(?:\s+(\d{1,3})(?::(\d{1,3}))?)?$/);
+  //   "john 3"          -> chapter 3
+  //   "john 3:16"       -> chapter 3, verse 16
+  //   "1 cor 13"        -> chapter 13
+  //   "james 2:14-26"   -> chapter 2, verses 14..26 (range)
+  // The range trailer accepts a hyphen-minus or an en-dash, with optional
+  // spaces around it ("james 2:14 - 26" works the same as "james 2:14-26").
+  const m = q.match(
+    /^(.*?)(?:\s+(\d{1,3})(?::(\d{1,3})(?:\s*[-–]\s*(\d{1,3}))?)?)?$/,
+  );
   const namePart = (m?.[1] ?? q).trim();
   const chapterPart = m?.[2] ? parseInt(m[2], 10) : null;
   const versePart = m?.[3] ? parseInt(m[3], 10) : null;
+  const verseEndPart = m?.[4] ? parseInt(m[4], 10) : null;
 
   // Normalize "1 john", "1cor" -> "1-..."
   const norm = namePart
@@ -140,6 +153,18 @@ export function searchBible(rawQuery: string, limit = 8): SearchHit[] {
   return matches.map((b) => {
     if (chapterPart && chapterPart >= 1 && chapterPart <= b.chapters) {
       if (versePart && versePart >= 1) {
+        // Range only when the trailing number is strictly greater than the
+        // start. Equal or smaller falls back to a single verse hit so the
+        // user still gets a useful destination from a malformed input.
+        if (verseEndPart && verseEndPart > versePart) {
+          return {
+            kind: "range" as const,
+            book: b,
+            chapter: chapterPart,
+            verseFrom: versePart,
+            verseTo: verseEndPart,
+          };
+        }
         return {
           kind: "verse" as const,
           book: b,

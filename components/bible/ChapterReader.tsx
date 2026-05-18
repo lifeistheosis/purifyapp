@@ -12,6 +12,7 @@ import { cn } from "@/lib/cn";
 
 export function ChapterReader({
   book,
+  bookName,
   chapter,
   verses,
   commentaryVerses,
@@ -21,6 +22,9 @@ export function ChapterReader({
   strongs,
 }: {
   book: string;
+  /** Display name of the book (e.g. "Matthew"). Used by the verse
+   *  right-click menu to build copy-as-quote and copy-reference strings. */
+  bookName: string;
   chapter: number;
   verses: Verse[];
   commentaryVerses?: number[];
@@ -49,6 +53,7 @@ export function ChapterReader({
           <VerseRow
             key={v.n}
             book={book}
+            bookName={bookName}
             chapter={chapter}
             verse={v}
             hasCommentary={has.has(v.n)}

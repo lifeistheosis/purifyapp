@@ -6,6 +6,10 @@ import type { StrongsEntry } from "@/lib/bible/strongs";
 import { useVerseAnnotation } from "@/lib/bible/annotations";
 import { useInterlinear } from "@/lib/bible/interlinear";
 import { WordPopover } from "./WordPopover";
+import {
+  VerseContextMenu,
+  type ContextMenuGroup,
+} from "./VerseContextMenu";
 import { cn } from "@/lib/cn";
 
 function tokenize(text: string): string[] {
@@ -21,6 +25,7 @@ function wordIndexFromElement(el: Element | null): number | null {
 
 export function VerseRow({
   book,
+  bookName,
   chapter,
   verse,
   hasCommentary = false,
@@ -30,6 +35,9 @@ export function VerseRow({
   strongs,
 }: {
   book: string;
+  /** Display name of the book (e.g. "Matthew"). Used in citation copy
+   *  formats: "Matthew 3:16", "...as a quote — Matthew 3:16 (KJV)". */
+  bookName: string;
   chapter: number;
   verse: Verse;
   hasCommentary?: boolean;
@@ -78,15 +86,49 @@ export function VerseRow({
   const [copied, setCopied] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  async function copyVerseLink() {
+  async function copyToClipboard(text: string) {
     try {
-      const url = `${window.location.origin}/bible/${book}/${chapter}#v${verse.n}`;
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 1400);
     } catch {
       /* clipboard unavailable; silently ignore */
     }
+  }
+  function reference() {
+    return `${bookName} ${chapter}:${verse.n}`;
+  }
+  function copyVerseLink() {
+    return copyToClipboard(
+      `${window.location.origin}/bible/${book}/${chapter}#v${verse.n}`,
+    );
+  }
+  function copyVerseText() {
+    return copyToClipboard(verse.text);
+  }
+  function copyAsQuote() {
+    return copyToClipboard(`"${verse.text}" — ${reference()} (KJV)`);
+  }
+  function copyReference() {
+    return copyToClipboard(reference());
+  }
+
+  // Custom right-click context menu. Anchored to cursor; closes on outside
+  // click, Esc, scroll, or a second right-click outside.
+  const [ctxAnchor, setCtxAnchor] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  function openContextMenu(e: React.MouseEvent) {
+    // Don't suppress the native menu when the user has selected text — let
+    // the browser handle "Copy" for the active selection. Custom menu fires
+    // only when the right-click is a plain click (no selection).
+    const sel = window.getSelection();
+    if (sel && !sel.isCollapsed) return;
+    e.preventDefault();
+    setCtxAnchor({ x: e.clientX, y: e.clientY });
+  }
+  function closeContextMenu() {
+    setCtxAnchor(null);
   }
 
   // Drag selection state for word-level highlighting.
@@ -291,6 +333,7 @@ export function VerseRow({
           onTouchMove={onWordsTouchMove}
           onTouchEnd={onWordsTouchEnd}
           onTouchCancel={onWordsTouchEnd}
+          onContextMenu={openContextMenu}
         >
           {hasCommentary ? (
             <a
@@ -448,6 +491,53 @@ export function VerseRow({
             }
             anchorRect={anchorRect}
             onClose={closePopover}
+          />
+        )}
+
+        {ctxAnchor && (
+          <VerseContextMenu
+            x={ctxAnchor.x}
+            y={ctxAnchor.y}
+            onClose={closeContextMenu}
+            groups={(() => {
+              const copyGroup: ContextMenuGroup = [
+                {
+                  label: copied ? "Copied" : "Copy verse",
+                  onClick: copyVerseText,
+                },
+                { label: "Copy as quote", onClick: copyAsQuote },
+                { label: "Copy reference", onClick: copyReference },
+                { label: "Copy link", onClick: copyVerseLink },
+              ];
+              const annotateGroup: ContextMenuGroup = [
+                {
+                  label: ann.highlighted
+                    ? "Remove highlight"
+                    : "Highlight verse",
+                  onClick: ann.toggleHighlight,
+                  destructive: !!ann.highlighted,
+                },
+                {
+                  label: ann.note ? "Edit note" : "Add note",
+                  onClick: () => {
+                    setDraft(ann.note ?? "");
+                    setEditing(true);
+                  },
+                },
+              ];
+              const groups: ContextMenuGroup[] = [copyGroup, annotateGroup];
+              if (hasCommentary) {
+                groups.push([
+                  {
+                    label: "Open commentary",
+                    onClick: () => {
+                      window.location.hash = `rail-v${verse.n}`;
+                    },
+                  },
+                ]);
+              }
+              return groups;
+            })()}
           />
         )}
         </div>

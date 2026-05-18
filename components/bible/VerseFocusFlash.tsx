@@ -22,17 +22,31 @@ export function VerseFocusFlash() {
 
     function focusFromHash() {
       const hash = window.location.hash;
-      const m = hash.match(/^#v(\d+)$/);
+      // #v123          -> single verse
+      // #v14-26        -> range (search result for "James 2:14-26"); flash all
+      const m = hash.match(/^#v(\d+)(?:-(\d+))?$/);
       if (!m) return;
+      const from = parseInt(m[1], 10);
+      const to = m[2] ? parseInt(m[2], 10) : from;
+      if (!Number.isFinite(from) || !Number.isFinite(to) || to < from) return;
+
       // Defer one frame so the verse list has mounted and laid out.
       requestAnimationFrame(() => {
-        const el = document.getElementById(`v${m[1]}`);
-        if (!el) return;
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-        el.setAttribute("data-focus", "true");
+        const head = document.getElementById(`v${from}`);
+        if (!head) return;
+        head.scrollIntoView({ behavior: "smooth", block: "center" });
+
+        const flashed: HTMLElement[] = [];
+        for (let n = from; n <= to; n++) {
+          const el = document.getElementById(`v${n}`);
+          if (el) {
+            el.setAttribute("data-focus", "true");
+            flashed.push(el);
+          }
+        }
         if (timer) clearTimeout(timer);
         timer = setTimeout(() => {
-          el.removeAttribute("data-focus");
+          for (const el of flashed) el.removeAttribute("data-focus");
         }, 1600);
       });
     }

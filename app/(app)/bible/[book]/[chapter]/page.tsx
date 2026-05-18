@@ -170,6 +170,7 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
 
               <ChapterReader
                 book={book}
+                bookName={b!.name}
                 chapter={chapterNum}
                 verses={data!.verses}
                 commentaryVerses={commentaryVerses}

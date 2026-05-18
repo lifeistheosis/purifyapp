@@ -7,16 +7,17 @@ import { searchBible, type SearchHit } from "@/lib/bible/books";
 
 /**
  * Free-form search:
- *   - "john"        -> filter books matching "john"
- *   - "john 3"      -> /bible/john/3
- *   - "john 3:16"   -> /bible/john/3#v16
- *   - "1 cor 13"    -> /bible/1-corinthians/13
- *   - "gen 1:1"     -> /bible/genesis/1#v1
- *   - "ps 23"       -> /bible/psalms/23
+ *   - "john"            -> filter books matching "john"
+ *   - "john 3"          -> /bible/john/3
+ *   - "john 3:16"       -> /bible/john/3#v16
+ *   - "1 cor 13"        -> /bible/1-corinthians/13
+ *   - "gen 1:1"         -> /bible/genesis/1#v1
+ *   - "ps 23"           -> /bible/psalms/23
+ *   - "james 2:14-26"   -> /bible/james/2#v14-26   (range; flashes all)
  */
 export function BibleSearch({
   className,
-  placeholder = "Search book, chapter, or verse (e.g. John 3:16, 1 Cor 13, Ps 23)",
+  placeholder = "Search book, chapter, verse, or range (e.g. John 3:16, James 2:14-26, Ps 23)",
 }: {
   className?: string;
   placeholder?: string;
@@ -42,7 +43,10 @@ export function BibleSearch({
   }, []);
 
   function hrefFor(h: SearchHit): string {
-    if (h.kind === "verse") return `/bible/${h.book.slug}/${h.chapter}#v${h.verse}`;
+    if (h.kind === "verse")
+      return `/bible/${h.book.slug}/${h.chapter}#v${h.verse}`;
+    if (h.kind === "range")
+      return `/bible/${h.book.slug}/${h.chapter}#v${h.verseFrom}-${h.verseTo}`;
     if (h.kind === "chapter") return `/bible/${h.book.slug}/${h.chapter}`;
     return `/bible/${h.book.slug}/1`;
   }
@@ -101,21 +105,27 @@ export function BibleSearch({
                 const label =
                   h.kind === "verse"
                     ? `${h.book.name} ${h.chapter}:${h.verse}`
-                    : h.kind === "chapter"
-                      ? `${h.book.name} ${h.chapter}`
-                      : h.book.name;
+                    : h.kind === "range"
+                      ? `${h.book.name} ${h.chapter}:${h.verseFrom}–${h.verseTo}`
+                      : h.kind === "chapter"
+                        ? `${h.book.name} ${h.chapter}`
+                        : h.book.name;
                 const sub =
                   h.kind === "verse"
                     ? `Verse ${h.verse} of chapter ${h.chapter}`
-                    : h.kind === "chapter"
-                      ? `Chapter ${h.chapter} of ${h.book.chapters}`
-                      : `${h.book.chapters} chapters · ${h.book.testament === "OT" ? "Old Testament" : "New Testament"}`;
+                    : h.kind === "range"
+                      ? `Verses ${h.verseFrom}–${h.verseTo} of chapter ${h.chapter} · ${h.verseTo - h.verseFrom + 1} verses`
+                      : h.kind === "chapter"
+                        ? `Chapter ${h.chapter} of ${h.book.chapters}`
+                        : `${h.book.chapters} chapters · ${h.book.testament === "OT" ? "Old Testament" : "New Testament"}`;
                 const key =
                   h.kind === "verse"
                     ? `${h.book.slug}-v-${h.chapter}-${h.verse}`
-                    : h.kind === "chapter"
-                      ? `${h.book.slug}-c-${h.chapter}`
-                      : `${h.book.slug}-b`;
+                    : h.kind === "range"
+                      ? `${h.book.slug}-r-${h.chapter}-${h.verseFrom}-${h.verseTo}`
+                      : h.kind === "chapter"
+                        ? `${h.book.slug}-c-${h.chapter}`
+                        : `${h.book.slug}-b`;
                 return (
                   <li key={key} role="option" aria-selected={i === activeIdx}>
                     <Link
