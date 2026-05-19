@@ -19,6 +19,20 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
   {
+    version: "v3.6",
+    kind: "Icon-corner polish — monochrome cross, hero declutter, donate links",
+    date: "May 19, 2026",
+    blurb:
+      "A small follow-up patch on top of v3.5. The home Icon Corner card drops its gold frame and candle-glow in favour of a pure black-and-white card with a proper three-bar Orthodox cross (gradient-filled beams with a soft drop-shadow), not a stick drawing. The home hero loses its Paschal greeting line and the Daily Wisdom strip — the page reads quieter. The Nahum 1:7 citation in the white Scripture break is now a real link into /bible/nahum/1#v7. Pricing is removed from the in-app secondary nav; Support takes its place. The Support page adds Cash App ($venkeshi) and PayPal (paypal.me/edgaraugustin) and drops the Monthly supporter and Direct (zero-fee) cards.",
+    items: [
+      "IconCornerCard rebuilt in pure black-and-white: no gold border, no gold inner frame, no candle-glow. Background is a flat dark gradient; the centerpiece is a filled three-bar Orthodox cross with a vertical white→light-gray gradient, soft drop-shadow, and a faint white halo behind it. Saint name demoted to a small italic caption.",
+      "Home hero: removed the Paschal greeting line (\"Christ is risen! Truly He is risen!\") and the Daily Wisdom strip below the hero. Cleaner page rhythm.",
+      "Nahum 1:7 citation in the white Scripture break is now a link to /bible/nahum/1#v7.",
+      "AppNav (in-app secondary nav): Pricing replaced by Support. The /pricing route still exists but is no longer reachable from nav surfaces.",
+      "/support donation paths: added Cash App ($venkeshi → cash.app/$venkeshi) and PayPal (paypal.me/edgaraugustin). Removed Monthly supporter and Direct (zero-fee) cards. Cards now: Cash App, PayPal, Buy Me a Coffee.",
+    ],
+  },
+  {
     version: "v3.5",
     kind: "Prayer section — whole new revision with Byzantine icons",
     date: "May 19, 2026",

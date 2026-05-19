@@ -52,19 +52,19 @@ export const SUPPORT = {
   /** Donation links — populate when wired up. */
   donateLinks: [
     {
+      label: "Cash App",
+      href: "https://cash.app/$venkeshi",
+      note: "$venkeshi",
+    },
+    {
+      label: "PayPal",
+      href: "https://www.paypal.com/paypalme/edgaraugustin",
+      note: "@edgaraugustin",
+    },
+    {
       label: "Buy Me a Coffee",
       href: "https://buymeacoffee.com/purifyapp",
       note: "One-time gifts of any size. The live counter on this page pulls from here.",
-    },
-    {
-      label: "Monthly supporter",
-      href: "mailto:team@purify.app?subject=Monthly%20supporter",
-      note: "Email us to set up a recurring gift. Stripe link coming soon.",
-    },
-    {
-      label: "Direct (zero-fee)",
-      href: "mailto:team@purify.app?subject=Direct%20gift",
-      note: "Wire, check, or in-person. No processing fees.",
     },
   ],
 };

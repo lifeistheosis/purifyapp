@@ -16,7 +16,7 @@ const NAV = [
 ];
 
 const SECONDARY = [
-  { label: "Pricing", href: "/pricing" },
+  { label: "Support", href: "/support" },
   { label: "Account", href: "/account" },
 ];
 

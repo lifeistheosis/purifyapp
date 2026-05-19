@@ -4,10 +4,8 @@ import { Navbar } from "@/components/nav/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SectionScroller } from "@/components/SectionScroller";
 import { IconCornerCard } from "@/components/marketing/IconCornerCard";
-import { DailyWisdom } from "@/components/marketing/DailyWisdom";
 import { SeasonBanner } from "@/components/marketing/SeasonBanner";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
-import { liturgicalGreeting, startOfDayUtc } from "@/lib/calendar/orthodox";
 
 // ISR so the live home-page surface (Today card, daily wisdom, season
 // banner, paschal greeting) refreshes daily without a redeploy.
@@ -71,7 +69,6 @@ const sectionBase =
   "snap-start md:[min-height:100dvh] flex items-center px-5 md:px-8 pt-24 md:pt-20 pb-16 md:pb-12";
 
 export default function Home() {
-  const greeting = liturgicalGreeting(startOfDayUtc(new Date()));
   return (
     <>
       <SectionScroller />
@@ -105,12 +102,6 @@ export default function Home() {
                 →
               </span>
             </Link>
-            <p
-              className="font-serif italic text-[14px] mb-3"
-              style={{ color: "#d4af37" }}
-            >
-              {greeting}
-            </p>
             <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/70 mb-4">
               An Orthodox prayer companion
             </p>
@@ -143,9 +134,6 @@ export default function Home() {
 
       {/* Season banner — auto-surfaces during major Orthodox seasons. */}
       <SeasonBanner />
-
-      {/* Daily Wisdom — alternating Scripture verses + Father sayings. */}
-      <DailyWisdom />
 
       {/* FEATURES */}
       <section className={`${sectionBase} bg-night`}>
@@ -182,9 +170,12 @@ export default function Home() {
           <p className="font-serif text-[36px] md:text-[52px] leading-[1.15] tracking-[-0.01em] text-night">
             &ldquo;The Lord is good to those who trust in him.&rdquo;
           </p>
-          <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-ink-soft mt-7">
+          <Link
+            href="/bible/nahum/1#v7"
+            className="inline-block mt-7 font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-ink-soft hover:text-night transition-colors underline-offset-4 hover:underline"
+          >
             Nahum 1:7
-          </p>
+          </Link>
         </div>
       </section>
 
