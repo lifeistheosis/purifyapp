@@ -13,6 +13,10 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import https from "node:https";
+import {
+  patchAllEnglishStrongs,
+  findLowCoverageChapters,
+} from "./patch-english-strongs.mjs";
 
 const ROOT = process.cwd();
 const OUT = path.join(ROOT, "data", "bible", "english-tagged");
@@ -210,4 +214,26 @@ async function assertCleanOutput() {
   const n = await buildNT();
   console.log(`English tagged chapters written: ${n}`);
   await assertCleanOutput();
+
+  // Recovery pass: back-fill Strong's numbers that the upstream source
+  // dropped on trailing words of many verses. Idempotent; no-op when
+  // already patched.
+  const { total } = await patchAllEnglishStrongs();
+  console.log(`Recovery: ${total} tokens patched.`);
+
+  // Coverage guard: fail loudly if any chapter has > 15% untagged
+  // content tokens after recovery.
+  const flagged = await findLowCoverageChapters(0.15);
+  if (flagged.length > 0) {
+    console.error(
+      `Coverage check failed: ${flagged.length} chapter(s) above the 15% untagged-content-token threshold.`,
+    );
+    for (const f of flagged.slice(0, 20)) {
+      console.error(
+        `  ${f.book} ${f.chapter}: ${f.untagged}/${f.content} (${(f.ratio * 100).toFixed(1)}%)`,
+      );
+    }
+    process.exit(1);
+  }
+  console.log("Coverage check passed: every NT chapter <= 15% untagged content.");
 })();
