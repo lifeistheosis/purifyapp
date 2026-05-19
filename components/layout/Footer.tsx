@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-type LinkItem = { label: string; href: string };
+type LinkItem = { label: string; href: string; external?: boolean };
 
 const cols: { heading: string; links: LinkItem[] }[] = [
   {
@@ -49,6 +49,7 @@ const cols: { heading: string; links: LinkItem[] }[] = [
       { label: "What's new", href: "/whats-new" },
       { label: "Your saved", href: "/saved" },
       { label: "Your account", href: "/account" },
+      { label: "Discord", href: "https://discord.gg/VzBYYUsNJ6", external: true },
       { label: "Write to us", href: "mailto:team@purify.app" },
     ],
   },
@@ -69,9 +70,16 @@ export function Footer() {
                   <li key={l.href + l.label}>
                     <Link
                       href={l.href}
+                      target={l.external ? "_blank" : undefined}
+                      rel={l.external ? "noopener noreferrer" : undefined}
                       className="font-sans text-[14px] text-paper/75 hover:text-paper transition-colors duration-150"
                     >
                       {l.label}
+                      {l.external && (
+                        <span aria-hidden className="ml-1 text-paper/40">
+                          ↗
+                        </span>
+                      )}
                     </Link>
                   </li>
                 ))}
@@ -79,7 +87,18 @@ export function Footer() {
             </div>
           ))}
         </div>
-        <div className="mt-14 pt-8 border-t border-white/8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        {/* Community strip — soft invitation to the Discord. */}
+        <div className="mt-12 pt-6 border-t border-white/8 text-center">
+          <a
+            href="https://discord.gg/VzBYYUsNJ6"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-sans text-[13px] text-[#a4adff] hover:text-paper transition-colors"
+          >
+            Join the Discord — talk through prayer, akathists, and the road ahead →
+          </a>
+        </div>
+        <div className="mt-8 pt-6 border-t border-white/8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <Link
             href="/"
             className="font-sans text-[20px] font-bold tracking-[-0.01em] text-paper"
@@ -90,7 +109,7 @@ export function Footer() {
             Glory to God for all things.
           </p>
           <p className="font-sans text-[12px] text-paper/45 text-center sm:text-right">
-            © {new Date().getFullYear()} · v3.3 · Beta · Public-domain texts unless otherwise noted.
+            © {new Date().getFullYear()} · v3.4 · Beta · Public-domain texts unless otherwise noted.
           </p>
         </div>
       </div>

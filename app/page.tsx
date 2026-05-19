@@ -32,7 +32,7 @@ const categories: { label: string; href: string }[] = [
   { label: "Morning prayers", href: "/prayers/morning" },
   { label: "Evening prayers", href: "/prayers/evening" },
   { label: "Akathists", href: "/prayers" },
-  { label: "The Jesus Prayer", href: "/prayers/jesus-prayer" },
+  { label: "The Jesus Prayer", href: "/prayers/learning/jesus-prayer" },
   { label: "Daily Gospel", href: "/calendar" },
   { label: "Lives of saints", href: "/saints" },
   { label: "Psalter", href: "/bible/psalms/1" },
@@ -54,8 +54,8 @@ const challenges: {
   {
     eyebrow: "The prayer of the heart",
     title: "Learn the Jesus Prayer",
-    body: "A short prayer that has carried Orthodox Christians for sixteen centuries. A counter, a goal, an optional breath cue.",
-    href: "/prayers/jesus-prayer",
+    body: "A short prayer that has carried Orthodox Christians for sixteen centuries. Pray it in the breath; the bringing-back is half the work.",
+    href: "/prayers/learning/jesus-prayer",
   },
   {
     eyebrow: "For your household",
@@ -98,8 +98,8 @@ export default function Home() {
                 New
               </span>
               <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
-                <span className="sm:hidden">Beta v3.3 · Accounts, saved, highlighted writings</span>
-                <span className="hidden sm:inline">Beta v3.3 · Accounts, saved, and highlighted writings</span>
+                <span className="sm:hidden">Beta v3.4 · Prayer, Bible, Discord</span>
+                <span className="hidden sm:inline">Beta v3.4 · Prayer reset, Bible reader polish, Discord</span>
               </span>
               <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
                 →

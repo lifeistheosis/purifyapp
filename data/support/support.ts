@@ -53,8 +53,8 @@ export const SUPPORT = {
   donateLinks: [
     {
       label: "Buy Me a Coffee",
-      href: "https://buymeacoffee.com/purify",
-      note: "One-time gifts of any size.",
+      href: "https://buymeacoffee.com/purifyapp",
+      note: "One-time gifts of any size. The live counter on this page pulls from here.",
     },
     {
       label: "Monthly supporter",

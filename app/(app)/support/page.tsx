@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SUPPORT } from "@/data/support/support";
+import { fetchBmcTotal } from "@/lib/support/buymeacoffee";
 
 export const metadata = {
   title: "Support",
@@ -7,20 +8,41 @@ export const metadata = {
     "How the project is funded, what the money goes toward, and how to help. Free now. Transparent goal. No paywall on what is shipped.",
 };
 
+// Server component; revalidates every five minutes so the live BMC total
+// is fresh without redeploying.
+export const revalidate = 300;
+
 const SECTION = "px-5 md:px-8 py-16 md:py-24";
 
 function formatUsd(n: number): string {
-  return n.toLocaleString("en-US", { style: "currency", currency: SUPPORT.currency, maximumFractionDigits: 0 });
+  return n.toLocaleString("en-US", {
+    style: "currency",
+    currency: SUPPORT.currency,
+    maximumFractionDigits: 0,
+  });
 }
 
-export default function SupportPage() {
+function ago(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  if (!Number.isFinite(diffMs)) return "just now";
+  const m = Math.floor(diffMs / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m} min ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return new Date(iso).toLocaleDateString();
+}
+
+export default async function SupportPage() {
+  const live = await fetchBmcTotal();
+  const raised = live?.monthlyRaisedUsd ?? SUPPORT.monthlyRaisedUsd;
   const totalMonthlyExpense = SUPPORT.expenses.reduce(
     (s, e) => s + e.monthlyUsd,
     0,
   );
   const pct = Math.min(
     1,
-    Math.max(0, SUPPORT.monthlyRaisedUsd / SUPPORT.monthlyGoalUsd),
+    Math.max(0, raised / SUPPORT.monthlyGoalUsd),
   );
 
   return (
@@ -46,12 +68,14 @@ export default function SupportPage() {
               This month&rsquo;s goal
             </p>
             <p className="font-sans text-[11px] text-paper/40">
-              Updated {SUPPORT.lastUpdated}
+              {live
+                ? `Live · refreshed ${ago(live.fetchedAt)}`
+                : `Updated ${SUPPORT.lastUpdated}`}
             </p>
           </div>
           <div className="flex items-baseline justify-between gap-3 mb-3">
             <p className="font-sans text-[28px] md:text-[32px] font-bold text-paper tabular-nums">
-              {formatUsd(SUPPORT.monthlyRaisedUsd)}
+              {formatUsd(raised)}
               <span className="text-paper/45 text-[18px] font-normal">
                 {" "}of {formatUsd(SUPPORT.monthlyGoalUsd)}
               </span>
@@ -67,8 +91,25 @@ export default function SupportPage() {
             />
           </div>
           <p className="mt-3 font-sans text-[12.5px] text-paper/55">
-            We list real numbers, not vanity metrics. The goal moves with
-            actual monthly expenses below.
+            {live ? (
+              <>
+                Real numbers, pulled from Buy Me a Coffee.
+                {live.supporters > 0 ? (
+                  <>
+                    {" "}
+                    {live.supporters}{" "}
+                    {live.supporters === 1 ? "supporter" : "supporters"} this
+                    month.
+                  </>
+                ) : null}{" "}
+                The goal moves with the monthly expenses below.
+              </>
+            ) : (
+              <>
+                We list real numbers, not vanity metrics. The goal moves with
+                actual monthly expenses below.
+              </>
+            )}
           </p>
         </section>
 
@@ -83,7 +124,9 @@ export default function SupportPage() {
                 key={d.label}
                 href={d.href}
                 target={d.href.startsWith("http") ? "_blank" : undefined}
-                rel={d.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                rel={
+                  d.href.startsWith("http") ? "noopener noreferrer" : undefined
+                }
                 className="group rounded-md border border-paper/15 bg-paper/[0.03] hover:border-[#d4af37]/55 hover:bg-[#d4af37]/[0.06] transition-colors p-5"
               >
                 <p className="font-sans text-[16px] font-semibold text-paper leading-tight">
@@ -98,6 +141,34 @@ export default function SupportPage() {
               </Link>
             ))}
           </div>
+        </section>
+
+        {/* Or join the community — Discord */}
+        <section className="mt-10">
+          <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+            Or join the community
+          </p>
+          <a
+            href="https://discord.gg/VzBYYUsNJ6"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group block rounded-md border border-[#5865F2]/35 bg-[#5865F2]/[0.06] hover:border-[#5865F2]/65 hover:bg-[#5865F2]/[0.10] transition-colors p-5"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <p className="font-sans text-[16px] font-semibold text-paper leading-tight">
+                  Discord
+                </p>
+                <p className="mt-2 font-sans text-[13.5px] text-paper/70 leading-[1.6] max-w-[560px]">
+                  Prayer requests, akathist suggestions, content questions, and
+                  a place to be heard. Open to everyone.
+                </p>
+              </div>
+              <span className="shrink-0 font-sans text-[13px] font-medium text-[#a4adff] group-hover:text-[#c7cdff] transition-colors mt-1">
+                Open Discord ↗
+              </span>
+            </div>
+          </a>
         </section>
 
         {/* Expense breakdown */}

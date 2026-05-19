@@ -9,6 +9,7 @@ import { StudyRail } from "@/components/bible/StudyRail";
 import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
 import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
 import { ReadingProgressBar } from "@/components/bible/ReadingProgressBar";
+import { ChapterStickyHeader } from "@/components/bible/ChapterStickyHeader";
 import { MobileChapterStrip } from "@/components/bible/MobileChapterStrip";
 import { MobileNextChapterFab } from "@/components/bible/MobileNextChapterFab";
 import { ReaderSettingsMenu } from "@/components/bible/ReaderSettingsMenu";
@@ -103,47 +104,44 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
         chapter={chapterNum}
         totalVerses={data!.verses.length}
       />
+      <ChapterStickyHeader
+        bookName={b!.name}
+        chapter={chapterNum}
+        totalVerses={data!.verses.length}
+      />
       <MobileNextChapterFab slug={book} chapter={chapterNum} />
       <BookChapterSidebar book={b!} current={chapterNum} />
       {/* Extra mobile top padding accounts for the fixed ReadingProgressBar
           context strip (~28px) sitting under the 72px sticky navbar. */}
       <section className="flex-1 px-5 md:px-10 pt-14 md:pt-16 pb-10 md:pb-16 min-w-0">
         <div className="mx-auto max-w-[1200px] w-full">
-          <div className="mb-6 flex flex-wrap items-center gap-3">
+          <div className="mb-4 flex flex-wrap items-center gap-3">
             <TranslationSwitcher currentSlug={book} />
             <BookSwitcher currentSlug={book} />
-            {/* Desktop: font controls inline */}
-            <div className="hidden md:flex items-center gap-3">
+            {/* Desktop: font controls + interlinear sit together as the
+                typography cluster. Mobile: collapse into ReaderSettingsMenu. */}
+            <div className="hidden md:flex items-center gap-3 ml-auto">
               <ReaderFontSizeButton />
               <ReaderFontFamilyButton />
+              {isNT && <InterlinearToggle />}
             </div>
-            {/* Mobile: collapse font + interlinear into a single Reader menu */}
-            <div className="md:hidden">
+            <div className="md:hidden ml-auto">
               <ReaderSettingsMenu showInterlinear={isNT} />
             </div>
           </div>
-          <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-3">
-            <div className="flex-1 min-w-0 max-w-[640px]">
-              <BibleSearch />
-            </div>
-            {/* Interlinear toggle stays inline on desktop only; the mobile
-                version lives inside ReaderSettingsMenu above. */}
-            {isNT && (
-              <div className="hidden md:block">
-                <InterlinearToggle />
-              </div>
-            )}
+          <div className="mb-6">
+            <BibleSearch />
           </div>
           <MobileChapterStrip book={b!} current={chapterNum} />
 
           <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
             {/* Reader column */}
             <div className="min-w-0">
-              <header className="mb-6">
+              <header id="chapter-title" className="mb-6">
                 <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55">
                   {b!.name}
                 </p>
-                <h1 className="mt-1 font-serif text-[44px] md:text-[56px] leading-none text-paper">
+                <h1 className="mt-1 font-serif text-[36px] md:text-[44px] leading-none text-paper">
                   Chapter {chapterNum}
                 </h1>
               </header>

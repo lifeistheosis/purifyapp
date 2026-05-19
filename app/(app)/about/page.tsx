@@ -28,7 +28,7 @@ export default function AboutPage() {
           (Septuagint and King James), the calendar (the saint of the
           day, the fast, Pascha), the saints (their lives and their
           works), and daily prayer (the Morning Rule, the Evening Rule,
-          the Jesus Prayer counter): all in one place, calm enough to
+          the Jesus Prayer): all in one place, calm enough to
           use at any hour. Built for anyone curious about, exploring,
           or rooted in the Orthodox Faith.
         </p>
@@ -103,6 +103,24 @@ export default function AboutPage() {
           </Link>{" "}
           are signed by Edgar; the rest of the copy is the Purify Team.
           We ship slow. We try to ship honestly.
+        </p>
+
+        {/* Community */}
+        <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+          Community
+        </p>
+        <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
+          There is a Discord for readers &mdash; a quiet place for prayer
+          requests, content questions, and a sense of who else is reading.
+          You can sit and listen, or come in and say something.{" "}
+          <a
+            href="https://discord.gg/VzBYYUsNJ6"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#a4adff] hover:text-paper underline underline-offset-2 decoration-[#a4adff]/35"
+          >
+            Join the Discord ↗
+          </a>
         </p>
 
         {/* Money */}

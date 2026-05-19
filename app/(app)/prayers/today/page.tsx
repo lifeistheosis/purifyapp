@@ -10,7 +10,6 @@ import {
 } from "@/lib/calendar/orthodox";
 import { SaintIcon } from "@/components/saints/SaintIcon";
 import { getSaint } from "@/lib/saints/saints";
-import { JesusPrayerTodayBadge } from "@/components/prayers/JesusPrayerTodayBadge";
 
 export const metadata = {
   title: "Today's prayer",
@@ -158,35 +157,28 @@ export default function PrayersTodayPage() {
             </Link>
           </div>
 
-          {/* Jesus Prayer card */}
-          <Link
-            href="/prayers/jesus-prayer"
-            className="group block mt-3 rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-[#d4af37]/55 hover:bg-[#d4af37]/[0.06] transition-colors p-5"
-          >
-            <div className="flex items-start justify-between gap-4 flex-wrap">
-              <div className="min-w-0 flex-1">
-                <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-[#d4af37]/85 mb-2">
-                  The Jesus Prayer
-                </p>
-                <h2 className="font-serif text-[24px] text-paper leading-tight">
-                  Lord Jesus Christ, Son of God, have mercy on me, a sinner.
-                </h2>
-                <p className="mt-3 font-sans text-[13px] text-paper/65 leading-[1.6]">
-                  Guided counter with goal presets and an optional breath cue.
-                  Builds a day-streak when you pray at least 33 in a day.
-                </p>
-                <p className="mt-4 font-sans text-[13px] font-medium text-paper/75 group-hover:text-[#d4af37] transition-colors">
-                  Open the counter →
-                </p>
-              </div>
-              <div className="shrink-0 rounded-md border border-paper/15 bg-night px-4 py-3">
-                <p className="font-sans text-[10.5px] uppercase tracking-[1.5px] text-paper/45 mb-1">
-                  Today
-                </p>
-                <JesusPrayerTodayBadge />
-              </div>
-            </div>
-          </Link>
+          {/* The Jesus Prayer — quiet card, no counter, no streak.
+              Body invites the reader to pray it without telling them how
+              many times. */}
+          <div className="mt-3 rounded-lg border border-paper/12 bg-paper/[0.03] p-5">
+            <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-[#d4af37]/85 mb-2">
+              The Jesus Prayer
+            </p>
+            <p className="font-serif text-[20px] md:text-[22px] text-paper leading-[1.4]">
+              Lord Jesus Christ, Son of God, have mercy on me, a sinner.
+            </p>
+            <p className="mt-3 font-sans text-[13px] text-paper/65 leading-[1.6] max-w-[640px]">
+              Pray it in the breath, with the heart, at any time. The
+              monastics call it the prayer of the heart; the Fathers say
+              the bringing-back is half the work.{" "}
+              <Link
+                href="/prayers/learning/jesus-prayer"
+                className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
+              >
+                Learn how →
+              </Link>
+            </p>
+          </div>
         </div>
       </section>
 

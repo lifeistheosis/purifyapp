@@ -21,8 +21,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/prayers/today",
     "/prayers/morning",
     "/prayers/evening",
-    "/prayers/jesus-prayer",
     "/prayers/learning",
+    "/saved",
+    "/account",
   ];
 
   const entries: MetadataRoute.Sitemap = STATIC.map((p) => ({
