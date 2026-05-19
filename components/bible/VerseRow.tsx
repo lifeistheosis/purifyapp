@@ -30,6 +30,7 @@ export function VerseRow({
   chapter,
   verse,
   hasCommentary = false,
+  onOpenCommentary,
   originalText,
   originalTokens,
   englishTokens,
@@ -42,6 +43,11 @@ export function VerseRow({
   chapter: number;
   verse: Verse;
   hasCommentary?: boolean;
+  /** Mobile callback: when set, the verse-number badge opens a bottom-sheet
+   *  with this verse's commentary on tap instead of routing to `#rail-vN`
+   *  (which doesn't exist on mobile any more). Only wired when
+   *  `hasCommentary` is true. */
+  onOpenCommentary?: () => void;
   /** Greek NT / Greek LXX text for this verse, when Interlinear is on. */
   originalText?: string;
   /** Word-by-word Greek tokens with Strong's. */
@@ -155,6 +161,34 @@ export function VerseRow({
   const [dragEnd, setDragEnd] = useState<number | null>(null);
   const dragStartRef = useRef<number | null>(null);
 
+  // Mobile gesture state — long-press gates highlight selection so that a
+  // tap or a tap-then-scroll never commits a highlight (only an explicit
+  // long-press does).
+  const [selecting, setSelecting] = useState(false);
+  const selectingRef = useRef(false);
+  const pressTimerRef = useRef<number | null>(null);
+  const pressOriginRef = useRef<
+    { x: number; y: number; idx: number } | null
+  >(null);
+  const LONG_PRESS_MS = 400;
+  const SCROLL_SLOP_PX = 8;
+
+  function clearPressTimer() {
+    if (pressTimerRef.current !== null) {
+      window.clearTimeout(pressTimerRef.current);
+      pressTimerRef.current = null;
+    }
+  }
+  function cancelPress() {
+    clearPressTimer();
+    pressOriginRef.current = null;
+    selectingRef.current = false;
+    setSelecting(false);
+    setDragStart(null);
+    setDragEnd(null);
+    dragStartRef.current = null;
+  }
+
   // Re-sync draft when annotation hydrates from localStorage.
   useEffect(() => {
     setDraft(ann.note ?? "");
@@ -227,31 +261,63 @@ export function VerseRow({
       document.elementFromPoint(t.clientX, t.clientY),
     );
     if (idx === null) return;
-    startDrag(idx);
+    // Stash the origin and arm a long-press timer. Do NOT start the drag
+    // yet — only an explicit long-press should enter select-mode. A pure
+    // tap (and the touchstart of a scroll) must leave annotations alone.
+    pressOriginRef.current = { x: t.clientX, y: t.clientY, idx };
+    clearPressTimer();
+    pressTimerRef.current = window.setTimeout(() => {
+      pressTimerRef.current = null;
+      selectingRef.current = true;
+      setSelecting(true);
+      startDrag(idx);
+      // Subtle haptic if the platform supports it.
+      try {
+        navigator.vibrate?.(15);
+      } catch {
+        /* no-op */
+      }
+    }, LONG_PRESS_MS);
   }
 
   function onWordsTouchMove(e: React.TouchEvent<HTMLParagraphElement>) {
     const t = e.touches[0];
-    if (!t || dragStartRef.current === null) return;
+    if (!t) return;
+    if (!selectingRef.current) {
+      // Pre-selection: if the finger has drifted enough to look like a
+      // scroll, cancel the pending long-press and let the browser scroll
+      // naturally. Diagonal motion is treated as scroll-leaning when the
+      // dominant axis is vertical.
+      const origin = pressOriginRef.current;
+      if (!origin) return;
+      const dx = Math.abs(t.clientX - origin.x);
+      const dy = Math.abs(t.clientY - origin.y);
+      if (dy > SCROLL_SLOP_PX || dx > SCROLL_SLOP_PX * 2) {
+        cancelPress();
+      }
+      return;
+    }
+    // Already in select-mode: extend the range and own the gesture.
+    if (dragStartRef.current === null) return;
     const idx = wordIndexFromElement(
       document.elementFromPoint(t.clientX, t.clientY),
     );
     if (idx === null) return;
-    // Only suppress page scroll once the user has actually moved to a
-    // different word — otherwise scrolling stays natural for normal taps.
-    if (idx !== dragStartRef.current) e.preventDefault();
+    e.preventDefault();
     setDragEnd(idx);
   }
 
   function onWordsTouchEnd() {
-    const start = dragStartRef.current;
-    const end = dragEnd ?? start;
-    if (start !== null && end !== null) {
-      ann.toggleWordRange(start, end);
+    // Only commit a highlight if the long-press actually fired and we
+    // entered select-mode. A bare tap (or a tap-then-scroll) is a no-op.
+    if (selectingRef.current) {
+      const start = dragStartRef.current;
+      const end = dragEnd ?? start;
+      if (start !== null && end !== null) {
+        ann.toggleWordRange(start, end);
+      }
     }
-    setDragStart(null);
-    setDragEnd(null);
-    dragStartRef.current = null;
+    cancelPress();
   }
 
   // Build the highlight set: persisted ∪ in-flight drag range.
@@ -344,9 +410,12 @@ export function VerseRow({
         >
         <p
           className={cn(
-            "indent-0 min-w-0",
+            "indent-0 min-w-0 transition-colors duration-150",
             dragging && "select-none",
+            selecting &&
+              "bg-[#d4af37]/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(212,175,55,0.35)]",
           )}
+          style={{ touchAction: "pan-y" }}
           onMouseDown={onWordsMouseDown}
           onTouchStart={onWordsTouchStart}
           onTouchMove={onWordsTouchMove}
@@ -355,20 +424,42 @@ export function VerseRow({
           onContextMenu={openContextMenu}
         >
           {hasCommentary ? (
-            <a
-              href={`#rail-v${verse.n}`}
-              className="group/cmt inline-flex items-baseline mr-1.5 align-super text-accent/75 hover:text-accent transition-colors"
-              aria-label={`Open commentary on verse ${verse.n}`}
-              title="Open commentary"
-            >
-              <sup className="font-sans text-[10px] font-semibold tracking-[0.05em] group-hover/cmt:underline underline-offset-2">
-                {verse.n}
-              </sup>
-              <span
-                aria-hidden
-                className="ml-[2px] inline-block h-[5px] w-[5px] rounded-full bg-accent/75 group-hover/cmt:bg-accent transition-colors"
-              />
-            </a>
+            // Desktop: anchor link to the sticky right-rail section.
+            // Mobile (`lg:hidden`): a button that opens the bottom sheet.
+            <span className="inline-flex items-baseline mr-1.5 align-super">
+              <a
+                href={`#rail-v${verse.n}`}
+                className="hidden lg:inline-flex group/cmt items-baseline text-accent/75 hover:text-accent transition-colors"
+                aria-label={`Open commentary on verse ${verse.n}`}
+                title="Open commentary"
+              >
+                <sup className="font-sans text-[10px] font-semibold tracking-[0.05em] group-hover/cmt:underline underline-offset-2">
+                  {verse.n}
+                </sup>
+                <span
+                  aria-hidden
+                  className="ml-[2px] inline-block h-[5px] w-[5px] rounded-full bg-accent/75 group-hover/cmt:bg-accent transition-colors"
+                />
+              </a>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onOpenCommentary?.();
+                }}
+                className="lg:hidden group/cmt inline-flex items-baseline text-accent/75 active:text-accent transition-colors"
+                aria-label={`Open commentary on verse ${verse.n}`}
+              >
+                <sup className="font-sans text-[10px] font-semibold tracking-[0.05em]">
+                  {verse.n}
+                </sup>
+                <span
+                  aria-hidden
+                  className="ml-[2px] inline-block h-[5px] w-[5px] rounded-full bg-accent/75"
+                />
+              </button>
+            </span>
           ) : (
             <sup className="font-sans text-[10px] font-medium text-paper/40 tracking-[0.05em] mr-1.5 align-super">
               {verse.n}

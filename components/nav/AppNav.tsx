@@ -90,7 +90,7 @@ export function AppNav() {
           type="button"
           aria-label="Toggle menu"
           aria-expanded={open}
-          className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-pill border border-paper/20 text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
+          className="md:hidden inline-flex items-center justify-center h-11 w-11 rounded-pill border border-paper/20 text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
           onClick={() => setOpen((v) => !v)}
         >
           <span className="text-[18px]">{open ? "✕" : "≡"}</span>

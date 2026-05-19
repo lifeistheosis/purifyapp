@@ -1,8 +1,10 @@
 "use client";
 
-import type { Verse, Token } from "@/lib/bible/load";
+import { useState } from "react";
+import type { Verse, Token, ChapterCommentary } from "@/lib/bible/load";
 import type { StrongsEntry } from "@/lib/bible/strongs";
 import { VerseRow } from "./VerseRow";
+import { MobileCommentarySheet } from "./MobileCommentarySheet";
 import {
   FONT_CLASSES,
   SIZE_CLASSES,
@@ -16,6 +18,7 @@ export function ChapterReader({
   chapter,
   verses,
   commentaryVerses,
+  commentary,
   originalByNum,
   tokensByNum,
   englishTokensByNum,
@@ -28,6 +31,9 @@ export function ChapterReader({
   chapter: number;
   verses: Verse[];
   commentaryVerses?: number[];
+  /** Full commentary map for the chapter. Passed through so the mobile
+   *  commentary sheet can pull the right verse's notes when opened. */
+  commentary?: ChapterCommentary;
   /** Verse number -> original-language text (Greek NT or Greek LXX OT). */
   originalByNum?: Record<number, string>;
   /** Verse number -> tokenized original-language words (NT only, Strong's-tagged). */
@@ -40,30 +46,45 @@ export function ChapterReader({
 }) {
   const { size, font } = useReaderPrefs();
   const has = new Set(commentaryVerses ?? []);
+  const [openVerse, setOpenVerse] = useState<number | null>(null);
   return (
-    <article
-      className={cn(
-        "text-paper/90",
-        FONT_CLASSES[font],
-        SIZE_CLASSES[size],
+    <>
+      <article
+        className={cn(
+          "text-paper/90",
+          FONT_CLASSES[font],
+          SIZE_CLASSES[size],
+        )}
+      >
+        <div className="space-y-1.5">
+          {verses.map((v) => (
+            <VerseRow
+              key={v.n}
+              book={book}
+              bookName={bookName}
+              chapter={chapter}
+              verse={v}
+              hasCommentary={has.has(v.n)}
+              onOpenCommentary={
+                has.has(v.n) ? () => setOpenVerse(v.n) : undefined
+              }
+              originalText={originalByNum?.[v.n]}
+              originalTokens={tokensByNum?.[v.n]}
+              englishTokens={englishTokensByNum?.[v.n]}
+              strongs={strongs}
+            />
+          ))}
+        </div>
+      </article>
+      {commentary && (
+        <MobileCommentarySheet
+          bookName={bookName}
+          chapter={chapter}
+          verse={openVerse}
+          commentary={commentary}
+          onClose={() => setOpenVerse(null)}
+        />
       )}
-    >
-      <div className="space-y-1.5">
-        {verses.map((v) => (
-          <VerseRow
-            key={v.n}
-            book={book}
-            bookName={bookName}
-            chapter={chapter}
-            verse={v}
-            hasCommentary={has.has(v.n)}
-            originalText={originalByNum?.[v.n]}
-            originalTokens={tokensByNum?.[v.n]}
-            englishTokens={englishTokensByNum?.[v.n]}
-            strongs={strongs}
-          />
-        ))}
-      </div>
-    </article>
+    </>
   );
 }

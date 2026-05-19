@@ -172,6 +172,7 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
                 chapter={chapterNum}
                 verses={data!.verses}
                 commentaryVerses={commentaryVerses}
+                commentary={commentary}
                 originalByNum={originalByNum}
                 tokensByNum={tokensByNum}
                 englishTokensByNum={englishTokensByNum}
@@ -191,23 +192,8 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
                 (public domain).
               </p>
 
-              {/* Mobile + tablet: study content collapsed below the verses */}
-              {hasCommentary && (
-                <details className="lg:hidden mt-12 group rounded-md border border-paper/10 bg-paper/[0.03] open:bg-paper/[0.05]">
-                  <summary className="cursor-pointer list-none px-4 py-3 flex items-center justify-between font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/70 hover:text-paper transition-colors">
-                    Patristic commentary
-                    <span
-                      aria-hidden
-                      className="text-[11px] text-paper/45 transition-transform duration-200 group-open:rotate-180"
-                    >
-                      ▾
-                    </span>
-                  </summary>
-                  <div className="px-4 pb-5 pt-2">
-                    <StudyRail commentary={commentary} anchorIds={false} />
-                  </div>
-                </details>
-              )}
+              {/* Mobile + tablet: commentary is opened on demand via the
+                  verse-number glyph; ChapterReader owns the MobileCommentarySheet. */}
             </div>
 
             {/* Desktop study rail */}
