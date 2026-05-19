@@ -98,8 +98,8 @@ export default function Home() {
                 New
               </span>
               <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
-                <span className="sm:hidden">Beta v3.4 · Prayer, Bible, Discord</span>
-                <span className="hidden sm:inline">Beta v3.4 · Prayer reset, Bible reader polish, Discord</span>
+                <span className="sm:hidden">Beta v3.5 · Prayer, with icons</span>
+                <span className="hidden sm:inline">Beta v3.5 · The prayer section, with traditional Byzantine icons</span>
               </span>
               <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
                 →

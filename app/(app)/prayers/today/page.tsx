@@ -10,6 +10,7 @@ import {
 } from "@/lib/calendar/orthodox";
 import { SaintIcon } from "@/components/saints/SaintIcon";
 import { getSaint } from "@/lib/saints/saints";
+import { PrayerIcon } from "@/components/prayers/PrayerIcon";
 
 export const metadata = {
   title: "Today's prayer",
@@ -118,42 +119,48 @@ export default function PrayersTodayPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <Link
               href="/prayers/morning"
-              className="group rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-[#d4af37]/55 hover:bg-[#d4af37]/[0.06] transition-colors p-5"
+              className="group flex gap-4 rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-[#d4af37]/55 hover:bg-[#d4af37]/[0.06] transition-colors p-5"
             >
-              <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-[#d4af37]/85 mb-2">
-                Morning rule
-              </p>
-              <h2 className="font-serif text-[24px] text-paper leading-tight">
-                Begin the day with God
-              </h2>
-              <p className="mt-3 font-sans text-[13px] text-paper/65 leading-[1.6]">
-                Sign of the Cross, O Heavenly King, the Trisagion, the Lord&rsquo;s
-                Prayer, Rising from Sleep, the Jesus Prayer, the Theotokos hymn,
-                and the dismissal. About 8 minutes.
-              </p>
-              <p className="mt-4 font-sans text-[13px] font-medium text-paper/75 group-hover:text-[#d4af37] transition-colors">
-                Open the rule →
-              </p>
+              <PrayerIcon slug="anastasis" size="sm" />
+              <div className="min-w-0 flex-1">
+                <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-[#d4af37]/85 mb-2">
+                  Morning rule
+                </p>
+                <h2 className="font-serif text-[24px] text-paper leading-tight">
+                  Begin the day with God
+                </h2>
+                <p className="mt-3 font-sans text-[13px] text-paper/65 leading-[1.6]">
+                  Sign of the Cross, O Heavenly King, the Trisagion, the
+                  Lord&rsquo;s Prayer, Rising from Sleep, the Jesus Prayer,
+                  the Theotokos hymn, and the dismissal. About 8 minutes.
+                </p>
+                <p className="mt-4 font-sans text-[13px] font-medium text-paper/75 group-hover:text-[#d4af37] transition-colors">
+                  Open the rule →
+                </p>
+              </div>
             </Link>
 
             <Link
               href="/prayers/evening"
-              className="group rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-[#d4af37]/55 hover:bg-[#d4af37]/[0.06] transition-colors p-5"
+              className="group flex gap-4 rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-[#d4af37]/55 hover:bg-[#d4af37]/[0.06] transition-colors p-5"
             >
-              <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-[#d4af37]/85 mb-2">
-                Evening rule
-              </p>
-              <h2 className="font-serif text-[24px] text-paper leading-tight">
-                Lay the day down
-              </h2>
-              <p className="mt-3 font-sans text-[13px] text-paper/65 leading-[1.6]">
-                The Trisagion, the Lord&rsquo;s Prayer, a brief examination of
-                the day, the Jesus Prayer, Into Thy hands, and the dismissal.
-                About 8 minutes.
-              </p>
-              <p className="mt-4 font-sans text-[13px] font-medium text-paper/75 group-hover:text-[#d4af37] transition-colors">
-                Open the rule →
-              </p>
+              <PrayerIcon slug="theotokos-of-vladimir" size="sm" />
+              <div className="min-w-0 flex-1">
+                <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-[#d4af37]/85 mb-2">
+                  Evening rule
+                </p>
+                <h2 className="font-serif text-[24px] text-paper leading-tight">
+                  Lay the day down
+                </h2>
+                <p className="mt-3 font-sans text-[13px] text-paper/65 leading-[1.6]">
+                  The Trisagion, the Lord&rsquo;s Prayer, a brief examination
+                  of the day, the Jesus Prayer, Into Thy hands, and the
+                  dismissal. About 8 minutes.
+                </p>
+                <p className="mt-4 font-sans text-[13px] font-medium text-paper/75 group-hover:text-[#d4af37] transition-colors">
+                  Open the rule →
+                </p>
+              </div>
             </Link>
           </div>
 
