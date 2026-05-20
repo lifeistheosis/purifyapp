@@ -19,6 +19,23 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
   {
+    version: "v4.0",
+    kind: "Welcome, the largest update yet",
+    date: "May 20, 2026",
+    blurb:
+      "If you're just arriving: welcome, we're so glad you're here. v4.0 is the biggest step Purify has taken, a whole season of work gathered into one release. The Bible reader now carries St. John Chrysostom verse-by-verse through fourteen books of the New Testament; the Saints section has grown, gained a search bar, and added an 'In his own words' collection of quotations; and the whole app has been warmed and tidied so it feels less like software and more like a place to pray. Whether you've been here since the early days or opened Purify for the first time today, make yourself at home.",
+    items: [
+      "Patristic commentary across 14 New Testament books: over 2,000 verse-by-verse notes from St. John Chrysostom now sit beside Scripture in the study rail and the mobile sheet, covering John, Acts, Romans, 1 and 2 Corinthians, Ephesians, Philippians, Colossians, 1 and 2 Thessalonians, 1 and 2 Timothy, Titus, Philemon, and Hebrews.",
+      "Seventeen of Chrysostom's works now read in full on his profile, including the complete homily series on Romans, Hebrews, the Corinthian letters, and the Pastoral Epistles, plus his Homilies on the Acts of the Apostles.",
+      "'In his own words': a new quotations section on the saint profiles, drawn straight from the Fathers' writings, with each line linking back to the homily it comes from.",
+      "Five new saints in the calendar of lives, each with a traditional Byzantine icon: St. Marina the Great-Martyr, St. Hermione of Ephesus, St. Isidora of Tabenna, St. Olympias the Deaconess, and St. Gregory of Nyssa.",
+      "A search bar for the Saints section: start typing to jump straight to a saint or one of their writings.",
+      "When one Father has several commentaries on a single verse, they now gather under his name, each kept as its own card so nothing runs together.",
+      "A daily word, a verse of Scripture or a saying of the Fathers, now greets you on the home page; and a small gold mark shows at a glance which books of the Bible carry the Fathers' commentary.",
+      "A gentler, more settled look throughout: a unified palette, a hand-drawn cross in place of stray symbols, clearer icons, and tidier typography across every page.",
+    ],
+  },
+  {
     version: "v3.10",
     kind: "St. John Chrysostom's complete Homilies on John",
     date: "May 19, 2026",
