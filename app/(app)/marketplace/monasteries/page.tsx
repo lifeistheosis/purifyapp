@@ -3,7 +3,7 @@ import { FeatureShell } from "@/components/feature/FeatureShell";
 export const metadata = {
   title: "Monasteries",
   description:
-    "Support a monastery directly — wax, prosphora, prayer ropes, and produce from working communities. Coming soon.",
+    "Support a monastery directly, wax, prosphora, prayer ropes, and produce from working communities. Coming soon.",
 };
 
 export default function MonasteriesPage() {

@@ -83,7 +83,7 @@ export function ParagraphRow({
     }
   }
   function reference() {
-    return `${saintName} — ${workTitle} — ${sectionTitle}`;
+    return `${saintName}, ${workTitle}, ${sectionTitle}`;
   }
   function copyParagraphLink() {
     return copyToClipboard(
@@ -94,7 +94,7 @@ export function ParagraphRow({
     return copyToClipboard(text);
   }
   function copyAsQuote() {
-    return copyToClipboard(`"${text}" — ${reference()}`);
+    return copyToClipboard(`"${text}", ${reference()}`);
   }
   function copyReference() {
     return copyToClipboard(reference());
@@ -130,7 +130,7 @@ export function ParagraphRow({
       workTitle,
       sectionN,
       sectionTitle,
-      label: `${saintName} — ${workTitle} — ${sectionTitle}`,
+      label: `${saintName}, ${workTitle}, ${sectionTitle}`,
     });
   }
 

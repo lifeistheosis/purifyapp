@@ -21,7 +21,7 @@ export function SavedList() {
           Nothing saved yet
         </p>
         <p className="font-serif text-[18px] text-paper/80 leading-[1.65] max-w-[560px]">
-          Open a Bible chapter and tap the ☆ on a verse — or right-click and
+          Open a Bible chapter and tap the ☆ on a verse, or right-click and
           choose <em className="not-italic text-paper">Bookmark verse</em>. The
           same on any saint writing section. What you save lands here.
         </p>

@@ -15,7 +15,7 @@ import { PrayerIcon } from "@/components/prayers/PrayerIcon";
 export const metadata = {
   title: "Prayer",
   description:
-    "Daily prayer in the Orthodox tradition: today's rule, morning and evening rules, the prayer of the heart, akathists, the liturgical hours, and a beginner's path — each anchored by a traditional Byzantine icon.",
+    "Daily prayer in the Orthodox tradition: today's rule, morning and evening rules, the prayer of the heart, akathists, the liturgical hours, and a beginner's path, each anchored by a traditional Byzantine icon.",
 };
 
 // Hourly ISR so the day strip rolls forward without a redeploy.

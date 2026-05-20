@@ -22,7 +22,7 @@ export const PRAYER_ICONS: Record<string, PrayerIcon> = {
   "christ-pantocrator": {
     slug: "christ-pantocrator",
     title: "Christ Pantocrator",
-    alt: "Christ Pantocrator — the icon of Christ as Almighty",
+    alt: "Christ Pantocrator, the icon of Christ as Almighty",
     src: "/icons/prayer/christ-pantocrator.jpg",
     source:
       "Saint Catherine's Monastery, Sinai, 6th c. Encaustic on panel. Public domain.",
@@ -30,7 +30,7 @@ export const PRAYER_ICONS: Record<string, PrayerIcon> = {
   anastasis: {
     slug: "anastasis",
     title: "The Anastasis",
-    alt: "Anastasis — Christ raising Adam and Eve from the tombs",
+    alt: "Anastasis, Christ raising Adam and Eve from the tombs",
     src: "/icons/prayer/anastasis.jpg",
     source:
       "Russian icon, c. 1500. Public domain (PD-Art).",
@@ -38,7 +38,7 @@ export const PRAYER_ICONS: Record<string, PrayerIcon> = {
   "theotokos-of-vladimir": {
     slug: "theotokos-of-vladimir",
     title: "The Vladimir Theotokos",
-    alt: "The Theotokos of Vladimir — the Mother of God",
+    alt: "The Theotokos of Vladimir, the Mother of God",
     src: "/icons/prayer/theotokos-of-vladimir.jpg",
     source:
       "Constantinople, early 12th c. Tretyakov Gallery, Moscow. Public domain.",
@@ -68,7 +68,7 @@ export const PRAYER_ICONS: Record<string, PrayerIcon> = {
   entombment: {
     slug: "entombment",
     title: "The Entombment of Christ",
-    alt: "The Entombment of Christ — the Lord laid in the tomb",
+    alt: "The Entombment of Christ, the Lord laid in the tomb",
     src: "/icons/prayer/entombment.jpg",
     source: "Russian icon, 15th c. Tretyakov Gallery, Moscow. Public domain.",
   },

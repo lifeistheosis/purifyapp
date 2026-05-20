@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: Params }) {
   const found = getWork(slug, work);
   if (!found) return { title: "Writing" };
   return {
-    title: `${found.work.title} — ${found.saint.name}`,
+    title: `${found.work.title}, ${found.saint.name}`,
     description: found.work.blurb,
   };
 }

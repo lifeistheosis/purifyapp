@@ -19,7 +19,7 @@ export default function SavedPage() {
           What you've kept.
         </h1>
         <p className="mt-6 font-serif text-[18px] text-paper/80 leading-[1.7] max-w-[620px]">
-          The verses, chapters, and saint writings you bookmarked — newest
+          The verses, chapters, and saint writings you bookmarked, newest
           first. Tap a row to open. Sign in to sync across devices.
         </p>
         <SavedList />

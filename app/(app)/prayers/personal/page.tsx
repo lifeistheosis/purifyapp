@@ -3,7 +3,7 @@ import { FeatureShell } from "@/components/feature/FeatureShell";
 export const metadata = {
   title: "Personal Prayer Plans",
   description:
-    "Your own prayer plans — build a rule that fits your life, with reminders and a streak. Coming soon.",
+    "Your own prayer plans, build a rule that fits your life, with reminders and a streak. Coming soon.",
 };
 
 export default function PersonalPrayersPage() {

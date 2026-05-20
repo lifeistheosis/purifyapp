@@ -80,7 +80,7 @@ const QUESTIONS: QA[] = [
     ),
   },
   {
-    q: "The Greek New Testament you show is Nestle 1904 — why not Byzantine?",
+    q: "The Greek New Testament you show is Nestle 1904, why not Byzantine?",
     a: (
       <>
         <p>

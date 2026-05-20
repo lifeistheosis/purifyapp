@@ -48,7 +48,7 @@ export function ChapterPager({
               <p className="mt-2 font-sans text-[12.5px] text-paper/55">
                 {next.slug === slug
                   ? "Next chapter"
-                  : `Next book — ${nextBookName} 1`}
+                  : `Next book, ${nextBookName} 1`}
               </p>
             </div>
             <span

@@ -136,7 +136,7 @@ export function VerseRow({
     return copyToClipboard(verse.text);
   }
   function copyAsQuote() {
-    return copyToClipboard(`"${verse.text}" — ${reference()} (KJV)`);
+    return copyToClipboard(`"${verse.text}", ${reference()} (KJV)`);
   }
   function copyReference() {
     return copyToClipboard(reference());

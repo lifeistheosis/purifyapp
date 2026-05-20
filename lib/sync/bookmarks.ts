@@ -139,11 +139,11 @@ export async function pullServerBookmarks() {
           ...base,
           kind: "writing-section",
           saintSlug: String(loc.saintSlug ?? ""),
-          saintName: row.label?.toString().split(" — ")[0] ?? "",
+          saintName: row.label?.toString().split(/ [—,] /)[0] ?? "",
           workSlug: String(loc.workSlug ?? ""),
-          workTitle: row.label?.toString().split(" — ")[1] ?? "",
+          workTitle: row.label?.toString().split(/ [—,] /)[1] ?? "",
           sectionN: Number(loc.sectionN ?? 0),
-          sectionTitle: row.label?.toString().split(" — ")[2] ?? "",
+          sectionTitle: row.label?.toString().split(/ [—,] /)[2] ?? "",
         };
       }
       if (item) merged.push(item);

@@ -95,7 +95,7 @@ export function Footer() {
             rel="noopener noreferrer"
             className="font-sans text-[13px] text-[#a4adff] hover:text-paper transition-colors"
           >
-            Join the Discord — talk through prayer, akathists, and the road ahead →
+            Join the Discord, talk through prayer, akathists, and the road ahead →
           </a>
         </div>
         <div className="mt-8 pt-6 border-t border-white/8 flex flex-col sm:flex-row items-center justify-between gap-4">

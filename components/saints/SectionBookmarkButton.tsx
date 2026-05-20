@@ -41,7 +41,7 @@ export function SectionBookmarkButton({
       workTitle,
       sectionN,
       sectionTitle,
-      label: `${saintName} — ${workTitle} — ${sectionTitle}`,
+      label: `${saintName}, ${workTitle}, ${sectionTitle}`,
     });
   }
 
