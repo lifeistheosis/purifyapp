@@ -1,5 +1,6 @@
 import { SAINTS } from "@/lib/saints/saints";
 import { SaintsBrowser } from "@/components/saints/SaintsBrowser";
+import { SaintSearch } from "@/components/saints/SaintSearch";
 
 export const metadata = {
   title: "Saints",
@@ -22,6 +23,8 @@ export default function SaintsPage() {
           Church. Each profile gathers a brief life, a list of writings, and
           the works themselves.
         </p>
+
+        <SaintSearch className="mt-8 max-w-[640px]" />
 
         <SaintsBrowser saints={SAINTS} />
       </div>

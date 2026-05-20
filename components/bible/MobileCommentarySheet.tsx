@@ -57,27 +57,21 @@ function SingleNote({ author, work, text }: Note) {
   );
 }
 
-/** A Father with multiple commentaries on one verse — collapsible group.
- *  Distinct commentaries are kept separate, each labelled by its work. */
-function FatherGroup({ author, items }: { author: string; items: Note[] }) {
+/** One distinct commentary as its own collapsible card, titled by its work.
+ *  Used inside a FatherGroup so each commentary stays separate. */
+function WorkCard({ work, text }: { work: string; text: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <article className="rounded-md border border-paper/10 bg-paper/[0.03] overflow-hidden">
+    <div className="rounded-md border border-paper/10 bg-paper/[0.03] overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         className="w-full flex items-center gap-2 p-3 text-left hover:bg-paper/[0.05] transition-colors"
       >
-        <SaintIcon author={author} size="sm" />
-        <div className="min-w-0 flex-1 leading-tight">
-          <p className="font-sans text-[10.5px] font-semibold uppercase tracking-[1px] text-paper/75 truncate">
-            {author}
-          </p>
-          <p className="font-sans text-[11px] italic text-paper/50 truncate">
-            {items.length} commentaries
-          </p>
-        </div>
+        <p className="min-w-0 flex-1 font-sans text-[11px] italic text-paper/60 truncate">
+          {work}
+        </p>
         <span
           aria-hidden
           className={
@@ -89,21 +83,37 @@ function FatherGroup({ author, items }: { author: string; items: Note[] }) {
         </span>
       </button>
       {open && (
-        <div className="px-3 pb-3 pt-1 border-t border-paper/8 space-y-4">
-          {items.map((it, i) => (
-            <div
-              key={i}
-              className={i > 0 ? "pt-3 border-t border-paper/8" : ""}
-            >
-              <p className="font-sans text-[11px] italic text-paper/50 mb-1.5">
-                {it.work}
-              </p>
-              <NoteText text={it.text} />
-            </div>
-          ))}
+        <div className="px-3 pb-3 pt-1 border-t border-paper/8">
+          <NoteText text={text} />
         </div>
       )}
-    </article>
+    </div>
+  );
+}
+
+/** A Father with multiple commentaries on one verse. The Father is a plain
+ *  category label; each distinct commentary stays its own collapsible card
+ *  (titled by its work) beneath it. Nothing is merged. */
+function FatherGroup({ author, items }: { author: string; items: Note[] }) {
+  return (
+    <div>
+      <div className="flex items-center gap-2 mb-2 px-0.5">
+        <SaintIcon author={author} size="sm" />
+        <div className="min-w-0 flex-1 leading-tight">
+          <p className="font-sans text-[10.5px] font-semibold uppercase tracking-[1px] text-paper/75 truncate">
+            {author}
+          </p>
+          <p className="font-sans text-[11px] italic text-paper/50 truncate">
+            {items.length} commentaries
+          </p>
+        </div>
+      </div>
+      <div className="pl-2 ml-2 border-l border-paper/10 space-y-2">
+        {items.map((it, i) => (
+          <WorkCard key={i} work={it.work} text={it.text} />
+        ))}
+      </div>
+    </div>
   );
 }
 
