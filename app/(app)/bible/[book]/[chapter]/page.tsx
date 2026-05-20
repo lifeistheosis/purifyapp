@@ -115,17 +115,27 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
           context strip (~28px) sitting under the 72px sticky navbar. */}
       <section className="flex-1 px-5 md:px-10 pt-14 md:pt-16 pb-10 md:pb-16 min-w-0">
         <div className="mx-auto max-w-[1200px] w-full">
-          <div className="mb-4 flex flex-wrap items-center gap-3">
-            <TranslationSwitcher currentSlug={book} />
-            <BookSwitcher currentSlug={book} />
-            {/* Desktop: font controls + interlinear sit together as the
-                typography cluster. Mobile: collapse into ReaderSettingsMenu. */}
+          {/* Row 1 — always: Translation + Book share the row.
+              On desktop the typography cluster (font + interlinear) sits to
+              their right. On mobile that cluster is split off into row 2 below. */}
+          <div className="mb-4 flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <TranslationSwitcher currentSlug={book} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <BookSwitcher currentSlug={book} />
+            </div>
             <div className="hidden md:flex items-center gap-3 ml-auto">
               <ReaderFontSizeButton />
               <ReaderFontFamilyButton />
               {isNT && <InterlinearToggle />}
             </div>
-            <div className="md:hidden ml-auto">
+          </div>
+          {/* Row 2 — mobile only: Interlinear pill (NT) on the left, gear on
+              the right. Un-buries the Interlinear toggle from the gear menu. */}
+          <div className="md:hidden mb-4 flex items-center gap-3">
+            {isNT && <InterlinearToggle />}
+            <div className="ml-auto">
               <ReaderSettingsMenu showInterlinear={isNT} />
             </div>
           </div>

@@ -19,6 +19,22 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
   {
+    version: "v3.9",
+    kind: "Mobile Bible reader — UI cleanup",
+    date: "May 19, 2026",
+    blurb:
+      "Three mobile cleanups on the chapter page. (1) The control row above the search bar no longer wraps awkwardly — Translation and Book share row one, and the Interlinear pill and gear sit on a clean row two. (2) The five per-verse action buttons (highlight, copy, bookmark, note, clear-words) no longer crowd the verse text on mobile; they now live in a floating contextual toolbar that appears on a long-press of the verse, like the iOS contextual bar, and dismisses on outside-tap. (3) When Interlinear is on, the Greek now sits next to the English on mobile in two columns (where the action buttons used to be) instead of stacking below.",
+    items: [
+      "Header row reflow: Translation + Book switchers share the top row at flex-1; on mobile a second row carries the Interlinear pill (when NT) and the gear menu. No more flex-wrap jaggedness.",
+      "Interlinear toggle un-buried: previously only reachable through the gear menu on mobile, now a first-class pill next to it.",
+      "Per-verse desktop toolbar hidden on mobile (`hidden md:flex`); desktop hover-reveal behaviour is unchanged.",
+      "New MobileVerseToolbar component: a pill-shaped floating action bar at the bottom of the viewport with highlight / clear-words / copy link / bookmark / note buttons, each h-11 w-11. Opens on long-press of the verse paragraph. Dismisses on outside tap, Escape, or after any action fires.",
+      "Long-press gesture (added in v3.7) now opens the toolbar instead of entering a word-range select-mode. The v3.7 fix is preserved: a tap is a no-op, and a tap-then-scroll never commits a highlight.",
+      "Word-level drag-to-highlight on touch is dropped — the popup's whole-verse highlight covers the primary mobile use case. Desktop mouse-drag highlighting is unchanged.",
+      "Interlinear render: switched from `grid-cols-1 md:grid-cols-2` to `grid-cols-2 gap-x-3 md:gap-x-6` so English | Greek are side-by-side on every viewport when Interlinear is on.",
+    ],
+  },
+  {
     version: "v3.8",
     kind: "Cleaner Koine ↔ English",
     date: "May 19, 2026",

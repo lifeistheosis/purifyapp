@@ -11,6 +11,10 @@ import {
   VerseContextMenu,
   type ContextMenuGroup,
 } from "./VerseContextMenu";
+import {
+  MobileVerseToolbar,
+  type MobileVerseAction,
+} from "./MobileVerseToolbar";
 import { cn } from "@/lib/cn";
 
 function tokenize(text: string): string[] {
@@ -161,15 +165,12 @@ export function VerseRow({
   const [dragEnd, setDragEnd] = useState<number | null>(null);
   const dragStartRef = useRef<number | null>(null);
 
-  // Mobile gesture state — long-press gates highlight selection so that a
-  // tap or a tap-then-scroll never commits a highlight (only an explicit
-  // long-press does).
-  const [selecting, setSelecting] = useState(false);
-  const selectingRef = useRef(false);
+  // Mobile gesture state — long-press opens the floating tool popup. A
+  // tap or tap-then-scroll never opens the popup (only an explicit hold
+  // does). The v3.7 invariant survives: no annotation writes from a tap.
+  const [showTools, setShowTools] = useState(false);
   const pressTimerRef = useRef<number | null>(null);
-  const pressOriginRef = useRef<
-    { x: number; y: number; idx: number } | null
-  >(null);
+  const pressOriginRef = useRef<{ x: number; y: number } | null>(null);
   const LONG_PRESS_MS = 400;
   const SCROLL_SLOP_PX = 8;
 
@@ -182,11 +183,6 @@ export function VerseRow({
   function cancelPress() {
     clearPressTimer();
     pressOriginRef.current = null;
-    selectingRef.current = false;
-    setSelecting(false);
-    setDragStart(null);
-    setDragEnd(null);
-    dragStartRef.current = null;
   }
 
   // Re-sync draft when annotation hydrates from localStorage.
@@ -257,21 +253,14 @@ export function VerseRow({
   function onWordsTouchStart(e: React.TouchEvent<HTMLParagraphElement>) {
     const t = e.touches[0];
     if (!t) return;
-    const idx = wordIndexFromElement(
-      document.elementFromPoint(t.clientX, t.clientY),
-    );
-    if (idx === null) return;
-    // Stash the origin and arm a long-press timer. Do NOT start the drag
-    // yet — only an explicit long-press should enter select-mode. A pure
-    // tap (and the touchstart of a scroll) must leave annotations alone.
-    pressOriginRef.current = { x: t.clientX, y: t.clientY, idx };
+    // Stash the origin and arm a long-press timer. Do NOT open the popup
+    // yet — only an explicit long-press should. A pure tap (and the
+    // touchstart of a scroll) must leave the UI untouched.
+    pressOriginRef.current = { x: t.clientX, y: t.clientY };
     clearPressTimer();
     pressTimerRef.current = window.setTimeout(() => {
       pressTimerRef.current = null;
-      selectingRef.current = true;
-      setSelecting(true);
-      startDrag(idx);
-      // Subtle haptic if the platform supports it.
+      setShowTools(true);
       try {
         navigator.vibrate?.(15);
       } catch {
@@ -283,40 +272,20 @@ export function VerseRow({
   function onWordsTouchMove(e: React.TouchEvent<HTMLParagraphElement>) {
     const t = e.touches[0];
     if (!t) return;
-    if (!selectingRef.current) {
-      // Pre-selection: if the finger has drifted enough to look like a
-      // scroll, cancel the pending long-press and let the browser scroll
-      // naturally. Diagonal motion is treated as scroll-leaning when the
-      // dominant axis is vertical.
-      const origin = pressOriginRef.current;
-      if (!origin) return;
-      const dx = Math.abs(t.clientX - origin.x);
-      const dy = Math.abs(t.clientY - origin.y);
-      if (dy > SCROLL_SLOP_PX || dx > SCROLL_SLOP_PX * 2) {
-        cancelPress();
-      }
-      return;
+    // If the finger drifts enough to look like a scroll, cancel the
+    // pending long-press and let the browser scroll naturally.
+    const origin = pressOriginRef.current;
+    if (!origin) return;
+    const dx = Math.abs(t.clientX - origin.x);
+    const dy = Math.abs(t.clientY - origin.y);
+    if (dy > SCROLL_SLOP_PX || dx > SCROLL_SLOP_PX * 2) {
+      cancelPress();
     }
-    // Already in select-mode: extend the range and own the gesture.
-    if (dragStartRef.current === null) return;
-    const idx = wordIndexFromElement(
-      document.elementFromPoint(t.clientX, t.clientY),
-    );
-    if (idx === null) return;
-    e.preventDefault();
-    setDragEnd(idx);
   }
 
   function onWordsTouchEnd() {
-    // Only commit a highlight if the long-press actually fired and we
-    // entered select-mode. A bare tap (or a tap-then-scroll) is a no-op.
-    if (selectingRef.current) {
-      const start = dragStartRef.current;
-      const end = dragEnd ?? start;
-      if (start !== null && end !== null) {
-        ann.toggleWordRange(start, end);
-      }
-    }
+    // A bare tap (or tap-then-scroll) is always a no-op. The popup is
+    // opened by the long-press timer itself, not by touchend.
     cancelPress();
   }
 
@@ -404,15 +373,18 @@ export function VerseRow({
         <div
           className={cn(
             "flex-1 min-w-0",
+            // Side-by-side English | Greek even on mobile. With the per-verse
+            // toolbar no longer occupying the right column on mobile, the
+            // Greek column takes its place (gap is tighter on small screens).
             hasInterlinear &&
-              "grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2",
+              "grid grid-cols-2 gap-x-3 md:gap-x-6 gap-y-2",
           )}
         >
         <p
           className={cn(
             "indent-0 min-w-0 transition-colors duration-150",
             dragging && "select-none",
-            selecting &&
+            showTools &&
               "bg-[#d4af37]/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(212,175,55,0.35)]",
           )}
           style={{ touchAction: "pan-y" }}
@@ -700,17 +672,19 @@ export function VerseRow({
         )}
         </div>
 
-        {/* Toolbar — always visible on touch, hover-revealed at md+ */}
+        {/* Desktop-only inline toolbar — hover-revealed at md+. On mobile
+            the same actions are presented in the MobileVerseToolbar popup
+            triggered by long-press; see below. */}
         <div
           className={
-            "flex items-center gap-1 shrink-0 -mt-1 transition-opacity duration-150 " +
+            "hidden md:flex items-center gap-1 shrink-0 -mt-1 transition-opacity duration-150 " +
             (ann.highlighted ||
             ann.note ||
             editing ||
             isVerseBookmarked ||
             (ann.highlightedWords && ann.highlightedWords.length > 0)
-              ? "opacity-100"
-              : "opacity-100 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100")
+              ? "md:opacity-100"
+              : "md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100")
           }
         >
           <button
@@ -858,6 +832,40 @@ export function VerseRow({
             </div>
           </div>
         </div>
+      )}
+
+      {showTools && (
+        <MobileVerseToolbar
+          reference={reference()}
+          state={{
+            highlighted: !!ann.highlighted,
+            bookmarked: isVerseBookmarked,
+            hasNote: !!ann.note,
+            hasWordHighlights: (ann.highlightedWords?.length ?? 0) > 0,
+            copied,
+          }}
+          onAction={(a: MobileVerseAction) => {
+            switch (a) {
+              case "highlight":
+                ann.toggleHighlight();
+                break;
+              case "bookmark":
+                toggleVerseBookmark();
+                break;
+              case "copyLink":
+                copyVerseLink();
+                break;
+              case "note":
+                setDraft(ann.note ?? "");
+                setEditing(true);
+                break;
+              case "clearWords":
+                ann.clearWords();
+                break;
+            }
+          }}
+          onClose={() => setShowTools(false)}
+        />
       )}
     </div>
   );
