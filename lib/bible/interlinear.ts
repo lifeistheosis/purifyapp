@@ -1,13 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
 /**
  * App-wide Interlinear toggle. When ON, the chapter reader shows the
  * original Greek alongside the English.
  *
  * Stored as a single boolean in localStorage so the choice persists across
- * chapters and reloads. Mirrors the pattern used by useVerseAnnotation.
+ * chapters and reloads. All consumers share one source of truth via
+ * useSyncExternalStore, so multiple instances on the same page stay in sync
+ * without per-instance effect setState.
  */
 
 const KEY = "purify:interlinear";
@@ -22,33 +24,27 @@ function read(): boolean {
   }
 }
 
-export function useInterlinear() {
-  const [on, setOn] = useState<boolean>(false);
+function subscribe(onChange: () => void): () => void {
+  window.addEventListener(EVT, onChange);
+  window.addEventListener("storage", onChange);
+  return () => {
+    window.removeEventListener(EVT, onChange);
+    window.removeEventListener("storage", onChange);
+  };
+}
 
-  useEffect(() => {
-    setOn(read());
-    function onExternal(e: Event) {
-      const detail = (e as CustomEvent<{ on: boolean }>).detail;
-      if (detail) setOn(detail.on);
-    }
-    window.addEventListener(EVT, onExternal);
-    return () => window.removeEventListener(EVT, onExternal);
-  }, []);
+export function useInterlinear() {
+  const on = useSyncExternalStore(subscribe, read, () => false);
 
   const toggle = useCallback(() => {
-    setOn((prev) => {
-      const next = !prev;
-      try {
-        if (next) window.localStorage.setItem(KEY, "1");
-        else window.localStorage.removeItem(KEY);
-        window.dispatchEvent(
-          new CustomEvent(EVT, { detail: { on: next } }),
-        );
-      } catch {
-        /* storage may be unavailable */
-      }
-      return next;
-    });
+    const next = !read();
+    try {
+      if (next) window.localStorage.setItem(KEY, "1");
+      else window.localStorage.removeItem(KEY);
+    } catch {
+      /* storage may be unavailable */
+    }
+    window.dispatchEvent(new CustomEvent(EVT, { detail: { on: next } }));
   }, []);
 
   return { on, toggle };
