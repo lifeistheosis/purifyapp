@@ -35,11 +35,11 @@ export function ChapterPager({
       {next && (
         <Link
           href={`/bible/${next.slug}/${next.chapter}`}
-          className="group block rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-[#d4af37]/55 hover:bg-[#d4af37]/[0.06] transition-colors p-6 md:p-7"
+          className="group block rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-6 md:p-7"
         >
           <div className="flex items-center justify-between gap-6">
             <div className="min-w-0">
-              <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-[#d4af37]/85 mb-2">
+              <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-gold/85 mb-2">
                 Continue reading
               </p>
               <h3 className="font-serif text-[26px] md:text-[32px] text-paper leading-tight">
@@ -53,7 +53,7 @@ export function ChapterPager({
             </div>
             <span
               aria-hidden
-              className="shrink-0 text-paper/55 group-hover:text-[#d4af37] transition-colors text-[28px]"
+              className="shrink-0 text-paper/55 group-hover:text-gold transition-colors text-[28px]"
             >
               →
             </span>

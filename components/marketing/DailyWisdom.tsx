@@ -27,12 +27,12 @@ export function DailyWisdom() {
         {entry.href ? (
           <Link
             href={entry.href}
-            className="mt-5 inline-block font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-[#d4af37]/85 hover:text-[#d4af37] transition-colors"
+            className="mt-5 inline-block font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-gold/85 hover:text-gold transition-colors"
           >
             {cite} →
           </Link>
         ) : (
-          <p className="mt-5 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-[#d4af37]/85">
+          <p className="mt-5 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-gold/85">
             {cite}
           </p>
         )}

@@ -366,7 +366,7 @@ export function VerseRow({
   return (
     <div
       id={`v${verse.n}`}
-      className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out data-[hl=true]:shadow-[inset_3px_0_0_#d4af37] data-[focus=true]:bg-[#d4af37]/12 data-[focus=true]:shadow-[0_0_0_2px_rgba(212,175,55,0.55),0_0_24px_rgba(212,175,55,0.35)]"
+      className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out data-[hl=true]:shadow-[inset_3px_0_0_var(--color-gold)] data-[focus=true]:bg-gold/12 data-[focus=true]:shadow-[0_0_0_2px_rgba(212,175,55,0.55),0_0_24px_rgba(212,175,55,0.35)]"
       data-hl={ann.highlighted ? "true" : undefined}
     >
       <div className="flex items-start gap-2">
@@ -385,7 +385,7 @@ export function VerseRow({
             "indent-0 min-w-0 transition-colors duration-150",
             dragging && "select-none",
             showTools &&
-              "bg-[#d4af37]/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(212,175,55,0.35)]",
+              "bg-gold/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(212,175,55,0.35)]",
           )}
           style={{ touchAction: "pan-y" }}
           onMouseDown={onWordsMouseDown}
@@ -475,7 +475,7 @@ export function VerseRow({
                       data-s={tk.s}
                       className={cn(
                         "cursor-pointer transition-colors duration-100",
-                        me && "bg-[#d4af37]/30",
+                        me && "bg-gold/30",
                         // Round + extend only on the outer ends of a run, so
                         // adjacent highlighted words look like one bar.
                         me && !mePrev && "rounded-l-[3px] pl-[1px] -ml-[1px]",
@@ -504,7 +504,7 @@ export function VerseRow({
                     {i < englishTokens!.length - 1 && (
                       <span
                         className={
-                          bridgeMe && !bridgeMatched ? "bg-[#d4af37]/30" : ""
+                          bridgeMe && !bridgeMatched ? "bg-gold/30" : ""
                         }
                         style={
                           bridgeMatched
@@ -528,7 +528,7 @@ export function VerseRow({
                       data-word-idx={i}
                       className={cn(
                         "cursor-pointer transition-colors",
-                        me && "bg-[#d4af37]/30",
+                        me && "bg-gold/30",
                         me && !prev && "rounded-l-[3px] pl-[1px] -ml-[1px]",
                         me && !next && "rounded-r-[3px] pr-[1px] -mr-[1px]",
                       )}
@@ -536,7 +536,7 @@ export function VerseRow({
                       {w}
                     </span>
                     {i < words.length - 1 && (
-                      <span className={me && next ? "bg-[#d4af37]/30" : ""}>
+                      <span className={me && next ? "bg-gold/30" : ""}>
                         {" "}
                       </span>
                     )}
@@ -696,7 +696,7 @@ export function VerseRow({
             className={
               "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-[14px] md:text-[12px] transition-colors duration-150 " +
               (ann.highlighted
-                ? "bg-[#d4af37]/30 border-[#d4af37]/60 text-[#d4af37]"
+                ? "bg-gold/30 border-gold/60 text-gold"
                 : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper")
             }
           >
@@ -738,7 +738,7 @@ export function VerseRow({
             className={cn(
               "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-[14px] md:text-[12px] transition-colors duration-150",
               isVerseBookmarked
-                ? "bg-[#d4af37]/25 border-[#d4af37]/55 text-[#d4af37]"
+                ? "bg-gold/25 border-gold/55 text-gold"
                 : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
             )}
           >

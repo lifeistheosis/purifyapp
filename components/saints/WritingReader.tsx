@@ -314,7 +314,7 @@ function SectionParagraphs({
       )}
 
       {sec.citation && (
-        <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-[#d4af37]/85 mb-4">
+        <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-gold/85 mb-4">
           {sec.citation}
         </p>
       )}

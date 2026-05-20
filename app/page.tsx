@@ -89,10 +89,7 @@ export default function Home() {
               href="/whats-new"
               className="group inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.06] px-3 py-1.5 mb-5 hover:bg-paper/10 hover:border-paper/35 transition-colors duration-150"
             >
-              <span
-                className="font-sans text-[10px] font-semibold uppercase tracking-[1.5px] px-2 py-0.5 rounded-pill"
-                style={{ color: "#161219", backgroundColor: "#d4af37" }}
-              >
+              <span className="font-sans text-[10px] font-semibold uppercase tracking-[1.5px] px-2 py-0.5 rounded-pill bg-gold text-night">
                 New
               </span>
               <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
@@ -224,9 +221,9 @@ export default function Home() {
               <Link
                 key={ch.title}
                 href={ch.href}
-                className="group block rounded-lg bg-night border border-paper/8 p-8 hover:border-[#d4af37]/45 hover:bg-[#d4af37]/[0.04] transition-colors duration-200"
+                className="group block rounded-lg bg-night border border-paper/8 p-8 hover:border-gold/45 hover:bg-gold/[0.04] transition-colors duration-200"
               >
-                <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-[#d4af37]/85 mb-4">
+                <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-gold/85 mb-4">
                   {ch.eyebrow}
                 </p>
                 <h3 className="font-sans text-[22px] md:text-[24px] font-semibold text-paper mb-3">
@@ -235,7 +232,7 @@ export default function Home() {
                 <p className="font-sans text-[14px] text-paper/65 leading-[1.6] mb-5">
                   {ch.body}
                 </p>
-                <span className="font-sans text-[13px] font-medium text-paper/75 group-hover:text-[#d4af37] transition-colors">
+                <span className="font-sans text-[13px] font-medium text-paper/75 group-hover:text-gold transition-colors">
                   Begin →
                 </span>
               </Link>

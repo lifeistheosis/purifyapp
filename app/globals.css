@@ -1,10 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  /* Hallow-inspired palette
-     Primary text: warm dark purple-gray
-     Accent: signature red, with light tint + deep variants
-     Surfaces: white + warm off-white */
+  /* Hybrid brand. Two committed surface palettes:
+     - DARK "sacred" surfaces (home/marketing, Bible reader, prayers, calendar):
+       night backgrounds + `gold` accent.
+     - WARM-LIGHT "study" surfaces (saints, account, info pages):
+       paper/paper-warm + `ink` text + `gold-deep` accent + `accent` (red) for CTAs.
+     Tokens below; pick the set that matches the surface. */
+
+  /* Warm-light study surfaces */
   --color-ink: #49424e;
   --color-ink-soft: #6b6470;
   --color-ink-mute: #a39ea8;
@@ -16,8 +20,15 @@
   --color-accent-deep: #a3261f;
   --color-accent-tint: #f8cac7;
 
+  /* Dark sacred surfaces */
   --color-night: #161219;
   --color-night-soft: #38323c;
+
+  /* Gold — the signature accent. Use `gold` on dark surfaces; `gold-deep`
+     on warm-light surfaces (plain gold fails contrast on white). */
+  --color-gold: #d4af37;
+  --color-gold-deep: #c89e2c;
+  --color-gold-soft: #e6cd6a;
 
   /* Gradient stops used in hero / feature cards */
   --color-grad-teal: #008171;

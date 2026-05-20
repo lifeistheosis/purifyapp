@@ -42,8 +42,8 @@ export function SignInPanel() {
 
   if (state === "sent") {
     return (
-      <div className="mt-10 rounded-lg border border-[#d4af37]/35 bg-[#d4af37]/[0.06] p-6 md:p-7">
-        <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-[#d4af37] mb-3">
+      <div className="mt-10 rounded-lg border border-gold/35 bg-gold/[0.06] p-6 md:p-7">
+        <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-gold mb-3">
           Check your inbox
         </p>
         <p className="font-serif text-[18px] text-paper/90 leading-[1.65]">

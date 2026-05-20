@@ -80,13 +80,13 @@ export default async function SupportPage() {
                 {" "}of {formatUsd(SUPPORT.monthlyGoalUsd)}
               </span>
             </p>
-            <p className="font-sans text-[13px] text-[#d4af37] font-semibold tabular-nums">
+            <p className="font-sans text-[13px] text-gold font-semibold tabular-nums">
               {Math.round(pct * 100)}%
             </p>
           </div>
           <div className="h-[6px] rounded-full bg-paper/8 overflow-hidden">
             <div
-              className="h-full bg-[#d4af37] transition-[width] duration-500"
+              className="h-full bg-gold transition-[width] duration-500"
               style={{ width: `${Math.round(pct * 100)}%` }}
             />
           </div>
@@ -127,7 +127,7 @@ export default async function SupportPage() {
                 rel={
                   d.href.startsWith("http") ? "noopener noreferrer" : undefined
                 }
-                className="group rounded-md border border-paper/15 bg-paper/[0.03] hover:border-[#d4af37]/55 hover:bg-[#d4af37]/[0.06] transition-colors p-5"
+                className="group rounded-md border border-paper/15 bg-paper/[0.03] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-5"
               >
                 <p className="font-sans text-[16px] font-semibold text-paper leading-tight">
                   {d.label}
@@ -135,7 +135,7 @@ export default async function SupportPage() {
                 <p className="mt-2 font-sans text-[12.5px] text-paper/65 leading-[1.55]">
                   {d.note}
                 </p>
-                <p className="mt-4 font-sans text-[12px] font-medium text-paper/65 group-hover:text-[#d4af37] transition-colors">
+                <p className="mt-4 font-sans text-[12px] font-medium text-paper/65 group-hover:text-gold transition-colors">
                   Open →
                 </p>
               </Link>
@@ -198,7 +198,7 @@ export default async function SupportPage() {
                     </p>
                   )}
                 </div>
-                <p className="shrink-0 font-sans text-[15px] font-semibold text-[#d4af37] tabular-nums">
+                <p className="shrink-0 font-sans text-[15px] font-semibold text-gold tabular-nums">
                   {formatUsd(e.monthlyUsd)}/mo
                 </p>
               </li>

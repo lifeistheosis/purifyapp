@@ -73,7 +73,7 @@ function isoDate(d: Date): string {
 
 const FAST_STYLE: Record<FastKind, { bar: string; chip: string; dot: string }> = {
   strict:     { bar: "bg-[#c1272d]",   chip: "bg-[#c1272d]/15 border-[#c1272d]/40 text-[#f8cac7]",   dot: "bg-[#c1272d]" },
-  "wine-oil": { bar: "bg-[#d4af37]",   chip: "bg-[#d4af37]/15 border-[#d4af37]/45 text-[#f4dc91]",   dot: "bg-[#d4af37]" },
+  "wine-oil": { bar: "bg-gold",   chip: "bg-gold/15 border-gold/45 text-[#f4dc91]",   dot: "bg-gold" },
   fish:       { bar: "bg-[#7b9b8f]",   chip: "bg-[#7b9b8f]/15 border-[#7b9b8f]/45 text-[#bfd6cc]",   dot: "bg-[#7b9b8f]" },
   fast:       { bar: "bg-paper/35",    chip: "bg-paper/[0.06] border-paper/20 text-paper/80",         dot: "bg-paper/35" },
   "fast-free":{ bar: "bg-emerald-500", chip: "bg-emerald-500/15 border-emerald-500/40 text-emerald-200", dot: "bg-emerald-500" },
@@ -130,7 +130,7 @@ function ReadingPanel({
   const kindLabel = ref.kind === "epistle" ? "Epistle" : ref.kind === "ot" ? "Old Testament" : "Gospel";
   const accent =
     ref.kind === "gospel"
-      ? "border-[#d4af37]/30 bg-[#d4af37]/[0.05]"
+      ? "border-gold/30 bg-gold/[0.05]"
       : ref.kind === "epistle"
         ? "border-paper/15 bg-paper/[0.04]"
         : "border-paper/12 bg-paper/[0.04]";
@@ -178,7 +178,7 @@ function CommemorationRow({ c }: { c: Commemoration }) {
     <div
       className={`flex items-start gap-3 rounded-md p-3 ${
         isFeast
-          ? "bg-[#d4af37]/8 border border-[#d4af37]/25"
+          ? "bg-gold/8 border border-gold/25"
           : "bg-paper/[0.03] border border-paper/8"
       }`}
     >
@@ -189,7 +189,7 @@ function CommemorationRow({ c }: { c: Commemoration }) {
           aria-hidden
           className={`h-9 w-9 shrink-0 rounded-full flex items-center justify-center text-[14px] ${
             isFeast
-              ? "bg-[#d4af37]/20 text-[#f4dc91] border border-[#d4af37]/40"
+              ? "bg-gold/20 text-[#f4dc91] border border-gold/40"
               : "bg-paper/[0.06] text-paper/60 border border-paper/15"
           }`}
         >
@@ -324,7 +324,7 @@ export default async function CalendarPage({
                         aria-hidden
                         className={`shrink-0 h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center text-[20px] ${
                           headline.kind === "feast"
-                            ? "bg-[#d4af37]/20 text-[#f4dc91] border border-[#d4af37]/40"
+                            ? "bg-gold/20 text-[#f4dc91] border border-gold/40"
                             : "bg-paper/[0.06] text-paper/70 border border-paper/15"
                         }`}
                       >
@@ -332,7 +332,7 @@ export default async function CalendarPage({
                       </span>
                     )}
                     <div className="min-w-0 flex-1">
-                      <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-[#d4af37]/85 mb-1">
+                      <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-gold/85 mb-1">
                         Commemorated today
                       </p>
                       <h1 className="font-sans text-[20px] md:text-[26px] lg:text-[30px] font-bold text-paper leading-[1.1] tracking-[-0.015em]">
@@ -514,9 +514,9 @@ export default async function CalendarPage({
                           : isSelected
                             ? "bg-paper/15 text-paper border-2 border-paper/55"
                             : cell.isToday
-                              ? "bg-[#d4af37]/15 text-paper border border-[#d4af37]/45"
+                              ? "bg-gold/15 text-paper border border-gold/45"
                               : cell.hasFeast
-                                ? "bg-[#d4af37]/[0.06] text-paper/85 border border-[#d4af37]/25 hover:bg-[#d4af37]/12 hover:border-[#d4af37]/40"
+                                ? "bg-gold/[0.06] text-paper/85 border border-gold/25 hover:bg-gold/12 hover:border-gold/40"
                                 : "bg-paper/[0.03] text-paper/85 border border-paper/8 hover:bg-paper/10 hover:border-paper/20"
                       }`}
                     >
@@ -529,7 +529,7 @@ export default async function CalendarPage({
                         {cell.inMonth && cell.hasFeast && (
                           <span
                             aria-label="Major feast"
-                            className="text-[10px] text-[#d4af37]"
+                            className="text-[10px] text-gold"
                           >
                             ✦
                           </span>
@@ -553,7 +553,7 @@ export default async function CalendarPage({
 
               <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 font-sans text-[11.5px] text-paper/55">
                 <span className="inline-flex items-center gap-1.5">
-                  <span className="text-[#d4af37]">✦</span>
+                  <span className="text-gold">✦</span>
                   Major feast
                 </span>
                 <span className="inline-flex items-center gap-1.5">
@@ -561,7 +561,7 @@ export default async function CalendarPage({
                   Strict fast
                 </span>
                 <span className="inline-flex items-center gap-1.5">
-                  <span className="h-[3px] w-3 bg-[#d4af37] rounded-full" />
+                  <span className="h-[3px] w-3 bg-gold rounded-full" />
                   Wine and oil
                 </span>
                 <span className="inline-flex items-center gap-1.5">

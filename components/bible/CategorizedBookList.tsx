@@ -10,11 +10,11 @@ const CATEGORY_TINTS: Record<string, string> = {
   Historical:
     "border-[#7b9b8f]/25 hover:border-[#7b9b8f]/60 hover:bg-[#7b9b8f]/[0.06]",
   Wisdom:
-    "border-[#d4af37]/25 hover:border-[#d4af37]/60 hover:bg-[#d4af37]/[0.06]",
+    "border-gold/25 hover:border-gold/60 hover:bg-gold/[0.06]",
   Prophets:
     "border-[#a37b9a]/25 hover:border-[#a37b9a]/60 hover:bg-[#a37b9a]/[0.06]",
   Gospels:
-    "border-[#d4af37]/35 hover:border-[#d4af37]/65 hover:bg-[#d4af37]/[0.08]",
+    "border-gold/35 hover:border-gold/65 hover:bg-gold/[0.08]",
   Acts: "border-[#7b9b8f]/30 hover:border-[#7b9b8f]/60 hover:bg-[#7b9b8f]/[0.06]",
   "Pauline Epistles":
     "border-[#9ba8c4]/25 hover:border-[#9ba8c4]/60 hover:bg-[#9ba8c4]/[0.06]",
@@ -61,14 +61,14 @@ export function CategorizedBookList({
                         <span
                           aria-label="Patristic commentary available"
                           title="Patristic commentary available"
-                          className="shrink-0 inline-block h-1.5 w-1.5 rounded-full bg-[#d4af37]"
+                          className="shrink-0 inline-block h-1.5 w-1.5 rounded-full bg-gold"
                         />
                       )}
                     </span>
                     <span className="block font-sans text-[11px] text-paper/50 mt-1 group-hover:text-paper/65 transition-colors">
                       {b.chapters} {b.chapters === 1 ? "chapter" : "chapters"}
                       {hasCommentary(b.slug) && (
-                        <span className="text-[#d4af37]/80"> · Fathers</span>
+                        <span className="text-gold/80"> · Fathers</span>
                       )}
                     </span>
                   </Link>

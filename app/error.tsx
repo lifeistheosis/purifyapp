@@ -41,7 +41,7 @@ export default function GlobalError({
           <button
             type="button"
             onClick={() => reset()}
-            className="rounded-pill border border-[#d4af37]/55 bg-[#d4af37]/15 hover:bg-[#d4af37]/25 px-5 h-[44px] font-sans text-[14px] font-semibold text-paper transition-colors"
+            className="rounded-pill border border-gold/55 bg-gold/15 hover:bg-gold/25 px-5 h-[44px] font-sans text-[14px] font-semibold text-paper transition-colors"
           >
             Try again
           </button>

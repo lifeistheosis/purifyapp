@@ -139,7 +139,7 @@ export function ParagraphRow({
       id={`p-${sectionN}-${paragraphIdx}`}
       data-paragraph-idx={paragraphIdx}
       data-hl={ann.highlighted ? "true" : undefined}
-      className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out data-[hl=true]:shadow-[inset_3px_0_0_#d4af37]"
+      className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out data-[hl=true]:shadow-[inset_3px_0_0_var(--color-gold)]"
     >
       <div className="flex items-start gap-2">
         <p
@@ -171,7 +171,7 @@ export function ParagraphRow({
             className={cn(
               "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-[14px] md:text-[12px] transition-colors duration-150",
               ann.highlighted
-                ? "bg-[#d4af37]/30 border-[#d4af37]/60 text-[#d4af37]"
+                ? "bg-gold/30 border-gold/60 text-gold"
                 : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
             )}
           >

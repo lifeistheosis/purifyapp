@@ -23,7 +23,7 @@ export const revalidate = 3600;
 
 const FAST_DOT: Record<FastKind, string> = {
   strict: "bg-[#c1272d]",
-  "wine-oil": "bg-[#d4af37]",
+  "wine-oil": "bg-gold",
   fish: "bg-[#7b9b8f]",
   fast: "bg-paper/40",
   "fast-free": "bg-emerald-400",
@@ -86,7 +86,7 @@ export default function PrayersPage() {
 
         <div className="relative px-5 md:px-8 pt-20 md:pt-28 pb-12 md:pb-16">
           <div className="mx-auto max-w-[1080px] w-full">
-            <p className="font-sans text-[11px] font-semibold uppercase tracking-[2px] text-[#d4af37]/85 mb-4">
+            <p className="font-sans text-[11px] font-semibold uppercase tracking-[2px] text-gold/85 mb-4">
               The Prayer
             </p>
             <h1 className="font-serif text-[56px] md:text-[88px] leading-[0.95] tracking-[-0.02em] text-paper max-w-[760px]">
@@ -105,10 +105,10 @@ export default function PrayersPage() {
                 front of the icon */}
             <Link
               href="/prayers/today"
-              className="group mt-12 inline-flex items-center gap-4 rounded-md border border-[#d4af37]/45 bg-night/75 backdrop-blur-sm px-5 py-4 hover:border-[#d4af37]/75 hover:bg-night/85 transition-colors max-w-full"
+              className="group mt-12 inline-flex items-center gap-4 rounded-md border border-gold/45 bg-night/75 backdrop-blur-sm px-5 py-4 hover:border-gold/75 hover:bg-night/85 transition-colors max-w-full"
             >
-              <div className="shrink-0 flex flex-col items-center justify-center w-12 h-12 rounded-md border border-[#d4af37]/50 bg-night text-center">
-                <p className="font-sans text-[9px] uppercase tracking-[1.5px] text-[#d4af37]/85 leading-none">
+              <div className="shrink-0 flex flex-col items-center justify-center w-12 h-12 rounded-md border border-gold/50 bg-night text-center">
+                <p className="font-sans text-[9px] uppercase tracking-[1.5px] text-gold/85 leading-none">
                   {formatMonthDay(today).split(" ")[0].slice(0, 3).toUpperCase()}
                 </p>
                 <p className="font-sans text-[18px] font-bold text-paper leading-none mt-0.5 tabular-nums">
@@ -121,7 +121,7 @@ export default function PrayersPage() {
                 </div>
               )}
               <div className="min-w-0 flex-1">
-                <p className="font-sans text-[10.5px] uppercase tracking-[1.5px] text-[#d4af37]/85 mb-1">
+                <p className="font-sans text-[10.5px] uppercase tracking-[1.5px] text-gold/85 mb-1">
                   Today
                 </p>
                 <p className="font-sans text-[14.5px] font-semibold text-paper truncate">
@@ -145,7 +145,7 @@ export default function PrayersPage() {
               </div>
               <span
                 aria-hidden
-                className="shrink-0 font-sans text-[18px] text-paper/55 group-hover:text-[#d4af37] transition-colors"
+                className="shrink-0 font-sans text-[18px] text-paper/55 group-hover:text-gold transition-colors"
               >
                 →
               </span>
@@ -160,11 +160,11 @@ export default function PrayersPage() {
         <section>
           <Link
             href="/prayers/today"
-            className="group block rounded-lg border border-[#d4af37]/35 bg-[#d4af37]/[0.06] p-7 md:p-8 hover:border-[#d4af37]/60 hover:bg-[#d4af37]/[0.10] transition-colors"
+            className="group block rounded-lg border border-gold/35 bg-gold/[0.06] p-7 md:p-8 hover:border-gold/60 hover:bg-gold/[0.10] transition-colors"
           >
             <div className="flex items-start justify-between gap-6 flex-wrap">
               <div className="min-w-0">
-                <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.8px] text-[#d4af37] mb-3">
+                <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.8px] text-gold mb-3">
                   Daily prayer
                 </p>
                 <h2 className="font-serif text-[34px] md:text-[42px] leading-[1.05] text-paper">
@@ -186,7 +186,7 @@ export default function PrayersPage() {
         {/* ===== The Daily Rules ===== */}
         <section>
           <div className="mb-8">
-            <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.8px] text-[#d4af37]/85 mb-3">
+            <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.8px] text-gold/85 mb-3">
               The Daily Rules
             </p>
             <h2 className="font-serif text-[34px] md:text-[42px] leading-[1.05] text-paper">
@@ -219,7 +219,7 @@ export default function PrayersPage() {
             <div className="flex justify-center mb-8">
               <PrayerIcon slug="christ-pantocrator" size="lg" />
             </div>
-            <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.8px] text-[#d4af37]/85 mb-6">
+            <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.8px] text-gold/85 mb-6">
               The prayer of the heart
             </p>
             <p className="font-serif text-[22px] md:text-[26px] leading-[1.5] text-paper">
@@ -237,7 +237,7 @@ export default function PrayersPage() {
             <p className="mt-6">
               <Link
                 href="/prayers/learning/jesus-prayer"
-                className="font-sans text-[13.5px] font-medium text-[#d4af37] hover:text-paper underline underline-offset-4 decoration-[#d4af37]/40 hover:decoration-paper transition-colors"
+                className="font-sans text-[13.5px] font-medium text-gold hover:text-paper underline underline-offset-4 decoration-gold/40 hover:decoration-paper transition-colors"
               >
                 Learn how to pray it →
               </Link>
@@ -249,7 +249,7 @@ export default function PrayersPage() {
         <section>
           <div className="mb-8 flex items-end justify-between gap-3 flex-wrap">
             <div>
-              <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.8px] text-[#d4af37]/85 mb-3">
+              <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.8px] text-gold/85 mb-3">
                 The Hours
               </p>
               <h2 className="font-serif text-[34px] md:text-[42px] leading-[1.05] text-paper">
@@ -268,7 +268,7 @@ export default function PrayersPage() {
               >
                 <PrayerIcon slug={h.icon} size="sm" />
                 <div>
-                  <p className="font-sans text-[10.5px] uppercase tracking-[1.5px] text-[#d4af37]/85 mb-1">
+                  <p className="font-sans text-[10.5px] uppercase tracking-[1.5px] text-gold/85 mb-1">
                     {h.label}
                   </p>
                   <p className="font-sans text-[12px] text-paper/55 mb-2">
@@ -286,7 +286,7 @@ export default function PrayersPage() {
         {/* ===== The Akathists ===== */}
         <section>
           <div className="mb-8">
-            <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.8px] text-[#d4af37]/85 mb-3">
+            <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.8px] text-gold/85 mb-3">
               The Akathists
             </p>
             <h2 className="font-serif text-[34px] md:text-[42px] leading-[1.05] text-paper">
@@ -375,11 +375,11 @@ function RuleCard({
   return (
     <Link
       href={href}
-      className="group flex gap-6 rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-[#d4af37]/55 hover:bg-[#d4af37]/[0.06] transition-colors p-6"
+      className="group flex gap-6 rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-6"
     >
       <PrayerIcon slug={iconSlug} size="md" className="self-stretch" />
       <div className="min-w-0 flex-1 flex flex-col">
-        <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-[#d4af37]/85 mb-2">
+        <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-gold/85 mb-2">
           {eyebrow}
         </p>
         <h3 className="font-serif text-[24px] md:text-[26px] text-paper leading-tight">
@@ -392,7 +392,7 @@ function RuleCard({
           <span className="font-sans text-[12px] text-paper/55">
             {duration}
           </span>
-          <span className="font-sans text-[13px] font-medium text-paper/75 group-hover:text-[#d4af37] transition-colors">
+          <span className="font-sans text-[13px] font-medium text-paper/75 group-hover:text-gold transition-colors">
             Open the rule →
           </span>
         </p>

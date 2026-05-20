@@ -89,7 +89,7 @@ export function ProfileStats() {
             key={it.label}
             className="rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-5"
           >
-            <p className="font-sans text-[32px] md:text-[36px] font-bold text-[#d4af37] tabular-nums leading-none">
+            <p className="font-sans text-[32px] md:text-[36px] font-bold text-gold tabular-nums leading-none">
               {it.value}
             </p>
             <p className="mt-2 font-sans text-[12.5px] text-paper/65 leading-[1.4]">

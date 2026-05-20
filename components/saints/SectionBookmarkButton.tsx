@@ -55,7 +55,7 @@ export function SectionBookmarkButton({
       className={cn(
         "h-8 w-8 rounded-full border flex items-center justify-center text-[13px] transition-colors duration-150 shrink-0",
         isOn
-          ? "bg-[#d4af37]/25 border-[#d4af37]/55 text-[#d4af37]"
+          ? "bg-gold/25 border-gold/55 text-gold"
           : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
       )}
     >

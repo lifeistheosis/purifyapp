@@ -156,7 +156,7 @@ export function ProfileData({ signedIn }: { signedIn: boolean }) {
             type="button"
             onClick={doSync}
             disabled={busy !== "idle"}
-            className="font-sans text-[13px] font-medium border border-[#d4af37]/40 text-[#d4af37] rounded-pill px-4 py-2 hover:bg-[#d4af37]/10 disabled:opacity-60 transition-colors"
+            className="font-sans text-[13px] font-medium border border-gold/40 text-gold rounded-pill px-4 py-2 hover:bg-gold/10 disabled:opacity-60 transition-colors"
           >
             {busy === "sync" ? "Syncing…" : "Sync now"}
           </button>

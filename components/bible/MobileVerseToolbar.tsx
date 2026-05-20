@@ -55,7 +55,7 @@ export function MobileVerseToolbar({
 
   const ringIfActive = (active: boolean) =>
     active
-      ? "bg-[#d4af37]/25 border-[#d4af37]/60 text-[#d4af37]"
+      ? "bg-gold/25 border-gold/60 text-gold"
       : "border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10";
 
   return (

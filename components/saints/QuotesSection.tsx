@@ -25,7 +25,7 @@ export function QuotesSection({ quotes }: { quotes: Quote[] }) {
               className="rounded-lg border border-paper/8 bg-night/40 p-6 flex flex-col gap-4"
             >
               <blockquote className="font-serif text-[19px] md:text-[20px] text-paper/90 leading-[1.55]">
-                <span aria-hidden className="text-[#d4af37]/70 mr-1">
+                <span aria-hidden className="text-gold/70 mr-1">
                   &ldquo;
                 </span>
                 {q.text}

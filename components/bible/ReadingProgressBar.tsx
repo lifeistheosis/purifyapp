@@ -87,7 +87,7 @@ export function ReadingProgressBar({
         className="fixed left-0 right-0 z-30 h-[2px] bg-white/5 top-[96px] md:top-[72px]"
       >
         <div
-          className="h-full bg-[#d4af37] origin-left transition-transform duration-150 ease-out"
+          className="h-full bg-gold origin-left transition-transform duration-150 ease-out"
           style={{ transform: `scaleX(${progress})` }}
         />
       </div>

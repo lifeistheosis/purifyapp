@@ -149,7 +149,7 @@ export function PrayerRuleReader({ rule }: { rule: Rule }) {
           </p>
           <div className="flex items-center gap-3 text-[12px] font-sans">
             {streak > 0 && (
-              <span className="text-[#d4af37]">
+              <span className="text-gold">
                 {streak} day{streak === 1 ? "" : "s"} in a row
               </span>
             )}
@@ -174,7 +174,7 @@ export function PrayerRuleReader({ rule }: { rule: Rule }) {
         </div>
         <div className="h-[3px] rounded-full bg-paper/8 overflow-hidden">
           <div
-            className="h-full bg-[#d4af37] transition-[width] duration-300 ease-out"
+            className="h-full bg-gold transition-[width] duration-300 ease-out"
             style={{ width: `${Math.round(progress * 100)}%` }}
           />
         </div>
@@ -182,12 +182,12 @@ export function PrayerRuleReader({ rule }: { rule: Rule }) {
 
       {/* Completion banner */}
       {allDone && (
-        <div className="mb-6 rounded-md border border-[#d4af37]/40 bg-[#d4af37]/[0.08] p-4 text-center">
+        <div className="mb-6 rounded-md border border-gold/40 bg-gold/[0.08] p-4 text-center">
           <p className="font-serif text-[17px] text-paper">
             Glory to God. Rule complete for today.
           </p>
           {streak > 1 && (
-            <p className="mt-1 font-sans text-[12px] text-[#d4af37]/85 uppercase tracking-[1.5px]">
+            <p className="mt-1 font-sans text-[12px] text-gold/85 uppercase tracking-[1.5px]">
               {streak} days in a row
             </p>
           )}

@@ -74,7 +74,7 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
           className={cn(
             "inline-block w-1.5 h-1.5 rounded-full transition-colors",
             interlinearOn && showInterlinear
-              ? "bg-[#d4af37]"
+              ? "bg-gold"
               : "bg-transparent",
           )}
           title={interlinearOn && showInterlinear ? "Interlinear is on" : undefined}
@@ -146,7 +146,7 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
                 className={cn(
                   "w-full inline-flex items-center justify-between gap-3 rounded-pill border h-[40px] px-3.5 font-sans text-[13px] font-medium transition-colors",
                   interlinearOn
-                    ? "border-[#d4af37] text-[#161219] bg-[#d4af37] hover:bg-[#c89e2c]"
+                    ? "border-gold text-[#161219] bg-gold hover:bg-[#c89e2c]"
                     : "border-paper/15 bg-paper/[0.04] text-paper/85 hover:bg-paper/10 hover:border-paper/30",
                 )}
               >

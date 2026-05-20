@@ -12,7 +12,7 @@ export function SaintCard({ saint }: { saint: Saint }) {
         <SaintIcon saint={saint} size="md" />
         <div className="min-w-0 flex flex-col">
           {saint.byname && (
-            <p className="font-serif text-[13px] italic text-[#d4af37]/90 mb-1 line-clamp-1">
+            <p className="font-serif text-[13px] italic text-gold/90 mb-1 line-clamp-1">
               &ldquo;{saint.byname}&rdquo;
             </p>
           )}

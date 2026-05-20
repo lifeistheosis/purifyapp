@@ -33,7 +33,7 @@ export function StartHereStrip() {
               <Link
                 key={p.name}
                 href={p.href}
-                className="shrink-0 snap-start min-w-[180px] md:min-w-0 rounded-lg border border-[#d4af37]/25 bg-[#d4af37]/[0.04] hover:bg-[#d4af37]/[0.10] hover:border-[#d4af37]/55 transition-colors px-4 py-3.5"
+                className="shrink-0 snap-start min-w-[180px] md:min-w-0 rounded-lg border border-gold/25 bg-gold/[0.04] hover:bg-gold/[0.10] hover:border-gold/55 transition-colors px-4 py-3.5"
               >
                 <span className="block font-sans text-[15px] font-semibold text-paper leading-tight">
                   {p.name}

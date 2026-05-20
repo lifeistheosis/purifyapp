@@ -22,7 +22,7 @@ export const revalidate = 3600;
 
 const FAST_CHIP: Record<FastKind, string> = {
   strict: "bg-[#c1272d]/15 border-[#c1272d]/40 text-[#f8cac7]",
-  "wine-oil": "bg-[#d4af37]/15 border-[#d4af37]/45 text-[#f4dc91]",
+  "wine-oil": "bg-gold/15 border-gold/45 text-[#f4dc91]",
   fish: "bg-[#7b9b8f]/15 border-[#7b9b8f]/45 text-[#bfd6cc]",
   fast: "bg-paper/[0.06] border-paper/20 text-paper/80",
   "fast-free": "bg-emerald-500/15 border-emerald-500/40 text-emerald-200",
@@ -73,7 +73,7 @@ export default function PrayersTodayPage() {
               ) : (
                 <span
                   aria-hidden
-                  className="shrink-0 h-12 w-12 rounded-full flex items-center justify-center bg-[#d4af37]/15 text-[#f4dc91] border border-[#d4af37]/35 text-[18px]"
+                  className="shrink-0 h-12 w-12 rounded-full flex items-center justify-center bg-gold/15 text-[#f4dc91] border border-gold/35 text-[18px]"
                 >
                   {headline?.kind === "feast" ? "✦" : "+"}
                 </span>
@@ -119,11 +119,11 @@ export default function PrayersTodayPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <Link
               href="/prayers/morning"
-              className="group flex gap-4 rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-[#d4af37]/55 hover:bg-[#d4af37]/[0.06] transition-colors p-5"
+              className="group flex gap-4 rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-5"
             >
               <PrayerIcon slug="anastasis" size="sm" />
               <div className="min-w-0 flex-1">
-                <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-[#d4af37]/85 mb-2">
+                <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-gold/85 mb-2">
                   Morning rule
                 </p>
                 <h2 className="font-serif text-[24px] text-paper leading-tight">
@@ -134,7 +134,7 @@ export default function PrayersTodayPage() {
                   Lord&rsquo;s Prayer, Rising from Sleep, the Jesus Prayer,
                   the Theotokos hymn, and the dismissal. About 8 minutes.
                 </p>
-                <p className="mt-4 font-sans text-[13px] font-medium text-paper/75 group-hover:text-[#d4af37] transition-colors">
+                <p className="mt-4 font-sans text-[13px] font-medium text-paper/75 group-hover:text-gold transition-colors">
                   Open the rule →
                 </p>
               </div>
@@ -142,11 +142,11 @@ export default function PrayersTodayPage() {
 
             <Link
               href="/prayers/evening"
-              className="group flex gap-4 rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-[#d4af37]/55 hover:bg-[#d4af37]/[0.06] transition-colors p-5"
+              className="group flex gap-4 rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-5"
             >
               <PrayerIcon slug="theotokos-of-vladimir" size="sm" />
               <div className="min-w-0 flex-1">
-                <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-[#d4af37]/85 mb-2">
+                <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-gold/85 mb-2">
                   Evening rule
                 </p>
                 <h2 className="font-serif text-[24px] text-paper leading-tight">
@@ -157,7 +157,7 @@ export default function PrayersTodayPage() {
                   of the day, the Jesus Prayer, Into Thy hands, and the
                   dismissal. About 8 minutes.
                 </p>
-                <p className="mt-4 font-sans text-[13px] font-medium text-paper/75 group-hover:text-[#d4af37] transition-colors">
+                <p className="mt-4 font-sans text-[13px] font-medium text-paper/75 group-hover:text-gold transition-colors">
                   Open the rule →
                 </p>
               </div>
@@ -168,7 +168,7 @@ export default function PrayersTodayPage() {
               Body invites the reader to pray it without telling them how
               many times. */}
           <div className="mt-3 rounded-lg border border-paper/12 bg-paper/[0.03] p-5">
-            <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-[#d4af37]/85 mb-2">
+            <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-gold/85 mb-2">
               The Jesus Prayer
             </p>
             <p className="font-serif text-[20px] md:text-[22px] text-paper leading-[1.4]">
@@ -208,7 +208,7 @@ export default function PrayersTodayPage() {
                   <Link
                     key={i}
                     href={`/bible/${r.book}/${r.chapter}#v${r.from}`}
-                    className="group rounded-md border border-paper/12 bg-paper/[0.03] hover:border-[#d4af37]/55 hover:bg-[#d4af37]/[0.05] transition-colors p-4"
+                    className="group rounded-md border border-paper/12 bg-paper/[0.03] hover:border-gold/55 hover:bg-gold/[0.05] transition-colors p-4"
                   >
                     <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-paper/55 mb-1.5">
                       {kindLabel}
@@ -216,7 +216,7 @@ export default function PrayersTodayPage() {
                     <p className="font-sans text-[15px] font-semibold text-paper">
                       {r.label}
                     </p>
-                    <p className="mt-2 font-sans text-[12px] text-paper/55 group-hover:text-[#d4af37] transition-colors">
+                    <p className="mt-2 font-sans text-[12px] text-paper/55 group-hover:text-gold transition-colors">
                       Read passage →
                     </p>
                   </Link>

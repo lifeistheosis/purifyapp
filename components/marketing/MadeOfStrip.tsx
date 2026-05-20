@@ -51,7 +51,7 @@ export function MadeOfStrip() {
               <div className="flex items-start gap-3">
                 <span
                   aria-hidden
-                  className="shrink-0 mt-0.5 text-[#d4af37] text-[16px] leading-none"
+                  className="shrink-0 mt-0.5 text-gold text-[16px] leading-none"
                 >
                   ✦
                 </span>

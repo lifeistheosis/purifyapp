@@ -17,7 +17,7 @@ export default function NotFound() {
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3">
           <Link
             href="/prayers/today"
-            className="rounded-md border border-[#d4af37]/35 bg-[#d4af37]/[0.06] hover:border-[#d4af37]/55 hover:bg-[#d4af37]/[0.10] transition-colors px-5 py-4 font-sans text-[14px] font-medium text-paper"
+            className="rounded-md border border-gold/35 bg-gold/[0.06] hover:border-gold/55 hover:bg-gold/[0.10] transition-colors px-5 py-4 font-sans text-[14px] font-medium text-paper"
           >
             Today&rsquo;s prayer →
           </Link>

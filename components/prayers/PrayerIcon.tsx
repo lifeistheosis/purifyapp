@@ -66,7 +66,7 @@ export function PrayerIcon({
       {/* Inner gold frame — the Orthodox icon-panel cue. */}
       <div
         aria-hidden
-        className="absolute inset-1 rounded-sm border border-[#d4af37]/40 pointer-events-none z-10"
+        className="absolute inset-1 rounded-sm border border-gold/40 pointer-events-none z-10"
       />
       <Image
         src={icon.src}

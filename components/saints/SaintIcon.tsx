@@ -64,10 +64,10 @@ export function SaintIcon({
           the JPG arrives. */}
       <div
         aria-hidden
-        className="absolute inset-1 rounded-sm border border-[#d4af37]/60 flex flex-col items-center justify-center pointer-events-none"
+        className="absolute inset-1 rounded-sm border border-gold/60 flex flex-col items-center justify-center pointer-events-none"
       >
         <div
-          className="rounded-full border-2 border-[#d4af37]"
+          className="rounded-full border-2 border-gold"
           style={{
             width: d.halo,
             height: d.halo,

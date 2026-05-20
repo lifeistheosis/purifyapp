@@ -17,7 +17,7 @@ export function SaintHero({ saint }: { saint: Saint }) {
         <SaintIcon saint={saint} size="lg" priority />
         <div className="min-w-0 flex-1">
           {saint.byname && (
-            <p className="font-serif text-[16px] md:text-[18px] italic text-[#d4af37]/90 mb-3 tracking-wide">
+            <p className="font-serif text-[16px] md:text-[18px] italic text-gold/90 mb-3 tracking-wide">
               &ldquo;{saint.byname}&rdquo;
             </p>
           )}

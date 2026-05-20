@@ -133,7 +133,7 @@ export default function AboutPage() {
           want to keep the lights on or speed up the work, you can{" "}
           <Link
             href="/support"
-            className="text-[#d4af37] hover:underline underline-offset-2"
+            className="text-gold hover:underline underline-offset-2"
           >
             support the project
           </Link>{" "}
@@ -146,8 +146,7 @@ export default function AboutPage() {
         {/* Closing */}
         <div className="mt-16 pt-10 border-t border-paper/10 text-center">
           <p
-            className="font-serif italic text-[20px] md:text-[22px] tracking-wide leading-[1.5] max-w-[560px] mx-auto"
-            style={{ color: "#d4af37" }}
+            className="font-serif italic text-[20px] md:text-[22px] tracking-wide leading-[1.5] max-w-[560px] mx-auto text-gold"
           >
             &ldquo;Acquire the spirit of peace, and a thousand souls
             around you will be saved.&rdquo;

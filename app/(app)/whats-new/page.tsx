@@ -495,8 +495,7 @@ export default function WhatsNewPage() {
           </p>
 
           <p
-            className="mt-10 font-serif italic text-[20px] md:text-[22px] tracking-wide"
-            style={{ color: "#d4af37" }}
+            className="mt-10 font-serif italic text-[20px] md:text-[22px] tracking-wide text-gold"
           >
             From Edgar, the Purify Team.
           </p>
