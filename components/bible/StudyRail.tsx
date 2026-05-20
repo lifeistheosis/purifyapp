@@ -57,13 +57,97 @@ function CommentaryCard({
   );
 }
 
+type Note = { author: string; work: string; text: string };
+
+/** Group a verse's notes by author, preserving first-appearance order.
+ *  Keeps each distinct commentary intact — only the author header is shared. */
+function groupByAuthor(notes: Note[]): { author: string; items: Note[] }[] {
+  const order: string[] = [];
+  const map = new Map<string, Note[]>();
+  for (const n of notes) {
+    const arr = map.get(n.author);
+    if (arr) arr.push(n);
+    else {
+      map.set(n.author, [n]);
+      order.push(n.author);
+    }
+  }
+  return order.map((author) => ({ author, items: map.get(author)! }));
+}
+
+/** Collapsible card for a Father with multiple commentaries on one verse.
+ *  The header is the Father; expanding reveals each distinct commentary,
+ *  labelled by its work and separated by a divider. */
+function FatherGroupCard({
+  author,
+  items,
+}: {
+  author: string;
+  items: Note[];
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="rounded-md border border-paper/10 bg-paper/[0.03] overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="w-full flex items-center gap-2 px-2.5 py-2 text-left hover:bg-paper/[0.05] transition-colors"
+      >
+        <SaintIcon author={author} size="sm" />
+        <div className="min-w-0 flex-1 leading-tight">
+          <p className="font-sans text-[10.5px] font-semibold uppercase tracking-[1px] text-paper/70 truncate">
+            {author}
+          </p>
+          <p className="font-sans text-[11px] italic text-paper/45 truncate">
+            {items.length} commentaries
+          </p>
+        </div>
+        <span
+          aria-hidden
+          className={
+            "text-[11px] text-paper/40 transition-transform duration-200 " +
+            (open ? "rotate-180" : "")
+          }
+        >
+          ▾
+        </span>
+      </button>
+      {open && (
+        <div className="px-3 pb-3 pt-2 border-t border-paper/8 space-y-3.5">
+          {items.map((it, i) => (
+            <div
+              key={i}
+              className={i > 0 ? "pt-3 border-t border-paper/8" : ""}
+            >
+              <p className="font-sans text-[11px] italic text-paper/45 mb-1.5">
+                {it.work}
+              </p>
+              <div className="space-y-2.5">
+                {it.text.split(/\n\n+/).map((para, j) => (
+                  <p
+                    key={j}
+                    className="font-serif text-[13.5px] leading-[1.55] text-paper/80"
+                  >
+                    {para}
+                  </p>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function VerseSection({
   verse,
   notes,
   anchorIds,
 }: {
   verse: number;
-  notes: { author: string; work: string; text: string }[];
+  notes: Note[];
   anchorIds: boolean;
 }) {
   const [open, setOpen] = useState(true);
@@ -103,14 +187,18 @@ function VerseSection({
       </div>
       {open && (
         <div className="mt-2.5 space-y-2">
-          {notes.map((n, i) => (
-            <CommentaryCard
-              key={i}
-              author={n.author}
-              work={n.work}
-              text={n.text}
-            />
-          ))}
+          {groupByAuthor(notes).map((g, i) =>
+            g.items.length === 1 ? (
+              <CommentaryCard
+                key={i}
+                author={g.author}
+                work={g.items[0].work}
+                text={g.items[0].text}
+              />
+            ) : (
+              <FatherGroupCard key={i} author={g.author} items={g.items} />
+            ),
+          )}
         </div>
       )}
     </section>

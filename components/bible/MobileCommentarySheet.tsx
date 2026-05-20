@@ -4,6 +4,109 @@ import { useEffect, useState } from "react";
 import type { ChapterCommentary } from "@/lib/bible/load";
 import { SaintIcon } from "./SaintIcon";
 
+type Note = { author: string; work: string; text: string };
+
+/** Group a verse's notes by author, preserving first-appearance order. */
+function groupByAuthor(notes: Note[]): { author: string; items: Note[] }[] {
+  const order: string[] = [];
+  const map = new Map<string, Note[]>();
+  for (const n of notes) {
+    const arr = map.get(n.author);
+    if (arr) arr.push(n);
+    else {
+      map.set(n.author, [n]);
+      order.push(n.author);
+    }
+  }
+  return order.map((author) => ({ author, items: map.get(author)! }));
+}
+
+/** Render the paragraphs of one commentary's text. */
+function NoteText({ text }: { text: string }) {
+  return (
+    <div className="space-y-2.5">
+      {text.split(/\n\n+/).map((para, j) => (
+        <p
+          key={j}
+          className="font-serif text-[14.5px] leading-[1.6] text-paper/85"
+        >
+          {para}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+/** A single Father with one commentary — shown expanded, as before. */
+function SingleNote({ author, work, text }: Note) {
+  return (
+    <article className="rounded-md border border-paper/10 bg-paper/[0.03] p-3">
+      <div className="flex items-center gap-2 mb-2">
+        <SaintIcon author={author} size="sm" />
+        <div className="min-w-0 flex-1 leading-tight">
+          <p className="font-sans text-[10.5px] font-semibold uppercase tracking-[1px] text-paper/75 truncate">
+            {author}
+          </p>
+          <p className="font-sans text-[11px] italic text-paper/50 truncate">
+            {work}
+          </p>
+        </div>
+      </div>
+      <NoteText text={text} />
+    </article>
+  );
+}
+
+/** A Father with multiple commentaries on one verse — collapsible group.
+ *  Distinct commentaries are kept separate, each labelled by its work. */
+function FatherGroup({ author, items }: { author: string; items: Note[] }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <article className="rounded-md border border-paper/10 bg-paper/[0.03] overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="w-full flex items-center gap-2 p-3 text-left hover:bg-paper/[0.05] transition-colors"
+      >
+        <SaintIcon author={author} size="sm" />
+        <div className="min-w-0 flex-1 leading-tight">
+          <p className="font-sans text-[10.5px] font-semibold uppercase tracking-[1px] text-paper/75 truncate">
+            {author}
+          </p>
+          <p className="font-sans text-[11px] italic text-paper/50 truncate">
+            {items.length} commentaries
+          </p>
+        </div>
+        <span
+          aria-hidden
+          className={
+            "text-[12px] text-paper/40 transition-transform duration-200 " +
+            (open ? "rotate-180" : "")
+          }
+        >
+          ▾
+        </span>
+      </button>
+      {open && (
+        <div className="px-3 pb-3 pt-1 border-t border-paper/8 space-y-4">
+          {items.map((it, i) => (
+            <div
+              key={i}
+              className={i > 0 ? "pt-3 border-t border-paper/8" : ""}
+            >
+              <p className="font-sans text-[11px] italic text-paper/50 mb-1.5">
+                {it.work}
+              </p>
+              <NoteText text={it.text} />
+            </div>
+          ))}
+        </div>
+      )}
+    </article>
+  );
+}
+
 /**
  * Mobile-only bottom sheet that shows patristic commentary for a single
  * verse. Replaces the collapsed `<details>` block that used to live at
@@ -134,34 +237,18 @@ export function MobileCommentarySheet({
               No commentary for this verse.
             </p>
           ) : (
-            notes.map((n, i) => (
-              <article
-                key={i}
-                className="rounded-md border border-paper/10 bg-paper/[0.03] p-3"
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <SaintIcon author={n.author} size="sm" />
-                  <div className="min-w-0 flex-1 leading-tight">
-                    <p className="font-sans text-[10.5px] font-semibold uppercase tracking-[1px] text-paper/75 truncate">
-                      {n.author}
-                    </p>
-                    <p className="font-sans text-[11px] italic text-paper/50 truncate">
-                      {n.work}
-                    </p>
-                  </div>
-                </div>
-                <div className="space-y-2.5">
-                  {n.text.split(/\n\n+/).map((para, j) => (
-                    <p
-                      key={j}
-                      className="font-serif text-[14.5px] leading-[1.6] text-paper/85"
-                    >
-                      {para}
-                    </p>
-                  ))}
-                </div>
-              </article>
-            ))
+            groupByAuthor(notes).map((g, i) =>
+              g.items.length === 1 ? (
+                <SingleNote
+                  key={i}
+                  author={g.author}
+                  work={g.items[0].work}
+                  text={g.items[0].text}
+                />
+              ) : (
+                <FatherGroup key={i} author={g.author} items={g.items} />
+              ),
+            )
           )}
         </div>
       </div>
