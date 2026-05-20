@@ -440,7 +440,7 @@ export default function WhatsNewPage() {
             What&rsquo;s new
           </p>
           <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
-            v3.8 &middot; Beta &middot; Cleaner Koine ↔ English
+            v4.0 &middot; The largest update yet
           </p>
         </div>
 
