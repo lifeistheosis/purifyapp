@@ -5,17 +5,45 @@ import Link from "next/link";
 import type { Saint, Work } from "@/lib/saints/saints";
 import { FilterPill } from "./FilterPill";
 
+// How many topic pills to show before collapsing the rest behind "More".
+const PRIMARY_MAX = 10;
+
 export function SaintWorksBrowser({ saint }: { saint: Saint }) {
   const [activeTopic, setActiveTopic] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
 
-  // Topics across this saint's works, with counts.
+  // Topics across this saint's works, ranked by how many works share them
+  // (most-shared first, then alphabetical). Single-work topics are the long
+  // tail and are hidden by default to keep the filter clean.
   const buckets = useMemo(() => {
     const map = new Map<string, number>();
     for (const w of saint.works) {
       for (const t of w.topics ?? []) map.set(t, (map.get(t) ?? 0) + 1);
     }
-    return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+    return Array.from(map.entries()).sort(
+      (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
+    );
   }, [saint]);
+
+  // Shared topics (count >= 2) make the useful filters; cap them so the row
+  // stays one or two lines. The rest live behind the "More" toggle.
+  const primary = useMemo(
+    () => buckets.filter(([, n]) => n >= 2).slice(0, PRIMARY_MAX),
+    [buckets],
+  );
+  const hasOverflow = primary.length < buckets.length;
+
+  // What to render: all topics when expanded, otherwise the primary set plus
+  // the active topic if the user picked one from the collapsed long tail.
+  const shownTopics = useMemo(() => {
+    if (showAll) return buckets;
+    const list = [...primary];
+    if (activeTopic && !list.some(([t]) => t === activeTopic)) {
+      const found = buckets.find(([t]) => t === activeTopic);
+      if (found) list.push(found);
+    }
+    return list;
+  }, [showAll, buckets, primary, activeTopic]);
 
   const visible = useMemo(() => {
     if (!activeTopic) return saint.works;
@@ -40,22 +68,36 @@ export function SaintWorksBrowser({ saint }: { saint: Saint }) {
       </div>
 
       {buckets.length > 0 && (
-        <div className="mb-8 flex flex-wrap gap-2.5">
+        <div className="mb-8 flex flex-wrap items-center gap-2.5">
           <FilterPill
             label="All topics"
             count={saint.works.length}
             active={activeTopic === null}
             onClick={() => setActiveTopic(null)}
           />
-          {buckets.map(([topic, n]) => (
+          {shownTopics.map(([topic, n]) => (
             <FilterPill
               key={topic}
               label={topic}
               count={n}
               active={activeTopic === topic}
-              onClick={() => setActiveTopic(topic)}
+              onClick={() =>
+                setActiveTopic((cur) => (cur === topic ? null : topic))
+              }
             />
           ))}
+          {hasOverflow && (
+            <button
+              type="button"
+              onClick={() => setShowAll((v) => !v)}
+              aria-expanded={showAll}
+              className="font-sans text-[13px] font-medium text-paper/55 hover:text-paper underline underline-offset-4 decoration-paper/25 hover:decoration-paper/60 transition-colors px-1.5 py-2"
+            >
+              {showAll
+                ? "Show fewer"
+                : `More topics (${buckets.length - primary.length})`}
+            </button>
+          )}
         </div>
       )}
 
