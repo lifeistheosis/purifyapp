@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { BookCategory } from "@/lib/bible/books";
+import { hasCommentary } from "@/lib/bible/commentary-index";
 
 // Subtle border tint per category so the eye can group books visually
 // without the page becoming a coloring book. Hover deepens the tint.
@@ -52,11 +53,23 @@ export function CategorizedBookList({
                     href={`/bible/${b.slug}/1`}
                     className={`group block rounded-md border bg-paper/[0.03] px-3.5 py-3 transition-colors duration-150 ${tint}`}
                   >
-                    <span className="block font-sans text-[14px] font-semibold text-paper truncate leading-tight">
-                      {b.name}
+                    <span className="flex items-center gap-1.5">
+                      <span className="block font-sans text-[14px] font-semibold text-paper truncate leading-tight">
+                        {b.name}
+                      </span>
+                      {hasCommentary(b.slug) && (
+                        <span
+                          aria-label="Patristic commentary available"
+                          title="Patristic commentary available"
+                          className="shrink-0 inline-block h-1.5 w-1.5 rounded-full bg-[#d4af37]"
+                        />
+                      )}
                     </span>
                     <span className="block font-sans text-[11px] text-paper/50 mt-1 group-hover:text-paper/65 transition-colors">
                       {b.chapters} {b.chapters === 1 ? "chapter" : "chapters"}
+                      {hasCommentary(b.slug) && (
+                        <span className="text-[#d4af37]/80"> · Fathers</span>
+                      )}
                     </span>
                   </Link>
                 ))}
