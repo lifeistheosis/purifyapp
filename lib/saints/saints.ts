@@ -237,6 +237,15 @@ export const SAINTS: Saint[] = [
           "On the runaway slave Onesimus returned as a brother: a short letter Chrysostom reads as a lesson in mercy, restitution, and the dignity of every soul.",
         topics: ["Mercy", "Forgiveness", "Brotherhood", "Humility", "Charity", "Scripture"],
       },
+      {
+        slug: "homilies-on-acts",
+        title: "Homilies on the Acts of the Apostles",
+        subtitle: "The complete fifty-five homilies",
+        year: "c. 400",
+        blurb:
+          "The only complete patristic commentary on Acts to survive: the descent of the Spirit, the life of the first community, and the apostolic preaching from Jerusalem to Rome.",
+        topics: ["Holy Spirit", "Church", "Mission", "Almsgiving", "Martyrdom", "Scripture"],
+      },
     ],
   },
   {
