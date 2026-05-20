@@ -445,58 +445,46 @@ export default function WhatsNewPage() {
         </div>
 
         <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
-          Pray with the Church, every day.
+          Read the Scriptures with the Fathers.
         </h1>
 
         <p className="mt-8 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-          The line that has stood at the bottom of every letter since v1.0
-          finally goes away: daily prayer is now built. v3.0 lands the
-          Morning Rule, the Evening Rule, and a guided Jesus Prayer
-          counter; and it ties them together with a Today screen that
-          gathers the date, the saint, the fast, and the appointed readings
-          into one place. Open it when you wake. Open it again before
-          sleep. That is the whole shape.
+          If you are new here, welcome. v4.0 is the largest release Purify
+          has had, and its heart is simple: you should never have to read
+          the Scriptures alone. Open any of fourteen books of the New
+          Testament and St. John Chrysostom now reads beside you, verse by
+          verse, in the study rail and the mobile sheet, the same exposition
+          the Church has leaned on for sixteen centuries, set next to the
+          very verse he is preaching.
         </p>
 
         <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-          The prayer texts are the ones the Church has handed down: O
-          Heavenly King, the Trisagion, the Lord&rsquo;s Prayer, Rising
-          from Sleep, Into Thy hands, the Theotokos hymn. They are the
-          same prayers your priest prays in his cell, the same prayers
-          your grandmother said in front of her icons. The English
-          translation matches the form carried in the common Orthodox
-          prayer books for at least a century. Each prayer is its own
-          collapsible block, with a small checkbox so you can keep your
-          place; the rule remembers what you prayed today, and a quiet
-          gold counter tracks how many days in a row you have stood with
-          the Church.
+          The Gospel of John, the Acts of the Apostles, Romans, both letters
+          to the Corinthians, Ephesians through Philemon, and Hebrews: more
+          than two thousand of his comments, drawn word for word from the
+          public-domain Fathers, are now in the reader. The same homilies
+          read in full on his profile, seventeen complete works in all, and a
+          new &ldquo;In his own words&rdquo; section gathers his sharpest
+          lines with a link back to the homily each one came from.
         </p>
 
         <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-          The Jesus Prayer gets its own room. Tap to advance the count;
-          choose a goal from 33 to 300; if it helps you, turn on the breath
-          cue and let the pulse carry your inhale and your exhale. The
-          Fathers say the bringing-back is half the work. The counter is
-          there only to free your hands and your mind to do the work.
+          The lives have grown too. Five saints join the calendar, each with
+          a traditional icon written in the Byzantine manner: the
+          Great-Martyr Marina, Hermione of Ephesus, Isidora of Tabenna,
+          Olympias the Deaconess, and Gregory of Nyssa. A search bar now sits
+          over the Saints, so a name or a writing is a keystroke away, and a
+          small gold mark shows which books of the Bible already carry the
+          Fathers.
         </p>
 
         <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-          Alongside the prayer feature, v3.0 finishes a long list of
-          quieter things the site has owed itself: a proper 404 page that
-          does not lose people, a loading skeleton on the Bible reader,
-          a sitemap and robots so search engines can read us, a link
-          preview card so the site looks like itself when you share it,
-          and the Old Calendar toggle on the calendar page (used by the
-          Russian, Serbian, Jerusalem, and Athonite churches; thirteen
-          days behind the New for fixed feasts, the same Pascha as
-          everyone). Still missing: akathists, audio, accounts and
-          cross-device sync. We will get there.
-        </p>
-
-        <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-          For now, the most important thing the site can ask of you it
-          now actually offers. Open it when you rise. Open it when you
-          lie down. Stand in the presence of God, even for a moment.
+          And the room itself is quieter. We have settled the colours, drawn
+          a proper cross in place of stray symbols, and tidied the type, so
+          the app feels less like software and more like a place to stand
+          before God. The Morning and Evening Rules, the Jesus Prayer, and
+          the Today screen are all still here, waiting whenever you rise and
+          whenever you lie down.
         </p>
 
         <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
@@ -507,7 +495,7 @@ export default function WhatsNewPage() {
         {/* Closing + signature */}
         <div className="mt-16 pt-10 border-t border-paper/10">
           <p className="font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-            Thank you for staying with us through three majors. Glory to God
+            Thank you for staying with us through four majors. Glory to God
             for all things.
           </p>
 
