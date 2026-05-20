@@ -19,6 +19,21 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
   {
+    version: "v3.10",
+    kind: "St. John Chrysostom's complete Homilies on John",
+    date: "May 19, 2026",
+    blurb:
+      "The single largest body of patristic text in the app so far. St. John Chrysostom's eighty-eight Homilies on the Gospel of John — preached at Antioch around 391 and the longest patristic treatment of any New Testament book — are now imported in full from the public-domain Nicene and Post-Nicene Fathers (Series 1, Vol. 14, ed. Schaff). The complete homilies read on Chrysostom's work page, and the same text is split verse-by-verse into the Bible reader: open any chapter of John and Chrysostom's exposition now sits in the study rail (and the mobile commentary sheet) next to the verse he is preaching on, alongside the other Fathers already there.",
+    items: [
+      "All 88 homilies imported verbatim to /saints/john-chrysostom/homilies-on-john — the work is no longer a 2-section stub.",
+      "Verse-by-verse commentary across all 21 chapters of John (579 Chrysostom notes), keyed to the verse each passage expounds via the homilies' own 'Ver. N' section markers.",
+      "Merge-not-clobber: the existing notes from Augustine, Cyril, Gregory the Theologian, Athanasius, and Irenaeus are preserved; only the older placeholder Chrysostom summaries were replaced.",
+      "New scripts/ingest-chrysostom-john.mjs parses the NPNF1-14 plaintext: slices the John block from the Hebrews homilies, strips footnote markers and paragraph bullets, rebuilds paragraphs, and emits both the work JSON and the per-chapter commentary JSON.",
+      "Commentary cards (study rail + mobile sheet) now render multi-paragraph notes with proper paragraph breaks.",
+      "Long-work performance: works with 20+ sections (like the 88 homilies) now render as an accordion — each homily's text mounts only when opened, so the page stays responsive on mobile. The table of contents opens and scrolls to any homily.",
+    ],
+  },
+  {
     version: "v3.9",
     kind: "Mobile Bible reader — UI cleanup",
     date: "May 19, 2026",

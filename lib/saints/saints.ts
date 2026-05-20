@@ -114,10 +114,10 @@ export const SAINTS: Saint[] = [
       {
         slug: "homilies-on-john",
         title: "Homilies on the Gospel of John",
-        subtitle: "Selections from the eighty-eight homilies",
+        subtitle: "The complete eighty-eight homilies",
         year: "c. 391",
         blurb:
-          "Chrysostom's verse-by-verse preaching through the Fourth Gospel, the longest patristic treatment of any New Testament book.",
+          "Chrysostom's verse-by-verse preaching through the whole Fourth Gospel — all eighty-eight homilies, the longest patristic treatment of any New Testament book.",
         topics: ["Logos", "Incarnation", "Trinity", "Eucharist", "Scripture", "Theology"],
       },
     ],

@@ -42,9 +42,16 @@ function CommentaryCard({
         </span>
       </button>
       {open && (
-        <p className="px-3 pb-3 pt-1 font-serif text-[13.5px] leading-[1.55] text-paper/80 border-t border-paper/8">
-          {text}
-        </p>
+        <div className="px-3 pb-3 pt-2 border-t border-paper/8 space-y-2.5">
+          {text.split(/\n\n+/).map((para, i) => (
+            <p
+              key={i}
+              className="font-serif text-[13.5px] leading-[1.55] text-paper/80"
+            >
+              {para}
+            </p>
+          ))}
+        </div>
       )}
     </div>
   );

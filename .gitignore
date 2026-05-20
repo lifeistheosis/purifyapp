@@ -43,3 +43,6 @@ next-env.d.ts
 
 # fetcher tmp
 .tmp/
+
+# ingestion source cache (large public-domain raw texts; not shipped)
+/scripts/.cache/

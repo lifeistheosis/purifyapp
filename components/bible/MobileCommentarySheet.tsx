@@ -145,9 +145,16 @@ export function MobileCommentarySheet({
                     </p>
                   </div>
                 </div>
-                <p className="font-serif text-[14.5px] leading-[1.6] text-paper/85">
-                  {n.text}
-                </p>
+                <div className="space-y-2.5">
+                  {n.text.split(/\n\n+/).map((para, j) => (
+                    <p
+                      key={j}
+                      className="font-serif text-[14.5px] leading-[1.6] text-paper/85"
+                    >
+                      {para}
+                    </p>
+                  ))}
+                </div>
               </article>
             ))
           )}
