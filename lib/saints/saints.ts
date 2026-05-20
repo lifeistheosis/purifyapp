@@ -120,6 +120,24 @@ export const SAINTS: Saint[] = [
           "Chrysostom's verse-by-verse preaching through the whole Fourth Gospel, all eighty-eight homilies, the longest patristic treatment of any New Testament book.",
         topics: ["Logos", "Incarnation", "Trinity", "Eucharist", "Scripture", "Theology"],
       },
+      {
+        slug: "homilies-on-romans",
+        title: "Homilies on the Epistle to the Romans",
+        subtitle: "The complete thirty-two homilies",
+        year: "c. 391",
+        blurb:
+          "Chrysostom's verse-by-verse exposition of St. Paul's greatest epistle, on grace, faith, the law, and life in the Spirit, across all sixteen chapters.",
+        topics: ["Grace", "Faith", "Law", "Salvation", "Repentance", "Scripture"],
+      },
+      {
+        slug: "homilies-on-hebrews",
+        title: "Homilies on the Epistle to the Hebrews",
+        subtitle: "The complete thirty-four homilies",
+        year: "c. 403",
+        blurb:
+          "Delivered near the end of his life and published from a hearer's notes, Chrysostom's reading of Hebrews on Christ the High Priest and the better covenant.",
+        topics: ["Christ", "Priesthood", "Covenant", "Faith", "Perseverance", "Scripture"],
+      },
     ],
   },
   {
