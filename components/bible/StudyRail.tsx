@@ -57,6 +57,66 @@ function CommentaryCard({
   );
 }
 
+function VerseSection({
+  verse,
+  notes,
+  anchorIds,
+}: {
+  verse: number;
+  notes: { author: string; work: string; text: string }[];
+  anchorIds: boolean;
+}) {
+  const [open, setOpen] = useState(true);
+  return (
+    <section
+      {...(anchorIds ? { id: `rail-v${verse}` } : {})}
+      className="rail-section -mx-2 px-2 py-1 rounded-md scroll-mt-24"
+    >
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          className="group/vs flex flex-1 items-center gap-2 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 hover:text-paper transition-colors"
+        >
+          <span
+            aria-hidden
+            className={
+              "text-[10px] text-paper/40 transition-transform duration-200 " +
+              (open ? "" : "-rotate-90")
+            }
+          >
+            ▾
+          </span>
+          <span>Verse {verse}</span>
+          <span className="rounded-full bg-paper/10 px-1.5 py-0.5 text-[9.5px] font-semibold tabular-nums text-paper/55 group-hover/vs:bg-paper/15 group-hover/vs:text-paper/75 transition-colors">
+            {notes.length}
+          </span>
+        </button>
+        <a
+          href={`#v${verse}`}
+          aria-label={`Jump to verse ${verse} in the text`}
+          className="shrink-0 text-paper/30 hover:text-paper/70 transition-colors text-[11px] px-1"
+        >
+          ↑
+        </a>
+      </div>
+      {open && (
+        <div className="mt-2.5 space-y-2">
+          {notes.map((n, i) => (
+            <CommentaryCard
+              key={i}
+              author={n.author}
+              work={n.work}
+              text={n.text}
+            />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
 export function StudyRail({
   commentary,
   anchorIds = true,
@@ -80,35 +140,15 @@ export function StudyRail({
   }
 
   return (
-    <div className="space-y-6">
-      {verses.map((vn) => {
-        const notes = commentary[String(vn)] ?? [];
-        return (
-          <section
-            key={vn}
-            {...(anchorIds ? { id: `rail-v${vn}` } : {})}
-            className="rail-section space-y-2.5 -mx-2 px-2 py-1 rounded-md scroll-mt-24"
-          >
-            <a
-              href={`#v${vn}`}
-              className="inline-flex items-baseline gap-2 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 hover:text-paper transition-colors"
-            >
-              Verse {vn}
-              <span className="text-paper/30 text-[10px]">↑</span>
-            </a>
-            <div className="space-y-2">
-              {notes.map((n, i) => (
-                <CommentaryCard
-                  key={i}
-                  author={n.author}
-                  work={n.work}
-                  text={n.text}
-                />
-              ))}
-            </div>
-          </section>
-        );
-      })}
+    <div className="space-y-4">
+      {verses.map((vn) => (
+        <VerseSection
+          key={vn}
+          verse={vn}
+          notes={commentary[String(vn)] ?? []}
+          anchorIds={anchorIds}
+        />
+      ))}
     </div>
   );
 }

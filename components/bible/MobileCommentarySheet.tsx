@@ -110,6 +110,11 @@ export function MobileCommentarySheet({
             </p>
             <p className="mt-0.5 font-serif text-[17px] text-paper truncate">
               {bookName} {chapter}:{verse}
+              {notes.length > 0 && (
+                <span className="ml-2 align-middle rounded-full bg-paper/10 px-1.5 py-0.5 font-sans text-[10px] font-semibold tabular-nums text-paper/55">
+                  {notes.length}
+                </span>
+              )}
             </p>
           </div>
           <button
