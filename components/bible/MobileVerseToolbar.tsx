@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { Highlighter, Eraser, Link2, Check, Bookmark, SquarePen } from "lucide-react";
 
 export type MobileVerseAction =
   | "highlight"
@@ -82,7 +83,7 @@ export function MobileVerseToolbar({
               ringIfActive(state.highlighted)
             }
           >
-            ✦
+            <Highlighter className="h-[18px] w-[18px]" aria-hidden />
           </button>
           {state.hasWordHighlights && (
             <button
@@ -94,7 +95,7 @@ export function MobileVerseToolbar({
                 ringIfActive(false)
               }
             >
-              ⌫
+              <Eraser className="h-[18px] w-[18px]" aria-hidden />
             </button>
           )}
           <button
@@ -108,7 +109,11 @@ export function MobileVerseToolbar({
                 : "border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10")
             }
           >
-            {state.copied ? "✓" : "🔗"}
+            {state.copied ? (
+              <Check className="h-[18px] w-[18px]" aria-hidden />
+            ) : (
+              <Link2 className="h-[18px] w-[18px]" aria-hidden />
+            )}
           </button>
           <button
             type="button"
@@ -120,7 +125,11 @@ export function MobileVerseToolbar({
               ringIfActive(state.bookmarked)
             }
           >
-            {state.bookmarked ? "★" : "☆"}
+            <Bookmark
+              className="h-[18px] w-[18px]"
+              fill={state.bookmarked ? "currentColor" : "none"}
+              aria-hidden
+            />
           </button>
           <button
             type="button"
@@ -134,7 +143,7 @@ export function MobileVerseToolbar({
                 : "border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10")
             }
           >
-            ✎
+            <SquarePen className="h-[18px] w-[18px]" aria-hidden />
           </button>
         </div>
       </div>

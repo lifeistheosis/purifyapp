@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Settings2 } from "lucide-react";
 import { useInterlinear } from "@/lib/bible/interlinear";
 import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
 import type { ReaderSize, ReaderFont } from "@/components/reader/ReaderPrefs";
@@ -65,7 +66,7 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
         aria-label="Reader settings"
         className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 px-3.5 h-[42px] font-sans text-[13px] font-medium text-paper transition-colors"
       >
-        <span aria-hidden className="text-[15px] leading-none">⚙</span>
+        <Settings2 aria-hidden className="h-4 w-4" />
         <span>Reader</span>
         {/* Always reserve the dot's space so the button width is stable
             whether or not interlinear is on (prevents the row shifting). */}

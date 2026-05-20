@@ -1,3 +1,5 @@
+import { Cross } from "@/components/ui/icons/Cross";
+
 const ITEMS: { title: string; body: string }[] = [
   {
     title: "The whole Orthodox canon",
@@ -49,12 +51,7 @@ export function MadeOfStrip() {
               className="rounded-md border border-paper/12 bg-paper/[0.03] p-5"
             >
               <div className="flex items-start gap-3">
-                <span
-                  aria-hidden
-                  className="shrink-0 mt-0.5 text-gold text-[16px] leading-none"
-                >
-                  ✦
-                </span>
+                <Cross size={16} className="shrink-0 mt-0.5 text-gold" />
                 <div className="min-w-0">
                   <p className="font-sans text-[15px] font-semibold text-paper leading-tight">
                     {it.title}

@@ -7,6 +7,7 @@ import { IconCornerCard } from "@/components/marketing/IconCornerCard";
 import { SeasonBanner } from "@/components/marketing/SeasonBanner";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
 import { DailyWisdom } from "@/components/marketing/DailyWisdom";
+import { Cross } from "@/components/ui/icons/Cross";
 
 // ISR so the live home-page surface (Today card, daily wisdom, season
 // banner, paschal greeting) refreshes daily without a redeploy.
@@ -150,8 +151,8 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {features.map((f) => (
               <div key={f.title} className="text-center">
-                <div className="mx-auto mb-6 h-14 w-14 rounded-pill bg-paper/10 flex items-center justify-center">
-                  <span className="text-paper text-[22px]">✦</span>
+                <div className="mx-auto mb-6 h-14 w-14 rounded-pill bg-paper/10 flex items-center justify-center text-gold">
+                  <Cross size={24} />
                 </div>
                 <h3 className="font-sans text-[24px] font-semibold text-paper mb-3">
                   {f.title}

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Search } from "lucide-react";
 import { SAINTS } from "@/lib/saints/saints";
 
 /**
@@ -114,9 +115,10 @@ export function SaintSearch({ className }: { className?: string }) {
   return (
     <div ref={containerRef} className={`relative ${className ?? ""}`}>
       <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-paper/40 text-[14px]">
-          ⌕
-        </span>
+        <Search
+          aria-hidden
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-paper/40 h-4 w-4"
+        />
         <input
           type="search"
           value={q}
