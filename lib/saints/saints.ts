@@ -138,6 +138,105 @@ export const SAINTS: Saint[] = [
           "Delivered near the end of his life and published from a hearer's notes, Chrysostom's reading of Hebrews on Christ the High Priest and the better covenant.",
         topics: ["Christ", "Priesthood", "Covenant", "Faith", "Perseverance", "Scripture"],
       },
+      {
+        slug: "homilies-on-1-corinthians",
+        title: "Homilies on the First Epistle to the Corinthians",
+        subtitle: "The complete forty-four homilies",
+        year: "c. 392",
+        blurb:
+          "Chrysostom's pastoral reading of a divided church, on unity, the gifts, the Eucharist, the resurrection of the body, and the hymn to love in chapter thirteen.",
+        topics: ["Love", "Unity", "Eucharist", "Resurrection", "Wisdom", "Scripture"],
+      },
+      {
+        slug: "homilies-on-2-corinthians",
+        title: "Homilies on the Second Epistle to the Corinthians",
+        subtitle: "The complete thirty homilies",
+        year: "c. 392",
+        blurb:
+          "The most personal of Paul's letters expounded: affliction and comfort, the ministry of reconciliation, godly sorrow, and strength made perfect in weakness.",
+        topics: ["Affliction", "Comfort", "Repentance", "Ministry", "Weakness", "Scripture"],
+      },
+      {
+        slug: "homilies-on-ephesians",
+        title: "Homilies on the Epistle to the Ephesians",
+        subtitle: "The complete twenty-four homilies",
+        year: "c. 392",
+        blurb:
+          "On the mystery of the Church as the body of Christ, grace through faith, the unity of the Spirit, and the whole armour of God.",
+        topics: ["Church", "Grace", "Unity", "Marriage", "Spiritual Warfare", "Scripture"],
+      },
+      {
+        slug: "homilies-on-philippians",
+        title: "Homilies on the Epistle to the Philippians",
+        subtitle: "The complete fifteen homilies",
+        year: "c. 400",
+        blurb:
+          "Joy from a prison cell: the self-emptying of Christ, pressing toward the prize, and learning in whatsoever state to be content.",
+        topics: ["Joy", "Humility", "Christ", "Contentment", "Perseverance", "Scripture"],
+      },
+      {
+        slug: "homilies-on-colossians",
+        title: "Homilies on the Epistle to the Colossians",
+        subtitle: "The complete twelve homilies",
+        year: "c. 399",
+        blurb:
+          "Christ the image of the invisible God and the fullness of the Godhead, against every philosophy that would dim His supremacy.",
+        topics: ["Christ", "Wisdom", "Baptism", "Thanksgiving", "Heresy", "Scripture"],
+      },
+      {
+        slug: "homilies-on-1-thessalonians",
+        title: "Homilies on the First Epistle to the Thessalonians",
+        subtitle: "The complete eleven homilies",
+        year: "c. 400",
+        blurb:
+          "Encouragement to a young church on holiness, brotherly love, work, and the coming of the Lord and the resurrection of those who sleep.",
+        topics: ["Hope", "Resurrection", "Holiness", "Love", "Vigilance", "Scripture"],
+      },
+      {
+        slug: "homilies-on-2-thessalonians",
+        title: "Homilies on the Second Epistle to the Thessalonians",
+        subtitle: "The complete five homilies",
+        year: "c. 400",
+        blurb:
+          "On patience under persecution, the man of sin and the restrainer, and the duty to stand fast and to labour quietly for one's bread.",
+        topics: ["Patience", "Judgment", "Tradition", "Work", "Vigilance", "Scripture"],
+      },
+      {
+        slug: "homilies-on-1-timothy",
+        title: "Homilies on the First Epistle to Timothy",
+        subtitle: "The complete eighteen homilies",
+        year: "c. 397",
+        blurb:
+          "A handbook for the shepherd: sound doctrine, prayer, the qualifications of bishops and deacons, the care of widows, and contentment with godliness.",
+        topics: ["Priesthood", "Prayer", "Order", "Almsgiving", "Contentment", "Scripture"],
+      },
+      {
+        slug: "homilies-on-2-timothy",
+        title: "Homilies on the Second Epistle to Timothy",
+        subtitle: "The complete ten homilies",
+        year: "c. 397",
+        blurb:
+          "Paul's last letter: fan into flame the gift of God, endure hardship as a good soldier, and the charge to preach the word in season and out.",
+        topics: ["Perseverance", "Courage", "Scripture", "Suffering", "Ministry", "Faith"],
+      },
+      {
+        slug: "homilies-on-titus",
+        title: "Homilies on the Epistle to Titus",
+        subtitle: "The complete six homilies",
+        year: "c. 397",
+        blurb:
+          "On ordering the churches of Crete, the character of elders, sound teaching, and the grace of God that trains us to live soberly and godly.",
+        topics: ["Order", "Grace", "Good Works", "Teaching", "Sobriety", "Scripture"],
+      },
+      {
+        slug: "homilies-on-philemon",
+        title: "Homilies on the Epistle to Philemon",
+        subtitle: "The complete three homilies",
+        year: "c. 397",
+        blurb:
+          "On the runaway slave Onesimus returned as a brother: a short letter Chrysostom reads as a lesson in mercy, restitution, and the dignity of every soul.",
+        topics: ["Mercy", "Forgiveness", "Brotherhood", "Humility", "Charity", "Scripture"],
+      },
     ],
   },
   {

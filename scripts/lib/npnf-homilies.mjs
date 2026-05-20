@@ -58,7 +58,57 @@ export async function getText(cacheName, srcUrl) {
   return text;
 }
 
+// Slice one book's homily region out of a multi-book NPNF volume (e.g. Vol 12
+// holds 1 & 2 Corinthians; Vol 13 holds Galatians..Philemon). Finds the first
+// "   Homily I." whose following lemma matches `lemmaTokenRe`, and ends at the
+// next book's section header (`endRe`) so the last homily isn't polluted by the
+// following book's title/argument. With no `endRe`, runs to end of text.
+export function regionByLemma(text, lemmaTokenRe, endRe = null) {
+  const heads = [...text.matchAll(/^ {3}Homily I\.\s*$/gm)].map((m) => m.index);
+  let start = -1;
+  for (const idx of heads) {
+    if (lemmaTokenRe.test(text.slice(idx, idx + 220))) {
+      start = idx;
+      break;
+    }
+  }
+  if (start < 0) {
+    throw new Error(`regionByLemma: no "Homily I." with lemma ${lemmaTokenRe}`);
+  }
+  let end = text.length;
+  if (endRe) {
+    const sub = text.slice(start + 50);
+    const r = endRe.exec(sub);
+    if (r) end = start + 50 + r.index;
+  }
+  return text.slice(start, end);
+}
+
+// Slice the Nth homily series out of a volume by the bare "   Homily I."
+// headers (every book in a volume restarts at Homily I). `index` is 0-based
+// over those headers in document order; the region runs to the next book's
+// Homily I, or to `endMarkerRe` (default the trailing Indexes) for the last.
+export function regionBetweenHomilyI(text, index, endMarkerRe = /Indexes/) {
+  const h1 = [...text.matchAll(/^ {3}Homily I\.\s*$/gm)].map((m) => m.index);
+  const start = h1[index];
+  if (start == null) throw new Error(`regionBetweenHomilyI: no Homily I #${index}`);
+  let end;
+  if (index + 1 < h1.length) {
+    end = h1[index + 1];
+  } else {
+    const m = endMarkerRe.exec(text.slice(start + 50));
+    end = m ? start + 50 + m.index : text.length;
+  }
+  return text.slice(start, end);
+}
+
 // ---- Cleaning helpers (ported from the John ingester) --------------------
+
+// Title-block boilerplate that can leak into the final homily of a book when
+// the next book's title sits just before its Homily I. These exact phrases
+// never occur as homily prose, so dropping them is safe.
+const TITLE_BOILERPLATE =
+  /^(homilies of st\.? john chrysostom,?|archbishop of constantinople,?|on the|to the|epistle of st\.? paul the apostle[,.]?)$/i;
 
 function cleanInline(s) {
   return s
@@ -95,7 +145,9 @@ function toParagraphs(raw) {
     }
   }
   if (buf.length) paras.push(buf.join(" "));
-  return paras.map(cleanInline).filter((p) => p.length > 1);
+  return paras
+    .map(cleanInline)
+    .filter((p) => p.length > 1 && !TITLE_BOILERPLATE.test(p));
 }
 
 // ---- Parsing -------------------------------------------------------------
@@ -126,14 +178,21 @@ function parseHomilies(region, headerRe = DEFAULT_HEADER_RE) {
 }
 
 // Pull the lemma line (e.g. "Rom. i. 1", "Acts ii. 1, 2", "Heb. i. 1, 2")
-// from the head of a homily block. `lemmaRe` must capture (chapterToken,
-// verseLabel). Returns { chapter, startVerse, verseLabel, rest }.
+// from the head of a homily block. `lemmaRe` captures (chapterToken,
+// verseLabel); it may also be an ARRAY of such regexes (some books mix lemma
+// forms, e.g. Ephesians uses both "Chapter I. Verses 1-2" and "Ephesians iv.
+// 4"). Returns { chapter, startVerse, verseLabel, rest }.
 function extractLemma(block, lemmaRe) {
+  const res = Array.isArray(lemmaRe) ? lemmaRe : [lemmaRe];
   const lines = block.split("\n");
   for (let i = 0; i < Math.min(lines.length, 8); i++) {
     const t = lines[i].trim();
     if (t === "") continue;
-    const lm = t.match(lemmaRe);
+    let lm = null;
+    for (const re of res) {
+      lm = t.match(re);
+      if (lm) break;
+    }
     if (lm) {
       const chapter = numeralToInt(lm[1]);
       const verseLabel = lm[2].replace(/\s+/g, " ").replace(/\.$/, "").trim();
@@ -174,6 +233,11 @@ export async function ingestHomilies(cfg) {
     lemmaRe, // regex with (chapter)(verseLabel) capture groups
     expectedHomilies, // gate
     prefaceCount = 0, // homilies with no lemma at the start (e.g. John has 1)
+    // "per-verse" (default): split each homily by "Ver. N." markers.
+    // "none": write only the readable work JSON, no commentary file — for
+    // volumes without Ver. markers (Matthew, Acts) where per-verse keying
+    // would dump a whole homily onto one verse.
+    commentaryMode = "per-verse",
     author,
     citation,
     saintSlug,
@@ -242,12 +306,21 @@ export async function ingestHomilies(cfg) {
   await fs.mkdir(path.dirname(workOut), { recursive: true });
   await fs.writeFile(workOut, JSON.stringify(work, null, 2) + "\n", "utf8");
 
-  // ---- Write/merge commentary ----
-  const commentaryDir = path.join(ROOT, "data", "bible", "commentary", bookSlug);
-  await fs.mkdir(commentaryDir, { recursive: true });
+  // ---- Write/merge commentary (skipped in "none" mode) ----
   let chaptersWritten = 0;
   let totalNotes = 0;
   const warnings = [];
+
+  if (commentaryMode === "none") {
+    process.stdout.write(
+      `\n${bookName}: ${homilies.length} homilies (work only, no commentary)\n` +
+        `  work: ${path.relative(ROOT, workOut)} (${sections.length} sections)\n`,
+    );
+    return { homilies: homilies.length, chaptersWritten: 0, totalNotes: 0 };
+  }
+
+  const commentaryDir = path.join(ROOT, "data", "bible", "commentary", bookSlug);
+  await fs.mkdir(commentaryDir, { recursive: true });
 
   for (const [chapter, verseMap] of [...commentaryByChapter.entries()].sort((a, b) => a[0] - b[0])) {
     const file = path.join(commentaryDir, `${chapter}.json`);
