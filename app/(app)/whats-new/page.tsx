@@ -20,7 +20,7 @@ type Entry = {
 const ENTRIES: Entry[] = [
   {
     version: "v4.0",
-    kind: "Welcome, the largest update yet",
+    kind: "A major release, welcome",
     date: "May 20, 2026",
     blurb:
       "If you're just arriving: welcome, we're so glad you're here. v4.0 is the biggest step Purify has taken, a whole season of work gathered into one release. The Bible reader now carries St. John Chrysostom verse-by-verse through fourteen books of the New Testament; the Saints section has grown, gained a search bar, and added an 'In his own words' collection of quotations; and the whole app has been warmed and tidied so it feels less like software and more like a place to pray. Whether you've been here since the early days or opened Purify for the first time today, make yourself at home.",
@@ -440,7 +440,7 @@ export default function WhatsNewPage() {
             What&rsquo;s new
           </p>
           <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
-            v4.0 &middot; The largest update yet
+            v4.0 &middot; A major release
           </p>
         </div>
 
