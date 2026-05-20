@@ -12,9 +12,11 @@ import https from "node:https";
 import sharp from "sharp";
 
 const TARGETS = [
-  { slug: "augustine-of-hippo", q: "Augustine of Hippo icon" },
-  { slug: "cyril-of-alexandria", q: "Cyril of Alexandria icon" },
-  { slug: "irenaeus-of-lyons", q: "Irenaeus of Lyons icon" },
+  { slug: "marina-the-great-martyr", q: "Saint Marina Antioch orthodox icon" },
+  { slug: "hermione-of-ephesus", q: "Saint Hermione Ephesus orthodox icon" },
+  { slug: "isidora-of-tabenna", q: "Saint Isidora fool orthodox icon" },
+  { slug: "olympias-the-deaconess", q: "Saint Olympias deaconess orthodox icon" },
+  { slug: "gregory-of-nyssa", q: "Saint Gregory of Nyssa orthodox icon" },
 ];
 
 const OUT = path.join(process.cwd(), "public", "saints", "icons");

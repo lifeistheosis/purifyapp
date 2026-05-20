@@ -30,7 +30,7 @@ export default async function SaintPage({ params }: { params: Params }) {
       <div className="mx-auto max-w-[1100px] w-full">
         <SaintHero saint={saint} />
         <LifeSection paragraphs={saint.life} />
-        <SaintWorksBrowser saint={saint} />
+        {saint.works.length > 0 && <SaintWorksBrowser saint={saint} />}
       </div>
     </section>
   );
