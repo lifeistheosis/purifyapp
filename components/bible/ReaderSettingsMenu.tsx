@@ -67,13 +67,18 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
       >
         <span aria-hidden className="text-[15px] leading-none">⚙</span>
         <span>Reader</span>
-        {interlinearOn && showInterlinear && (
-          <span
-            aria-hidden
-            className="inline-block w-1.5 h-1.5 rounded-full bg-[#d4af37]"
-            title="Interlinear is on"
-          />
-        )}
+        {/* Always reserve the dot's space so the button width is stable
+            whether or not interlinear is on (prevents the row shifting). */}
+        <span
+          aria-hidden
+          className={cn(
+            "inline-block w-1.5 h-1.5 rounded-full transition-colors",
+            interlinearOn && showInterlinear
+              ? "bg-[#d4af37]"
+              : "bg-transparent",
+          )}
+          title={interlinearOn && showInterlinear ? "Interlinear is on" : undefined}
+        />
       </button>
 
       {open && (

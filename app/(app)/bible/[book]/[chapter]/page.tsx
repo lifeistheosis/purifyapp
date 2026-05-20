@@ -115,16 +115,14 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
           context strip (~28px) sitting under the 72px sticky navbar. */}
       <section className="flex-1 px-5 md:px-10 pt-14 md:pt-16 pb-10 md:pb-16 min-w-0">
         <div className="mx-auto max-w-[1200px] w-full">
-          {/* Row 1 — always: Translation + Book share the row.
+          {/* Row 1 — always: Translation + Book at their natural width.
               On desktop the typography cluster (font + interlinear) sits to
-              their right. On mobile that cluster is split off into row 2 below. */}
+              their right. On mobile that cluster is split off into row 2 below.
+              Switchers are kept at content width (not stretched) so they don't
+              shift as the book name length changes. */}
           <div className="mb-4 flex items-center gap-3">
-            <div className="flex-1 min-w-0">
-              <TranslationSwitcher currentSlug={book} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <BookSwitcher currentSlug={book} />
-            </div>
+            <TranslationSwitcher currentSlug={book} />
+            <BookSwitcher currentSlug={book} />
             <div className="hidden md:flex items-center gap-3 ml-auto">
               <ReaderFontSizeButton />
               <ReaderFontFamilyButton />

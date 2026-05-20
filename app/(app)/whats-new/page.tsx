@@ -32,6 +32,7 @@ const ENTRIES: Entry[] = [
       "Long-press gesture (added in v3.7) now opens the toolbar instead of entering a word-range select-mode. The v3.7 fix is preserved: a tap is a no-op, and a tap-then-scroll never commits a highlight.",
       "Word-level drag-to-highlight on touch is dropped — the popup's whole-verse highlight covers the primary mobile use case. Desktop mouse-drag highlighting is unchanged.",
       "Interlinear render: switched from `grid-cols-1 md:grid-cols-2` to `grid-cols-2 gap-x-3 md:gap-x-6` so English | Greek are side-by-side on every viewport when Interlinear is on.",
+      "Stability fix: the Translation/Book switchers no longer stretch to equal widths (dropped the flex-1 wrappers), so they sit at their natural content width and don't shift around. The Reader gear button now reserves the space for its gold interlinear dot, so toggling interlinear no longer nudges the button.",
     ],
   },
   {
