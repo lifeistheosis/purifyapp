@@ -13,6 +13,7 @@ export const COMMENTED_BOOKS: ReadonlySet<string> = new Set([
   "acts",
   // Pauline epistles (Chrysostom, complete per-verse except where noted)
   "romans",
+  "galatians",
   "1-corinthians",
   "2-corinthians",
   "ephesians",

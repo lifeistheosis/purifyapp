@@ -110,7 +110,7 @@ export function regionBetweenHomilyI(text, index, endMarkerRe = /Indexes/) {
 const TITLE_BOILERPLATE =
   /^(homilies of st\.? john chrysostom,?|archbishop of constantinople,?|on the|to the|epistle of st\.? paul the apostle[,.]?)$/i;
 
-function cleanInline(s) {
+export function cleanInline(s) {
   return s
     .replace(/\[\d+\.\]/g, "") // paragraph-number bullets [1.]
     .replace(/\[\d+\]/g, "") // inline footnote refs [74]
@@ -121,7 +121,7 @@ function cleanInline(s) {
     .trim();
 }
 
-function toParagraphs(raw) {
+export function toParagraphs(raw) {
   const lines = raw.split("\n");
   const kept = [];
   for (const line of lines) {
@@ -209,7 +209,7 @@ function extractLemma(block, lemmaRe) {
 
 // Split a homily's paragraphs into verse-keyed chunks using paragraph-leading
 // "Ver. N." markers (parenthetical "( Ver. N.)" citations are ignored).
-function splitByVerse(paragraphs, startVerse) {
+export function splitByVerse(paragraphs, startVerse) {
   const out = new Map();
   let cur = startVerse;
   for (const p of paragraphs) {

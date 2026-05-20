@@ -101,8 +101,10 @@ export const SAINTS: Saint[] = [
     life: [
       "Born in Antioch around 349 to a noble family, John was reared by his widowed mother Anthusa, who refused remarriage in order to give her son a Christian upbringing. He studied rhetoric under the famous pagan teacher Libanius, who is said to have wished John would succeed him 'if the Christians had not stolen him.'",
       "After his mother's repose he withdrew to the mountains outside Antioch to practice asceticism, spending two of those years in a cave learning the Scriptures by heart. The harshness of the regime broke his health, and he returned to the city, was ordained deacon, then presbyter, and for twelve years preached the homilies that fill fifteen volumes of his collected works.",
+      "It was at Antioch, in the Lent of 387, that he became the voice of a terrified city. When the people, crushed by a new tax, had thrown down and broken the statues of the emperor Theodosius and dreaded his vengeance, John preached the twenty-one Homilies on the Statues, holding the city together with the fear of God and the hope of mercy until imperial pardon came. The people never forgot it, and it was there that the name Golden-Mouth fastened to him.",
       "In 397 he was seized, almost kidnapped, and brought to Constantinople to be made archbishop of the capital. He gave away the silver of the patriarchate, fed the poor, and from the pulpit rebuked the luxury of the court. The empress Eudoxia, whose vanity he had publicly named, twice procured his exile.",
       "The second exile killed him. Sent on foot through the Armenian highlands in the winter of 407, he died at Comana in Pontus on September 14, his last words: 'Glory to God for all things.'",
+      "Thirty-one years later, in 438, his relics were brought home to Constantinople in triumph, and the emperor Theodosius II laid his face upon the coffin to beg forgiveness for the wrong his parents had done the saint. The Church numbers him with St. Basil the Great and St. Gregory the Theologian as one of the Three Hierarchs, and keeps him as the author of the Divine Liturgy most often served in Orthodox churches to this day.",
     ],
     works: [
       {
@@ -117,7 +119,7 @@ export const SAINTS: Saint[] = [
       {
         slug: "on-the-priesthood",
         title: "On the Priesthood",
-        subtitle: "Six dialogues",
+        subtitle: "The six books, complete",
         year: "c. 386",
         blurb:
           "The weight of the priesthood, the manner of those who would bear it, and why the young Chrysostom fled ordination.",
@@ -258,6 +260,15 @@ export const SAINTS: Saint[] = [
           "The only complete patristic commentary on Acts to survive: the descent of the Spirit, the life of the first community, and the apostolic preaching from Jerusalem to Rome.",
         topics: ["Holy Spirit", "Church", "Mission", "Almsgiving", "Martyrdom", "Scripture"],
       },
+      {
+        slug: "commentary-on-galatians",
+        title: "Commentary on the Epistle to the Galatians",
+        subtitle: "The complete commentary, all six chapters",
+        year: "c. 395",
+        blurb:
+          "Chrysostom's continuous commentary on Paul's defense of the Gospel of grace: justified by faith and not by the law, and called to the freedom of the children of God.",
+        topics: ["Grace", "Faith", "Freedom", "Law", "Spirit", "Scripture"],
+      },
     ],
     quotes: [
       {
@@ -294,6 +305,16 @@ export const SAINTS: Saint[] = [
         text: "Almsgiving I mean, fits not only the rich, but also the needy.",
         source: "Homilies on the Epistle to the Hebrews",
         href: "/saints/john-chrysostom/homilies-on-hebrews",
+      },
+      {
+        text: "God has bestowed a power on priests greater than that of our natural parents.",
+        source: "On the Priesthood",
+        href: "/saints/john-chrysostom/on-the-priesthood",
+      },
+      {
+        text: "For neither of these did the Law avail, but grace was sufficient for both.",
+        source: "Commentary on the Epistle to the Galatians",
+        href: "/saints/john-chrysostom/commentary-on-galatians",
       },
       {
         text: "Glory to God for all things.",
