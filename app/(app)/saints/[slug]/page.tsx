@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { SAINTS, getSaint } from "@/lib/saints/saints";
 import { SaintHero } from "@/components/saints/SaintHero";
 import { LifeSection } from "@/components/saints/LifeSection";
+import { QuotesSection } from "@/components/saints/QuotesSection";
 import { SaintWorksBrowser } from "@/components/saints/SaintWorksBrowser";
 
 type Params = Promise<{ slug: string }>;
@@ -30,6 +31,7 @@ export default async function SaintPage({ params }: { params: Params }) {
       <div className="mx-auto max-w-[1100px] w-full">
         <SaintHero saint={saint} />
         <LifeSection paragraphs={saint.life} />
+        {saint.quotes?.length ? <QuotesSection quotes={saint.quotes} /> : null}
         {saint.works.length > 0 && <SaintWorksBrowser saint={saint} />}
       </div>
     </section>

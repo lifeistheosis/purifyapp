@@ -179,6 +179,16 @@ export const SAYINGS: WisdomEntry[] = [
     href: "/saints/john-chrysostom",
   },
   {
+    text: "Let no one fear death, for the death of the Savior has set us free.",
+    cite: "St. John Chrysostom, The Paschal Homily",
+    href: "/saints/john-chrysostom/paschal-homily",
+  },
+  {
+    text: "Nothing is more frigid than a Christian, who cares not for the salvation of others.",
+    cite: "St. John Chrysostom, Homilies on Acts",
+    href: "/saints/john-chrysostom/homilies-on-acts",
+  },
+  {
     text: "Thou hast made us for Thyself, O Lord, and our heart is restless until it repose in Thee.",
     cite: "St. Augustine of Hippo",
     href: "/saints/augustine-of-hippo",

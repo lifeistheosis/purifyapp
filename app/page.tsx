@@ -6,6 +6,7 @@ import { SectionScroller } from "@/components/SectionScroller";
 import { IconCornerCard } from "@/components/marketing/IconCornerCard";
 import { SeasonBanner } from "@/components/marketing/SeasonBanner";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
+import { DailyWisdom } from "@/components/marketing/DailyWisdom";
 
 // ISR so the live home-page surface (Today card, daily wisdom, season
 // banner, paschal greeting) refreshes daily without a redeploy.
@@ -134,6 +135,9 @@ export default function Home() {
 
       {/* Season banner — auto-surfaces during major Orthodox seasons. */}
       <SeasonBanner />
+
+      {/* Daily wisdom — a Scripture verse or a Father's saying, rotating daily. */}
+      <DailyWisdom />
 
       {/* FEATURES */}
       <section className={`${sectionBase} bg-night`}>

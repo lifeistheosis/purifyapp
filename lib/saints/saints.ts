@@ -36,11 +36,23 @@ export type Saint = {
   life: string[];
   works: Work[];
   /**
+   * Notable quotations, drawn verbatim from the saint's own works (or, where
+   * noted, his recorded words). Shown in a "In his own words" section on the
+   * profile. `href` deep-links to the work the line is taken from.
+   */
+  quotes?: Quote[];
+  /**
    * Optional path to a real icon image, e.g. "/saints/icons/john-chrysostom.png".
    * If absent, the SaintIcon component renders a styled placeholder
    * (halo + initials on a wood-and-gold panel).
    */
   iconUrl?: string;
+};
+
+export type Quote = {
+  text: string;
+  source: string;
+  href?: string;
 };
 
 export const SAINTS: Saint[] = [
@@ -245,6 +257,47 @@ export const SAINTS: Saint[] = [
         blurb:
           "The only complete patristic commentary on Acts to survive: the descent of the Spirit, the life of the first community, and the apostolic preaching from Jerusalem to Rome.",
         topics: ["Holy Spirit", "Church", "Mission", "Almsgiving", "Martyrdom", "Scripture"],
+      },
+    ],
+    quotes: [
+      {
+        text: "Let no one fear death, for the death of the Savior has set us free.",
+        source: "The Paschal Homily",
+        href: "/saints/john-chrysostom/paschal-homily",
+      },
+      {
+        text: "Nothing is more frigid than a Christian, who cares not for the salvation of others.",
+        source: "Homilies on the Acts of the Apostles, Homily 20",
+        href: "/saints/john-chrysostom/homilies-on-acts",
+      },
+      {
+        text: "Nothing is so important as thy brother's salvation.",
+        source: "Homilies on the Epistle to the Romans",
+        href: "/saints/john-chrysostom/homilies-on-romans",
+      },
+      {
+        text: "Nothing is worse than envy; to destroy another it destroys itself also.",
+        source: "Homilies on the Gospel of John",
+        href: "/saints/john-chrysostom/homilies-on-john",
+      },
+      {
+        text: "He that loves never can hate.",
+        source: "Homilies on the First Epistle to the Corinthians, on the hymn to love",
+        href: "/saints/john-chrysostom/homilies-on-1-corinthians",
+      },
+      {
+        text: "Nothing is more blessed than that chain.",
+        source: "Homilies on the Epistle to the Ephesians, on the imprisonment of St. Paul",
+        href: "/saints/john-chrysostom/homilies-on-ephesians",
+      },
+      {
+        text: "Almsgiving I mean, fits not only the rich, but also the needy.",
+        source: "Homilies on the Epistle to the Hebrews",
+        href: "/saints/john-chrysostom/homilies-on-hebrews",
+      },
+      {
+        text: "Glory to God for all things.",
+        source: "His last words, at Comana in Pontus, 407",
       },
     ],
   },
