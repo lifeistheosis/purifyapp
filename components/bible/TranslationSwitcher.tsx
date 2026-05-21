@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { getBook } from "@/lib/bible/books";
 
@@ -10,6 +11,8 @@ type Translation = {
   fullLabel: string;
   testament: "OT" | "NT" | "BOTH";
   available: boolean;
+  /** Licensed (API.Bible) translation — selected via ?v= and fetched live. */
+  licensed?: boolean;
   note?: string;
 };
 
@@ -44,24 +47,39 @@ const TRANSLATIONS: Translation[] = [
     id: "nkjv",
     shortLabel: "NKJV",
     fullLabel: "New King James Version",
-    testament: "BOTH",
-    available: false,
-    note: "Licensing in progress.",
+    testament: "NT",
+    available: true,
+    licensed: true,
+    note: "© Thomas Nelson. Used by permission.",
   },
   {
     id: "niv",
     shortLabel: "NIV",
     fullLabel: "New International Version",
-    testament: "BOTH",
-    available: false,
-    note: "Licensing in progress.",
+    testament: "NT",
+    available: true,
+    licensed: true,
+    note: "© Biblica. Used by permission.",
+  },
+  {
+    id: "nlt",
+    shortLabel: "NLT",
+    fullLabel: "New Living Translation",
+    testament: "NT",
+    available: true,
+    licensed: true,
+    note: "© Tyndale House. Used by permission.",
   },
 ];
 
-function currentForTestament(testament: "OT" | "NT"): Translation {
+// The public-domain default for a testament (used when no licensed ?v= is set).
+function pdDefaultForTestament(testament: "OT" | "NT"): Translation {
   return (
     TRANSLATIONS.find(
-      (t) => t.available && (t.testament === testament || t.testament === "BOTH"),
+      (t) =>
+        t.available &&
+        !t.licensed &&
+        (t.testament === testament || t.testament === "BOTH"),
     ) ?? TRANSLATIONS[0]
   );
 }
@@ -69,7 +87,32 @@ function currentForTestament(testament: "OT" | "NT"): Translation {
 export function TranslationSwitcher({ currentSlug }: { currentSlug: string }) {
   const book = getBook(currentSlug);
   const testament = (book?.testament ?? "OT") as "OT" | "NT";
-  const current = currentForTestament(testament);
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const activeV = searchParams.get("v");
+
+  // A licensed translation is "current" only when its ?v= is set AND it applies
+  // to this testament (licensed translations are NT here). Otherwise the
+  // public-domain default for the testament is current.
+  const licensedActive = TRANSLATIONS.find(
+    (t) => t.licensed && t.id === activeV && t.testament === testament,
+  );
+  const current = licensedActive ?? pdDefaultForTestament(testament);
+
+  function select(t: Translation) {
+    if (!t.available || t.id === current.id) {
+      setOpen(false);
+      return;
+    }
+    const params = new URLSearchParams(searchParams.toString());
+    if (t.licensed) params.set("v", t.id);
+    else params.delete("v");
+    const qs = params.toString();
+    router.push(qs ? `${pathname}?${qs}` : pathname);
+    setOpen(false);
+  }
 
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -142,12 +185,20 @@ export function TranslationSwitcher({ currentSlug }: { currentSlug: string }) {
                     role="option"
                     aria-selected={isCurrent}
                     aria-disabled={!t.available}
+                    tabIndex={t.available ? 0 : -1}
+                    onClick={() => select(t)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        select(t);
+                      }
+                    }}
                     className={cn(
                       "rounded-md px-3 py-2.5 transition-colors",
                       isCurrent
                         ? "bg-accent/12"
                         : t.available
-                          ? "hover:bg-paper/[0.06]"
+                          ? "hover:bg-paper/[0.06] cursor-pointer"
                           : "opacity-55",
                     )}
                   >
@@ -172,7 +223,13 @@ export function TranslationSwitcher({ currentSlug }: { currentSlug: string }) {
                               : "border-paper/10 text-paper/35",
                         )}
                       >
-                        {isCurrent ? "Current" : t.available ? "Free" : "Soon"}
+                        {isCurrent
+                          ? "Current"
+                          : t.available
+                            ? t.licensed
+                              ? "Licensed"
+                              : "Free"
+                            : "Soon"}
                       </span>
                     </div>
                   </div>

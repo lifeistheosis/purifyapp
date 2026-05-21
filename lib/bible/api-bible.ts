@@ -22,7 +22,7 @@ import "server-only";
  * unaffected until the licensed translations are switched on.
  */
 
-const API_ROOT = "https://api.scripture.api.bible/v1";
+const API_ROOT = "https://rest.api.bible/v1";
 
 // App translation id -> env var holding that translation's API.Bible bibleId.
 const BIBLE_ID_ENV: Record<string, string> = {
@@ -67,9 +67,10 @@ const USFM: Record<string, string> = {
 export type LicensedChapter = {
   html: string;
   copyright: string;
-  /** FUMS tracking id to feed the <Fums> component (required by the license). */
-  fumsId: string | null;
+  /** FUMS tracking token to feed the <Fums> component (required by the license). */
+  fumsToken: string | null;
   reference: string;
+  verseCount: number;
 };
 
 /**
@@ -104,8 +105,9 @@ export async function fetchLicensedChapter(
     return {
       html: d.content as string,
       copyright: (d.copyright as string) ?? "",
-      fumsId: (json?.meta?.fumsId as string) ?? null,
+      fumsToken: (json?.meta?.fumsToken as string) ?? null,
       reference: (d.reference as string) ?? `${bookSlug} ${chapter}`,
+      verseCount: typeof d.verseCount === "number" ? d.verseCount : 0,
     };
   } catch {
     return null;

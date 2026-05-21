@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { BookChapterSidebar } from "@/components/bible/BookChapterSidebar";
 import { ChapterReader } from "@/components/bible/ChapterReader";
+import { LicensedChapterReader } from "@/components/bible/LicensedChapterReader";
 import { ChapterPager } from "@/components/bible/ChapterPager";
 import { BibleSearch } from "@/components/bible/BibleSearch";
 import { BookSwitcher } from "@/components/bible/BookSwitcher";
@@ -28,8 +29,23 @@ import {
   loadEnglishTagged,
 } from "@/lib/bible/load";
 import { strongsMap } from "@/lib/bible/strongs";
+import {
+  isLicensed,
+  isApiConfigured,
+  fetchLicensedChapter,
+} from "@/lib/bible/api-bible";
 
 type Params = Promise<{ book: string; chapter: string }>;
+type Search = Promise<{ v?: string }>;
+
+// Licensed translations are fetched live (never statically generated / stored).
+export const dynamicParams = true;
+
+const LICENSED_LABEL: Record<string, string> = {
+  niv: "New International Version",
+  nkjv: "New King James Version",
+  nlt: "New Living Translation",
+};
 
 export function generateStaticParams() {
   return allChapterParams();
@@ -42,25 +58,43 @@ export async function generateMetadata({ params }: { params: Params }) {
   return { title: `${b.name} ${chapter}` };
 }
 
-export default async function BibleChapterPage({ params }: { params: Params }) {
+export default async function BibleChapterPage({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: Search;
+}) {
   const { book, chapter } = await params;
+  const { v } = await searchParams;
   const chapterNum = Number(chapter);
   const b = getBook(book);
   if (!b || !Number.isInteger(chapterNum) || chapterNum < 1 || chapterNum > b.chapters) {
     notFound();
   }
-  // Interlinear (Greek + English Strong's tags) is NT-only. The OT was
-  // originally Hebrew; the Septuagint is a Greek translation, but the
-  // user wants the interlinear scoped to the New Testament only.
+  // A licensed translation (NKJV/NIV/NLT) is fetched live from API.Bible when
+  // selected (?v=) and configured. It renders verbatim with no Strong's /
+  // interlinear overlay (content integrity). Falls back to public domain when
+  // the book isn't in the translation (e.g. deuterocanon) or the API fails.
+  const licensedId = v && isLicensed(v) && isApiConfigured(v) ? v : null;
+  const licensed = licensedId
+    ? await fetchLicensedChapter(licensedId, book, chapterNum)
+    : null;
+  const usingLicensed = Boolean(licensed);
+
+  // Interlinear (Greek + English Strong's tags) is NT-only, and only ever on
+  // the public-domain text — never overlaid on licensed translations.
   const isNT = b!.testament === "NT";
+  const showInterlinear = isNT && !usingLicensed;
   const [data, intro, commentary, original, englishTagged] = await Promise.all([
-    loadChapter(book, chapterNum),
+    usingLicensed ? Promise.resolve(null) : loadChapter(book, chapterNum),
     chapterNum === 1 ? loadIntro(book) : Promise.resolve(null),
     loadCommentary(book, chapterNum),
-    isNT ? loadOriginal(book, chapterNum) : Promise.resolve(null),
-    isNT ? loadEnglishTagged(book, chapterNum) : Promise.resolve(null),
+    showInterlinear ? loadOriginal(book, chapterNum) : Promise.resolve(null),
+    showInterlinear ? loadEnglishTagged(book, chapterNum) : Promise.resolve(null),
   ]);
-  if (!data) notFound();
+  if (!usingLicensed && !data) notFound();
+  const totalVerses = usingLicensed ? licensed!.verseCount : data!.verses.length;
 
   const originalByNum: Record<number, string> = {};
   const tokensByNum: Record<
@@ -102,12 +136,12 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
       <ReadingProgressBar
         bookName={b!.name}
         chapter={chapterNum}
-        totalVerses={data!.verses.length}
+        totalVerses={totalVerses}
       />
       <ChapterStickyHeader
         bookName={b!.name}
         chapter={chapterNum}
-        totalVerses={data!.verses.length}
+        totalVerses={totalVerses}
       />
       <MobileNextChapterFab slug={book} chapter={chapterNum} />
       <BookChapterSidebar book={b!} current={chapterNum} />
@@ -126,15 +160,15 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
             <div className="hidden md:flex items-center gap-3 ml-auto">
               <ReaderFontSizeButton />
               <ReaderFontFamilyButton />
-              {isNT && <InterlinearToggle />}
+              {showInterlinear && <InterlinearToggle />}
             </div>
           </div>
           {/* Row 2 — mobile only: Interlinear pill (NT) on the left, gear on
               the right. Un-buries the Interlinear toggle from the gear menu. */}
           <div className="md:hidden mb-4 flex items-center gap-3">
-            {isNT && <InterlinearToggle />}
+            {showInterlinear && <InterlinearToggle />}
             <div className="ml-auto">
-              <ReaderSettingsMenu showInterlinear={isNT} />
+              <ReaderSettingsMenu showInterlinear={showInterlinear} />
             </div>
           </div>
           <div className="mb-6">
@@ -174,31 +208,43 @@ export default async function BibleChapterPage({ params }: { params: Params }) {
                 </details>
               )}
 
-              <ChapterReader
-                book={book}
-                bookName={b!.name}
-                chapter={chapterNum}
-                verses={data!.verses}
-                commentaryVerses={commentaryVerses}
-                commentary={commentary}
-                originalByNum={originalByNum}
-                tokensByNum={tokensByNum}
-                englishTokensByNum={englishTokensByNum}
-                strongs={strongs}
-              />
+              {usingLicensed ? (
+                <LicensedChapterReader
+                  chapter={licensed!}
+                  transId={licensedId!}
+                  translationLabel={LICENSED_LABEL[licensedId!] ?? licensedId!}
+                />
+              ) : (
+                <ChapterReader
+                  book={book}
+                  bookName={b!.name}
+                  chapter={chapterNum}
+                  verses={data!.verses}
+                  commentaryVerses={commentaryVerses}
+                  commentary={commentary}
+                  originalByNum={originalByNum}
+                  tokensByNum={tokensByNum}
+                  englishTokensByNum={englishTokensByNum}
+                  strongs={strongs}
+                />
+              )}
 
               <ChapterPager slug={book} chapter={chapterNum} />
 
-              <p className="hidden md:block mt-10 mb-3 font-sans text-[11px] text-paper/40 leading-[1.6]">
-                ← → chapters · drag across words to highlight a phrase · click any Greek word for definition · Cmd+Enter to save a note
-              </p>
+              {!usingLicensed && (
+                <p className="hidden md:block mt-10 mb-3 font-sans text-[11px] text-paper/40 leading-[1.6]">
+                  ← → chapters · drag across words to highlight a phrase · click any Greek word for definition · Cmd+Enter to save a note
+                </p>
+              )}
 
-              <p className="mt-6 md:mt-3 font-sans text-[11px] text-paper/35 leading-[1.6]">
-                Old Testament: Brenton&rsquo;s English Septuagint (1851, public domain).
-                New Testament: King James Version (public domain). Patristic
-                commentary from Schaff&rsquo;s Ante-Nicene and Nicene Fathers
-                (public domain).
-              </p>
+              {!usingLicensed && (
+                <p className="mt-6 md:mt-3 font-sans text-[11px] text-paper/35 leading-[1.6]">
+                  Old Testament: Brenton&rsquo;s English Septuagint (1851, public domain).
+                  New Testament: King James Version (public domain). Patristic
+                  commentary from Schaff&rsquo;s Ante-Nicene and Nicene Fathers
+                  (public domain).
+                </p>
+              )}
 
               {/* Mobile + tablet: commentary is opened on demand via the
                   verse-number glyph; ChapterReader owns the MobileCommentarySheet. */}
