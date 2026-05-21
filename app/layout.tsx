@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cardo, DM_Sans, DM_Serif_Display, Lora } from "next/font/google";
 import "./globals.css";
+import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -88,7 +89,10 @@ export default function RootLayout({
       lang="en"
       className={`${dmSans.variable} ${dmSerif.variable} ${lora.variable} ${cardo.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <AnalyticsTracker />
+      </body>
     </html>
   );
 }
