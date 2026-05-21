@@ -473,6 +473,16 @@ export function VerseRow({
                     <span
                       data-word-idx={i}
                       data-s={tk.s}
+                      onMouseEnter={() => {
+                        // Hovering an English word lights the matching Greek
+                        // word (bidirectional link). Suppressed mid-drag so
+                        // word-highlighting isn't disturbed.
+                        if (!dragging && tk.s)
+                          setHoverStrong({ s: tk.s, occ: englishOccByIdx[i] });
+                      }}
+                      onMouseLeave={() => {
+                        if (!dragging) setHoverStrong(null);
+                      }}
                       className={cn(
                         "cursor-pointer transition-colors duration-100",
                         me && "bg-gold/30",
@@ -561,6 +571,16 @@ export function VerseRow({
                   const clickable = !!tk.s;
                   const isWord = /\p{L}/u.test(tk.w);
                   const needsSpaceBefore = i > 0 && isWord;
+                  // This Greek token is "matched" when it shares the hovered
+                  // Strong's number AND occurrence index — set either by its
+                  // own hover or by hovering the corresponding English word
+                  // (bidirectional link). Repeated words (e.g. ἐγέννησεν)
+                  // light only the matching occurrence, never all at once.
+                  const gMatched =
+                    !!hoverStrong &&
+                    !!tk.s &&
+                    tk.s === hoverStrong.s &&
+                    (greekOccByIdx[i] ?? 0) === hoverStrong.occ;
                   return (
                     <Fragment key={i}>
                       {needsSpaceBefore ? " " : ""}
@@ -584,7 +604,20 @@ export function VerseRow({
                             )
                           }
                           onBlur={() => setHoverStrong(null)}
-                          className="font-[inherit] inline border-b border-dotted border-paper/25 hover:border-paper/70 hover:text-paper transition-colors duration-150 cursor-pointer text-left"
+                          className={cn(
+                            "font-[inherit] inline border-b border-dotted transition-colors duration-150 cursor-pointer text-left rounded-[3px]",
+                            gMatched
+                              ? "border-transparent text-white px-[1px]"
+                              : "border-paper/25 hover:border-paper/70 hover:text-paper",
+                          )}
+                          style={
+                            gMatched
+                              ? {
+                                  backgroundColor: "rgba(212,175,55,0.45)",
+                                  boxShadow: "0 0 10px rgba(212,175,55,0.55)",
+                                }
+                              : undefined
+                          }
                           aria-label={`Look up ${tk.w}`}
                         >
                           {tk.w}
