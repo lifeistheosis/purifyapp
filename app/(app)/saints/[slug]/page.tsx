@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { SAINTS, getSaint } from "@/lib/saints/saints";
 import { SaintHero } from "@/components/saints/SaintHero";
 import { LifeSection } from "@/components/saints/LifeSection";
+import { TitlesSection } from "@/components/saints/TitlesSection";
+import { GreatFeastsSection } from "@/components/saints/GreatFeastsSection";
 import { QuotesSection } from "@/components/saints/QuotesSection";
 import { SaintWorksBrowser } from "@/components/saints/SaintWorksBrowser";
 
@@ -30,7 +32,11 @@ export default async function SaintPage({ params }: { params: Params }) {
     <section className="bg-night px-5 md:px-8">
       <div className="mx-auto max-w-[1100px] w-full">
         <SaintHero saint={saint} />
+        {saint.titles?.length ? <TitlesSection titles={saint.titles} /> : null}
         <LifeSection paragraphs={saint.life} />
+        {saint.greatFeasts?.length ? (
+          <GreatFeastsSection feasts={saint.greatFeasts} />
+        ) : null}
         {saint.quotes?.length ? <QuotesSection quotes={saint.quotes} /> : null}
         {saint.works.length > 0 && <SaintWorksBrowser saint={saint} />}
       </div>

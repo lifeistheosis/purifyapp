@@ -47,6 +47,21 @@ export type Saint = {
    * (halo + initials on a wood-and-gold panel).
    */
   iconUrl?: string;
+  /**
+   * Featured saint (the Theotokos): sorts first on the index and renders a
+   * distinguished card + hero. Other saints leave this unset.
+   */
+  featured?: boolean;
+  /**
+   * Venerated titles, shown in a "Titles" section. Used by the Theotokos
+   * (Mother of God, Ever-Virgin, Panagia, ...).
+   */
+  titles?: string[];
+  /**
+   * Named feasts (beyond the plain `feastDays` dates), each optionally linking
+   * to the calendar. Used by the Theotokos for her Great Feasts.
+   */
+  greatFeasts?: { name: string; date: string; href?: string }[];
 };
 
 export type Quote = {
@@ -56,6 +71,120 @@ export type Quote = {
 };
 
 export const SAINTS: Saint[] = [
+  {
+    slug: "theotokos",
+    featured: true,
+    iconUrl: "/saints/icons/theotokos.jpg",
+    name: "The Most Holy Theotokos",
+    byname: "Ever-Virgin Mary",
+    epithet: "Mother of God · Panagia",
+    born: "Tradition: Jerusalem, to Ss. Joachim and Anna",
+    reposed: "The Dormition, c. 41 (Jerusalem)",
+    feastDays: [
+      "August 15",
+      "September 8",
+      "November 21",
+      "March 25",
+      "October 1",
+      "December 26",
+    ],
+    see: "Jerusalem",
+    shortBio:
+      "The Mother of God, more honorable than the Cherubim and beyond compare more glorious than the Seraphim: the Virgin who bore the uncontainable Word, and who stands first among all the saints.",
+    titles: [
+      "Theotokos (the God-bearer)",
+      "Ever-Virgin",
+      "Mother of God",
+      "Panagia (the All-Holy)",
+      "More Honorable than the Cherubim",
+      "Queen of Heaven",
+      "The New Eve",
+      "Joy of All Who Sorrow",
+    ],
+    greatFeasts: [
+      { name: "The Nativity of the Theotokos", date: "September 8", href: "/calendar" },
+      { name: "The Entrance into the Temple", date: "November 21", href: "/calendar" },
+      { name: "The Annunciation", date: "March 25", href: "/calendar" },
+      { name: "The Dormition", date: "August 15", href: "/calendar" },
+      { name: "The Synaxis of the Theotokos", date: "December 26", href: "/calendar" },
+      { name: "The Protection of the Theotokos", date: "October 1", href: "/calendar" },
+    ],
+    life: [
+      "The Most Holy Theotokos stands at the heart of the Church's love and wonder: a daughter of the fallen race of Adam who became the Mother of its Maker. The Orthodox Church does not worship her, for worship belongs to God alone; but it honors her above every other creature, as the one who gave her own flesh to the eternal Son and so opened the way of our salvation.",
+      "The Church holds that she was born to the aged and childless Joachim and Anna, who had prayed long for a child and vowed to dedicate her to God. Her birth is kept as the first of the year's great feasts, on the eighth of September. While still a small child she was brought to the Temple in Jerusalem and, the tradition relates, received to be raised within its precincts, a feast the Church keeps on the twenty-first of November as the Entrance of the Theotokos.",
+      "Betrothed in her youth to the righteous Joseph, a guardian of her virginity, she was living quietly at Nazareth when the Archangel Gabriel was sent to her. He greeted her as 'full of grace' and told her she would bear the Son of the Most High. To the angel's word she gave the answer on which, the Fathers say, the whole world waited: 'Behold the handmaid of the Lord; be it unto me according to thy word.' In that free consent the Word was made flesh.",
+      "Carrying the Lord within her, she went into the hill country to her kinswoman Elizabeth, and there poured out the song the Church has never ceased to sing, the Magnificat: 'My soul doth magnify the Lord.' In Bethlehem she brought forth her firstborn and laid him in a manger; she kept the words of the shepherds and the magi and pondered them in her heart; and she fled with the child into Egypt from the sword of Herod.",
+      "She appears again at the beginning of his ministry, at the wedding in Cana of Galilee, where her quiet command to the servants remains her counsel to every Christian: 'Whatsoever he saith unto you, do it.' Through the years of his preaching she followed at a distance, a sword piercing her own soul, as the elder Symeon had foretold over the infant in the Temple.",
+      "She did not turn away at the end. While the disciples fled, she stood at the foot of the Cross; and from there her dying Son gave her to the beloved disciple, and the disciple to her: 'Behold thy mother.' In her the Church sees the mother of all who are born anew in Christ.",
+      "After the Resurrection and the Ascension she remained with the apostles, and was among them in the upper room when the Holy Spirit descended at Pentecost. She lived out her remaining years under the care of the Apostle John, honored by the young Church as its mother.",
+      "The Church holds that when she fell asleep, the apostles were gathered miraculously to her side; that her Son received her soul; and that on the third day he raised her body and took her to himself, the first to share fully in the resurrection he had won. This is the Dormition, kept on the fifteenth of August after a fast, the last of the year's great feasts and the seal of her life. The Church sings of her as 'more honorable than the Cherubim and beyond compare more glorious than the Seraphim,' and runs to her protection in every need.",
+    ],
+    quotes: [
+      {
+        text: "Behold the handmaid of the Lord; be it unto me according to thy word.",
+        source: "At the Annunciation (Luke 1:38)",
+      },
+      {
+        text: "My soul doth magnify the Lord, and my spirit hath rejoiced in God my Saviour.",
+        source: "The Magnificat (Luke 1:46-47)",
+        href: "/saints/theotokos/the-magnificat",
+      },
+      {
+        text: "Whatsoever he saith unto you, do it.",
+        source: "At the wedding in Cana (John 2:5)",
+      },
+    ],
+    works: [
+      {
+        slug: "the-magnificat",
+        title: "The Magnificat",
+        subtitle: "The Song of the Theotokos",
+        year: "Luke 1:46-55",
+        blurb:
+          "Her song at the Visitation, chanted at Orthros every morning: the soul's magnifying of the Lord who has regarded the lowliness of his handmaiden and exalted the humble.",
+        topics: ["Praise", "Humility", "Mercy", "Prophecy", "Scripture"],
+      },
+    ],
+  },
+  {
+    slug: "anthony-the-great",
+    byname: "Father of Monasticism",
+    iconUrl: "/saints/icons/anthony-the-great.jpg",
+    name: "St. Anthony the Great",
+    epithet: "Father of Monks · The Great",
+    born: "c. 251 (Coma, Lower Egypt)",
+    reposed: "January 17, 356 (Mount Colzim)",
+    feastDays: ["January 17"],
+    shortBio:
+      "The Egyptian who gave away his inheritance at a word of the Gospel and went into the desert, becoming the father of Christian monasticism and the great pattern of ascetic struggle.",
+    life: [
+      "Anthony was born around the year 251 at Coma in Lower Egypt, the son of well-to-do Christian parents who left him a large estate and the care of a younger sister. He was a quiet boy who loved the church more than the schoolroom. When he was about twenty his parents died, and not long after, entering the church, he heard the Gospel read: 'If thou wilt be perfect, go and sell that thou hast, and give to the poor, and thou shalt have treasure in heaven.'",
+      "He took the words as spoken to him. He gave the family lands to his village, sold the rest and gave it to the poor, placed his sister with a community of consecrated virgins, and went to live as an ascetic at the edge of his town, learning from the holy old men nearby. He worked with his hands, prayed without ceasing, and ate once a day after sunset.",
+      "Seeking greater solitude he withdrew to the tombs, and then across the Nile to an abandoned desert fort, where he shut himself in for nearly twenty years. There the Life of Antony, written by St. Athanasius who knew him, tells of his long warfare with the demons, who came against him as wild beasts and as phantoms and as despair, and whom he overcame by the name of Christ, by prayer, and by humility.",
+      "When at last his friends broke open the door, he came out neither wasted nor wild but whole in body and serene in soul, and the report of him drew so many imitators that the desert, in Athanasius's famous phrase, was made a city of monks. Anthony became their father and physician of souls, teaching not by systems but by his life, and by short, piercing words that were remembered and gathered into the Sayings of the Desert Fathers.",
+      "Twice he left his solitude for the sake of the Church. In the persecution under Maximinus he went down to Alexandria to comfort the confessors and longed for martyrdom himself; and in old age he came down again to stand publicly with St. Athanasius against the Arians, declaring that the Son is not a creature but the eternal Word, so that pagans and heretics alike marveled at the old monk to whom even the emperors wrote.",
+      "He withdrew at the end to the 'Inner Mountain' by the Red Sea, where a monastery bearing his name still stands. There he reposed in peace around the year 356, having lived, the tradition holds, to one hundred and five years, and asking that his burial place be kept secret. He is honored as the father of monasticism, kept on the seventeenth of January, his struggle and his stillness a pattern for all who would seek God.",
+    ],
+    quotes: [
+      {
+        text: "I saw the snares of the enemy spread out over the world, and I groaned and said, What can pass through these? And I heard a voice saying, Humility.",
+        source: "The Sayings of the Desert Fathers",
+      },
+      {
+        text: "Our life and our death is with our neighbour. If we win our brother, we win God; if we cause our brother to stumble, we have sinned against Christ.",
+        source: "The Sayings of the Desert Fathers",
+      },
+      {
+        text: "Whoever has not been tried by temptation cannot enter the Kingdom of Heaven; take away temptations, and no one would be saved.",
+        source: "The Sayings of the Desert Fathers",
+      },
+      {
+        text: "I no longer fear God, but I love Him; for perfect love casteth out fear.",
+        source: "The Sayings of the Desert Fathers",
+      },
+    ],
+    works: [],
+  },
   {
     slug: "athanasius-the-great",
     byname: "Pillar of Orthodoxy",

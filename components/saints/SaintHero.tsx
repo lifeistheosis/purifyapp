@@ -10,11 +10,21 @@ export function SaintHero({ saint }: { saint: Saint }) {
 
   return (
     <header className="pt-12 md:pt-16 pb-10 border-b border-paper/8">
-      <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-6">
-        Saints
+      <p
+        className={
+          "font-sans text-[13px] font-semibold uppercase tracking-[1.5px] mb-6 " +
+          (saint.featured ? "text-gold" : "text-paper/55")
+        }
+      >
+        {saint.featured ? "The Mother of God" : "Saints"}
       </p>
       <div className="flex flex-col md:flex-row md:items-start gap-8">
-        <SaintIcon saint={saint} size="lg" priority />
+        <SaintIcon
+          saint={saint}
+          size="lg"
+          priority
+          className={saint.featured ? "ring-2 ring-gold/50 shadow-[0_0_40px_rgba(212,175,55,0.18)]" : undefined}
+        />
         <div className="min-w-0 flex-1">
           {saint.byname && (
             <p className="font-serif text-[16px] md:text-[18px] italic text-gold/90 mb-3 tracking-wide">

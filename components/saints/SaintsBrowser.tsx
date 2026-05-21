@@ -7,29 +7,42 @@ import {
   centuryLabel,
 } from "@/lib/saints/saints";
 import { SaintCard } from "./SaintCard";
+import { FeaturedSaintCard } from "./FeaturedSaintCard";
 import { FilterPill } from "./FilterPill";
 
 export function SaintsBrowser({ saints }: { saints: Saint[] }) {
   const [activeCentury, setActiveCentury] = useState<number | null>(null);
 
+  // Featured saints (the Theotokos) are pinned above the grid; the century
+  // filter and grid operate on the rest.
+  const featured = useMemo(() => saints.filter((s) => s.featured), [saints]);
+  const rest = useMemo(() => saints.filter((s) => !s.featured), [saints]);
+
   // Per-century counts (sorted by century ascending).
   const buckets = useMemo(() => {
     const map = new Map<number, number>();
-    for (const s of saints) {
+    for (const s of rest) {
       const c = centuryFor(s);
       if (c == null) continue;
       map.set(c, (map.get(c) ?? 0) + 1);
     }
     return Array.from(map.entries()).sort((a, b) => a[0] - b[0]);
-  }, [saints]);
+  }, [rest]);
 
   const visible = useMemo(() => {
-    if (activeCentury == null) return saints;
-    return saints.filter((s) => centuryFor(s) === activeCentury);
-  }, [saints, activeCentury]);
+    if (activeCentury == null) return rest;
+    return rest.filter((s) => centuryFor(s) === activeCentury);
+  }, [rest, activeCentury]);
 
   return (
     <>
+      {activeCentury == null &&
+        featured.map((s) => (
+          <div key={s.slug} className="mt-10">
+            <FeaturedSaintCard saint={s} />
+          </div>
+        ))}
+
       <div className="mt-10 flex flex-wrap gap-2.5">
         <FilterPill
           label="All"
