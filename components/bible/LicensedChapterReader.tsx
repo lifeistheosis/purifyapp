@@ -41,16 +41,10 @@ export function LicensedChapterReader({
           FONT_CLASSES[font],
           SIZE_CLASSES[size],
           "text-paper/90",
-          // Section headings within the passage
-          "[&_.s1]:font-sans [&_.s1]:text-[13px] [&_.s1]:font-semibold [&_.s1]:uppercase [&_.s1]:tracking-[1.5px] [&_.s1]:text-paper/55 [&_.s1]:mt-8 [&_.s1]:mb-3",
-          "[&_.s2]:font-sans [&_.s2]:text-[12px] [&_.s2]:uppercase [&_.s2]:tracking-[1.2px] [&_.s2]:text-paper/45 [&_.s2]:mt-6 [&_.s2]:mb-2",
-          // Paragraphs
-          "[&_p]:mb-4",
-          // Verse numbers
-          "[&_.v]:align-super [&_.v]:text-[11px] [&_.v]:font-sans [&_.v]:font-semibold [&_.v]:text-gold/80 [&_.v]:mr-1",
-          // Footnotes / cross-reference markers (kept accessible per the license)
-          "[&_.note]:text-gold/70 [&_.note]:text-[12px]",
-          "[&_.fr]:text-paper/40 [&_.ft]:text-paper/60",
+          // `.licensed-scripture` (globals.css) restyles every USX/USFM class
+          // the API emits — poetry, footnotes, cross-refs, red-letter, headings,
+          // small-caps — without altering the delivered text.
+          "licensed-scripture",
         )}
         dangerouslySetInnerHTML={{ __html: chapter.html }}
       />
