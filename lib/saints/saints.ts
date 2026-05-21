@@ -62,6 +62,11 @@ export type Saint = {
    * to the calendar. Used by the Theotokos for her Great Feasts.
    */
   greatFeasts?: { name: string; date: string; href?: string }[];
+  /**
+   * Possessive pronoun for UI copy like "Read {his/her} works". Defaults to
+   * "his"; set "her" for female saints (and the Theotokos).
+   */
+  pronoun?: "his" | "her";
 };
 
 export type Quote = {
@@ -74,6 +79,7 @@ export const SAINTS: Saint[] = [
   {
     slug: "theotokos",
     featured: true,
+    pronoun: "her",
     iconUrl: "/saints/icons/theotokos.jpg",
     name: "The Most Holy Theotokos",
     byname: "Ever-Virgin Mary",
@@ -792,6 +798,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "mary-of-egypt",
+    pronoun: "her",
     byname: "The Desert Penitent",
     iconUrl: "/saints/icons/mary-of-egypt.jpg",
     name: "St. Mary of Egypt",
@@ -852,6 +859,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "marina-the-great-martyr",
+    pronoun: "her",
     byname: "Margaret of Antioch",
     iconUrl: "/saints/icons/marina-the-great-martyr.jpg",
     name: "St. Marina the Great-Martyr",
@@ -871,6 +879,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "hermione-of-ephesus",
+    pronoun: "her",
     byname: "Daughter of the Apostle Philip",
     iconUrl: "/saints/icons/hermione-of-ephesus.jpg",
     name: "St. Hermione of Ephesus",
@@ -891,6 +900,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "isidora-of-tabenna",
+    pronoun: "her",
     byname: "The Fool-for-Christ",
     iconUrl: "/saints/icons/isidora-of-tabenna.jpg",
     name: "St. Isidora of Tabenna",
@@ -910,6 +920,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "olympias-the-deaconess",
+    pronoun: "her",
     byname: "Deaconess of Constantinople",
     iconUrl: "/saints/icons/olympias-the-deaconess.jpg",
     name: "St. Olympias the Deaconess",

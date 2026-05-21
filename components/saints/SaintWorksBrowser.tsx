@@ -58,7 +58,7 @@ export function SaintWorksBrowser({ saint }: { saint: Saint }) {
             Writings
           </p>
           <h2 className="font-sans text-[28px] md:text-[36px] font-bold text-paper tracking-[-0.02em]">
-            Read his works
+            Read {saint.pronoun ?? "his"} works
           </h2>
         </div>
         <span className="font-sans text-[13px] text-paper/45">
