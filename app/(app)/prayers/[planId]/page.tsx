@@ -9,7 +9,6 @@ export default async function PrayerPlanPage({ params }: { params: Params }) {
       eyebrow="Prayer plan"
       title={`Plan: ${planId}`}
       body="Plan detail view coming soon - day-by-day prayers, audio guides, and progress tracking."
-      tierBadge="Free"
     />
   );
 }

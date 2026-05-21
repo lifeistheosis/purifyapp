@@ -9,7 +9,6 @@ export default async function CampaignPage({ params }: { params: Params }) {
       eyebrow="Campaign"
       title={`Campaign #${id}`}
       body="Campaign detail: intentions, prayer list, participants, and updates. Stubbed for now."
-      tierBadge="Free"
     />
   );
 }

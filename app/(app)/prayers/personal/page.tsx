@@ -11,9 +11,7 @@ export default function PersonalPrayersPage() {
     <FeatureShell
       eyebrow="Prayer · personal"
       title="Personal Prayer Plans"
-      body="Build your own rule with custom prayers, reminders, intentions, and progress. Available with the Paid tier."
-      tierBadge="Paid"
-      ctaLabel="Upgrade to build your own"
+      body="Build your own rule with custom prayers, reminders, intentions, and progress. Free, like everything on Purify."
     />
   );
 }

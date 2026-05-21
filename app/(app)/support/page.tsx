@@ -214,19 +214,17 @@ export default async function SupportPage() {
           </ul>
         </section>
 
-        {/* Supporter tier note */}
+        {/* Free-forever note */}
         <section className="mt-14 rounded-lg border border-paper/12 bg-paper/[0.02] p-6">
           <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-            A note on a future supporter tier
+            Purify is, and stays, free
           </p>
           <p className="font-serif text-[17px] text-paper/85 leading-[1.7]">
-            Some future features cost meaningfully more to run than what
-            ships today: audio recordings of the daily services, optional
-            account-and-sync (so your highlights follow you across
-            devices), custom prayer plans. When those land, we will offer
-            an optional supporter tier to fund them. **Everything that is
-            free today will stay free.** We will not move features behind
-            a paywall after the fact.
+            Every part of Purify is free for everyone, with no ads, no
+            subscriptions, and no paywalls, now or later. Gifts here are
+            freewill offerings that help cover running costs; they unlock
+            nothing and are never required. Nothing on the site is ever moved
+            behind a paywall.
           </p>
         </section>
 

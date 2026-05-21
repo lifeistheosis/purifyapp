@@ -12,7 +12,6 @@ const NAV = [
   { label: "Prayers", href: "/prayers" },
   { label: "Saints", href: "/saints" },
   { label: "Calendar", href: "/calendar" },
-  { label: "Marketplace", href: "/marketplace" },
 ];
 
 const SECONDARY = [

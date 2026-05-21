@@ -115,7 +115,7 @@ export default function Home() {
             </p>
             <div className="mt-7 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
               <ComingSoonCTA variant="inverse">
-                Try Purify for Free
+                Open Purify
               </ComingSoonCTA>
               <ComingSoonCTA
                 variant="tertiary"
@@ -253,7 +253,7 @@ export default function Home() {
           </h2>
           <div className="mt-10">
             <ComingSoonCTA variant="inverse" className="text-[16px]">
-              Try Purify for Free
+              Open Purify
             </ComingSoonCTA>
           </div>
         </div>
