@@ -319,4 +319,19 @@ export const SAYINGS: WisdomEntry[] = [
     text: "Let your prayer be entirely simple, for both the publican and the prodigal son were reconciled to God by a single phrase.",
     cite: "St. John Climacus",
   },
+  {
+    text: "Virtue is not far from us, nor is it without us, but it is within us, and is easy if only we are willing.",
+    cite: "St. Athanasius the Great, Life of Antony",
+    href: "/saints/athanasius-the-great/life-of-antony",
+  },
+  {
+    text: "He ever was and is and never was not; for the Father being everlasting, His Word and His Wisdom must be everlasting.",
+    cite: "St. Athanasius the Great, Against the Arians",
+    href: "/saints/athanasius-the-great/four-discourses-against-the-arians",
+  },
+  {
+    text: "In the beginning wickedness did not exist, nor does it belong in any way to our nature.",
+    cite: "St. Athanasius the Great, Against the Heathen",
+    href: "/saints/athanasius-the-great/against-the-heathen",
+  },
 ];

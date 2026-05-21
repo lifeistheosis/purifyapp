@@ -189,7 +189,17 @@ export const SAINTS: Saint[] = [
         source: "The Sayings of the Desert Fathers",
       },
     ],
-    works: [],
+    works: [
+      {
+        slug: "life-of-antony",
+        title: "Life of Antony",
+        subtitle: "Written by St. Athanasius the Great",
+        year: "c. 360",
+        blurb:
+          "The first and greatest monastic biography, written by St. Athanasius for the monks abroad. It tells of Anthony's call, his long warfare with the demons, and the wisdom by which the desert was made a city. The book that set countless souls on the ascetic path.",
+        topics: ["Monasticism", "Asceticism", "Spiritual Warfare", "Desert", "Prayer"],
+      },
+    ],
   },
   {
     slug: "athanasius-the-great",
@@ -204,10 +214,55 @@ export const SAINTS: Saint[] = [
     shortBio:
       "The fearless defender of the Council of Nicaea against the Arian heresy, exiled five times for his confession that the Son is consubstantial with the Father.",
     life: [
-      "Born in Alexandria around 296, Athanasius was raised in a Christian household and educated in the classical curriculum of his city. As a young deacon he accompanied his bishop, Alexander, to the First Ecumenical Council at Nicaea in 325, where he was already known for the lucidity of his theology against Arius.",
+      "Born in Alexandria around 296, Athanasius was raised in a Christian household and educated in the classical curriculum of his city. While still a young man he wrote two companion treatises, Against the Heathen and On the Incarnation, that already showed the mind which would shape the century: that the Word through whom all things were made had entered His own creation to remake it from within.",
+      "As a young deacon he accompanied his bishop, Alexander, to the First Ecumenical Council at Nicaea in 325. There the priest Arius taught that the Son was a creature, that there was once when He was not. Athanasius saw at once what was at stake: if the Son is not true God of true God, then He cannot make us partakers of God, and no one is saved. The Council confessed the Son to be of one essence with the Father, and that word became the labor of Athanasius's life.",
       "On Alexander's repose in 328, Athanasius, barely thirty, was elevated to the patriarchal throne of Alexandria. He would hold it for forty-five years, but spend seventeen of them in exile.",
-      "Five times he was driven from his see by emperors who sought peace with the Arian party: to Trier, to Rome, to the desert of the Egyptian monks (where he wrote the Life of Antony), to the catacombs and house-roofs of his own city. Each time he returned, and each time he taught the same thing: that if the Son is not what the Father is, no man is saved.",
-      "He outlived nearly every emperor who exiled him. His De Incarnatione, written in his youth, is still read as the clearest brief statement of why God became man. He reposed in peace in Alexandria on May 2, 373, having seen the faith of Nicaea publicly confirmed once more before his death.",
+      "Five times he was driven from his see by emperors who sought peace with the Arian party: to Trier, to Rome, to the desert of the Egyptian monks, and to the catacombs and house-roofs of his own city. Each time he returned, and each time he taught the same thing: that if the Son is not what the Father is, no man is saved. From his pen in those years came the Four Discourses Against the Arians, the Defence of the Nicene Definition, and On the Councils, the great arsenal of Nicene theology.",
+      "In the Egyptian desert he found not only refuge but friendship. He knew St. Anthony the Great, and after the hermit's repose he wrote the Life of Antony, the book that carried the monastic ideal across the whole Empire and set countless souls, Augustine among them, on the path to God.",
+      "Against him stood the power of emperors and the eloquence of the learned; for him stood the Scriptures, the monks, and the faith of the simple. Twice St. Anthony himself came down from the mountain to stand publicly at his side. The age would later remember the lonely struggle in a single phrase: Athanasius against the world.",
+      "He outlived nearly every emperor who exiled him. He reposed in peace in Alexandria on May 2, 373, having seen the faith of Nicaea publicly confirmed once more before his death. The Church keeps him as the Pillar of Orthodoxy and a Father of the Fathers, and reads his treatise On the Incarnation still as the clearest brief statement of why God became man.",
+    ],
+    quotes: [
+      {
+        text: "He assumed a human body, in order that in it death might once for all be destroyed, and that men might be renewed according to the Image.",
+        source: "On the Incarnation",
+        href: "/saints/athanasius-the-great/on-the-incarnation#s3",
+      },
+      {
+        text: "In the beginning wickedness did not exist. Nor indeed does it exist even now in those who are holy, nor does it in any way belong to their nature.",
+        source: "Against the Heathen, 2",
+        href: "/saints/athanasius-the-great/against-the-heathen",
+      },
+      {
+        text: "He ever was and is and never was not. For the Father being everlasting, His Word and His Wisdom must be everlasting.",
+        source: "Four Discourses Against the Arians, I.9",
+        href: "/saints/athanasius-the-great/four-discourses-against-the-arians",
+      },
+      {
+        text: "The Son is not from nothing but from God, and is Word and Wisdom, not creature or work, but a proper offspring from the Father.",
+        source: "On the Nicene Definition, 19",
+        href: "/saints/athanasius-the-great/on-the-nicene-definition",
+      },
+      {
+        text: "We believe in one Only and True God, the Father Almighty, Creator and Framer of all things.",
+        source: "On the Councils of Ariminum and Seleucia",
+        href: "/saints/athanasius-the-great/on-the-councils",
+      },
+      {
+        text: "Virtue has need at our hands of willingness alone, for it is not far from us, nor is it without us, but it is within us, and is easy if only we are willing.",
+        source: "Life of Antony, 20",
+        href: "/saints/athanasius-the-great/life-of-antony",
+      },
+      {
+        text: "We Christians hold the mystery not in the wisdom of Greek arguments, but in the power of faith richly supplied to us by God through Jesus Christ.",
+        source: "Life of Antony, 78",
+        href: "/saints/athanasius-the-great/life-of-antony",
+      },
+      {
+        text: "Believe on the Lord and love Him; keep yourselves from filthy thoughts and fleshly pleasures.",
+        source: "Life of Antony, 55",
+        href: "/saints/athanasius-the-great/life-of-antony",
+      },
     ],
     works: [
       {
@@ -218,6 +273,51 @@ export const SAINTS: Saint[] = [
         blurb:
           "Why God became man, and what He accomplished by doing so. The classic Orthodox treatise on the Person and work of Christ.",
         topics: ["Incarnation", "Trinity", "Salvation", "Christology", "Theology"],
+      },
+      {
+        slug: "against-the-heathen",
+        title: "Against the Heathen",
+        subtitle: "Contra Gentes",
+        year: "c. 318",
+        blurb:
+          "The companion to On the Incarnation. Athanasius shows how idolatry and evil entered by the soul turning from God, and how creation and the soul itself still point back to the Word through whom all things were made.",
+        topics: ["Creation", "Idolatry", "The Soul", "Knowledge of God", "Apologetics"],
+      },
+      {
+        slug: "four-discourses-against-the-arians",
+        title: "Four Discourses Against the Arians",
+        subtitle: "Orationes contra Arianos",
+        year: "c. 356-360",
+        blurb:
+          "The fullest refutation of Arianism: a verse-by-verse defense of the Son's eternity and equality with the Father, answering every text the Arians pressed into service. The backbone of Nicene theology.",
+        topics: ["Trinity", "Christology", "Arianism", "Nicaea", "Scripture"],
+      },
+      {
+        slug: "on-the-nicene-definition",
+        title: "On the Nicene Definition",
+        subtitle: "De Decretis",
+        year: "c. 352",
+        blurb:
+          "Why the Council of Nicaea chose its words. Athanasius defends the non-scriptural terms 'from the essence' and 'one in essence' as the only way to fence out the Arian evasions and confess the Son truly God.",
+        topics: ["Nicaea", "Trinity", "Councils", "Doctrine", "Tradition"],
+      },
+      {
+        slug: "on-the-councils",
+        title: "On the Councils of Ariminum and Seleucia",
+        subtitle: "De Synodis",
+        year: "c. 359-361",
+        blurb:
+          "A history and theological reckoning of the rival councils and the shifting Arian creeds, written to gather the wavering back to the one faith of Nicaea by showing the unity beneath its disputed words.",
+        topics: ["Councils", "Arianism", "Creeds", "Church History", "Unity"],
+      },
+      {
+        slug: "life-of-antony",
+        title: "Life of Antony",
+        subtitle: "Vita S. Antonii",
+        year: "c. 360",
+        blurb:
+          "Athanasius's life of his friend St. Anthony the Great: the call of the Gospel, the long warfare in the tombs and the desert, and the wisdom by which the desert was made a city. The book that carried monasticism across the world.",
+        topics: ["Monasticism", "Asceticism", "Spiritual Warfare", "Desert", "Prayer"],
       },
     ],
   },
