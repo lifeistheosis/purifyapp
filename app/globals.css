@@ -352,3 +352,117 @@ div[data-hl="true"] {
 .licensed-scripture .xt {
   font-style: normal;
 }
+
+/* After hydration the inline notes above are replaced by compact superscript
+   markers (.lic-f footnote / .lic-x cross-ref), and the bodies move to the
+   `.lic-notes` disclosure below. */
+.licensed-scripture .lic-f,
+.licensed-scripture .lic-x {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.6em;
+  vertical-align: super;
+  margin: 0 0.06em;
+  line-height: 0;
+}
+.licensed-scripture .lic-f a {
+  color: var(--color-gold);
+  opacity: 0.85;
+  text-decoration: none;
+}
+.licensed-scripture .lic-x a {
+  color: rgba(255, 255, 255, 0.38);
+  text-decoration: none;
+}
+.licensed-scripture .lic-f a:hover,
+.licensed-scripture .lic-x a:hover {
+  text-decoration: underline;
+  opacity: 1;
+}
+
+/* Footnotes & cross-references, relocated to the foot of the chapter. */
+.lic-notes {
+  margin-top: 2.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1rem;
+}
+.lic-notes > summary {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  transition: color 0.15s;
+}
+.lic-notes > summary::-webkit-details-marker {
+  display: none;
+}
+.lic-notes > summary::after {
+  content: "▾";
+  margin-left: 0.5em;
+  font-size: 0.9em;
+  color: rgba(255, 255, 255, 0.35);
+}
+.lic-notes[open] > summary::after {
+  content: "▴";
+}
+.lic-notes > summary:hover {
+  color: rgba(255, 255, 255, 0.75);
+}
+.lic-notes ol {
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.55rem;
+}
+.lic-notes .lic-note {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.6);
+  padding-left: 1.6rem;
+  position: relative;
+  scroll-margin-top: 6rem;
+  border-radius: 6px;
+  transition: background-color 0.4s ease-out;
+}
+.lic-notes .lic-back {
+  position: absolute;
+  left: 0;
+  top: 0;
+  min-width: 1.2rem;
+  text-align: right;
+  font-weight: 600;
+  text-decoration: none;
+}
+.lic-notes .lic-note-f .lic-back {
+  color: var(--color-gold);
+  opacity: 0.85;
+}
+.lic-notes .lic-note-x .lic-back {
+  color: rgba(255, 255, 255, 0.4);
+}
+.lic-notes .lic-note:target {
+  background-color: rgba(212, 175, 55, 0.12);
+}
+/* Inside a relocated note, the leading verse locator + quoted words. */
+.lic-notes .fr,
+.lic-notes .xo {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+  margin-right: 0.35em;
+}
+.lic-notes .fq,
+.lic-notes .fqa {
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.72);
+}
+.lic-notes .xt a,
+.lic-notes .xt {
+  color: rgba(212, 175, 55, 0.7);
+}
