@@ -880,20 +880,25 @@
     { "name": "St. Symeon the Stylite", "note": "the first of the pillar-saints, +459" }
   ],
   "09-02": [
-    { "name": "Martyr Mamas of Caesarea in Cappadocia", "note": "+275" }
+    { "name": "Martyr Mamas of Caesarea in Cappadocia", "note": "+275" },
+    { "name": "St. John the Faster, Patriarch of Constantinople", "note": "+595" }
   ],
   "09-03": [
-    { "name": "Hieromartyr Anthimus, Bishop of Nicomedia", "note": "+302" }
+    { "name": "Hieromartyr Anthimus, Bishop of Nicomedia", "note": "+302" },
+    { "name": "Ven. Theoctistus, fellow-faster of Euthymius the Great", "note": "+467" }
   ],
   "09-04": [
     { "name": "Hieromartyr Babylas, Patriarch of Antioch", "note": "+251" },
-    { "name": "Prophet Moses the God-Seer", "note": "+1531 BC" }
+    { "name": "Prophet Moses the God-Seer", "note": "+1531 BC" },
+    { "name": "Martyr Hermione, daughter of the Apostle Philip", "slug": "hermione-of-ephesus", "note": "+117" }
   ],
   "09-05": [
-    { "name": "Prophet Zachariah, father of John the Forerunner", "note": "+1st c. BC" }
+    { "name": "Prophet Zachariah, father of John the Forerunner", "note": "+1st c. BC" },
+    { "name": "Martyrs Urban, Theodore, and companions of Nicomedia", "note": "+370" }
   ],
   "09-06": [
-    { "name": "Commemoration of the Miracle of the Archangel Michael at Colossae", "kind": "feast" }
+    { "name": "Commemoration of the Miracle of the Archangel Michael at Colossae", "kind": "feast" },
+    { "name": "Martyr Eudoxius and companions", "note": "+311" }
   ],
   "09-07": [
     { "name": "Forefeast of the Nativity of the Theotokos", "kind": "feast" },
@@ -903,70 +908,90 @@
     { "name": "Nativity of Our Most Holy Lady the Theotokos", "kind": "feast" }
   ],
   "09-09": [
-    { "name": "Synaxis of the Righteous Ancestors of God, Joachim and Anna", "kind": "feast" }
+    { "name": "Synaxis of the Righteous Ancestors of God, Joachim and Anna", "kind": "feast" },
+    { "name": "St. Joseph of Volotsk", "note": "abbot of Volokolamsk, +1515" }
   ],
   "09-10": [
-    { "name": "Martyrs Menodora, Metrodora, and Nymphodora", "note": "sisters of Bithynia, +305" }
+    { "name": "Martyrs Menodora, Metrodora, and Nymphodora", "note": "sisters of Bithynia, +305" },
+    { "name": "St. Pulcheria the Empress", "note": "of Constantinople, +453" }
   ],
   "09-11": [
-    { "name": "St. Theodora of Alexandria", "note": "the desert ammas, +5th c." }
+    { "name": "St. Theodora of Alexandria", "note": "the desert ammas, +5th c." },
+    { "name": "Sts. Sergius and Herman of Valaam", "note": "wonderworkers, +1353" }
   ],
   "09-12": [
     { "name": "Hieromartyr Autonomus, Bishop of Italy", "note": "+ca. 313" }
   ],
   "09-13": [
-    { "name": "Forefeast of the Exaltation of the Cross", "kind": "feast" }
+    { "name": "Forefeast of the Exaltation of the Cross", "kind": "feast" },
+    { "name": "Consecration of the Church of the Resurrection in Jerusalem", "note": "the Holy Sepulchre, 335" },
+    { "name": "Hieromartyr Cornelius the Centurion", "note": "+1st c." }
   ],
   "09-14": [
     { "name": "Universal Exaltation of the Honorable and Life-Giving Cross", "kind": "feast" }
   ],
   "09-15": [
-    { "name": "Great-martyr Nicetas the Goth", "note": "+ca. 372" }
+    { "name": "Great-martyr Nicetas the Goth", "note": "+ca. 372" },
+    { "name": "St. Symeon, Archbishop of Thessalonica", "note": "+1429" }
   ],
   "09-16": [
-    { "name": "Great-martyr Euphemia the All-Praised", "kind": "feast", "note": "patroness of Chalcedon" }
+    { "name": "Great-martyr Euphemia the All-Praised", "kind": "feast", "note": "patroness of Chalcedon" },
+    { "name": "St. Ludmila of Bohemia", "note": "grandmother of St. Wenceslaus, +927" }
   ],
   "09-17": [
-    { "name": "Martyrs Sophia and her daughters Faith, Hope, and Love", "note": "+ca. 137" }
+    { "name": "Martyrs Sophia and her daughters Faith, Hope, and Love", "note": "+ca. 137" },
+    { "name": "Martyr Agathoclia", "note": "+230" }
   ],
   "09-18": [
-    { "name": "St. Eumenius the Wonderworker, Bishop of Gortyna", "note": "+7th c." }
+    { "name": "St. Eumenius the Wonderworker, Bishop of Gortyna", "note": "+7th c." },
+    { "name": "Ven. Hilarion, Elder of Optina", "note": "+1873" }
   ],
   "09-19": [
-    { "name": "Martyrs Trophimus, Sabbatius, and Dorymedon", "note": "of Antioch, +276" }
+    { "name": "Martyrs Trophimus, Sabbatius, and Dorymedon", "note": "of Antioch, +276" },
+    { "name": "Right-believing Prince Theodore of Smolensk and his sons", "note": "David and Constantine, +1299" }
   ],
   "09-20": [
-    { "name": "Great-martyr Eustathius (Placidas) and his family", "note": "+ca. 118" }
+    { "name": "Great-martyr Eustathius (Placidas) and his family", "note": "+ca. 118" },
+    { "name": "Martyrs Michael of Chernigov and his counselor Theodore", "note": "+1245" }
   ],
   "09-21": [
-    { "name": "Apostle Quadratus of the Seventy", "note": "early apologist, +130" }
+    { "name": "Apostle Quadratus of the Seventy", "note": "early apologist, +130" },
+    { "name": "St. Demetrius, Metropolitan of Rostov", "note": "+1709" }
   ],
   "09-22": [
-    { "name": "Hieromartyr Phocas the Gardener of Sinope", "note": "+117" }
+    { "name": "Hieromartyr Phocas the Gardener of Sinope", "note": "+117" },
+    { "name": "Prophet Jonah", "note": "+8th c. BC" }
   ],
   "09-23": [
-    { "name": "Conception of the Honorable Forerunner John the Baptist", "kind": "feast" }
+    { "name": "Conception of the Honorable Forerunner John the Baptist", "kind": "feast" },
+    { "name": "Holy Women Xanthippe and Polyxena", "note": "disciples of the Apostles, +1st c." }
   ],
   "09-24": [
-    { "name": "Protomartyr and Equal-to-Apostles Thecla", "note": "disciple of the Apostle Paul, +1st c." }
+    { "name": "Protomartyr and Equal-to-Apostles Thecla", "note": "disciple of the Apostle Paul, +1st c." },
+    { "name": "St. Silouan the Athonite", "note": "of Mount Athos, +1938" }
   ],
   "09-25": [
-    { "name": "St. Euphrosyne of Alexandria", "note": "+ca. 470" }
+    { "name": "St. Euphrosyne of Alexandria", "note": "+ca. 470" },
+    { "name": "Repose of St. Sergius of Radonezh", "note": "abbot and wonderworker of all Russia, +1392" }
   ],
   "09-26": [
     { "name": "Repose of the Apostle and Evangelist John the Theologian", "kind": "feast", "note": "+ca. 105" }
   ],
   "09-27": [
-    { "name": "Martyr Callistratus and 49 companions", "note": "+ca. 304" }
+    { "name": "Martyr Callistratus and 49 companions", "note": "+ca. 304" },
+    { "name": "Ven. Savvatius of Solovki", "note": "+1435" }
   ],
   "09-28": [
-    { "name": "St. Chariton the Confessor", "note": "of Palestine, +350" }
+    { "name": "St. Chariton the Confessor", "note": "of Palestine, +350" },
+    { "name": "St. Wenceslaus, Prince of Bohemia", "note": "martyr, +935" }
   ],
   "09-29": [
-    { "name": "St. Cyriacus the Anchorite", "note": "of Palestine, +556" }
+    { "name": "St. Cyriacus the Anchorite", "note": "of Palestine, +556" },
+    { "name": "Ven. Theophanes the Merciful of Gaza", "note": "+9th c." }
   ],
   "09-30": [
-    { "name": "Hieromartyr Gregory the Illuminator of Greater Armenia", "note": "Equal-to-the-Apostles, +335" }
+    { "name": "Hieromartyr Gregory the Illuminator of Greater Armenia", "note": "Equal-to-the-Apostles, +335" },
+    { "name": "St. Michael, first Metropolitan of Kiev", "note": "+992" }
   ],
   "10-01": [
     { "name": "Protection of Our Most Holy Lady the Theotokos", "kind": "feast", "note": "at Blachernae, 10th c." },
