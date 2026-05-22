@@ -32,10 +32,6 @@ export function BibleSearch({
   const hits: SearchHit[] = useMemo(() => searchBible(q, 8), [q]);
 
   useEffect(() => {
-    setActiveIdx(0);
-  }, [q]);
-
-  useEffect(() => {
     function onDocClick(e: MouseEvent) {
       if (!containerRef.current?.contains(e.target as Node)) setOpen(false);
     }
@@ -86,7 +82,10 @@ export function BibleSearch({
         <input
           type="search"
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setActiveIdx(0);
+          }}
           onFocus={() => setOpen(true)}
           onKeyDown={onKey}
           placeholder={placeholder}

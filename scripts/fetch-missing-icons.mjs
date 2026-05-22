@@ -6,7 +6,6 @@
 // Usage: node scripts/fetch-missing-icons.mjs
 
 import fs from "node:fs/promises";
-import fssync from "node:fs";
 import path from "node:path";
 import https from "node:https";
 import sharp from "sharp";

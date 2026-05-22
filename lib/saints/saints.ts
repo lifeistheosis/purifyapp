@@ -224,9 +224,9 @@ export const SAINTS: Saint[] = [
     ],
     quotes: [
       {
-        text: "He assumed a human body, in order that in it death might once for all be destroyed, and that men might be renewed according to the Image.",
-        source: "On the Incarnation",
-        href: "/saints/athanasius-the-great/on-the-incarnation#s3",
+        text: "He was made man that we might be made God; and He manifested Himself by a body that we might receive the idea of the unseen Father; and He endured the insolence of men that we might inherit immortality.",
+        source: "On the Incarnation, 54",
+        href: "/saints/athanasius-the-great/on-the-incarnation#s1",
       },
       {
         text: "In the beginning wickedness did not exist. Nor indeed does it exist even now in those who are holy, nor does it in any way belong to their nature.",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 /**
@@ -23,8 +23,6 @@ export function ProfileHero({
   const [draft, setDraft] = useState(initialDisplayName);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => setDraft(displayName), [displayName]);
-
   async function save() {
     const trimmed = draft.trim();
     if (!trimmed || trimmed === displayName) {
@@ -44,6 +42,7 @@ export function ProfileHero({
         })
         .eq("id", (await supabase.auth.getUser()).data.user?.id ?? "");
       setDisplayName(trimmed);
+      setDraft(trimmed);
       setEditing(false);
     } catch {
       /* surface in console */

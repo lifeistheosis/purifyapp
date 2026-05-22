@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
 /**
  * Per-verse annotations stored in localStorage.
@@ -9,6 +9,11 @@ import { useCallback, useEffect, useState } from "react";
  *   highlightedWords?: number[]      (sorted word-index list for word-level tints)
  *   note?:             string
  * Key: purify:bible:{book}:{chapter}:{verse}
+ *
+ * Reads go through useSyncExternalStore (subscribing to the same-tab
+ * `purify:annotation` CustomEvent + cross-tab `storage` event) so there is no
+ * hydrate-in-effect setState, and every mounted instance for the same verse
+ * stays in sync.
  */
 
 export type VerseAnnotation = {
@@ -21,40 +26,71 @@ function key(book: string, chapter: number, verse: number) {
   return `purify:bible:${book}:${chapter}:${verse}`;
 }
 
+const EMPTY: VerseAnnotation = {};
+
+// useSyncExternalStore requires getSnapshot to return a stable reference while
+// the underlying value is unchanged; cache the parsed object keyed by the raw
+// string so repeated reads don't allocate (which would loop the store).
+const snapCache = new Map<string, { raw: string | null; val: VerseAnnotation }>();
+
+function readSnapshot(k: string): VerseAnnotation {
+  if (typeof window === "undefined") return EMPTY;
+  let raw: string | null = null;
+  try {
+    raw = window.localStorage.getItem(k);
+  } catch {
+    return EMPTY;
+  }
+  const cached = snapCache.get(k);
+  if (cached && cached.raw === raw) return cached.val;
+  let val: VerseAnnotation = EMPTY;
+  if (raw) {
+    try {
+      val = JSON.parse(raw) as VerseAnnotation;
+    } catch {
+      val = EMPTY;
+    }
+  }
+  snapCache.set(k, { raw, val });
+  return val;
+}
+
+function subscribe(cb: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("purify:annotation", cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    window.removeEventListener("purify:annotation", cb);
+    window.removeEventListener("storage", cb);
+  };
+}
+
 export function useVerseAnnotation(
   book: string,
   chapter: number,
   verse: number,
 ) {
-  const [data, setData] = useState<VerseAnnotation>({});
-
-  // Hydrate from localStorage after mount (avoid SSR mismatch).
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = window.localStorage.getItem(key(book, chapter, verse));
-      if (raw) setData(JSON.parse(raw));
-    } catch {
-      /* ignore */
-    }
-  }, [book, chapter, verse]);
+  const k = key(book, chapter, verse);
+  const data = useSyncExternalStore(
+    subscribe,
+    () => readSnapshot(k),
+    () => EMPTY,
+  );
 
   const persist = useCallback(
     (next: VerseAnnotation) => {
-      setData(next);
       try {
         const isEmpty =
           !next.highlighted &&
           !next.note &&
           (!next.highlightedWords || next.highlightedWords.length === 0);
         if (!isEmpty) {
-          window.localStorage.setItem(
-            key(book, chapter, verse),
-            JSON.stringify(next),
-          );
+          window.localStorage.setItem(k, JSON.stringify(next));
         } else {
-          window.localStorage.removeItem(key(book, chapter, verse));
+          window.localStorage.removeItem(k);
         }
+        // Bust the cache so the next snapshot reflects this write immediately.
+        snapCache.delete(k);
         window.dispatchEvent(
           new CustomEvent("purify:annotation", {
             detail: { book, chapter, verse, data: next },
@@ -64,7 +100,7 @@ export function useVerseAnnotation(
         /* storage may be unavailable */
       }
     },
-    [book, chapter, verse],
+    [k, book, chapter, verse],
   );
 
   const toggleHighlight = useCallback(() => {

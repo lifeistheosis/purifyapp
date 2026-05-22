@@ -137,6 +137,24 @@ async function writeWork({ slug, title, subtitle, sections, min }) {
   });
 }
 
+// ---- 1b. On the Incarnation (de Incarnatione) — single section -----------
+// Re-ingested from the public-domain NPNF2-04 text, replacing the prior
+// (copyrighted) CSMV 1944 translation.
+{
+  const start = afterLine(firstIdx(/^On the Incarnation of the Word\.$/));
+  const end = firstIdxAfter(/^Introduction to the Deposition of Arius/, start);
+  const sections = [
+    { n: 1, title: "On the Incarnation of the Word", paragraphs: paras(text.slice(start, end)) },
+  ];
+  await writeWork({
+    slug: "on-the-incarnation",
+    title: "On the Incarnation",
+    subtitle: "De Incarnatione Verbi Dei",
+    sections,
+    min: 40000,
+  });
+}
+
 // ---- 2. On the Nicene Definition (de Decretis) — single section ----------
 {
   const start = afterLine(firstIdx(/^De Decretis or Defence of the Nicene Definition$/));

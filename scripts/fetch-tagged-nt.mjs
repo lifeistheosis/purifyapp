@@ -13,7 +13,6 @@
 // Usage: node scripts/fetch-tagged-nt.mjs
 
 import fs from "node:fs/promises";
-import fssync from "node:fs";
 import path from "node:path";
 import https from "node:https";
 
@@ -162,7 +161,6 @@ async function buildLexicon() {
   }
   if (depth !== 0) throw new Error("Unbalanced braces in lexicon");
   const objSrc = js.slice(openIdx, i + 1);
-  // eslint-disable-next-line no-eval
   const raw = eval("(" + objSrc + ")");
   const slim = {};
   for (const [k, v] of Object.entries(raw)) {

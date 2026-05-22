@@ -185,11 +185,6 @@ export function VerseRow({
     pressOriginRef.current = null;
   }
 
-  // Re-sync draft when annotation hydrates from localStorage.
-  useEffect(() => {
-    setDraft(ann.note ?? "");
-  }, [ann.note]);
-
   // Autofocus when entering edit mode.
   useEffect(() => {
     if (!editing) return;

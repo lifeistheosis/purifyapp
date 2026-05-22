@@ -80,9 +80,6 @@ export type FastingStatus = {
   rule: string;
 };
 
-const MONTH_DAYS = (year: number, month: number /* 0-11 */) =>
-  new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
-
 /**
  * Returns the fasting status for a calendar date according to common
  * Eastern Orthodox practice (Constantinople/Greek tradition). This is a
@@ -112,7 +109,6 @@ export function fastingStatus(date: Date): FastingStatus {
   const nativityStart = new Date(Date.UTC(year, 10, 15, 12));
   const nativityEnd = new Date(Date.UTC(year, 11, 24, 12));
   const christmasFreeStart = new Date(Date.UTC(year, 11, 25, 12));
-  const theophanyEve = new Date(Date.UTC(year, 0, 4, 12)); // Jan 4 (free through)
   const publicanFeast = addDays(pascha, -70); // approx Sunday of Publican & Pharisee
   const publicanFreeEnd = addDays(publicanFeast, 7);
 
@@ -568,7 +564,6 @@ export function currentSeason(date: Date): SeasonInfo | null {
   const cleanMonday = addDays(pascha, -48);
   const holySaturday = addDays(pascha, -1);
   const brightWeekEnd = addDays(pascha, 7);
-  const pentecost = addDays(pascha, 49);
   const allSaintsSunday = addDays(pascha, 56);
   const apostlesFastStart = addDays(allSaintsSunday, 1);
   const apostlesFastEnd = new Date(Date.UTC(year, 5, 28, 12));
@@ -659,7 +654,6 @@ export function currentSeason(date: Date): SeasonInfo | null {
   const publicanSunday = addDays(pascha, -70);
   const prodigalSunday = addDays(pascha, -63);
   const meatfareSunday = addDays(pascha, -56);
-  const forgivenessSunday = addDays(pascha, -49);
   if (inRangeInclusive(d, publicanSunday, addDays(cleanMonday, -1))) {
     let sub: string;
     if (diffDays(d, publicanSunday) <= 6) sub = "Publican and Pharisee";

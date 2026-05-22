@@ -60,11 +60,6 @@ export function ParagraphRow({
   );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Re-sync the draft when localStorage hydration finishes.
-  useEffect(() => {
-    setDraft(ann.note ?? "");
-  }, [ann.note]);
-
   useEffect(() => {
     if (!editing) return;
     const el = textareaRef.current;

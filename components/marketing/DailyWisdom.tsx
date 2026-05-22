@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { VERSES, SAYINGS, type WisdomEntry } from "@/data/marketing/daily-wisdom";
+import { pickDailyWisdom } from "@/data/marketing/daily-wisdom";
 
 /**
  * Server component. Pulls today's daily wisdom entry — a Scripture
@@ -8,10 +8,7 @@ import { VERSES, SAYINGS, type WisdomEntry } from "@/data/marketing/daily-wisdom
  * entry refreshes once per day without a redeploy.
  */
 export function DailyWisdom() {
-  const dayOfYear = Math.floor(Date.now() / 86_400_000);
-  const useVerse = dayOfYear % 2 === 0;
-  const pool: WisdomEntry[] = useVerse ? VERSES : SAYINGS;
-  const entry = pool[dayOfYear % pool.length];
+  const { entry, useVerse } = pickDailyWisdom();
   const cite = entry.cite;
   const text = entry.text;
 

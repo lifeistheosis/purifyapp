@@ -19,6 +19,23 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
   {
+    version: "v5.0",
+    kind: "A major release",
+    date: "May 21, 2026",
+    blurb:
+      "v5.0 opens the Scriptures wider. You can now read the New Testament in the New King James, New International, or New Living translation, shown exactly as published; and on the public-domain text the Greek now sits word-for-word beside the English, each word linked to its original. St. Athanasius the Great's profile is complete, with six of his works readable in full. And Purify is now free for good, the last of the old commerce gone. Whether you read in plain modern English or trace the Greek behind it, the Fathers are never far.",
+    items: [
+      "Three modern translations in the reader: the New King James (NKJV), New International (NIV), and New Living (NLT), fetched live and shown exactly as published, footnotes and all, with the publisher's copyright and a link, an API.Bible citation, and usage reporting, under the American Bible Society and Biblica license.",
+      "A bidirectional Greek interlinear on the New Testament (public-domain KJV): hover an English word to light its matching Greek word, or hover the Greek to light the English, occurrence-aware so repeated words pair to the right one.",
+      "The licensed translations are typeset with care: poetry set as verse, the words of Christ in red, the divine Name in small capitals, and footnotes and cross-references gathered into a tidy panel at the foot of the chapter rather than scattered through the text.",
+      "Your reading font and size now apply to every translation, modern or ancient.",
+      "St. Athanasius the Great's profile is now complete: a fuller life, eight sourced sayings, and six works readable in full, On the Incarnation, Against the Heathen, the Four Discourses Against the Arians, On the Nicene Definition, On the Councils, and his Life of Antony, which now also sits on St. Anthony the Great's page.",
+      "Purify is now, and will remain, entirely free. The pricing tier and the commercial marketplace are gone, leaving only the prayers, the Scriptures, and the saints.",
+      "Bible pages now ask AI crawlers not to scrape the Scriptures, and a private Live View dashboard lets the team see visits in real time without tying any of it to who is reading what.",
+      "A careful quality pass under the hood: every linter warning cleared, the reader's highlights, notes, and bookmarks rebuilt on a steadier footing, and a copyrighted translation quietly replaced with its public-domain edition.",
+    ],
+  },
+  {
     version: "v4.0",
     kind: "A major release, welcome",
     date: "May 20, 2026",
@@ -440,51 +457,48 @@ export default function WhatsNewPage() {
             What&rsquo;s new
           </p>
           <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
-            v4.0 &middot; A major release
+            v5.0 &middot; A major release
           </p>
         </div>
 
         <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
-          Read the Scriptures with the Fathers.
+          Your translation, and the words behind it.
         </h1>
 
         <p className="mt-8 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-          If you are new here, welcome. v4.0 is the largest release Purify
-          has had, and its heart is simple: you should never have to read
-          the Scriptures alone. Open any of fourteen books of the New
-          Testament and St. John Chrysostom now reads beside you, verse by
-          verse, in the study rail and the mobile sheet, the same exposition
-          the Church has leaned on for sixteen centuries, set next to the
-          very verse he is preaching.
+          If you are new here, welcome. v5.0 opens the Scriptures wider. You
+          can now read the New Testament in the translation you grew up with,
+          the New King James, the New International, or the New Living, each
+          shown exactly as its publishers set it, footnotes and all. They are
+          fetched fresh, never altered, and carry their proper attribution,
+          held under the license of the American Bible Society and Biblica.
         </p>
 
         <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-          The Gospel of John, the Acts of the Apostles, Romans, both letters
-          to the Corinthians, Ephesians through Philemon, and Hebrews: more
-          than two thousand of his comments, drawn word for word from the
-          public-domain Fathers, are now in the reader. The same homilies
-          read in full on his profile, seventeen complete works in all, and a
-          new &ldquo;In his own words&rdquo; section gathers his sharpest
-          lines with a link back to the homily each one came from.
+          And if you want to go behind the English, you can. On the
+          public-domain text the original Greek now sits word for word beside
+          it: hover a word in either column and its partner lights up, so you
+          can see exactly which Greek stands behind your &ldquo;Word,&rdquo;
+          your &ldquo;grace,&rdquo; your &ldquo;love.&rdquo; The Fathers, of
+          course, are still in the margin, reading along.
         </p>
 
         <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-          The lives have grown too. Five saints join the calendar, each with
-          a traditional icon written in the Byzantine manner: the
-          Great-Martyr Marina, Hermione of Ephesus, Isidora of Tabenna,
-          Olympias the Deaconess, and Gregory of Nyssa. A search bar now sits
-          over the Saints, so a name or a writing is a keystroke away, and a
-          small gold mark shows which books of the Bible already carry the
-          Fathers.
+          The lives keep deepening. St. Athanasius the Great, who stood almost
+          alone for the faith of Nicaea, now has a full profile: his story,
+          his sayings, and six of his works to read in full, from On the
+          Incarnation to his Life of Antony, the little book that carried
+          monasticism across the world, and which now sits on St. Anthony&rsquo;s
+          page as well.
         </p>
 
         <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-          And the room itself is quieter. We have settled the colours, drawn
-          a proper cross in place of stray symbols, and tidied the type, so
-          the app feels less like software and more like a place to stand
-          before God. The Morning and Evening Rules, the Jesus Prayer, and
-          the Today screen are all still here, waiting whenever you rise and
-          whenever you lie down.
+          One more thing, and we mean it: Purify is free, and it is staying
+          free. The old pricing tier and the marketplace are gone for good,
+          and the licenses we hold for the Scriptures bind us to keep it that
+          way. There is nothing to buy here, only Someone to seek. The Morning
+          and Evening Rules, the Jesus Prayer, and the Today screen are all
+          still here, waiting whenever you rise and whenever you lie down.
         </p>
 
         <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
@@ -495,7 +509,7 @@ export default function WhatsNewPage() {
         {/* Closing + signature */}
         <div className="mt-16 pt-10 border-t border-paper/10">
           <p className="font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
-            Thank you for staying with us through four majors. Glory to God
+            Thank you for staying with us through five majors. Glory to God
             for all things.
           </p>
 

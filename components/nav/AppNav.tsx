@@ -81,7 +81,7 @@ export function AppNav() {
             </Link>
           ))}
           <ComingSoonCTA variant="inverse" className="!py-2.5 !px-5 text-[14px]">
-            Try Free
+            Open Purify
           </ComingSoonCTA>
         </div>
 

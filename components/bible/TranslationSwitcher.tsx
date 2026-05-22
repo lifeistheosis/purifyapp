@@ -84,9 +84,21 @@ function pdDefaultForTestament(testament: "OT" | "NT"): Translation {
   );
 }
 
-export function TranslationSwitcher({ currentSlug }: { currentSlug: string }) {
+export function TranslationSwitcher({
+  currentSlug,
+  configuredLicensed = [],
+}: {
+  currentSlug: string;
+  /** Licensed translation ids that are actually configured (key + bibleId).
+   *  Others are shown but disabled so selecting them can't silently fall back. */
+  configuredLicensed?: string[];
+}) {
   const book = getBook(currentSlug);
   const testament = (book?.testament ?? "OT") as "OT" | "NT";
+
+  // A licensed row is selectable only when its API access is configured.
+  const isSelectable = (t: Translation) =>
+    t.available && (!t.licensed || configuredLicensed.includes(t.id));
 
   const router = useRouter();
   const pathname = usePathname();
@@ -102,7 +114,7 @@ export function TranslationSwitcher({ currentSlug }: { currentSlug: string }) {
   const current = licensedActive ?? pdDefaultForTestament(testament);
 
   function select(t: Translation) {
-    if (!t.available || t.id === current.id) {
+    if (!isSelectable(t) || t.id === current.id) {
       setOpen(false);
       return;
     }
@@ -179,13 +191,16 @@ export function TranslationSwitcher({ currentSlug }: { currentSlug: string }) {
           <ul role="listbox" className="p-2 max-h-[60vh] overflow-y-auto">
             {visible.map((t) => {
               const isCurrent = t.id === current.id;
+              const selectable = isSelectable(t);
+              const needsSetup =
+                t.licensed && t.available && !configuredLicensed.includes(t.id);
               return (
                 <li key={t.id}>
                   <div
                     role="option"
                     aria-selected={isCurrent}
-                    aria-disabled={!t.available}
-                    tabIndex={t.available ? 0 : -1}
+                    aria-disabled={!selectable}
+                    tabIndex={selectable ? 0 : -1}
                     onClick={() => select(t)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
@@ -197,7 +212,7 @@ export function TranslationSwitcher({ currentSlug }: { currentSlug: string }) {
                       "rounded-md px-3 py-2.5 transition-colors",
                       isCurrent
                         ? "bg-accent/12"
-                        : t.available
+                        : selectable
                           ? "hover:bg-paper/[0.06] cursor-pointer"
                           : "opacity-55",
                     )}
@@ -207,9 +222,9 @@ export function TranslationSwitcher({ currentSlug }: { currentSlug: string }) {
                         <p className="font-sans text-[13.5px] font-medium text-paper">
                           {t.fullLabel}
                         </p>
-                        {t.note && (
+                        {(needsSetup || t.note) && (
                           <p className="mt-0.5 font-sans text-[11.5px] text-paper/50">
-                            {t.note}
+                            {needsSetup ? "Requires setup" : t.note}
                           </p>
                         )}
                       </div>
@@ -218,18 +233,20 @@ export function TranslationSwitcher({ currentSlug }: { currentSlug: string }) {
                           "font-sans text-[10.5px] uppercase tracking-[1px] shrink-0 px-2 py-0.5 rounded-full border",
                           isCurrent
                             ? "border-accent/40 text-accent bg-accent/8"
-                            : t.available
+                            : selectable
                               ? "border-paper/20 text-paper/65"
                               : "border-paper/10 text-paper/35",
                         )}
                       >
                         {isCurrent
                           ? "Current"
-                          : t.available
-                            ? t.licensed
-                              ? "Licensed"
-                              : "Free"
-                            : "Soon"}
+                          : needsSetup
+                            ? "Setup"
+                            : selectable
+                              ? t.licensed
+                                ? "Licensed"
+                                : "Free"
+                              : "Soon"}
                       </span>
                     </div>
                   </div>

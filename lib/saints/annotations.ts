@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
 /**
  * Per-paragraph annotations on saint writings, stored in localStorage.
  * Mirrors the shape of `lib/bible/annotations.ts:useVerseAnnotation` so the UI
  * patterns transfer one-to-one: highlight toggle, inline note, persistence
- * via a cross-tab CustomEvent.
+ * via a cross-tab CustomEvent, and reads via useSyncExternalStore.
  *
  * Schema:
  *   highlighted?: boolean   (whole-paragraph gold left bar)
@@ -28,66 +28,69 @@ function key(
   return `purify:saint:${saintSlug}:${workSlug}:${sectionN}:${paragraphIdx}`;
 }
 
+const EMPTY: ParagraphAnnotation = {};
+
+// Stable-snapshot cache (see lib/bible/annotations.ts for the rationale).
+const snapCache = new Map<
+  string,
+  { raw: string | null; val: ParagraphAnnotation }
+>();
+
+function readSnapshot(k: string): ParagraphAnnotation {
+  if (typeof window === "undefined") return EMPTY;
+  let raw: string | null = null;
+  try {
+    raw = window.localStorage.getItem(k);
+  } catch {
+    return EMPTY;
+  }
+  const cached = snapCache.get(k);
+  if (cached && cached.raw === raw) return cached.val;
+  let val: ParagraphAnnotation = EMPTY;
+  if (raw) {
+    try {
+      val = JSON.parse(raw) as ParagraphAnnotation;
+    } catch {
+      val = EMPTY;
+    }
+  }
+  snapCache.set(k, { raw, val });
+  return val;
+}
+
+function subscribe(cb: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("purify:annotation", cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    window.removeEventListener("purify:annotation", cb);
+    window.removeEventListener("storage", cb);
+  };
+}
+
 export function useParagraphAnnotation(
   saintSlug: string,
   workSlug: string,
   sectionN: number,
   paragraphIdx: number,
 ) {
-  const [data, setData] = useState<ParagraphAnnotation>({});
-
-  // Hydrate from localStorage after mount (avoid SSR mismatch).
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = window.localStorage.getItem(
-        key(saintSlug, workSlug, sectionN, paragraphIdx),
-      );
-      if (raw) setData(JSON.parse(raw));
-    } catch {
-      /* ignore */
-    }
-  }, [saintSlug, workSlug, sectionN, paragraphIdx]);
-
-  // Listen for cross-tab + same-tab updates dispatched by `persist`.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    function onAnn(e: Event) {
-      const ce = e as CustomEvent<{
-        kind: string;
-        saintSlug: string;
-        workSlug: string;
-        sectionN: number;
-        paragraphIdx: number;
-        data: ParagraphAnnotation;
-      }>;
-      const d = ce.detail;
-      if (
-        d?.kind === "saint-paragraph" &&
-        d.saintSlug === saintSlug &&
-        d.workSlug === workSlug &&
-        d.sectionN === sectionN &&
-        d.paragraphIdx === paragraphIdx
-      ) {
-        setData(d.data);
-      }
-    }
-    window.addEventListener("purify:annotation", onAnn as EventListener);
-    return () =>
-      window.removeEventListener("purify:annotation", onAnn as EventListener);
-  }, [saintSlug, workSlug, sectionN, paragraphIdx]);
+  const k = key(saintSlug, workSlug, sectionN, paragraphIdx);
+  const data = useSyncExternalStore(
+    subscribe,
+    () => readSnapshot(k),
+    () => EMPTY,
+  );
 
   const persist = useCallback(
     (next: ParagraphAnnotation) => {
-      setData(next);
       try {
-        const k = key(saintSlug, workSlug, sectionN, paragraphIdx);
         const isEmpty = !next.highlighted && !next.note;
         if (!isEmpty) {
           window.localStorage.setItem(k, JSON.stringify(next));
         } else {
           window.localStorage.removeItem(k);
         }
+        snapCache.delete(k);
         window.dispatchEvent(
           new CustomEvent("purify:annotation", {
             detail: {
@@ -104,7 +107,7 @@ export function useParagraphAnnotation(
         /* storage may be unavailable */
       }
     },
-    [saintSlug, workSlug, sectionN, paragraphIdx],
+    [k, saintSlug, workSlug, sectionN, paragraphIdx],
   );
 
   const toggleHighlight = useCallback(() => {

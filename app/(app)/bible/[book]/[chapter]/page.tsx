@@ -76,6 +76,11 @@ export default async function BibleChapterPage({
   // selected (?v=) and configured. It renders verbatim with no Strong's /
   // interlinear overlay (content integrity). Falls back to public domain when
   // the book isn't in the translation (e.g. deuterocanon) or the API fails.
+  // Which licensed translations are actually configured (key + bibleId). Passed
+  // to the switcher so it can grey out ones that would silently fall back.
+  const configuredLicensed = (["niv", "nkjv", "nlt"] as const).filter((t) =>
+    isApiConfigured(t),
+  );
   const licensedId = v && isLicensed(v) && isApiConfigured(v) ? v : null;
   const licensed = licensedId
     ? await fetchLicensedChapter(licensedId, book, chapterNum)
@@ -155,7 +160,10 @@ export default async function BibleChapterPage({
               Switchers are kept at content width (not stretched) so they don't
               shift as the book name length changes. */}
           <div className="mb-4 flex items-center gap-3">
-            <TranslationSwitcher currentSlug={book} />
+            <TranslationSwitcher
+              currentSlug={book}
+              configuredLicensed={configuredLicensed}
+            />
             <BookSwitcher currentSlug={book} />
             <div className="hidden md:flex items-center gap-3 ml-auto">
               <ReaderFontSizeButton />

@@ -66,7 +66,7 @@ export function Navbar() {
             </Link>
           ))}
           <ComingSoonCTA variant="inverse" className="!py-2.5 !px-5 text-[14px]">
-            Try Free
+            Open Purify
           </ComingSoonCTA>
         </div>
 
@@ -97,7 +97,7 @@ export function Navbar() {
             ))}
             <div className="mt-4 mb-2">
               <ComingSoonCTA variant="inverse" className="w-full !py-3 text-[15px]">
-                Try Free
+                Open Purify
               </ComingSoonCTA>
             </div>
           </nav>

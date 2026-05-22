@@ -335,3 +335,15 @@ export const SAYINGS: WisdomEntry[] = [
     href: "/saints/athanasius-the-great/against-the-heathen",
   },
 ];
+
+/**
+ * Pick today's wisdom entry: a Scripture verse on even days, a Father's saying
+ * on odd days. The time-based read lives here (a plain data module) rather than
+ * inside the server component so the render stays pure.
+ */
+export function pickDailyWisdom(): { entry: WisdomEntry; useVerse: boolean } {
+  const dayOfYear = Math.floor(Date.now() / 86_400_000);
+  const useVerse = dayOfYear % 2 === 0;
+  const pool: WisdomEntry[] = useVerse ? VERSES : SAYINGS;
+  return { entry: pool[dayOfYear % pool.length], useVerse };
+}

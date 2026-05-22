@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useCallback } from "react";
+import { useSyncExternalStore } from "react";
 import { cn } from "@/lib/cn";
 
 export type ReaderSize = "sm" | "md" | "lg" | "xl";
@@ -30,6 +24,7 @@ const FONT_LABELS: Record<ReaderFont, string> = {
 
 const SIZE_KEY = "purify.reader.size";
 const FONT_KEY = "purify.reader.font";
+const PREFS_EVENT = "purify:reader-prefs";
 
 // Verse-body text classes per size.
 export const SIZE_CLASSES: Record<ReaderSize, string> = {
@@ -46,6 +41,57 @@ export const FONT_CLASSES: Record<ReaderFont, string> = {
   sans: "font-sans",
 };
 
+// ---- localStorage-backed store (read via useSyncExternalStore) -----------
+// Avoids a hydrate-in-effect setState: the server renders the default snapshot,
+// then the client re-reads localStorage. Writes broadcast `purify:reader-prefs`
+// so every mounted control (size/font pills, the readers) stays in sync.
+
+type PrefsSnap = { size: ReaderSize; font: ReaderFont };
+const DEFAULT_SNAP: PrefsSnap = { size: "md", font: "serif" };
+let prefsCache: { rawS: string | null; rawF: string | null; val: PrefsSnap } | null = null;
+
+function readPrefs(): PrefsSnap {
+  if (typeof window === "undefined") return DEFAULT_SNAP;
+  let rawS: string | null = null;
+  let rawF: string | null = null;
+  try {
+    rawS = window.localStorage.getItem(SIZE_KEY);
+    rawF = window.localStorage.getItem(FONT_KEY);
+  } catch {
+    return DEFAULT_SNAP;
+  }
+  if (prefsCache && prefsCache.rawS === rawS && prefsCache.rawF === rawF) {
+    return prefsCache.val;
+  }
+  const size =
+    rawS && SIZES.includes(rawS as ReaderSize) ? (rawS as ReaderSize) : "md";
+  const font =
+    rawF && FONTS.includes(rawF as ReaderFont) ? (rawF as ReaderFont) : "serif";
+  const val: PrefsSnap = { size, font };
+  prefsCache = { rawS, rawF, val };
+  return val;
+}
+
+function subscribePrefs(cb: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener(PREFS_EVENT, cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    window.removeEventListener(PREFS_EVENT, cb);
+    window.removeEventListener("storage", cb);
+  };
+}
+
+function write(keyName: string, value: string) {
+  try {
+    window.localStorage.setItem(keyName, value);
+    prefsCache = null;
+    window.dispatchEvent(new CustomEvent(PREFS_EVENT));
+  } catch {
+    /* storage may be unavailable */
+  }
+}
+
 type Ctx = {
   size: ReaderSize;
   font: ReaderFont;
@@ -57,101 +103,44 @@ type Ctx = {
   fontLabel: string;
 };
 
-const ReaderCtx = createContext<Ctx | null>(null);
-
+// The provider is now a passthrough (state lives in the module store); kept so
+// existing <ReaderPrefsProvider> mount points don't need to change.
 export function ReaderPrefsProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [size, setSizeState] = useState<ReaderSize>("md");
-  const [font, setFontState] = useState<ReaderFont>("serif");
-
-  useEffect(() => {
-    try {
-      const s = window.localStorage.getItem(SIZE_KEY);
-      if (s && SIZES.includes(s as ReaderSize)) setSizeState(s as ReaderSize);
-      const f = window.localStorage.getItem(FONT_KEY);
-      if (f && FONTS.includes(f as ReaderFont)) setFontState(f as ReaderFont);
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
-  const setSize = useCallback((s: ReaderSize) => {
-    setSizeState(s);
-    try {
-      window.localStorage.setItem(SIZE_KEY, s);
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
-  const setFont = useCallback((f: ReaderFont) => {
-    setFontState(f);
-    try {
-      window.localStorage.setItem(FONT_KEY, f);
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
-  const cycleSize = useCallback(() => {
-    setSizeState((cur) => {
-      const next = SIZES[(SIZES.indexOf(cur) + 1) % SIZES.length];
-      try {
-        window.localStorage.setItem(SIZE_KEY, next);
-      } catch {
-        /* ignore */
-      }
-      return next;
-    });
-  }, []);
-
-  const cycleFont = useCallback(() => {
-    setFontState((cur) => {
-      const next = FONTS[(FONTS.indexOf(cur) + 1) % FONTS.length];
-      try {
-        window.localStorage.setItem(FONT_KEY, next);
-      } catch {
-        /* ignore */
-      }
-      return next;
-    });
-  }, []);
-
-  const value = useMemo<Ctx>(
-    () => ({
-      size,
-      font,
-      setSize,
-      setFont,
-      cycleSize,
-      cycleFont,
-      sizeLabel: SIZE_LABELS[size],
-      fontLabel: FONT_LABELS[font],
-    }),
-    [size, font, setSize, setFont, cycleSize, cycleFont],
-  );
-
-  return <ReaderCtx.Provider value={value}>{children}</ReaderCtx.Provider>;
+  return <>{children}</>;
 }
 
 export function useReaderPrefs(): Ctx {
-  const ctx = useContext(ReaderCtx);
-  if (!ctx) {
-    return {
-      size: "md",
-      font: "serif",
-      setSize: () => {},
-      setFont: () => {},
-      cycleSize: () => {},
-      cycleFont: () => {},
-      sizeLabel: SIZE_LABELS.md,
-      fontLabel: FONT_LABELS.serif,
-    };
-  }
-  return ctx;
+  const { size, font } = useSyncExternalStore(
+    subscribePrefs,
+    readPrefs,
+    () => DEFAULT_SNAP,
+  );
+
+  const setSize = useCallback((s: ReaderSize) => write(SIZE_KEY, s), []);
+  const setFont = useCallback((f: ReaderFont) => write(FONT_KEY, f), []);
+  const cycleSize = useCallback(() => {
+    const cur = readPrefs().size;
+    write(SIZE_KEY, SIZES[(SIZES.indexOf(cur) + 1) % SIZES.length]);
+  }, []);
+  const cycleFont = useCallback(() => {
+    const cur = readPrefs().font;
+    write(FONT_KEY, FONTS[(FONTS.indexOf(cur) + 1) % FONTS.length]);
+  }, []);
+
+  return {
+    size,
+    font,
+    setSize,
+    setFont,
+    cycleSize,
+    cycleFont,
+    sizeLabel: SIZE_LABELS[size],
+    fontLabel: FONT_LABELS[font],
+  };
 }
 
 // Backwards-compatible alias for the existing import name.

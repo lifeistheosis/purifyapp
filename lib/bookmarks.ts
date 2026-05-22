@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
 /**
  * Bookmarks across both readers — Bible verses, Bible chapters, and saint
@@ -126,30 +126,56 @@ function writeAll(items: Bookmark[]) {
   }
 }
 
+// Stable snapshot for useSyncExternalStore: cache the parsed array keyed by the
+// raw string so reads return the same reference until the list actually changes.
+const EMPTY_LIST: Bookmark[] = [];
+let snapRaw: string | null | undefined;
+let snapVal: Bookmark[] = EMPTY_LIST;
+
+function readSnapshot(): Bookmark[] {
+  if (typeof window === "undefined") return EMPTY_LIST;
+  let raw: string | null = null;
+  try {
+    raw = window.localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return EMPTY_LIST;
+  }
+  if (raw === snapRaw) return snapVal;
+  snapRaw = raw;
+  if (!raw) {
+    snapVal = EMPTY_LIST;
+    return snapVal;
+  }
+  try {
+    const parsed = JSON.parse(raw);
+    snapVal = Array.isArray(parsed) ? (parsed as Bookmark[]) : EMPTY_LIST;
+  } catch {
+    snapVal = EMPTY_LIST;
+  }
+  return snapVal;
+}
+
+function subscribeBookmarks(cb: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener(EVENT, cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    window.removeEventListener(EVENT, cb);
+    window.removeEventListener("storage", cb);
+  };
+}
+
 /**
- * Returns the live bookmark list plus mutators. Reads on mount and updates
- * via the `purify:bookmark` event, so multiple components stay in sync.
+ * Returns the live bookmark list plus mutators. Reads via useSyncExternalStore
+ * and updates on the `purify:bookmark` event (and cross-tab `storage`), so
+ * multiple components stay in sync without a hydrate-in-effect setState.
  */
 export function useBookmarks() {
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-
-  useEffect(() => {
-    setBookmarks(readAll());
-    function onChange(e: Event) {
-      const ce = e as CustomEvent<{ items: Bookmark[] }>;
-      if (ce.detail?.items) setBookmarks(ce.detail.items);
-      else setBookmarks(readAll());
-    }
-    function onStorage(e: StorageEvent) {
-      if (e.key === STORAGE_KEY) setBookmarks(readAll());
-    }
-    window.addEventListener(EVENT, onChange as EventListener);
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener(EVENT, onChange as EventListener);
-      window.removeEventListener("storage", onStorage);
-    };
-  }, []);
+  const bookmarks = useSyncExternalStore(
+    subscribeBookmarks,
+    readSnapshot,
+    () => EMPTY_LIST,
+  );
 
   const add = useCallback((b: BookmarkInput) => {
     const current = readAll();

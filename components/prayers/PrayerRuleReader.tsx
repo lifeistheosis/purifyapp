@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import { cn } from "@/lib/cn";
 
 export type Prayer = {
@@ -34,6 +34,57 @@ function ymdMinusOne(ymd: string): string {
   return `${dt.getUTCFullYear()}${String(dt.getUTCMonth() + 1).padStart(2, "0")}${String(dt.getUTCDate()).padStart(2, "0")}`;
 }
 
+// Today's progress + streak, read straight from localStorage via
+// useSyncExternalStore (no hydrate-in-effect setState; SSR renders the empty
+// snapshot, then the client re-reads). Writes dispatch `purify:prayers`.
+const PRAYER_EVENT = "purify:prayers";
+type PrayerSnap = { done: string[]; streak: number; today: string };
+const SERVER_SNAP: PrayerSnap = { done: [], streak: 0, today: "" };
+const prayerCache = new Map<
+  string,
+  { rawDone: string | null; rawStreak: string | null; today: string; val: PrayerSnap }
+>();
+
+function readPrayerSnapshot(ruleId: string): PrayerSnap {
+  if (typeof window === "undefined") return SERVER_SNAP;
+  const today = todayKey();
+  let rawDone: string | null = null;
+  let rawStreak: string | null = null;
+  try {
+    rawDone = window.localStorage.getItem(`purify.prayers.${ruleId}.${today}`);
+    rawStreak = window.localStorage.getItem(`purify.prayers.${ruleId}.streak`);
+  } catch {
+    return SERVER_SNAP;
+  }
+  const c = prayerCache.get(ruleId);
+  if (c && c.rawDone === rawDone && c.rawStreak === rawStreak && c.today === today) {
+    return c.val;
+  }
+  let done: string[] = [];
+  if (rawDone) {
+    try {
+      const p = JSON.parse(rawDone);
+      if (Array.isArray(p)) done = p as string[];
+    } catch {
+      /* ignore */
+    }
+  }
+  const streak = rawStreak ? parseInt(rawStreak, 10) || 0 : 0;
+  const val: PrayerSnap = { done, streak, today };
+  prayerCache.set(ruleId, { rawDone, rawStreak, today, val });
+  return val;
+}
+
+function subscribePrayers(cb: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener(PRAYER_EVENT, cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    window.removeEventListener(PRAYER_EVENT, cb);
+    window.removeEventListener("storage", cb);
+  };
+}
+
 /**
  * A single Orthodox prayer rule presented prayer-by-prayer. Each prayer is
  * a `<details>` open by default. Each can be marked Done; state is stored
@@ -43,61 +94,52 @@ function ymdMinusOne(ymd: string): string {
  * (purify.prayers.{ruleId}.streak).
  */
 export function PrayerRuleReader({ rule }: { rule: Rule }) {
-  const [hydrated, setHydrated] = useState(false);
-  const [done, setDone] = useState<Set<string>>(new Set());
-  const [streak, setStreak] = useState(0);
-  const [today, setToday] = useState<string>("");
-
-  useEffect(() => {
-    const k = todayKey();
-    setToday(k);
-    try {
-      const raw = window.localStorage.getItem(
-        `purify.prayers.${rule.id}.${k}`,
-      );
-      if (raw) setDone(new Set(JSON.parse(raw)));
-      const s = window.localStorage.getItem(`purify.prayers.${rule.id}.streak`);
-      if (s) setStreak(parseInt(s, 10) || 0);
-    } catch {
-      /* ignore */
-    }
-    setHydrated(true);
-  }, [rule.id]);
+  const snap = useSyncExternalStore(
+    subscribePrayers,
+    () => readPrayerSnapshot(rule.id),
+    () => SERVER_SNAP,
+  );
+  const done = useMemo(() => new Set(snap.done), [snap.done]);
+  const streak = snap.streak;
+  const today = snap.today;
+  // After the first client read `today` is set; on the server it is "".
+  const hydrated = today !== "";
 
   const total = rule.prayers.length;
   const completedCount = done.size;
   const progress = total > 0 ? completedCount / total : 0;
   const allDone = completedCount === total && total > 0;
 
-  // When the rule flips from not-all-done to all-done, advance the streak.
-  // Idempotent per day: only increments if today's date hasn't already been
-  // counted (we track last-completed yyyymmdd alongside the streak).
-  useEffect(() => {
-    if (!hydrated || !allDone || !today) return;
-    try {
-      const lastKey = `purify.prayers.${rule.id}.last`;
-      const last = window.localStorage.getItem(lastKey);
-      if (last === today) return;
-      const yesterday = ymdMinusOne(today);
-      const newStreak = last === yesterday ? streak + 1 : 1;
-      window.localStorage.setItem(lastKey, today);
-      window.localStorage.setItem(
-        `purify.prayers.${rule.id}.streak`,
-        String(newStreak),
-      );
-      setStreak(newStreak);
-    } catch {
-      /* ignore */
-    }
-  }, [allDone, hydrated, rule.id, streak, today]);
-
   function persist(next: Set<string>) {
-    setDone(new Set(next));
+    if (typeof window === "undefined") return;
+    const k = todayKey();
     try {
       window.localStorage.setItem(
-        `purify.prayers.${rule.id}.${today}`,
+        `purify.prayers.${rule.id}.${k}`,
         JSON.stringify([...next]),
       );
+      // Advance the streak when the rule becomes complete for the day.
+      // Idempotent per day via the `.last` marker.
+      if (total > 0 && next.size === total) {
+        const lastKey = `purify.prayers.${rule.id}.last`;
+        const last = window.localStorage.getItem(lastKey);
+        if (last !== k) {
+          const prev =
+            parseInt(
+              window.localStorage.getItem(`purify.prayers.${rule.id}.streak`) ||
+                "0",
+              10,
+            ) || 0;
+          const newStreak = last === ymdMinusOne(k) ? prev + 1 : 1;
+          window.localStorage.setItem(lastKey, k);
+          window.localStorage.setItem(
+            `purify.prayers.${rule.id}.streak`,
+            String(newStreak),
+          );
+        }
+      }
+      prayerCache.delete(rule.id);
+      window.dispatchEvent(new CustomEvent(PRAYER_EVENT));
     } catch {
       /* ignore */
     }

@@ -58,7 +58,7 @@ export function ProfileStats() {
       setStats({ verses, paragraphs, notes, bookmarks });
     }
     recompute();
-    function on(_e: Event) {
+    function on() {
       recompute();
     }
     window.addEventListener("purify:annotation", on);

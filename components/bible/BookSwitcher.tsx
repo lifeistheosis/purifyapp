@@ -26,10 +26,10 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Reset query when opening; focus search.
+  // Focus the search input when the panel opens. (Query is reset in the
+  // open toggle handler so no setState happens inside this effect.)
   useEffect(() => {
     if (!open) return;
-    setQuery("");
     // microtask so the input is in the DOM
     queueMicrotask(() => inputRef.current?.focus());
   }, [open]);
@@ -90,7 +90,10 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
     <div ref={rootRef} className="relative inline-block">
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          if (!open) setQuery("");
+          setOpen((v) => !v);
+        }}
         aria-haspopup="listbox"
         aria-expanded={open}
         className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 pl-3 pr-2.5 py-2 font-sans text-[13px] font-medium text-paper transition-colors"
