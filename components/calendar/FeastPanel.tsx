@@ -6,7 +6,7 @@ import { Cross } from "@/components/ui/icons/Cross";
 import { Halo } from "@/components/ui/icons/Halo";
 import { OrnamentRule } from "./OrnamentRule";
 import { SectionLabel } from "./SectionLabel";
-import { FastBadge } from "./FastBadge";
+import { DropCap } from "./DropCap";
 
 /**
  * The illuminated "feast of the day" panel: the haloed saint icon lit by a
@@ -60,20 +60,33 @@ export function FeastPanel({
           </SectionLabel>
           {headline ? (
             <>
-              <h1 className="mt-3 font-display-serif text-[30px] md:text-[42px] leading-[1.06] text-paper">
-                {headlineSaint ? (
-                  <Link
-                    href={`/saints/${headlineSaint.slug}`}
-                    className="hover:text-gold transition-colors"
-                  >
-                    {headline.name}
-                  </Link>
-                ) : (
-                  headline.name
-                )}
-              </h1>
+              {/* Saint name with illuminated drop-cap when this is a named
+                  saint or feast; without it (would-be drop cap collides
+                  with non-Latin/short labels), fall through to a plain
+                  display-serif heading. */}
+              {/^[A-Za-z]/.test(headline.name) ? (
+                <DropCap
+                  name={headline.name}
+                  href={
+                    headlineSaint ? `/saints/${headlineSaint.slug}` : undefined
+                  }
+                />
+              ) : (
+                <h1 className="mt-3 font-display-serif text-[30px] md:text-[42px] leading-[1.06] text-paper">
+                  {headlineSaint ? (
+                    <Link
+                      href={`/saints/${headlineSaint.slug}`}
+                      className="hover:text-gold transition-colors"
+                    >
+                      {headline.name}
+                    </Link>
+                  ) : (
+                    headline.name
+                  )}
+                </h1>
+              )}
               {headline.note && (
-                <p className="mt-3 font-serif italic text-[16px] md:text-[17px] text-paper/75 leading-[1.6]">
+                <p className="mt-3 font-serif italic text-[16px] md:text-[17px] text-paper/75 leading-[1.6] clear-left">
                   {headline.note}
                 </p>
               )}
@@ -90,16 +103,29 @@ export function FeastPanel({
             </p>
           )}
 
-          <div className="mt-6 flex flex-wrap gap-3 justify-center md:justify-start">
-            <FastBadge kind={fast.kind} label={fast.label} />
-            <div className="rounded-md border border-paper/12 bg-paper/[0.03] px-4 py-3">
-              <p className="font-sans text-[10.5px] uppercase tracking-[1.5px] text-gold/70">
+          {/* Inline rubric: fast rule + Pascha countdown. Two thin gold
+              hairlines instead of bordered tablets; the surrounding space
+              is the container. */}
+          <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-5 clear-left">
+            <div className="border-t border-gold/30 pt-3">
+              <p className="font-sans text-[10.5px] uppercase tracking-[2px] text-gold/70 font-semibold">
+                The Fast
+              </p>
+              <p className="mt-1 font-serif text-[17px] leading-[1.45] rubric">
+                {fast.label}
+              </p>
+              <p className="mt-1 font-serif text-[13.5px] text-paper/70 leading-[1.55]">
+                {fast.rule}
+              </p>
+            </div>
+            <div className="border-t border-gold/30 pt-3">
+              <p className="font-sans text-[10.5px] uppercase tracking-[2px] text-gold/70 font-semibold">
                 Pascha
               </p>
-              <p className="mt-0.5 font-sans text-[15px] font-semibold text-paper leading-tight">
+              <p className="mt-1 font-display-serif text-[19px] text-paper leading-tight">
                 {paschaPrimary}
               </p>
-              <p className="mt-0.5 font-sans text-[11.5px] text-paper/55 leading-[1.4]">
+              <p className="mt-1 font-serif text-[13.5px] text-paper/70 leading-[1.55]">
                 {paschaSecondary}
               </p>
             </div>

@@ -19,6 +19,26 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
   {
+    version: "v5.2",
+    kind: "The calendar as a menologion",
+    date: "May 22, 2026",
+    blurb:
+      "The /calendar page steps further out of the SaaS-dashboard idiom and into the typographic vocabulary of an actual Orthodox menologion. Cinnabar-red rubrics for feast saints and fasting rules, an illuminated drop cap on the saint of the day, a sharp ruled month grid with small saint faces on feast days, parchment-grain texture under the night background, season-aware page tinting (burgundy in Lent, marian blue in Dormition, paschal white-gold in Bright Week), a bilingual ΜΑΪΟΣ · MAY heading above the grid, a colophon at the foot, and a dual Gregorian / Julian date when the Old Calendar is selected.",
+    items: [
+      "Rubric red: a new --ink-rubric CSS variable (cinnabar 196·47·36) carries the day-of-month for feast cells, the saint name in the FeastPanel, and the fasting-rule label. Gold stays for page decoration only. Two-color liturgical printing.",
+      "Illuminated initial: the saint's name in the FeastPanel now renders with a 2-line-tall display-serif drop cap in rubric red, underlined in gold (`components/calendar/DropCap.tsx`). Plain weekday pages without a Latin-letter saint name skip the drop cap.",
+      "Dual Gregorian / Julian date when Old Calendar is selected: 'Saturday · May 22 / May 9, 2026'. Helper `formatLongDateDual(date, style)` in `lib/calendar/orthodox.ts`. A small italic note under the hero explains the dual format.",
+      "Pascha countdown and the fasting rule lose their bordered-tablet chrome — replaced with thin gold hairlines and gold uppercase labels above the value. The whole hero now reads as one composed page rather than a card-with-card-inside.",
+      "Month grid sharpened: rectangular cells (no rounded corners), thin gold hairline rules between cells (no gap), single thick gold outline around today (no tinted background). Feast cells render the day number in display-serif rubric red with a small saint icon in the upper-right when one is indexed; everything else stays quiet.",
+      "Parchment-grain SVG noise layered into `.menaion-surface` at mix-blend-overlay 0.07 opacity. Invisible at a glance, present on inspection; the page stops feeling like a backlit OLED rectangle and starts feeling like ink on a panel.",
+      "Page-level liturgical-season tinting via a new --season-tone variable: Great Lent burgundy, Holy Week deep violet, Bright Week paschal white-gold, Apostles' Fast olive, Dormition Fast marian blue, Nativity Fast indigo, Pre-Lent quiet ochre. Affects only the vignette overlay; body text stays paper.",
+      "Bilingual headpiece above the month grid: a wider three-cross ornament SVG (`components/calendar/OrnamentHeadpiece.tsx`) sits above 'ΜΑΪΟΣ · 2026' in Greek capitals + the English display-serif month/year. Real-book headpiece, not a dashboard section divider.",
+      "Colophon at the foot of the page (`components/calendar/Colophon.tsx`) replacing the bordered footnote: 'Glory to God for all things.' / a small gold cross / 'Through the prayers of our holy fathers…' in display-serif italic, with the Greek dismissal underneath.",
+      "Old / New calendar toggle restyled as an inline kalendrium header — gold-underlined active label, dot separator, no pill chrome. New `lib/calendar/tone.ts` helpers `seasonTone(season)` and `calendarPageVars(tone, season)` cleanly set both `--tone` and `--season-tone` on the page wrapper.",
+      "Footer version stamp + home chip + /whats-new chip step to v5.2.",
+    ],
+  },
+  {
     version: "v5.1",
     kind: "The illuminated calendar",
     date: "May 22, 2026",
@@ -472,7 +492,7 @@ export default function WhatsNewPage() {
             What&rsquo;s new
           </p>
           <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
-            v5.0 &middot; A major release
+            v5.2 &middot; The calendar as a menologion
           </p>
         </div>
 

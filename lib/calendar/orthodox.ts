@@ -467,6 +467,45 @@ export function formatLongDate(d: Date): string {
   return `${dow} · ${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
 }
 
+/**
+ * Long-date format with both the civil (Gregorian) and the liturgical
+ * (Julian) reckonings when the Old Calendar style is selected, e.g.
+ *   Saturday · May 17 / May 4, 2026
+ * For New Calendar, falls back to the single-style `formatLongDate`.
+ */
+export function formatLongDateDual(d: Date, style: "new" | "old"): string {
+  if (style === "new") return formatLongDate(d);
+  const julian = new Date(d);
+  julian.setUTCDate(julian.getUTCDate() - 13);
+  const dow = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][
+    d.getUTCDay()
+  ];
+  return `${dow} · ${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()} / ${MONTHS[julian.getUTCMonth()]} ${julian.getUTCDate()}, ${d.getUTCFullYear()}`;
+}
+
+/**
+ * Greek capital month name for the bilingual calendar heading. Returns the
+ * polytonic form used in modern Greek service-books.
+ */
+const GREEK_MONTHS = [
+  "ΙΑΝΟΥΑΡΙΟΣ",
+  "ΦΕΒΡΟΥΑΡΙΟΣ",
+  "ΜΑΡΤΙΟΣ",
+  "ΑΠΡΙΛΙΟΣ",
+  "ΜΑΪΟΣ",
+  "ΙΟΥΝΙΟΣ",
+  "ΙΟΥΛΙΟΣ",
+  "ΑΥΓΟΥΣΤΟΣ",
+  "ΣΕΠΤΕΜΒΡΙΟΣ",
+  "ΟΚΤΩΒΡΙΟΣ",
+  "ΝΟΕΜΒΡΙΟΣ",
+  "ΔΕΚΕΜΒΡΙΟΣ",
+] as const;
+
+export function greekMonthName(month: number): string {
+  return GREEK_MONTHS[month] ?? "";
+}
+
 export function formatMonthDay(d: Date): string {
   return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}`;
 }

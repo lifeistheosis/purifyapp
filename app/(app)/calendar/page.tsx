@@ -1,10 +1,12 @@
 import Link from "next/link";
 import {
   commemorationsOn,
+  currentSeason,
   fastingStatus,
   formatLongDate,
+  formatLongDateDual,
   formatMonthDay,
-  formatMonthYear,
+  greekMonthName,
   monthGrid,
   paschaInfo,
   readingsOn,
@@ -13,11 +15,13 @@ import {
 } from "@/lib/calendar/orthodox";
 import { getSaint } from "@/lib/saints/saints";
 import { loadVerseRange, type Verse } from "@/lib/bible/load";
-import { toneFor, toneVars } from "@/lib/calendar/tone";
+import { calendarPageVars, toneFor } from "@/lib/calendar/tone";
 import { FeastPanel } from "@/components/calendar/FeastPanel";
 import { CalendarGrid } from "@/components/calendar/CalendarGrid";
 import { DayScroll } from "@/components/calendar/DayScroll";
 import { OrnamentRule } from "@/components/calendar/OrnamentRule";
+import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
+import { Colophon } from "@/components/calendar/Colophon";
 import { SectionLabel } from "@/components/calendar/SectionLabel";
 
 export const metadata = {
@@ -213,41 +217,56 @@ export default async function CalendarPage({
   oldQS.set("style", "old");
   const oldStyleHref = `/calendar?${oldQS.toString()}`;
 
+  const season = currentSeason(today);
+
   return (
-    <div className="bg-night min-h-screen menaion-surface" style={toneVars(todayTone)}>
+    <div
+      className="bg-night min-h-screen menaion-surface"
+      data-season={season?.label ?? undefined}
+      style={calendarPageVars(todayTone, season)}
+    >
       {/* HERO */}
       <section className="px-5 md:px-8 pt-10 md:pt-14 pb-10 border-b border-white/8">
         <div className="mx-auto max-w-[1280px] w-full">
-          <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
+          <div className="flex items-end justify-between flex-wrap gap-3 mb-6">
             <SectionLabel>Orthodox Calendar · Today</SectionLabel>
-            <div className="inline-flex items-center rounded-pill border border-paper/15 bg-paper/[0.04] p-0.5 font-sans text-[11px] font-medium">
-              <Link
-                href={newStyleHref}
-                aria-current={style === "new" ? "true" : undefined}
-                className={`px-3 py-1 rounded-pill transition-colors ${
-                  style === "new"
-                    ? "bg-paper/15 text-paper"
-                    : "text-paper/55 hover:text-paper"
-                }`}
-              >
-                New (Revised Julian)
-              </Link>
-              <Link
-                href={oldStyleHref}
-                aria-current={style === "old" ? "true" : undefined}
-                className={`px-3 py-1 rounded-pill transition-colors ${
-                  style === "old"
-                    ? "bg-paper/15 text-paper"
-                    : "text-paper/55 hover:text-paper"
-                }`}
-              >
-                Old (Julian)
-              </Link>
+            {/* Kalendrium-style style toggle — typographic, not a pill. */}
+            <div className="inline-flex flex-col items-end">
+              <p className="font-sans text-[10px] uppercase tracking-[2px] text-gold/65 mb-1">
+                Reckoning
+              </p>
+              <div className="inline-flex items-baseline gap-3 border-b border-gold/25 pb-1">
+                <Link
+                  href={newStyleHref}
+                  aria-current={style === "new" ? "true" : undefined}
+                  className={`font-sans text-[12px] tracking-[0.5px] transition-colors ${
+                    style === "new"
+                      ? "kalendrium-active"
+                      : "text-paper/55 hover:text-paper"
+                  }`}
+                >
+                  New (Revised Julian)
+                </Link>
+                <span aria-hidden className="text-gold/35 text-[12px]">
+                  ·
+                </span>
+                <Link
+                  href={oldStyleHref}
+                  aria-current={style === "old" ? "true" : undefined}
+                  className={`font-sans text-[12px] tracking-[0.5px] transition-colors ${
+                    style === "old"
+                      ? "kalendrium-active"
+                      : "text-paper/55 hover:text-paper"
+                  }`}
+                >
+                  Old (Julian)
+                </Link>
+              </div>
             </div>
           </div>
 
           <FeastPanel
-            dateLabel={formatLongDate(today)}
+            dateLabel={formatLongDateDual(today, style)}
             headline={headline}
             headlineSaint={headlineSaint}
             others={headline ? todayCommemorations.slice(1) : todayCommemorations}
@@ -255,6 +274,13 @@ export default async function CalendarPage({
             paschaPrimary={paschaPrimary}
             paschaSecondary={paschaSecondary}
           />
+
+          {style === "old" && (
+            <p className="mt-4 font-serif italic text-[12.5px] text-paper/55 text-right max-w-[1280px]">
+              On the Old (Julian) calendar, today&rsquo;s liturgical date is
+              thirteen days behind the civil date. Both are shown above.
+            </p>
+          )}
         </div>
       </section>
 
@@ -281,26 +307,45 @@ export default async function CalendarPage({
       {/* GRID + DAY DETAIL */}
       <section className="px-5 md:px-8 py-10 md:py-14">
         <div className="mx-auto max-w-[1280px] w-full">
-          <header className="flex items-center justify-between mb-6 gap-4 flex-wrap">
-            <h2 className="font-display-serif text-[26px] md:text-[34px] text-paper">
-              {formatMonthYear(year, month)}
-            </h2>
-            <nav className="flex items-center gap-2">
+          {/* Bilingual headpiece for the month */}
+          <div className="text-center mb-2">
+            <OrnamentHeadpiece className="mx-auto max-w-[480px]" tinted />
+          </div>
+          <header className="flex items-end justify-between mb-6 gap-4 flex-wrap">
+            <div className="min-w-0">
+              <p
+                lang="grc"
+                className="font-serif uppercase tracking-[3px] text-[12px] md:text-[13px] text-gold/80 leading-none"
+                style={{ fontFamily: "var(--font-greek), serif" }}
+              >
+                {greekMonthName(month)} · {String(year)}
+              </p>
+              <h2 className="mt-2 font-display-serif text-[30px] md:text-[40px] text-paper leading-[1.05]">
+                {[
+                  "January", "February", "March", "April", "May", "June",
+                  "July", "August", "September", "October", "November", "December",
+                ][month]}{" "}
+                {year}
+              </h2>
+            </div>
+            <nav className="flex items-baseline gap-4 border-b border-gold/25 pb-1">
               <Link
                 href={prevMonthHref(year, month)}
-                className="rounded-pill border border-paper/15 bg-paper/[0.04] px-3.5 py-2 font-sans text-[13px] font-medium text-paper/85 hover:bg-paper/10 hover:border-paper/30 transition-colors"
+                className="font-sans text-[12px] tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
               >
                 ‹ Prev
               </Link>
+              <span aria-hidden className="text-gold/35 text-[12px]">·</span>
               <Link
                 href="/calendar"
-                className="rounded-pill border border-paper/15 bg-paper/[0.04] px-3.5 py-2 font-sans text-[13px] font-medium text-paper/85 hover:bg-paper/10 hover:border-paper/30 transition-colors"
+                className="font-sans text-[12px] tracking-[0.5px] text-paper/85 hover:text-paper transition-colors"
               >
                 Today
               </Link>
+              <span aria-hidden className="text-gold/35 text-[12px]">·</span>
               <Link
                 href={nextMonthHref(year, month)}
-                className="rounded-pill border border-paper/15 bg-paper/[0.04] px-3.5 py-2 font-sans text-[13px] font-medium text-paper/85 hover:bg-paper/10 hover:border-paper/30 transition-colors"
+                className="font-sans text-[12px] tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
               >
                 Next ›
               </Link>
@@ -339,22 +384,21 @@ export default async function CalendarPage({
         </div>
       </section>
 
-      {/* FOOTNOTE */}
-      <section className="px-5 md:px-8 py-10 border-t border-white/8 bg-night-soft">
-        <div className="mx-auto max-w-[860px] w-full text-center">
-          <OrnamentRule className="mb-6 max-w-[300px] mx-auto" />
-          <SectionLabel className="justify-center">About this calendar</SectionLabel>
-          <p className="mt-4 font-serif text-[14px] text-paper/65 leading-[1.7] text-left">
-            Two reckonings are available via the toggle at the top of this page.
-            The default, New (Revised Julian), is used by the Ecumenical
-            Patriarchate of Constantinople and the majority of canonical Orthodox
-            jurisdictions for fixed feasts. The Old (Julian) option is used by the
-            Russian, Serbian, Jerusalem, and Athonite traditions, and runs
-            thirteen days behind for fixed feasts. Pascha and its moveable cycle
-            are shared between both, computed by the Julian-based algorithm common
-            to every canonical Orthodox church.
+      {/* COLOPHON */}
+      <section className="px-5 md:px-8 py-14 md:py-16">
+        <div className="mx-auto max-w-[760px] w-full">
+          <Colophon />
+          <p className="mt-10 font-serif text-[13px] text-paper/55 leading-[1.7]">
+            Two reckonings are available via the toggle above. The default,
+            New (Revised Julian), is used by the Ecumenical Patriarchate of
+            Constantinople and the majority of canonical Orthodox jurisdictions
+            for fixed feasts. The Old (Julian) option is used by the Russian,
+            Serbian, Jerusalem, and Athonite traditions, and runs thirteen days
+            behind for fixed feasts. Pascha and its moveable cycle are shared
+            between both, computed by the Julian-based algorithm common to
+            every canonical Orthodox church.
           </p>
-          <p className="mt-3 font-sans text-[12px] text-paper/45 leading-[1.6] text-left">
+          <p className="mt-3 font-sans text-[12px] text-paper/40 leading-[1.6]">
             Fasting rules are a simplified reading of common Eastern Orthodox
             (Greek tradition) practice for daily orientation. Your priest&rsquo;s
             direction takes precedence for any individual question.

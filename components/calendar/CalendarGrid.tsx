@@ -33,18 +33,18 @@ export function CalendarGrid({
   const styleQS = style === "old" ? "&style=old" : "";
   return (
     <div>
-      <div className="grid grid-cols-7 gap-1 mb-2">
+      <div className="grid grid-cols-7 border-t border-l border-gold/15 mb-0">
         {WEEKDAYS.map((d) => (
           <div
             key={d}
-            className="font-sans text-[10.5px] font-semibold uppercase tracking-[1.5px] text-paper/40 text-center"
+            className="border-r border-b border-gold/15 py-1.5 font-sans text-[10.5px] font-semibold uppercase tracking-[1.8px] text-gold/70 text-center"
           >
             {d}
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 border-l border-gold/15">
         {grid.map((cell, i) => {
           const isSelected =
             cell.inMonth &&

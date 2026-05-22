@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { MonthCell } from "@/lib/calendar/orthodox";
 import { Cross } from "@/components/ui/icons/Cross";
+import { SaintIcon } from "@/components/saints/SaintIcon";
 import { toneFor, TONE_RGB } from "@/lib/calendar/tone";
 import { FAST_META } from "./fastMeta";
 import { cn } from "@/lib/cn";
@@ -13,9 +14,10 @@ function shortName(name: string): string {
 }
 
 /**
- * One day in the month grid: a parchment-tinted tile that becomes a lit
- * lampada on `today`, carries a gold Cross for feasts, and shows a bespoke
- * fast icon (tinted by the day's tone). Navigation stays a plain `<Link>`.
+ * One day in the month grid — a ruled rectangular tile (not a card), in the
+ * idiom of a printed wall calendar. Feast days get a rubric-red day number
+ * and a small saint icon when one is indexed; ordinary days stay quiet.
+ * Today is marked by a single thick gold outline, not a tinted background.
  */
 export function CalendarCell({
   cell,
@@ -30,7 +32,7 @@ export function CalendarCell({
     return (
       <div
         aria-hidden
-        className="aspect-square min-h-[58px] md:min-h-[84px] rounded-md"
+        className="aspect-square min-h-[58px] md:min-h-[84px] border-r border-b border-gold/15 bg-paper/[0.01]"
       />
     );
   }
@@ -41,50 +43,70 @@ export function CalendarCell({
   const label = cell.headline ? shortName(cell.headline.name) : "";
   const rgb = TONE_RGB[tone];
 
-  // Tone-dependent colours go through inline styles (reliable) rather than
-  // Tailwind arbitrary values, whose `/` would be read as an opacity modifier.
-  const toneStyle: React.CSSProperties =
-    cell.isToday && !isSelected
-      ? {
-          ["--tone" as string]: rgb,
-          borderColor: `rgb(${rgb} / 0.55)`,
-          backgroundColor: `rgb(${rgb} / 0.09)`,
-        }
-      : { ["--tone" as string]: rgb };
+  // Find a registered saint for this day with an icon, if any.
+  const saintWithIcon = cell.saints.find((s) => s.iconUrl);
+
+  const baseClasses =
+    "group relative aspect-square min-h-[58px] md:min-h-[84px] flex flex-col p-1.5 overflow-hidden border-r border-b transition-colors duration-150";
 
   return (
     <Link
       href={href}
       scroll={false}
-      style={toneStyle}
+      style={{ ["--tone" as string]: rgb }}
       className={cn(
-        "group relative aspect-square min-h-[58px] md:min-h-[84px] rounded-md flex flex-col p-1.5 overflow-hidden border transition-colors duration-150",
-        isSelected
-          ? "border-paper/55 bg-paper/12"
-          : cell.isToday
-            ? "lampada-glow"
-            : cell.hasFeast
-              ? "border-gold/20 bg-gold/[0.05] hover:bg-gold/10 hover:border-gold/35"
-              : "border-paper/[0.07] bg-paper/[0.02] hover:bg-paper/[0.06] hover:border-paper/20",
+        baseClasses,
+        // Today: a single thick gold outline, no tinted background.
+        cell.isToday &&
+          "lampada-glow outline outline-2 outline-offset-[-2px] outline-gold/65 z-[1]",
+        // Selected (but not today): paper outline
+        !cell.isToday &&
+          isSelected &&
+          "outline outline-2 outline-offset-[-2px] outline-paper/55 bg-paper/[0.05] z-[1]",
+        // Default state, including hover
+        !cell.isToday &&
+          !isSelected &&
+          (cell.hasFeast
+            ? "border-gold/30 bg-gold/[0.04] hover:bg-gold/[0.09]"
+            : "border-gold/15 bg-paper/[0.015] hover:bg-paper/[0.05]"),
       )}
     >
       <div className="flex items-start justify-between gap-1">
         <span
           className={cn(
-            "font-sans text-[13px] md:text-[14px] font-semibold leading-none",
-            cell.isToday ? "" : "text-paper/85",
+            "font-display-serif text-[14px] md:text-[16px] leading-none",
+            cell.hasFeast ? "rubric" : "text-paper/85",
           )}
-          style={cell.isToday ? { color: `rgb(${rgb})` } : undefined}
+          style={
+            cell.isToday && !cell.hasFeast
+              ? { color: `rgb(${rgb})` }
+              : undefined
+          }
         >
           {cell.day}
         </span>
-        {cell.hasFeast && (
-          <Cross size={12} className="shrink-0 text-gold" aria-label="Feast" />
-        )}
+        {/* Feast cells: small saint icon if available, otherwise the Cross. */}
+        {cell.hasFeast &&
+          (saintWithIcon ? (
+            <span
+              aria-label="Feast"
+              className="shrink-0 rounded-sm overflow-hidden border border-gold/40"
+              style={{ width: 18, height: 22 }}
+            >
+              <SaintIcon saint={saintWithIcon} size="sm" />
+            </span>
+          ) : (
+            <Cross size={12} className="shrink-0 text-gold" aria-label="Feast" />
+          ))}
       </div>
 
       {label && (
-        <span className="mt-auto pr-4 font-serif text-[9.5px] md:text-[11px] leading-[1.2] text-paper/60 line-clamp-2 break-words">
+        <span
+          className={cn(
+            "mt-auto pr-4 font-serif text-[9.5px] md:text-[11px] leading-[1.2] line-clamp-2 break-words",
+            cell.hasFeast ? "rubric opacity-90" : "text-paper/60",
+          )}
+        >
           {label}
         </span>
       )}
