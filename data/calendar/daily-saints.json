@@ -759,97 +759,121 @@
     { "name": "Seven Holy Maccabean Martyrs", "note": "and their mother Solomonia, and teacher Eleazar, +166 BC" }
   ],
   "08-02": [
-    { "name": "Translation of Relics of Stephen the First-Martyr", "kind": "feast" }
+    { "name": "Translation of Relics of Stephen the First-Martyr", "kind": "feast" },
+    { "name": "Blessed Basil, Fool-for-Christ of Moscow", "note": "the Wonderworker, +1557" }
   ],
   "08-03": [
-    { "name": "Saints Isaac, Dalmatus, and Faustus of the Studion", "note": "+4-5th c." }
+    { "name": "Saints Isaac, Dalmatus, and Faustus of the Studion", "note": "+4-5th c." },
+    { "name": "Ven. Anthony the Roman of Novgorod", "note": "+1147" }
   ],
   "08-04": [
-    { "name": "Seven Sleepers of Ephesus", "note": "+250 (and awakened ca. 446)" }
+    { "name": "Seven Sleepers of Ephesus", "note": "+250 (and awakened ca. 446)" },
+    { "name": "Virgin-martyr Eudocia", "note": "of Persia, +4th c." }
   ],
   "08-05": [
-    { "name": "Forefeast of the Transfiguration", "kind": "feast" }
+    { "name": "Forefeast of the Transfiguration", "kind": "feast" },
+    { "name": "Martyr Eusignius of Antioch", "note": "the soldier, +362" }
   ],
   "08-06": [
     { "name": "Holy Transfiguration of Our Lord on Mount Tabor", "kind": "feast" }
   ],
   "08-07": [
-    { "name": "Venerable-martyr Dometius the Persian", "note": "+363" }
+    { "name": "Venerable-martyr Dometius the Persian", "note": "+363" },
+    { "name": "Ven. Or of the Thebaid", "note": "Desert Father, +ca. 390" }
   ],
   "08-08": [
-    { "name": "St. Aemilian the Confessor, Bishop of Cyzicus", "note": "iconophile, +820" }
+    { "name": "St. Aemilian the Confessor, Bishop of Cyzicus", "note": "iconophile, +820" },
+    { "name": "St. Myron the Wonderworker, Bishop of Crete", "note": "+350" }
   ],
   "08-09": [
-    { "name": "Apostle Matthias", "kind": "feast", "note": "chosen to replace Judas Iscariot, +ca. 63" }
+    { "name": "Apostle Matthias", "kind": "feast", "note": "chosen to replace Judas Iscariot, +ca. 63" },
+    { "name": "St. Herman of Alaska", "note": "Wonderworker and enlightener of America, +1837" }
   ],
   "08-10": [
-    { "name": "Martyr Lawrence the Archdeacon of Rome", "note": "+258" }
+    { "name": "Martyr Lawrence the Archdeacon of Rome", "note": "+258" },
+    { "name": "Hieromartyr Sixtus II, Pope of Rome", "note": "+258" }
   ],
   "08-11": [
-    { "name": "Martyr Euplus the Deacon of Catania", "note": "+304" }
+    { "name": "Martyr Euplus the Deacon of Catania", "note": "+304" },
+    { "name": "Sts. Theodore and Vasily of the Kiev Caves", "note": "+1098" }
   ],
   "08-12": [
-    { "name": "Martyrs Photius and Anicetus", "note": "of Nicomedia, +ca. 305" }
+    { "name": "Martyrs Photius and Anicetus", "note": "of Nicomedia, +ca. 305" },
+    { "name": "Martyrs Pamphilus and Capito", "note": "+early c." }
   ],
   "08-13": [
     { "name": "Translation of Relics of St. Maximus the Confessor", "slug": "maximus-the-confessor", "kind": "feast" },
     { "name": "St. Tikhon, Bishop of Voronezh and Zadonsk", "note": "+1783" }
   ],
   "08-14": [
-    { "name": "Prophet Micah", "note": "of the Twelve, +8th c. BC" }
+    { "name": "Prophet Micah", "note": "of the Twelve, +8th c. BC" },
+    { "name": "Forefeast of the Dormition of the Theotokos", "kind": "feast" }
   ],
   "08-15": [
     { "name": "Dormition of the Most Holy Theotokos", "kind": "feast" }
   ],
   "08-16": [
-    { "name": "Translation of the Image of Christ Not Made by Hands from Edessa", "kind": "feast" }
+    { "name": "Translation of the Image of Christ Not Made by Hands from Edessa", "kind": "feast" },
+    { "name": "Martyr Diomedes the Physician", "note": "of Tarsus, +298" }
   ],
   "08-17": [
-    { "name": "Martyr Myron of Cyzicus", "note": "+250" }
+    { "name": "Martyr Myron of Cyzicus", "note": "+250" },
+    { "name": "Martyrs Straton, Philip, and Eutychian", "note": "of Nicomedia" }
   ],
   "08-18": [
-    { "name": "Martyrs Floros and Lauros of Illyricum", "note": "+2nd c." }
+    { "name": "Martyrs Floros and Lauros of Illyricum", "note": "+2nd c." },
+    { "name": "Sts. John and George, Patriarchs of Constantinople", "note": "+7th-8th c." }
   ],
   "08-19": [
-    { "name": "Martyr Andrew Stratelates and 2,593 soldiers with him", "note": "+ca. 300" }
+    { "name": "Martyr Andrew Stratelates and 2,593 soldiers with him", "note": "+ca. 300" },
+    { "name": "Donskoy Icon of the Theotokos", "note": "of the Don, before 1380" }
   ],
   "08-20": [
     { "name": "Prophet Samuel", "note": "the seer of Israel" }
   ],
   "08-21": [
-    { "name": "Apostle Thaddeus of the Seventy", "note": "first apostle to Edessa, +44" }
+    { "name": "Apostle Thaddeus of the Seventy", "note": "first apostle to Edessa, +44" },
+    { "name": "Ven. Abraham of Smolensk", "note": "the wonderworker, +1221" }
   ],
   "08-22": [
-    { "name": "Martyr Agathonicus and Companions of Nicomedia", "note": "+ca. 300" }
+    { "name": "Martyr Agathonicus and Companions of Nicomedia", "note": "+ca. 300" },
+    { "name": "Martyr Anthusa and her servants", "note": "+5th c." }
   ],
   "08-23": [
     { "name": "Hieromartyr Irenaeus, Bishop of Lyons", "slug": "irenaeus-of-lyons", "note": "disciple of the disciple of John, +ca. 202" },
     { "name": "Hieromartyr Lupus", "note": "slave of Demetrius of Thessaloniki, +306" }
   ],
   "08-24": [
-    { "name": "Hieromartyr Eutyches, disciple of John the Theologian", "note": "+1st c." }
+    { "name": "Hieromartyr Eutyches, disciple of John the Theologian", "note": "+1st c." },
+    { "name": "Translation of the Relics of St. Peter, Metropolitan of Moscow", "note": "in the year 1479" }
   ],
   "08-25": [
-    { "name": "Translation of Relics of Apostle Bartholomew", "kind": "feast" }
+    { "name": "Translation of Relics of Apostle Bartholomew", "kind": "feast" },
+    { "name": "Apostle Titus of the Seventy, Bishop of Crete", "note": "disciple of the Apostle Paul, +1st c." }
   ],
   "08-26": [
-    { "name": "Martyrs Adrian and Natalia of Nicomedia", "note": "+ca. 305" }
+    { "name": "Martyrs Adrian and Natalia of Nicomedia", "note": "+ca. 305" },
+    { "name": "Vladimir Icon of the Theotokos", "note": "the deliverance from Tamerlane, 1395" }
   ],
   "08-27": [
-    { "name": "St. Pimen the Great of Egypt", "note": "father of the abba, +450" }
+    { "name": "St. Pimen the Great of Egypt", "note": "father of the abba, +450" },
+    { "name": "Great-martyr Phanourios the Newly-Revealed", "note": "of Rhodes" }
   ],
   "08-28": [
     { "name": "St. Moses the Ethiopian of Scete", "note": "the brigand who became a desert father, +ca. 400" },
-    { "name": "St. Augustine of Hippo", "slug": "augustine-of-hippo", "note": "his repose at Hippo Regius, +430" }
+    { "name": "St. Augustine of Hippo", "slug": "augustine-of-hippo", "note": "his repose at Hippo Regius, +430" },
+    { "name": "St. Job of Pochaev", "note": "abbot and wonderworker, +1651" }
   ],
   "08-29": [
     { "name": "Beheading of the Honored Forerunner John the Baptist", "kind": "feast" }
   ],
   "08-30": [
-    { "name": "Saints Alexander, John, and Paul the New, Patriarchs of Constantinople", "note": "4th and 8th c." }
+    { "name": "Saints Alexander, John, and Paul the New, Patriarchs of Constantinople", "note": "4th and 8th c." },
+    { "name": "St. Alexander of Svir", "note": "wonderworker, +1533" }
   ],
   "08-31": [
-    { "name": "Deposition of the Honorable Sash of the Theotokos", "kind": "feast" }
+    { "name": "Deposition of the Honorable Sash of the Theotokos", "kind": "feast" },
+    { "name": "Hieromartyr Cyprian, Bishop of Carthage", "note": "+258" }
   ],
   "09-01": [
     { "name": "Indiction (Ecclesiastical New Year)", "kind": "feast" },
