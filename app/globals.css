@@ -1,598 +1,602 @@
 @import "tailwindcss";
 
 @theme {
-  /* Hybrid brand. Two committed surface palettes:
-     - DARK "sacred" surfaces (home/marketing, Bible reader, prayers, calendar):
-       night backgrounds + `gold` accent.
-     - WARM-LIGHT "study" surfaces (saints, account, info pages):
-       paper/paper-warm + `ink` text + `gold-deep` accent + `accent` (red) for CTAs.
-     Tokens below; pick the set that matches the surface. */
+ /* Hybrid brand. Two committed surface palettes:
+ - DARK "sacred" surfaces (home/marketing, Bible reader, prayers, calendar):
+ night backgrounds + `gold` accent.
+ - WARM-LIGHT "study" surfaces (saints, account, info pages):
+ paper/paper-warm + `ink` text + `gold-deep` accent + `accent` (red) for CTAs.
+ Tokens below; pick the set that matches the surface. */
 
-  /* Warm-light study surfaces */
-  --color-ink: #49424e;
-  --color-ink-soft: #6b6470;
-  --color-ink-mute: #a39ea8;
-  --color-paper: #ffffff;
-  --color-paper-warm: #faf7f3;
-  --color-line: #ece8e4;
+ /* Warm-light study surfaces */
+ --color-ink: #49424e;
+ --color-ink-soft: #6b6470;
+ --color-ink-mute: #a39ea8;
+ --color-paper: #ffffff;
+ --color-paper-warm: #faf7f3;
+ --color-line: #ece8e4;
 
-  --color-accent: #dc372d;
-  --color-accent-deep: #a3261f;
-  --color-accent-tint: #f8cac7;
+ --color-accent: #dc372d;
+ --color-accent-deep: #a3261f;
+ --color-accent-tint: #f8cac7;
 
-  /* Dark sacred surfaces */
-  --color-night: #161219;
-  --color-night-soft: #38323c;
+ /* Dark sacred surfaces */
+ --color-night: #161219;
+ --color-night-soft: #38323c;
 
-  /* Gold — the signature accent. Use `gold` on dark surfaces; `gold-deep`
-     on warm-light surfaces (plain gold fails contrast on white). */
-  --color-gold: #d4af37;
-  --color-gold-deep: #c89e2c;
-  --color-gold-soft: #e6cd6a;
+ /* Gold, the signature accent. Use `gold` on dark surfaces; `gold-deep`
+ on warm-light surfaces (plain gold fails contrast on white). */
+ --color-gold: #d4af37;
+ --color-gold-deep: #c89e2c;
+ --color-gold-soft: #e6cd6a;
 
-  /* Gradient stops used in hero / feature cards */
-  --color-grad-teal: #008171;
-  --color-grad-purple: #7400bb;
-  --color-grad-violet: #362774;
-  --color-grad-pink: #d90068;
+ /* Gradient stops used in hero / feature cards */
+ --color-grad-teal: #008171;
+ --color-grad-purple: #7400bb;
+ --color-grad-violet: #362774;
+ --color-grad-pink: #d90068;
 
-  --font-sans: var(--font-dm-sans), system-ui, -apple-system, "Segoe UI",
-    sans-serif;
-  --font-serif: var(--font-lora), Georgia, serif;
-  /* Available as `font-display-serif` for big ornate headings if needed. */
-  --font-display-serif: var(--font-dm-serif), Georgia, serif;
+ --font-sans: var(--font-dm-sans), system-ui, -apple-system, "Segoe UI",
+ sans-serif;
+ --font-serif: var(--font-lora), Georgia, serif;
+ /* Available as `font-display-serif` for big ornate headings if needed. */
+ --font-display-serif: var(--font-dm-serif), Georgia, serif;
 
-  --text-h1: 56px;
-  --text-h1--line-height: 1.08;
-  --text-h2: 40px;
-  --text-h2--line-height: 1.15;
-  --text-h3: 24px;
-  --text-h3--line-height: 1.25;
-  --text-body: 17px;
-  --text-body--line-height: 1.55;
-  --text-small: 14px;
-  --text-small--line-height: 1.5;
+ --text-h1: 56px;
+ --text-h1--line-height: 1.08;
+ --text-h2: 40px;
+ --text-h2--line-height: 1.15;
+ --text-h3: 24px;
+ --text-h3--line-height: 1.25;
+ --text-body: 17px;
+ --text-body--line-height: 1.55;
+ --text-small: 14px;
+ --text-small--line-height: 1.5;
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --radius-pill: 999px;
+ --radius-sm: 8px;
+ --radius-md: 12px;
+ --radius-lg: 20px;
+ --radius-pill: 999px;
 
-  --shadow-sm: 0 1px 2px rgba(73, 66, 78, 0.06);
-  --shadow-md: 0 8px 24px rgba(73, 66, 78, 0.08);
-  --shadow-lg: 0 16px 48px rgba(73, 66, 78, 0.12);
+ --shadow-sm: 0 1px 2px rgba(73, 66, 78, 0.06);
+ --shadow-md: 0 8px 24px rgba(73, 66, 78, 0.08);
+ --shadow-lg: 0 16px 48px rgba(73, 66, 78, 0.12);
 }
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 72px;
-  }
+ html {
+ scroll-behavior: smooth;
+ scroll-padding-top: 72px;
+ }
 
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-      scroll-snap-type: none;
-    }
-  }
+ @media (prefers-reduced-motion: reduce) {
+ html {
+ scroll-behavior: auto;
+ scroll-snap-type: none;
+ }
+ }
 
-  /* Short-viewport safety: shrink display headings so content always fits. */
-  @media (min-width: 768px) and (max-height: 720px) {
-    main > section h1 {
-      font-size: 40px !important;
-      line-height: 1.05 !important;
-    }
-    main > section h2 {
-      font-size: 36px !important;
-      line-height: 1.05 !important;
-    }
-  }
-  @media (min-width: 768px) and (max-height: 600px) {
-    main > section h1 {
-      font-size: 32px !important;
-    }
-    main > section h2 {
-      font-size: 28px !important;
-    }
-    main > section p {
-      font-size: 15px !important;
-    }
-  }
+ /* Short-viewport safety: shrink display headings so content always fits. */
+ @media (min-width: 768px) and (max-height: 720px) {
+ main > section h1 {
+ font-size: 40px !important;
+ line-height: 1.05 !important;
+ }
+ main > section h2 {
+ font-size: 36px !important;
+ line-height: 1.05 !important;
+ }
+ }
+ @media (min-width: 768px) and (max-height: 600px) {
+ main > section h1 {
+ font-size: 32px !important;
+ }
+ main > section h2 {
+ font-size: 28px !important;
+ }
+ main > section p {
+ font-size: 15px !important;
+ }
+ }
 
-  html,
-  body {
-    background-color: var(--color-night);
-    color: var(--color-paper);
-    font-family: var(--font-sans);
-    font-size: 17px;
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+ html,
+ body {
+ background-color: var(--color-night);
+ color: var(--color-paper);
+ font-family: var(--font-sans);
+ font-size: 17px;
+ line-height: 1.55;
+ -webkit-font-smoothing: antialiased;
+ -moz-osx-font-smoothing: grayscale;
+ }
 }
 
 *:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+ outline: 2px solid var(--color-accent);
+ outline-offset: 2px;
 }
 
 /* Verse highlight tint (gold). Tailwind arbitrary rgba was inconsistent here. */
 div[data-hl="true"] {
-  background-color: rgba(212, 175, 55, 0.12) !important;
+ background-color: rgba(212, 175, 55, 0.12) !important;
 }
 
 /* Pulse the study-rail section when its hash is the URL target. */
 .rail-section:target {
-  animation: rail-pulse 1.4s ease-out;
+ animation: rail-pulse 1.4s ease-out;
 }
 @keyframes rail-pulse {
-  0%   { background-color: rgba(220, 55, 45, 0.22); }
-  60%  { background-color: rgba(220, 55, 45, 0.10); }
-  100% { background-color: transparent; }
+ 0% { background-color: rgba(220, 55, 45, 0.22); }
+ 60% { background-color: rgba(220, 55, 45, 0.10); }
+ 100% { background-color: transparent; }
 }
 
 /* Thin paper-tone scrollbar for in-app scroll containers (commentary
-   rail, popovers, etc.). Replaces the OS default which sits awkwardly
-   on the dark chrome. */
+ rail, popovers, etc.). Replaces the OS default which sits awkwardly
+ on the dark chrome. */
 .scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+ scrollbar-width: thin;
+ scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
 }
 .scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+ width: 6px;
+ height: 6px;
 }
 .scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
+ background: transparent;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
+ background-color: rgba(255, 255, 255, 0.18);
+ border-radius: 999px;
 }
 .scrollbar-thin:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.28);
+ background-color: rgba(255, 255, 255, 0.28);
 }
 
 /* ----------------------------------------------------------------------
-   Licensed translation (API.Bible) prose — NKJV / NIV / NLT.
-   The chapter HTML is rendered verbatim; these rules only RESTYLE the
-   publisher's USX/USFM class names for the dark reader (font-family and
-   size come from the shared reader prefs on the same element). No text
-   is altered, and footnotes/cross-refs stay visible + accessible.
-   ---------------------------------------------------------------------- */
+ Licensed translation (API.Bible) prose, NKJV / NIV / NLT.
+ The chapter HTML is rendered verbatim; these rules only RESTYLE the
+ publisher's USX/USFM class names for the dark reader (font-family and
+ size come from the shared reader prefs on the same element). No text
+ is altered, and footnotes/cross-refs stay visible + accessible.
+ ---------------------------------------------------------------------- */
 
 /* Prose paragraphs. (Tailwind preflight already zeroes <p> margins, so we
-   only ADD spacing where we want it — poetry lines stay tight.) */
+ only ADD spacing where we want it, poetry lines stay tight.) */
 .licensed-scripture .p,
 .licensed-scripture .m,
 .licensed-scripture .pi,
 .licensed-scripture .pi1 {
-  margin-bottom: 1.15em;
+ margin-bottom: 1.15em;
 }
 .licensed-scripture .pi,
 .licensed-scripture .pi1 {
-  padding-left: 1.4em;
+ padding-left: 1.4em;
 }
 
 /* Poetry: each line is its own <p class="q1|q2">. Keep the lines tight and
-   indent the second level so a psalm reads as verse, not as run-on prose. */
+ indent the second level so a psalm reads as verse, not as run-on prose. */
 .licensed-scripture .q,
 .licensed-scripture .q1,
 .licensed-scripture .q2 {
-  margin-bottom: 0.12em;
-  line-height: 1.5;
+ margin-bottom: 0.12em;
+ line-height: 1.5;
 }
 .licensed-scripture .q2 {
-  padding-left: 1.6em;
+ padding-left: 1.6em;
 }
 /* Centered poetic line (e.g. a refrain). */
 .licensed-scripture .qc {
-  text-align: center;
-  margin-bottom: 0.12em;
-  line-height: 1.5;
+ text-align: center;
+ margin-bottom: 0.12em;
+ line-height: 1.5;
 }
 /* Acrostic heading (the Hebrew letter names in Psalm 119: Aleph, Beth…). */
 .licensed-scripture .qa {
-  font-family: var(--font-sans);
-  font-size: 0.62em;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(212, 175, 55, 0.65);
-  margin: 1.4em 0 0.5em;
+ font-family: var(--font-sans);
+ font-size: 0.62em;
+ letter-spacing: 0.18em;
+ text-transform: uppercase;
+ color: rgba(212, 175, 55, 0.65);
+ margin: 1.4em 0 0.5em;
 }
 /* Epistle opening / salutation paragraph. */
 .licensed-scripture .po {
-  margin-bottom: 1.15em;
+ margin-bottom: 1.15em;
 }
 /* Blank line marker = stanza break. */
 .licensed-scripture .b {
-  display: block;
-  height: 0.9em;
+ display: block;
+ height: 0.9em;
 }
 /* Indented list items (e.g. genealogies, the Beatitudes). */
 .licensed-scripture .li1 {
-  padding-left: 1.4em;
-  margin-bottom: 0.4em;
+ padding-left: 1.4em;
+ margin-bottom: 0.4em;
 }
 
 /* Chapter label ("Psalm 23") and the descriptive title ("A psalm of David."). */
 .licensed-scripture .cl {
-  font-family: var(--font-sans);
-  font-size: 0.62em;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
-  text-align: center;
-  margin-bottom: 1em;
+ font-family: var(--font-sans);
+ font-size: 0.62em;
+ letter-spacing: 0.16em;
+ text-transform: uppercase;
+ color: rgba(255, 255, 255, 0.4);
+ text-align: center;
+ margin-bottom: 1em;
 }
 .licensed-scripture .d {
-  font-style: italic;
-  text-align: center;
-  font-size: 0.85em;
-  color: rgba(255, 255, 255, 0.55);
-  margin-bottom: 1em;
+ font-style: italic;
+ text-align: center;
+ font-size: 0.85em;
+ color: rgba(255, 255, 255, 0.55);
+ margin-bottom: 1em;
 }
 
 /* Section headings (.s in NKJV; .s1/.s2 in NIV/NLT). */
 .licensed-scripture .s,
 .licensed-scripture .s1,
 .licensed-scripture .s2 {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-  margin: 1.8em 0 0.7em;
+ font-family: var(--font-sans);
+ font-weight: 600;
+ text-transform: uppercase;
+ color: rgba(255, 255, 255, 0.55);
+ margin: 1.8em 0 0.7em;
 }
 .licensed-scripture .s,
 .licensed-scripture .s1 {
-  font-size: 0.7em;
-  letter-spacing: 0.14em;
+ font-size: 0.7em;
+ letter-spacing: 0.14em;
 }
 .licensed-scripture .s2 {
-  font-size: 0.66em;
-  letter-spacing: 0.1em;
-  color: rgba(255, 255, 255, 0.45);
-  margin-top: 1.2em;
+ font-size: 0.66em;
+ letter-spacing: 0.1em;
+ color: rgba(255, 255, 255, 0.45);
+ margin-top: 1.2em;
 }
 /* Major title (book heading on chapter 1, if present). */
 .licensed-scripture .mt,
 .licensed-scripture .mt1,
 .licensed-scripture .mt2 {
-  font-family: var(--font-serif);
-  text-align: center;
-  color: #fff;
-  margin: 0 0 0.6em;
+ font-family: var(--font-serif);
+ text-align: center;
+ color: #fff;
+ margin: 0 0 0.6em;
 }
 .licensed-scripture .mt,
 .licensed-scripture .mt1 {
-  font-size: 1.4em;
+ font-size: 1.4em;
 }
 /* Parallel-passage reference line under a heading. */
 .licensed-scripture .r {
-  font-family: var(--font-sans);
-  font-size: 0.72em;
-  font-style: italic;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.4);
-  margin-bottom: 1em;
+ font-family: var(--font-sans);
+ font-size: 0.72em;
+ font-style: italic;
+ text-align: center;
+ color: rgba(255, 255, 255, 0.4);
+ margin-bottom: 1em;
 }
 
 /* Verse numbers. */
 .licensed-scripture .v {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: 0.6em;
-  vertical-align: super;
-  color: var(--color-gold);
-  opacity: 0.72;
-  margin: 0 0.35em 0 0.1em;
+ font-family: var(--font-sans);
+ font-weight: 600;
+ font-size: 0.6em;
+ vertical-align: super;
+ color: var(--color-gold);
+ opacity: 0.72;
+ margin: 0 0.35em 0 0.1em;
 }
 .licensed-scripture .p > .v:first-child,
 .licensed-scripture .q1 > .v:first-child,
 .licensed-scripture .q2 > .v:first-child {
-  margin-left: 0;
+ margin-left: 0;
 }
 
-/* Words of Jesus — a soft rose, distinct without shouting on the dark page. */
+/* Words of Jesus, a soft rose, distinct without shouting on the dark page. */
 .licensed-scripture .wj {
-  color: #e3a7a7;
+ color: #e3a7a7;
 }
 /* The divine Name (LORD) and other small-caps. */
 .licensed-scripture .nd,
 .licensed-scripture .sc {
-  font-variant: small-caps;
-  letter-spacing: 0.02em;
+ font-variant: small-caps;
+ letter-spacing: 0.02em;
 }
 /* Emphasis / translator-added words. */
 .licensed-scripture .it,
 .licensed-scripture .add,
 .licensed-scripture .qt {
-  font-style: italic;
+ font-style: italic;
 }
 .licensed-scripture .add {
-  color: rgba(255, 255, 255, 0.7);
+ color: rgba(255, 255, 255, 0.7);
 }
 
-/* Footnotes (.f) and cross-references (.x). Shown inline — kept visible and
-   accessible per the license — but shrunk, muted, and bracketed so they read
-   as annotations and never break the flow of the verse line. */
+/* Footnotes (.f) and cross-references (.x). Shown inline, kept visible and
+ accessible per the license, but shrunk, muted, and bracketed so they read
+ as annotations and never break the flow of the verse line. */
 .licensed-scripture .f,
 .licensed-scripture .x {
-  font-size: 0.72em;
-  line-height: 1;
-  margin: 0 0.15em;
+ font-size: 0.72em;
+ line-height: 1;
+ margin: 0 0.15em;
 }
 .licensed-scripture .f {
-  color: rgba(212, 175, 55, 0.7);
+ color: rgba(212, 175, 55, 0.7);
 }
 .licensed-scripture .x {
-  color: rgba(255, 255, 255, 0.32);
+ color: rgba(255, 255, 255, 0.32);
 }
 .licensed-scripture .f::before,
 .licensed-scripture .x::before {
-  content: "[";
-  opacity: 0.5;
+ content: "[";
+ opacity: 0.5;
 }
 .licensed-scripture .f::after,
 .licensed-scripture .x::after {
-  content: "]";
-  opacity: 0.5;
+ content: "]";
+ opacity: 0.5;
 }
 /* The little verse locator inside a note ("3:3", "23:4"). */
 .licensed-scripture .fr,
 .licensed-scripture .xo {
-  font-weight: 600;
-  margin-right: 0.3em;
-  opacity: 0.85;
+ font-weight: 600;
+ margin-right: 0.3em;
+ opacity: 0.85;
 }
 .licensed-scripture .fq,
 .licensed-scripture .fqa {
-  font-style: italic;
+ font-style: italic;
 }
 .licensed-scripture .xt {
-  font-style: normal;
+ font-style: normal;
 }
 
 /* After hydration the inline notes above are replaced by compact superscript
-   markers (.lic-f footnote / .lic-x cross-ref), and the bodies move to the
-   `.lic-notes` disclosure below. */
+ markers (.lic-f footnote / .lic-x cross-ref), and the bodies move to the
+ `.lic-notes` disclosure below. */
 .licensed-scripture .lic-f,
 .licensed-scripture .lic-x {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: 0.6em;
-  vertical-align: super;
-  margin: 0 0.06em;
-  line-height: 0;
+ font-family: var(--font-sans);
+ font-weight: 600;
+ font-size: 0.6em;
+ vertical-align: super;
+ margin: 0 0.06em;
+ line-height: 0;
 }
 .licensed-scripture .lic-f a {
-  color: var(--color-gold);
-  opacity: 0.85;
-  text-decoration: none;
+ color: var(--color-gold);
+ opacity: 0.85;
+ text-decoration: none;
 }
 .licensed-scripture .lic-x a {
-  color: rgba(255, 255, 255, 0.38);
-  text-decoration: none;
+ color: rgba(255, 255, 255, 0.38);
+ text-decoration: none;
 }
 .licensed-scripture .lic-f a:hover,
 .licensed-scripture .lic-x a:hover {
-  text-decoration: underline;
-  opacity: 1;
+ text-decoration: underline;
+ opacity: 1;
 }
 
 /* Footnotes & cross-references, relocated to the foot of the chapter. */
 .lic-notes {
-  margin-top: 2.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 1rem;
+ margin-top: 2.25rem;
+ border-top: 1px solid rgba(255, 255, 255, 0.1);
+ padding-top: 1rem;
 }
 .lic-notes > summary {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: rgba(255, 255, 255, 0.5);
-  cursor: pointer;
-  list-style: none;
-  user-select: none;
-  transition: color 0.15s;
+ font-family: var(--font-sans);
+ font-size: 11px;
+ font-weight: 600;
+ text-transform: uppercase;
+ letter-spacing: 1.5px;
+ color: rgba(255, 255, 255, 0.5);
+ cursor: pointer;
+ list-style: none;
+ user-select: none;
+ transition: color 0.15s;
 }
 .lic-notes > summary::-webkit-details-marker {
-  display: none;
+ display: none;
 }
 .lic-notes > summary::after {
-  content: "▾";
-  margin-left: 0.5em;
-  font-size: 0.9em;
-  color: rgba(255, 255, 255, 0.35);
+ content: "▾";
+ margin-left: 0.5em;
+ font-size: 0.9em;
+ color: rgba(255, 255, 255, 0.35);
 }
 .lic-notes[open] > summary::after {
-  content: "▴";
+ content: "▴";
 }
 .lic-notes > summary:hover {
-  color: rgba(255, 255, 255, 0.75);
+ color: rgba(255, 255, 255, 0.75);
 }
 .lic-notes ol {
-  margin: 1rem 0 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 0.55rem;
+ margin: 1rem 0 0;
+ padding: 0;
+ list-style: none;
+ display: grid;
+ gap: 0.55rem;
 }
 .lic-notes .lic-note {
-  font-family: var(--font-sans);
-  font-size: 13px;
-  line-height: 1.55;
-  color: rgba(255, 255, 255, 0.6);
-  padding-left: 1.6rem;
-  position: relative;
-  scroll-margin-top: 6rem;
-  border-radius: 6px;
-  transition: background-color 0.4s ease-out;
+ font-family: var(--font-sans);
+ font-size: 13px;
+ line-height: 1.55;
+ color: rgba(255, 255, 255, 0.6);
+ padding-left: 1.6rem;
+ position: relative;
+ scroll-margin-top: 6rem;
+ border-radius: 6px;
+ transition: background-color 0.4s ease-out;
 }
 .lic-notes .lic-back {
-  position: absolute;
-  left: 0;
-  top: 0;
-  min-width: 1.2rem;
-  text-align: right;
-  font-weight: 600;
-  text-decoration: none;
+ position: absolute;
+ left: 0;
+ top: 0;
+ min-width: 1.2rem;
+ text-align: right;
+ font-weight: 600;
+ text-decoration: none;
 }
 .lic-notes .lic-note-f .lic-back {
-  color: var(--color-gold);
-  opacity: 0.85;
+ color: var(--color-gold);
+ opacity: 0.85;
 }
 .lic-notes .lic-note-x .lic-back {
-  color: rgba(255, 255, 255, 0.4);
+ color: rgba(255, 255, 255, 0.4);
 }
 .lic-notes .lic-note:target {
-  background-color: rgba(212, 175, 55, 0.12);
+ background-color: rgba(212, 175, 55, 0.12);
 }
 /* Inside a relocated note, the leading verse locator + quoted words. */
 .lic-notes .fr,
 .lic-notes .xo {
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.45);
-  margin-right: 0.35em;
+ font-weight: 600;
+ color: rgba(255, 255, 255, 0.45);
+ margin-right: 0.35em;
 }
 .lic-notes .fq,
 .lic-notes .fqa {
-  font-style: italic;
-  color: rgba(255, 255, 255, 0.72);
+ font-style: italic;
+ color: rgba(255, 255, 255, 0.72);
 }
 .lic-notes .xt a,
 .lic-notes .xt {
-  color: rgba(212, 175, 55, 0.7);
+ color: rgba(212, 175, 55, 0.7);
 }
 
 /* ----------------------------------------------------------------------
-   "The Menaion" — illuminated Orthodox calendar.
-   The page sets `--tone` (an "R G B" triplet) per the day's liturgical
-   register (gold / crimson / green); the glow and ornaments read it.
-   `--ink-rubric` is the cinnabar red used for feast-saint names, fast
-   labels, and rubrics — gold stays for page-decoration only.
-   `--season-tone` overlays the page during major Orthodox seasons
-   (burgundy in Lent, marian blue in Dormition, etc.); it does not
-   affect body text.
-   ---------------------------------------------------------------------- */
+ "The Menaion", illuminated Orthodox calendar.
+ The page sets `--tone` (an "R G B" triplet) per the day's liturgical
+ register (gold / crimson / green); the glow and ornaments read it.
+ `--ink-rubric` is the cinnabar red used for feast-saint names, fast
+ labels, and rubrics, gold stays for page-decoration only.
+ `--season-tone` overlays the page during major Orthodox seasons
+ (burgundy in Lent, marian blue in Dormition, etc.); it does not
+ affect body text.
+ ---------------------------------------------------------------------- */
 
 :root {
-  --ink-rubric: 196 47 36;
+ /* Was cinnabar red (196 47 36), softened to gold so the "rubricated"
+ ink reads as a quiet illuminated highlight rather than a flag. The
+ .rubric utility still exists as the single point of control if a
+ deeper red is ever wanted again. */
+ --ink-rubric: 212 175 55;
 }
 
 /* Page surface: a faint radial vignette so the page feels like a lit room,
-   layered over a low-opacity parchment grain (an SVG noise pattern). */
+ layered over a low-opacity parchment grain (an SVG noise pattern). */
 .menaion-surface {
-  position: relative;
-  background:
-    radial-gradient(
-      120% 80% at 50% -10%,
-      rgba(var(--tone, 212 175 55) / 0.06) 0%,
-      transparent 55%
-    ),
-    radial-gradient(80% 60% at 50% 120%, rgba(0, 0, 0, 0.35) 0%, transparent 60%);
+ position: relative;
+ background:
+ radial-gradient(
+ 120% 80% at 50% -10%,
+ rgba(var(--tone, 212 175 55) / 0.06) 0%,
+ transparent 55%
+ ),
+ radial-gradient(80% 60% at 50% 120%, rgba(0, 0, 0, 0.35) 0%, transparent 60%);
 }
 .menaion-surface::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
-  mix-blend-mode: overlay;
+ content: "";
+ position: fixed;
+ inset: 0;
+ pointer-events: none;
+ z-index: 0;
+ background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+ mix-blend-mode: overlay;
 }
 .menaion-surface > * {
-  position: relative;
-  z-index: 1;
+ position: relative;
+ z-index: 1;
 }
 
-/* Rubricated red — small utility for feast-saint names, fast labels, and
-   short rubric strings. */
+/* Rubricated red, small utility for feast-saint names, fast labels, and
+ short rubric strings. */
 .rubric {
-  color: rgb(var(--ink-rubric));
+ color: rgb(var(--ink-rubric));
 }
 
-/* Kalendrium toggle — typographic header with a gold-underlined active
-   state, used in the Old/New calendar style switcher. */
+/* Kalendrium toggle, typographic header with a gold-underlined active
+ state, used in the Old/New calendar style switcher. */
 .kalendrium-active {
-  color: rgb(var(--color-paper, 248 244 234));
-  font-weight: 600;
-  border-bottom: 2px solid rgba(212, 175, 55, 0.85);
-  padding-bottom: 2px;
+ color: rgb(var(--color-paper, 248 244 234));
+ font-weight: 600;
+ border-bottom: 2px solid rgba(212, 175, 55, 0.85);
+ padding-bottom: 2px;
 }
 
 /* Season-aware page tinting: when --season-tone is set on the page wrapper
-   (via toneVars(seasonTone(currentSeason(today)))), it overlays the
-   menaion vignette with the season's liturgical color. */
+ (via toneVars(seasonTone(currentSeason(today)))), it overlays the
+ menaion vignette with the season's liturgical color. */
 .menaion-surface[data-season]::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background: radial-gradient(
-    100% 65% at 50% 0%,
-    rgb(var(--season-tone, 212 175 55) / 0.07) 0%,
-    transparent 60%
-  );
+ content: "";
+ position: fixed;
+ inset: 0;
+ pointer-events: none;
+ z-index: 0;
+ background: radial-gradient(
+ 100% 65% at 50% 0%,
+ rgb(var(--season-tone, 212 175 55) / 0.07) 0%,
+ transparent 60%
+ );
 }
 
 /* The lit-lampada glow behind today's icon / cell. Tinted by --tone. */
 .lampada-glow {
-  position: relative;
+ position: relative;
 }
 .lampada-glow::before {
-  content: "";
-  position: absolute;
-  inset: -40% -40% -10% -40%;
-  background: radial-gradient(
-    50% 50% at 50% 45%,
-    rgb(var(--tone, 212 175 55) / 0.4) 0%,
-    rgb(var(--tone, 212 175 55) / 0.12) 38%,
-    transparent 70%
-  );
-  filter: blur(6px);
-  z-index: 0;
-  pointer-events: none;
-  animation: halo-breathe 6.5s ease-in-out infinite;
+ content: "";
+ position: absolute;
+ inset: -40% -40% -10% -40%;
+ background: radial-gradient(
+ 50% 50% at 50% 45%,
+ rgb(var(--tone, 212 175 55) / 0.4) 0%,
+ rgb(var(--tone, 212 175 55) / 0.12) 38%,
+ transparent 70%
+ );
+ filter: blur(6px);
+ z-index: 0;
+ pointer-events: none;
+ animation: halo-breathe 6.5s ease-in-out infinite;
 }
 .lampada-glow > * {
-  position: relative;
-  z-index: 1;
+ position: relative;
+ z-index: 1;
 }
 
 @keyframes halo-breathe {
-  0%,
-  100% {
-    opacity: 0.85;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.04);
-  }
+ 0%,
+ 100% {
+ opacity: 0.85;
+ transform: scale(1);
+ }
+ 50% {
+ opacity: 1;
+ transform: scale(1.04);
+ }
 }
 
 /* A small steady halo behind today's grid number (no animation, subtle). */
 .cell-halo {
-  position: relative;
+ position: relative;
 }
 .cell-halo::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    60% 55% at 50% 42%,
-    rgb(var(--tone, 212 175 55) / 0.22) 0%,
-    transparent 65%
-  );
-  pointer-events: none;
+ content: "";
+ position: absolute;
+ inset: 0;
+ background: radial-gradient(
+ 60% 55% at 50% 42%,
+ rgb(var(--tone, 212 175 55) / 0.22) 0%,
+ transparent 65%
+ );
+ pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lampada-glow::before {
-    animation: none;
-  }
+ .lampada-glow::before {
+ animation: none;
+ }
 }

@@ -16,23 +16,23 @@ import { MobileNextChapterFab } from "@/components/bible/MobileNextChapterFab";
 import { ReaderSettingsMenu } from "@/components/bible/ReaderSettingsMenu";
 import { VerseFocusFlash } from "@/components/bible/VerseFocusFlash";
 import {
-  ReaderFontFamilyButton,
-  ReaderFontSizeButton,
-  ReaderPrefsProvider,
+ ReaderFontFamilyButton,
+ ReaderFontSizeButton,
+ ReaderPrefsProvider,
 } from "@/components/reader/ReaderPrefs";
 import { allChapterParams, getBook } from "@/lib/bible/books";
 import {
-  loadChapter,
-  loadIntro,
-  loadCommentary,
-  loadOriginal,
-  loadEnglishTagged,
+ loadChapter,
+ loadIntro,
+ loadCommentary,
+ loadOriginal,
+ loadEnglishTagged,
 } from "@/lib/bible/load";
 import { strongsMap } from "@/lib/bible/strongs";
 import {
-  isLicensed,
-  isApiConfigured,
-  fetchLicensedChapter,
+ isLicensed,
+ isApiConfigured,
+ fetchLicensedChapter,
 } from "@/lib/bible/api-bible";
 
 type Params = Promise<{ book: string; chapter: string }>;
@@ -42,237 +42,237 @@ type Search = Promise<{ v?: string }>;
 export const dynamicParams = true;
 
 const LICENSED_LABEL: Record<string, string> = {
-  niv: "New International Version",
-  nkjv: "New King James Version",
-  nlt: "New Living Translation",
+ niv: "New International Version",
+ nkjv: "New King James Version",
+ nlt: "New Living Translation",
 };
 
 export function generateStaticParams() {
-  return allChapterParams();
+ return allChapterParams();
 }
 
 export async function generateMetadata({ params }: { params: Params }) {
-  const { book, chapter } = await params;
-  const b = getBook(book);
-  if (!b) return { title: "The Orthodox Bible" };
-  return { title: `${b.name} ${chapter}` };
+ const { book, chapter } = await params;
+ const b = getBook(book);
+ if (!b) return { title: "The Orthodox Bible" };
+ return { title: `${b.name} ${chapter}` };
 }
 
 export default async function BibleChapterPage({
-  params,
-  searchParams,
+ params,
+ searchParams,
 }: {
-  params: Params;
-  searchParams: Search;
+ params: Params;
+ searchParams: Search;
 }) {
-  const { book, chapter } = await params;
-  const { v } = await searchParams;
-  const chapterNum = Number(chapter);
-  const b = getBook(book);
-  if (!b || !Number.isInteger(chapterNum) || chapterNum < 1 || chapterNum > b.chapters) {
-    notFound();
-  }
-  // A licensed translation (NKJV/NIV/NLT) is fetched live from API.Bible when
-  // selected (?v=) and configured. It renders verbatim with no Strong's /
-  // interlinear overlay (content integrity). Falls back to public domain when
-  // the book isn't in the translation (e.g. deuterocanon) or the API fails.
-  // Which licensed translations are actually configured (key + bibleId). Passed
-  // to the switcher so it can grey out ones that would silently fall back.
-  const configuredLicensed = (["niv", "nkjv", "nlt"] as const).filter((t) =>
-    isApiConfigured(t),
-  );
-  const licensedId = v && isLicensed(v) && isApiConfigured(v) ? v : null;
-  const licensed = licensedId
-    ? await fetchLicensedChapter(licensedId, book, chapterNum)
-    : null;
-  const usingLicensed = Boolean(licensed);
+ const { book, chapter } = await params;
+ const { v } = await searchParams;
+ const chapterNum = Number(chapter);
+ const b = getBook(book);
+ if (!b || !Number.isInteger(chapterNum) || chapterNum < 1 || chapterNum > b.chapters) {
+ notFound();
+ }
+ // A licensed translation (NKJV/NIV/NLT) is fetched live from API.Bible when
+ // selected (?v=) and configured. It renders verbatim with no Strong's /
+ // interlinear overlay (content integrity). Falls back to public domain when
+ // the book isn't in the translation (e.g. deuterocanon) or the API fails.
+ // Which licensed translations are actually configured (key + bibleId). Passed
+ // to the switcher so it can grey out ones that would silently fall back.
+ const configuredLicensed = (["niv", "nkjv", "nlt"] as const).filter((t) =>
+ isApiConfigured(t),
+ );
+ const licensedId = v && isLicensed(v) && isApiConfigured(v) ? v : null;
+ const licensed = licensedId
+ ? await fetchLicensedChapter(licensedId, book, chapterNum)
+ : null;
+ const usingLicensed = Boolean(licensed);
 
-  // Interlinear (Greek + English Strong's tags) is NT-only, and only ever on
-  // the public-domain text — never overlaid on licensed translations.
-  const isNT = b!.testament === "NT";
-  const showInterlinear = isNT && !usingLicensed;
-  const [data, intro, commentary, original, englishTagged] = await Promise.all([
-    usingLicensed ? Promise.resolve(null) : loadChapter(book, chapterNum),
-    chapterNum === 1 ? loadIntro(book) : Promise.resolve(null),
-    loadCommentary(book, chapterNum),
-    showInterlinear ? loadOriginal(book, chapterNum) : Promise.resolve(null),
-    showInterlinear ? loadEnglishTagged(book, chapterNum) : Promise.resolve(null),
-  ]);
-  if (!usingLicensed && !data) notFound();
-  const totalVerses = usingLicensed ? licensed!.verseCount : data!.verses.length;
+ // Interlinear (Greek + English Strong's tags) is NT-only, and only ever on
+ // the public-domain text, never overlaid on licensed translations.
+ const isNT = b!.testament === "NT";
+ const showInterlinear = isNT && !usingLicensed;
+ const [data, intro, commentary, original, englishTagged] = await Promise.all([
+ usingLicensed ? Promise.resolve(null) : loadChapter(book, chapterNum),
+ chapterNum === 1 ? loadIntro(book) : Promise.resolve(null),
+ loadCommentary(book, chapterNum),
+ showInterlinear ? loadOriginal(book, chapterNum) : Promise.resolve(null),
+ showInterlinear ? loadEnglishTagged(book, chapterNum) : Promise.resolve(null),
+ ]);
+ if (!usingLicensed && !data) notFound();
+ const totalVerses = usingLicensed ? licensed!.verseCount : data!.verses.length;
 
-  const originalByNum: Record<number, string> = {};
-  const tokensByNum: Record<
-    number,
-    { w: string; s?: string; p?: string }[]
-  > = {};
-  const usedStrongs = new Set<string>();
-  for (const v of original?.verses ?? []) {
-    originalByNum[v.n] = v.text;
-    if (v.tokens?.length) {
-      tokensByNum[v.n] = v.tokens;
-      for (const t of v.tokens) if (t.s) usedStrongs.add(t.s);
-    }
-  }
-  // Per-chapter Strong's mini-lexicon (only the entries this chapter uses).
-  // Keeps the prop payload at a few KB instead of shipping the whole 557 KB.
-  const strongs = strongsMap(Array.from(usedStrongs));
+ const originalByNum: Record<number, string> = {};
+ const tokensByNum: Record<
+ number,
+ { w: string; s?: string; p?: string }[]
+ > = {};
+ const usedStrongs = new Set<string>();
+ for (const v of original?.verses ?? []) {
+ originalByNum[v.n] = v.text;
+ if (v.tokens?.length) {
+ tokensByNum[v.n] = v.tokens;
+ for (const t of v.tokens) if (t.s) usedStrongs.add(t.s);
+ }
+ }
+ // Per-chapter Strong's mini-lexicon (only the entries this chapter uses).
+ // Keeps the prop payload at a few KB instead of shipping the whole 557 KB.
+ const strongs = strongsMap(Array.from(usedStrongs));
 
-  // English-side tokens (NT only). Each token has a Strong's number that
-  // matches the Greek token's number — used for hover sync.
-  const englishTokensByNum: Record<
-    number,
-    { w: string; s?: string }[]
-  > = {};
-  for (const v of englishTagged?.verses ?? []) {
-    if (v.tokens?.length) englishTokensByNum[v.n] = v.tokens;
-  }
+ // English-side tokens (NT only). Each token has a Strong's number that
+ // matches the Greek token's number, used for hover sync.
+ const englishTokensByNum: Record<
+ number,
+ { w: string; s?: string }[]
+ > = {};
+ for (const v of englishTagged?.verses ?? []) {
+ if (v.tokens?.length) englishTokensByNum[v.n] = v.tokens;
+ }
 
-  const commentaryVerses = Object.keys(commentary)
-    .map(Number)
-    .filter((n) => (commentary[String(n)]?.length ?? 0) > 0);
-  const hasCommentary = commentaryVerses.length > 0;
+ const commentaryVerses = Object.keys(commentary)
+ .map(Number)
+ .filter((n) => (commentary[String(n)]?.length ?? 0) > 0);
+ const hasCommentary = commentaryVerses.length > 0;
 
-  return (
-    <ReaderPrefsProvider>
-    <div className="bg-night flex">
-      <ChapterKeyNav slug={book} chapter={chapterNum} />
-      <VerseFocusFlash />
-      <ReadingProgressBar
-        bookName={b!.name}
-        chapter={chapterNum}
-        totalVerses={totalVerses}
-      />
-      <ChapterStickyHeader
-        bookName={b!.name}
-        chapter={chapterNum}
-        totalVerses={totalVerses}
-      />
-      <MobileNextChapterFab slug={book} chapter={chapterNum} />
-      <BookChapterSidebar book={b!} current={chapterNum} />
-      {/* Extra mobile top padding accounts for the fixed ReadingProgressBar
-          context strip (~28px) sitting under the 72px sticky navbar. */}
-      <section className="flex-1 px-5 md:px-10 pt-14 md:pt-16 pb-10 md:pb-16 min-w-0">
-        <div className="mx-auto max-w-[1200px] w-full">
-          {/* Row 1 — always: Translation + Book at their natural width.
-              On desktop the typography cluster (font + interlinear) sits to
-              their right. On mobile that cluster is split off into row 2 below.
-              Switchers are kept at content width (not stretched) so they don't
-              shift as the book name length changes. */}
-          <div className="mb-4 flex items-center gap-3">
-            <TranslationSwitcher
-              currentSlug={book}
-              configuredLicensed={configuredLicensed}
-            />
-            <BookSwitcher currentSlug={book} />
-            <div className="hidden md:flex items-center gap-3 ml-auto">
-              <ReaderFontSizeButton />
-              <ReaderFontFamilyButton />
-              {showInterlinear && <InterlinearToggle />}
-            </div>
-          </div>
-          {/* Row 2 — mobile only: Interlinear pill (NT) on the left, gear on
-              the right. Un-buries the Interlinear toggle from the gear menu. */}
-          <div className="md:hidden mb-4 flex items-center gap-3">
-            {showInterlinear && <InterlinearToggle />}
-            <div className="ml-auto">
-              <ReaderSettingsMenu showInterlinear={showInterlinear} />
-            </div>
-          </div>
-          <div className="mb-6">
-            <BibleSearch />
-          </div>
-          <MobileChapterStrip book={b!} current={chapterNum} />
+ return (
+ <ReaderPrefsProvider>
+ <div className="bg-night flex">
+ <ChapterKeyNav slug={book} chapter={chapterNum} />
+ <VerseFocusFlash />
+ <ReadingProgressBar
+ bookName={b!.name}
+ chapter={chapterNum}
+ totalVerses={totalVerses}
+ />
+ <ChapterStickyHeader
+ bookName={b!.name}
+ chapter={chapterNum}
+ totalVerses={totalVerses}
+ />
+ <MobileNextChapterFab slug={book} chapter={chapterNum} />
+ <BookChapterSidebar book={b!} current={chapterNum} />
+ {/* Extra mobile top padding accounts for the fixed ReadingProgressBar
+ context strip (~28px) sitting under the 72px sticky navbar. */}
+ <section className="flex-1 px-5 md:px-10 pt-14 md:pt-16 pb-10 md:pb-16 min-w-0">
+ <div className="mx-auto max-w-[1200px] w-full">
+ {/* Row 1, always: Translation + Book at their natural width.
+ On desktop the typography cluster (font + interlinear) sits to
+ their right. On mobile that cluster is split off into row 2 below.
+ Switchers are kept at content width (not stretched) so they don't
+ shift as the book name length changes. */}
+ <div className="mb-4 flex items-center gap-3">
+ <TranslationSwitcher
+ currentSlug={book}
+ configuredLicensed={configuredLicensed}
+ />
+ <BookSwitcher currentSlug={book} />
+ <div className="hidden md:flex items-center gap-3 ml-auto">
+ <ReaderFontSizeButton />
+ <ReaderFontFamilyButton />
+ {showInterlinear && <InterlinearToggle />}
+ </div>
+ </div>
+ {/* Row 2, mobile only: Interlinear pill (NT) on the left, gear on
+ the right. Un-buries the Interlinear toggle from the gear menu. */}
+ <div className="md:hidden mb-4 flex items-center gap-3">
+ {showInterlinear && <InterlinearToggle />}
+ <div className="ml-auto">
+ <ReaderSettingsMenu showInterlinear={showInterlinear} />
+ </div>
+ </div>
+ <div className="mb-6">
+ <BibleSearch />
+ </div>
+ <MobileChapterStrip book={b!} current={chapterNum} />
 
-          <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
-            {/* Reader column */}
-            <div className="min-w-0">
-              <header id="chapter-title" className="mb-6">
-                <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55">
-                  {b!.name}
-                </p>
-                <h1 className="mt-1 font-serif text-[36px] md:text-[44px] leading-none text-paper">
-                  Chapter {chapterNum}
-                </h1>
-              </header>
-              <hr className="mb-8 border-0 h-px bg-white/10" />
+ <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
+ {/* Reader column */}
+ <div className="min-w-0">
+ <header id="chapter-title" className="mb-6">
+ <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+ {b!.name}
+ </p>
+ <h1 className="mt-1 font-serif text-[36px] md:text-[44px] leading-none text-paper">
+ Chapter {chapterNum}
+ </h1>
+ </header>
+ <hr className="mb-8 border-0 h-px bg-white/10" />
 
-              {intro && (
-                <details className="mb-10 group rounded-md border border-paper/10 bg-paper/[0.03] open:bg-paper/[0.05] transition-colors">
-                  <summary className="cursor-pointer list-none px-6 py-4 flex items-center justify-between">
-                    <span className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 group-open:text-paper/75 transition-colors">
-                      About this book
-                    </span>
-                    <span
-                      aria-hidden
-                      className="text-paper/40 group-open:rotate-180 transition-transform duration-200 text-[12px]"
-                    >
-                      ▾
-                    </span>
-                  </summary>
-                  <div className="px-6 pb-6 -mt-1 font-serif text-[16px] leading-[1.7] text-paper/80 whitespace-pre-line">
-                    {intro}
-                  </div>
-                </details>
-              )}
+ {intro && (
+ <details className="mb-10 group rounded-md border border-paper/10 bg-paper/[0.03] open:bg-paper/[0.05] transition-colors">
+ <summary className="cursor-pointer list-none px-6 py-4 flex items-center justify-between">
+ <span className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 group-open:text-paper/75 transition-colors">
+ About this book
+ </span>
+ <span
+ aria-hidden
+ className="text-paper/40 group-open:rotate-180 transition-transform duration-200 text-[12px]"
+ >
+ ▾
+ </span>
+ </summary>
+ <div className="px-6 pb-6 -mt-1 font-serif text-[16px] leading-[1.7] text-paper/80 whitespace-pre-line">
+ {intro}
+ </div>
+ </details>
+ )}
 
-              {usingLicensed ? (
-                <LicensedChapterReader
-                  chapter={licensed!}
-                  transId={licensedId!}
-                  translationLabel={LICENSED_LABEL[licensedId!] ?? licensedId!}
-                />
-              ) : (
-                <ChapterReader
-                  book={book}
-                  bookName={b!.name}
-                  chapter={chapterNum}
-                  verses={data!.verses}
-                  commentaryVerses={commentaryVerses}
-                  commentary={commentary}
-                  originalByNum={originalByNum}
-                  tokensByNum={tokensByNum}
-                  englishTokensByNum={englishTokensByNum}
-                  strongs={strongs}
-                />
-              )}
+ {usingLicensed ? (
+ <LicensedChapterReader
+ chapter={licensed!}
+ transId={licensedId!}
+ translationLabel={LICENSED_LABEL[licensedId!] ?? licensedId!}
+ />
+ ) : (
+ <ChapterReader
+ book={book}
+ bookName={b!.name}
+ chapter={chapterNum}
+ verses={data!.verses}
+ commentaryVerses={commentaryVerses}
+ commentary={commentary}
+ originalByNum={originalByNum}
+ tokensByNum={tokensByNum}
+ englishTokensByNum={englishTokensByNum}
+ strongs={strongs}
+ />
+ )}
 
-              <ChapterPager slug={book} chapter={chapterNum} />
+ <ChapterPager slug={book} chapter={chapterNum} />
 
-              {!usingLicensed && (
-                <p className="hidden md:block mt-10 mb-3 font-sans text-[11px] text-paper/40 leading-[1.6]">
-                  ← → chapters · drag across words to highlight a phrase · click any Greek word for definition · Cmd+Enter to save a note
-                </p>
-              )}
+ {!usingLicensed && (
+ <p className="hidden md:block mt-10 mb-3 font-sans text-[11px] text-paper/40 leading-[1.6]">
+ ← → chapters · drag across words to highlight a phrase · click any Greek word for definition · Cmd+Enter to save a note
+ </p>
+ )}
 
-              {!usingLicensed && (
-                <p className="mt-6 md:mt-3 font-sans text-[11px] text-paper/35 leading-[1.6]">
-                  Old Testament: Brenton&rsquo;s English Septuagint (1851, public domain).
-                  New Testament: King James Version (public domain). Patristic
-                  commentary from Schaff&rsquo;s Ante-Nicene and Nicene Fathers
-                  (public domain).
-                </p>
-              )}
+ {!usingLicensed && (
+ <p className="mt-6 md:mt-3 font-sans text-[11px] text-paper/35 leading-[1.6]">
+ Old Testament: Brenton&rsquo;s English Septuagint (1851, public domain).
+ New Testament: King James Version (public domain). Patristic
+ commentary from Schaff&rsquo;s Ante-Nicene and Nicene Fathers
+ (public domain).
+ </p>
+ )}
 
-              {/* Mobile + tablet: commentary is opened on demand via the
-                  verse-number glyph; ChapterReader owns the MobileCommentarySheet. */}
-            </div>
+ {/* Mobile + tablet: commentary is opened on demand via the
+ verse-number glyph; ChapterReader owns the MobileCommentarySheet. */}
+ </div>
 
-            {/* Desktop study rail */}
-            {hasCommentary && (
-              <aside className="hidden lg:block">
-                <div className="sticky top-[88px] max-h-[calc(100dvh-104px)] overflow-y-auto scrollbar-thin pr-2 -mr-2">
-                  <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-                    Patristic commentary
-                  </p>
-                  <StudyRail commentary={commentary} />
-                </div>
-              </aside>
-            )}
-          </div>
-        </div>
-      </section>
-    </div>
-    </ReaderPrefsProvider>
-  );
+ {/* Desktop study rail */}
+ {hasCommentary && (
+ <aside className="hidden lg:block">
+ <div className="sticky top-[88px] max-h-[calc(100dvh-104px)] overflow-y-auto scrollbar-thin pr-2 -mr-2">
+ <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ Patristic commentary
+ </p>
+ <StudyRail commentary={commentary} />
+ </div>
+ </aside>
+ )}
+ </div>
+ </div>
+ </section>
+ </div>
+ </ReaderPrefsProvider>
+ );
 }

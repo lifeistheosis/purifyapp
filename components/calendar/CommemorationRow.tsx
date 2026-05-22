@@ -2,13 +2,14 @@ import Link from "next/link";
 import type { Commemoration } from "@/lib/calendar/orthodox";
 import { SaintIcon } from "@/components/saints/SaintIcon";
 import { Cross } from "@/components/ui/icons/Cross";
-import { Halo } from "@/components/ui/icons/Halo";
 import { cn } from "@/lib/cn";
 
 /**
- * One commemoration in a list: the saint's haloed icon (or a Cross/Halo
- * medallion fallback), the name in serif (linked when a profile exists), and
- * the one-line note. Feasts get the radiant Halo; saints get the Cross.
+ * One commemoration in a list: the saint's haloed icon (or a three-bar
+ * Cross medallion fallback), the name in serif (linked when a profile
+ * exists), and the one-line note. Feasts get a brighter gold-ring
+ * medallion; ordinary saints get a quieter paper-ring one. Same glyph
+ * (the three-bar Cross) so the visual idiom stays Orthodox throughout.
  */
 export function CommemorationRow({ c }: { c: Commemoration }) {
   const saint = c.saint ?? null;
@@ -23,11 +24,11 @@ export function CommemorationRow({ c }: { c: Commemoration }) {
           className={cn(
             "shrink-0 h-9 w-9 rounded-full flex items-center justify-center border",
             isFeast
-              ? "border-gold/40 text-gold bg-gold/10"
+              ? "border-gold/45 text-gold bg-gold/10"
               : "border-paper/15 text-paper/55 bg-paper/[0.04]",
           )}
         >
-          {isFeast ? <Halo size={18} /> : <Cross size={15} />}
+          <Cross size={isFeast ? 17 : 15} />
         </span>
       )}
       <div className="min-w-0 flex-1 pt-0.5">

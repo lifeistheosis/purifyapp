@@ -10,98 +10,98 @@ import { ProfileDanger } from "@/components/profile/ProfileDanger";
 import { SyncOnMount } from "@/components/profile/SyncOnMount";
 
 export const metadata = {
-  title: "Your account",
-  description:
-    "Sign in to sync your highlights, notes, bookmarks, and prayer streaks across devices. Or keep everything local on this device. Your choice.",
+ title: "Your account",
+ description:
+ "Sign in to sync your highlights, notes, bookmarks, and prayer streaks across devices. Or keep everything local on this device. Your choice.",
 };
 
 const SECTION = "px-5 md:px-8 py-16 md:py-24";
 
 export default async function AccountPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+ const supabase = await createClient();
+ const {
+ data: { user },
+ } = await supabase.auth.getUser();
 
-  if (!user) {
-    return (
-      <section className={`${SECTION} bg-night min-h-[calc(100dvh-72px)]`}>
-        <article className="mx-auto max-w-[760px] w-full">
-          <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-            Your account
-          </p>
-          <h1 className="font-sans text-[40px] md:text-[52px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
-            Pick up where you left off.
-          </h1>
-          <p className="mt-6 font-serif text-[19px] text-paper/85 leading-[1.7] max-w-[620px]">
-            An account lets your highlights, notes, bookmarks, and prayer
-            streaks travel with you between devices. No password &mdash; you
-            sign in with a one-tap email link. You can delete the account,
-            and every server-side row it created, at any time.
-          </p>
+ if (!user) {
+ return (
+ <section className={`${SECTION} bg-night min-h-[calc(100dvh-72px)]`}>
+ <article className="mx-auto max-w-[760px] w-full">
+ <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ Your account
+ </p>
+ <h1 className="font-sans text-[40px] md:text-[52px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ Pick up where you left off.
+ </h1>
+ <p className="mt-6 font-serif text-[19px] text-paper/85 leading-[1.7] max-w-[620px]">
+ An account lets your highlights, notes, bookmarks, and prayer
+ streaks travel with you between devices. No password, you
+ sign in with a one-tap email link. You can delete the account,
+ and every server-side row it created, at any time.
+ </p>
 
-          <SignInPanel />
+ <SignInPanel />
 
-          <p className="mt-10 font-sans text-[14px] text-paper/55 leading-[1.65] max-w-[560px]">
-            Or keep using Purify without an account. What you save will live
-            in this browser only.{" "}
-            <Link
-              href="/faq"
-              className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
-            >
-              How we handle your data
-            </Link>
-            .
-          </p>
-        </article>
-      </section>
-    );
-  }
+ <p className="mt-10 font-sans text-[14px] text-paper/55 leading-[1.65] max-w-[560px]">
+ Or keep using Purify without an account. What you save will live
+ in this browser only.{" "}
+ <Link
+ href="/faq"
+ className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
+ >
+ How we handle your data
+ </Link>
+ .
+ </p>
+ </article>
+ </section>
+ );
+ }
 
-  // Pull the profile row for joinedAt / display_name (the trigger creates
-  // it on sign-up). Fall back to email-derived name if missing.
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("display_name, joined_at")
-    .eq("id", user.id)
-    .maybeSingle();
+ // Pull the profile row for joinedAt / display_name (the trigger creates
+ // it on sign-up). Fall back to email-derived name if missing.
+ const { data: profile } = await supabase
+ .from("profiles")
+ .select("display_name, joined_at")
+ .eq("id", user.id)
+ .maybeSingle();
 
-  const displayName =
-    (profile?.display_name as string | undefined) ??
-    (user.user_metadata?.display_name as string | undefined) ??
-    (user.email?.split("@")[0] ?? "Reader");
-  const joinedAt =
-    (profile?.joined_at as string | undefined) ?? user.created_at ?? "";
+ const displayName =
+ (profile?.display_name as string | undefined) ??
+ (user.user_metadata?.display_name as string | undefined) ??
+ (user.email?.split("@")[0] ?? "Reader");
+ const joinedAt =
+ (profile?.joined_at as string | undefined) ?? user.created_at ?? "";
 
-  return (
-    <ReaderPrefsProvider>
-      <section className={`${SECTION} bg-night min-h-[calc(100dvh-72px)]`}>
-        <article className="mx-auto max-w-[820px] w-full">
-          <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-            Your account
-          </p>
+ return (
+ <ReaderPrefsProvider>
+ <section className={`${SECTION} bg-night min-h-[calc(100dvh-72px)]`}>
+ <article className="mx-auto max-w-[820px] w-full">
+ <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ Your account
+ </p>
 
-          <SyncOnMount />
+ <SyncOnMount />
 
-          <ProfileHero
-            email={user.email ?? ""}
-            initialDisplayName={displayName}
-            joinedAt={joinedAt}
-          />
+ <ProfileHero
+ email={user.email ?? ""}
+ initialDisplayName={displayName}
+ joinedAt={joinedAt}
+ />
 
-          <ProfileStats />
+ <ProfileStats />
 
-          <ProfileSettings />
+ <ProfileSettings />
 
-          <ProfileData signedIn />
+ <ProfileData signedIn />
 
-          <ProfileDanger signedIn />
+ <ProfileDanger signedIn />
 
-          <p className="mt-12 text-center font-serif italic text-[16px] text-paper/55 leading-[1.65]">
-            Glory to God for all things.
-          </p>
-        </article>
-      </section>
-    </ReaderPrefsProvider>
-  );
+ <p className="mt-12 text-center font-serif italic text-[16px] text-paper/55 leading-[1.65]">
+ Glory to God for all things.
+ </p>
+ </article>
+ </section>
+ </ReaderPrefsProvider>
+ );
 }

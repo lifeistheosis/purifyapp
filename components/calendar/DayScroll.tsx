@@ -36,9 +36,9 @@ export function DayScroll({
 
       <FastBadge kind={fast.kind} label={fast.label} rule={fast.rule} />
 
-      <p className="mt-6 mb-3.5">
+      <div className="mt-6 mb-3.5">
         <SectionLabel>Commemorations</SectionLabel>
-      </p>
+      </div>
       {commemorations.length > 0 ? (
         <ul className="space-y-3.5">
           {commemorations.map((c, i) => (
@@ -55,9 +55,9 @@ export function DayScroll({
 
       {readings && (
         <>
-          <p className="mt-6 mb-3.5">
+          <div className="mt-6 mb-3.5">
             <SectionLabel>Readings</SectionLabel>
-          </p>
+          </div>
           {readings}
         </>
       )}
