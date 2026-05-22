@@ -629,97 +629,126 @@
     { "name": "St. Peter, Prince of the Horde", "note": "of Rostov, +1290" }
   ],
   "07-01": [
-    { "name": "Holy Unmercenaries Cosmas and Damian of Rome", "note": "+284" }
+    { "name": "Holy Unmercenaries Cosmas and Damian of Rome", "note": "+284" },
+    { "name": "Ven. Peter the Patrician", "note": "of Constantinople, +854" }
   ],
   "07-02": [
-    { "name": "Deposition of the Honorable Robe of the Theotokos at Blachernae", "kind": "feast" }
+    { "name": "Deposition of the Honorable Robe of the Theotokos at Blachernae", "kind": "feast" },
+    { "name": "St. John, Archbishop of Shanghai and San Francisco", "note": "the Wonderworker, +1966" },
+    { "name": "St. Juvenal, Patriarch of Jerusalem", "note": "+458" }
   ],
   "07-03": [
-    { "name": "Martyr Hyacinthus of Caesarea", "note": "of the imperial chamberlains, +108" }
+    { "name": "Martyr Hyacinthus of Caesarea", "note": "of the imperial chamberlains, +108" },
+    { "name": "St. Anatolius, Patriarch of Constantinople", "note": "+458" }
   ],
   "07-04": [
-    { "name": "St. Andrew, Archbishop of Crete", "note": "composer of the Great Canon, +740" }
+    { "name": "St. Andrew, Archbishop of Crete", "note": "composer of the Great Canon, +740" },
+    { "name": "St. Andrei Rublev the Iconographer", "note": "of Moscow, +ca. 1430" }
   ],
   "07-05": [
-    { "name": "St. Athanasius of Athos", "note": "founder of the Great Lavra, +1000" }
+    { "name": "St. Athanasius of Athos", "note": "founder of the Great Lavra, +1000" },
+    { "name": "Uncovering of the Relics of St. Sergius of Radonezh", "note": "in the year 1422" }
   ],
   "07-06": [
-    { "name": "St. Sisoes the Great of Egypt", "note": "the Desert Father weeping over Adam, +429" }
+    { "name": "St. Sisoes the Great of Egypt", "note": "the Desert Father weeping over Adam, +429" },
+    { "name": "Martyrs Marinus and Martha of Rome", "note": "with their sons, +269" }
   ],
   "07-07": [
+    { "name": "Great-martyr Kyriaki of Nicomedia", "note": "+289" },
     { "name": "St. Thomas of Maleon", "note": "+10th c." }
   ],
   "07-08": [
-    { "name": "Great-martyr Procopius of Caesarea in Palestine", "note": "+303" }
+    { "name": "Great-martyr Procopius of Caesarea in Palestine", "note": "+303" },
+    { "name": "Appearance of the Kazan Icon of the Theotokos", "kind": "feast", "note": "at Kazan, 1579" }
   ],
   "07-09": [
-    { "name": "Hieromartyr Pancratius, Bishop of Tauromenium", "note": "+1st c." }
+    { "name": "Hieromartyr Pancratius, Bishop of Tauromenium", "note": "+1st c." },
+    { "name": "Hieromartyr Cyril, Bishop of Gortyna", "note": "+3rd c." }
   ],
   "07-10": [
-    { "name": "45 Martyrs of Nicopolis in Armenia", "note": "+ca. 319" }
+    { "name": "45 Martyrs of Nicopolis in Armenia", "note": "+ca. 319" },
+    { "name": "Ven. Anthony of the Kiev Caves", "note": "founder of Russian monasticism, +1073" }
   ],
   "07-11": [
     { "name": "Great-martyr Euphemia the All-Praised", "note": "her relics confirmed Chalcedon, +304" },
     { "name": "Equal-to-Apostles Olga, Princess of Kiev", "note": "+969" }
   ],
   "07-12": [
-    { "name": "Martyrs Proclus and Hilary of Ancyra", "note": "+ca. 115" }
+    { "name": "Martyrs Proclus and Hilary of Ancyra", "note": "+ca. 115" },
+    { "name": "Ven. Michael of Maleon", "note": "+962" }
   ],
   "07-13": [
-    { "name": "Synaxis of the Archangel Gabriel", "kind": "feast" }
+    { "name": "Synaxis of the Archangel Gabriel", "kind": "feast" },
+    { "name": "Ven. Stephen of St. Sabbas Monastery", "note": "+794" }
   ],
   "07-14": [
-    { "name": "Apostle Aquila of the Seventy", "note": "and his wife Priscilla" }
+    { "name": "Apostle Aquila of the Seventy", "note": "and his wife Priscilla" },
+    { "name": "St. Nicodemus the Hagiorite", "note": "of the Holy Mountain, +1809" }
   ],
   "07-15": [
-    { "name": "Equal-to-Apostles Vladimir, Great Prince of Kiev", "note": "the baptizer of Rus', +1015" }
+    { "name": "Equal-to-Apostles Vladimir, Great Prince of Kiev", "note": "the baptizer of Rus', +1015" },
+    { "name": "Martyrs Cyricus and his mother Julitta", "note": "+305" }
   ],
   "07-16": [
-    { "name": "Hieromartyr Athenogenes, Bishop of Heracleopolis", "note": "and his ten disciples, +311" }
+    { "name": "Hieromartyr Athenogenes, Bishop of Heracleopolis", "note": "and his ten disciples, +311" },
+    { "name": "Holy Fathers of the Six Ecumenical Councils", "kind": "feast" }
   ],
   "07-17": [
-    { "name": "Great-martyr Marina (Margaret) of Antioch", "note": "+ca. 275" }
+    { "name": "Great-martyr Marina (Margaret) of Antioch", "slug": "marina-the-great-martyr", "note": "+ca. 275" },
+    { "name": "Ven. Irinarchus, Abbot of Solovki", "note": "+1628" }
   ],
   "07-18": [
-    { "name": "Martyr Aemilian of Silistra", "note": "+362" }
+    { "name": "Martyr Aemilian of Silistra", "note": "+362" },
+    { "name": "Ven. Pambo of Nitria", "note": "Desert Father, +386" }
   ],
   "07-19": [
     { "name": "St. Macrina the Younger", "note": "sister of Basil the Great and Gregory of Nyssa, +379" },
-    { "name": "Uncovering of the Relics of St. Seraphim of Sarov", "slug": "seraphim-of-sarov", "kind": "feast", "note": "+1903" }
+    { "name": "Uncovering of the Relics of St. Seraphim of Sarov", "slug": "seraphim-of-sarov", "kind": "feast", "note": "+1903" },
+    { "name": "Ven. Dius, Abbot of Antioch", "note": "+430" }
   ],
   "07-20": [
-    { "name": "Prophet Elijah the Tishbite", "kind": "feast", "note": "+9th c. BC" }
+    { "name": "Prophet Elijah the Tishbite", "kind": "feast", "note": "+9th c. BC" },
+    { "name": "Ven. Abramius of Galich", "note": "disciple of St. Sergius, +1375" }
   ],
   "07-21": [
     { "name": "Prophet Ezekiel", "note": "+6th c. BC" },
     { "name": "St. Symeon, Fool for Christ", "note": "and John his companion, +6th c." }
   ],
   "07-22": [
-    { "name": "St. Mary Magdalene, Equal-to-the-Apostles", "kind": "feast", "note": "the myrrh-bearer and first witness of the Resurrection" }
+    { "name": "St. Mary Magdalene, Equal-to-the-Apostles", "kind": "feast", "note": "the myrrh-bearer and first witness of the Resurrection" },
+    { "name": "Virgin-martyr Markella of Chios", "note": "+14th c." }
   ],
   "07-23": [
-    { "name": "Hieromartyr Phocas, Bishop of Sinope", "note": "+ca. 117" }
+    { "name": "Hieromartyr Phocas, Bishop of Sinope", "note": "+ca. 117" },
+    { "name": "Pochaev Icon of the Theotokos", "note": "of the Pochaev Lavra" }
   ],
   "07-24": [
-    { "name": "Great-martyr Christina of Tyre", "note": "+ca. 200" }
+    { "name": "Great-martyr Christina of Tyre", "note": "+ca. 200" },
+    { "name": "Holy Passion-bearers Boris and Gleb", "note": "the first Russian saints, +1015" }
   ],
   "07-25": [
-    { "name": "Dormition of Righteous Anna, Mother of the Theotokos", "kind": "feast" }
+    { "name": "Dormition of Righteous Anna, Mother of the Theotokos", "kind": "feast" },
+    { "name": "St. Olympias the Deaconess", "slug": "olympias-the-deaconess", "note": "of Constantinople, +408" }
   ],
   "07-26": [
-    { "name": "Hieromartyr Hermolaus", "note": "presbyter of Nicomedia and teacher of Panteleimon, +ca. 305" }
+    { "name": "Hieromartyr Hermolaus", "note": "presbyter of Nicomedia and teacher of Panteleimon, +ca. 305" },
+    { "name": "Venerable-martyr Parasceva of Rome", "note": "+138" }
   ],
   "07-27": [
-    { "name": "Great-martyr and Healer Panteleimon", "kind": "feast", "note": "physician of Nicomedia, +305" }
+    { "name": "Great-martyr and Healer Panteleimon", "kind": "feast", "note": "physician of Nicomedia, +305" },
+    { "name": "Blessed Nicholas Kochanov", "note": "Fool-for-Christ of Novgorod, +1392" }
   ],
   "07-28": [
-    { "name": "Apostles and Deacons Prochorus, Nicanor, Timon, and Parmenas", "note": "of the Seventy" }
+    { "name": "Apostles and Deacons Prochorus, Nicanor, Timon, and Parmenas", "note": "of the Seventy" },
+    { "name": "Smolensk Icon of the Theotokos 'Hodegetria'", "kind": "feast" }
   ],
   "07-29": [
-    { "name": "Martyr Callinicus of Cilicia", "note": "+3rd c." }
+    { "name": "Martyr Callinicus of Cilicia", "note": "+3rd c." },
+    { "name": "Martyr Theodota and her three sons", "note": "+304" }
   ],
   "07-30": [
-    { "name": "Apostles Silas, Silvanus, Crescens, and Andronicus", "note": "of the Seventy" }
+    { "name": "Apostles Silas, Silvanus, Crescens, and Andronicus", "note": "of the Seventy" },
+    { "name": "Martyr Valentine, Bishop of Interamna", "note": "+273" }
   ],
   "07-31": [
     { "name": "Forefeast of the Procession of the Cross", "kind": "feast" },
