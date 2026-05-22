@@ -995,51 +995,65 @@
   ],
   "10-01": [
     { "name": "Protection of Our Most Holy Lady the Theotokos", "kind": "feast", "note": "at Blachernae, 10th c." },
-    { "name": "Apostle Ananias", "note": "of the Seventy, baptizer of Paul" }
+    { "name": "Apostle Ananias", "note": "of the Seventy, baptizer of Paul" },
+    { "name": "St. Romanus the Melodist", "note": "the hymnographer, +ca. 556" }
   ],
   "10-02": [
-    { "name": "Hieromartyr Cyprian and Virgin-martyr Justina", "note": "+304" }
+    { "name": "Hieromartyr Cyprian and Virgin-martyr Justina", "note": "+304" },
+    { "name": "Blessed Andrew, Fool-for-Christ of Constantinople", "note": "who beheld the Protection, +936" }
   ],
   "10-03": [
-    { "name": "Hieromartyr Dionysius the Areopagite", "note": "bishop of Athens, +96" }
+    { "name": "Hieromartyr Dionysius the Areopagite", "note": "bishop of Athens, +96" },
+    { "name": "St. John the Chozebite, Bishop of Caesarea", "note": "+6th c." }
   ],
   "10-04": [
-    { "name": "Hieromartyr Hierotheus, Bishop of Athens", "note": "disciple of Paul, +1st c." }
+    { "name": "Hieromartyr Hierotheus, Bishop of Athens", "note": "disciple of Paul, +1st c." },
+    { "name": "Sts. Guriah and Barsanuphius, Hierarchs of Kazan", "note": "+1563 and +1576" }
   ],
   "10-05": [
-    { "name": "Martyr Charitina of Amisus", "note": "+304" }
+    { "name": "Martyr Charitina of Amisus", "note": "+304" },
+    { "name": "Synaxis of the Hierarchs of Moscow", "note": "Peter, Alexis, Jonah, Philip, and Hermogenes" }
   ],
   "10-06": [
-    { "name": "Holy and Glorious Apostle Thomas", "kind": "feast", "note": "preacher in Parthia and India, +1st c." }
+    { "name": "Holy and Glorious Apostle Thomas", "kind": "feast", "note": "preacher in Parthia and India, +1st c." },
+    { "name": "St. Innocent, Enlightener of the Aleuts and Apostle to America", "note": "Metropolitan of Moscow, +1879" }
   ],
   "10-07": [
-    { "name": "Martyrs Sergius and Bacchus the Romans", "note": "of Syria, +296" }
+    { "name": "Martyrs Sergius and Bacchus the Romans", "note": "of Syria, +296" },
+    { "name": "Martyr Polychronius the Presbyter", "note": "+4th c." }
   ],
   "10-08": [
-    { "name": "St. Pelagia the Penitent", "note": "of Antioch and Jerusalem, +457" }
+    { "name": "St. Pelagia the Penitent", "note": "of Antioch and Jerusalem, +457" },
+    { "name": "St. Taisia of Egypt", "note": "the penitent, +4th c." }
   ],
   "10-09": [
-    { "name": "Holy Apostle James, son of Alphaeus", "kind": "feast", "note": "of the Twelve, +1st c." }
+    { "name": "Holy Apostle James, son of Alphaeus", "kind": "feast", "note": "of the Twelve, +1st c." },
+    { "name": "Righteous Abraham the Patriarch and his nephew Lot", "note": "+ca. 2000 BC" }
   ],
   "10-10": [
-    { "name": "Martyrs Eulampius and Eulampia of Nicomedia", "note": "+303" }
+    { "name": "Martyrs Eulampius and Eulampia of Nicomedia", "note": "+303" },
+    { "name": "St. Ambrose, Elder of Optina", "note": "+1891" }
   ],
   "10-11": [
-    { "name": "Apostle Philip the Deacon", "note": "one of the Seven, +1st c." }
+    { "name": "Apostle Philip the Deacon", "note": "one of the Seven, +1st c." },
+    { "name": "Holy Fathers of the Seventh Ecumenical Council", "kind": "feast", "note": "Nicaea, 787" }
   ],
   "10-12": [
     { "name": "Martyrs Probus, Tarachus, and Andronicus", "note": "of Cilicia, +304" },
     { "name": "St. Symeon the New Theologian", "slug": "symeon-the-new-theologian", "note": "translation of relics, +1022" }
   ],
   "10-13": [
-    { "name": "Martyrs Carpus, Papylus, Agathonica, and Agathodorus", "note": "of Pergamum, +ca. 251" }
+    { "name": "Martyrs Carpus, Papylus, Agathonica, and Agathodorus", "note": "of Pergamum, +ca. 251" },
+    { "name": "Iveron Icon of the Theotokos", "note": "the Portaitissa of Mount Athos" }
   ],
   "10-14": [
     { "name": "Hieromartyr Cosmas of Maiuma the Hymnographer", "note": "+776" },
-    { "name": "St. Parasceva of Tirnova", "note": "patroness of Bulgaria and Romania, +11th c." }
+    { "name": "St. Parasceva of Tirnova", "note": "patroness of Bulgaria and Romania, +11th c." },
+    { "name": "Martyrs Nazarius, Gervasius, Protasius, and Celsus", "note": "of Milan, +1st c." }
   ],
   "10-15": [
-    { "name": "Hieromartyr Lucian, presbyter of Antioch", "note": "+312" }
+    { "name": "Hieromartyr Lucian, presbyter of Antioch", "note": "+312" },
+    { "name": "Ven. Euthymius the New of Thessalonica", "note": "+889" }
   ],
   "10-16": [
     { "name": "Martyr Longinus the Centurion", "note": "the centurion at the Cross, +1st c." }
@@ -1052,43 +1066,58 @@
     { "name": "Apostle and Evangelist Luke", "kind": "feast", "note": "physician and iconographer, +1st c." }
   ],
   "10-19": [
-    { "name": "Prophet Joel", "note": "of the Twelve, +9th c. BC" }
+    { "name": "Prophet Joel", "note": "of the Twelve, +9th c. BC" },
+    { "name": "Martyr Varus and those with him", "note": "+307" }
   ],
   "10-20": [
-    { "name": "Great-martyr Artemius of Antioch", "note": "general, +362" }
+    { "name": "Great-martyr Artemius of Antioch", "note": "general, +362" },
+    { "name": "St. Gerasimus of Cephalonia", "note": "+1579" }
   ],
   "10-21": [
-    { "name": "St. Hilarion the Great", "note": "Palestinian hermit, +371" }
+    { "name": "St. Hilarion the Great", "note": "Palestinian hermit, +371" },
+    { "name": "St. Hilarion of Meglin, Bishop", "note": "+1164" }
   ],
   "10-22": [
-    { "name": "Equal-to-Apostles Abercius, Bishop of Hierapolis", "note": "the Wonderworker, +ca. 167" }
+    { "name": "Equal-to-Apostles Abercius, Bishop of Hierapolis", "note": "the Wonderworker, +ca. 167" },
+    { "name": "Kazan Icon of the Theotokos", "kind": "feast", "note": "the deliverance of Moscow, 1612" },
+    { "name": "Seven Youths (Sleepers) of Ephesus", "note": "+ca. 250" }
   ],
   "10-23": [
-    { "name": "Apostle James the Brother of the Lord", "kind": "feast", "note": "first bishop of Jerusalem, +63" }
+    { "name": "Apostle James the Brother of the Lord", "kind": "feast", "note": "first bishop of Jerusalem, +63" },
+    { "name": "St. Ignatius, Patriarch of Constantinople", "note": "+877" }
   ],
   "10-24": [
-    { "name": "Great-martyr Arethas and Companions", "note": "of Negran, +523" }
+    { "name": "Great-martyr Arethas and Companions", "note": "of Negran, +523" },
+    { "name": "Icon of the Theotokos 'Joy of All Who Sorrow'", "note": "of Moscow, 1688" }
   ],
   "10-25": [
-    { "name": "Martyrs and Notaries Marcian and Martyrius of Constantinople", "note": "+ca. 355" }
+    { "name": "Martyrs and Notaries Marcian and Martyrius of Constantinople", "note": "+ca. 355" },
+    { "name": "Righteous Tabitha of Joppa", "note": "raised by the Apostle Peter, +1st c." }
   ],
   "10-26": [
-    { "name": "Great-martyr Demetrius the Myrrh-Streaming", "kind": "feast", "note": "patron of Thessaloniki, +306" }
+    { "name": "Great-martyr Demetrius the Myrrh-Streaming", "kind": "feast", "note": "patron of Thessaloniki, +306" },
+    { "name": "Recollection of the Great Earthquake at Constantinople", "note": "in the year 740" }
   ],
   "10-27": [
-    { "name": "Martyr Nestor of Thessaloniki", "note": "disciple of Demetrius, +306" }
+    { "name": "Martyr Nestor of Thessaloniki", "note": "disciple of Demetrius, +306" },
+    { "name": "St. Nestor the Chronicler of the Kiev Caves", "note": "+1114" }
   ],
   "10-28": [
-    { "name": "Martyrs Terence, Neonilla, and Companions", "note": "+3rd c." }
+    { "name": "Great-martyr Paraskeva of Iconium", "note": "named for Friday, +3rd c." },
+    { "name": "Martyrs Terence, Neonilla, and Companions", "note": "+3rd c." },
+    { "name": "St. Job of Pochaev", "note": "abbot and wonderworker, +1651" }
   ],
   "10-29": [
-    { "name": "Venerable-martyr Anastasia the Roman", "note": "+ca. 257" }
+    { "name": "Venerable-martyr Anastasia the Roman", "note": "+ca. 257" },
+    { "name": "Ven. Abramius the Recluse and his niece Mary", "note": "+360" }
   ],
   "10-30": [
-    { "name": "Hieromartyr Zenobius, Bishop of Aegae, and his sister Zenobia", "note": "+285" }
+    { "name": "Hieromartyr Zenobius, Bishop of Aegae, and his sister Zenobia", "note": "+285" },
+    { "name": "Apostles Tertius, Mark, Justus, and Artemas", "note": "of the Seventy" }
   ],
   "10-31": [
-    { "name": "Apostles Stachys, Amplias, Urban, Narcissus, Apelles, and Aristobulus", "note": "of the Seventy" }
+    { "name": "Apostles Stachys, Amplias, Urban, Narcissus, Apelles, and Aristobulus", "note": "of the Seventy" },
+    { "name": "Martyr Epimachus of Egypt", "note": "+250" }
   ],
   "11-01": [
     { "name": "Holy Unmercenaries Cosmas and Damian of Asia", "note": "physicians who took no fee, +3rd c." }
