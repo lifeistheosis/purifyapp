@@ -19,6 +19,21 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
   {
+    version: "v5.1",
+    kind: "The illuminated calendar",
+    date: "May 22, 2026",
+    blurb:
+      "The calendar has been rebuilt from the ground up to look like what it is, a window onto the Church's year. The day of the feast now stands in an illuminated panel, the saint's icon lit within a halo of light; the month reads like an illuminated page, each day glowing in its own liturgical colour, gold for feasts, deep red for the strict fasts, green for the days of release. And every day of the year now carries its full company of saints.",
+    items: [
+      "A bold redesign of the whole calendar page in an Orthodox, 'hallowed' register: the ornate display serif for the feast names, gold ornament rules drawn around a three-bar Cross, and the saint of the day lit by a soft lampada glow.",
+      "A bespoke icon set drawn for the calendar, a haloed disc, a vigil lamp, grapes, a fish, and a sheaf of wheat, now mark feasts and the fasting rule in place of plain coloured dots.",
+      "Liturgical colour: the page quietly takes the tone of the day, gold on feasts and ordinary days, crimson on strict and fasting days, green when the fast is released. Colour is always paired with an icon and a word, never alone.",
+      "The month grid was reimagined: today glows like a lit lamp, feasts carry a gold Cross, and each day shows its fast at a glance.",
+      "Every day of the year now lists its full commemorations, more than six hundred saints and feasts across the calendar, where many days once named only one.",
+      "All of it stays fast and faithful to the reckoning: the New and Old (Julian) calendars, the fasting rules, and the day's appointed readings are unchanged underneath.",
+    ],
+  },
+  {
     version: "v5.0",
     kind: "A major release",
     date: "May 21, 2026",

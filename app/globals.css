@@ -466,3 +466,78 @@ div[data-hl="true"] {
 .lic-notes .xt {
   color: rgba(212, 175, 55, 0.7);
 }
+
+/* ----------------------------------------------------------------------
+   "The Menaion" — illuminated Orthodox calendar.
+   The page sets `--tone` (an "R G B" triplet) per the day's liturgical
+   register (gold / crimson / green); the glow and ornaments read it.
+   ---------------------------------------------------------------------- */
+
+/* Page surface: a faint radial vignette so the page feels like a lit room. */
+.menaion-surface {
+  background:
+    radial-gradient(
+      120% 80% at 50% -10%,
+      rgba(var(--tone, 212 175 55) / 0.06) 0%,
+      transparent 55%
+    ),
+    radial-gradient(80% 60% at 50% 120%, rgba(0, 0, 0, 0.35) 0%, transparent 60%);
+}
+
+/* The lit-lampada glow behind today's icon / cell. Tinted by --tone. */
+.lampada-glow {
+  position: relative;
+}
+.lampada-glow::before {
+  content: "";
+  position: absolute;
+  inset: -40% -40% -10% -40%;
+  background: radial-gradient(
+    50% 50% at 50% 45%,
+    rgb(var(--tone, 212 175 55) / 0.4) 0%,
+    rgb(var(--tone, 212 175 55) / 0.12) 38%,
+    transparent 70%
+  );
+  filter: blur(6px);
+  z-index: 0;
+  pointer-events: none;
+  animation: halo-breathe 6.5s ease-in-out infinite;
+}
+.lampada-glow > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes halo-breathe {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+/* A small steady halo behind today's grid number (no animation, subtle). */
+.cell-halo {
+  position: relative;
+}
+.cell-halo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    60% 55% at 50% 42%,
+    rgb(var(--tone, 212 175 55) / 0.22) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lampada-glow::before {
+    animation: none;
+  }
+}
