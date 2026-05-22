@@ -1120,66 +1120,83 @@
     { "name": "Martyr Epimachus of Egypt", "note": "+250" }
   ],
   "11-01": [
-    { "name": "Holy Unmercenaries Cosmas and Damian of Asia", "note": "physicians who took no fee, +3rd c." }
+    { "name": "Holy Unmercenaries Cosmas and Damian of Asia", "note": "physicians who took no fee, +3rd c." },
+    { "name": "St. Theodota, mother of the Holy Unmercenaries", "note": "+3rd c." }
   ],
   "11-02": [
-    { "name": "Martyrs Acindynus, Pegasius, Aphthonius, Elpidephorus, Anempodistus", "note": "of Persia, +ca. 341" }
+    { "name": "Martyrs Acindynus, Pegasius, Aphthonius, Elpidephorus, Anempodistus", "note": "of Persia, +ca. 341" },
+    { "name": "Ven. Marcian of Cyrrhus", "note": "Desert Father of Syria, +388" }
   ],
   "11-03": [
-    { "name": "Martyrs Acepsimas, Joseph, and Aithalas of Persia", "note": "+ca. 341" }
+    { "name": "Martyrs Acepsimas, Joseph, and Aithalas of Persia", "note": "+ca. 341" },
+    { "name": "Dedication of the Church of Great-martyr George at Lydda", "kind": "feast" }
   ],
   "11-04": [
-    { "name": "St. Joannicus the Great of Bithynia", "note": "+846" }
+    { "name": "St. Joannicus the Great of Bithynia", "note": "+846" },
+    { "name": "Hieromartyrs Nicander and Hermas", "note": "+1st c." }
   ],
   "11-05": [
-    { "name": "Saints Galaction and Episteme", "note": "of Emesa, +253" }
+    { "name": "Saints Galaction and Episteme", "note": "of Emesa, +253" },
+    { "name": "Apostles Patrobus, Hermas, Linus, Gaius, and Philologus", "note": "of the Seventy" }
   ],
   "11-06": [
-    { "name": "St. Paul the Confessor, Archbishop of Constantinople", "note": "+350" }
+    { "name": "St. Paul the Confessor, Archbishop of Constantinople", "note": "+350" },
+    { "name": "St. Varlaam of Khutyn", "note": "wonderworker of Novgorod, +1192" }
   ],
   "11-07": [
-    { "name": "33 Martyrs of Melitene", "note": "+ca. 298" }
+    { "name": "33 Martyrs of Melitene", "note": "+ca. 298" },
+    { "name": "Ven. Lazarus the Wonderworker of Mount Galesius", "note": "+1053" }
   ],
   "11-08": [
     { "name": "Synaxis of the Holy Archangel Michael and All the Bodiless Powers", "kind": "feast" }
   ],
   "11-09": [
+    { "name": "St. Nectarius of Aegina, Bishop of Pentapolis", "note": "the Wonderworker, +1920" },
     { "name": "Saints Onesiphorus and Porphyrius", "note": "+ca. 284" },
     { "name": "St. Matrona of Constantinople", "note": "ammas, +ca. 492" }
   ],
   "11-10": [
-    { "name": "Apostles Erastus, Olympas, Rhodion, Sosipater, Quartus, Tertius", "note": "of the Seventy" }
+    { "name": "Apostles Erastus, Olympas, Rhodion, Sosipater, Quartus, Tertius", "note": "of the Seventy" },
+    { "name": "St. Arsenius of Cappadocia", "note": "+1924" }
   ],
   "11-11": [
     { "name": "Great-martyr Menas of Egypt", "note": "+ca. 304" },
-    { "name": "St. Theodore the Studite", "note": "abbot of the Studion, +826" }
+    { "name": "St. Theodore the Studite", "note": "abbot of the Studion, +826" },
+    { "name": "Blessed Maximus, Fool-for-Christ of Moscow", "note": "+1434" }
   ],
   "11-12": [
-    { "name": "St. John the Merciful, Patriarch of Alexandria", "note": "+620" }
+    { "name": "St. John the Merciful, Patriarch of Alexandria", "note": "+620" },
+    { "name": "St. Nilus the Faster of Sinai", "note": "+451" }
   ],
   "11-13": [
     { "name": "St. John Chrysostom, Archbishop of Constantinople", "slug": "john-chrysostom", "note": "+407" }
   ],
   "11-14": [
     { "name": "Holy Apostle Philip", "kind": "feast", "note": "of the Twelve, +1st c." },
-    { "name": "Beginning of the Nativity Fast", "kind": "feast" }
+    { "name": "Beginning of the Nativity Fast", "kind": "feast" },
+    { "name": "St. Gregory Palamas, Archbishop of Thessalonica", "note": "theologian of the divine light, +1359" }
   ],
   "11-15": [
-    { "name": "Confessors Gurias, Samonas, and Habibus", "note": "of Edessa, +ca. 322" }
+    { "name": "Confessors Gurias, Samonas, and Habibus", "note": "of Edessa, +ca. 322" },
+    { "name": "St. Paisius Velichkovsky", "note": "of Neamts, restorer of hesychasm, +1794" }
   ],
   "11-16": [
     { "name": "Holy Apostle and Evangelist Matthew", "kind": "feast", "note": "+ca. 60" }
   ],
   "11-17": [
-    { "name": "St. Gregory the Wonderworker, Bishop of Neocaesarea", "note": "disciple of Origen, +ca. 270" }
+    { "name": "St. Gregory the Wonderworker, Bishop of Neocaesarea", "note": "disciple of Origen, +ca. 270" },
+    { "name": "St. Nikon of Radonezh", "note": "successor of St. Sergius, +1426" }
   ],
   "11-18": [
-    { "name": "Martyrs Plato and Romanus", "note": "+ca. 306" }
+    { "name": "Martyrs Plato and Romanus", "note": "+ca. 306" },
+    { "name": "Martyrs Zacchaeus the Deacon and Alphaeus the Reader", "note": "+303" }
   ],
   "11-19": [
-    { "name": "Prophet Obadiah", "note": "of the Twelve, +9th c. BC" }
+    { "name": "Prophet Obadiah", "note": "of the Twelve, +9th c. BC" },
+    { "name": "Sts. Barlaam and Josaphat of India", "note": "and Abenner the King" }
   ],
   "11-20": [
+    { "name": "Forefeast of the Entrance of the Theotokos", "kind": "feast" },
     { "name": "St. Gregory of Decapolis", "note": "+ca. 820" },
     { "name": "St. Proclus, Archbishop of Constantinople", "note": "disciple of John Chrysostom, +447" }
   ],
@@ -1187,32 +1204,40 @@
     { "name": "Entrance of the Most Holy Theotokos into the Temple", "kind": "feast" }
   ],
   "11-22": [
-    { "name": "Apostle Philemon of the Seventy", "note": "the recipient of Paul's letter" }
+    { "name": "Apostle Philemon and Apphia of the Seventy", "note": "recipients of Paul's letter" },
+    { "name": "Right-believing Prince Michael of Tver", "note": "+1318" }
   ],
   "11-23": [
-    { "name": "St. Amphilochius, Bishop of Iconium", "note": "Cappadocian, friend of Basil and the Gregorys, +395" }
+    { "name": "St. Amphilochius, Bishop of Iconium", "note": "Cappadocian, friend of Basil and the Gregorys, +395" },
+    { "name": "Right-believing Prince Alexander Nevsky", "note": "+1263" }
   ],
   "11-24": [
-    { "name": "Hieromartyr Clement, Pope of Rome", "note": "disciple of Peter, +ca. 101" }
+    { "name": "Hieromartyr Clement, Pope of Rome", "note": "disciple of Peter, +ca. 101" },
+    { "name": "Hieromartyr Peter, Archbishop of Alexandria", "note": "+311" }
   ],
   "11-25": [
     { "name": "Great-martyr Catherine of Alexandria", "note": "+305" },
     { "name": "Great-martyr Mercurius", "note": "of Caesarea, +259" }
   ],
   "11-26": [
-    { "name": "St. Alypius the Stylite of Adrianople", "note": "+640" }
+    { "name": "St. Alypius the Stylite of Adrianople", "note": "+640" },
+    { "name": "St. Innocent, First Bishop of Irkutsk", "note": "+1731" }
   ],
   "11-27": [
-    { "name": "Great-martyr James the Persian", "note": "+421" }
+    { "name": "Great-martyr James the Persian", "note": "+421" },
+    { "name": "Icon of the Theotokos 'The Sign'", "kind": "feast", "note": "of Novgorod, 1170" }
   ],
   "11-28": [
-    { "name": "Venerable-martyr Stephen the New, Confessor", "note": "iconophile, +767" }
+    { "name": "Venerable-martyr Stephen the New, Confessor", "note": "iconophile, +767" },
+    { "name": "Martyr Irenarchus of Sebaste and the Seven Women", "note": "+303" }
   ],
   "11-29": [
-    { "name": "Martyr Paramonus and 370 with him", "note": "of Bithynia, +250" }
+    { "name": "Martyr Paramonus and 370 with him", "note": "of Bithynia, +250" },
+    { "name": "Ven. Acacius of Sinai", "note": "of The Ladder, +6th c." }
   ],
   "11-30": [
-    { "name": "Holy Apostle Andrew the First-Called", "kind": "feast", "note": "brother of Peter, preacher to Byzantium and Greece" }
+    { "name": "Holy Apostle Andrew the First-Called", "kind": "feast", "note": "brother of Peter, preacher to Byzantium and Greece" },
+    { "name": "St. Frumentius, Enlightener of Abyssinia", "note": "+ca. 380" }
   ],
   "12-01": [
     { "name": "Prophet Nahum", "note": "of the Twelve, +7th c. BC" }
