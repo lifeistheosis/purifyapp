@@ -1384,6 +1384,304 @@ export const SAINTS: Saint[] = [
  },
  ],
  },
+ {
+ slug: "apostle-andrew",
+ byname: "The First-Called",
+ name: "Holy Apostle Andrew",
+ epithet: "Protokletos · The First-Called · Brother of Peter",
+ born: "1st century (Bethsaida of Galilee)",
+ reposed: "1st century (Patras in Achaia)",
+ feastDays: ["November 30", "June 30"],
+ see: "Apostle at large; tradition founder of the see of Byzantium",
+ shortBio:
+ "The brother of Simon Peter, first of the disciples of John the Baptist to follow the Lord, and the apostle whose preaching opened the Gospel to the lands of the Black Sea and to the city that would become Constantinople.",
+ life: [
+ "Andrew was born at Bethsaida of Galilee, the son of Jonas and the elder brother of Simon Peter, and worked with his brother as a fisherman on the Sea of Galilee. He was a disciple of John the Baptist when, on the day after John pointed out the Lord as the Lamb of God, Andrew and another disciple turned and followed Jesus. He was the first of the Twelve to confess him, and the first thing he did afterwards was to find his brother and bring him.",
+ "He travelled with the Lord through the years of the Galilean ministry and was numbered among the Twelve. After Pentecost the tradition sends him on the longest northern missionary route of any of the apostles: along the coasts of Asia Minor, into Scythia and the lands beyond the Black Sea, into Thrace and Macedonia, and most famously to Byzantium, where he ordained Stachys as the first bishop of the see that became the Ecumenical Patriarchate.",
+ "He ended his preaching at Patras in Achaia, in southern Greece, where he had converted a great multitude including the wife and brother of the proconsul Aegeates. The proconsul condemned him to crucifixion, and the oldest accounts relate that he was bound, not nailed, to a cross of the saltire form so that his suffering would be longer. He hung on it for two days, preaching to the people from the cross, and reposed on the thirtieth of November around the year sixty.",
+ "His relics were translated to Constantinople in 357 by the emperor Constantius II and laid in the Church of the Holy Apostles. Portions were taken west to Amalfi in Italy, and the skull was returned by Pope Paul VI to Patras in 1964. He is honored as the patron of Russia, of Romania, of Scotland, and of the Ecumenical Patriarchate, which keeps his feast as its great feast of thanksgiving.",
+ ],
+ quotes: [
+ {
+ text: "We have found the Messias, which is, being interpreted, the Christ.",
+ source: "John 1:41 (KJV)",
+ href: "/saints/apostle-andrew/the-first-called",
+ },
+ {
+ text: "There is a lad here, which hath five barley loaves, and two small fishes: but what are they among so many?",
+ source: "John 6:9 (KJV)",
+ },
+ ],
+ works: [
+ {
+ slug: "the-first-called",
+ title: "The First-Called",
+ subtitle: "Selected passages from the Gospels",
+ year: "c. 30-60",
+ blurb:
+ "The call on the bank of the Jordan, the bringing of Peter to the Lord, and the long northern mission ending at the saltire cross of Patras.",
+ topics: ["Mission", "Calling", "Brotherhood", "Martyrdom", "Scripture"],
+ },
+ ],
+ },
+ {
+ slug: "apostle-james-zebedee",
+ byname: "Son of Thunder",
+ name: "Holy Apostle James, Son of Zebedee",
+ epithet: "Brother of John the Theologian · First of the Twelve to Suffer",
+ born: "1st century (Galilee)",
+ reposed: "c. AD 44 (Jerusalem)",
+ feastDays: ["April 30"],
+ see: "Apostle at Jerusalem",
+ shortBio:
+ "The elder brother of John the Theologian and the first of the Twelve to die for the Name, beheaded at Jerusalem under King Herod Agrippa I around the year 44.",
+ life: [
+ "James was the son of Zebedee, a Galilean fisherman of considerable means with hired servants, and of Salome, who was, the tradition holds, a kinswoman of the Lord. With his younger brother John he was a partner of Simon Peter in the fishing trade, and was mending nets in the boat with his father when the Lord called the brothers, and they left both nets and father and followed.",
+ "He was numbered among the three closest disciples: with Peter and John he alone was admitted to the raising of Jairus's daughter, to the Transfiguration on Mount Tabor, and to the agony in the garden of Gethsemane. The Lord named the two brothers together Boanerges, 'sons of thunder,' perhaps for the fervor which once asked to call down fire on a Samaritan village.",
+ "Once their mother, with the brothers beside her, asked the Lord that they might sit on either side of him in his kingdom. The Lord turned to them and asked whether they could drink the cup he was to drink. They said they could. The Lord answered that they would indeed drink it; and so it proved.",
+ "Around the year forty-four, King Herod Agrippa I, the grandson of Herod the Great, sought favor with his Jewish subjects by turning against the new community at Jerusalem. He laid hold of James and had him beheaded with the sword. He was the first of the Twelve to die for the Faith, and his martyrdom is recorded in the twelfth chapter of the Book of Acts, the only such record of an apostle's death in the New Testament.",
+ "Eusebius preserves a tradition that the officer who led James to execution was so moved by his bearing on the way that he confessed Christ on the spot and was beheaded with him. The Church keeps James's memory on the thirtieth of April; his relics, after long translations, came to rest at Santiago de Compostela in Spain, one of the great pilgrimage shrines of the medieval and modern world.",
+ ],
+ quotes: [
+ {
+ text: "We can.",
+ source: "His answer with John to the question of the cup (Mark 10:39, KJV)",
+ href: "/saints/apostle-james-zebedee/first-of-the-martyrs",
+ },
+ ],
+ works: [
+ {
+ slug: "first-of-the-martyrs",
+ title: "First of the Apostles to Suffer",
+ subtitle: "Selected passages from the Gospels and Acts",
+ year: "c. 30-44",
+ blurb:
+ "Two scenes: the request for the cup that turned into a prophecy of martyrdom, and the brief notice in Acts of his beheading under Herod.",
+ topics: ["Martyrdom", "Discipleship", "Suffering", "Witness", "Scripture"],
+ },
+ ],
+ },
+ {
+ slug: "apostle-philip",
+ byname: "Of Bethsaida",
+ name: "Holy Apostle Philip",
+ epithet: "Apostle of Hierapolis · One of the Twelve",
+ born: "1st century (Bethsaida of Galilee)",
+ reposed: "1st century (Hierapolis in Phrygia)",
+ feastDays: ["November 14"],
+ see: "Apostle at large; martyred at Hierapolis",
+ shortBio:
+ "The Galilean of Bethsaida who brought Nathanael to the Lord with the words 'Come and see,' asked at the Mystical Supper to be shown the Father, and preached the Gospel through Phrygia until he was crucified at Hierapolis.",
+ life: [
+ "Philip was a Galilean of Bethsaida, the same town as Andrew and Peter. He was called by the Lord himself on the day after Andrew's call, with the single word 'Follow me,' and on his way home he found Nathanael, also called Bartholomew, and brought him to the Lord with the invitation 'Come and see.'",
+ "He is mentioned by name in each of the four Gospel lists of the Twelve, and the Fourth Gospel gives him three further scenes. He is the disciple to whom the Lord turns at the feeding of the five thousand, to test what he would answer; he is the one to whom the Greeks who came to the feast first put their request, 'Sir, we would see Jesus'; and at the Mystical Supper it is he who asks the question that draws from the Lord the great saying, 'He that hath seen me hath seen the Father.'",
+ "After Pentecost the tradition sends Philip into Phrygia and Lydia, where he preached the Gospel with his sister Mariamne and, the older accounts agree, with the apostle Bartholomew. He confronted the cult of the serpent at Hierapolis, and converted the wife of the proconsul. The proconsul, enraged at the loss of his household, condemned the two apostles. Philip was crucified, head-downward in some accounts, and reposed on the cross. Bartholomew, after being released through the prayer of the dying Philip, took the body for burial and went on to other lands.",
+ "His memory is kept on the fourteenth of November; the Nativity Fast that begins the next day is sometimes called Philip's Fast, taking its name from the eve.",
+ ],
+ quotes: [
+ {
+ text: "Come and see.",
+ source: "His invitation to Nathanael (John 1:46, KJV)",
+ href: "/saints/apostle-philip/come-and-see",
+ },
+ {
+ text: "Lord, shew us the Father, and it sufficeth us.",
+ source: "John 14:8 (KJV)",
+ href: "/saints/apostle-philip/come-and-see",
+ },
+ ],
+ works: [
+ {
+ slug: "come-and-see",
+ title: "Come and See",
+ subtitle: "Selected passages from the Gospel of John",
+ year: "c. 30-60",
+ blurb:
+ "Two Johannine scenes: the call of Philip and his bringing of Nathanael, and the question at the Supper that draws out one of the great sayings on the Father and the Son.",
+ topics: ["Mission", "Christology", "Discipleship", "Scripture"],
+ },
+ ],
+ },
+ {
+ slug: "apostle-bartholomew",
+ byname: "Nathanael, the Israelite Indeed",
+ name: "Holy Apostle Bartholomew",
+ epithet: "Nathanael of Cana · Apostle of Armenia and India",
+ born: "1st century (Cana of Galilee)",
+ reposed: "1st century (Albanopolis in Armenia)",
+ feastDays: ["June 11", "August 25"],
+ see: "Apostle at large; tradition sends him to India and Armenia",
+ shortBio:
+ "The Israelite in whom the Lord said there was no guile, called Nathanael in the Gospel of John and Bartholomew in the synoptics, whose long missions reached India and Armenia and who was flayed and beheaded for the Faith.",
+ life: [
+ "He was born at Cana of Galilee, the same village where the Lord turned water into wine. The synoptic Gospels number him among the Twelve under the name Bartholomew, 'son of Tolmai,' which is a patronymic; the Gospel of John, which never uses that name, calls him Nathanael and tells the story of his call. The two have been identified as the same man from very early in the Church's reading.",
+ "He was sitting under a fig tree when his friend Philip brought him word of the Lord. He answered with the question 'Can there any good thing come out of Nazareth?' But he came when Philip said 'Come and see,' and as he was coming the Lord saw him from afar and said, 'Behold an Israelite indeed, in whom is no guile.' When the Lord told him that he had been seen praying under the fig tree, before Philip had called him, Bartholomew confessed: 'Rabbi, thou art the Son of God; thou art the King of Israel.'",
+ "After Pentecost the traditions send him on some of the longest journeys of any of the Twelve: into Mesopotamia, into India, where Eusebius records that Pantaenus of Alexandria in the second century found a Hebrew copy of Matthew left by him, and at last into Armenia, where the Armenian Church honors him with Thaddaeus as her founding apostle.",
+ "In Armenia he converted the king Polymius and a great part of his court. The king's brother, raised against him, ordered him arrested, and he was flayed alive and then beheaded at Albanopolis on the western shore of the Caspian. His iconography often shows him holding his own skin as the witness of his cost. The Orthodox Church keeps his memory on the eleventh of June together with Barnabas, and on the twenty-fifth of August at the translation of his relics.",
+ ],
+ quotes: [
+ {
+ text: "Rabbi, thou art the Son of God; thou art the King of Israel.",
+ source: "John 1:49 (KJV)",
+ href: "/saints/apostle-bartholomew/nathanael-under-the-fig-tree",
+ },
+ {
+ text: "Can there any good thing come out of Nazareth?",
+ source: "John 1:46 (KJV)",
+ href: "/saints/apostle-bartholomew/nathanael-under-the-fig-tree",
+ },
+ ],
+ works: [
+ {
+ slug: "nathanael-under-the-fig-tree",
+ title: "Nathanael Under the Fig Tree",
+ subtitle: "Selected passages from the Gospel of John",
+ year: "c. 30-65",
+ blurb:
+ "The call of Nathanael in the first chapter of the Fourth Gospel, and the tradition of his mission and martyrdom in Armenia.",
+ topics: ["Calling", "Confession", "Mission", "Martyrdom", "Scripture"],
+ },
+ ],
+ },
+ {
+ slug: "apostle-james-alphaeus",
+ byname: "Son of Alphaeus",
+ name: "Holy Apostle James, Son of Alphaeus",
+ epithet: "One of the Twelve · The Silent Apostle",
+ born: "1st century (Galilee)",
+ reposed: "1st century (tradition: Egypt)",
+ feastDays: ["October 9", "June 30"],
+ see: "Apostle at large",
+ shortBio:
+ "The second James named among the Twelve, distinguished in the apostolic lists from James the son of Zebedee and from James the Brother of God, who labored quietly through the apostolic age and died a martyr in Egypt.",
+ life: [
+ "James the son of Alphaeus is one of the apostles whom the Gospel names but does not describe at length. He is set down in all four lists of the Twelve, in Matthew, in Mark, in Luke, and in the Acts; beyond his name, the Gospels record no word of his. The Church has always honored him in the company of the rest, taking the silence as part of his witness.",
+ "He is to be carefully distinguished from two other Jameses of the apostolic age. James the son of Zebedee, the brother of John, was the first of the Twelve to be martyred, around the year forty-four. James 'the Brother of God,' the first bishop of Jerusalem and the author of the catholic epistle, was a kinsman of the Lord rather than one of the original Twelve. James of Alphaeus is the third, and the silent one.",
+ "Some of the older Fathers identify him with James 'the Less' or 'the Little' (Mark 15:40), whose mother stood at the Cross of the Lord; if that identification holds, he is the brother of the apostle Matthew, the son of the same Alphaeus. The Orthodox tradition keeps the identification possible but does not require it.",
+ "The synaxaria report that after Pentecost he preached in Judaea, in Gaza, in Eleutheropolis, and at last in Egypt. The manner of his martyrdom is variously told, some accounts saying that he was stoned, some that he was crucified, some that he was sawn asunder. The Church keeps his memory on the ninth of October.",
+ ],
+ works: [
+ {
+ slug: "the-second-james",
+ title: "The Second James Among the Twelve",
+ subtitle: "Passages from the Gospels and tradition",
+ year: "c. 30-65",
+ blurb:
+ "His name in the apostolic lists, the difficulty of identifying him with the other Jameses of the New Testament, and the traditions of his silent mission and martyrdom.",
+ topics: ["Apostle", "Discipleship", "Mission", "Martyrdom", "Scripture"],
+ },
+ ],
+ },
+ {
+ slug: "apostle-jude",
+ byname: "Thaddaeus, the Brother of James",
+ name: "Holy Apostle Jude",
+ epithet: "Thaddaeus · Brother of James · Apostle to Armenia",
+ born: "1st century (Galilee)",
+ reposed: "1st century (tradition: Ararat in Armenia)",
+ feastDays: ["June 19"],
+ see: "Apostle at large; co-founder with Bartholomew of the Armenian Church",
+ shortBio:
+ "The apostle whom Matthew and Mark call Thaddaeus and whom Luke calls Jude the brother of James, the writer of the brief catholic epistle that bears his name, careful through it all not to be confused with Judas Iscariot.",
+ life: [
+ "Jude, also called Thaddaeus and in some manuscripts Lebbaeus, was one of the Twelve, the brother of James (the son of Alphaeus, by older tradition, or the Brother of God, by another reading), and, the Church holds, a kinsman of the Lord on the side of Joseph the Betrothed. The Gospel of John carefully calls him 'Judas, not Iscariot' (John 14:22), so that the readers should not confuse him with the traitor.",
+ "On the night of the Mystical Supper he put one question to the Lord, the only words the Gospels record from him: 'Lord, how is it that thou wilt manifest thyself unto us, and not unto the world?' The Lord's answer is one of the great sayings of the farewell discourse, that the one who keeps his word will be loved of the Father, and the Father and the Son will come and make their abode with him.",
+ "He is the author of the short catholic epistle that bears his name, twenty-five verses long. He calls himself in it not an apostle but a servant of Christ and a brother of James, the great bishop of Jerusalem. The letter sharply warns the early churches against teachers who turn grace into license, and ends with a doxology sung in Orthodox services to this day.",
+ "After Pentecost he is said to have preached in Judaea, Galilee, Samaria, and Idumaea, and afterwards in Mesopotamia, Edessa, Persia, and Armenia, where with Bartholomew he is honored as the founding apostle of the Armenian Church. He died a martyr, the tradition relates, at Ararat, around the year seventy-two. His memory is kept on the nineteenth of June.",
+ ],
+ quotes: [
+ {
+ text: "Lord, how is it that thou wilt manifest thyself unto us, and not unto the world?",
+ source: "John 14:22 (KJV)",
+ },
+ {
+ text: "Keep yourselves in the love of God, looking for the mercy of our Lord Jesus Christ unto eternal life.",
+ source: "Jude 21 (KJV)",
+ href: "/saints/apostle-jude/the-brother-of-james",
+ },
+ {
+ text: "Now unto him that is able to keep you from falling, and to present you faultless before the presence of his glory with exceeding joy.",
+ source: "Jude 24 (KJV)",
+ href: "/saints/apostle-jude/the-brother-of-james",
+ },
+ ],
+ works: [
+ {
+ slug: "the-brother-of-james",
+ title: "Selections from the Epistle",
+ subtitle: "From the Catholic Epistle of Jude",
+ year: "c. 65-80",
+ blurb:
+ "The opening greeting of the short catholic epistle and the closing counsels and doxology that end it: a manual of perseverance in twenty-five verses.",
+ topics: ["Perseverance", "Doctrine", "Doxology", "Mercy", "Scripture"],
+ },
+ ],
+ },
+ {
+ slug: "apostle-simon-zealot",
+ byname: "The Zealot",
+ name: "Holy Apostle Simon the Zealot",
+ epithet: "The Canaanite · One of the Twelve",
+ born: "1st century (Galilee)",
+ reposed: "1st century (tradition: Persia or the Caucasus)",
+ feastDays: ["May 10"],
+ see: "Apostle at large",
+ shortBio:
+ "The second Simon among the Twelve, distinguished by the byname Zealot from Simon Peter, an apostle whose missionary travels in the early tradition span Egypt, Britain, Persia, and the Caucasus, and who was martyred by being sawn asunder.",
+ life: [
+ "Simon, called Zelotes in Luke and the Canaanite in Matthew and Mark, was one of the Twelve. The names Zealot and Canaanite are the Greek and Aramaic forms of the same word: not 'of Cana' nor 'of Canaan,' but 'the zealous one,' a man who had once belonged, or had at least sympathized, with the party of Jewish patriots who longed for the deliverance of Israel from Rome.",
+ "A pious tradition going back to early Christian centuries identifies him with the bridegroom of the wedding at Cana, the first to receive a miraculous sign from the Lord through the request of his Mother. The identification is not given in Scripture, and the Church receives it as devout speculation rather than as a defined memory.",
+ "After Pentecost the traditions follow Simon over the widest map of any of the Twelve. The synaxaria send him through Egypt and along the coasts of North Africa to Mauretania and Cyrene; some accounts add a voyage to the west as far as Britain. He returned at last to the East, where he laboured among the Persians and the Iberians of the Caucasus, in some accounts together with the apostle Jude.",
+ "He was martyred for the Gospel, the older sources agree, by being sawn asunder. The Orthodox Church keeps his memory on the tenth of May. His relics, divided over many centuries, rest in part at the Vatican Basilica in Rome, and in part at the Iberian monastery of New Athos in Abkhazia, where a cave in which he is said to have lived is shown to pilgrims.",
+ ],
+ works: [
+ {
+ slug: "from-cana-to-the-nations",
+ title: "From Cana to the Nations",
+ subtitle: "Passages from the Gospels and tradition",
+ year: "c. 30-72",
+ blurb:
+ "His name in the apostolic lists, the tradition that he was the bridegroom of Cana, and the long missionary travels that ended in his martyrdom by the saw.",
+ topics: ["Mission", "Martyrdom", "Discipleship", "Zeal", "Scripture"],
+ },
+ ],
+ },
+ {
+ slug: "apostle-matthias",
+ byname: "Numbered with the Eleven",
+ name: "Holy Apostle Matthias",
+ epithet: "Successor to Judas Iscariot · One of the Seventy",
+ born: "1st century (Bethlehem of Judaea, by tradition)",
+ reposed: "1st century (tradition: Colchis or Jerusalem)",
+ feastDays: ["August 9"],
+ see: "Apostle at large",
+ shortBio:
+ "The disciple who had companied with the Twelve through the whole of the Lord's ministry and was chosen by lot in the upper room before Pentecost to fill the place vacated by Judas Iscariot, taking the apostolate the traitor had cast away.",
+ life: [
+ "Matthias was a disciple of the Lord from the beginning, present, the Acts say, from the baptism of John until the day the Lord was taken up. The tradition numbers him also among the Seventy whom the Lord sent out two by two to prepare his way (Luke 10:1). He was not, however, among the original Twelve.",
+ "Between the Ascension and Pentecost the disciples were gathered in the upper room at Jerusalem, a hundred and twenty in all. Peter stood up and reminded them that the prophecy of the Psalm required the place left empty by Judas to be filled, and that the one chosen must be a witness of the Resurrection. Two were put forward, Joseph called Barsabas and Matthias. They prayed, cast lots, and the lot fell upon Matthias, who was numbered with the Eleven.",
+ "After Pentecost he preached, the synaxaria relate, in Judaea, in Cappadocia, on the coasts of the Black Sea, and as far as Colchis on the eastern shore. He suffered much for the Gospel, was imprisoned, blinded for a time and restored, and at last condemned for confessing Christ. The accounts of his death differ: some say he was stoned in Jerusalem, some that he was crucified in Colchis, some that he was beheaded after being stoned. The Church keeps his memory on the ninth of August, and his relics rest in part at Trier in Germany, brought there from the East in the early centuries.",
+ "He is the last of the Twelve to be added before Pentecost, and the figure in whom the Church first learned that an apostolic office, once given, must be passed on. The order of succession that has held the Church together since rests, in its very pattern, on the choosing of Matthias.",
+ ],
+ quotes: [
+ {
+ text: "Thou, Lord, which knowest the hearts of all men, shew whether of these two thou hast chosen.",
+ source: "The prayer at his choosing (Acts 1:24, KJV)",
+ href: "/saints/apostle-matthias/numbered-with-the-eleven",
+ },
+ ],
+ works: [
+ {
+ slug: "numbered-with-the-eleven",
+ title: "Numbered with the Eleven",
+ subtitle: "From the Acts of the Apostles",
+ year: "c. 33",
+ blurb:
+ "Two scenes: the choosing in the upper room as recorded in Acts 1, and the tradition of his long missionary travels ending in martyrdom in the East.",
+ topics: ["Apostolate", "Succession", "Mission", "Martyrdom", "Scripture"],
+ },
+ ],
+ },
 ];
 
 export function getSaint(slug: string): Saint | null {
