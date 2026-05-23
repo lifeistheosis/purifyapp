@@ -679,10 +679,10 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "ignatius-of-antioch",
- byname: "The God-bearer",
+ byname: "Theophorus, Disciple of John",
  iconUrl: "/saints/icons/ignatius-of-antioch.jpg",
  name: "St. Ignatius of Antioch",
- epithet: "Bishop of Antioch · Apostolic Father",
+ epithet: "Bishop of Antioch · Disciple of the Theologian · Apostolic Father",
  born: "c. 35",
  reposed: "c. 108 (Rome)",
  feastDays: ["December 20"],
@@ -690,10 +690,18 @@ export const SAINTS: Saint[] = [
  shortBio:
  "A disciple of the Apostle John and second bishop of Antioch, who was taken in chains to Rome to be killed by wild beasts in the Colosseum, and wrote seven letters along the road that have shaped the Church ever since.",
  life: [
- "Tradition names Ignatius as a disciple of the Apostle John and identifies him with the child whom the Lord set in the midst of the disciples and said, 'Whosoever shall humble himself as this little child, the same is greatest in the kingdom of heaven.' From this comes his second name, Theophorus, the God-bearer.",
+ "Ignatius is one of the small handful of figures who form the visible bridge from the apostolic generation to the Church of the Fathers. The tradition names him a disciple of the Apostle John, alongside the younger Polycarp of Smyrna, and identifies him with the child whom the Lord set in the midst of the disciples and said, 'Whosoever shall humble himself as this little child, the same is greatest in the kingdom of heaven.' From this comes his second name, Theophorus, the God-bearer.",
+ "He was formed by John in the years the Apostle spent at Ephesus and in the cities of Asia, and the Johannine cast of his thought is unmistakable in his letters: the eternity of the Word, the unity of the Father and the Son, the Eucharist as the flesh of the Lord, the Church as the body that abides in the Vine. Where Polycarp would carry the apostolic teaching forward as a quiet pastor for sixty years, Ignatius carried it forward as a fierce bishop and finally as a martyr in chains.",
  "He succeeded the Apostle Peter and Evodius as bishop of Antioch, the city where the disciples were first called Christians. For some forty years he led the Antiochene church through the last decades of the apostolic generation.",
- "In the persecution under the emperor Trajan he was condemned to die at Rome. Bound and guarded by ten soldiers whom he called 'ten leopards', he was taken overland through Asia Minor. At each stop the local churches sent delegations to comfort him, and he wrote to them in return: to the Ephesians, the Magnesians, the Trallians, the Romans, the Philadelphians, the Smyrneans, and to Polycarp of Smyrna.",
- "He was martyred in the Colosseum, devoured by lions. The seven letters are the earliest patristic writings outside the New Testament, and witness to the eucharistic theology, the threefold ministry of bishop, presbyter, and deacon, and the unity of the Church around her bishop.",
+ "In the persecution under the emperor Trajan he was condemned to die at Rome. Bound and guarded by ten soldiers whom he called 'ten leopards', he was taken overland through Asia Minor. At each stop the local churches sent delegations to comfort him, and he wrote to them in return: to the Ephesians, the Magnesians, the Trallians, the Romans, the Philadelphians, the Smyrneans, and to Polycarp of Smyrna, his fellow disciple of John.",
+ "He was martyred in the Colosseum, devoured by lions, around the year 108. The seven letters are the earliest patristic writings outside the New Testament, and witness to the eucharistic theology, the threefold ministry of bishop, presbyter, and deacon, and the unity of the Church around her bishop. Through Ignatius and Polycarp, and through Polycarp's own disciple Irenaeus of Lyons, the chain from John to the Fathers is visible at every link.",
+ ],
+ quotes: [
+ {
+ text: "I am the wheat of God, and I am ground by the teeth of the wild beasts that I may be found pure bread of Christ.",
+ source: "Epistle to the Romans 4 (on the way to martyrdom)",
+ href: "/saints/ignatius-of-antioch/epistle-to-the-romans",
+ },
  ],
  works: [
  {
