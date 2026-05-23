@@ -16,6 +16,8 @@ import {
 import { getSaint } from "@/lib/saints/saints";
 import { loadVerseRange, type Verse } from "@/lib/bible/load";
 import { calendarPageVars, toneFor } from "@/lib/calendar/tone";
+import { cookies } from "next/headers";
+import { CALENDAR_STYLE_COOKIE } from "@/lib/calendar/styleDefault";
 import { FeastPanel } from "@/components/calendar/FeastPanel";
 import { CalendarGrid } from "@/components/calendar/CalendarGrid";
 import { DayScroll } from "@/components/calendar/DayScroll";
@@ -159,7 +161,20 @@ export default async function CalendarPage({
  searchParams: SearchParams;
 }) {
  const params = await searchParams;
- const style: CalStyle = params.style === "old" ? "old" : "new";
+ // Resolve the calendar style:
+ //   1. ?style= query (per-visit toggle wins)
+ //   2. user preference cookie (ProfileSettings writes it)
+ //   3. fall back to New (Revised Julian)
+ const cookieStore = await cookies();
+ const cookieStyle = cookieStore.get(CALENDAR_STYLE_COOKIE)?.value;
+ const style: CalStyle =
+   params.style === "old"
+     ? "old"
+     : params.style === "new"
+       ? "new"
+       : cookieStyle === "old"
+         ? "old"
+         : "new";
  const today = startOfDayUtc(new Date());
  const { year, month } = parseMonthParam(params.m, today);
 

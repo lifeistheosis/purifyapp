@@ -19,6 +19,25 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v5.4",
+ kind: "Account, made real",
+ date: "May 22, 2026",
+ blurb:
+ "The signed-in /account dashboard becomes a real reading-life dashboard. A gold-ringed initials avatar on the hero, prayer-rule streaks alongside the highlight counters, a recent-activity strip, a sync-status widget with a manual 'Sync now' and a last-synced timestamp, a Devices section that signs you out of all other devices in one tap, and a Reader Preferences panel that finally includes the interlinear default and the calendar reckoning. AppNav swaps the static 'Account' label for a small gold-ringed initials disc when signed in. /support adds a Bible translation licensing line so the funding goal reflects the cost of the live-fetched NKJV, NIV, and NLT translations.",
+ items: [
+ "ProfileHero gains a gold-ringed initials avatar (SaintIcon-style night gradient + display-serif initials) and a 'Last signed in' relative-time line under the email.",
+ "ProfileStats grows a second tier: Morning rule streak, Evening rule streak, and 'Both rules, in a row' (read from localStorage prayer keys, refreshes on a new purify:prayer-streak event the PrayerRuleReader now dispatches).",
+ "New ProfileActivity strip, three most-recent bookmarks as quick-jump links into their verse, chapter, or saint writing section. Empty-state copy when nothing is saved yet.",
+ "New ProfileSyncStatus widget, last-sync timestamp ('just now', '12 min ago', 'Today 4:21pm'), a manual 'Sync now' button, and a red error badge when the last push/pull threw. SyncOnMount now records the timestamp and the error message so the widget has something to read.",
+ "New ProfileDevices section, current-device card (parsed from window.navigator.userAgent) plus a 'Sign out of all other devices' action that POSTs to /api/auth/signout-others (wrapping supabase.auth.signOut({scope:'others'})).",
+ "ProfileSettings now exposes the Interlinear-by-default toggle (writes the same localStorage key the in-reader pill uses) and a functional Calendar Reckoning radio (New / Old Julian, persisted to localStorage and mirrored into a cookie so the server-rendered /calendar page can read it without a flash of wrong content).",
+ "Signed-out /account adds a small 'What syncs' card strip (highlights & notes / bookmarks / prayer streaks) and a single-line privacy reassurance under the form.",
+ "AppNav: when a Supabase session exists the 'Account' link becomes a small gold-ringed initials disc; signed-out keeps the text label. Mobile menu still shows the text link.",
+ "/support breakdown: new 'Bible translation licensing' line at $65/mo for the live-fetched modern translations (NKJV via Thomas Nelson, NIV via Biblica, NLT via Tyndale, delivered through the American Bible Society API.Bible). Monthly goal bumped from $300 to $375 to keep the 'leave some margin' copy honest.",
+ "Footer + home banner + /whats-new chip step to v5.4.",
+ ],
+ },
+ {
  version: "v5.3",
  kind: "The front door",
  date: "May 22, 2026",
@@ -506,7 +525,7 @@ export default function WhatsNewPage() {
  What&rsquo;s new
  </p>
  <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
- v5.2 &middot; The calendar as a menologion
+ v5.4 &middot; Account, made real
  </p>
  </div>
 

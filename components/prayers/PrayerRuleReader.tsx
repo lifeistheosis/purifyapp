@@ -136,6 +136,8 @@ export function PrayerRuleReader({ rule }: { rule: Rule }) {
             `purify.prayers.${rule.id}.streak`,
             String(newStreak),
           );
+          // Surface the streak change to dashboards (ProfileStats).
+          window.dispatchEvent(new CustomEvent("purify:prayer-streak"));
         }
       }
       prayerCache.delete(rule.id);

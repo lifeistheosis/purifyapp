@@ -1,15 +1,44 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useReaderPrefs, type ReaderSize, type ReaderFont } from "@/components/reader/ReaderPrefs";
+import { useInterlinear } from "@/lib/bible/interlinear";
+import {
+  CALENDAR_STYLE_KEY,
+  readCalendarStyleDefault,
+  writeCalendarStyleDefault,
+  type CalendarStyleDefault,
+} from "@/lib/calendar/styleDefault";
 
 /**
  * Reading preferences that live in localStorage and persist across visits.
- * Currently exposes font family + size from ReaderPrefs (same source used by
- * the inline reader toolbar). Future additions like calendar style and
- * default Bible version will land here.
+ * Surfaces the four user-facing knobs in one place: reader font + size
+ * (from ReaderPrefs), interlinear default (the Bible reader's
+ * Interlinear toggle persists here), and the calendar reckoning default
+ * (New / Old Julian).
  */
 export function ProfileSettings() {
   const { size, setSize, font, setFont } = useReaderPrefs();
+  const { on: interlinearOn, toggle: toggleInterlinear } = useInterlinear();
+
+  const [calStyle, setCalStyle] =
+    useState<CalendarStyleDefault>("new");
+  const [calHydrated, setCalHydrated] = useState(false);
+  useEffect(() => {
+    setCalStyle(readCalendarStyleDefault());
+    setCalHydrated(true);
+    function on(e: StorageEvent) {
+      if (e.key === CALENDAR_STYLE_KEY) {
+        setCalStyle(readCalendarStyleDefault());
+      }
+    }
+    window.addEventListener("storage", on);
+    return () => window.removeEventListener("storage", on);
+  }, []);
+  function pickCalStyle(v: CalendarStyleDefault) {
+    setCalStyle(v);
+    writeCalendarStyleDefault(v);
+  }
 
   const sizeOptions: { value: ReaderSize; label: string }[] = [
     { value: "sm", label: "Small" },
@@ -46,16 +75,65 @@ export function ProfileSettings() {
           />
         </Row>
         <Row
-          label="Calendar style"
-          description="New (Revised Julian) is set on the /calendar page; Old (Julian) is a per-visit toggle there. A persistent default lands in v3.4."
-          locked
+          label="Interlinear by default"
+          description="Show the Greek alongside the English on New Testament chapters as soon as you open them."
         >
-          <span className="font-sans text-[13px] text-paper/45 italic">
-            Coming next
-          </span>
+          <Toggle
+            on={interlinearOn}
+            onChange={toggleInterlinear}
+            label={interlinearOn ? "On" : "Off"}
+          />
+        </Row>
+        <Row
+          label="Calendar reckoning"
+          description="The default style used by /calendar when no ?style= query is set. New (Revised Julian) for the Ecumenical Patriarchate and the majority; Old (Julian) for the Russian, Serbian, Athonite, and Jerusalem traditions."
+        >
+          {calHydrated && (
+            <SegGroup
+              value={calStyle}
+              options={[
+                { value: "new", label: "New" },
+                { value: "old", label: "Old (Julian)" },
+              ]}
+              onChange={(v) => pickCalStyle(v as CalendarStyleDefault)}
+            />
+          )}
         </Row>
       </div>
     </section>
+  );
+}
+
+function Toggle({
+  on,
+  onChange,
+  label,
+}: {
+  on: boolean;
+  onChange: () => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onChange}
+      aria-pressed={on}
+      className={
+        "inline-flex items-center gap-2 rounded-pill border px-4 h-[36px] font-sans text-[13px] font-medium transition-colors " +
+        (on
+          ? "border-gold text-night bg-gold hover:bg-gold/90"
+          : "border-paper/15 bg-paper/[0.04] text-paper/85 hover:bg-paper/10 hover:border-paper/30")
+      }
+    >
+      <span
+        aria-hidden
+        className={
+          "inline-block w-2 h-2 rounded-full " +
+          (on ? "bg-night" : "bg-paper/30")
+        }
+      />
+      {label}
+    </button>
   );
 }
 

@@ -2,9 +2,13 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ReaderPrefsProvider } from "@/components/reader/ReaderPrefs";
 import { SignInPanel } from "@/components/profile/SignInPanel";
+import { WhatSyncsStrip } from "@/components/profile/WhatSyncsStrip";
 import { ProfileHero } from "@/components/profile/ProfileHero";
 import { ProfileStats } from "@/components/profile/ProfileStats";
+import { ProfileActivity } from "@/components/profile/ProfileActivity";
 import { ProfileSettings } from "@/components/profile/ProfileSettings";
+import { ProfileSyncStatus } from "@/components/profile/ProfileSyncStatus";
+import { ProfileDevices } from "@/components/profile/ProfileDevices";
 import { ProfileData } from "@/components/profile/ProfileData";
 import { ProfileDanger } from "@/components/profile/ProfileDanger";
 import { SyncOnMount } from "@/components/profile/SyncOnMount";
@@ -41,6 +45,8 @@ export default async function AccountPage() {
  </p>
 
  <SignInPanel />
+
+ <WhatSyncsStrip />
 
  <p className="mt-10 font-sans text-[14px] text-paper/55 leading-[1.65] max-w-[560px]">
  Or keep using Purify without an account. What you save will live
@@ -87,11 +93,18 @@ export default async function AccountPage() {
  email={user.email ?? ""}
  initialDisplayName={displayName}
  joinedAt={joinedAt}
+ lastSignedInAt={user.last_sign_in_at ?? undefined}
  />
 
  <ProfileStats />
 
+ <ProfileActivity />
+
+ <ProfileSyncStatus />
+
  <ProfileSettings />
+
+ <ProfileDevices />
 
  <ProfileData signedIn />
 

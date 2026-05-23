@@ -11,11 +11,11 @@ export const SUPPORT = {
  /** Currency code displayed on the page. */
  currency: "USD",
  /** Current month's funding goal in USD. */
- monthlyGoalUsd: 300,
+ monthlyGoalUsd: 375,
  /** Donations received toward this month's goal in USD. */
  monthlyRaisedUsd: 42,
  /** Last update of these numbers (human-readable). */
- lastUpdated: "May 19, 2026",
+ lastUpdated: "May 22, 2026",
  /** Where the money goes, in priority order. */
  expenses: [
  {
@@ -47,6 +47,11 @@ export const SUPPORT = {
  label: "Encrypted offsite backups",
  monthlyUsd: 10,
  note: "Daily Supabase backups plus an encrypted mirror of the assets bucket to a second region.",
+ },
+ {
+ label: "Bible translation licensing",
+ monthlyUsd: 65,
+ note: "Licensing fees for the live-fetched modern translations, NKJV via Thomas Nelson, NIV via Biblica, NLT via Tyndale, delivered through the American Bible Society API.Bible. Per-call fees plus a flat annual production surcharge, amortized monthly.",
  },
  {
  label: "Patristic-translation sourcing time",
