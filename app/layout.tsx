@@ -33,8 +33,15 @@ const cardo = Cardo({
  display: "swap",
 });
 
+// The deployed origin, used to resolve every absolute URL Next emits for us
+// (Open Graph image, Twitter card image, canonicals). Driven by an env var so
+// the same build serves the Render preview AND the future production domain
+// without code changes; falls back to the current Render host.
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://purifyapp.onrender.com";
+
 export const metadata: Metadata = {
- metadataBase: new URL("https://purify.app"),
+ metadataBase: new URL(SITE_URL),
  title: {
  default: "Purify, Orthodox prayer, calendar, and Scripture",
  template: "%s | Purify",
