@@ -1508,6 +1508,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-bartholomew",
  byname: "Nathanael, the Israelite Indeed",
+ iconUrl: "/saints/icons/apostle-bartholomew.jpg",
  name: "Holy Apostle Bartholomew",
  epithet: "Nathanael of Cana · Apostle of Armenia and India",
  born: "1st century (Cana of Galilee)",
