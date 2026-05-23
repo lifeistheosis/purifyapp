@@ -1690,6 +1690,156 @@ export const SAINTS: Saint[] = [
  },
  ],
  },
+ {
+ slug: "anianus-of-alexandria",
+ byname: "Successor of St. Mark",
+ name: "St. Anianus of Alexandria",
+ epithet: "Second Bishop of Alexandria · Cobbler of the See of St. Mark",
+ born: "1st century (Alexandria)",
+ reposed: "c. 86 (Alexandria)",
+ feastDays: ["April 25"],
+ see: "Alexandria",
+ shortBio:
+ "The Alexandrian cobbler whose pierced hand the Apostle Mark healed at his first preaching in the city, who was baptized with his household, and who after Mark's martyrdom became the second bishop of the see he founded.",
+ life: [
+ "Anianus was a cobbler at Alexandria when the holy Evangelist Mark first came to the city from Cyrene to preach the Gospel. The tradition of the Alexandrian Church relates that, as Mark entered the city, the thong of his sandal broke, and he sought out the nearest workshop to have it mended. Anianus, taking the sandal, pierced his own hand with the awl and cried out involuntarily on the one God whose name he knew. Mark took the wounded hand, prayed, and healed it.",
+ "He received Mark into his house, was catechized, baptized with his household, and became the first fruits of the great Egyptian Church. Many of his neighbors followed him to the Faith, and the wonder of the healing was the seed of the patriarchate that has continued in Alexandria since.",
+ "When the Apostle Mark, after several returns to Alexandria, was at last seized by a pagan mob on the morning of Pascha in 68 and dragged through the streets to his death, the new community received Anianus as their bishop. He sat on the throne of St. Mark for some twenty-two years, through the reigns of Vespasian, Titus, and into the years of Domitian. He reposed in peace around 86.",
+ "The Orthodox and Coptic Churches keep his memory together with the Evangelist Mark on the twenty-fifth of April. Every succession of the great Patriarchate of Alexandria, Athanasius, Cyril, and all the rest, traces itself back through every patriarch to him.",
+ ],
+ quotes: [
+ {
+ text: "One God!",
+ source: "His involuntary cry when the awl pierced his hand (Coptic synaxarion)",
+ href: "/saints/anianus-of-alexandria/the-second-bishop",
+ },
+ ],
+ works: [
+ {
+ slug: "the-second-bishop",
+ title: "The Second Bishop of Alexandria",
+ subtitle: "From the tradition of the Alexandrian Church",
+ year: "1st century",
+ blurb:
+ "The healing of the cobbler's hand by the Evangelist Mark, the founding of the Alexandrian Church, and Anianus's twenty-two years as successor to the apostle.",
+ topics: ["Succession", "Mission", "Healing", "Episcopate", "Tradition"],
+ },
+ ],
+ },
+ {
+ slug: "polycarp-of-smyrna",
+ byname: "Disciple of John",
+ name: "St. Polycarp of Smyrna",
+ epithet: "Bishop of Smyrna · Hieromartyr · Disciple of the Theologian",
+ born: "c. 69",
+ reposed: "c. 155 (Smyrna)",
+ feastDays: ["February 23"],
+ see: "Smyrna in Asia Minor",
+ shortBio:
+ "The bishop of Smyrna who as a young man sat at the feet of the Apostle John, who pastored his church for upwards of sixty years, and who at the age of eighty-six was burned and finally stabbed for the Faith in the stadium of his city.",
+ life: [
+ "Polycarp was born around the year sixty-nine, less than a generation after the Resurrection, and as a young man was a disciple of the Apostle John during John's last years at Ephesus. From John he received the Faith and from John, the tradition holds, his consecration as bishop of Smyrna in Asia Minor. He governed that see for upwards of sixty years.",
+ "He stands at the visible bridge between the apostolic generation and the second-century Fathers. He gave hospitality to Ignatius of Antioch as the chained bishop passed through Smyrna on the way to his martyrdom at Rome, received four of his letters, and gathered the others for forwarding. He afterwards wrote his own short letter to the Philippians, the only surviving writing from his hand. His own disciple, Irenaeus of Lyons, would as an old man recall the way Polycarp had described those who had seen the Lord, and would credit him with the orthodox reading of the Gospel of John against the Gnostics.",
+ "In his very old age he travelled to Rome to discuss the date of Pascha with Pope Anicetus. They could not bring their traditions into agreement, but they parted in peace, and Anicetus gave Polycarp the place of honor at the Eucharist as to one whose hands had been blessed by the hands of an apostle.",
+ "Around the year one hundred and fifty-five a pagan festival in Smyrna sought victims, and Polycarp was named. He was taken at a country house outside the city, set on an ass, and brought into the stadium before the proconsul, who pressed him to swear by the genius of the emperor and revile Christ. Polycarp answered that for eighty-six years he had served his Lord and that his Lord had done him no wrong; he could not blaspheme his King who saved him.",
+ "He was condemned to be burned. As the fire was kindled around him he gave thanks aloud that he had been counted worthy to share in the cup of Christ. When the fire did not consume him, an executioner stabbed him with a dagger, and his blood put out the flames. The church of Smyrna gathered his bones as more precious than jewels and kept the annual day of his death as his 'birthday', the first surviving use of that expression for a martyr's anniversary, which the Church has not ceased to use since.",
+ ],
+ quotes: [
+ {
+ text: "Fourscore and six years have I been His servant, and He hath done me no wrong. How then can I blaspheme my King who saved me?",
+ source: "His answer in the stadium of Smyrna",
+ href: "/saints/polycarp-of-smyrna/eighty-and-six-years",
+ },
+ {
+ text: "I bless thee, that thou hast counted me worthy of this day and this hour, that I should receive a portion among the number of the martyrs in the cup of thy Christ.",
+ source: "His prayer as the fire was kindled (Martyrdom of Polycarp 14)",
+ href: "/saints/polycarp-of-smyrna/eighty-and-six-years",
+ },
+ ],
+ works: [
+ {
+ slug: "eighty-and-six-years",
+ title: "Eighty and Six Years",
+ subtitle: "From the Letter to the Philippians and the Martyrdom of Polycarp",
+ year: "c. 110-155",
+ blurb:
+ "His discipleship under John, his counsels to the Philippians on prayer, mercy, and watchfulness, and the eyewitness account of his martyrdom in the stadium of Smyrna.",
+ topics: ["Martyrdom", "Apostolic Succession", "Perseverance", "Episcopate", "Tradition"],
+ },
+ ],
+ },
+ {
+ slug: "papias-of-hierapolis",
+ byname: "Hearer of the Elders",
+ name: "St. Papias of Hierapolis",
+ epithet: "Bishop of Hierapolis · Hearer of John · Companion of Polycarp",
+ born: "c. 70",
+ reposed: "c. 155 (Hierapolis in Phrygia)",
+ feastDays: ["February 22"],
+ see: "Hierapolis in Phrygia",
+ shortBio:
+ "The bishop of Hierapolis whom Irenaeus calls 'a hearer of John, and a companion of Polycarp,' the writer of five lost books on the oracles of the Lord, and the earliest extra-biblical witness to the writing of the Gospels of Matthew and Mark.",
+ life: [
+ "Papias was bishop of Hierapolis in Phrygia, the same town in which the Apostle Philip had been crucified two generations earlier and where his prophesying daughters were remembered into the second century. He was a disciple of the Apostle John in John's old age, and a friend of Polycarp of Smyrna, who like himself had heard the Theologian.",
+ "Somewhere between 110 and 130 he composed a five-volume work in Greek under the title Expositions of the Oracles of the Lord. The five books are lost. Eusebius of Caesarea, two centuries later, preserved fragments that are now the chief witness to what they had contained. Irenaeus, Polycarp's disciple, quotes him also.",
+ "He had set himself, he wrote in his preface, to gather not only what was in the books but what the elders had reported of what Andrew or Peter or Philip or Thomas or James or John or Matthew or any of the rest of the Lord's disciples had said. He preferred, he confessed, a living voice to a written page, because the truth could be felt only in the company of one who had handled it.",
+ "Through Papias the Church possesses the earliest external accounts of the writing of the Gospels of Matthew and Mark, and a vivid fragment, attributed through John to the Lord, on the abundance of the world to come. The Orthodox tradition keeps his memory on the twenty-second of February, the day before that of his fellow disciple Polycarp.",
+ ],
+ quotes: [
+ {
+ text: "I did not suppose that things from books would benefit me as much as things from a living and abiding voice.",
+ source: "From the preface to his five books, preserved by Eusebius (Church History III.39.4)",
+ href: "/saints/papias-of-hierapolis/the-living-voice",
+ },
+ ],
+ works: [
+ {
+ slug: "the-living-voice",
+ title: "The Living Voice",
+ subtitle: "From the surviving fragments of his five books",
+ year: "c. 110-130",
+ blurb:
+ "His preface on the elders, the famous notices on the writing of Matthew and Mark, and the great millennial fragment on the kingdom to come.",
+ topics: ["Tradition", "Gospel", "Apostolic Succession", "Eschatology", "Scripture"],
+ },
+ ],
+ },
+ {
+ slug: "prochorus-the-deacon",
+ byname: "Scribe of the Theologian",
+ name: "St. Prochorus, Deacon and Bishop",
+ epithet: "One of the Seven Deacons · Scribe of John on Patmos · Bishop of Nicomedia",
+ born: "1st century",
+ reposed: "late 1st century (Antioch or Nicomedia)",
+ feastDays: ["July 28"],
+ see: "Nicomedia in Bithynia",
+ shortBio:
+ "One of the Seven Deacons chosen with Stephen in the sixth chapter of Acts, who afterwards attached himself to the Apostle John, served him as scribe on Patmos at the dictation of the Fourth Gospel, and reposed a martyr as bishop of Nicomedia.",
+ life: [
+ "Prochorus is named in the sixth chapter of Acts as one of the Seven set apart by the apostles to serve the tables of the daily distribution at Jerusalem, the first deacons of the Church. He was, with the rest of the Seven, 'a man of good report, full of the Holy Ghost and wisdom.'",
+ "After the martyrdom of Stephen and the scattering of the Seven, the later Greek tradition relates that Prochorus attached himself to the Apostle John, travelled with him through his missionary labors in Asia, and accompanied him into exile when the emperor Domitian banished him to the island of Patmos around the year ninety-five.",
+ "On Patmos, the synaxarion holds, after the visions of the Apocalypse had been given to John, the apostle dictated to Prochorus the Fourth Gospel, that the Church might have in writing the words on which the whole later theology of the Word would rest. The iconography of John the Theologian in the cave on Patmos almost always shows Prochorus seated at his feet, pen in hand, writing on a scroll.",
+ "After John's release and return to Ephesus, Prochorus was consecrated bishop of Nicomedia in Bithynia. There he labored to the end of his life, and at last died a martyr's death for the Faith around the close of the first century. His memory is kept on the twenty-eighth of July with the rest of the Seven Deacons.",
+ ],
+ quotes: [
+ {
+ text: "Stephen, a man full of faith and of the Holy Ghost, and Philip, and Prochorus, and Nicanor, and Timon, and Parmenas, and Nicolas a proselyte of Antioch.",
+ source: "Acts 6:5 (KJV), the names of the Seven Deacons",
+ href: "/saints/prochorus-the-deacon/scribe-on-patmos",
+ },
+ ],
+ works: [
+ {
+ slug: "scribe-on-patmos",
+ title: "Scribe on Patmos",
+ subtitle: "From the Acts of the Apostles and the tradition of the Seven",
+ year: "1st century",
+ blurb:
+ "His choosing as one of the Seven in Acts 6, and the long tradition of his service to the Apostle John in exile, where the Fourth Gospel was given to the Church through his hand.",
+ topics: ["Diaconate", "Mission", "Tradition", "Episcopate", "Scripture"],
+ },
+ ],
+ },
 ];
 
 export function getSaint(slug: string): Saint | null {
