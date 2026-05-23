@@ -720,9 +720,25 @@ export const SAINTS: Saint[] = [
  ],
  works: [
  {
+ slug: "epistle-to-the-ephesians",
+ title: "Epistle to the Ephesians",
+ subtitle: "On the bishop, the bread, and the silent God",
+ year: "c. 107",
+ blurb:
+ "The longest and earliest of the seven letters. Onesimus is bishop, the Eucharist is the medicine of immortality, and the Incarnation is one of the three mysteries wrought in silence by God.",
+ topics: [
+ "Eucharist",
+ "Unity",
+ "Bishopric",
+ "Incarnation",
+ "Heresy",
+ "Christology",
+ ],
+ },
+ {
  slug: "epistle-to-the-romans",
  title: "Epistle to the Romans",
- subtitle: "Written on the road to martyrdom",
+ subtitle: "On the road to martyrdom",
  year: "c. 107",
  blurb:
  "The fiercest of the seven letters: Ignatius begs the Roman Christians not to intervene to spare him from the wild beasts.",
@@ -1808,6 +1824,22 @@ export const SAINTS: Saint[] = [
  },
  ],
  works: [
+ {
+ slug: "epistle-to-the-philippians",
+ title: "Epistle to the Philippians",
+ subtitle: "The bridge between St. John and St. Irenaeus",
+ year: "c. 110",
+ blurb:
+ "The only surviving writing from Polycarp's hand: a short letter to the Philippians on righteousness, the Eucharist, and the apostolic teaching, written within months of Ignatius's martyrdom. The fourteenth chapter is the historical anchor for the entire Ignatian corpus.",
+ topics: [
+ "Apostolic Succession",
+ "Tradition",
+ "Prayer",
+ "Eucharist",
+ "Episcopate",
+ "Perseverance",
+ ],
+ },
  {
  slug: "eighty-and-six-years",
  title: "Eighty and Six Years",
