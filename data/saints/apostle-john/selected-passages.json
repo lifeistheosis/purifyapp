@@ -1,0 +1,73 @@
+{
+  "saint": "apostle-john",
+  "slug": "selected-passages",
+  "title": "Selected Passages from the Gospel and First Epistle",
+  "subtitle": "From the Theologian's Gospel and his catholic epistles",
+  "source": "Text drawn from the King James Version (1611, public domain). Editorial framing by the editors of Purify.",
+  "sections": [
+    {
+      "n": 1,
+      "title": "The Prologue",
+      "framing": "Where Matthew opens his Gospel with a genealogy and Mark with the cry of the Forerunner, John begins before the world was. He echoes the first verse of Genesis and goes behind it: in the beginning, already, there is the Word. The Fathers read the Prologue as the deepest sentence the apostolic Church spoke about Christ before the councils were called. It is sung at the Paschal Liturgy each year, the new creation announced in the words of the old.",
+      "citation": "John 1:1-5, 14 (KJV)",
+      "paragraphs": [
+        "In the beginning was the Word, and the Word was with God, and the Word was God.",
+        "The same was in the beginning with God.",
+        "All things were made by him; and without him was not any thing made that was made.",
+        "In him was life; and the life was the light of men.",
+        "And the light shineth in darkness; and the darkness comprehended it not.",
+        "And the Word was made flesh, and dwelt among us, (and we beheld his glory, the glory as of the only begotten of the Father,) full of grace and truth."
+      ],
+      "notes": [
+        "'Dwelt among us' renders a Greek verb that means literally 'pitched his tent' or 'tabernacled': the glory that filled the tent in the wilderness has now taken flesh.",
+        "St. Athanasius made the Prologue one of the great Nicene texts: if all things were made by him, then he himself is not made."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "The new commandment",
+      "framing": "On the night the Lord was betrayed, after he had washed the disciples' feet and given them the bread and the cup, he laid one charge on them that has been remembered ever since as the mark of his own. The commandment is not new in that love had not been commanded before, the Law of Moses was full of it, but new in its measure. The standard is no longer the love of neighbor as oneself, but the love with which he has just loved them.",
+      "citation": "John 13:34-35 (KJV)",
+      "paragraphs": [
+        "A new commandment I give unto you, That ye love one another; as I have loved you, that ye also love one another.",
+        "By this shall all men know that ye are my disciples, if ye have love one to another."
+      ],
+      "notes": [
+        "St. John Chrysostom: the new measure of love is no longer 'as thyself' but 'as I have loved you,' that is, even unto death.",
+        "John, who reclined on the Lord's breast at the supper, was the one apostle who did not run on the night this was said. The commandment costs."
+      ]
+    },
+    {
+      "n": 3,
+      "title": "From the High-Priestly Prayer",
+      "framing": "John alone records the prayer the Lord prayed aloud in the upper room before he went out to the garden. The Fathers call it the Prayer of the High Priest, because in it the eternal Son consecrates himself for the offering and asks of the Father what the offering is to accomplish in his disciples. He prays not only for the Eleven but for all who through their word will believe; and his petition is that they may share, in the Spirit, the unity that he has with the Father from before the foundation of the world.",
+      "citation": "John 17:20-21 (KJV)",
+      "paragraphs": [
+        "Neither pray I for these alone, but for them also which shall believe on me through their word;",
+        "That they all may be one; as thou, Father, art in me, and I in thee, that they also may be one in us: that the world may believe that thou hast sent me."
+      ],
+      "notes": [
+        "This is the only place in the New Testament where the unity of the Church is grounded explicitly in the unity of the Holy Trinity.",
+        "'Through their word' is John's quiet acknowledgement that the Church of every age is reached only through the apostolic preaching."
+      ]
+    },
+    {
+      "n": 4,
+      "title": "God is love",
+      "framing": "John writes his first epistle from Ephesus near the end of his very long life, after every other apostle has been killed. He is the last witness to the Lord he saw, heard, and touched, and he writes as a father to his children. The whole letter circles around three verbs: to know, to love, to abide. In the central chapter he gives the sentence on which the whole Christian theology of God rests: not that God is loving, but that God is love. Whoever lives in love, the Theologian says, lives already in God.",
+      "citation": "1 John 4:7-12 (KJV)",
+      "paragraphs": [
+        "Beloved, let us love one another: for love is of God; and every one that loveth is born of God, and knoweth God.",
+        "He that loveth not knoweth not God; for God is love.",
+        "In this was manifested the love of God toward us, because that God sent his only begotten Son into the world, that we might live through him.",
+        "Herein is love, not that we loved God, but that he loved us, and sent his Son to be the propitiation for our sins.",
+        "Beloved, if God so loved us, we ought also to love one another.",
+        "No man hath seen God at any time. If we love one another, God dwelleth in us, and his love is perfected in us."
+      ],
+      "notes": [
+        "The tradition relates that in his very last years at Ephesus, when John could no longer walk, he was carried into the assembly and would say only one thing: 'Little children, love one another.' Asked why he repeated this and nothing else, he answered: because it is the Lord's commandment, and if you keep it, it is enough.",
+        "'God is love' is the only direct definition of the divine essence the New Testament offers. The Fathers read it together with 'God is light' (1 John 1:5) and 'God is spirit' (John 4:24) as a triad of biblical names for the same one God."
+      ]
+    }
+  ]
+}

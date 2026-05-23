@@ -1177,6 +1177,156 @@ export const SAINTS: Saint[] = [
  },
  ],
  },
+ {
+ slug: "apostle-matthew",
+ byname: "The Evangelist",
+ name: "Holy Apostle and Evangelist Matthew",
+ epithet: "Evangelist · Levi the Publican",
+ born: "1st century (Galilee)",
+ reposed: "1st century (tradition: Ethiopia)",
+ feastDays: ["November 16", "June 30"],
+ see: "Apostle at large; tradition sends him to Ethiopia and the East",
+ shortBio:
+ "The customs officer of Capernaum who left his ledger at a word of the Lord and afterwards wrote the first of the four Gospels, the Gospel of the Kingdom for the Hebrews.",
+ life: [
+ "Matthew, also called Levi the son of Alphaeus, was a Jew of Galilee who held the customs post at Capernaum, gathering tolls on the trade road that ran from Damascus down to the Mediterranean. To his own people his trade made him an outcast, lumped together with sinners; to the Romans he was a useful man.",
+ "He was sitting at the receipt of custom when the Lord passed by and called him with a single word. The other evangelists who tell the story call him Levi at the booth and Matthew among the Twelve; he himself, in his own Gospel, gives only the name by which the disciples afterwards knew him, and adds without comment the dinner he gave at his house that night for his old colleagues, the publicans and sinners.",
+ "He travelled with the Twelve through the rest of the Lord's ministry, was numbered with them in the Acts after the Resurrection, and was present in the upper room at Pentecost. Tradition holds that he then preached among the Hebrews in Judaea for some years, during which he wrote his Gospel in their tongue, ordered around the great discourses of the Lord and arranged to show how every fulfilment had been foretold by the prophets.",
+ "Later traditions take him to Ethiopia or to Parthia, where he is said to have died a martyr's death. The relics venerated as his now lie at Salerno in southern Italy. The Church keeps him among the four evangelists, signified in the iconography by a man (or an angel), the symbol assigned him from the opening of his Gospel with the human genealogy of Christ.",
+ ],
+ quotes: [
+ {
+ text: "Blessed are the poor in spirit: for theirs is the kingdom of heaven.",
+ source: "Matthew 5:3 (KJV)",
+ href: "/saints/apostle-matthew/selected-passages",
+ },
+ {
+ text: "I will have mercy, and not sacrifice: for I am not come to call the righteous, but sinners to repentance.",
+ source: "Matthew 9:13 (KJV)",
+ href: "/saints/apostle-matthew/selected-passages",
+ },
+ {
+ text: "Lo, I am with you alway, even unto the end of the world.",
+ source: "Matthew 28:20 (KJV)",
+ href: "/saints/apostle-matthew/selected-passages",
+ },
+ ],
+ works: [
+ {
+ slug: "selected-passages",
+ title: "Selected Passages from the Gospel",
+ subtitle: "From the Gospel according to St. Matthew",
+ year: "c. 50-65",
+ blurb:
+ "Three scenes from the Gospel he wrote: his own call at the tax booth, the opening of the Sermon on the Mount, and the Great Commission with which his Gospel closes.",
+ topics: ["Gospel", "Repentance", "Kingdom", "Beatitudes", "Mission", "Scripture"],
+ },
+ ],
+ },
+ {
+ slug: "apostle-john",
+ byname: "The Theologian",
+ name: "Holy Apostle and Evangelist John",
+ epithet: "The Theologian · The Beloved Disciple",
+ born: "1st century (Bethsaida of Galilee)",
+ reposed: "c. AD 100 (Ephesus)",
+ feastDays: ["May 8", "September 26"],
+ see: "Ephesus",
+ shortBio:
+ "The fisherman of Galilee whom the Lord loved, who reclined on his breast at the Mystical Supper and stood beneath his Cross, and who afterwards wrote the Fourth Gospel, the three catholic epistles, and the Apocalypse, the only apostle to die in peace, having lived to a very great age at Ephesus.",
+ life: [
+ "John was the son of Zebedee, a fisherman of Bethsaida, and of Salome, who according to tradition was a daughter of Joseph the Betrothed and therefore a kinswoman of the Lord. He and his elder brother James were partners with Simon Peter in the fishing trade on the Sea of Galilee, and were called by the Lord from their nets on the same day Peter was called.",
+ "From the first he was reckoned among the Lord's closest disciples. With Peter and James he alone was admitted to the raising of Jairus's daughter, to the Transfiguration on Tabor, and to the agony in Gethsemane. He calls himself in his own Gospel only 'the disciple whom Jesus loved,' and that disciple reclined on the Lord's breast at the Mystical Supper.",
+ "He was the only one of the Twelve who did not flee on the night the Lord was taken. He followed to the courtyard of the high priest, and stood at the foot of the Cross, and there received from the dying Lord the charge of his Mother: 'Behold thy mother.' He took her into his own house, and cared for her until her Dormition.",
+ "He was among the first at the empty tomb on the morning of the Resurrection, saw the linen clothes lying, and believed. After Pentecost he laboured with Peter at Jerusalem and was reckoned one of the pillars of the Church there.",
+ "Tradition relates that after the Dormition of the Theotokos he settled at Ephesus, the great Christian metropolis of Asia, and was the spiritual father of all the churches of Asia Minor. Exiled by the emperor Domitian to the island of Patmos, he received there the visions that became the Book of Revelation. Returning to Ephesus under Nerva, he wrote in his very old age the Fourth Gospel, that the Church might know in his words who the Word had been from before the world. He wrote also the three catholic epistles, the last of them perhaps the briefest writing in the New Testament.",
+ "He lived to a very great age, the tradition says past a hundred, and was the only one of the Twelve to die in peace. The Fathers add that he laid himself down in a grave he had himself prepared at Ephesus, and when his disciples opened it the next day his body was no longer there. The Church keeps the memory of his Dormition on the twenty-sixth of September and a feast of him with the rest of the Twelve on the thirtieth of June; on the eighth of May, the tradition relates, a fragrant dust rose from his grave and brought healing to all who took it, and that miracle is kept as its own feast.",
+ ],
+ quotes: [
+ {
+ text: "In the beginning was the Word, and the Word was with God, and the Word was God.",
+ source: "John 1:1 (KJV)",
+ href: "/saints/apostle-john/selected-passages",
+ },
+ {
+ text: "And the Word was made flesh, and dwelt among us.",
+ source: "John 1:14 (KJV)",
+ href: "/saints/apostle-john/selected-passages",
+ },
+ {
+ text: "A new commandment I give unto you, That ye love one another; as I have loved you.",
+ source: "John 13:34 (KJV)",
+ href: "/saints/apostle-john/selected-passages",
+ },
+ {
+ text: "Beloved, let us love one another: for love is of God.",
+ source: "1 John 4:7 (KJV)",
+ href: "/saints/apostle-john/selected-passages",
+ },
+ {
+ text: "He that loveth not knoweth not God; for God is love.",
+ source: "1 John 4:8 (KJV)",
+ href: "/saints/apostle-john/selected-passages",
+ },
+ ],
+ works: [
+ {
+ slug: "selected-passages",
+ title: "Selected Passages from the Gospel and First Epistle",
+ subtitle: "From the Theologian's Gospel and his catholic epistles",
+ year: "c. 90-100",
+ blurb:
+ "Four passages from the Fourth Gospel and the First Epistle: the Prologue, the new commandment of love, the High-Priestly Prayer, and the great chapter that confesses God is love.",
+ topics: ["Logos", "Incarnation", "Love", "Unity", "Trinity", "Scripture"],
+ },
+ ],
+ },
+ {
+ slug: "apostle-thomas",
+ byname: "Didymus, the Twin",
+ name: "Holy Apostle Thomas",
+ epithet: "Apostle to India · The Twin",
+ born: "1st century (Galilee)",
+ reposed: "1st century (tradition: Mylapore in India)",
+ feastDays: ["October 6", "June 30", "Antipascha (Thomas Sunday)"],
+ see: "Apostle at large; tradition sends him to Parthia and India",
+ shortBio:
+ "The apostle whose honest doubt at the Resurrection drew from the Risen Lord the offer of his wounds, and whose confession 'My Lord and my God' is the highest the Gospels record from any human mouth; tradition sends him to India, where he founded the Church of the Malabar coast.",
+ life: [
+ "Thomas was a Galilean Jew, called among the Twelve and given the Aramaic name Thomas, which means 'twin'; the Gospel of John, when he is mentioned, glosses the name into Greek as Didymus.",
+ "He appears three times by name in the Fourth Gospel and each time speaks. He proposed to his fellow disciples, when the Lord turned back into Judaea to raise Lazarus, that they should go with him to die together; he asked at the Mystical Supper the question that drew from the Lord the saying 'I am the way, the truth, and the life'; and on the eighth day after the Resurrection he was given by the Lord the wounds of the hands and the side and answered with the confession the Church has not ceased to repeat: 'My Lord and my God.'",
+ "Tradition relates that when the apostles cast lots after Pentecost to divide the world between them for preaching, India fell to Thomas. He went first to Parthia, then to the kingdom of Gondophares in north India, and afterwards down the Malabar coast in the south, where he founded seven churches that survive to this day as the ancient St. Thomas Christians of Kerala.",
+ "He was martyred at Mylapore near the modern city of Chennai, run through with a spear, around the middle of the first century. The Church keeps his memory on the sixth of October, and on the Sunday after Pascha as Thomas Sunday or the Antipascha, the eighth day on which the Risen Lord returned to the upper room to meet him.",
+ ],
+ quotes: [
+ {
+ text: "Let us also go, that we may die with him.",
+ source: "John 11:16 (KJV)",
+ href: "/saints/apostle-thomas/the-confession",
+ },
+ {
+ text: "Lord, we know not whither thou goest; and how can we know the way?",
+ source: "John 14:5 (KJV)",
+ href: "/saints/apostle-thomas/the-confession",
+ },
+ {
+ text: "My Lord and my God.",
+ source: "John 20:28 (KJV)",
+ href: "/saints/apostle-thomas/the-confession",
+ },
+ ],
+ works: [
+ {
+ slug: "the-confession",
+ title: "The Confession of Thomas",
+ subtitle: "Selected passages from the Gospel of John",
+ year: "c. 90",
+ blurb:
+ "The three scenes in which Thomas speaks in the Fourth Gospel: his courage on the road to Bethany, his question at the Supper, and his confession of the Risen Lord on the eighth day.",
+ topics: ["Resurrection", "Faith", "Doubt", "Christology", "Scripture"],
+ },
+ ],
+ },
 ];
 
 export function getSaint(slug: string): Saint | null {
