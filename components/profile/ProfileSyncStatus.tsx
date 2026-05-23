@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { pushAllLocalBookmarks, pullServerBookmarks } from "@/lib/sync/bookmarks";
 import {
   pushAllLocalAnnotations,
@@ -9,6 +9,43 @@ import {
 
 const LAST_KEY = "purify.sync.last";
 const ERR_KEY = "purify.sync.error";
+const EVENT = "purify:sync";
+
+type SyncSnapshot = { last: string | null; err: string | null };
+
+const EMPTY: SyncSnapshot = { last: null, err: null };
+
+// Stable snapshot for useSyncExternalStore: cache by the joined raw values so
+// re-reads return the same reference until either localStorage entry changes.
+let snapKey: string | undefined;
+let snapValue: SyncSnapshot = EMPTY;
+
+function readSnapshot(): SyncSnapshot {
+  if (typeof window === "undefined") return EMPTY;
+  let last: string | null = null;
+  let err: string | null = null;
+  try {
+    last = window.localStorage.getItem(LAST_KEY);
+    err = window.localStorage.getItem(ERR_KEY);
+  } catch {
+    return EMPTY;
+  }
+  const key = `${last ?? ""}|${err ?? ""}`;
+  if (key === snapKey) return snapValue;
+  snapKey = key;
+  snapValue = last === null && err === null ? EMPTY : { last, err };
+  return snapValue;
+}
+
+function subscribe(cb: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener(EVENT, cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    window.removeEventListener(EVENT, cb);
+    window.removeEventListener("storage", cb);
+  };
+}
 
 function relativeShort(iso: string | null): string {
   if (!iso) return "never";
@@ -33,26 +70,15 @@ function relativeShort(iso: string | null): string {
  * timestamp (read from the same localStorage key SyncOnMount writes to),
  * any error from the last attempt, and a manual "Sync now" button that
  * re-runs the bookmark + annotation push/pull pair.
+ *
+ * Reads via useSyncExternalStore listening for the in-tab `purify:sync`
+ * event + cross-tab `storage` event, so manual sync from this surface and
+ * background sync from SyncOnMount both refresh the widget without a
+ * hydrate-in-effect setState.
  */
 export function ProfileSyncStatus() {
-  const [last, setLast] = useState<string | null>(null);
-  const [err, setErr] = useState<string | null>(null);
+  const { last, err } = useSyncExternalStore(subscribe, readSnapshot, () => EMPTY);
   const [busy, setBusy] = useState(false);
-
-  useEffect(() => {
-    setLast(window.localStorage.getItem(LAST_KEY));
-    setErr(window.localStorage.getItem(ERR_KEY));
-    const on = () => {
-      setLast(window.localStorage.getItem(LAST_KEY));
-      setErr(window.localStorage.getItem(ERR_KEY));
-    };
-    window.addEventListener("purify:sync", on);
-    window.addEventListener("storage", on);
-    return () => {
-      window.removeEventListener("purify:sync", on);
-      window.removeEventListener("storage", on);
-    };
-  }, []);
 
   async function syncNow() {
     setBusy(true);
@@ -62,13 +88,11 @@ export function ProfileSyncStatus() {
       const stamp = new Date().toISOString();
       window.localStorage.setItem(LAST_KEY, stamp);
       window.localStorage.removeItem(ERR_KEY);
-      setLast(stamp);
-      setErr(null);
-      window.dispatchEvent(new CustomEvent("purify:sync"));
+      window.dispatchEvent(new CustomEvent(EVENT));
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       window.localStorage.setItem(ERR_KEY, msg);
-      setErr(msg);
+      window.dispatchEvent(new CustomEvent(EVENT));
     } finally {
       setBusy(false);
     }

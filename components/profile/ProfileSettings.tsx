@@ -1,14 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useReaderPrefs, type ReaderSize, type ReaderFont } from "@/components/reader/ReaderPrefs";
 import { useInterlinear } from "@/lib/bible/interlinear";
-import {
-  CALENDAR_STYLE_KEY,
-  readCalendarStyleDefault,
-  writeCalendarStyleDefault,
-  type CalendarStyleDefault,
-} from "@/lib/calendar/styleDefault";
+import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
+import type { CalendarStyleDefault } from "@/lib/calendar/styleDefault";
 
 /**
  * Reading preferences that live in localStorage and persist across visits.
@@ -21,24 +16,7 @@ export function ProfileSettings() {
   const { size, setSize, font, setFont } = useReaderPrefs();
   const { on: interlinearOn, toggle: toggleInterlinear } = useInterlinear();
 
-  const [calStyle, setCalStyle] =
-    useState<CalendarStyleDefault>("new");
-  const [calHydrated, setCalHydrated] = useState(false);
-  useEffect(() => {
-    setCalStyle(readCalendarStyleDefault());
-    setCalHydrated(true);
-    function on(e: StorageEvent) {
-      if (e.key === CALENDAR_STYLE_KEY) {
-        setCalStyle(readCalendarStyleDefault());
-      }
-    }
-    window.addEventListener("storage", on);
-    return () => window.removeEventListener("storage", on);
-  }, []);
-  function pickCalStyle(v: CalendarStyleDefault) {
-    setCalStyle(v);
-    writeCalendarStyleDefault(v);
-  }
+  const [calStyle, pickCalStyle] = useCalendarStyleDefault();
 
   const sizeOptions: { value: ReaderSize; label: string }[] = [
     { value: "sm", label: "Small" },
@@ -88,16 +66,14 @@ export function ProfileSettings() {
           label="Calendar reckoning"
           description="The default style used by /calendar when no ?style= query is set. New (Revised Julian) for the Ecumenical Patriarchate and the majority; Old (Julian) for the Russian, Serbian, Athonite, and Jerusalem traditions."
         >
-          {calHydrated && (
-            <SegGroup
-              value={calStyle}
-              options={[
-                { value: "new", label: "New" },
-                { value: "old", label: "Old (Julian)" },
-              ]}
-              onChange={(v) => pickCalStyle(v as CalendarStyleDefault)}
-            />
-          )}
+          <SegGroup
+            value={calStyle}
+            options={[
+              { value: "new", label: "New" },
+              { value: "old", label: "Old (Julian)" },
+            ]}
+            onChange={(v) => pickCalStyle(v as CalendarStyleDefault)}
+          />
         </Row>
       </div>
     </section>

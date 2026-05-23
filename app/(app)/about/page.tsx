@@ -100,9 +100,35 @@ export default function AboutPage() {
  prayer-rule check-offs, and bookmarks sync across devices;
  without one, the same things live in your browser&rsquo;s local
  storage on this device alone. Either way, nothing about your
- reading is sold or shared.
+ reading is sold or shared &mdash; the long version of that
+ promise, with every field and every third party named, is on
+ the{" "}
+ <Link
+ href="/privacy"
+ className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
+ >
+ privacy page
+ </Link>
+ .
  </li>
  </ul>
+
+ {/* On contested questions */}
+ <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ On contested questions
+ </p>
+ <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ Purify does not adjudicate questions that the canonical Orthodox
+ jurisdictions answer differently. The calendar reckoning, the
+ precise typikon of a fast, the use of the New or Old style, and
+ the disciplinary lineage of one&rsquo;s parish are matters for
+ one&rsquo;s priest and one&rsquo;s bishop, not for an app. Where
+ the Fathers spoke with one voice, we serve their text. Where they
+ did not, we name the difference and surface both. This is also
+ why you will not find Purify weighing in on inter-confessional
+ polemics: the silence is principled, not avoidant. Where you need
+ a judgment, ask a priest.
+ </p>
 
  {/* Who we are */}
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">

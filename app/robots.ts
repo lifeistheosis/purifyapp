@@ -19,6 +19,17 @@ const AI_BOTS = [
   "Amazonbot",
   "Meta-ExternalAgent",
   "cohere-ai",
+  // Added 2026-05: bring the disallow list up to twenty-two named agents
+  // covering the major model-training and AI-assistant crawlers active
+  // today. The privacy page advertises this exact count.
+  "Diffbot",
+  "FacebookBot",
+  "YouBot",
+  "Timpi",
+  "MistralAI-User",
+  "DuckAssistBot",
+  "Scrapy",
+  "PanguBot",
 ];
 
 export default function robots(): MetadataRoute.Robots {

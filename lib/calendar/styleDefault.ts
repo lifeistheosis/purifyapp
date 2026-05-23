@@ -4,8 +4,17 @@
 //
 // Lives in localStorage so it works without an account; signed-in users
 // see it follow them across devices via the cookie session.
+//
+// This file is intentionally hook-free so it can be imported from server
+// components (e.g. the calendar page's cookie-fallback path). The React
+// hook that subscribes to the in-tab event lives next door in
+// `useCalendarStyleDefault.ts` (`"use client"`).
 
 export const CALENDAR_STYLE_KEY = "purify:calendar.style";
+
+/** Custom event fired in-tab when the preference changes, so subscribers
+ *  refresh without waiting for the cross-tab `storage` event. */
+export const CALENDAR_STYLE_EVENT = "purify:calendar.style";
 
 export type CalendarStyleDefault = "new" | "old";
 
@@ -30,6 +39,13 @@ export function writeCalendarStyleDefault(v: CalendarStyleDefault): void {
   // the preference without a flash of wrong content.
   try {
     document.cookie = `${CALENDAR_STYLE_COOKIE}=${v}; Max-Age=31536000; Path=/; SameSite=Lax`;
+  } catch {
+    /* ignore */
+  }
+  // In-tab subscribers (the useCalendarStyleDefault hook) listen for this
+  // event so they refresh without waiting on the cross-tab `storage` event.
+  try {
+    window.dispatchEvent(new CustomEvent(CALENDAR_STYLE_EVENT));
   } catch {
     /* ignore */
   }

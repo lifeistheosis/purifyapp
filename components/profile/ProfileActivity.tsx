@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 
 type Bookmark = {
@@ -17,6 +17,55 @@ type Bookmark = {
   addedAt: string;
   label?: string;
 };
+
+const STORAGE_KEY = "purify:bookmarks";
+const EVENT = "purify:bookmark";
+const EMPTY: Bookmark[] = [];
+
+// Stable snapshot keyed by the raw string so identical reads return the same
+// reference and useSyncExternalStore doesn't tear.
+let lastRaw: string | null | undefined;
+let lastValue: Bookmark[] = EMPTY;
+
+function readTopThree(): Bookmark[] {
+  if (typeof window === "undefined") return EMPTY;
+  let raw: string | null = null;
+  try {
+    raw = window.localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return EMPTY;
+  }
+  if (raw === lastRaw) return lastValue;
+  lastRaw = raw;
+  if (!raw) {
+    lastValue = EMPTY;
+    return lastValue;
+  }
+  try {
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) {
+      lastValue = EMPTY;
+      return lastValue;
+    }
+    lastValue = (arr as Bookmark[])
+      .filter((b) => b && b.addedAt)
+      .sort((a, b) => (a.addedAt < b.addedAt ? 1 : -1))
+      .slice(0, 3);
+  } catch {
+    lastValue = EMPTY;
+  }
+  return lastValue;
+}
+
+function subscribe(cb: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener(EVENT, cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    window.removeEventListener(EVENT, cb);
+    window.removeEventListener("storage", cb);
+  };
+}
 
 function hrefFor(b: Bookmark): string {
   const l = b.locator ?? {};
@@ -51,47 +100,15 @@ function relativeShort(iso: string): string {
 
 /**
  * "Last saved" strip on the account dashboard — the three most recent
- * bookmarks (verse, chapter, or saint writing section), each a one-tap
- * link back into its target. Reads the same localStorage shape
- * `lib/sync/bookmarks.ts` works with. Updates in real time via the
- * `purify:bookmark` event the bookmark hook already dispatches.
+ * bookmarks, each a one-tap link back into its target. Reads from the same
+ * `purify:bookmarks` localStorage key via useSyncExternalStore so it stays
+ * in sync with the rest of the bookmark UI without a hydrate-in-effect.
  */
 export function ProfileActivity() {
-  const [items, setItems] = useState<Bookmark[]>([]);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    function recompute() {
-      try {
-        const raw = window.localStorage.getItem("purify:bookmarks");
-        if (!raw) {
-          setItems([]);
-          return;
-        }
-        const arr = JSON.parse(raw);
-        if (!Array.isArray(arr)) {
-          setItems([]);
-          return;
-        }
-        const sorted = (arr as Bookmark[])
-          .filter((b) => b && b.addedAt)
-          .sort((a, b) => (a.addedAt < b.addedAt ? 1 : -1))
-          .slice(0, 3);
-        setItems(sorted);
-      } catch {
-        setItems([]);
-      }
-    }
-    recompute();
-    setHydrated(true);
-    const on = () => recompute();
-    window.addEventListener("purify:bookmark", on);
-    window.addEventListener("storage", on);
-    return () => {
-      window.removeEventListener("purify:bookmark", on);
-      window.removeEventListener("storage", on);
-    };
-  }, []);
+  const items = useSyncExternalStore(subscribe, readTopThree, () => EMPTY);
+  // Distinct identity between SSR and the first client read tells us whether
+  // we have hydrated client storage yet (without triggering a setState).
+  const hydrated = items !== EMPTY || typeof window !== "undefined";
 
   return (
     <section className="mt-6">
@@ -109,7 +126,7 @@ export function ProfileActivity() {
       {hydrated && items.length === 0 ? (
         <div className="rounded-md border border-paper/12 bg-paper/[0.02] px-5 py-6 font-serif italic text-[14.5px] text-paper/55 leading-[1.55]">
           Nothing saved yet. Bookmark a verse on any chapter, or a section in a
-          saint's writing, and it will show up here.
+          saint&apos;s writing, and it will show up here.
         </div>
       ) : (
         <ul className="grid grid-cols-1 sm:grid-cols-3 gap-3">

@@ -96,6 +96,7 @@ export function VerseContextMenu({
  <div
  ref={ref}
  role="menu"
+ tabIndex={-1}
  aria-label="Verse actions"
  className="fixed z-50 rounded-md border border-paper/15 bg-night-soft shadow-[0_8px_32px_rgba(0,0,0,0.5)] py-1 backdrop-blur-sm"
  style={{ width: MENU_W, left, top }}

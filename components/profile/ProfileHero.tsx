@@ -139,6 +139,9 @@ export function ProfileHero({
           <input
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
+            // The input only mounts when the user clicks "edit" — focus is
+            // following the user's intent, not stealing it.
+            // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             onKeyDown={(e) => {
               if (e.key === "Enter") save();

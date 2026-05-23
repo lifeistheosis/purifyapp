@@ -29,6 +29,7 @@ export function Card({ variant = "default", className, ...props }: CardProps) {
 
 export function CardTitle({
   className,
+  children,
   ...props
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
@@ -38,7 +39,9 @@ export function CardTitle({
         className,
       )}
       {...props}
-    />
+    >
+      {children}
+    </h3>
   );
 }
 

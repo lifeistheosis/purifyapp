@@ -375,6 +375,14 @@ export function VerseRow({
  "grid grid-cols-2 gap-x-3 md:gap-x-6 gap-y-2",
  )}
  >
+ {/*
+  * Drag/long-press gestures are a progressive enhancement for verse
+  * selection. The same actions are reachable via keyboard through the
+  * verse anchor links + the toolbar that appears on selection, so the
+  * gesture handlers on this paragraph do not introduce a
+  * keyboard-only-user gap.
+  */}
+ {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
  <p
  className={cn(
  "indent-0 min-w-0 transition-colors duration-150",
