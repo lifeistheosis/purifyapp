@@ -19,6 +19,26 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v5.5",
+ kind: "The full company of the Twelve",
+ date: "May 23, 2026",
+ blurb:
+ "A long pass through the saints registry. The Twelve are now complete, all eleven who walked with the Lord plus Matthias chosen by lot, each with a profile, a deep-linked work, and an icon image. To them are added the great Equal-to-the-Apostles Mary Magdalene, the Russian elder Paisios the Athonite, and the four firmly-attested direct successors of the apostolic generation, Anianus of Alexandria (Mark's successor) and Polycarp, Papias, and Prochorus (the three disciples of John the Theologian). Every profile now supports a new 'Disciples and successors' section that makes the chain of tradition visible, with the John -> Polycarp -> Irenaeus line wired across three linked profiles. Plus a small bug fix on the Account button in the app shell, a hero rebuild on the home page, and a quieter landing.",
+ items: [
+ "The Twelve, complete: Andrew the First-Called, James son of Zebedee, Philip, Bartholomew (Nathanael), James son of Alphaeus, Jude/Thaddaeus, Simon the Zealot, and Matthias join Peter, John, Matthew, and Thomas with full Saint entries, deep-linked quotes, and one work file each combining KJV passages with editorial framing.",
+ "Mary Magdalene added as Equal-to-the-Apostles and Myrrhbearer, with the four-section work 'The Myrrhbearer at the Tomb' covering Luke 8, John 19, the encounter in the garden, and the tradition of the Paschal egg.",
+ "St. Paisios the Athonite (1924-1994, canonized 2015) added with two works: 'Spiritual Counsels' (five-section selection) and 'Epistles' (three-section selection from his letters).",
+ "Four direct successors of the apostolic generation added: Anianus of Alexandria (the cobbler whose hand St. Mark healed, second bishop of Alexandria), Polycarp of Smyrna (the eighty-six-year servant burned and stabbed in the stadium), Papias of Hierapolis (the earliest external witness to the writing of Matthew and Mark), and Prochorus the Deacon (scribe of John on Patmos).",
+ "St. Ignatius of Antioch's entry rewritten to make his discipleship under John explicit: new byname 'Theophorus, Disciple of John', expanded life paragraph alongside Polycarp, and a quote from his Epistle to the Romans.",
+ "New 'Disciples and successors' section on saint profiles. New `Saint.disciples` field with `{ slug, relation, blurb }` entries, a new `DisciplesSection.tsx` component (styled to match the existing Great Feasts cards), and integration into the saint profile page. The chain John -> Polycarp -> Irenaeus is now navigable across three linked profiles.",
+ "Eighteen icon images wired across the new entries (apostles, Magdalene, Paisios, the four successors). Files renamed where needed to the `apostle-<slug>.jpg` and `<slug>.jpg` conventions, and matching author-name mappings added to `lib/saints/icons.ts` so commentary cards that cite these saints also pick up the icon.",
+ "Refreshed icons for Gregory the Theologian, Ignatius of Antioch, and Nicholas the Wonderworker.",
+ "Bug fix in `AppNav`: the Account button was rendering an invisible 36x36 placeholder span before the Supabase session check resolved, which made it look absent on every app page until hydration finished. The pre-hydration default is now the text 'Account' link; the gold initials avatar still upgrades in place once a signed-in session is confirmed.",
+ "Home page hero rebuilt. The harsh black-to-white linear gradient is replaced with a quieter twilight-blue ambience (soft blue glow behind the heading, a deeper indigo settling toward the Today card, deep night base). The eyebrow tagline and the four-pillar list are dropped from the hero in favor of a tighter line of body copy. The four-tile Today strip and the Daily Wisdom block are removed from the landing.",
+ "Footer + home banner + /whats-new chip step to v5.5.",
+ ],
+ },
+ {
  version: "v5.4",
  kind: "Account, made real",
  date: "May 22, 2026",

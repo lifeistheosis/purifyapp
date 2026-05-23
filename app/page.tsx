@@ -105,8 +105,8 @@ export default function Home() {
  New
  </span>
  <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
- <span className="sm:hidden">v5.4 · Account, made real</span>
- <span className="hidden sm:inline">v5.4 · Account, made real; Bible licensing on /support</span>
+ <span className="sm:hidden">v5.5 · The full company of the Twelve</span>
+ <span className="hidden sm:inline">v5.5 · The full company of the Twelve, with successors</span>
  </span>
  <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
  →
@@ -117,8 +117,8 @@ export default function Home() {
  <br className="hidden sm:block" /> in one quiet place.
  </h1>
  <p className="font-sans text-[17px] md:text-[18px] text-paper/85 mt-5 max-w-[560px]">
- Prayer, Scripture, saints, and the sacred Calendar. Free. No
- tracking. Yours to keep.
+ Pray with the Church. Read with the Fathers. Walk the year.
+ Free, ad-free, yours to keep.
  </p>
  <div className="mt-7 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
  <ComingSoonCTA variant="inverse">
