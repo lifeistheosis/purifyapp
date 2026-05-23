@@ -67,6 +67,21 @@ export type Saint = {
  * "his"; set "her" for female saints (and the Theotokos).
  */
  pronoun?: "his" | "her";
+ /**
+ * Named direct disciples or successors. Shown in a "Disciples and
+ * successors" section on the profile, with a short explanation of the
+ * relationship. Each `slug` deep-links to the disciple's own profile,
+ * if present in the registry.
+ */
+ disciples?: Disciple[];
+};
+
+export type Disciple = {
+ slug: string;
+ /** Short relation label, e.g. "Successor as bishop", "Hearer at Ephesus". */
+ relation: string;
+ /** One- or two-sentence explanation of the relationship. */
+ blurb: string;
 };
 
 export type Quote = {
@@ -1290,6 +1305,32 @@ export const SAINTS: Saint[] = [
  topics: ["Logos", "Incarnation", "Love", "Unity", "Trinity", "Scripture"],
  },
  ],
+ disciples: [
+ {
+ slug: "ignatius-of-antioch",
+ relation: "Disciple at Antioch",
+ blurb:
+ "Bishop of Antioch and one of the small handful of figures who form the visible bridge from the apostles to the Fathers. Formed by John in his years at Ephesus, he carried the Johannine teaching on the Word, the Eucharist, and the unity of the Church into his seven letters, written in chains on the road to martyrdom at Rome around 108.",
+ },
+ {
+ slug: "polycarp-of-smyrna",
+ relation: "Disciple at Ephesus",
+ blurb:
+ "As a young man Polycarp sat at John's feet at Ephesus and was made by him bishop of Smyrna. He shepherded that church for upwards of sixty years and was burned and stabbed in its stadium around 155, at the age of eighty-six. His own disciple Irenaeus carried the chain one further link west into Gaul.",
+ },
+ {
+ slug: "papias-of-hierapolis",
+ relation: "Hearer at Ephesus",
+ blurb:
+ "Bishop of Hierapolis in Phrygia and a friend of Polycarp, Papias was 'a hearer of John' and gathered from the elders who had known the apostles the earliest external accounts of the writing of the Gospels of Matthew and Mark.",
+ },
+ {
+ slug: "prochorus-the-deacon",
+ relation: "Scribe on Patmos",
+ blurb:
+ "One of the Seven Deacons of Acts 6, who according to tradition accompanied John into exile on Patmos and wrote at the apostle's dictation. The iconography of John the Theologian on Patmos almost always shows Prochorus at his feet, pen in hand.",
+ },
+ ],
  },
  {
  slug: "apostle-thomas",
@@ -1773,6 +1814,14 @@ export const SAINTS: Saint[] = [
  blurb:
  "His discipleship under John, his counsels to the Philippians on prayer, mercy, and watchfulness, and the eyewitness account of his martyrdom in the stadium of Smyrna.",
  topics: ["Martyrdom", "Apostolic Succession", "Perseverance", "Episcopate", "Tradition"],
+ },
+ ],
+ disciples: [
+ {
+ slug: "irenaeus-of-lyons",
+ relation: "Disciple at Smyrna",
+ blurb:
+ "As a boy Irenaeus heard Polycarp preach at Smyrna, and as an old man he could still describe the saint's appearance and manner. He carried the apostolic teaching west to Gaul, where as bishop of Lyons he wrote Against Heresies, defending the rule of faith handed down from the apostles through Polycarp.",
  },
  ],
  },

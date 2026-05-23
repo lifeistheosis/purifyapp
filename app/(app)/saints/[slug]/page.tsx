@@ -5,6 +5,7 @@ import { LifeSection } from "@/components/saints/LifeSection";
 import { TitlesSection } from "@/components/saints/TitlesSection";
 import { GreatFeastsSection } from "@/components/saints/GreatFeastsSection";
 import { QuotesSection } from "@/components/saints/QuotesSection";
+import { DisciplesSection } from "@/components/saints/DisciplesSection";
 import { SaintWorksBrowser } from "@/components/saints/SaintWorksBrowser";
 
 type Params = Promise<{ slug: string }>;
@@ -38,6 +39,9 @@ export default async function SaintPage({ params }: { params: Params }) {
           <GreatFeastsSection feasts={saint.greatFeasts} />
         ) : null}
         {saint.quotes?.length ? <QuotesSection quotes={saint.quotes} /> : null}
+        {saint.disciples?.length ? (
+          <DisciplesSection saint={saint} disciples={saint.disciples} />
+        ) : null}
         {saint.works.length > 0 && <SaintWorksBrowser saint={saint} />}
       </div>
     </section>
