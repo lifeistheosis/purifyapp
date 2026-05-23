@@ -1387,6 +1387,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-andrew",
  byname: "The First-Called",
+ iconUrl: "/saints/icons/apostle-andrew.jpg",
  name: "Holy Apostle Andrew",
  epithet: "Protokletos · The First-Called · Brother of Peter",
  born: "1st century (Bethsaida of Galilee)",
@@ -1427,6 +1428,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-james-zebedee",
  byname: "Son of Thunder",
+ iconUrl: "/saints/icons/apostle-james-zebedee.jpg",
  name: "Holy Apostle James, Son of Zebedee",
  epithet: "Brother of John the Theologian · First of the Twelve to Suffer",
  born: "1st century (Galilee)",
@@ -1464,6 +1466,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-philip",
  byname: "Of Bethsaida",
+ iconUrl: "/saints/icons/apostle-philip.jpg",
  name: "Holy Apostle Philip",
  epithet: "Apostle of Hierapolis · One of the Twelve",
  born: "1st century (Bethsaida of Galilee)",
@@ -1575,6 +1578,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-jude",
  byname: "Thaddaeus, the Brother of James",
+ iconUrl: "/saints/icons/apostle-jude.jpg",
  name: "Holy Apostle Jude",
  epithet: "Thaddaeus · Brother of James · Apostle to Armenia",
  born: "1st century (Galilee)",
@@ -1620,6 +1624,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-simon-zealot",
  byname: "The Zealot",
+ iconUrl: "/saints/icons/apostle-simon-zealot.jpg",
  name: "Holy Apostle Simon the Zealot",
  epithet: "The Canaanite · One of the Twelve",
  born: "1st century (Galilee)",
@@ -1649,6 +1654,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-matthias",
  byname: "Numbered with the Eleven",
+ iconUrl: "/saints/icons/apostle-matthias.jpg",
  name: "Holy Apostle Matthias",
  epithet: "Successor to Judas Iscariot · One of the Seventy",
  born: "1st century (Bethlehem of Judaea, by tradition)",
