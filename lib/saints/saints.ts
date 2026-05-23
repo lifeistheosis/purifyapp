@@ -1778,6 +1778,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "polycarp-of-smyrna",
  byname: "Disciple of John",
+ iconUrl: "/saints/icons/polycarp-of-smyrna.jpg",
  name: "St. Polycarp of Smyrna",
  epithet: "Bishop of Smyrna · Hieromartyr · Disciple of the Theologian",
  born: "c. 69",
@@ -1828,6 +1829,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "papias-of-hierapolis",
  byname: "Hearer of the Elders",
+ iconUrl: "/saints/icons/papias-of-hierapolis.jpg",
  name: "St. Papias of Hierapolis",
  epithet: "Bishop of Hierapolis · Hearer of John · Companion of Polycarp",
  born: "c. 70",
@@ -1864,6 +1866,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "prochorus-the-deacon",
  byname: "Scribe of the Theologian",
+ iconUrl: "/saints/icons/prochorus-the-deacon.jpg",
  name: "St. Prochorus, Deacon and Bishop",
  epithet: "One of the Seven Deacons · Scribe of John on Patmos · Bishop of Nicomedia",
  born: "1st century",
