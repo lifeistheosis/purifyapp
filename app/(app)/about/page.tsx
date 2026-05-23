@@ -24,13 +24,17 @@ export default function AboutPage() {
  What this is
  </p>
  <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
- Purify is an Orthodox Christian prayer companion. The Bible
- (Septuagint and King James), the calendar (the saint of the
- day, the fast, Pascha), the saints (their lives and their
- works), and daily prayer (the Morning Rule, the Evening Rule,
- the Jesus Prayer): all in one place, calm enough to
- use at any hour. Built for anyone curious about, exploring,
- or rooted in the Orthodox Faith.
+ Purify is one place for the four things an Orthodox Christian
+ reaches for on any given day. The Scriptures, with the Fathers
+ in the margin. The saint of today, the fast of today, and the
+ count to Pascha. Twenty-four saint profiles with their works
+ to read in full, from St. John Chrysostom verse by verse
+ through fourteen books of the New Testament to St. Athanasius
+ and the Theotokos. And the prayers that have carried the
+ Church for sixteen centuries, sat down quietly enough to
+ actually pray. Anyone is welcome here, whether you grew up
+ in the Church, are looking in from the outside, or are
+ finding your way back after years away.
  </p>
 
  {/* What this is made of */}
@@ -38,20 +42,32 @@ export default function AboutPage() {
  What this is made of
  </p>
  <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
- Everything you see is drawn from public-domain sources. The
- Old Testament is Brenton&rsquo;s 1851 English translation of
- the Septuagint, which carries the deuterocanonical books and
- the Psalter numbering the Church has always sung. The New
- Testament is the King James (1611), paired with the polytonic
- Nestle 1904 Greek and Robinson&rsquo;s morphology and
- Strong&rsquo;s numbers for the interlinear study mode.
- Patristic commentary is selected from Philip Schaff&rsquo;s
- Ante-Nicene and Nicene Fathers (1885&ndash;1900). Saint icons
- are from Wikimedia Commons, mostly the early-twentieth-century
- tradition of Greek and Russian iconographers. The daily prayer
- rules are in the common Orthodox prayer-book wording carried
- by the Jordanville, St. Tikhon&rsquo;s, and Hapgood Service
- Book traditions.
+ Almost everything you see is drawn from public-domain sources.
+ The Old Testament is Brenton&rsquo;s 1851 English Septuagint,
+ which carries the deuterocanon and the Psalter numbering the
+ Church has always sung. The New Testament is the King James
+ (1611), paired with the polytonic Nestle 1904 Greek, Robinson&rsquo;s
+ morphology, and Strong&rsquo;s numbers, so a word can be hovered
+ in either column and its match lights up in the other. Patristic
+ commentary comes from Philip Schaff&rsquo;s Ante-Nicene and
+ Nicene Fathers (1885&ndash;1900); St. John Chrysostom&rsquo;s
+ homilies on John, Acts, Romans, the Corinthian letters,
+ Ephesians through Philemon, and Hebrews now sit inline with
+ the verses he is preaching.
+ </p>
+ <p className="mt-4 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ Three modern translations, the NKJV, NIV, and NLT, are also
+ available, fetched live from API.Bible under the publishers&rsquo;
+ license, shown exactly as published, with their copyright and
+ the usage tracking the license requires. They are never modified
+ and never overlaid with our own tagging. Saint icons are from
+ Wikimedia Commons, mostly the early-twentieth-century Greek and
+ Russian iconographers. The daily prayer rules use the common
+ Orthodox prayer-book wording carried by the Jordanville,
+ St. Tikhon&rsquo;s, and Hapgood Service Book traditions. The
+ calendar is built on the Pascha algorithm shared by every
+ canonical Orthodox church, with both the New (Revised Julian)
+ and the Old (Julian) reckonings of the fixed feasts.
  </p>
 
  {/* What this is not */}
@@ -60,30 +76,31 @@ export default function AboutPage() {
  </p>
  <ul className="mt-3 space-y-3 font-serif text-[18px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
- Not aligned with one jurisdiction. We surface both the New
- (Revised Julian) and the Old (Julian) calendars and we name
- their differences. The fasting and feast indexes lean Greek
- for now; Russian-specific feasts will be added.
+ Not tied to one jurisdiction. Both calendars are surfaced and
+ their differences named, the New (Revised Julian) kept by
+ Constantinople and most of the Greek-speaking world, and the
+ Old (Julian) kept in Russia, Serbia, Jerusalem, and on Mount
+ Athos. The fasting and feast indexes lean Greek for now; the
+ Russian-specific additions will land as we go.
  </li>
  <li>
- Not affiliated with the trademarked{" "}
- <em>Orthodox Study Bible</em> published by Thomas Nelson.
- We are a separate, public-domain edition.
+ Not the trademarked{" "}
+ <em>Orthodox Study Bible</em>, which is published by Thomas
+ Nelson. We&rsquo;re a separate, public-domain reader.
  </li>
  <li>
- Not engagement-optimized. There are no notifications, no
- streaks calculated against your peers, no engagement-loop
- patterns. The streak counters we do have exist for you, not
- for us.
+ Not built to keep you here. No notifications, no leaderboards,
+ no streaks reported back to us. The streak counters that do
+ exist are for you to see, and they live in your browser,
+ not in a database.
  </li>
  <li>
- Not an engagement-driven account product. You don&rsquo;t
- have to sign up to use anything. Accounts are optional,
- create one to sync your highlights, notes, prayer-rule
- check-offs, and bookmarks across devices. Without one,
- everything lives in your browser&rsquo;s local storage on this
- device alone. Your choice. We do not run analytics or sell
- anything, either way.
+ Not a SaaS account product. You don&rsquo;t have to sign in to
+ use anything. An account lets your highlights, notes,
+ prayer-rule check-offs, and bookmarks sync across devices;
+ without one, the same things live in your browser&rsquo;s local
+ storage on this device alone. Either way, nothing about your
+ reading is sold or shared.
  </li>
  </ul>
 
@@ -128,19 +145,21 @@ export default function AboutPage() {
  Money
  </p>
  <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
- Purify is free, with no plans to put a paywall around what
- ships today. Hosting, domain, and storage cost money; if you
- want to keep the lights on or speed up the work, you can{" "}
+ Purify is free, and it&rsquo;s staying free. The pricing tier
+ is gone, the marketplace is gone, and the licenses we hold for
+ the Scriptures bind us to keep it that way, so there&rsquo;s
+ nothing to sell here and nothing planned. Hosting and storage
+ cost something to run; if you&rsquo;d like to keep the lights
+ on, you can{" "}
  <Link
  href="/support"
  className="text-gold hover:underline underline-offset-2"
  >
  support the project
  </Link>{" "}
- (transparent goal + monthly expense breakdown). A supporter
- tier is on the roadmap for features that genuinely cost more
- to run (audio recordings, custom prayer plans). Everything in
- v3.3 will stay free, accounts and sync included.
+ (with a transparent goal and a monthly expense breakdown).
+ Everything you see today, accounts and sync included, is yours
+ at no cost.
  </p>
 
  {/* Closing */}
@@ -163,14 +182,24 @@ export default function AboutPage() {
  </p>
  <p className="font-serif text-[17px] text-paper/85 leading-[1.7]">
  Found a mistake, want a feature, want to argue about a
- patristic gloss?{" "}
+ patristic gloss? The{" "}
  <a
- href="mailto:team@purify.app"
+ href="https://discord.gg/VzBYYUsNJ6"
+ target="_blank"
+ rel="noopener noreferrer"
+ className="text-[#a4adff] hover:text-paper underline underline-offset-2 decoration-[#a4adff]/35"
+ >
+ Discord
+ </a>{" "}
+ is the fastest way in; the{" "}
+ <Link
+ href="/support"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- team@purify.app
- </a>
- . We read everything. We answer most things.
+ support page
+ </Link>{" "}
+ has a longer form if you&rsquo;d rather write at length. We
+ read everything. We answer most things.
  </p>
  </div>
  </article>
