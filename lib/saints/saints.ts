@@ -1062,6 +1062,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "paisios-the-athonite",
  byname: "Elder of the Holy Mountain",
+ iconUrl: "/saints/icons/paisios-the-athonite.jpg",
  name: "St. Paisios the Athonite",
  epithet: "Hieromonk of Mount Athos · Elder of Panagouda",
  born: "July 25, 1924 (Farasa, Cappadocia)",
