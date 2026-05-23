@@ -1550,6 +1550,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-james-alphaeus",
  byname: "Son of Alphaeus",
+ iconUrl: "/saints/icons/apostle-james-alphaeus.jpg",
  name: "Holy Apostle James, Son of Alphaeus",
  epithet: "One of the Twelve · The Silent Apostle",
  born: "1st century (Galilee)",
