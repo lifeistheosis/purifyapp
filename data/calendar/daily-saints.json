@@ -1,1360 +1,3305 @@
 {
   "01-01": [
-    { "name": "Circumcision of Our Lord", "kind": "feast" },
-    { "name": "St. Basil the Great", "slug": "basil-the-great", "note": "Archbishop of Caesarea, father of the Eucharistic liturgy still served on his feast" }
+    {
+      "name": "Circumcision of Our Lord",
+      "kind": "feast"
+    },
+    {
+      "name": "St. Basil the Great",
+      "slug": "basil-the-great",
+      "note": "Archbishop of Caesarea, father of the Eucharistic liturgy still served on his feast"
+    }
   ],
   "01-02": [
-    { "name": "St. Seraphim of Sarov", "slug": "seraphim-of-sarov", "note": "wonderworker of the Russian forests, +1833" },
-    { "name": "St. Sylvester, Pope of Rome", "note": "+335" }
+    {
+      "name": "St. Seraphim of Sarov",
+      "slug": "seraphim-of-sarov",
+      "note": "wonderworker of the Russian forests, +1833"
+    },
+    {
+      "name": "St. Sylvester, Pope of Rome",
+      "note": "+335"
+    }
   ],
   "01-03": [
-    { "name": "Prophet Malachi", "note": "last of the Twelve" },
-    { "name": "Martyr Gordius", "note": "soldier of Caesarea, +ca. 320" }
+    {
+      "name": "Prophet Malachi",
+      "note": "last of the Twelve"
+    },
+    {
+      "name": "Martyr Gordius",
+      "note": "soldier of Caesarea, +ca. 320"
+    }
   ],
   "01-04": [
-    { "name": "Synaxis of the Seventy Apostles", "kind": "feast" }
+    {
+      "name": "Synaxis of the Seventy Apostles",
+      "kind": "feast"
+    }
   ],
   "01-05": [
-    { "name": "Eve of Theophany", "kind": "feast" },
-    { "name": "Prophet Micah", "note": "the elder Micah, +9th c. BC" }
+    {
+      "name": "Eve of Theophany",
+      "kind": "feast"
+    },
+    {
+      "name": "Prophet Micah",
+      "note": "the elder Micah, +9th c. BC"
+    }
   ],
   "01-06": [
-    { "name": "Holy Theophany of Our Lord", "kind": "feast", "note": "Baptism of Christ in the Jordan" }
+    {
+      "name": "Holy Theophany of Our Lord",
+      "kind": "feast",
+      "note": "Baptism of Christ in the Jordan"
+    }
   ],
   "01-07": [
-    { "name": "Synaxis of St. John the Forerunner", "kind": "feast" }
+    {
+      "name": "Synaxis of St. John the Forerunner",
+      "kind": "feast"
+    }
   ],
   "01-08": [
-    { "name": "St. George the Chozebite", "note": "+7th c." },
-    { "name": "St. Domnica of Constantinople", "note": "+ca. 474" }
+    {
+      "name": "St. George the Chozebite",
+      "note": "+7th c."
+    },
+    {
+      "name": "St. Domnica of Constantinople",
+      "note": "+ca. 474"
+    }
   ],
   "01-09": [
-    { "name": "Martyr Polyeuctus", "note": "Roman soldier of Melitene, +259" }
+    {
+      "name": "Martyr Polyeuctus",
+      "note": "Roman soldier of Melitene, +259"
+    }
   ],
   "01-10": [
-    { "name": "St. Gregory of Nyssa", "note": "Cappadocian, brother of Basil the Great, +ca. 395" },
-    { "name": "St. Dometian, Bishop of Melitene", "note": "+601" }
+    {
+      "name": "St. Gregory of Nyssa",
+      "note": "Cappadocian, brother of Basil the Great, +ca. 395"
+    },
+    {
+      "name": "St. Dometian, Bishop of Melitene",
+      "note": "+601"
+    }
   ],
   "01-11": [
-    { "name": "St. Theodosius the Cenobiarch", "note": "founder of the first communal monastery in Palestine, +529" }
+    {
+      "name": "St. Theodosius the Cenobiarch",
+      "note": "founder of the first communal monastery in Palestine, +529"
+    }
   ],
   "01-12": [
-    { "name": "Martyr Tatiana of Rome", "note": "deaconess and martyr, +226" }
+    {
+      "name": "Martyr Tatiana of Rome",
+      "note": "deaconess and martyr, +226"
+    }
   ],
   "01-13": [
-    { "name": "Martyrs Hermylas and Stratonicus", "note": "of Belgrade, +315" }
+    {
+      "name": "Martyrs Hermylas and Stratonicus",
+      "note": "of Belgrade, +315"
+    }
   ],
   "01-14": [
-    { "name": "St. Sava the Sanctified", "note": "Serbian Equal-to-Apostles, +1235" },
-    { "name": "Fathers Slain at Sinai and Raithu", "note": "early monastic martyrs" }
+    {
+      "name": "St. Sava the Sanctified",
+      "note": "Serbian Equal-to-Apostles, +1235"
+    },
+    {
+      "name": "Fathers Slain at Sinai and Raithu",
+      "note": "early monastic martyrs"
+    }
   ],
   "01-15": [
-    { "name": "St. Paul of Thebes", "note": "the first Christian hermit, +341" },
-    { "name": "St. John the Hut-Dweller", "note": "+5th c." }
+    {
+      "name": "St. Paul of Thebes",
+      "note": "the first Christian hermit, +341"
+    },
+    {
+      "name": "St. John the Hut-Dweller",
+      "note": "+5th c."
+    }
   ],
   "01-16": [
-    { "name": "Veneration of the Chains of the Apostle Peter", "kind": "feast" }
+    {
+      "name": "Veneration of the Chains of the Apostle Peter",
+      "kind": "feast"
+    }
   ],
   "01-17": [
-    { "name": "St. Anthony the Great", "note": "father of monasticism, +356" }
+    {
+      "name": "St. Anthony the Great",
+      "note": "father of monasticism, +356"
+    }
   ],
   "01-18": [
-    { "name": "St. Athanasius the Great", "slug": "athanasius-the-great", "note": "Patriarch of Alexandria, pillar of Orthodoxy against Arius" },
-    { "name": "St. Cyril of Alexandria", "slug": "cyril-of-alexandria", "note": "Seal of the Fathers, champion of the Theotokos" }
+    {
+      "name": "St. Athanasius the Great",
+      "slug": "athanasius-the-great",
+      "note": "Patriarch of Alexandria, pillar of Orthodoxy against Arius"
+    },
+    {
+      "name": "St. Cyril of Alexandria",
+      "slug": "cyril-of-alexandria",
+      "note": "Seal of the Fathers, champion of the Theotokos"
+    }
   ],
   "01-19": [
-    { "name": "St. Macarius the Great of Egypt", "note": "+ca. 391" }
+    {
+      "name": "St. Macarius the Great of Egypt",
+      "note": "+ca. 391"
+    }
   ],
   "01-20": [
-    { "name": "St. Euthymius the Great", "note": "Palestinian monastic father, +473" }
+    {
+      "name": "St. Euthymius the Great",
+      "note": "Palestinian monastic father, +473"
+    }
   ],
   "01-21": [
-    { "name": "St. Maximus the Confessor", "slug": "maximus-the-confessor", "note": "defender of the two wills of Christ, +662" }
+    {
+      "name": "St. Maximus the Confessor",
+      "slug": "maximus-the-confessor",
+      "note": "defender of the two wills of Christ, +662"
+    }
   ],
   "01-22": [
-    { "name": "Apostle Timothy", "note": "first bishop of Ephesus, +96" },
-    { "name": "St. Anastasius the Persian", "note": "+628" }
+    {
+      "name": "Apostle Timothy",
+      "note": "first bishop of Ephesus, +96"
+    },
+    {
+      "name": "St. Anastasius the Persian",
+      "note": "+628"
+    }
   ],
   "01-23": [
-    { "name": "Hieromartyr Clement of Ancyra", "note": "and Agathangelus, +312" }
+    {
+      "name": "Hieromartyr Clement of Ancyra",
+      "note": "and Agathangelus, +312"
+    }
   ],
   "01-24": [
-    { "name": "St. Xenia of Rome", "note": "+5th c." }
+    {
+      "name": "St. Xenia of Rome",
+      "note": "+5th c."
+    }
   ],
   "01-25": [
-    { "name": "St. Gregory the Theologian", "slug": "gregory-theologian", "note": "Archbishop of Constantinople, the second 'Theologian'" }
+    {
+      "name": "St. Gregory the Theologian",
+      "slug": "gregory-theologian",
+      "note": "Archbishop of Constantinople, the second 'Theologian'"
+    }
   ],
   "01-26": [
-    { "name": "St. Xenophon, his wife Mary, and sons Arcadius and John", "note": "monastic family of Constantinople, +6th c." }
+    {
+      "name": "St. Xenophon, his wife Mary, and sons Arcadius and John",
+      "note": "monastic family of Constantinople, +6th c."
+    }
   ],
   "01-27": [
-    { "name": "Translation of Relics of St. John Chrysostom", "slug": "john-chrysostom", "kind": "feast" }
+    {
+      "name": "Translation of Relics of St. John Chrysostom",
+      "slug": "john-chrysostom",
+      "kind": "feast"
+    }
   ],
   "01-28": [
-    { "name": "St. Ephraim the Syrian", "note": "the lyre of the Holy Spirit, +373" }
+    {
+      "name": "St. Ephraim the Syrian",
+      "note": "the lyre of the Holy Spirit, +373"
+    }
   ],
   "01-29": [
-    { "name": "Translation of Relics of St. Ignatius of Antioch", "slug": "ignatius-of-antioch", "kind": "feast" }
+    {
+      "name": "Translation of Relics of St. Ignatius of Antioch",
+      "slug": "ignatius-of-antioch",
+      "kind": "feast"
+    }
   ],
   "01-30": [
-    { "name": "Synaxis of the Three Holy Hierarchs", "kind": "feast", "note": "Basil the Great, Gregory the Theologian, John Chrysostom" }
+    {
+      "name": "Synaxis of the Three Holy Hierarchs",
+      "kind": "feast",
+      "note": "Basil the Great, Gregory the Theologian, John Chrysostom"
+    }
   ],
   "01-31": [
-    { "name": "Unmercenaries Cyrus and John", "note": "physicians and martyrs of Alexandria, +311" }
+    {
+      "name": "Unmercenaries Cyrus and John",
+      "note": "physicians and martyrs of Alexandria, +311"
+    }
   ],
   "02-01": [
-    { "name": "Forefeast of the Meeting of the Lord", "kind": "feast" },
-    { "name": "Martyr Tryphon", "note": "+250" }
+    {
+      "name": "Forefeast of the Meeting of the Lord",
+      "kind": "feast"
+    },
+    {
+      "name": "Martyr Tryphon",
+      "note": "+250"
+    }
   ],
   "02-02": [
-    { "name": "Meeting of Our Lord in the Temple", "kind": "feast", "note": "the Lord presented to Symeon and Anna" }
+    {
+      "name": "Meeting of Our Lord in the Temple",
+      "kind": "feast",
+      "note": "the Lord presented to Symeon and Anna"
+    }
   ],
   "02-03": [
-    { "name": "Righteous Symeon the God-Receiver", "note": "and the Prophetess Anna" }
+    {
+      "name": "Righteous Symeon the God-Receiver",
+      "note": "and the Prophetess Anna"
+    }
   ],
   "02-04": [
-    { "name": "St. Isidore of Pelusium", "note": "Egyptian monastic, +ca. 436" }
+    {
+      "name": "St. Isidore of Pelusium",
+      "note": "Egyptian monastic, +ca. 436"
+    }
   ],
   "02-05": [
-    { "name": "Martyr Agatha of Sicily", "note": "+251" }
+    {
+      "name": "Martyr Agatha of Sicily",
+      "note": "+251"
+    }
   ],
   "02-06": [
-    { "name": "St. Bucolus, Bishop of Smyrna", "note": "disciple of John the Theologian, +ca. 105" }
+    {
+      "name": "St. Bucolus, Bishop of Smyrna",
+      "note": "disciple of John the Theologian, +ca. 105"
+    }
   ],
   "02-07": [
-    { "name": "St. Parthenius, Bishop of Lampsacus", "note": "+4th c." }
+    {
+      "name": "St. Parthenius, Bishop of Lampsacus",
+      "note": "+4th c."
+    }
   ],
   "02-08": [
-    { "name": "Great-martyr Theodore Stratelates", "note": "general and martyr, +319" }
+    {
+      "name": "Great-martyr Theodore Stratelates",
+      "note": "general and martyr, +319"
+    }
   ],
   "02-09": [
-    { "name": "St. Nicephorus, Patriarch of Constantinople", "note": "+828" }
+    {
+      "name": "St. Nicephorus, Patriarch of Constantinople",
+      "note": "+828"
+    }
   ],
   "02-10": [
-    { "name": "Hieromartyr Charalampus", "note": "Bishop of Magnesia in Thessaly, +202" }
+    {
+      "name": "Hieromartyr Charalampus",
+      "note": "Bishop of Magnesia in Thessaly, +202"
+    }
   ],
   "02-11": [
-    { "name": "Hieromartyr Blaise of Sebaste", "note": "physician-bishop, +316" }
+    {
+      "name": "Hieromartyr Blaise of Sebaste",
+      "note": "physician-bishop, +316"
+    }
   ],
   "02-12": [
-    { "name": "St. Meletius, Archbishop of Antioch", "note": "presided over the Second Ecumenical Council, +381" }
+    {
+      "name": "St. Meletius, Archbishop of Antioch",
+      "note": "presided over the Second Ecumenical Council, +381"
+    }
   ],
   "02-13": [
-    { "name": "St. Martinian of Caesarea", "note": "the hermit, +5th c." }
+    {
+      "name": "St. Martinian of Caesarea",
+      "note": "the hermit, +5th c."
+    }
   ],
   "02-14": [
-    { "name": "St. Cyril, Equal-to-the-Apostles", "note": "Apostle to the Slavs, +869" },
-    { "name": "St. Auxentius of Bithynia", "note": "+ca. 470" }
+    {
+      "name": "St. Cyril, Equal-to-the-Apostles",
+      "note": "Apostle to the Slavs, +869"
+    },
+    {
+      "name": "St. Auxentius of Bithynia",
+      "note": "+ca. 470"
+    }
   ],
   "02-15": [
-    { "name": "Apostle Onesimus of the Seventy", "note": "Paul's letter to Philemon, +109" }
+    {
+      "name": "Apostle Onesimus of the Seventy",
+      "note": "Paul's letter to Philemon, +109"
+    }
   ],
   "02-16": [
-    { "name": "Martyr Pamphilus the Presbyter", "note": "biblical scholar of Caesarea, +309" }
+    {
+      "name": "Martyr Pamphilus the Presbyter",
+      "note": "biblical scholar of Caesarea, +309"
+    }
   ],
   "02-17": [
-    { "name": "Great-martyr Theodore the Recruit (Tyro)", "note": "+306" }
+    {
+      "name": "Great-martyr Theodore the Recruit (Tyro)",
+      "note": "+306"
+    }
   ],
   "02-18": [
-    { "name": "St. Leo, Pope of Rome", "note": "his Tome was received at Chalcedon, +461" }
+    {
+      "name": "St. Leo, Pope of Rome",
+      "note": "his Tome was received at Chalcedon, +461"
+    }
   ],
   "02-19": [
-    { "name": "Apostle Archippus", "note": "of the Seventy" }
+    {
+      "name": "Apostle Archippus",
+      "note": "of the Seventy"
+    }
   ],
   "02-20": [
-    { "name": "St. Leo, Bishop of Catania", "note": "+ca. 780" }
+    {
+      "name": "St. Leo, Bishop of Catania",
+      "note": "+ca. 780"
+    }
   ],
   "02-21": [
-    { "name": "St. Timothy of Symbola", "note": "monastic of Bithynia, +795" }
+    {
+      "name": "St. Timothy of Symbola",
+      "note": "monastic of Bithynia, +795"
+    }
   ],
   "02-22": [
-    { "name": "Uncovering of the Relics of the Martyrs of Eugenius", "kind": "feast" }
+    {
+      "name": "Uncovering of the Relics of the Martyrs of Eugenius",
+      "kind": "feast"
+    }
   ],
   "02-23": [
-    { "name": "Hieromartyr Polycarp of Smyrna", "note": "disciple of John the Theologian, +156" }
+    {
+      "name": "Hieromartyr Polycarp of Smyrna",
+      "note": "disciple of John the Theologian, +156"
+    }
   ],
   "02-24": [
-    { "name": "First and Second Findings of the Honored Head of John the Forerunner", "kind": "feast" }
+    {
+      "name": "First and Second Findings of the Honored Head of John the Forerunner",
+      "kind": "feast"
+    }
   ],
   "02-25": [
-    { "name": "St. Tarasius, Patriarch of Constantinople", "note": "presided over the Seventh Ecumenical Council, +806" }
+    {
+      "name": "St. Tarasius, Patriarch of Constantinople",
+      "note": "presided over the Seventh Ecumenical Council, +806"
+    }
   ],
   "02-26": [
-    { "name": "St. Porphyrius, Bishop of Gaza", "note": "+420" }
+    {
+      "name": "St. Porphyrius, Bishop of Gaza",
+      "note": "+420"
+    }
   ],
   "02-27": [
-    { "name": "St. Procopius the Confessor of Decapolis", "note": "+8th c." }
+    {
+      "name": "St. Procopius the Confessor of Decapolis",
+      "note": "+8th c."
+    }
   ],
   "02-28": [
-    { "name": "St. Basil the Confessor", "note": "ascetic and iconophile, +747" }
+    {
+      "name": "St. Basil the Confessor",
+      "note": "ascetic and iconophile, +747"
+    }
   ],
   "02-29": [
-    { "name": "St. John Cassian the Roman", "note": "writer on the eight thoughts, +435 (kept Feb 29 leap, Feb 28 otherwise)" }
+    {
+      "name": "St. John Cassian the Roman",
+      "note": "writer on the eight thoughts, +435 (kept Feb 29 leap, Feb 28 otherwise)"
+    }
   ],
   "03-01": [
-    { "name": "Venerable-martyr Eudoxia of Heliopolis", "note": "+ca. 160" }
+    {
+      "name": "Venerable-martyr Eudoxia of Heliopolis",
+      "note": "+ca. 160"
+    }
   ],
   "03-02": [
-    { "name": "Hieromartyr Hesychius the Senator", "note": "of Antioch, +4th c." }
+    {
+      "name": "Hieromartyr Hesychius the Senator",
+      "note": "of Antioch, +4th c."
+    }
   ],
   "03-03": [
-    { "name": "Martyrs Eutropius, Cleonicus, and Basiliscus", "note": "+ca. 308" }
+    {
+      "name": "Martyrs Eutropius, Cleonicus, and Basiliscus",
+      "note": "+ca. 308"
+    }
   ],
   "03-04": [
-    { "name": "St. Gerasimus of the Jordan", "note": "tamer of the lion, +475" }
+    {
+      "name": "St. Gerasimus of the Jordan",
+      "note": "tamer of the lion, +475"
+    }
   ],
   "03-05": [
-    { "name": "Martyr Conon of Isauria", "note": "Apostolic Age" }
+    {
+      "name": "Martyr Conon of Isauria",
+      "note": "Apostolic Age"
+    }
   ],
   "03-06": [
-    { "name": "42 Martyrs of Amorion", "note": "Byzantine officers martyred by the Saracens, +845" }
+    {
+      "name": "42 Martyrs of Amorion",
+      "note": "Byzantine officers martyred by the Saracens, +845"
+    }
   ],
   "03-07": [
-    { "name": "Hieromartyrs of Cherson", "note": "early apostles to the Crimea" }
+    {
+      "name": "Hieromartyrs of Cherson",
+      "note": "early apostles to the Crimea"
+    }
   ],
   "03-08": [
-    { "name": "St. Theophylact the Confessor, Bishop of Nicomedia", "note": "iconophile, +845" }
+    {
+      "name": "St. Theophylact the Confessor, Bishop of Nicomedia",
+      "note": "iconophile, +845"
+    }
   ],
   "03-09": [
-    { "name": "40 Martyrs of Sebaste", "note": "Roman soldiers frozen in a lake for Christ, +320" }
+    {
+      "name": "40 Martyrs of Sebaste",
+      "note": "Roman soldiers frozen in a lake for Christ, +320"
+    }
   ],
   "03-10": [
-    { "name": "Martyr Quadratus and Companions", "note": "of Corinth, +258" }
+    {
+      "name": "Martyr Quadratus and Companions",
+      "note": "of Corinth, +258"
+    }
   ],
   "03-11": [
-    { "name": "St. Sophronius, Patriarch of Jerusalem", "note": "defender against Monothelitism, +638" }
+    {
+      "name": "St. Sophronius, Patriarch of Jerusalem",
+      "note": "defender against Monothelitism, +638"
+    }
   ],
   "03-12": [
-    { "name": "St. Symeon the New Theologian", "slug": "symeon-the-new-theologian", "note": "Byzantine mystic, +1022" },
-    { "name": "St. Theophanes the Confessor of Sigriane", "note": "+818" }
+    {
+      "name": "St. Symeon the New Theologian",
+      "slug": "symeon-the-new-theologian",
+      "note": "Byzantine mystic, +1022"
+    },
+    {
+      "name": "St. Theophanes the Confessor of Sigriane",
+      "note": "+818"
+    }
   ],
   "03-13": [
-    { "name": "Translation of Relics of St. Nicephorus of Constantinople", "kind": "feast" }
+    {
+      "name": "Translation of Relics of St. Nicephorus of Constantinople",
+      "kind": "feast"
+    }
   ],
   "03-14": [
-    { "name": "St. Benedict of Nursia", "note": "patriarch of Western monasticism, +547" }
+    {
+      "name": "St. Benedict of Nursia",
+      "note": "patriarch of Western monasticism, +547"
+    }
   ],
   "03-15": [
-    { "name": "Martyr Agapius and Seven Companions", "note": "of Caesarea in Palestine, +304" }
+    {
+      "name": "Martyr Agapius and Seven Companions",
+      "note": "of Caesarea in Palestine, +304"
+    }
   ],
   "03-16": [
-    { "name": "Martyr Sabinus the Egyptian", "note": "+287" }
+    {
+      "name": "Martyr Sabinus the Egyptian",
+      "note": "+287"
+    }
   ],
   "03-17": [
-    { "name": "St. Alexis the Man of God", "note": "+411" }
+    {
+      "name": "St. Alexis the Man of God",
+      "note": "+411"
+    }
   ],
   "03-18": [
-    { "name": "St. Cyril, Archbishop of Jerusalem", "note": "his Catechetical Lectures shape Orthodox initiation to this day, +386" }
+    {
+      "name": "St. Cyril, Archbishop of Jerusalem",
+      "note": "his Catechetical Lectures shape Orthodox initiation to this day, +386"
+    }
   ],
   "03-19": [
-    { "name": "Martyrs Chrysanthus and Daria", "note": "+283" }
+    {
+      "name": "Martyrs Chrysanthus and Daria",
+      "note": "+283"
+    }
   ],
   "03-20": [
-    { "name": "Fathers Slain at the Monastery of St. Sabbas", "note": "+796" }
+    {
+      "name": "Fathers Slain at the Monastery of St. Sabbas",
+      "note": "+796"
+    }
   ],
   "03-21": [
-    { "name": "St. James the Confessor", "note": "+8th c." }
+    {
+      "name": "St. James the Confessor",
+      "note": "+8th c."
+    }
   ],
   "03-22": [
-    { "name": "Hieromartyr Basil of Ancyra", "note": "+ca. 363" }
+    {
+      "name": "Hieromartyr Basil of Ancyra",
+      "note": "+ca. 363"
+    }
   ],
   "03-23": [
-    { "name": "Venerable-martyr Nicon and 199 Disciples", "note": "+251" }
+    {
+      "name": "Venerable-martyr Nicon and 199 Disciples",
+      "note": "+251"
+    }
   ],
   "03-24": [
-    { "name": "Forefeast of the Annunciation", "kind": "feast" }
+    {
+      "name": "Forefeast of the Annunciation",
+      "kind": "feast"
+    }
   ],
   "03-25": [
-    { "name": "The Annunciation of the Most Holy Theotokos", "kind": "feast" }
+    {
+      "name": "The Annunciation of the Most Holy Theotokos",
+      "kind": "feast"
+    }
   ],
   "03-26": [
-    { "name": "Synaxis of the Archangel Gabriel", "kind": "feast" }
+    {
+      "name": "Synaxis of the Archangel Gabriel",
+      "kind": "feast"
+    }
   ],
   "03-27": [
-    { "name": "Martyr Matrona of Thessaloniki", "note": "+4th c." }
+    {
+      "name": "Martyr Matrona of Thessaloniki",
+      "note": "+4th c."
+    }
   ],
   "03-28": [
-    { "name": "St. Hilarion the New of Pelekete", "note": "+754" }
+    {
+      "name": "St. Hilarion the New of Pelekete",
+      "note": "+754"
+    }
   ],
   "03-29": [
-    { "name": "Hieromartyr Mark, Bishop of Arethusa", "note": "+ca. 364" }
+    {
+      "name": "Hieromartyr Mark, Bishop of Arethusa",
+      "note": "+ca. 364"
+    }
   ],
   "03-30": [
-    { "name": "St. John of the Ladder (Climacus)", "note": "abbot of Sinai, +ca. 649" }
+    {
+      "name": "St. John of the Ladder (Climacus)",
+      "note": "abbot of Sinai, +ca. 649"
+    }
   ],
   "03-31": [
-    { "name": "St. Hypatius, Bishop of Gangra", "note": "father of the First Ecumenical Council, +ca. 326" }
+    {
+      "name": "St. Hypatius, Bishop of Gangra",
+      "note": "father of the First Ecumenical Council, +ca. 326"
+    }
   ],
   "04-01": [
-    { "name": "St. Mary of Egypt", "note": "the great repentant, +522" }
+    {
+      "name": "St. Mary of Egypt",
+      "note": "the great repentant, +522"
+    }
   ],
   "04-02": [
-    { "name": "St. Titus the Wonderworker", "note": "+9th c." }
+    {
+      "name": "St. Titus the Wonderworker",
+      "note": "+9th c."
+    }
   ],
   "04-03": [
-    { "name": "St. Nicetas the Confessor of the Studion", "note": "+824" }
+    {
+      "name": "St. Nicetas the Confessor of the Studion",
+      "note": "+824"
+    }
   ],
   "04-04": [
-    { "name": "St. Joseph the Hymnographer", "note": "composer of canons, +883" }
+    {
+      "name": "St. Joseph the Hymnographer",
+      "note": "composer of canons, +883"
+    }
   ],
   "04-05": [
-    { "name": "Martyrs Theodulus and Agathopodes", "note": "of Thessaloniki, +303" }
+    {
+      "name": "Martyrs Theodulus and Agathopodes",
+      "note": "of Thessaloniki, +303"
+    }
   ],
   "04-06": [
-    { "name": "St. Eutychius, Patriarch of Constantinople", "note": "+582" }
+    {
+      "name": "St. Eutychius, Patriarch of Constantinople",
+      "note": "+582"
+    }
   ],
   "04-07": [
-    { "name": "St. George the Confessor, Bishop of Mytilene", "note": "+816" }
+    {
+      "name": "St. George the Confessor, Bishop of Mytilene",
+      "note": "+816"
+    }
   ],
   "04-08": [
-    { "name": "Apostles Herodion, Agabus, Asyncritus, Rufus, Phlegon, Hermes", "note": "of the Seventy" }
+    {
+      "name": "Apostles Herodion, Agabus, Asyncritus, Rufus, Phlegon, Hermes",
+      "note": "of the Seventy"
+    }
   ],
   "04-09": [
-    { "name": "Martyr Eupsychius of Caesarea", "note": "+362" }
+    {
+      "name": "Martyr Eupsychius of Caesarea",
+      "note": "+362"
+    }
   ],
   "04-10": [
-    { "name": "Martyrs Terence, Africanus, and Companions", "note": "of Carthage, +250" }
+    {
+      "name": "Martyrs Terence, Africanus, and Companions",
+      "note": "of Carthage, +250"
+    }
   ],
   "04-11": [
-    { "name": "Hieromartyr Antipas, Bishop of Pergamum", "note": "the faithful witness, +92" }
+    {
+      "name": "Hieromartyr Antipas, Bishop of Pergamum",
+      "note": "the faithful witness, +92"
+    }
   ],
   "04-12": [
-    { "name": "St. Basil, Bishop of Parium", "note": "+8th c." }
+    {
+      "name": "St. Basil, Bishop of Parium",
+      "note": "+8th c."
+    }
   ],
   "04-13": [
-    { "name": "Hieromartyr Artemon", "note": "presbyter of Laodicea, +303" }
+    {
+      "name": "Hieromartyr Artemon",
+      "note": "presbyter of Laodicea, +303"
+    }
   ],
   "04-14": [
-    { "name": "St. Martin the Confessor, Pope of Rome", "note": "defender of orthodoxy against Monothelitism, +655" }
+    {
+      "name": "St. Martin the Confessor, Pope of Rome",
+      "note": "defender of orthodoxy against Monothelitism, +655"
+    }
   ],
   "04-15": [
-    { "name": "Apostles Aristarchus, Pudens, Trophimus", "note": "of the Seventy" }
+    {
+      "name": "Apostles Aristarchus, Pudens, Trophimus",
+      "note": "of the Seventy"
+    }
   ],
   "04-16": [
-    { "name": "Virgin-martyrs Agape, Irene, and Chionia", "note": "of Illyria, +304" }
+    {
+      "name": "Virgin-martyrs Agape, Irene, and Chionia",
+      "note": "of Illyria, +304"
+    }
   ],
   "04-17": [
-    { "name": "Hieromartyr Symeon, Bishop in Persia", "note": "+341" }
+    {
+      "name": "Hieromartyr Symeon, Bishop in Persia",
+      "note": "+341"
+    }
   ],
   "04-18": [
-    { "name": "St. John, Disciple of Gregory of Decapolis", "note": "+9th c." }
+    {
+      "name": "St. John, Disciple of Gregory of Decapolis",
+      "note": "+9th c."
+    }
   ],
   "04-19": [
-    { "name": "St. John of the Ancient Caves", "note": "+8th c." }
+    {
+      "name": "St. John of the Ancient Caves",
+      "note": "+8th c."
+    }
   ],
   "04-20": [
-    { "name": "St. Theodore Trichinas", "note": "of Constantinople, +400" }
+    {
+      "name": "St. Theodore Trichinas",
+      "note": "of Constantinople, +400"
+    }
   ],
   "04-21": [
-    { "name": "Hieromartyr Januarius, Bishop of Benevento", "note": "+ca. 305" }
+    {
+      "name": "Hieromartyr Januarius, Bishop of Benevento",
+      "note": "+ca. 305"
+    }
   ],
   "04-22": [
-    { "name": "St. Theodore Sykeotes", "note": "Bishop of Anastasioupolis, +613" }
+    {
+      "name": "St. Theodore Sykeotes",
+      "note": "Bishop of Anastasioupolis, +613"
+    }
   ],
   "04-23": [
-    { "name": "Great-martyr George the Trophy-Bearer", "kind": "feast", "note": "+303" }
+    {
+      "name": "Great-martyr George the Trophy-Bearer",
+      "kind": "feast",
+      "note": "+303"
+    }
   ],
   "04-24": [
-    { "name": "Martyr Sabbas Stratelates", "note": "and 70 soldiers with him, +272" }
+    {
+      "name": "Martyr Sabbas Stratelates",
+      "note": "and 70 soldiers with him, +272"
+    }
   ],
   "04-25": [
-    { "name": "Apostle and Evangelist Mark", "kind": "feast", "note": "+63" }
+    {
+      "name": "Apostle and Evangelist Mark",
+      "kind": "feast",
+      "note": "+63"
+    }
   ],
   "04-26": [
-    { "name": "Hieromartyr Basil, Bishop of Amasea", "note": "+322" }
+    {
+      "name": "Hieromartyr Basil, Bishop of Amasea",
+      "note": "+322"
+    }
   ],
   "04-27": [
-    { "name": "Hieromartyr Symeon, kinsman of the Lord", "note": "second bishop of Jerusalem, +107" }
+    {
+      "name": "Hieromartyr Symeon, kinsman of the Lord",
+      "note": "second bishop of Jerusalem, +107"
+    }
   ],
   "04-28": [
-    { "name": "Nine Holy Martyrs of Cyzicus", "note": "+ca. 286" }
+    {
+      "name": "Nine Holy Martyrs of Cyzicus",
+      "note": "+ca. 286"
+    }
   ],
   "04-29": [
-    { "name": "St. Memnon the Wonderworker", "note": "+4th c." }
+    {
+      "name": "St. Memnon the Wonderworker",
+      "note": "+4th c."
+    }
   ],
   "04-30": [
-    { "name": "Apostle James, brother of John the Theologian", "kind": "feast", "note": "first apostle to be martyred, +44" }
+    {
+      "name": "Apostle James, brother of John the Theologian",
+      "kind": "feast",
+      "note": "first apostle to be martyred, +44"
+    }
   ],
   "05-01": [
-    { "name": "Prophet Jeremiah", "note": "+6th c. BC" },
-    { "name": "St. Paphnutius, Abbot of Borovsk", "note": "wonderworker of the Russian forests, +1477" }
+    {
+      "name": "Prophet Jeremiah",
+      "note": "+6th c. BC"
+    },
+    {
+      "name": "St. Paphnutius, Abbot of Borovsk",
+      "note": "wonderworker of the Russian forests, +1477"
+    }
   ],
   "05-02": [
-    { "name": "Translation of Relics of St. Athanasius the Great", "slug": "athanasius-the-great", "kind": "feast" },
-    { "name": "Translation of the Relics of Sts. Boris and Gleb", "note": "the first Russian saints, passion-bearers, +1015" }
+    {
+      "name": "Translation of Relics of St. Athanasius the Great",
+      "slug": "athanasius-the-great",
+      "kind": "feast"
+    },
+    {
+      "name": "Translation of the Relics of Sts. Boris and Gleb",
+      "note": "the first Russian saints, passion-bearers, +1015"
+    }
   ],
   "05-03": [
-    { "name": "St. Theodosius of the Kiev Caves", "note": "father of Russian cenobitic monasticism, +1074" },
-    { "name": "Martyrs Timothy and Maura", "note": "of Egypt, +ca. 286" },
-    { "name": "St. Peter the Wonderworker, Bishop of Argos", "note": "+922" }
+    {
+      "name": "St. Theodosius of the Kiev Caves",
+      "note": "father of Russian cenobitic monasticism, +1074"
+    },
+    {
+      "name": "Martyrs Timothy and Maura",
+      "note": "of Egypt, +ca. 286"
+    },
+    {
+      "name": "St. Peter the Wonderworker, Bishop of Argos",
+      "note": "+922"
+    }
   ],
   "05-04": [
-    { "name": "Virgin-martyr Pelagia of Tarsus", "note": "+ca. 290" },
-    { "name": "Hieromartyr Silvanus, Bishop of Gaza", "note": "+311" },
-    { "name": "St. Hilary the Wonderworker", "note": "abbot, +476" }
+    {
+      "name": "St. Florian of Lorch",
+      "note": "Roman officer and martyr at Lauriacum, +304; venerated in the Polish Orthodox Church",
+      "slug": "florian-of-lorch"
+    },
+    {
+      "name": "Virgin-martyr Pelagia of Tarsus",
+      "note": "+ca. 290"
+    },
+    {
+      "name": "Hieromartyr Silvanus, Bishop of Gaza",
+      "note": "+311"
+    },
+    {
+      "name": "St. Hilary the Wonderworker",
+      "note": "abbot, +476"
+    }
   ],
   "05-05": [
-    { "name": "Great-martyr Irene of Magedon", "note": "Apostolic Age" },
-    { "name": "Ven. Micah of Radonezh", "note": "disciple of St. Sergius, +1385" }
+    {
+      "name": "Great-martyr Irene of Magedon",
+      "note": "Apostolic Age"
+    },
+    {
+      "name": "Ven. Micah of Radonezh",
+      "note": "disciple of St. Sergius, +1385"
+    }
   ],
   "05-06": [
-    { "name": "Righteous Job the Long-Suffering", "note": "of the land of Uz" },
-    { "name": "Martyr Barbarus the Myrrh-gusher", "note": "the former robber, +9th c." }
+    {
+      "name": "Righteous Job the Long-Suffering",
+      "note": "of the land of Uz"
+    },
+    {
+      "name": "Martyr Barbarus the Myrrh-gusher",
+      "note": "the former robber, +9th c."
+    }
   ],
   "05-07": [
-    { "name": "Appearance of the Sign of the Cross over Jerusalem", "kind": "feast", "note": "in the year 351" },
-    { "name": "Martyr Acacius the Centurion", "note": "of Byzantium, +303" },
-    { "name": "St. Alexis Toth, Confessor", "note": "defender of Orthodoxy in America, +1909" }
+    {
+      "name": "Appearance of the Sign of the Cross over Jerusalem",
+      "kind": "feast",
+      "note": "in the year 351"
+    },
+    {
+      "name": "Martyr Acacius the Centurion",
+      "note": "of Byzantium, +303"
+    },
+    {
+      "name": "St. Alexis Toth, Confessor",
+      "note": "defender of Orthodoxy in America, +1909"
+    }
   ],
   "05-08": [
-    { "name": "Apostle and Evangelist John the Theologian", "kind": "feast", "note": "his repose at Ephesus" },
-    { "name": "Ven. Arsenius the Great", "note": "of the Egyptian desert, +449" }
+    {
+      "name": "Apostle and Evangelist John the Theologian",
+      "kind": "feast",
+      "note": "his repose at Ephesus"
+    },
+    {
+      "name": "Ven. Arsenius the Great",
+      "note": "of the Egyptian desert, +449"
+    }
   ],
   "05-09": [
-    { "name": "Translation of the Relics of St. Nicholas of Myra to Bari", "kind": "feast", "note": "in the year 1087" },
-    { "name": "Prophet Isaiah", "note": "+8th c. BC" },
-    { "name": "Martyr Christopher of Lycia", "note": "+ca. 250" }
+    {
+      "name": "Translation of the Relics of St. Nicholas of Myra to Bari",
+      "kind": "feast",
+      "note": "in the year 1087"
+    },
+    {
+      "name": "Prophet Isaiah",
+      "note": "+8th c. BC"
+    },
+    {
+      "name": "Martyr Christopher of Lycia",
+      "note": "+ca. 250"
+    }
   ],
   "05-10": [
-    { "name": "Apostle Simon the Zealot", "note": "+1st c." },
-    { "name": "St. Simon, Bishop of Vladimir and Suzdal", "note": "of the Kiev Caves, +1226" }
+    {
+      "name": "Apostle Simon the Zealot",
+      "note": "+1st c."
+    },
+    {
+      "name": "St. Simon, Bishop of Vladimir and Suzdal",
+      "note": "of the Kiev Caves, +1226"
+    }
   ],
   "05-11": [
-    { "name": "Equal-to-Apostles Cyril and Methodius", "kind": "feast", "note": "Apostles to the Slavs, +869 and +885" },
-    { "name": "Hieromartyr Mocius of Amphipolis", "note": "+ca. 295" }
+    {
+      "name": "Equal-to-Apostles Cyril and Methodius",
+      "kind": "feast",
+      "note": "Apostles to the Slavs, +869 and +885"
+    },
+    {
+      "name": "Hieromartyr Mocius of Amphipolis",
+      "note": "+ca. 295"
+    }
   ],
   "05-12": [
-    { "name": "St. Epiphanius of Cyprus", "note": "+403" },
-    { "name": "St. Germanus, Patriarch of Constantinople", "note": "defender of the icons, +740" }
+    {
+      "name": "St. Epiphanius of Cyprus",
+      "note": "+403"
+    },
+    {
+      "name": "St. Germanus, Patriarch of Constantinople",
+      "note": "defender of the icons, +740"
+    }
   ],
   "05-13": [
-    { "name": "Virgin-martyr Glyceria of Heraclea", "note": "+177" },
-    { "name": "Martyr Alexander of Rome", "note": "soldier, +ca. 284" },
-    { "name": "St. Pausikakos, Bishop of Synada", "note": "+606" }
+    {
+      "name": "Virgin-martyr Glyceria of Heraclea",
+      "note": "+177"
+    },
+    {
+      "name": "Martyr Alexander of Rome",
+      "note": "soldier, +ca. 284"
+    },
+    {
+      "name": "St. Pausikakos, Bishop of Synada",
+      "note": "+606"
+    }
   ],
   "05-14": [
-    { "name": "Martyr Isidore of Chios", "note": "Roman soldier, +251" },
-    { "name": "Blessed Isidore the Fool-for-Christ", "note": "wonderworker of Rostov, +1474" },
-    { "name": "Hieromartyr Therapon, Bishop of Cyprus", "note": "+4th c." }
+    {
+      "name": "Martyr Isidore of Chios",
+      "note": "Roman soldier, +251"
+    },
+    {
+      "name": "Blessed Isidore the Fool-for-Christ",
+      "note": "wonderworker of Rostov, +1474"
+    },
+    {
+      "name": "Hieromartyr Therapon, Bishop of Cyprus",
+      "note": "+4th c."
+    }
   ],
   "05-15": [
-    { "name": "St. Pachomius the Great", "note": "father of cenobitic monasticism, +348" },
-    { "name": "St. Achillius, Bishop of Larissa", "note": "Father of the First Council, +ca. 330" },
-    { "name": "Right-believing Tsarevich Demetrius of Uglich", "note": "+1591" }
+    {
+      "name": "St. Pachomius the Great",
+      "note": "father of cenobitic monasticism, +348"
+    },
+    {
+      "name": "St. Achillius, Bishop of Larissa",
+      "note": "Father of the First Council, +ca. 330"
+    },
+    {
+      "name": "Right-believing Tsarevich Demetrius of Uglich",
+      "note": "+1591"
+    }
   ],
   "05-16": [
-    { "name": "St. Theodore the Sanctified", "note": "disciple of Pachomius the Great, +368" },
-    { "name": "St. Nicholas Velimirović of Žiča", "note": "Serbian theologian and confessor, +1956" },
-    { "name": "St. Brendan the Navigator", "note": "Irish abbot, +577" }
+    {
+      "name": "St. Theodore the Sanctified",
+      "note": "disciple of Pachomius the Great, +368"
+    },
+    {
+      "name": "St. Nicholas Velimirović of Žiča",
+      "note": "Serbian theologian and confessor, +1956"
+    },
+    {
+      "name": "St. Brendan the Navigator",
+      "note": "Irish abbot, +577"
+    }
   ],
   "05-17": [
-    { "name": "Apostle Andronicus of the Seventy", "note": "and Junia, +1st c." },
-    { "name": "Martyr Solochon of Egypt", "note": "soldier, +298" }
+    {
+      "name": "Apostle Andronicus of the Seventy",
+      "note": "and Junia, +1st c."
+    },
+    {
+      "name": "Martyr Solochon of Egypt",
+      "note": "soldier, +298"
+    }
   ],
   "05-18": [
-    { "name": "Martyrs Theodotus and Seven Virgins of Ancyra", "note": "+ca. 303" },
-    { "name": "Martyrs Peter, Dionysius, and companions", "note": "of Lampsacus, +ca. 250" }
+    {
+      "name": "Martyrs Theodotus and Seven Virgins of Ancyra",
+      "note": "+ca. 303"
+    },
+    {
+      "name": "Martyrs Peter, Dionysius, and companions",
+      "note": "of Lampsacus, +ca. 250"
+    }
   ],
   "05-19": [
-    { "name": "Hieromartyr Patrick, Bishop of Prussa", "note": "+360" },
-    { "name": "Ven. Cornelius, Abbot of Komel", "note": "wonderworker, +1537" }
+    {
+      "name": "Hieromartyr Patrick, Bishop of Prussa",
+      "note": "+360"
+    },
+    {
+      "name": "Ven. Cornelius, Abbot of Komel",
+      "note": "wonderworker, +1537"
+    }
   ],
   "05-20": [
-    { "name": "Martyr Thallelaeus the Physician", "note": "+284" },
-    { "name": "Uncovering of the Relics of St. Alexis, Metropolitan of Moscow", "note": "in the year 1431" },
-    { "name": "Martyrs Asterius and Alexander", "note": "companions of Thallelaeus, +284" }
+    {
+      "name": "Martyr Thallelaeus the Physician",
+      "note": "+284"
+    },
+    {
+      "name": "Uncovering of the Relics of St. Alexis, Metropolitan of Moscow",
+      "note": "in the year 1431"
+    },
+    {
+      "name": "Martyrs Asterius and Alexander",
+      "note": "companions of Thallelaeus, +284"
+    }
   ],
   "05-21": [
-    { "name": "Equal-to-Apostles Constantine and Helen", "kind": "feast", "note": "the Great Emperor (+337) and his mother (+327)" },
-    { "name": "Ven. Cassian the Greek, Wonderworker of Uglich", "note": "+1504" }
+    {
+      "name": "Equal-to-Apostles Constantine and Helen",
+      "kind": "feast",
+      "note": "the Great Emperor (+337) and his mother (+327)"
+    },
+    {
+      "name": "Ven. Cassian the Greek, Wonderworker of Uglich",
+      "note": "+1504"
+    }
   ],
   "05-22": [
-    { "name": "Martyr Basiliscus", "note": "of Comana, +308" },
-    { "name": "Commemoration of the Second Ecumenical Council", "kind": "feast", "note": "Constantinople, in the year 381" }
+    {
+      "name": "Martyr Basiliscus",
+      "note": "of Comana, +308"
+    },
+    {
+      "name": "Commemoration of the Second Ecumenical Council",
+      "kind": "feast",
+      "note": "Constantinople, in the year 381"
+    }
   ],
   "05-23": [
-    { "name": "St. Michael the Confessor, Bishop of Synada", "note": "iconophile, +821" },
-    { "name": "Ven. Euphrosyne, Abbess of Polotsk", "note": "+1173" }
+    {
+      "name": "St. Michael the Confessor, Bishop of Synada",
+      "note": "iconophile, +821"
+    },
+    {
+      "name": "Ven. Euphrosyne, Abbess of Polotsk",
+      "note": "+1173"
+    }
   ],
   "05-24": [
-    { "name": "St. Symeon the Stylite of the Wonderful Mountain", "note": "+596" },
-    { "name": "Ven. Nicetas the Stylite of Pereyaslavl", "note": "+1186" }
+    {
+      "name": "St. Symeon the Stylite of the Wonderful Mountain",
+      "note": "+596"
+    },
+    {
+      "name": "Ven. Nicetas the Stylite of Pereyaslavl",
+      "note": "+1186"
+    }
   ],
   "05-25": [
-    { "name": "Third Finding of the Honored Head of John the Forerunner", "kind": "feast" },
-    { "name": "Hieromartyr Therapon, Bishop of Sardis", "note": "+259" }
+    {
+      "name": "Third Finding of the Honored Head of John the Forerunner",
+      "kind": "feast"
+    },
+    {
+      "name": "Hieromartyr Therapon, Bishop of Sardis",
+      "note": "+259"
+    }
   ],
   "05-26": [
-    { "name": "Apostle Carpus", "note": "of the Seventy, fellow-laborer of Paul" },
-    { "name": "Apostle Alphaeus of the Seventy", "note": "+1st c." },
-    { "name": "St. Augustine, Archbishop of Canterbury", "note": "enlightener of the English, +605" }
+    {
+      "name": "Apostle Carpus",
+      "note": "of the Seventy, fellow-laborer of Paul"
+    },
+    {
+      "name": "Apostle Alphaeus of the Seventy",
+      "note": "+1st c."
+    },
+    {
+      "name": "St. Augustine, Archbishop of Canterbury",
+      "note": "enlightener of the English, +605"
+    }
   ],
   "05-27": [
-    { "name": "Hieromartyr Helladius", "note": "of the East, +6th c." },
-    { "name": "St. John the Russian, Confessor", "note": "of Evia, +1730" }
+    {
+      "name": "Hieromartyr Helladius",
+      "note": "of the East, +6th c."
+    },
+    {
+      "name": "St. John the Russian, Confessor",
+      "note": "of Evia, +1730"
+    }
   ],
   "05-28": [
-    { "name": "St. Nicetas, Bishop of Chalcedon", "note": "+9th c." },
-    { "name": "St. Ignatius, Bishop of Rostov", "note": "wonderworker, +1288" }
+    {
+      "name": "St. Nicetas, Bishop of Chalcedon",
+      "note": "+9th c."
+    },
+    {
+      "name": "St. Ignatius, Bishop of Rostov",
+      "note": "wonderworker, +1288"
+    }
   ],
   "05-29": [
-    { "name": "Virgin-martyr Theodosia of Tyre", "note": "+308" },
-    { "name": "Nun-martyr Theodosia of Constantinople", "note": "defender of the holy icons, +730" }
+    {
+      "name": "Virgin-martyr Theodosia of Tyre",
+      "note": "+308"
+    },
+    {
+      "name": "Nun-martyr Theodosia of Constantinople",
+      "note": "defender of the holy icons, +730"
+    }
   ],
   "05-30": [
-    { "name": "St. Isaac the Confessor, Abbot of Dalmatia", "note": "+383" },
-    { "name": "Righteous Macrina the Elder", "note": "grandmother of St. Basil the Great, +4th c." }
+    {
+      "name": "St. Isaac the Confessor, Abbot of Dalmatia",
+      "note": "+383"
+    },
+    {
+      "name": "Righteous Macrina the Elder",
+      "note": "grandmother of St. Basil the Great, +4th c."
+    }
   ],
   "05-31": [
-    { "name": "Apostle Hermas of the Seventy", "note": "+1st c." },
-    { "name": "Martyr Hermeias of Comana", "note": "+160" }
+    {
+      "name": "Apostle Hermas of the Seventy",
+      "note": "+1st c."
+    },
+    {
+      "name": "Martyr Hermeias of Comana",
+      "note": "+160"
+    }
   ],
   "06-01": [
-    { "name": "Martyr Justin the Philosopher", "note": "the first apologist, +166" },
-    { "name": "Ven. Dionysius, Abbot of Glushitsa", "note": "wonderworker, +1437" }
+    {
+      "name": "Martyr Justin the Philosopher",
+      "note": "the first apologist, +166"
+    },
+    {
+      "name": "Ven. Dionysius, Abbot of Glushitsa",
+      "note": "wonderworker, +1437"
+    }
   ],
   "06-02": [
-    { "name": "St. Nicephorus the Confessor, Patriarch of Constantinople", "note": "+828" },
-    { "name": "Great-martyr John the New of Suceava", "note": "+1330" }
+    {
+      "name": "St. Nicephorus the Confessor, Patriarch of Constantinople",
+      "note": "+828"
+    },
+    {
+      "name": "Great-martyr John the New of Suceava",
+      "note": "+1330"
+    }
   ],
   "06-03": [
-    { "name": "Martyr Lucillian and Companions", "note": "of Byzantium, +ca. 270" },
-    { "name": "St. Kevin of Glendalough", "note": "Irish abbot, +618" }
+    {
+      "name": "Martyr Lucillian and Companions",
+      "note": "of Byzantium, +ca. 270"
+    },
+    {
+      "name": "St. Kevin of Glendalough",
+      "note": "Irish abbot, +618"
+    }
   ],
   "06-04": [
-    { "name": "St. Metrophanes, First Patriarch of Constantinople", "note": "+325" },
-    { "name": "St. Methodius, Abbot of Peshnosha", "note": "disciple of St. Sergius, +1392" }
+    {
+      "name": "St. Metrophanes, First Patriarch of Constantinople",
+      "note": "+325"
+    },
+    {
+      "name": "St. Methodius, Abbot of Peshnosha",
+      "note": "disciple of St. Sergius, +1392"
+    }
   ],
   "06-05": [
-    { "name": "Hieromartyr Dorotheus, Bishop of Tyre", "note": "+ca. 362" },
-    { "name": "Ven. Dorotheus of Gaza", "note": "the abba, teacher of the spiritual life, +6th c." }
+    {
+      "name": "Hieromartyr Dorotheus, Bishop of Tyre",
+      "note": "+ca. 362"
+    },
+    {
+      "name": "Ven. Dorotheus of Gaza",
+      "note": "the abba, teacher of the spiritual life, +6th c."
+    }
   ],
   "06-06": [
-    { "name": "St. Bessarion the Wonderworker of Egypt", "note": "+4th c." },
-    { "name": "St. Hilarion the New, Abbot of Dalmatia", "note": "confessor, +845" }
+    {
+      "name": "St. Bessarion the Wonderworker of Egypt",
+      "note": "+4th c."
+    },
+    {
+      "name": "St. Hilarion the New, Abbot of Dalmatia",
+      "note": "confessor, +845"
+    }
   ],
   "06-07": [
-    { "name": "Hieromartyr Theodotus, Bishop of Ancyra", "note": "+303" }
+    {
+      "name": "Hieromartyr Theodotus, Bishop of Ancyra",
+      "note": "+303"
+    }
   ],
   "06-08": [
-    { "name": "Translation of Relics of Great-martyr Theodore Stratelates", "kind": "feast" },
-    { "name": "St. Theodore, Bishop of Suzdal", "note": "+1023" }
+    {
+      "name": "Translation of Relics of Great-martyr Theodore Stratelates",
+      "kind": "feast"
+    },
+    {
+      "name": "St. Theodore, Bishop of Suzdal",
+      "note": "+1023"
+    }
   ],
   "06-09": [
-    { "name": "St. Cyril of Alexandria", "slug": "cyril-of-alexandria", "note": "his repose, +444" },
-    { "name": "St. Cyril, Abbot of Belozersk", "note": "of the White Lake, +1427" }
+    {
+      "name": "St. Cyril of Alexandria",
+      "slug": "cyril-of-alexandria",
+      "note": "his repose, +444"
+    },
+    {
+      "name": "St. Cyril, Abbot of Belozersk",
+      "note": "of the White Lake, +1427"
+    }
   ],
   "06-10": [
-    { "name": "Hieromartyr Timothy, Bishop of Prussa", "note": "+361" },
-    { "name": "Martyrs Alexander and Antonina", "note": "of Crodamnus, +ca. 313" }
+    {
+      "name": "Hieromartyr Timothy, Bishop of Prussa",
+      "note": "+361"
+    },
+    {
+      "name": "Martyrs Alexander and Antonina",
+      "note": "of Crodamnus, +ca. 313"
+    }
   ],
   "06-11": [
-    { "name": "Apostles Bartholomew and Barnabas", "kind": "feast", "note": "of the Twelve and the Seventy" },
-    { "name": "Icon of the Theotokos 'It Is Truly Meet'", "note": "Axion Estin, of Mount Athos" }
+    {
+      "name": "Apostles Bartholomew and Barnabas",
+      "kind": "feast",
+      "note": "of the Twelve and the Seventy"
+    },
+    {
+      "name": "Icon of the Theotokos 'It Is Truly Meet'",
+      "note": "Axion Estin, of Mount Athos"
+    }
   ],
   "06-12": [
-    { "name": "St. Onuphrius the Great of Egypt", "note": "+400" },
-    { "name": "St. Peter of Athos", "note": "+734" },
-    { "name": "St. Arsenius, Abbot of Konevits", "note": "+1447" }
+    {
+      "name": "St. Onuphrius the Great of Egypt",
+      "note": "+400"
+    },
+    {
+      "name": "St. Peter of Athos",
+      "note": "+734"
+    },
+    {
+      "name": "St. Arsenius, Abbot of Konevits",
+      "note": "+1447"
+    }
   ],
   "06-13": [
-    { "name": "Virgin-martyr Aquilina of Byblos", "note": "+293" },
-    { "name": "St. Triphyllius, Bishop of Leucosia in Cyprus", "note": "+370" }
+    {
+      "name": "Virgin-martyr Aquilina of Byblos",
+      "note": "+293"
+    },
+    {
+      "name": "St. Triphyllius, Bishop of Leucosia in Cyprus",
+      "note": "+370"
+    }
   ],
   "06-14": [
-    { "name": "Prophet Elisha", "note": "the disciple of Elijah" },
-    { "name": "St. Methodius the Confessor, Patriarch of Constantinople", "note": "+847" }
+    {
+      "name": "Prophet Elisha",
+      "note": "the disciple of Elijah"
+    },
+    {
+      "name": "St. Methodius the Confessor, Patriarch of Constantinople",
+      "note": "+847"
+    }
   ],
   "06-15": [
-    { "name": "Prophet Amos", "note": "the shepherd of Tekoa" },
-    { "name": "St. Augustine of Hippo", "slug": "augustine-of-hippo", "note": "Blessed Augustine, Doctor of Grace, +430" },
-    { "name": "St. Jerome of Stridon", "note": "translator of the Vulgate, +420" }
+    {
+      "name": "Prophet Amos",
+      "note": "the shepherd of Tekoa"
+    },
+    {
+      "name": "St. Augustine of Hippo",
+      "slug": "augustine-of-hippo",
+      "note": "Blessed Augustine, Doctor of Grace, +430"
+    },
+    {
+      "name": "St. Jerome of Stridon",
+      "note": "translator of the Vulgate, +420"
+    }
   ],
   "06-16": [
-    { "name": "St. Tychon the Wonderworker, Bishop of Amathus", "note": "of Cyprus, +425" },
-    { "name": "St. Tikhon of Lukhov", "note": "wonderworker, +1503" }
+    {
+      "name": "St. Tychon the Wonderworker, Bishop of Amathus",
+      "note": "of Cyprus, +425"
+    },
+    {
+      "name": "St. Tikhon of Lukhov",
+      "note": "wonderworker, +1503"
+    }
   ],
   "06-17": [
-    { "name": "Martyrs Manuel, Sabel, and Ismael", "note": "Persian envoys martyred at Constantinople, +362" },
-    { "name": "Ven. Hypatius, Abbot of Rufinianus", "note": "+446" }
+    {
+      "name": "Martyrs Manuel, Sabel, and Ismael",
+      "note": "Persian envoys martyred at Constantinople, +362"
+    },
+    {
+      "name": "Ven. Hypatius, Abbot of Rufinianus",
+      "note": "+446"
+    }
   ],
   "06-18": [
-    { "name": "Martyr Leontius and Companions", "note": "of Tripoli in Phoenicia, +ca. 73" },
-    { "name": "Martyrs Hypatius and Theodulus", "note": "companions of Leontius" }
+    {
+      "name": "Martyr Leontius and Companions",
+      "note": "of Tripoli in Phoenicia, +ca. 73"
+    },
+    {
+      "name": "Martyrs Hypatius and Theodulus",
+      "note": "companions of Leontius"
+    }
   ],
   "06-19": [
-    { "name": "Apostle Jude, brother of the Lord", "kind": "feast" },
-    { "name": "Ven. Paisius the Great", "note": "of Egypt, +400" }
+    {
+      "name": "Apostle Jude, brother of the Lord",
+      "kind": "feast"
+    },
+    {
+      "name": "Ven. Paisius the Great",
+      "note": "of Egypt, +400"
+    }
   ],
   "06-20": [
-    { "name": "Hieromartyr Methodius, Bishop of Patara", "note": "+312" },
-    { "name": "St. Nahum of Ohrid", "note": "disciple of Sts. Cyril and Methodius, +910" }
+    {
+      "name": "Hieromartyr Methodius, Bishop of Patara",
+      "note": "+312"
+    },
+    {
+      "name": "St. Nahum of Ohrid",
+      "note": "disciple of Sts. Cyril and Methodius, +910"
+    }
   ],
   "06-21": [
-    { "name": "Martyr Julian of Tarsus", "note": "+305" },
-    { "name": "Hieromartyr Terence, Bishop of Iconium", "note": "+1st c." }
+    {
+      "name": "Martyr Julian of Tarsus",
+      "note": "+305"
+    },
+    {
+      "name": "Hieromartyr Terence, Bishop of Iconium",
+      "note": "+1st c."
+    }
   ],
   "06-22": [
-    { "name": "Hieromartyr Eusebius, Bishop of Samosata", "note": "+380" },
-    { "name": "St. Alban, Protomartyr of Britain", "note": "+ca. 305" }
+    {
+      "name": "Hieromartyr Eusebius, Bishop of Samosata",
+      "note": "+380"
+    },
+    {
+      "name": "St. Alban, Protomartyr of Britain",
+      "note": "+ca. 305"
+    }
   ],
   "06-23": [
-    { "name": "Martyr Agrippina of Rome", "note": "+253" },
-    { "name": "Vladimir Icon of the Theotokos", "note": "the deliverance of Moscow, 1480" }
+    {
+      "name": "Martyr Agrippina of Rome",
+      "note": "+253"
+    },
+    {
+      "name": "Vladimir Icon of the Theotokos",
+      "note": "the deliverance of Moscow, 1480"
+    }
   ],
   "06-24": [
-    { "name": "Nativity of the Honored Forerunner John the Baptist", "kind": "feast" }
+    {
+      "name": "Nativity of the Honored Forerunner John the Baptist",
+      "kind": "feast"
+    }
   ],
   "06-25": [
-    { "name": "Venerable-martyr Febronia", "note": "of Nisibis, +304" },
-    { "name": "Sts. Peter and Febronia of Murom", "note": "wonderworkers, +1228" }
+    {
+      "name": "Venerable-martyr Febronia",
+      "note": "of Nisibis, +304"
+    },
+    {
+      "name": "Sts. Peter and Febronia of Murom",
+      "note": "wonderworkers, +1228"
+    }
   ],
   "06-26": [
-    { "name": "St. David of Thessaloniki", "note": "+540" },
-    { "name": "Tikhvin Icon of the Theotokos", "note": "appeared near Novgorod, 1383" }
+    {
+      "name": "St. David of Thessaloniki",
+      "note": "+540"
+    },
+    {
+      "name": "Tikhvin Icon of the Theotokos",
+      "note": "appeared near Novgorod, 1383"
+    }
   ],
   "06-27": [
-    { "name": "St. Sampson the Hospitable", "note": "physician of Constantinople, +530" },
-    { "name": "St. Joanna the Myrrh-bearer", "note": "wife of Chuza, +1st c." }
+    {
+      "name": "St. Sampson the Hospitable",
+      "note": "physician of Constantinople, +530"
+    },
+    {
+      "name": "St. Joanna the Myrrh-bearer",
+      "note": "wife of Chuza, +1st c."
+    }
   ],
   "06-28": [
-    { "name": "Translation of Relics of Unmercenaries Cyrus and John", "kind": "feast" },
-    { "name": "Sts. Sergius and Herman of Valaam", "note": "wonderworkers, +1353" }
+    {
+      "name": "Translation of Relics of Unmercenaries Cyrus and John",
+      "kind": "feast"
+    },
+    {
+      "name": "Sts. Sergius and Herman of Valaam",
+      "note": "wonderworkers, +1353"
+    }
   ],
   "06-29": [
-    { "name": "Holy Glorious and All-Praised Leaders of the Apostles Peter and Paul", "kind": "feast" }
+    {
+      "name": "Holy Glorious and All-Praised Leaders of the Apostles Peter and Paul",
+      "kind": "feast"
+    }
   ],
   "06-30": [
-    { "name": "Synaxis of the Holy Twelve Apostles", "kind": "feast" },
-    { "name": "St. Peter, Prince of the Horde", "note": "of Rostov, +1290" }
+    {
+      "name": "Synaxis of the Holy Twelve Apostles",
+      "kind": "feast"
+    },
+    {
+      "name": "St. Peter, Prince of the Horde",
+      "note": "of Rostov, +1290"
+    }
   ],
   "07-01": [
-    { "name": "Holy Unmercenaries Cosmas and Damian of Rome", "note": "+284" },
-    { "name": "Ven. Peter the Patrician", "note": "of Constantinople, +854" }
+    {
+      "name": "Holy Unmercenaries Cosmas and Damian of Rome",
+      "note": "+284"
+    },
+    {
+      "name": "Ven. Peter the Patrician",
+      "note": "of Constantinople, +854"
+    }
   ],
   "07-02": [
-    { "name": "Deposition of the Honorable Robe of the Theotokos at Blachernae", "kind": "feast" },
-    { "name": "St. John, Archbishop of Shanghai and San Francisco", "note": "the Wonderworker, +1966" },
-    { "name": "St. Juvenal, Patriarch of Jerusalem", "note": "+458" }
+    {
+      "name": "Deposition of the Honorable Robe of the Theotokos at Blachernae",
+      "kind": "feast"
+    },
+    {
+      "name": "St. John, Archbishop of Shanghai and San Francisco",
+      "note": "the Wonderworker, +1966"
+    },
+    {
+      "name": "St. Juvenal, Patriarch of Jerusalem",
+      "note": "+458"
+    }
   ],
   "07-03": [
-    { "name": "Martyr Hyacinthus of Caesarea", "note": "of the imperial chamberlains, +108" },
-    { "name": "St. Anatolius, Patriarch of Constantinople", "note": "+458" }
+    {
+      "name": "Martyr Hyacinthus of Caesarea",
+      "note": "of the imperial chamberlains, +108"
+    },
+    {
+      "name": "St. Anatolius, Patriarch of Constantinople",
+      "note": "+458"
+    }
   ],
   "07-04": [
-    { "name": "St. Andrew, Archbishop of Crete", "note": "composer of the Great Canon, +740" },
-    { "name": "St. Andrei Rublev the Iconographer", "note": "of Moscow, +ca. 1430" }
+    {
+      "name": "St. Andrew, Archbishop of Crete",
+      "note": "composer of the Great Canon, +740"
+    },
+    {
+      "name": "St. Andrei Rublev the Iconographer",
+      "note": "of Moscow, +ca. 1430"
+    }
   ],
   "07-05": [
-    { "name": "St. Athanasius of Athos", "note": "founder of the Great Lavra, +1000" },
-    { "name": "Uncovering of the Relics of St. Sergius of Radonezh", "note": "in the year 1422" }
+    {
+      "name": "St. Athanasius of Athos",
+      "note": "founder of the Great Lavra, +1000"
+    },
+    {
+      "name": "Uncovering of the Relics of St. Sergius of Radonezh",
+      "note": "in the year 1422"
+    }
   ],
   "07-06": [
-    { "name": "St. Sisoes the Great of Egypt", "note": "the Desert Father weeping over Adam, +429" },
-    { "name": "Martyrs Marinus and Martha of Rome", "note": "with their sons, +269" }
+    {
+      "name": "St. Sisoes the Great of Egypt",
+      "note": "the Desert Father weeping over Adam, +429"
+    },
+    {
+      "name": "Martyrs Marinus and Martha of Rome",
+      "note": "with their sons, +269"
+    }
   ],
   "07-07": [
-    { "name": "Great-martyr Kyriaki of Nicomedia", "note": "+289" },
-    { "name": "St. Thomas of Maleon", "note": "+10th c." }
+    {
+      "name": "Great-martyr Kyriaki of Nicomedia",
+      "note": "+289"
+    },
+    {
+      "name": "St. Thomas of Maleon",
+      "note": "+10th c."
+    }
   ],
   "07-08": [
-    { "name": "Great-martyr Procopius of Caesarea in Palestine", "note": "+303" },
-    { "name": "Appearance of the Kazan Icon of the Theotokos", "kind": "feast", "note": "at Kazan, 1579" }
+    {
+      "name": "Great-martyr Procopius of Caesarea in Palestine",
+      "note": "+303"
+    },
+    {
+      "name": "Appearance of the Kazan Icon of the Theotokos",
+      "kind": "feast",
+      "note": "at Kazan, 1579"
+    }
   ],
   "07-09": [
-    { "name": "Hieromartyr Pancratius, Bishop of Tauromenium", "note": "+1st c." },
-    { "name": "Hieromartyr Cyril, Bishop of Gortyna", "note": "+3rd c." }
+    {
+      "name": "Hieromartyr Pancratius, Bishop of Tauromenium",
+      "note": "+1st c."
+    },
+    {
+      "name": "Hieromartyr Cyril, Bishop of Gortyna",
+      "note": "+3rd c."
+    }
   ],
   "07-10": [
-    { "name": "45 Martyrs of Nicopolis in Armenia", "note": "+ca. 319" },
-    { "name": "Ven. Anthony of the Kiev Caves", "note": "founder of Russian monasticism, +1073" }
+    {
+      "name": "45 Martyrs of Nicopolis in Armenia",
+      "note": "+ca. 319"
+    },
+    {
+      "name": "Ven. Anthony of the Kiev Caves",
+      "note": "founder of Russian monasticism, +1073"
+    }
   ],
   "07-11": [
-    { "name": "Great-martyr Euphemia the All-Praised", "note": "her relics confirmed Chalcedon, +304" },
-    { "name": "Equal-to-Apostles Olga, Princess of Kiev", "note": "+969" }
+    {
+      "name": "Great-martyr Euphemia the All-Praised",
+      "note": "her relics confirmed Chalcedon, +304"
+    },
+    {
+      "name": "Equal-to-Apostles Olga, Princess of Kiev",
+      "note": "+969"
+    }
   ],
   "07-12": [
-    { "name": "Martyrs Proclus and Hilary of Ancyra", "note": "+ca. 115" },
-    { "name": "Ven. Michael of Maleon", "note": "+962" }
+    {
+      "name": "Martyrs Proclus and Hilary of Ancyra",
+      "note": "+ca. 115"
+    },
+    {
+      "name": "Ven. Michael of Maleon",
+      "note": "+962"
+    }
   ],
   "07-13": [
-    { "name": "Synaxis of the Archangel Gabriel", "kind": "feast" },
-    { "name": "Ven. Stephen of St. Sabbas Monastery", "note": "+794" }
+    {
+      "name": "Synaxis of the Archangel Gabriel",
+      "kind": "feast"
+    },
+    {
+      "name": "Ven. Stephen of St. Sabbas Monastery",
+      "note": "+794"
+    }
   ],
   "07-14": [
-    { "name": "Apostle Aquila of the Seventy", "note": "and his wife Priscilla" },
-    { "name": "St. Nicodemus the Hagiorite", "note": "of the Holy Mountain, +1809" }
+    {
+      "name": "Apostle Aquila of the Seventy",
+      "note": "and his wife Priscilla"
+    },
+    {
+      "name": "St. Nicodemus the Hagiorite",
+      "note": "of the Holy Mountain, +1809"
+    }
   ],
   "07-15": [
-    { "name": "Equal-to-Apostles Vladimir, Great Prince of Kiev", "note": "the baptizer of Rus', +1015" },
-    { "name": "Martyrs Cyricus and his mother Julitta", "note": "+305" }
+    {
+      "name": "Equal-to-Apostles Vladimir, Great Prince of Kiev",
+      "note": "the baptizer of Rus', +1015"
+    },
+    {
+      "name": "Martyrs Cyricus and his mother Julitta",
+      "note": "+305"
+    }
   ],
   "07-16": [
-    { "name": "Hieromartyr Athenogenes, Bishop of Heracleopolis", "note": "and his ten disciples, +311" },
-    { "name": "Holy Fathers of the Six Ecumenical Councils", "kind": "feast" }
+    {
+      "name": "Hieromartyr Athenogenes, Bishop of Heracleopolis",
+      "note": "and his ten disciples, +311"
+    },
+    {
+      "name": "Holy Fathers of the Six Ecumenical Councils",
+      "kind": "feast"
+    }
   ],
   "07-17": [
-    { "name": "Great-martyr Marina (Margaret) of Antioch", "slug": "marina-the-great-martyr", "note": "+ca. 275" },
-    { "name": "Ven. Irinarchus, Abbot of Solovki", "note": "+1628" }
+    {
+      "name": "Great-martyr Marina (Margaret) of Antioch",
+      "slug": "marina-the-great-martyr",
+      "note": "+ca. 275"
+    },
+    {
+      "name": "Ven. Irinarchus, Abbot of Solovki",
+      "note": "+1628"
+    }
   ],
   "07-18": [
-    { "name": "Martyr Aemilian of Silistra", "note": "+362" },
-    { "name": "Ven. Pambo of Nitria", "note": "Desert Father, +386" }
+    {
+      "name": "Martyr Aemilian of Silistra",
+      "note": "+362"
+    },
+    {
+      "name": "Ven. Pambo of Nitria",
+      "note": "Desert Father, +386"
+    }
   ],
   "07-19": [
-    { "name": "St. Macrina the Younger", "note": "sister of Basil the Great and Gregory of Nyssa, +379" },
-    { "name": "Uncovering of the Relics of St. Seraphim of Sarov", "slug": "seraphim-of-sarov", "kind": "feast", "note": "+1903" },
-    { "name": "Ven. Dius, Abbot of Antioch", "note": "+430" }
+    {
+      "name": "St. Macrina the Younger",
+      "note": "sister of Basil the Great and Gregory of Nyssa, +379"
+    },
+    {
+      "name": "Uncovering of the Relics of St. Seraphim of Sarov",
+      "slug": "seraphim-of-sarov",
+      "kind": "feast",
+      "note": "+1903"
+    },
+    {
+      "name": "Ven. Dius, Abbot of Antioch",
+      "note": "+430"
+    }
   ],
   "07-20": [
-    { "name": "Prophet Elijah the Tishbite", "kind": "feast", "note": "+9th c. BC" },
-    { "name": "Ven. Abramius of Galich", "note": "disciple of St. Sergius, +1375" }
+    {
+      "name": "Prophet Elijah the Tishbite",
+      "kind": "feast",
+      "note": "+9th c. BC"
+    },
+    {
+      "name": "Ven. Abramius of Galich",
+      "note": "disciple of St. Sergius, +1375"
+    }
   ],
   "07-21": [
-    { "name": "Prophet Ezekiel", "note": "+6th c. BC" },
-    { "name": "St. Symeon, Fool for Christ", "note": "and John his companion, +6th c." }
+    {
+      "name": "Prophet Ezekiel",
+      "note": "+6th c. BC"
+    },
+    {
+      "name": "St. Symeon, Fool for Christ",
+      "note": "and John his companion, +6th c."
+    }
   ],
   "07-22": [
-    { "name": "St. Mary Magdalene, Equal-to-the-Apostles", "kind": "feast", "note": "the myrrh-bearer and first witness of the Resurrection" },
-    { "name": "Virgin-martyr Markella of Chios", "note": "+14th c." }
+    {
+      "name": "St. Mary Magdalene, Equal-to-the-Apostles",
+      "kind": "feast",
+      "note": "the myrrh-bearer and first witness of the Resurrection"
+    },
+    {
+      "name": "Virgin-martyr Markella of Chios",
+      "note": "+14th c."
+    }
   ],
   "07-23": [
-    { "name": "Hieromartyr Phocas, Bishop of Sinope", "note": "+ca. 117" },
-    { "name": "Pochaev Icon of the Theotokos", "note": "of the Pochaev Lavra" }
+    {
+      "name": "Hieromartyr Phocas, Bishop of Sinope",
+      "note": "+ca. 117"
+    },
+    {
+      "name": "Pochaev Icon of the Theotokos",
+      "note": "of the Pochaev Lavra"
+    }
   ],
   "07-24": [
-    { "name": "Great-martyr Christina of Tyre", "note": "+ca. 200" },
-    { "name": "Holy Passion-bearers Boris and Gleb", "note": "the first Russian saints, +1015" }
+    {
+      "name": "Great-martyr Christina of Tyre",
+      "note": "+ca. 200"
+    },
+    {
+      "name": "Holy Passion-bearers Boris and Gleb",
+      "note": "the first Russian saints, +1015"
+    }
   ],
   "07-25": [
-    { "name": "Dormition of Righteous Anna, Mother of the Theotokos", "kind": "feast" },
-    { "name": "St. Olympias the Deaconess", "slug": "olympias-the-deaconess", "note": "of Constantinople, +408" }
+    {
+      "name": "Dormition of Righteous Anna, Mother of the Theotokos",
+      "kind": "feast"
+    },
+    {
+      "name": "St. Olympias the Deaconess",
+      "slug": "olympias-the-deaconess",
+      "note": "of Constantinople, +408"
+    }
   ],
   "07-26": [
-    { "name": "Hieromartyr Hermolaus", "note": "presbyter of Nicomedia and teacher of Panteleimon, +ca. 305" },
-    { "name": "Venerable-martyr Parasceva of Rome", "note": "+138" }
+    {
+      "name": "Hieromartyr Hermolaus",
+      "note": "presbyter of Nicomedia and teacher of Panteleimon, +ca. 305"
+    },
+    {
+      "name": "Venerable-martyr Parasceva of Rome",
+      "note": "+138"
+    }
   ],
   "07-27": [
-    { "name": "Great-martyr and Healer Panteleimon", "kind": "feast", "note": "physician of Nicomedia, +305" },
-    { "name": "Blessed Nicholas Kochanov", "note": "Fool-for-Christ of Novgorod, +1392" }
+    {
+      "name": "Great-martyr and Healer Panteleimon",
+      "kind": "feast",
+      "note": "physician of Nicomedia, +305"
+    },
+    {
+      "name": "Blessed Nicholas Kochanov",
+      "note": "Fool-for-Christ of Novgorod, +1392"
+    }
   ],
   "07-28": [
-    { "name": "Apostles and Deacons Prochorus, Nicanor, Timon, and Parmenas", "note": "of the Seventy" },
-    { "name": "Smolensk Icon of the Theotokos 'Hodegetria'", "kind": "feast" }
+    {
+      "name": "Apostles and Deacons Prochorus, Nicanor, Timon, and Parmenas",
+      "note": "of the Seventy"
+    },
+    {
+      "name": "Smolensk Icon of the Theotokos 'Hodegetria'",
+      "kind": "feast"
+    }
   ],
   "07-29": [
-    { "name": "Martyr Callinicus of Cilicia", "note": "+3rd c." },
-    { "name": "Martyr Theodota and her three sons", "note": "+304" }
+    {
+      "name": "Martyr Callinicus of Cilicia",
+      "note": "+3rd c."
+    },
+    {
+      "name": "Martyr Theodota and her three sons",
+      "note": "+304"
+    }
   ],
   "07-30": [
-    { "name": "Apostles Silas, Silvanus, Crescens, and Andronicus", "note": "of the Seventy" },
-    { "name": "Martyr Valentine, Bishop of Interamna", "note": "+273" }
+    {
+      "name": "Apostles Silas, Silvanus, Crescens, and Andronicus",
+      "note": "of the Seventy"
+    },
+    {
+      "name": "Martyr Valentine, Bishop of Interamna",
+      "note": "+273"
+    }
   ],
   "07-31": [
-    { "name": "Forefeast of the Procession of the Cross", "kind": "feast" },
-    { "name": "Righteous Eudocimus of Cappadocia", "note": "+9th c." }
+    {
+      "name": "Forefeast of the Procession of the Cross",
+      "kind": "feast"
+    },
+    {
+      "name": "Righteous Eudocimus of Cappadocia",
+      "note": "+9th c."
+    }
   ],
   "08-01": [
-    { "name": "Procession of the Honorable and Life-Giving Cross", "kind": "feast" },
-    { "name": "Seven Holy Maccabean Martyrs", "note": "and their mother Solomonia, and teacher Eleazar, +166 BC" }
+    {
+      "name": "Procession of the Honorable and Life-Giving Cross",
+      "kind": "feast"
+    },
+    {
+      "name": "Seven Holy Maccabean Martyrs",
+      "note": "and their mother Solomonia, and teacher Eleazar, +166 BC"
+    }
   ],
   "08-02": [
-    { "name": "Translation of Relics of Stephen the First-Martyr", "kind": "feast" },
-    { "name": "Blessed Basil, Fool-for-Christ of Moscow", "note": "the Wonderworker, +1557" }
+    {
+      "name": "Translation of Relics of Stephen the First-Martyr",
+      "kind": "feast"
+    },
+    {
+      "name": "Blessed Basil, Fool-for-Christ of Moscow",
+      "note": "the Wonderworker, +1557"
+    }
   ],
   "08-03": [
-    { "name": "Saints Isaac, Dalmatus, and Faustus of the Studion", "note": "+4-5th c." },
-    { "name": "Ven. Anthony the Roman of Novgorod", "note": "+1147" }
+    {
+      "name": "Saints Isaac, Dalmatus, and Faustus of the Studion",
+      "note": "+4-5th c."
+    },
+    {
+      "name": "Ven. Anthony the Roman of Novgorod",
+      "note": "+1147"
+    }
   ],
   "08-04": [
-    { "name": "Seven Sleepers of Ephesus", "note": "+250 (and awakened ca. 446)" },
-    { "name": "Virgin-martyr Eudocia", "note": "of Persia, +4th c." }
+    {
+      "name": "Seven Sleepers of Ephesus",
+      "note": "+250 (and awakened ca. 446)"
+    },
+    {
+      "name": "Virgin-martyr Eudocia",
+      "note": "of Persia, +4th c."
+    }
   ],
   "08-05": [
-    { "name": "Forefeast of the Transfiguration", "kind": "feast" },
-    { "name": "Martyr Eusignius of Antioch", "note": "the soldier, +362" }
+    {
+      "name": "Forefeast of the Transfiguration",
+      "kind": "feast"
+    },
+    {
+      "name": "Martyr Eusignius of Antioch",
+      "note": "the soldier, +362"
+    }
   ],
   "08-06": [
-    { "name": "Holy Transfiguration of Our Lord on Mount Tabor", "kind": "feast" }
+    {
+      "name": "Holy Transfiguration of Our Lord on Mount Tabor",
+      "kind": "feast"
+    }
   ],
   "08-07": [
-    { "name": "Venerable-martyr Dometius the Persian", "note": "+363" },
-    { "name": "Ven. Or of the Thebaid", "note": "Desert Father, +ca. 390" }
+    {
+      "name": "Venerable-martyr Dometius the Persian",
+      "note": "+363"
+    },
+    {
+      "name": "Ven. Or of the Thebaid",
+      "note": "Desert Father, +ca. 390"
+    }
   ],
   "08-08": [
-    { "name": "St. Aemilian the Confessor, Bishop of Cyzicus", "note": "iconophile, +820" },
-    { "name": "St. Myron the Wonderworker, Bishop of Crete", "note": "+350" }
+    {
+      "name": "St. Aemilian the Confessor, Bishop of Cyzicus",
+      "note": "iconophile, +820"
+    },
+    {
+      "name": "St. Myron the Wonderworker, Bishop of Crete",
+      "note": "+350"
+    }
   ],
   "08-09": [
-    { "name": "Apostle Matthias", "kind": "feast", "note": "chosen to replace Judas Iscariot, +ca. 63" },
-    { "name": "St. Herman of Alaska", "note": "Wonderworker and enlightener of America, +1837" }
+    {
+      "name": "Apostle Matthias",
+      "kind": "feast",
+      "note": "chosen to replace Judas Iscariot, +ca. 63"
+    },
+    {
+      "name": "St. Herman of Alaska",
+      "note": "Wonderworker and enlightener of America, +1837"
+    }
   ],
   "08-10": [
-    { "name": "Martyr Lawrence the Archdeacon of Rome", "note": "+258" },
-    { "name": "Hieromartyr Sixtus II, Pope of Rome", "note": "+258" }
+    {
+      "name": "Martyr Lawrence the Archdeacon of Rome",
+      "note": "+258"
+    },
+    {
+      "name": "Hieromartyr Sixtus II, Pope of Rome",
+      "note": "+258"
+    }
   ],
   "08-11": [
-    { "name": "Martyr Euplus the Deacon of Catania", "note": "+304" },
-    { "name": "Sts. Theodore and Vasily of the Kiev Caves", "note": "+1098" }
+    {
+      "name": "Martyr Euplus the Deacon of Catania",
+      "note": "+304"
+    },
+    {
+      "name": "Sts. Theodore and Vasily of the Kiev Caves",
+      "note": "+1098"
+    }
   ],
   "08-12": [
-    { "name": "Martyrs Photius and Anicetus", "note": "of Nicomedia, +ca. 305" },
-    { "name": "Martyrs Pamphilus and Capito", "note": "+early c." }
+    {
+      "name": "Martyrs Photius and Anicetus",
+      "note": "of Nicomedia, +ca. 305"
+    },
+    {
+      "name": "Martyrs Pamphilus and Capito",
+      "note": "+early c."
+    }
   ],
   "08-13": [
-    { "name": "Translation of Relics of St. Maximus the Confessor", "slug": "maximus-the-confessor", "kind": "feast" },
-    { "name": "St. Tikhon, Bishop of Voronezh and Zadonsk", "note": "+1783" }
+    {
+      "name": "Translation of Relics of St. Maximus the Confessor",
+      "slug": "maximus-the-confessor",
+      "kind": "feast"
+    },
+    {
+      "name": "St. Tikhon, Bishop of Voronezh and Zadonsk",
+      "note": "+1783"
+    }
   ],
   "08-14": [
-    { "name": "Prophet Micah", "note": "of the Twelve, +8th c. BC" },
-    { "name": "Forefeast of the Dormition of the Theotokos", "kind": "feast" }
+    {
+      "name": "Prophet Micah",
+      "note": "of the Twelve, +8th c. BC"
+    },
+    {
+      "name": "Forefeast of the Dormition of the Theotokos",
+      "kind": "feast"
+    }
   ],
   "08-15": [
-    { "name": "Dormition of the Most Holy Theotokos", "kind": "feast" }
+    {
+      "name": "Dormition of the Most Holy Theotokos",
+      "kind": "feast"
+    }
   ],
   "08-16": [
-    { "name": "Translation of the Image of Christ Not Made by Hands from Edessa", "kind": "feast" },
-    { "name": "Martyr Diomedes the Physician", "note": "of Tarsus, +298" }
+    {
+      "name": "Translation of the Image of Christ Not Made by Hands from Edessa",
+      "kind": "feast"
+    },
+    {
+      "name": "Martyr Diomedes the Physician",
+      "note": "of Tarsus, +298"
+    }
   ],
   "08-17": [
-    { "name": "Martyr Myron of Cyzicus", "note": "+250" },
-    { "name": "Martyrs Straton, Philip, and Eutychian", "note": "of Nicomedia" }
+    {
+      "name": "Martyr Myron of Cyzicus",
+      "note": "+250"
+    },
+    {
+      "name": "Martyrs Straton, Philip, and Eutychian",
+      "note": "of Nicomedia"
+    }
   ],
   "08-18": [
-    { "name": "Martyrs Floros and Lauros of Illyricum", "note": "+2nd c." },
-    { "name": "Sts. John and George, Patriarchs of Constantinople", "note": "+7th-8th c." }
+    {
+      "name": "Martyrs Floros and Lauros of Illyricum",
+      "note": "+2nd c."
+    },
+    {
+      "name": "Sts. John and George, Patriarchs of Constantinople",
+      "note": "+7th-8th c."
+    }
   ],
   "08-19": [
-    { "name": "Martyr Andrew Stratelates and 2,593 soldiers with him", "note": "+ca. 300" },
-    { "name": "Donskoy Icon of the Theotokos", "note": "of the Don, before 1380" }
+    {
+      "name": "Martyr Andrew Stratelates and 2,593 soldiers with him",
+      "note": "+ca. 300"
+    },
+    {
+      "name": "Donskoy Icon of the Theotokos",
+      "note": "of the Don, before 1380"
+    }
   ],
   "08-20": [
-    { "name": "Prophet Samuel", "note": "the seer of Israel" }
+    {
+      "name": "Prophet Samuel",
+      "note": "the seer of Israel"
+    }
   ],
   "08-21": [
-    { "name": "Apostle Thaddeus of the Seventy", "note": "first apostle to Edessa, +44" },
-    { "name": "Ven. Abraham of Smolensk", "note": "the wonderworker, +1221" }
+    {
+      "name": "Apostle Thaddeus of the Seventy",
+      "note": "first apostle to Edessa, +44"
+    },
+    {
+      "name": "Ven. Abraham of Smolensk",
+      "note": "the wonderworker, +1221"
+    }
   ],
   "08-22": [
-    { "name": "Martyr Agathonicus and Companions of Nicomedia", "note": "+ca. 300" },
-    { "name": "Martyr Anthusa and her servants", "note": "+5th c." }
+    {
+      "name": "Martyr Agathonicus and Companions of Nicomedia",
+      "note": "+ca. 300"
+    },
+    {
+      "name": "Martyr Anthusa and her servants",
+      "note": "+5th c."
+    }
   ],
   "08-23": [
-    { "name": "Hieromartyr Irenaeus, Bishop of Lyons", "slug": "irenaeus-of-lyons", "note": "disciple of the disciple of John, +ca. 202" },
-    { "name": "Hieromartyr Lupus", "note": "slave of Demetrius of Thessaloniki, +306" }
+    {
+      "name": "Hieromartyr Irenaeus, Bishop of Lyons",
+      "slug": "irenaeus-of-lyons",
+      "note": "disciple of the disciple of John, +ca. 202"
+    },
+    {
+      "name": "Hieromartyr Lupus",
+      "note": "slave of Demetrius of Thessaloniki, +306"
+    }
   ],
   "08-24": [
-    { "name": "Hieromartyr Eutyches, disciple of John the Theologian", "note": "+1st c." },
-    { "name": "Translation of the Relics of St. Peter, Metropolitan of Moscow", "note": "in the year 1479" }
+    {
+      "name": "Hieromartyr Eutyches, disciple of John the Theologian",
+      "note": "+1st c."
+    },
+    {
+      "name": "Translation of the Relics of St. Peter, Metropolitan of Moscow",
+      "note": "in the year 1479"
+    }
   ],
   "08-25": [
-    { "name": "Translation of Relics of Apostle Bartholomew", "kind": "feast" },
-    { "name": "Apostle Titus of the Seventy, Bishop of Crete", "note": "disciple of the Apostle Paul, +1st c." }
+    {
+      "name": "Translation of Relics of Apostle Bartholomew",
+      "kind": "feast"
+    },
+    {
+      "name": "Apostle Titus of the Seventy, Bishop of Crete",
+      "note": "disciple of the Apostle Paul, +1st c."
+    }
   ],
   "08-26": [
-    { "name": "Martyrs Adrian and Natalia of Nicomedia", "note": "+ca. 305" },
-    { "name": "Vladimir Icon of the Theotokos", "note": "the deliverance from Tamerlane, 1395" }
+    {
+      "name": "Martyrs Adrian and Natalia of Nicomedia",
+      "note": "+ca. 305"
+    },
+    {
+      "name": "Vladimir Icon of the Theotokos",
+      "note": "the deliverance from Tamerlane, 1395"
+    }
   ],
   "08-27": [
-    { "name": "St. Pimen the Great of Egypt", "note": "father of the abba, +450" },
-    { "name": "Great-martyr Phanourios the Newly-Revealed", "note": "of Rhodes" }
+    {
+      "name": "St. Pimen the Great of Egypt",
+      "note": "father of the abba, +450"
+    },
+    {
+      "name": "Great-martyr Phanourios the Newly-Revealed",
+      "note": "of Rhodes"
+    }
   ],
   "08-28": [
-    { "name": "St. Moses the Ethiopian of Scete", "note": "the brigand who became a desert father, +ca. 400" },
-    { "name": "St. Augustine of Hippo", "slug": "augustine-of-hippo", "note": "his repose at Hippo Regius, +430" },
-    { "name": "St. Job of Pochaev", "note": "abbot and wonderworker, +1651" }
+    {
+      "name": "St. Moses the Ethiopian of Scete",
+      "note": "the brigand who became a desert father, +ca. 400"
+    },
+    {
+      "name": "St. Augustine of Hippo",
+      "slug": "augustine-of-hippo",
+      "note": "his repose at Hippo Regius, +430"
+    },
+    {
+      "name": "St. Job of Pochaev",
+      "note": "abbot and wonderworker, +1651"
+    }
   ],
   "08-29": [
-    { "name": "Beheading of the Honored Forerunner John the Baptist", "kind": "feast" }
+    {
+      "name": "Beheading of the Honored Forerunner John the Baptist",
+      "kind": "feast"
+    }
   ],
   "08-30": [
-    { "name": "Saints Alexander, John, and Paul the New, Patriarchs of Constantinople", "note": "4th and 8th c." },
-    { "name": "St. Alexander of Svir", "note": "wonderworker, +1533" }
+    {
+      "name": "Saints Alexander, John, and Paul the New, Patriarchs of Constantinople",
+      "note": "4th and 8th c."
+    },
+    {
+      "name": "St. Alexander of Svir",
+      "note": "wonderworker, +1533"
+    }
   ],
   "08-31": [
-    { "name": "Deposition of the Honorable Sash of the Theotokos", "kind": "feast" },
-    { "name": "Hieromartyr Cyprian, Bishop of Carthage", "note": "+258" }
+    {
+      "name": "Deposition of the Honorable Sash of the Theotokos",
+      "kind": "feast"
+    },
+    {
+      "name": "Hieromartyr Cyprian, Bishop of Carthage",
+      "note": "+258"
+    }
   ],
   "09-01": [
-    { "name": "Indiction (Ecclesiastical New Year)", "kind": "feast" },
-    { "name": "St. Symeon the Stylite", "note": "the first of the pillar-saints, +459" }
+    {
+      "name": "Indiction (Ecclesiastical New Year)",
+      "kind": "feast"
+    },
+    {
+      "name": "St. Symeon the Stylite",
+      "note": "the first of the pillar-saints, +459"
+    }
   ],
   "09-02": [
-    { "name": "Martyr Mamas of Caesarea in Cappadocia", "note": "+275" },
-    { "name": "St. John the Faster, Patriarch of Constantinople", "note": "+595" }
+    {
+      "name": "Martyr Mamas of Caesarea in Cappadocia",
+      "note": "+275"
+    },
+    {
+      "name": "St. John the Faster, Patriarch of Constantinople",
+      "note": "+595"
+    }
   ],
   "09-03": [
-    { "name": "Hieromartyr Anthimus, Bishop of Nicomedia", "note": "+302" },
-    { "name": "Ven. Theoctistus, fellow-faster of Euthymius the Great", "note": "+467" }
+    {
+      "name": "Hieromartyr Anthimus, Bishop of Nicomedia",
+      "note": "+302"
+    },
+    {
+      "name": "Ven. Theoctistus, fellow-faster of Euthymius the Great",
+      "note": "+467"
+    }
   ],
   "09-04": [
-    { "name": "Hieromartyr Babylas, Patriarch of Antioch", "note": "+251" },
-    { "name": "Prophet Moses the God-Seer", "note": "+1531 BC" },
-    { "name": "Martyr Hermione, daughter of the Apostle Philip", "slug": "hermione-of-ephesus", "note": "+117" }
+    {
+      "name": "Hieromartyr Babylas, Patriarch of Antioch",
+      "note": "+251"
+    },
+    {
+      "name": "Prophet Moses the God-Seer",
+      "note": "+1531 BC"
+    },
+    {
+      "name": "Martyr Hermione, daughter of the Apostle Philip",
+      "slug": "hermione-of-ephesus",
+      "note": "+117"
+    }
   ],
   "09-05": [
-    { "name": "Prophet Zachariah, father of John the Forerunner", "note": "+1st c. BC" },
-    { "name": "Martyrs Urban, Theodore, and companions of Nicomedia", "note": "+370" }
+    {
+      "name": "Prophet Zachariah, father of John the Forerunner",
+      "note": "+1st c. BC"
+    },
+    {
+      "name": "Martyrs Urban, Theodore, and companions of Nicomedia",
+      "note": "+370"
+    }
   ],
   "09-06": [
-    { "name": "Commemoration of the Miracle of the Archangel Michael at Colossae", "kind": "feast" },
-    { "name": "Martyr Eudoxius and companions", "note": "+311" }
+    {
+      "name": "Commemoration of the Miracle of the Archangel Michael at Colossae",
+      "kind": "feast",
+      "slug": "archangel-michael"
+    },
+    {
+      "name": "Martyr Eudoxius and companions",
+      "note": "+311"
+    }
   ],
   "09-07": [
-    { "name": "Forefeast of the Nativity of the Theotokos", "kind": "feast" },
-    { "name": "Martyr Sozon of Cilicia", "note": "+ca. 304" }
+    {
+      "name": "Forefeast of the Nativity of the Theotokos",
+      "kind": "feast"
+    },
+    {
+      "name": "Martyr Sozon of Cilicia",
+      "note": "+ca. 304"
+    }
   ],
   "09-08": [
-    { "name": "Nativity of Our Most Holy Lady the Theotokos", "kind": "feast" }
+    {
+      "name": "Nativity of Our Most Holy Lady the Theotokos",
+      "kind": "feast"
+    }
   ],
   "09-09": [
-    { "name": "Synaxis of the Righteous Ancestors of God, Joachim and Anna", "kind": "feast" },
-    { "name": "St. Joseph of Volotsk", "note": "abbot of Volokolamsk, +1515" }
+    {
+      "name": "Synaxis of the Righteous Ancestors of God, Joachim and Anna",
+      "kind": "feast"
+    },
+    {
+      "name": "St. Joseph of Volotsk",
+      "note": "abbot of Volokolamsk, +1515"
+    }
   ],
   "09-10": [
-    { "name": "Martyrs Menodora, Metrodora, and Nymphodora", "note": "sisters of Bithynia, +305" },
-    { "name": "St. Pulcheria the Empress", "note": "of Constantinople, +453" }
+    {
+      "name": "Martyrs Menodora, Metrodora, and Nymphodora",
+      "note": "sisters of Bithynia, +305"
+    },
+    {
+      "name": "St. Pulcheria the Empress",
+      "note": "of Constantinople, +453"
+    }
   ],
   "09-11": [
-    { "name": "St. Theodora of Alexandria", "note": "the desert ammas, +5th c." },
-    { "name": "Sts. Sergius and Herman of Valaam", "note": "wonderworkers, +1353" }
+    {
+      "name": "St. Theodora of Alexandria",
+      "note": "the desert ammas, +5th c."
+    },
+    {
+      "name": "Sts. Sergius and Herman of Valaam",
+      "note": "wonderworkers, +1353"
+    }
   ],
   "09-12": [
-    { "name": "Hieromartyr Autonomus, Bishop of Italy", "note": "+ca. 313" }
+    {
+      "name": "Hieromartyr Autonomus, Bishop of Italy",
+      "note": "+ca. 313"
+    }
   ],
   "09-13": [
-    { "name": "Forefeast of the Exaltation of the Cross", "kind": "feast" },
-    { "name": "Consecration of the Church of the Resurrection in Jerusalem", "note": "the Holy Sepulchre, 335" },
-    { "name": "Hieromartyr Cornelius the Centurion", "note": "+1st c." }
+    {
+      "name": "Forefeast of the Exaltation of the Cross",
+      "kind": "feast"
+    },
+    {
+      "name": "Consecration of the Church of the Resurrection in Jerusalem",
+      "note": "the Holy Sepulchre, 335"
+    },
+    {
+      "name": "Hieromartyr Cornelius the Centurion",
+      "note": "+1st c."
+    }
   ],
   "09-14": [
-    { "name": "Universal Exaltation of the Honorable and Life-Giving Cross", "kind": "feast" }
+    {
+      "name": "Universal Exaltation of the Honorable and Life-Giving Cross",
+      "kind": "feast"
+    }
   ],
   "09-15": [
-    { "name": "Great-martyr Nicetas the Goth", "note": "+ca. 372" },
-    { "name": "St. Symeon, Archbishop of Thessalonica", "note": "+1429" }
+    {
+      "name": "Great-martyr Nicetas the Goth",
+      "note": "+ca. 372"
+    },
+    {
+      "name": "St. Symeon, Archbishop of Thessalonica",
+      "note": "+1429"
+    }
   ],
   "09-16": [
-    { "name": "Great-martyr Euphemia the All-Praised", "kind": "feast", "note": "patroness of Chalcedon" },
-    { "name": "St. Ludmila of Bohemia", "note": "grandmother of St. Wenceslaus, +927" }
+    {
+      "name": "Great-martyr Euphemia the All-Praised",
+      "kind": "feast",
+      "note": "patroness of Chalcedon"
+    },
+    {
+      "name": "St. Ludmila of Bohemia",
+      "note": "grandmother of St. Wenceslaus, +927"
+    }
   ],
   "09-17": [
-    { "name": "Martyrs Sophia and her daughters Faith, Hope, and Love", "note": "+ca. 137" },
-    { "name": "Martyr Agathoclia", "note": "+230" }
+    {
+      "name": "Martyrs Sophia and her daughters Faith, Hope, and Love",
+      "note": "+ca. 137"
+    },
+    {
+      "name": "Martyr Agathoclia",
+      "note": "+230"
+    }
   ],
   "09-18": [
-    { "name": "St. Eumenius the Wonderworker, Bishop of Gortyna", "note": "+7th c." },
-    { "name": "Ven. Hilarion, Elder of Optina", "note": "+1873" }
+    {
+      "name": "St. Eumenius the Wonderworker, Bishop of Gortyna",
+      "note": "+7th c."
+    },
+    {
+      "name": "Ven. Hilarion, Elder of Optina",
+      "note": "+1873"
+    }
   ],
   "09-19": [
-    { "name": "Martyrs Trophimus, Sabbatius, and Dorymedon", "note": "of Antioch, +276" },
-    { "name": "Right-believing Prince Theodore of Smolensk and his sons", "note": "David and Constantine, +1299" }
+    {
+      "name": "Martyrs Trophimus, Sabbatius, and Dorymedon",
+      "note": "of Antioch, +276"
+    },
+    {
+      "name": "Right-believing Prince Theodore of Smolensk and his sons",
+      "note": "David and Constantine, +1299"
+    }
   ],
   "09-20": [
-    { "name": "Great-martyr Eustathius (Placidas) and his family", "note": "+ca. 118" },
-    { "name": "Martyrs Michael of Chernigov and his counselor Theodore", "note": "+1245" }
+    {
+      "name": "Great-martyr Eustathius (Placidas) and his family",
+      "note": "+ca. 118"
+    },
+    {
+      "name": "Martyrs Michael of Chernigov and his counselor Theodore",
+      "note": "+1245"
+    }
   ],
   "09-21": [
-    { "name": "Apostle Quadratus of the Seventy", "note": "early apologist, +130" },
-    { "name": "St. Demetrius, Metropolitan of Rostov", "note": "+1709" }
+    {
+      "name": "Apostle Quadratus of the Seventy",
+      "note": "early apologist, +130"
+    },
+    {
+      "name": "St. Demetrius, Metropolitan of Rostov",
+      "note": "+1709"
+    }
   ],
   "09-22": [
-    { "name": "Hieromartyr Phocas the Gardener of Sinope", "note": "+117" },
-    { "name": "Prophet Jonah", "note": "+8th c. BC" }
+    {
+      "name": "Hieromartyr Phocas the Gardener of Sinope",
+      "note": "+117"
+    },
+    {
+      "name": "Prophet Jonah",
+      "note": "+8th c. BC"
+    }
   ],
   "09-23": [
-    { "name": "Conception of the Honorable Forerunner John the Baptist", "kind": "feast" },
-    { "name": "Holy Women Xanthippe and Polyxena", "note": "disciples of the Apostles, +1st c." }
+    {
+      "name": "Conception of the Honorable Forerunner John the Baptist",
+      "kind": "feast"
+    },
+    {
+      "name": "Holy Women Xanthippe and Polyxena",
+      "note": "disciples of the Apostles, +1st c."
+    }
   ],
   "09-24": [
-    { "name": "Protomartyr and Equal-to-Apostles Thecla", "note": "disciple of the Apostle Paul, +1st c." },
-    { "name": "St. Silouan the Athonite", "note": "of Mount Athos, +1938" }
+    {
+      "name": "Protomartyr and Equal-to-Apostles Thecla",
+      "note": "disciple of the Apostle Paul, +1st c."
+    },
+    {
+      "name": "St. Silouan the Athonite",
+      "note": "of Mount Athos, +1938"
+    }
   ],
   "09-25": [
-    { "name": "St. Euphrosyne of Alexandria", "note": "+ca. 470" },
-    { "name": "Repose of St. Sergius of Radonezh", "note": "abbot and wonderworker of all Russia, +1392" }
+    {
+      "name": "St. Euphrosyne of Alexandria",
+      "note": "+ca. 470"
+    },
+    {
+      "name": "Repose of St. Sergius of Radonezh",
+      "note": "abbot and wonderworker of all Russia, +1392"
+    }
   ],
   "09-26": [
-    { "name": "Repose of the Apostle and Evangelist John the Theologian", "kind": "feast", "note": "+ca. 105" }
+    {
+      "name": "Repose of the Apostle and Evangelist John the Theologian",
+      "kind": "feast",
+      "note": "+ca. 105"
+    }
   ],
   "09-27": [
-    { "name": "Martyr Callistratus and 49 companions", "note": "+ca. 304" },
-    { "name": "Ven. Savvatius of Solovki", "note": "+1435" }
+    {
+      "name": "Martyr Callistratus and 49 companions",
+      "note": "+ca. 304"
+    },
+    {
+      "name": "Ven. Savvatius of Solovki",
+      "note": "+1435"
+    }
   ],
   "09-28": [
-    { "name": "St. Chariton the Confessor", "note": "of Palestine, +350" },
-    { "name": "St. Wenceslaus, Prince of Bohemia", "note": "martyr, +935" }
+    {
+      "name": "St. Chariton the Confessor",
+      "note": "of Palestine, +350"
+    },
+    {
+      "name": "St. Wenceslaus, Prince of Bohemia",
+      "note": "martyr, +935"
+    }
   ],
   "09-29": [
-    { "name": "St. Cyriacus the Anchorite", "note": "of Palestine, +556" },
-    { "name": "Ven. Theophanes the Merciful of Gaza", "note": "+9th c." }
+    {
+      "name": "St. Cyriacus the Anchorite",
+      "note": "of Palestine, +556"
+    },
+    {
+      "name": "Ven. Theophanes the Merciful of Gaza",
+      "note": "+9th c."
+    }
   ],
   "09-30": [
-    { "name": "Hieromartyr Gregory the Illuminator of Greater Armenia", "note": "Equal-to-the-Apostles, +335" },
-    { "name": "St. Michael, first Metropolitan of Kiev", "note": "+992" }
+    {
+      "name": "Hieromartyr Gregory the Illuminator of Greater Armenia",
+      "note": "Equal-to-the-Apostles, +335"
+    },
+    {
+      "name": "St. Michael, first Metropolitan of Kiev",
+      "note": "+992"
+    }
   ],
   "10-01": [
-    { "name": "Protection of Our Most Holy Lady the Theotokos", "kind": "feast", "note": "at Blachernae, 10th c." },
-    { "name": "Apostle Ananias", "note": "of the Seventy, baptizer of Paul" },
-    { "name": "St. Romanus the Melodist", "note": "the hymnographer, +ca. 556" }
+    {
+      "name": "Protection of Our Most Holy Lady the Theotokos",
+      "kind": "feast",
+      "note": "at Blachernae, 10th c."
+    },
+    {
+      "name": "Apostle Ananias",
+      "note": "of the Seventy, baptizer of Paul"
+    },
+    {
+      "name": "St. Romanus the Melodist",
+      "note": "the hymnographer, +ca. 556"
+    }
   ],
   "10-02": [
-    { "name": "Hieromartyr Cyprian and Virgin-martyr Justina", "note": "+304" },
-    { "name": "Blessed Andrew, Fool-for-Christ of Constantinople", "note": "who beheld the Protection, +936" }
+    {
+      "name": "Hieromartyr Cyprian and Virgin-martyr Justina",
+      "note": "+304"
+    },
+    {
+      "name": "Blessed Andrew, Fool-for-Christ of Constantinople",
+      "note": "who beheld the Protection, +936"
+    }
   ],
   "10-03": [
-    { "name": "Hieromartyr Dionysius the Areopagite", "note": "bishop of Athens, +96" },
-    { "name": "St. John the Chozebite, Bishop of Caesarea", "note": "+6th c." }
+    {
+      "name": "Hieromartyr Dionysius the Areopagite",
+      "note": "bishop of Athens, +96"
+    },
+    {
+      "name": "St. John the Chozebite, Bishop of Caesarea",
+      "note": "+6th c."
+    }
   ],
   "10-04": [
-    { "name": "Hieromartyr Hierotheus, Bishop of Athens", "note": "disciple of Paul, +1st c." },
-    { "name": "Sts. Guriah and Barsanuphius, Hierarchs of Kazan", "note": "+1563 and +1576" }
+    {
+      "name": "Hieromartyr Hierotheus, Bishop of Athens",
+      "note": "disciple of Paul, +1st c."
+    },
+    {
+      "name": "Sts. Guriah and Barsanuphius, Hierarchs of Kazan",
+      "note": "+1563 and +1576"
+    }
   ],
   "10-05": [
-    { "name": "Martyr Charitina of Amisus", "note": "+304" },
-    { "name": "Synaxis of the Hierarchs of Moscow", "note": "Peter, Alexis, Jonah, Philip, and Hermogenes" }
+    {
+      "name": "Martyr Charitina of Amisus",
+      "note": "+304"
+    },
+    {
+      "name": "Synaxis of the Hierarchs of Moscow",
+      "note": "Peter, Alexis, Jonah, Philip, and Hermogenes"
+    }
   ],
   "10-06": [
-    { "name": "Holy and Glorious Apostle Thomas", "kind": "feast", "note": "preacher in Parthia and India, +1st c." },
-    { "name": "St. Innocent, Enlightener of the Aleuts and Apostle to America", "note": "Metropolitan of Moscow, +1879" }
+    {
+      "name": "Holy and Glorious Apostle Thomas",
+      "kind": "feast",
+      "note": "preacher in Parthia and India, +1st c."
+    },
+    {
+      "name": "St. Innocent, Enlightener of the Aleuts and Apostle to America",
+      "note": "Metropolitan of Moscow, +1879"
+    }
   ],
   "10-07": [
-    { "name": "Martyrs Sergius and Bacchus the Romans", "note": "of Syria, +296" },
-    { "name": "Martyr Polychronius the Presbyter", "note": "+4th c." }
+    {
+      "name": "Martyrs Sergius and Bacchus the Romans",
+      "note": "of Syria, +296"
+    },
+    {
+      "name": "Martyr Polychronius the Presbyter",
+      "note": "+4th c."
+    }
   ],
   "10-08": [
-    { "name": "St. Pelagia the Penitent", "note": "of Antioch and Jerusalem, +457" },
-    { "name": "St. Taisia of Egypt", "note": "the penitent, +4th c." }
+    {
+      "name": "St. Pelagia the Penitent",
+      "note": "of Antioch and Jerusalem, +457"
+    },
+    {
+      "name": "St. Taisia of Egypt",
+      "note": "the penitent, +4th c."
+    }
   ],
   "10-09": [
-    { "name": "Holy Apostle James, son of Alphaeus", "kind": "feast", "note": "of the Twelve, +1st c." },
-    { "name": "Righteous Abraham the Patriarch and his nephew Lot", "note": "+ca. 2000 BC" }
+    {
+      "name": "Holy Apostle James, son of Alphaeus",
+      "kind": "feast",
+      "note": "of the Twelve, +1st c."
+    },
+    {
+      "name": "Righteous Abraham the Patriarch and his nephew Lot",
+      "note": "+ca. 2000 BC"
+    }
   ],
   "10-10": [
-    { "name": "Martyrs Eulampius and Eulampia of Nicomedia", "note": "+303" },
-    { "name": "St. Ambrose, Elder of Optina", "note": "+1891" }
+    {
+      "name": "Martyrs Eulampius and Eulampia of Nicomedia",
+      "note": "+303"
+    },
+    {
+      "name": "St. Ambrose, Elder of Optina",
+      "note": "+1891"
+    }
   ],
   "10-11": [
-    { "name": "Apostle Philip the Deacon", "note": "one of the Seven, +1st c." },
-    { "name": "Holy Fathers of the Seventh Ecumenical Council", "kind": "feast", "note": "Nicaea, 787" }
+    {
+      "name": "Apostle Philip the Deacon",
+      "note": "one of the Seven, +1st c."
+    },
+    {
+      "name": "Holy Fathers of the Seventh Ecumenical Council",
+      "kind": "feast",
+      "note": "Nicaea, 787"
+    }
   ],
   "10-12": [
-    { "name": "Martyrs Probus, Tarachus, and Andronicus", "note": "of Cilicia, +304" },
-    { "name": "St. Symeon the New Theologian", "slug": "symeon-the-new-theologian", "note": "translation of relics, +1022" }
+    {
+      "name": "Martyrs Probus, Tarachus, and Andronicus",
+      "note": "of Cilicia, +304"
+    },
+    {
+      "name": "St. Symeon the New Theologian",
+      "slug": "symeon-the-new-theologian",
+      "note": "translation of relics, +1022"
+    }
   ],
   "10-13": [
-    { "name": "Martyrs Carpus, Papylus, Agathonica, and Agathodorus", "note": "of Pergamum, +ca. 251" },
-    { "name": "Iveron Icon of the Theotokos", "note": "the Portaitissa of Mount Athos" }
+    {
+      "name": "Martyrs Carpus, Papylus, Agathonica, and Agathodorus",
+      "note": "of Pergamum, +ca. 251"
+    },
+    {
+      "name": "Iveron Icon of the Theotokos",
+      "note": "the Portaitissa of Mount Athos"
+    }
   ],
   "10-14": [
-    { "name": "Hieromartyr Cosmas of Maiuma the Hymnographer", "note": "+776" },
-    { "name": "St. Parasceva of Tirnova", "note": "patroness of Bulgaria and Romania, +11th c." },
-    { "name": "Martyrs Nazarius, Gervasius, Protasius, and Celsus", "note": "of Milan, +1st c." }
+    {
+      "name": "Hieromartyr Cosmas of Maiuma the Hymnographer",
+      "note": "+776"
+    },
+    {
+      "name": "St. Parasceva of Tirnova",
+      "note": "patroness of Bulgaria and Romania, +11th c."
+    },
+    {
+      "name": "Martyrs Nazarius, Gervasius, Protasius, and Celsus",
+      "note": "of Milan, +1st c."
+    }
   ],
   "10-15": [
-    { "name": "Hieromartyr Lucian, presbyter of Antioch", "note": "+312" },
-    { "name": "Ven. Euthymius the New of Thessalonica", "note": "+889" }
+    {
+      "name": "Hieromartyr Lucian, presbyter of Antioch",
+      "note": "+312"
+    },
+    {
+      "name": "Ven. Euthymius the New of Thessalonica",
+      "note": "+889"
+    }
   ],
   "10-16": [
-    { "name": "Martyr Longinus the Centurion", "note": "the centurion at the Cross, +1st c." }
+    {
+      "name": "Martyr Longinus the Centurion",
+      "note": "the centurion at the Cross, +1st c."
+    }
   ],
   "10-17": [
-    { "name": "Prophet Hosea", "note": "first of the Twelve, +8th c. BC" },
-    { "name": "Venerable-martyr Andrew of Crete the Just", "note": "iconophile, +767" }
+    {
+      "name": "Prophet Hosea",
+      "note": "first of the Twelve, +8th c. BC"
+    },
+    {
+      "name": "Venerable-martyr Andrew of Crete the Just",
+      "note": "iconophile, +767"
+    }
   ],
   "10-18": [
-    { "name": "Apostle and Evangelist Luke", "kind": "feast", "note": "physician and iconographer, +1st c." }
+    {
+      "name": "Apostle and Evangelist Luke",
+      "kind": "feast",
+      "note": "physician and iconographer, +1st c."
+    }
   ],
   "10-19": [
-    { "name": "Prophet Joel", "note": "of the Twelve, +9th c. BC" },
-    { "name": "Martyr Varus and those with him", "note": "+307" }
+    {
+      "name": "Prophet Joel",
+      "note": "of the Twelve, +9th c. BC"
+    },
+    {
+      "name": "Martyr Varus and those with him",
+      "note": "+307"
+    }
   ],
   "10-20": [
-    { "name": "Great-martyr Artemius of Antioch", "note": "general, +362" },
-    { "name": "St. Gerasimus of Cephalonia", "note": "+1579" }
+    {
+      "name": "Great-martyr Artemius of Antioch",
+      "note": "general, +362"
+    },
+    {
+      "name": "St. Gerasimus of Cephalonia",
+      "note": "+1579"
+    }
   ],
   "10-21": [
-    { "name": "St. Hilarion the Great", "note": "Palestinian hermit, +371" },
-    { "name": "St. Hilarion of Meglin, Bishop", "note": "+1164" }
+    {
+      "name": "St. Hilarion the Great",
+      "note": "Palestinian hermit, +371"
+    },
+    {
+      "name": "St. Hilarion of Meglin, Bishop",
+      "note": "+1164"
+    }
   ],
   "10-22": [
-    { "name": "Equal-to-Apostles Abercius, Bishop of Hierapolis", "note": "the Wonderworker, +ca. 167" },
-    { "name": "Kazan Icon of the Theotokos", "kind": "feast", "note": "the deliverance of Moscow, 1612" },
-    { "name": "Seven Youths (Sleepers) of Ephesus", "note": "+ca. 250" }
+    {
+      "name": "Equal-to-Apostles Abercius, Bishop of Hierapolis",
+      "note": "the Wonderworker, +ca. 167"
+    },
+    {
+      "name": "Kazan Icon of the Theotokos",
+      "kind": "feast",
+      "note": "the deliverance of Moscow, 1612"
+    },
+    {
+      "name": "Seven Youths (Sleepers) of Ephesus",
+      "note": "+ca. 250"
+    }
   ],
   "10-23": [
-    { "name": "Apostle James the Brother of the Lord", "kind": "feast", "note": "first bishop of Jerusalem, +63" },
-    { "name": "St. Ignatius, Patriarch of Constantinople", "note": "+877" }
+    {
+      "name": "Apostle James the Brother of the Lord",
+      "kind": "feast",
+      "note": "first bishop of Jerusalem, +63"
+    },
+    {
+      "name": "St. Ignatius, Patriarch of Constantinople",
+      "note": "+877"
+    }
   ],
   "10-24": [
-    { "name": "Great-martyr Arethas and Companions", "note": "of Negran, +523" },
-    { "name": "Icon of the Theotokos 'Joy of All Who Sorrow'", "note": "of Moscow, 1688" }
+    {
+      "name": "Great-martyr Arethas and Companions",
+      "note": "of Negran, +523"
+    },
+    {
+      "name": "Icon of the Theotokos 'Joy of All Who Sorrow'",
+      "note": "of Moscow, 1688"
+    }
   ],
   "10-25": [
-    { "name": "Martyrs and Notaries Marcian and Martyrius of Constantinople", "note": "+ca. 355" },
-    { "name": "Righteous Tabitha of Joppa", "note": "raised by the Apostle Peter, +1st c." }
+    {
+      "name": "Martyrs and Notaries Marcian and Martyrius of Constantinople",
+      "note": "+ca. 355"
+    },
+    {
+      "name": "Righteous Tabitha of Joppa",
+      "note": "raised by the Apostle Peter, +1st c."
+    }
   ],
   "10-26": [
-    { "name": "Great-martyr Demetrius the Myrrh-Streaming", "kind": "feast", "note": "patron of Thessaloniki, +306" },
-    { "name": "Recollection of the Great Earthquake at Constantinople", "note": "in the year 740" }
+    {
+      "name": "Great-martyr Demetrius the Myrrh-Streaming",
+      "kind": "feast",
+      "note": "patron of Thessaloniki, +306"
+    },
+    {
+      "name": "Recollection of the Great Earthquake at Constantinople",
+      "note": "in the year 740"
+    }
   ],
   "10-27": [
-    { "name": "Martyr Nestor of Thessaloniki", "note": "disciple of Demetrius, +306" },
-    { "name": "St. Nestor the Chronicler of the Kiev Caves", "note": "+1114" }
+    {
+      "name": "Martyr Nestor of Thessaloniki",
+      "note": "disciple of Demetrius, +306"
+    },
+    {
+      "name": "St. Nestor the Chronicler of the Kiev Caves",
+      "note": "+1114"
+    }
   ],
   "10-28": [
-    { "name": "Great-martyr Paraskeva of Iconium", "note": "named for Friday, +3rd c." },
-    { "name": "Martyrs Terence, Neonilla, and Companions", "note": "+3rd c." },
-    { "name": "St. Job of Pochaev", "note": "abbot and wonderworker, +1651" }
+    {
+      "name": "Great-martyr Paraskeva of Iconium",
+      "note": "named for Friday, +3rd c."
+    },
+    {
+      "name": "Martyrs Terence, Neonilla, and Companions",
+      "note": "+3rd c."
+    },
+    {
+      "name": "St. Job of Pochaev",
+      "note": "abbot and wonderworker, +1651"
+    }
   ],
   "10-29": [
-    { "name": "Venerable-martyr Anastasia the Roman", "note": "+ca. 257" },
-    { "name": "Ven. Abramius the Recluse and his niece Mary", "note": "+360" }
+    {
+      "name": "Venerable-martyr Anastasia the Roman",
+      "note": "+ca. 257"
+    },
+    {
+      "name": "Ven. Abramius the Recluse and his niece Mary",
+      "note": "+360"
+    }
   ],
   "10-30": [
-    { "name": "Hieromartyr Zenobius, Bishop of Aegae, and his sister Zenobia", "note": "+285" },
-    { "name": "Apostles Tertius, Mark, Justus, and Artemas", "note": "of the Seventy" }
+    {
+      "name": "Hieromartyr Zenobius, Bishop of Aegae, and his sister Zenobia",
+      "note": "+285"
+    },
+    {
+      "name": "Apostles Tertius, Mark, Justus, and Artemas",
+      "note": "of the Seventy"
+    }
   ],
   "10-31": [
-    { "name": "Apostles Stachys, Amplias, Urban, Narcissus, Apelles, and Aristobulus", "note": "of the Seventy" },
-    { "name": "Martyr Epimachus of Egypt", "note": "+250" }
+    {
+      "name": "Apostles Stachys, Amplias, Urban, Narcissus, Apelles, and Aristobulus",
+      "note": "of the Seventy"
+    },
+    {
+      "name": "Martyr Epimachus of Egypt",
+      "note": "+250"
+    }
   ],
   "11-01": [
-    { "name": "Holy Unmercenaries Cosmas and Damian of Asia", "note": "physicians who took no fee, +3rd c." },
-    { "name": "St. Theodota, mother of the Holy Unmercenaries", "note": "+3rd c." }
+    {
+      "name": "Holy Unmercenaries Cosmas and Damian of Asia",
+      "note": "physicians who took no fee, +3rd c."
+    },
+    {
+      "name": "St. Theodota, mother of the Holy Unmercenaries",
+      "note": "+3rd c."
+    }
   ],
   "11-02": [
-    { "name": "Martyrs Acindynus, Pegasius, Aphthonius, Elpidephorus, Anempodistus", "note": "of Persia, +ca. 341" },
-    { "name": "Ven. Marcian of Cyrrhus", "note": "Desert Father of Syria, +388" }
+    {
+      "name": "Martyrs Acindynus, Pegasius, Aphthonius, Elpidephorus, Anempodistus",
+      "note": "of Persia, +ca. 341"
+    },
+    {
+      "name": "Ven. Marcian of Cyrrhus",
+      "note": "Desert Father of Syria, +388"
+    }
   ],
   "11-03": [
-    { "name": "Martyrs Acepsimas, Joseph, and Aithalas of Persia", "note": "+ca. 341" },
-    { "name": "Dedication of the Church of Great-martyr George at Lydda", "kind": "feast" }
+    {
+      "name": "Martyrs Acepsimas, Joseph, and Aithalas of Persia",
+      "note": "+ca. 341"
+    },
+    {
+      "name": "Dedication of the Church of Great-martyr George at Lydda",
+      "kind": "feast"
+    }
   ],
   "11-04": [
-    { "name": "St. Joannicus the Great of Bithynia", "note": "+846" },
-    { "name": "Hieromartyrs Nicander and Hermas", "note": "+1st c." }
+    {
+      "name": "St. Joannicus the Great of Bithynia",
+      "note": "+846"
+    },
+    {
+      "name": "Hieromartyrs Nicander and Hermas",
+      "note": "+1st c."
+    }
   ],
   "11-05": [
-    { "name": "Saints Galaction and Episteme", "note": "of Emesa, +253" },
-    { "name": "Apostles Patrobus, Hermas, Linus, Gaius, and Philologus", "note": "of the Seventy" }
+    {
+      "name": "Saints Galaction and Episteme",
+      "note": "of Emesa, +253"
+    },
+    {
+      "name": "Apostles Patrobus, Hermas, Linus, Gaius, and Philologus",
+      "note": "of the Seventy"
+    }
   ],
   "11-06": [
-    { "name": "St. Paul the Confessor, Archbishop of Constantinople", "note": "+350" },
-    { "name": "St. Varlaam of Khutyn", "note": "wonderworker of Novgorod, +1192" }
+    {
+      "name": "St. Paul the Confessor, Archbishop of Constantinople",
+      "note": "+350"
+    },
+    {
+      "name": "St. Varlaam of Khutyn",
+      "note": "wonderworker of Novgorod, +1192"
+    }
   ],
   "11-07": [
-    { "name": "33 Martyrs of Melitene", "note": "+ca. 298" },
-    { "name": "Ven. Lazarus the Wonderworker of Mount Galesius", "note": "+1053" }
+    {
+      "name": "33 Martyrs of Melitene",
+      "note": "+ca. 298"
+    },
+    {
+      "name": "Ven. Lazarus the Wonderworker of Mount Galesius",
+      "note": "+1053"
+    }
   ],
   "11-08": [
-    { "name": "Synaxis of the Holy Archangel Michael and All the Bodiless Powers", "kind": "feast" }
+    {
+      "name": "Synaxis of the Holy Archangel Michael and All the Bodiless Powers",
+      "kind": "feast",
+      "slug": "archangel-michael"
+    }
   ],
   "11-09": [
-    { "name": "St. Nectarius of Aegina, Bishop of Pentapolis", "note": "the Wonderworker, +1920" },
-    { "name": "Saints Onesiphorus and Porphyrius", "note": "+ca. 284" },
-    { "name": "St. Matrona of Constantinople", "note": "ammas, +ca. 492" }
+    {
+      "name": "St. Nectarius of Aegina, Bishop of Pentapolis",
+      "note": "the Wonderworker, +1920",
+      "slug": "nektarios-of-aegina"
+    },
+    {
+      "name": "Saints Onesiphorus and Porphyrius",
+      "note": "+ca. 284"
+    },
+    {
+      "name": "St. Matrona of Constantinople",
+      "note": "ammas, +ca. 492"
+    }
   ],
   "11-10": [
-    { "name": "Apostles Erastus, Olympas, Rhodion, Sosipater, Quartus, Tertius", "note": "of the Seventy" },
-    { "name": "St. Arsenius of Cappadocia", "note": "+1924" }
+    {
+      "name": "Apostles Erastus, Olympas, Rhodion, Sosipater, Quartus, Tertius",
+      "note": "of the Seventy"
+    },
+    {
+      "name": "St. Arsenius of Cappadocia",
+      "note": "+1924"
+    }
   ],
   "11-11": [
-    { "name": "Great-martyr Menas of Egypt", "note": "+ca. 304" },
-    { "name": "St. Theodore the Studite", "note": "abbot of the Studion, +826" },
-    { "name": "Blessed Maximus, Fool-for-Christ of Moscow", "note": "+1434" }
+    {
+      "name": "Great-martyr Menas of Egypt",
+      "note": "+ca. 304"
+    },
+    {
+      "name": "St. Theodore the Studite",
+      "note": "abbot of the Studion, +826"
+    },
+    {
+      "name": "Blessed Maximus, Fool-for-Christ of Moscow",
+      "note": "+1434"
+    }
   ],
   "11-12": [
-    { "name": "St. John the Merciful, Patriarch of Alexandria", "note": "+620" },
-    { "name": "St. Nilus the Faster of Sinai", "note": "+451" }
+    {
+      "name": "St. John the Merciful, Patriarch of Alexandria",
+      "note": "+620"
+    },
+    {
+      "name": "St. Nilus the Faster of Sinai",
+      "note": "+451"
+    }
   ],
   "11-13": [
-    { "name": "St. John Chrysostom, Archbishop of Constantinople", "slug": "john-chrysostom", "note": "+407" }
+    {
+      "name": "St. John Chrysostom, Archbishop of Constantinople",
+      "slug": "john-chrysostom",
+      "note": "+407"
+    }
   ],
   "11-14": [
-    { "name": "Holy Apostle Philip", "kind": "feast", "note": "of the Twelve, +1st c." },
-    { "name": "Beginning of the Nativity Fast", "kind": "feast" },
-    { "name": "St. Gregory Palamas, Archbishop of Thessalonica", "note": "theologian of the divine light, +1359" }
+    {
+      "name": "Holy Apostle Philip",
+      "kind": "feast",
+      "note": "of the Twelve, +1st c."
+    },
+    {
+      "name": "Beginning of the Nativity Fast",
+      "kind": "feast"
+    },
+    {
+      "name": "St. Gregory Palamas, Archbishop of Thessalonica",
+      "note": "theologian of the divine light, +1359"
+    }
   ],
   "11-15": [
-    { "name": "Confessors Gurias, Samonas, and Habibus", "note": "of Edessa, +ca. 322" },
-    { "name": "St. Paisius Velichkovsky", "note": "of Neamts, restorer of hesychasm, +1794" }
+    {
+      "name": "Confessors Gurias, Samonas, and Habibus",
+      "note": "of Edessa, +ca. 322"
+    },
+    {
+      "name": "St. Paisius Velichkovsky",
+      "note": "of Neamts, restorer of hesychasm, +1794"
+    }
   ],
   "11-16": [
-    { "name": "Holy Apostle and Evangelist Matthew", "kind": "feast", "note": "+ca. 60" }
+    {
+      "name": "Holy Apostle and Evangelist Matthew",
+      "kind": "feast",
+      "note": "+ca. 60"
+    }
   ],
   "11-17": [
-    { "name": "St. Gregory the Wonderworker, Bishop of Neocaesarea", "note": "disciple of Origen, +ca. 270" },
-    { "name": "St. Nikon of Radonezh", "note": "successor of St. Sergius, +1426" }
+    {
+      "name": "St. Gregory the Wonderworker, Bishop of Neocaesarea",
+      "note": "disciple of Origen, +ca. 270"
+    },
+    {
+      "name": "St. Nikon of Radonezh",
+      "note": "successor of St. Sergius, +1426"
+    }
   ],
   "11-18": [
-    { "name": "Martyrs Plato and Romanus", "note": "+ca. 306" },
-    { "name": "Martyrs Zacchaeus the Deacon and Alphaeus the Reader", "note": "+303" }
+    {
+      "name": "Martyrs Plato and Romanus",
+      "note": "+ca. 306"
+    },
+    {
+      "name": "Martyrs Zacchaeus the Deacon and Alphaeus the Reader",
+      "note": "+303"
+    }
   ],
   "11-19": [
-    { "name": "Prophet Obadiah", "note": "of the Twelve, +9th c. BC" },
-    { "name": "Sts. Barlaam and Josaphat of India", "note": "and Abenner the King" }
+    {
+      "name": "Prophet Obadiah",
+      "note": "of the Twelve, +9th c. BC"
+    },
+    {
+      "name": "Sts. Barlaam and Josaphat of India",
+      "note": "and Abenner the King"
+    }
   ],
   "11-20": [
-    { "name": "Forefeast of the Entrance of the Theotokos", "kind": "feast" },
-    { "name": "St. Gregory of Decapolis", "note": "+ca. 820" },
-    { "name": "St. Proclus, Archbishop of Constantinople", "note": "disciple of John Chrysostom, +447" }
+    {
+      "name": "Forefeast of the Entrance of the Theotokos",
+      "kind": "feast"
+    },
+    {
+      "name": "St. Gregory of Decapolis",
+      "note": "+ca. 820"
+    },
+    {
+      "name": "St. Proclus, Archbishop of Constantinople",
+      "note": "disciple of John Chrysostom, +447"
+    }
   ],
   "11-21": [
-    { "name": "Entrance of the Most Holy Theotokos into the Temple", "kind": "feast" }
+    {
+      "name": "Entrance of the Most Holy Theotokos into the Temple",
+      "kind": "feast"
+    }
   ],
   "11-22": [
-    { "name": "Apostle Philemon and Apphia of the Seventy", "note": "recipients of Paul's letter" },
-    { "name": "Right-believing Prince Michael of Tver", "note": "+1318" }
+    {
+      "name": "Apostle Philemon and Apphia of the Seventy",
+      "note": "recipients of Paul's letter"
+    },
+    {
+      "name": "Right-believing Prince Michael of Tver",
+      "note": "+1318"
+    }
   ],
   "11-23": [
-    { "name": "St. Amphilochius, Bishop of Iconium", "note": "Cappadocian, friend of Basil and the Gregorys, +395" },
-    { "name": "Right-believing Prince Alexander Nevsky", "note": "+1263" }
+    {
+      "name": "St. Amphilochius, Bishop of Iconium",
+      "note": "Cappadocian, friend of Basil and the Gregorys, +395"
+    },
+    {
+      "name": "Right-believing Prince Alexander Nevsky",
+      "note": "+1263"
+    }
   ],
   "11-24": [
-    { "name": "Hieromartyr Clement, Pope of Rome", "note": "disciple of Peter, +ca. 101" },
-    { "name": "Hieromartyr Peter, Archbishop of Alexandria", "note": "+311" }
+    {
+      "name": "Hieromartyr Clement, Pope of Rome",
+      "note": "disciple of Peter, +ca. 101"
+    },
+    {
+      "name": "Hieromartyr Peter, Archbishop of Alexandria",
+      "note": "+311"
+    }
   ],
   "11-25": [
-    { "name": "Great-martyr Catherine of Alexandria", "note": "+305" },
-    { "name": "Great-martyr Mercurius", "note": "of Caesarea, +259" }
+    {
+      "name": "Great-martyr Catherine of Alexandria",
+      "note": "+305"
+    },
+    {
+      "name": "Great-martyr Mercurius",
+      "note": "of Caesarea, +259"
+    }
   ],
   "11-26": [
-    { "name": "St. Alypius the Stylite of Adrianople", "note": "+640" },
-    { "name": "St. Innocent, First Bishop of Irkutsk", "note": "+1731" }
+    {
+      "name": "St. Alypius the Stylite of Adrianople",
+      "note": "+640"
+    },
+    {
+      "name": "St. Innocent, First Bishop of Irkutsk",
+      "note": "+1731"
+    }
   ],
   "11-27": [
-    { "name": "Great-martyr James the Persian", "note": "+421" },
-    { "name": "Icon of the Theotokos 'The Sign'", "kind": "feast", "note": "of Novgorod, 1170" }
+    {
+      "name": "Great-martyr James the Persian",
+      "note": "+421"
+    },
+    {
+      "name": "Icon of the Theotokos 'The Sign'",
+      "kind": "feast",
+      "note": "of Novgorod, 1170"
+    }
   ],
   "11-28": [
-    { "name": "Venerable-martyr Stephen the New, Confessor", "note": "iconophile, +767" },
-    { "name": "Martyr Irenarchus of Sebaste and the Seven Women", "note": "+303" }
+    {
+      "name": "Venerable-martyr Stephen the New, Confessor",
+      "note": "iconophile, +767"
+    },
+    {
+      "name": "Martyr Irenarchus of Sebaste and the Seven Women",
+      "note": "+303"
+    }
   ],
   "11-29": [
-    { "name": "Martyr Paramonus and 370 with him", "note": "of Bithynia, +250" },
-    { "name": "Ven. Acacius of Sinai", "note": "of The Ladder, +6th c." }
+    {
+      "name": "Martyr Paramonus and 370 with him",
+      "note": "of Bithynia, +250"
+    },
+    {
+      "name": "Ven. Acacius of Sinai",
+      "note": "of The Ladder, +6th c."
+    }
   ],
   "11-30": [
-    { "name": "Holy Apostle Andrew the First-Called", "kind": "feast", "note": "brother of Peter, preacher to Byzantium and Greece" },
-    { "name": "St. Frumentius, Enlightener of Abyssinia", "note": "+ca. 380" }
+    {
+      "name": "Holy Apostle Andrew the First-Called",
+      "kind": "feast",
+      "note": "brother of Peter, preacher to Byzantium and Greece"
+    },
+    {
+      "name": "St. Frumentius, Enlightener of Abyssinia",
+      "note": "+ca. 380"
+    }
   ],
   "12-01": [
-    { "name": "Prophet Nahum", "note": "of the Twelve, +7th c. BC" },
-    { "name": "Righteous Philaret the Merciful", "note": "of Amnia, +792" }
+    {
+      "name": "Prophet Nahum",
+      "note": "of the Twelve, +7th c. BC"
+    },
+    {
+      "name": "Righteous Philaret the Merciful",
+      "note": "of Amnia, +792"
+    }
   ],
   "12-02": [
-    { "name": "Prophet Habakkuk", "note": "of the Twelve, +7th c. BC" },
-    { "name": "St. Porphyrios of Kavsokalyvia", "note": "the clairvoyant elder of Athos, +1991" }
+    {
+      "name": "Prophet Habakkuk",
+      "note": "of the Twelve, +7th c. BC"
+    },
+    {
+      "name": "St. Porphyrios of Kavsokalyvia",
+      "note": "the clairvoyant elder of Athos, +1991"
+    }
   ],
   "12-03": [
-    { "name": "Prophet Zephaniah", "note": "of the Twelve, +7th c. BC" },
-    { "name": "St. Savva of Storozhevsk", "note": "abbot of Zvenigorod, disciple of St. Sergius, +1407" }
+    {
+      "name": "Prophet Zephaniah",
+      "note": "of the Twelve, +7th c. BC"
+    },
+    {
+      "name": "St. Savva of Storozhevsk",
+      "note": "abbot of Zvenigorod, disciple of St. Sergius, +1407"
+    }
   ],
   "12-04": [
-    { "name": "Great-martyr Barbara of Heliopolis", "note": "+ca. 306" },
-    { "name": "St. John of Damascus", "slug": "john-of-damascus", "note": "Defender of the Holy Icons, +ca. 760" }
+    {
+      "name": "Great-martyr Barbara of Heliopolis",
+      "note": "+ca. 306"
+    },
+    {
+      "name": "St. John of Damascus",
+      "slug": "john-of-damascus",
+      "note": "Defender of the Holy Icons, +ca. 760"
+    }
   ],
   "12-05": [
-    { "name": "St. Sabbas the Sanctified", "note": "founder of the Great Lavra of Palestine, +532" }
+    {
+      "name": "St. Sabbas the Sanctified",
+      "note": "founder of the Great Lavra of Palestine, +532"
+    }
   ],
   "12-06": [
-    { "name": "St. Nicholas the Wonderworker, Archbishop of Myra in Lycia", "slug": "nicholas-the-wonderworker", "kind": "feast", "note": "+ca. 345" }
+    {
+      "name": "St. Nicholas the Wonderworker, Archbishop of Myra in Lycia",
+      "slug": "nicholas-the-wonderworker",
+      "kind": "feast",
+      "note": "+ca. 345"
+    }
   ],
   "12-07": [
-    { "name": "St. Ambrose, Bishop of Milan", "note": "baptizer of Augustine, +397" },
-    { "name": "St. Nilus of Stolobny", "note": "wonderworker of Seliger, +1554" }
+    {
+      "name": "St. Ambrose, Bishop of Milan",
+      "note": "baptizer of Augustine, +397"
+    },
+    {
+      "name": "St. Nilus of Stolobny",
+      "note": "wonderworker of Seliger, +1554"
+    }
   ],
   "12-08": [
-    { "name": "St. Patapius of Egypt", "note": "+7th c." },
-    { "name": "Apostles Sosthenes, Apollos, Cephas, and Tychicus", "note": "of the Seventy" }
+    {
+      "name": "St. Patapius of Egypt",
+      "note": "+7th c."
+    },
+    {
+      "name": "Apostles Sosthenes, Apollos, Cephas, and Tychicus",
+      "note": "of the Seventy"
+    }
   ],
   "12-09": [
-    { "name": "Conception of the Most Holy Theotokos by Righteous Anna", "kind": "feast" },
-    { "name": "Icon of the Theotokos 'Unexpected Joy'", "note": "of Moscow" }
+    {
+      "name": "Conception of the Most Holy Theotokos by Righteous Anna",
+      "kind": "feast"
+    },
+    {
+      "name": "Icon of the Theotokos 'Unexpected Joy'",
+      "note": "of Moscow"
+    }
   ],
   "12-10": [
-    { "name": "Martyrs Menas, Hermogenes, and Eugraphus of Alexandria", "note": "+313" },
-    { "name": "St. Joasaph, Bishop of Belgorod", "note": "+1754" }
+    {
+      "name": "Martyrs Menas, Hermogenes, and Eugraphus of Alexandria",
+      "note": "+313"
+    },
+    {
+      "name": "St. Joasaph, Bishop of Belgorod",
+      "note": "+1754"
+    }
   ],
   "12-11": [
-    { "name": "St. Daniel the Stylite", "note": "Constantinople, +493" },
-    { "name": "St. Luke the New Stylite of Chalcedon", "note": "+979" }
+    {
+      "name": "St. Daniel the Stylite",
+      "note": "Constantinople, +493"
+    },
+    {
+      "name": "St. Luke the New Stylite of Chalcedon",
+      "note": "+979"
+    }
   ],
   "12-12": [
-    { "name": "St. Spyridon the Wonderworker, Bishop of Trimythous", "note": "Cypriot shepherd-bishop of the First Ecumenical Council, +348" }
+    {
+      "name": "St. Spyridon the Wonderworker, Bishop of Trimythous",
+      "note": "Cypriot shepherd-bishop of the First Ecumenical Council, +348"
+    }
   ],
   "12-13": [
-    { "name": "Martyrs Eustratius, Auxentius, Eugene, Mardarius, and Orestes", "note": "of Sebaste, +ca. 284" },
-    { "name": "St. Herman of Alaska", "note": "his repose, +1837" },
-    { "name": "Virgin-martyr Lucia of Syracuse", "note": "+304" }
+    {
+      "name": "Martyrs Eustratius, Auxentius, Eugene, Mardarius, and Orestes",
+      "note": "of Sebaste, +ca. 284"
+    },
+    {
+      "name": "St. Herman of Alaska",
+      "note": "his repose, +1837"
+    },
+    {
+      "name": "Virgin-martyr Lucia of Syracuse",
+      "note": "+304"
+    }
   ],
   "12-14": [
-    { "name": "Martyrs Thyrsus, Leucius, and Callinicus", "note": "of Bithynia, +ca. 251" },
-    { "name": "Martyrs Philemon, Apollonius, and Arrianus", "note": "of Egypt, +ca. 305" }
+    {
+      "name": "Martyrs Thyrsus, Leucius, and Callinicus",
+      "note": "of Bithynia, +ca. 251"
+    },
+    {
+      "name": "Martyrs Philemon, Apollonius, and Arrianus",
+      "note": "of Egypt, +ca. 305"
+    }
   ],
   "12-15": [
-    { "name": "Hieromartyr Eleutherius, Bishop of Illyria", "note": "+126" },
-    { "name": "St. Stephen the Confessor, Archbishop of Surozh", "note": "+8th c." }
+    {
+      "name": "Hieromartyr Eleutherius, Bishop of Illyria",
+      "note": "+126"
+    },
+    {
+      "name": "St. Stephen the Confessor, Archbishop of Surozh",
+      "note": "+8th c."
+    }
   ],
   "12-16": [
-    { "name": "Prophet Aggeus (Haggai)", "note": "of the Twelve, +6th c. BC" },
-    { "name": "St. Theophano the Empress", "note": "of Constantinople, +ca. 894" }
+    {
+      "name": "Prophet Aggeus (Haggai)",
+      "note": "of the Twelve, +6th c. BC"
+    },
+    {
+      "name": "St. Theophano the Empress",
+      "note": "of Constantinople, +ca. 894"
+    }
   ],
   "12-17": [
-    { "name": "Prophet Daniel", "note": "and the Three Holy Youths Ananias, Azarias, and Misael, +6th c. BC" }
+    {
+      "name": "Prophet Daniel",
+      "note": "and the Three Holy Youths Ananias, Azarias, and Misael, +6th c. BC"
+    }
   ],
   "12-18": [
-    { "name": "Martyr Sebastian of Rome and Companions", "note": "+287" },
-    { "name": "St. Modestus, Patriarch of Jerusalem", "note": "+634" }
+    {
+      "name": "Martyr Sebastian of Rome and Companions",
+      "note": "+287"
+    },
+    {
+      "name": "St. Modestus, Patriarch of Jerusalem",
+      "note": "+634"
+    }
   ],
   "12-19": [
-    { "name": "Martyr Boniface at Tarsus", "note": "+290" },
-    { "name": "St. Elias of Murom, of the Kiev Caves", "note": "the warrior-monk, +1188" }
+    {
+      "name": "Martyr Boniface at Tarsus",
+      "note": "+290"
+    },
+    {
+      "name": "St. Elias of Murom, of the Kiev Caves",
+      "note": "the warrior-monk, +1188"
+    }
   ],
   "12-20": [
-    { "name": "Forefeast of the Nativity of Christ", "kind": "feast" },
-    { "name": "Hieromartyr Ignatius the God-Bearer, Bishop of Antioch", "slug": "ignatius-of-antioch", "note": "the second bishop of Antioch after Peter, +107" },
-    { "name": "St. John of Kronstadt", "note": "wonderworker and pastor, +1908" }
+    {
+      "name": "Forefeast of the Nativity of Christ",
+      "kind": "feast"
+    },
+    {
+      "name": "Hieromartyr Ignatius the God-Bearer, Bishop of Antioch",
+      "slug": "ignatius-of-antioch",
+      "note": "the second bishop of Antioch after Peter, +107"
+    },
+    {
+      "name": "St. John of Kronstadt",
+      "note": "wonderworker and pastor, +1908"
+    }
   ],
   "12-21": [
-    { "name": "Virgin-martyr Juliana of Nicomedia", "note": "+304" },
-    { "name": "St. Peter, Metropolitan of Moscow and All Russia", "note": "+1326" }
+    {
+      "name": "Virgin-martyr Juliana of Nicomedia",
+      "note": "+304"
+    },
+    {
+      "name": "St. Peter, Metropolitan of Moscow and All Russia",
+      "note": "+1326"
+    }
   ],
   "12-22": [
-    { "name": "Great-martyr Anastasia the Pharmakolytria (Deliverer from Poisons)", "note": "+304" },
-    { "name": "Martyr Chrysogonus", "note": "teacher of St. Anastasia, +304" }
+    {
+      "name": "Great-martyr Anastasia the Pharmakolytria (Deliverer from Poisons)",
+      "note": "+304"
+    },
+    {
+      "name": "Martyr Chrysogonus",
+      "note": "teacher of St. Anastasia, +304"
+    }
   ],
   "12-23": [
-    { "name": "Ten Martyrs of Crete", "note": "+250" },
-    { "name": "St. Niphon, Bishop of Cyprus", "note": "+4th c." }
+    {
+      "name": "Ten Martyrs of Crete",
+      "note": "+250"
+    },
+    {
+      "name": "St. Niphon, Bishop of Cyprus",
+      "note": "+4th c."
+    }
   ],
   "12-24": [
-    { "name": "Eve of the Nativity", "kind": "feast" },
-    { "name": "Venerable-martyr Eugenia", "note": "of Rome, +ca. 262" }
+    {
+      "name": "Eve of the Nativity",
+      "kind": "feast"
+    },
+    {
+      "name": "Venerable-martyr Eugenia",
+      "note": "of Rome, +ca. 262"
+    }
   ],
   "12-25": [
-    { "name": "Nativity According to the Flesh of Our Lord, God, and Savior Jesus Christ", "kind": "feast" }
+    {
+      "name": "Nativity According to the Flesh of Our Lord, God, and Savior Jesus Christ",
+      "kind": "feast"
+    }
   ],
   "12-26": [
-    { "name": "Synaxis of the Most Holy Theotokos", "kind": "feast" }
+    {
+      "name": "Synaxis of the Most Holy Theotokos",
+      "kind": "feast"
+    }
   ],
   "12-27": [
-    { "name": "Protomartyr and Archdeacon Stephen", "kind": "feast", "note": "+ca. 34" },
-    { "name": "St. Theodore the Branded, Confessor", "note": "+840" }
+    {
+      "name": "Protomartyr and Archdeacon Stephen",
+      "kind": "feast",
+      "note": "+ca. 34"
+    },
+    {
+      "name": "St. Theodore the Branded, Confessor",
+      "note": "+840"
+    }
   ],
   "12-28": [
-    { "name": "20,000 Martyrs Burned at Nicomedia", "note": "+ca. 303" }
+    {
+      "name": "20,000 Martyrs Burned at Nicomedia",
+      "note": "+ca. 303"
+    }
   ],
   "12-29": [
-    { "name": "14,000 Holy Innocents Slain by Herod in Bethlehem", "note": "+1 BC" },
-    { "name": "Ven. Marcellus, Abbot of the Unsleeping Ones", "note": "+485" }
+    {
+      "name": "14,000 Holy Innocents Slain by Herod in Bethlehem",
+      "note": "+1 BC"
+    },
+    {
+      "name": "Ven. Marcellus, Abbot of the Unsleeping Ones",
+      "note": "+485"
+    }
   ],
   "12-30": [
-    { "name": "Martyr Anysia of Thessaloniki", "note": "+ca. 298" },
-    { "name": "St. Zoticus the Orphanmaster, Servant of the Poor", "note": "of Constantinople, +4th c." }
+    {
+      "name": "Martyr Anysia of Thessaloniki",
+      "note": "+ca. 298"
+    },
+    {
+      "name": "St. Zoticus the Orphanmaster, Servant of the Poor",
+      "note": "of Constantinople, +4th c."
+    }
   ],
   "12-31": [
-    { "name": "St. Melania the Younger of Rome", "note": "+439" }
+    {
+      "name": "St. Melania the Younger of Rome",
+      "note": "+439"
+    }
   ]
 }

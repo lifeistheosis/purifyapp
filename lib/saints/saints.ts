@@ -736,6 +736,24 @@ export const SAINTS: Saint[] = [
  ],
  },
  {
+ slug: "epistle-to-the-magnesians",
+ title: "Epistle to the Magnesians",
+ subtitle: "On the youthful bishop and against the Sabbath",
+ year: "c. 107",
+ blurb:
+ "Ignatius praises the Magnesians for honoring their bishop Damas despite his youth, warns against living after the Sabbath rather than the Lord's Day, and presses the corpus's theme that the bishop is the visible center of unity.",
+ topics: ["Bishopric", "Lord's Day", "Unity", "Judaizing", "Tradition"],
+ },
+ {
+ slug: "epistle-to-the-trallians",
+ title: "Epistle to the Trallians",
+ subtitle: "Against the Docetic denial of Christ's flesh",
+ year: "c. 107",
+ blurb:
+ "A short refutation of those who taught that Christ only seemed to suffer. Ignatius answers that his own real chains are unintelligible if Christ's passion was only an appearance.",
+ topics: ["Incarnation", "Heresy", "Martyrdom", "Bishopric"],
+ },
+ {
  slug: "epistle-to-the-romans",
  title: "Epistle to the Romans",
  subtitle: "On the road to martyrdom",
@@ -743,6 +761,33 @@ export const SAINTS: Saint[] = [
  blurb:
  "The fiercest of the seven letters: Ignatius begs the Roman Christians not to intervene to spare him from the wild beasts.",
  topics: ["Martyrdom", "Eucharist", "Bishopric", "Unity"],
+ },
+ {
+ slug: "epistle-to-the-philadelphians",
+ title: "Epistle to the Philadelphians",
+ subtitle: "On the bishop's silence, and the one altar of the Church",
+ year: "c. 107",
+ blurb:
+ "Written from Troas after Ignatius heard of disorder at Philadelphia. The opening passage on the silence of the bishop — \"by his silence he is able to accomplish more than those who vainly talk\" — became a patristic touchstone on the spiritual authority of restraint.",
+ topics: ["Bishopric", "Unity", "Eucharist", "Schism"],
+ },
+ {
+ slug: "epistle-to-the-smyrnaeans",
+ title: "Epistle to the Smyrnaeans",
+ subtitle: "On the truly suffering and risen flesh of Christ",
+ year: "c. 107",
+ blurb:
+ "The most explicit Ignatian witness to the bodily resurrection. Quotes the risen Lord's words to those with Peter (\"Lay hold, handle me, and see that I am not an incorporeal spirit\") and condemns those who deny the real flesh of Christ in the Eucharist.",
+ topics: ["Resurrection", "Incarnation", "Eucharist", "Heresy"],
+ },
+ {
+ slug: "epistle-to-polycarp",
+ title: "Epistle to Polycarp",
+ subtitle: "A bishop writes to a bishop",
+ year: "c. 107",
+ blurb:
+ "The seventh and shortest of the letters, written to Polycarp, Ignatius's fellow disciple of the Apostle John. Less a doctrinal letter than a pastoral charge: be diligent, do not be moved by those who teach strange doctrine, bear the infirmities of all, marry in the Lord, honour the slaves of God.",
+ topics: ["Pastoral", "Bishopric", "Marriage", "Slavery", "Patience"],
  },
  ],
  },
@@ -1930,6 +1975,123 @@ export const SAINTS: Saint[] = [
  blurb:
  "His choosing as one of the Seven in Acts 6, and the long tradition of his service to the Apostle John in exile, where the Fourth Gospel was given to the Church through his hand.",
  topics: ["Diaconate", "Mission", "Tradition", "Episcopate", "Scripture"],
+ },
+ ],
+ },
+ {
+ slug: "archangel-michael",
+ byname: "Captain of the Heavenly Hosts",
+ iconUrl: "/saints/icons/archangel-michael.jpg",
+ name: "The Holy Archangel Michael",
+ epithet: "Archistratigos of the Bodiless Hosts · Defender of the Faith · First among the Angels",
+ feastDays: ["September 6", "November 8"],
+ shortBio:
+ "The chief of the angelic orders who in the Scriptures stands for Israel against the prince of Persia, contends with the devil over the body of Moses, casts the dragon out of heaven, and to whom the Church gives the protection of every soul, every parish, and every Christian people.",
+ life: [
+ "Michael is named four times in the canonical Scriptures — three times in Daniel (10:13, 10:21, and 12:1), once in the Epistle of Jude, and once in the Apocalypse (12:7) — and each time he is the one whom God appoints to stand. In Daniel he is \"the great prince which standeth for the children of thy people\"; in Jude he is the one who, contending with the devil over the body of Moses, dares not bring against him a railing accusation, but says \"the Lord rebuke thee\"; in Revelation he is the captain who fights the dragon and casts him out of heaven with his angels.",
+ "His name in Hebrew is a question — מִיכָאֵל, Mi-ka-El, \"who is like God?\" — the standing rebuke to every creaturely claim to divinity, beginning with the fallen one whose pride filled heaven and was cast out. The Fathers read the angelic war of Revelation 12 back into the first hour of creation: when Lucifer rose, it was Michael who answered \"who is like God?\", and the host that followed him became the holy angels who serve the Lord without falling.",
+ "He is, in the language of the Eastern Liturgy, the Archistratigos — the chief commander, the first of the bodiless hosts. The Synaxis of November 8 commemorates Michael together with Gabriel and the whole heavenly host, set on the ninth month from March (the month of the Annunciation) and on the eighth day to recall the eighth day of the Resurrection and the age to come.",
+ "The September 6 feast commemorates the Miracle at Chonae, where the Archangel rescued a small church dedicated to his name in Asia Minor: pagans, seeking to destroy the church and the sacristan Archippus, diverted two rivers to flood the site, and Michael appeared with his staff and split the rock to swallow the waters, leaving the church standing. The chasm, called the \"Khoni\" (funnel), gave the place its name.",
+ "Michael appears in nearly every order of the Church's prayer: at the head of the deisis after Christ and the Theotokos, at the Anaphora as one of the powers that surround the throne, at the deathbed as the one who escorts the soul, at the parish patronage of countless monasteries and cathedrals. The faithful pray him as the defender of the Faith against heresy, the defender of Christian peoples in war, and the personal guardian against the demonic.",
+ ],
+ quotes: [
+ {
+ text: "Who is like God? Let us stand well, let us stand with fear.",
+ source: "Traditional acclamation drawn from the meaning of his Hebrew name + the deacon's call at the Anaphora",
+ },
+ {
+ text: "And there was war in heaven: Michael and his angels fought against the dragon; and the dragon fought and his angels, and prevailed not.",
+ source: "Revelation 12:7-8 (KJV)",
+ },
+ ],
+ works: [
+ {
+ slug: "hymns-to-the-bodiless-hosts",
+ title: "Hymns to the Bodiless Hosts",
+ subtitle: "The standard liturgical texts of the November 8 Synaxis",
+ year: "Byzantine, traditional",
+ blurb:
+ "The apolytikion, kontakion, and megalynarion appointed by the Church for the feast of the Archangels and all the Bodiless Hosts, in the public-domain English of the Hapgood Service Book.",
+ topics: ["Angels", "Hymnography", "Protection", "Liturgy", "Spiritual Warfare"],
+ },
+ ],
+ },
+ {
+ slug: "nektarios-of-aegina",
+ byname: "Wonderworker of Aegina",
+ iconUrl: "/saints/icons/nektarios-of-aegina.jpg",
+ name: "St. Nektarios of Aegina",
+ epithet: "Metropolitan of Pentapolis · Wonderworker · Modern Saint",
+ born: "October 1, 1846 (Selybria, Eastern Thrace)",
+ reposed: "November 9, 1920 (Athens)",
+ feastDays: ["November 9"],
+ see: "Pentapolis in the Patriarchate of Alexandria",
+ shortBio:
+ "A modern saint of the Greek tradition, a Metropolitan slandered out of his see who spent the rest of his life teaching poor seminarians in Athens, founded a convent on Aegina, was buried there in 1920, and within a generation was glorified as one of the most-loved wonderworkers of the Greek-speaking world.",
+ life: [
+ "He was born Anastasios Kephalas in 1846 in Selybria, Eastern Thrace, to a poor Greek family. As a boy he travelled alone to Constantinople to work and study, sleeping in a shop and reading the Fathers by candle-light. At twenty-two he went to the island of Chios, was tonsured a monk with the name Lazarus, and a year later was given the name Nektarios at his monastic profession.",
+ "He was ordained deacon and sent at the expense of a benefactor to study at the Theological School of Athens, then to Alexandria, where the Patriarch Sophronios ordained him priest, made him archimandrite, and appointed him patriarchal secretary. In 1889, at the age of forty-three, he was consecrated Metropolitan of Pentapolis, the ancient titular see in Libya. He served the Patriarchate of Alexandria with a freshness and a closeness to the poor that earned him both immense affection from the people and the jealousy of senior clergy.",
+ "Calumnies were brought against him. The Patriarch, without trial, removed him from his see, and he was left a bishop without a diocese. He returned to Greece with no income and no welcome. For a year he walked the streets of Athens looking for any clerical work; finally he was given a small place preaching in country parishes, and then, when the slander followed him there too, was made the director of the Rizareios Ecclesiastical School in Athens — a teacher of poor seminarians, where he served fifteen years.",
+ "He lived in radical poverty and humility. The students saw him sweeping the school's floors before dawn, fixing the boys' shoes by hand, taking the blame for breakages he had not caused so that the cooks would not be punished. He wrote treatises on dogmatic theology, on the Church, on the Holy Trinity, on the path of repentance, on Christian morals — all in plain Greek, for the parish and the catechumen, not for the academy.",
+ "In his last years he founded a convent of nuns on the small Saronic island of Aegina, the Holy Trinity Monastery, restoring an old ruined community. He retired there in 1908, served the small church, heard the sisters' confessions, planted the gardens, and bore the long illness that finally killed him — cancer of the prostate, in great pain, in the Aretaieio public hospital in Athens. He fell asleep in the Lord on the night of November 8 / 9, 1920.",
+ "Within a year of his repose the wonders began. The patient in the next bed was healed when a sweater of Nektarios's was laid on him. His relics, when they were translated, gave off myrrh. The Greek Orthodox Patriarchate of Constantinople formally glorified him as a saint on April 20, 1961. The Holy Trinity Monastery on Aegina has since become one of the most visited pilgrimage sites in the Greek Orthodox world, and St. Nektarios is one of the most-loved modern wonderworkers in every Greek and Greek-tradition jurisdiction.",
+ ],
+ quotes: [
+ {
+ text: "Christ is everything to those who love Him. Without Christ joy is not joy, light is not light, love is not love.",
+ source: "Saying preserved by his disciples at the Holy Trinity Monastery, Aegina",
+ },
+ {
+ text: "I bear no ill will to anyone who has injured me; I have prayed God to give them every good.",
+ source: "From his correspondence in the last years",
+ },
+ ],
+ works: [
+ {
+ slug: "apolytikion-and-the-rule-of-life",
+ title: "Apolytikion and the Rule of Life",
+ subtitle: "The standard liturgical hymn of the November 9 feast, and his short Rule for the nuns of Aegina",
+ year: "1961 (apolytikion) / c. 1908 (Rule)",
+ blurb:
+ "The official Apolytikion composed at his glorification, the festal Kontakion of his feast, and a short, plain Rule of Life he gave the sisters of the Holy Trinity Monastery on Aegina — simple, ascetical, and unmistakably his.",
+ topics: ["Humility", "Wonderworking", "Modern Saint", "Monasticism", "Greek Tradition"],
+ },
+ ],
+ },
+ {
+ slug: "florian-of-lorch",
+ byname: "Martyr of Noricum",
+ iconUrl: "/saints/icons/florian-of-lorch.jpg",
+ name: "St. Florian of Lorch",
+ epithet: "Roman Officer · Holy Martyr of Noricum · Patron of those in danger from fire",
+ born: "c. 250 (Aelium Cetium, Roman Noricum)",
+ reposed: "May 4, 304 (Lauriacum on the river Enns, drowned with a millstone)",
+ feastDays: ["May 4"],
+ see: "(lay martyr)",
+ shortBio:
+ "A Roman officer of the province of Noricum who, in the great persecution under Diocletian, refused to take part in the sacrifices, confessed himself a Christian, was scourged and drowned in the river Enns with a millstone tied around his neck. A pre-Schism Western saint received by the Eastern Orthodox Church alongside the other martyrs of the Undivided Church.",
+ life: [
+ "Florian was born around the year two hundred and fifty in Aelium Cetium, in the Roman province of Noricum (in what is today Lower Austria). He rose to the rank of senior officer in the Roman civil administration of the province, with charge over the imperial fire brigades — the official watchmen against fires, both natural and arson — in the cities along the Danube frontier.",
+ "When the persecution of Diocletian was published in 303, the prefect Aquilinus was sent into Noricum to enforce it. Some forty Christian soldiers from the garrison at Lauriacum were arrested, refused to sacrifice, and were imprisoned. Florian, hearing of them, left his post at Aelium Cetium and went down to Lauriacum to stand with them.",
+ "He met the prefect on the road, was recognized, was challenged to sacrifice, and refused. He said, as the early Latin Acts record, that he had been a Christian since his youth and would not now learn another way of praying. He was scourged, his shoulder blades were broken, and a millstone was tied around his neck. He was thrown from the bridge over the river Enns and drowned. The forty soldiers were beheaded shortly after.",
+ "A pious Christian woman named Valeria, the Acts say, was given his body by night and buried him quietly on her land. A church rose over the grave, then an abbey — the great Augustinian abbey of Sankt Florian, still standing today in Upper Austria, on the spot of his burial. From there his name spread through Bavaria, Bohemia, Hungary, and especially Poland, where King Casimir II in 1184 obtained a portion of his relics and made him a co-patron of the realm.",
+ "St. Florian is venerated among the Western martyrs of the pre-Schism Church received by the Eastern Orthodox Church — the so-called Saints of the Undivided Church, whose witness is from the seven hundred years before the breach of 1054 and is held in common by both East and West. The Polish Autocephalous Orthodox Church keeps his feast on May 4 in the Old Calendar reckoning, and a number of other Slavic Orthodox jurisdictions of Central Europe likewise commemorate him. Outside the liturgical calendar he is widely known as the heavenly patron of those whose work is to stand between people and fire — fire fighters, chimney sweeps, brewers, and soap makers — and of the city of Linz and the land of Upper Austria.",
+ ],
+ quotes: [
+ {
+ text: "I have served my God since I was a youth, and I will not now learn another way of praying.",
+ source: "Traditional answer to the prefect Aquilinus, from the Latin Passio Floriani",
+ },
+ ],
+ works: [
+ {
+ slug: "the-passion-of-florian",
+ title: "The Passion of St. Florian",
+ subtitle: "The Acts of his martyrdom at Lauriacum, May 4, 304",
+ year: "Latin Passio, traditional",
+ blurb:
+ "The short account of his witness before the prefect Aquilinus, his confession, his scourging, the millstone, the drowning in the Enns, and his burial by Valeria — drawn from the public-domain English of the Acta Sanctorum tradition.",
+ topics: ["Martyrdom", "Roman Persecution", "Witness", "Pre-Schism Western Saints", "Patronage"],
  },
  ],
  },

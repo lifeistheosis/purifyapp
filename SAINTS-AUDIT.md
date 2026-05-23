@@ -70,19 +70,33 @@ The three works imported this commit demonstrate the pattern. Repeat as follows 
 
 ## What this commit closes vs. defers
 
-**Closed (3 works, ~40 chapters of new patristic primary text):**
+**Closed in the first import commit (2026-05-23, three Apostolic Fathers works, ~40 chapters):**
 
 - Ignatius/Romans — expanded 3 → 11 sections (full salutation + 10 chapters).
 - Ignatius/Ephesians — new, 22 sections (salutation + 21 chapters). Includes "the medicine of immortality."
 - Polycarp/Philippians — new, 15 sections (salutation + 14 chapters). The only surviving writing from Polycarp's hand.
 
+**Closed in the second import commit (2026-05-23, eight files: five Ignatian epistles + three new saint registries + first works for each):**
+
+- Ignatius/Magnesians — new, 16 sections. The youthful bishop Damas; against Sabbath observance.
+- Ignatius/Trallians — new, 14 sections. Against the Docetic denial of Christ's flesh.
+- Ignatius/Philadelphians — new, 12 sections. On the silence of the bishop and the one altar.
+- Ignatius/Smyrnaeans — new, 14 sections. The bodily resurrection; "Lay hold, handle me, and see."
+- Ignatius/To Polycarp — new, 9 sections. A bishop writes to a bishop.
+- **Archangel Michael** — new registry entry + *Hymns to the Bodiless Hosts* (festal hymnography for the Nov 8 Synaxis, PD Hapgood).
+- **St. Nektarios of Aegina** — new registry entry + *Apolytikion and the Rule of Life* (festal hymns + his short Rule for the sisters of Aegina).
+- **St. Florian of Lorch** — new registry entry + *The Passion of St. Florian* (the Acts of his martyrdom at Lauriacum, May 4, 304, as preserved in the Acta Sanctorum and Butler's *Lives*; received in the East as a saint of the Undivided Church).
+
+All seven Ignatian epistles are now complete in the corpus. The Apostolic Fathers gap is now closed on the Ignatian side. Polycarp still needs *The Martyrdom of Polycarp* to complete his pair.
+
 **Next sprint (next ~3 weeks, in priority order):**
 
-1. The remaining five Ignatian epistles (Magnesians, Trallians, Philadelphians, Smyrnaeans, To Polycarp). Same pattern, ~5-10 short chapters each. Closes the Apostolic Fathers gap completely on the Ignatian side.
-2. The Martyrdom of Polycarp — completes the Polycarp pair, gives the first surviving martyrology.
-3. Gregory of Nyssa — Great Catechetical Oration. Currently 0 works. The Cappadocian gap.
-4. Basil the Great — On the Holy Spirit. Currently 1 work (Hexaemeron). The pneumatology gap.
-5. John of Damascus — full Exposition of the Orthodox Faith (4 books). Currently 1 excerpt.
+1. The Martyrdom of Polycarp — completes the Polycarp pair, gives Purify its first surviving martyrology.
+2. Gregory of Nyssa — Great Catechetical Oration. Currently 0 works. The Cappadocian gap.
+3. Basil the Great — On the Holy Spirit. Currently 1 work (Hexaemeron). The pneumatology gap.
+4. John of Damascus — full Exposition of the Orthodox Faith (4 books). Currently 1 excerpt.
+5. Augustine — Confessions Books II-X (currently Book I only).
+6. Expand the new saints' corpora — for Michael, add Chrysostom's homilies on the angels (NPNF1, PD); for Nektarios, his short PD treatises on the path of repentance; for Florian, no further primary text but the entry could grow with a hymnographic compilation as new PD English appears.
 
 **Later sprints (out of this audit cycle):**
 
