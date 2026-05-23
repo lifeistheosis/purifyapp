@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
-
-const SITE = "https://purify.app";
+import { SITE_URL as SITE } from "@/lib/site";
 
 // The ABS / Biblica licenses prohibit using the Scripture content to train
 // generative AI / LLMs. Block known AI crawlers so the licensed text is not
