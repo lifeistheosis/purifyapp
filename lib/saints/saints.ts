@@ -1742,6 +1742,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "anianus-of-alexandria",
  byname: "Successor of St. Mark",
+ iconUrl: "/saints/icons/anianus-of-alexandria.jpg",
  name: "St. Anianus of Alexandria",
  epithet: "Second Bishop of Alexandria · Cobbler of the See of St. Mark",
  born: "1st century (Alexandria)",
