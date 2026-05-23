@@ -19,6 +19,20 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v5.3",
+ kind: "The front door",
+ date: "May 22, 2026",
+ blurb:
+ "Two small changes to the first thing people see. The home page no longer reads as a prayer app and nothing else, a live 'Today' rail now sits above the fold with the day's saint, the fast, a reading, and the count to Pascha; and the hero, features, and quick-jump links have all been rebalanced so Scripture, the saints, the calendar, and prayer stand together. And when someone pastes a Purify link into Discord or Slack, the preview now shows a real Purify card on the dark scroll background rather than a broken image from a domain we don't own.",
+ items: [
+ "A live 'Today' rail on the home page, the saint of the day with their icon, today's fast with its bespoke icon and liturgical colour, the day's appointed Gospel verse with a one-click jump into the reader, and the days to Pascha. ISR'd so it rolls forward each hour without a redeploy.",
+ "The hero broadened from 'an Orthodox prayer companion' to the whole life of the Church, with a new headline ('The whole Orthodox life, in one quiet place.') and a quiet 'See today' link straight into the calendar.",
+ "Four feature cards instead of three, one per pillar: Read with the Fathers, Lives of the saints, The Sacred Calendar, and Prayer that breathes. The eight quick-jump links underneath were rebalanced to match, two per pillar (the Gospel of John, the Psalter, the saints index, St. John Chrysostom, the calendar, Today, Morning prayers, the Jesus Prayer).",
+ "The 'Where would you like to begin?' challenge cards finally point at the Bible too, 'Read the Gospel with Chrysostom' joins the path through Great Lent and the Jesus Prayer.",
+ "Link previews fixed: shared URLs no longer pull a broken image from a domain we don't own. A clean Purify card (the three-bar Cross, the wordmark, 'Apostolic · Orthodox · Knowledge') is now the Open Graph image, and every absolute URL in our metadata resolves through the actual deployment URL automatically, with a defensive guard that refuses any 'purify.app' value entirely.",
+ ],
+ },
+ {
  version: "v5.2",
  kind: "The calendar as a menologion",
  date: "May 22, 2026",

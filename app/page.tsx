@@ -101,8 +101,8 @@ export default function Home() {
  New
  </span>
  <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
- <span className="sm:hidden">v5.2 · The menologion</span>
- <span className="hidden sm:inline">v5.2 · The calendar as a menologion</span>
+ <span className="sm:hidden">v5.3 · The front door</span>
+ <span className="hidden sm:inline">v5.3 · A rebalanced front door</span>
  </span>
  <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
  →
