@@ -85,8 +85,14 @@ export default function Home() {
  <section
  className={`${sectionBase} relative overflow-hidden`}
  style={{
- background:
- "linear-gradient(180deg, #000000 0%, #1a1a1a 55%, #ffffff 100%)",
+ background: [
+ // Soft warm halo behind the heading, like candlelight catching the wall
+ "radial-gradient(ellipse 70% 55% at 30% 25%, rgba(212, 169, 90, 0.10) 0%, transparent 65%)",
+ // Cool counterweight on the opposite side so the panel doesn't sit empty
+ "radial-gradient(ellipse 55% 45% at 90% 60%, rgba(120, 100, 160, 0.06) 0%, transparent 70%)",
+ // Deep night base, warming a shade as it descends
+ "linear-gradient(180deg, #07070a 0%, #110e0c 55%, #16120e 100%)",
+ ].join(", "),
  }}
  >
  <div className="mx-auto max-w-[1240px] w-full grid grid-cols-1 xl:grid-cols-2 gap-12 items-center">
