@@ -86,12 +86,12 @@ export default function Home() {
  className={`${sectionBase} relative overflow-hidden`}
  style={{
  background: [
- // Soft warm halo behind the heading, like candlelight catching the wall
- "radial-gradient(ellipse 70% 55% at 30% 25%, rgba(212, 169, 90, 0.10) 0%, transparent 65%)",
- // Cool counterweight on the opposite side so the panel doesn't sit empty
- "radial-gradient(ellipse 55% 45% at 90% 60%, rgba(120, 100, 160, 0.06) 0%, transparent 70%)",
- // Deep night base, warming a shade as it descends
- "linear-gradient(180deg, #07070a 0%, #110e0c 55%, #16120e 100%)",
+ // Soft twilight-blue glow behind the heading, like the hour before vespers
+ "radial-gradient(ellipse 75% 60% at 25% 30%, rgba(70, 95, 140, 0.12) 0%, transparent 65%)",
+ // Subtle deeper indigo settling toward the lower right
+ "radial-gradient(ellipse 60% 50% at 85% 75%, rgba(40, 50, 80, 0.10) 0%, transparent 70%)",
+ // Deep night base, a hair cooler than pure black
+ "linear-gradient(180deg, #07080c 0%, #0c0e14 55%, #10121a 100%)",
  ].join(", "),
  }}
  >
