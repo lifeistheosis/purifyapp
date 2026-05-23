@@ -148,7 +148,10 @@ export function AppNav() {
                 {initials}
               </span>
             </Link>
-          ) : initials === "" ? (
+          ) : (
+            // Default for both pre-hydration (initials === null) and confirmed
+            // signed-out (initials === ""): show the text link. If a session is
+            // later detected the avatar branch above takes over in place.
             <Link
               href="/account"
               className={cn(
@@ -160,12 +163,6 @@ export function AppNav() {
             >
               Account
             </Link>
-          ) : (
-            // Pre-hydration placeholder so the layout doesn't jump.
-            <span
-              aria-hidden
-              className="inline-block h-[36px] w-[36px]"
-            />
           )}
           <ComingSoonCTA variant="inverse" className="!py-2.5 !px-5 text-[14px]">
             Open Purify
