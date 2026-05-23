@@ -1330,6 +1330,60 @@ export const SAINTS: Saint[] = [
  },
  ],
  },
+ {
+ slug: "mary-magdalene",
+ pronoun: "her",
+ byname: "Equal-to-the-Apostles",
+ iconUrl: "/saints/icons/mary-magdalene.jpg",
+ name: "St. Mary Magdalene",
+ epithet: "Myrrhbearer · Equal-to-the-Apostles · Apostle to the Apostles",
+ born: "1st century (Magdala on the Sea of Galilee)",
+ reposed: "1st century (tradition: Ephesus)",
+ feastDays: ["July 22", "Third Sunday of Pascha"],
+ see: "Disciple at large; tradition sends her with the Apostle John to Ephesus",
+ shortBio:
+ "The woman of Magdala from whom the Lord cast out seven demons and who afterwards followed him to the Cross, kept vigil at his tomb, and was the first to see and to announce the Resurrection.",
+ life: [
+ "Mary was a woman of the fishing town of Magdala on the western shore of the Sea of Galilee. The Gospel of Luke records that she was healed by the Lord of seven demons, and that from that day she gave up everything to follow him, joining a small company of women who travelled with him and the Twelve and provided for them from their own means.",
+ "She is named more often in the Resurrection accounts than any other woman, and stands by the Cross when most of the disciples have fled. With the other myrrhbearing women she watched where the body was laid on the evening of the Crucifixion, and came back at first light on the third day with spices to anoint the dead.",
+ "It was to her, the Fourth Gospel records, that the Risen Lord first appeared, in the garden by the empty tomb, and her he sent to the apostles with the news that he was risen and ascending to his Father. For this the Orthodox Church names her Equal-to-the-Apostles, and the Fathers from St. Hippolytus onward call her the 'apostle to the apostles.'",
+ "After Pentecost the tradition holds that she preached the Resurrection widely. A long-standing account relates that she travelled to Rome, where she was received by the emperor Tiberius and greeted him with the Paschal salutation; from that meeting comes the Orthodox custom of the red Paschal egg. She afterwards joined the Apostle John at Ephesus, and there reposed in peace and was buried. Her relics were translated to Constantinople under Leo the Wise in 886, and remain in part to this day at the monastery of Simonopetra on Mount Athos.",
+ "The Orthodox Church has never accepted the Western conflation of Mary Magdalene with the unnamed sinful woman of Luke 7 or with Mary of Bethany. She is honored as a chaste and faithful disciple, the first witness of the Resurrection, and the first preacher of it.",
+ ],
+ quotes: [
+ {
+ text: "They have taken away my Lord, and I know not where they have laid him.",
+ source: "John 20:13 (KJV)",
+ href: "/saints/mary-magdalene/the-myrrhbearer",
+ },
+ {
+ text: "Rabboni; which is to say, Master.",
+ source: "John 20:16 (KJV)",
+ href: "/saints/mary-magdalene/the-myrrhbearer",
+ },
+ {
+ text: "I have seen the Lord.",
+ source: "John 20:18 (KJV)",
+ href: "/saints/mary-magdalene/the-myrrhbearer",
+ },
+ {
+ text: "Christ is risen.",
+ source: "Her greeting to the emperor Tiberius (tradition)",
+ href: "/saints/mary-magdalene/the-myrrhbearer",
+ },
+ ],
+ works: [
+ {
+ slug: "the-myrrhbearer",
+ title: "The Myrrhbearer at the Tomb",
+ subtitle: "Selected passages from the Gospels",
+ year: "Recorded in the Gospels, c. 60-90",
+ blurb:
+ "Four scenes: her healing of the seven demons, her steadfastness at the Cross, the encounter with the Risen Lord in the garden, and the tradition of the Paschal egg before the emperor.",
+ topics: ["Resurrection", "Faith", "Repentance", "Mission", "Scripture"],
+ },
+ ],
+ },
 ];
 
 export function getSaint(slug: string): Saint | null {
