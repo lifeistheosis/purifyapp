@@ -1121,6 +1121,61 @@ export const SAINTS: Saint[] = [
  },
  ],
  },
+ {
+ slug: "apostle-peter",
+ byname: "Chief of the Apostles",
+ name: "Holy Apostle Peter",
+ epithet: "Chief of the Apostles · The Rock",
+ born: "c. AD 1 (Bethsaida of Galilee)",
+ reposed: "c. AD 67 (Rome)",
+ feastDays: ["June 29", "June 30", "January 16"],
+ see: "Antioch, then Rome",
+ shortBio:
+ "The Galilean fisherman whom Christ called from his nets to be a fisher of men, whose confession at Caesarea Philippi the Church names the rock of her faith, and who, after a night of denial and a morning of restoration, fed the sheep of the Lord until he was crucified head-downward in Rome.",
+ life: [
+ "Simon was the son of Jonas, a fisherman of Bethsaida on the Sea of Galilee, and brother of the Apostle Andrew. He was already married and settled in Capernaum when his brother brought him to Jesus with the words, 'We have found the Messias.' At their meeting the Lord looked upon him and said, 'Thou art Simon the son of Jonas: thou shalt be called Cephas,' the Aramaic word the Greek Gospel renders Peter, that is, a stone.",
+ "He left his nets at a word and followed. He was at the wedding of Cana, the calming of the storm, the raising of Jairus's daughter, the Transfiguration on Tabor, and the agony in Gethsemane. He was the first of the Twelve to confess, when the Lord asked the question at Caesarea Philippi, 'Thou art the Christ, the Son of the living God,' and heard in answer the words on which the Church has never ceased to reflect: 'Upon this rock I will build my church, and the gates of hell shall not prevail against it.'",
+ "He was also the disciple who, on the night the Lord was taken, denied Him three times in the high priest's courtyard, and who at the cock-crow went out and wept bitterly. After the Resurrection the Lord sought him out by the Sea of Tiberias, and over a breakfast of bread and fish gave him a threefold commission to balance the threefold fall: 'Lovest thou me? Feed my sheep.' From that morning his ministry was a tending of the flock.",
+ "At Pentecost he was the first to speak to the gathered crowd, and three thousand were baptized at his preaching. He healed the lame man at the Beautiful Gate, raised Tabitha at Joppa, received in a vision at the house of Simon the tanner the command to take the Gospel to the Gentiles, and baptized the centurion Cornelius and his household, opening the door of the Church to the nations.",
+ "Tradition holds that he served as the first bishop of Antioch before going to Rome, where he labored in the last years of his life. There, in the persecution under Nero around the year 67, he was crucified; and the tradition relates that, counting himself unworthy to suffer in the manner of his Master, he asked to be hanged head-downward. He was buried on the Vatican hill, and the Church keeps his feast together with the Apostle Paul on the twenty-ninth of June, and the feast of his Chains on the sixteenth of January.",
+ ],
+ quotes: [
+ {
+ text: "Thou art the Christ, the Son of the living God.",
+ source: "His confession at Caesarea Philippi (Matthew 16:16)",
+ },
+ {
+ text: "Lord, to whom shall we go? thou hast the words of eternal life.",
+ source: "John 6:68",
+ },
+ {
+ text: "Casting all your care upon him; for he careth for you.",
+ source: "1 Peter 5:7 (KJV)",
+ href: "/saints/apostle-peter/the-two-epistles",
+ },
+ {
+ text: "Whom having not seen, ye love; in whom, though now ye see him not, yet believing, ye rejoice with joy unspeakable and full of glory.",
+ source: "1 Peter 1:8 (KJV)",
+ href: "/saints/apostle-peter/the-two-epistles",
+ },
+ {
+ text: "But grow in grace, and in the knowledge of our Lord and Saviour Jesus Christ.",
+ source: "2 Peter 3:18 (KJV)",
+ href: "/saints/apostle-peter/the-two-epistles",
+ },
+ ],
+ works: [
+ {
+ slug: "the-two-epistles",
+ title: "Selected Passages from the Two Epistles",
+ subtitle: "From the First and Second Epistles General of Peter",
+ year: "c. 62-67",
+ blurb:
+ "Five passages from Peter's two catholic epistles, on the living hope born from the Resurrection, the royal priesthood of the Church, the duty of shepherds, the casting of every care on God, and the call to grow in grace.",
+ topics: ["Hope", "Church", "Priesthood", "Humility", "Suffering", "Scripture"],
+ },
+ ],
+ },
 ];
 
 export function getSaint(slug: string): Saint | null {
