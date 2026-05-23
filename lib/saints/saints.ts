@@ -1141,7 +1141,34 @@ export const SAINTS: Saint[] = [
  "He returned in triumph at the death of the Arian emperor Valens, and after the repose of Basil he came into his own as a theologian of the first rank. At the Second Ecumenical Council in Constantinople in 381 he was a leading defender of the divinity of the Holy Spirit, and the council named him a touchstone of orthodoxy for the churches of Pontus.",
  "His writings, the great catechetical oration, the treatise on the soul and the resurrection composed as a dialogue with the dying Macrina, the Life of Moses, the homilies on the Song of Songs, and his works against Eunomius, explore the endless ascent of the soul toward a God who can never be exhausted. He reposed around 395, and the Church honors him on the tenth of January among the great Fathers and teachers of the Cappadocian age.",
  ],
- works: [],
+ quotes: [
+ {
+ text: "Concepts create idols; only wonder grasps anything.",
+ source: "Attributed; the saying preserved in the tradition of the Cappadocian Fathers",
+ },
+ {
+ text: "For this is the true vision of God, never to be satisfied in the desire to see Him.",
+ source: "Life of Moses II.239",
+ },
+ ],
+ works: [
+ {
+ slug: "the-great-catechism",
+ title: "The Great Catechism",
+ subtitle: "Oratio Catechetica Magna — the Trinity, the Incarnation, the Sacraments, in forty chapters",
+ year: "c. 385",
+ blurb:
+ "Gregory's catechist's notebook: how to teach the Trinity, the Incarnation, the Atonement, and the Sacraments to Jews, pagans, Manicheans, and Arians. One of the great systematic theological works of the fourth century, alongside Athanasius on the Incarnation and Basil on the Holy Spirit.",
+ topics: [
+ "Trinity",
+ "Incarnation",
+ "Atonement",
+ "Sacraments",
+ "Apologetics",
+ "Catechesis",
+ ],
+ },
+ ],
  },
  {
  slug: "paisios-the-athonite",
@@ -1883,6 +1910,22 @@ export const SAINTS: Saint[] = [
  "Eucharist",
  "Episcopate",
  "Perseverance",
+ ],
+ },
+ {
+ slug: "the-martyrdom-of-polycarp",
+ title: "The Martyrdom of Polycarp",
+ subtitle: "The Encyclical Epistle of the Church at Smyrna",
+ year: "c. 155 (events) / c. 156 (encyclical)",
+ blurb:
+ "The earliest surviving Christian martyrology, written by the church of Smyrna to the church of Philomelium within a year of Polycarp's death. The eyewitness account of his arrest, his \"eighty and six years I have served Him\" before the proconsul, his prayer at the pyre, and the burning that became the model for every Christian martyrdom thereafter. The first known use of \"birthday\" for a martyr's day of death.",
+ topics: [
+ "Martyrdom",
+ "Witness",
+ "Roman Persecution",
+ "Episcopate",
+ "Eucharist",
+ "Birthday of a Martyr",
  ],
  },
  {

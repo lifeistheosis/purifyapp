@@ -89,14 +89,20 @@ The three works imported this commit demonstrate the pattern. Repeat as follows 
 
 All seven Ignatian epistles are now complete in the corpus. The Apostolic Fathers gap is now closed on the Ignatian side. Polycarp still needs *The Martyrdom of Polycarp* to complete his pair.
 
+**Closed in the third import commit (2026-05-23, two works — one large):**
+
+- Polycarp/The Martyrdom of Polycarp — new, 23 sections (salutation + 22 chapters). The earliest surviving Christian martyrology, the eyewitness encyclical of the church of Smyrna. With the Letter to the Philippians already shipped, Polycarp's primary-text corpus is now complete on the PD side.
+- Gregory of Nyssa/The Great Catechism — new, 42 sections (framing + Prologue + 40 chapters). Gregory's catechist's notebook on Trinity, Incarnation, Atonement, Sacraments. Closes Gregory of Nyssa's 0-works gap with one of the great systematic theological works of the fourth century. ~120,000 characters of primary text — the largest single import yet, sourced from NPNF Series II Vol 5 (Schaff & Wace, 1893) via per-chapter Wikisource pages.
+
 **Next sprint (next ~3 weeks, in priority order):**
 
-1. The Martyrdom of Polycarp — completes the Polycarp pair, gives Purify its first surviving martyrology.
-2. Gregory of Nyssa — Great Catechetical Oration. Currently 0 works. The Cappadocian gap.
-3. Basil the Great — On the Holy Spirit. Currently 1 work (Hexaemeron). The pneumatology gap.
-4. John of Damascus — full Exposition of the Orthodox Faith (4 books). Currently 1 excerpt.
-5. Augustine — Confessions Books II-X (currently Book I only).
+1. Basil the Great — On the Holy Spirit. Currently 1 work (Hexaemeron). The pneumatology gap — Basil's most-cited dogmatic treatise, the foundation of the Church's confession of the Spirit as God.
+2. John of Damascus — full Exposition of the Orthodox Faith (4 books). Currently 1 excerpt. The synthesis of the patristic age.
+3. Augustine — Confessions Books II-X (currently Book I only).
+4. Cyril of Alexandria — full Commentary on John (currently selections only); or On the Unity of Christ.
+5. Irenaeus — Against Heresies Books I and II (currently III-V excerpts only); or Proof of the Apostolic Preaching as a complete short work.
 6. Expand the new saints' corpora — for Michael, add Chrysostom's homilies on the angels (NPNF1, PD); for Nektarios, his short PD treatises on the path of repentance; for Florian, no further primary text but the entry could grow with a hymnographic compilation as new PD English appears.
+7. Add Cyril of Jerusalem to the registry with the 23 Catechetical Lectures (NPNF2 Vol 7, PD) — standard fourth-century catechumenate text.
 
 **Later sprints (out of this audit cycle):**
 
