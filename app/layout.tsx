@@ -34,11 +34,23 @@ const cardo = Cardo({
 });
 
 // The deployed origin, used to resolve every absolute URL Next emits for us
-// (Open Graph image, Twitter card image, canonicals). Driven by an env var so
-// the same build serves the Render preview AND the future production domain
-// without code changes; falls back to the current Render host.
+// (Open Graph image, Twitter card image, canonicals).
+//
+// Precedence:
+//   1. NEXT_PUBLIC_SITE_URL — explicit override (set only when we want a
+//      custom domain like purify.app).
+//   2. RENDER_EXTERNAL_URL  — auto-injected by Render for every web service
+//      (e.g. https://purifyapp.onrender.com); the right answer on Render
+//      previews and the current production deploy.
+//   3. Local dev fallback   — the current Render host string.
+//
+// If link previews are pointing at the wrong domain, the culprit is almost
+// always NEXT_PUBLIC_SITE_URL set to that wrong domain in Render's
+// Environment tab; unset it and Render's own URL takes over.
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://purifyapp.onrender.com";
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  process.env.RENDER_EXTERNAL_URL ??
+  "https://purifyapp.onrender.com";
 
 export const metadata: Metadata = {
  metadataBase: new URL(SITE_URL),
