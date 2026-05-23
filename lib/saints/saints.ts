@@ -1124,6 +1124,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-peter",
  byname: "Chief of the Apostles",
+ iconUrl: "/saints/icons/apostle-peter.jpg",
  name: "Holy Apostle Peter",
  epithet: "Chief of the Apostles · The Rock",
  born: "c. AD 1 (Bethsaida of Galilee)",
