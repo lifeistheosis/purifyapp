@@ -1180,6 +1180,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-matthew",
  byname: "The Evangelist",
+ iconUrl: "/saints/icons/apostle-matthew.jpg",
  name: "Holy Apostle and Evangelist Matthew",
  epithet: "Evangelist · Levi the Publican",
  born: "1st century (Galilee)",
@@ -1226,6 +1227,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-john",
  byname: "The Theologian",
+ iconUrl: "/saints/icons/apostle-john.jpg",
  name: "Holy Apostle and Evangelist John",
  epithet: "The Theologian · The Beloved Disciple",
  born: "1st century (Bethsaida of Galilee)",
@@ -1284,6 +1286,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-thomas",
  byname: "Didymus, the Twin",
+ iconUrl: "/saints/icons/apostle-thomas.jpg",
  name: "Holy Apostle Thomas",
  epithet: "Apostle to India · The Twin",
  born: "1st century (Galilee)",
