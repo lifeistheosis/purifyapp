@@ -32,6 +32,9 @@ export const AUTHOR_ICONS: Record<string, string> = {
   "St. Symeon": "/saints/icons/symeon-the-new-theologian.jpg",
   "St. Seraphim of Sarov": "/saints/icons/seraphim-of-sarov.jpg",
   "St. Seraphim": "/saints/icons/seraphim-of-sarov.jpg",
+  "St. Paisios the Athonite": "/saints/icons/paisios-the-athonite.jpg",
+  "St. Paisios": "/saints/icons/paisios-the-athonite.jpg",
+  "Elder Paisios": "/saints/icons/paisios-the-athonite.jpg",
 
   // v2.5: Apostle Paul, Mary of Egypt, Nicholas the Wonderworker.
   "Holy Apostle Paul": "/saints/icons/apostle-paul.jpg",

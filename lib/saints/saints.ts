@@ -1059,6 +1059,67 @@ export const SAINTS: Saint[] = [
  ],
  works: [],
  },
+ {
+ slug: "paisios-the-athonite",
+ byname: "Elder of the Holy Mountain",
+ name: "St. Paisios the Athonite",
+ epithet: "Hieromonk of Mount Athos · Elder of Panagouda",
+ born: "July 25, 1924 (Farasa, Cappadocia)",
+ reposed: "July 12, 1994 (Souroti, near Thessaloniki)",
+ feastDays: ["July 12"],
+ see: "Mount Athos (Panagouda, dependency of Koutloumousiou)",
+ shortBio:
+ "The Cappadocian-born monk of Mount Athos whose hermitage at Panagouda was for twenty-five years a place of pilgrimage for tens of thousands seeking counsel, and who, since his glorification in 2015, has been venerated as one of the great elders of the modern Orthodox world.",
+ life: [
+ "Arsenios Eznepidis was born in the village of Farasa in Cappadocia on the twenty-fifth of July, 1924, and baptized by the saintly Elder Arsenios of Farasa, who foretold that the boy would one day become a monk. Less than a month after his baptism his family was uprooted by the population exchange between Greece and Turkey, and they settled at Konitsa in Epirus, where he grew up.",
+ "He learned carpentry, served in the Greek army as a signalman during the civil war of 1948-1949, and from his youth practiced a strict prayer rule and read the lives of the saints. After his military service he sought out the monastic life, first at the monastery of Esphigmenou on Mount Athos in 1950, then at Philotheou, and was tonsured to the small schema with the name Paisios in 1954.",
+ "From 1958 to 1962 he was sent at the bidding of the Metropolitan to help revive monastic life at the dilapidated monastery of Stomion in Konitsa; from 1962 to 1964 he lived on Mount Sinai, struggling in solitude in the cave of Sts. Galaktion and Episteme; and in 1964 he returned to Athos for good. After years at the Iviron skete and at Katounakia, in 1979 he settled at the small cell of Panagouda, a dependency of the monastery of Koutloumousiou, where he was to spend the remaining fifteen years of his life.",
+ "There, against all the inclinations of his solitary heart, he gave himself to the multitudes who climbed the steep path to his door, pilgrims from every corner of Greece and from many nations, sometimes a thousand a day in the summer months. He spoke with each as if there were no other, healed the sick by his prayer, foresaw the difficulties of his visitors, and refused all gifts but a little flour for the prosphora.",
+ "He suffered from cancer in his last years and bore it without painkillers, as he had borne every cross. He was taken from Panagouda to the women's monastery of St. John the Theologian at Souroti, near Thessaloniki, which had grown up under his guidance, and there he reposed on the twelfth of July, 1994. His grave at Souroti has been since that day a place of unbroken pilgrimage. The Ecumenical Patriarchate canonized him on the thirteenth of January, 2015, naming his feast on the day of his repose.",
+ ],
+ quotes: [
+ {
+ text: "Prayer must come from the heart, with pain. When one prays for another with pain, that prayer is heard.",
+ source: "Spiritual Counsels, on pain of heart",
+ href: "/saints/paisios-the-athonite/spiritual-counsels",
+ },
+ {
+ text: "When you have done what you can, leave the rest to God. He does what we cannot do, but He will not do what we can.",
+ source: "Spiritual Counsels, on trust in God",
+ href: "/saints/paisios-the-athonite/spiritual-counsels",
+ },
+ {
+ text: "Do not be afraid. Whatever comes, God permits it for our good. Only let us keep our soul close to Him.",
+ source: "Spiritual Counsels, on the times",
+ href: "/saints/paisios-the-athonite/spiritual-counsels",
+ },
+ {
+ text: "If you love Christ, you will not be able to keep silent for joy.",
+ source: "Epistles, on joy in the cell",
+ href: "/saints/paisios-the-athonite/epistles",
+ },
+ ],
+ works: [
+ {
+ slug: "spiritual-counsels",
+ title: "Spiritual Counsels",
+ subtitle: "Selected sayings",
+ year: "Recorded 1968-1994",
+ blurb:
+ "Brief sayings of the Elder of Panagouda on prayer with pain, trust in God's providence, love of neighbor, humility, and the spirit of our own age, gathered from the oral tradition of his pilgrims.",
+ topics: ["Prayer", "Humility", "Trust", "Love", "Watchfulness"],
+ },
+ {
+ slug: "epistles",
+ title: "Epistles",
+ subtitle: "Selected letters of spiritual counsel",
+ year: "c. 1965-1994",
+ blurb:
+ "Letters to the nuns of Souroti and to spiritual children in the world, on perseverance in the struggle, prayer for those who have strayed, and the joy that is the perfume of the Holy Spirit.",
+ topics: ["Repentance", "Perseverance", "Family", "Joy", "Holy Spirit"],
+ },
+ ],
+ },
 ];
 
 export function getSaint(slug: string): Saint | null {
