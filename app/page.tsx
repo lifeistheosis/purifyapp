@@ -106,18 +106,13 @@ export default function Home() {
  →
  </span>
  </Link>
- <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/70 mb-4">
- Prayer · Scripture · Saints · The Sacred Calendar
- </p>
  <h1 className="font-sans text-[40px] md:text-[52px] lg:text-[64px] font-bold leading-[1.02] tracking-[-0.025em]">
  The whole Orthodox life,
  <br className="hidden sm:block" /> in one quiet place.
  </h1>
  <p className="font-sans text-[17px] md:text-[18px] text-paper/85 mt-5 max-w-[560px]">
- The Morning and Evening Rules. The Septuagint and the King James
- with the Fathers, verse by verse. The lives of the saints and
- their writings in full. Every day of the Church&rsquo;s year, fast
- and feast. Free. No tracking. Yours to keep.
+ Prayer, Scripture, saints, and the sacred Calendar. Free. No
+ tracking. Yours to keep.
  </p>
  <div className="mt-7 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
  <ComingSoonCTA variant="inverse">
