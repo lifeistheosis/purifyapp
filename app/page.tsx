@@ -6,8 +6,6 @@ import { SectionScroller } from "@/components/SectionScroller";
 import { IconCornerCard } from "@/components/marketing/IconCornerCard";
 import { SeasonBanner } from "@/components/marketing/SeasonBanner";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
-import { DailyWisdom } from "@/components/marketing/DailyWisdom";
-import { TodayStrip } from "@/components/marketing/TodayStrip";
 import { Cross } from "@/components/ui/icons/Cross";
 
 // ISR so the live home-page surface (Today card, daily wisdom, season
@@ -139,15 +137,8 @@ export default function Home() {
  </div>
  </section>
 
- {/* TODAY strip, a live four-tile rail (saint of the day, fast, a reading,
- Pascha). Turns the landing into a small dashboard above the fold. */}
- <TodayStrip />
-
  {/* Season banner, auto-surfaces during major Orthodox seasons. */}
  <SeasonBanner />
-
- {/* Daily wisdom, a Scripture verse or a Father's saying, rotating daily. */}
- <DailyWisdom />
 
  {/* FEATURES */}
  <section className={`${sectionBase} bg-night`}>
