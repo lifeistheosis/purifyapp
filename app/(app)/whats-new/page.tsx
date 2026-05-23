@@ -19,6 +19,47 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v5.7",
+ kind: "The Apostolic Fathers, the whole way through",
+ date: "May 23, 2026",
+ blurb:
+ "The largest patristic content burst yet. All seven authentic letters of St. Ignatius of Antioch are now present in full, in the public-domain Roberts-Donaldson translation, alongside the only writing of his fellow disciple of John, St. Polycarp's letter to the Philippians, and the eyewitness encyclical of the church of Smyrna that became the model for every Christian martyrology thereafter. St. Gregory of Nyssa's Great Catechism, one of the three or four most important systematic theological works of the Eastern fourth century, closes his zero-works gap in a single forty-chapter import. Three new saints join the registry: the Holy Archangel Michael, the great Captain of the Bodiless Hosts; St. Nektarios of Aegina, the most-loved modern Greek wonderworker; and St. Florian of Lorch, the Roman officer drowned with a millstone in 304, received in the East as a saint of the Undivided Church.",
+ items: [
+ "All seven authentic Ignatian epistles now read in full on his profile: to the Ephesians (22 sections), Magnesians (16), Trallians (14), Romans (11), Philadelphians (12), Smyrnaeans (14), and to Polycarp (9). The Eucharist as the medicine of immortality, the three mysteries wrought in silence by God, \"Lay hold, handle me, and see that I am not an incorporeal spirit\" — all in place. Roberts-Donaldson translation, ANF Vol. 1 (1885), public domain.",
+ "Polycarp of Smyrna's primary corpus complete on the PD side: his short letter to the Philippians (15 sections), the only writing to come down to us from his hand, and The Martyrdom of Polycarp (23 sections), the earliest surviving Christian martyrology, written by the church of Smyrna to the church of Philomelium within a year of the events. Contains the famous \"Eighty and six years have I served Him\" before the proconsul, the prayer at the pyre, and the first known use of the word \"birthday\" for a martyr's day of death.",
+ "St. Gregory of Nyssa's The Great Catechism added in full: the framing intro plus the Prologue and all forty chapters of his catechist's notebook on Trinity, Incarnation, Atonement, and Sacraments. Closes a zero-works gap on one of the great Cappadocian Fathers. Around 120 KB of primary text from NPNF Series II, Vol. 5 (Schaff and Wace, 1893), assembled from the per-chapter Wikisource transcriptions.",
+ "The Holy Archangel Michael added to the registry with a full life from Daniel, Jude, and the Apocalypse, the November 8 Synaxis, and the September 6 Miracle at Chonae. First work: Hymns to the Bodiless Hosts (the Apolytikion, Kontakion, Megalynalia, and Theotokion appointed for the Synaxis, in the public-domain English of Hapgood's 1906 Service Book).",
+ "St. Nektarios of Aegina added with a full life from his birth at Selybria in 1846 through his unjust deposition from Pentapolis, his fifteen years as director of the Rizareios School, and the long illness that ended on the night of November 8/9, 1920. First work: Apolytikion and the Rule of Life, the festal hymns authorized at his 1961 glorification together with the short Rule he gave the sisters of the Holy Trinity Monastery on Aegina.",
+ "St. Florian of Lorch added as a pre-Schism Western martyr received in the East: the Roman officer in Noricum who left his post to stand with the imprisoned Christian soldiers at Lauriacum, was scourged and drowned with a millstone in the river Enns in 304. Venerated in the Polish Autocephalous Orthodox Church and other Slavic Orthodox jurisdictions among the saints of the Undivided Church. First work: The Passion of St. Florian, drawn from the Acta Sanctorum and the long PD English tradition.",
+ "Calendar wired: November 8 (Synaxis of the Archangel), September 6 (Miracle at Chonae), and November 9 (St. Nektarios) now deep-link from their commemoration entries straight into the new registry profiles. May 4 gains a new entry for St. Florian alongside the existing commemorations of Pelagia of Tarsus, Silvanus, and Hilary.",
+ "Footer + home banner + /whats-new chip step to v5.7.",
+ ],
+ },
+ {
+ version: "v5.6",
+ kind: "Credibility, the floor under the work",
+ date: "May 23, 2026",
+ blurb:
+ "A quiet release that wouldn't be worth a chip on the home page if it weren't the prerequisite for everything that follows. The first published privacy policy, audited line-by-line against the code that records page visits. A working Continuous Integration pipeline that runs every lint rule, every type check, every Pascha-date assertion, every end-to-end smoke test, every accessibility check, and every Lighthouse performance budget on every push to the main branch. A real architecture document a new contributor can read in fifteen minutes. A contributor's guide that says no language model wrote any saint biography on this site, and that every line of patristic text is traceable to a public-domain edition. A page-long honest audit of the whole site on a ten-criterion rubric, in the repo, for anyone who cares to read it. The site is not measurably more beautiful after this release. It is measurably more serious.",
+ items: [
+ "A new /privacy page: ten claims about what Purify records, what it keeps, and for how long, each one cross-checked against the actual code path in app/api/track/route.ts and lib/analytics/geo.ts. No third-party trackers anywhere on the site: no Google Analytics, no Meta Pixel, no Sentry tied to user identity, no PostHog, no Mixpanel, no Amplitude.",
+ "Twenty-two named AI training and assistant crawlers disallowed in robots.txt: the original fourteen (GPTBot, OAI-SearchBot, ChatGPT-User, CCBot, Google-Extended, anthropic-ai, ClaudeBot, Claude-Web, PerplexityBot, Applebot-Extended, Bytespider, Amazonbot, Meta-ExternalAgent, cohere-ai) joined by Diffbot, FacebookBot, YouBot, Timpi, MistralAI-User, DuckAssistBot, Scrapy, and PanguBot. The privacy page names all twenty-two by name.",
+ "A 90-day analytics retention window: the prune statement, the pg_cron schedule, the verification queries, and an activation log file in the repo where the operator who runs the cron in the production Supabase console drops in the proof. The privacy page only promises 90 days because the policy is written, not aspirational.",
+ "End-to-end test suite using Playwright with axe-core accessibility assertions on every rendered page: seven smoke specs covering the home page, the Bible reader, today's prayer rule, the calendar with deep-linked dates, a saint profile and work, the four meta pages (about, what's new, privacy, support), and the signed-out account page.",
+ "Lighthouse CI configured against four representative URLs with strict thresholds: Accessibility at 95 (error), Performance at 85, Best Practices at 95, SEO at 95 — every page on the deploy preview must clear all four to ship.",
+ "A GitHub Actions workflow that runs on every push and pull request: install, lint, typecheck, Vitest unit tests, full Next.js build, Playwright browser install, smoke suite + axe, Lighthouse CI. CI is now what gates a green deploy, not the operator's memory.",
+ "ARCHITECTURE.md: a one-page mapping a new contributor can read in fifteen minutes covering the stack (Next 16 App Router, React 19, Tailwind v4, Supabase, Render), every major route segment with its purpose, the four data layers, the rendering strategy (SSG for Bible chapters and saints, ISR for the home and calendar), and the build and deploy story.",
+ "CONTRIBUTING.md: the ethos, the local setup, the dev loop, the branch and PR flow, and the strict content rules: scripture and Fathers must be public-domain or licensed with a citation; saint biographies are drawn from established hagiographies and never generated by a language model; prayers are the common Jordanville, St. Tikhon's, or Hapgood wording; icons are Wikimedia Commons public-domain with the iconographer attributed where known.",
+ "AUDIT.md at the repository root: a public ten-criterion rubric (content depth, source transparency, UX polish, performance, privacy and compliance, tests, architecture documentation, contributor posture, distinctiveness, accessibility) plus a five-criterion clergy-vetter lens (doctrinal precision, liturgical accuracy, tone and voice, language register, citation density on contested topics) applied to the whole site, scored honestly. SAINTS-AUDIT.md adds a per-saint gap map across all 47 registry entries against the realistic public-domain ceiling.",
+ "ESLint plugin jsx-a11y wired into the project's flat config (with a small Next 16 workaround for the redefined-plugin error), and every resulting violation either fixed in code or suppressed with a justifying comment.",
+ "A new section on /about, On contested questions: a single paragraph stating that Purify does not adjudicate questions the canonical Orthodox jurisdictions answer differently — calendar reckoning, fasting typikon, jurisdictional primacy, inter-confessional polemics — and that the silence is principled, not avoidant. Where you need a judgment, ask a priest.",
+ "Vitest infrastructure plus a unit test file covering the Pascha algorithm in lib/calendar/orthodox.ts: orthodoxPascha verified against canonical published dates for 2024 through 2030, fastingStatus checked on Holy Friday, Bright Monday, and an ordinary-time Wednesday, paschaInfo countdown and roll-over both asserted. Thirteen assertions; previously zero coverage on the highest-stakes math in the codebase.",
+ "Three account-dashboard components (ProfileActivity, ProfileSettings, ProfileSyncStatus) converted from a hydrate-in-effect useState/useEffect pattern to useSyncExternalStore — the React 19 recommended path for localStorage subscriptions, and the reason CI lint is now green.",
+ "The calendar-style preference hook split into a client-only module (lib/calendar/useCalendarStyleDefault.ts) so that the server-rendered calendar page can still import the cookie-reading helpers from styleDefault.ts without tripping the Next 16 \"useSyncExternalStore in a server component\" error.",
+ "Footer + home banner + /whats-new chip step to v5.6 (then immediately to v5.7 for the saints content burst that landed alongside).",
+ ],
+ },
+ {
  version: "v5.5",
  kind: "The full company of the Twelve",
  date: "May 23, 2026",
@@ -545,63 +586,87 @@ export default function WhatsNewPage() {
  What&rsquo;s new
  </p>
  <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
- v5.5 &middot; The full company of the Twelve
+ v5.7 &middot; The Apostolic Fathers, the whole way through
  </p>
  </div>
 
  <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- The Twelve, complete; and the chain unbroken.
+ The chain from John to the Fathers, in their own words.
  </h1>
 
  <p className="mt-8 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- If you are new here, welcome. We&rsquo;re so glad you came. Purify
- has been quietly growing in the background, and v5.5 is the release
- where the saints section grows up. The Twelve who walked with the
- Lord are now all here, every one with a profile, a deep-linked work,
- and an icon, and you can read their words in the Gospels and the
- epistles they left behind.
+ If you are new here, welcome. We&rsquo;re so glad you came. Two
+ releases landed together this evening. v5.6 is the quiet one: the
+ first published privacy policy, a working continuous integration
+ pipeline that runs every test on every push, a proper architecture
+ document, a contributor&rsquo;s guide that forbids language-model
+ saint biographies in writing, and an honest ten-criterion audit of
+ the whole site committed to the repository for anyone who wants to
+ read it. v5.7 is the loud one: the Apostolic Fathers, all the way
+ through, in the words they wrote in chains.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- Around them gather others we&rsquo;ve long meant to add. St. Mary
- Magdalene, the Myrrhbearer, first witness of the Resurrection and
- apostle to the apostles, with the scenes in the garden and the old
- tradition of the Paschal egg. St. Paisios the Athonite, the Cappadocian
- elder of Panagouda, whose counsels on prayer with pain, trust in God,
- and joy in the cell come down from his pilgrims. And four of the
- direct disciples of the apostolic generation: Anianus the cobbler,
- whom St. Mark healed and who succeeded him at Alexandria; and
- Polycarp, Papias, and Prochorus, the three whom John the Theologian
- himself taught.
+ St. Ignatius of Antioch&rsquo;s seven authentic letters, all of
+ them, are now on the site in the public-domain Roberts-Donaldson
+ translation: to the Ephesians, to the Magnesians, to the Trallians,
+ to the Romans, to the Philadelphians, to the Smyrnaeans, and to
+ Polycarp. The famous lines are all here in their place: the
+ Eucharist as the medicine of immortality; the three mysteries
+ wrought in silence by God; &ldquo;I am the wheat of God, and let
+ me be ground by the teeth of the wild beasts, that I may be found
+ the pure bread of Christ&rdquo;; the risen Lord&rsquo;s &ldquo;Lay
+ hold, handle me, and see that I am not an incorporeal spirit.&rdquo;
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- You can now see the chain. Every saint profile has a new
- &ldquo;Disciples and successors&rdquo; section, with a short note
- on each relationship and a tap straight through to the disciple&rsquo;s
- own page. Open the Apostle John, and you&rsquo;ll find Polycarp; open
- Polycarp, and you&rsquo;ll find Irenaeus of Lyons; open Irenaeus, and
- you stand at the doorway to the second-century Fathers. The thread
- from the upper room to the patristic age, the same thread the Church
- has held all along, is finally something you can walk with your
- finger.
+ Polycarp now has both of the works the Church has from him: the
+ short letter he wrote to the Philippians within months of
+ Ignatius&rsquo;s martyrdom, the only writing of his to come down
+ to us; and The Martyrdom of Polycarp, the encyclical the church of
+ Smyrna sent to the church of Philomelium about the burning of
+ their old bishop in the stadium. It is the earliest surviving
+ Christian martyrology, the first known use of the word
+ &ldquo;birthday&rdquo; for the death-day of a martyr, and the
+ model that every later acts of the martyrs followed.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- The front of the site has been quieted at the same time. The harsh
- black-to-white gradient on the home page is gone, replaced with a
- softer twilight blue; the hero says less and means more; the small
- dashboard tiles have stepped aside. And the Account button in the
- app shell, which had a habit of vanishing on every page that
- wasn&rsquo;t the front door, now stays where you can find it.
+ St. Gregory of Nyssa, the youngest of the great Cappadocians, who
+ until tonight had a profile but no readable work, now has The
+ Great Catechism in full: the Prologue and forty chapters of his
+ catechist&rsquo;s notebook on the Trinity, the Incarnation, the
+ Atonement, and the Sacraments. Around 120 KB of primary text,
+ from the 1893 Schaff and Wace edition, assembled from forty-one
+ separate transcription pages. One of the three or four most
+ important systematic theological works of the Eastern fourth
+ century, alongside St. Athanasius on the Incarnation and
+ St. Basil on the Holy Spirit.
+ </p>
+
+ <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ And three new saints join the registry. The Holy Archangel
+ Michael, the great Captain of the Bodiless Hosts, with his life
+ from Daniel, Jude, and the Apocalypse, the November 8 Synaxis,
+ and the Miracle at Chonae. St. Nektarios of Aegina, the
+ most-loved modern wonderworker of the Greek-speaking world,
+ unjustly deposed from his see, who spent the rest of his life
+ teaching poor seminarians and the sisters of his small Aegina
+ convent, and was glorified in 1961. And St. Florian of Lorch, the
+ Roman officer who left his post to stand with the imprisoned
+ Christian soldiers at Lauriacum and was drowned with a millstone
+ in 304: a pre-Schism Western martyr received in the East as a
+ saint of the Undivided Church.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
  The promise underneath has not moved. Purify is free. It is
  ad-free. There is nothing to buy and no one to track you, only
  prayer, Scripture, the saints, and the year of the Church laid
- out plainly. Pray with the Church. Read with the Fathers. Walk the
- year. We&rsquo;re honored you would do any of it with us.
+ out plainly. The privacy page in v5.6 spells out every field and
+ every third party by name. Pray with the Church. Read with the
+ Fathers. Walk the year. We&rsquo;re honored you would do any of
+ it with us.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
