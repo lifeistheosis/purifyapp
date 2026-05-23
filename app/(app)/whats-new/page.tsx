@@ -545,48 +545,63 @@ export default function WhatsNewPage() {
  What&rsquo;s new
  </p>
  <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
- v5.4 &middot; Account, made real
+ v5.5 &middot; The full company of the Twelve
  </p>
  </div>
 
  <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Your translation, and the words behind it.
+ The Twelve, complete; and the chain unbroken.
  </h1>
 
  <p className="mt-8 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- If you are new here, welcome. v5.0 opens the Scriptures wider. You
- can now read the New Testament in the translation you grew up with,
- the New King James, the New International, or the New Living, each
- shown exactly as its publishers set it, footnotes and all. They are
- fetched fresh, never altered, and carry their proper attribution,
- held under the license of the American Bible Society and Biblica.
+ If you are new here, welcome. We&rsquo;re so glad you came. Purify
+ has been quietly growing in the background, and v5.5 is the release
+ where the saints section grows up. The Twelve who walked with the
+ Lord are now all here, every one with a profile, a deep-linked work,
+ and an icon, and you can read their words in the Gospels and the
+ epistles they left behind.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- And if you want to go behind the English, you can. On the
- public-domain text the original Greek now sits word for word beside
- it: hover a word in either column and its partner lights up, so you
- can see exactly which Greek stands behind your &ldquo;Word,&rdquo;
- your &ldquo;grace,&rdquo; your &ldquo;love.&rdquo; The Fathers, of
- course, are still in the margin, reading along.
+ Around them gather others we&rsquo;ve long meant to add. St. Mary
+ Magdalene, the Myrrhbearer, first witness of the Resurrection and
+ apostle to the apostles, with the scenes in the garden and the old
+ tradition of the Paschal egg. St. Paisios the Athonite, the Cappadocian
+ elder of Panagouda, whose counsels on prayer with pain, trust in God,
+ and joy in the cell come down from his pilgrims. And four of the
+ direct disciples of the apostolic generation: Anianus the cobbler,
+ whom St. Mark healed and who succeeded him at Alexandria; and
+ Polycarp, Papias, and Prochorus, the three whom John the Theologian
+ himself taught.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- The lives keep deepening. St. Athanasius the Great, who stood almost
- alone for the faith of Nicaea, now has a full profile: his story,
- his sayings, and six of his works to read in full, from On the
- Incarnation to his Life of Antony, the little book that carried
- monasticism across the world, and which now sits on St. Anthony&rsquo;s
- page as well.
+ You can now see the chain. Every saint profile has a new
+ &ldquo;Disciples and successors&rdquo; section, with a short note
+ on each relationship and a tap straight through to the disciple&rsquo;s
+ own page. Open the Apostle John, and you&rsquo;ll find Polycarp; open
+ Polycarp, and you&rsquo;ll find Irenaeus of Lyons; open Irenaeus, and
+ you stand at the doorway to the second-century Fathers. The thread
+ from the upper room to the patristic age, the same thread the Church
+ has held all along, is finally something you can walk with your
+ finger.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- One more thing, and we mean it: Purify is free, and it is staying
- free. The old pricing tier and the marketplace are gone for good,
- and the licenses we hold for the Scriptures bind us to keep it that
- way. There is nothing to buy here, only Someone to seek. The Morning
- and Evening Rules, the Jesus Prayer, and the Today screen are all
- still here, waiting whenever you rise and whenever you lie down.
+ The front of the site has been quieted at the same time. The harsh
+ black-to-white gradient on the home page is gone, replaced with a
+ softer twilight blue; the hero says less and means more; the small
+ dashboard tiles have stepped aside. And the Account button in the
+ app shell, which had a habit of vanishing on every page that
+ wasn&rsquo;t the front door, now stays where you can find it.
+ </p>
+
+ <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ The promise underneath has not moved. Purify is free. It is
+ ad-free. There is nothing to buy and no one to track you, only
+ prayer, Scripture, the saints, and the year of the Church laid
+ out plainly. Pray with the Church. Read with the Fathers. Walk the
+ year. We&rsquo;re honored you would do any of it with us.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
