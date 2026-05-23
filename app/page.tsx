@@ -7,36 +7,43 @@ import { IconCornerCard } from "@/components/marketing/IconCornerCard";
 import { SeasonBanner } from "@/components/marketing/SeasonBanner";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
 import { DailyWisdom } from "@/components/marketing/DailyWisdom";
+import { TodayStrip } from "@/components/marketing/TodayStrip";
 import { Cross } from "@/components/ui/icons/Cross";
 
 // ISR so the live home-page surface (Today card, daily wisdom, season
 // banner, paschal greeting) refreshes daily without a redeploy.
 export const revalidate = 3600;
 
+// Four pillars, equal billing — Scripture, Saints, Calendar, Prayer.
 const features = [
  {
- title: "Daily prayer",
- body: "Begin and end each day with guided morning and evening prayer.",
+ title: "Read with the Fathers",
+ body: "The Septuagint and the King James, the Greek beside the English, with St. John Chrysostom verse by verse across fourteen books of the New Testament.",
  },
  {
- title: "Scripture & saints",
- body: "Read the appointed Gospel, Epistle, and life of the saint for every day.",
+ title: "Lives of the saints",
+ body: "Twenty-four profiles, with their writings to read in full, from Chrysostom and Athanasius to the Theotokos and the desert fathers.",
  },
  {
- title: "Quiet reflection",
- body: "Short meditations on the Jesus Prayer, the Psalms, and the Fathers.",
+ title: "The Sacred Calendar",
+ body: "Every day of the Church's year, the saint and the fast, in the New and Old (Julian) reckoning. The whole menologion at a glance.",
+ },
+ {
+ title: "Prayer that breathes",
+ body: "The Morning and Evening Rules, the Jesus Prayer, and the prayers that have carried Christians for sixteen centuries.",
  },
 ];
 
+// Two per pillar — Scripture, Saints, Calendar, Prayer.
 const categories: { label: string; href: string }[] = [
- { label: "Morning prayers", href: "/prayers/morning" },
- { label: "Evening prayers", href: "/prayers/evening" },
- { label: "Akathists", href: "/prayers" },
- { label: "The Jesus Prayer", href: "/prayers/learning/jesus-prayer" },
- { label: "Daily Gospel", href: "/calendar" },
+ { label: "The Gospel of John", href: "/bible/john/1" },
+ { label: "The Psalter", href: "/bible/psalms/1" },
  { label: "Lives of saints", href: "/saints" },
- { label: "Psalter", href: "/bible/psalms/1" },
- { label: "Great Lent", href: "/calendar" },
+ { label: "St. John Chrysostom", href: "/saints/john-chrysostom" },
+ { label: "The Sacred Calendar", href: "/calendar" },
+ { label: "Today", href: "/prayers/today" },
+ { label: "Morning prayers", href: "/prayers/morning" },
+ { label: "The Jesus Prayer", href: "/prayers/learning/jesus-prayer" },
 ];
 
 const challenges: {
@@ -45,6 +52,12 @@ const challenges: {
  body: string;
  href: string;
 }[] = [
+ {
+ eyebrow: "Sixteen centuries of reading",
+ title: "Read the Gospel with Chrysostom",
+ body: "Open the Gospel of John and the eighty-eight homilies of St. John Chrysostom read along with you, verse by verse, in the study rail.",
+ href: "/bible/john/1",
+ },
  {
  eyebrow: "40-day journey",
  title: "Great Lent with the Fathers",
@@ -56,12 +69,6 @@ const challenges: {
  title: "Learn the Jesus Prayer",
  body: "A short prayer that has carried Orthodox Christians for sixteen centuries. Pray it in the breath; the bringing-back is half the work.",
  href: "/prayers/learning/jesus-prayer",
- },
- {
- eyebrow: "For your household",
- title: "A child's first prayers",
- body: "A short, beginner's path through the Sign of the Cross, the Jesus Prayer, the Trisagion, and a simple morning and evening rule.",
- href: "/prayers/learning",
  },
 ];
 
@@ -102,27 +109,28 @@ export default function Home() {
  </span>
  </Link>
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/70 mb-4">
- An Orthodox prayer companion
+ Prayer · Scripture · Saints · The Sacred Calendar
  </p>
  <h1 className="font-sans text-[40px] md:text-[52px] lg:text-[64px] font-bold leading-[1.02] tracking-[-0.025em]">
- Find God&rsquo;s peace in prayer.
+ The whole Orthodox life,
+ <br className="hidden sm:block" /> in one quiet place.
  </h1>
- <p className="font-sans text-[17px] md:text-[18px] text-paper/85 mt-5 max-w-[520px]">
- A quiet place to begin and end the day: the Morning and Evening
- Rules, the Jesus Prayer, the saint and fast of the day, the
- Septuagint and the King James with the Fathers. Free. No
- tracking. Yours to keep.
+ <p className="font-sans text-[17px] md:text-[18px] text-paper/85 mt-5 max-w-[560px]">
+ The Morning and Evening Rules. The Septuagint and the King James
+ with the Fathers, verse by verse. The lives of the saints and
+ their writings in full. Every day of the Church&rsquo;s year, fast
+ and feast. Free. No tracking. Yours to keep.
  </p>
  <div className="mt-7 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
  <ComingSoonCTA variant="inverse">
  Open Purify
  </ComingSoonCTA>
- <ComingSoonCTA
- variant="tertiary"
- className="!text-paper hover:!text-paper/80"
+ <Link
+ href="/calendar"
+ className="font-sans text-[14px] font-medium text-paper/80 hover:text-paper transition-colors"
  >
- Watch the trailer →
- </ComingSoonCTA>
+ See today →
+ </Link>
  </div>
  </div>
  <div className="hidden xl:flex justify-center items-center">
@@ -130,6 +138,10 @@ export default function Home() {
  </div>
  </div>
  </section>
+
+ {/* TODAY strip, a live four-tile rail (saint of the day, fast, a reading,
+ Pascha). Turns the landing into a small dashboard above the fold. */}
+ <TodayStrip />
 
  {/* Season banner, auto-surfaces during major Orthodox seasons. */}
  <SeasonBanner />
@@ -145,16 +157,16 @@ export default function Home() {
  Why Purify
  </p>
  <h2 className="font-sans text-[32px] md:text-[44px] lg:text-[56px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
- A companion for the praying life.
+ Four pillars, one quiet place.
  </h2>
  </div>
- <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+ <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
  {features.map((f) => (
  <div key={f.title} className="text-center">
  <div className="mx-auto mb-6 h-14 w-14 rounded-pill bg-paper/10 flex items-center justify-center text-gold">
  <Cross size={24} />
  </div>
- <h3 className="font-sans text-[24px] font-semibold text-paper mb-3">
+ <h3 className="font-sans text-[22px] font-semibold text-paper mb-3">
  {f.title}
  </h3>
  <p className="font-sans text-body text-paper/70 max-w-[320px] mx-auto">
@@ -186,10 +198,10 @@ export default function Home() {
  <div className="mx-auto max-w-[1240px] w-full">
  <div className="mb-12">
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
- Pray with Purify
+ Where to begin
  </p>
  <h2 className="font-sans text-[32px] md:text-[44px] lg:text-[56px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
- Browse prayers and readings.
+ Begin where you stand.
  </h2>
  </div>
  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -249,8 +261,12 @@ export default function Home() {
  <section className={`${sectionBase} bg-night`}>
  <div className="mx-auto max-w-[1100px] w-full">
  <h2 className="font-sans text-[40px] md:text-[56px] lg:text-[72px] font-bold text-paper leading-[1.02] tracking-[-0.03em]">
- Start your prayer journey today!
+ Open Purify.
  </h2>
+ <p className="mt-6 font-serif text-[18px] md:text-[22px] text-paper/75 leading-[1.6] max-w-[680px]">
+ Begin where you stand, at a prayer, at the saint of the day, at
+ a verse of the Gospel.
+ </p>
  <div className="mt-10">
  <ComingSoonCTA variant="inverse" className="text-[16px]">
  Open Purify
