@@ -2138,6 +2138,417 @@ export const SAINTS: Saint[] = [
  },
  ],
  },
+ {
+ slug: "constantine-the-great",
+ byname: "Equal-to-the-Apostles",
+ iconUrl: "/saints/icons/constantine-the-great.jpg",
+ name: "St. Constantine the Great",
+ epithet: "Equal-to-the-Apostles · First Christian Emperor · Convener of the First Ecumenical Council",
+ born: "c. 272 (Naissus, Moesia Superior)",
+ reposed: "May 22, 337 (near Nicomedia)",
+ feastDays: ["May 21"],
+ see: "Roman Emperor; baptized on his deathbed",
+ shortBio:
+ "The Emperor who saw the sign of the Cross in the sky before the battle of the Milvian Bridge, gave the Church her freedom by the Edict of Milan (313), summoned the First Ecumenical Council at Nicaea, and re-founded New Rome at Constantinople. Venerated together with his mother St. Helena, equal-to-the-apostles, who found the True Cross.",
+ life: [
+ "Constantine was born around the year 272 in Naissus (modern Niš in Serbia), the son of the western Caesar Constantius Chlorus and the holy Helena, an innkeeper's daughter who had quietly been a Christian for most of her life. He grew up as a hostage at the court of Diocletian in the East, where he saw the great persecution of 303 with his own eyes: bishops imprisoned, churches burned, Scriptures put to the fire.",
+ "On the eve of the battle of the Milvian Bridge in October of 312, as he marched against his rival Maxentius for the rule of the Western half of the empire, Constantine saw a sign of the Cross in the sky at midday, together with the words ἐν τούτῳ νίκα, in this sign conquer. He placed the chi-rho on the shields of his army; he won the battle; and within months he had issued, together with his eastern colleague Licinius, the Edict of Milan, which gave the Church her freedom throughout the Roman world.",
+ "When he came to the sole rule of the empire in 324, he summoned the First Ecumenical Council to settle the Arian controversy. He paid the travel of the three hundred and eighteen Fathers from the public treasury; he opened the council in person with an oration in Latin; he assured the Fathers that whatever they decided would be the law of his empire; and at the close he kissed the scars of those who had been confessors in the recent persecutions before he kissed their bishop's rings.",
+ "He re-founded the old Greek town of Byzantium as a new Christian capital, Constantinople, the New Rome. He sent his mother St. Helena to the Holy Land, where she found the True Cross and built the great churches of the Anastasis at the Holy Sepulchre and of the Nativity at Bethlehem. He passed laws on the side of the Faith: the Lord's Day made a public rest, the cross adopted as the imperial standard, the crucifixion abolished as a punishment.",
+ "He delayed his own baptism, in the manner of many fourth-century Christians, until he was on his deathbed in 337. He was baptized at Nicomedia by Eusebius, the same bishop who had been the chief political patron of the Arian party at Nicaea, an irony the historians have not always known what to do with. He died on the Day of Pentecost, May 22, 337, in white baptismal garments. The Church glorified him equal-to-the-apostles, and keeps his memory with his mother St. Helena on May 21.",
+ ],
+ quotes: [
+ {
+ text: "In this sign, conquer.",
+ source: "ἐν τούτῳ νίκα, the words seen with the sign of the Cross before the battle of the Milvian Bridge, October 312, preserved by Eusebius in the Vita Constantini",
+ },
+ ],
+ works: [
+ {
+ slug: "the-vision-and-the-council",
+ title: "The Vision and the Council",
+ subtitle: "From the Life of Constantine by Eusebius of Caesarea",
+ year: "c. 339",
+ blurb:
+ "Three scenes from Eusebius's contemporary biography: the vision of the Cross before the Milvian Bridge, the opening of the Council of Nicaea, and the death on the Day of Pentecost. With the standard apolytikia for the May 21 feast of Constantine and Helena.",
+ topics: ["Equal-to-the-Apostles", "Vision", "Ecumenical Council", "Cross", "Symphonia"],
+ },
+ ],
+ },
+ {
+ slug: "alexander-of-alexandria",
+ byname: "The Confessor",
+ iconUrl: "/saints/icons/alexander-of-alexandria.jpg",
+ name: "St. Alexander of Alexandria",
+ epithet: "Patriarch of Alexandria · Father of Nicaea · Bishop of St. Athanasius",
+ born: "c. 250",
+ reposed: "April 17, 328 (Alexandria)",
+ feastDays: ["May 29", "August 30"],
+ see: "Alexandria",
+ shortBio:
+ "Patriarch of Alexandria who deposed the presbyter Arius in 318, gathered the local synod that anathematized his teaching, and led the anti-Arian party at the First Ecumenical Council in 325. The bishop who ordained the young deacon Athanasius and brought him to Nicaea.",
+ life: [
+ "Alexander succeeded St. Achillas as Patriarch of Alexandria around 312, in the years after the peace of Constantine. He inherited a great church recovering from persecution, and a clergy of immense theological vitality. Among his presbyters was a popular preacher named Arius, who had charge of the church of Baucalis in the city.",
+ "Around the year 318, Alexander preached in his cathedral on the eternity of the Word and on the equal honour due to Father, Son, and Holy Spirit. Arius accused him of crypto-Sabellianism, and began to teach, both in his own church and in letters to the bishops of the East, that the Son was a creature, the first and highest, but a creature: \"there was when He was not.\" Alexander gathered a synod of the bishops of Egypt and Libya, examined the doctrine, deposed Arius from the priesthood, and sent encyclical letters to the bishops of the world warning against his teaching.",
+ "Arius found refuge in Asia Minor and his powerful old fellow-student Eusebius of Nicomedia took up his cause. By 324 the controversy had divided the Eastern half of the empire. When Constantine summoned the Council of Nicaea in 325, Alexander travelled there with his young deacon Athanasius, who had been by his side throughout the controversy and would carry the Nicene Faith forward for the next half-century.",
+ "At Nicaea Alexander led the anti-Arian party. The Synodal Letter from the Council, sent back to the church of Alexandria, is in effect a report to his see of what had been done in his name and in the name of his presbytery. He returned to Alexandria in glory and lived for not quite three more years, dying on April 17, 328. On his deathbed he named Athanasius as his successor, a recommendation the bishops of Egypt ratified within weeks.",
+ "He is remembered as the bishop who saw the question, gave it its first canonical answer, and gave the Church the man who would carry that answer through fifty years of struggle. The Greek tradition keeps his memory on May 29; the Coptic and several other Eastern traditions on August 30.",
+ ],
+ quotes: [
+ {
+ text: "The Son is not in the manner that a thing made is, neither in the manner that a creature is, but as the proper offspring of the Father.",
+ source: "From his Encyclical Letter to all the bishops, c. 319, preserved by Socrates Scholasticus, H.E. I.6",
+ },
+ ],
+ works: [
+ {
+ slug: "encyclical-against-arius",
+ title: "Encyclical Letter Against Arius",
+ subtitle: "The first canonical condemnation of the Arian doctrine, c. 319",
+ year: "c. 319",
+ blurb:
+ "An excerpt from Alexander's circular letter to the bishops of the world, in which he gives the first canonical statement of the question that would dominate the next century and the first ecclesial deposition of Arius. Preserved verbatim by Socrates Scholasticus in his Ecclesiastical History.",
+ topics: ["Trinity", "Arianism", "Episcopate", "Encyclical"],
+ },
+ ],
+ },
+ {
+ slug: "hosius-of-cordova",
+ byname: "Confessor of the West",
+ iconUrl: "/saints/icons/hosius-of-cordova.jpg",
+ name: "St. Hosius of Cordova",
+ epithet: "Bishop of Cordova · Confessor · Elder of the West at Nicaea",
+ born: "c. 256 (Cordova, Hispania)",
+ reposed: "c. 359 (in exile, Sirmium)",
+ feastDays: ["August 27"],
+ see: "Cordova in Hispania",
+ shortBio:
+ "Bishop of Cordova in Spain for sixty years, the Western Father who survived the persecution of Diocletian to become St. Constantine's theological adviser and the elder whose name signs first at the First Ecumenical Council. In his last years he was tortured into a brief subscription to an Arian formula, recanted it on his deathbed, and died confessing the Nicene Faith.",
+ life: [
+ "Hosius (Ossius in Spanish) was born around the year 256 in Cordova, in Roman Hispania. He was elected to the see of Cordova as a young man, around 295, and held it until his death almost sixty-five years later. In the great persecution under Diocletian he was a confessor: he refused to sacrifice, was tortured, and bore the scars to his grave.",
+ "When the Donatist schism broke out in North Africa after the persecution, Constantine sent Hosius into Africa as his ecclesiastical envoy. The two had met and Hosius became, in the years that followed, the closest theological adviser of the Emperor: it was Hosius who travelled with Constantine's letter to Alexander and Arius in 324 attempting to settle the controversy in advance, and it was Hosius who, when that letter failed, advised the Emperor to summon the Ecumenical Council.",
+ "At Nicaea, Hosius is the first signatory in every surviving subscription list. The Western tradition has read this as evidence that he presided over the council's sessions; the Eastern tradition gives the opening oration to Eustathius of Antioch and the chief theological work to Alexander and Athanasius. Both are right that he was the elder of the West, and that his subscription gave the council its weight in the Latin churches.",
+ "He returned to his see in Spain and to a long old age. He held Cordova for another thirty years. He presided over the Council of Sardica in 343, the great Western synod that vindicated Athanasius against the eastern Arians.",
+ "In his last years the Arianizing Emperor Constantius II ordered him brought to Sirmium and pressed him to sign one of the Arianizing formulae of the 350s. He was over a hundred years old. He held out under threats and beatings for a long time, and at length, under torture, his hand was guided to subscribe a compromise formula. On his deathbed in 359 he recanted that subscription and confessed the Nicene Faith in full. The Church kept his memory as a Confessor: a man whose lifelong testimony was not overturned by what was extorted from him at the end.",
+ ],
+ quotes: [
+ {
+ text: "I have been a Confessor from the first; I will not, in my last hour, do what I refused to do in my first.",
+ source: "Traditional response to the Emperor Constantius II's first pressure to subscribe the Arianizing formula at Sirmium, c. 357",
+ },
+ ],
+ works: [
+ {
+ slug: "the-elder-of-the-west",
+ title: "The Elder of the West",
+ subtitle: "A short Life and the deathbed confession",
+ year: "Traditional Life",
+ blurb:
+ "A brief Life of the bishop who saw both the great persecution and the great peace, who carried the Nicene Faith into Spain, and who in his last hour recanted under torture and died a Confessor. With the troparion of his feast.",
+ topics: ["Confessor", "Persecution", "Nicaea", "Western Saints", "Episcopate"],
+ },
+ ],
+ },
+ {
+ slug: "eustathius-of-antioch",
+ byname: "The Confessor",
+ iconUrl: "/saints/icons/eustathius-of-antioch.jpg",
+ name: "St. Eustathius of Antioch",
+ epithet: "Patriarch of Antioch · Confessor · Opener of the First Council",
+ born: "c. 270 (Side, Pamphylia)",
+ reposed: "c. 360 (in exile, Trajanopolis)",
+ feastDays: ["February 21"],
+ see: "Antioch",
+ shortBio:
+ "Patriarch of Antioch and a Confessor under Licinius before the peace of the Church. He gave the opening address to the First Ecumenical Council in the Eastern tradition. Deposed by an Arianizing synod at Antioch around 330 and exiled until his death some thirty years later.",
+ life: [
+ "Eustathius was born around the year 270 in Side in Pamphylia. He was a Confessor in the last of the persecutions: under Licinius, before the peace of the Church, he was imprisoned and bore torture for the Faith. He became bishop of Beroea (modern Aleppo) and then, around the year 324, was translated to the great see of Antioch.",
+ "In the year of his elevation the Arian controversy reached its open phase. At the First Ecumenical Council at Nicaea in 325, Eustathius gave the opening address to the assembled Fathers, in the role the Eastern tradition assigns him as senior bishop of the Eastern half of the empire. He subscribed the Creed without reservation and led the anti-Arian party in the Antiochene patriarchate in the years immediately after.",
+ "Around 330, the resurgent Arian party gathered a council of bishops at Antioch on a pretext (Eustathius was accused, falsely, of Sabellianism and of insulting the Emperor's mother Helena), deposed him, and obtained his exile from the Emperor Constantine. He was sent to Trajanopolis in Thrace, where he died, perhaps in 360, after some thirty years of exile.",
+ "He wrote many works in defense of Nicaea, of which only one is preserved in full (a treatise against Origen on the Witch of Endor) and a number of fragments. The Antiochene tradition counted him among its three or four great Fathers, alongside Babylas and Ignatius before him and Meletius after.",
+ "Half a century after his exile, the great schism at Antioch over his rightful successor (the so-called Meletian Schism) was finally healed at the Second Ecumenical Council under Meletius and Flavian, whom he had effectively prepared the way for. The Church keeps his memory as the Confessor whose long exile preserved the apostolic faith of Antioch through its hardest decades.",
+ ],
+ quotes: [
+ {
+ text: "I will not for any worldly fear or honour assent to the unjust doctrine that the Lord, who made all that is, is Himself among the things made.",
+ source: "Fragment preserved from his anti-Arian writings, recorded by St. Athanasius in De Synodis",
+ },
+ ],
+ works: [
+ {
+ slug: "the-confessor-of-antioch",
+ title: "The Confessor of Antioch",
+ subtitle: "A short Life and the surviving fragments",
+ year: "Traditional Life with patristic fragments",
+ blurb:
+ "A brief Life of the Patriarch who confessed before Licinius, gave the opening oration at Nicaea, and bore thirty years of exile for the Nicene Faith. With selected fragments of his anti-Arian writings preserved by St. Athanasius and Theodoret.",
+ topics: ["Confessor", "Patriarchate", "Nicaea", "Antioch", "Exile"],
+ },
+ ],
+ },
+ {
+ slug: "spyridon-of-trimythous",
+ byname: "The Wonderworker",
+ iconUrl: "/saints/icons/spyridon-of-trimythous.jpg",
+ name: "St. Spyridon of Trimythous",
+ epithet: "Shepherd of Cyprus · Bishop of Trimythous · Wonderworker · Father of Nicaea",
+ born: "c. 270 (Cyprus)",
+ reposed: "c. 348 (Trimythous)",
+ feastDays: ["December 12"],
+ see: "Trimythous in Cyprus",
+ shortBio:
+ "The shepherd-bishop of Trimythous in Cyprus, married, unlettered in the secular learning of his day, who carried his flock through the great persecution and stood at the First Ecumenical Council in 325, where the tradition gives him the famous demonstration of the Holy Trinity with the brick. His relics on the island of Corfu remain incorrupt to this day.",
+ life: [
+ "Spyridon was born around the year 270 in a village in Cyprus. He was the son of shepherds, married a quiet wife, and lived as a shepherd himself for the first part of his life. After his wife reposed he was given to the priesthood; in the years before the Edict of Milan he was consecrated bishop of the small see of Trimythous in Cyprus and was a Confessor in the great persecution: he lost his right eye and bore the scars on his face.",
+ "At the First Ecumenical Council in 325, Spyridon appeared in his shepherd's clothing and was looked at askance by some of the more learned Fathers, who thought him unfit to dispute with the philosophical Arian party. The tradition gives him the great demonstration of the Holy Trinity to the assembled bishops: he took a brick into his hand, made the sign of the Cross, and from the one brick fire shot upward, water dripped downward, and clay remained in his palm. Three natures, held in one substance.",
+ "He returned from Nicaea to his small see in Cyprus and to the life of a country bishop. The traditions of his pastorate are full of wonders: the conversion of a thief by his quiet mercy; a flood that he turned aside with the sign of the Cross; the raising of his own daughter Irene from sleep to answer a question and laying her down again; the appearance of an icon-painter who was warned in a vision and turned back from defrauding a poor woman.",
+ "He reposed around the year 348 and was buried in his small see. When the Arab raids on Cyprus in the seventh and eighth centuries threatened the island, his relics were translated to Constantinople; at the fall of the City in 1453 they were carried west to Corfu, where they remain in the church of St. Spyridon to this day, incorrupt and warm to the touch, with shoes upon his feet that the keepers of his shrine say wear out every year and must be replaced.",
+ "He is one of the most-loved of the early Fathers in the Greek-speaking and Cypriot Orthodox world. The faithful keep his feast on December 12, and the islanders of Corfu carry his relics in procession four times a year in thanksgiving for the wonders he has worked for them.",
+ ],
+ quotes: [
+ {
+ text: "There is one God, and in that one God the Father, the Son, and the Holy Spirit, three persons and one nature, like as in this brick you see fire and water and clay, three natures and one substance.",
+ source: "Traditional explanation given with the brick miracle at the First Ecumenical Council, 325",
+ },
+ ],
+ works: [
+ {
+ slug: "the-brick-and-the-flood",
+ title: "The Brick and the Flood",
+ subtitle: "Episodes from the Life of the shepherd-bishop of Trimythous",
+ year: "Traditional Life",
+ blurb:
+ "Five scenes from the traditional Life: the shepherd called to the bishopric; the brick miracle at Nicaea; the flood turned aside with the sign of the Cross; the thief converted by mercy; the daughter Irene raised to answer a question and laid back down. With the standard apolytikion of his December 12 feast.",
+ topics: ["Wonderworking", "Nicaea", "Trinity", "Shepherd", "Cyprus"],
+ },
+ ],
+ },
+ {
+ slug: "theodosius-the-great",
+ byname: "The Great",
+ iconUrl: "/saints/icons/theodosius-the-great.jpg",
+ name: "St. Theodosius the Great",
+ epithet: "Emperor of the Romans · Convener of the Second Ecumenical Council · Defender of Nicaea",
+ born: "January 11, 347 (Cauca, Hispania)",
+ reposed: "January 17, 395 (Milan)",
+ feastDays: ["January 17"],
+ see: "Roman Emperor",
+ shortBio:
+ "The first emperor since Constantine to confess the Nicene Faith without reservation, who took the throne in 379 in the wake of the disaster at Adrianople, made the Nicene Faith the public confession of the empire (380), convened the Second Ecumenical Council at Constantinople (381), and submitted to public penance under St. Ambrose of Milan after the massacre at Thessaloniki (390).",
+ life: [
+ "Theodosius was born on January 11, 347, in Cauca in northern Spain, the son of the Roman general Theodosius the Elder. He was raised a Nicene Christian in a Spanish provincial home. He served as a young general under Valentinian I and was set aside under the Arian Emperor Valens.",
+ "When Valens was killed by the Goths at the battle of Adrianople in August of 378, the empire passed to the western Augustus Gratian, who recalled Theodosius from retirement and made him emperor of the East. Within a year of his elevation, Theodosius issued the Edict of Thessalonica (380) declaring the Faith of Nicaea, as held by the Bishop of Rome and the Patriarch of Alexandria, to be the public confession of the Roman world. The Arianizing settlements of the previous fifty years were quietly ended.",
+ "In 381 he summoned the Second Ecumenical Council at Constantinople, to ratify Nicaea, to confess the divinity of the Holy Spirit against the Pneumatomachi, and to set the order of the new Eastern patriarchates. He was present at the council in person, supported St. Gregory the Theologian when he was attacked, and, when Gregory withdrew to spare the council division, presided in person at the baptism, ordination, and consecration of Nectarius to the throne of Constantinople in a single day.",
+ "In April of 390 there was a riot at Thessaloniki in which an imperial general was killed by the crowd. In retaliation Theodosius ordered a public reprisal in the city's circus, and the slaughter was extensive (the traditional figure is seven thousand). St. Ambrose of Milan refused him Communion until he had done public penance. Theodosius came out of his palace in the dress of a penitent, stood at the door of the cathedral of Milan with the catechumens, and was not received again to the Holy Mysteries until he had wept his way through the canonical period of penance. It is the most famous instance in the patristic age of an emperor submitted to the discipline of the Church, and the principle has stood ever since: there is no rank in the Body of Christ above the canons of the Faith.",
+ "He died at Milan on January 17, 395, in the presence of his sons Arcadius and Honorius and of St. Ambrose, who preached his funeral oration. The Church keeps his memory as Theodosius the Great, equal to Constantine in his defense of the Nicene confession.",
+ ],
+ quotes: [
+ {
+ text: "There is no rank in the Body of Christ above the canons of the Faith.",
+ source: "Traditional summary of his conduct under the discipline of St. Ambrose at Milan, 390",
+ },
+ ],
+ works: [
+ {
+ slug: "the-edict-and-the-penance",
+ title: "The Edict and the Penance",
+ subtitle: "Two scenes from the reign of the Emperor of Nicaea",
+ year: "380 and 390",
+ blurb:
+ "Two scenes from his reign: the Edict of Thessalonica of February 380 by which the Nicene Faith became the public confession of the empire, and the famous public penance at Milan in 390 after the massacre at Thessaloniki, as preserved in the funeral oration of St. Ambrose. With the standard troparion of his January 17 feast.",
+ topics: ["Symphonia", "Nicaea", "Penance", "Episcopate", "Equal-to-Constantine"],
+ },
+ ],
+ },
+ {
+ slug: "meletius-of-antioch",
+ byname: "Confessor of Antioch",
+ iconUrl: "/saints/icons/meletius-of-antioch.jpg",
+ name: "St. Meletius of Antioch",
+ epithet: "Patriarch of Antioch · Confessor · Presider of the Second Council",
+ born: "c. 310 (Melitene, Armenia)",
+ reposed: "May 381 (Constantinople, during the Second Council)",
+ feastDays: ["February 12"],
+ see: "Antioch",
+ shortBio:
+ "Patriarch of Antioch who was thrice exiled by the Arianizing emperors for confessing the consubstantial Faith. Restored to his see by St. Theodosius the Great in 378, he presided over the opening of the Second Ecumenical Council at Constantinople in 381 and died during its sessions. St. John Chrysostom, who knew him as a young man, preached his funeral oration.",
+ life: [
+ "Meletius was born around the year 310 in Melitene in Lesser Armenia. He was made bishop of Sebaste in 357, in a difficult period of the Arianizing settlements; finding his see unworkable, he withdrew to Beroea. In 360 the emperor Constantius II, attempting to find a candidate acceptable to both the Nicene and the moderate Arian parties at Antioch, had Meletius translated to the great see of Antioch.",
+ "Within a month of his enthronement, Meletius preached a public sermon in the cathedral on Proverbs 8:22 in which he confessed the Nicene Faith without ambiguity. The Arianizing party that had elected him in the hope of compromise had him deposed and exiled within weeks. The Nicene community of Antioch, who had hoped for him from the first, gathered around him as their true bishop.",
+ "He was three times exiled and three times restored, his see changing hands as the emperor changed: deposed under Constantius II in 360, restored under Julian in 362, deposed again under Valens in 365, restored under the western Valentinian briefly in 367, deposed again under Valens, and finally restored under St. Theodosius the Great in 378 with the change of imperial policy after Adrianople.",
+ "When Theodosius summoned the Second Ecumenical Council to Constantinople in 381, Meletius presided over its opening sessions as the senior bishop of the Nicene Patriarchate of Antioch. He had been at the Council only a short time when he was struck by his last illness and reposed. The emperor honoured him with a public funeral; his body was taken back to Antioch in solemn procession; and St. John Chrysostom, then a young presbyter who had been baptized by Meletius as a youth, preached the funeral oration on his return to the city.",
+ "The schism in the Antiochene Church that had arisen during his long absences (the so-called Meletian Schism, between his own followers and those of the rigorist Paulinus) was not finally healed until the next bishop, St. Flavian, who is named in the Synodical Letter of the Council. The Church keeps Meletius's memory on February 12, and remembers him as the patriarch whose long suffering kept the Nicene Faith at Antioch through the worst of the fourth century.",
+ ],
+ quotes: [
+ {
+ text: "We have one God, one Christ, one Holy Spirit. There is no other Faith in which the Church can stand.",
+ source: "Traditional substance of his opening sermon at Antioch in 360 on Proverbs 8:22, preserved in summary by Theodoret, H.E. II.31",
+ },
+ ],
+ works: [
+ {
+ slug: "the-confessor-and-the-funeral",
+ title: "The Confessor and the Funeral",
+ subtitle: "The Patriarch of Antioch and St. John Chrysostom's funeral oration",
+ year: "Traditional Life with patristic excerpt",
+ blurb:
+ "A brief Life of the thrice-exiled Patriarch whose long suffering kept the Nicene Faith at Antioch through the worst of the fourth century; with selected passages from St. John Chrysostom's funeral oration for his old bishop, preserved in NPNF1 Vol 9. Includes the troparion of his February 12 feast.",
+ topics: ["Confessor", "Patriarchate", "Antioch", "Nicaea", "Exile"],
+ },
+ ],
+ },
+ {
+ slug: "cyril-of-jerusalem",
+ byname: "Catechist of the Holy City",
+ iconUrl: "/saints/icons/cyril-of-jerusalem.jpg",
+ name: "St. Cyril of Jerusalem",
+ epithet: "Patriarch of Jerusalem · Catechist · Father of the Second Council",
+ born: "c. 315 (Jerusalem)",
+ reposed: "March 18, 386 (Jerusalem)",
+ feastDays: ["March 18"],
+ see: "Jerusalem",
+ shortBio:
+ "Patriarch of Jerusalem for thirty-five years, three times exiled by the Arianizing emperors for confessing the consubstantial Faith. His twenty-three Catechetical Lectures, preached to the catechumens in the Anastasis at the Holy Sepulchre in the years before his consecration, are the foundational fourth-century introduction to the Christian Mysteries.",
+ life: [
+ "Cyril was born around the year 315 in or near Jerusalem, in the years just after Constantine's restoration of the Holy City and the building of the great church of the Anastasis at the Holy Sepulchre. He was raised in the Faith, ordained presbyter under his predecessor Maximus around 343, and during his presbytery preached the twenty-three Catechetical Lectures that have come down to us: eighteen pre-baptismal lectures to the catechumens during Great Lent (the Procatechesis and Catecheses I-XVIII), and five mystagogical lectures to the newly-baptized during Bright Week (the Mystagogical Catecheses).",
+ "He was consecrated Patriarch of Jerusalem around the year 350, in succession to Maximus. His relations with the Arianizing metropolitan of Caesarea (Acacius) were difficult from the start: Cyril held the Nicene Faith without ambiguity, and the more Acacius pressed his Arianizing sympathies, the more clearly Cyril preached against them. Acacius secured his first deposition in 357 on a pretext about church property he had sold to feed the poor during a famine. Cyril was sent into exile in Tarsus.",
+ "He was restored by the Council of Seleucia in 359, exiled again under Constantius II, restored under Julian, exiled a third time under Valens, and finally restored under St. Theodosius the Great in 378. Of the thirty-five years between his first consecration and his death, he had spent some sixteen in exile.",
+ "He came to the Second Ecumenical Council in 381 as one of the long-suffering elders of the Nicene Faith. The Council's Synodical Letter, written the following year to Pope Damasus, explicitly names him and vindicates the canonicity of his ordination against the slanders of the earlier decades: \"the right reverend and most religious Cyril, who was some time ago canonically ordained by the bishops of the province, and has in several places fought a good fight against the Arians.\"",
+ "He died at Jerusalem on March 18, 386, after thirty-five years on the throne of the Holy City. The Catechetical Lectures are one of the four or five most-used patristic texts in catechetical instruction in the Eastern Orthodox Church to this day, and the Mystagogical Catecheses are the principal patristic witness to the fourth-century practice of the Holy Mysteries at Jerusalem: the Eucharist, the Holy Baptism with triple immersion and chrismation, and the Liturgy of St. James.",
+ ],
+ quotes: [
+ {
+ text: "Make thy fold with the sheep; flee from the wolves; depart not from the Church.",
+ source: "Procatechesis 5, the prologue to the catechumenate at Jerusalem, c. 348",
+ },
+ {
+ text: "After the invocation, the Bread becomes the Body of Christ, and the Wine, the Blood of Christ.",
+ source: "Mystagogical Catechesis V.7, on the Eucharist, preached to the newly baptized at the Holy Sepulchre, c. 350",
+ },
+ ],
+ works: [
+ {
+ slug: "the-catechist-of-jerusalem",
+ title: "The Catechist of Jerusalem",
+ subtitle: "Selections from the Catechetical and Mystagogical Lectures",
+ year: "c. 347-350",
+ blurb:
+ "A short Life and four representative selections from the Catechetical and Mystagogical Lectures: the prologue to the catechumenate (Procatechesis), the article on the Trinity (Catechesis IV.16), the Eucharist (Mystagogical V.7), and the closing prayer for the newly baptized. PD English from NPNF Series II Vol. 7.",
+ topics: ["Catechesis", "Mysteries", "Eucharist", "Baptism", "Holy City"],
+ },
+ ],
+ },
+ {
+ slug: "nectarius-of-constantinople",
+ byname: "The Senator-Bishop",
+ iconUrl: "/saints/icons/nectarius-of-constantinople.jpg",
+ name: "St. Nectarius of Constantinople",
+ epithet: "Archbishop of Constantinople · Father of the Second Council · Successor of St. Gregory the Theologian",
+ born: "c. 330 (Tarsus, Cilicia)",
+ reposed: "September 27, 397 (Constantinople)",
+ feastDays: ["October 11"],
+ see: "Constantinople",
+ shortBio:
+ "The unbaptized senator of Constantinople who, on the withdrawal of St. Gregory the Theologian, was elected to the throne of Constantinople in 381, baptized, ordained, and consecrated in the same day. He presided over the latter half of the Second Ecumenical Council and the final issue of its decrees, and was the predecessor under whom St. John Chrysostom served as a presbyter.",
+ life: [
+ "Nectarius was born around the year 330 in Tarsus in Cilicia, of a Christian family of senatorial rank. He served in the imperial civil administration and rose to be praetor of Constantinople. He was at the Council of 381 as a catechumen, unbaptized but having lived in the Christian register all his life, intending to receive baptism in his own time.",
+ "When St. Gregory the Theologian withdrew from the throne of Constantinople rather than be a cause of division between the Eastern and Egyptian factions at the Council, the bishops asked the Emperor Theodosius to nominate a successor. Theodosius gave them a list of candidates including Nectarius, whose name he placed last. The bishops, examining the list, found themselves drawn to the senator, and elected him.",
+ "On the same day he was catechised, baptized, chrismated, ordained deacon, ordained presbyter, and consecrated to the throne of Constantinople in a sequence of services that began at dawn and was completed before the evening, the Emperor and the Council standing as witnesses. He presided over the rest of the Council, the Council subscribed the Creed and the canons under his presidency, and the Synodical Letter to the West the following year went out in his name.",
+ "He held the throne for sixteen years, a quiet and able pastor of a city that had been theologically tumultuous for sixty years. He kept St. Gregory of Nyssa, St. Gregory the Theologian (in retirement at Cappadocia), and the other Cappadocian elders as his theological counsellors. He ordained the young John Chrysostom as deacon and presbyter in Antioch on Meletius's recommendation, the foundation of Chrysostom's later succession to the throne of Constantinople.",
+ "He reposed on September 27, 397, after sixteen years on the throne. The Church keeps his memory on October 11. He is remembered as the man elected for the qualities of his Christian life before he was elected for the qualities of his episcopate, and as a witness to the older patristic principle that the throne does not make the man but finds him.",
+ ],
+ quotes: [
+ {
+ text: "I was a catechumen at dawn; before evening I had taken the throne. I had time only to pray that what I had received in the morning would be enough for what was asked of me by night.",
+ source: "Saying attributed to him in the Synaxarion on the day of his October 11 commemoration",
+ },
+ ],
+ works: [
+ {
+ slug: "the-senator-bishop",
+ title: "The Senator-Bishop",
+ subtitle: "From catechumen to throne in a single day",
+ year: "Traditional Life",
+ blurb:
+ "A short Life of the senator made bishop, the long pastorate that followed, the ordination of St. John Chrysostom, and the quiet sixteen years that gave Constantinople a settled patristic episcopate after sixty years of contest. With the troparion of his October 11 feast.",
+ topics: ["Episcopate", "Baptism", "Symphonia", "Constantinople", "Cappadocian"],
+ },
+ ],
+ },
+ {
+ slug: "diodore-of-tarsus",
+ byname: "Teacher of St. Chrysostom",
+ iconUrl: "/saints/icons/diodore-of-tarsus.jpg",
+ name: "St. Diodore of Tarsus",
+ epithet: "Bishop of Tarsus · Confessor · Founder of the Antiochene Exegetical School",
+ born: "c. 320 (Antioch)",
+ reposed: "c. 390 (Tarsus)",
+ feastDays: ["October 22"],
+ see: "Tarsus in Cilicia",
+ shortBio:
+ "Founder of the Antiochene school of biblical interpretation that produced St. John Chrysostom and St. Theodore of Mopsuestia. A staunch Nicene through the Arianizing decades and a presider at the Second Ecumenical Council; bishop of Tarsus from 378 until his death some twelve years later.",
+ life: [
+ "Diodore was born around the year 320 in Antioch of a Christian family. He studied at the philosophical schools of Athens and returned to Antioch as a young layman to teach the rudiments of biblical interpretation. With his friend St. Flavian (later the patriarch of Antioch), he organized the lay anti-Arian community of the city through the long pressure of the Arianizing emperors.",
+ "He took monastic tonsure and was ordained presbyter by St. Meletius of Antioch around 360. As a presbyter he led the public worship of the Nicene community of Antioch during the periods of Meletius's exile. Among his pupils in his small school of biblical interpretation were the young John Chrysostom and Theodore of Mopsuestia: the principal teachers of the Antiochene exegetical tradition, with its preference for the literal-historical sense over the Alexandrian allegorical method.",
+ "He was exiled by Valens in the early 370s to Armenia, where he passed several years in the school of St. Basil the Great. On the change of imperial policy under Theodosius in 378, he returned to Antioch and was made bishop of Tarsus in Cilicia, the metropolitan see of his patriarchate.",
+ "He came to the Second Ecumenical Council in 381 as one of the Council's leading theological voices on the side of Meletius and the Nicene party. After Meletius's death during the Council, his weight was felt in the canonical settlement of the new patriarchates. He returned to Tarsus and held the see for twelve more years until his death around 390.",
+ "Most of his exegetical and dogmatic writings have been lost. He wrote against the Arians, against the Eunomians, against the Apollinarians, on the difference between providence and fate, and a commentary on most of the books of the Bible. Fragments survive, and through his disciple Chrysostom his manner of reading the Scriptures, the literal sense disciplined by the rule of faith and oriented to preaching, has carried through the whole later Eastern tradition.",
+ ],
+ quotes: [
+ {
+ text: "We do not deny the higher senses; but we will not seek them where the letter has not first been served.",
+ source: "Traditional summary of his exegetical method, preserved in fragments by St. John Chrysostom and the Antiochene tradition",
+ },
+ ],
+ works: [
+ {
+ slug: "the-school-of-antioch",
+ title: "The School of Antioch",
+ subtitle: "A short Life and the surviving exegetical fragments",
+ year: "Traditional Life with patristic fragments",
+ blurb:
+ "A brief Life of the bishop whose small school at Antioch produced St. John Chrysostom; with surviving fragments of his exegetical writings preserved in patristic catenae and the troparion of his October 22 feast.",
+ topics: ["Exegesis", "Antioch", "Episcopate", "Confessor", "Discipleship"],
+ },
+ ],
+ },
+ {
+ slug: "epiphanius-of-salamis",
+ byname: "Hammer of Heresies",
+ iconUrl: "/saints/icons/epiphanius-of-salamis.jpg",
+ name: "St. Epiphanius of Salamis",
+ epithet: "Archbishop of Salamis · Confessor · Author of the Panarion",
+ born: "c. 315 (Besanduc, near Eleutheropolis, Palestine)",
+ reposed: "May 12, 403 (at sea, returning from Constantinople)",
+ feastDays: ["May 12"],
+ see: "Salamis in Cyprus",
+ shortBio:
+ "Archbishop of Salamis in Cyprus for thirty-five years, a Palestinian-born ascetic who knew six languages and devoted his life to refuting the heresies of the fourth century. His Ancoratus (c. 374) preserves the baptismal creed scholars hold to be a near-cousin of the Niceno-Constantinopolitan Creed; his Panarion is the great fourth-century encyclopedia of heresies.",
+ life: [
+ "Epiphanius was born around the year 315 in Besanduc, a village near Eleutheropolis in Palestine. He grew up in a Jewish family and converted to Christ as a young man. He went to Egypt and spent his early monastic formation among the Egyptian Fathers, returning to Palestine to found his own monastery near Eleutheropolis, which he ruled for some thirty years.",
+ "He was known in his own lifetime for the rigor of his Faith, the breadth of his languages (Greek, Latin, Hebrew, Syriac, Coptic, and some Egyptian, the five-tongued doctor in the tradition), and his uncompromising opposition to every heresy he encountered. Around 367 he was called to the throne of Salamis in Cyprus and consecrated archbishop of the island, a see he held for the remaining thirty-six years of his life.",
+ "Around 374 he composed the Ancoratus (the \"anchored one\"), a long treatise on the Faith intended to give the ordinary Christian an anchor against the storms of heresy. At the end of the Ancoratus he set out a long baptismal creed which, in its main lines, agrees almost word for word with the Niceno-Constantinopolitan Creed that the Second Ecumenical Council would issue seven years later. The scholarly tradition since Tillemont has held that the Council did not invent its Symbol but received and ratified a creed already in liturgical use in the East, of which the Epiphanian text is the principal documentary witness.",
+ "Around 377 he composed the Panarion (the \"medicine chest,\" sometimes translated as Against the Heresies): a long encyclopedic refutation of eighty heresies, from the first century to his own day. The Panarion is one of the most-used patristic sources for the early history of Gnostic and post-Nicene heresy, and many heresies (including the Ebionites and several Jewish-Christian groups) are known to us today principally because Epiphanius described them.",
+ "In his last years he was drawn into the Origenist controversy on the side of the rigorists, and travelled to Constantinople at the request of his old correspondent the empress Eudoxia, who wanted his weight against St. John Chrysostom. He arrived in Constantinople, learned more of the situation, regretted being there, and embarked on a ship for Cyprus. He died at sea on the return voyage, on May 12, 403, in the eighty-eighth year of his life and the thirty-sixth of his episcopate.",
+ ],
+ quotes: [
+ {
+ text: "The children of the Church have received from the holy Fathers, that is from the holy Apostles, the Faith to keep, and to hand down, and to teach their children.",
+ source: "Ancoratus 119, preface to the Salaminian baptismal creed, c. 374",
+ },
+ ],
+ works: [
+ {
+ slug: "the-anchored-one",
+ title: "The Anchored One",
+ subtitle: "From the Ancoratus and the Panarion",
+ year: "c. 374 and c. 377",
+ blurb:
+ "Two selections from his great anti-heretical works: the closing chapters of the Ancoratus, with the baptismal creed scholars identify as a near-cousin of the Niceno-Constantinopolitan Creed; and an excerpt from the Panarion's preface explaining his metaphor of the eighty heresies as venomous beasts and his treatise as the medicine chest the Church needs to keep at hand. PD English from NPNF Series II.",
+ topics: ["Heresy", "Catechesis", "Creed", "Cyprus", "Polemics"],
+ },
+ ],
+ },
 ];
 
 export function getSaint(slug: string): Saint | null {

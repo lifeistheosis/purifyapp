@@ -1,0 +1,41 @@
+{
+  "saint": "hosius-of-cordova",
+  "slug": "the-elder-of-the-west",
+  "title": "The Elder of the West",
+  "subtitle": "A short Life and the famous letter to Constantius II",
+  "source": "Adapted from the Life as preserved in the Roman and Spanish synaxaries and in Athanasius, History of the Arians 42-45 (NPNF Series II Vol. 4, public domain). The letter excerpts are from Athanasius's preservation of Hosius's own words to the Emperor Constantius II, c. 357.",
+  "sections": [
+    {
+      "n": 1,
+      "title": "From the persecution to the Council",
+      "framing": "St. Athanasius the Great, who knew Hosius personally over a long correspondence, gives the most reliable contemporary witness to his life. The selections below are drawn from Athanasius's History of the Arians.",
+      "paragraphs": [
+        "Hosius was bishop of Cordova in Spain for almost sixty years, from his consecration as a young man around 295 to his death over a hundred years old around 359. In the great persecution under Diocletian he was a confessor: he refused to sacrifice to the gods, was tortured, and bore the marks on his body to his grave.",
+        "When the Donatist schism broke out in North Africa after the peace of the Church, the Emperor Constantine sent Hosius into Africa as his ecclesiastical envoy. The two grew close, and in the years that followed Hosius became, in Athanasius's words, the chief of the Church, the most steadfast in the Faith, the wisest counsellor that ever came to the right hand of an Emperor.",
+        "When the question of Arius could not be settled by letters, it was Hosius who advised Constantine to summon a Council of the bishops of the inhabited earth. At Nicaea in 325, Hosius is the first signatory in the surviving subscription lists; the Western tradition has read this as evidence of his presidency, while the Eastern tradition gives the opening oration to Eustathius of Antioch. Both are right that he was the elder of the West, and that his subscription gave the council its weight in the Latin churches."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "Hosius's letter to the Emperor Constantius II",
+      "framing": "Some thirty years after Nicaea, the Arianizing Emperor Constantius II began to press the surviving Western Nicenes to subscribe a compromise formula. Hosius, by then over a hundred years old, refused, and wrote the Emperor this letter, preserved by St. Athanasius. It is one of the most direct patristic statements of the separation of imperial and ecclesial authority.",
+      "citation": "Athanasius, History of the Arians 44, preserving Hosius's letter to Constantius, c. 357",
+      "paragraphs": [
+        "I was a Confessor at the first, when the persecution arose in the time of your grandfather Maximian; and if you shall persecute me, I am ready now also to endure anything, rather than to shed innocent blood and to betray the truth.",
+        "Cease, I beseech you, and remember that you are a mortal man. Fear the day of judgment, and keep yourself pure for it. Do not intrude yourself into ecclesiastical matters, neither command us in this kind of thing, but rather learn them from us. For into your hands God has put the kingdom; to us He has entrusted the affairs of His Church; and as he who would steal the empire from you would resist the ordinance of God, so beware that you yourself also do not draw upon yourself a great fault by taking the affairs of the Church to yourself.",
+        "It is written, Render unto Caesar the things which are Caesar's, and unto God the things which are God's. Neither, therefore, is it permitted to us bishops to exercise rule over the earth; nor have you, O Emperor, authority over the incense and the sacred things."
+      ],
+      "notes": [
+        "This passage is the locus classicus in the patristic literature for the principle of separation between the imperial authority and the ecclesial authority, anticipating by some seven hundred years the formal articulation of Gelasian dyarchy in the West."
+      ]
+    },
+    {
+      "n": 3,
+      "title": "The end",
+      "paragraphs": [
+        "Some two years after this letter, around the year 359, Hosius was summoned to Sirmium by Constantius and was held under house arrest. The accounts vary as to what happened next: under threats and the rumour of torture, his hand was guided to subscribe one of the compromise Arianizing formulae of that year. He was over a hundred years old.",
+        "He returned to Cordova broken in body, and on his deathbed in 359 he recanted that subscription and confessed the Nicene Faith in full. The Church kept his memory as a Confessor: a man whose lifelong testimony was not overturned by what was extorted from him at the end. His feast in the Roman calendar is August 27; the Spanish Orthodox keep his memory on the same day."
+      ]
+    }
+  ]
+}

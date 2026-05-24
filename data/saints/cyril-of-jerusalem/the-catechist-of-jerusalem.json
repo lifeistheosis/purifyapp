@@ -1,0 +1,56 @@
+{
+  "saint": "cyril-of-jerusalem",
+  "slug": "the-catechist-of-jerusalem",
+  "title": "The Catechist of Jerusalem",
+  "subtitle": "Selections from the Catechetical and Mystagogical Lectures",
+  "source": "All lecture excerpts from St. Cyril of Jerusalem, Catechetical Lectures, in the public-domain English of NPNF Series II Vol. 7 (1894), ed. Schaff & Wace, public domain. Apolytikion from the standard Greek Menaion for March 18.",
+  "sections": [
+    {
+      "n": 1,
+      "title": "On St. Cyril and the Catechetical Lectures",
+      "framing": "St. Cyril of Jerusalem preached the twenty-three Catechetical Lectures over Great Lent and Bright Week of one year, probably around 347-350, while he was still a presbyter under the patriarch Maximus. They are addressed to the catechumens in the Anastasis at the Holy Sepulchre, who would be baptized at the Paschal Vigil at the end of Lent. Eighteen of them are pre-baptismal lectures (the Procatechesis and Catecheses I-XVIII), preached to the catechumens during the forty days of Lent; the remaining five are the Mystagogical Catecheses, preached to the newly baptized in Bright Week and explaining to them the Mysteries they had just received. The four selections below give a representative tour: the prologue, the Trinity, the Eucharist, and the closing prayer.",
+      "paragraphs": [
+        "The Lectures are one of the four or five most-used patristic texts in catechetical instruction in the Eastern Orthodox Church to this day. The Mystagogical Catecheses are the principal patristic witness to the fourth-century practice of the Holy Mysteries at Jerusalem: the Eucharist (with the words of institution, the epiklesis, and the formulary of intinction at communion), the Holy Baptism (with triple immersion and chrismation), and the Liturgy of St. James."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "From the Procatechesis: the prologue to the catechumenate",
+      "citation": "Procatechesis 1, 5-6 (NPNF II.7)",
+      "paragraphs": [
+        "Already, my dear children of righteousness, there is upon you an odour of blessedness, O ye who are about to be enlightened: already ye are gathering the spiritual flowers, to weave heavenly crowns. Already the fragrance of the Holy Ghost has breathed upon you: already ye have been gathered together into the porch of the King's palace.",
+        "May God grant you to be transferred at length into the palace itself, to taste of its mysteries. Even now ye are being adorned with bright robes; even now ye are wearing the crown of righteousness which the Lord, the righteous Judge, has prepared for you. Already, before the time of the bridal feast, your shoulders have been touched with the seal of the Cross.",
+        "Make thy fold with the sheep; flee from the wolves; depart not from the Church. Hate those who hate the truth; love those who love it. The very word Catechumen means a hearer: the time of catechesis is the time of careful listening, of testing your own heart, of laying the foundations on which a Christian life will stand."
+      ]
+    },
+    {
+      "n": 3,
+      "title": "From Catechesis IV: the Holy Trinity",
+      "citation": "Catechetical Lecture IV.16 (NPNF II.7)",
+      "paragraphs": [
+        "Believe also in the Son of God, One and Only, our Lord Jesus Christ, who was begotten God of God, begotten Life of Life, begotten Light of Light, who is in all things like to Him that begat Him, who received not His being in time, but was before all ages eternally and incomprehensibly begotten of the Father.",
+        "Believe also in the Holy Ghost, and hold the same opinion concerning Him which thou hast received to hold concerning the Father and the Son, and follow not those who teach blasphemous things concerning Him. But learn thou that this Holy Spirit is One, indivisible, of many powers, working many things, yet not Himself divided. Who knoweth our spirits, and giveth utterance, and Himself prayeth in us with groanings that cannot be uttered.",
+        "Worship the Father, the Son, and the Holy Ghost, distinguishing their Persons, but uniting the Godhead. Never separate from the Father the Son, nor admit those who teach that the Son was at any time without being. Believe that there is one Lord Jesus Christ, the Only-begotten Son of God, who was begotten God of God, and Life of Life, ineffably and incomprehensibly, who is the Maker of the worlds."
+      ]
+    },
+    {
+      "n": 4,
+      "title": "From Mystagogical Catechesis V: the Eucharist",
+      "framing": "Preached in Bright Week to the newly baptized, explaining what they had received at the Liturgy of the Paschal Vigil. The selection below contains one of the earliest unambiguous patristic statements of the Real Presence in the Eucharist and the earliest extant description of the structure of the Anaphora.",
+      "citation": "Mystagogical Catechesis V.6-10, 19-22 (NPNF II.7)",
+      "paragraphs": [
+        "We then call upon the merciful God to send forth His Holy Spirit upon the gifts lying before Him: that He may make the bread the Body of Christ, and the wine the Blood of Christ. For whatsoever the Holy Ghost has touched is surely sanctified and changed.",
+        "Then, after the spiritual sacrifice is perfected, the Bloodless Service upon that Sacrifice of Propitiation, we entreat God for the common peace of the Churches, for the welfare of the world; for kings; for soldiers and allies; for the sick; for the afflicted; and in a word, for all who stand in need of help we all supplicate and offer this Sacrifice.",
+        "After the invocation, the Bread becomes the Body of Christ, and the Wine, the Blood of Christ. Consider therefore the Bread and the Wine not as bare elements, for they are, according to the Lord's declaration, the Body and Blood of Christ; for though sense suggests this to thee, yet let faith stablish thee. Judge not the matter from the taste, but from faith be fully assured without misgiving, that the Body and Blood of Christ have been vouchsafed to thee.",
+        "Approaching, therefore, come not with thy wrists extended, or thy fingers spread; but make thy left hand a throne for the right, as for that which is to receive a King. And having hollowed thy palm, receive the Body of Christ, saying over it, Amen."
+      ]
+    },
+    {
+      "n": 5,
+      "title": "Apolytikion of St. Cyril of Jerusalem (Tone 4)",
+      "paragraphs": [
+        "A rule of faith and an image of meekness, a teacher of self-control, your humility has shown you to be unto your flock. Through humility you gained exaltation, through poverty riches. Hierarch and Father Cyril, intercede with Christ our God that our souls may be saved."
+      ]
+    }
+  ]
+}

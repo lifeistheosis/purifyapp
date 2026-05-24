@@ -1,0 +1,46 @@
+{
+  "saint": "theodosius-the-great",
+  "slug": "the-edict-and-the-penance",
+  "title": "The Edict and the Penance",
+  "subtitle": "Two scenes from the reign of the Emperor of Nicaea",
+  "source": "Edict of Thessalonica text from the Codex Theodosianus XVI.1.2, in the standard public-domain English of Pharr's 1952 translation tradition (with adaptation from the earlier nineteenth-century renderings). Penance scene from St. Ambrose's funeral oration On the Death of Theodosius (De obitu Theodosii), public-domain English in NPNF Series II Vol. 10. Hymns from the Greek Menaion for January 17.",
+  "sections": [
+    {
+      "n": 1,
+      "title": "The Edict of Thessalonica (February 28, 380)",
+      "framing": "Issued at Thessalonica by the Emperors Gratian, Valentinian II, and Theodosius, with Theodosius as the moving force. The Edict ended the official toleration of the Arianizing settlements and made the Nicene Faith, as held by the Bishop of Rome and the Patriarch of Alexandria, the public confession of the Roman world.",
+      "citation": "Codex Theodosianus XVI.1.2, February 28, 380",
+      "paragraphs": [
+        "It is our desire that all the various peoples who are subject to our clemency and moderation should continue in the profession of that religion which was delivered to the Romans by the divine Apostle Peter, as it has been preserved by faithful tradition; and which is now professed by the Pontiff Damasus, and by Peter, bishop of Alexandria, a man of apostolic holiness.",
+        "According to the apostolic teaching and the doctrine of the Gospel, let us believe in the one Deity of the Father, of the Son, and of the Holy Spirit, in equal majesty and in a holy Trinity. We authorize the followers of this law to assume the title of Catholic Christians; but as for the others, since in our judgment they are foolish madmen, we decree that they shall be branded with the ignominious name of heretics."
+      ],
+      "notes": [
+        "The Edict named the standard of orthodoxy by reference to two living bishops, Damasus of Rome and Peter of Alexandria, rather than by spelling out the Nicene Symbol. The Council of Constantinople the following year (381) supplied the Symbol the Edict had assumed."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "The Council and the new Eastern patriarchs",
+      "paragraphs": [
+        "In May of 381 Theodosius summoned the Second Ecumenical Council at Constantinople. He attended in person; he supported St. Gregory the Theologian when he was attacked by the Egyptian bishops; and when Gregory withdrew from the throne of Constantinople and from the presidency of the Council to spare the assembly any pretext for division, Theodosius himself was the witness at the baptism, ordination, and consecration of Nectarius to the throne of Constantinople in a single day. The Synodical Letter the bishops sent to the Western Church the following year names the Emperor as the one whose patient defense of the Faith had brought the Eastern Church back to her ancient health."
+      ]
+    },
+    {
+      "n": 3,
+      "title": "The penance at Milan (390)",
+      "framing": "In April of 390 there was a riot at Thessaloniki in which an imperial general was killed by the crowd. In retaliation Theodosius ordered a public reprisal in the city's circus, and the slaughter was extensive. St. Ambrose of Milan refused him Communion until he had done public penance. The funeral oration St. Ambrose preached five years later remembers what followed.",
+      "citation": "St. Ambrose of Milan, De obitu Theodosii 28-34, abridged from the NPNF English",
+      "paragraphs": [
+        "He had loved David especially, because David, when his sin was rebuked, did not hide it but confessed it openly, and did public penance. Theodosius, when he learned the multitude of the slain, was struck with a great grief, and laid off the imperial purple, and put on the dress of a penitent, and stood at the door of the church for many months, refusing to be received again to the Holy Mysteries until the canonical period was fulfilled.",
+        "I refused him admittance into the church, because I held that he ought to do public penance before he was admitted to the sacraments which he had outraged. He did not resist; he did not contest the discipline of the Church; he wept his way through the months that the canons require, and at the last he was received again with great rejoicing, the Emperor of the Romans standing as a penitent before the bishop of Milan."
+      ]
+    },
+    {
+      "n": 4,
+      "title": "Apolytikion of St. Theodosius the Great (Tone 8)",
+      "paragraphs": [
+        "Equal to Constantine in defending the Faith, and a most pious Emperor of the Romans, you preserved the holy Church without blemish, and led many to the worship of the consubstantial Trinity. By your prayers, O Theodosius, may we be granted the great mercy of God."
+      ]
+    }
+  ]
+}

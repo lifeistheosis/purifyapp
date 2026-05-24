@@ -123,22 +123,27 @@ export const COUNCILS: Council[] = [
  role: "Then a young deacon, accompanying his bishop Alexander of Alexandria; the most penetrating theological voice for the homoousios at the council, and the one who would defend its teaching through fifty years of exile and struggle.",
  },
  {
+ slug: "alexander-of-alexandria",
  name: "St. Alexander of Alexandria",
  role: "Patriarch of Alexandria, Arius's own bishop, who had already deposed him; leader of the anti-Arian party at the council.",
  },
  {
+ slug: "hosius-of-cordova",
  name: "St. Hosius (Ossius) of Cordova",
  role: "Bishop of Cordova in Spain, elder statesman of the Western Church and the emperor's theological confidant; signs first in the surviving subscription lists, and is widely held in the Western tradition to have presided. In the Eastern tradition the opening address to the Council is given to Eustathius of Antioch.",
  },
  {
+ slug: "eustathius-of-antioch",
  name: "St. Eustathius of Antioch",
  role: "Patriarch of Antioch; in the Eastern tradition the one who delivered the opening oration to the Council. A staunch anti-Arian; later deposed by an Arianizing synod at Antioch around 330 and exiled.",
  },
  {
+ slug: "nicholas-the-wonderworker",
  name: "St. Nicholas of Myra",
  role: "The wonderworker bishop of Myra in Lycia; tradition holds he was among the Fathers at Nicaea and was famously moved by zeal against Arius.",
  },
  {
+ slug: "spyridon-of-trimythous",
  name: "St. Spyridon of Trimythous",
  role: "The shepherd-bishop of Trimythous in Cyprus, simple in his learning and ready in his defense of the Faith. Tradition gives him the demonstration of the Holy Trinity at the Council: he took a brick into his hand and, with the sign of the Cross, drew from it fire upward, water downward, and clay remaining in his palm.",
  },
@@ -222,18 +227,22 @@ export const COUNCILS: Council[] = [
  role: "The youngest of the great Cappadocians; brother of St. Basil who had died two years before; present at the Council as the principal living voice of Cappadocian Trinitarian theology. His Great Catechism, written near this time, is the systematic complement to the Council's Creed.",
  },
  {
+ slug: "meletius-of-antioch",
  name: "St. Meletius of Antioch",
  role: "Patriarch of Antioch and presider over the opening of the Council; died during its sessions and was buried with great honor in Constantinople. A staunch Nicene through the long Arian struggle.",
  },
  {
+ slug: "cyril-of-jerusalem",
  name: "St. Cyril of Jerusalem",
  role: "Bishop of Jerusalem; author of the Catechetical Lectures that had formed two generations of catechumens in the Nicene Faith. Vindicated by the Council against earlier slanders.",
  },
  {
+ slug: "nectarius-of-constantinople",
  name: "St. Nectarius of Constantinople",
  role: "An unbaptized senator on the eve of the Council; elected to the throne of Constantinople after the withdrawal of Gregory the Theologian; baptized, ordained, and consecrated in the same day. Presided over the latter part of the Council and the final issue of its decrees.",
  },
  {
+ slug: "diodore-of-tarsus",
  name: "St. Diodore of Tarsus",
  role: "Bishop of Tarsus, elder of the Antiochene exegetical tradition; teacher of St. John Chrysostom; one of the Council's leading theological voices on the side of Meletius.",
  },
