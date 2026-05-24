@@ -175,11 +175,13 @@ export const COUNCILS: Council[] = [
  "The letter the Fathers wrote to the Church of Alexandria reporting the deposition of Arius, the settlement of the Paschalion, and the resolution of the Meletian schism in Egypt.",
  topics: ["Encyclical", "Arianism", "Pascha", "Meletian Schism"],
  },
- ],
- pendingDocuments: [
  {
+ slug: "the-twenty-canons",
  title: "The Twenty Canons",
- note: "The disciplinary canons of the Council are pending a clean public-domain source. Wikisource hosts the canons-index but not the per-canon text; the Schaff & Wace edition on CCEL is the canonical English. Will land in a follow-up content drop.",
+ subtitle: "The disciplinary canons of the First Ecumenical Council, 325",
+ blurb:
+ "All twenty disciplinary canons of the Council in full, each followed where extant by the Ancient Epitome (the short Greek-tradition synaxarial summary of the canon's force). Covers episcopal ordination, the discipline for the lapsed, the reception of returning heretics and schismatics (Cathari, Paulianists, Meletians), the precedence of the ancient sees of Alexandria, Rome, Antioch, and Jerusalem, and the rule of standing for prayer on the Lord's Day and at Pentecost.",
+ topics: ["Canons", "Discipline", "Episcopate", "Pascha", "Penitential", "Lord's Day"],
  },
  ],
  },
