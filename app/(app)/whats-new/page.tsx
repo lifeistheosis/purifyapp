@@ -20,6 +20,28 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v6.0",
+ kind: "A major release: the Councils, at last",
+ date: "May 24, 2026",
+ blurb:
+ "If you are new here, welcome. v6.0 is a major release, the largest content step Purify has taken since v5.0 and the one that brings the Councils section to a place where it can stand on its own. Four of the Seven Ecumenical Councils now live in the corpus, each with a full historical profile, principal Fathers cross-linked to their saint pages, principal opposing parties named honestly, and the conciliar documents themselves readable in full. Nicaea (325) and Constantinople (381) ship complete: Creed, Synodal Letter, and Canons for each. Ephesus (431) and Chalcedon (451) ship with their canons; their dogmatic Definitions are the next workstream. Twelve new saints joined the registry along the way (every named principal Father of the first two councils, plus St. Gregory Palamas). The em-dash is gone from the project's editorial prose. The marketing nav on the home page now actually links to the Councils section. The site reads, for the first time, as it was meant to read: the Faith confessed by the Fathers in council, with every link traceable to a public-domain primary source.",
+ items: [
+ "Four Ecumenical Councils now in the corpus, where v5.7 had only the foundation and v5.8 had only Nicaea. Each carries a six-paragraph historical narrative, what the Council defined, what it condemned, the principal Holy Fathers (cross-linked to /saints where present in the registry), and the principal opposing parties named honestly.",
+ "Nicaea I (325) ships complete: The Symbol of the Faith with the anathemas, The Synodal Letter to the Church of Alexandria, and The Twenty Canons in full. Source: Schaff & Wace NPNF Vol. 14 (1900), public domain, via Wikisource and the archive.org plain-text OCR.",
+ "Constantinople I (381) ships complete: The Niceno-Constantinopolitan Creed (the Creed you recite at every Divine Liturgy) together with the related baptismal creed of St. Epiphanius's Ancoratus, The Synodical Letter to Pope Damasus and the West, The Letter to the Emperor Theodosius, and The Seven Canons in full.",
+ "Ephesus (431) opens with The Eight Canons in full, plus the full historical profile from the Antiochene exegetical tradition through Nestorius's refusal of the Theotokos, St. Cyril of Alexandria's letters, the Council itself with the famous Ephesian procession (\"Praised be the Theotokos\"), and the Formula of Reunion of 433. Cyril's Second and Third Letters to Nestorius, the Twelve Anathemas, and the Formula of Reunion are flagged as pending.",
+ "Chalcedon (451) opens with The Thirty Canons in full, plus the full historical profile from the Eutychian controversy through the Robber Council of 449, the death of St. Flavian, the accession of St. Marcian and St. Pulcheria, the Council itself with the famous acclamation \"Peter has spoken through Leo,\" the dispute over Canon XXVIII, and the post-Chalcedonian Oriental Orthodox separation. The Definition of Faith itself and the Tome of Pope Leo are flagged as pending. On the Oriental Orthodox question Purify takes the principled silence already set out on /about: where the Fathers spoke with one voice, we serve their text; where later traditions differ on the reception, we name the difference, surface the standard Eastern Orthodox position, and direct the reader to their priest.",
+ "Twelve new saints in the registry. From the first two Councils: St. Constantine the Great, St. Alexander of Alexandria, St. Hosius of Cordova, St. Eustathius of Antioch, St. Spyridon of Trimythous (with his demonstration of the Trinity at Nicaea), St. Theodosius the Great, St. Meletius of Antioch, St. Cyril of Jerusalem, St. Nectarius of Constantinople, St. Diodore of Tarsus, and St. Epiphanius of Salamis. Plus St. Gregory Palamas, the Archbishop of Thessaloniki and defender of hesychasm, with The Holy Hesychast (the Hagioritic Tome of 1340 in PD English plus a guided summary of the Triads). Each new saint has a full life, a first work, a feast-day entry in the calendar, and an icon on the profile.",
+ "The Twenty Canons of Nicaea and the Seven Canons of Constantinople I were unblockable from this sandbox's network for a while (Wikisource hosts the canons-index pages but not the per-canon text; CCEL and New Advent are DNS-unreachable from the build environment). The eventual path: open the archive.org plain-text OCR of NPNF Vol. 14 in a real browser, copy the canons section, drop it into a project file, parse with a small extractor that handles the OCR's word-spacing, hyphenated line breaks, and Roman-numeral garbles (\"xni\" for \"xiii\", \"in\" for \"III\", \"n\" for \"II\"). The same parser carried all four Councils' canons through.",
+ "Em-dashes removed from every line of project-authored prose: pages, registry bios, plan files, audit docs, release notes, all editorial fields in JSON content. The 28 em-dashes inside verbatim public-domain source paragraphs (NPNF/ANF translators 1885-1900) are deliberately preserved per the verbatim-source rule in CONTRIBUTING.md.",
+ "Bug fix: the marketing Navbar on the home page never had a link to the Councils section, because the link had only been wired into AppNav (the in-app navigation). The home-page nav now matches.",
+ "Calendar: feast-day entries with slug-links to the saint profiles for every council Father added (May 21 Constantine, May 29 Alexander, Aug 27 Hosius, Feb 21 Eustathius, Dec 12 Spyridon, Jan 17 Theodosius, Feb 12 Meletius, Mar 18 Cyril of Jerusalem, Oct 11 Nectarius, Oct 22 Diodore, May 12 Epiphanius, Nov 14 Palamas). Plus the conciliar feasts themselves: July 9 (Holy Fathers of Ephesus), July 16 (Holy Fathers of Chalcedon).",
+ "Icons resolve cleanly across every new entry: real images for every council Father and for Palamas, with several arriving as drops that the build pass renamed from informal upload filenames to the slug-form paths the registry expects.",
+ "SAINTS-AUDIT.md updated: per-council priority queue reflects all four councils now in the corpus; the remaining three (Constantinople II 553, Constantinople III 680-681, Second Nicaea 787) named with their priority documents.",
+ "Footer + home banner + /whats-new chip step to v6.0.",
+ ],
+ },
+ {
  version: "v5.9",
  kind: "Nicaea refined, Constantinople opened",
  date: "May 23, 2026",
@@ -628,91 +650,81 @@ export default function WhatsNewPage() {
  What&rsquo;s new
  </p>
  <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
- v5.9 &middot; Nicaea refined, Constantinople opened
+ v6.0 &middot; A major release: the Councils, at last
  </p>
  </div>
 
  <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- The Creed you recite at Liturgy, in its own Council.
+ The Faith confessed by the Fathers in council, in their own words.
  </h1>
 
  <p className="mt-8 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- If you are new here, welcome. We&rsquo;re so glad you came. The
- Second Ecumenical Council opens tonight on <Link href="/councils" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">/councils</Link>:
- Constantinople 381, the council of the 150 Holy Fathers under St.
- Theodosius the Great. It gave the Church the Creed she still
- recites at every Divine Liturgy, every Baptism, every Compline,
- and on the day of repose, completing the Nicene Symbol with the
- full article on the Holy Spirit and the closing articles on the
- Church, baptism, the resurrection, and the age to come. Three
- documents in full: the Creed itself (with the closely related
- Salaminian baptismal Creed of St. Epiphanius&rsquo;s Ancoratus
- preserved alongside as the scholarly witness to a prior liturgical
- use), the Synodical Letter to Pope Damasus and the Western bishops
- written the year after the Council, and the short Letter to the
- Emperor Theodosius requesting imperial ratification.
+ If you are new here, welcome. We&rsquo;re so glad you came.
+ v6.0 is a major release, the largest content step Purify has taken
+ since v5.0 a week ago, and the one that brings the Councils
+ section to a place where it can stand on its own. <Link href="/councils" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">/councils</Link>
+ now holds four of the Seven Ecumenical Councils in full profile,
+ each with the historical narrative that produced it, the principal
+ Holy Fathers cross-linked to their saint pages, the principal
+ opposing parties named honestly, and the conciliar documents
+ themselves readable in full from the public-domain Schaff &amp;
+ Wace edition of the Nicene and Post-Nicene Fathers.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- The historical narrative names what the Council was up against:
- fifty years of imperial Arianism after Nicaea, the rise of the
- Pneumatomachi (the &ldquo;Spirit-fighters&rdquo;) who taught that
- the Spirit was a creature, and the parallel rise of Apollinarianism
- from one of the old defenders of Nicaea himself. It names the
- Fathers who shaped the Council&rsquo;s work: St. Gregory the
- Theologian, whose Five Theological Orations preached in
- Constantinople the year before are the dogmatic foundation the
- Council ratified, and who withdrew from the throne and from the
- presidency to spare the Council any pretext for division; St.
- Gregory of Nyssa, the youngest of the great Cappadocians, present
- as the principal living voice of Trinitarian theology; St. Meletius
- of Antioch, who presided over the opening and died during the
- Council; St. Cyril of Jerusalem, vindicated against earlier
- slanders; and St. Nectarius, the unbaptized senator made bishop of
- Constantinople in a single day.
+ Nicaea (325) and Constantinople (381) ship complete: the Creed of
+ each, the Synodal Letter of each, and the Canons of each. Ephesus
+ (431) and Chalcedon (451) ship with their Canons, the disciplinary
+ backbone of the Patristic age: the Theotokos-affirming canons of
+ Ephesus, the famous Chalcedonian thirty including Canon XXVIII on
+ the precedence of New Rome. Their dogmatic Definitions, the
+ Christological charters Eastern Orthodoxy has rested on for
+ sixteen centuries, are the next workstream and will land in the
+ coming days. Three Councils remain after that, and they too will
+ come.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- The First Ecumenical Council got an audit pass at the same time,
- with seven small refinements landing in the same release: the
- symbolic 318 Fathers is now named with both the historical count
- (about 250, per Eusebius&rsquo;s Vita Constantini) and the Genesis
- 14:14 typology the Fathers themselves read into it; the question of
- who presided is softened from a flat claim to honor the genuine
- contest between Hosius of the West (who signs first) and Eustathius
- of Antioch (who gave the opening oration in the Eastern tradition);
- St. Spyridon&rsquo;s demonstration of the Trinity is told plainly
- (the brick, the fire upward, the water downward, the clay in his
- palm); the two bishops deposed with Arius are named; the homoousios
- gloss steps from the older &ldquo;of one essence&rdquo; to the
- modern liturgical &ldquo;consubstantial,&rdquo; with both rendered;
- and a Pending section now appears on the council profile so readers
- know the Twenty Canons of Nicaea are coming.
+ Twelve new saints joined the registry on the way. Every named
+ principal Father of the first two Councils now has his own profile:
+ the Emperor St. Constantine the Great and the Empress St. Helena;
+ St. Alexander of Alexandria who deposed Arius; St. Hosius of
+ Cordova, the elder of the West; St. Eustathius of Antioch, the
+ confessor of the Eastern tradition; St. Spyridon of Trimythous,
+ with the brick miracle at Nicaea; St. Theodosius the Great, who
+ closed the Arian century and convened the Second Council; St.
+ Meletius of Antioch, thrice exiled and presider over the Second
+ Council until his death there; St. Cyril of Jerusalem and his
+ Catechetical Lectures; St. Nectarius, the unbaptized senator made
+ bishop of Constantinople in a single day; St. Diodore of Tarsus,
+ the teacher of Chrysostom; and St. Epiphanius of Salamis, whose
+ Ancoratus preserves the baptismal creed scholars hold as a
+ near-cousin of the Niceno-Constantinopolitan Symbol. Plus St.
+ Gregory Palamas, the Archbishop of Thessaloniki and defender of
+ hesychasm.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- On contested questions: the same principled posture the <Link href="/about" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">/about</Link> page
- states. Where the Fathers spoke with one voice (the Definition and
- the Creed) we serve their text. Where later traditions differ on
- the reception of a council, we name the difference and direct the
- reader to their priest. The Filioque clause that the West would
- later add to the Creed is named for what it is: not in the original
- Greek of 381 and never part of the Creed as the Orthodox Church
- receives and recites it.
+ On contested questions Purify keeps the principled posture the
+ <Link href="/about" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"> /about</Link> page already sets out. Where the Fathers spoke with
+ one voice (the Definition and the Creed of each Council) we serve
+ their text verbatim. Where later traditions differ on the reception
+ of a Council, we name the difference, surface the standard Eastern
+ Orthodox position, and direct the reader to their own priest. The
+ Filioque clause that the West would later add to the Creed of 381
+ is named for what it is: not in the original Greek and never part
+ of the Creed as the Orthodox Church receives and recites it. The
+ post-Chalcedonian separation of the Oriental Orthodox Church is
+ named honestly as a historical fact and not adjudicated.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- The releases earlier today are worth a sentence each. <strong className="text-paper font-semibold">v5.6</strong> was
- the quiet one: privacy policy audited line by line against the code
- that records page visits, working CI on every push, a proper
- architecture document, a contributor&rsquo;s guide that forbids
- language-model saint biographies, and an honest ten-criterion audit
- of the whole site committed to the repository. <strong className="text-paper font-semibold">v5.7</strong> was the loud
- content one: all seven authentic letters of St. Ignatius of Antioch
- in full, both of Polycarp&rsquo;s works, St. Gregory of Nyssa&rsquo;s
- Great Catechism, and three new saints. <strong className="text-paper font-semibold">v5.8</strong> opened the Councils
- section with the foundation and the First Council itself. <strong className="text-paper font-semibold">v5.9</strong>
- is the audit pass on Nicaea I and the Second Council added in full.
+ The promise underneath has not moved. Purify is free. It is
+ ad-free. There is nothing to buy and no one to track you, only
+ prayer, Scripture, the saints, the Councils, and the year of the
+ Church laid out plainly. Pray with the Church. Read with the
+ Fathers. Walk the year. We&rsquo;re honored you would do any of
+ it with us.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
@@ -732,7 +744,7 @@ export default function WhatsNewPage() {
  {/* Closing + signature */}
  <div className="mt-16 pt-10 border-t border-paper/10">
  <p className="font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- Thank you for staying with us through five majors. Glory to God
+ Thank you for staying with us through six majors. Glory to God
  for all things.
  </p>
 
