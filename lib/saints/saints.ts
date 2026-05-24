@@ -2549,6 +2549,55 @@ export const SAINTS: Saint[] = [
  },
  ],
  },
+ {
+ slug: "gregory-palamas",
+ byname: "Defender of Hesychasm",
+ iconUrl: "/saints/icons/gregory-palamas.jpg",
+ name: "St. Gregory Palamas",
+ epithet: "Archbishop of Thessaloniki · Theologian of the Uncreated Light · Defender of the Hesychasts",
+ born: "1296 (Constantinople)",
+ reposed: "November 14, 1359 (Thessaloniki)",
+ feastDays: ["November 14", "Second Sunday of Great Lent"],
+ see: "Thessaloniki",
+ shortBio:
+ "Athonite monk and Archbishop of Thessaloniki who, against the philosophical attacks of Barlaam the Calabrian, defended the hesychast prayer of the heart and gave the Eastern Orthodox Church its mature theological grammar for what man knows of God: that God is unknowable in His essence and truly known in His uncreated energies, the same uncreated divine light the three disciples saw on Tabor.",
+ life: [
+ "Gregory was born in Constantinople in 1296, the eldest son of a senator at the court of the Emperor Andronikos II. His father reposed when Gregory was a small child, and the Emperor himself took on the upbringing of the four orphaned children, intending Gregory for a high office in the imperial administration. Gregory studied at the imperial university, where he excelled especially in Aristotelian logic; at twenty he gave a public oration on Aristotle that astonished his teachers.",
+ "He resolved to enter the monastic life. He brought his two brothers, his mother, his two sisters, and most of the household servants to the consent of his decision, and the whole household entered monasteries at the same time: Gregory and his brothers to Mount Athos, his mother and sisters to a convent in Constantinople. Gregory was twenty years old; the year was 1316.",
+ "On the Holy Mountain he was placed under the elder Nikodemos of Vatopedi and was given the prayer of Jesus and a long period of silence and watchfulness in the cell. After the death of Nikodemos he passed to the Great Lavra, then to a small hermitage near it, then, when the Turkish raids made the southern Athonite peninsula unsafe, to the monastery of St. Sabbas at Beroea on the mainland, where he spent five more years in stricter asceticism. He returned to Athos in 1331 and was ordained to the priesthood.",
+ "In 1335 the controversy began that would consume the rest of his life. The Calabrian philosopher and theologian Barlaam, who had come to Constantinople from southern Italy, attacked the Athonite hesychasts in writing: he ridiculed their practice of the Jesus Prayer joined to the breath, their claim that pure-hearted ascetics could behold an uncreated divine light, and their teaching that God can be truly known in something other than the bare logical concept of His existence. Gregory was asked by the Athonite community to answer Barlaam. The Triads in Defense of the Holy Hesychasts (1338–1341), three sets of three treatises each, are the principal answer. In them Gregory worked out the distinction the Church has held ever since: God's essence is unknowable and incommunicable to any creature, but His uncreated energies, His operations, His grace, are truly God Himself, and through them the saints really partake of God, by deification, while remaining creatures.",
+ "Three Constantinopolitan synods, in 1341, 1347, and 1351, vindicated the Palamite teaching against Barlaam, against the later attacks of Akindynos and Nikephoros Gregoras, and against the philosophical view that the divine light is created. The Synodal Tomos of 1351 was placed in the Synodikon of Orthodoxy and is read aloud in many Orthodox churches on the First Sunday of Great Lent (Sunday of Orthodoxy). The Tomos Hagioreitikos, the brief Athonite confession Gregory had co-drafted with the elders of the Holy Mountain in 1340 in support of the hesychast practice, was received by the Church as the Athonite witness to the same teaching.",
+ "In 1347 Gregory was consecrated Archbishop of Thessaloniki. He held the see for the last twelve years of his life, interrupted by a year of captivity among the Turks (1354–1355) when his ship was taken in the Sea of Marmara; in captivity he debated theology calmly with the Muslim scholars set over him, and was ransomed by the Christians of Bursa. He reposed at Thessaloniki on November 14, 1359, at the age of sixty-three. Nine years later, in 1368, the Patriarch Philotheos Kokkinos of Constantinople (who had been one of his disciples) presided over his glorification as a saint; the second Sunday of Great Lent was set aside for the universal commemoration of his memory and his teaching, as a kind of continuation of the Sunday of Orthodoxy: that the Faith confessed against the iconoclasts in 843 is the same Faith confessed against the philosophical attack on hesychasm in 1351.",
+ ],
+ quotes: [
+ {
+ text: "The illumination, or divine and deifying grace, is not the essence but the energy of God.",
+ source: "Triads III.1.29 (summary of the Palamite distinction, as preserved in the Synodal Tomos of 1351)",
+ },
+ {
+ text: "He who participates in the divine energy becomes, in some sense, himself light: he is united to the light and beholds with the light all that remains hidden to those who do not have this grace.",
+ source: "Tomos Hagioreitikos (Hagioritic Tome), 1340, on the deifying light of Tabor",
+ },
+ ],
+ works: [
+ {
+ slug: "the-holy-hesychast",
+ title: "The Holy Hesychast",
+ subtitle: "The Hagioritic Tome of 1340, the Apolytikia, and a guided summary of the Triads",
+ year: "1340 (Hagioritic Tome); 1338-1341 (Triads); 1351 (Synodal Tomos)",
+ blurb:
+ "His own Hagioritic Tome of 1340 in PD English; the standard Apolytikia for the November 14 feast and the Second Sunday of Great Lent; and a guided summary of the central teaching of the Triads (the essence/energies distinction, the uncreated light of Tabor, the prayer of the heart) drawn from the Synodal Tomos of 1351 read at the Sunday of Orthodoxy.",
+ topics: [
+ "Hesychasm",
+ "Essence and Energies",
+ "Uncreated Light",
+ "Tabor",
+ "Jesus Prayer",
+ "Deification",
+ ],
+ },
+ ],
+ },
 ];
 
 export function getSaint(slug: string): Saint | null {
