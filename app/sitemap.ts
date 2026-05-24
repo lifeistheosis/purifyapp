@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { allChapterParams, BOOKS } from "@/lib/bible/books";
 import { SAINTS } from "@/lib/saints/saints";
+import { COUNCILS } from "@/lib/councils/councils";
 import { SITE_URL as SITE } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -15,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/support",
     "/bible",
     "/saints",
+    "/councils",
     "/calendar",
     "/prayers",
     "/prayers/today",
@@ -66,6 +68,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
         lastModified: now,
         changeFrequency: "monthly",
         priority: 0.5,
+      });
+    }
+  }
+
+  // Councils + documents.
+  for (const c of COUNCILS) {
+    entries.push({
+      url: `${SITE}/councils/${c.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.65,
+    });
+    for (const d of c.documents) {
+      entries.push({
+        url: `${SITE}/councils/${c.slug}/${d.slug}`,
+        lastModified: now,
+        changeFrequency: "monthly",
+        priority: 0.55,
       });
     }
   }

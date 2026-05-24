@@ -4,6 +4,28 @@
 **Scope.** 47 saints in `lib/saints/saints.ts`. Audited against the realistic public-domain ceiling (NPNF Series 1 & 2, ANF, CCEL, Wikisource, Project Gutenberg, and pre-1929 English translations of the Russian-tradition fathers).
 **Companion to.** `AUDIT.md` (overall site audit). This file is the per-saint expansion plan that backs audit gap C1 ("content depth").
 
+## Sister workstream: the Councils section
+
+A second content section opened in v5.8: `/councils`, parallel to `/saints`. Foundation (registry, types, two routes, AppNav + sitemap wiring) plus the First Ecumenical Council (Nicaea 325) shipped with two of three planned documents:
+
+- **The Symbol of the Faith** — the original Nicene Creed, ratified 325, with the anathemas. NPNF2 Vol 14 (Schaff & Wace 1900) PD via Wikisource.
+- **The Synodal Letter to the Church of Alexandria** — the Council's encyclical announcing the deposition of Arius, the Meletian settlement, and the common Paschalion. Same source.
+- **The Twenty Canons** — DEFERRED. Wikisource hosts the canons-index page but not the per-canon text. CCEL and New Advent are unreachable from the build sandbox. Will land in a follow-up content drop once a clean PD source is wired (likely a hand-typed transcription from an archive.org Schaff scan, or fetched once outside-network access is restored).
+
+Per-council priority order for the next sprints:
+
+| # | Council | Year | Priority docs to ship |
+| - | --- | ---: | --- |
+| 1 | First Nicaea | 325 | Symbol ✓, Synodal Letter ✓, Twenty Canons (DEFERRED) |
+| 2 | First Constantinople | 381 | Niceno-Constantinopolitan Creed, Seven Canons, Synodal Letter to the Western Church |
+| 3 | Ephesus | 431 | Cyril's Twelve Anathemas, the Definition (acceptance of Cyril's Second Letter to Nestorius), Seven Canons |
+| 4 | Chalcedon | 451 | The Definition of Faith (two natures), Twenty-Eight Canons, Tome of Leo. **Highest editorial care on the Oriental Orthodox separation framing.** |
+| 5 | Second Constantinople | 553 | The Sentence (Three Chapters), Fourteen Anathemas Against the Three Chapters, the Anathemas Against Origen |
+| 6 | Third Constantinople | 680-681 | The Definition (two wills), the Definition of Faith, the Eighteen Anathemas — anchors St. Maximus the Confessor's profile (he died for what this Council later affirmed) |
+| 7 | Second Nicaea | 787 | The Definition on the Holy Icons, the Twenty-Two Canons. Closes the iconographic foundation underneath every saint icon on the site. |
+
+The schema (`lib/councils/councils.ts` + `lib/councils/load.ts`) is in place and stable. Each subsequent council needs a registry entry plus 1-3 JSON documents at `data/councils/{slug}/{doc}.json`. Same fetch/build pattern as the saints work imports — Wikisource Series II Volume XIV is the canonical source for all seven.
+
 ## Headline
 
 Two kinds of gap are present:

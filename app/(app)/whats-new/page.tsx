@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ChangelogControls } from "@/components/whats-new/ChangelogControls";
 
 export const metadata = {
@@ -18,6 +19,24 @@ type Entry = {
 
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
+ {
+ version: "v5.8",
+ kind: "The Councils, beginning at Nicaea",
+ date: "May 23, 2026",
+ blurb:
+ "A new section opens on the site: /councils. It will hold the seven Ecumenical Councils of the Orthodox Church — between Nicaea in 325 and the Second Council of Nicaea in 787 — with their Definitions, their Canons, the Holy Fathers principally associated with each, and the historical context that produced them. The foundation lands tonight with the First Council itself: the original Nicene Creed (the first half of the Creed every Orthodox Christian still recites at the Divine Liturgy), the Council's Synodal Letter to the Church of Alexandria announcing the deposition of Arius and the common Paschalion, the 318 Holy Fathers named in their roles, and the historical narrative from St. Constantine's summons to Athanasius's defense of the homoousios. The Twenty Canons of Nicaea are deferred to the next content drop while a clean public-domain source is wired up; the other six councils will land in sequence in the coming releases. On contested questions — notably the post-Chalcedonian separation of the Oriental Orthodox — the section observes the same principled silence /about already states: where the Fathers spoke with one voice, we serve their text; where later traditions differ on the reception of a council, we name the difference and direct the reader to their priest.",
+ items: [
+ "New section at /councils — index page listing the seven Ecumenical Councils, each as a card with its ordinal, year, location, and a short summary. Linked from the global app navigation alongside Bible, Prayers, Saints, and Calendar.",
+ "New per-council profile page at /councils/[slug]: hero with the ordinal name and year and location, the presiding emperor and the traditional count of bishops, two-column lists of what the Council defined and what it condemned, a multi-paragraph historical narrative, the principal Holy Fathers (cross-linked to the saint profiles when present in the registry), the principal opposing parties named honestly, and the documents themselves listed as readable links.",
+ "New document reader at /councils/[slug]/[document] — the same reader register the saints' works use: breadcrumb, hero, source line, editorial framing where a section needs it, the conciliar text verbatim, and editorial marginalia for the right column.",
+ "The First Ecumenical Council shipped: hero, historical narrative (St. Constantine's summons, the 318 Holy Fathers, Athanasius's role as a young deacon, the choice of ὁμοούσιος as the unyielding word), the principal Fathers (Athanasius, Alexander of Alexandria, Hosius of Cordova, Nicholas of Myra, Spyridon of Trimythous), and the principal opponents (Arius, Eusebius of Nicomedia) named with their teaching.",
+ "Two documents for Nicaea I in full: The Symbol of the Faith (the original 325 Creed with the anathemas, plus the alternate Eusebian Creed that was presented and set aside) and The Synodal Letter to the Church of Alexandria (the Council's encyclical announcing the deposition of Arius, the Meletian settlement, and the common Paschalion). Both verbatim from Schaff &middot; Wace, NPNF Series II Vol. 14 (1900), public domain, via Wikisource.",
+ "The Twenty Canons of Nicaea are deferred to the next content drop. Wikisource hosts the canons-index but not the per-canon text; CCEL and New Advent are unreachable from the build sandbox. A follow-up will fetch them from a clean source or hand-transcribe from an archive.org Schaff scan.",
+ "The new /councils route is wired into the sitemap.xml for search-engine indexing alongside Bible, Saints, and Calendar.",
+ "SAINTS-AUDIT.md is updated with a sister-workstream section detailing the per-council priority queue for the remaining six councils, with notes on the editorial care required at Chalcedon (the Oriental Orthodox separation) and the cross-link between Council III Constantinople and St. Maximus the Confessor.",
+ "Footer + home banner + /whats-new chip step to v5.8.",
+ ],
+ },
  {
  version: "v5.7",
  kind: "The Apostolic Fathers, the whole way through",
@@ -586,85 +605,74 @@ export default function WhatsNewPage() {
  What&rsquo;s new
  </p>
  <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
- v5.7 &middot; The Apostolic Fathers, the whole way through
+ v5.8 &middot; The Councils, beginning at Nicaea
  </p>
  </div>
 
  <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- The chain from John to the Fathers, in their own words.
+ The Seven Ecumenical Councils, beginning with the 318 Fathers at Nicaea.
  </h1>
 
  <p className="mt-8 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- If you are new here, welcome. We&rsquo;re so glad you came. Two
- releases landed together this evening. v5.6 is the quiet one: the
- first published privacy policy, a working continuous integration
- pipeline that runs every test on every push, a proper architecture
- document, a contributor&rsquo;s guide that forbids language-model
- saint biographies in writing, and an honest ten-criterion audit of
- the whole site committed to the repository for anyone who wants to
- read it. v5.7 is the loud one: the Apostolic Fathers, all the way
- through, in the words they wrote in chains.
+ If you are new here, welcome. We&rsquo;re so glad you came. A new
+ section opens on Purify tonight: <Link href="/councils" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">/councils</Link>.
+ It will hold the seven Ecumenical Councils of the Orthodox Church
+ &mdash; between Nicaea in 325 and the Second Council of Nicaea in
+ 787 &mdash; with their dogmatic Definitions, their disciplinary
+ Canons, the Holy Fathers principally associated with each, and
+ the historical narrative that produced them. The foundation lands
+ with the First Council itself, and the other six will follow in
+ sequence over the coming releases.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- St. Ignatius of Antioch&rsquo;s seven authentic letters, all of
- them, are now on the site in the public-domain Roberts-Donaldson
- translation: to the Ephesians, to the Magnesians, to the Trallians,
- to the Romans, to the Philadelphians, to the Smyrnaeans, and to
- Polycarp. The famous lines are all here in their place: the
- Eucharist as the medicine of immortality; the three mysteries
- wrought in silence by God; &ldquo;I am the wheat of God, and let
- me be ground by the teeth of the wild beasts, that I may be found
- the pure bread of Christ&rdquo;; the risen Lord&rsquo;s &ldquo;Lay
- hold, handle me, and see that I am not an incorporeal spirit.&rdquo;
+ In place tonight on the new section: the historical context of
+ Nicaea, the 318 Holy Fathers, St. Constantine&rsquo;s summons, the
+ young deacon Athanasius&rsquo;s defense of the homoousios; the
+ principal Fathers and the principal opponents named in their roles;
+ and the two principal documents themselves, verbatim from the
+ public-domain Schaff &amp; Wace edition of NPNF Series II Vol. 14
+ &mdash; the original Nicene Creed with its anathemas (the first
+ half of the Creed every Orthodox Christian still recites at the
+ Divine Liturgy), and the Council&rsquo;s Synodal Letter announcing
+ the deposition of Arius, the Meletian settlement, and the common
+ Paschalion. The Twenty Canons of Nicaea are still being sourced and
+ will land in the next content drop.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- Polycarp now has both of the works the Church has from him: the
- short letter he wrote to the Philippians within months of
- Ignatius&rsquo;s martyrdom, the only writing of his to come down
- to us; and The Martyrdom of Polycarp, the encyclical the church of
- Smyrna sent to the church of Philomelium about the burning of
- their old bishop in the stadium. It is the earliest surviving
- Christian martyrology, the first known use of the word
- &ldquo;birthday&rdquo; for the death-day of a martyr, and the
- model that every later acts of the martyrs followed.
+ On contested questions &mdash; notably the post-Chalcedonian
+ separation of the Oriental Orthodox Church &mdash; the section
+ observes the same principled silence the <Link href="/about" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">/about</Link> page
+ already states. Where the Fathers spoke with one voice, we serve
+ their text. Where later traditions differ on the reception of a
+ council, we name the difference, surface the standard Eastern
+ Orthodox position, and direct the reader to their priest. Purify
+ does not adjudicate between communions.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- St. Gregory of Nyssa, the youngest of the great Cappadocians, who
- until tonight had a profile but no readable work, now has The
- Great Catechism in full: the Prologue and forty chapters of his
- catechist&rsquo;s notebook on the Trinity, the Incarnation, the
- Atonement, and the Sacraments. Around 120 KB of primary text,
- from the 1893 Schaff and Wace edition, assembled from forty-one
- separate transcription pages. One of the three or four most
- important systematic theological works of the Eastern fourth
- century, alongside St. Athanasius on the Incarnation and
- St. Basil on the Holy Spirit.
- </p>
-
- <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- And three new saints join the registry. The Holy Archangel
- Michael, the great Captain of the Bodiless Hosts, with his life
- from Daniel, Jude, and the Apocalypse, the November 8 Synaxis,
- and the Miracle at Chonae. St. Nektarios of Aegina, the
- most-loved modern wonderworker of the Greek-speaking world,
- unjustly deposed from his see, who spent the rest of his life
- teaching poor seminarians and the sisters of his small Aegina
- convent, and was glorified in 1961. And St. Florian of Lorch, the
- Roman officer who left his post to stand with the imprisoned
- Christian soldiers at Lauriacum and was drowned with a millstone
- in 304: a pre-Schism Western martyr received in the East as a
- saint of the Undivided Church.
+ Behind the new section are the two releases that landed earlier
+ this evening, and they are worth a sentence each. <strong className="text-paper font-semibold">v5.6</strong> was the quiet one:
+ the first published privacy policy audited line by line against
+ the code that records page visits, a working continuous-integration
+ pipeline that runs every lint rule and every test on every push, a
+ proper architecture document, a contributor&rsquo;s guide that
+ forbids language-model saint biographies in writing, and an honest
+ ten-criterion audit of the whole site committed to the repository
+ for anyone who wants to read it. <strong className="text-paper font-semibold">v5.7</strong> was the loud one: all seven
+ authentic letters of St. Ignatius of Antioch in full, both of
+ Polycarp&rsquo;s works (the letter to the Philippians and the
+ Martyrdom), St. Gregory of Nyssa&rsquo;s Great Catechism, and three
+ new saints in the registry &mdash; the Holy Archangel Michael, St.
+ Nektarios of Aegina, and St. Florian of Lorch.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
  The promise underneath has not moved. Purify is free. It is
  ad-free. There is nothing to buy and no one to track you, only
- prayer, Scripture, the saints, and the year of the Church laid
- out plainly. The privacy page in v5.6 spells out every field and
- every third party by name. Pray with the Church. Read with the
+ prayer, Scripture, the saints, the Councils, and the year of the
+ Church laid out plainly. Pray with the Church. Read with the
  Fathers. Walk the year. We&rsquo;re honored you would do any of
  it with us.
  </p>
