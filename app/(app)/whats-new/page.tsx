@@ -662,8 +662,9 @@ export default function WhatsNewPage() {
  If you are new here, welcome. We&rsquo;re so glad you came.
  v6.0 is a major release, the largest content step Purify has taken
  since v5.0 a week ago, and the one that brings the Councils
- section to a place where it can stand on its own. <Link href="/councils" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">/councils</Link>
- now holds four of the Seven Ecumenical Councils in full profile,
+ section to a place where it can stand on its own. The{" "}
+ <Link href="/councils" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">councils</Link>{" "}
+ section now holds four of the Seven Ecumenical Councils in full profile,
  each with the historical narrative that produced it, the principal
  Holy Fathers cross-linked to their saint pages, the principal
  opposing parties named honestly, and the conciliar documents
