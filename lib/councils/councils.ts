@@ -298,6 +298,170 @@ export const COUNCILS: Council[] = [
  },
  ],
  },
+ {
+ slug: "ephesus",
+ ordinal: 3,
+ name: "The Third Ecumenical Council",
+ byname: "The Council of Ephesus",
+ year: 431,
+ location: "Ephesus in Asia Minor (modern Selçuk, Türkiye)",
+ presidingEmperor: "St. Theodosius II (with St. Valentinian III in the West)",
+ bishopsAttending: "Approximately 200 Holy Fathers",
+ shortBio:
+ "The Third Council, called by St. Theodosius II in 431 to settle the controversy raised by the Patriarch Nestorius of Constantinople. It deposed Nestorius and confessed the doctrine he had refused: that the Word of God truly became flesh in the womb of the Virgin Mary, who is therefore rightly called Theotokos, the Mother of God.",
+ defined: [
+ "That the Virgin Mary is truly Theotokos (Θεοτόκος, God-bearer, Mother of God), because the one whom she bore is one Person, the Word made flesh, who is God from all eternity.",
+ "That Christ is one Person in two natures, divine and human, united from the moment of His conception in the womb without confusion: the union is hypostatic, not merely a moral conjunction.",
+ "The Nicene Creed (in its 325 form, later completed at Constantinople 381) as the sole baptismal confession of the Faith; no other creed may be presented to candidates for baptism.",
+ "The autocephaly of the Church of Cyprus against the encroachment of the See of Antioch (Canon VIII), the constitutional precedent for the autocephaly of other national Churches.",
+ ],
+ condemned: [
+ "Nestorianism: the teaching of Nestorius, Patriarch of Constantinople, that there are in Christ two distinct persons (a divine and a human) in moral conjunction rather than hypostatic union, with the consequence that Mary is rightly called Christotokos (Mother of Christ) but not Theotokos (Mother of God).",
+ "Pelagianism: the teaching of the British monk Pelagius that man can attain to salvation by his own natural powers without the necessity of grace, condemned at Ephesus in solidarity with the Council of Carthage of 418 and the prior Western condemnations.",
+ "Celestianism: the related Pelagian teaching of Celestius.",
+ ],
+ life: [
+ "By the 420s the long Trinitarian struggle of the fourth century had given way to a new question: how the union of the divine and the human in the one Christ is to be confessed. The Antiochene exegetical tradition, with its strong sense of the integrity of Christ's human nature, found in the Bishop of Mopsuestia, Theodore (the teacher of John Chrysostom's old fellow-disciple), a teacher who pressed the distinction between the two natures so far as to speak almost of two distinct persons united in one. His pupil Nestorius, made Patriarch of Constantinople in 428, took up the same idiom and preached publicly in his cathedral that Mary should not be called Theotokos (Mother of God), because no creature can have given birth to the divine nature; she should be called Christotokos (Mother of Christ) instead.",
+ "The Patriarch of Alexandria, St. Cyril, answered. In a series of letters to Nestorius (the Second Letter and the Third Letter are the famous ones) he set out the case that the Theotokos was not a title of Mary's dignity but a title of Christ's identity: the one who was born of her was the eternal Word in His own person, made flesh in her womb without confusion of natures and without the introduction of a second person. To call her Theotokos was to confess that the man Jesus Christ was God; to refuse the title was to confess that the man Jesus Christ was someone other than God, joined to God by grace alone, in which case the work of salvation is no longer the work of God Himself.",
+ "Pope Celestine of Rome, in synod at Rome in 430, formally condemned Nestorius and entrusted the execution of the sentence to Cyril. Cyril sent Nestorius a third letter appending Twelve Anathemas summarizing the case against him. The Emperor Theodosius II, while sympathetic to Nestorius personally, summoned an Ecumenical Council to settle the question.",
+ "The Council opened on June 22, 431, in the Church of the Theotokos at Ephesus. About two hundred bishops were present. Cyril presided. The Council waited some weeks for the Antiochene contingent under John of Antioch, who supported Nestorius and was delayed on the road; when they did not arrive, the Council proceeded. It read Cyril's Second Letter to Nestorius and unanimously accepted it as conformable to the Nicene Faith; it read Nestorius's reply and unanimously condemned it; it deposed Nestorius from the throne of Constantinople. The crowds of Ephesus, who had loved the Theotokos for centuries as the patroness of their city, lit torches that night and accompanied the Fathers in procession crying, \"Praised be the Theotokos.\"",
+ "John of Antioch arrived four days later with the Eastern bishops and held a counter-synod that deposed Cyril and Memnon of Ephesus. The papal legates from Rome then arrived and joined Cyril's Council, ratifying the deposition of Nestorius and the Theotokos confession. The Emperor, after months of confusion, accepted the Council's decision; Nestorius was exiled, eventually to the Egyptian desert, where he reposed around the year 450 still refusing the title.",
+ "Two years later, in 433, Cyril and John of Antioch reconciled through the Formula of Reunion, a short Christological statement drafted at Antioch and accepted at Alexandria. It received the Theotokos and the hypostatic union, and Cyril for his part acknowledged that the language of \"two natures\" could be used of Christ in a sense compatible with His one person. The Formula is one of the foundations on which the Council of Chalcedon would build twenty years later.",
+ ],
+ principalFathers: [
+ {
+ slug: "cyril-of-alexandria",
+ name: "St. Cyril of Alexandria",
+ role: "Patriarch of Alexandria; presider of the Council; author of the Second and Third Letters to Nestorius and the Twelve Anathemas. The principal theological voice of the Council from its first session.",
+ },
+ {
+ name: "St. Memnon of Ephesus",
+ role: "Bishop of Ephesus, host of the Council in the great Church of the Theotokos in his city; deposed by John of Antioch's counter-synod and restored.",
+ },
+ {
+ name: "St. Juvenal of Jerusalem",
+ role: "Patriarch of Jerusalem; one of the senior bishops at the Council; ratified the Theotokos and the deposition of Nestorius.",
+ },
+ {
+ name: "St. Celestine of Rome",
+ role: "Pope of Rome; condemned Nestorius at the Roman synod of 430 in advance of the Ecumenical Council, and entrusted the execution of the sentence to Cyril. Represented at Ephesus by his legates Arcadius, Projectus, and Philip.",
+ },
+ ],
+ principalOpposed: [
+ {
+ name: "Nestorius, Patriarch of Constantinople",
+ teaching: "Preached publicly that Mary is rightly called Christotokos (Mother of Christ) but not Theotokos (Mother of God), and taught that the union of the divine and human natures in Christ is a conjunction of two distinct persons in one prosopon of dignity, rather than a hypostatic union in the person of the Word. Deposed by the Council and exiled.",
+ },
+ {
+ name: "Pelagius and Celestius",
+ teaching: "British and Italian monks of the prior generation who taught that man can attain to righteousness by his own natural powers without the necessity of saving grace. Condemned at Ephesus in solidarity with the prior Western condemnations.",
+ },
+ ],
+ documents: [
+ {
+ slug: "the-eight-canons",
+ title: "The Eight Canons",
+ subtitle: "The disciplinary canons of the Council, 431",
+ blurb:
+ "All eight canons of the Council of Ephesus in full, each followed where extant by the Ancient Epitome. Covers the reception of the Nestorian and Pelagian parties, the restoration of clergy unjustly deposed by Nestorius's faction, the integrity of the Nicene Creed as the sole baptismal confession (Canon VII), and the autocephaly of the Church of Cyprus against the encroachment of Antioch (Canon VIII).",
+ topics: ["Canons", "Nestorianism", "Pelagianism", "Creed", "Autocephaly"],
+ },
+ ],
+ pendingDocuments: [
+ {
+ title: "Cyril's Second Letter to Nestorius (received by the Council)",
+ note: "The Letter the Council formally read and unanimously accepted as conformable to the Nicene Faith — the dogmatic charter of the Council. Pending a clean public-domain source.",
+ },
+ {
+ title: "Cyril's Third Letter to Nestorius, with the Twelve Anathemas",
+ note: "Cyril's sharper second polemic, with the famous Twelve Anathemas summarizing the case against Nestorianism. Technically Cyril's own work but received in the Ephesine corpus. Pending a clean PD source.",
+ },
+ {
+ title: "The Formula of Reunion (433)",
+ note: "The Christological statement drafted at Antioch and accepted at Alexandria two years after the Council, by which Cyril and John of Antioch were reconciled. One of the foundations on which Chalcedon would build. Pending a clean PD source.",
+ },
+ ],
+ },
+ {
+ slug: "chalcedon",
+ ordinal: 4,
+ name: "The Fourth Ecumenical Council",
+ byname: "The Council of Chalcedon",
+ year: 451,
+ location: "Chalcedon (modern Kadıköy, İstanbul, Türkiye), across the Bosphorus from Constantinople",
+ presidingEmperor: "St. Marcian (with St. Pulcheria as Empress regnant in the East; Valentinian III in the West)",
+ bishopsAttending: "Approximately 520 Holy Fathers (the largest of the Seven)",
+ shortBio:
+ "The Fourth Council, called by St. Marcian and St. Pulcheria in 451 to settle the Eutychian controversy. It confessed Christ as one Person in two natures, without confusion, change, division, or separation — the formula on which Eastern Orthodox Christology has rested ever since. The post-Chalcedonian Oriental Orthodox separation, named honestly below, is the most consequential rift in the early Church.",
+ defined: [
+ "The Christological formula in its mature form: that the one Lord Jesus Christ is to be acknowledged in two natures (ἐν δύο φύσεσιν), divine and human, without confusion (ἀσυγχύτως), without change (ἀτρέπτως), without division (ἀδιαιρέτως), and without separation (ἀχωρίστως); the distinction of natures by no means taken away by the union, but rather the properties of each preserved and concurring in one Person and one Hypostasis.",
+ "The full reception of the Nicene Faith (325) and the Constantinopolitan completion (381) as inviolable, and the Cyrilline letters (the Second Letter to Nestorius, the Letter to John of Antioch) as the standard against which Christological language is to be measured.",
+ "The Tome of Pope Leo I (449) as conformable to the Nicene and Cyrilline Faith and a normative statement of the two natures. (The Tome's reception was the practical occasion for the Council's own Definition.)",
+ "Thirty disciplinary canons covering the clerical life: simoniacal ordination, ordination at large, the deaconess order, the marriage of readers and singers, jurisdiction of metropolitans, the procedure for clerical lawsuits, the protection of monasteries, and (in Canon XXVIII) the extension to the See of Constantinople of the prerogatives the First Council of Constantinople had given New Rome.",
+ ],
+ condemned: [
+ "Eutychianism: the teaching of the elderly Archimandrite Eutyches of Constantinople that after the union there is only one nature in Christ (a divine nature, the human nature being absorbed). Eutyches was deposed in 448 by Patriarch Flavian of Constantinople and then restored at the so-called Robber Council of Ephesus in 449; Chalcedon condemned him definitively.",
+ "The Robber Council of Ephesus (449): not an Ecumenical Council but a violent synod presided by Dioscorus of Alexandria, which restored Eutyches, deposed Flavian (who died of his injuries days later), and prevented the reading of the Tome of Leo. Chalcedon annulled all its acts.",
+ "Dioscorus of Alexandria: deposed by the Council for his presidency of the Robber Council and for refusing repeated summons to answer for it. The Council's sentence was personal and procedural, not directly on his Christology; the wider Christological dispute with the non-Chalcedonian party began in earnest after his deposition.",
+ ],
+ life: [
+ "Twenty years after the Council of Ephesus had settled the Nestorian question and twenty years after the Formula of Reunion had healed the breach between Cyril and the Antiochene party, a new Christological dispute opened in Constantinople. The Archimandrite Eutyches, the aged superior of a great monastery near the imperial city, was an outspoken anti-Nestorian who taught publicly that in Christ, after the union, there is only one nature: the divine nature, which has absorbed the human. The Patriarch of Constantinople, St. Flavian, summoned a local synod in 448, examined the doctrine, and deposed Eutyches.",
+ "Eutyches appealed to the Emperor Theodosius II and to his powerful patron Dioscorus, the Patriarch of Alexandria and successor to Cyril. Theodosius summoned a council to meet at Ephesus in August 449 to re-examine the case. Dioscorus presided. The Council restored Eutyches, deposed Flavian (who was beaten so badly that he died on the road into exile a few days later), and prevented the reading of the Tome of Pope Leo, the dogmatic letter Leo had sent to Flavian setting out the Christology of the West. The papal legates protested and withdrew. Pope Leo, hearing what had happened, named the council the Latrocinium, the Robber Council, and refused to recognize its acts.",
+ "Theodosius II died in 450 in a fall from his horse. His sister St. Pulcheria, the most theologically educated of the imperial family, took the throne and married the senior general Marcian, who became co-emperor. Pulcheria and Marcian summoned a new Ecumenical Council to undo the work of the Robber Council and settle the question once and for all. It convened at Chalcedon, across the Bosphorus from Constantinople, in October of 451. About five hundred and twenty bishops attended, the largest gathering of the Ecumenical era. The papal legates presided in the Pope's name, with the imperial commissioners managing the procedure on behalf of the emperor.",
+ "The Council annulled the acts of the Robber Council, restored the memory of Flavian, deposed Dioscorus of Alexandria for his presidency at the Robber Council and his refusal to answer the summons, condemned Eutyches by name, and at its Fifth Session (October 22) issued the Definition of Faith: that the one Lord Jesus Christ is to be acknowledged in two natures, without confusion, without change, without division, without separation. The four alpha-privatives have been the negative grammar of Eastern Orthodox Christology ever since.",
+ "The Council also enacted thirty disciplinary canons. The famous Canon XXVIII confirmed and extended to the See of Constantinople the prerogatives the First Council of Constantinople had given to New Rome, against the formal protest of the Roman legates. The Pope did not receive Canon XXVIII (the Roman Church's reasons are noted in the editorial commentary that accompanies the canon's source text); the Eastern Orthodox Church received it as the canonical foundation of the Patriarchate of Constantinople and the order of the five (later four) ancient sees.",
+ "On the post-Chalcedonian separation: the Council's deposition of Dioscorus and its Definition of Faith were not received by the Egyptian and Syrian churches that held to the strict Cyrilline formula \"one incarnate nature of the divine Word.\" These churches gathered into what is today called the Oriental Orthodox communion (Coptic, Syriac, Armenian, Ethiopian, Eritrean, Malankara) — historically distinct from the Eastern Orthodox communion that received Chalcedon. The Christological difference between the two communions has been the subject of formal theological dialogue since the 1960s. The Eastern Orthodox Church has not formally received the Oriental Orthodox confession as identical to her own; the question is genuinely contested within the Eastern Orthodox jurisdictions themselves. Purify, in keeping with the doctrinal stance set out on /about, does not adjudicate the question: it names the historical separation honestly, serves the Definition and the Tome as the Council itself issued them, and directs the reader to their own bishop and to the published dialogue documents for further direction.",
+ ],
+ principalFathers: [
+ {
+ name: "St. Pope Leo I (the Great)",
+ role: "Pope of Rome; not present at the Council in person but present through his Tome, the dogmatic letter on Christology he had sent to Flavian in 449. When the Tome was finally read at the Council's Second Session, the assembled Fathers cried, \"Peter has spoken through Leo.\"",
+ },
+ {
+ name: "St. Anatolius of Constantinople",
+ role: "Patriarch of Constantinople; one of the four presiders alongside the papal legates. Carried the work of the Council on the Eastern side.",
+ },
+ {
+ slug: "cyril-of-jerusalem",
+ name: "St. Juvenal of Jerusalem",
+ role: "Patriarch of Jerusalem; secured at this Council the elevation of Jerusalem from a metropolitanate of Caesarea Palaestina to one of the five great sees (the Pentarchy). (Cross-link is to St. Cyril of Jerusalem, the predecessor whose Catechetical Lectures shaped the see's catechetical tradition.)",
+ },
+ {
+ name: "St. Marcian and St. Pulcheria",
+ role: "Eastern Emperor and Empress; summoned the Council, attended in person at the Sixth Session, ratified the Definition of Faith, and gave the Council the imperial weight by which its decrees became civil as well as ecclesial law throughout the Eastern half of the empire.",
+ },
+ ],
+ principalOpposed: [
+ {
+ name: "Eutyches of Constantinople",
+ teaching: "Aged Archimandrite of a great monastery near Constantinople; taught that in Christ, after the union, there is only one nature, the divine nature having absorbed the human. The Council deposed him by name and condemned the formula.",
+ },
+ {
+ name: "Dioscorus of Alexandria",
+ teaching: "Patriarch of Alexandria and successor to Cyril; presided over the Robber Council of Ephesus in 449. Deposed at Chalcedon for his presidency at the Robber Council and for refusing the summons to answer for it. His Christology proper was the strict Cyrilline formula \"one incarnate nature of the divine Word\"; the wider non-Chalcedonian (\"miaphysite\") movement received him as a confessor.",
+ },
+ ],
+ documents: [
+ {
+ slug: "the-thirty-canons",
+ title: "The Thirty Canons",
+ subtitle: "The disciplinary canons of the Council, 451",
+ blurb:
+ "All thirty disciplinary canons of the Council of Chalcedon in full, each followed where extant by the Ancient Epitome. Covers simoniacal ordination, ordination at large, the deaconess order, monastic life, jurisdiction of metropolitans, clerical lawsuits, and (in Canon XXVIII) the extension to the See of Constantinople of the prerogatives given to New Rome at the First Council of Constantinople. Canon XXVIII has been received by the Eastern Orthodox Church and has not been received by the Roman Catholic Church.",
+ topics: ["Canons", "Discipline", "Patriarchate", "Monasticism", "Diaconesses", "New Rome"],
+ },
+ ],
+ pendingDocuments: [
+ {
+ title: "The Definition of Faith (the Chalcedonian Definition)",
+ note: "The dogmatic charter of the Council and the formula on which Eastern Orthodox Christology has rested ever since: Christ acknowledged in two natures, without confusion, without change, without division, without separation. Pending a clean public-domain source.",
+ },
+ {
+ title: "The Tome of Pope Leo I (449)",
+ note: "The dogmatic letter Pope Leo sent to St. Flavian of Constantinople in 449, received at the Council's Second Session in 451 to the acclamation, \"Peter has spoken through Leo.\" Pending a clean PD source.",
+ },
+ ],
+ },
 ];
 
 export function getCouncil(slug: string): Council | null {
