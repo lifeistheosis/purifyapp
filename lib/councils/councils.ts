@@ -288,11 +288,13 @@ export const COUNCILS: Council[] = [
  "The short letter the Fathers sent to St. Theodosius the Great accompanying the Canons, asking for imperial ratification of the Council's decrees, with thanks for the emperor's defense of the true Faith.",
  topics: ["Letter", "Symphonia", "Canons", "Theodosius"],
  },
- ],
- pendingDocuments: [
  {
+ slug: "the-seven-canons",
  title: "The Seven Canons",
- note: "The disciplinary canons (the affirmation of Nicaea, the diocesan jurisdiction rule, the honor of Constantinople as New Rome, and the reception of returning heretical groups) are pending a clean public-domain source. Wikisource hosts the canons-index but not the per-canon text. Will land in the same content drop as the Nicene canons.",
+ subtitle: "The disciplinary canons of the Second Ecumenical Council, 381-382",
+ blurb:
+ "All seven canons of the Council in full, each followed where extant by the Ancient Epitome. Covers the affirmation of Nicaea against the named heresies, the diocesan jurisdiction rule, the precedence of Constantinople (New Rome) after Rome, the deposition of Maximus the Cynic, the reception of the Tome of the West, the procedure for accusations against bishops, and the reception of returning heretics by category (re-baptism for Eunomians and Sabellians; chrismation for Arians, Macedonians, and Apollinarians).",
+ topics: ["Canons", "Discipline", "Patriarchate", "Heresy", "Reception", "New Rome"],
  },
  ],
  },
