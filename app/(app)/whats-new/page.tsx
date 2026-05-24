@@ -20,6 +20,29 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v5.9",
+ kind: "Nicaea refined, Constantinople opened",
+ date: "May 23, 2026",
+ blurb:
+ "Two pieces this evening. First, an honest audit of the First Council page surfaced seven refinements, all landed: the symbolic number of the 318 Fathers is now named with both the historical count (about 250, per Eusebius's Vita Constantini) and the Genesis 14:14 typology the Fathers themselves read into the number; St. Hosius's presidency is softened from a flat claim to the more accurate description of him as the elder of the West who signs first in the subscriptions, with St. Eustathius of Antioch named as the giver of the opening oration in the Eastern tradition; St. Spyridon's demonstration of the Trinity is now told plainly (the brick, the fire upward, the water downward, the clay in his palm); the two bishops deposed with Arius are named (Secundus of Ptolemais and Theonas of Marmarica); the homoousios gloss is updated to the modern liturgical rendering (consubstantial) with the older Hapgood rendering noted alongside; and a Pending section now appears on the council profile so readers know the Twenty Canons of Nicaea are coming once a clean public-domain source is wired. Second, the Second Ecumenical Council opens: Constantinople 381, the council of the 150 Holy Fathers under St. Theodosius the Great, which gave the Church the Creed she still recites at every Divine Liturgy. Three documents in full: the Niceno-Constantinopolitan Creed itself (with the related baptismal Creed of fourth-century Salamis preserved by St. Epiphanius), the Synodical Letter to Pope Damasus and the Western bishops written the following year, and the short Letter to the Emperor Theodosius requesting imperial ratification.",
+ items: [
+ "Nicaea I refinement: the historical note on the 318 Holy Fathers is updated with Eusebius's count of about 250 actual attendees and the patristic typological reading of the number (Genesis 14:14, Abraham's 318 trained servants, read by the Fathers as a type of the Faith carrying the Church through Christ).",
+ "Nicaea I refinement: St. Hosius of Cordova is now described as the elder of the West and the emperor's confidant who signs first in the subscriptions, with St. Eustathius of Antioch added to the principal Fathers as the giver of the opening address to the Council in the Eastern tradition. The flat claim that Hosius \"presided\" is softened to reflect that the question of presidency at Nicaea is genuinely contested.",
+ "Nicaea I refinement: St. Spyridon's demonstration of the Holy Trinity to the assembled Fathers is now told in its received form: the brick taken into his hand, the sign of the Cross, the fire upward, the water downward, the clay remaining in his palm. Three natures held in one substance.",
+ "Nicaea I refinement: the two bishops who refused to subscribe the Creed with Arius (Secundus of Ptolemais and Theonas of Marmarica) are now named in the historical narrative, cross-referencing the names that already appear in the Synodal Letter.",
+ "Nicaea I refinement: the gloss on ὁμοούσιος is updated from the older \"of one essence\" to the modern liturgical \"consubstantial,\" with both renderings noted (Hapgood tradition vs. current English liturgical use).",
+ "Nicaea I refinement: the Symbol document's framing of the Eusebian Creed (section 3) is rewritten to acknowledge that the standard modern reading sees Eusebius's letter to his diocese as apologetic, and that the Fathers did not so much adopt his creed as look past it.",
+ "New schema field on Council registry: `pendingDocuments`. Surfaces on the council profile page as a faint \"Pending\" section beneath the readable documents, listing documents that belong to the council but are not yet wired. Used immediately on Nicaea I (the Twenty Canons) and Constantinople I (the Seven Canons).",
+ "The Second Ecumenical Council (Constantinople 381) added: full historical narrative from the long Arian struggle of the post-Nicene fifty years through the rise of the Pneumatomachi and the work of the Cappadocians; the 150 Holy Fathers; the brief presidency of St. Gregory the Theologian and his withdrawal in self-sparing humility; the principal Fathers (Gregory the Theologian, Gregory of Nyssa, Meletius of Antioch, Cyril of Jerusalem, Nectarius, Diodore of Tarsus) cross-linked to the saint profiles where present in the registry; and the principal opposing parties named honestly (the Pneumatomachi, Apollinaris, Eunomius).",
+ "Constantinople I document: The Niceno-Constantinopolitan Creed in full, in three sections (framing + the Holy Creed as ratified by the 150 Fathers + the closely related Salaminian baptismal Creed of St. Epiphanius's Ancoratus 120 from 374, the scholarly witness to a prior liturgical use the Council ratified). With editorial notes on the Filioque (not in the original Greek), the \"whose kingdom shall have no end\" anti-Marcellan addition, and the optional \"holy\" in the article on the Church.",
+ "Constantinople I document: The Synodical Letter to Pope Damasus and the Western bishops at Rome (382), the Eastern bishops' summary of the Faith confessed at Constantinople, the heresies condemned (Sabellius, the Eunomians, the Arians, the Pneumatomachi), and the canonical confirmation of the three new Eastern patriarchs (Nectarius of Constantinople, Flavian of Antioch, Cyril of Jerusalem).",
+ "Constantinople I document: The short Letter to the Emperor Theodosius (381) requesting imperial ratification of the Council's decrees, with the editorial note on \"by the prayers of the Saints\" as one of the earliest formal conciliar witnesses to the Orthodox doctrine of the intercession of the saints.",
+ "The Seven Canons of Constantinople I are pending the same content drop as the Twenty Canons of Nicaea (Wikisource hosts the canons-index but not the per-canon text; the Schaff & Wace edition on CCEL is currently unreachable from the build sandbox).",
+ "SAINTS-AUDIT.md updated: per-council priority queue reflects Nicaea I and Constantinople I as the two councils now in the corpus.",
+ "Footer + home banner + /whats-new chip step to v5.9.",
+ ],
+ },
+ {
  version: "v5.8",
  kind: "The Councils, beginning at Nicaea",
  date: "May 23, 2026",
@@ -605,67 +628,91 @@ export default function WhatsNewPage() {
  What&rsquo;s new
  </p>
  <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
- v5.8 &middot; The Councils, beginning at Nicaea
+ v5.9 &middot; Nicaea refined, Constantinople opened
  </p>
  </div>
 
  <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- The Seven Ecumenical Councils, beginning with the 318 Fathers at Nicaea.
+ The Creed you recite at Liturgy, in its own Council.
  </h1>
 
  <p className="mt-8 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- If you are new here, welcome. We&rsquo;re so glad you came. A new
- section opens on Purify tonight: <Link href="/councils" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">/councils</Link>.
- It will hold the seven Ecumenical Councils of the Orthodox Church,
- between Nicaea in 325 and the Second Council of Nicaea in
- 787, with their dogmatic Definitions, their disciplinary
- Canons, the Holy Fathers principally associated with each, and
- the historical narrative that produced them. The foundation lands
- with the First Council itself, and the other six will follow in
- sequence over the coming releases.
+ If you are new here, welcome. We&rsquo;re so glad you came. The
+ Second Ecumenical Council opens tonight on <Link href="/councils" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">/councils</Link>:
+ Constantinople 381, the council of the 150 Holy Fathers under St.
+ Theodosius the Great. It gave the Church the Creed she still
+ recites at every Divine Liturgy, every Baptism, every Compline,
+ and on the day of repose, completing the Nicene Symbol with the
+ full article on the Holy Spirit and the closing articles on the
+ Church, baptism, the resurrection, and the age to come. Three
+ documents in full: the Creed itself (with the closely related
+ Salaminian baptismal Creed of St. Epiphanius&rsquo;s Ancoratus
+ preserved alongside as the scholarly witness to a prior liturgical
+ use), the Synodical Letter to Pope Damasus and the Western bishops
+ written the year after the Council, and the short Letter to the
+ Emperor Theodosius requesting imperial ratification.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- In place tonight on the new section: the historical context of
- Nicaea, the 318 Holy Fathers, St. Constantine&rsquo;s summons, the
- young deacon Athanasius&rsquo;s defense of the homoousios; the
- principal Fathers and the principal opponents named in their roles;
- and the two principal documents themselves, verbatim from the
- public-domain Schaff &amp; Wace edition of NPNF Series II Vol. 14:
- the original Nicene Creed with its anathemas (the first
- half of the Creed every Orthodox Christian still recites at the
- Divine Liturgy), and the Council&rsquo;s Synodal Letter announcing
- the deposition of Arius, the Meletian settlement, and the common
- Paschalion. The Twenty Canons of Nicaea are still being sourced and
- will land in the next content drop.
+ The historical narrative names what the Council was up against:
+ fifty years of imperial Arianism after Nicaea, the rise of the
+ Pneumatomachi (the &ldquo;Spirit-fighters&rdquo;) who taught that
+ the Spirit was a creature, and the parallel rise of Apollinarianism
+ from one of the old defenders of Nicaea himself. It names the
+ Fathers who shaped the Council&rsquo;s work: St. Gregory the
+ Theologian, whose Five Theological Orations preached in
+ Constantinople the year before are the dogmatic foundation the
+ Council ratified, and who withdrew from the throne and from the
+ presidency to spare the Council any pretext for division; St.
+ Gregory of Nyssa, the youngest of the great Cappadocians, present
+ as the principal living voice of Trinitarian theology; St. Meletius
+ of Antioch, who presided over the opening and died during the
+ Council; St. Cyril of Jerusalem, vindicated against earlier
+ slanders; and St. Nectarius, the unbaptized senator made bishop of
+ Constantinople in a single day.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- On contested questions, notably the post-Chalcedonian
- separation of the Oriental Orthodox Church, the section
- observes the same principled silence the <Link href="/about" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">/about</Link> page
- already states. Where the Fathers spoke with one voice, we serve
- their text. Where later traditions differ on the reception of a
- council, we name the difference, surface the standard Eastern
- Orthodox position, and direct the reader to their priest. Purify
- does not adjudicate between communions.
+ The First Ecumenical Council got an audit pass at the same time,
+ with seven small refinements landing in the same release: the
+ symbolic 318 Fathers is now named with both the historical count
+ (about 250, per Eusebius&rsquo;s Vita Constantini) and the Genesis
+ 14:14 typology the Fathers themselves read into it; the question of
+ who presided is softened from a flat claim to honor the genuine
+ contest between Hosius of the West (who signs first) and Eustathius
+ of Antioch (who gave the opening oration in the Eastern tradition);
+ St. Spyridon&rsquo;s demonstration of the Trinity is told plainly
+ (the brick, the fire upward, the water downward, the clay in his
+ palm); the two bishops deposed with Arius are named; the homoousios
+ gloss steps from the older &ldquo;of one essence&rdquo; to the
+ modern liturgical &ldquo;consubstantial,&rdquo; with both rendered;
+ and a Pending section now appears on the council profile so readers
+ know the Twenty Canons of Nicaea are coming.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- Behind the new section are the two releases that landed earlier
- this evening, and they are worth a sentence each. <strong className="text-paper font-semibold">v5.6</strong> was the quiet one:
- the first published privacy policy audited line by line against
- the code that records page visits, a working continuous-integration
- pipeline that runs every lint rule and every test on every push, a
- proper architecture document, a contributor&rsquo;s guide that
- forbids language-model saint biographies in writing, and an honest
- ten-criterion audit of the whole site committed to the repository
- for anyone who wants to read it. <strong className="text-paper font-semibold">v5.7</strong> was the loud one: all seven
- authentic letters of St. Ignatius of Antioch in full, both of
- Polycarp&rsquo;s works (the letter to the Philippians and the
- Martyrdom), St. Gregory of Nyssa&rsquo;s Great Catechism, and three
- new saints in the registry, the Holy Archangel Michael, St.
- Nektarios of Aegina, and St. Florian of Lorch.
+ On contested questions: the same principled posture the <Link href="/about" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">/about</Link> page
+ states. Where the Fathers spoke with one voice (the Definition and
+ the Creed) we serve their text. Where later traditions differ on
+ the reception of a council, we name the difference and direct the
+ reader to their priest. The Filioque clause that the West would
+ later add to the Creed is named for what it is: not in the original
+ Greek of 381 and never part of the Creed as the Orthodox Church
+ receives and recites it.
+ </p>
+
+ <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ The releases earlier today are worth a sentence each. <strong className="text-paper font-semibold">v5.6</strong> was
+ the quiet one: privacy policy audited line by line against the code
+ that records page visits, working CI on every push, a proper
+ architecture document, a contributor&rsquo;s guide that forbids
+ language-model saint biographies, and an honest ten-criterion audit
+ of the whole site committed to the repository. <strong className="text-paper font-semibold">v5.7</strong> was the loud
+ content one: all seven authentic letters of St. Ignatius of Antioch
+ in full, both of Polycarp&rsquo;s works, St. Gregory of Nyssa&rsquo;s
+ Great Catechism, and three new saints. <strong className="text-paper font-semibold">v5.8</strong> opened the Councils
+ section with the foundation and the First Council itself. <strong className="text-paper font-semibold">v5.9</strong>
+ is the audit pass on Nicaea I and the Second Council added in full.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">

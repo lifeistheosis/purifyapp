@@ -1,0 +1,42 @@
+{
+  "council": "first-constantinople",
+  "slug": "the-niceno-constantinopolitan-creed",
+  "title": "The Niceno-Constantinopolitan Creed",
+  "subtitle": "The Holy Creed which the 150 Fathers set forth, consonant with the Holy and Great Synod of Nice",
+  "source": "Schaff & Wace, Nicene and Post-Nicene Fathers, Series II, Vol. 14: The Seven Ecumenical Councils (Edinburgh: T&T Clark, 1900). Public domain. Source text via Wikisource. The Creed is preserved in all the Collections in the Acts of the Council of Chalcedon (451), through which the East and West together received it as ecumenical.",
+  "sections": [
+    {
+      "n": 1,
+      "title": "On the Holy Creed",
+      "framing": "The Creed below is the Symbol of Faith set forth by the 150 Fathers at Constantinople in 381. It is the Creed every Orthodox Christian recites at the Divine Liturgy, at every Baptism, at Compline, and on the day of repose. It carries the work of Nicaea forward in three directions: the article on the Holy Spirit, missing from the original Nicene Symbol, is filled out in full; the closing articles on the Church, baptism, the resurrection, and the age to come are added; and the article on the Son is expanded with the phrases the Cappadocian theological work of the intervening fifty years had clarified (\"begotten of his Father before all worlds,\" \"and was incarnate by the Holy Ghost and the Virgin Mary,\" \"whose kingdom shall have no end\"). The Filioque clause that the Roman Church would later add to the article on the Spirit is not in the original Creed of 381 and has never been part of the Creed as the Orthodox Church receives and recites it.",
+      "paragraphs": [
+        "The Creed is given here in the public-domain English of Schaff & Wace (NPNF Series II, Vol. 14, 1900). Section 2 carries the Creed in the form ratified by the Council; section 3 carries the closely related baptismal Creed of late-fourth-century Salamis preserved by St. Epiphanius in his Ancoratus, which scholarly opinion (Tillemont, Hefele, Lipsius) regards as a near-cousin or possible source of the Constantinopolitan formula."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "The Holy Creed",
+      "citation": "Set forth by the 150 Holy Fathers at Constantinople, 381 A.D.",
+      "paragraphs": [
+        "We believe in one God, the Father Almighty, maker of heaven and earth and of all things visible and invisible. And in one Lord Jesus Christ, the only begotten Son of God, begotten of his Father before all worlds, Light of Light, very God of very God, begotten not made, being of one substance with the Father, by whom all things were made. Who for us men and for our salvation came down from heaven and was incarnate by the Holy Ghost and the Virgin Mary, and was made man, and was crucified also for us under Pontius Pilate. He suffered and was buried, and the third day he rose again according to the Scriptures, and ascended into heaven, and sitteth at the Right Hand of the Father. And he shall come again with glory to judge both the quick and the dead. Whose kingdom shall have no end.",
+        "And we believe in the Holy Ghost, the Lord and Giver-of-Life, who proceedeth from the Father, who with the Father and the Son together is worshipped and glorified, who spake by the prophets. And we believe in one, holy, Catholic and Apostolic Church. We acknowledge one Baptism for the remission of sins, and we look for the resurrection of the dead and the life of the world to come. Amen."
+      ],
+      "notes": [
+        "\"Whose kingdom shall have no end\" was added in correction of the heresy of Marcellus of Ancyra, who, in over-zealous defense of Nicene language against the Arians, had taught that the Son's reign would end at the close of the age. The phrase had been in use for a generation before the Council (e.g. in the Creed of the Council of Antioch in 341); the 150 Fathers received it into the Symbol.",
+        "\"Holy\" before \"Catholic and Apostolic Church\" is in the Greek; some later Latin transmissions (notably the version in the collection of Isidore Mercator, and the form in the Anglican Book of Common Prayer) omit the word.",
+        "\"Who proceedeth from the Father\" is the clause from which the Latin Filioque (\"and from the Son\") was later expanded. The original Greek and the Orthodox liturgical recitation has only ἐκ τοῦ Πατρὸς ἐκπορευόμενον, the procession from the Father alone, in keeping with the Lord's own word in John 15:26."
+      ]
+    },
+    {
+      "n": 3,
+      "title": "A related baptismal creed: St. Epiphanius of Salamis, Ancoratus 120",
+      "framing": "The baptismal Creed of late-fourth-century Salamis, preserved by St. Epiphanius in his Ancoratus (chapter 120, written around 374, seven years before Constantinople), agrees almost word for word with the Constantinopolitan Creed. Scholarly opinion since Tillemont has held that the Council did not invent its Symbol but received and ratified a Creed already in liturgical use in the East. The Ancoratus text is preserved here as the principal documentary witness to that prior use, and as an extended commentary on the Faith from one of the great Cappadocian-era teachers.",
+      "citation": "St. Epiphanius of Salamis, Ancoratus 120, c. 374 A.D.",
+      "paragraphs": [
+        "We believe in one God the Father Almighty, maker of heaven and earth, and of all things visible and invisible: and in one Lord Jesus Christ, the only begotten Son of God, begotten of the Father before all worlds, that is of the substance of the Father, Light of Light, very God of very God, begotten not made, consubstantial with the Father: by whom all things were made, both in heaven and earth: who for us men and for our salvation came down from heaven, and was incarnate of the Holy Ghost and the Virgin Mary, and was made man, was crucified also for us under Pontius Pilate, and suffered, and was buried, and on the third day he rose again according to the Scriptures, and ascended into heaven, and sitteth on the right hand of the Father, and from thence he shall come again with glory to judge both the quick and the dead, whose kingdom shall have no end.",
+        "And in the Holy Ghost, the Lord and Giver of life, who proceedeth from the Father; who, with the Father and the Son together is worshipped and glorified, who spake by the prophets: in one holy Catholic and Apostolic Church. We acknowledge one baptism for the remission of sins; we look for the resurrection of the dead, and the life of the world to come.",
+        "And those who say that there was a time when the Son of God was not, and before he was begotten he was not, or that he was of things which are not, or that he is of a different hypostasis or substance, or pretend that he is effluent or changeable, these the Catholic and Apostolic Church anathematizes."
+      ]
+    }
+  ]
+}

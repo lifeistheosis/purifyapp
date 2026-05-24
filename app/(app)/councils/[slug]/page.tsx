@@ -193,6 +193,26 @@ export default async function CouncilProfilePage({
  </li>
  ))}
  </ul>
+
+ {c.pendingDocuments && c.pendingDocuments.length > 0 && (
+ <div className="mt-5 rounded-md border border-dashed border-paper/15 bg-paper/[0.015] px-5 py-4">
+ <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
+ Pending
+ </p>
+ <ul className="space-y-3">
+ {c.pendingDocuments.map((p, i) => (
+ <li key={i}>
+ <p className="font-display-serif text-[17px] text-paper/75">
+ {p.title}
+ </p>
+ <p className="mt-1 font-serif text-[14px] text-paper/55 leading-[1.6]">
+ {p.note}
+ </p>
+ </li>
+ ))}
+ </ul>
+ </div>
+ )}
  </div>
  </article>
  </section>

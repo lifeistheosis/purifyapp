@@ -16,8 +16,8 @@ Per-council priority order for the next sprints:
 
 | # | Council | Year | Priority docs to ship |
 | - | --- | ---: | --- |
-| 1 | First Nicaea | 325 | Symbol ✓, Synodal Letter ✓, Twenty Canons (DEFERRED) |
-| 2 | First Constantinople | 381 | Niceno-Constantinopolitan Creed, Seven Canons, Synodal Letter to the Western Church |
+| 1 | First Nicaea | 325 | Symbol ✓, Synodal Letter ✓, Twenty Canons (DEFERRED — Wikisource per-canon stubs) |
+| 2 | First Constantinople | 381 | Niceno-Constantinopolitan Creed ✓, Synodical Letter to the West ✓, Letter to Theodosius ✓, Seven Canons (DEFERRED — same as Nicaea I) |
 | 3 | Ephesus | 431 | Cyril's Twelve Anathemas, the Definition (acceptance of Cyril's Second Letter to Nestorius), Seven Canons |
 | 4 | Chalcedon | 451 | The Definition of Faith (two natures), Twenty-Eight Canons, Tome of Leo. **Highest editorial care on the Oriental Orthodox separation framing.** |
 | 5 | Second Constantinople | 553 | The Sentence (Three Chapters), Fourteen Anathemas Against the Three Chapters, the Anathemas Against Origen |
