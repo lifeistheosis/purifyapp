@@ -19,7 +19,7 @@ export async function generateMetadata({
  const doc = c?.documents.find((d) => d.slug === document);
  if (!c || !doc) return { title: "Document not found" };
  return {
- title: `${doc.title} — ${c.byname}`,
+ title: `${doc.title}, ${c.byname}`,
  description: doc.blurb,
  };
 }
@@ -96,7 +96,7 @@ export default async function CouncilDocumentPage({
  {s.notes && s.notes.length > 0 && (
  <ul className="mt-6 space-y-2 font-sans text-[13.5px] text-paper/55 leading-[1.6] border-t border-paper/10 pt-4">
  {s.notes.map((n, i) => (
- <li key={i}>— {n}</li>
+ <li key={i}>· {n}</li>
  ))}
  </ul>
  )}

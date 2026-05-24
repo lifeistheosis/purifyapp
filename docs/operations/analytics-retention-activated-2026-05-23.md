@@ -1,8 +1,8 @@
-# Analytics retention — activation log
+# Analytics retention, activation log
 
 This file records when the 90-day analytics-retention pg_cron job was first scheduled on the production Supabase project, and any subsequent re-schedules or pauses.
 
-The privacy page at [`/privacy`](../../app/(app)/privacy/page.tsx) promises 90-day retention. The schedule below is what enforces that promise. If the schedule is not active, the promise is not being kept — escalate immediately.
+The privacy page at [`/privacy`](../../app/(app)/privacy/page.tsx) promises 90-day retention. The schedule below is what enforces that promise. If the schedule is not active, the promise is not being kept, escalate immediately.
 
 ---
 
@@ -45,7 +45,7 @@ The schedule has not yet been activated on production as of the commit that intr
 
 Template for the first real entry:
 
-> ### 2026-MM-DD — initial activation
+> ### 2026-MM-DD, initial activation
 >
 > Operator: <name>
 > Action: scheduled `prune-analytics-90d` for the first time on the production Supabase project.

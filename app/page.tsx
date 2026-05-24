@@ -12,7 +12,7 @@ import { Cross } from "@/components/ui/icons/Cross";
 // banner, paschal greeting) refreshes daily without a redeploy.
 export const revalidate = 3600;
 
-// Four pillars, equal billing — Scripture, Saints, Calendar, Prayer.
+// Four pillars, equal billing, Scripture, Saints, Calendar, Prayer.
 const features = [
  {
  title: "Read with the Fathers",
@@ -32,7 +32,7 @@ const features = [
  },
 ];
 
-// Two per pillar — Scripture, Saints, Calendar, Prayer.
+// Two per pillar, Scripture, Saints, Calendar, Prayer.
 const categories: { label: string; href: string }[] = [
  { label: "The Gospel of John", href: "/bible/john/1" },
  { label: "The Psalter", href: "/bible/psalms/1" },

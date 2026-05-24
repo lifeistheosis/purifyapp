@@ -1,4 +1,4 @@
-# Purify — Audit
+# Purify, Audit
 
 **Date.** 2026-05-23
 **Method.** Code + content review of the working tree at `projects/orthoapp`, including the in-progress credibility sprint (Playwright + axe smoke suite, Lighthouse CI, GitHub Actions, jsx-a11y, `/privacy`, `ARCHITECTURE.md`, `CONTRIBUTING.md`, 90-day analytics retention docs).
@@ -17,7 +17,7 @@ The prior audit gave Purify 82-86/100 on a looser 0-5 rubric. The drop to 71 is 
 
 A score below 8 does not mean "bad." It means an exacting reviewer would notice.
 
-## Part A — C1-C10
+## Part A, C1-C10
 
 | ID  | Criterion                | Score | Prior (0-5) | One-line rationale                                                                                                |
 | --- | ------------------------ | ----- | ----------- | ----------------------------------------------------------------------------------------------------------------- |
@@ -25,7 +25,7 @@ A score below 8 does not mean "bad." It means an exacting reviewer would notice.
 | C2  | Source transparency      | 7/10  | 4/5         | Editor + series + vol cited (NPNF Schaff standard). No DOIs, no source URLs, no publication years.               |
 | C3  | UX / design polish       | 7/10  | 4/5         | Cardo polytonic Greek, restrained palette, 21:1 contrast, deliberate typography. Live mobile UX not verified this pass. |
 | C4  | Performance / tech       | 6/10  | n/a         | Server-first Next 16, optimal font loading. No image-pipeline policy, no route-segment error boundaries, 52 client components unaudited. |
-| C5  | Privacy + compliance     | 8/10  | 4/5         | Privacy page audited line-by-line vs `app/api/track/route.ts` — accurate. Retention cron documented, not provably scheduled. |
+| C5  | Privacy + compliance     | 8/10  | 4/5         | Privacy page audited line-by-line vs `app/api/track/route.ts`, accurate. Retention cron documented, not provably scheduled. |
 | C6  | Tests                    | 6/10  | 4/5         | 7 smoke specs (3 meaningful, 4 shallow). Axe + Lighthouse in CI. Pascha algorithm has zero coverage. CI currently red on a known lint error. |
 | C7  | Architecture doc         | 8/10  | 4/5         | Stack + routes + data layers + rendering strategy mapped. Missing links to `lib/calendar/orthodox.ts` and the calendar data JSONs. |
 | C8  | Contributor posture      | 8/10  | 4/5         | Strict content rules (PD only, citations, **no LLM-generated saint bios**). Missing `MAINTAINERS.md` + private security/doctrinal contact. |
@@ -33,7 +33,7 @@ A score below 8 does not mean "bad." It means an exacting reviewer would notice.
 | C10 | Accessibility            | 7/10  | 3/5         | WCAG 2.1 AA enforced (axe + LHCI 0.95 error). No skip link, no axe-on-interaction-state, 52 client components keyboard-unverified. |
 |     | **Total**                | **71** | 82-86 (loose) |                                                                                                                   |
 
-## Part B — V1-V5 (clergy-vetter lens)
+## Part B, V1-V5 (clergy-vetter lens)
 
 | ID  | Criterion                                   | Score | One-line rationale                                                                                                                 |
 | --- | ------------------------------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -41,7 +41,7 @@ A score below 8 does not mean "bad." It means an exacting reviewer would notice.
 | V2  | Liturgical accuracy                         | 9/10  | 6/6 sampled feasts (Theophany synaxis, Annunciation, Dormition, Cross, Entrance, Nativity) correct. Both calendars first-class.    |
 | V3  | Tone + voice                                | 9/10  | Believing-author register throughout. No startup tropes. No emoji. Liturgical cadence. The site's strongest dimension.             |
 | V4  | Language register                           | 7/10  | Strong English (Hapgood/Jordanville). No Greek transliteration policy. No Slavonic glosses. Patristic excerpts unmodernized. |
-| V5  | Citation density (contentious topics)       | 7/10  | Intentional silence on papacy, Filioque, jurisdictional disputes. Defensible — but unstated. A vetter wants the silence to be principled. |
+| V5  | Citation density (contentious topics)       | 7/10  | Intentional silence on papacy, Filioque, jurisdictional disputes. Defensible, but unstated. A vetter wants the silence to be principled. |
 |     | **Total**                                   | **41/50** |                                                                                                                                |
 
 ## Top 5 gaps, ordered by ROI on clergy endorsement

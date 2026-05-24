@@ -16,17 +16,17 @@ Requirements: Node 20+, npm.
 ```bash
 git clone https://github.com/<your-fork>/orthoapp.git
 cd orthoapp
-npm install --legacy-peer-deps   # required by .npmrc — see ARCHITECTURE.md
+npm install --legacy-peer-deps   # required by .npmrc, see ARCHITECTURE.md
 cp .env.example .env.local       # if present; otherwise see env vars below
 npm run dev                      # http://localhost:3000
 ```
 
 Environment variables (only the first two are required for local dev):
 
-- `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL.
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase anon key.
-- `SUPABASE_SERVICE_ROLE_KEY` — required to test `/api/track` or `/admin`.
-- `BIBLE_API_KEY`, `BIBLE_ID_NKJV`, `BIBLE_ID_NIV`, `BIBLE_ID_NLT` — optional. Without them, the licensed translations fail gracefully and only public-domain Scripture renders.
+- `NEXT_PUBLIC_SUPABASE_URL`, Supabase project URL.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`, Supabase anon key.
+- `SUPABASE_SERVICE_ROLE_KEY`, required to test `/api/track` or `/admin`.
+- `BIBLE_API_KEY`, `BIBLE_ID_NKJV`, `BIBLE_ID_NIV`, `BIBLE_ID_NLT`, optional. Without them, the licensed translations fail gracefully and only public-domain Scripture renders.
 
 ## Dev loop
 
@@ -44,7 +44,7 @@ CI runs all of the above on every push and pull request. PRs failing CI cannot m
 ## Branch + PR flow
 
 - Branch off `main` (e.g. `git checkout -b feat/akathist-theotokos`).
-- Keep changes scoped — one concern per PR.
+- Keep changes scoped, one concern per PR.
 - Push, open a PR against `main`. Squash-merge.
 - Tag breaking deploys in the next [/whats-new](app/(app)/whats-new/page.tsx) letter.
 
@@ -64,7 +64,7 @@ This is the strictest area of the project. The rule is simple: **everything trac
 - **Color is never the only signal.** Fast/feast/tone surfaces must also carry an icon + a label. Don't ship anything that fails this test.
 - **A11y is non-negotiable.** Every interactive control has an `aria-label` or visible label. Every non-decorative icon has alt text. `prefers-reduced-motion` is honored. Axe runs in CI and will block on violations.
 - **TypeScript strict.** No `any`. No `@ts-ignore` without a comment explaining why.
-- **No comments that restate the code.** Comments explain the *why* — a license constraint, a workaround, a non-obvious invariant. If removing the comment wouldn't confuse a reader, don't write it.
+- **No comments that restate the code.** Comments explain the *why*, a license constraint, a workaround, a non-obvious invariant. If removing the comment wouldn't confuse a reader, don't write it.
 - **No new dependencies** without a real need. The site renders the four pillars; it doesn't need a UI library.
 - **Bespoke icons in [`components/icons/`](components/icons/)** for identity-bearing surfaces. `lucide-react` is fine for utility icons.
 

@@ -4,11 +4,11 @@
  * robots.txt.
  *
  * Precedence:
- *   1. NEXT_PUBLIC_SITE_URL  — explicit override (set only for a real custom
+ *   1. NEXT_PUBLIC_SITE_URL , explicit override (set only for a real custom
  *                              domain we actually own).
- *   2. RENDER_EXTERNAL_URL   — auto-injected by Render for every web service
+ *   2. RENDER_EXTERNAL_URL  , auto-injected by Render for every web service
  *                              (e.g. https://purifyapp.onrender.com).
- *   3. Hard-coded onrender   — local dev fallback.
+ *   3. Hard-coded onrender  , local dev fallback.
  *
  * Defensive guard: we DO NOT own purify.app, so any source that resolves to
  * that host is ignored. This prevents a stale `NEXT_PUBLIC_SITE_URL` env var

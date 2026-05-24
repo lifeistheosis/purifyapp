@@ -50,7 +50,7 @@ export default function AboutPage() {
  morphology, and Strong&rsquo;s numbers, so a word can be hovered
  in either column and its match lights up in the other. Patristic
  commentary comes from Philip Schaff&rsquo;s Ante-Nicene and
- Nicene Fathers (1885&ndash;1900); St. John Chrysostom&rsquo;s
+ Nicene Fathers (1885-1900); St. John Chrysostom&rsquo;s
  homilies on John, Acts, Romans, the Corinthian letters,
  Ephesians through Philemon, and Hebrews now sit inline with
  the verses he is preaching.
@@ -100,7 +100,7 @@ export default function AboutPage() {
  prayer-rule check-offs, and bookmarks sync across devices;
  without one, the same things live in your browser&rsquo;s local
  storage on this device alone. Either way, nothing about your
- reading is sold or shared &mdash; the long version of that
+ reading is sold or shared, the long version of that
  promise, with every field and every third party named, is on
  the{" "}
  <Link

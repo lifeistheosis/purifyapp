@@ -68,8 +68,8 @@ export default function PrivacyPage() {
  300 characters. Used to tell phones from desktops in aggregate.
  </li>
  <li>
- A <em>coarse, city-level geolocation</em> &mdash; country,
- region, city, and the city&rsquo;s rough lat/long &mdash;
+ A <em>coarse, city-level geolocation</em>, country,
+ region, city, and the city&rsquo;s rough lat/long ,
  derived from your request IP via <a
  href="https://ipwho.is/"
  target="_blank"
@@ -156,15 +156,15 @@ export default function PrivacyPage() {
  </p>
  <ul className="mt-3 space-y-3 font-serif text-[18px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
- <strong>Supabase</strong> &mdash; hosted Postgres and auth. Stores
+ <strong>Supabase</strong>, hosted Postgres and auth. Stores
  your sync data and the anonymous analytics tables.
  </li>
  <li>
- <strong>Render</strong> &mdash; web hosting. Sees the same HTTP
+ <strong>Render</strong>, web hosting. Sees the same HTTP
  request traffic any host would.
  </li>
  <li>
- <strong>API.Bible</strong> (American Bible Society) &mdash; when
+ <strong>API.Bible</strong> (American Bible Society), when
  you read the NKJV, NIV, or NLT, we fetch that single chapter
  from API.Bible at request time and emit the publisher&rsquo;s
  FUMS usage token they require us to send. Public-domain
@@ -178,13 +178,13 @@ export default function PrivacyPage() {
  for the licensing detail.
  </li>
  <li>
- <strong>ipwho.is</strong> &mdash; free, server-side IP&rarr;city
+ <strong>ipwho.is</strong>, free, server-side IP&rarr;city
  lookup, used only on the first hit of an anonymous session, then
  cached server-side for six hours so the IP isn&rsquo;t looked up
  again.
  </li>
  <li>
- <strong>Buy Me a Coffee</strong> &mdash; only on{" "}
+ <strong>Buy Me a Coffee</strong>, only on{" "}
  <Link
  href="/support"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
@@ -196,7 +196,7 @@ export default function PrivacyPage() {
  records the donation total, not your identity.
  </li>
  <li>
- <strong>Discord</strong> &mdash; an external link, not embedded.
+ <strong>Discord</strong>, an external link, not embedded.
  No Discord code runs on Purify.
  </li>
  </ul>
@@ -213,12 +213,12 @@ export default function PrivacyPage() {
  href="/robots.txt"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >Our robots file</Link>{" "}
- disallows the twenty-two named AI crawlers we know about &mdash;
+ disallows the twenty-two named AI crawlers we know about ,
  GPTBot, OAI-SearchBot, ChatGPT-User, CCBot, Google-Extended,
  anthropic-ai, ClaudeBot, Claude-Web, PerplexityBot,
  Applebot-Extended, Bytespider, Amazonbot, Meta-ExternalAgent,
  cohere-ai, Diffbot, FacebookBot, YouBot, Timpi, MistralAI-User,
- DuckAssistBot, Scrapy, and PanguBot &mdash; from the entire site.
+ DuckAssistBot, Scrapy, and PanguBot, from the entire site.
  We&rsquo;ll add others as we learn about them.
  </p>
 

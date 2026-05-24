@@ -1,17 +1,17 @@
-# Analytics retention — 90-day rolling window
+# Analytics retention, 90-day rolling window
 
 The `/privacy` page promises that anonymous session and pageview rows are pruned at 90 days. This doc is the implementation of that promise.
 
-**Activated:** see [analytics-retention-activated-2026-05-23.md](./analytics-retention-activated-2026-05-23.md) for the activation log and the proof-of-schedule screenshot. Until that file shows an activation entry, the privacy promise is documented but not enforced — the operator who runs the schedule statement below is responsible for updating that file in the same commit.
+**Activated:** see [analytics-retention-activated-2026-05-23.md](./analytics-retention-activated-2026-05-23.md) for the activation log and the proof-of-schedule screenshot. Until that file shows an activation entry, the privacy promise is documented but not enforced, the operator who runs the schedule statement below is responsible for updating that file in the same commit.
 
 ## What gets pruned
 
 Two Supabase tables, written by [`app/api/track/route.ts`](../../app/api/track/route.ts):
 
-- `analytics_sessions` — one row per anonymous session. Pruning key: `first_seen` (or `last_seen`, whichever is older).
-- `analytics_pageviews` — one row per page load. Pruning key: the row's `created_at` (or join through `session_id`).
+- `analytics_sessions`, one row per anonymous session. Pruning key: `first_seen` (or `last_seen`, whichever is older).
+- `analytics_pageviews`, one row per page load. Pruning key: the row's `created_at` (or join through `session_id`).
 
-User sync data (highlights, bookmarks, prayer-rule check-offs, account) is **not** pruned by this job — it lives as long as the account does, and is removed when the user deletes their account from `/account`.
+User sync data (highlights, bookmarks, prayer-rule check-offs, account) is **not** pruned by this job, it lives as long as the account does, and is removed when the user deletes their account from `/account`.
 
 ## The prune statement
 
@@ -78,7 +78,7 @@ select count(*) from analytics_sessions where last_seen < now() - interval '90 d
 select count(*) from analytics_pageviews where created_at < now() - interval '90 days';
 ```
 
-If either is non-zero for more than 24h, the job didn't run — inspect `cron.job_run_details` for the failure and re-schedule.
+If either is non-zero for more than 24h, the job didn't run, inspect `cron.job_run_details` for the failure and re-schedule.
 
 ## If you ever change the window
 
