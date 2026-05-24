@@ -11,6 +11,7 @@ const navItems = [
   { label: "Bible", href: "/bible" },
   { label: "Prayers", href: "/prayers" },
   { label: "Saints", href: "/saints" },
+  { label: "Councils", href: "/councils" },
   { label: "Calendar", href: "/calendar" },
 ];
 
