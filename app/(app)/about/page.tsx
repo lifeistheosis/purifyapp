@@ -165,6 +165,20 @@ export default function AboutPage() {
  Join the Discord ↗
  </a>
  </p>
+ <p className="mt-4 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ And on Instagram,{" "}
+ <a
+ href="https://instagram.com/purifymylife"
+ target="_blank"
+ rel="noopener noreferrer"
+ className="text-gold hover:text-paper underline underline-offset-2 decoration-gold/35"
+ >
+ @purifymylife ↗
+ </a>{" "}
+ is where the day&rsquo;s saint, the day&rsquo;s fast, and the
+ occasional small note from Edgar go out. No reels, no chasing
+ the algorithm.
+ </p>
 
  {/* Money */}
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Instagram } from "@/components/ui/icons/Instagram";
 
 type LinkItem = { label: string; href: string; external?: boolean };
 
@@ -51,6 +52,7 @@ const cols: { heading: string; links: LinkItem[] }[] = [
  { label: "Your saved", href: "/saved" },
  { label: "Your account", href: "/account" },
  { label: "Discord", href: "https://discord.gg/VzBYYUsNJ6", external: true },
+ { label: "Instagram", href: "https://instagram.com/purifymylife", external: true },
  { label: "Write to us", href: "mailto:team@purify.app" },
  ],
  },
@@ -88,16 +90,34 @@ export function Footer() {
  </div>
  ))}
  </div>
- {/* Community strip, soft invitation to the Discord. */}
- <div className="mt-12 pt-6 border-t border-white/8 text-center">
+ {/* Community strip. Soft invitation: Discord for the longer
+ conversations, Instagram for the day-to-day. */}
+ <div className="mt-12 pt-6 border-t border-white/8 flex flex-col items-center gap-4">
+ <p className="font-sans text-[12px] uppercase tracking-[1.5px] text-paper/45">
+ Find us
+ </p>
+ <div className="flex items-center gap-3">
  <a
  href="https://discord.gg/VzBYYUsNJ6"
  target="_blank"
  rel="noopener noreferrer"
- className="font-sans text-[13px] text-[#a4adff] hover:text-paper transition-colors"
+ aria-label="Join the Purify Discord"
+ className="inline-flex items-center gap-2 rounded-pill border border-[#5865F2]/35 bg-[#5865F2]/[0.06] px-4 py-2 font-sans text-[13px] text-[#a4adff] hover:bg-[#5865F2]/[0.12] hover:border-[#5865F2]/55 hover:text-paper transition-colors"
  >
- Join the Discord, talk through prayer, akathists, and the road ahead →
+ <span aria-hidden className="text-[14px]">#</span>
+ Discord
  </a>
+ <a
+ href="https://instagram.com/purifymylife"
+ target="_blank"
+ rel="noopener noreferrer"
+ aria-label="Follow Purify on Instagram (@purifymylife)"
+ className="inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.04] px-4 py-2 font-sans text-[13px] text-paper/85 hover:bg-paper/10 hover:border-paper/45 hover:text-paper transition-colors"
+ >
+ <Instagram size={14} />
+ @purifymylife
+ </a>
+ </div>
  </div>
  <div className="mt-8 pt-6 border-t border-white/8 flex flex-col sm:flex-row items-center justify-between gap-4">
  <Link

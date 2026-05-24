@@ -143,11 +143,12 @@ export default async function SupportPage() {
  </div>
  </section>
 
- {/* Or join the community, Discord */}
+ {/* Or join the community, Discord + Instagram */}
  <section className="mt-10">
  <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  Or join the community
  </p>
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <a
  href="https://discord.gg/VzBYYUsNJ6"
  target="_blank"
@@ -159,16 +160,39 @@ export default async function SupportPage() {
  <p className="font-sans text-[16px] font-semibold text-paper leading-tight">
  Discord
  </p>
- <p className="mt-2 font-sans text-[13.5px] text-paper/70 leading-[1.6] max-w-[560px]">
- Prayer requests, akathist suggestions, content questions, and
- a place to be heard. Open to everyone.
+ <p className="mt-2 font-sans text-[13.5px] text-paper/70 leading-[1.6]">
+ Prayer requests, akathist suggestions, content questions,
+ and a place to be heard. Open to everyone.
  </p>
  </div>
  <span className="shrink-0 font-sans text-[13px] font-medium text-[#a4adff] group-hover:text-[#c7cdff] transition-colors mt-1">
- Open Discord ↗
+ Open ↗
  </span>
  </div>
  </a>
+ <a
+ href="https://instagram.com/purifymylife"
+ target="_blank"
+ rel="noopener noreferrer"
+ className="group block rounded-md border border-paper/15 bg-paper/[0.03] hover:border-gold/45 hover:bg-gold/[0.04] transition-colors p-5"
+ >
+ <div className="flex items-start justify-between gap-4">
+ <div className="min-w-0">
+ <p className="font-sans text-[16px] font-semibold text-paper leading-tight">
+ Instagram &middot; @purifymylife
+ </p>
+ <p className="mt-2 font-sans text-[13.5px] text-paper/70 leading-[1.6]">
+ The day&rsquo;s saint, the day&rsquo;s fast, and the
+ occasional small note from Edgar. No reels, no chasing
+ the algorithm.
+ </p>
+ </div>
+ <span className="shrink-0 font-sans text-[13px] font-medium text-gold/85 group-hover:text-gold transition-colors mt-1">
+ Open ↗
+ </span>
+ </div>
+ </a>
+ </div>
  </section>
 
  {/* Expense breakdown */}
