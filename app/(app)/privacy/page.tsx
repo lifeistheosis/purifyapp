@@ -73,10 +73,17 @@ export default function PrivacyPage() {
  <p className="font-serif text-[16px] text-paper/85 leading-[1.65]">
  The same items go to our Supabase Postgres database so they
  sync across every device you sign in on. We store: your email
- (used only to send the sign-in link), a display name, and a
+ (used to sign you in and to send confirmations on
+ password/email changes), an Argon2 hash of your password
+ (never the password itself), a display name, and a
  <code className="font-mono text-[14px] text-paper/70"> profiles </code>
- row with your account creation date. Highlights, notes, bookmarks,
- and prayer-rule check-offs travel as their own rows.
+ row with your account creation date plus a boolean flag for
+ whether you&rsquo;ve set a password. Highlights, notes,
+ bookmarks, and prayer-rule check-offs travel as their own rows.
+ If you sign in with Google or Apple, we additionally store an
+ <code className="font-mono text-[14px] text-paper/70"> identities </code>
+ row linking your account to that provider; we never see your
+ Google/Apple password, only the OAuth token.
  </p>
  <p className="mt-3 font-sans text-[12.5px] text-paper/55 leading-[1.55]">
  To delete the account and every server-side row it created,

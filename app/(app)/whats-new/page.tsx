@@ -20,6 +20,28 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v6.2",
+ kind: "A real account system",
+ date: "May 26, 2026",
+ blurb:
+ "Sign in with email and a password instead of a magic-link. Continue with Google or Apple if you'd rather. Change your password from the new Security tab, change your email with a confirmation step, sign out everywhere with one click. The account page is now a tabbed dashboard, Profile / Security / Data / Sessions, so the things you might want to manage are actually findable. Existing magic-link users are walked through setting a password the first time they sign in; no other changes to their data.",
+ items: [
+ "Email and password sign-up at /signup, sign-in at /signin. The old one-tap magic-link flow is retired.",
+ "Continue with Google and Continue with Apple on both /signin and /signup. The buttons are wired; each provider needs to be configured once in the Supabase dashboard before it works (see docs/auth-setup.md).",
+ "Forgot-password flow at /forgot. We send a reset link; it lands on /reset where you pick a new password.",
+ "Change password from the new Security tab. We re-verify your current password first so a stolen session can't silently rotate it.",
+ "Change email from Security; we send a confirmation link to the new address before the change takes effect.",
+ "Connect or disconnect Google / Apple from Security at any time, even after sign-up.",
+ "Sign out everywhere with one click from Security. Useful if you signed in on a device you no longer have.",
+ "Existing magic-link users are prompted to set a password the first time they sign in after this release. Everything else about their account stays the same.",
+ "The signed-in /account page is now a tabbed dashboard: Profile, Security, Data, Sessions. The four old long-scroll sections are mapped one-for-one.",
+ "Middleware enforces the auth gate server-side (the redirect happens before any page shell paints) so unsigned users hitting /account/* land on /signin with a return path.",
+ "New supabase migration adds profiles.has_password and a mark_password_set RPC the client calls when the password is set or rotated.",
+ "New docs/auth-setup.md walks the maintainer through the Google + Apple + Supabase configuration steps.",
+ "Footer + home-page chip step to v6.2.",
+ ],
+ },
+ {
  version: "v6.1",
  kind: "The app on your phone, and a clearer account choice",
  date: "May 25, 2026",

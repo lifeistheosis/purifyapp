@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { SignInPanel } from "./SignInPanel";
 import { claimLocal } from "@/lib/profile/localAccount";
 
 /**
@@ -129,8 +128,19 @@ export function AccountChoice() {
             </li>
           </ul>
 
-          <div className="mt-5">
-            <SignInPanel compact />
+          <div className="mt-5 flex flex-col gap-2">
+            <Link
+              href="/signup"
+              className="inline-flex items-center justify-center font-sans text-[14px] font-semibold rounded-pill px-5 py-3 bg-gold text-night hover:bg-gold-soft transition-colors"
+            >
+              Create an account →
+            </Link>
+            <Link
+              href="/signin"
+              className="inline-flex items-center justify-center font-sans text-[13px] text-paper/75 hover:text-paper transition-colors"
+            >
+              Already have one? Sign in
+            </Link>
           </div>
         </section>
       </div>

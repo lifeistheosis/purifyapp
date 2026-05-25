@@ -100,10 +100,10 @@ export default function AboutPage() {
  keeps highlights, notes, bookmarks, and your prayer streak in
  this browser only, with no server-side record. A{" "}
  <strong className="text-paper">public account</strong> stores the same
- things on our server so they sync across devices, with a one-tap
- email magic-link sign-in (no password) and a delete-everything
- button on your account page. Neither is the default; the choice
- is presented plainly when you open{" "}
+ things on our server so they sync across devices, signed in with
+ email + password (or Google / Apple), with a real change-password
+ flow and a delete-everything button on your account page. Neither
+ is the default; the choice is presented plainly when you open{" "}
  <Link
  href="/account"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
