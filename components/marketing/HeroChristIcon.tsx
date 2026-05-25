@@ -5,17 +5,16 @@ import { useEffect, useRef, useState } from "react";
 
 /**
  * Right-column hero piece. A round portrait of Christ inside a gold
- * halo, revealed on first mount through a crimson "drop of blood"
- * sequence: a single droplet falls from above, lands at center,
- * splashes outward, and the icon emerges from the negative space
- * of the spreading wash (inverse-shadow reveal).
+ * halo, revealed on first mount through a three-beat sequence: empty
+ * halo → crimson drop falls and splashes → icon fades in.
  *
  * Sequence (1.8s, mount-once):
- *   - hero-drop-fall:    the droplet accelerates downward.
- *   - hero-splash-ring:  thin crimson ring on landing.
- *   - hero-wash-bloom:   soft crimson radial fills the circle.
- *   - hero-mask-bloom:   the icon's CSS mask grows from 0 → full,
- *                        so the portrait emerges where the wash spreads.
+ *   - hero-drop-fall:    the droplet accelerates downward (0→55%).
+ *   - hero-splash-ring:  thin crimson ring on landing (55→85%).
+ *   - hero-wash-bloom:   soft crimson radial fills the circle (50→100%).
+ *   - hero-icon-fade:    the portrait fades from 0 → 1 starting at
+ *                        55% (the moment the drop lands), so the
+ *                        viewer sees the drop trigger the reveal.
  *
  * After the intro, `data-intro="done"` is set on the wrapper; the
  * crimson wash settles to a quiet ambient glow and pointer-tilt /
@@ -129,21 +128,16 @@ export function HeroChristIcon() {
           }}
         />
 
-        {/* The icon, with the bloom mask. The wrapper is what gets
-            the mask animation; the <Image> inside stays static. */}
+        {/* The icon, opacity-faded in once the drop lands. The wrapper
+            holds the fade animation; the <Image> inside stays static. */}
         <div
           aria-hidden
-          className="absolute inset-0 motion-reduce:[mask-image:none]"
+          className="absolute inset-0 motion-reduce:!opacity-100"
           style={{
+            opacity: introDone ? 1 : 0,
             animation: introDone
               ? undefined
-              : "hero-mask-bloom 1.8s ease-out forwards",
-            WebkitMaskImage: introDone
-              ? "radial-gradient(circle at 50% 50%, #000 0%, #000 100%, transparent 100%)"
-              : undefined,
-            maskImage: introDone
-              ? "radial-gradient(circle at 50% 50%, #000 0%, #000 100%, transparent 100%)"
-              : undefined,
+              : "hero-icon-fade 1.8s ease-out forwards",
           }}
         >
           <Image

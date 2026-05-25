@@ -623,15 +623,13 @@ div[data-hl="true"] {
  65% { opacity: 0.85; }
  100% { transform: scale(1); opacity: 0.55; }
 }
-@keyframes hero-mask-bloom {
- 0%, 48% {
- -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 0%, transparent 1%);
- mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 0%, transparent 1%);
- }
- 100% {
- -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 100%, transparent 100%);
- mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 100%, transparent 100%);
- }
+/* The icon's straight opacity fade. Holds invisible while the drop
+ falls (0–55%), then fades in once the drop has landed and the
+ wash starts to spread (55%→100%). Simpler than a mask reveal,
+ and more obviously a "transition." */
+@keyframes hero-icon-fade {
+ 0%, 55% { opacity: 0; }
+ 100% { opacity: 1; }
 }
 
 @keyframes halo-breathe {
