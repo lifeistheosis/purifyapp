@@ -117,8 +117,8 @@ export default function Home() {
  New
  </span>
  <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
- <span className="sm:hidden">v6.0 · The Councils, at last</span>
- <span className="hidden sm:inline">v6.0 · A major release: four of the Seven Councils</span>
+ <span className="sm:hidden">v6.1 · The app, on your phone</span>
+ <span className="hidden sm:inline">v6.1 · The app on your phone, and a clearer account choice</span>
  </span>
  <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
  →
