@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ReaderPrefsProvider } from "@/components/reader/ReaderPrefs";
-import { SignInPanel } from "@/components/profile/SignInPanel";
-import { WhatSyncsStrip } from "@/components/profile/WhatSyncsStrip";
+import { UnsignedAccount } from "@/components/profile/UnsignedAccount";
 import { ProfileHero } from "@/components/profile/ProfileHero";
 import { ProfileStats } from "@/components/profile/ProfileStats";
 import { ProfileActivity } from "@/components/profile/ProfileActivity";
@@ -32,32 +31,35 @@ export default async function AccountPage() {
  if (!user) {
  return (
  <section className={`${SECTION} bg-night min-h-[calc(100dvh-72px)]`}>
- <article className="mx-auto max-w-[760px] w-full">
+ <article className="mx-auto max-w-[1080px] w-full">
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  Your account
  </p>
  <h1 className="font-sans text-[40px] md:text-[52px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  Pick up where you left off.
  </h1>
- <p className="mt-6 font-serif text-[19px] text-paper/85 leading-[1.7] max-w-[620px]">
- An account lets your highlights, notes, bookmarks, and prayer
- streaks travel with you between devices. No password, you
- sign in with a one-tap email link. You can delete the account,
- and every server-side row it created, at any time.
+ <p className="mt-6 font-serif text-[19px] text-paper/85 leading-[1.7] max-w-[640px]">
+ Two real ways to use Purify, both free and both private. Keep
+ everything on this device, or sync across devices with a
+ one-tap email link. Either choice is reversible.
  </p>
 
- <SignInPanel />
+ {/* min-h guards against layout shift: the client picks between
+ AccountChoice (no local profile) and LocalProfileHero (local
+ profile claimed) after mount; this height fits the larger of
+ the two so the page doesn't jump. */}
+ <div className="min-h-[520px]">
+ <UnsignedAccount />
+ </div>
 
- <WhatSyncsStrip />
-
- <p className="mt-10 font-sans text-[14px] text-paper/55 leading-[1.65] max-w-[560px]">
- Or keep using Purify without an account. What you save will live
- in this browser only.{" "}
+ <p className="mt-10 font-sans text-[14px] text-paper/55 leading-[1.65] max-w-[640px]">
+ The full data-handling rules, with every field stored and every
+ third party named, are on the{" "}
  <Link
- href="/faq"
+ href="/privacy"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- How we handle your data
+ privacy page
  </Link>
  .
  </p>

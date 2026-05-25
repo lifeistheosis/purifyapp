@@ -9,7 +9,13 @@ import { createClient } from "@/lib/supabase/client";
  * (an unrecognized email creates an auth.users row, the trigger inserts the
  * matching profile, and the user lands signed in on /account).
  */
-export function SignInPanel() {
+/**
+ * Pass `compact` when slotting this panel inside another card (e.g.
+ * the Public side of `AccountChoice`). Compact mode drops the outer
+ * card chrome + preamble paragraph; the surrounding card supplies
+ * them.
+ */
+export function SignInPanel({ compact = false }: { compact?: boolean } = {}) {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">(
     "idle",
@@ -72,17 +78,25 @@ export function SignInPanel() {
   return (
     <form
       onSubmit={send}
-      className="mt-10 rounded-lg border border-paper/15 bg-paper/[0.03] p-6 md:p-7"
+      className={
+        compact
+          ? ""
+          : "mt-10 rounded-lg border border-paper/15 bg-paper/[0.03] p-6 md:p-7"
+      }
     >
-      <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-        Sign in or sign up
-      </p>
-      <p className="font-serif text-[17px] text-paper/85 leading-[1.65] max-w-[560px]">
-        Type your email. We&rsquo;ll send you a one-tap sign-in link.
-        You&rsquo;ll never make a password. Same flow whether you&rsquo;ve
-        used Purify before or not.
-      </p>
-      <div className="mt-5 flex flex-col sm:flex-row gap-3">
+      {compact ? null : (
+        <>
+          <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+            Sign in or sign up
+          </p>
+          <p className="font-serif text-[17px] text-paper/85 leading-[1.65] max-w-[560px]">
+            Type your email. We&rsquo;ll send you a one-tap sign-in link.
+            You&rsquo;ll never make a password. Same flow whether
+            you&rsquo;ve used Purify before or not.
+          </p>
+        </>
+      )}
+      <div className={compact ? "flex flex-col gap-3" : "mt-5 flex flex-col sm:flex-row gap-3"}>
         <input
           type="email"
           inputMode="email"
@@ -106,10 +120,12 @@ export function SignInPanel() {
           {errMsg || "Something went wrong. Try again."}
         </p>
       )}
-      <p className="mt-4 font-sans text-[12.5px] text-paper/45 leading-[1.55]">
-        We use only your email for sign-in. No analytics, no ads. You can
-        delete your account and every server-side row from this page later.
-      </p>
+      {compact ? null : (
+        <p className="mt-4 font-sans text-[12.5px] text-paper/45 leading-[1.55]">
+          We use only your email for sign-in. No analytics, no ads. You can
+          delete your account and every server-side row from this page later.
+        </p>
+      )}
     </form>
   );
 }
