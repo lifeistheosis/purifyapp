@@ -1,0 +1,43 @@
+import Link from "next/link";
+import { Cross } from "@/components/ui/icons/Cross";
+import { Hands } from "@/components/ui/icons/Hands";
+import { Halo } from "@/components/ui/icons/Halo";
+import { Compass } from "@/components/ui/icons/Compass";
+
+/**
+ * Mobile-priority chip row on the "You" surface, mirrors the
+ * Saved / Prayer / Giving pattern from the YouVersion profile tab.
+ *
+ *  - Saved → bookmarks page.
+ *  - Prayer → today's prayer surface.
+ *  - Saints → the saints index, the "lives" they're following.
+ *  - Discover → the wider library, for jumping out of the profile view.
+ *
+ * Server component, all links are static.
+ */
+const CHIPS: { label: string; href: string; Icon: typeof Cross; tint: string }[] = [
+  { label: "Saved", href: "/saved", Icon: Cross, tint: "text-gold" },
+  { label: "Prayer", href: "/prayers/today", Icon: Hands, tint: "text-[#a4adff]" },
+  { label: "Saints", href: "/saints", Icon: Halo, tint: "text-[#f4dc91]" },
+  { label: "Discover", href: "/discover", Icon: Compass, tint: "text-[#bfd6cc]" },
+];
+
+export function AccountChipRow() {
+  return (
+    <ul className="md:hidden grid grid-cols-4 gap-2 mb-6">
+      {CHIPS.map(({ label, href, Icon, tint }) => (
+        <li key={href}>
+          <Link
+            href={href}
+            className="flex flex-col items-center justify-center gap-1.5 h-[68px] rounded-2xl border border-paper/12 bg-paper/[0.04] hover:bg-paper/[0.08] hover:border-paper/25 transition-colors"
+          >
+            <span className={tint}>
+              <Icon size={20} />
+            </span>
+            <span className="font-sans text-[11px] text-paper/85">{label}</span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}

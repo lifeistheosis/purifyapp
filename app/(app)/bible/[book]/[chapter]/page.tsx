@@ -12,7 +12,7 @@ import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
 import { ReadingProgressBar } from "@/components/bible/ReadingProgressBar";
 import { ChapterStickyHeader } from "@/components/bible/ChapterStickyHeader";
 import { MobileChapterStrip } from "@/components/bible/MobileChapterStrip";
-import { MobileNextChapterFab } from "@/components/bible/MobileNextChapterFab";
+import { MobileChapterPill } from "@/components/bible/MobileChapterPill";
 import { ReaderSettingsMenu } from "@/components/bible/ReaderSettingsMenu";
 import { VerseFocusFlash } from "@/components/bible/VerseFocusFlash";
 import {
@@ -148,7 +148,7 @@ export default async function BibleChapterPage({
  chapter={chapterNum}
  totalVerses={totalVerses}
  />
- <MobileNextChapterFab slug={book} chapter={chapterNum} />
+ <MobileChapterPill slug={book} chapter={chapterNum} />
  <BookChapterSidebar book={b!} current={chapterNum} />
  {/* Extra mobile top padding accounts for the fixed ReadingProgressBar
  context strip (~28px) sitting under the 72px sticky navbar. */}

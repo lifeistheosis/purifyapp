@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { LESSONS } from "@/lib/prayers/learning";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { PrayersSubTabs } from "@/components/nav/PrayersSubTabs";
 import {
  commemorationsOn,
  fastingStatus,
@@ -69,6 +71,8 @@ export default function PrayersPage() {
 
  return (
  <div className="bg-night">
+ <MobileTopBar title="Prayers" />
+ <PrayersSubTabs />
  {/* ============== HERO ============== */}
  <section className="relative overflow-hidden border-b border-paper/8">
  {/* Christ Pantocrator (Sinai, 6th c.) backdrop, the strongest

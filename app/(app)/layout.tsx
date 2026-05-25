@@ -1,6 +1,8 @@
 import { AppNav } from "@/components/nav/AppNav";
 import { Footer } from "@/components/layout/Footer";
 import { SyncBridge } from "@/components/profile/SyncBridge";
+import { MobileTabBar } from "@/components/nav/MobileTabBar";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
 export default function AppGroupLayout({
   children,
@@ -9,10 +11,19 @@ export default function AppGroupLayout({
 }) {
   return (
     <>
-      <AppNav />
+      {/* Desktop chrome. Hidden on phones — the MobileTabBar replaces it. */}
+      <div className="hidden md:block">
+        <AppNav />
+      </div>
       <SyncBridge />
-      <main className="flex-1">{children}</main>
-      <Footer />
+      {/* safe-pb gives mobile scroll containers room to clear the tab bar
+          + iOS home indicator; the utility is a no-op on md+. */}
+      <main className="flex-1 safe-pb">{children}</main>
+      <div className="hidden md:block">
+        <Footer />
+      </div>
+      <MobileTabBar />
+      <InstallPrompt />
     </>
   );
 }

@@ -63,6 +63,30 @@
  --shadow-lg: 0 16px 48px rgba(73, 66, 78, 0.12);
 }
 
+/* ----------------------------------------------------------------------
+ Mobile app-shell: bottom tab bar height + safe-area helpers.
+ The bar is fixed at the bottom on `< md`; safe-pb keeps scrolling
+ content from being trapped beneath it and the iOS home indicator.
+ ---------------------------------------------------------------------- */
+:root {
+ --tab-bar-h: 64px;
+}
+
+/* Padding for any scroll container that sits behind the mobile tab bar. */
+@utility safe-pb {
+ padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tab-bar-h));
+}
+/* Position helper for the tab bar itself (sits above the home indicator). */
+@utility safe-bottom-pad {
+ padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+/* Desktop: tab bar is hidden, so kill the extra bottom padding. */
+@media (min-width: 768px) {
+ .safe-pb {
+ padding-bottom: 0;
+ }
+}
+
 @layer base {
  html {
  scroll-behavior: smooth;

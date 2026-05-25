@@ -8,7 +8,8 @@
         "http://localhost:3000/",
         "http://localhost:3000/bible/john/1",
         "http://localhost:3000/calendar",
-        "http://localhost:3000/saints/john-chrysostom"
+        "http://localhost:3000/saints/john-chrysostom",
+        "http://localhost:3000/discover"
       ],
       "numberOfRuns": 1,
       "settings": {

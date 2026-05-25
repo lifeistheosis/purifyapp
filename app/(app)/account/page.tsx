@@ -12,6 +12,8 @@ import { ProfileDevices } from "@/components/profile/ProfileDevices";
 import { ProfileData } from "@/components/profile/ProfileData";
 import { ProfileDanger } from "@/components/profile/ProfileDanger";
 import { SyncOnMount } from "@/components/profile/SyncOnMount";
+import { AccountChipRow } from "@/components/profile/AccountChipRow";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 
 export const metadata = {
  title: "Your account",
@@ -81,6 +83,7 @@ export default async function AccountPage() {
 
  return (
  <ReaderPrefsProvider>
+ <MobileTopBar title="You" />
  <section className={`${SECTION} bg-night min-h-[calc(100dvh-72px)]`}>
  <article className="mx-auto max-w-[820px] w-full">
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
@@ -88,6 +91,8 @@ export default async function AccountPage() {
  </p>
 
  <SyncOnMount />
+
+ <AccountChipRow />
 
  <ProfileHero
  email={user.email ?? ""}

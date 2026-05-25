@@ -24,7 +24,18 @@ export default defineConfig({
  trace: "on-first-retry",
  screenshot: "only-on-failure",
  },
- projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+ projects: [
+ { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+ // Mobile shell project: the iPhone 14 Pro viewport is wide enough to
+ // exercise the < md breakpoint where the tab bar takes over from the
+ // desktop AppNav. Specs are filtered to the mobile-shell suite so we
+ // don't double-run the desktop smoke on a phone viewport.
+ {
+ name: "mobile-shell",
+ testMatch: /mobile-shell\.spec\.ts/,
+ use: { ...devices["iPhone 14 Pro"] },
+ },
+ ],
  webServer: {
  command: "npm run start",
  url: "http://localhost:3000",

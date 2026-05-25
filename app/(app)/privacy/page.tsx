@@ -251,6 +251,31 @@ export default function PrivacyPage() {
  letter. We won&rsquo;t change the posture quietly.
  </p>
 
+ {/* Offline cache */}
+ <h2 className="mt-16 font-sans text-[24px] md:text-[28px] font-bold text-paper leading-[1.15]">
+ Offline cache (the service worker)
+ </h2>
+ <p className="mt-4 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ If you add Purify to your home screen, a small service worker
+ (<code className="font-mono text-[15px] text-paper/70">/sw.js</code>)
+ caches the pages and assets you&rsquo;ve already visited so the
+ app keeps working on a bad signal. Caches are named
+ {" "}<code className="font-mono text-[15px] text-paper/70">purify-v*-html</code>,
+ {" "}<code className="font-mono text-[15px] text-paper/70">purify-v*-static</code>,
+ and {" "}<code className="font-mono text-[15px] text-paper/70">purify-v*-assets</code>.
+ They store only public, public-domain page HTML, the Next.js
+ build output, fonts, saint icons, and the manifest. Authenticated
+ API calls (Supabase, our analytics endpoint, the licensed
+ translation API) are never intercepted and never cached, so your
+ session stays on the network where it belongs.
+ </p>
+ <p className="mt-4 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ To clear the cache, uninstall the home-screen app, or in your
+ browser settings, clear site data for the Purify origin. We can
+ also bump the cache version on a release, which evicts the old
+ caches automatically the next time the app opens.
+ </p>
+
  {/* Closing */}
  <div className="mt-16 pt-10 border-t border-paper/10">
  <p className="font-serif text-[17px] text-paper/65 leading-[1.7]">

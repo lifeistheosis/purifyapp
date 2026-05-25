@@ -7,6 +7,9 @@ import { IconCornerCard } from "@/components/marketing/IconCornerCard";
 import { SeasonBanner } from "@/components/marketing/SeasonBanner";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
 import { Cross } from "@/components/ui/icons/Cross";
+import { TodayMobileHero } from "@/components/today/TodayMobileHero";
+import { MobileTabBar } from "@/components/nav/MobileTabBar";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
 // ISR so the live home-page surface (Today card, daily wisdom, season
 // banner, paschal greeting) refreshes daily without a redeploy.
@@ -78,6 +81,15 @@ const sectionBase =
 export default function Home() {
  return (
  <>
+ {/* MOBILE: app-shell Today hero. Hidden on md+ where the marketing
+ home below takes over. The hero is wrapped here so the marketing
+ sections (rich, long) don't double-load on phones. */}
+ <div className="md:hidden flex-1 safe-pb">
+ <TodayMobileHero />
+ </div>
+
+ {/* DESKTOP: existing marketing home, unchanged. Hidden on phones. */}
+ <div className="hidden md:contents">
  <SectionScroller />
  <Navbar />
  <main className="flex-1">
@@ -268,6 +280,11 @@ export default function Home() {
  </section>
  </main>
  <Footer />
+ </div>
+ {/* Bottom tab bar + PWA install prompt mount on the mobile shell.
+ Both render md:hidden internally, so they're inert on desktop. */}
+ <MobileTabBar />
+ <InstallPrompt />
  </>
  );
 }
