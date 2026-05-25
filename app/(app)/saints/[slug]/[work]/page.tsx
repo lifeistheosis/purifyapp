@@ -2,6 +2,13 @@ import { notFound } from "next/navigation";
 import { SAINTS, getWork } from "@/lib/saints/saints";
 import { loadWriting } from "@/lib/saints/load";
 import { WritingReader } from "@/components/saints/WritingReader";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { MobileWorkProgressBar } from "@/components/saints/MobileWorkProgressBar";
+import {
+  ReaderFontFamilyButton,
+  ReaderFontSizeButton,
+  ReaderPrefsProvider,
+} from "@/components/reader/ReaderPrefs";
 
 type Params = Promise<{ slug: string; work: string }>;
 
@@ -29,10 +36,28 @@ export default async function WritingPage({ params }: { params: Params }) {
   if (!content) notFound();
 
   return (
-    <section className="bg-night px-5 md:px-8">
-      <div className="mx-auto max-w-[1100px] w-full">
-        <WritingReader saint={found.saint} content={content} />
-      </div>
-    </section>
+    <ReaderPrefsProvider>
+      {/* Mobile-only chrome: a 48px top bar with back + work title, and
+          a 2px gold progress bar pinned beneath it. The trailing slot
+          exposes the same font-family + font-size cyclers the Bible
+          reader uses, so a reader's choice carries between surfaces. */}
+      <MobileTopBar
+        title={content.title}
+        back={`/saints/${found.saint.slug}`}
+        trailing={
+          <div className="flex items-center gap-1">
+            <ReaderFontFamilyButton />
+            <ReaderFontSizeButton />
+          </div>
+        }
+      />
+      <MobileWorkProgressBar />
+
+      <section className="bg-night px-5 md:px-8">
+        <div className="mx-auto max-w-[1100px] w-full">
+          <WritingReader saint={found.saint} content={content} />
+        </div>
+      </section>
+    </ReaderPrefsProvider>
   );
 }

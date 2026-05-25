@@ -6,6 +6,8 @@ import type { WritingContent, Section } from "@/lib/saints/load";
 import type { Saint } from "@/lib/saints/saints";
 import { ParagraphRow } from "./ParagraphRow";
 import { SectionBookmarkButton } from "./SectionBookmarkButton";
+import { MobileWorkPill } from "./MobileWorkPill";
+import { FONT_CLASSES, SIZE_CLASSES, useReaderPrefs } from "@/components/reader/ReaderPrefs";
 
 // Works with this many sections render as an accordion: each section's body
 // (and its per-paragraph annotation components) mounts only when the section
@@ -23,6 +25,9 @@ export function WritingReader({
 }) {
  const isLong = content.sections.length >= ACCORDION_THRESHOLD;
  const [open, setOpen] = useState<Set<number>>(() => new Set());
+ // Shared reader prefs — same provider as the Bible reader, so a font
+ // and size chosen in Scripture carry over to the Fathers.
+ const { size, font } = useReaderPrefs();
 
  // Open the section targeted by the URL hash (#sN) on load and on change,
  // and scroll it into view. Continuous (short) works don't need this.
@@ -58,7 +63,9 @@ export function WritingReader({
  }
 
  return (
- <article className="pt-12 md:pt-16 pb-24">
+ <article
+ className={`pt-12 md:pt-16 pb-24 safe-pb-reader ${FONT_CLASSES[font]} ${SIZE_CLASSES[size]}`}
+ >
  <nav className="mb-10 flex items-center gap-2 font-sans text-[13px] text-paper/55">
  <Link
  href="/saints"
@@ -241,6 +248,12 @@ export function WritingReader({
  Source: {content.source}
  </p>
  </footer>
+
+ {/* Mobile floating section switcher — sits above the bottom tab
+ bar and exposes the full TOC behind a tap. Hidden on md+. */}
+ <MobileWorkPill
+ sections={content.sections.map((s) => ({ n: s.n, title: s.title }))}
+ />
  </article>
  );
 }
