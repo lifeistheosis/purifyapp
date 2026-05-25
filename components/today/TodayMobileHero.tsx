@@ -7,6 +7,7 @@ import {
   type FastKind,
 } from "@/lib/calendar/orthodox";
 import { getSaint } from "@/lib/saints/saints";
+import { createClient } from "@/lib/supabase/server";
 import { Cross } from "@/components/ui/icons/Cross";
 import { Hands } from "@/components/ui/icons/Hands";
 import { Book } from "@/components/ui/icons/Book";
@@ -52,7 +53,15 @@ const CHIPS: Chip[] = [
   { label: "You", href: "/account", Icon: User },
 ];
 
-export function TodayMobileHero() {
+function greetingForHour(h: number): string {
+  if (h < 5) return "Peace be with you";
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  if (h < 21) return "Good evening";
+  return "Peace this night";
+}
+
+export async function TodayMobileHero() {
   const today = startOfDayUtc(new Date());
   const fast = fastingStatus(today);
   const commemorations = commemorationsOn(today);
@@ -61,6 +70,34 @@ export function TodayMobileHero() {
   const headlineSaint =
     headline?.saint ?? (headline?.slug ? getSaint(headline.slug) : null);
   const bgIcon = headlineSaint?.iconUrl;
+
+  // Signed-in greeting. Silently falls back to nothing if the user is
+  // unsigned, so the unauth surface stays the date eyebrow + headline.
+  let firstName: string | null = null;
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("id", user.id)
+        .maybeSingle();
+      const displayName =
+        (profile?.display_name as string | undefined) ??
+        (user.user_metadata?.display_name as string | undefined) ??
+        user.email?.split("@")[0] ??
+        null;
+      if (displayName) firstName = displayName.split(/\s+/)[0];
+    }
+  } catch {
+    // Auth lookups shouldn't break the page; leave firstName null.
+  }
+  const greeting = firstName
+    ? `${greetingForHour(new Date().getHours())}, ${firstName}`
+    : null;
 
   return (
     <div className="md:hidden bg-night text-paper">
@@ -84,6 +121,11 @@ export function TodayMobileHero() {
           }}
         />
         <div className="relative px-5 pt-10 pb-8">
+          {greeting ? (
+            <p className="font-serif text-[15px] italic text-paper/80 mb-1">
+              {greeting}
+            </p>
+          ) : null}
           <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/65">
             {formatLongDate(today)}
           </p>
@@ -123,10 +165,16 @@ export function TodayMobileHero() {
         </div>
       </section>
 
-      {/* CHIP ROW — Hallow-style quick actions. Horizontally scrolling so the
-          row doesn't squeeze on the smallest phones. */}
+      {/* CHIP ROW — Hallow-style quick actions. Centered when the row
+          fits (five chips on most phones); horizontally scrollable as
+          a fallback for narrow viewports. */}
       <section className="px-3 pt-5">
-        <ul className="flex gap-2 overflow-x-auto scrollbar-thin pb-1">
+        <ul
+          className={
+            "flex gap-2 overflow-x-auto scrollbar-thin pb-1 " +
+            (CHIPS.length <= 5 ? "justify-center" : "")
+          }
+        >
           {CHIPS.map(({ label, href, Icon }) => (
             <li key={href} className="shrink-0">
               <Link

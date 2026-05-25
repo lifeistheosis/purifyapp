@@ -22,8 +22,15 @@ type Tile = {
   href: string;
   blurb: string;
   Icon: typeof Cross;
-  /** Hex color or tailwind text-* token rendered on the small icon halo. */
+  /** Color of the icon glyph. */
   tint: string;
+  /**
+   * Background tint for the whole tile, ~8% opacity over the dark
+   * surface. Hallow's Discover uses real per-category color blocks;
+   * this brings that energy without breaking the dark register.
+   */
+  bg: string;
+  border: string;
 };
 
 const TILES: Tile[] = [
@@ -33,6 +40,8 @@ const TILES: Tile[] = [
     blurb: "Fifty-plus profiles, with their works to read in full.",
     Icon: Halo,
     tint: "text-gold",
+    bg: "bg-gold/[0.08]",
+    border: "border-gold/30",
   },
   {
     label: "Councils",
@@ -40,6 +49,8 @@ const TILES: Tile[] = [
     blurb: "The first four Ecumenical Councils, in their own words.",
     Icon: Cross,
     tint: "text-[#f4dc91]",
+    bg: "bg-[var(--color-grad-violet)]/[0.18]",
+    border: "border-[var(--color-grad-violet)]/40",
   },
   {
     label: "Calendar",
@@ -47,6 +58,8 @@ const TILES: Tile[] = [
     blurb: "Every day of the Church's year, New and Old style.",
     Icon: Lampada,
     tint: "text-[#bfd6cc]",
+    bg: "bg-[var(--color-grad-teal)]/[0.14]",
+    border: "border-[var(--color-grad-teal)]/35",
   },
   {
     label: "Fasts",
@@ -54,6 +67,8 @@ const TILES: Tile[] = [
     blurb: "Today's fast at a glance, and the whole liturgical year.",
     Icon: Fish,
     tint: "text-[#bfd6cc]",
+    bg: "bg-[var(--color-grad-teal)]/[0.08]",
+    border: "border-[var(--color-grad-teal)]/30",
   },
   {
     label: "Daily readings",
@@ -61,6 +76,8 @@ const TILES: Tile[] = [
     blurb: "The appointed Epistle and Gospel for today.",
     Icon: Book,
     tint: "text-paper/85",
+    bg: "bg-paper/[0.05]",
+    border: "border-paper/15",
   },
   {
     label: "The Psalter",
@@ -68,6 +85,8 @@ const TILES: Tile[] = [
     blurb: "The hundred fifty psalms, in the Septuagint numbering.",
     Icon: Wheat,
     tint: "text-gold",
+    bg: "bg-gold/[0.06]",
+    border: "border-gold/25",
   },
   {
     label: "Patristic commentary",
@@ -75,6 +94,8 @@ const TILES: Tile[] = [
     blurb: "St. John Chrysostom verse by verse, beside the Gospel.",
     Icon: Grapes,
     tint: "text-[#e3a7a7]",
+    bg: "bg-[var(--color-accent)]/[0.10]",
+    border: "border-[var(--color-accent)]/30",
   },
   {
     label: "Pascha",
@@ -82,6 +103,8 @@ const TILES: Tile[] = [
     blurb: "The Great Feast, and the count to it from today.",
     Icon: Compass,
     tint: "text-gold",
+    bg: "bg-[var(--color-grad-pink)]/[0.10]",
+    border: "border-[var(--color-grad-pink)]/30",
   },
 ];
 
@@ -109,21 +132,21 @@ export default function DiscoverPage() {
           </p>
 
           <ul className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {TILES.map(({ label, href, blurb, Icon, tint }) => (
+            {TILES.map(({ label, href, blurb, Icon, tint, bg, border }) => (
               <li key={href}>
                 <Link
                   href={href}
-                  className="group block h-full rounded-2xl border border-paper/12 bg-paper/[0.03] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-4 md:p-5"
+                  className={`group block h-full rounded-2xl border transition-colors p-4 md:p-5 hover:brightness-125 ${bg} ${border}`}
                 >
                   <div
-                    className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-paper/[0.06] ${tint}`}
+                    className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-night/40 ${tint}`}
                   >
                     <Icon size={20} />
                   </div>
                   <p className="font-sans text-[15px] font-semibold text-paper leading-tight">
                     {label}
                   </p>
-                  <p className="mt-1.5 font-sans text-[12.5px] text-paper/65 leading-[1.55]">
+                  <p className="mt-1.5 font-sans text-[12.5px] text-paper/70 leading-[1.55]">
                     {blurb}
                   </p>
                 </Link>

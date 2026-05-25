@@ -111,7 +111,16 @@ export function MobileTabBar() {
                     : "text-paper/55 hover:text-paper/85",
                 )}
               >
-                <Icon size={22} />
+                {/* Soft gold halo behind the active glyph so the row
+                    reads as filled, like the Hallow tab bar. */}
+                <span
+                  className={cn(
+                    "inline-flex items-center justify-center h-8 w-10 rounded-pill transition-colors",
+                    active ? "bg-gold/12" : "bg-transparent",
+                  )}
+                >
+                  <Icon size={22} />
+                </span>
                 <span className="leading-none">{label}</span>
               </Link>
             </li>
