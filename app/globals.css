@@ -599,6 +599,41 @@ div[data-hl="true"] {
  z-index: 1;
 }
 
+/* ----------------------------------------------------------------------
+ Hero Christ icon intro: a crimson droplet falls, lands, splashes, and
+ the portrait reveals from the negative space of the expanding wash.
+ Used by components/marketing/HeroChristIcon.tsx. All layers are
+ gated by `prefers-reduced-motion` at the call site.
+ ---------------------------------------------------------------------- */
+@keyframes hero-drop-fall {
+ 0% { transform: translate(-50%, -260%) rotate(-2deg); opacity: 0; }
+ 8% { opacity: 1; }
+ 50% { transform: translate(-50%, -10%) rotate(2deg); opacity: 1; }
+ 58% { transform: translate(-50%, 0%) rotate(0deg); opacity: 0; }
+ 100% { opacity: 0; }
+}
+@keyframes hero-splash-ring {
+ 0%, 54% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+ 60% { opacity: 0.9; }
+ 85% { transform: translate(-50%, -50%) scale(1.18); opacity: 0; }
+ 100% { transform: translate(-50%, -50%) scale(1.18); opacity: 0; }
+}
+@keyframes hero-wash-bloom {
+ 0%, 48% { transform: scale(0); opacity: 0; }
+ 65% { opacity: 0.85; }
+ 100% { transform: scale(1); opacity: 0.55; }
+}
+@keyframes hero-mask-bloom {
+ 0%, 48% {
+ -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 0%, transparent 1%);
+ mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 0%, transparent 1%);
+ }
+ 100% {
+ -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 100%, transparent 100%);
+ mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 100%, transparent 100%);
+ }
+}
+
 @keyframes halo-breathe {
  0%,
  100% {

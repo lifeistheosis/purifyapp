@@ -1,47 +1,71 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
- * Right-column hero piece, replacing the older typographic-accent
- * design. Shows a large square portrait of Christ (the same icon
- * file used elsewhere in the saints registry, public-domain Greek
- * iconography) inside a quiet halo.
+ * Right-column hero piece. A round portrait of Christ inside a gold
+ * halo, revealed on first mount through a crimson "drop of blood"
+ * sequence: a single droplet falls from above, lands at center,
+ * splashes outward, and the icon emerges from the negative space
+ * of the spreading wash (inverse-shadow reveal).
  *
- * Interactive on hover:
- *  - The icon tilts subtly toward the cursor (rotateX / rotateY
- *    on a perspective transform), producing a parallax feel like
- *    the surface is catching light from where the reader is
- *    standing.
- *  - The gold halo behind the icon brightens.
- *  - On mouse-leave the icon eases back to flat. No tilt on
- *    devices without a pointer (touch / coarse pointer).
+ * Sequence (1.8s, mount-once):
+ *   - hero-drop-fall:    the droplet accelerates downward.
+ *   - hero-splash-ring:  thin crimson ring on landing.
+ *   - hero-wash-bloom:   soft crimson radial fills the circle.
+ *   - hero-mask-bloom:   the icon's CSS mask grows from 0 → full,
+ *                        so the portrait emerges where the wash spreads.
  *
- * The whole surface is decorative (aria-hidden) — the text on the
- * left column carries the meaning. Honors `prefers-reduced-motion`
- * via the inline transition: a user with that preference set
- * gets a static portrait.
+ * After the intro, `data-intro="done"` is set on the wrapper; the
+ * crimson wash settles to a quiet ambient glow and pointer-tilt /
+ * cursor-glint take over.
+ *
+ * Honors `prefers-reduced-motion`: those users skip all four
+ * animations via the motion-reduce class variants (set on each
+ * layer) and the React state is initialised to "done" so the
+ * mask is full from the first paint.
  *
  * Image: `/saints/icons/jesus.jpg`, served from public/.
  */
+
 const SIZE = 360; // px square; the lg viewport gives this room
 const MAX_TILT = 9; // degrees of rotation at the corner of the icon
+const INTRO_MS = 1800;
+
+function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+}
 
 export function HeroChristIcon() {
   const ref = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [hovered, setHovered] = useState(false);
+  const [introDone, setIntroDone] = useState(false);
+
+  // First-mount intro: skip entirely if the user prefers reduced motion,
+  // else flip introDone after the animation length. The reduced-motion
+  // synchronous setState is intentional — it must happen before paint
+  // so the user doesn't briefly see the not-yet-revealed state.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (prefersReducedMotion()) {
+      setIntroDone(true);
+      return;
+    }
+    const t = setTimeout(() => setIntroDone(true), INTRO_MS);
+    return () => clearTimeout(t);
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   function handleMove(e: React.MouseEvent<HTMLDivElement>) {
+    if (!introDone) return; // no pointer tilt during the intro
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    // Mouse position relative to center, normalized to [-1, 1].
     const px = (e.clientX - rect.left) / rect.width - 0.5;
     const py = (e.clientY - rect.top) / rect.height - 0.5;
-    // Tilt INTO the cursor (positive y on bottom → tilt forward).
-    // Reduce-motion users get the static fallback via CSS.
     setTilt({ x: -py * MAX_TILT * 2, y: px * MAX_TILT * 2 });
   }
 
@@ -53,68 +77,158 @@ export function HeroChristIcon() {
   return (
     <div
       aria-hidden
+      data-intro={introDone ? "done" : "playing"}
       className="relative mx-auto select-none"
       style={{
         width: SIZE,
         height: SIZE,
-        // perspective creates the 3D space the rotateX/Y reads against.
         perspective: 1200,
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={handleLeave}
       onMouseMove={handleMove}
     >
-      {/* Soft gold halo behind the icon. Brightens on hover. The
-          motion-reduce variant kills the lift transition. */}
+      {/* Soft gold halo. Brightens on hover. */}
       <div
         className="absolute inset-0 rounded-full transition-opacity duration-500 motion-reduce:transition-none"
         style={{
           background:
-            "radial-gradient(circle at center, rgba(212,175,55,0.28) 0%, rgba(212,175,55,0.08) 40%, transparent 70%)",
-          filter: "blur(12px)",
-          opacity: hovered ? 1 : 0.65,
+            "radial-gradient(circle at center, rgba(212,175,55,0.32) 0%, rgba(212,175,55,0.10) 40%, transparent 70%)",
+          filter: "blur(14px)",
+          opacity: hovered ? 1 : 0.7,
         }}
       />
 
       {/* The icon itself, transformed inside its own wrapper so the
-          halo doesn't tilt with it. */}
+          halo doesn't tilt with it. The mask-image bloom is what
+          makes the icon "appear from the wash" during the intro. */}
       <div
         ref={ref}
-        className="relative w-full h-full rounded-full overflow-hidden border border-gold/30 shadow-[0_24px_60px_rgba(0,0,0,0.55)] transition-transform duration-300 ease-out motion-reduce:transition-none motion-reduce:transform-none"
+        className="relative w-full h-full rounded-full overflow-hidden border border-gold/45 transition-transform duration-300 ease-out motion-reduce:transition-none motion-reduce:transform-none"
         style={{
           transformStyle: "preserve-3d",
           transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${hovered ? 1.03 : 1})`,
+          boxShadow:
+            "0 0 0 1px rgba(212,175,55,0.18), 0 24px 60px rgba(0,0,0,0.55)",
         }}
       >
-        <Image
-          src="/saints/icons/jesus.jpg"
-          alt=""
-          width={SIZE}
-          height={SIZE}
-          priority
-          className="w-full h-full object-cover"
-          // Slight saturation lift on hover, applied via filter so the
-          // motion-reduce media query can leave the base treatment.
+        {/* The crimson wash. Sits behind the masked icon during the
+            intro and settles to a faint ambient glow after. */}
+        <div
+          aria-hidden
+          className="absolute inset-0 rounded-full motion-reduce:!opacity-30 motion-reduce:!transform-none"
           style={{
-            filter: hovered ? "saturate(1.08) brightness(1.04)" : "none",
-            transition: "filter 0.35s ease-out",
+            background:
+              "radial-gradient(circle at center, rgba(196,47,36,0.42) 0%, rgba(196,47,36,0.18) 55%, transparent 80%)",
+            transformOrigin: "center",
+            animation: introDone
+              ? undefined
+              : "hero-wash-bloom 1.8s ease-out forwards",
+            // After the intro, settle to a quiet glow.
+            opacity: introDone ? 0.3 : undefined,
           }}
         />
 
-        {/* Light-glint that follows the cursor: a thin radial
-            highlight positioned where the mouse is. Disappears on
-            mouse-leave. Decorative only. */}
+        {/* The icon, with the bloom mask. The wrapper is what gets
+            the mask animation; the <Image> inside stays static. */}
+        <div
+          aria-hidden
+          className="absolute inset-0 motion-reduce:[mask-image:none]"
+          style={{
+            animation: introDone
+              ? undefined
+              : "hero-mask-bloom 1.8s ease-out forwards",
+            WebkitMaskImage: introDone
+              ? "radial-gradient(circle at 50% 50%, #000 0%, #000 100%, transparent 100%)"
+              : undefined,
+            maskImage: introDone
+              ? "radial-gradient(circle at 50% 50%, #000 0%, #000 100%, transparent 100%)"
+              : undefined,
+          }}
+        >
+          <Image
+            src="/saints/icons/jesus.jpg"
+            alt=""
+            width={SIZE}
+            height={SIZE}
+            priority
+            className="w-full h-full object-cover"
+            style={{
+              // Slightly lift the portrait off the night surface so
+              // the gold inks read at rest. Hover tightens further.
+              filter: hovered
+                ? "saturate(1.12) brightness(1.08) contrast(1.04)"
+                : "saturate(1.06) brightness(1.06) contrast(1.04)",
+              transition: "filter 0.35s ease-out",
+            }}
+          />
+          {/* A faint upward white wash so the bottom of the portrait
+              picks up a quiet rim of light against night. */}
+          <div
+            aria-hidden
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(to top, rgba(255,255,255,0.06) 0%, transparent 60%)",
+            }}
+          />
+        </div>
+
+        {/* The light-glint following the cursor (post-intro only). */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 transition-opacity duration-200"
           style={{
-            opacity: hovered ? 1 : 0,
+            opacity: hovered && introDone ? 1 : 0,
             background: `radial-gradient(circle at ${50 + tilt.y * 4}% ${50 - tilt.x * 4}%, rgba(255,255,255,0.18) 0%, transparent 35%)`,
           }}
         />
       </div>
 
-      {/* Tiny lit-lampada glow under the icon. Pure decoration. */}
+      {/* The falling crimson droplet (a small teardrop SVG). Renders
+          only while the intro is playing. */}
+      {!introDone ? (
+        <svg
+          aria-hidden
+          width="14"
+          height="20"
+          viewBox="0 0 14 20"
+          className="absolute pointer-events-none motion-reduce:hidden"
+          style={{
+            top: 0,
+            left: "50%",
+            transformOrigin: "50% 100%",
+            animation: "hero-drop-fall 1.8s ease-in forwards",
+            // Initial transform placed by the keyframe; this is just
+            // for browsers that paint before the first frame.
+            transform: "translate(-50%, -260%)",
+            filter: "drop-shadow(0 2px 6px rgba(196,47,36,0.55))",
+          }}
+        >
+          <path
+            d="M7 0 C 3 7, 0 11, 0 14 a 7 6 0 0 0 14 0 C 14 11, 11 7, 7 0 Z"
+            fill="#c1272d"
+          />
+        </svg>
+      ) : null}
+
+      {/* The splash ring (born where the drop lands at the icon center). */}
+      {!introDone ? (
+        <div
+          aria-hidden
+          className="absolute pointer-events-none rounded-full border border-[#c1272d]/85 motion-reduce:hidden"
+          style={{
+            top: "50%",
+            left: "50%",
+            width: SIZE * 0.82,
+            height: SIZE * 0.82,
+            transform: "translate(-50%, -50%) scale(0)",
+            animation: "hero-splash-ring 1.8s ease-out forwards",
+          }}
+        />
+      ) : null}
+
+      {/* Tiny lit-lampada glow under the icon. */}
       <div
         aria-hidden
         className="absolute left-1/2 -translate-x-1/2 -bottom-4 h-6 w-32 rounded-full"
