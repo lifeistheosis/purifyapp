@@ -83,3 +83,14 @@ test("saint-work reader renders MobileTopBar + section pill", async ({
   // Floating section switcher: the label reads "Section N of M".
   await expect(page.getByText(/Section \d+ of \d+/)).toBeVisible();
 });
+
+test("/account (signed out) renders both account options", async ({ page }) => {
+  await page.goto("/account");
+  // Both cards mount as headings inside the AccountChoice client wrapper.
+  await expect(
+    page.getByRole("heading", { name: "Local profile", level: 2 }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Public account", level: 2 }),
+  ).toBeVisible();
+});
