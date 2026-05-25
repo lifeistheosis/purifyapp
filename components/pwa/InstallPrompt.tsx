@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { isOverlayOpen } from "@/lib/ui/overlay";
 
 /**
  * Two responsibilities, intentionally co-located so the PWA layer is a
@@ -138,12 +139,15 @@ export function InstallPrompt() {
   };
 
   if (!show && !iosHint) return null;
+  // Don't compete with an open sheet / verse toolbar — those are
+  // mid-task UI; the install banner can wait.
+  if (isOverlayOpen()) return null;
 
   return (
     <div
       role="dialog"
       aria-label="Add Purify to your home screen"
-      className="md:hidden fixed inset-x-3 z-[60]"
+      className="md:hidden fixed inset-x-3 z-[55]"
       style={{
         bottom:
           "calc(var(--tab-bar-h) + env(safe-area-inset-bottom, 0px) + 12px)",

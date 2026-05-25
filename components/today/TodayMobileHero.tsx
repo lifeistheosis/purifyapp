@@ -143,22 +143,29 @@ export function TodayMobileHero() {
         </ul>
       </section>
 
-      {/* Verse / quote card — uses the saint life's first quote if available,
-          else a steady fallback. Kept short on phone, no extra chrome. */}
-      <section className="px-5 pt-6 pb-2">
-        <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
-          A word for today
-        </p>
-        <blockquote className="rounded-lg border border-paper/12 bg-paper/[0.03] p-5">
-          <p className="font-serif text-[17px] leading-[1.55] text-paper/90">
-            &ldquo;Acquire the spirit of peace, and a thousand souls around
-            you will be saved.&rdquo;
-          </p>
-          <p className="mt-3 font-sans text-[11px] uppercase tracking-[1.5px] text-paper/50">
-            St. Seraphim of Sarov
-          </p>
-        </blockquote>
-      </section>
+      {/* Verse / quote card — pulls the headline saint's first quote
+          when available, with St. Seraphim as the steady fallback.
+          Kept short on phone, no extra chrome. */}
+      {(() => {
+        const q = headlineSaint?.quotes?.[0];
+        const text = q?.text ?? "Acquire the spirit of peace, and a thousand souls around you will be saved.";
+        const cite = q ? `${headlineSaint?.name ?? ""}${q.source ? ` · ${q.source}` : ""}` : "St. Seraphim of Sarov";
+        return (
+          <section className="px-5 pt-6 pb-2">
+            <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+              A word for today
+            </p>
+            <blockquote className="rounded-lg border border-paper/12 bg-paper/[0.03] p-5">
+              <p className="font-serif text-[17px] leading-[1.55] text-paper/90">
+                &ldquo;{text}&rdquo;
+              </p>
+              <p className="mt-3 font-sans text-[11px] uppercase tracking-[1.5px] text-paper/50">
+                {cite}
+              </p>
+            </blockquote>
+          </section>
+        );
+      })()}
 
       {/* Spacer so the last card clears the floating tab bar without being
           flush. safe-pb on <main> handles the rest. */}

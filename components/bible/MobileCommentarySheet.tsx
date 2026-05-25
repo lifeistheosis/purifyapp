@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { ChapterCommentary } from "@/lib/bible/load";
 import { SaintIcon } from "./SaintIcon";
+import { setOverlayOpen } from "@/lib/ui/overlay";
 
 type Note = { author: string; work: string; text: string };
 
@@ -164,13 +165,16 @@ export function MobileCommentarySheet({
  }, [verse]);
  /* eslint-enable react-hooks/set-state-in-effect */
 
- // Lock body scroll while open.
+ // Lock body scroll while open + flag the global overlay so other
+ // floating UI (the PWA install banner) can step aside.
  useEffect(() => {
  if (!mounted) return;
  const prev = document.body.style.overflow;
  document.body.style.overflow = "hidden";
+ setOverlayOpen(true);
  return () => {
  document.body.style.overflow = prev;
+ setOverlayOpen(false);
  };
  }, [mounted]);
 

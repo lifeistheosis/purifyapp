@@ -152,7 +152,7 @@ export default async function BibleChapterPage({
  <BookChapterSidebar book={b!} current={chapterNum} />
  {/* Extra mobile top padding accounts for the fixed ReadingProgressBar
  context strip (~28px) sitting under the 72px sticky navbar. */}
- <section className="flex-1 px-5 md:px-10 pt-14 md:pt-16 pb-10 md:pb-16 min-w-0">
+ <section className="flex-1 px-5 md:px-10 pt-14 md:pt-16 pb-10 md:pb-16 safe-pb-reader min-w-0">
  <div className="mx-auto max-w-[1200px] w-full">
  {/* Row 1, always: Translation + Book at their natural width.
  On desktop the typography cluster (font + interlinear) sits to

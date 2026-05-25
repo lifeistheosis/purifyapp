@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { setOverlayOpen } from "@/lib/ui/overlay";
 import { Highlighter, Eraser, Link2, Check, Bookmark, SquarePen } from "lucide-react";
 
 export type MobileVerseAction =
@@ -46,6 +47,13 @@ export function MobileVerseToolbar({
  return () => window.removeEventListener("keydown", onKey);
  }, [onClose]);
 
+ // Flag the global overlay so the PWA install banner steps aside while
+ // the toolbar is up.
+ useEffect(() => {
+ setOverlayOpen(true);
+ return () => setOverlayOpen(false);
+ }, []);
+
  // Tap-outside dismiss via a transparent backdrop. We do NOT lock body
  // scroll, the toolbar is a transient affordance, not a modal.
 
@@ -68,8 +76,17 @@ export function MobileVerseToolbar({
  onClick={onClose}
  className="absolute inset-0 bg-transparent"
  />
- {/* Floating pill at the bottom-center of the viewport. */}
- <div className="absolute inset-x-0 bottom-6 px-4 flex justify-center pointer-events-none">
+ {/* Floating pill at the bottom-center of the viewport, lifted above
+ the mobile tab bar + iOS home indicator. Same math as
+ MobileChapterPill so the two pills stack predictably when both
+ are visible. */}
+ <div
+ className="absolute inset-x-0 px-4 flex justify-center pointer-events-none"
+ style={{
+ bottom:
+ "calc(var(--tab-bar-h) + env(safe-area-inset-bottom, 0px) + 12px)",
+ }}
+ >
  <div
  className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full border border-paper/15 bg-night/95 backdrop-blur px-2 py-2 shadow-[0_12px_32px_rgba(0,0,0,0.55)]"
  >
