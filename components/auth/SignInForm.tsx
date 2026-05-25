@@ -102,7 +102,7 @@ export function SignInForm({ next }: { next?: string }) {
         </span>
       </div>
 
-      <OAuthButtons intent="signin" />
+      <OAuthButtons />
     </form>
   );
 }

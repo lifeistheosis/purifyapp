@@ -7,43 +7,36 @@ import { createClient } from "@/lib/supabase/client";
  * Continue-with-Google and Continue-with-Apple buttons. Used by both
  * SignInForm and SignUpForm (the OAuth flow doesn't distinguish).
  *
- * IMPORTANT: each provider must be configured in Supabase Dashboard →
- * Authentication → Providers BEFORE the button works in production.
- * Until then a click renders an inline error rather than silently
- * failing. See docs/auth-setup.md for the checklist.
+ * Google is wired and live (configured in Supabase Dashboard).
+ * Apple is intentionally disabled with a "Coming soon" label — the
+ * provider config (Apple Developer account, Services ID, key) hasn't
+ * been set up yet. The button is left visible so the layout
+ * stays right and so anyone curious knows it's planned.
  */
-export function OAuthButtons({
-  intent,
-}: {
-  /** Affects redirect path post-callback. Both go through /api/auth/callback. */
-  intent: "signin" | "signup";
-}) {
-  const [pending, setPending] = useState<"google" | "apple" | null>(null);
+export function OAuthButtons() {
+  const [pendingGoogle, setPendingGoogle] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function go(provider: "google" | "apple") {
-    setPending(provider);
+  async function go() {
+    setPendingGoogle(true);
     setError(null);
     try {
       const supabase = createClient();
       const origin =
         typeof window !== "undefined" ? window.location.origin : "";
-      const next = intent === "signup" ? "/account/profile" : "/account/profile";
       const { error: err } = await supabase.auth.signInWithOAuth({
-        provider,
+        provider: "google",
         options: {
-          redirectTo: `${origin}/api/auth/callback?next=${encodeURIComponent(next)}`,
+          redirectTo: `${origin}/api/auth/callback?next=/account/profile`,
         },
       });
       if (err) throw err;
       // On success Supabase redirects the page; no state cleanup needed.
     } catch (e) {
       setError(
-        e instanceof Error
-          ? e.message
-          : `Couldn't start ${provider} sign-in.`,
+        e instanceof Error ? e.message : "Couldn't start Google sign-in.",
       );
-      setPending(null);
+      setPendingGoogle(false);
     }
   }
 
@@ -52,21 +45,22 @@ export function OAuthButtons({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <button
           type="button"
-          disabled={pending !== null}
-          onClick={() => go("google")}
+          disabled={pendingGoogle}
+          onClick={go}
           className="inline-flex items-center justify-center gap-2 h-11 rounded-pill border border-paper/20 bg-paper/[0.04] hover:bg-paper/10 hover:border-paper/35 disabled:opacity-50 disabled:cursor-wait transition-colors font-sans text-[14px] font-medium text-paper"
         >
           <GoogleGlyph />
-          {pending === "google" ? "Connecting…" : "Continue with Google"}
+          {pendingGoogle ? "Connecting…" : "Continue with Google"}
         </button>
         <button
           type="button"
-          disabled={pending !== null}
-          onClick={() => go("apple")}
-          className="inline-flex items-center justify-center gap-2 h-11 rounded-pill border border-paper/20 bg-paper/[0.04] hover:bg-paper/10 hover:border-paper/35 disabled:opacity-50 disabled:cursor-wait transition-colors font-sans text-[14px] font-medium text-paper"
+          disabled
+          aria-disabled="true"
+          title="Sign in with Apple is coming soon"
+          className="inline-flex items-center justify-center gap-2 h-11 rounded-pill border border-paper/15 bg-paper/[0.02] cursor-not-allowed font-sans text-[14px] font-medium text-paper/45"
         >
           <AppleGlyph />
-          {pending === "apple" ? "Connecting…" : "Continue with Apple"}
+          Apple · Coming soon
         </button>
       </div>
       {error ? (

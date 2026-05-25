@@ -166,7 +166,7 @@ export function SignUpForm() {
         </span>
       </div>
 
-      <OAuthButtons intent="signup" />
+      <OAuthButtons />
     </form>
   );
 }
