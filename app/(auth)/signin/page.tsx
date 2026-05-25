@@ -13,6 +13,7 @@ export default async function SignInPage({
   searchParams: Search;
 }) {
   const { next, error } = await searchParams;
+  const friendly = error ? friendlyError(error) : null;
   return (
     <div>
       <h1 className="font-sans text-[28px] font-bold text-paper leading-tight mb-2">
@@ -21,7 +22,7 @@ export default async function SignInPage({
       <p className="font-serif text-[15px] text-paper/75 mb-7">
         Sign in to pick up where you left off.
       </p>
-      {error ? (
+      {friendly ? (
         <div
           role="alert"
           className="mb-5 rounded-md border border-[#c1272d]/45 bg-[#c1272d]/[0.08] px-4 py-3"
@@ -30,11 +31,24 @@ export default async function SignInPage({
             Sign-in failed
           </p>
           <p className="font-sans text-[13.5px] text-paper/85 leading-[1.55]">
-            {error}
+            {friendly}
           </p>
         </div>
       ) : null}
       <SignInForm next={next} />
     </div>
   );
+}
+
+function friendlyError(raw: string): string {
+  if (/identity is already linked/i.test(raw) || /identity_already_exists/i.test(raw)) {
+    return "That Google account is already linked to a Purify account. Click \"Continue with Google\" below to sign in with it.";
+  }
+  if (/access[_ ]denied/i.test(raw) || /user denied/i.test(raw)) {
+    return "You declined the provider's consent prompt. Try again, or use email and password.";
+  }
+  if (/redirect_uri/i.test(raw) || /redirect uri/i.test(raw)) {
+    return "Sign-in completed but the redirect URL wasn't recognized. The site maintainer needs to add this app's callback URL to the Supabase allowlist.";
+  }
+  return raw;
 }

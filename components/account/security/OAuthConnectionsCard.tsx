@@ -61,12 +61,18 @@ export function OAuthConnectionsCard() {
       if (err) throw err;
     } catch (e) {
       const raw = e instanceof Error ? e.message : "";
-      // Supabase's stock message is too cryptic for end-users; the
-      // fix is one toggle in the dashboard but the SDK doesn't say
-      // that. Translate.
+      // Supabase's stock messages are too cryptic to act on; translate
+      // the two we expect to see in production into next-steps.
       if (/manual linking is disabled/i.test(raw)) {
         setError(
           "Linking new providers from inside the app is currently off. The site maintainer needs to enable Manual Linking in Supabase Dashboard → Authentication → Settings. In the meantime you can sign out and sign in with Google directly.",
+        );
+      } else if (
+        /identity is already linked/i.test(raw) ||
+        /identity_already_exists/i.test(raw)
+      ) {
+        setError(
+          "That Google account is already linked to a Purify account. If you'd like to use it to sign in, sign out and click \"Continue with Google\" on /signin — Supabase will recognize the existing link and let you in.",
         );
       } else {
         setError(raw || "Couldn't connect Google.");
