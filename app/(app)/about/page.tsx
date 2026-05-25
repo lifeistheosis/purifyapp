@@ -95,14 +95,24 @@ export default function AboutPage() {
  not in a database.
  </li>
  <li>
- Not a SaaS account product. You don&rsquo;t have to sign in to
- use anything. An account lets your highlights, notes,
- prayer-rule check-offs, and bookmarks sync across devices;
- without one, the same things live in your browser&rsquo;s local
- storage on this device alone. Either way, nothing about your
- reading is sold or shared, the long version of that
- promise, with every field and every third party named, is on
- the{" "}
+ Not a SaaS account product. Two real ways to use Purify, both
+ free, both private. A <strong className="text-paper">local profile</strong>{" "}
+ keeps highlights, notes, bookmarks, and your prayer streak in
+ this browser only, with no server-side record. A{" "}
+ <strong className="text-paper">public account</strong> stores the same
+ things on our server so they sync across devices, with a one-tap
+ email magic-link sign-in (no password) and a delete-everything
+ button on your account page. Neither is the default; the choice
+ is presented plainly when you open{" "}
+ <Link
+ href="/account"
+ className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
+ >
+ /account
+ </Link>
+ . Either way, nothing about your reading is sold or shared, and
+ the long version of that promise, with every field and every
+ third party named, is on the{" "}
  <Link
  href="/privacy"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"

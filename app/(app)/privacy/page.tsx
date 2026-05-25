@@ -32,6 +32,66 @@ export default function PrivacyPage() {
  it.
  </p>
 
+ {/* Two account paths */}
+ <h2 className="mt-12 font-sans text-[24px] md:text-[28px] font-bold text-paper leading-[1.15]">
+ Local profile vs public account
+ </h2>
+ <p className="mt-4 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ When you open{" "}
+ <Link
+ href="/account"
+ className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
+ >
+ /account
+ </Link>{" "}
+ you pick one of two paths. Neither is the default; the choice
+ is presented plainly.
+ </p>
+ <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+ <div className="rounded-md border border-paper/12 bg-paper/[0.02] p-5">
+ <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+ Local profile
+ </p>
+ <p className="font-serif text-[16px] text-paper/85 leading-[1.65]">
+ Highlights, notes, bookmarks, your prayer streak, and reader
+ preferences (font, size) are stored in your browser&rsquo;s{" "}
+ <code className="font-mono text-[14px] text-paper/70">localStorage</code>.
+ We do not see or receive any of it. There is no row for you in
+ our database. The trade-off: it lives on this device only, and
+ goes away if you clear browser data.
+ </p>
+ <p className="mt-3 font-sans text-[12.5px] text-paper/55 leading-[1.55]">
+ To release a local profile, open /account and click &ldquo;Release
+ this local profile.&rdquo; To wipe all local data, clear site
+ data for this origin in your browser settings.
+ </p>
+ </div>
+ <div className="rounded-md border border-gold/30 bg-gold/[0.04] p-5">
+ <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-gold mb-2">
+ Public account
+ </p>
+ <p className="font-serif text-[16px] text-paper/85 leading-[1.65]">
+ The same items go to our Supabase Postgres database so they
+ sync across every device you sign in on. We store: your email
+ (used only to send the sign-in link), a display name, and a
+ <code className="font-mono text-[14px] text-paper/70"> profiles </code>
+ row with your account creation date. Highlights, notes, bookmarks,
+ and prayer-rule check-offs travel as their own rows.
+ </p>
+ <p className="mt-3 font-sans text-[12.5px] text-paper/55 leading-[1.55]">
+ To delete the account and every server-side row it created,
+ use the &ldquo;Delete account&rdquo; button on /account. The
+ deletion is immediate and cascades.
+ </p>
+ </div>
+ </div>
+ <p className="mt-5 font-serif text-[17px] text-paper/80 leading-[1.7]">
+ Nothing in either path is sold, shared, or used to train models.
+ The analytics described below are separate from both: they record
+ page views in aggregate, without your account identity, whether you
+ are signed in or not.
+ </p>
+
  {/* What we record */}
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
  What we record
