@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-type Provider = "google" | "apple";
-
 type Identity = {
   id?: string;
   identity_id?: string;
@@ -12,14 +10,20 @@ type Identity = {
 };
 
 /**
- * Lists which OAuth identities are linked to the current user.
- * Lets the user connect or disconnect each (Google, Apple).
+ * Lists which OAuth identities are linked to the current user and
+ * lets them connect / disconnect Google. Apple is shown but marked
+ * "Coming soon" until the provider config is in place (Apple
+ * Developer account required).
  *
- * Reads `user.identities` on mount; refreshes after any change.
+ * Linking a new identity hits `supabase.auth.linkIdentity()`, which
+ * requires the project's "Manual Linking" setting to be enabled in
+ * Supabase Dashboard → Authentication → Settings. If it's off, the
+ * SDK throws "Manual linking is disabled" — we translate that to a
+ * concrete next-step message instead of relaying the raw text.
  */
 export function OAuthConnectionsCard() {
   const [identities, setIdentities] = useState<Identity[]>([]);
-  const [pending, setPending] = useState<Provider | null>(null);
+  const [pending, setPending] = useState<"google" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function load() {
@@ -36,49 +40,58 @@ export function OAuthConnectionsCard() {
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  const linked = (p: Provider) =>
-    identities.find((i) => i.provider === p) ?? null;
+  const googleIdentity =
+    identities.find((i) => i.provider === "google") ?? null;
+  const appleIdentity =
+    identities.find((i) => i.provider === "apple") ?? null;
 
-  async function connect(p: Provider) {
-    setPending(p);
+  async function connectGoogle() {
+    setPending("google");
     setError(null);
     try {
       const supabase = createClient();
       const origin =
         typeof window !== "undefined" ? window.location.origin : "";
       const { error: err } = await supabase.auth.linkIdentity({
-        provider: p,
+        provider: "google",
         options: {
           redirectTo: `${origin}/api/auth/callback?next=/account/security`,
         },
       });
       if (err) throw err;
     } catch (e) {
-      setError(
-        e instanceof Error
-          ? e.message
-          : `Couldn't connect ${p}.`,
-      );
+      const raw = e instanceof Error ? e.message : "";
+      // Supabase's stock message is too cryptic for end-users; the
+      // fix is one toggle in the dashboard but the SDK doesn't say
+      // that. Translate.
+      if (/manual linking is disabled/i.test(raw)) {
+        setError(
+          "Linking new providers from inside the app is currently off. The site maintainer needs to enable Manual Linking in Supabase Dashboard → Authentication → Settings. In the meantime you can sign out and sign in with Google directly.",
+        );
+      } else {
+        setError(raw || "Couldn't connect Google.");
+      }
       setPending(null);
     }
   }
 
-  async function disconnect(p: Provider) {
-    const ident = linked(p);
-    if (!ident) return;
-    setPending(p);
+  async function disconnectGoogle() {
+    if (!googleIdentity) return;
+    setPending("google");
     setError(null);
     try {
       const supabase = createClient();
-      // Supabase types: identities[].identity_id is the canonical id
-      // newer SDKs expose; some return `id`. Pass the whole object.
       const { error: err } = await supabase.auth.unlinkIdentity(
-        ident as Parameters<typeof supabase.auth.unlinkIdentity>[0],
+        googleIdentity as Parameters<
+          typeof supabase.auth.unlinkIdentity
+        >[0],
       );
       if (err) throw err;
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : `Couldn't disconnect ${p}.`);
+      setError(
+        e instanceof Error ? e.message : "Couldn't disconnect Google.",
+      );
     } finally {
       setPending(null);
     }
@@ -90,51 +103,64 @@ export function OAuthConnectionsCard() {
         Connected accounts
       </h2>
       <p className="font-sans text-[13px] text-paper/60 mb-5 leading-[1.55]">
-        Sign in faster by linking Google or Apple. You can still sign in
-        with email + password at any time.
+        Sign in faster by linking Google to your account. You can still
+        sign in with email + password at any time.
       </p>
       <ul className="flex flex-col gap-3 max-w-[480px]">
-        {(["google", "apple"] as const).map((p) => {
-          const ident = linked(p);
-          const label = p === "google" ? "Google" : "Apple";
-          return (
-            <li
-              key={p}
-              className="flex items-center justify-between gap-4 rounded-md border border-paper/10 bg-paper/[0.02] px-4 py-3"
+        {/* Google — live */}
+        <li className="flex items-center justify-between gap-4 rounded-md border border-paper/10 bg-paper/[0.02] px-4 py-3">
+          <div className="min-w-0">
+            <p className="font-sans text-[13.5px] font-medium text-paper">
+              Google
+            </p>
+            <p className="font-sans text-[12px] text-paper/55">
+              {googleIdentity ? "Connected" : "Not connected"}
+            </p>
+          </div>
+          {googleIdentity ? (
+            <button
+              type="button"
+              onClick={disconnectGoogle}
+              disabled={pending !== null}
+              className="font-sans text-[12.5px] text-paper/70 hover:text-paper disabled:opacity-50"
             >
-              <div className="min-w-0">
-                <p className="font-sans text-[13.5px] font-medium text-paper">
-                  {label}
-                </p>
-                <p className="font-sans text-[12px] text-paper/55">
-                  {ident ? "Connected" : "Not connected"}
-                </p>
-              </div>
-              {ident ? (
-                <button
-                  type="button"
-                  onClick={() => disconnect(p)}
-                  disabled={pending !== null}
-                  className="font-sans text-[12.5px] text-paper/70 hover:text-paper disabled:opacity-50"
-                >
-                  {pending === p ? "Working…" : "Disconnect"}
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => connect(p)}
-                  disabled={pending !== null}
-                  className="font-sans text-[12.5px] font-semibold rounded-pill bg-paper text-night px-4 py-1.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
-                >
-                  {pending === p ? "Opening…" : "Connect"}
-                </button>
-              )}
-            </li>
-          );
-        })}
+              {pending === "google" ? "Working…" : "Disconnect"}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={connectGoogle}
+              disabled={pending !== null}
+              className="font-sans text-[12.5px] font-semibold rounded-pill bg-paper text-night px-4 py-1.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
+            >
+              {pending === "google" ? "Opening…" : "Connect"}
+            </button>
+          )}
+        </li>
+
+        {/* Apple — coming soon */}
+        <li className="flex items-center justify-between gap-4 rounded-md border border-paper/10 bg-paper/[0.02] px-4 py-3 opacity-70">
+          <div className="min-w-0">
+            <p className="font-sans text-[13.5px] font-medium text-paper">
+              Apple
+            </p>
+            <p className="font-sans text-[12px] text-paper/55">
+              {appleIdentity ? "Connected" : "Coming soon"}
+            </p>
+          </div>
+          <span
+            aria-disabled="true"
+            title="Sign in with Apple is coming soon"
+            className="font-sans text-[12.5px] font-medium text-paper/40 cursor-not-allowed"
+          >
+            Coming soon
+          </span>
+        </li>
       </ul>
       {error ? (
-        <p className="mt-3 font-sans text-[13px] text-[#f8cac7]">{error}</p>
+        <p className="mt-3 font-sans text-[13px] text-[#f8cac7] leading-[1.55]">
+          {error}
+        </p>
       ) : null}
     </section>
   );
