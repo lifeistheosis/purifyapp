@@ -54,3 +54,32 @@ test("manifest is served and parses as JSON", async ({ request }) => {
   expect(body.display).toBe("standalone");
   expect(Array.isArray(body.icons)).toBeTruthy();
 });
+
+test("Bible chapter shows MobileTopBar with back + reader actions", async ({
+  page,
+}) => {
+  await page.goto("/bible/john/1");
+  // The top bar's back button is the only "Back" aria-label on the page.
+  await expect(page.getByLabel("Back").first()).toBeVisible();
+  // Reader actions cluster: bookmark + settings.
+  await expect(page.getByLabel("Bookmark this chapter")).toBeVisible();
+  await expect(page.getByLabel("Reader settings")).toBeVisible();
+});
+
+test("chapter pill opens the book/chapter picker sheet", async ({ page }) => {
+  await page.goto("/bible/john/1");
+  // The pill's center label includes the book name + current chapter.
+  await page.getByLabel(/Pick a chapter/).click();
+  // Sheet renders as a dialog with the book name as its title.
+  await expect(page.getByRole("dialog", { name: /John/ })).toBeVisible();
+});
+
+test("saint-work reader renders MobileTopBar + section pill", async ({
+  page,
+}) => {
+  await page.goto("/saints/john-chrysostom/paschal-homily");
+  // Top bar back button to the saint profile.
+  await expect(page.getByLabel("Back").first()).toBeVisible();
+  // Floating section switcher: the label reads "Section N of M".
+  await expect(page.getByText(/Section \d+ of \d+/)).toBeVisible();
+});
