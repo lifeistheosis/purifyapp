@@ -86,6 +86,13 @@ export default function PrivacyPage() {
  </div>
  </div>
  <p className="mt-5 font-serif text-[17px] text-paper/80 leading-[1.7]">
+ If you upgrade from a local profile to a public account, your
+ existing highlights, notes, and bookmarks are pushed to your
+ account on first sign-in. Prayer streaks, reader preferences, and
+ calendar style stay on this device only, they have no server
+ table yet.
+ </p>
+ <p className="mt-3 font-serif text-[17px] text-paper/80 leading-[1.7]">
  Nothing in either path is sold, shared, or used to train models.
  The analytics described below are separate from both: they record
  page views in aggregate, without your account identity, whether you

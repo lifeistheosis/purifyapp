@@ -13,6 +13,7 @@ import { ProfileDanger } from "@/components/profile/ProfileDanger";
 import { SyncOnMount } from "@/components/profile/SyncOnMount";
 import { AccountChipRow } from "@/components/profile/AccountChipRow";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { PostSignInBridge } from "@/components/profile/PostSignInBridge";
 
 export const metadata = {
  title: "Your account",
@@ -93,6 +94,7 @@ export default async function AccountPage() {
  </p>
 
  <SyncOnMount />
+ <PostSignInBridge />
 
  <AccountChipRow />
 

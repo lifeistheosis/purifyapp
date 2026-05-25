@@ -103,10 +103,10 @@ export function LocalProfileHero() {
       </div>
 
       <p className="mt-5 font-sans text-[12.5px] text-paper/45 leading-[1.55]">
-        Upgrading does not auto-migrate the highlights and notes that
-        already live in this browser; that&rsquo;s a separate
-        workstream. For now, anything saved publicly after sign-in
-        starts fresh on the server.
+        Upgrading will sync your local highlights, notes, and bookmarks
+        to your account the first time you sign in. Prayer streaks and
+        reader settings stay on this device for now (no server table
+        for them yet).
       </p>
     </section>
   );
