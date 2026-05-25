@@ -92,7 +92,9 @@ export function ChapterStickyHeader({
   return (
     <div
       aria-hidden
-      className="fixed left-0 right-0 top-[72px] z-40 backdrop-blur-md bg-night/85 border-b border-paper/8"
+      // Anchors under the 48px MobileTopBar on phones, and under the
+      // 72px AppNav on desktop.
+      className="fixed left-0 right-0 top-12 md:top-[72px] z-40 backdrop-blur-md bg-night/85 border-b border-paper/8"
     >
       <div className="mx-auto max-w-[1200px] px-5 md:px-10 py-2 flex items-center justify-between gap-3 font-sans text-[12px]">
         <span className="text-paper/85 font-semibold truncate">

@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { nextChapter, prevChapter, getBook } from "@/lib/bible/books";
+import { MobileChapterSheet } from "./MobileChapterSheet";
 
 /**
  * Hoisted out of the pill body so React (and the new
@@ -43,13 +45,8 @@ function Arrow({
  * and centered above the bottom tab bar. Shows the current `<Book> <Chapter>`
  * with ‹ › arrows to step backward and forward through the canon.
  *
- * Replaces the older scroll-gated `MobileNextChapterFab` — that affordance
- * only ever advanced; this one is symmetric, and the center label gives
- * orientation at a glance, like the Bible.com reader.
- *
- * The label tap-target also routes to `/bible` so a reader can pop back to
- * the table of contents (no full book-switcher sheet primitive yet — that
- * lives in `BookChapterSidebar` on desktop).
+ * Tapping the center label opens `MobileChapterSheet` — a real book +
+ * chapter picker — instead of dumping to /bible.
  */
 export function MobileChapterPill({
   slug,
@@ -61,44 +58,56 @@ export function MobileChapterPill({
   const book = getBook(slug);
   const prev = prevChapter(slug, chapter);
   const next = nextChapter(slug, chapter);
+  const [sheetOpen, setSheetOpen] = useState(false);
   if (!book) return null;
 
   return (
-    <div
-      aria-label="Chapter switcher"
-      className="md:hidden fixed inset-x-0 z-40 flex justify-center pointer-events-none"
-      // Sit clear of the tab bar AND the iOS home indicator, plus a 12px gap.
-      style={{
-        bottom:
-          "calc(var(--tab-bar-h) + env(safe-area-inset-bottom, 0px) + 12px)",
-      }}
-    >
-      <div className="pointer-events-auto inline-flex items-center gap-1 rounded-pill bg-night/95 backdrop-blur border border-white/15 shadow-[0_8px_24px_rgba(0,0,0,0.45)] pl-1 pr-1 py-1">
-        <Arrow
-          target={prev}
-          label={
-            prev
-              ? `Previous: ${getBook(prev.slug)?.name ?? prev.slug} ${prev.chapter}`
-              : "No previous chapter"
-          }
-          dir="‹"
-        />
-        <Link
-          href="/bible"
-          className="px-3 h-10 inline-flex items-center font-sans text-[14px] font-semibold text-paper"
-        >
-          {book.name} {chapter}
-        </Link>
-        <Arrow
-          target={next}
-          label={
-            next
-              ? `Next: ${getBook(next.slug)?.name ?? next.slug} ${next.chapter}`
-              : "No next chapter"
-          }
-          dir="›"
-        />
+    <>
+      <div
+        aria-label="Chapter switcher"
+        className="md:hidden fixed inset-x-0 z-40 flex justify-center pointer-events-none"
+        // Sit clear of the tab bar AND the iOS home indicator, plus a 12px gap.
+        style={{
+          bottom:
+            "calc(var(--tab-bar-h) + env(safe-area-inset-bottom, 0px) + 12px)",
+        }}
+      >
+        <div className="pointer-events-auto inline-flex items-center gap-1 rounded-pill bg-night/95 backdrop-blur border border-white/15 shadow-[0_8px_24px_rgba(0,0,0,0.45)] pl-1 pr-1 py-1">
+          <Arrow
+            target={prev}
+            label={
+              prev
+                ? `Previous: ${getBook(prev.slug)?.name ?? prev.slug} ${prev.chapter}`
+                : "No previous chapter"
+            }
+            dir="‹"
+          />
+          <button
+            type="button"
+            onClick={() => setSheetOpen(true)}
+            aria-label={`Pick a chapter — currently ${book.name} ${chapter}`}
+            className="px-3 h-10 inline-flex items-center font-sans text-[14px] font-semibold text-paper"
+          >
+            {book.name} {chapter}
+          </button>
+          <Arrow
+            target={next}
+            label={
+              next
+                ? `Next: ${getBook(next.slug)?.name ?? next.slug} ${next.chapter}`
+                : "No next chapter"
+            }
+            dir="›"
+          />
+        </div>
       </div>
-    </div>
+
+      <MobileChapterSheet
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        currentSlug={slug}
+        currentChapter={chapter}
+      />
+    </>
   );
 }

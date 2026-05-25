@@ -13,6 +13,8 @@ import { ReadingProgressBar } from "@/components/bible/ReadingProgressBar";
 import { ChapterStickyHeader } from "@/components/bible/ChapterStickyHeader";
 import { MobileChapterStrip } from "@/components/bible/MobileChapterStrip";
 import { MobileChapterPill } from "@/components/bible/MobileChapterPill";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { MobileReaderActions } from "@/components/bible/MobileReaderActions";
 import { ReaderSettingsMenu } from "@/components/bible/ReaderSettingsMenu";
 import { VerseFocusFlash } from "@/components/bible/VerseFocusFlash";
 import {
@@ -135,6 +137,14 @@ export default async function BibleChapterPage({
 
  return (
  <ReaderPrefsProvider>
+ {/* Mobile-only YouVersion-style top bar: back to /bible, book +
+ chapter as the title, trailing icon cluster (bookmark stub +
+ settings sheet). Hidden on md+; desktop uses the AppNav. */}
+ <MobileTopBar
+ title={`${b!.name} ${chapterNum}`}
+ back="/bible"
+ trailing={<MobileReaderActions />}
+ />
  <div className="bg-night flex">
  <ChapterKeyNav slug={book} chapter={chapterNum} />
  <VerseFocusFlash />

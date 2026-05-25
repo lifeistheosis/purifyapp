@@ -67,8 +67,8 @@ export function ReadingProgressBar({
 
  return (
  <>
- {/* Mobile-only context strip, sits just under the navbar. */}
- <div className="md:hidden fixed top-[72px] left-0 right-0 z-30 bg-night/90 backdrop-blur border-b border-white/8 px-4 py-1.5 pointer-events-none">
+ {/* Mobile-only context strip, sits just under the 48px MobileTopBar. */}
+ <div className="md:hidden fixed top-12 left-0 right-0 z-30 bg-night/90 backdrop-blur border-b border-white/8 px-4 py-1.5 pointer-events-none">
  <p className="font-sans text-[11px] text-paper/65 leading-none flex items-center gap-1.5">
  <span className="font-semibold text-paper/85">
  {bookName} {chapter}
@@ -80,11 +80,12 @@ export function ReadingProgressBar({
  </p>
  </div>
 
- {/* Progress bar, slim gold fill, sits under the navbar on desktop
- and under the context strip on mobile. */}
+ {/* Progress bar, slim gold fill. On mobile it sits under the
+ context strip (48px top bar + ~32px strip = top-20). On
+ desktop it sits flush under the 72px AppNav. */}
  <div
  aria-hidden
- className="fixed left-0 right-0 z-30 h-[2px] bg-white/5 top-[96px] md:top-[72px]"
+ className="fixed left-0 right-0 z-30 h-[2px] bg-white/5 top-[80px] md:top-[72px]"
  >
  <div
  className="h-full bg-gold origin-left transition-transform duration-150 ease-out"
