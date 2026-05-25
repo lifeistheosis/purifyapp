@@ -15,7 +15,7 @@ export default function SavedPage() {
         <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
           Your saved
         </p>
-        <h1 className="font-sans text-[40px] md:text-[52px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+        <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
           What you&rsquo;ve kept.
         </h1>
         <p className="mt-6 font-serif text-[18px] text-paper/80 leading-[1.7] max-w-[620px]">

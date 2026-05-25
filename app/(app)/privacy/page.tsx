@@ -15,7 +15,7 @@ export default function PrivacyPage() {
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  Privacy
  </p>
- <h1 className="font-sans text-[40px] md:text-[52px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  What Purify keeps, and what it doesn&rsquo;t.
  </h1>
  <p className="mt-6 font-serif text-[17px] text-paper/65 leading-[1.7]">
@@ -36,7 +36,7 @@ export default function PrivacyPage() {
  <h2 className="mt-12 font-sans text-[24px] md:text-[28px] font-bold text-paper leading-[1.15]">
  Local profile vs public account
  </h2>
- <p className="mt-4 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  When you open{" "}
  <Link
  href="/account"
@@ -103,7 +103,7 @@ export default function PrivacyPage() {
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
  What we record
  </p>
- <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
  The only thing the site records about a visit is an anonymous,
  ephemeral session, used for the small &ldquo;who is reading
  right now&rdquo; view that helps us understand whether the work
@@ -125,7 +125,7 @@ export default function PrivacyPage() {
  see when a link from elsewhere brought someone in.
  </li>
  </ul>
- <p className="mt-4 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  On the server, when a session is first seen, we additionally
  derive and store:
  </p>
@@ -146,7 +146,7 @@ export default function PrivacyPage() {
  city-level fields above are.
  </li>
  </ul>
- <p className="mt-4 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  If you sign in to sync your highlights and bookmarks, Supabase
  stores the email address you signed in with and the rows you
  create (highlights, notes, prayer-rule check-offs, bookmarks).
@@ -188,7 +188,7 @@ export default function PrivacyPage() {
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
  Where it lives
  </p>
- <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
  All session and pageview rows are written to a Supabase Postgres
  database we control, in two tables: <code>analytics_sessions</code>{" "}
  (one row per session, with the coarse geo + user-agent) and{" "}
@@ -203,7 +203,7 @@ export default function PrivacyPage() {
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
  How long we keep it
  </p>
- <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
  Anonymous session and pageview rows older than 90 days are
  deleted by a scheduled job. Sync data tied to your account
  (highlights, bookmarks, etc.) is kept as long as your account
@@ -272,7 +272,7 @@ export default function PrivacyPage() {
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
  The AI-crawler policy
  </p>
- <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
  The licensed-Scripture publishers require that we don&rsquo;t let
  their text be ingested into language-model training corpora, and
  we extend the same posture to the patristic and public-domain
@@ -293,7 +293,7 @@ export default function PrivacyPage() {
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
  What lives in your browser
  </p>
- <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
  If you aren&rsquo;t signed in, your reader preferences (font,
  size, translation choice), your bookmarks, and any streak counters
  are kept in your browser&rsquo;s <code>localStorage</code> on
@@ -305,7 +305,7 @@ export default function PrivacyPage() {
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
  Changes to this page
  </p>
- <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
  If we change what is recorded, or add a third party that sees
  your traffic, this page is updated first and the change is
  listed in the next{" "}
@@ -322,7 +322,7 @@ export default function PrivacyPage() {
  <h2 className="mt-16 font-sans text-[24px] md:text-[28px] font-bold text-paper leading-[1.15]">
  Offline cache (the service worker)
  </h2>
- <p className="mt-4 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  If you add Purify to your home screen, a small service worker
  (<code className="font-mono text-[15px] text-paper/70">/sw.js</code>)
  caches the pages and assets you&rsquo;ve already visited so the
@@ -336,7 +336,7 @@ export default function PrivacyPage() {
  translation API) are never intercepted and never cached, so your
  session stays on the network where it belongs.
  </p>
- <p className="mt-4 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  To clear the cache, uninstall the home-screen app, or in your
  browser settings, clear site data for the Purify origin. We can
  also bump the cache version on a release, which evicts the old

@@ -36,10 +36,10 @@ export default async function AccountPage() {
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  Your account
  </p>
- <h1 className="font-sans text-[40px] md:text-[52px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  Pick up where you left off.
  </h1>
- <p className="mt-6 font-serif text-[19px] text-paper/85 leading-[1.7] max-w-[640px]">
+ <p className="mt-6 font-serif text-[17px] text-paper/85 leading-[1.7] max-w-[640px]">
  Two real ways to use Purify, both free and both private. Keep
  everything on this device, or sync across devices with a
  one-tap email link. Either choice is reversible.

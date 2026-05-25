@@ -15,7 +15,7 @@ export default function AboutPage() {
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  About this work
  </p>
- <h1 className="font-sans text-[40px] md:text-[52px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  A quiet place to stand before God.
  </h1>
 
@@ -23,7 +23,7 @@ export default function AboutPage() {
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
  What this is
  </p>
- <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
  Purify is one place for the four things an Orthodox Christian
  reaches for on any given day. The Scriptures, with the Fathers
  in the margin. The saint of today, the fast of today, and the
@@ -41,7 +41,7 @@ export default function AboutPage() {
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
  What this is made of
  </p>
- <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
  Almost everything you see is drawn from public-domain sources.
  The Old Testament is Brenton&rsquo;s 1851 English Septuagint,
  which carries the deuterocanon and the Psalter numbering the
@@ -55,7 +55,7 @@ export default function AboutPage() {
  Ephesians through Philemon, and Hebrews now sit inline with
  the verses he is preaching.
  </p>
- <p className="mt-4 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  Three modern translations, the NKJV, NIV, and NLT, are also
  available, fetched live from API.Bible under the publishers&rsquo;
  license, shown exactly as published, with their copyright and
@@ -127,7 +127,7 @@ export default function AboutPage() {
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
  On contested questions
  </p>
- <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
  Purify does not adjudicate questions that the canonical Orthodox
  jurisdictions answer differently. The calendar reckoning, the
  precise typikon of a fast, the use of the New or Old style, and
@@ -144,7 +144,7 @@ export default function AboutPage() {
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
  Who is behind this
  </p>
- <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
  The site is built and maintained by Edgar, an Orthodox
  Christian, with a small team of contributors who care about
  the texts and the typography. The release letters at{" "}
@@ -162,7 +162,7 @@ export default function AboutPage() {
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
  Community
  </p>
- <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
  There is a Discord for readers, a quiet place for prayer
  requests, content questions, and a sense of who else is reading.
  You can sit and listen, or come in and say something.{" "}
@@ -175,7 +175,7 @@ export default function AboutPage() {
  Join the Discord ↗
  </a>
  </p>
- <p className="mt-4 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  And on Instagram,{" "}
  <a
  href="https://instagram.com/purifymylife"
@@ -194,7 +194,7 @@ export default function AboutPage() {
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
  Money
  </p>
- <p className="mt-3 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
  Purify is free, and it&rsquo;s staying free. The pricing tier
  is gone, the marketplace is gone, and the licenses we hold for
  the Scriptures bind us to keep it that way, so there&rsquo;s

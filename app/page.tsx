@@ -3,7 +3,7 @@ import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
 import { Navbar } from "@/components/nav/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SectionScroller } from "@/components/SectionScroller";
-import { IconCornerCard } from "@/components/marketing/IconCornerCard";
+import { HeroTypographicAccent } from "@/components/marketing/HeroTypographicAccent";
 import { SeasonBanner } from "@/components/marketing/SeasonBanner";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
 import { Cross } from "@/components/ui/icons/Cross";
@@ -75,8 +75,9 @@ const challenges: {
 
 // Each section: full viewport min-height, snap-aligned, flex-centered.
 // pt offsets the 72px sticky navbar so content centers in the visible area.
+// Padding tightened ~20% as part of the v6.1.1 home polish (less shouty).
 const sectionBase =
- "snap-start md:[min-height:100dvh] flex items-center px-5 md:px-8 pt-24 md:pt-20 pb-16 md:pb-12";
+ "snap-start md:[min-height:100dvh] flex items-center px-5 md:px-8 pt-16 md:pt-14 pb-12 md:pb-10";
 
 export default function Home() {
  return (
@@ -93,17 +94,20 @@ export default function Home() {
  <SectionScroller />
  <Navbar />
  <main className="flex-1">
- {/* HERO */}
+ {/* HERO. Black-and-white surface (the older blue twilight was
+ swapped out for a pure dark register on the v6.1.1 polish);
+ the right column now holds a still typographic accent rather
+ than a phone-shaped card. */}
  <section
  className={`${sectionBase} relative overflow-hidden`}
  style={{
  background: [
- // Soft twilight-blue glow behind the heading, like the hour before vespers
- "radial-gradient(ellipse 75% 60% at 25% 30%, rgba(70, 95, 140, 0.12) 0%, transparent 65%)",
- // Subtle deeper indigo settling toward the lower right
- "radial-gradient(ellipse 60% 50% at 85% 75%, rgba(40, 50, 80, 0.10) 0%, transparent 70%)",
- // Deep night base, a hair cooler than pure black
- "linear-gradient(180deg, #07080c 0%, #0c0e14 55%, #10121a 100%)",
+ // Soft white halo behind the heading — quiet, candle-like.
+ "radial-gradient(ellipse 75% 60% at 25% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 65%)",
+ // A second, fainter halo near the right column.
+ "radial-gradient(ellipse 55% 45% at 80% 70%, rgba(255, 255, 255, 0.03) 0%, transparent 70%)",
+ // Pure dark base, true black at the corners settling into night.
+ "linear-gradient(180deg, #050505 0%, #0a0a0c 55%, #121214 100%)",
  ].join(", "),
  }}
  >
@@ -124,11 +128,11 @@ export default function Home() {
  →
  </span>
  </Link>
- <h1 className="font-sans text-[40px] md:text-[52px] lg:text-[64px] font-bold leading-[1.02] tracking-[-0.025em]">
+ <h1 className="font-sans text-[32px] md:text-[42px] lg:text-[52px] font-bold leading-[1.05] tracking-[-0.025em]">
  The whole Orthodox life,
  <br className="hidden sm:block" /> in one quiet place.
  </h1>
- <p className="font-sans text-[17px] md:text-[18px] text-paper/85 mt-5 max-w-[560px]">
+ <p className="font-sans text-[14px] md:text-[15px] text-paper/85 mt-4 max-w-[520px]">
  Pray with the Church. Read with the Fathers. Walk the year.
  Free, ad-free, yours to keep.
  </p>
@@ -145,7 +149,7 @@ export default function Home() {
  </div>
  </div>
  <div className="hidden xl:flex justify-center items-center">
- <IconCornerCard />
+ <HeroTypographicAccent />
  </div>
  </div>
  </section>
@@ -160,7 +164,7 @@ export default function Home() {
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
  Why Purify
  </p>
- <h2 className="font-sans text-[32px] md:text-[44px] lg:text-[56px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
+ <h2 className="font-sans text-[26px] md:text-[36px] lg:text-[46px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
  Four pillars, one quiet place.
  </h2>
  </div>
@@ -170,10 +174,10 @@ export default function Home() {
  <div className="mx-auto mb-6 h-14 w-14 rounded-pill bg-paper/10 flex items-center justify-center text-gold">
  <Cross size={24} />
  </div>
- <h3 className="font-sans text-[22px] font-semibold text-paper mb-3">
+ <h3 className="font-sans text-[18px] font-semibold text-paper mb-3">
  {f.title}
  </h3>
- <p className="font-sans text-body text-paper/70 max-w-[320px] mx-auto">
+ <p className="font-sans text-[14px] text-paper/70 max-w-[300px] mx-auto leading-[1.55]">
  {f.body}
  </p>
  </div>
@@ -185,7 +189,7 @@ export default function Home() {
  {/* SCRIPTURE - white rhythm break */}
  <section className={`${sectionBase} bg-paper text-center`}>
  <div className="mx-auto max-w-[820px] w-full">
- <p className="font-serif text-[36px] md:text-[52px] leading-[1.15] tracking-[-0.01em] text-night">
+ <p className="font-serif text-[28px] md:text-[42px] leading-[1.15] tracking-[-0.01em] text-night">
  &ldquo;The Lord is good to those who trust in him.&rdquo;
  </p>
  <Link
@@ -204,7 +208,7 @@ export default function Home() {
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
  Where to begin
  </p>
- <h2 className="font-sans text-[32px] md:text-[44px] lg:text-[56px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
+ <h2 className="font-sans text-[26px] md:text-[36px] lg:text-[46px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
  Begin where you stand.
  </h2>
  </div>
@@ -229,7 +233,7 @@ export default function Home() {
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
  Paths to walk
  </p>
- <h2 className="font-sans text-[32px] md:text-[44px] lg:text-[56px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
+ <h2 className="font-sans text-[26px] md:text-[36px] lg:text-[46px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
  Where would you like to begin?
  </h2>
  </div>
@@ -243,7 +247,7 @@ export default function Home() {
  <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-gold/85 mb-4">
  {ch.eyebrow}
  </p>
- <h3 className="font-sans text-[22px] md:text-[24px] font-semibold text-paper mb-3">
+ <h3 className="font-sans text-[18px] md:text-[20px] font-semibold text-paper mb-3">
  {ch.title}
  </h3>
  <p className="font-sans text-[14px] text-paper/65 leading-[1.6] mb-5">
@@ -264,10 +268,10 @@ export default function Home() {
  {/* FINAL CTA */}
  <section className={`${sectionBase} bg-night`}>
  <div className="mx-auto max-w-[1100px] w-full">
- <h2 className="font-sans text-[40px] md:text-[56px] lg:text-[72px] font-bold text-paper leading-[1.02] tracking-[-0.03em]">
+ <h2 className="font-sans text-[32px] md:text-[46px] lg:text-[60px] font-bold text-paper leading-[1.02] tracking-[-0.03em]">
  Open Purify.
  </h2>
- <p className="mt-6 font-serif text-[18px] md:text-[22px] text-paper/75 leading-[1.6] max-w-[680px]">
+ <p className="mt-5 font-serif text-[15px] md:text-[18px] text-paper/75 leading-[1.6] max-w-[640px]">
  Begin where you stand, at a prayer, at the saint of the day, at
  a verse of the Gospel.
  </p>

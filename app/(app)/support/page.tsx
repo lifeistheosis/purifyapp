@@ -51,10 +51,10 @@ export default async function SupportPage() {
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  Support this work
  </p>
- <h1 className="font-sans text-[40px] md:text-[52px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  Free now. Donations welcome.
  </h1>
- <p className="mt-6 font-serif text-[19px] text-paper/85 leading-[1.7]">
+ <p className="mt-6 font-serif text-[17px] text-paper/85 leading-[1.7]">
  Purify is free, with no plans to put a paywall around what
  ships today. Hosting, storage, sourcing, and the people who
  do the work all cost money. If the site has helped you, you

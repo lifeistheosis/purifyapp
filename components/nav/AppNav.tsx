@@ -9,6 +9,10 @@ import { useScrolled } from "@/lib/useScrolled";
 import { createClient } from "@/lib/supabase/client";
 
 const NAV = [
+  // Today added so AppNav matches the marketing Navbar; previously the
+  // top bar lost an item (and visibly shrank) when a reader navigated
+  // from the home page into any /app surface.
+  { label: "Today", href: "/prayers/today" },
   { label: "Bible", href: "/bible" },
   { label: "Prayers", href: "/prayers" },
   { label: "Saints", href: "/saints" },
