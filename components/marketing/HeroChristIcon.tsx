@@ -25,7 +25,10 @@ import { useEffect, useRef, useState } from "react";
  * layer) and the React state is initialised to "done" so the
  * mask is full from the first paint.
  *
- * Image: `/saints/icons/jesus.jpg`, served from public/.
+ * Image: `/purify-logo.jpg`, served from public/. The component
+ * name is historical (the previous design used the Pantocrator
+ * icon); the file now holds the Purify mark, an Orthodox three-bar
+ * cross on a black field.
  */
 
 const SIZE = 360; // px square; the lg viewport gives this room
@@ -141,7 +144,7 @@ export function HeroChristIcon() {
           }}
         >
           <Image
-            src="/saints/icons/jesus.jpg"
+            src="/purify-logo.jpg"
             alt=""
             width={SIZE}
             height={SIZE}
