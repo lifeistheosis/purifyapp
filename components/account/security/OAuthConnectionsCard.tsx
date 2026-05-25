@@ -126,11 +126,21 @@ export function OAuthConnectionsCard() {
           {googleIdentity ? (
             <button
               type="button"
-              onClick={disconnectGoogle}
+              onClick={() => {
+                if (
+                  typeof window !== "undefined" &&
+                  !window.confirm(
+                    "Unlink Google from your account? You'll still be able to sign in with email + password.",
+                  )
+                ) {
+                  return;
+                }
+                disconnectGoogle();
+              }}
               disabled={pending !== null}
-              className="font-sans text-[12.5px] text-paper/70 hover:text-paper disabled:opacity-50"
+              className="font-sans text-[12.5px] font-semibold rounded-pill border border-[#c1272d]/55 text-[#f8cac7] bg-[#c1272d]/[0.06] hover:bg-[#c1272d]/[0.15] hover:border-[#c1272d]/75 px-4 py-1.5 disabled:opacity-50 disabled:cursor-wait transition-colors"
             >
-              {pending === "google" ? "Working…" : "Disconnect"}
+              {pending === "google" ? "Working…" : "Unlink"}
             </button>
           ) : (
             <button
