@@ -108,7 +108,15 @@ export function SignInForm({ next }: { next?: string }) {
 }
 
 function friendly(msg: string): string {
-  if (/invalid login credentials/i.test(msg)) return "Email or password didn't match. Try again.";
-  if (/email not confirmed/i.test(msg)) return "Please confirm your email first — check your inbox.";
+  if (/invalid login credentials/i.test(msg)) {
+    // Pre-v6.2 users signed up via magic-link with no password set.
+    // The fix is the same as forgetting one: Forgot password → email
+    // → set a password. Naming that path here is the difference
+    // between "I'm locked out" and "I know what to do."
+    return "Email or password didn't match. If you signed up before passwords existed on Purify (magic-link era), use Forgot password? below to set one.";
+  }
+  if (/email not confirmed/i.test(msg)) {
+    return "Please confirm your email first — check your inbox.";
+  }
   return msg;
 }
