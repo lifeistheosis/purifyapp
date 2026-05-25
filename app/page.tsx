@@ -3,7 +3,7 @@ import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
 import { Navbar } from "@/components/nav/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SectionScroller } from "@/components/SectionScroller";
-import { HeroTypographicAccent } from "@/components/marketing/HeroTypographicAccent";
+import { HeroChristIcon } from "@/components/marketing/HeroChristIcon";
 import { SeasonBanner } from "@/components/marketing/SeasonBanner";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
 import { Cross } from "@/components/ui/icons/Cross";
@@ -149,7 +149,7 @@ export default function Home() {
  </div>
  </div>
  <div className="hidden xl:flex justify-center items-center">
- <HeroTypographicAccent />
+ <HeroChristIcon />
  </div>
  </div>
  </section>
