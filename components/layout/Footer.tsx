@@ -130,7 +130,7 @@ export function Footer() {
  Glory to God for all things.
  </p>
  <p className="font-sans text-[12px] text-paper/45 text-center sm:text-right">
- © {new Date().getFullYear()} · v6.2 · Public-domain texts unless otherwise noted.
+ © {new Date().getFullYear()} · v6.3 · Public-domain texts unless otherwise noted.
  </p>
  </div>
  </div>

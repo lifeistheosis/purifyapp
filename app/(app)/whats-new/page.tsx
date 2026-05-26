@@ -20,6 +20,25 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v6.3",
+ kind: "Auth hardened, hero rebuilt",
+ date: "May 26, 2026",
+ blurb:
+ "v6.2 shipped the password and OAuth system; v6.3 is the cleanup pass that makes it usable in production. Legacy magic-link users can now set a password from Security without being asked for a current password they never had. Google OAuth errors translate to concrete next-steps instead of raw Supabase strings, and provider errors surface on /signin in a red banner instead of redirecting silently. Apple is marked 'Coming soon' honestly (the Apple Developer account isn't provisioned yet). The Unlink action on Security is now a visible red pill with a confirm guard so a misclick can't silently drop the connection. The home page hero also gets two cleanups: the Pantocrator portrait was swapped for the three-bar Purify cross logo (the mark people see on the install screen, manifest, and elsewhere), and the intro animation was reworked from fade-with-extra-steps into a plainer empty halo → crimson drop → fade-in. Plus one layout fix so the bottom row of 'What we are made of' no longer falls behind the snap-scroller.",
+ items: [
+ "Set-a-password mode on Security for legacy magic-link users. The card now reads `profiles.has_password` server-side and branches: if false, it renders 'Set a password' (new + confirm only, gold-tinted callout explaining why) and calls updateUser + mark_password_set; if true, it renders the usual 'Change password' with current-password re-verification.",
+ "Forgot-password path explicitly named in the wrong-password error on /signin: 'use Forgot password? below to set one.' The /forgot → /reset flow already worked for accounts without a current password (Supabase resetPasswordForEmail issues a recovery token; ResetForm calls updateUser({ password })), it just wasn't named.",
+ "Apple sign-in, sign-up, and Connect-Google buttons all marked 'Coming soon' since the Apple Developer account isn't provisioned yet. The buttons are visibly dimmed with aria-disabled and cursor-not-allowed; the layout stays two-up so the row reads as a deliberate pair instead of a hole. Two-line restore when the Developer account is ready.",
+ "OAuth provider errors surface on /signin in a red banner. /api/auth/callback now handles ?code (success), ?error (provider cancelled / misconfigured), and the no-code fallthrough, redirecting failures to /signin?error=<msg> with a visible message instead of a silent landing on /account.",
+ "Google 'identity_already_exists' / 'access_denied' / 'redirect_uri' / 'manual linking is disabled' all translate to concrete next-steps in the Connect Google flow and on /signin, instead of relaying raw Supabase text. 'That Google account is already linked to a Purify account. Click Continue with Google on /signin and Supabase will recognize the existing link and let you in.'",
+ "Unlink action on Security promoted from a faded text-link to a proper red-outlined pill (cinnabar border on a low-opacity tint) with a confirm() guard. Now visually matches the Sign-out-everywhere card's destructive treatment so the two destructive controls read as a deliberate pair.",
+ "Hero icon swap. The right column on the home hero now renders the Purify three-bar cross logo instead of the Pantocrator portrait. Same blood-drop intro, gold halo, pointer-tilt, and cursor-glint still apply; only the image src moved (and the file moved from public/public/ to public/ root so it serves at /purify-logo.jpg).",
+ "Hero intro animation reworked. Replaces the mask-bloom reveal with a plainer sequence: 0s empty halo and crimson drop falling; ~1s drop lands, thin splash ring, crimson wash blooms, icon begins fading in; 1.8s icon fully visible, wash settles to ambient glow. Same total length, motion-reduce still respected.",
+ "MadeOfStrip layout fix. The home page SectionScroller intercepts wheel events and snaps to each top-level main > section, blocking internal scrolling. MadeOfStrip was taller than 100dvh on most desktop displays, so the sixth tile ('No tracking. No advertising. Optional account.') was clipped at the bottom and unreachable. Now adopts the same sectionBase shape the other home sections use (snap-start + md:[min-height:100dvh] + flex items-center, with navbar offset baked in), with tighter vertical rhythm so all six tiles plus the header fit comfortably under 100dvh.",
+ "Footer + home-page chip + /whats-new chip step to v6.3.",
+ ],
+ },
+ {
  version: "v6.2",
  kind: "A real account system",
  date: "May 26, 2026",
