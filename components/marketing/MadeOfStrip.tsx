@@ -29,34 +29,34 @@ const ITEMS: { title: string; body: string }[] = [
 
 export function MadeOfStrip() {
   return (
-    <section className="px-5 md:px-8 py-16 md:py-20 bg-night">
+    <section className="snap-start md:[min-height:100dvh] flex items-center px-5 md:px-8 pt-24 md:pt-20 pb-10 md:pb-12 bg-night">
       <div className="mx-auto max-w-[1080px] w-full">
-        <div className="text-center max-w-[680px] mx-auto mb-12">
-          <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.8px] text-paper/55 mb-3">
+        <div className="text-center max-w-[680px] mx-auto mb-6 md:mb-8">
+          <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.8px] text-paper/55 mb-2">
             What we are made of
           </p>
-          <h2 className="font-sans text-[28px] md:text-[36px] font-bold text-paper tracking-[-0.02em] leading-[1.15]">
+          <h2 className="font-sans text-[26px] md:text-[32px] font-bold text-paper tracking-[-0.02em] leading-[1.15]">
             Public domain, plain-text, all the way down.
           </h2>
-          <p className="mt-4 font-sans text-[15px] text-paper/65 leading-[1.65]">
+          <p className="mt-3 font-sans text-[14px] text-paper/65 leading-[1.6]">
             We tell you what we used and where it came from. No black-box
             translations, no proprietary lock-in, no scriptural choices
             hidden from you.
           </p>
         </div>
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
           {ITEMS.map((it) => (
             <li
               key={it.title}
-              className="rounded-md border border-paper/12 bg-paper/[0.03] p-5"
+              className="rounded-md border border-paper/12 bg-paper/[0.03] p-4"
             >
               <div className="flex items-start gap-3">
-                <Cross size={16} className="shrink-0 mt-0.5 text-gold" />
+                <Cross size={14} className="shrink-0 mt-0.5 text-gold" />
                 <div className="min-w-0">
-                  <p className="font-sans text-[15px] font-semibold text-paper leading-tight">
+                  <p className="font-sans text-[14.5px] font-semibold text-paper leading-tight">
                     {it.title}
                   </p>
-                  <p className="mt-1.5 font-sans text-[13.5px] text-paper/70 leading-[1.6]">
+                  <p className="mt-1 font-sans text-[13px] text-paper/70 leading-[1.55]">
                     {it.body}
                   </p>
                 </div>
