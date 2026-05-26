@@ -5,14 +5,12 @@ import { Book } from "@/components/ui/icons/Book";
 import { Halo } from "@/components/ui/icons/Halo";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Wheat } from "@/components/ui/icons/Wheat";
-import { Fish } from "@/components/ui/icons/Fish";
 import { Grapes } from "@/components/ui/icons/Grapes";
-import { Compass } from "@/components/ui/icons/Compass";
 
 export const metadata = {
   title: "Discover",
   description:
-    "The whole library at a glance: saints, councils, calendar, fasts, daily readings, patristic commentary, Pascha.",
+    "The whole library at a glance: saints, councils, the calendar, daily readings, the Psalter, patristic commentary.",
 };
 
 export const revalidate = 3600;
@@ -55,20 +53,11 @@ const TILES: Tile[] = [
   {
     label: "Calendar",
     href: "/calendar",
-    blurb: "Every day of the Church's year, New and Old style.",
+    blurb: "Every day of the Church's year, the fasts, and the count to Pascha.",
     Icon: Lampada,
     tint: "text-[#bfd6cc]",
     bg: "bg-[var(--color-grad-teal)]/[0.14]",
     border: "border-[var(--color-grad-teal)]/35",
-  },
-  {
-    label: "Fasts",
-    href: "/calendar#fasts",
-    blurb: "Today's fast at a glance, and the whole liturgical year.",
-    Icon: Fish,
-    tint: "text-[#bfd6cc]",
-    bg: "bg-[var(--color-grad-teal)]/[0.08]",
-    border: "border-[var(--color-grad-teal)]/30",
   },
   {
     label: "Daily readings",
@@ -97,15 +86,6 @@ const TILES: Tile[] = [
     bg: "bg-[var(--color-accent)]/[0.10]",
     border: "border-[var(--color-accent)]/30",
   },
-  {
-    label: "Pascha",
-    href: "/calendar#pascha",
-    blurb: "The Great Feast, and the count to it from today.",
-    Icon: Compass,
-    tint: "text-gold",
-    bg: "bg-[var(--color-grad-pink)]/[0.10]",
-    border: "border-[var(--color-grad-pink)]/30",
-  },
 ];
 
 export default function DiscoverPage() {
@@ -122,8 +102,8 @@ export default function DiscoverPage() {
               Discover.
             </h1>
             <p className="mt-4 font-serif text-[17px] text-paper/80 max-w-[640px] leading-[1.65]">
-              Saints, councils, the calendar, the fasts, and a way into the
-              wider library. Tap a tile to start.
+              Saints, councils, the calendar, and a way into the wider library.
+              Tap a tile to start.
             </p>
           </header>
 
@@ -131,7 +111,7 @@ export default function DiscoverPage() {
             The whole library at a glance.
           </p>
 
-          <ul className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <ul className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {TILES.map(({ label, href, blurb, Icon, tint, bg, border }) => (
               <li key={href}>
                 <Link
