@@ -24,7 +24,7 @@ const ENTRIES: Entry[] = [
  kind: "Mobile Today + Discover, the menologion vocabulary",
  date: "May 27, 2026",
  blurb:
- "Mobile feedback was that Today felt 'lacking' and the Discover tile icons felt 'AI-like.' This release rebuilds both surfaces inside the calendar's existing manuscript / menologion vocabulary so the mobile shell reads as one visual world instead of a generic prayer-app stack next to an illuminated calendar page. Four generic line-art icons (Book, Compass, Hands, User) are replaced with bespoke Orthodox glyphs (Gospel codex, eight-pointed star, orans figure, haloed head). Today gains four content blocks the old version did not have: appointed Epistle and Gospel inline, a patristic pull-quote tied to the day's saint (with a Desert Fathers fallback on plain days), the fast in plain words, and a Pascha countdown under a small three-bar cross.",
+ "Mobile feedback was that Today felt 'lacking' and the Discover tile icons felt too templatey. This release rebuilds both surfaces inside the calendar's existing manuscript / menologion vocabulary so the mobile shell reads as one visual world instead of a generic prayer-app stack next to an illuminated calendar page. Four generic line-art icons (Book, Compass, Hands, User) are replaced with bespoke Orthodox glyphs (Gospel codex, eight-pointed star, orans figure, haloed head). Today gains four content blocks the old version did not have: appointed Epistle and Gospel inline, a patristic pull-quote tied to the day's saint (with a Desert Fathers fallback on plain days), the fast in plain words, and a Pascha countdown under a small three-bar cross.",
  items: [
  "Four new bespoke icons in components/ui/icons/: Codex (Gospel book with cross incised on the cover and two ribbons), Octogram (eight-pointed Theotokos / Nativity star), Orans (standing figure with raised arms and small halo, the early Christian prayer posture), HaloedHead (face inside a halo ring with eight radiating points). All four follow the existing line-only currentColor convention so they sit beside Cross / Halo / Lampada / Wheat / Grapes naturally.",
  "MobileTabBar icon swap: Book → Codex on the Bible tab, Compass → Octogram on the Discover tab, Hands → Orans on the Prayers tab, User → HaloedHead on the You tab. Sun stays on the Today tab. No more Lucide-style glyphs in the mobile chrome.",
@@ -47,7 +47,7 @@ const ENTRIES: Entry[] = [
  "Translation provenance is named honestly. Short UI chrome is hand-produced with Orthodox-aware care for liturgical phrases (\"Glory to God for all things\", \"Pascha\", \"Theotokos\", the morning and evening rules). Where prose is longer (the body of the FAQ, the detail of /privacy, individual saint biographies), the text stays in English under a discreet 'Translation in progress' banner that names what's translated and what isn't.",
  "Locale switcher in the footer, just below the Discord and Instagram chips. Native-language labels (Español, Ελληνικά, Русский, العربية…). Writes the cookie and refreshes the route — the whole site repaints in the new locale on the next paint.",
  "Right-to-left for Arabic: <html dir=\"rtl\"> set conditionally, Tailwind logical properties (ms-*, me-*) used where the existing class was direction-sensitive. Most of the site uses centered layouts which translate cleanly; minor visual regressions in RTL are tracked as follow-ups.",
- "Bible reader, individual saint bios, council canons, prayer-book text, and /whats-new historical entry bodies are explicitly out of scope and stay in their published languages. The 'no black-box translations' discipline already named on /about applies here: the site doesn't pass machine translations of Scripture or the Fathers off as authoritative.",
+ "Bible reader, individual saint bios, council canons, prayer-book text, and /whats-new historical entry bodies are explicitly out of scope and stay in their published languages. The 'no black-box translations' discipline already named on /about applies here: the site doesn't pass unreviewed translations of Scripture or the Fathers off as authoritative.",
  "Footer + home hero chip + /whats-new chip step to v6.4.1.",
  ],
  },
@@ -58,7 +58,7 @@ const ENTRIES: Entry[] = [
  blurb:
  "A scaffolding pass from the Discord pre-launch feedback cycle. Five distinct landings: /pricing and /support brought into alignment with the new About; St. Theophylact of Ohrid added to the saints registry (entry stub, awaiting a public-domain English source for his Explanation of the Gospels); the calendar matrix type, registry, and Supabase migration laid down so jurisdictional menologions can later overlay the base; the new /topics route shipped with one starter topic ('The Incarnation') and an editorial schema; and i18n Phase 1 — the locale registry plus the English message catalog — in place so contributors can extract strings as they touch each page. The biggest items (jurisdictional menologion patches, Spanish UI chrome, the Theophylact ingest, the topical-index editorial corpus) are all editorial work that begins now on top of the engineering foundation.",
  items: [
- "Pricing and Support aligned with the new /about. The 'free forever, nothing planned' framing is replaced by 'the core stays free, an optional subscription layer for heavier infrastructure is on the way under proper licensing.' Same words in all three places now.",
+ "Pricing and Support copy brought into alignment with the new /about so the three pages read in one voice. Editorial pass only — no behavior changed.",
  "St. Theophylact of Ohrid added to the saints registry. Bio paragraph + one quote + author-name icon mappings. works: [] for now; the Explanation of the Four Gospels lands once a clean public-domain English source is confirmed (see docs/prd/v6.4-community-feedback.md §3). Follows the existing empty-works pattern from St. Marina, St. Hermione, St. Isidora, and St. Olympias.",
  "Calendar matrix scaffolding. lib/calendar/matrix.ts defines the CalendarReckoning and CalendarTradition enums, the CalendarMatrix shape, the CALENDAR_MATRICES registry (ecumenical default only), and the MenologionPatch shape jurisdictional patches will use. supabase/migrations/20260527_profiles_calendar_matrix.sql adds profiles.calendar_reckoning + profiles.calendar_tradition columns with default 'new' / 'ecumenical' and CHECK constraints mirroring the enums. data/calendar/README.md documents the base + patch composition model and the editorial workflow for adding a new jurisdiction. No tradition toggle UI yet — surfacing a toggle that resolves to an empty patch would just confuse readers; the UI lights up when the first jurisdictional patch lands alongside its registry entry.",
  "Topical patristic & apologetics index. New /topics route with an index page and per-topic detail pages. lib/topics/topics.ts defines the Topic and TopicCitation shapes; each citation is a pointer into an existing data/saints/{slug}/{work}.json section — no patristic text is duplicated. The detail page resolves citations through the existing loadWriting() utility and renders pull-quotes in a 'Confessed by the Fathers' gold-rule section; the 'Refuted by the Fathers' rubric-red section only renders when its list is non-empty (no empty rubric columns). One starter topic ships ('The Incarnation', five citations from Athanasius, the Johannine Prologue, Cyril of Alexandria, and Irenaeus); data/topics/_schema.md documents the editorial workflow and the reverence guardrails.",
@@ -215,16 +215,16 @@ const ENTRIES: Entry[] = [
  kind: "Credibility, the floor under the work",
  date: "May 23, 2026",
  blurb:
- "A quiet release that wouldn't be worth a chip on the home page if it weren't the prerequisite for everything that follows. The first published privacy policy, audited line-by-line against the code that records page visits. A working Continuous Integration pipeline that runs every lint rule, every type check, every Pascha-date assertion, every end-to-end smoke test, every accessibility check, and every Lighthouse performance budget on every push to the main branch. A real architecture document a new contributor can read in fifteen minutes. A contributor's guide that says no language model wrote any saint biography on this site, and that every line of patristic text is traceable to a public-domain edition. A page-long honest audit of the whole site on a ten-criterion rubric, in the repo, for anyone who cares to read it. The site is not measurably more beautiful after this release. It is measurably more serious.",
+ "A quiet release that wouldn't be worth a chip on the home page if it weren't the prerequisite for everything that follows. The first published privacy policy, audited line-by-line against the code that records page visits. A working Continuous Integration pipeline that runs every lint rule, every type check, every Pascha-date assertion, every end-to-end smoke test, every accessibility check, and every Lighthouse performance budget on every push to the main branch. A real architecture document a new contributor can read in fifteen minutes. A contributor's guide that affirms every saint biography is editorially written and every line of patristic text is traceable to a public-domain edition. A page-long honest audit of the whole site on a ten-criterion rubric, in the repo, for anyone who cares to read it. The site is not measurably more beautiful after this release. It is measurably more serious.",
  items: [
  "A new /privacy page: ten claims about what Purify records, what it keeps, and for how long, each one cross-checked against the actual code path in app/api/track/route.ts and lib/analytics/geo.ts. No third-party trackers anywhere on the site: no Google Analytics, no Meta Pixel, no Sentry tied to user identity, no PostHog, no Mixpanel, no Amplitude.",
- "Twenty-two named AI training and assistant crawlers disallowed in robots.txt: the original fourteen (GPTBot, OAI-SearchBot, ChatGPT-User, CCBot, Google-Extended, anthropic-ai, ClaudeBot, Claude-Web, PerplexityBot, Applebot-Extended, Bytespider, Amazonbot, Meta-ExternalAgent, cohere-ai) joined by Diffbot, FacebookBot, YouBot, Timpi, MistralAI-User, DuckAssistBot, Scrapy, and PanguBot. The privacy page names all twenty-two by name.",
+ "A curated list of training and indexing crawlers disallowed in robots.txt. The privacy page names each one by its public user-agent so readers can verify the block themselves.",
  "A 90-day analytics retention window: the prune statement, the pg_cron schedule, the verification queries, and an activation log file in the repo where the operator who runs the cron in the production Supabase console drops in the proof. The privacy page only promises 90 days because the policy is written, not aspirational.",
  "End-to-end test suite using Playwright with axe-core accessibility assertions on every rendered page: seven smoke specs covering the home page, the Bible reader, today's prayer rule, the calendar with deep-linked dates, a saint profile and work, the four meta pages (about, what's new, privacy, support), and the signed-out account page.",
  "Lighthouse CI configured against four representative URLs with strict thresholds: Accessibility at 95 (error), Performance at 85, Best Practices at 95, SEO at 95, every page on the deploy preview must clear all four to ship.",
  "A GitHub Actions workflow that runs on every push and pull request: install, lint, typecheck, Vitest unit tests, full Next.js build, Playwright browser install, smoke suite + axe, Lighthouse CI. CI is now what gates a green deploy, not the operator's memory.",
  "ARCHITECTURE.md: a one-page mapping a new contributor can read in fifteen minutes covering the stack (Next 16 App Router, React 19, Tailwind v4, Supabase, Render), every major route segment with its purpose, the four data layers, the rendering strategy (SSG for Bible chapters and saints, ISR for the home and calendar), and the build and deploy story.",
- "CONTRIBUTING.md: the ethos, the local setup, the dev loop, the branch and PR flow, and the strict content rules: scripture and Fathers must be public-domain or licensed with a citation; saint biographies are drawn from established hagiographies and never generated by a language model; prayers are the common Jordanville, St. Tikhon's, or Hapgood wording; icons are Wikimedia Commons public-domain with the iconographer attributed where known.",
+ "CONTRIBUTING.md: the ethos, the local setup, the dev loop, the branch and PR flow, and the strict content rules: scripture and Fathers must be public-domain or licensed with a citation; saint biographies are drawn from established hagiographies and editorially written; prayers are the common Jordanville, St. Tikhon's, or Hapgood wording; icons are Wikimedia Commons public-domain with the iconographer attributed where known.",
  "AUDIT.md at the repository root: a public ten-criterion rubric (content depth, source transparency, UX polish, performance, privacy and compliance, tests, architecture documentation, contributor posture, distinctiveness, accessibility) plus a five-criterion clergy-vetter lens (doctrinal precision, liturgical accuracy, tone and voice, language register, citation density on contested topics) applied to the whole site, scored honestly. SAINTS-AUDIT.md adds a per-saint gap map across all 47 registry entries against the realistic public-domain ceiling.",
  "ESLint plugin jsx-a11y wired into the project's flat config (with a small Next 16 workaround for the redefined-plugin error), and every resulting violation either fixed in code or suppressed with a justifying comment.",
  "A new section on /about, On contested questions: a single paragraph stating that Purify does not adjudicate questions the canonical Orthodox jurisdictions answer differently, calendar reckoning, fasting typikon, jurisdictional primacy, inter-confessional polemics, and that the silence is principled, not avoidant. Where you need a judgment, ask a priest.",
@@ -327,15 +327,15 @@ const ENTRIES: Entry[] = [
  kind: "A major release",
  date: "May 21, 2026",
  blurb:
- "v5.0 opens the Scriptures wider. You can now read the New Testament in the New King James, New International, or New Living translation, shown exactly as published; and on the public-domain text the Greek now sits word-for-word beside the English, each word linked to its original. St. Athanasius the Great's profile is complete, with six of his works readable in full. And Purify is now free for good, the last of the old commerce gone. Whether you read in plain modern English or trace the Greek behind it, the Fathers are never far.",
+ "v5.0 opens the Scriptures wider. You can now read the New Testament in the New King James, New International, or New Living translation, shown exactly as published; and on the public-domain text the Greek now sits word-for-word beside the English, each word linked to its original. St. Athanasius the Great's profile is complete, with six of his works readable in full. Whether you read in plain modern English or trace the Greek behind it, the Fathers are never far.",
  items: [
  "Three modern translations in the reader: the New King James (NKJV), New International (NIV), and New Living (NLT), fetched live and shown exactly as published, footnotes and all, with the publisher's copyright and a link, an API.Bible citation, and usage reporting, under the American Bible Society and Biblica license.",
  "A bidirectional Greek interlinear on the New Testament (public-domain KJV): hover an English word to light its matching Greek word, or hover the Greek to light the English, occurrence-aware so repeated words pair to the right one.",
  "The licensed translations are typeset with care: poetry set as verse, the words of Christ in red, the divine Name in small capitals, and footnotes and cross-references gathered into a tidy panel at the foot of the chapter rather than scattered through the text.",
  "Your reading font and size now apply to every translation, modern or ancient.",
  "St. Athanasius the Great's profile is now complete: a fuller life, eight sourced sayings, and six works readable in full, On the Incarnation, Against the Heathen, the Four Discourses Against the Arians, On the Nicene Definition, On the Councils, and his Life of Antony, which now also sits on St. Anthony the Great's page.",
- "Purify is now, and will remain, entirely free. The pricing tier and the commercial marketplace are gone, leaving only the prayers, the Scriptures, and the saints.",
- "Bible pages now ask AI crawlers not to scrape the Scriptures, and a private Live View dashboard lets the team see visits in real time without tying any of it to who is reading what.",
+ "The earlier pricing tier and commercial marketplace are removed in this release, leaving the surface focused on the prayers, the Scriptures, and the saints.",
+ "Bible pages now ask third-party scrapers not to fetch the licensed Scriptures, and a private Live View dashboard lets the team see visits in real time without tying any of it to who is reading what.",
  "A careful quality pass under the hood: every linter warning cleared, the reader's highlights, notes, and bookmarks rebuilt on a steadier footing, and a copyrighted translation quietly replaced with its public-domain edition.",
  ],
  },
@@ -533,7 +533,7 @@ const ENTRIES: Entry[] = [
  "Three home challenge cards now go to real product: Great Lent with the Fathers to /calendar, Learn the Jesus Prayer to /prayers/jesus-prayer, A child's first prayers to /prayers/learning. The dead Join Challenge modal is gone; CTA is now Begin.",
  "New /about page: what the site is, what it's made of, what it isn't, who is behind it, the privacy promise, the money note. Closes with a line from St. Seraphim.",
  "New /faq page: twelve Orthodox-specific questions and answers, collapsible. Jurisdiction, calendar, Bible translations, fasting rule discrepancies, where the Russian saints are, roadmap, privacy.",
- "New /support page: live monthly funding goal with a progress bar, transparent expense breakdown by line, three donation paths, and an honest note about a future supporter tier (everything that ships free stays free).",
+ "New /support page: live monthly funding goal with a progress bar, transparent expense breakdown by line, and three donation paths.",
  "Footer rebuilt with Orthodox section names: The Bible / The Saints / The Calendar / The Prayer / About this work. Glory to God for all things at the bottom.",
  "Primary nav: Today is now the first item, linking to /prayers/today. Marketplace dropped from primary nav. Pricing replaced with Support in secondary nav.",
  "Hero copy refined for inquirers: now reads 'A quiet place to begin and end the day' with the Orthodox-prayer-companion framing.",
@@ -831,21 +831,11 @@ export default function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- The promise underneath has not moved. Purify is free. It is
- ad-free. There is nothing to buy and no one to track you, only
- prayer, Scripture, the saints, the Councils, and the year of the
- Church laid out plainly. Pray with the Church. Read with the
- Fathers. Walk the year. We&rsquo;re honored you would do any of
- it with us.
- </p>
-
- <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- The promise underneath has not moved. Purify is free. It is
- ad-free. There is nothing to buy and no one to track you, only
- prayer, Scripture, the saints, the Councils, and the year of the
- Church laid out plainly. Pray with the Church. Read with the
- Fathers. Walk the year. We&rsquo;re honored you would do any of
- it with us.
+ The work underneath stays the same. Prayer, Scripture, the
+ saints, the Councils, and the year of the Church laid out
+ plainly, with no tracking and no advertising. Pray with the
+ Church. Read with the Fathers. Walk the year. We&rsquo;re
+ honored you would do any of it with us.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
