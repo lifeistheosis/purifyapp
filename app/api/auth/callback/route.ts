@@ -28,14 +28,21 @@ export async function GET(request: Request) {
   const safeNext = next.startsWith("/") ? next : "/account/profile";
 
   // OAuth providers redirect back with ?error= when the user cancels
-  // or when the provider config is bad. Surface it cleanly.
+  // or when the provider config is bad. Surface it cleanly. If the
+  // original ?next= points at an /account/* page (e.g. the Security
+  // tab during a Connect-Google attempt), bounce back to *that* page
+  // with the error in the query — that's where the user started, and
+  // OAuthConnectionsCard already knows how to read /account-side
+  // errors. Falling through to /signin is right only for sign-in /
+  // sign-up flows that originated unsigned.
   const providerError = url.searchParams.get("error");
   const providerErrorDesc = url.searchParams.get("error_description");
   if (providerError) {
     const msg = providerErrorDesc || providerError;
-    return NextResponse.redirect(
-      new URL(`/signin?error=${encodeURIComponent(msg)}`, SITE_URL),
-    );
+    const errorTarget = safeNext.startsWith("/account")
+      ? `${safeNext}${safeNext.includes("?") ? "&" : "?"}error=${encodeURIComponent(msg)}`
+      : `/signin?error=${encodeURIComponent(msg)}`;
+    return NextResponse.redirect(new URL(errorTarget, SITE_URL));
   }
 
   if (!code) {

@@ -53,6 +53,29 @@ export function OAuthConnectionsCard() {
     // First paint: pull fresh from server so a just-completed link
     // shows up in the UI without requiring a manual reload.
     load({ forceRefresh: true });
+    // If the OAuth callback bounced us back here with ?error=...,
+    // surface it. Translate the common cases the same way the
+    // synchronous catch block does.
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const err = params.get("error");
+      if (err) {
+        if (/identity is already linked/i.test(err) || /identity_already_exists/i.test(err)) {
+          // Linked to a different account. Couldn't have been linked
+          // to this one or the OAuth flow would have succeeded
+          // silently — Supabase only throws this when the identity
+          // exists on a user other than auth.uid().
+          setError(
+            "That Google account is already linked to a different Purify account. Sign out and click \"Continue with Google\" on /signin to sign in with it, or try a different Google account here.",
+          );
+        } else {
+          setError(err);
+        }
+        // Strip the error from the URL so a refresh doesn't re-fire it.
+        const clean = window.location.pathname + window.location.hash;
+        window.history.replaceState({}, "", clean);
+      }
+    }
     // Stay subscribed so any later auth event (link, unlink, refresh,
     // sign-out from another tab) repaints the card.
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
