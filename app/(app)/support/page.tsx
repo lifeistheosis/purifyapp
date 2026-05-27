@@ -5,7 +5,7 @@ import { fetchBmcTotal } from "@/lib/support/buymeacoffee";
 export const metadata = {
  title: "Support",
  description:
- "How the project is funded, what the money goes toward, and how to help. Free now. Transparent goal. No paywall on what is shipped.",
+ "How the project is funded, what the money goes toward, and how to help. The core stays free; a future optional subscription layer covers heavier infrastructure under proper licensing.",
 };
 
 // Server component; revalidates every five minutes so the live BMC total
@@ -55,10 +55,11 @@ export default async function SupportPage() {
  Free now. Donations welcome.
  </h1>
  <p className="mt-6 font-serif text-[17px] text-paper/85 leading-[1.7]">
- Purify is free, with no plans to put a paywall around what
- ships today. Hosting, storage, sourcing, and the people who
- do the work all cost money. If the site has helped you, you
- can keep the lights on, or speed up the next thing we build.
+ The core of Purify &mdash; the saints, the Scriptures, the
+ prayers, the calendar &mdash; is free, and stays free. Hosting,
+ storage, sourcing, and the people who do the work all cost
+ money. If the site has helped you, you can keep the lights on,
+ or speed up the next thing we build.
  </p>
 
  {/* Live goal */}
@@ -241,14 +242,16 @@ export default async function SupportPage() {
  {/* Free-forever note */}
  <section className="mt-14 rounded-lg border border-paper/12 bg-paper/[0.02] p-6">
  <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
- Purify is, and stays, free
+ The core stays free
  </p>
  <p className="font-serif text-[17px] text-paper/85 leading-[1.7]">
- Every part of Purify is free for everyone, with no ads, no
- subscriptions, and no paywalls, now or later. Gifts here are
- freewill offerings that help cover running costs; they unlock
- nothing and are never required. Nothing on the site is ever moved
- behind a paywall.
+ The saints, the Scriptures with the Greek beside them, the daily
+ prayers, and the calendar will remain free of charge to anyone
+ who needs them. Gifts on this page are freewill offerings that
+ cover running costs; they unlock nothing and are never required.
+ A heavier infrastructure layer is on the way under proper
+ licensing, and when it arrives as an optional, subscription-funded
+ tier, what is free today will still be free then.
  </p>
  </section>
 

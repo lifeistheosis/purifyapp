@@ -3,7 +3,7 @@ import Link from "next/link";
 export const metadata = {
   title: "Pricing",
   description:
-    "Purify is free. Every part of it, for everyone, with no ads, no subscriptions, and no paywalls.",
+    "The core spiritual treasury of Purify is free, always. An optional subscription layer is on the way for heavier infrastructure; what is free today will still be free then.",
 };
 
 export default function PricingPage() {
@@ -14,12 +14,21 @@ export default function PricingPage() {
           Pricing
         </p>
         <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
-          Free. All of it.
+          The core is free, always.
         </h1>
         <p className="font-sans text-[17px] md:text-[18px] text-paper/75 mt-6 leading-relaxed">
-          Purify is free for everyone, and stays that way: the whole Bible, the
-          saints, the prayers, and the calendar, with no ads, no subscriptions,
-          no in-app purchases, and nothing hidden behind a paywall.
+          Every saint&rsquo;s life, every primary writing of the Fathers, the
+          Scriptures with the Greek beside them, the daily prayers, and the
+          calendar will remain free of charge to anyone who needs them. No
+          ads, no tracking, no surprise locks.
+        </p>
+        <p className="font-sans text-[16px] text-paper/70 mt-6 leading-relaxed">
+          A heavier infrastructure layer is on the way, and the licensing is
+          being upgraded so that it can be offered honestly. When that
+          optional, subscription-funded layer arrives, it will exist solely to
+          pay for the work it requires &mdash; the servers, the production,
+          the rights &mdash; and to keep the core forever open. What is free
+          today will still be free then.
         </p>
         <p className="font-sans text-[15px] text-paper/60 mt-6 leading-relaxed">
           If the app has helped you and you would like to,{" "}
@@ -29,8 +38,8 @@ export default function PricingPage() {
           >
             you can support it
           </Link>{" "}
-          with a freewill gift. That is the only way money is ever involved, and
-          it is entirely optional.
+          with a freewill gift. That remains the only way money is involved
+          today, and it stays entirely optional.
         </p>
       </div>
     </section>
