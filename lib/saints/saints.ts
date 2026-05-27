@@ -2598,6 +2598,34 @@ export const SAINTS: Saint[] = [
  },
  ],
  },
+ {
+ slug: "theophylact-of-ohrid",
+ byname: "The Bulgarian",
+ name: "St. Theophylact of Ohrid",
+ epithet: "Archbishop of Ohrid · Explainer of the Gospels",
+ born: "c. 1055 (Euripos, Euboea)",
+ reposed: "c. 1107 (Ohrid)",
+ feastDays: ["December 31"],
+ see: "Ohrid (Achrida) in the Archbishopric of Bulgaria",
+ shortBio:
+ "The eleventh-century Byzantine scholar and bishop whose verse-by-verse Explanations of the Four Gospels, the Acts of the Apostles, and the Epistles became, and remain, the most-loved continuous patristic commentary on the New Testament in the Orthodox East.",
+ life: [
+ "Theophylact was born around 1055 on the island of Euboea, in the town of Euripos, and went as a young man to Constantinople for his education. He studied under Michael Psellos, the great Byzantine humanist, and rose in the patriarchal household to become deacon of the Great Church of Hagia Sophia and tutor to the imperial prince Constantine Doukas.",
+ "Around the year 1090, at the height of his career in the capital, he was named Archbishop of Ohrid, the see of the Bulgarian church, and sent to govern a flock of Slavs who did not speak his language, in mountains he had never seen. He kept the office for the rest of his life. He never settled into the place, and his letters from Ohrid to his friends in Constantinople are full of homesickness and loneliness; but he stayed and served, and his commentaries were written in those mountains.",
+ "His chief work is the Explanation, a continuous patristic commentary on the Four Gospels, the Book of Acts, and the Epistles of the Apostles (and, partially, the Minor Prophets). He composed it, he said in his preface, for the simple reader: he gathered the meaning the earlier Fathers had given to each verse, especially St. John Chrysostom, and rendered it in clearer Greek, leaving out the rhetorical flights and tightening the doctrine. The Explanation has been read continuously ever since, copied in Greek monasteries, translated into Slavonic, and beloved in the Russian Church as one of the great practical commentaries on the New Testament.",
+ "He reposed around the year 1107 at Ohrid. The Orthodox Church keeps his memory on the thirty-first of December.",
+ ],
+ quotes: [
+ {
+ text: "I write for those who have not the leisure to read the great Fathers in their length, but who still desire to understand the Gospel they hear in church.",
+ source: "Paraphrase of his preface to the Explanation of the Four Gospels",
+ },
+ ],
+ // Work files are pending: the Explanation has not yet been ingested.
+ // A clean public-domain English source must be confirmed before any
+ // text is added (see docs/prd/v6.4-community-feedback.md §3).
+ works: [],
+ },
 ];
 
 export function getSaint(slug: string): Saint | null {
