@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { authOrigin } from "@/lib/site";
 import { PasswordInput } from "./PasswordInput";
 import { OAuthButtons } from "./OAuthButtons";
 
@@ -39,8 +40,7 @@ export function SignUpForm() {
     setPending(true);
     try {
       const supabase = createClient();
-      const origin =
-        typeof window !== "undefined" ? window.location.origin : "";
+      const origin = authOrigin();
       const { data, error: err } = await supabase.auth.signUp({
         email: email.trim(),
         password,

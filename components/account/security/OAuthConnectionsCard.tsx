@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { authOrigin } from "@/lib/site";
 
 type Identity = {
   id?: string;
@@ -50,8 +51,7 @@ export function OAuthConnectionsCard() {
     setError(null);
     try {
       const supabase = createClient();
-      const origin =
-        typeof window !== "undefined" ? window.location.origin : "";
+      const origin = authOrigin();
       const { error: err } = await supabase.auth.linkIdentity({
         provider: "google",
         options: {

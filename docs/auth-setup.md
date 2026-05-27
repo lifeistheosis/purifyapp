@@ -38,9 +38,28 @@ In Supabase Dashboard → Authentication → URL Configuration:
 - **Site URL**: `https://purifyapp.onrender.com`
 - **Redirect URLs** (add each):
   - `https://purifyapp.onrender.com/api/auth/callback`
+  - `https://purifyapp.onrender.com/api/auth/callback?next=*` (the
+    sign-up + OAuth flow appends a `next=` query parameter; the
+    explicit wildcard is required for Supabase to honor it instead
+    of falling back to Site URL)
   - `https://purifyapp.onrender.com/reset`
   - `http://localhost:3000/api/auth/callback` (for local dev)
+  - `http://localhost:3000/api/auth/callback?next=*` (local dev)
   - `http://localhost:3000/reset` (for local dev)
+
+**The single most common bug after deploy**: the Site URL is still
+`http://localhost:3000` from the initial Supabase project setup.
+When that's the case, every confirmation email Supabase sends ends
+up pointing at localhost no matter what `emailRedirectTo` the
+client passes, because Supabase silently falls back to Site URL
+when the redirect URL isn't on the allowlist. If users report
+"the confirmation email opens localhost," check this field first.
+
+The code-side defense (`authOrigin()` in `lib/site.ts`) prevents
+the *client* from ever passing a localhost URL to Supabase from a
+deployed origin — but the *Supabase project's own Site URL setting*
+must also be the production URL, or Supabase overrides whatever
+the client passes.
 
 In Supabase Dashboard → Authentication → Providers → Email:
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { authOrigin } from "@/lib/site";
 
 /**
  * Continue-with-Google and Continue-with-Apple buttons. Used by both
@@ -22,8 +23,7 @@ export function OAuthButtons() {
     setError(null);
     try {
       const supabase = createClient();
-      const origin =
-        typeof window !== "undefined" ? window.location.origin : "";
+      const origin = authOrigin();
       const { error: err } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {

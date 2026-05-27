@@ -1,7 +1,8 @@
 /**
  * The canonical deployed origin used for every absolute URL Next emits for us:
- * metadataBase (Open Graph + Twitter image, canonical), the sitemap, and
- * robots.txt.
+ * metadataBase (Open Graph + Twitter image, canonical), the sitemap,
+ * robots.txt, and all Supabase auth `redirectTo` URLs (signup confirmation,
+ * password reset, OAuth callback).
  *
  * Precedence:
  *   1. NEXT_PUBLIC_SITE_URL , explicit override (set only for a real custom
@@ -31,3 +32,31 @@ function pick(): string {
 }
 
 export const SITE_URL = pick();
+
+/**
+ * The canonical origin used for client-side Supabase auth flows. Returns
+ * the build-time SITE_URL when running on a deployed host (anything that
+ * isn't localhost), and falls back to `window.location.origin` only during
+ * local development so the dev flow stays self-contained.
+ *
+ * Use this everywhere `emailRedirectTo` or `redirectTo` is passed to
+ * supabase.auth.* — without it, a user who signs up on `localhost:3000`
+ * gets a confirmation email pointing at localhost, and even production
+ * users get pointed at the Supabase project's stale Site URL setting
+ * whenever the dashboard allowlist doesn't match.
+ */
+export function authOrigin(): string {
+  // SITE_URL was resolved at build time. On the client, NEXT_PUBLIC_SITE_URL
+  // is the only env var inlined into the bundle; RENDER_EXTERNAL_URL is
+  // server-only. So on the deployed client SITE_URL = NEXT_PUBLIC_SITE_URL
+  // or the FALLBACK, never localhost — exactly the behavior we want.
+  if (typeof window === "undefined") return SITE_URL;
+  const here = window.location.origin;
+  // Only fall back to window.location.origin during local development.
+  // Any deployed origin uses SITE_URL so the auth provider can't send a
+  // localhost link out into the world.
+  if (here.startsWith("http://localhost") || here.startsWith("http://127.")) {
+    return here;
+  }
+  return SITE_URL;
+}

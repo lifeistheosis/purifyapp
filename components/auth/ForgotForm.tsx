@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { authOrigin } from "@/lib/site";
 
 /**
  * Forgot-password form. Sends a Supabase reset link that lands on
@@ -21,8 +22,7 @@ export function ForgotForm() {
     setError(null);
     try {
       const supabase = createClient();
-      const origin =
-        typeof window !== "undefined" ? window.location.origin : "";
+      const origin = authOrigin();
       const { error: err } = await supabase.auth.resetPasswordForEmail(
         email.trim(),
         { redirectTo: `${origin}/reset` },
