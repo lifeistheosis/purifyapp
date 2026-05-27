@@ -2601,6 +2601,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "theophylact-of-ohrid",
  byname: "The Bulgarian",
+ iconUrl: "/saints/icons/theophylact-of-ohrid.jpg",
  name: "St. Theophylact of Ohrid",
  epithet: "Archbishop of Ohrid · Explainer of the Gospels",
  born: "c. 1055 (Euripos, Euboea)",
