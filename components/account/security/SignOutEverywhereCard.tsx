@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 /**
  * Sign-out-everywhere control. Uses Supabase's `signOut({ scope:
@@ -13,16 +14,9 @@ export function SignOutEverywhereCard() {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState(false);
 
   async function go() {
-    if (
-      typeof window !== "undefined" &&
-      !window.confirm(
-        "Sign out of every browser and device where you're signed in?",
-      )
-    ) {
-      return;
-    }
     setPending(true);
     setError(null);
     try {
@@ -48,7 +42,7 @@ export function SignOutEverywhereCard() {
       </p>
       <button
         type="button"
-        onClick={go}
+        onClick={() => setConfirming(true)}
         disabled={pending}
         className="rounded-pill border border-[#c1272d]/60 text-[#f8cac7] font-sans text-[13.5px] font-semibold px-5 py-2.5 hover:bg-[#c1272d]/15 disabled:opacity-60 disabled:cursor-wait transition-colors"
       >
@@ -57,6 +51,20 @@ export function SignOutEverywhereCard() {
       {error ? (
         <p className="mt-3 font-sans text-[13px] text-[#f8cac7]">{error}</p>
       ) : null}
+      <ConfirmDialog
+        open={confirming}
+        title="Sign out of every device?"
+        description="Every browser and device currently signed in to this account will be signed out. You'll be sent back to the sign-in page on this device."
+        confirmLabel="Sign out everywhere"
+        cancelLabel="Stay signed in"
+        destructive
+        pending={pending}
+        onCancel={() => setConfirming(false)}
+        onConfirm={() => {
+          setConfirming(false);
+          go();
+        }}
+      />
     </section>
   );
 }

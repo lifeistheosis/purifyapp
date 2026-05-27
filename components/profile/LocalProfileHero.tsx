@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useLocalAccount, releaseLocal } from "@/lib/profile/localAccount";
 import { AccountChoice } from "./AccountChoice";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 /**
  * Mirrors `ProfileHero` for the local-only path. Shown on `/account`
@@ -22,6 +23,7 @@ import { AccountChoice } from "./AccountChoice";
 export function LocalProfileHero() {
   const account = useLocalAccount();
   const [upgrading, setUpgrading] = useState(false);
+  const [confirmingRelease, setConfirmingRelease] = useState(false);
 
   if (!account) return null;
   if (upgrading) {
@@ -86,21 +88,25 @@ export function LocalProfileHero() {
         </button>
         <button
           type="button"
-          onClick={() => {
-            if (
-              typeof window !== "undefined" &&
-              window.confirm(
-                "Release this local profile? Your local highlights, notes, and bookmarks stay where they are — only the name and claim date are removed.",
-              )
-            ) {
-              releaseLocal();
-            }
-          }}
+          onClick={() => setConfirmingRelease(true)}
           className="font-sans text-[14px] font-medium rounded-pill px-5 py-3 border border-paper/25 text-paper/80 hover:border-paper/55 hover:text-paper transition-colors"
         >
           Release this local profile
         </button>
       </div>
+      <ConfirmDialog
+        open={confirmingRelease}
+        title="Release this local profile?"
+        description="Your local highlights, notes, and bookmarks stay where they are — only the name and claim date are removed."
+        confirmLabel="Release profile"
+        cancelLabel="Keep it"
+        destructive
+        onCancel={() => setConfirmingRelease(false)}
+        onConfirm={() => {
+          setConfirmingRelease(false);
+          releaseLocal();
+        }}
+      />
 
       <p className="mt-5 font-sans text-[12.5px] text-paper/45 leading-[1.55]">
         Upgrading will sync your local highlights, notes, and bookmarks

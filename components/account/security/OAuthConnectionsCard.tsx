@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { authOrigin } from "@/lib/site";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 // Mirrors Supabase's UserIdentity loosely. We accept any shape that
 // carries identity_id and provider; the full server-side object is
@@ -44,6 +45,7 @@ export function OAuthConnectionsCard({
   );
   const [pending, setPending] = useState<"google" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [confirmingUnlink, setConfirmingUnlink] = useState(false);
 
   async function load(opts?: { forceRefresh?: boolean }) {
     const supabase = createClient();
@@ -256,17 +258,7 @@ export function OAuthConnectionsCard({
           {googleIdentity ? (
             <button
               type="button"
-              onClick={() => {
-                if (
-                  typeof window !== "undefined" &&
-                  !window.confirm(
-                    "Unlink Google from your account? You'll still be able to sign in with email + password.",
-                  )
-                ) {
-                  return;
-                }
-                disconnectGoogle();
-              }}
+              onClick={() => setConfirmingUnlink(true)}
               disabled={pending !== null}
               className="font-sans text-[12.5px] font-semibold rounded-pill border border-[#c1272d]/55 text-[#f8cac7] bg-[#c1272d]/[0.06] hover:bg-[#c1272d]/[0.15] hover:border-[#c1272d]/75 px-4 py-1.5 disabled:opacity-50 disabled:cursor-wait transition-colors"
             >
@@ -308,6 +300,20 @@ export function OAuthConnectionsCard({
           {error}
         </p>
       ) : null}
+      <ConfirmDialog
+        open={confirmingUnlink}
+        title="Unlink Google?"
+        description="You'll still be able to sign in with your email and password. You can reconnect Google at any time from this page."
+        confirmLabel="Unlink Google"
+        cancelLabel="Keep linked"
+        destructive
+        pending={pending === "google"}
+        onCancel={() => setConfirmingUnlink(false)}
+        onConfirm={() => {
+          setConfirmingUnlink(false);
+          disconnectGoogle();
+        }}
+      />
     </section>
   );
 }
