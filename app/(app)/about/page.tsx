@@ -3,7 +3,7 @@ import Link from "next/link";
 export const metadata = {
  title: "About",
  description:
- "What Purify is, what it is made of, what it is not. The mission, the sources, the privacy promise.",
+ "A sanctuary for the Orthodox life outside the Liturgy. What Purify is, what it is made of, how it is kept, and the promises that hold underneath.",
 };
 
 const SECTION = "px-5 md:px-8 py-16 md:py-24";
@@ -16,103 +16,135 @@ export default function AboutPage() {
  About this work
  </p>
  <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- A quiet place to stand before God.
+ A sanctuary for the Orthodox life outside the Liturgy.
  </h1>
 
- {/* What this is */}
+ {/* §1 Manifesto / North Star */}
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
- What this is
+ The north star
  </p>
  <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
- Purify is one place for the four things an Orthodox Christian
- reaches for on any given day. The Scriptures, with the Fathers
- in the margin. The saint of today, the fast of today, and the
- count to Pascha. Twenty-four saint profiles with their works
- to read in full, from St. John Chrysostom verse by verse
- through fourteen books of the New Testament to St. Athanasius
- and the Theotokos. And the prayers that have carried the
- Church for sixteen centuries, sat down quietly enough to
- actually pray. Anyone is welcome here, whether you grew up
- in the Church, are looking in from the outside, or are
- finding your way back after years away.
- </p>
-
- {/* What this is made of */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
- What this is made of
- </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
- Almost everything you see is drawn from public-domain sources.
- The Old Testament is Brenton&rsquo;s 1851 English Septuagint,
- which carries the deuterocanon and the Psalter numbering the
- Church has always sung. The New Testament is the King James
- (1611), paired with the polytonic Nestle 1904 Greek, Robinson&rsquo;s
- morphology, and Strong&rsquo;s numbers, so a word can be hovered
- in either column and its match lights up in the other. Patristic
- commentary comes from Philip Schaff&rsquo;s Ante-Nicene and
- Nicene Fathers (1885-1900); St. John Chrysostom&rsquo;s
- homilies on John, Acts, Romans, the Corinthian letters,
- Ephesians through Philemon, and Hebrews now sit inline with
- the verses he is preaching.
+ Purify is not an app, not a Bible reader, not a calendar, not a
+ prayer book. It is one quiet home for all of those, set together
+ so that no part stands alone. The Scriptures with the Fathers in
+ the margin. The lives of the saints with their writings to read
+ in full. Every day of the Church&rsquo;s year, fast and feast,
+ in either reckoning. The morning and evening rules in the wording
+ the diaspora has carried.
  </p>
  <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
- Three modern translations, the NKJV, NIV, and NLT, are also
- available, fetched live from API.Bible under the publishers&rsquo;
- license, shown exactly as published, with their copyright and
- the usage tracking the license requires. They are never modified
- and never overlaid with our own tagging. Saint icons are from
- Wikimedia Commons, mostly the early-twentieth-century Greek and
- Russian iconographers. The daily prayer rules use the common
- Orthodox prayer-book wording carried by the Jordanville,
- St. Tikhon&rsquo;s, and Hapgood Service Book traditions. The
- calendar is built on the Pascha algorithm shared by every
- canonical Orthodox church, with both the New (Revised Julian)
- and the Old (Julian) reckonings of the fixed feasts.
+ The Liturgy is where the Church gathers. This is the room you
+ come into between Liturgies: to pray when you rise, to read when
+ you have an hour, to walk the year, to keep the fast.
+ </p>
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ Built for the praying life, not for retention loops. There are no
+ analytics watching you read, no advertising in the margins, no
+ notifications pulling you back. The site is plain on purpose. It
+ hopes to be the only thing open on the screen for a little while,
+ and then to be closed.
  </p>
 
- {/* What this is not */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
- What this is not
+ {/* §2 Radical Textual Honesty */}
+ <p className="mt-12 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ What it is made of
  </p>
- <ul className="mt-3 space-y-3 font-serif text-[18px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <h2 className="mt-2 font-sans text-[26px] md:text-[30px] font-bold text-paper tracking-[-0.02em] leading-[1.15]">
+ Every text named. Every source open.
+ </h2>
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ Purify hides nothing about what it puts in front of you. The
+ Scriptures, the prayers, and the Fathers are drawn from sources
+ you can verify line by line.
+ </p>
+ <ul className="mt-4 space-y-3 font-serif text-[17px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
- Not tied to one jurisdiction. Both calendars are surfaced and
- their differences named, the New (Revised Julian) kept by
- Constantinople and most of the Greek-speaking world, and the
- Old (Julian) kept in Russia, Serbia, Jerusalem, and on Mount
- Athos. The fasting and feast indexes lean Greek for now; the
- Russian-specific additions will land as we go.
+ <strong className="text-paper">Old Testament</strong> &mdash; Brenton&rsquo;s
+ 1851 English Septuagint, with the deuterocanonical books and
+ the Church&rsquo;s Psalter numbering.
  </li>
  <li>
- Not the trademarked{" "}
- <em>Orthodox Study Bible</em>, which is published by Thomas
- Nelson. We&rsquo;re a separate, public-domain reader.
+ <strong className="text-paper">New Testament</strong> &mdash; The King
+ James Version of 1611.
  </li>
  <li>
- Not built to keep you here. No notifications, no leaderboards,
- no streaks reported back to us. The streak counters that do
- exist are for you to see, and they live in your browser,
- not in a database.
+ <strong className="text-paper">Greek</strong> &mdash; Nestle 1904,
+ polytonic, with Strong&rsquo;s numbers and Robinson morphology
+ on every word.
  </li>
  <li>
- Not a SaaS account product. Two real ways to use Purify, both
- free, both private. A <strong className="text-paper">local profile</strong>{" "}
- keeps highlights, notes, bookmarks, and your prayer streak in
- this browser only, with no server-side record. A{" "}
- <strong className="text-paper">public account</strong> stores the same
- things on our server so they sync across devices, signed in with
- email + password (or Google / Apple), with a real change-password
- flow and a delete-everything button on your account page. Neither
- is the default; the choice is presented plainly when you open{" "}
+ <strong className="text-paper">The Fathers</strong> &mdash; Schaff&rsquo;s
+ Ante-Nicene and Nicene Fathers (1885&ndash;1900), the standard
+ English critical editions.
+ </li>
+ <li>
+ <strong className="text-paper">Daily prayers</strong> &mdash; The wording
+ carried by the Jordanville Prayer Book, the editions of St.
+ Tikhon&rsquo;s Monastery, and Isabel Hapgood&rsquo;s Service Book.
+ </li>
+ <li>
+ <strong className="text-paper">The Calendar</strong> &mdash; Fixed feasts
+ on the New (Revised Julian) reckoning of the Ecumenical
+ Patriarchate; an Old (Julian) toggle for the Russian, Serbian,
+ Athonite, and Jerusalem traditions. Pascha by the algorithm
+ shared by all canonical Orthodox churches.
+ </li>
+ </ul>
+ <p className="mt-5 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ Over ninety per cent of the textual treasury is in the public
+ domain. The site also carries three modern translations under
+ proper license &mdash; the New King James, the New International,
+ and the New Living &mdash; fetched live from the publishers and
+ shown exactly as set, footnotes and all, with their attribution
+ intact. Nothing is repackaged. No translation is concealed inside
+ a black-box rendering. There are no proprietary lock-ins.
+ </p>
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ Where the Orthodox jurisdictions disagree on a point of practice
+ &mdash; most often the calendar and the fast &mdash; Purify
+ surfaces both readings and does not arbitrate. The Church has not
+ asked it to.
+ </p>
+
+ {/* §3 Ethical Privacy Covenant */}
+ <p className="mt-12 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ Your reading life is yours
+ </p>
+ <h2 className="mt-2 font-sans text-[26px] md:text-[30px] font-bold text-paper tracking-[-0.02em] leading-[1.15]">
+ A covenant on privacy.
+ </h2>
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ What you highlight, what you note, what you bookmark, the length
+ of your prayer streak &mdash; these belong to you and only to you.
+ </p>
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ By default, all of it lives on your device, in the local storage
+ of the browser you are reading in. There is no server row, no
+ profile, no copy elsewhere. Purify cannot read it because Purify
+ never receives it.
+ </p>
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ If you want your notes and bookmarks to follow you between phone
+ and laptop, you may open a{" "}
+ <strong className="text-paper">public account</strong> &mdash; your
+ email and a password, or one of the OAuth providers wired into
+ the site. The same data is then stored in a row under your name,
+ behind row-level security, so no one else may read it. You may
+ sign out at any time, and delete the account and every row
+ attached to it from the Data tab on your dashboard. The choice
+ between the two paths is named plainly the first time you open{" "}
  <Link
  href="/account"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
  /account
  </Link>
- . Either way, nothing about your reading is sold or shared, and
- the long version of that promise, with every field and every
- third party named, is on the{" "}
+ , and is reversible in either direction.
+ </p>
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ There is no analytics layer. No third-party tracker. No advertising
+ network. The full details, with every field and every third party
+ named, are set out on the{" "}
  <Link
  href="/privacy"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
@@ -120,136 +152,73 @@ export default function AboutPage() {
  privacy page
  </Link>
  .
- </li>
- </ul>
-
- {/* On contested questions */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
- On contested questions
- </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
- Purify does not adjudicate questions that the canonical Orthodox
- jurisdictions answer differently. The calendar reckoning, the
- precise typikon of a fast, the use of the New or Old style, and
- the disciplinary lineage of one&rsquo;s parish are matters for
- one&rsquo;s priest and one&rsquo;s bishop, not for an app. Where
- the Fathers spoke with one voice, we serve their text. Where they
- did not, we name the difference and surface both. This is also
- why you will not find Purify weighing in on inter-confessional
- polemics: the silence is principled, not avoidant. Where you need
- a judgment, ask a priest.
  </p>
 
- {/* Who we are */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
- Who is behind this
+ {/* §4 Stewardship & the Road Ahead */}
+ <p className="mt-12 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ How it is kept
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
- The site is built and maintained by Edgar, an Orthodox
- Christian, with a small team of contributors who care about
- the texts and the typography. The release letters at{" "}
- <Link
- href="/whats-new"
- className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
- >
- /whats-new
- </Link>{" "}
- are signed by Edgar; the rest of the copy is the Purify Team.
- We ship slow. We try to ship honestly.
+ <h2 className="mt-2 font-sans text-[26px] md:text-[30px] font-bold text-paper tracking-[-0.02em] leading-[1.15]">
+ Mission-first, independently built.
+ </h2>
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ This work is kept by an independent steward, not a company. There
+ is no investor to satisfy, no growth team to feed, and no incentive
+ to keep you on the page longer than you came to be. What ships,
+ and what does not, is decided for the sake of the Faith confessed
+ by the Fathers and for the sake of the readers who pray with us.
  </p>
-
- {/* Community */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
- Community
- </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
- There is a Discord for readers, a quiet place for prayer
- requests, content questions, and a sense of who else is reading.
- You can sit and listen, or come in and say something.{" "}
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ The{" "}
  <a
  href="https://discord.gg/VzBYYUsNJ6"
  target="_blank"
  rel="noopener noreferrer"
  className="text-[#a4adff] hover:text-paper underline underline-offset-2 decoration-[#a4adff]/35"
  >
- Join the Discord ↗
- </a>
- </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
- And on Instagram,{" "}
+ Discord server
+ </a>{" "}
+ and the Instagram account{" "}
  <a
  href="https://instagram.com/purifymylife"
  target="_blank"
  rel="noopener noreferrer"
  className="text-gold hover:text-paper underline underline-offset-2 decoration-gold/35"
  >
- @purifymylife ↗
+ @purifymylife
  </a>{" "}
- is where the day&rsquo;s saint, the day&rsquo;s fast, and the
- occasional small note from Edgar go out. No reels, no chasing
- the algorithm.
+ exist for the community, not for the algorithm. Conversation
+ about the texts, about the saints, about the year &mdash; that
+ is what they are for.
  </p>
-
- {/* Money */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
- Money
- </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
- Purify is free, and it&rsquo;s staying free. The pricing tier
- is gone, the marketplace is gone, and the licenses we hold for
- the Scriptures bind us to keep it that way, so there&rsquo;s
- nothing to sell here and nothing planned. Hosting and storage
- cost something to run; if you&rsquo;d like to keep the lights
- on, you can{" "}
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ Purify is funded today by freewill gifts, transparently itemized
+ on the{" "}
  <Link
  href="/support"
  className="text-gold hover:underline underline-offset-2"
  >
- support the project
- </Link>{" "}
- (with a transparent goal and a monthly expense breakdown).
- Everything you see today, accounts and sync included, is yours
- at no cost.
+ Support page
+ </Link>
+ . The core spiritual treasury &mdash; every saint&rsquo;s life,
+ every primary writing of the Fathers, the Scriptures with the
+ Greek beside them, the daily prayers, the calendar &mdash; will
+ remain free of charge, always.
+ </p>
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ A heavier infrastructure layer is on the way, and the licensing
+ is being upgraded so that it can be offered honestly. When that
+ optional, subscription-funded layer arrives, it will exist solely
+ to pay for the work it requires &mdash; the servers, the
+ production, the rights &mdash; and to keep the core forever open
+ to anyone who needs it. What is free today will still be free
+ then.
  </p>
 
- {/* Closing */}
+ {/* §5 Closing Doxology */}
  <div className="mt-16 pt-10 border-t border-paper/10 text-center">
- <p
- className="font-serif italic text-[20px] md:text-[22px] tracking-wide leading-[1.5] max-w-[560px] mx-auto text-gold"
- >
- &ldquo;Acquire the spirit of peace, and a thousand souls
- around you will be saved.&rdquo;
- </p>
- <p className="mt-3 font-sans text-[12px] uppercase tracking-[1.5px] text-paper/45">
- St. Seraphim of Sarov
- </p>
- </div>
-
- {/* Write to us */}
- <div className="mt-16">
- <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
- Write to us
- </p>
- <p className="font-serif text-[17px] text-paper/85 leading-[1.7]">
- Found a mistake, want a feature, want to argue about a
- patristic gloss? The{" "}
- <a
- href="https://discord.gg/VzBYYUsNJ6"
- target="_blank"
- rel="noopener noreferrer"
- className="text-[#a4adff] hover:text-paper underline underline-offset-2 decoration-[#a4adff]/35"
- >
- Discord
- </a>{" "}
- is the fastest way in; the{" "}
- <Link
- href="/support"
- className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
- >
- support page
- </Link>{" "}
- has a longer form if you&rsquo;d rather write at length. We
- read everything. We answer most things.
+ <p className="font-serif italic text-[22px] md:text-[26px] tracking-wide leading-[1.4] max-w-[560px] mx-auto text-gold">
+ Glory to God for all things.
  </p>
  </div>
  </article>
