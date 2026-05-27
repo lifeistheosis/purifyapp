@@ -1,0 +1,29 @@
+{
+  "nav.today": "Today",
+  "nav.bible": "Bible",
+  "nav.prayers": "Prayers",
+  "nav.saints": "Saints",
+  "nav.councils": "Councils",
+  "nav.calendar": "Calendar",
+  "nav.topics": "Topics",
+  "nav.about": "About",
+  "nav.support": "Support",
+  "nav.account": "Account",
+
+  "common.signIn": "Sign in",
+  "common.signUp": "Sign up",
+  "common.signOut": "Sign out",
+  "common.continue": "Continue",
+  "common.cancel": "Cancel",
+  "common.save": "Save",
+  "common.delete": "Delete",
+  "common.loading": "Loading…",
+
+  "calendar.today": "Today",
+  "calendar.fast": "Fast",
+  "calendar.pascha": "Pascha",
+  "calendar.reckoning.new": "New (Revised Julian)",
+  "calendar.reckoning.old": "Old (Julian)",
+
+  "footer.gloryToGod": "Glory to God for all things."
+}
