@@ -27,8 +27,20 @@ export function OAuthConnectionsCard() {
   const [pending, setPending] = useState<"google" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function load() {
+  async function load(opts?: { forceRefresh?: boolean }) {
     const supabase = createClient();
+    // Force a fresh JWT from the server on mount and after any link /
+    // unlink event. Without this, the SDK serves a cached user object
+    // whose `identities` array doesn't reflect the link that just
+    // completed on the server during the OAuth round-trip.
+    if (opts?.forceRefresh) {
+      try {
+        await supabase.auth.refreshSession();
+      } catch {
+        // Refresh failures are benign — fall through to getUser which
+        // will fail noisily if the session is genuinely dead.
+      }
+    }
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -37,7 +49,26 @@ export function OAuthConnectionsCard() {
 
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
-    load();
+    const supabase = createClient();
+    // First paint: pull fresh from server so a just-completed link
+    // shows up in the UI without requiring a manual reload.
+    load({ forceRefresh: true });
+    // Stay subscribed so any later auth event (link, unlink, refresh,
+    // sign-out from another tab) repaints the card.
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      // USER_UPDATED fires after a successful linkIdentity / unlinkIdentity.
+      // SIGNED_IN and TOKEN_REFRESHED fire after the OAuth callback returns.
+      if (
+        event === "USER_UPDATED" ||
+        event === "SIGNED_IN" ||
+        event === "TOKEN_REFRESHED"
+      ) {
+        load();
+      }
+    });
+    return () => {
+      sub.subscription.unsubscribe();
+    };
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
@@ -71,9 +102,29 @@ export function OAuthConnectionsCard() {
         /identity is already linked/i.test(raw) ||
         /identity_already_exists/i.test(raw)
       ) {
-        setError(
-          "That Google account is already linked to a Purify account. If you'd like to use it to sign in, sign out and click \"Continue with Google\" on /signin — Supabase will recognize the existing link and let you in.",
-        );
+        // Most common reason this fires: the link DID succeed on a
+        // previous click but the local state was stale. Refresh from
+        // the server and clear the error — if the link is on this
+        // user, the card will repaint as "Connected / Unlink." If
+        // it's on a *different* Purify account, the identity won't
+        // appear and we surface the deeper-link explanation.
+        await load({ forceRefresh: true });
+        // Re-read identities directly from the response we just set,
+        // not from the closed-over `identities` state above which is
+        // still the pre-refresh value.
+        const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        const fresh = (user?.identities ?? []) as Identity[];
+        const linkedHere = fresh.find((i) => i.provider === "google");
+        if (linkedHere) {
+          setError(null);
+        } else {
+          setError(
+            "That Google account is already linked to a different Purify account. Sign out and click \"Continue with Google\" on /signin to use it, or pick another Google account.",
+          );
+        }
       } else {
         setError(raw || "Couldn't connect Google.");
       }
@@ -93,7 +144,7 @@ export function OAuthConnectionsCard() {
         >[0],
       );
       if (err) throw err;
-      await load();
+      await load({ forceRefresh: true });
     } catch (e) {
       setError(
         e instanceof Error ? e.message : "Couldn't disconnect Google.",
