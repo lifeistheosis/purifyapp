@@ -1,96 +1,74 @@
 import Link from "next/link";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { Cross } from "@/components/ui/icons/Cross";
-import { Book } from "@/components/ui/icons/Book";
+import { Codex } from "@/components/ui/icons/Codex";
 import { Halo } from "@/components/ui/icons/Halo";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Wheat } from "@/components/ui/icons/Wheat";
 import { Grapes } from "@/components/ui/icons/Grapes";
+import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 
 export const metadata = {
   title: "Discover",
   description:
-    "The whole library at a glance: saints, councils, the calendar, daily readings, the Psalter, patristic commentary.",
+    "An index of the library: saints, councils, the calendar, daily readings, the Psalter, patristic commentary.",
 };
 
 export const revalidate = 3600;
 
-type Tile = {
+type Entry = {
   label: string;
   href: string;
   blurb: string;
   Icon: typeof Cross;
-  /** Color of the icon glyph. */
-  tint: string;
-  /**
-   * Background tint for the whole tile, ~8% opacity over the dark
-   * surface. Hallow's Discover uses real per-category color blocks;
-   * this brings that energy without breaking the dark register.
-   */
-  bg: string;
-  border: string;
 };
 
 export default async function DiscoverPage() {
   const locale = await getServerLocale();
   const m = getMessages(locale);
 
-  const TILES: Tile[] = [
+  // Order chosen so the index reads like a menologion table of contents:
+  // the people first (saints, councils), then the year, then the daily
+  // readings, then the Psalter, then the patristic commentary that
+  // ties it all together.
+  const ENTRIES: Entry[] = [
     {
       label: t(m, "discover.tile.saints"),
       href: "/saints",
       blurb: t(m, "discover.tile.saintsBlurb"),
       Icon: Halo,
-      tint: "text-gold",
-      bg: "bg-gold/[0.08]",
-      border: "border-gold/30",
     },
     {
       label: t(m, "discover.tile.councils"),
       href: "/councils",
       blurb: t(m, "discover.tile.councilsBlurb"),
       Icon: Cross,
-      tint: "text-[#f4dc91]",
-      bg: "bg-[var(--color-grad-violet)]/[0.18]",
-      border: "border-[var(--color-grad-violet)]/40",
     },
     {
       label: t(m, "discover.tile.calendar"),
       href: "/calendar",
       blurb: t(m, "discover.tile.calendarBlurb"),
       Icon: Lampada,
-      tint: "text-[#bfd6cc]",
-      bg: "bg-[var(--color-grad-teal)]/[0.14]",
-      border: "border-[var(--color-grad-teal)]/35",
     },
     {
       label: t(m, "discover.tile.dailyReadings"),
       href: "/prayers/today",
       blurb: t(m, "discover.tile.dailyReadingsBlurb"),
-      Icon: Book,
-      tint: "text-paper/85",
-      bg: "bg-paper/[0.05]",
-      border: "border-paper/15",
+      Icon: Codex,
     },
     {
       label: t(m, "discover.tile.psalter"),
       href: "/bible/psalms/1",
       blurb: t(m, "discover.tile.psalterBlurb"),
       Icon: Wheat,
-      tint: "text-gold",
-      bg: "bg-gold/[0.06]",
-      border: "border-gold/25",
     },
     {
       label: t(m, "discover.tile.patristic"),
       href: "/bible/john/1",
       blurb: t(m, "discover.tile.patristicBlurb"),
       Icon: Grapes,
-      tint: "text-[#e3a7a7]",
-      bg: "bg-[var(--color-accent)]/[0.10]",
-      border: "border-[var(--color-accent)]/30",
     },
   ];
 
@@ -98,45 +76,59 @@ export default async function DiscoverPage() {
     <>
       <MobileTopBar title={t(m, "discover.h1").replace(/\.$/, "")} />
       <section className="bg-night min-h-[calc(100dvh-72px)] md:px-8 md:py-16">
-        <article className="mx-auto max-w-[1080px] w-full px-5 pt-6 pb-10 md:pt-0 md:pb-0">
-          <header className="mb-6 hidden md:block">
-            <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+        <article className="mx-auto max-w-[820px] w-full px-5 pt-6 pb-10 md:pt-0 md:pb-0">
+          <header className="text-center mb-8 md:mb-12">
+            <OrnamentHeadpiece className="mx-auto mb-5 max-w-[400px]" />
+            <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.6px] text-gold/85 mb-3">
               {t(m, "discover.eyebrow")}
             </p>
-            <h1 className="font-sans text-[36px] md:text-[48px] font-bold text-paper leading-[1.05] tracking-[-0.025em]">
+            <h1 className="font-display-serif text-[34px] md:text-[44px] text-paper leading-[1.05]">
               {t(m, "discover.h1")}
             </h1>
-            <p className="mt-4 font-serif text-[17px] text-paper/80 max-w-[640px] leading-[1.65]">
+            <p className="mt-4 font-serif italic text-[15px] md:text-[16px] text-paper/70 max-w-[520px] mx-auto leading-[1.65]">
               {t(m, "discover.subtitle")}
             </p>
           </header>
 
-          <p className="md:hidden mt-1 mb-5 font-sans text-[13px] text-paper/65">
-            {t(m, "discover.mobileSubtitle")}
-          </p>
-
-          <ul className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {TILES.map(({ label, href, blurb, Icon, tint, bg, border }) => (
+          {/* Index list — each entry reads as one printed line of a
+              menologion table of contents: glyph on the left, name in
+              display-serif, italic blurb. Thin gold hairline between
+              entries. No tile chrome. */}
+          <ul className="divide-y divide-gold/20 border-y border-gold/20">
+            {ENTRIES.map(({ label, href, blurb, Icon }) => (
               <li key={href}>
                 <Link
                   href={href}
-                  className={`group block h-full rounded-2xl border transition-colors p-4 md:p-5 hover:brightness-125 ${bg} ${border}`}
+                  className="group flex items-start gap-5 py-5 md:py-6 px-1 hover:bg-gold/[0.04] transition-colors"
                 >
-                  <div
-                    className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-night/40 ${tint}`}
-                  >
-                    <Icon size={20} />
+                  <span className="shrink-0 inline-flex items-center justify-center h-9 w-9 text-gold/85 group-hover:text-gold transition-colors">
+                    <Icon size={28} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-display-serif text-[20px] md:text-[22px] text-paper leading-tight group-hover:text-gold transition-colors">
+                      {label}
+                    </p>
+                    <p className="mt-1.5 font-serif italic text-[13.5px] md:text-[14px] text-paper/65 leading-[1.55]">
+                      {blurb}
+                    </p>
                   </div>
-                  <p className="font-sans text-[15px] font-semibold text-paper leading-tight">
-                    {label}
-                  </p>
-                  <p className="mt-1.5 font-sans text-[12.5px] text-paper/70 leading-[1.55]">
-                    {blurb}
-                  </p>
+                  <span
+                    aria-hidden
+                    className="shrink-0 self-center font-serif text-[18px] text-paper/30 group-hover:text-gold transition-colors"
+                  >
+                    →
+                  </span>
                 </Link>
               </li>
             ))}
           </ul>
+
+          {/* Quiet colophon to close the page. */}
+          <p className="mt-10 text-center font-display-serif italic text-[14px] text-paper/45 leading-[1.55]">
+            Through the prayers of our holy Fathers,
+            <br />
+            Lord Jesus Christ our God, have mercy on us.
+          </p>
         </article>
       </section>
     </>

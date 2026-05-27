@@ -7,7 +7,7 @@ import { HeroChristIcon } from "@/components/marketing/HeroChristIcon";
 import { SeasonBanner } from "@/components/marketing/SeasonBanner";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
 import { Cross } from "@/components/ui/icons/Cross";
-import { TodayMobileHero } from "@/components/today/TodayMobileHero";
+import { TodayMenologionHero } from "@/components/today/TodayMenologionHero";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { getServerLocale } from "@/lib/i18n/server";
@@ -90,7 +90,7 @@ export default async function Home() {
  home below takes over. The hero is wrapped here so the marketing
  sections (rich, long) don't double-load on phones. */}
  <div className="md:hidden flex-1 safe-pb">
- <TodayMobileHero />
+ <TodayMenologionHero />
  </div>
 
  {/* DESKTOP: existing marketing home, unchanged. Hidden on phones. */}
@@ -125,8 +125,8 @@ export default async function Home() {
  New
  </span>
  <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
- <span className="sm:hidden">v6.4.1 · Full UI translation</span>
- <span className="hidden sm:inline">v6.4.1 · Full UI translation, 13 locales</span>
+ <span className="sm:hidden">v6.4.2 · Mobile, the menologion</span>
+ <span className="hidden sm:inline">v6.4.2 · Mobile Today + Discover, the menologion vocabulary</span>
  </span>
  <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
  →

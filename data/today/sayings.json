@@ -1,0 +1,53 @@
+{
+  "source": "The Sayings of the Desert Fathers (Apophthegmata Patrum). Public-domain English translations (Wallis Budge, Helen Waddell). Used as a fallback on Today when the headline saint has no entry in the registry's quotes array. Rotated by day-of-year so the same line does not appear two days running.",
+  "sayings": [
+    {
+      "text": "I saw the snares of the enemy spread out over the world, and I groaned and said, What can pass through these? And I heard a voice saying, Humility.",
+      "attribution": "Abba Anthony the Great"
+    },
+    {
+      "text": "Our life and our death is with our neighbour. If we win our brother, we win God; if we cause our brother to stumble, we have sinned against Christ.",
+      "attribution": "Abba Anthony the Great"
+    },
+    {
+      "text": "Whoever has not been tried by temptation cannot enter the Kingdom of Heaven; take away temptations, and no one would be saved.",
+      "attribution": "Abba Anthony the Great"
+    },
+    {
+      "text": "He who sits in solitude and is quiet hath escaped from three wars: hearing, speaking, seeing; but against one thing shall he continually battle: that is, his own heart.",
+      "attribution": "Abba Anthony the Great"
+    },
+    {
+      "text": "If a man does not say in his heart, in the world there is only myself and God, he will not gain peace.",
+      "attribution": "Abba Allois"
+    },
+    {
+      "text": "Go, sit in thy cell, and thy cell shall teach thee all things.",
+      "attribution": "Abba Moses the Black"
+    },
+    {
+      "text": "If you cannot keep silence, speak as if you were before God; for you are before Him.",
+      "attribution": "Abba Poemen"
+    },
+    {
+      "text": "Do not give your heart to that which does not satisfy your heart.",
+      "attribution": "Abba Poemen"
+    },
+    {
+      "text": "Pray as you can, not as you cannot.",
+      "attribution": "Saying of the Elders"
+    },
+    {
+      "text": "If a man's deeds are not in harmony with his prayer, he labors in vain.",
+      "attribution": "Abba Moses the Black"
+    },
+    {
+      "text": "A brother said to Abba Sisoes: I see myself always in the presence of God. The old man said to him: It is not very great that thy thought should be with God; but it is great when a man sees himself lower than every creature.",
+      "attribution": "Abba Sisoes"
+    },
+    {
+      "text": "Forgive, and you shall be forgiven; this fulfils the law.",
+      "attribution": "Abba Poemen"
+    }
+  ]
+}

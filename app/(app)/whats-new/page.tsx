@@ -20,6 +20,22 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v6.4.2",
+ kind: "Mobile Today + Discover, the menologion vocabulary",
+ date: "May 27, 2026",
+ blurb:
+ "Mobile feedback was that Today felt 'lacking' and the Discover tile icons felt 'AI-like.' This release rebuilds both surfaces inside the calendar's existing manuscript / menologion vocabulary so the mobile shell reads as one visual world instead of a generic prayer-app stack next to an illuminated calendar page. Four generic line-art icons (Book, Compass, Hands, User) are replaced with bespoke Orthodox glyphs (Gospel codex, eight-pointed star, orans figure, haloed head). Today gains four content blocks the old version did not have: appointed Epistle and Gospel inline, a patristic pull-quote tied to the day's saint (with a Desert Fathers fallback on plain days), the fast in plain words, and a Pascha countdown under a small three-bar cross.",
+ items: [
+ "Four new bespoke icons in components/ui/icons/: Codex (Gospel book with cross incised on the cover and two ribbons), Octogram (eight-pointed Theotokos / Nativity star), Orans (standing figure with raised arms and small halo, the early Christian prayer posture), HaloedHead (face inside a halo ring with eight radiating points). All four follow the existing line-only currentColor convention so they sit beside Cross / Halo / Lampada / Wheat / Grapes naturally.",
+ "MobileTabBar icon swap: Book → Codex on the Bible tab, Compass → Octogram on the Discover tab, Hands → Orans on the Prayers tab, User → HaloedHead on the You tab. Sun stays on the Today tab. No more Lucide-style glyphs in the mobile chrome.",
+ "New TodayMenologionHero (components/today/TodayMenologionHero.tsx) replaces TodayMobileHero. Top to bottom: hour-aware display-serif greeting, date line in rubric red on fast days and gold on feast days, the day's saint with an illuminated drop cap on the first letter (reuses components/calendar/DropCap.tsx), first sentence of the bio as a serif tease, OrnamentHeadpiece divider, FAST block with the plain-English rule (Strict fast / Wine and oil / Fast released), Appointed Readings block with Epistle + Gospel citations deep-linking into /bible/{book}/{chapter}#v{from}-{to}, a printed-book pull-quote from the day's saint with rubric-red attribution (Desert Fathers fallback rotates by day-of-year through data/today/sayings.json), a centered Pascha countdown under a small three-bar cross, the existing CTA pair, and a quiet colophon at the foot. The old five-chip Hallow-style nav row is gone — the bottom tab bar already does navigation.",
+ "Seasonal tone wash on the Today page using the calendar's existing calendarPageVars() + toneFor() helpers, so the whole hero takes on a gold / crimson / green / muted tint based on whether the day is a feast, a strict fast, fast-free, or ordinary. Same --tone CSS variable the calendar already uses; same source of truth.",
+ "Discover restructured from a six-card grid to a menologion-index list. Each library section is one printed line: small illuminated glyph on the left, display-serif title, italic serif blurb, thin gold hairline rules between entries, a quiet right-arrow at the end of each row. Header is an OrnamentHeadpiece + rubric eyebrow + display-serif H1; closing colophon at the foot. No more per-tile gradient backgrounds or rounded-2xl borders — the page reads as a service-book table of contents, not a SaaS feature grid.",
+ "Mobile-only changes; the desktop home stays exactly as it was. The /calendar page is untouched (it was already the model). Saint profile pages and the Bible reader are unchanged.",
+ "Footer + home hero chip + /whats-new chip step to v6.4.2.",
+ ],
+ },
+ {
  version: "v6.4.1",
  kind: "Full UI translation, 13 locales",
  date: "May 27, 2026",

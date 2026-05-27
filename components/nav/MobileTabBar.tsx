@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { Sun } from "@/components/ui/icons/Sun";
-import { Book } from "@/components/ui/icons/Book";
-import { Compass } from "@/components/ui/icons/Compass";
-import { Hands } from "@/components/ui/icons/Hands";
-import { User } from "@/components/ui/icons/User";
+import { Codex } from "@/components/ui/icons/Codex";
+import { Octogram } from "@/components/ui/icons/Octogram";
+import { Orans } from "@/components/ui/icons/Orans";
+import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -46,14 +46,14 @@ export function MobileTabBar() {
       key: "bible",
       label: t("nav.bible"),
       href: "/bible",
-      Icon: Book,
+      Icon: Codex,
       matches: (p) => p === "/bible" || p.startsWith("/bible/"),
     },
     {
       key: "discover",
       label: t("nav.discover"),
       href: "/discover",
-      Icon: Compass,
+      Icon: Octogram,
       matches: (p) =>
         p === "/discover" ||
         p.startsWith("/discover/") ||
@@ -68,7 +68,7 @@ export function MobileTabBar() {
       key: "prayers",
       label: t("nav.prayers"),
       href: "/prayers",
-      Icon: Hands,
+      Icon: Orans,
       matches: (p) =>
         (p === "/prayers" || p.startsWith("/prayers/")) && p !== "/prayers/today",
     },
@@ -76,7 +76,7 @@ export function MobileTabBar() {
       key: "you",
       label: t("nav.you"),
       href: "/account",
-      Icon: User,
+      Icon: HaloedHead,
       matches: (p) =>
         p === "/account" ||
         p.startsWith("/account/") ||
