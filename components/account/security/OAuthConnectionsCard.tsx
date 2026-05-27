@@ -37,9 +37,23 @@ export function OAuthConnectionsCard() {
       try {
         await supabase.auth.refreshSession();
       } catch {
-        // Refresh failures are benign — fall through to getUser which
-        // will fail noisily if the session is genuinely dead.
+        // Refresh failures are benign — fall through to getUserIdentities
+        // which will fail noisily if the session is genuinely dead.
       }
+    }
+    // Prefer getUserIdentities() — it's a direct read against the
+    // /auth/v1/user/identities endpoint, no cached-user-object layer
+    // in the middle. Some SDK versions return a stale .identities
+    // array on getUser() after a recent link, even with a fresh
+    // session; this avoids that path entirely.
+    try {
+      const { data } = await supabase.auth.getUserIdentities();
+      if (data?.identities) {
+        setIdentities(data.identities as Identity[]);
+        return;
+      }
+    } catch {
+      // Fall through to the legacy path below.
     }
     const {
       data: { user },
