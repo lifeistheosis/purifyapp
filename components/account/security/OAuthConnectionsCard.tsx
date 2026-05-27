@@ -36,8 +36,17 @@ type Identity = {
  */
 export function OAuthConnectionsCard({
   initialIdentities,
+  hasPassword = true,
 }: {
   initialIdentities?: Identity[];
+  /**
+   * Whether the user has a password set on their auth.users row. When
+   * false, unlinking the only OAuth identity would leave them with
+   * no way to sign in, so Supabase's server-side check would reject
+   * the request. We pre-empt that with a clearer "set a password
+   * first" affordance instead of letting them hit the raw error.
+   */
+  hasPassword?: boolean;
 }) {
   const router = useRouter();
   const [identities, setIdentities] = useState<Identity[]>(
@@ -226,9 +235,16 @@ export function OAuthConnectionsCard({
       // SDK refresh is in the critical path.
       router.refresh();
     } catch (e) {
-      setError(
-        e instanceof Error ? e.message : "Couldn't disconnect Google.",
-      );
+      const raw = e instanceof Error ? e.message : "";
+      if (/at least 1 identity|last identity|at_least_one_identity/i.test(raw)) {
+        // Supabase refuses to remove the only sign-in path. Translate
+        // to a sentence that says what the user actually has to do.
+        setError(
+          "Unlinking Google would leave this account with no way to sign in. Set a password in the card above first, then try Unlink again.",
+        );
+      } else {
+        setError(raw || "Couldn't disconnect Google.");
+      }
     } finally {
       clearTimeout(watchdog);
       setPending(null);
@@ -256,14 +272,23 @@ export function OAuthConnectionsCard({
             </p>
           </div>
           {googleIdentity ? (
-            <button
-              type="button"
-              onClick={() => setConfirmingUnlink(true)}
-              disabled={pending !== null}
-              className="font-sans text-[12.5px] font-semibold rounded-pill border border-[#c1272d]/55 text-[#f8cac7] bg-[#c1272d]/[0.06] hover:bg-[#c1272d]/[0.15] hover:border-[#c1272d]/75 px-4 py-1.5 disabled:opacity-50 disabled:cursor-wait transition-colors"
-            >
-              {pending === "google" ? "Working…" : "Unlink"}
-            </button>
+            hasPassword ? (
+              <button
+                type="button"
+                onClick={() => setConfirmingUnlink(true)}
+                disabled={pending !== null}
+                className="font-sans text-[12.5px] font-semibold rounded-pill border border-[#c1272d]/55 text-[#f8cac7] bg-[#c1272d]/[0.06] hover:bg-[#c1272d]/[0.15] hover:border-[#c1272d]/75 px-4 py-1.5 disabled:opacity-50 disabled:cursor-wait transition-colors"
+              >
+                {pending === "google" ? "Working…" : "Unlink"}
+              </button>
+            ) : (
+              <span
+                title="Set a password first so you have another way to sign in."
+                className="font-sans text-[12.5px] font-medium rounded-pill border border-paper/15 text-paper/35 bg-paper/[0.02] px-4 py-1.5 cursor-not-allowed"
+              >
+                Set a password first
+              </span>
+            )
           ) : (
             <button
               type="button"

@@ -40,7 +40,10 @@ export default async function SecurityTabPage() {
     <div className="flex flex-col gap-5">
       <ChangePasswordCard email={user.email ?? ""} hasPassword={hasPassword} />
       <ChangeEmailCard currentEmail={user.email ?? ""} />
-      <OAuthConnectionsCard initialIdentities={initialIdentities} />
+      <OAuthConnectionsCard
+        initialIdentities={initialIdentities}
+        hasPassword={hasPassword}
+      />
       <SignOutEverywhereCard />
     </div>
   );
