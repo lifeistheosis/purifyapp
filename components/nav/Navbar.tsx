@@ -5,24 +5,26 @@ import Link from "next/link";
 import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
 import { useScrolled } from "@/lib/useScrolled";
 import { cn } from "@/lib/cn";
-
-const navItems = [
-  { label: "Today", href: "/prayers/today" },
-  { label: "Bible", href: "/bible" },
-  { label: "Prayers", href: "/prayers" },
-  { label: "Saints", href: "/saints" },
-  { label: "Councils", href: "/councils" },
-  { label: "Calendar", href: "/calendar" },
-];
-
-const secondary = [
-  { label: "Support", href: "/support" },
-  { label: "Account", href: "/account" },
-];
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function Navbar() {
   const scrolled = useScrolled();
   const [open, setOpen] = useState(false);
+  const { t } = useTranslate();
+
+  const navItems = [
+    { key: "today", label: t("nav.today"), href: "/prayers/today" },
+    { key: "bible", label: t("nav.bible"), href: "/bible" },
+    { key: "prayers", label: t("nav.prayers"), href: "/prayers" },
+    { key: "saints", label: t("nav.saints"), href: "/saints" },
+    { key: "councils", label: t("nav.councils"), href: "/councils" },
+    { key: "calendar", label: t("nav.calendar"), href: "/calendar" },
+  ];
+
+  const secondary = [
+    { key: "support", label: t("nav.support"), href: "/support" },
+    { key: "account", label: t("nav.account"), href: "/account" },
+  ];
 
   // Force the dark bg on while the mobile menu is open so the panel reads cleanly.
   const showBg = scrolled || open;
@@ -47,7 +49,7 @@ export function Navbar() {
         <nav className="hidden md:flex items-center gap-9">
           {navItems.map((item) => (
             <Link
-              key={item.label}
+              key={item.key}
               href={item.href}
               className="font-sans text-[15px] font-medium text-paper/85 hover:text-paper transition-colors duration-150"
             >
@@ -59,7 +61,7 @@ export function Navbar() {
         <div className="hidden sm:flex items-center gap-5">
           {secondary.map((item) => (
             <Link
-              key={item.href}
+              key={item.key}
               href={item.href}
               className="font-sans text-[14px] font-medium text-paper/85 hover:text-paper transition-colors duration-150"
             >
@@ -67,14 +69,14 @@ export function Navbar() {
             </Link>
           ))}
           <ComingSoonCTA variant="inverse" className="!py-2.5 !px-5 text-[14px]">
-            Open Purify
+            {t("nav.openPurify")}
           </ComingSoonCTA>
         </div>
 
         {/* Mobile hamburger */}
         <button
           type="button"
-          aria-label="Toggle menu"
+          aria-label={t("nav.menuToggle")}
           aria-expanded={open}
           className="sm:hidden inline-flex items-center justify-center h-11 w-11 rounded-pill border border-paper/20 text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
           onClick={() => setOpen((v) => !v)}
@@ -88,7 +90,7 @@ export function Navbar() {
           <nav className="flex flex-col px-5 py-3">
             {[...navItems, ...secondary].map((it) => (
               <Link
-                key={it.href}
+                key={it.key}
                 href={it.href}
                 onClick={() => setOpen(false)}
                 className="font-sans text-[16px] font-medium text-paper/85 hover:text-paper py-3.5 border-b border-white/5 last:border-0"
@@ -98,7 +100,7 @@ export function Navbar() {
             ))}
             <div className="mt-4 mb-2">
               <ComingSoonCTA variant="inverse" className="w-full !py-3 text-[15px]">
-                Open Purify
+                {t("nav.openPurify")}
               </ComingSoonCTA>
             </div>
           </nav>

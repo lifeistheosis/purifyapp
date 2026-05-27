@@ -6,6 +6,8 @@ import { Halo } from "@/components/ui/icons/Halo";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Wheat } from "@/components/ui/icons/Wheat";
 import { Grapes } from "@/components/ui/icons/Grapes";
+import { getServerLocale } from "@/lib/i18n/server";
+import { getMessages, t } from "@/lib/i18n";
 
 export const metadata = {
   title: "Discover",
@@ -31,84 +33,86 @@ type Tile = {
   border: string;
 };
 
-const TILES: Tile[] = [
-  {
-    label: "Saints",
-    href: "/saints",
-    blurb: "Fifty-plus profiles, with their works to read in full.",
-    Icon: Halo,
-    tint: "text-gold",
-    bg: "bg-gold/[0.08]",
-    border: "border-gold/30",
-  },
-  {
-    label: "Councils",
-    href: "/councils",
-    blurb: "The first four Ecumenical Councils, in their own words.",
-    Icon: Cross,
-    tint: "text-[#f4dc91]",
-    bg: "bg-[var(--color-grad-violet)]/[0.18]",
-    border: "border-[var(--color-grad-violet)]/40",
-  },
-  {
-    label: "Calendar",
-    href: "/calendar",
-    blurb: "Every day of the Church's year, the fasts, and the count to Pascha.",
-    Icon: Lampada,
-    tint: "text-[#bfd6cc]",
-    bg: "bg-[var(--color-grad-teal)]/[0.14]",
-    border: "border-[var(--color-grad-teal)]/35",
-  },
-  {
-    label: "Daily readings",
-    href: "/prayers/today",
-    blurb: "The appointed Epistle and Gospel for today.",
-    Icon: Book,
-    tint: "text-paper/85",
-    bg: "bg-paper/[0.05]",
-    border: "border-paper/15",
-  },
-  {
-    label: "The Psalter",
-    href: "/bible/psalms/1",
-    blurb: "The hundred fifty psalms, in the Septuagint numbering.",
-    Icon: Wheat,
-    tint: "text-gold",
-    bg: "bg-gold/[0.06]",
-    border: "border-gold/25",
-  },
-  {
-    label: "Patristic commentary",
-    href: "/bible/john/1",
-    blurb: "St. John Chrysostom verse by verse, beside the Gospel.",
-    Icon: Grapes,
-    tint: "text-[#e3a7a7]",
-    bg: "bg-[var(--color-accent)]/[0.10]",
-    border: "border-[var(--color-accent)]/30",
-  },
-];
+export default async function DiscoverPage() {
+  const locale = await getServerLocale();
+  const m = getMessages(locale);
 
-export default function DiscoverPage() {
+  const TILES: Tile[] = [
+    {
+      label: t(m, "discover.tile.saints"),
+      href: "/saints",
+      blurb: t(m, "discover.tile.saintsBlurb"),
+      Icon: Halo,
+      tint: "text-gold",
+      bg: "bg-gold/[0.08]",
+      border: "border-gold/30",
+    },
+    {
+      label: t(m, "discover.tile.councils"),
+      href: "/councils",
+      blurb: t(m, "discover.tile.councilsBlurb"),
+      Icon: Cross,
+      tint: "text-[#f4dc91]",
+      bg: "bg-[var(--color-grad-violet)]/[0.18]",
+      border: "border-[var(--color-grad-violet)]/40",
+    },
+    {
+      label: t(m, "discover.tile.calendar"),
+      href: "/calendar",
+      blurb: t(m, "discover.tile.calendarBlurb"),
+      Icon: Lampada,
+      tint: "text-[#bfd6cc]",
+      bg: "bg-[var(--color-grad-teal)]/[0.14]",
+      border: "border-[var(--color-grad-teal)]/35",
+    },
+    {
+      label: t(m, "discover.tile.dailyReadings"),
+      href: "/prayers/today",
+      blurb: t(m, "discover.tile.dailyReadingsBlurb"),
+      Icon: Book,
+      tint: "text-paper/85",
+      bg: "bg-paper/[0.05]",
+      border: "border-paper/15",
+    },
+    {
+      label: t(m, "discover.tile.psalter"),
+      href: "/bible/psalms/1",
+      blurb: t(m, "discover.tile.psalterBlurb"),
+      Icon: Wheat,
+      tint: "text-gold",
+      bg: "bg-gold/[0.06]",
+      border: "border-gold/25",
+    },
+    {
+      label: t(m, "discover.tile.patristic"),
+      href: "/bible/john/1",
+      blurb: t(m, "discover.tile.patristicBlurb"),
+      Icon: Grapes,
+      tint: "text-[#e3a7a7]",
+      bg: "bg-[var(--color-accent)]/[0.10]",
+      border: "border-[var(--color-accent)]/30",
+    },
+  ];
+
   return (
     <>
-      <MobileTopBar title="Discover" />
+      <MobileTopBar title={t(m, "discover.h1").replace(/\.$/, "")} />
       <section className="bg-night min-h-[calc(100dvh-72px)] md:px-8 md:py-16">
         <article className="mx-auto max-w-[1080px] w-full px-5 pt-6 pb-10 md:pt-0 md:pb-0">
           <header className="mb-6 hidden md:block">
             <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-              The whole library
+              {t(m, "discover.eyebrow")}
             </p>
             <h1 className="font-sans text-[36px] md:text-[48px] font-bold text-paper leading-[1.05] tracking-[-0.025em]">
-              Discover.
+              {t(m, "discover.h1")}
             </h1>
             <p className="mt-4 font-serif text-[17px] text-paper/80 max-w-[640px] leading-[1.65]">
-              Saints, councils, the calendar, and a way into the wider library.
-              Tap a tile to start.
+              {t(m, "discover.subtitle")}
             </p>
           </header>
 
           <p className="md:hidden mt-1 mb-5 font-sans text-[13px] text-paper/65">
-            The whole library at a glance.
+            {t(m, "discover.mobileSubtitle")}
           </p>
 
           <ul className="grid grid-cols-2 md:grid-cols-3 gap-3">

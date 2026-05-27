@@ -8,6 +8,7 @@ import { Book } from "@/components/ui/icons/Book";
 import { Compass } from "@/components/ui/icons/Compass";
 import { Hands } from "@/components/ui/icons/Hands";
 import { User } from "@/components/ui/icons/User";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Persistent bottom tab bar on `< md` viewports. Hidden on desktop, which
@@ -22,64 +23,67 @@ import { User } from "@/components/ui/icons/User";
  */
 
 type Tab = {
+  key: string;
   label: string;
   href: string;
   Icon: typeof Sun;
   matches: (p: string) => boolean;
 };
 
-const TABS: Tab[] = [
-  {
-    label: "Today",
-    href: "/",
-    Icon: Sun,
-    // Today owns the bare home + the canonical /prayers/today surface.
-    matches: (p) => p === "/" || p === "/prayers/today",
-  },
-  {
-    label: "Bible",
-    href: "/bible",
-    Icon: Book,
-    matches: (p) => p === "/bible" || p.startsWith("/bible/"),
-  },
-  {
-    label: "Discover",
-    href: "/discover",
-    Icon: Compass,
-    // Hub for the wider library: saints, councils, calendar, fasts.
-    matches: (p) =>
-      p === "/discover" ||
-      p.startsWith("/discover/") ||
-      p === "/saints" ||
-      p.startsWith("/saints/") ||
-      p === "/councils" ||
-      p.startsWith("/councils/") ||
-      p === "/calendar" ||
-      p.startsWith("/calendar/"),
-  },
-  {
-    label: "Prayers",
-    href: "/prayers",
-    Icon: Hands,
-    // Prayers tab covers everything in /prayers EXCEPT /prayers/today (that
-    // belongs to the Today tab so the home hero stays the primary surface).
-    matches: (p) =>
-      (p === "/prayers" || p.startsWith("/prayers/")) && p !== "/prayers/today",
-  },
-  {
-    label: "You",
-    href: "/account",
-    Icon: User,
-    matches: (p) =>
-      p === "/account" ||
-      p.startsWith("/account/") ||
-      p === "/saved" ||
-      p.startsWith("/saved/"),
-  },
-];
-
 export function MobileTabBar() {
   const pathname = usePathname() ?? "/";
+  const { t } = useTranslate();
+
+  const TABS: Tab[] = [
+    {
+      key: "today",
+      label: t("nav.today"),
+      href: "/",
+      Icon: Sun,
+      matches: (p) => p === "/" || p === "/prayers/today",
+    },
+    {
+      key: "bible",
+      label: t("nav.bible"),
+      href: "/bible",
+      Icon: Book,
+      matches: (p) => p === "/bible" || p.startsWith("/bible/"),
+    },
+    {
+      key: "discover",
+      label: t("nav.discover"),
+      href: "/discover",
+      Icon: Compass,
+      matches: (p) =>
+        p === "/discover" ||
+        p.startsWith("/discover/") ||
+        p === "/saints" ||
+        p.startsWith("/saints/") ||
+        p === "/councils" ||
+        p.startsWith("/councils/") ||
+        p === "/calendar" ||
+        p.startsWith("/calendar/"),
+    },
+    {
+      key: "prayers",
+      label: t("nav.prayers"),
+      href: "/prayers",
+      Icon: Hands,
+      matches: (p) =>
+        (p === "/prayers" || p.startsWith("/prayers/")) && p !== "/prayers/today",
+    },
+    {
+      key: "you",
+      label: t("nav.you"),
+      href: "/account",
+      Icon: User,
+      matches: (p) =>
+        p === "/account" ||
+        p.startsWith("/account/") ||
+        p === "/saved" ||
+        p.startsWith("/saved/"),
+    },
+  ];
 
   return (
     <nav
@@ -95,10 +99,10 @@ export function MobileTabBar() {
       )}
     >
       <ul className="flex items-stretch justify-around h-[var(--tab-bar-h)] px-1">
-        {TABS.map(({ label, href, Icon, matches }) => {
+        {TABS.map(({ key, label, href, Icon, matches }) => {
           const active = matches(pathname);
           return (
-            <li key={href} className="flex-1">
+            <li key={key} className="flex-1">
               <Link
                 href={href}
                 aria-current={active ? "page" : undefined}

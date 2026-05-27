@@ -20,6 +20,22 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v6.4.1",
+ kind: "Full UI translation, 13 locales",
+ date: "May 27, 2026",
+ blurb:
+ "The site now auto-translates its UI to the reader's browser language across thirteen locales: English, Spanish, Romanian, Greek, Russian, French, German, Serbian, Ukrainian, Italian, Portuguese, Bulgarian, and Arabic (right-to-left). The Bible text itself is intentionally untouched per the source-honesty discipline; long-prose pages (FAQ bodies, /privacy detail, individual saint biographies, council canons, prayer-book text, /whats-new historical entries) also stay in English, with a small banner naming this honestly. Translation is cookie-driven, so a user's bookmark on any saint's profile keeps working at the same URL — only the chrome around the page repaints. A locale switcher in the footer makes the choice manual when the auto-detected one isn't right.",
+ items: [
+ "Middleware reads Accept-Language on the first request and sets a year-long `purify_locale` cookie. The root layout reads the cookie server-side, sets <html lang dir>, and mounts a MessagesProvider so every server and client component sees the same active locale. No URL change — /saints/john-chrysostom resolves at the same path in every language.",
+ "Thirteen catalogs at lib/i18n/messages/{locale}.json with ~180 keys each, covering nav (Navbar, AppNav, MobileTabBar), Footer, the home hero, /about eyebrows + H1s + H2s, /pricing, /support intro, /faq, /privacy, /account chooser, /signin, /signup, /forgot, /reset, /topics + /topics/[slug], /discover, /calendar shell, /prayers shell, /saints index shell, /councils index shell, /whats-new shell, and the saint-profile shell components (the Disciples and successors section, the Great Feasts section, the In his/her own words section).",
+ "Translation provenance is named honestly. Short UI chrome is hand-produced with Orthodox-aware care for liturgical phrases (\"Glory to God for all things\", \"Pascha\", \"Theotokos\", the morning and evening rules). Where prose is longer (the body of the FAQ, the detail of /privacy, individual saint biographies), the text stays in English under a discreet 'Translation in progress' banner that names what's translated and what isn't.",
+ "Locale switcher in the footer, just below the Discord and Instagram chips. Native-language labels (Español, Ελληνικά, Русский, العربية…). Writes the cookie and refreshes the route — the whole site repaints in the new locale on the next paint.",
+ "Right-to-left for Arabic: <html dir=\"rtl\"> set conditionally, Tailwind logical properties (ms-*, me-*) used where the existing class was direction-sensitive. Most of the site uses centered layouts which translate cleanly; minor visual regressions in RTL are tracked as follow-ups.",
+ "Bible reader, individual saint bios, council canons, prayer-book text, and /whats-new historical entry bodies are explicitly out of scope and stay in their published languages. The 'no black-box translations' discipline already named on /about applies here: the site doesn't pass machine translations of Scripture or the Fathers off as authoritative.",
+ "Footer + home hero chip + /whats-new chip step to v6.4.1.",
+ ],
+ },
+ {
  version: "v6.4",
  kind: "Roadmap scaffolding from the Discord cycle",
  date: "May 27, 2026",

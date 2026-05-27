@@ -1,22 +1,35 @@
-// Locale registry (v6.4 PRD §2).
+// Locale registry (v6.4.1 — full UI translation patch).
 //
 // Two tracks for i18n on Purify:
 //
 //   Track A — UI chrome localization. Navigation, button labels,
-//             eyebrows, error strings, FAQ, About, prayer-rule
-//             scaffolding. Texts themselves (Scripture, Fathers) stay
-//             in their published languages.
+//             eyebrows, error strings, page headings, short bodies.
+//             Texts themselves (Scripture, Fathers, council canons,
+//             prayer book) stay in their published languages.
 //   Track B — Liturgical / textual localization. The Scriptures and
 //             prayers in Greek, Slavonic / Russian. Mostly a content
 //             acquisition problem; one corpus + editorial pass per
-//             language.
+//             language. Out of scope for v6.4.1.
 //
-// This file is the *engineering* foundation: a typed registry of
-// locales the site knows about, and the helpers needed to load and
-// resolve message catalogs. No routing changes here — that belongs to
-// a follow-up patch that moves every page under app/[locale]/(app)/.
+// What v6.4.1 ships: thirteen locales with full UI chrome translation.
+// Cookie-based; no route restructure. Long-prose pages (FAQ bodies,
+// Privacy detail, individual saint bios, Bible) stay English with a
+// disclaimer banner.
 
-export type LocaleCode = "en" | "es" | "el" | "ru";
+export type LocaleCode =
+  | "en"
+  | "es"
+  | "ro"
+  | "el"
+  | "ru"
+  | "fr"
+  | "de"
+  | "sr"
+  | "uk"
+  | "it"
+  | "pt"
+  | "bg"
+  | "ar";
 
 export type Locale = {
   code: LocaleCode;
@@ -26,6 +39,8 @@ export type Locale = {
   englishLabel: string;
   /** Whether the chrome catalog has been translated and is shippable. */
   ready: boolean;
+  /** Writing direction. Arabic is rtl; everything else ltr. */
+  dir: "ltr" | "rtl";
   /** Optional note about the locale's status. */
   status?: string;
 };
@@ -33,36 +48,19 @@ export type Locale = {
 export const DEFAULT_LOCALE: LocaleCode = "en";
 
 export const LOCALES: Locale[] = [
-  {
-    code: "en",
-    nativeLabel: "English",
-    englishLabel: "English",
-    ready: true,
-  },
-  {
-    code: "es",
-    nativeLabel: "Español",
-    englishLabel: "Spanish",
-    ready: false,
-    status:
-      "UI chrome translation pending. The catalog skeleton ships under lib/i18n/messages/es.json with placeholders matching the English keys.",
-  },
-  {
-    code: "el",
-    nativeLabel: "Ελληνικά",
-    englishLabel: "Greek",
-    ready: false,
-    status:
-      "Greek UI chrome pending. Greek Bible reader column is separate work (Track B).",
-  },
-  {
-    code: "ru",
-    nativeLabel: "Русский",
-    englishLabel: "Russian",
-    ready: false,
-    status:
-      "Russian UI chrome pending. The Synodal Bible + Slavonic prayer corpus is the largest content lift; budget accordingly (Track B).",
-  },
+  { code: "en", nativeLabel: "English", englishLabel: "English", ready: true, dir: "ltr" },
+  { code: "es", nativeLabel: "Español", englishLabel: "Spanish", ready: true, dir: "ltr" },
+  { code: "ro", nativeLabel: "Română", englishLabel: "Romanian", ready: true, dir: "ltr" },
+  { code: "el", nativeLabel: "Ελληνικά", englishLabel: "Greek", ready: true, dir: "ltr" },
+  { code: "ru", nativeLabel: "Русский", englishLabel: "Russian", ready: true, dir: "ltr" },
+  { code: "fr", nativeLabel: "Français", englishLabel: "French", ready: true, dir: "ltr" },
+  { code: "de", nativeLabel: "Deutsch", englishLabel: "German", ready: true, dir: "ltr" },
+  { code: "sr", nativeLabel: "Српски", englishLabel: "Serbian", ready: true, dir: "ltr" },
+  { code: "uk", nativeLabel: "Українська", englishLabel: "Ukrainian", ready: true, dir: "ltr" },
+  { code: "it", nativeLabel: "Italiano", englishLabel: "Italian", ready: true, dir: "ltr" },
+  { code: "pt", nativeLabel: "Português", englishLabel: "Portuguese", ready: true, dir: "ltr" },
+  { code: "bg", nativeLabel: "Български", englishLabel: "Bulgarian", ready: true, dir: "ltr" },
+  { code: "ar", nativeLabel: "العربية", englishLabel: "Arabic", ready: true, dir: "rtl" },
 ];
 
 /** True if a locale is considered shippable today. */
@@ -75,6 +73,12 @@ export function resolveLocale(input: string | null | undefined): LocaleCode {
   if (!input) return DEFAULT_LOCALE;
   const found = LOCALES.find((l) => l.code === input);
   return found ? found.code : DEFAULT_LOCALE;
+}
+
+/** Look up a Locale record by code, with fallback to English. */
+export function getLocale(code: string | null | undefined): Locale {
+  const resolved = resolveLocale(code);
+  return LOCALES.find((l) => l.code === resolved) ?? LOCALES[0];
 }
 
 /**
@@ -90,9 +94,7 @@ export function negotiateFromAcceptLanguage(header: string | null): LocaleCode {
     .map((part) => part.trim().split(";")[0].toLowerCase());
   for (const range of ranges) {
     const primary = range.split("-")[0];
-    const candidate = LOCALES.find(
-      (l) => l.code === primary && l.ready,
-    );
+    const candidate = LOCALES.find((l) => l.code === primary && l.ready);
     if (candidate) return candidate.code;
   }
   return DEFAULT_LOCALE;

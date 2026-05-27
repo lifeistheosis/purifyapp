@@ -1,16 +1,28 @@
+"use client";
+
 import Link from "next/link";
 import type { Quote } from "@/lib/saints/saints";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
- * "In his own words", a set of notable quotations on the saint profile,
+ * "In his/her own words", a set of notable quotations on the saint profile,
  * rendered between the Life and the Works. Each quote links to the work it
  * is drawn from where available.
  */
-export function QuotesSection({ quotes }: { quotes: Quote[] }) {
+export function QuotesSection({
+ quotes,
+ pronoun,
+}: {
+ quotes: Quote[];
+ pronoun?: "his" | "her";
+}) {
+ const { t } = useTranslate();
+ const eyebrow =
+ pronoun === "her" ? t("saints.inHerOwnWords") : t("saints.inHisOwnWords");
  return (
  <section className="py-14 border-b border-paper/8">
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-6">
- In his own words
+ {eyebrow}
  </p>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[900px]">
  {quotes.map((q, i) => {

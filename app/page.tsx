@@ -10,6 +10,8 @@ import { Cross } from "@/components/ui/icons/Cross";
 import { TodayMobileHero } from "@/components/today/TodayMobileHero";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { getServerLocale } from "@/lib/i18n/server";
+import { getMessages, t } from "@/lib/i18n";
 
 // ISR so the live home-page surface (Today card, daily wisdom, season
 // banner, paschal greeting) refreshes daily without a redeploy.
@@ -79,7 +81,9 @@ const challenges: {
 const sectionBase =
  "snap-start md:[min-height:100dvh] flex items-center px-5 md:px-8 pt-16 md:pt-14 pb-12 md:pb-10";
 
-export default function Home() {
+export default async function Home() {
+ const locale = await getServerLocale();
+ const m = getMessages(locale);
  return (
  <>
  {/* MOBILE: app-shell Today hero. Hidden on md+ where the marketing
@@ -121,30 +125,28 @@ export default function Home() {
  New
  </span>
  <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
- <span className="sm:hidden">v6.4 · Roadmap scaffolding</span>
- <span className="hidden sm:inline">v6.4 · Roadmap scaffolding from the Discord cycle</span>
+ <span className="sm:hidden">v6.4.1 · Full UI translation</span>
+ <span className="hidden sm:inline">v6.4.1 · Full UI translation, 13 locales</span>
  </span>
  <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
  →
  </span>
  </Link>
  <h1 className="font-sans text-[32px] md:text-[42px] lg:text-[52px] font-bold leading-[1.05] tracking-[-0.025em]">
- The whole Orthodox life,
- <br className="hidden sm:block" /> in one quiet place.
+ {t(m, "home.heroH1")}
  </h1>
  <p className="font-sans text-[14px] md:text-[15px] text-paper/85 mt-4 max-w-[520px]">
- Pray with the Church. Read with the Fathers. Walk the year.
- Free, ad-free, yours to keep.
+ {t(m, "home.heroSubtitle")}
  </p>
  <div className="mt-7 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
  <ComingSoonCTA variant="inverse">
- Open Purify
+ {t(m, "nav.openPurify")}
  </ComingSoonCTA>
  <Link
  href="/calendar"
  className="font-sans text-[14px] font-medium text-paper/80 hover:text-paper transition-colors"
  >
- See today →
+ {t(m, "home.seeToday")}
  </Link>
  </div>
  </div>

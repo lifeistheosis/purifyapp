@@ -7,20 +7,7 @@ import { cn } from "@/lib/cn";
 import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
 import { useScrolled } from "@/lib/useScrolled";
 import { createClient } from "@/lib/supabase/client";
-
-const NAV = [
-  // Today added so AppNav matches the marketing Navbar; previously the
-  // top bar lost an item (and visibly shrank) when a reader navigated
-  // from the home page into any /app surface.
-  { label: "Today", href: "/prayers/today" },
-  { label: "Bible", href: "/bible" },
-  { label: "Prayers", href: "/prayers" },
-  { label: "Saints", href: "/saints" },
-  { label: "Councils", href: "/councils" },
-  { label: "Calendar", href: "/calendar" },
-];
-
-const SECONDARY = [{ label: "Support", href: "/support" }];
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 function initialsFromName(name: string | null | undefined): string {
   if (!name) return "?";
@@ -75,6 +62,18 @@ export function AppNav() {
   const scrolled = useScrolled();
   const initials = useAccountInitials();
   const signedIn = !!initials;
+  const { t } = useTranslate();
+
+  const NAV = [
+    { key: "today", label: t("nav.today"), href: "/prayers/today" },
+    { key: "bible", label: t("nav.bible"), href: "/bible" },
+    { key: "prayers", label: t("nav.prayers"), href: "/prayers" },
+    { key: "saints", label: t("nav.saints"), href: "/saints" },
+    { key: "councils", label: t("nav.councils"), href: "/councils" },
+    { key: "calendar", label: t("nav.calendar"), href: "/calendar" },
+  ];
+
+  const SECONDARY = [{ key: "support", label: t("nav.support"), href: "/support" }];
 
   function isActive(href: string) {
     return pathname === href || pathname.startsWith(href + "/");
@@ -103,7 +102,7 @@ export function AppNav() {
         <nav className="hidden md:flex items-center gap-7">
           {NAV.map((it) => (
             <Link
-              key={it.href}
+              key={it.key}
               href={it.href}
               className={cn(
                 "font-sans text-[15px] font-medium transition-colors duration-150",
@@ -120,7 +119,7 @@ export function AppNav() {
         <div className="hidden md:flex items-center gap-5">
           {SECONDARY.map((it) => (
             <Link
-              key={it.href}
+              key={it.key}
               href={it.href}
               className={cn(
                 "font-sans text-[14px] font-medium transition-colors duration-150",
@@ -135,7 +134,7 @@ export function AppNav() {
           {signedIn ? (
             <Link
               href="/account"
-              aria-label="Your account"
+              aria-label={t("nav.yourAccount")}
               className={cn(
                 "inline-flex items-center justify-center rounded-full border-2 transition-colors duration-150",
                 isActive("/account")
@@ -166,17 +165,17 @@ export function AppNav() {
                   : "text-paper/65 hover:text-paper",
               )}
             >
-              Account
+              {t("nav.account")}
             </Link>
           )}
           <ComingSoonCTA variant="inverse" className="!py-2.5 !px-5 text-[14px]">
-            Open Purify
+            {t("nav.openPurify")}
           </ComingSoonCTA>
         </div>
 
         <button
           type="button"
-          aria-label="Toggle menu"
+          aria-label={t("nav.menuToggle")}
           aria-expanded={open}
           className="md:hidden inline-flex items-center justify-center h-11 w-11 rounded-pill border border-paper/20 text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
           onClick={() => setOpen((v) => !v)}
@@ -188,10 +187,10 @@ export function AppNav() {
       {open && (
         <div className="md:hidden absolute left-0 right-0 top-[72px] bg-night border-b border-white/8">
           <nav className="flex flex-col px-5 py-4 gap-1">
-            {[...NAV, ...SECONDARY, { label: "Account", href: "/account" }].map(
+            {[...NAV, ...SECONDARY, { key: "account", label: t("nav.account"), href: "/account" }].map(
               (it) => (
                 <Link
-                  key={it.href}
+                  key={it.key}
                   href={it.href}
                   onClick={() => setOpen(false)}
                   className="font-sans text-[16px] font-medium text-paper/85 hover:text-paper py-3 border-b border-white/5 last:border-0"

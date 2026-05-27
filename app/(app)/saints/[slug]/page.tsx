@@ -36,9 +36,9 @@ export default async function SaintPage({ params }: { params: Params }) {
         {saint.titles?.length ? <TitlesSection titles={saint.titles} /> : null}
         <LifeSection paragraphs={saint.life} />
         {saint.greatFeasts?.length ? (
-          <GreatFeastsSection feasts={saint.greatFeasts} />
+          <GreatFeastsSection feasts={saint.greatFeasts} pronoun={saint.pronoun} />
         ) : null}
-        {saint.quotes?.length ? <QuotesSection quotes={saint.quotes} /> : null}
+        {saint.quotes?.length ? <QuotesSection quotes={saint.quotes} pronoun={saint.pronoun} /> : null}
         {saint.disciples?.length ? (
           <DisciplesSection saint={saint} disciples={saint.disciples} />
         ) : null}

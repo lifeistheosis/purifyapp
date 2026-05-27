@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import type { Disciple, Saint } from "@/lib/saints/saints";
 import { getSaint } from "@/lib/saints/saints";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function DisciplesSection({
   saint,
@@ -9,16 +12,18 @@ export function DisciplesSection({
   saint: Saint;
   disciples: Disciple[];
 }) {
-  const pronoun = saint.pronoun === "her" ? "Her" : "His";
+  const { t } = useTranslate();
+  const heading =
+    saint.pronoun === "her" ? t("saints.herDisciples") : t("saints.hisDisciples");
 
   return (
     <section className="py-12 border-b border-paper/8">
       <div className="mb-6">
         <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-          The chain of tradition
+          {t("saints.chainOfTradition")}
         </p>
         <h2 className="font-sans text-[28px] md:text-[36px] font-bold text-paper tracking-[-0.02em]">
-          {pronoun} disciples and successors
+          {heading}
         </h2>
       </div>
       <ul className="grid grid-cols-1 gap-3">

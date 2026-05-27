@@ -3,6 +3,10 @@ import { Cardo, DM_Sans, DM_Serif_Display, Lora } from "next/font/google";
 import "./globals.css";
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { SITE_URL } from "@/lib/site";
+import { getServerLocale } from "@/lib/i18n/server";
+import { getMessages } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n/locales";
+import { MessagesProvider } from "@/components/i18n/MessagesProvider";
 
 const dmSans = DM_Sans({
  variable: "--font-dm-sans",
@@ -91,18 +95,24 @@ export const viewport: Viewport = {
  viewportFit: "cover",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
  children,
 }: Readonly<{
  children: React.ReactNode;
 }>) {
+ const localeCode = await getServerLocale();
+ const localeRecord = getLocale(localeCode);
+ const messages = getMessages(localeCode);
  return (
  <html
- lang="en"
+ lang={localeCode}
+ dir={localeRecord.dir}
  className={`${dmSans.variable} ${dmSerif.variable} ${lora.variable} ${cardo.variable} h-full antialiased`}
  >
  <body className="min-h-full flex flex-col">
+ <MessagesProvider locale={localeCode} messages={messages}>
  {children}
+ </MessagesProvider>
  <AnalyticsTracker />
  </body>
  </html>

@@ -1,20 +1,28 @@
+"use client";
+
 import Link from "next/link";
 import type { Saint } from "@/lib/saints/saints";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function GreatFeastsSection({
   feasts,
+  pronoun,
 }: {
   feasts: NonNullable<Saint["greatFeasts"]>;
+  pronoun?: "his" | "her";
 }) {
+  const { t } = useTranslate();
+  const heading =
+    pronoun === "her" ? t("saints.herGreatFeasts") : t("saints.hisGreatFeasts");
   return (
     <section className="py-12 border-b border-paper/8">
       <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
         <div>
           <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-            The Church year
+            {t("saints.theChurchYear")}
           </p>
           <h2 className="font-sans text-[28px] md:text-[36px] font-bold text-paper tracking-[-0.02em]">
-            Her Great Feasts
+            {heading}
           </h2>
         </div>
         <Link
