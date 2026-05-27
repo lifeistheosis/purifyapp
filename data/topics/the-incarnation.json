@@ -1,0 +1,45 @@
+{
+  "slug": "the-incarnation",
+  "title": "The Incarnation",
+  "definition": "The eternal Son of God, of one essence with the Father, took on a complete human nature from the Virgin Mary by the Holy Spirit, so that without ceasing to be God he became truly man. The Orthodox Church confesses one Person in two natures, divine and human, unconfused and undivided.",
+  "tradition": "The doctrine took its conciliar shape at Nicaea (325), Ephesus (431), and Chalcedon (451), against successive attempts to dilute either the divinity (Arius) or the unity (Nestorius) or the humanity (Eutyches) of Christ. The patristic witness on either side of those councils is what the Church reads.",
+  "citations": [
+    {
+      "saintSlug": "athanasius-the-great",
+      "workSlug": "on-the-incarnation",
+      "sectionN": 1,
+      "stance": "affirms",
+      "gloss": "The classic Orthodox treatise on why God became man."
+    },
+    {
+      "saintSlug": "athanasius-the-great",
+      "workSlug": "four-discourses-against-the-arians",
+      "sectionN": 1,
+      "stance": "affirms",
+      "gloss": "Against the Arians: the Son was always, and never was not."
+    },
+    {
+      "saintSlug": "apostle-john",
+      "workSlug": "selected-passages",
+      "sectionN": 1,
+      "stance": "affirms",
+      "gloss": "The Prologue of the Fourth Gospel. The Word was made flesh, and dwelt among us."
+    },
+    {
+      "saintSlug": "cyril-of-alexandria",
+      "workSlug": "commentary-on-john",
+      "sectionN": 1,
+      "stance": "affirms",
+      "gloss": "Cyril's reading of the Fourth Gospel, ordered by the question who is Christ."
+    },
+    {
+      "saintSlug": "irenaeus-of-lyons",
+      "workSlug": "against-heresies-on-john",
+      "sectionN": 1,
+      "stance": "affirms",
+      "gloss": "On the recapitulation: Christ, by becoming what we are, sums up the whole of human nature and restores in himself what Adam lost."
+    }
+  ],
+  "curatedBy": "Editorial (starter example accompanying v6.4 PRD §1 scaffolding)",
+  "curatedOn": "2026-05-27"
+}
