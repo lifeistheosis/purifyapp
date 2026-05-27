@@ -14,7 +14,7 @@ export type Geo = {
 const cache = new Map<string, { geo: Geo; exp: number }>();
 const TTL = 6 * 60 * 60 * 1000; // 6h
 // A small negative cache so a failing provider doesn't get retried
-// once per pageview — slows fallback chain otherwise.
+// once per pageview, slows fallback chain otherwise.
 const failCache = new Map<string, number>();
 const FAIL_TTL = 15 * 60 * 1000; // 15m
 
@@ -34,7 +34,7 @@ function isPrivate(ip: string): boolean {
 /**
  * Best-effort coarse geolocation. Tries ipwho.is first, then
  * ip-api.com as a fallback when the primary returns null. Never
- * throws — returns null only when both providers fail or the IP is
+ * throws, returns null only when both providers fail or the IP is
  * private / missing.
  */
 export async function geolocate(ip: string): Promise<Geo | null> {
@@ -44,7 +44,7 @@ export async function geolocate(ip: string): Promise<Geo | null> {
   const failed = failCache.get(ip);
   if (failed && failed > Date.now()) return null;
 
-  // Provider chain. Each is independent — if the first returns a
+  // Provider chain. Each is independent, if the first returns a
   // partial result we don't second-guess it.
   let geo = await tryIpwhois(ip);
   if (!geo) geo = await tryIpApi(ip);

@@ -7,11 +7,11 @@ import { PasswordInput } from "@/components/auth/PasswordInput";
 /**
  * Two modes:
  *
- *  - Change mode (`hasPassword: true`) — old + new + confirm. We
+ *  - Change mode (`hasPassword: true`), old + new + confirm. We
  *    re-authenticate with the old password before calling
  *    `updateUser({ password })` so a stolen session can't silently
  *    rotate.
- *  - Set mode (`hasPassword: false`) — new + confirm only. For
+ *  - Set mode (`hasPassword: false`), new + confirm only. For
  *    legacy magic-link users who signed up before passwords existed
  *    and never went through the /set-password interstitial (e.g.
  *    they got into Security some other way). Same path as the
@@ -50,7 +50,7 @@ export function ChangePasswordCard({
     setPending(true);
     try {
       const supabase = createClient();
-      // Re-auth gate (change mode only — set mode has no old password).
+      // Re-auth gate (change mode only, set mode has no old password).
       if (hasPassword) {
         const { error: signInErr } = await supabase.auth.signInWithPassword({
           email,

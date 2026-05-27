@@ -81,7 +81,7 @@ describe("paschaInfo", () => {
   });
 
   it("rolls over to next year once this year's Pascha has passed", () => {
-    // June 1, 2026 — Pascha 2026 (April 12) is past, so the next target
+    // June 1, 2026, Pascha 2026 (April 12) is past, so the next target
     // is Pascha 2027 (May 2).
     const info = paschaInfo(utc(2026, 6, 1));
     expect(ymd(info.date)).toEqual({ y: 2027, m: 5, d: 2 });

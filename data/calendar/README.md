@@ -2,14 +2,14 @@
 
 The `/calendar` page composes three layers at read time:
 
-1. **Pascha** — computed by the algorithm in `lib/calendar/orthodox.ts`. Shared across every canonical Orthodox church.
-2. **Base menologion** — `daily-saints.json`. One entry per fixed-date day of the year, ecumenical-Greek-leaning by origin.
-3. **Optional jurisdictional patch** — `menologion-{slug}.json`. Adds, reorders, or replaces the headline commemoration for the user's chosen tradition.
+1. **Pascha**, computed by the algorithm in `lib/calendar/orthodox.ts`. Shared across every canonical Orthodox church.
+2. **Base menologion**, `daily-saints.json`. One entry per fixed-date day of the year, ecumenical-Greek-leaning by origin.
+3. **Optional jurisdictional patch**, `menologion-{slug}.json`. Adds, reorders, or replaces the headline commemoration for the user's chosen tradition.
 
 The user's preference is stored as two independent axes:
 
-- **Reckoning** (`new` / `old`) — already shipped, controls the Old / New Julian toggle.
-- **Tradition** (`ecumenical` / `moscow` / `constantinople` / `antiochian` / `serbian` / `rocor`) — added in v6.4 PRD §4.
+- **Reckoning** (`new` / `old`), already shipped, controls the Old / New Julian toggle.
+- **Tradition** (`ecumenical` / `moscow` / `constantinople` / `antiochian` / `serbian` / `rocor`), added in v6.4 PRD §4.
 
 Pascha stays one calculation across all matrices. Only the fixed feasts and saint commemorations shift.
 

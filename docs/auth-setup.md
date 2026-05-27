@@ -57,7 +57,7 @@ when the redirect URL isn't on the allowlist. If users report
 
 The code-side defense (`authOrigin()` in `lib/site.ts`) prevents
 the *client* from ever passing a localhost URL to Supabase from a
-deployed origin — but the *Supabase project's own Site URL setting*
+deployed origin, but the *Supabase project's own Site URL setting*
 must also be the production URL, or Supabase overrides whatever
 the client passes.
 
@@ -85,7 +85,7 @@ Free. ~10 minutes of clicks.
 3. Authorized JavaScript origins:
    - `https://purifyapp.onrender.com`
    - `http://localhost:3000`
-4. Authorized redirect URIs (Supabase provides the exact URL — copy
+4. Authorized redirect URIs (Supabase provides the exact URL, copy
    it from the Supabase dashboard → Authentication → Providers →
    Google → "Callback URL (for OAuth)"). It looks like
    `https://<your-project-ref>.supabase.co/auth/v1/callback`.
@@ -101,7 +101,7 @@ Google flow. You should land on `/account/profile`.
 ## 4. Apple Sign-In
 
 **Requires an Apple Developer account ($99/year).** If you don't
-have one, leave the button wired — clicks will surface a clear
+have one, leave the button wired, clicks will surface a clear
 error rather than silently failing.
 
 1. **Apple Developer → Identifiers** → register a new **App ID**
@@ -116,7 +116,7 @@ error rather than silently failing.
      for where to find it).
 3. **Keys** → register a new key with **Sign in with Apple**
    enabled. Configure it for the Primary App ID. Download the
-   `.p8` key file (only available once — save it).
+   `.p8` key file (only available once, save it).
 4. Note your **Team ID** (top-right of the developer portal),
    **Key ID** (from the key you just made), and **Services ID**
    (the identifier you registered in step 2).
@@ -142,5 +142,5 @@ hold them there until they pick one. After that, every subsequent
 sign-in is a normal password + optional OAuth flow.
 
 If a legacy user truly can't get back in (lost the magic-link,
-hasn't picked a password yet), they should use `/forgot` — the
+hasn't picked a password yet), they should use `/forgot`, the
 reset flow also satisfies the set-password gate.

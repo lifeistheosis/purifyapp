@@ -130,7 +130,7 @@ export default async function TopicPage({ params }: { params: Params }) {
           </section>
         ) : null}
 
-        {/* Refuted by the Fathers — only renders when non-empty.
+        {/* Refuted by the Fathers, only renders when non-empty.
             Per the PRD, never show an empty rubric column. */}
         {resolvedRefuting.length > 0 ? (
           <section className="mt-12">

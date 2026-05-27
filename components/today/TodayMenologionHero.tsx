@@ -20,7 +20,7 @@ import sayingsData from "@/data/today/sayings.json";
 /**
  * Mobile-only Today hero, menologion register (v6.4.2).
  *
- * Replaces the previous TodayMobileHero — that surface had drifted into
+ * Replaces the previous TodayMobileHero, that surface had drifted into
  * a Hallow-style five-chip nav + generic quote card + blurred saint
  * photo. This rebuild aligns Today with the calendar's printed-book
  * vocabulary: drop caps, three-cross ornament dividers, rubric tones,
@@ -154,10 +154,10 @@ export async function TodayMenologionHero() {
         ) : null}
       </section>
 
-      {/* Ornament headpiece divider — tinted by the day's tone. */}
+      {/* Ornament headpiece divider, tinted by the day's tone. */}
       <OrnamentHeadpiece tinted className="px-8 my-2" />
 
-      {/* FAST block — plain-words instruction. */}
+      {/* FAST block, plain-words instruction. */}
       <section className="px-5 pt-4 pb-2">
         <p
           className="font-sans text-[11px] font-semibold uppercase tracking-[1.6px] mb-2"
@@ -207,7 +207,7 @@ export async function TodayMenologionHero() {
         </section>
       ) : null}
 
-      {/* Patristic pull-quote — printed-book register, rubric-red
+      {/* Patristic pull-quote, printed-book register, rubric-red
           attribution. Falls back to a Desert Fathers saying on plain
           days when the headline saint has no quote. */}
       <section className="px-5 pt-8 pb-4">
@@ -239,7 +239,7 @@ export async function TodayMenologionHero() {
         </p>
       </section>
 
-      {/* PASCHA countdown — small three-bar cross above. */}
+      {/* PASCHA countdown, small three-bar cross above. */}
       <section className="px-5 pt-6 pb-2">
         <div className="flex justify-center mb-2">
           <Cross size={22} className="text-gold" />
@@ -269,7 +269,7 @@ export async function TodayMenologionHero() {
       </section>
 
       {/* CTA strip. Drops the old five-chip Hallow-like nav row entirely
-          — the bottom tab bar already does navigation. */}
+         , the bottom tab bar already does navigation. */}
       <section className="px-5 pt-8 pb-2">
         <div className="flex flex-col sm:flex-row gap-3">
           <Link

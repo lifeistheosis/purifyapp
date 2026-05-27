@@ -51,7 +51,7 @@
   "home.pathsToWalk": "Wege zu gehen",
   "home.whereWouldYouLikeToBegin": "Wo möchten Sie beginnen?",
   "home.openPurify": "Purify öffnen.",
-  "home.openPurifySub": "Beginnen Sie dort, wo Sie stehen — bei einem Gebet, beim Heiligen des Tages, bei einem Vers des Evangeliums.",
+  "home.openPurifySub": "Beginnen Sie dort, wo Sie stehen, bei einem Gebet, beim Heiligen des Tages, bei einem Vers des Evangeliums.",
 
   "footer.bible": "Die Bibel",
   "footer.saints": "Die Heiligen",
@@ -134,7 +134,7 @@
 
   "topics.eyebrow": "Thematischer Index",
   "topics.h1": "Die Väter, nach den Fragen, die sie beantworteten.",
-  "topics.intro": "Ein Lehrindex für Suchende, Katechumenen und Laien-Apologeten. Wählen Sie ein Thema und lesen Sie, was die Väter bekannten — jedes Zitat verlinkt direkt auf das Werk, dem es entstammt.",
+  "topics.intro": "Ein Lehrindex für Suchende, Katechumenen und Laien-Apologeten. Wählen Sie ein Thema und lesen Sie, was die Väter bekannten, jedes Zitat verlinkt direkt auf das Werk, dem es entstammt.",
   "topics.emptyState": "Noch keine kuratierten Themen. Die ersten Einträge erscheinen, sobald das Redaktionsteam sie verfasst; schauen Sie bald wieder vorbei.",
   "topics.citations.singular": "{count} Zitat der Väter",
   "topics.citations.plural": "{count} Zitate der Väter",

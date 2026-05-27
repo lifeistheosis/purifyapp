@@ -2,7 +2,7 @@ import type { SVGProps } from "react";
 
 /**
  * Eight-pointed star (Theotokos / Star of Bethlehem). Two overlapping
- * squares rotated 45° to each other — a glyph found across Orthodox
+ * squares rotated 45° to each other, a glyph found across Orthodox
  * iconography on the Theotokos's veil and as the star above the
  * Nativity. Replaces the generic Compass icon for the Discover tab so
  * the mobile nav reads in the same vocabulary as the iconography.

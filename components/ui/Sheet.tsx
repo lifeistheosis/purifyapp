@@ -7,7 +7,7 @@ import { setOverlayOpen } from "@/lib/ui/overlay";
  * Shared mobile bottom-sheet primitive, extracted from the bespoke
  * `MobileCommentarySheet` pattern so it can be reused by the saint-works
  * reader (TOC sheet) and the Bible reader (chapter picker, reader
- * settings sheet). Mobile-only by convention — desktop should use a
+ * settings sheet). Mobile-only by convention, desktop should use a
  * different affordance (dropdown, popover, sidebar).
  *
  *  - Slides up from the bottom, `max-h-[85dvh]`, rounded top corners.

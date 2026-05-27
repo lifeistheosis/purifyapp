@@ -1,4 +1,4 @@
-// Message catalog loader (v6.4.1 — full UI translation patch).
+// Message catalog loader (v6.4.1, full UI translation patch).
 //
 // Flat-key JSON catalogs under lib/i18n/messages/{locale}.json. Server
 // components call getMessages(locale) once; client components receive

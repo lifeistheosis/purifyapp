@@ -106,7 +106,7 @@ export default async function Home() {
  className={`${sectionBase} relative overflow-hidden`}
  style={{
  background: [
- // Soft white halo behind the heading — quiet, candle-like.
+ // Soft white halo behind the heading, quiet, candle-like.
  "radial-gradient(ellipse 75% 60% at 25% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 65%)",
  // A second, fainter halo near the right column.
  "radial-gradient(ellipse 55% 45% at 80% 70%, rgba(255, 255, 255, 0.03) 0%, transparent 70%)",

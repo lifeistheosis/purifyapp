@@ -99,7 +99,7 @@ function relativeShort(iso: string): string {
 }
 
 /**
- * "Last saved" strip on the account dashboard — the three most recent
+ * "Last saved" strip on the account dashboard, the three most recent
  * bookmarks, each a one-tap link back into its target. Reads from the same
  * `purify:bookmarks` localStorage key via useSyncExternalStore so it stays
  * in sync with the rest of the bookmark UI without a hydrate-in-effect.

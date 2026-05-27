@@ -14,7 +14,7 @@ import { OAuthButtons } from "./OAuthButtons";
  *
  * If "Confirm email" is enabled in Supabase Auth settings (recommended),
  * the user lands in the "check your inbox" state and the password is
- * already on `auth.users` — the flag is set by the SetPasswordForm /
+ * already on `auth.users`, the flag is set by the SetPasswordForm /
  * first successful sign-in path.
  */
 export function SignUpForm() {
@@ -58,7 +58,7 @@ export function SignUpForm() {
         try {
           await supabase.rpc("mark_password_set");
         } catch {
-          /* ignore — the middleware will trip the set-password gate if needed */
+          /* ignore, the middleware will trip the set-password gate if needed */
         }
         window.location.href = "/account/profile";
         return;

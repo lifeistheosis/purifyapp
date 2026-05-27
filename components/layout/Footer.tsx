@@ -121,7 +121,7 @@ export function Footer() {
        @purifymylife
       </a>
      </div>
-     {/* Locale switcher — sits below the community strip so it's
+     {/* Locale switcher, sits below the community strip so it's
          findable but doesn't compete for attention. */}
      <div className="mt-2">
       <LocaleSwitcher />

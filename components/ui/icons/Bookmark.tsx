@@ -2,7 +2,7 @@ import type { SVGProps } from "react";
 
 /**
  * Minimal bookmark ribbon. Used in the mobile Bible reader top bar
- * as a stub (no persistence yet — wiring lands in a follow-up).
+ * as a stub (no persistence yet, wiring lands in a follow-up).
  * Inherits `currentColor`.
  */
 export function Bookmark({

@@ -7,7 +7,7 @@ import { useSyncExternalStore } from "react";
  * network calls, no Supabase row. The presence of a `LocalAccount`
  * record is what distinguishes "the user explicitly chose to keep
  * things on this device" from "the user just hasn't picked anything
- * yet" — important for the dual-choice account surface to behave
+ * yet", important for the dual-choice account surface to behave
  * predictably.
  *
  * Schema:
@@ -15,7 +15,7 @@ import { useSyncExternalStore } from "react";
  *
  * Subscribers (e.g. `useLocalAccount()`) re-read on the cross-tab
  * `storage` event AND on a same-tab custom event we dispatch whenever
- * we mutate the value — the storage event only fires in OTHER tabs.
+ * we mutate the value, the storage event only fires in OTHER tabs.
  */
 
 export type LocalAccount = { name: string; createdAt: string };
@@ -91,7 +91,7 @@ export function claimLocal(name: string): void {
     window.localStorage.setItem(KEY, JSON.stringify(value));
     window.dispatchEvent(new Event(EVENT));
   } catch {
-    /* localStorage unavailable — silently noop */
+    /* localStorage unavailable, silently noop */
   }
 }
 

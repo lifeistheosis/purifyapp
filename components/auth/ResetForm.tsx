@@ -39,7 +39,7 @@ export function ResetForm() {
       try {
         await supabase.rpc("mark_password_set");
       } catch {
-        /* ignore — middleware will tolerate either state */
+        /* ignore, middleware will tolerate either state */
       }
       router.push("/account/profile");
       router.refresh();

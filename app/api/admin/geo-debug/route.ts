@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
       lookupElapsedMs: elapsedMs,
       notes:
         snapshot.privateOrEmpty
-          ? "Selected IP is private or empty — Render's proxy is not forwarding the client IP via the headers we read. Check the deployment's proxy configuration."
+          ? "Selected IP is private or empty, Render's proxy is not forwarding the client IP via the headers we read. Check the deployment's proxy configuration."
           : geo
             ? "Geo lookup succeeded for the selected IP."
             : "Both providers (ipwho.is, ip-api.com) returned null or timed out. Check outbound network from Render or provider rate-limits.",

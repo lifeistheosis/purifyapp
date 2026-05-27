@@ -3,7 +3,7 @@ import type { SVGProps } from "react";
 /**
  * Bespoke Gospel codex. Closed book viewed at three-quarter with a small
  * three-bar Orthodox cross incised on the cover and two ribbons hanging
- * from the bottom. Replaces the generic line-art Book icon — reads as a
+ * from the bottom. Replaces the generic line-art Book icon, reads as a
  * specifically liturgical object rather than a generic open book.
  */
 export function Codex({

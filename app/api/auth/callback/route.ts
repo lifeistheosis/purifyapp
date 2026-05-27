@@ -15,7 +15,7 @@ import { SITE_URL } from "@/lib/site";
  * IMPORTANT: every redirect built here uses the constant SITE_URL as
  * the base, never the incoming request's `url.origin`. On Render
  * (and most managed Node hosts), the request URL the server sees is
- * the proxied internal address — `http://localhost:10000/...` —
+ * the proxied internal address, `http://localhost:10000/...` ,
  * because the platform's reverse proxy forwards traffic to the
  * container's internal port. Using `url.origin` to build the
  * redirect URL would then send the user-agent to localhost, which
@@ -31,7 +31,7 @@ export async function GET(request: Request) {
   // or when the provider config is bad. Surface it cleanly. If the
   // original ?next= points at an /account/* page (e.g. the Security
   // tab during a Connect-Google attempt), bounce back to *that* page
-  // with the error in the query — that's where the user started, and
+  // with the error in the query, that's where the user started, and
   // OAuthConnectionsCard already knows how to read /account-side
   // errors. Falling through to /signin is right only for sign-in /
   // sign-up flows that originated unsigned.

@@ -31,7 +31,7 @@ type Identity = {
  * Linking a new identity hits `supabase.auth.linkIdentity()`, which
  * requires the project's "Manual Linking" setting to be enabled in
  * Supabase Dashboard → Authentication → Settings. If it's off, the
- * SDK throws "Manual linking is disabled" — we translate that to a
+ * SDK throws "Manual linking is disabled", we translate that to a
  * concrete next-step message instead of relaying the raw text.
  */
 export function OAuthConnectionsCard({
@@ -66,11 +66,11 @@ export function OAuthConnectionsCard({
       try {
         await supabase.auth.refreshSession();
       } catch {
-        // Refresh failures are benign — fall through to getUserIdentities
+        // Refresh failures are benign, fall through to getUserIdentities
         // which will fail noisily if the session is genuinely dead.
       }
     }
-    // Prefer getUserIdentities() — it's a direct read against the
+    // Prefer getUserIdentities(), it's a direct read against the
     // /auth/v1/user/identities endpoint, no cached-user-object layer
     // in the middle. Some SDK versions return a stale .identities
     // array on getUser() after a recent link, even with a fresh
@@ -99,7 +99,7 @@ export function OAuthConnectionsCard({
     // If the OAuth callback bounced us back here with ?error=...,
     // figure out which case we're in by checking what's actually on
     // the user. Supabase throws "identity_already_exists" for BOTH
-    // "already on this user" and "already on a different user" —
+    // "already on this user" and "already on a different user" ,
     // the URL error alone can't tell us which.
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -180,7 +180,7 @@ export function OAuthConnectionsCard({
       ) {
         // Most common reason this fires: the link DID succeed on a
         // previous click but the local state was stale. Refresh from
-        // the server and clear the error — if the link is on this
+        // the server and clear the error, if the link is on this
         // user, the card will repaint as "Connected / Unlink." If
         // it's on a *different* Purify account, the identity won't
         // appear and we surface the deeper-link explanation.
@@ -276,7 +276,7 @@ export function OAuthConnectionsCard({
         sign in with email + password at any time.
       </p>
       <ul className="flex flex-col gap-3 max-w-[480px]">
-        {/* Google — live */}
+        {/* Google, live */}
         <li className="flex items-center justify-between gap-4 rounded-md border border-paper/10 bg-paper/[0.02] px-4 py-3">
           <div className="min-w-0">
             <p className="font-sans text-[13.5px] font-medium text-paper">
@@ -317,7 +317,7 @@ export function OAuthConnectionsCard({
           )}
         </li>
 
-        {/* Apple — coming soon */}
+        {/* Apple, coming soon */}
         <li className="flex items-center justify-between gap-4 rounded-md border border-paper/10 bg-paper/[0.02] px-4 py-3 opacity-70">
           <div className="min-w-0">
             <p className="font-sans text-[13.5px] font-medium text-paper">
@@ -370,7 +370,7 @@ export function OAuthConnectionsCard({
           </p>
           <p className="font-sans text-[14px] text-paper/85 leading-[1.6]">
             We can&rsquo;t unlink Google yet. Right now, Google is the
-            only way you can sign in to this account &mdash; removing
+            only way you can sign in to this account, removing
             it would lock you out.
           </p>
           <p className="mt-2 font-sans text-[14px] text-paper/85 leading-[1.6]">

@@ -14,7 +14,7 @@ import { Sheet } from "@/components/ui/Sheet";
  * can jump anywhere in a long work without scrolling back to the
  * `<details>` block at the top.
  *
- * Hidden on `md+` — desktop has the in-page TOC.
+ * Hidden on `md+`, desktop has the in-page TOC.
  */
 export function MobileWorkPill({
   sections,
@@ -51,7 +51,7 @@ export function MobileWorkPill({
       },
       {
         // Trigger when the section header crosses the top quarter of the
-        // viewport — feels like "I'm reading this one."
+        // viewport, feels like "I'm reading this one."
         rootMargin: "-15% 0px -70% 0px",
         threshold: 0,
       },

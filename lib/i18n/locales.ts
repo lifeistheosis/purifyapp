@@ -1,12 +1,12 @@
-// Locale registry (v6.4.1 — full UI translation patch).
+// Locale registry (v6.4.1, full UI translation patch).
 //
 // Two tracks for i18n on Purify:
 //
-//   Track A — UI chrome localization. Navigation, button labels,
+//   Track A, UI chrome localization. Navigation, button labels,
 //             eyebrows, error strings, page headings, short bodies.
 //             Texts themselves (Scripture, Fathers, council canons,
 //             prayer book) stay in their published languages.
-//   Track B — Liturgical / textual localization. The Scriptures and
+//   Track B, Liturgical / textual localization. The Scriptures and
 //             prayers in Greek, Slavonic / Russian. Mostly a content
 //             acquisition problem; one corpus + editorial pass per
 //             language. Out of scope for v6.4.1.
@@ -84,7 +84,7 @@ export function getLocale(code: string | null | undefined): Locale {
 /**
  * Best-effort locale negotiation from an Accept-Language header. Used
  * by middleware on first visit before a `purify_locale` cookie is set.
- * Quality scores are ignored — we just look for the first listed
+ * Quality scores are ignored, we just look for the first listed
  * language whose primary tag is one of our ready locales.
  */
 export function negotiateFromAcceptLanguage(header: string | null): LocaleCode {

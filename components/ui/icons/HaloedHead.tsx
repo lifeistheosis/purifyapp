@@ -1,7 +1,7 @@
 import type { SVGProps } from "react";
 
 /**
- * Haloed head silhouette — a face inside a halo ring with eight small
+ * Haloed head silhouette, a face inside a halo ring with eight small
  * radiating points. Reads as a saint's portrait icon at small size and
  * communicates personhood-before-God for the You tab. Replaces the
  * generic User glyph (a circle-and-shoulders shape used in every app).

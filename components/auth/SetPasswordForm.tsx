@@ -10,7 +10,7 @@ import { PasswordInput } from "./PasswordInput";
  * user without `profiles.has_password = true`). The middleware
  * redirects them here from anywhere auth-gated until they set one.
  *
- * No "skip" button — the whole point is to migrate the account to
+ * No "skip" button, the whole point is to migrate the account to
  * the new model. Sign-out is the only escape (and they'll be back
  * in the same place next time they sign in).
  */

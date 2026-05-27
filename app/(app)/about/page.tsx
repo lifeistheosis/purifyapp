@@ -59,31 +59,31 @@ export default function AboutPage() {
  </p>
  <ul className="mt-4 space-y-3 font-serif text-[17px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
- <strong className="text-paper">Old Testament</strong> &mdash; Brenton&rsquo;s
+ <strong className="text-paper">Old Testament</strong>, Brenton&rsquo;s
  1851 English Septuagint, with the deuterocanonical books and
  the Church&rsquo;s Psalter numbering.
  </li>
  <li>
- <strong className="text-paper">New Testament</strong> &mdash; The King
+ <strong className="text-paper">New Testament</strong>, The King
  James Version of 1611.
  </li>
  <li>
- <strong className="text-paper">Greek</strong> &mdash; Nestle 1904,
+ <strong className="text-paper">Greek</strong>, Nestle 1904,
  polytonic, with Strong&rsquo;s numbers and Robinson morphology
  on every word.
  </li>
  <li>
- <strong className="text-paper">The Fathers</strong> &mdash; Schaff&rsquo;s
+ <strong className="text-paper">The Fathers</strong>, Schaff&rsquo;s
  Ante-Nicene and Nicene Fathers (1885&ndash;1900), the standard
  English critical editions.
  </li>
  <li>
- <strong className="text-paper">Daily prayers</strong> &mdash; The wording
+ <strong className="text-paper">Daily prayers</strong>, The wording
  carried by the Jordanville Prayer Book, the editions of St.
  Tikhon&rsquo;s Monastery, and Isabel Hapgood&rsquo;s Service Book.
  </li>
  <li>
- <strong className="text-paper">The Calendar</strong> &mdash; Fixed feasts
+ <strong className="text-paper">The Calendar</strong>, Fixed feasts
  on the New (Revised Julian) reckoning of the Ecumenical
  Patriarchate; an Old (Julian) toggle for the Russian, Serbian,
  Athonite, and Jerusalem traditions. Pascha by the algorithm
@@ -93,15 +93,15 @@ export default function AboutPage() {
  <p className="mt-5 font-serif text-[17px] text-paper/85 leading-[1.7]">
  Over ninety per cent of the textual treasury is in the public
  domain. The site also carries three modern translations under
- proper license &mdash; the New King James, the New International,
- and the New Living &mdash; fetched live from the publishers and
+ proper license, the New King James, the New International,
+ and the New Living, fetched live from the publishers and
  shown exactly as set, footnotes and all, with their attribution
  intact. Nothing is repackaged. No translation is concealed inside
  a black-box rendering. There are no proprietary lock-ins.
  </p>
  <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  Where the Orthodox jurisdictions disagree on a point of practice
- &mdash; most often the calendar and the fast &mdash; Purify
+, most often the calendar and the fast, Purify
  surfaces both readings and does not arbitrate. The Church has not
  asked it to.
  </p>
@@ -115,7 +115,7 @@ export default function AboutPage() {
  </h2>
  <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  What you highlight, what you note, what you bookmark, the length
- of your prayer streak &mdash; these belong to you and only to you.
+ of your prayer streak, these belong to you and only to you.
  </p>
  <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  By default, all of it lives on your device, in the local storage
@@ -126,7 +126,7 @@ export default function AboutPage() {
  <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  If you want your notes and bookmarks to follow you between phone
  and laptop, you may open a{" "}
- <strong className="text-paper">public account</strong> &mdash; your
+ <strong className="text-paper">public account</strong>, your
  email and a password, or one of the OAuth providers wired into
  the site. The same data is then stored in a row under your name,
  behind row-level security, so no one else may read it. You may
@@ -188,7 +188,7 @@ export default function AboutPage() {
  @purifymylife
  </a>{" "}
  exist for the community, not for the algorithm. Conversation
- about the texts, about the saints, about the year &mdash; that
+ about the texts, about the saints, about the year, that
  is what they are for.
  </p>
  <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
@@ -200,17 +200,17 @@ export default function AboutPage() {
  >
  Support page
  </Link>
- . The core spiritual treasury &mdash; every saint&rsquo;s life,
+ . The core spiritual treasury, every saint&rsquo;s life,
  every primary writing of the Fathers, the Scriptures with the
- Greek beside them, the daily prayers, the calendar &mdash; will
+ Greek beside them, the daily prayers, the calendar, will
  remain free of charge, always.
  </p>
  <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  A heavier infrastructure layer is on the way, and the licensing
  is being upgraded so that it can be offered honestly. When that
  optional, subscription-funded layer arrives, it will exist solely
- to pay for the work it requires &mdash; the servers, the
- production, the rights &mdash; and to keep the core forever open
+ to pay for the work it requires, the servers, the
+ production, the rights, and to keep the core forever open
  to anyone who needs it. What is free today will still be free
  then.
  </p>

@@ -90,7 +90,7 @@ export default async function DiscoverPage() {
             </p>
           </header>
 
-          {/* Index list — each entry reads as one printed line of a
+          {/* Index list, each entry reads as one printed line of a
               menologion table of contents: glyph on the left, name in
               display-serif, italic blurb. Thin gold hairline between
               entries. No tile chrome. */}

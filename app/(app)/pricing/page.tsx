@@ -26,8 +26,8 @@ export default function PricingPage() {
           A heavier infrastructure layer is on the way, and the licensing is
           being upgraded so that it can be offered honestly. When that
           optional, subscription-funded layer arrives, it will exist solely to
-          pay for the work it requires &mdash; the servers, the production,
-          the rights &mdash; and to keep the core forever open. What is free
+          pay for the work it requires, the servers, the production,
+          the rights, and to keep the core forever open. What is free
           today will still be free then.
         </p>
         <p className="font-sans text-[15px] text-paper/60 mt-6 leading-relaxed">

@@ -122,7 +122,7 @@ export async function GET() {
     .sort((a, b) => b.count - a.count)
     .slice(0, 10);
 
-  // Top declared browser languages (primary tag only — "es", "ru", etc.).
+  // Top declared browser languages (primary tag only, "es", "ru", etc.).
   const languageTally = new Map<string, number>();
   for (const r of sessMonth ?? []) {
     const code = r.accept_language;

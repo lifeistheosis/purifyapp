@@ -9,7 +9,7 @@ import { authOrigin } from "@/lib/site";
  * SignInForm and SignUpForm (the OAuth flow doesn't distinguish).
  *
  * Google is wired and live (configured in Supabase Dashboard).
- * Apple is intentionally disabled with a "Coming soon" label — the
+ * Apple is intentionally disabled with a "Coming soon" label, the
  * provider config (Apple Developer account, Services ID, key) hasn't
  * been set up yet. The button is left visible so the layout
  * stays right and so anyone curious knows it's planned.

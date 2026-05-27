@@ -31,9 +31,9 @@ export function MessagesProvider({
 
 /**
  * Hook for client components. Returns:
- *   locale  — the active locale code ("en" | "es" | …)
- *   t(key)  — translate a key; falls back to the key itself on miss
- *   tn(key, count, replacements?) — singular/plural-aware variant
+ *   locale , the active locale code ("en" | "es" | …)
+ *   t(key) , translate a key; falls back to the key itself on miss
+ *   tn(key, count, replacements?), singular/plural-aware variant
  */
 export function useTranslate() {
   const ctx = useContext(MessagesContext);

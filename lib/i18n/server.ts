@@ -4,7 +4,7 @@
 // the default locale when missing or unknown. Pair with getMessages()
 // from `./index` to load the catalog.
 //
-// Server components only — uses next/headers which is server-context.
+// Server components only, uses next/headers which is server-context.
 
 import "server-only";
 import { cookies } from "next/headers";

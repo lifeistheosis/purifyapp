@@ -16,13 +16,13 @@ import {
  *
  *  - Bookmark: stub icon. Real persistence lands in a follow-up.
  *    Tapping briefly flashes a "saved" hint but doesn't yet write
- *    anywhere — the prompt explicitly says to stub.
+ *    anywhere, the prompt explicitly says to stub.
  *  - Settings: opens the existing `ReaderFontFamilyButton` +
  *    `ReaderFontSizeButton` controls inside a bottom Sheet. These
  *    are the same controls the saints reader uses, so a reader's
  *    pick carries across.
  *
- * Hidden on `md+` — desktop has the inline control row.
+ * Hidden on `md+`, desktop has the inline control row.
  */
 export function MobileReaderActions() {
   const [settingsOpen, setSettingsOpen] = useState(false);

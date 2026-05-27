@@ -7,12 +7,12 @@ import { claimLocal } from "@/lib/profile/localAccount";
 /**
  * Two-card account chooser. Shown on `/account` when the visitor has
  * neither a Supabase session nor a claimed local profile. Both cards
- * are real, named choices — neither is a default.
+ * are real, named choices, neither is a default.
  *
- *  - LEFT: "Local profile" — keeps highlights / notes / bookmarks /
+ *  - LEFT: "Local profile", keeps highlights / notes / bookmarks /
  *    prayer streak / reader prefs on this device only. Writes a
  *    LocalAccount record via `claimLocal()`. No server row.
- *  - RIGHT: "Public account" — Supabase magic-link email sign-in.
+ *  - RIGHT: "Public account", Supabase magic-link email sign-in.
  *    Same items, synced across devices, deletable any time.
  *
  * The cards explicitly list trade-offs on each side so the choice is

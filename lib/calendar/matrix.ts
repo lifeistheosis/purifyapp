@@ -28,9 +28,9 @@
  * The reckoning axis: which calendar's fixed feasts and saint-days
  * are observed.
  *
- *   "new" — Revised Julian (Ecumenical Patriarchate, Greek world,
+ *   "new", Revised Julian (Ecumenical Patriarchate, Greek world,
  *           Antiochian Archdiocese, OCA, most diaspora).
- *   "old" — Julian (Russian Orthodox Church, Serbian Orthodox Church,
+ *   "old", Julian (Russian Orthodox Church, Serbian Orthodox Church,
  *           Jerusalem Patriarchate, Mount Athos, ROCOR).
  *
  * Pascha is shared and not affected by this axis.
@@ -41,7 +41,7 @@ export type CalendarReckoning = "new" | "old";
  * The tradition axis: which jurisdictional menologion (and, where
  * needed, fasting-practice override) is overlaid on the base.
  *
- *   "ecumenical" — the default base menologion already shipped in
+ *   "ecumenical", the default base menologion already shipped in
  *                  data/calendar/daily-saints.json. Greek-leaning by
  *                  origin; no overrides applied.
  *   Named jurisdictions add overrides via menologion-{slug}.json.

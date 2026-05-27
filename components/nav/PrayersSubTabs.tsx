@@ -9,7 +9,7 @@ import { cn } from "@/lib/cn";
  * the Prayers section. Horizontal-scrollable on narrow phones so all
  * five labels remain reachable without wrapping.
  *
- * Hidden on desktop — the existing AppNav + page heading carry that
+ * Hidden on desktop, the existing AppNav + page heading carry that
  * register on `md+`.
  */
 const TABS: { label: string; href: string }[] = [

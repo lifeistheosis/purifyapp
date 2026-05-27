@@ -7,7 +7,7 @@
 //
 // The corpus of patristic text already lives in
 // data/saints/{slug}/{work}.json as numbered sections of paragraphs.
-// This layer is a *thin index* on top of that corpus — each citation
+// This layer is a *thin index* on top of that corpus, each citation
 // is a deep-link into a specific paragraph that already exists, never
 // a duplicate of its text.
 

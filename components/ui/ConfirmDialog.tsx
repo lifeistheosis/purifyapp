@@ -69,7 +69,7 @@ export function ConfirmDialog({
   /* eslint-enable react-hooks/set-state-in-effect */
 
   // Esc closes; Enter confirms (only when not pending and the
-  // dialog actually owns focus — checked via document.activeElement).
+  // dialog actually owns focus, checked via document.activeElement).
   useEffect(() => {
     if (!shown) return;
     function onKey(e: KeyboardEvent) {

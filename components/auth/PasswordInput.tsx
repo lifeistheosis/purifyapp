@@ -6,7 +6,7 @@ import { useId, useState } from "react";
  * Password field with show/hide toggle and an optional inline strength
  * meter (renders only when `showStrength` is on, typically the signup +
  * reset flows). The meter is a four-step bar coloured by a tiny
- * heuristic — long-enough length plus character-class variety.
+ * heuristic, long-enough length plus character-class variety.
  *
  * Controlled component: parent owns the value.
  */

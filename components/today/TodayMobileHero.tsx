@@ -22,11 +22,11 @@ import { User } from "@/components/ui/icons/User";
  *  - Date eyebrow + saint headline + a single CTA into the full prayer
  *    surface at /prayers/today.
  *  - A four-chip row underneath (Saved · Prayers · Bible · Discover ·
- *    You) — direct shortcuts into the rest of the app, like Hallow's
+ *    You), direct shortcuts into the rest of the app, like Hallow's
  *    Favorites/Ask Hallow/Routine/Recents row.
  *
  *  Hidden on `md+`: the marketing home stays the desktop landing.
- *  Server component — relies only on the calendar helpers, which are
+ *  Server component, relies only on the calendar helpers, which are
  *  pure and cacheable.
  */
 
@@ -165,7 +165,7 @@ export async function TodayMobileHero() {
         </div>
       </section>
 
-      {/* CHIP ROW — Hallow-style quick actions. Centered when the row
+      {/* CHIP ROW, Hallow-style quick actions. Centered when the row
           fits (five chips on most phones); horizontally scrollable as
           a fallback for narrow viewports. */}
       <section className="px-3 pt-5">
@@ -191,7 +191,7 @@ export async function TodayMobileHero() {
         </ul>
       </section>
 
-      {/* Verse / quote card — pulls the headline saint's first quote
+      {/* Verse / quote card, pulls the headline saint's first quote
           when available, with St. Seraphim as the steady fallback.
           Kept short on phone, no extra chrome. */}
       {(() => {

@@ -17,7 +17,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
  *    appears alongside the local card),
  *  - a quieter "Release this local profile" affordance for cleanup.
  *
- * Stateless w/r/t Supabase — this whole component only reads
+ * Stateless w/r/t Supabase, this whole component only reads
  * localStorage.
  */
 export function LocalProfileHero() {
@@ -97,7 +97,7 @@ export function LocalProfileHero() {
       <ConfirmDialog
         open={confirmingRelease}
         title="Release this local profile?"
-        description="Your local highlights, notes, and bookmarks stay where they are — only the name and claim date are removed."
+        description="Your local highlights, notes, and bookmarks stay where they are, only the name and claim date are removed."
         confirmLabel="Release profile"
         cancelLabel="Keep it"
         destructive

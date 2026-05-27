@@ -2,7 +2,7 @@ import Link from "next/link";
 
 /**
  * Minimal centered shell for sign-in / sign-up / forgot / reset /
- * set-password. No AppNav, no Footer — just a brand mark and a
+ * set-password. No AppNav, no Footer, just a brand mark and a
  * single small footer link to /privacy. Lives in its own route
  * group `(auth)` so the in-app chrome doesn't compose over it.
  */

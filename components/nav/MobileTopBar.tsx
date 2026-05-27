@@ -15,7 +15,7 @@ import { cn } from "@/lib/cn";
  * - `trailing` is a slot for a small action (translation switcher,
  *   settings icon, etc.).
  *
- * Hidden on `md+` — desktop keeps the AppNav.
+ * Hidden on `md+`, desktop keeps the AppNav.
  */
 export function MobileTopBar({
   title,

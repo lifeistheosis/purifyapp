@@ -46,7 +46,7 @@ export const SITE_URL = pick();
  * local development so the dev flow stays self-contained.
  *
  * Use this everywhere `emailRedirectTo` or `redirectTo` is passed to
- * supabase.auth.* — without it, a user who signs up on `localhost:3000`
+ * supabase.auth.*, without it, a user who signs up on `localhost:3000`
  * gets a confirmation email pointing at localhost, and even production
  * users get pointed at the Supabase project's stale Site URL setting
  * whenever the dashboard allowlist doesn't match.
@@ -55,7 +55,7 @@ export function authOrigin(): string {
   // SITE_URL was resolved at build time. On the client, NEXT_PUBLIC_SITE_URL
   // is the only env var inlined into the bundle; RENDER_EXTERNAL_URL is
   // server-only. So on the deployed client SITE_URL = NEXT_PUBLIC_SITE_URL
-  // or the FALLBACK, never localhost — exactly the behavior we want.
+  // or the FALLBACK, never localhost, exactly the behavior we want.
   if (typeof window === "undefined") return SITE_URL;
   const here = window.location.origin;
   // Only fall back to window.location.origin during local development.

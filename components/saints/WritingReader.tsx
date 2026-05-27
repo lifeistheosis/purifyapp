@@ -25,7 +25,7 @@ export function WritingReader({
 }) {
  const isLong = content.sections.length >= ACCORDION_THRESHOLD;
  const [open, setOpen] = useState<Set<number>>(() => new Set());
- // Shared reader prefs — same provider as the Bible reader, so a font
+ // Shared reader prefs, same provider as the Bible reader, so a font
  // and size chosen in Scripture carry over to the Fathers.
  const { size, font } = useReaderPrefs();
 
@@ -249,7 +249,7 @@ export function WritingReader({
  </p>
  </footer>
 
- {/* Mobile floating section switcher — sits above the bottom tab
+ {/* Mobile floating section switcher, sits above the bottom tab
  bar and exposes the full TOC behind a tap. Hidden on md+. */}
  <MobileWorkPill
  sections={content.sections.map((s) => ({ n: s.n, title: s.title }))}

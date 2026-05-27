@@ -48,7 +48,7 @@ export function HeroChristIcon() {
 
   // First-mount intro: skip entirely if the user prefers reduced motion,
   // else flip introDone after the animation length. The reduced-motion
-  // synchronous setState is intentional — it must happen before paint
+  // synchronous setState is intentional, it must happen before paint
   // so the user doesn't briefly see the not-yet-revealed state.
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {

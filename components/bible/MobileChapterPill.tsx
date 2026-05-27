@@ -45,8 +45,8 @@ function Arrow({
  * and centered above the bottom tab bar. Shows the current `<Book> <Chapter>`
  * with ‹ › arrows to step backward and forward through the canon.
  *
- * Tapping the center label opens `MobileChapterSheet` — a real book +
- * chapter picker — instead of dumping to /bible.
+ * Tapping the center label opens `MobileChapterSheet`, a real book +
+ * chapter picker, instead of dumping to /bible.
  */
 export function MobileChapterPill({
   slug,
@@ -85,7 +85,7 @@ export function MobileChapterPill({
           <button
             type="button"
             onClick={() => setSheetOpen(true)}
-            aria-label={`Pick a chapter — currently ${book.name} ${chapter}`}
+            aria-label={`Pick a chapter, currently ${book.name} ${chapter}`}
             className="px-3 h-10 inline-flex items-center font-sans text-[14px] font-semibold text-paper"
           >
             {book.name} {chapter}

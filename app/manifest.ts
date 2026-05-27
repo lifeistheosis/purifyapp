@@ -10,7 +10,7 @@ import type { MetadataRoute } from "next";
  *    the dark sacred surface rather than flashing white.
  *  - Three shortcuts (Today / Bible / Prayers) so a long-press on the
  *    home-screen icon jumps straight to the right surface.
- *  - Both PNG icons are declared with `purpose: "any maskable"` —
+ *  - Both PNG icons are declared with `purpose: "any maskable"` ,
  *    Android Adaptive Icons crop the 512px square to a circle, so the
  *    same file is used and the safe-area is presumed adequate. If the
  *    crop ever looks tight we'll add a padded variant.

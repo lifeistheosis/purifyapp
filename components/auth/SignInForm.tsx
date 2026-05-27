@@ -116,7 +116,7 @@ function friendly(msg: string): string {
     return "Email or password didn't match. If you signed up before passwords existed on Purify (magic-link era), use Forgot password? below to set one.";
   }
   if (/email not confirmed/i.test(msg)) {
-    return "Please confirm your email first — check your inbox.";
+    return "Please confirm your email first, check your inbox.";
   }
   return msg;
 }

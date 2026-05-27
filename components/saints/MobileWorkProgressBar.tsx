@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
  *
  * Reuses the requestAnimationFrame throttling pattern from
  * `ReadingProgressBar` (Bible reader) but skips the verse-context
- * strip — saint works don't have verse-locator semantics.
+ * strip, saint works don't have verse-locator semantics.
  */
 export function MobileWorkProgressBar() {
   const [progress, setProgress] = useState(0);

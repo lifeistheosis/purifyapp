@@ -55,8 +55,8 @@ export default async function SupportPage() {
  Free now. Donations welcome.
  </h1>
  <p className="mt-6 font-serif text-[17px] text-paper/85 leading-[1.7]">
- The core of Purify &mdash; the saints, the Scriptures, the
- prayers, the calendar &mdash; is free, and stays free. Hosting,
+ The core of Purify, the saints, the Scriptures, the
+ prayers, the calendar, is free, and stays free. Hosting,
  storage, sourcing, and the people who do the work all cost
  money. If the site has helped you, you can keep the lights on,
  or speed up the next thing we build.

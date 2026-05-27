@@ -1,7 +1,7 @@
 import type { SVGProps } from "react";
 
 /**
- * Orans figure — the standing posture with both arms raised, used for
+ * Orans figure, the standing posture with both arms raised, used for
  * prayer across early Christian and Orthodox iconography (catacomb
  * frescoes, the Platytera Theotokos). Replaces the generic praying-
  * palms gesture, which is a Western devotional posture not native to

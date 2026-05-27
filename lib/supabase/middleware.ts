@@ -80,7 +80,7 @@ export async function updateSession(request: NextRequest) {
 
   // Forced password gate: if signed-in and `has_password` is false,
   // redirect to /set-password (unless already there, or hitting an
-  // auth surface, or on /reset). The profiles read is best-effort —
+  // auth surface, or on /reset). The profiles read is best-effort ,
   // if it fails (e.g. migration not yet applied), we fail open and
   // let the request pass.
   if (user && requiresAuth(pathname) && pathname !== "/set-password") {
@@ -97,7 +97,7 @@ export async function updateSession(request: NextRequest) {
         return NextResponse.redirect(url);
       }
     } catch {
-      /* swallow — fail open */
+      /* swallow, fail open */
     }
   }
 

@@ -11,7 +11,7 @@ export default function AppGroupLayout({
 }) {
   return (
     <>
-      {/* Desktop chrome. Hidden on phones — the MobileTabBar replaces it. */}
+      {/* Desktop chrome. Hidden on phones, the MobileTabBar replaces it. */}
       <div className="hidden md:block">
         <AppNav />
       </div>

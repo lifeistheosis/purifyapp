@@ -8,7 +8,7 @@ import { isOverlayOpen } from "@/lib/ui/overlay";
  * single client-component import in the (app) layout:
  *
  *  1. Register `/sw.js` on first mount in production. Skipped on dev so
- *     hot-reload doesn't fight the cache. Idempotent — the browser
+ *     hot-reload doesn't fight the cache. Idempotent, the browser
  *     de-dupes registrations of the same script URL.
  *  2. Listen for `beforeinstallprompt` (Chromium / Android), and once
  *     the user has visited at least three times, surface a dismissible
@@ -18,8 +18,8 @@ import { isOverlayOpen } from "@/lib/ui/overlay";
  *
  *  Local-storage keys (kept in `purify_*` namespace, never sent to the
  *  server):
- *    - purify_install_visits        — incremented per app load
- *    - purify_install_dismissed_at  — epoch ms of last dismiss; banner
+ *    - purify_install_visits       , incremented per app load
+ *    - purify_install_dismissed_at , epoch ms of last dismiss; banner
  *                                     stays hidden for 30 days after
  *
  *  No analytics fire from this component. The banner is local UI only.
@@ -53,7 +53,7 @@ function isStandalone(): boolean {
 export function InstallPrompt() {
   const [bip, setBip] = useState<BIPEvent | null>(null);
   const [show, setShow] = useState(false);
-  // Lazy initializer — read once at mount. The ref-style state lets us
+  // Lazy initializer, read once at mount. The ref-style state lets us
   // toggle the iOS hint on a real user interaction (the visit-count
   // gate) without falling into the React 19 "setState in effect"
   // anti-pattern that the new lint rule flags.
@@ -105,7 +105,7 @@ export function InstallPrompt() {
 
     // iOS Safari path (no beforeinstallprompt). We toggle the hint via a
     // 0-delay timer so the state transition happens *outside* the effect
-    // body — see react-hooks/set-state-in-effect.
+    // body, see react-hooks/set-state-in-effect.
     let iosTimer: ReturnType<typeof setTimeout> | null = null;
     if (iosHintEligible) {
       iosTimer = setTimeout(() => setIosHint(true), 0);
@@ -139,7 +139,7 @@ export function InstallPrompt() {
   };
 
   if (!show && !iosHint) return null;
-  // Don't compete with an open sheet / verse toolbar — those are
+  // Don't compete with an open sheet / verse toolbar, those are
   // mid-task UI; the install banner can wait.
   if (isOverlayOpen()) return null;
 

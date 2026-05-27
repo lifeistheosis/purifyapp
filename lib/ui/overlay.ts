@@ -4,7 +4,7 @@
  * install banner during a verse-action toolbar interaction).
  *
  * Sets `document.body.dataset.overlayOpen` so other components can
- * watch it via a MutationObserver — no shared state library needed,
+ * watch it via a MutationObserver, no shared state library needed,
  * and the flag is observable from any client component without prop
  * drilling.
  *
