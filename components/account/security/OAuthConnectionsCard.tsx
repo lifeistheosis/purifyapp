@@ -22,8 +22,14 @@ type Identity = {
  * SDK throws "Manual linking is disabled" — we translate that to a
  * concrete next-step message instead of relaying the raw text.
  */
-export function OAuthConnectionsCard() {
-  const [identities, setIdentities] = useState<Identity[]>([]);
+export function OAuthConnectionsCard({
+  initialIdentities,
+}: {
+  initialIdentities?: Identity[];
+}) {
+  const [identities, setIdentities] = useState<Identity[]>(
+    initialIdentities ?? [],
+  );
   const [pending, setPending] = useState<"google" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -68,26 +74,36 @@ export function OAuthConnectionsCard() {
     // shows up in the UI without requiring a manual reload.
     load({ forceRefresh: true });
     // If the OAuth callback bounced us back here with ?error=...,
-    // surface it. Translate the common cases the same way the
-    // synchronous catch block does.
+    // figure out which case we're in by checking what's actually on
+    // the user. Supabase throws "identity_already_exists" for BOTH
+    // "already on this user" and "already on a different user" —
+    // the URL error alone can't tell us which.
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const err = params.get("error");
       if (err) {
-        if (/identity is already linked/i.test(err) || /identity_already_exists/i.test(err)) {
-          // Linked to a different account. Couldn't have been linked
-          // to this one or the OAuth flow would have succeeded
-          // silently — Supabase only throws this when the identity
-          // exists on a user other than auth.uid().
-          setError(
-            "That Google account is already linked to a different Purify account. Sign out and click \"Continue with Google\" on /signin to sign in with it, or try a different Google account here.",
-          );
-        } else {
-          setError(err);
-        }
         // Strip the error from the URL so a refresh doesn't re-fire it.
         const clean = window.location.pathname + window.location.hash;
         window.history.replaceState({}, "", clean);
+        if (/identity is already linked/i.test(err) || /identity_already_exists/i.test(err)) {
+          // Defer the verdict until we know what's on this user.
+          // The initialIdentities prop is the server-side truth at
+          // page load; if Google is already there, this error means
+          // "you tried to link the account you already have," not
+          // "linked to someone else."
+          const alreadyOnThisUser = (initialIdentities ?? []).some(
+            (i) => i.provider === "google",
+          );
+          if (!alreadyOnThisUser) {
+            setError(
+              "That Google account is already linked to a different Purify account. Sign out and click \"Continue with Google\" on /signin to sign in with it, or try a different Google account here.",
+            );
+          }
+          // If it IS on this user, fall through: no error, and the
+          // initial-identities render already shows Connected.
+        } else {
+          setError(err);
+        }
       }
     }
     // Stay subscribed so any later auth event (link, unlink, refresh,

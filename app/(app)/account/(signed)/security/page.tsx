@@ -24,11 +24,20 @@ export default async function SecurityTabPage() {
     .maybeSingle();
   const hasPassword = profile?.has_password === true;
 
+  // Pass the server-side identities snapshot down so the card has a
+  // correct first paint without depending on the client SDK to
+  // re-fetch them. Client-side refresh still fires for any
+  // subsequent link / unlink events.
+  const initialIdentities = (user.identities ?? []).map((i) => ({
+    provider: i.provider,
+    identity_id: i.identity_id,
+  }));
+
   return (
     <div className="flex flex-col gap-5">
       <ChangePasswordCard email={user.email ?? ""} hasPassword={hasPassword} />
       <ChangeEmailCard currentEmail={user.email ?? ""} />
-      <OAuthConnectionsCard />
+      <OAuthConnectionsCard initialIdentities={initialIdentities} />
       <SignOutEverywhereCard />
     </div>
   );
