@@ -20,6 +20,22 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v6.4",
+ kind: "Roadmap scaffolding from the Discord cycle",
+ date: "May 27, 2026",
+ blurb:
+ "A scaffolding pass from the Discord pre-launch feedback cycle. Five distinct landings: /pricing and /support brought into alignment with the new About; St. Theophylact of Ohrid added to the saints registry (entry stub, awaiting a public-domain English source for his Explanation of the Gospels); the calendar matrix type, registry, and Supabase migration laid down so jurisdictional menologions can later overlay the base; the new /topics route shipped with one starter topic ('The Incarnation') and an editorial schema; and i18n Phase 1 — the locale registry plus the English message catalog — in place so contributors can extract strings as they touch each page. The biggest items (jurisdictional menologion patches, Spanish UI chrome, the Theophylact ingest, the topical-index editorial corpus) are all editorial work that begins now on top of the engineering foundation.",
+ items: [
+ "Pricing and Support aligned with the new /about. The 'free forever, nothing planned' framing is replaced by 'the core stays free, an optional subscription layer for heavier infrastructure is on the way under proper licensing.' Same words in all three places now.",
+ "St. Theophylact of Ohrid added to the saints registry. Bio paragraph + one quote + author-name icon mappings. works: [] for now; the Explanation of the Four Gospels lands once a clean public-domain English source is confirmed (see docs/prd/v6.4-community-feedback.md §3). Follows the existing empty-works pattern from St. Marina, St. Hermione, St. Isidora, and St. Olympias.",
+ "Calendar matrix scaffolding. lib/calendar/matrix.ts defines the CalendarReckoning and CalendarTradition enums, the CalendarMatrix shape, the CALENDAR_MATRICES registry (ecumenical default only), and the MenologionPatch shape jurisdictional patches will use. supabase/migrations/20260527_profiles_calendar_matrix.sql adds profiles.calendar_reckoning + profiles.calendar_tradition columns with default 'new' / 'ecumenical' and CHECK constraints mirroring the enums. data/calendar/README.md documents the base + patch composition model and the editorial workflow for adding a new jurisdiction. No tradition toggle UI yet — surfacing a toggle that resolves to an empty patch would just confuse readers; the UI lights up when the first jurisdictional patch lands alongside its registry entry.",
+ "Topical patristic & apologetics index. New /topics route with an index page and per-topic detail pages. lib/topics/topics.ts defines the Topic and TopicCitation shapes; each citation is a pointer into an existing data/saints/{slug}/{work}.json section — no patristic text is duplicated. The detail page resolves citations through the existing loadWriting() utility and renders pull-quotes in a 'Confessed by the Fathers' gold-rule section; the 'Refuted by the Fathers' rubric-red section only renders when its list is non-empty (no empty rubric columns). One starter topic ships ('The Incarnation', five citations from Athanasius, the Johannine Prologue, Cyril of Alexandria, and Irenaeus); data/topics/_schema.md documents the editorial workflow and the reverence guardrails.",
+ "i18n Phase 1 scaffolding. lib/i18n/locales.ts holds the typed LocaleCode union (en | es | el | ru), the LOCALES registry with ready flags and status notes, DEFAULT_LOCALE, resolveLocale(), negotiateFromAcceptLanguage(), and isLocaleReady(). lib/i18n/index.ts provides server-only getMessages() and t(). lib/i18n/messages/en.json ships a starter ~25-key catalog covering nav, common buttons, the calendar reckoning labels, and the footer doxology; the other three locales ship as empty objects until the editorial translation work begins. docs/i18n.md documents the four-phase roadmap, what ships in v6.4, the contributor workflow for extracting strings, and the open governance question about translation labor. The App Router locale segment restructure is deferred to Phase 2 — a separate, focused session.",
+ "PRD persisted at docs/prd/v6.4-community-feedback.md so future contributors can find the architectural decisions behind these landings without trawling chat logs. Founds the docs/prd/ folder.",
+ "Footer + home hero chip + /whats-new chip step to v6.4.",
+ ],
+ },
+ {
  version: "v6.3",
  kind: "Auth hardened, hero rebuilt",
  date: "May 26, 2026",

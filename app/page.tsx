@@ -121,8 +121,8 @@ export default function Home() {
  New
  </span>
  <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
- <span className="sm:hidden">v6.3 · Auth hardened, hero rebuilt</span>
- <span className="hidden sm:inline">v6.3 · Auth hardened, hero rebuilt, layout fixes</span>
+ <span className="sm:hidden">v6.4 · Roadmap scaffolding</span>
+ <span className="hidden sm:inline">v6.4 · Roadmap scaffolding from the Discord cycle</span>
  </span>
  <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
  →
