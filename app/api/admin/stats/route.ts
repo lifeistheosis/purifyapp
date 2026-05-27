@@ -92,6 +92,48 @@ export async function GET() {
   }
   const topCountries = [...countryTally.values()].sort((a, b) => b.count - a.count).slice(0, 8);
 
+  // 30-day rollups for the language-prioritization view.
+  // A wider window than "today" makes the signal stable enough to
+  // decide which UI translations to invest in.
+  const monthStart = new Date(now - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const { data: sessMonth } = await supa
+    .from("analytics_sessions")
+    .select("country, country_code, region, accept_language")
+    .gte("first_seen", monthStart)
+    .limit(20000);
+
+  // Top regions (state / province), keyed by "Country · Region" so
+  // California and Bavaria don't collide.
+  const regionTally = new Map<
+    string,
+    { country: string; region: string; code: string | null; count: number }
+  >();
+  for (const r of sessMonth ?? []) {
+    if (!r.region) continue;
+    const country = r.country ?? "Unknown";
+    const key = `${country}|${r.region}`;
+    const e =
+      regionTally.get(key) ??
+      { country, region: r.region, code: r.country_code ?? null, count: 0 };
+    e.count += 1;
+    regionTally.set(key, e);
+  }
+  const topRegions = [...regionTally.values()]
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+
+  // Top declared browser languages (primary tag only — "es", "ru", etc.).
+  const languageTally = new Map<string, number>();
+  for (const r of sessMonth ?? []) {
+    const code = r.accept_language;
+    if (!code) continue;
+    languageTally.set(code, (languageTally.get(code) ?? 0) + 1);
+  }
+  const topLanguages = [...languageTally.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 12)
+    .map(([code, count]) => ({ code, count }));
+
   return NextResponse.json(
     {
       liveCount: sessions.length,
@@ -104,6 +146,8 @@ export async function GET() {
       totalUsers: totalUsers ?? 0,
       topPages,
       topCountries,
+      topRegions,
+      topLanguages,
       generatedAt: new Date().toISOString(),
     },
     { headers: { "Cache-Control": "no-store" } },

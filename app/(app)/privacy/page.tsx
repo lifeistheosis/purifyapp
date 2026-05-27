@@ -152,6 +152,14 @@ export default function PrivacyPage() {
  >ipwho.is</a>. Your IP itself is <em>not</em> stored; only the
  city-level fields above are.
  </li>
+ <li>
+ Your browser&rsquo;s declared <em>primary language tag</em>
+ (the first entry of the <code>Accept-Language</code> header
+ with any region subtag stripped, e.g. &ldquo;es&rdquo; or
+ &ldquo;ru&rdquo;). Used only to decide which UI translations
+ to prioritize; nothing finer-grained than the country we
+ already keep is retained.
+ </li>
  </ul>
  <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  If you sign in to sync your highlights and bookmarks, Supabase

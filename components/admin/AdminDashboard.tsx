@@ -31,7 +31,45 @@ type Stats = {
  totalUsers: number;
  topPages: { path: string; count: number }[];
  topCountries: { name: string; code: string | null; count: number }[];
+ topRegions: { country: string; region: string; code: string | null; count: number }[];
+ topLanguages: { code: string; count: number }[];
  generatedAt: string;
+};
+
+// Minimal display-name table for the primary language tags the site
+// supports plus a few common ones we don't yet translate. Falls back
+// to the raw tag when unknown.
+const LANG_NAMES: Record<string, string> = {
+ en: "English",
+ es: "Spanish",
+ ro: "Romanian",
+ el: "Greek",
+ ru: "Russian",
+ fr: "French",
+ de: "German",
+ sr: "Serbian",
+ uk: "Ukrainian",
+ it: "Italian",
+ pt: "Portuguese",
+ bg: "Bulgarian",
+ ar: "Arabic",
+ pl: "Polish",
+ nl: "Dutch",
+ sv: "Swedish",
+ no: "Norwegian",
+ da: "Danish",
+ fi: "Finnish",
+ cs: "Czech",
+ sk: "Slovak",
+ hu: "Hungarian",
+ tr: "Turkish",
+ he: "Hebrew",
+ fa: "Persian",
+ ka: "Georgian",
+ hy: "Armenian",
+ zh: "Chinese",
+ ja: "Japanese",
+ ko: "Korean",
 };
 
 function flag(code: string | null): string {
@@ -200,6 +238,67 @@ export function AdminDashboard({ adminEmail }: { adminEmail: string }) {
  ))}
  {stats && stats.topCountries.length === 0 && (
  <li className="font-sans text-[13px] text-paper/45">No visitors yet today.</li>
+ )}
+ </ul>
+ </section>
+
+ {/* 30-day region (state / province) breakdown for the
+   language-prioritization view. */}
+ <section className="rounded-lg border border-paper/10 bg-night p-5">
+ <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.2px] text-paper/45 mb-1">
+ Top regions, 30 days
+ </p>
+ <p className="font-sans text-[11px] text-paper/40 mb-4">
+ State / province, scoped by country.
+ </p>
+ <ul className="space-y-2">
+ {stats?.topRegions.map((r) => (
+ <li
+ key={`${r.country}-${r.region}`}
+ className="flex items-center justify-between gap-3"
+ >
+ <span className="font-sans text-[13px] text-paper/80 truncate flex items-center gap-2">
+ <span>{flag(r.code)}</span>
+ <span className="truncate">
+ {r.region}
+ <span className="text-paper/40"> · {r.country}</span>
+ </span>
+ </span>
+ <span className="font-sans text-[13px] text-paper/55 tabular-nums">{r.count}</span>
+ </li>
+ ))}
+ {stats && stats.topRegions.length === 0 && (
+ <li className="font-sans text-[13px] text-paper/45">
+ No region data yet.
+ </li>
+ )}
+ </ul>
+ </section>
+
+ {/* 30-day declared-language leaderboard for prioritization. */}
+ <section className="rounded-lg border border-paper/10 bg-night p-5">
+ <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.2px] text-paper/45 mb-1">
+ Top languages, 30 days
+ </p>
+ <p className="font-sans text-[11px] text-paper/40 mb-4">
+ From Accept-Language. Drives translation priority.
+ </p>
+ <ul className="space-y-2">
+ {stats?.topLanguages.map((l) => (
+ <li key={l.code} className="flex items-center justify-between gap-3">
+ <span className="font-sans text-[13px] text-paper/80 truncate">
+ {LANG_NAMES[l.code] ?? l.code}
+ <span className="text-paper/40 ms-2 text-[11px] uppercase tracking-[1.2px]">
+ {l.code}
+ </span>
+ </span>
+ <span className="font-sans text-[13px] text-paper/55 tabular-nums">{l.count}</span>
+ </li>
+ ))}
+ {stats && stats.topLanguages.length === 0 && (
+ <li className="font-sans text-[13px] text-paper/45">
+ No language data yet.
+ </li>
  )}
  </ul>
  </section>

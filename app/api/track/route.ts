@@ -6,6 +6,25 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
+ * Parse the primary language tag from an Accept-Language header.
+ * "es-MX,es;q=0.9,en;q=0.8" → "es". Returns null when the header is
+ * absent or malformed. Truncated to 8 chars defensively (a primary
+ * tag plus a region subtag never exceeds this in BCP 47).
+ */
+function parsePrimaryLanguage(header: string | null): string | null {
+  if (!header) return null;
+  const first = header.split(",")[0]?.trim();
+  if (!first) return null;
+  // Drop the q-value suffix if any ("en;q=0.8" → "en"), then the
+  // region subtag ("es-MX" → "es") so the leaderboard groups
+  // Brazilian and European Portuguese under "pt" once and lets us
+  // see Portuguese demand at all.
+  const primary = first.split(";")[0]?.split("-")[0]?.toLowerCase();
+  if (!primary || primary.length > 8 || !/^[a-z]+$/.test(primary)) return null;
+  return primary;
+}
+
+/**
  * Anonymous, server-side visit tracking for the /admin Live View. The client
  * (AnalyticsTracker) posts an ephemeral session id + path; we geolocate the IP
  * server-side, upsert the session (last_seen + coarse geo on first sight), and
@@ -36,12 +55,21 @@ export async function POST(req: NextRequest) {
     if (!existing) {
       const geo = await geolocate(clientIp(req.headers));
       const ua = (req.headers.get("user-agent") ?? "").slice(0, 300);
+      // Parse the visitor's declared primary language tag from
+      // Accept-Language. We store only the primary (e.g. "es" from
+      // "es-MX,es;q=0.9,en;q=0.8") so the data can drive translation
+      // prioritization without retaining anything finer-grained than
+      // the country already on the row.
+      const acceptLanguage = parsePrimaryLanguage(
+        req.headers.get("accept-language"),
+      );
       await supa.from("analytics_sessions").insert({
         session_id: sessionId,
         first_seen: now,
         last_seen: now,
         referrer,
         user_agent: ua,
+        accept_language: acceptLanguage,
         pageviews: 1,
         ...(geo ?? {}),
       });
