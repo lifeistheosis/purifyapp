@@ -93,7 +93,7 @@ export function ChangePasswordCard({
 
   if (!hasPassword) {
     return (
-      <section className="rounded-lg border border-gold/35 bg-gold/[0.05] p-6">
+      <section id="change-password" className="rounded-lg border border-gold/35 bg-gold/[0.05] p-6 scroll-mt-24">
         <h2 className="font-sans text-[16px] font-semibold text-paper mb-1">
           Set a password
         </h2>
@@ -137,7 +137,7 @@ export function ChangePasswordCard({
   }
 
   return (
-    <section className="rounded-lg border border-paper/12 bg-paper/[0.02] p-6">
+    <section id="change-password" className="rounded-lg border border-paper/12 bg-paper/[0.02] p-6 scroll-mt-24">
       <h2 className="font-sans text-[16px] font-semibold text-paper mb-1">
         Change password
       </h2>

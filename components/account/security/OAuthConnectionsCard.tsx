@@ -237,11 +237,10 @@ export function OAuthConnectionsCard({
     } catch (e) {
       const raw = e instanceof Error ? e.message : "";
       if (/at least 1 identity|last identity|at_least_one_identity/i.test(raw)) {
-        // Supabase refuses to remove the only sign-in path. Translate
-        // to a sentence that says what the user actually has to do.
-        setError(
-          "Unlinking Google would leave this account with no way to sign in. Set a password in the card above first, then try Unlink again.",
-        );
+        // Supabase refuses to remove the only sign-in path. Mark the
+        // error so the UI can render a friendlier callout with a link
+        // to the password card right above.
+        setError("needs-password");
       } else {
         setError(raw || "Couldn't disconnect Google.");
       }
@@ -249,6 +248,22 @@ export function OAuthConnectionsCard({
       clearTimeout(watchdog);
       setPending(null);
     }
+  }
+
+  function focusPasswordCard() {
+    if (typeof document === "undefined") return;
+    const el = document.getElementById("change-password");
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Brief gold attention pulse so the eye knows what just moved.
+    el.animate(
+      [
+        { boxShadow: "0 0 0 0 rgba(212,175,55,0)" },
+        { boxShadow: "0 0 0 6px rgba(212,175,55,0.28)" },
+        { boxShadow: "0 0 0 0 rgba(212,175,55,0)" },
+      ],
+      { duration: 1100, easing: "ease-out" },
+    );
   }
 
   return (
@@ -282,12 +297,13 @@ export function OAuthConnectionsCard({
                 {pending === "google" ? "Working…" : "Unlink"}
               </button>
             ) : (
-              <span
-                title="Set a password first so you have another way to sign in."
-                className="font-sans text-[12.5px] font-medium rounded-pill border border-paper/15 text-paper/35 bg-paper/[0.02] px-4 py-1.5 cursor-not-allowed"
+              <button
+                type="button"
+                onClick={focusPasswordCard}
+                className="font-sans text-[12.5px] font-medium rounded-pill border border-gold/45 text-gold bg-gold/[0.06] hover:bg-gold/[0.12] hover:border-gold/70 px-4 py-1.5 transition-colors"
               >
-                Set a password first
-              </span>
+                Set a password first →
+              </button>
             )
           ) : (
             <button
@@ -320,7 +336,57 @@ export function OAuthConnectionsCard({
           </span>
         </li>
       </ul>
-      {error ? (
+      {/* Always-on explainer when the user has no password set, so a
+          newcomer understands the disabled state BEFORE clicking. */}
+      {googleIdentity && !hasPassword ? (
+        <div className="mt-4 rounded-md border border-gold/30 bg-gold/[0.05] p-4">
+          <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.2px] text-gold/85 mb-1.5">
+            Why can&rsquo;t I unlink Google?
+          </p>
+          <p className="font-sans text-[13.5px] text-paper/80 leading-[1.6]">
+            Google is the only way you can sign in to this account right
+            now. If you unlinked it, you&rsquo;d be locked out the next
+            time you sign out.
+          </p>
+          <p className="mt-2 font-sans text-[13.5px] text-paper/80 leading-[1.6]">
+            Set a password in the{" "}
+            <button
+              type="button"
+              onClick={focusPasswordCard}
+              className="text-gold underline underline-offset-2 hover:text-gold/80 transition-colors"
+            >
+              Change password
+            </button>{" "}
+            card above first. Once you have email + password as a backup,
+            you&rsquo;ll be able to unlink Google any time.
+          </p>
+        </div>
+      ) : null}
+
+      {error === "needs-password" ? (
+        <div className="mt-4 rounded-md border border-gold/45 bg-gold/[0.08] p-4">
+          <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.2px] text-gold/90 mb-1.5">
+            One step before you can do that
+          </p>
+          <p className="font-sans text-[14px] text-paper/85 leading-[1.6]">
+            We can&rsquo;t unlink Google yet. Right now, Google is the
+            only way you can sign in to this account &mdash; removing
+            it would lock you out.
+          </p>
+          <p className="mt-2 font-sans text-[14px] text-paper/85 leading-[1.6]">
+            Set a password first so you have email + password as a
+            backup. Then come back here and Unlink will work.
+          </p>
+          <button
+            type="button"
+            onClick={focusPasswordCard}
+            className="mt-3 inline-flex items-center gap-1.5 rounded-pill border border-gold/55 bg-gold/15 text-gold font-sans text-[13px] font-semibold px-4 py-2 hover:bg-gold/25 hover:border-gold/80 transition-colors"
+          >
+            Set a password
+            <span aria-hidden>→</span>
+          </button>
+        </div>
+      ) : error ? (
         <p className="mt-3 font-sans text-[13px] text-[#f8cac7] leading-[1.55]">
           {error}
         </p>
