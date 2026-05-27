@@ -25,7 +25,13 @@ function pick(): string {
   ];
   for (const v of candidates) {
     if (!v) continue;
+    // Reject `purify.app` (we don't own that domain) and any localhost
+    // value (e.g. Render's internal :10000 port if it ever leaks into
+    // the env, or a stale `NEXT_PUBLIC_SITE_URL=http://localhost:3000`
+    // copied from a dev .env into production). Either would silently
+    // route every Supabase auth callback to a non-existent host.
     if (/purify\.app/i.test(v)) continue;
+    if (/^https?:\/\/(localhost|127\.|0\.0\.0\.0|\[::1\])(:|\/|$)/i.test(v)) continue;
     return v;
   }
   return FALLBACK;
