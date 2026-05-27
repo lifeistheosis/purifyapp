@@ -1,13 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { authOrigin } from "@/lib/site";
 
+// Mirrors Supabase's UserIdentity loosely. We accept any shape that
+// carries identity_id and provider; the full server-side object is
+// forwarded as-is to unlinkIdentity which needs all of it.
 type Identity = {
   id?: string;
   identity_id?: string;
+  user_id?: string;
   provider?: string;
+  identity_data?: Record<string, unknown> | null;
+  last_sign_in_at?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  // Allow any other fields the SDK adds in newer versions.
+  [key: string]: unknown;
 };
 
 /**
@@ -27,6 +38,7 @@ export function OAuthConnectionsCard({
 }: {
   initialIdentities?: Identity[];
 }) {
+  const router = useRouter();
   const [identities, setIdentities] = useState<Identity[]>(
     initialIdentities ?? [],
   );
@@ -189,6 +201,15 @@ export function OAuthConnectionsCard({
     if (!googleIdentity) return;
     setPending("google");
     setError(null);
+    // Watchdog so a hanging SDK call can never leave the button stuck
+    // on "Working…". 15s is generous for a single DELETE; any longer
+    // and something is genuinely wrong and the user deserves to know.
+    const watchdog = setTimeout(() => {
+      setPending((p) => (p === "google" ? null : p));
+      setError(
+        "Unlink request didn't finish in time. Refresh the page; if Google still shows as Connected, try again.",
+      );
+    }, 15000);
     try {
       const supabase = createClient();
       const { error: err } = await supabase.auth.unlinkIdentity(
@@ -197,12 +218,17 @@ export function OAuthConnectionsCard({
         >[0],
       );
       if (err) throw err;
-      await load({ forceRefresh: true });
+      // Re-run the security page server-side: the SSR re-reads the
+      // user's identities and re-passes them as initialIdentities,
+      // which the card consumes as its source of truth. No client
+      // SDK refresh is in the critical path.
+      router.refresh();
     } catch (e) {
       setError(
         e instanceof Error ? e.message : "Couldn't disconnect Google.",
       );
     } finally {
+      clearTimeout(watchdog);
       setPending(null);
     }
   }

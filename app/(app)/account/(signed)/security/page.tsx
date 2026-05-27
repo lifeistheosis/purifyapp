@@ -24,14 +24,17 @@ export default async function SecurityTabPage() {
     .maybeSingle();
   const hasPassword = profile?.has_password === true;
 
-  // Pass the server-side identities snapshot down so the card has a
-  // correct first paint without depending on the client SDK to
-  // re-fetch them. Client-side refresh still fires for any
-  // subsequent link / unlink events.
-  const initialIdentities = (user.identities ?? []).map((i) => ({
-    provider: i.provider,
-    identity_id: i.identity_id,
-  }));
+  // Pass the FULL server-side identities snapshot down so the card
+  // has both (a) the correct first paint and (b) the complete
+  // identity objects supabase.auth.unlinkIdentity() requires. A
+  // stripped-down { provider, identity_id } pair is enough to show
+  // the Unlink button but caused the unlinkIdentity SDK call to
+  // hang because it expects the full UserIdentity shape. JSON-clone
+  // through serialization so we don't pass non-serializable values
+  // through the server → client boundary.
+  const initialIdentities = JSON.parse(
+    JSON.stringify(user.identities ?? []),
+  );
 
   return (
     <div className="flex flex-col gap-5">
