@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { SITE_URL } from "@/lib/site";
 
 /**
  * Delete the signed-in user's account and every server-side row they own.
@@ -12,7 +13,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
  *
  * POST is required so this can't be triggered by a stray link click.
  */
-export async function POST(request: Request) {
+export async function POST() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -29,5 +30,7 @@ export async function POST(request: Request) {
 
   // Clear the session cookie on this device too.
   await supabase.auth.signOut();
-  return NextResponse.redirect(new URL("/", request.url));
+  // Use SITE_URL so the proxied-internal `request.url` (localhost:10000
+  // on Render) doesn't leak into the redirect.
+  return NextResponse.redirect(new URL("/", SITE_URL));
 }
