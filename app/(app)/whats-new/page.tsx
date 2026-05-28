@@ -814,8 +814,8 @@ export default async function WhatsNewPage() {
  <p className="mt-8 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
  If you are new here, welcome. We are seeing a real wave of new
  readers arrive this week, and we are so glad you came. Purify is
- small, hand-built, and run by one person plus a few volunteers, so
- every one of you who shows up matters. Pour a cup of coffee, take
+ small, hand-built, and ran by a small team of developers and
+ editorials, so every one of you who shows up matters. Pour a cup of coffee, take
  a look around, and if anything is broken or missing, tell us. We
  want you to feel at home.
  </p>
