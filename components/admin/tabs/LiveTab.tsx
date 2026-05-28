@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import type { MapPoint } from "../WorldMap";
 import { Card, StatCard } from "../primitives";
+import { CountUp } from "../CountUp";
 
 const WorldMap = dynamic(() => import("../WorldMap").then((m) => m.WorldMap), {
   ssr: false,
@@ -95,7 +96,7 @@ export function LiveTab() {
             Live now
           </p>
           <p className="mt-2 font-sans text-[44px] font-bold tabular-nums leading-none text-gold">
-            {stats?.liveCount ?? "—"}
+            <CountUp value={stats?.liveCount ?? "—"} />
           </p>
         </div>
         <StatCard label="Visitors today" value={stats?.today.visitors ?? "—"} />

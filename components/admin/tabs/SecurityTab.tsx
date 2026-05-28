@@ -6,6 +6,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { Card, DataTable, Pill, Toolbar, ToolbarButton } from "../primitives";
 import { BarChart } from "../charts";
+import { CountUp } from "../CountUp";
 
 type CspReport = {
   id: number;
@@ -86,22 +87,22 @@ export function SecurityTab() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card title="Active CSP reports" accent={data.csp.active.length > 0}>
           <p className="font-sans text-[40px] font-bold tabular-nums leading-none text-paper">
-            {data.csp.active.length}
+            <CountUp value={data.csp.active.length} />
           </p>
         </Card>
         <Card title="Dismissed">
           <p className="font-sans text-[40px] font-bold tabular-nums leading-none text-paper/65">
-            {data.csp.dismissed.length}
+            <CountUp value={data.csp.dismissed.length} />
           </p>
         </Card>
         <Card title="Rate-limit hits · 1h">
           <p className="font-sans text-[40px] font-bold tabular-nums leading-none text-paper">
-            {data.rateLimits.windowHour.reduce((a, b) => a + b.total, 0)}
+            <CountUp value={data.rateLimits.windowHour.reduce((a, b) => a + b.total, 0)} />
           </p>
         </Card>
         <Card title="Rate-limit hits · 24h">
           <p className="font-sans text-[40px] font-bold tabular-nums leading-none text-paper">
-            {data.rateLimits.last24hHits}
+            <CountUp value={data.rateLimits.last24hHits} />
           </p>
         </Card>
       </div>

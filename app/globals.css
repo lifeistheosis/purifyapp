@@ -665,3 +665,28 @@ div[data-hl="true"] {
  animation: none;
  }
 }
+
+/* Admin panel — gentle fade + rise when a tab section becomes active.
+   The shell sets `key` on the wrapper so a tab swap remounts and replays
+   the animation. Children opt in to a small stagger by setting
+   `style={{ animationDelay: "<n>ms" }}` on .admin-fade-in. */
+@keyframes admin-fade-in {
+ from {
+ opacity: 0;
+ transform: translateY(8px);
+ }
+ to {
+ opacity: 1;
+ transform: translateY(0);
+ }
+}
+
+.admin-fade-in {
+ animation: admin-fade-in 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+ .admin-fade-in {
+ animation: none;
+ }
+}

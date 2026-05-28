@@ -5,6 +5,7 @@
 
 import { useState, type ReactNode } from "react";
 import { Sparkline } from "./charts";
+import { CountUp } from "./CountUp";
 import { downloadCsv, toCsv } from "@/lib/admin/csv";
 
 // ── Card ────────────────────────────────────────────────────────────────────
@@ -90,7 +91,7 @@ export function StatCard({
           (accent ? "text-gold" : "text-paper")
         }
       >
-        {value}
+        <CountUp value={value} />
       </p>
       {hint && (
         <p className="mt-1.5 font-sans text-[11px] text-paper/45">{hint}</p>
@@ -138,7 +139,7 @@ export function KpiCard({
             (accent ? "text-gold" : "text-paper")
           }
         >
-          {value}
+          <CountUp value={value} />
         </p>
         {trend && trend.length > 1 && (
           <Sparkline data={trend} width={90} height={28} />

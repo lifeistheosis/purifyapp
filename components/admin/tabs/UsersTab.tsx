@@ -5,6 +5,7 @@
 import { useEffect, useState } from "react";
 import { Card, DataTable, Toolbar, ToolbarButton } from "../primitives";
 import { LineChart, Donut, SERIES_COLORS } from "../charts";
+import { CountUp } from "../CountUp";
 
 type Profile = {
   id: string;
@@ -58,7 +59,7 @@ export function UsersTab() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card title="Total users">
           <p className="font-sans text-[40px] font-bold tabular-nums leading-none text-paper">
-            {data.total}
+            <CountUp value={data.total} />
           </p>
         </Card>
         <Card title="OAuth provider mix · sample" subtitle="Most recent 200 users.">

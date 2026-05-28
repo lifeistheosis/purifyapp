@@ -152,8 +152,11 @@ export function AdminShell({ adminEmail }: { adminEmail: string }) {
         </ul>
       </nav>
 
-      {/* Active tab content */}
-      <Current />
+      {/* Active tab content — keyed so it remounts on tab switch and the
+          fade-in animation replays for every section open. */}
+      <div key={active} className="admin-fade-in">
+        <Current />
+      </div>
     </div>
   );
 }
