@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { getServerLocale } from "@/lib/i18n/server";
+import { getMessages, t } from "@/lib/i18n";
+import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
 
 export const metadata = {
  title: "Privacy",
@@ -8,15 +11,18 @@ export const metadata = {
 
 const SECTION = "px-5 md:px-8 py-16 md:py-24";
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+ const locale = await getServerLocale();
+ const m = getMessages(locale);
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
+ <TranslationDisclaimer />
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- Privacy
+ {t(m, "privacy.eyebrow")}
  </p>
  <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- What Purify keeps, and what it doesn&rsquo;t.
+ {t(m, "privacy.h1")}
  </h1>
  <p className="mt-6 font-serif text-[17px] text-paper/65 leading-[1.7]">
  The short version is on the{" "}

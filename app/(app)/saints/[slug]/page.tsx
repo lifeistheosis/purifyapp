@@ -33,8 +33,10 @@ export default async function SaintPage({ params }: { params: Params }) {
     <section className="bg-night px-5 md:px-8">
       <div className="mx-auto max-w-[1100px] w-full">
         <SaintHero saint={saint} />
-        {saint.titles?.length ? <TitlesSection titles={saint.titles} /> : null}
-        <LifeSection paragraphs={saint.life} />
+        {saint.titles?.length ? (
+          <TitlesSection titles={saint.titles} pronoun={saint.pronoun} />
+        ) : null}
+        <LifeSection paragraphs={saint.life} pronoun={saint.pronoun} />
         {saint.greatFeasts?.length ? (
           <GreatFeastsSection feasts={saint.greatFeasts} pronoun={saint.pronoun} />
         ) : null}

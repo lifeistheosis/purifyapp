@@ -8,6 +8,8 @@ import {
 } from "@/lib/topics/topics";
 import { loadWriting } from "@/lib/saints/load";
 import { getSaint } from "@/lib/saints/saints";
+import { getServerLocale } from "@/lib/i18n/server";
+import { getMessages, t } from "@/lib/i18n";
 
 type Params = Promise<{ slug: string }>;
 
@@ -95,12 +97,14 @@ export default async function TopicPage({ params }: { params: Params }) {
   const resolvedRefuting = (
     await Promise.all(refuting.map(resolveCitation))
   ).filter((c): c is ResolvedCitation => c !== null);
+  const locale = await getServerLocale();
+  const m = getMessages(locale);
 
   return (
     <section className="bg-night px-5 md:px-8 py-16 md:py-24">
       <article className="mx-auto max-w-[760px] w-full">
         <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-          Topical index
+          {t(m, "topics.eyebrow")}
         </p>
         <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
           {topic.title}
@@ -118,7 +122,7 @@ export default async function TopicPage({ params }: { params: Params }) {
         {resolvedAffirming.length > 0 ? (
           <section className="mt-12">
             <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-gold mb-5">
-              Confessed by the Fathers
+              {t(m, "topics.confessed")}
             </p>
             <ul className="space-y-4">
               {resolvedAffirming.map((c, i) => (
@@ -136,7 +140,7 @@ export default async function TopicPage({ params }: { params: Params }) {
           <section className="mt-12">
             <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] mb-5"
                style={{ color: "var(--ink-rubric, #c1272d)" }}>
-              Refuted by the Fathers
+              {t(m, "topics.refuted")}
             </p>
             <ul className="space-y-4">
               {resolvedRefuting.map((c, i) => (

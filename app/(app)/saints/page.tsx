@@ -1,6 +1,8 @@
 import { SAINTS } from "@/lib/saints/saints";
 import { SaintsBrowser } from "@/components/saints/SaintsBrowser";
 import { SaintSearch } from "@/components/saints/SaintSearch";
+import { getServerLocale } from "@/lib/i18n/server";
+import { getMessages, t } from "@/lib/i18n";
 
 export const metadata = {
   title: "Saints",
@@ -8,15 +10,17 @@ export const metadata = {
     "Lives and writings of the Eastern Orthodox saints.",
 };
 
-export default function SaintsPage() {
+export default async function SaintsPage() {
+  const locale = await getServerLocale();
+  const m = getMessages(locale);
   return (
     <section className="bg-night px-5 md:px-8 py-16 md:py-24">
       <div className="mx-auto max-w-[1200px] w-full">
         <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
-          Saints
+          {t(m, "saints.eyebrow")}
         </p>
         <h1 className="font-sans text-[40px] md:text-[56px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
-          Lives and writings of the saints
+          {t(m, "saints.h1")}
         </h1>
         <p className="mt-5 max-w-[640px] font-sans text-[17px] text-paper/75">
           The teachers, ascetics, and wonderworkers of the Eastern Orthodox

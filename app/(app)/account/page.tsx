@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { UnsignedAccount } from "@/components/profile/UnsignedAccount";
+import { getServerLocale } from "@/lib/i18n/server";
+import { getMessages, t } from "@/lib/i18n";
 
 export const metadata = {
   title: "Your account",
@@ -26,14 +28,17 @@ export default async function AccountPage() {
     redirect("/account/profile");
   }
 
+  const locale = await getServerLocale();
+  const m = getMessages(locale);
+
   return (
     <section className={`${SECTION} bg-night min-h-[calc(100dvh-72px)]`}>
       <article className="mx-auto max-w-[1080px] w-full">
         <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-          Your account
+          {t(m, "account.eyebrow")}
         </p>
         <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
-          Pick up where you left off.
+          {t(m, "account.h1")}
         </h1>
         <p className="mt-6 font-serif text-[17px] text-paper/85 leading-[1.7] max-w-[640px]">
           Two real ways to use Purify, both free and both private. Keep

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { SUPPORT } from "@/data/support/support";
 import { fetchBmcTotal } from "@/lib/support/buymeacoffee";
+import { getServerLocale } from "@/lib/i18n/server";
+import { getMessages, t } from "@/lib/i18n";
 
 export const metadata = {
  title: "Support",
@@ -44,15 +46,17 @@ export default async function SupportPage() {
  1,
  Math.max(0, raised / SUPPORT.monthlyGoalUsd),
  );
+ const locale = await getServerLocale();
+ const m = getMessages(locale);
 
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- Support this work
+ {t(m, "support.eyebrow")}
  </p>
  <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Free now. Donations welcome.
+ {t(m, "support.h1")}
  </h1>
  <p className="mt-6 font-serif text-[17px] text-paper/85 leading-[1.7]">
  The core of Purify, the saints, the Scriptures, the

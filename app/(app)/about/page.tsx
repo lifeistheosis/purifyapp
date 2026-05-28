@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { getServerLocale } from "@/lib/i18n/server";
+import { getMessages, t } from "@/lib/i18n";
+import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
 
 export const metadata = {
  title: "About",
@@ -8,15 +11,18 @@ export const metadata = {
 
 const SECTION = "px-5 md:px-8 py-16 md:py-24";
 
-export default function AboutPage() {
+export default async function AboutPage() {
+ const locale = await getServerLocale();
+ const m = getMessages(locale);
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
+ <TranslationDisclaimer />
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- About this work
+ {t(m, "about.eyebrow")}
  </p>
  <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- A sanctuary for the Orthodox life outside the Liturgy.
+ {t(m, "about.h1")}
  </h1>
 
  {/* §1 Manifesto / North Star */}

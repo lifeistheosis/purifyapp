@@ -1,8 +1,20 @@
-export function LifeSection({ paragraphs }: { paragraphs: string[] }) {
+"use client";
+
+import { useTranslate } from "@/components/i18n/MessagesProvider";
+
+export function LifeSection({
+  paragraphs,
+  pronoun,
+}: {
+  paragraphs: string[];
+  pronoun?: "his" | "her";
+}) {
+  const { t } = useTranslate();
+  const heading = pronoun === "her" ? t("saints.herLife") : t("saints.hisLife");
   return (
     <section className="py-14 border-b border-paper/8">
       <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-        His Life
+        {heading}
       </p>
       <div className="max-w-[680px] space-y-5">
         {paragraphs.map((p, i) => (

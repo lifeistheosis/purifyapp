@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { loadAllTopics } from "@/lib/topics/topics";
+import { getServerLocale } from "@/lib/i18n/server";
+import { getMessages, t } from "@/lib/i18n";
 
 export const metadata = {
   title: "Topical Index",
@@ -11,15 +13,17 @@ export const revalidate = 3600;
 
 export default async function TopicsIndexPage() {
   const topics = await loadAllTopics();
+  const locale = await getServerLocale();
+  const m = getMessages(locale);
 
   return (
     <section className="bg-night px-5 md:px-8 py-16 md:py-24">
       <article className="mx-auto max-w-[760px] w-full">
         <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-          Topical index
+          {t(m, "topics.eyebrow")}
         </p>
         <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
-          The Fathers, by the questions they answered.
+          {t(m, "topics.h1")}
         </h1>
         <p className="mt-6 font-serif text-[17px] text-paper/80 leading-[1.7]">
           A doctrinal index for enquirers, catechumens, and lay

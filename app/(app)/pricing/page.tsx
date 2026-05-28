@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { getServerLocale } from "@/lib/i18n/server";
+import { getMessages, t } from "@/lib/i18n";
 
 export const metadata = {
   title: "Pricing",
@@ -6,15 +8,17 @@ export const metadata = {
     "The core spiritual treasury of Purify is free, always. An optional subscription layer is on the way for heavier infrastructure; what is free today will still be free then.",
 };
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const locale = await getServerLocale();
+  const m = getMessages(locale);
   return (
     <section className="min-h-[calc(100dvh-72px)] bg-night px-5 md:px-8 py-16 md:py-24">
       <div className="mx-auto max-w-[720px] w-full text-center">
         <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
-          Pricing
+          {t(m, "pricing.eyebrow")}
         </p>
         <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
-          The core is free, always.
+          {t(m, "pricing.h1")}
         </h1>
         <p className="font-sans text-[17px] md:text-[18px] text-paper/75 mt-6 leading-relaxed">
           Every saint&rsquo;s life, every primary writing of the Fathers, the

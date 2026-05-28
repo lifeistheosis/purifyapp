@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { COUNCILS } from "@/lib/councils/councils";
+import { getServerLocale } from "@/lib/i18n/server";
+import { getMessages, t } from "@/lib/i18n";
 
 export const metadata = {
  title: "The Ecumenical Councils",
@@ -18,15 +20,17 @@ const ORDINAL_NAMES = [
  "Seventh",
 ];
 
-export default function CouncilsPage() {
+export default async function CouncilsPage() {
+ const locale = await getServerLocale();
+ const m = getMessages(locale);
  return (
  <section className="bg-night px-5 md:px-8 py-16 md:py-24">
  <div className="mx-auto max-w-[1200px] w-full">
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
- The Councils
+ {t(m, "councils.eyebrow")}
  </p>
  <h1 className="font-sans text-[40px] md:text-[56px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
- The Seven Ecumenical Councils
+ {t(m, "councils.h1")}
  </h1>
  <p className="mt-5 max-w-[720px] font-serif text-[18px] md:text-[19px] text-paper/80 leading-[1.65]">
  The seven councils of the whole Church, between Nicaea in 325 and

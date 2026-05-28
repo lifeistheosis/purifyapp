@@ -1,3 +1,7 @@
+import { getServerLocale } from "@/lib/i18n/server";
+import { getMessages, t } from "@/lib/i18n";
+import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
+
 export const metadata = {
  title: "FAQ",
  description:
@@ -243,15 +247,18 @@ const QUESTIONS: QA[] = [
  },
 ];
 
-export default function FaqPage() {
+export default async function FaqPage() {
+ const locale = await getServerLocale();
+ const m = getMessages(locale);
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
+ <TranslationDisclaimer />
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- Frequently asked
+ {t(m, "faq.eyebrow")}
  </p>
  <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- The questions readers actually ask.
+ {t(m, "faq.h1")}
  </h1>
  <p className="mt-6 font-serif text-[17px] text-paper/75 leading-[1.7]">
  Honest answers. The first one is open; tap any other to expand.

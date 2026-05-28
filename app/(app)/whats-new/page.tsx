@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { ChangelogControls } from "@/components/whats-new/ChangelogControls";
+import { getServerLocale } from "@/lib/i18n/server";
+import { getMessages, t } from "@/lib/i18n";
+import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
 
 export const metadata = {
  title: "What's new",
@@ -19,6 +22,21 @@ type Entry = {
 
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
+ {
+ version: "v6.4.3",
+ kind: "The site now opens in your language",
+ date: "May 27, 2026",
+ blurb:
+ "The i18n patch lands end-to-end. Every page-level chrome string (navigation, footer, eyebrows, H1s, button labels, lead paragraphs) now reads through the locale catalog. Thirteen languages ship: English, Spanish, Romanian, Greek, Russian, French, German, Serbian, Ukrainian, Italian, Portuguese, Bulgarian, Arabic. The picker in the footer sets the language for the whole session; the choice now sticks across every navigation. Long-prose surfaces (/about body, /faq Q&A, /privacy detail, /whats-new historical entries) stay in their original English with a discreet 'Translation in progress' banner that names the discipline, the catalog was sized for chrome only because Scripture, the Fathers, the saint biographies, and the council canons should not be passed off as authoritatively translated without editorial review.",
+ items: [
+ "Server pages wired: /about, /pricing, /support, /faq, /privacy, /account, /topics, /topics/[slug], /saints, /councils, /whats-new. Each uses getServerLocale() + getMessages() server-side and renders eyebrow + H1 through t(m, key).",
+ "Saint profile shell components: TitlesSection and LifeSection now read 'His/Her titles' and 'His/Her life' through the catalog with pronoun-aware lookup. DisciplesSection, QuotesSection, and GreatFeastsSection were already wired.",
+ "TranslationDisclaimer banner mounted at the top of /about, /faq, /privacy, and /whats-new. Renders only on non-English locales. Names what's translated (UI chrome) and what isn't (body prose pending editorial review).",
+ "Locale picker fix: clicking a language now does a hard window.location.reload() so the choice persists across navigations. The previous router.refresh() only repainted the current page; the next Link click served the previously-prefetched payload in the old language.",
+ "The thirteen catalogs are hand-produced with Orthodox-aware care for liturgical terms (Glory to God for all things, Pascha, Theotokos, the morning and evening rules). The disclaimer banner discloses that editorial review for theological precision is still in progress.",
+ "Footer + home hero chip + /whats-new chip step to v6.4.3.",
+ ],
+ },
  {
  version: "v6.4.2",
  kind: "Mobile Today + Discover, the menologion vocabulary",
@@ -749,16 +767,19 @@ function groupByDate(entries: Entry[]): { date: string; entries: Entry[] }[] {
  return out;
 }
 
-export default function WhatsNewPage() {
+export default async function WhatsNewPage() {
  const groups = groupByDate(ENTRIES);
+ const locale = await getServerLocale();
+ const m = getMessages(locale);
 
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
+ <TranslationDisclaimer />
  {/* Eyebrow + version */}
  <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55">
- What&rsquo;s new
+ {t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
  v6.0 &middot; A major release: the Councils, at last
