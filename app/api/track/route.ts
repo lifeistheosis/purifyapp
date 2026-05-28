@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { geolocate, clientIp } from "@/lib/analytics/geo";
+import { trackSchema } from "@/lib/security/schemas";
+import { rateLimited, ipKey } from "@/lib/security/ratelimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,10 +17,6 @@ function parsePrimaryLanguage(header: string | null): string | null {
   if (!header) return null;
   const first = header.split(",")[0]?.trim();
   if (!first) return null;
-  // Drop the q-value suffix if any ("en;q=0.8" → "en"), then the
-  // region subtag ("es-MX" → "es") so the leaderboard groups
-  // Brazilian and European Portuguese under "pt" once and lets us
-  // see Portuguese demand at all.
   const primary = first.split(";")[0]?.split("-")[0]?.toLowerCase();
   if (!primary || primary.length > 8 || !/^[a-z]+$/.test(primary)) return null;
   return primary;
@@ -30,16 +28,39 @@ function parsePrimaryLanguage(header: string | null): string | null {
  * server-side, upsert the session (last_seen + coarse geo on first sight), and
  * record the pageview. All writes use the service role; nothing is exposed to
  * the browser. Failures are swallowed so tracking never breaks a page.
+ *
+ * Hardened:
+ *   - Content-Type must be application/json.
+ *   - Body validated by zod (sessionId pattern + path shape).
+ *   - Rate-limited: 120 events/min per IP and 600 inserts/day per IP.
+ *   - Sec-Fetch-Site, when present, must be same-origin.
  */
 export async function POST(req: NextRequest) {
+  // Cheap origin sanity. Real browsers send this; bots usually don't.
+  const sfs = req.headers.get("sec-fetch-site");
+  if (sfs && sfs !== "same-origin" && sfs !== "same-site" && sfs !== "none") {
+    return NextResponse.json({ ok: false }, { status: 403 });
+  }
+
+  const ct = req.headers.get("content-type") ?? "";
+  if (!ct.toLowerCase().includes("application/json")) {
+    return NextResponse.json({ ok: false }, { status: 415 });
+  }
+
+  const ip = ipKey(req.headers);
+  // Per-minute burst guard.
+  if (await rateLimited(`track:${ip}`, 60, 120)) {
+    return new NextResponse(null, { status: 429 });
+  }
+
   try {
-    const body = await req.json().catch(() => null);
-    const sessionId = String(body?.sessionId ?? "").slice(0, 64);
-    const path = String(body?.path ?? "").slice(0, 512);
-    const referrer = body?.referrer ? String(body.referrer).slice(0, 512) : null;
-    if (!sessionId || !path) {
+    const raw = await req.json().catch(() => null);
+    const parsed = trackSchema.safeParse(raw);
+    if (!parsed.success) {
       return NextResponse.json({ ok: false }, { status: 400 });
     }
+    const { sessionId, path, referrer } = parsed.data;
+
     // Don't record visits to the admin panel itself.
     if (path.startsWith("/admin")) return NextResponse.json({ ok: true });
 
@@ -53,13 +74,13 @@ export async function POST(req: NextRequest) {
       .maybeSingle();
 
     if (!existing) {
+      // First-sight write: tighter daily budget keeps a single IP from
+      // creating millions of session rows.
+      if (await rateLimited(`track-new:${ip}`, 86400, 600)) {
+        return new NextResponse(null, { status: 429 });
+      }
       const geo = await geolocate(clientIp(req.headers));
       const ua = (req.headers.get("user-agent") ?? "").slice(0, 300);
-      // Parse the visitor's declared primary language tag from
-      // Accept-Language. We store only the primary (e.g. "es" from
-      // "es-MX,es;q=0.9,en;q=0.8") so the data can drive translation
-      // prioritization without retaining anything finer-grained than
-      // the country already on the row.
       const acceptLanguage = parsePrimaryLanguage(
         req.headers.get("accept-language"),
       );
@@ -67,7 +88,7 @@ export async function POST(req: NextRequest) {
         session_id: sessionId,
         first_seen: now,
         last_seen: now,
-        referrer,
+        referrer: referrer ?? null,
         user_agent: ua,
         accept_language: acceptLanguage,
         pageviews: 1,

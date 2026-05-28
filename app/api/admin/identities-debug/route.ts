@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getAdminUser } from "@/lib/admin/access";
+import { getAdminUser, adminDebugEnabled } from "@/lib/admin/access";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,6 +17,7 @@ export const dynamic = "force-dynamic";
  * Google account is linked. The truth lives here.
  */
 export async function GET() {
+  if (!adminDebugEnabled()) notFound();
   const admin = await getAdminUser();
   if (!admin) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });

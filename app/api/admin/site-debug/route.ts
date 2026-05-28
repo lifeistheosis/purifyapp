@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { getAdminUser } from "@/lib/admin/access";
+import { notFound } from "next/navigation";
+import { getAdminUser, adminDebugEnabled } from "@/lib/admin/access";
 import { SITE_URL } from "@/lib/site";
 
 export const runtime = "nodejs";
@@ -13,6 +14,7 @@ export const dynamic = "force-dynamic";
  * host and you need to see which input is poisoning the result.
  */
 export async function GET() {
+  if (!adminDebugEnabled()) notFound();
   const admin = await getAdminUser();
   if (!admin) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });

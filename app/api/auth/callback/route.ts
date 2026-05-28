@@ -1,6 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { SITE_URL } from "@/lib/site";
+import { rateLimited, ipKey } from "@/lib/security/ratelimit";
+import { isSafeNext } from "@/lib/security/schemas";
 
 /**
  * Auth callback. Handles three sources:
@@ -12,29 +14,25 @@ import { SITE_URL } from "@/lib/site";
  * onward to `?next=` (default `/account/profile`). On failure: bounce
  * to `/signin` with a human-readable message in `?error=`.
  *
- * IMPORTANT: every redirect built here uses the constant SITE_URL as
- * the base, never the incoming request's `url.origin`. On Render
- * (and most managed Node hosts), the request URL the server sees is
- * the proxied internal address, `http://localhost:10000/...` ,
- * because the platform's reverse proxy forwards traffic to the
- * container's internal port. Using `url.origin` to build the
- * redirect URL would then send the user-agent to localhost, which
- * isn't reachable from a browser.
+ * Hardened:
+ *   - Per-IP rate limit (slows magic-link replay / OAuth-code stuffing).
+ *   - `next` is validated against `isSafeNext` (no //, no \\, no control
+ *     chars) — defends against open-redirect via mangled paths that
+ *     `startsWith("/")` alone wouldn't catch.
+ *   - Every redirect uses SITE_URL as the base (existing convention) so
+ *     the proxied internal request URL on Render never leaks.
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  const ip = ipKey(request.headers);
+  if (await rateLimited(`auth-cb:${ip}`, 60, 20)) {
+    return new NextResponse(null, { status: 429 });
+  }
+
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  const next = url.searchParams.get("next") ?? "/account/profile";
-  const safeNext = next.startsWith("/") ? next : "/account/profile";
+  const rawNext = url.searchParams.get("next");
+  const safeNext = isSafeNext(rawNext) ? rawNext : "/account/profile";
 
-  // OAuth providers redirect back with ?error= when the user cancels
-  // or when the provider config is bad. Surface it cleanly. If the
-  // original ?next= points at an /account/* page (e.g. the Security
-  // tab during a Connect-Google attempt), bounce back to *that* page
-  // with the error in the query, that's where the user started, and
-  // OAuthConnectionsCard already knows how to read /account-side
-  // errors. Falling through to /signin is right only for sign-in /
-  // sign-up flows that originated unsigned.
   const providerError = url.searchParams.get("error");
   const providerErrorDesc = url.searchParams.get("error_description");
   if (providerError) {

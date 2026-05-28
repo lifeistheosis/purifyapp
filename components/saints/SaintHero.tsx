@@ -1,7 +1,13 @@
 import type { Saint } from "@/lib/saints/saints";
 import { SaintIcon } from "./SaintIcon";
+import { BumpButton } from "./BumpButton";
 
-export function SaintHero({ saint }: { saint: Saint }) {
+type Props = {
+  saint: Saint;
+  bump: { bumped: boolean; total: number; signedIn: boolean };
+};
+
+export function SaintHero({ saint, bump }: Props) {
   const facts: { label: string; value: string }[] = [];
   if (saint.born) facts.push({ label: "Born", value: saint.born });
   if (saint.reposed) facts.push({ label: "Reposed", value: saint.reposed });
@@ -40,6 +46,16 @@ export function SaintHero({ saint }: { saint: Saint }) {
           <p className="mt-6 max-w-[640px] font-sans text-[17px] text-paper/80 leading-relaxed">
             {saint.shortBio}
           </p>
+          <div className="mt-6">
+            <BumpButton
+              slug={saint.slug}
+              saintName={saint.name}
+              initialBumped={bump.bumped}
+              initialTotal={bump.total}
+              signedIn={bump.signedIn}
+              complete={saint.complete}
+            />
+          </div>
         </div>
       </div>
       <dl className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-5">

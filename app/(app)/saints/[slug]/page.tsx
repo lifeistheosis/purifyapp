@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { SAINTS, getSaint } from "@/lib/saints/saints";
+import { createClient } from "@/lib/supabase/server";
 import { SaintHero } from "@/components/saints/SaintHero";
 import { LifeSection } from "@/components/saints/LifeSection";
 import { TitlesSection } from "@/components/saints/TitlesSection";
@@ -14,6 +15,10 @@ export function generateStaticParams() {
   return SAINTS.map((s) => ({ slug: s.slug }));
 }
 
+// Force dynamic so the bump count + per-user bumped state are always fresh.
+// generateStaticParams still keeps the slug list discoverable for sitemaps.
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params;
   const saint = getSaint(slug);
@@ -24,15 +29,50 @@ export async function generateMetadata({ params }: { params: Params }) {
   };
 }
 
+async function loadBumpState(slug: string) {
+  try {
+    const supa = await createClient();
+    const {
+      data: { user },
+    } = await supa.auth.getUser();
+
+    const [{ data: agg }, mine] = await Promise.all([
+      supa
+        .from("saint_bump_counts")
+        .select("bumps")
+        .eq("saint_slug", slug)
+        .maybeSingle(),
+      user
+        ? supa
+            .from("saint_bumps")
+            .select("id")
+            .eq("user_id", user.id)
+            .eq("saint_slug", slug)
+            .maybeSingle()
+        : Promise.resolve({ data: null }),
+    ]);
+
+    return {
+      total: agg?.bumps ?? 0,
+      bumped: Boolean(mine?.data),
+      signedIn: Boolean(user),
+    };
+  } catch {
+    return { total: 0, bumped: false, signedIn: false };
+  }
+}
+
 export default async function SaintPage({ params }: { params: Params }) {
   const { slug } = await params;
   const saint = getSaint(slug);
   if (!saint) notFound();
 
+  const bump = await loadBumpState(slug);
+
   return (
     <section className="bg-night px-5 md:px-8">
       <div className="mx-auto max-w-[1100px] w-full">
-        <SaintHero saint={saint} />
+        <SaintHero saint={saint} bump={bump} />
         {saint.titles?.length ? (
           <TitlesSection titles={saint.titles} pronoun={saint.pronoun} />
         ) : null}

@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getAdminUser } from "@/lib/admin/access";
+import { notFound } from "next/navigation";
+import { getAdminUser, adminDebugEnabled } from "@/lib/admin/access";
 import { geolocate, geoHeaderSnapshot } from "@/lib/analytics/geo";
 
 export const runtime = "nodejs";
@@ -14,6 +15,7 @@ export const dynamic = "force-dynamic";
  * problem is header shape, provider rate-limit, or something else.
  */
 export async function GET(req: NextRequest) {
+  if (!adminDebugEnabled()) notFound();
   const admin = await getAdminUser();
   if (!admin) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });

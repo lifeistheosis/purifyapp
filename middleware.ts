@@ -4,10 +4,17 @@ import {
   isLocaleReady,
   negotiateFromAcceptLanguage,
 } from "@/lib/i18n/locales";
+import { buildCsp, generateNonce, NONCE_HEADER } from "@/lib/security/headers";
 
 const LOCALE_COOKIE = "purify_locale";
 
 export async function middleware(request: NextRequest) {
+  // Per-request nonce for the Content-Security-Policy. Thread it via a
+  // request header so the root layout can read it from headers() and
+  // attach it to any inline <script> it renders.
+  const nonce = generateNonce();
+  request.headers.set(NONCE_HEADER, nonce);
+
   // First: hand the request to the Supabase auth middleware so the
   // session cookie is refreshed before any page renders.
   const response = await updateSession(request);
@@ -26,11 +33,18 @@ export async function middleware(request: NextRequest) {
       // locale switcher can mirror state in the DOM if it wants.
       httpOnly: false,
       sameSite: "lax",
-      // One year — locale rarely changes; users who want to change
-      // it use the switcher in the footer.
+      secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 365,
     });
   }
+
+  // Attach the CSP header. Ship as Report-Only first so violations are
+  // collected without breaking the site. Flip to "Content-Security-Policy"
+  // (no -Report-Only) once /api/csp-report has been clean for a week.
+  const csp = buildCsp(nonce);
+  response.headers.set("Content-Security-Policy-Report-Only", csp);
+  // Echo the nonce so server components can read it via headers().
+  response.headers.set(NONCE_HEADER, nonce);
 
   return response;
 }

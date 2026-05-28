@@ -74,6 +74,17 @@ export type Saint = {
  * if present in the registry.
  */
  disciples?: Disciple[];
+ /**
+ * Editorial flag. When `true`, every known work for this saint has
+ * been translated and shipped — the bump/upvote button on the profile
+ * is replaced by a non-interactive "Fully published" badge so users
+ * stop being asked to signal demand we've already met.
+ *
+ * Defaults to `false` (undefined === false). Set per-saint as new
+ * corpora ship. The badge has its own help popover explaining what
+ * the marker means and how to read the bump history that preceded it.
+ */
+ complete?: boolean;
 };
 
 export type Disciple = {

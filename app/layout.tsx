@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cardo, DM_Sans, DM_Serif_Display, Lora } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { SITE_URL } from "@/lib/site";
@@ -7,6 +8,7 @@ import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n/locales";
 import { MessagesProvider } from "@/components/i18n/MessagesProvider";
+import { NONCE_HEADER } from "@/lib/security/headers";
 
 const dmSans = DM_Sans({
  variable: "--font-dm-sans",
@@ -103,6 +105,13 @@ export default async function RootLayout({
  const localeCode = await getServerLocale();
  const localeRecord = getLocale(localeCode);
  const messages = getMessages(localeCode);
+ // Per-request CSP nonce, set by middleware. Read it so any future inline
+ // <script nonce={nonce}> tags here will satisfy the strict-dynamic policy.
+ // Currently unused by app code; Next's own runtime carries the nonce via
+ // its build pipeline once the request header is set.
+ const h = await headers();
+ // eslint-disable-next-line @typescript-eslint/no-unused-vars
+ const nonce = h.get(NONCE_HEADER) ?? undefined;
  return (
  <html
  lang={localeCode}
