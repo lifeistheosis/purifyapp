@@ -138,7 +138,7 @@ export function Footer() {
       {t("footer.glory")}
      </p>
      <p className="font-sans text-[12px] text-paper/45 text-center sm:text-right">
-      © {new Date().getFullYear()} · v6.4.3 · {t("footer.copyright")}
+      © {new Date().getFullYear()} · v6.5 · {t("footer.copyright")}
      </p>
     </div>
    </div>

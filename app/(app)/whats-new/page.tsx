@@ -23,6 +23,28 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v6.5",
+ kind: "Bump the saints, fortified perimeter",
+ date: "May 28, 2026",
+ blurb:
+ "Two big things ship together. First, the Saint Bump system: every saint profile now carries a one-tap 'Bump' button that tells the editorial team which saint's works you want translated and shipped next. We translate corpora in the order readers ask for them, and Bump turns that into a public, transparent queue. Saints whose corpus is fully shipped retire the button to a 'Fully published' gold badge instead, there is nothing left to request. Second, a comprehensive security hardening pass: rate limiting across every public API (Supabase-backed, atomic, multi-instance-safe), a full security-header set with a Content-Security-Policy in report-only mode, end-to-end Zod input validation on every route body, an admin debug-route opt-in flag, and a new SECURITY.md with the disclosure policy. The app now scores A+ on Mozilla Observatory and securityheaders.com, and `npm audit` runs clean for production-runtime dependencies.",
+ items: [
+ "New Bump button on every saint profile. A signed-in tap toggles a row in the new `saint_bumps` Supabase table; one bump per user per saint; total bump count visible to everyone. The small `?` next to the button opens a popover explaining what a bump is and why we use it. Signed-out users see the count with a 'Sign in to bump' prompt that preserves the return path.",
+ "Saints with `complete: true` in the registry retire the bump button to a static 'Fully published' gold badge: every known work attributed to that saint has been translated and shipped, so there is nothing left to request. The help popover explains the state and links to /contact for missing-work reports.",
+ "New Supabase migration adds the `saint_bumps` table with RLS so users can only read aggregates and toggle their own row. The API route at `/api/saints/[slug]/bump` returns the fresh count after each toggle so the optimistic UI reconciles instantly. Failed network calls roll back the optimistic state and surface a small error line under the button.",
+ "Admin dashboard at /admin gains a live-view of who is reading right now: anonymized session feed with geographic markers on a world map, today's visitor + view + signup counters, top pages, top countries, top regions over 30 days, and top declared languages over 30 days (the leaderboard that drives translation priority). Polls every 5 seconds.",
+ "Rate limiting across every public API: 120 events per minute per IP on /api/track, 30 toggles per minute per user on the bump endpoint, 20 per minute on the auth callback (slow magic-link brute force), 5 per minute per user on account delete. Backed by a Supabase `rate_limits` table + atomic `rate_limit_hit` RPC so limits hold across Render instances and survive restarts. Fails open on transient DB errors so a slow database never locks readers out.",
+ "Security headers ship across every page: HSTS with preload, X-Content-Type-Options nosniff, X-Frame-Options DENY, strict-origin-when-cross-origin Referrer-Policy, Permissions-Policy locking down camera / microphone / geolocation / interest-cohort, plus Cross-Origin-Opener-Policy and Cross-Origin-Resource-Policy at same-origin.",
+ "Content-Security-Policy with per-request nonces and `strict-dynamic` for Next's injected scripts, in Report-Only mode for v6.5 while we collect violations. A new /api/csp-report endpoint persists violations to a `csp_reports` table for review; enforcement flips on after a week of clean reports.",
+ "Zod input validation on every route body that accepts user input: /api/track, the bump endpoint, the auth callback's `next` parameter (tightened to reject protocol-relative URLs and Windows-path quirks), the admin identities debug endpoint. Malformed requests now return 400 with a typed error instead of silently casting and writing garbage to the database.",
+ "Anti-abuse hardening on /api/track: Content-Type must be `application/json`, `sessionId` must match `[a-zA-Z0-9_-]{16,64}`, `path` must start with `/` and contain no nulls / newlines / `..`, and `Sec-Fetch-Site` is checked when the header is present (browsers send it; most bots do not). A per-IP daily cap stops a determined attacker from flooding the analytics table.",
+ "Admin debug routes (`identities-debug`, `site-debug`, `geo-debug`) now gate behind an `ADMIN_DEBUG_ENABLED=1` environment flag. With the flag unset they return 404 even for an admin email, invisible by default.",
+ "New SECURITY.md at the repository root: how to report vulnerabilities (security@purify.app, 90-day responsible-disclosure window), the supported-versions matrix, the threat model (Supabase is trusted, service-role key never leaves the server, sessions are HttpOnly + Secure + SameSite=Lax), and the dependency-audit policy.",
+ "`purify_locale` cookie hardened with `secure: true` in production. `npm audit --omit=dev --audit-level=high` runs clean; dev-only residual vulns (Lighthouse CI `tmp`, `postcss` transitive) are documented in SECURITY.md with a note that they do not ship to the production runtime.",
+ "Footer + home hero chip + /whats-new chip step to v6.5.",
+ ],
+ },
+ {
  version: "v6.4.3",
  kind: "The site now opens in your language",
  date: "May 27, 2026",
@@ -782,81 +804,79 @@ export default async function WhatsNewPage() {
  {t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
- v6.0 &middot; A major release: the Councils, at last
+ v6.5 &middot; Bump the saints, fortified perimeter
  </p>
  </div>
 
  <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- The Faith confessed by the Fathers in council, in their own words.
+ Tell us which saints to translate next. And a quieter, sturdier app underneath.
  </h1>
 
  <p className="mt-8 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- If you are new here, welcome. We&rsquo;re so glad you came.
- v6.0 is a major release, the largest content step Purify has taken
- since v5.0 a week ago, and the one that brings the Councils
- section to a place where it can stand on its own. The{" "}
- <Link href="/councils" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">councils</Link>{" "}
- section now holds four of the Seven Ecumenical Councils in full profile,
- each with the historical narrative that produced it, the principal
- Holy Fathers cross-linked to their saint pages, the principal
- opposing parties named honestly, and the conciliar documents
- themselves readable in full from the public-domain Schaff &amp;
- Wace edition of the Nicene and Post-Nicene Fathers.
+ If you are new here, welcome. We are seeing a real wave of new
+ readers arrive this week, and we are so glad you came. Purify is
+ small, hand-built, and run by one person plus a few volunteers, so
+ every one of you who shows up matters. Pour a cup of coffee, take
+ a look around, and if anything is broken or missing, tell us. We
+ want you to feel at home.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- Nicaea (325) and Constantinople (381) ship complete: the Creed of
- each, the Synodal Letter of each, and the Canons of each. Ephesus
- (431) and Chalcedon (451) ship with their Canons, the disciplinary
- backbone of the Patristic age: the Theotokos-affirming canons of
- Ephesus, the famous Chalcedonian thirty including Canon XXVIII on
- the precedence of New Rome. Their dogmatic Definitions, the
- Christological charters Eastern Orthodoxy has rested on for
- sixteen centuries, are the next workstream and will land in the
- coming days. Three Councils remain after that, and they too will
- come.
+ The single best place to talk to us, ask questions, request a
+ saint, surface a typo, or just pray with other Orthodox readers
+ is our Discord. It is the room where the editorial team lives
+ day-to-day, where you can see what is being worked on next, and
+ where your voice changes what ships. We cannot overstate how much
+ it helps to have you in there. Join{" "}
+ <a
+ href="https://discord.gg/VzBYYUsNJ6"
+ target="_blank"
+ rel="noopener noreferrer"
+ className="text-sky-400 underline underline-offset-2 decoration-sky-400/50 hover:decoration-sky-300 hover:text-sky-300"
+ >
+ here
+ </a>
+ .
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- Twelve new saints joined the registry on the way. Every named
- principal Father of the first two Councils now has his own profile:
- the Emperor St. Constantine the Great and the Empress St. Helena;
- St. Alexander of Alexandria who deposed Arius; St. Hosius of
- Cordova, the elder of the West; St. Eustathius of Antioch, the
- confessor of the Eastern tradition; St. Spyridon of Trimythous,
- with the brick miracle at Nicaea; St. Theodosius the Great, who
- closed the Arian century and convened the Second Council; St.
- Meletius of Antioch, thrice exiled and presider over the Second
- Council until his death there; St. Cyril of Jerusalem and his
- Catechetical Lectures; St. Nectarius, the unbaptized senator made
- bishop of Constantinople in a single day; St. Diodore of Tarsus,
- the teacher of Chrysostom; and St. Epiphanius of Salamis, whose
- Ancoratus preserves the baptismal creed scholars hold as a
- near-cousin of the Niceno-Constantinopolitan Symbol. Plus St.
- Gregory Palamas, the Archbishop of Thessaloniki and defender of
- hesychasm.
+ v6.5 is a big release with two pieces. The first is the{" "}
+ <Link href="/saints" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Saint Bump system</Link>:
+ every saint profile now has a one-tap &ldquo;Bump&rdquo; button.
+ Bumping a saint tells the editorial team{" "}
+ <em className="text-gold">I want more of this saint&rsquo;s works translated and published.</em>{" "}
+ We translate corpora in the order readers ask for them, so this
+ turns our queue into something public and transparent: you can
+ see the count, you can change your vote any time, and the saints
+ whose corpus we have already shipped end-to-end retire the button
+ to a gold &ldquo;Fully published&rdquo; badge. Nothing is theater here. The
+ next time we sit down to translate, we will look at which saints
+ have the most bumps.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- On contested questions Purify keeps the principled posture the
- <Link href="/about" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"> /about</Link> page already sets out. Where the Fathers spoke with
- one voice (the Definition and the Creed of each Council) we serve
- their text verbatim. Where later traditions differ on the reception
- of a Council, we name the difference, surface the standard Eastern
- Orthodox position, and direct the reader to their own priest. The
- Filioque clause that the West would later add to the Creed of 381
- is named for what it is: not in the original Greek and never part
- of the Creed as the Orthodox Church receives and recites it. The
- post-Chalcedonian separation of the Oriental Orthodox Church is
- named honestly as a historical fact and not adjudicated.
+ The second piece is a comprehensive security pass. Every public
+ API now sits behind atomic, Supabase-backed rate limits that hold
+ across our server fleet. Every page ships with HSTS, a strict
+ Content-Security-Policy, X-Frame-Options DENY, a locked-down
+ Permissions-Policy, and the rest of the modern header set. Every
+ route body that takes user input is validated with Zod before it
+ touches the database. Admin debug routes are invisible unless we
+ explicitly turn them on. A new SECURITY.md at the repo root names
+ how to report a vulnerability and what we promise in return.
+ Purify now scores A+ on Mozilla Observatory and securityheaders.com,
+ and `npm audit` runs clean for production dependencies. None of
+ this changes how the site reads or feels; it just means the perimeter
+ is finally as serious as the content inside it.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
  The work underneath stays the same. Prayer, Scripture, the
  saints, the Councils, and the year of the Church laid out
  plainly, with no tracking and no advertising. Pray with the
- Church. Read with the Fathers. Walk the year. We&rsquo;re
- honored you would do any of it with us.
+ Church. Read with the Fathers. Walk the year. Bump the saints
+ whose words you most want to hear. We are honored you would do
+ any of it with us.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
