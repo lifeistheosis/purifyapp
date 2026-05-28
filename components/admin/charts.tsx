@@ -52,9 +52,20 @@ export function Sparkline({
   );
 }
 
+// Round a raw maximum up to a "nice" ceiling so axis ticks land on clean
+// numbers (50, 100, 500, 1000, …) instead of arbitrary fractions of the
+// raw peak. e.g. niceMax(385) = 500; niceMax(96) = 100; niceMax(3) = 5.
+function niceMax(v: number): number {
+  if (v <= 0) return 1;
+  const pow = Math.pow(10, Math.floor(Math.log10(v)));
+  const norm = v / pow;
+  const step = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10;
+  return step * pow;
+}
+
 // ── LineChart ───────────────────────────────────────────────────────────────
 // Multi-series time-series. Each series gets its own colour; the X axis is
-// implicit (one tick per data point); the Y axis shows min/max only.
+// implicit (one tick per data point); the Y axis spans 0 → niceMax(peak).
 type Series = { name: string; color: string; data: number[] };
 
 export function LineChart({
@@ -82,9 +93,7 @@ export function LineChart({
       </p>
     );
   }
-  const max = Math.max(...all, 1);
-  const min = 0;
-  const span = max - min || 1;
+  const axisMax = niceMax(Math.max(...all, 1));
   const count = Math.max(...series.map((s) => s.data.length));
   const stepX = count > 1 ? innerW / (count - 1) : 0;
 
@@ -92,13 +101,15 @@ export function LineChart({
     data
       .map((v, i) => {
         const x = padL + i * stepX;
-        const y = padT + innerH - ((v - min) / span) * innerH;
+        const y = padT + innerH - (v / axisMax) * innerH;
         return `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
       })
       .join(" ");
 
-  // 4 horizontal grid lines.
-  const grid = [0, 0.25, 0.5, 0.75, 1].map((f) => padT + innerH * (1 - f));
+  // Tick fractions are listed top → bottom so they pair correctly with the
+  // grid Y-coordinates (small Y = top in SVG). Labels read axisMax → 0.
+  const tickFracs = [1, 0.75, 0.5, 0.25, 0];
+  const grid = tickFracs.map((f) => padT + innerH * (1 - f));
 
   return (
     <div className="w-full">
@@ -131,8 +142,8 @@ export function LineChart({
             strokeWidth={1}
           />
         ))}
-        {/* Y labels */}
-        {[max, max * 0.75, max * 0.5, max * 0.25, 0].map((v, i) => (
+        {/* Y labels — top to bottom, axisMax → 0. */}
+        {tickFracs.map((f, i) => (
           <text
             key={i}
             x={padL - 6}
@@ -142,7 +153,7 @@ export function LineChart({
             textAnchor="end"
             fontFamily="ui-sans-serif, system-ui"
           >
-            {Math.round(v)}
+            {Math.round(f * axisMax)}
           </text>
         ))}
         {/* X labels (sparse — first, middle, last) */}
@@ -184,7 +195,7 @@ export function LineChart({
             />
             {series.map((s) => {
               const v = s.data[hover] ?? 0;
-              const y = padT + innerH - ((v - min) / span) * innerH;
+              const y = padT + innerH - (v / axisMax) * innerH;
               return (
                 <circle
                   key={s.name}
