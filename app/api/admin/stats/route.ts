@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getSaint } from "@/lib/saints/saints";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -134,6 +135,30 @@ export async function GET() {
     .slice(0, 12)
     .map(([code, count]) => ({ code, count }));
 
+  // Top bumped saints — the editorial leaderboard the v6.5 bump system
+  // feeds. Reads the public aggregate view so RLS doesn't matter; resolves
+  // the slug back to a display name + complete flag via the in-repo registry.
+  const { data: bumpRows } = await supa
+    .from("saint_bump_counts")
+    .select("saint_slug, bumps")
+    .order("bumps", { ascending: false })
+    .limit(20);
+  const topBumps = (bumpRows ?? [])
+    .map((r) => {
+      const s = getSaint(r.saint_slug);
+      return {
+        slug: r.saint_slug,
+        name: s?.name ?? r.saint_slug,
+        complete: Boolean(s?.complete),
+        bumps: r.bumps as number,
+      };
+    })
+    .filter((r) => r.bumps > 0);
+
+  const { count: totalBumps } = await supa
+    .from("saint_bumps")
+    .select("*", { count: "exact", head: true });
+
   return NextResponse.json(
     {
       liveCount: sessions.length,
@@ -148,6 +173,8 @@ export async function GET() {
       topCountries,
       topRegions,
       topLanguages,
+      topBumps,
+      totalBumps: totalBumps ?? 0,
       generatedAt: new Date().toISOString(),
     },
     { headers: { "Cache-Control": "no-store" } },

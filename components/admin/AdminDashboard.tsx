@@ -24,6 +24,13 @@ type Session = {
  lastSeen: string;
 };
 
+type SaintBump = {
+ slug: string;
+ name: string;
+ complete: boolean;
+ bumps: number;
+};
+
 type Stats = {
  liveCount: number;
  sessions: Session[];
@@ -33,6 +40,8 @@ type Stats = {
  topCountries: { name: string; code: string | null; count: number }[];
  topRegions: { country: string; region: string; code: string | null; count: number }[];
  topLanguages: { code: string; count: number }[];
+ topBumps: SaintBump[];
+ totalBumps: number;
  generatedAt: string;
 };
 
@@ -270,6 +279,60 @@ export function AdminDashboard({ adminEmail }: { adminEmail: string }) {
  {stats && stats.topRegions.length === 0 && (
  <li className="font-sans text-[13px] text-paper/45">
  No region data yet.
+ </li>
+ )}
+ </ul>
+ </section>
+
+ {/* Saint Bump leaderboard — the editorial queue v6.5 introduced.
+   Sorted by total bumps, capped at 20. Saints flagged complete:true
+   show a gold "shipped" pip so we don't double-prioritize them. */}
+ <section className="rounded-lg border border-gold/25 bg-gold/[0.04] p-5">
+ <div className="flex items-baseline justify-between gap-3 mb-1 flex-wrap">
+ <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.2px] text-gold/80">
+ Top bumped saints
+ </p>
+ {stats && (
+ <p className="font-sans text-[11px] text-paper/45 tabular-nums">
+ {stats.totalBumps} total
+ </p>
+ )}
+ </div>
+ <p className="font-sans text-[11px] text-paper/40 mb-4">
+ Readers asking for more works. Drives translation priority.
+ </p>
+ <ul className="space-y-2">
+ {stats?.topBumps.map((b, i) => (
+ <li key={b.slug} className="flex items-center justify-between gap-3">
+ <span className="font-sans text-[13px] text-paper/80 truncate flex items-center gap-2 min-w-0">
+ <span className="font-sans text-[11px] text-paper/35 tabular-nums w-5 shrink-0">
+ {i + 1}.
+ </span>
+ <a
+ href={`/saints/${b.slug}`}
+ target="_blank"
+ rel="noopener noreferrer"
+ className="truncate hover:text-gold transition-colors"
+ >
+ {b.name}
+ </a>
+ {b.complete && (
+ <span
+ title="Fully published"
+ className="shrink-0 rounded-full border border-gold/40 bg-gold/10 px-1.5 py-0.5 font-sans text-[9px] font-semibold uppercase tracking-[1px] text-gold"
+ >
+ ✓
+ </span>
+ )}
+ </span>
+ <span className="font-sans text-[13px] text-gold tabular-nums font-semibold shrink-0">
+ {b.bumps}
+ </span>
+ </li>
+ ))}
+ {stats && stats.topBumps.length === 0 && (
+ <li className="font-sans text-[13px] text-paper/45">
+ No bumps yet. Nothing to prioritize.
  </li>
  )}
  </ul>
