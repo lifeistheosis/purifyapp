@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { SAINTS, getSaint } from "@/lib/saints/saints";
 import { createClient } from "@/lib/supabase/server";
+import { getEffectiveComplete } from "@/lib/admin/saintOverrides";
 import { SaintHero } from "@/components/saints/SaintHero";
 import { LifeSection } from "@/components/saints/LifeSection";
 import { TitlesSection } from "@/components/saints/TitlesSection";
@@ -67,12 +68,19 @@ export default async function SaintPage({ params }: { params: Params }) {
   const saint = getSaint(slug);
   if (!saint) notFound();
 
-  const bump = await loadBumpState(slug);
+  // Apply admin-set `complete` override on top of the registry value. Falls
+  // back to the registry on any error; the public site never breaks if the
+  // override table is unreachable.
+  const [bump, effectiveComplete] = await Promise.all([
+    loadBumpState(slug),
+    getEffectiveComplete(slug, Boolean(saint.complete)),
+  ]);
+  const effectiveSaint = { ...saint, complete: effectiveComplete };
 
   return (
     <section className="bg-night px-5 md:px-8">
       <div className="mx-auto max-w-[1100px] w-full">
-        <SaintHero saint={saint} bump={bump} />
+        <SaintHero saint={effectiveSaint} bump={bump} />
         {saint.titles?.length ? (
           <TitlesSection titles={saint.titles} pronoun={saint.pronoun} />
         ) : null}

@@ -1,0 +1,135 @@
+"use client";
+
+// Live view tab — current visitors, world map, real-time feed.
+// Polls /api/admin/stats every 5 seconds.
+
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import type { MapPoint } from "../WorldMap";
+import { Card, StatCard } from "../primitives";
+
+const WorldMap = dynamic(() => import("../WorldMap").then((m) => m.WorldMap), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full aspect-[2/1] rounded-lg border border-paper/10 bg-night animate-pulse" />
+  ),
+});
+
+type Session = {
+  id: string;
+  city: string | null;
+  region: string | null;
+  country: string | null;
+  countryCode: string | null;
+  lat: number | null;
+  lng: number | null;
+  path: string | null;
+  lastSeen: string;
+};
+
+type Stats = {
+  liveCount: number;
+  sessions: Session[];
+  today: { visitors: number; views: number; signups: number };
+  totalUsers: number;
+  generatedAt: string;
+};
+
+function flag(code: string | null): string {
+  if (!code || code.length !== 2) return "🌐";
+  return String.fromCodePoint(
+    ...[...code.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65),
+  );
+}
+
+function timeAgo(iso: string): string {
+  const s = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
+  if (s < 60) return `${s}s ago`;
+  return `${Math.round(s / 60)}m ago`;
+}
+
+export function LiveTab() {
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    async function load() {
+      try {
+        const r = await fetch("/api/admin/stats", { cache: "no-store" });
+        if (!r.ok) throw new Error();
+        const j = (await r.json()) as Stats;
+        if (alive) {
+          setStats(j);
+          setError(false);
+        }
+      } catch {
+        if (alive) setError(true);
+      }
+    }
+    load();
+    const id = setInterval(load, 5000);
+    return () => {
+      alive = false;
+      clearInterval(id);
+    };
+  }, []);
+
+  const points: MapPoint[] =
+    stats?.sessions
+      .filter((s) => typeof s.lat === "number" && typeof s.lng === "number")
+      .map((s) => ({ id: s.id, lat: s.lat as number, lng: s.lng as number })) ?? [];
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-baseline justify-end">
+        <p className="font-sans text-[11px] text-paper/40">
+          {error ? "reconnecting…" : stats ? `live · updated ${timeAgo(stats.generatedAt)}` : "loading…"}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="rounded-lg border border-gold/30 bg-gold/[0.06] p-5 col-span-2 md:col-span-1">
+          <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.2px] text-gold/80 flex items-center gap-2">
+            <span className="inline-block h-2 w-2 rounded-full bg-gold animate-pulse" />
+            Live now
+          </p>
+          <p className="mt-2 font-sans text-[44px] font-bold tabular-nums leading-none text-gold">
+            {stats?.liveCount ?? "—"}
+          </p>
+        </div>
+        <StatCard label="Visitors today" value={stats?.today.visitors ?? "—"} />
+        <StatCard label="Page views today" value={stats?.today.views ?? "—"} />
+        <StatCard label="New users today" value={stats?.today.signups ?? "—"} accent />
+        <StatCard label="Total users" value={stats?.totalUsers ?? "—"} />
+      </div>
+
+      <WorldMap points={points} />
+
+      <Card title="Active visitors" subtitle={`${stats?.sessions.length ?? 0} on the site right now`}>
+        {stats && stats.sessions.length === 0 && (
+          <p className="font-sans text-[14px] text-paper/45">No one on the site right now.</p>
+        )}
+        <ul className="space-y-2 max-h-[420px] overflow-y-auto">
+          {stats?.sessions.map((s) => (
+            <li
+              key={s.id}
+              className="flex items-center gap-3 rounded-md border border-paper/[0.08] bg-paper/[0.02] px-3 py-2.5"
+            >
+              <span className="text-[18px] leading-none">{flag(s.countryCode)}</span>
+              <div className="min-w-0 flex-1">
+                <p className="font-sans text-[14px] text-paper truncate">
+                  {[s.city, s.country].filter(Boolean).join(", ") || "Unknown location"}
+                </p>
+                <p className="font-sans text-[12px] text-paper/45 truncate">{s.path ?? "—"}</p>
+              </div>
+              <span className="shrink-0 font-sans text-[11px] text-paper/40 tabular-nums">
+                {timeAgo(s.lastSeen)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </Card>
+    </div>
+  );
+}
