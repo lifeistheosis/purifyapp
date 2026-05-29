@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Instagram } from "@/components/ui/icons/Instagram";
+import { Discord } from "@/components/ui/icons/Discord";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 
@@ -23,7 +24,7 @@ export function Footer() {
   {
    heading: t("footer.saints"),
    links: [
-    { label: t("saints.h1"), href: "/saints" },
+    { label: t("footer.saints"), href: "/saints" },
     { label: "The Fathers", href: "/saints" },
     { label: t("saints.writings"), href: "/saints" },
     { label: t("discover.tile.patristic"), href: "/bible/john/1" },
@@ -107,7 +108,7 @@ export function Footer() {
        aria-label="Discord"
        className="inline-flex items-center gap-2 rounded-pill border border-[#5865F2]/35 bg-[#5865F2]/[0.06] px-4 py-2 font-sans text-[13px] text-[#a4adff] hover:bg-[#5865F2]/[0.12] hover:border-[#5865F2]/55 hover:text-paper transition-colors"
       >
-       <span aria-hidden className="text-[14px]">#</span>
+       <Discord size={14} />
        {t("footer.discord")}
       </a>
       <a
@@ -141,10 +142,6 @@ export function Footer() {
       © {new Date().getFullYear()} · v6.9 · {t("footer.copyright")}
      </p>
     </div>
-    <p className="mt-6 font-sans text-[11px] text-paper/40 text-center leading-relaxed">
-     Purify participates in the Amazon Associates program. We may earn a
-     commission on qualifying purchases.
-    </p>
    </div>
   </footer>
  );

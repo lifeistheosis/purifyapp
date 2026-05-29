@@ -47,20 +47,24 @@ export type Locale = {
 
 export const DEFAULT_LOCALE: LocaleCode = "en";
 
+// v6.9.1: only English and German are shippable. The other eleven
+// locales stay in the registry so any stale cookie still resolves
+// to a known shape; isLocaleReady() is the gate. They will return
+// when the editorial team has hand-checked their catalogs.
 export const LOCALES: Locale[] = [
   { code: "en", nativeLabel: "English", englishLabel: "English", ready: true, dir: "ltr" },
-  { code: "es", nativeLabel: "Español", englishLabel: "Spanish", ready: true, dir: "ltr" },
-  { code: "ro", nativeLabel: "Română", englishLabel: "Romanian", ready: true, dir: "ltr" },
-  { code: "el", nativeLabel: "Ελληνικά", englishLabel: "Greek", ready: true, dir: "ltr" },
-  { code: "ru", nativeLabel: "Русский", englishLabel: "Russian", ready: true, dir: "ltr" },
-  { code: "fr", nativeLabel: "Français", englishLabel: "French", ready: true, dir: "ltr" },
+  { code: "es", nativeLabel: "Español", englishLabel: "Spanish", ready: false, dir: "ltr" },
+  { code: "ro", nativeLabel: "Română", englishLabel: "Romanian", ready: false, dir: "ltr" },
+  { code: "el", nativeLabel: "Ελληνικά", englishLabel: "Greek", ready: false, dir: "ltr" },
+  { code: "ru", nativeLabel: "Русский", englishLabel: "Russian", ready: false, dir: "ltr" },
+  { code: "fr", nativeLabel: "Français", englishLabel: "French", ready: false, dir: "ltr" },
   { code: "de", nativeLabel: "Deutsch", englishLabel: "German", ready: true, dir: "ltr" },
-  { code: "sr", nativeLabel: "Српски", englishLabel: "Serbian", ready: true, dir: "ltr" },
-  { code: "uk", nativeLabel: "Українська", englishLabel: "Ukrainian", ready: true, dir: "ltr" },
-  { code: "it", nativeLabel: "Italiano", englishLabel: "Italian", ready: true, dir: "ltr" },
-  { code: "pt", nativeLabel: "Português", englishLabel: "Portuguese", ready: true, dir: "ltr" },
-  { code: "bg", nativeLabel: "Български", englishLabel: "Bulgarian", ready: true, dir: "ltr" },
-  { code: "ar", nativeLabel: "العربية", englishLabel: "Arabic", ready: true, dir: "rtl" },
+  { code: "sr", nativeLabel: "Српски", englishLabel: "Serbian", ready: false, dir: "ltr" },
+  { code: "uk", nativeLabel: "Українська", englishLabel: "Ukrainian", ready: false, dir: "ltr" },
+  { code: "it", nativeLabel: "Italiano", englishLabel: "Italian", ready: false, dir: "ltr" },
+  { code: "pt", nativeLabel: "Português", englishLabel: "Portuguese", ready: false, dir: "ltr" },
+  { code: "bg", nativeLabel: "Български", englishLabel: "Bulgarian", ready: false, dir: "ltr" },
+  { code: "ar", nativeLabel: "العربية", englishLabel: "Arabic", ready: false, dir: "rtl" },
 ];
 
 /** True if a locale is considered shippable today. */

@@ -186,7 +186,7 @@ export default async function Home() {
  </span>
  <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
  <span className="sm:hidden">v6.9 · Deutsch</span>
- <span className="hidden sm:inline">v6.9 · Deutsch — the site speaks German now</span>
+ <span className="hidden sm:inline">v6.9 · Deutsch, the site speaks German now</span>
  </span>
  <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
  →
@@ -341,7 +341,7 @@ export default async function Home() {
  </h2>
  <p className="mt-5 font-serif text-[15px] md:text-[18px] text-paper/75 leading-[1.6] max-w-[640px]">
  {isDe
- ? "Fang an, wo du stehst — bei einem Gebet, beim Heiligen des Tages, bei einem Vers des Evangeliums."
+ ? "Fang an, wo du stehst, bei einem Gebet, beim Heiligen des Tages, bei einem Vers des Evangeliums."
  : "Begin where you stand, at a prayer, at the saint of the day, at a verse of the Gospel."}
  </p>
  <div className="mt-10">

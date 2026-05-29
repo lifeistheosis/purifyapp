@@ -48,7 +48,7 @@ export function LocaleSwitcher() {
         disabled={pending}
         onChange={(e) => setLocale(e.target.value)}
       >
-        {LOCALES.map((l) => (
+        {LOCALES.filter((l) => l.ready).map((l) => (
           <option key={l.code} value={l.code}>
             {l.nativeLabel}
           </option>

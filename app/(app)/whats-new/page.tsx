@@ -875,7 +875,7 @@ export default async function WhatsNewPage() {
 
  {isDe ? (
  <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Die ganze Seite spricht jetzt Deutsch.
+ Sag uns, welche Heiligen wir als nächste übersetzen sollen. Und eine stillere, festere App darunter.
  </h1>
  ) : (
  <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
@@ -887,24 +887,24 @@ export default async function WhatsNewPage() {
  <>
  <p className="mt-8 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
  Wenn du neu hier bist, willkommen. Wir sehen in dieser Woche
- eine echte Welle neuer Leser kommen, und wir sind sehr froh,
- daß du gekommen bist. Purify ist klein, von Hand gebaut und
- wird von einem kleinen Team von Entwicklern und Redakteuren
- getragen — jeder Einzelne, der hereinschaut, zählt. Gieß dir
- eine Tasse Kaffee ein, schau dich um, und wenn etwas kaputt
- ist oder fehlt, sag uns Bescheid. Wir möchten, daß du dich
- zuhause fühlst.
+ eine echte Welle neuer Leser ankommen, und wir sind sehr
+ froh, daß du gekommen bist. Purify ist klein, von Hand gebaut
+ und wird von einem kleinen Team von Entwicklern und
+ Redakteuren getragen, jeder einzelne von euch, der
+ vorbeischaut, zählt. Gieß dir eine Tasse Kaffee ein, schau
+ dich um, und wenn etwas kaputt ist oder fehlt, sag uns
+ Bescheid. Wir möchten, daß du dich zuhause fühlst.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- Der beste Ort, mit uns zu sprechen, Fragen zu stellen, einen
- Heiligen vorzuschlagen, einen Tippfehler zu melden oder
- einfach mit anderen orthodoxen Lesern zu beten, ist unser
- Discord. Es ist der Raum, in dem die Redaktion täglich lebt,
- wo du siehst, woran als Nächstes gearbeitet wird, und wo
- deine Stimme ändert, was geliefert wird. Wir können nicht
- genug betonen, wie sehr es hilft, wenn du dort dabei bist.
- Tritt{" "}
+ Der mit Abstand beste Ort, um mit uns zu sprechen, Fragen zu
+ stellen, einen Heiligen vorzuschlagen, einen Tippfehler zu
+ melden oder einfach mit anderen orthodoxen Lesern zu beten,
+ ist unser Discord. Es ist der Raum, in dem die Redaktion
+ täglich lebt, wo du sehen kannst, woran als nächstes
+ gearbeitet wird, und wo deine Stimme ändert, was geliefert
+ wird. Wir können nicht genug betonen, wie sehr es hilft, dich
+ dort dabei zu haben. Tritt{" "}
  <a
  href="https://discord.gg/VzBYYUsNJ6"
  target="_blank"
@@ -917,51 +917,65 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- v6.9 ist ein großes Release: die deutsche Ausgabe von Purify.
- Wähle Deutsch im Fußbereich, und die ganze Seite wechselt die
- Sprache. Die Startseite, der Gebets-Bereich, der Kalender,{" "}
+ v6.5 ist ein großes Release mit zwei Teilen. Der erste ist
+ das{" "}
  <Link
- href="/about"
+ href="/saints"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- /about
+ Heiligen-Bump-System
  </Link>
- , /faq, /privacy, /support, /pricing, /topics — jede Seite,
- die ein gewöhnlicher Leser tatsächlich öffnet — erscheint in
- redaktionellem Deutsch, von Hand geschrieben, nicht
- maschinell übersetzt. Alle sechsundfünfzig Heiligenviten, die
- Morgen- und Abendregel, das Wesens-Energien-Florilegium aus
- v6.8 und das Nicänische Glaubensbekenntnis von 325 liefern
- wir gleich mit aus.
+ : jedes Heiligenprofil hat jetzt eine
+ Ein-Klick-&bdquo;Bump&ldquo;-Schaltfläche. Einen Heiligen zu
+ bumpen sagt der Redaktion:{" "}
+ <em className="text-gold">
+ Ich möchte mehr von den Werken dieses Heiligen übersetzt und
+ veröffentlicht haben.
+ </em>{" "}
+ Wir übersetzen die Korpora in der Reihenfolge, in der die
+ Leser danach fragen, so daß dies unsere Warteschlange in
+ etwas Öffentliches und Durchsichtiges verwandelt: du kannst
+ die Zahl sehen, du kannst deine Stimme jederzeit ändern, und
+ die Heiligen, deren Korpus wir bereits vollständig
+ ausgeliefert haben, ersetzen die Schaltfläche durch ein
+ goldenes &bdquo;Vollständig veröffentlicht&ldquo;-Abzeichen.
+ Hier ist nichts inszeniert. Wenn wir das nächste Mal zum
+ Übersetzen ansetzen, schauen wir, welche Heiligen die meisten
+ Bumps haben.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- Voice und Terminologie folgen dem etablierten Wortlaut der
- Diözese Berlin und Deutschland (ROCOR) und der Metropolie
- von Wien. Wo redaktionelles Deutsch noch nicht geschrieben
- ist — die meisten gehosteten Väterwerke, das Lern-Modul, die
- Akathiste, die Bibel selbst —, benennt ein kleines ehrliches
- Banner (Übersetzung im Werden) die Lücke und liefert den
- englischen Urtext aus. Keine maschinelle Übersetzung der
- Schrift oder der Väter, ohne daß ein Redakteur sie geprüft
- hat.
+ Der zweite Teil ist eine umfassende Sicherheits-Durchsicht.
+ Jede öffentliche API sitzt jetzt hinter atomaren, von Supabase
+ gestützten Rate-Limits, die über unsere Serverflotte hinweg
+ halten. Jede Seite liefert HSTS aus, eine strenge
+ Content-Security-Policy, X-Frame-Options DENY, eine
+ abgeriegelte Permissions-Policy und den Rest des modernen
+ Header-Sets. Jeder Route-Body, der Nutzereingaben annimmt,
+ wird mit Zod validiert, bevor er die Datenbank berührt.
+ Admin-Debug-Routen sind unsichtbar, sofern wir sie nicht
+ ausdrücklich einschalten. Eine neue SECURITY.md im Wurzelpfad
+ nennt, wie man eine Schwachstelle meldet und was wir im
+ Gegenzug versprechen. Purify erreicht jetzt A+ bei Mozilla
+ Observatory und securityheaders.com, und `npm audit` läuft
+ sauber für die Produktionsabhängigkeiten. Nichts davon ändert,
+ wie sich die Seite liest oder anfühlt; es bedeutet bloß, daß
+ der Außenmantel endlich so ernsthaft ist wie der Inhalt darin.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
  Die Arbeit darunter bleibt dieselbe. Gebet, Schrift, die
- Heiligen, die Konzile und das Kirchenjahr — schlicht
+ Heiligen, die Konzile und das Jahr der Kirche, schlicht
  hingestellt, ohne Verfolgung und ohne Werbung. Bete mit der
- Kirche. Lies mit den Vätern. Geh durch das Jahr. Wir sind
+ Kirche. Lies mit den Vätern. Geh durch das Jahr. Bumpe die
+ Heiligen, deren Worte du am liebsten hören möchtest. Wir sind
  geehrt, daß du irgend etwas davon mit uns tust.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- Die vollständige Versionsliste lebt unten, nach Datum
- geordnet und voreingestellt zugeklappt. Klappe einen Eintrag
- auf, wenn du die Einzelheiten möchtest. Die historischen
- Einträge sind weiterhin auf Englisch — sie beschreiben
- frühere Veröffentlichungen einer englisch entwickelten App
- und werden nicht rückwirkend übersetzt.
+ Das vollständige Versionsprotokoll lebt unten, nach Datum
+ gruppiert und voreingestellt zugeklappt. Klappe einen Eintrag
+ auf, wenn du die Einzelheiten möchtest.
  </p>
  </>
  ) : (
@@ -1044,7 +1058,7 @@ export default async function WhatsNewPage() {
  <div className="mt-16 pt-10 border-t border-paper/10">
  <p className="font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
  {isDe
- ? "Danke, daß du bis hierher mit uns durchgehalten hast. Ehre sei Gott für alles."
+ ? "Danke, daß du durch sechs Major-Versionen bei uns geblieben bist. Ehre sei Gott für alles."
  : "Thank you for staying with us through six majors. Glory to God for all things."}
  </p>
 
@@ -1065,7 +1079,7 @@ export default async function WhatsNewPage() {
  </div>
  <p className="font-sans text-[13px] text-paper/45 mb-8 leading-[1.65]">
  {isDe
- ? "Nach Datum geordnet. Der jüngste Tag ist voreingestellt geöffnet; tippe jeden anderen Tag an, um ihn aufzuklappen. Innerhalb eines Tages tippe auf eine Version, um die vollständige Liste zu lesen. Die Einträge selbst sind weiterhin auf Englisch."
+ ? "Nach Datum gruppiert. Der jüngste Tag ist voreingestellt offen; tippe jeden anderen Tag an, um ihn aufzuklappen. Innerhalb eines Tages tippe auf eine Version, um ihre vollständige Liste zu lesen."
  : "Grouped by date. The most recent day is open by default; tap any other day to expand. Inside each day, tap a release to read its full item list."}
  </p>
 

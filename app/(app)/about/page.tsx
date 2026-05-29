@@ -238,7 +238,7 @@ export default async function AboutPage() {
  </p>
  <ul className="mt-4 space-y-3 font-serif text-[17px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
- <strong className="text-paper">ChristosAnesti</strong> &mdash; the
+ <strong className="text-paper">ChristosAnesti</strong>, the
  florilegium on the essence-energies distinction (v6.8), including
  the patristic and Scriptural witnesses underlying the new hosted
  page on Gregory Palamas&rsquo;s profile.
@@ -351,8 +351,8 @@ function AboutDe() {
  <p className="mt-5 font-serif text-[17px] text-paper/85 leading-[1.7]">
  Über neunzig Prozent des Textschatzes liegen gemeinfrei. Die Seite
  trägt außerdem drei moderne Übersetzungen unter ordentlicher
- Lizenz &mdash; die New King James, die New International und
- die New Living &mdash;, die unmittelbar von den Verlagen geholt
+ Lizenz, die New King James, die New International und
+ die New Living,, die unmittelbar von den Verlagen geholt
  und genau so gezeigt werden, wie sie gesetzt sind, mit Fußnoten
  und allem, ihre Verfasserangabe unangetastet. Nichts wird
  umverpackt. Keine Übersetzung wird in einer Blackbox versteckt.
@@ -360,8 +360,8 @@ function AboutDe() {
  </p>
  <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  Wo die orthodoxen Jurisdiktionen in einem Punkt der Praxis
- voneinander abweichen &mdash; meistens im Kalender und im Fasten
- &mdash;, legt Purify beide Lesarten vor und richtet nicht. Die
+ voneinander abweichen, meistens im Kalender und im Fasten
+,, legt Purify beide Lesarten vor und richtet nicht. Die
  Kirche hat es nicht darum gebeten.
  </p>
 
@@ -374,7 +374,7 @@ function AboutDe() {
  </h2>
  <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  Was du markierst, was du dir notierst, was du als Lesezeichen
- setzt, die Länge deiner Gebets-Strähne &mdash; das gehört dir
+ setzt, die Länge deiner Gebets-Strähne, das gehört dir
  und nur dir.
  </p>
  <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
@@ -387,7 +387,7 @@ function AboutDe() {
  Wenn du möchtest, daß deine Notizen und Lesezeichen dir zwischen
  Telefon und Laptop folgen, kannst du ein{" "}
  <strong className="text-paper">öffentliches Konto</strong> öffnen
- &mdash; deine E-Mail und ein Paßwort, oder einen der in die Seite
+, deine E-Mail und ein Paßwort, oder einen der in die Seite
  eingebauten OAuth-Anbieter. Dieselben Daten werden dann in einer
  Zeile unter deinem Namen gespeichert, hinter zeilenstrenger
  Sicherheit, so daß niemand sonst sie lesen kann. Du kannst dich
@@ -451,7 +451,7 @@ function AboutDe() {
  @purifymylife
  </a>{" "}
  sind für die Gemeinschaft da, nicht für den Algorithmus. Gespräch
- über die Texte, über die Heiligen, über das Jahr &mdash; dafür
+ über die Texte, über die Heiligen, über das Jahr, dafür
  sind sie.
  </p>
  <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
@@ -463,17 +463,17 @@ function AboutDe() {
  Unterstützungsseite
  </Link>{" "}
  durchsichtig aufgeschlüsselt sind. Der geistliche Kernschatz
- &mdash; das Leben jedes Heiligen, jedes wichtige Schreiben der
+, das Leben jedes Heiligen, jedes wichtige Schreiben der
  Väter, die Schriften mit dem Griechischen daneben, die täglichen
- Gebete, der Kalender &mdash; wird immer unentgeltlich bleiben.
+ Gebete, der Kalender, wird immer unentgeltlich bleiben.
  </p>
  <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  Eine schwerere Infrastrukturschicht ist im Werden, und die
  Lizenzierung wird verbessert, damit sie ehrlich angeboten werden
  kann. Wenn diese freiwillige, durch Abonnement getragene Schicht
  kommt, wird sie ausschließlich dazu da sein, die Arbeit zu
- bezahlen, die sie verlangt &mdash; die Server, die Produktion,
- die Rechte &mdash; und den Kern für jeden, der ihn braucht,
+ bezahlen, die sie verlangt, die Server, die Produktion,
+ die Rechte, und den Kern für jeden, der ihn braucht,
  immer offen zu halten. Was heute frei ist, wird dann noch frei
  sein.
  </p>
@@ -494,7 +494,7 @@ function AboutDe() {
  </p>
  <ul className="mt-4 space-y-3 font-serif text-[17px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
- <strong className="text-paper">ChristosAnesti</strong> &mdash; das
+ <strong className="text-paper">ChristosAnesti</strong>, das
  Florilegium zur Wesens-Energien-Unterscheidung (v6.8), samt der
  patristischen und Schrift-Zeugen, die der neuen Seite auf dem
  Profil des heiligen Gregor Palamas zugrunde liegen.

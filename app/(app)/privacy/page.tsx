@@ -288,6 +288,15 @@ export default async function PrivacyPage() {
  <strong>Discord</strong>, an external link, not embedded.
  No Discord code runs on Purify.
  </li>
+ <li>
+ <strong>Amazon Associates</strong>, when a Licensed Works
+ entry on a saint profile or elsewhere links to a book on
+ amazon.com, the link carries our affiliate tag. Purify
+ participates in the Amazon Associates program and may
+ earn a commission on qualifying purchases. Amazon receives
+ nothing from us about your identity; what they collect from
+ your click is governed by their own policy.
+ </li>
  </ul>
 
  {/* AI bots */}
@@ -675,6 +684,16 @@ function PrivacyDe() {
  <li>
  <strong>Discord</strong> &mdash; ein externer Verweis, nicht
  eingebettet. Kein Discord-Code läuft auf Purify.
+ </li>
+ <li>
+ <strong>Amazon-Partner-Programm</strong> &mdash; wenn ein
+ Eintrag der lizenzierten Werke auf einem Heiligen-Profil oder
+ anderswo auf ein Buch bei amazon.com verweist, trägt der
+ Verweis unsere Partner-Kennung. Purify nimmt am
+ Amazon-Partner-Programm teil und kann an qualifizierten Käufen
+ eine Provision verdienen. Amazon empfängt von uns nichts über
+ deine Identität; was sie aus deinem Klick erheben, regelt ihre
+ eigene Richtlinie.
  </li>
  </ul>
 
