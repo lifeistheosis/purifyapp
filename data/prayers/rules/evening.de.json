@@ -1,0 +1,69 @@
+{
+  "id": "evening",
+  "title": "Abendregel",
+  "subtitle": "Eine kurze Abendregel mit Rückschau auf den Tag",
+  "intro": "Stehen Sie vor Ihren Ikonen. Bekreuzigen Sie sich. Beten Sie langsam. Wenn der Tag schwer war, ist nun die Zeit, ihn niederzulegen.",
+  "estimatedMinutes": 8,
+  "source": "Allgemeines orthodoxes Gebetbuch, übersetzt in der Tradition der Diözese Berlin und Deutschland der Russischen Orthodoxen Kirche im Ausland sowie der Metropolie von Wien und Österreich.",
+  "prayers": [
+    {
+      "id": "sign-of-cross",
+      "title": "Das Zeichen des Kreuzes",
+      "instruction": "Führen Sie die rechte Hand zur Stirn, dann zum Bauch, dann zur rechten Schulter, dann zur linken Schulter, und sprechen Sie dabei:",
+      "text": "Im Namen des Vaters und des Sohnes und des Heiligen Geistes. Amen."
+    },
+    {
+      "id": "glory-to-thee",
+      "title": "Ehre sei Dir, unser Gott",
+      "text": "Ehre sei Dir, unser Gott, Ehre sei Dir."
+    },
+    {
+      "id": "heavenly-king",
+      "title": "Himmlischer König",
+      "text": "Himmlischer König, Tröster, Geist der Wahrheit, der Du überall bist und alles erfüllst, Schatz der Güter und Spender des Lebens: komm und wohne in uns, reinige uns von jedem Makel und errette unsere Seelen, Du Gütiger."
+    },
+    {
+      "id": "trisagion",
+      "title": "Das Trisagion",
+      "instruction": "Dreimal, mit einer kleinen Verneigung bei jeder Wiederholung:",
+      "text": "Heiliger Gott, Heiliger Starker, Heiliger Unsterblicher, erbarme Dich unser. (3x)\n\nEhre sei dem Vater und dem Sohn und dem Heiligen Geist, jetzt und immerdar und in die Ewigkeit der Ewigkeiten. Amen."
+    },
+    {
+      "id": "our-father",
+      "title": "Das Gebet des Herrn",
+      "text": "Vater unser im Himmel, geheiligt werde Dein Name. Dein Reich komme. Dein Wille geschehe wie im Himmel so auf Erden. Unser tägliches Brot gib uns heute, und vergib uns unsere Schuld, wie auch wir vergeben unseren Schuldigern; und führe uns nicht in Versuchung, sondern erlöse uns von dem Bösen."
+    },
+    {
+      "id": "evening-petition",
+      "title": "Vergib mir an diesem Tage",
+      "text": "Herr, unser Gott, wenn ich an diesem Tage gesündigt habe in Wort, Tat oder Gedanken, so vergib mir, denn Du bist gütig und menschenliebend. Schenke mir einen friedlichen und ungestörten Schlaf. Sende Deinen Schutzengel, der mich beschirme und vor allem Übel bewahre. Denn Du bist der Hüter unserer Seelen und Leiber, und Dir lobsingen wir: dem Vater und dem Sohn und dem Heiligen Geist, jetzt und immerdar und in die Ewigkeit der Ewigkeiten. Amen."
+    },
+    {
+      "id": "examination",
+      "title": "Kurze Rückschau auf den Tag",
+      "instruction": "Rufen Sie sich den Tag in Erinnerung. Wo sind Sie schuldig geblieben? Bekennen Sie es kurz vor Gott. Wo hat Er Sie gesegnet? Danken Sie. Halten Sie diese Rückschau kurz und ehrlich.",
+      "text": ""
+    },
+    {
+      "id": "jesus-prayer-block",
+      "title": "Das Jesusgebet",
+      "instruction": "Langsam, zehnmal.",
+      "text": "Herr Jesus Christus, Sohn Gottes, erbarme Dich meiner, eines Sünders. (10x)"
+    },
+    {
+      "id": "into-thy-hands",
+      "title": "In Deine Hände",
+      "text": "In Deine Hände, Herr Jesus Christus, mein Gott, befehle ich meinen Geist. Segne mich, errette mich und schenke mir das ewige Leben. Amen."
+    },
+    {
+      "id": "theotokos-hymn",
+      "title": "An die Gottesgebärerin",
+      "text": "Allheilige Gottesgebärerin, errette uns.\n\nIn Wahrheit ist es würdig, Dich seligzupreisen, Gottesgebärerin, allzeit selige und allreine Mutter unseres Gottes. Ehrwürdiger als die Cherubim und unvergleichlich herrlicher als die Seraphim, hast Du ohne Verderben Gott das Wort geboren; als wahre Gottesgebärerin preisen wir Dich hoch."
+    },
+    {
+      "id": "dismissal",
+      "title": "Entlassung",
+      "text": "Ehre sei dem Vater und dem Sohn und dem Heiligen Geist, jetzt und immerdar und in die Ewigkeit der Ewigkeiten. Amen.\n\nHerr, erbarme Dich. (3x) Segne.\n\nAuf die Gebete unserer heiligen Väter, Herr Jesus Christus, unser Gott, erbarme Dich unser. Amen."
+    }
+  ]
+}

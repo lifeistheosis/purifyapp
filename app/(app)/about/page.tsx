@@ -221,7 +221,35 @@ export default async function AboutPage() {
  then.
  </p>
 
- {/* §5 Closing Doxology */}
+ {/* §5 Contributors */}
+ <p className="mt-12 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ Readers who have shaped Purify
+ </p>
+ <h2 className="mt-2 font-sans text-[26px] md:text-[30px] font-bold text-paper tracking-[-0.02em] leading-[1.15]">
+ Contributors
+ </h2>
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ Purify is editorially small, but it is not alone. Readers in the
+ Discord and through /contact regularly send patristic citations,
+ corrections, and theological notes that the editors take seriously
+ and that shape what ships. The following readers contributed
+ substantively to specific patches:
+ </p>
+ <ul className="mt-4 space-y-3 font-serif text-[17px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <li>
+ <strong className="text-paper">ChristosAnesti</strong> &mdash; the
+ florilegium on the essence-energies distinction (v6.8), including
+ the patristic and Scriptural witnesses underlying the new hosted
+ page on Gregory Palamas&rsquo;s profile.
+ </li>
+ </ul>
+ <p className="mt-4 font-serif text-[15px] text-paper/55 leading-[1.65] italic">
+ If you have contributed a citation, a translation note, or an
+ editorial correction that shipped, and you do not see your handle
+ here, write us; we want to keep this list honest.
+ </p>
+
+ {/* §6 Closing Doxology */}
  <div className="mt-16 pt-10 border-t border-paper/10 text-center">
  <p className="font-serif italic text-[22px] md:text-[26px] tracking-wide leading-[1.4] max-w-[560px] mx-auto text-gold">
  Glory to God for all things.

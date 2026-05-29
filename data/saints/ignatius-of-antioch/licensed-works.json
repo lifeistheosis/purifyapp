@@ -1,0 +1,16 @@
+{
+  "works": [
+    {
+      "slug": "the-apostolic-fathers-holmes",
+      "title": "The Apostolic Fathers",
+      "subtitle": "Greek Texts and English Translations, 3rd ed.",
+      "author": "Michael W. Holmes",
+      "authorRole": "edited",
+      "publisher": "Baker Academic",
+      "year": 2007,
+      "blurb": "The standard scholarly diglot of the earliest sub-apostolic writings, including Ignatius's seven authentic letters — to the Ephesians, Magnesians, Trallians, Romans, Philadelphians, Smyrnaeans, and Polycarp — written on the way to martyrdom.",
+      "topics": ["apostolic-fathers", "martyrdom", "ecclesiology"],
+      "amazonAsin": "080103468X"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "works": [
+    {
+      "slug": "works-vol-1",
+      "title": "The Works of Saint Cyril of Jerusalem, Vol. 1",
+      "subtitle": "Procatechesis and Catecheses 1–12 (Fathers of the Church, Vol. 61)",
+      "author": "Cyril of Jerusalem",
+      "authorRole": "by",
+      "publisher": "The Catholic University of America Press",
+      "year": 1969,
+      "blurb": "Cyril's pre-baptismal catechetical lectures to fourth-century catechumens in Jerusalem — what the candidates for Pascha were taught about sin, repentance, the creed, and the Scriptures. McCauley and Stephenson translation.",
+      "topics": ["catechesis", "baptism", "lent"],
+      "amazonAsin": "0813214319"
+    },
+    {
+      "slug": "works-vol-2",
+      "title": "The Works of Saint Cyril of Jerusalem, Vol. 2",
+      "subtitle": "Catecheses 13–18 and the Five Mystagogical Catecheses (Fathers of the Church, Vol. 64)",
+      "author": "Cyril of Jerusalem",
+      "authorRole": "by",
+      "publisher": "The Catholic University of America Press",
+      "year": 1970,
+      "blurb": "The remaining Lenten catecheses and the post-baptismal Mystagogical lectures — Cyril leading the newly-illumined through Baptism, Chrismation, and the Eucharist. The earliest extant Christian mystagogy.",
+      "topics": ["mystagogy", "sacraments", "eucharist"],
+      "amazonAsin": "0813210267"
+    }
+  ]
+}

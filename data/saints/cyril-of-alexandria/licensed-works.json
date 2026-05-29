@@ -1,0 +1,136 @@
+{
+  "works": [
+    {
+      "slug": "on-the-unity-of-christ",
+      "title": "On the Unity of Christ",
+      "subtitle": "Popular Patristics Series",
+      "author": "Cyril of Alexandria",
+      "authorRole": "by",
+      "publisher": "St. Vladimir's Seminary Press",
+      "year": 1995,
+      "blurb": "Cyril's mature statement of the union of natures in the one incarnate Word — the doctrinal voice that carried the day at Ephesus and shaped the Chalcedonian definition. John McGuckin's translation.",
+      "topics": ["christology", "nestorianism"],
+      "amazonAsin": "0881411337"
+    },
+    {
+      "slug": "commentary-on-john-vol-1",
+      "title": "Commentary on John, Vol. 1",
+      "subtitle": "Ancient Christian Texts",
+      "author": "Cyril of Alexandria",
+      "authorRole": "by",
+      "publisher": "IVP Academic",
+      "year": 2013,
+      "blurb": "Books 1–6 of Cyril's twelve-book exegesis of the Fourth Gospel — the first complete modern English translation. David R. Maxwell, working from Pusey's critical Greek text, restores the work to general readability.",
+      "topics": ["exegesis", "christology", "logos"],
+      "amazonAsin": "0830829113"
+    },
+    {
+      "slug": "commentary-on-john-vol-2",
+      "title": "Commentary on John, Vol. 2",
+      "subtitle": "Ancient Christian Texts",
+      "author": "Cyril of Alexandria",
+      "authorRole": "by",
+      "publisher": "IVP Academic",
+      "year": 2015,
+      "blurb": "Books 7–12 of the Commentary on John, completing Maxwell's translation — including Cyril's exposition of the Last Supper discourses, the high-priestly prayer, and the Resurrection appearances.",
+      "topics": ["exegesis", "trinity", "paraclete"],
+      "amazonAsin": "0830829121"
+    },
+    {
+      "slug": "three-christological-treatises",
+      "title": "Three Christological Treatises",
+      "subtitle": "Fathers of the Church, Vol. 129",
+      "author": "Cyril of Alexandria",
+      "authorRole": "by",
+      "publisher": "The Catholic University of America Press",
+      "year": 2014,
+      "blurb": "On Orthodoxy to Theodosius, Defense against the Bishops of Oriens, and Defense against Theodoret — the three works in which Cyril explained his Twelve Anathemas to the Emperor and his critics on the eve of Ephesus. Daniel King's translation, the first into English.",
+      "topics": ["christology", "ephesus", "anathemas"],
+      "amazonAsin": "0813227054"
+    },
+    {
+      "slug": "letters-1-50",
+      "title": "Letters 1–50",
+      "subtitle": "Fathers of the Church, Vol. 76",
+      "author": "Cyril of Alexandria",
+      "authorRole": "by",
+      "publisher": "The Catholic University of America Press",
+      "year": 1987,
+      "blurb": "The first half of Cyril's surviving correspondence — including the Second Letter to Nestorius, the Third Letter with the Twelve Anathemas, and the Letter to John of Antioch that sealed the Formulary of Reunion. John I. McEnerney's translation.",
+      "topics": ["letters", "ephesus", "ecclesiology"],
+      "amazonAsin": "0813200768"
+    },
+    {
+      "slug": "letters-51-110",
+      "title": "Letters 51–110",
+      "subtitle": "Fathers of the Church, Vol. 77",
+      "author": "Cyril of Alexandria",
+      "authorRole": "by",
+      "publisher": "The Catholic University of America Press",
+      "year": 1987,
+      "blurb": "The second and final volume of McEnerney's translation of Cyril's letters — Christological clarifications after the Reunion of 433, pastoral correspondence, and the Letter to Eulogius on the proper reception of the Antiochene formula.",
+      "topics": ["letters", "christology", "reunion"],
+      "amazonAsin": "0813200776"
+    },
+    {
+      "slug": "festal-letters-1-12",
+      "title": "Festal Letters 1–12",
+      "subtitle": "Fathers of the Church, Vol. 118",
+      "author": "Cyril of Alexandria",
+      "authorRole": "by",
+      "publisher": "The Catholic University of America Press",
+      "year": 2009,
+      "blurb": "The annual Paschal letters by which the Alexandrian patriarch announced the date of Pascha and prepared his flock for the great fast — Cyril's pastoral voice, year by year, on repentance, almsgiving, and the meaning of the Resurrection. Philip Amidon's translation.",
+      "topics": ["pascha", "fasting", "pastoral"],
+      "amazonAsin": "0813201187"
+    },
+    {
+      "slug": "festal-letters-13-30",
+      "title": "Festal Letters 13–30",
+      "subtitle": "Fathers of the Church, Vol. 127",
+      "author": "Cyril of Alexandria",
+      "authorRole": "by",
+      "publisher": "The Catholic University of America Press",
+      "year": 2013,
+      "blurb": "The remaining festal letters Cyril sent across his patriarchate — including the letters of the years through and beyond Ephesus, in which the Christological controversy enters his Paschal preaching.",
+      "topics": ["pascha", "christology", "homilies"],
+      "amazonAsin": "0813221846"
+    },
+    {
+      "slug": "cyril-of-alexandria-russell",
+      "title": "Cyril of Alexandria",
+      "subtitle": "The Early Church Fathers",
+      "author": "Norman Russell",
+      "authorRole": "about",
+      "publisher": "Routledge",
+      "year": 2000,
+      "blurb": "Russell's introduction to Cyril's life, method, and theology, with fresh translations of selections from the major works — the Commentary on John, the Christological treatises, the Against Julian, and the Letters. The standard scholarly entry point.",
+      "topics": ["patristics", "christology", "biography"],
+      "amazonAsin": "0415182514"
+    },
+    {
+      "slug": "saint-cyril-of-alexandria-and-the-christological-controversy",
+      "title": "Saint Cyril of Alexandria and the Christological Controversy",
+      "subtitle": "Its History, Theology, and Texts",
+      "author": "John A. McGuckin",
+      "authorRole": "about",
+      "publisher": "St. Vladimir's Seminary Press",
+      "year": 2004,
+      "blurb": "McGuckin's standard study of the fifth-century clash between Cyril and Nestorius — political, theological, and personal — with key primary texts in translation.",
+      "topics": ["christology", "history", "ephesus"],
+      "amazonAsin": "0881418633"
+    },
+    {
+      "slug": "appropriation-of-divine-life",
+      "title": "The Appropriation of Divine Life in Cyril of Alexandria",
+      "subtitle": "Oxford Theological Monographs",
+      "author": "Daniel A. Keating",
+      "authorRole": "about",
+      "publisher": "Oxford University Press",
+      "year": 2004,
+      "blurb": "Keating's comprehensive account of sanctification and deification in Cyril, drawn from the New Testament commentaries and homilies. The definitive monograph on the soteriology that runs beneath Cyril's Christology.",
+      "topics": ["theosis", "soteriology", "deification"],
+      "amazonAsin": "0199267138"
+    }
+  ]
+}

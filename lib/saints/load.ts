@@ -46,14 +46,35 @@ export type WritingContent = {
 
 const DATA_DIR = path.join(process.cwd(), "data", "saints");
 
+/**
+ * Load a writing by slug. When a non-default `locale` is provided we look
+ * first for `data/saints/{slug}/i18n/{locale}/{work}.json`, then fall back
+ * to the English source at `data/saints/{slug}/{work}.json`. Returns the
+ * content plus an `isLocalized` flag so the page can show a banner when
+ * the fallback fired.
+ */
 export async function loadWriting(
  saintSlug: string,
  workSlug: string,
-): Promise<WritingContent | null> {
+ locale: string = "en",
+): Promise<(WritingContent & { isLocalized: boolean }) | null> {
+ const tryLocale =
+ locale && locale !== "en"
+ ? path.join(DATA_DIR, saintSlug, "i18n", locale, `${workSlug}.json`)
+ : null;
+ const fallback = path.join(DATA_DIR, saintSlug, `${workSlug}.json`);
+
+ if (tryLocale) {
  try {
- const file = path.join(DATA_DIR, saintSlug, `${workSlug}.json`);
- const raw = await fs.readFile(file, "utf8");
- return JSON.parse(raw) as WritingContent;
+ const raw = await fs.readFile(tryLocale, "utf8");
+ return { ...(JSON.parse(raw) as WritingContent), isLocalized: true };
+ } catch {
+ /* fall through to English */
+ }
+ }
+ try {
+ const raw = await fs.readFile(fallback, "utf8");
+ return { ...(JSON.parse(raw) as WritingContent), isLocalized: locale === "en" };
  } catch {
  return null;
  }

@@ -1,0 +1,64 @@
+{
+  "saint": "cyril-of-alexandria",
+  "slug": "three-epistles-to-nestorius",
+  "title": "Three Epistles to Nestorius",
+  "subtitle": "The Second Letter, the Third Letter, and the Twelve Anathemas",
+  "source": "Summarized from the Nicene and Post-Nicene Fathers translation edited by Philip Schaff (Series II, vol. 14, 1900), public domain. Editorial framing and notes by the editors of Purify.",
+  "sections": [
+    {
+      "n": 1,
+      "title": "Epistle 4: the Second Letter to Nestorius",
+      "paragraphs": [
+        "The Second Letter was written in early 430, before the breach with Nestorius was final. Cyril writes still as one Patriarch to another, urging Nestorius to reconsider. The argument is short, dogmatic, and careful. The Son of God who was begotten of the Father before all ages is the same Son who was born of the Virgin in time; one and the same is begotten and born, and the union is not of two persons but of two natures in one Person.",
+        "Cyril names the doctrine that Nestorius has been preaching and explains why it cannot stand. If Christ is two persons, then the Gospel verses must be divided between them: one set for the Word, another for the man. But Scripture does not divide them. The same Jesus is hungry and feeds the five thousand; the same Jesus weeps at the tomb and raises the dead; the same Jesus suffers and rises."
+      ],
+      "notes": [
+        "The Second Letter was solemnly approved at the Council of Ephesus in 431 as a faithful statement of the Church's faith. It is sometimes called the Ephesine standard.",
+        "Cyril writes here with restraint. The tone is fraternal correction, not yet judgment. That changes a year later."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "Epistle 17: the Third Letter to Nestorius",
+      "paragraphs": [
+        "The Third Letter is written in November 430, after Nestorius has refused correction and after Cyril has the explicit charge from Pope Celestine to require recantation. The tone is now formal. Cyril sets out the orthodox faith in long paragraphs that read like a creed, addressing each of the points Nestorius has denied.",
+        "He confesses the eternal generation of the Son from the Father; the personal incarnation of the same Son from the Virgin Theotokos; the unity of natures in one Person; the saving sufferings of the impassible Word, who suffers in His own flesh; the life-giving character of the Eucharist as the flesh of the Word Himself. Each clause is offered for Nestorius's acceptance. To refuse this faith is to refuse the faith of the Catholic Church."
+      ],
+      "notes": [
+        "The Third Letter, with the Twelve Anathemas appended, became the document Nestorius was required either to sign or to be deposed. It was received at Ephesus as a faithful expression of the apostolic faith.",
+        "Some of the Anathemas use terminology that the Antiochene tradition found difficult; these were later clarified in the Formulary of Reunion (433). The substance, however, has remained the standard."
+      ]
+    },
+    {
+      "n": 3,
+      "title": "The First Anathema",
+      "paragraphs": [
+        "If anyone does not confess that Emmanuel is in truth God and that on this account the holy Virgin is the Theotokos, for she bore in the flesh the Word of God become flesh, let him be anathema. The first anathema is the heart of the controversy: the title Theotokos is not a piety to be optional, but the confession that the One who was born of Mary is the eternal Word."
+      ],
+      "notes": [
+        "The anathemas are deliberately spare. Each names a heresy and pronounces it outside the faith. The point is precision, not theatre."
+      ]
+    },
+    {
+      "n": 4,
+      "title": "The Fourth Anathema",
+      "paragraphs": [
+        "If anyone divides between two persons or hypostases the words used in the Gospel and apostolic writings, either by the saints concerning Christ or by Himself concerning Himself, applying some as to a man understood separately from the Word of God and applying others as fitting only to God to the Word who is from God the Father, let him be anathema. The fourth anathema names the Nestorian rule of reading and rules it out: the verses of Scripture concerning Christ are not to be parcelled out between a man and the Word, but received as the words of one Person, who is the incarnate Son."
+      ],
+      "notes": [
+        "This anathema is the methodological foundation of all the others. It rules a way of reading Scripture, not just a way of speculating about it."
+      ]
+    },
+    {
+      "n": 5,
+      "title": "The Twelfth Anathema",
+      "paragraphs": [
+        "If anyone does not confess that the Word of God suffered in the flesh and was crucified in the flesh and tasted death in the flesh and became the firstborn of the dead, since He is Life and Life-giving as God, let him be anathema. The twelfth anathema seals the work. The One who suffered on the Cross is the eternal Word, who suffered not in His divine nature but in the flesh that He had made His own. To deny this is to deny that God has saved us; what suffers in another's flesh saves no one."
+      ],
+      "notes": [
+        "The twelfth anathema names the theopaschite formula in its earliest dogmatic form: 'one of the Trinity suffered in the flesh'. It will be received again at the Fifth Ecumenical Council in 553.",
+        "These three of the twelve are selected here as the spine. The full twelve cover the personal union, the communicatio idiomatum, the title Theotokos, the integrity of the natures, the saving suffering of the Word, and the life-giving Eucharist."
+      ]
+    }
+  ]
+}

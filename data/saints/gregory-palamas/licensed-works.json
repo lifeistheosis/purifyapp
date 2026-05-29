@@ -1,0 +1,96 @@
+{
+  "works": [
+    {
+      "slug": "the-triads",
+      "title": "The Triads",
+      "subtitle": "Classics of Western Spirituality",
+      "author": "Gregory Palamas",
+      "authorRole": "by",
+      "publisher": "Paulist Press",
+      "year": 1983,
+      "blurb": "Palamas's defense of the hesychasts, distinguishing God's unknowable essence from His uncreated energies in which we truly partake. The cornerstone text of Orthodox theology of theosis.",
+      "topics": ["hesychasm", "theosis", "essence-energies"],
+      "amazonAsin": "0809124475"
+    },
+    {
+      "slug": "saint-gregory-palamas-and-the-orthodox-tradition",
+      "title": "Saint Gregory Palamas and Orthodox Spirituality",
+      "author": "John Meyendorff",
+      "authorRole": "about",
+      "publisher": "St. Vladimir's Seminary Press",
+      "year": 1998,
+      "blurb": "Meyendorff's accessible introduction to the spiritual world from which Palamas wrote — monastic, sacramental, and rooted in the prayer of the heart.",
+      "topics": ["hesychasm", "patristics"],
+      "amazonAsin": "0913836117"
+    },
+    {
+      "slug": "mystical-theology-of-the-eastern-church",
+      "title": "The Mystical Theology of the Eastern Church",
+      "author": "Vladimir Lossky",
+      "authorRole": "about",
+      "publisher": "St. Vladimir's Seminary Press",
+      "year": 1976,
+      "blurb": "Lossky's classic exposition of Orthodox dogmatic theology read through the prism of the essence-energies distinction: apophasis, the Trinity, the economy of the Son and the Spirit, the deifying union. The book that introduced the Palamite vision to the modern West.",
+      "topics": ["essence-energies", "apophasis", "theosis"],
+      "amazonAsin": "0913836311"
+    },
+    {
+      "slug": "vision-of-god",
+      "title": "The Vision of God",
+      "author": "Vladimir Lossky",
+      "authorRole": "about",
+      "publisher": "St. Vladimir's Seminary Press",
+      "year": 1983,
+      "blurb": "Lossky traces the patristic doctrine of seeing God from the Apologists through the Cappadocians and Maximus to its synthesis in Palamas — a short history of one question read across the whole Greek Fathers.",
+      "topics": ["essence-energies", "vision-of-god", "patristics"],
+      "amazonAsin": "0881418609"
+    },
+    {
+      "slug": "aristotle-east-and-west",
+      "title": "Aristotle East and West",
+      "subtitle": "Metaphysics and the Division of Christendom",
+      "author": "David Bradshaw",
+      "authorRole": "about",
+      "publisher": "Cambridge University Press",
+      "year": 2007,
+      "blurb": "Bradshaw traces the divergent reception of Aristotle's energeia in East and West — from the Cappadocians and Dionysius through Maximus to Palamas, set against the parallel Western trajectory through Augustine and Aquinas. The rigorous philosophical case for the essence-energies distinction.",
+      "topics": ["essence-energies", "philosophy", "metaphysics"],
+      "amazonAsin": "0521035562"
+    },
+    {
+      "slug": "a-study-of-gregory-palamas",
+      "title": "A Study of Gregory Palamas",
+      "author": "John Meyendorff",
+      "authorRole": "about",
+      "publisher": "St. Vladimir's Seminary Press",
+      "year": 1998,
+      "blurb": "The first full English study of Palamas's life and work, originally published in French in 1959 and hailed at the time as a major contribution to Western understanding of Eastern Christianity. The starting point for any serious reading of Palamite theology.",
+      "topics": ["hesychasm", "essence-energies", "biography"],
+      "amazonAsin": "0913836141"
+    },
+    {
+      "slug": "making-of-palamism",
+      "title": "Gregory Palamas and the Making of Palamism in the Modern Age",
+      "subtitle": "Changing Paradigms in Historical and Systematic Theology",
+      "author": "Norman Russell",
+      "authorRole": "about",
+      "publisher": "Oxford University Press",
+      "year": 2019,
+      "blurb": "Russell's recent study examines how 'Palamism' was constructed in the twentieth century by Western and Eastern theologians for polemical and apologetic purposes, then returns to Palamas himself to read his tradition, philosophy, and theology on their own terms.",
+      "topics": ["essence-energies", "historiography", "modern-theology"],
+      "amazonAsin": "0199644640"
+    },
+    {
+      "slug": "essence-and-energies-pino",
+      "title": "Essence and Energies: Being and Naming God in St. Gregory Palamas",
+      "subtitle": "Routledge Research in Byzantine Studies",
+      "author": "Tikhon Alexander Pino",
+      "authorRole": "about",
+      "publisher": "Routledge",
+      "year": 2023,
+      "blurb": "Pino's comprehensive account of the essence-energies distinction across Palamas's twenty-five treatises and letters, written over twenty years — the standard scholarly treatment for the modal grammar of the distinction. The book to read alongside the florilegium on this profile.",
+      "topics": ["essence-energies", "palamite-grammar", "scholarship"],
+      "amazonAsin": "1032244801"
+    }
+  ]
+}

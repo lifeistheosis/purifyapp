@@ -538,6 +538,11 @@ export const SAINTS: Saint[] = [
  href: "/saints/john-chrysostom/paschal-homily",
  },
  {
+ text: "For many of our conceptions about God, we are unable to express, as also many things we express, but have not strength to conceive of them. That God is everywhere, we know; but how, we no longer understand. Lo, we speak, and do not understand.",
+ source: "Homily II on Hebrews (NPNF I.14) — on the incomprehensibility of the divine essence",
+ href: "/saints/gregory-palamas/essence-and-energies",
+ },
+ {
  text: "Nothing is more frigid than a Christian, who cares not for the salvation of others.",
  source: "Homilies on the Acts of the Apostles, Homily 20",
  href: "/saints/john-chrysostom/homilies-on-acts",
@@ -601,6 +606,13 @@ export const SAINTS: Saint[] = [
  "Made bishop of Caesarea in 370, he confronted both the Arian emperor Valens and a famine that gripped his city. He sold the family estates to build a hospital, almshouse, and school complex outside the walls, the Basileiad, one of the first such institutions in history.",
  "His treatise On the Holy Spirit is the patristic charter for the Spirit's divinity. The Divine Liturgy that bears his name is still served in Orthodox churches on the Sundays of Great Lent, on his own feast, and on the eves of Nativity and Theophany. He reposed at forty-nine, worn out by ascetic labor and a chronic illness.",
  ],
+ quotes: [
+ {
+ text: "The divine nature is too exalted to be perceived as objects of enquiry are perceived. We are therefore of necessity guided in the investigation of the divine nature by its operations. Grant that we perceive the operation of Father, Son, and Holy Ghost to be one and the same, in no respect showing difference or variation; from this identity of operation we necessarily infer the unity of the nature.",
+ source: "Letter 189 to Eustathius, on the operations of Father, Son, and Holy Spirit (NPNF II.8)",
+ href: "/saints/gregory-palamas/essence-and-energies",
+ },
+ ],
  works: [
  {
  slug: "hexaemeron",
@@ -660,6 +672,13 @@ export const SAINTS: Saint[] = [
  "When the Byzantine emperor Leo III issued the edicts of iconoclasm in 726 and 730, John, safely beyond Leo's reach in the caliphate, wrote three Apologies in defense of the holy images. He argued that since the invisible God had become visible flesh in Christ, the matter of the image was now itself sanctified.",
  "Tradition holds that the iconoclast emperor procured a forged letter in John's hand and sent it to the caliph, who ordered John's right hand cut off. John prayed before an icon of the Theotokos; in the morning the hand was restored. The Theotokos icon called 'Tricheirousa', 'of the Three Hands', still stands at Hilandar Monastery on Mount Athos in memory of the miracle.",
  "He spent the rest of his life at St. Sabbas writing hymns, the Paschal Canon among them, and his Fountain of Knowledge, whose third part, the Exact Exposition of the Orthodox Faith, became the East's standard summa.",
+ ],
+ quotes: [
+ {
+ text: "Energy is the efficacious and substantial activity of nature: the capacity for energy is the nature from which proceeds energy: the product of energy is that which is effected by energy: and the agent of energy is the person or subsistence which uses the energy.",
+ source: "Exact Exposition of the Orthodox Faith III.15, on the fourfold grammar of operation (NPNF II.9)",
+ href: "/saints/gregory-palamas/essence-and-energies",
+ },
  ],
  works: [
  {
@@ -820,6 +839,13 @@ export const SAINTS: Saint[] = [
  "For this he was arrested and brought back to Constantinople. He was tried, exiled, brought back, tried again, and finally, when he refused to recant, his tongue was cut out and his right hand cut off, that he might neither speak nor write the truth he confessed.",
  "He was exiled to the Caucasus, where he died on August 13, 662. Twenty years later the Sixth Ecumenical Council of 681 affirmed everything he had taught and condemned everything he had opposed. The Church gave him the name 'Confessor' for the witness of his maimed body and silent tongue.",
  ],
+ quotes: [
+ {
+ text: "Perhaps the holy Paul said he knew the knowledge of the Word of God in part, for He is only known to a limited degree on the basis of His activities. For knowledge concerning His substance and person in Himself is to everyone alike, both to angels and humans.",
+ source: "200 Chapters on Theology 2.76, on partial knowledge of God",
+ href: "/saints/gregory-palamas/essence-and-energies",
+ },
+ ],
  works: [
  {
  slug: "four-hundred-chapters-on-love",
@@ -928,6 +954,56 @@ export const SAINTS: Saint[] = [
  blurb:
  "Cyril's reading of the Fourth Gospel, ordered by the question who is Christ, given to the Church before the Nestorian crisis erupted.",
  topics: ["Christology", "Trinity", "Logos", "Incarnation", "Theotokos", "Scripture"],
+ },
+ {
+ slug: "five-tomes-against-nestorius",
+ title: "Five Tomes Against Nestorius",
+ subtitle: "Selections from Books I, II, III, and V",
+ year: "c. 430",
+ blurb:
+ "Cyril's first systematic answer to Nestorius, written in the spring before Ephesus. Quotes Nestorius line by line and refutes him from Scripture, the Fathers, and the rule of faith.",
+ topics: ["Christology", "Nestorianism", "Theotokos", "Eucharist", "Polemics"],
+ },
+ {
+ slug: "three-epistles-to-nestorius",
+ title: "Three Epistles to Nestorius",
+ subtitle: "The Second Letter, the Third Letter, and the Twelve Anathemas",
+ year: "c. 430",
+ blurb:
+ "The two dogmatic letters and the Twelve Anathemas appended to the third — the conciliar standard received at Ephesus in 431 as the Church's confession of the one incarnate Word.",
+ topics: ["Christology", "Anathemas", "Ephesus", "Letters", "Theotokos"],
+ },
+ {
+ slug: "commentary-on-luke",
+ title: "Commentary on the Gospel of Luke",
+ subtitle: "Selected homilies on the Annunciation, Nativity, Theophany, and Transfiguration",
+ year: "c. 430",
+ blurb:
+ "Cyril's homiletic reading of Luke, preserved chiefly in Syriac — the great Christological feasts read as the unfolding of one Person from the Virgin's consent to the light of Tabor.",
+ topics: ["Exegesis", "Christology", "Feasts", "Transfiguration", "Theotokos"],
+ },
+ {
+ slug: "scholia-on-the-incarnation",
+ title: "Scholia on the Incarnation of the Only-Begotten",
+ subtitle: "A short Christological handbook",
+ year: "c. 435",
+ blurb:
+ "Cyril's compact teacher's syllabus on the Incarnation — the eternal generation, the personal union, the communicatio idiomatum — written for clergy who needed precise definitions after Ephesus.",
+ topics: ["Christology", "Catechesis", "Incarnation", "Communicatio idiomatum"],
+ },
+ ],
+ quotes: [
+ {
+ text:
+ "To call Mary Theotokos is not to say that her flesh contributed something to the divine nature, as if the Word received existence or essence from her. It is to confess that the One whom she carried for nine months and laid in the manger is the eternal Son.",
+ source: "Five Tomes Against Nestorius, Book II",
+ href: "/saints/cyril-of-alexandria/five-tomes-against-nestorius",
+ },
+ {
+ text:
+ "If anyone does not confess that the Word of God suffered in the flesh and was crucified in the flesh and tasted death in the flesh and became the firstborn of the dead, since He is Life and Life-giving as God, let him be anathema.",
+ source: "The Third Letter to Nestorius, Twelfth Anathema",
+ href: "/saints/cyril-of-alexandria/three-epistles-to-nestorius",
  },
  ],
  },
@@ -2436,6 +2512,11 @@ export const SAINTS: Saint[] = [
  text: "After the invocation, the Bread becomes the Body of Christ, and the Wine, the Blood of Christ.",
  source: "Mystagogical Catechesis V.7, on the Eucharist, preached to the newly baptized at the Holy Sepulchre, c. 350",
  },
+ {
+ text: "Though the Prophet makes the explanation, we cannot yet understand it even as we read. But if we cannot understand the throne which he has described, how shall we be able to comprehend Him who sits thereon, the Invisible and Ineffable God? To scrutinise then the nature of God is impossible; but it is in our power to send up praises of His glory for His works that are seen.",
+ source: "Catechesis VI.6, on the Unity of God and the incomprehensibility of His nature (NPNF II.7)",
+ href: "/saints/gregory-palamas/essence-and-energies",
+ },
  ],
  works: [
  {
@@ -2589,6 +2670,11 @@ export const SAINTS: Saint[] = [
  text: "He who participates in the divine energy becomes, in some sense, himself light: he is united to the light and beholds with the light all that remains hidden to those who do not have this grace.",
  source: "Tomos Hagioreitikos (Hagioritic Tome), 1340, on the deifying light of Tabor",
  },
+ {
+ text: "The substance of God is entirely unnameable since it is completely incomprehensible. Thus it is given names — improperly — on the basis of all its energies, although none of the names there differs from another in its denotation. But in the case of the energies each of the names has a different meaning, for who does not know that creating, ruling, judging, guiding providentially, and God's adopting us as sons by His grace are different from one another?",
+ source: "150 Chapters, Ch. 144 — the essence has no proper name; the energies bear distinct ones",
+ href: "/saints/gregory-palamas/essence-and-energies",
+ },
  ],
  works: [
  {
@@ -2605,6 +2691,22 @@ export const SAINTS: Saint[] = [
  "Tabor",
  "Jesus Prayer",
  "Deification",
+ ],
+ },
+ {
+ slug: "essence-and-energies",
+ title: "The Essence and the Energies, in the Words of the Fathers",
+ subtitle: "A florilegium of patristic and Scriptural witnesses",
+ year: "compiled 2026",
+ blurb:
+ "A short curated florilegium gathering the Scriptural and patristic witnesses to the essence-energies distinction — from Athanasius, Cyril of Jerusalem, Basil, Chrysostom, Cyril of Alexandria, Ephraim, Maximus, and John of Damascus to Palamas's own 150 Chapters and Letters. Prepared with the assistance of a reader from the Purify Discord (ChristosAnesti).",
+ topics: [
+ "Essence and Energies",
+ "Apophasis",
+ "Theophany",
+ "Deification",
+ "Uncreated Light",
+ "Florilegium",
  ],
  },
  ],
@@ -2637,6 +2739,43 @@ export const SAINTS: Saint[] = [
  // A clean public-domain English source must be confirmed before any
  // text is added (see docs/prd/v6.4-community-feedback.md §3).
  works: [],
+ },
+ {
+ slug: "ephraim-the-syrian",
+ byname: "Harp of the Spirit",
+ iconUrl: "/saints/icons/ephraim-the-syrian.jpg",
+ name: "St. Ephraim the Syrian",
+ epithet: "Deacon of Edessa · Harp of the Spirit",
+ born: "c. 306 (Nisibis)",
+ reposed: "June 9, 373 (Edessa)",
+ feastDays: ["January 28"],
+ see: "Edessa (deacon)",
+ shortBio:
+ "The fourth-century Syriac father whose verse-homilies and hymns gave the Eastern Church one of its earliest and most enduring voices in praise of the Incarnation, the Cross, and the Resurrection.",
+ life: [
+ "Ephraim was born around the year 306 at Nisibis in Mesopotamia, on the frontier between the Roman empire and Persia. He was raised in the Christian faith and from his youth was attached to the bishop of Nisibis, St. James, who took him as a disciple and brought him to the First Ecumenical Council at Nicaea in 325 as part of his retinue.",
+ "He served the church at Nisibis through three successive bishops and three Persian sieges of the city. After the Roman cession of Nisibis to the Persians in 363 he withdrew with most of the Christian population to Edessa, on the Roman side of the new border, where he spent the last ten years of his life teaching, writing, and serving as a deacon in the local church.",
+ "Ephraim is the principal Father of the Syriac-speaking East. He wrote almost everything in verse — hundreds of hymns (madrashe) and verse-homilies (memre) on the Nativity, the Crucifixion, Pascha, the Faith, the Church, Paradise, the Transfiguration, and many more. His verse is dense with biblical typology, lyrical in its meditation, and theologically precise; the Syriac Church sings it to this day, and the Greek and Slavonic traditions received much of it under his name in translation.",
+ "He reposed at Edessa on June 9, 373, ministering to victims of a famine. The Greek Church celebrates his memory on January 28; the Syriac and Western traditions on June 9. He is honoured as 'the Harp of the Spirit' for the lyrical theology by which the East was first catechised in song.",
+ ],
+ quotes: [
+ {
+ text: "His garments white as light showed that the glory of His divinity flooded from His whole body, and His light shone from all His members. For His flesh did not shine with splendour from outside, like Moses, but the glory of His divinity flooded from Him.",
+ source: "Homily on the Transfiguration of the Lord — on the uncreated light of Tabor",
+ href: "/saints/ephraim-the-syrian/on-the-transfiguration-of-the-lord",
+ },
+ ],
+ works: [
+ {
+ slug: "on-the-transfiguration-of-the-lord",
+ title: "On the Transfiguration of the Lord",
+ subtitle: "A homily on Tabor and the unveiled glory of the divinity",
+ year: "c. 370",
+ blurb:
+ "Ephraim's prose-poem on the Transfiguration: why Christ led the disciples up Tabor, the two suns on the mountain, and the light that flooded from within His own divinity rather than reflecting from outside, as Moses's face did at Sinai.",
+ topics: ["Transfiguration", "Uncreated Light", "Christology", "Tabor", "Glory"],
+ },
+ ],
  },
 ];
 

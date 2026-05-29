@@ -1,0 +1,15 @@
+{
+  "works": [
+    {
+      "slug": "saint-paisios-of-mount-athos",
+      "title": "Saint Paisios of Mount Athos",
+      "author": "Hieromonk Isaac",
+      "authorRole": "about",
+      "publisher": "Holy Hesychasterion 'Saint John the Theologian'",
+      "year": 2012,
+      "blurb": "The definitive biography of Elder Paisios, written by his close disciple Hieromonk Isaac. Part one is a full life; part two arranges Paisios's own teachings by theme. The standard reference for the saint's life and counsel.",
+      "topics": ["biography", "athonite", "modern-saints"],
+      "amazonAsin": "9608976456"
+    }
+  ]
+}

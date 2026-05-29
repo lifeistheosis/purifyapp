@@ -1,0 +1,28 @@
+{
+  "works": [
+    {
+      "slug": "on-wealth-and-poverty",
+      "title": "On Wealth and Poverty",
+      "subtitle": "Popular Patristics Series",
+      "author": "John Chrysostom",
+      "authorRole": "by",
+      "publisher": "St. Vladimir's Seminary Press",
+      "year": 1984,
+      "blurb": "Chrysostom's sermons on Lazarus and the rich man — uncompromising, pastoral, and pointed. A modern English translation that reads aloud as well as it preaches.",
+      "topics": ["homilies", "ethics", "almsgiving"],
+      "amazonAsin": "088141039X"
+    },
+    {
+      "slug": "on-marriage-and-family-life",
+      "title": "On Marriage and Family Life",
+      "subtitle": "Popular Patristics Series",
+      "author": "John Chrysostom",
+      "authorRole": "by",
+      "publisher": "St. Vladimir's Seminary Press",
+      "year": 1986,
+      "blurb": "A practical patristic vision for husbands, wives, and children — the household as the little Church. Drawn from the homilies on Ephesians and Colossians.",
+      "topics": ["marriage", "family", "homilies"],
+      "amazonAsin": "0913836869"
+    }
+  ]
+}

@@ -9,6 +9,11 @@ import { GreatFeastsSection } from "@/components/saints/GreatFeastsSection";
 import { QuotesSection } from "@/components/saints/QuotesSection";
 import { DisciplesSection } from "@/components/saints/DisciplesSection";
 import { SaintWorksBrowser } from "@/components/saints/SaintWorksBrowser";
+import { LicensedWorksSection } from "@/components/saints/LicensedWorksSection";
+import { getLicensedWorks } from "@/lib/saints/licensedWorks";
+import { getServerLocale } from "@/lib/i18n/server";
+import { getSaintBioOverrides } from "@/lib/i18n/localizedContent";
+import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 
 type Params = Promise<{ slug: string }>;
 
@@ -71,28 +76,50 @@ export default async function SaintPage({ params }: { params: Params }) {
   // Apply admin-set `complete` override on top of the registry value. Falls
   // back to the registry on any error; the public site never breaks if the
   // override table is unreachable.
-  const [bump, effectiveComplete] = await Promise.all([
+  const locale = await getServerLocale();
+  const [bump, effectiveComplete, licensedWorks, bioOverrides] = await Promise.all([
     loadBumpState(slug),
     getEffectiveComplete(slug, Boolean(saint.complete)),
+    getLicensedWorks(slug),
+    getSaintBioOverrides(slug, locale),
   ]);
-  const effectiveSaint = { ...saint, complete: effectiveComplete };
+
+  // Merge locale overrides over English defaults. Quotes, disciples, and the
+  // works[] registry stay in English — those are either citations (kept in
+  // their authoritative form) or hand off to per-work locale variants.
+  const localized = bioOverrides ?? {};
+  const effectiveSaint = {
+    ...saint,
+    shortBio: localized.shortBio ?? saint.shortBio,
+    epithet: localized.epithet ?? saint.epithet,
+    byname: localized.byname ?? saint.byname,
+    life: localized.life ?? saint.life,
+    titles: localized.titles ?? saint.titles,
+    greatFeasts: localized.greatFeasts ?? saint.greatFeasts,
+    complete: effectiveComplete,
+  };
+  const bioIsLocalized = Boolean(bioOverrides);
 
   return (
     <section className="bg-night px-5 md:px-8">
       <div className="mx-auto max-w-[1100px] w-full">
         <SaintHero saint={effectiveSaint} bump={bump} />
-        {saint.titles?.length ? (
-          <TitlesSection titles={saint.titles} pronoun={saint.pronoun} />
+        {locale !== "en" && !bioIsLocalized ? (
+          <ContentNotYetTranslated locale={locale} kind="bio" />
         ) : null}
-        <LifeSection paragraphs={saint.life} pronoun={saint.pronoun} />
-        {saint.greatFeasts?.length ? (
-          <GreatFeastsSection feasts={saint.greatFeasts} pronoun={saint.pronoun} />
+        {effectiveSaint.titles?.length ? (
+          <TitlesSection titles={effectiveSaint.titles} pronoun={saint.pronoun} />
+        ) : null}
+        <LifeSection paragraphs={effectiveSaint.life} pronoun={saint.pronoun} />
+        {effectiveSaint.greatFeasts?.length ? (
+          <GreatFeastsSection feasts={effectiveSaint.greatFeasts} pronoun={saint.pronoun} />
         ) : null}
         {saint.quotes?.length ? <QuotesSection quotes={saint.quotes} pronoun={saint.pronoun} /> : null}
         {saint.disciples?.length ? (
           <DisciplesSection saint={saint} disciples={saint.disciples} />
         ) : null}
         {saint.works.length > 0 && <SaintWorksBrowser saint={saint} />}
+        <LicensedWorksSection works={licensedWorks} />
       </div>
     </section>
   );

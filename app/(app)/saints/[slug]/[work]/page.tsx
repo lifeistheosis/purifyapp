@@ -9,6 +9,8 @@ import {
   ReaderFontSizeButton,
   ReaderPrefsProvider,
 } from "@/components/reader/ReaderPrefs";
+import { getServerLocale } from "@/lib/i18n/server";
+import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 
 type Params = Promise<{ slug: string; work: string }>;
 
@@ -32,7 +34,8 @@ export default async function WritingPage({ params }: { params: Params }) {
   const { slug, work } = await params;
   const found = getWork(slug, work);
   if (!found) notFound();
-  const content = await loadWriting(slug, work);
+  const locale = await getServerLocale();
+  const content = await loadWriting(slug, work, locale);
   if (!content) notFound();
 
   return (
@@ -55,6 +58,9 @@ export default async function WritingPage({ params }: { params: Params }) {
 
       <section className="bg-night px-5 md:px-8">
         <div className="mx-auto max-w-[1100px] w-full">
+          {locale !== "en" && !content.isLocalized ? (
+            <ContentNotYetTranslated locale={locale} kind="work" />
+          ) : null}
           <WritingReader saint={found.saint} content={content} />
         </div>
       </section>

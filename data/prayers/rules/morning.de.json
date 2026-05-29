@@ -1,0 +1,58 @@
+{
+  "id": "morning",
+  "title": "Morgenregel",
+  "subtitle": "Eine einfache Morgenregel für den täglichen Gebrauch",
+  "intro": "Stehen Sie nach Osten gewandt, wenn möglich, oder vor Ihren Ikonen. Bekreuzigen Sie sich. Dann beten Sie jedes der folgenden Gebete der Reihe nach, langsam.",
+  "estimatedMinutes": 8,
+  "source": "Allgemeines orthodoxes Gebetbuch, übersetzt in der Tradition der Diözese Berlin und Deutschland der Russischen Orthodoxen Kirche im Ausland sowie der Metropolie von Wien und Österreich.",
+  "prayers": [
+    {
+      "id": "sign-of-cross",
+      "title": "Das Zeichen des Kreuzes",
+      "instruction": "Führen Sie die rechte Hand zur Stirn, dann zum Bauch, dann zur rechten Schulter, dann zur linken Schulter, und sprechen Sie dabei:",
+      "text": "Im Namen des Vaters und des Sohnes und des Heiligen Geistes. Amen."
+    },
+    {
+      "id": "glory-to-thee",
+      "title": "Ehre sei Dir, unser Gott",
+      "text": "Ehre sei Dir, unser Gott, Ehre sei Dir."
+    },
+    {
+      "id": "heavenly-king",
+      "title": "Himmlischer König",
+      "text": "Himmlischer König, Tröster, Geist der Wahrheit, der Du überall bist und alles erfüllst, Schatz der Güter und Spender des Lebens: komm und wohne in uns, reinige uns von jedem Makel und errette unsere Seelen, Du Gütiger."
+    },
+    {
+      "id": "trisagion",
+      "title": "Das Trisagion",
+      "instruction": "Dreimal, mit einer kleinen Verneigung bei jeder Wiederholung:",
+      "text": "Heiliger Gott, Heiliger Starker, Heiliger Unsterblicher, erbarme Dich unser. (3x)\n\nEhre sei dem Vater und dem Sohn und dem Heiligen Geist, jetzt und immerdar und in die Ewigkeit der Ewigkeiten. Amen.\n\nAllheilige Dreifaltigkeit, erbarme Dich unser. Herr, reinige uns von unseren Sünden. Gebieter, vergib uns unsere Vergehen. Heiliger, suche uns heim und heile unsere Gebrechen um Deines Namens willen.\n\nHerr, erbarme Dich. (3x)\n\nEhre sei dem Vater und dem Sohn und dem Heiligen Geist, jetzt und immerdar und in die Ewigkeit der Ewigkeiten. Amen."
+    },
+    {
+      "id": "our-father",
+      "title": "Das Gebet des Herrn",
+      "text": "Vater unser im Himmel, geheiligt werde Dein Name. Dein Reich komme. Dein Wille geschehe wie im Himmel so auf Erden. Unser tägliches Brot gib uns heute, und vergib uns unsere Schuld, wie auch wir vergeben unseren Schuldigern; und führe uns nicht in Versuchung, sondern erlöse uns von dem Bösen."
+    },
+    {
+      "id": "rising-from-sleep",
+      "title": "Beim Aufstehen vom Schlaf",
+      "text": "Da ich aus dem Schlaf erwacht bin, danke ich Dir, Heilige Dreifaltigkeit, daß Du aus Deiner großen Güte und Langmut nicht zürntest mir, dem Trägen und Sündigen, noch mich mit meinen Missetaten verdarbst, sondern Deine gewohnte Menschenliebe an mir erwiesen und mich, der ich in Sorglosigkeit lag, aufgerichtet hast, damit ich mein Morgenlied singe und Deine Macht verherrliche.\n\nErleuchte nun die Augen meines Geistes, öffne meinen Mund, daß ich Deine Worte betrachte, Deine Gebote verstehe, Deinen Willen tue, Dir aus dem Bekenntnis des Herzens lobsinge und Deinen allheiligen Namen preise: des Vaters und des Sohnes und des Heiligen Geistes, jetzt und immerdar und in die Ewigkeit der Ewigkeiten. Amen."
+    },
+    {
+      "id": "jesus-prayer-block",
+      "title": "Das Jesusgebet",
+      "instruction": "Langsam, zehnmal. Verwenden Sie Ihre Finger oder eine Gebetsschnur, falls vorhanden.",
+      "text": "Herr Jesus Christus, Sohn Gottes, erbarme Dich meiner, eines Sünders. (10x)"
+    },
+    {
+      "id": "theotokos-hymn",
+      "title": "An die Gottesgebärerin",
+      "text": "Allheilige Gottesgebärerin, errette uns.\n\nIn Wahrheit ist es würdig, Dich seligzupreisen, Gottesgebärerin, allzeit selige und allreine Mutter unseres Gottes. Ehrwürdiger als die Cherubim und unvergleichlich herrlicher als die Seraphim, hast Du ohne Verderben Gott das Wort geboren; als wahre Gottesgebärerin preisen wir Dich hoch."
+    },
+    {
+      "id": "dismissal",
+      "title": "Entlassung",
+      "text": "Ehre sei dem Vater und dem Sohn und dem Heiligen Geist, jetzt und immerdar und in die Ewigkeit der Ewigkeiten. Amen.\n\nHerr, erbarme Dich. (3x) Segne.\n\nAuf die Gebete unserer heiligen Väter, Herr Jesus Christus, unser Gott, erbarme Dich unser. Amen."
+    }
+  ]
+}

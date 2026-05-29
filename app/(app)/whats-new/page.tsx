@@ -23,6 +23,72 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v6.9",
+ kind: "Deutsch — the German patch lands",
+ date: "May 29, 2026",
+ blurb:
+ "The German edition of Purify gets its first big wave of long-prose translation. New i18n infrastructure carries locale-aware saint biographies, locale-aware patristic works, and locale-aware prayer rules: a sibling JSON file at data/saints/{slug}/i18n/de.json, data/saints/{slug}/i18n/de/{work}.json, and data/prayers/rules/{id}.de.json is all it takes to bring any page into German. The Morning Rule and Evening Rule ship in German first, using the established Berlin Diocese and Vienna Metropolis liturgical wording. Every saint profile in the registry — all fifty-six — ships with a full German biography this patch: the Theotokos, the Twelve, the Cappadocians, Chrysostom, both Cyrils, the Athonites, the Russian elders, the apostolic Fathers, the Fathers of the first two Councils. The new essence-and-energies florilegium ships fully translated alongside them. Long-prose surfaces that still wait on editorial review — most hosted patristic works, the learning module, the Akathists hub — show a small honest banner (Übersetzung im Werden) that names the gap and routes the reader to the English source rather than guessing in German at theology the editors have not yet reviewed.",
+ items: [
+  "New i18n infrastructure: lib/i18n/localizedContent.ts loads sibling locale JSON for saints (i18n/{locale}.json), for hosted works (i18n/{locale}/{work}.json), and for prayer rules ({id}.{locale}.json). All loaders fall back to the English source if the locale variant is missing, and surface an isLocalized flag so the page can render the correct banner.",
+  "New ContentNotYetTranslated banner component, with messaging in all 13 ready locales (German has the longest tailored wording; the others get a one-line note). Shown above any long-prose surface where the requested locale variant is absent. Routes reader to English without leaving the user's locale cookie behind, so chrome stays German on every navigation.",
+  "Saint profile page wired: reads server locale, applies locale bio overrides over the English defaults for shortBio, epithet, byname, life[], titles, greatFeasts. Quotes and the works[] registry stay in English (quotes are citations; works hand off to per-work loaders that already do locale fallback).",
+  "Writing reader page wired: loadWriting() now takes a locale and resolves data/saints/{slug}/i18n/{locale}/{work}.json before the English fallback. The work reader shows the German text directly when present.",
+  "Morning Rule (/prayers/morning) and Evening Rule (/prayers/evening) ship in German. Source line credits the Diözese Berlin und Deutschland (ROCOR) and the Metropolie von Wien tradition. The Jesus Prayer, Trisagion, Lord's Prayer, Heavenly King hymn, Magnificat-adjacent Theotokos hymn, dismissal, and the rising-from-sleep prayer are all in established German Orthodox wording (Theotokos / Gottesgebärerin; Heiliger Gott, Heiliger Starker, Heiliger Unsterblicher; Herr Jesus Christus, Sohn Gottes, erbarme Dich meiner, eines Sünders).",
+  "All fifty-six saint biographies in the registry translated into German: the Theotokos, the Twelve and St. Mary Magdalene, the apostolic Fathers (Ignatius, Polycarp, Papias, Anianus, Prochorus), the Cappadocians, the Antiochenes, the Alexandrians, the Syrians (Ephraim, Isaac), the Athonites (Palamas, Paisios, Nektarios), the Russian elders (Seraphim), the desert saints (Anthony, Mary of Egypt), the Confessors (Maximus, Theodore the Studite), the apologist Fathers, the Fathers of Nicaea and the Fathers of the First Council of Constantinople. Each entry covers shortBio, epithet, byname, life paragraphs, and (where present) titles[]. Editorial translations in calm catechetical voice — not machine output. Done in batches with consistent Orthodox-aware terminology across the corpus.",
+  "The v6.8 essence-and-energies florilegium ships fully in German at /saints/gregory-palamas/essence-and-energies — all eight sections, all editorial notes. The corrected Cyril of Jerusalem citation, the live-academic-question framing on Pino vs. Loudovikos, and the public-domain-only translation discipline carry through into the German edition.",
+  "Editorial position from v6.4.3 stands and is now operational: long-prose content that has not been editorially translated does not get machine-translated and shipped silently. Untranslated saint biographies and untranslated patristic works show 'Übersetzung im Werden' / 'Translation in progress' and serve the English source. As individual saints and works are translated, the banner disappears for that surface and the German text takes over.",
+  "Still queued and shown in English with banner for now: roughly thirty hosted patristic works (everything except the essence-and-energies florilegium), the Jesus Prayer learning module, the Akathists hub, the Hours preview, and the long-prose surfaces named in v6.4.3 (the body of /about, /faq, /privacy, /whats-new historical entries). Future patches will translate these work by work; each shipped translation moves a page out of banner-mode automatically.",
+  "Footer + home hero chip + /whats-new chip step to v6.9.",
+ ],
+ },
+ {
+ version: "v6.8",
+ kind: "The essence and energies, in the words of the Fathers",
+ date: "May 28, 2026",
+ blurb:
+ "A reader on the Purify Discord (handle: ChristosAnesti) sent in a substantial florilegium on the essence-energies distinction — patristic witnesses spanning Athanasius, Cyril of Jerusalem, Basil, Chrysostom, Cyril of Alexandria, Maximus the Confessor, John of Damascus, Ephraim the Syrian, Gregory Palamas, Gennadios Scholarios, and Nicodemos the Hagiorite, together with the relevant Scripture (Exodus 3:14, Romans 1:20, John 10:38, Ephesians 1:19–20, Philippians 3:21, 1 Corinthians 12:10–11). This patch turns that gift into a curated page on Gregory Palamas's profile, with the citations reframed in calm catechetical voice and drawn from public-domain English translations (Schaff NPNF, Pusey, R. Payne Smith). Alongside it: new quotes on six saints’ profiles, a new St. Ephraim the Syrian profile with his Transfiguration homily, Tikhon Pino's 2023 *Essence and Energies* added to Palamas's licensed shelf as the current standard scholarly treatment, and a new Contributors section on /about so that readers who shape the work can be credited honestly.",
+ items: [
+  "New hosted page: /saints/gregory-palamas/essence-and-energies — a florilegium of eight sections (the doctrine in one sentence, Scripture's witness, the incomprehensibility of the essence, God known through His operations, the Tabor light, Maximus and John of Damascus on operation, Cyril of Alexandria against created energies, Palamas's own grammar of identity-and-distinction). Each citation drawn from public-domain English; corrections to two contributor citations made in the editorial notes.",
+  "Six saints’ profiles gain a new quote tied to the florilegium: Basil the Great (Letter 189 on operations and unity of nature), John Chrysostom (Homily II on Hebrews on the incomprehensibility of the essence), John of Damascus (Exact Exposition III.15 on the fourfold grammar of operation), Maximus the Confessor (200 Chapters on Theology 2.76 on partial knowledge), Cyril of Jerusalem (Catechesis VI.6 on the Cherubim and the unscrutable nature), and Gregory Palamas (150 Chapters 144 on the names of the energies). Each href deep-links to the new florilegium.",
+  "New saint profile: St. Ephraim the Syrian. Short life from Nisibis to Edessa, one hosted work — his Sermon on the Transfiguration of the Lord, the 'two suns on the mountain' homily that became a patristic ground for the Palamite reading of the Tabor light as uncreated.",
+  "Palamas's Licensed Works shelf grows from 7 to 8: Tikhon Alexander Pino's *Essence and Energies: Being and Naming God in St. Gregory Palamas* (Routledge Research in Byzantine Studies, 2023). The current standard scholarly treatment of the modal grammar of the distinction; the volume to read alongside the florilegium.",
+  "New Contributors section on /about. Lists readers who have shipped patches by handle. ChristosAnesti is the first listed.",
+  "Editorial guardrails honored: polemical Discord voice stripped; the live academic question (Pino vs. Loudovikos on Palamite ontology) named but not adjudicated; the contributor's mislabel of 'Catechetical Lectures Ch. 2–3' corrected to Catechesis VI.6; the Boulnois/de Durand modern translation of Cyril paraphrased in our own words with PG citation rather than quoted verbatim.",
+  "Footer + home hero chip + /whats-new chip step to v6.8.",
+ ],
+ },
+ {
+ version: "v6.7",
+ kind: "Cyril of Alexandria + the essence-energies shelf",
+ date: "May 28, 2026",
+ blurb:
+ "Two depth patches in one. First, Cyril of Alexandria — the Seal of the Fathers — gets the corpus treatment he deserves: four new hosted works ship from public-domain translations (the Five Tomes Against Nestorius, the Three Epistles with the Twelve Anathemas, selections from the Commentary on Luke, and the Scholia on the Incarnation), plus nine new licensed editions on his Licensed Works shelf (the IVP Ancient Christian Texts Commentary on John in two volumes, the Catholic University FOTC editions of the Letters and the Festal Letters and the Three Christological Treatises, Norman Russell's Routledge introduction, and Daniel Keating's Oxford monograph on deification in Cyril). Second, the essence-energies distinction now has a real shelf. Palamas gains Lossky's two classics, Bradshaw's Aristotle East and West, Meyendorff's foundational Study, and Russell's recent Oxford volume on the making of Palamism. The doctrine's Cappadocian and Maximian roots each get one thematic title on the relevant saint's profile.",
+ items: [
+  "Cyril of Alexandria hosted-works expand from 1 to 5: Five Tomes Against Nestorius, Three Epistles to Nestorius (with the Twelve Anathemas), Commentary on Luke (Annunciation through Transfiguration), and the Scholia on the Incarnation. All four drawn from public-domain English translations (Pusey's Library of Fathers, R. Payne Smith's Syriac translation, Schaff's NPNF) with editorial framing and section notes.",
+  "Cyril's saint profile picks up two quotes for the first time: a passage from the Five Tomes on the meaning of Theotokos, and the Twelfth Anathema from the Third Letter to Nestorius. Both link directly to the new hosted works.",
+  "Cyril's Licensed Works section grows from 2 to 11: the IVP Academic Commentary on John (vols 1 and 2, Maxwell translation), the FOTC editions of Three Christological Treatises (King), Letters 1–50 and 51–110 (McEnerney), Festal Letters 1–12 and 13–30 (Amidon), Norman Russell's Cyril of Alexandria (Routledge Early Church Fathers), and Daniel Keating's The Appropriation of Divine Life in Cyril of Alexandria (Oxford).",
+  "Essence-energies main shelf lands on Gregory Palamas: Lossky's Mystical Theology of the Eastern Church and The Vision of God (SVS), Bradshaw's Aristotle East and West (Cambridge), Meyendorff's A Study of Gregory Palamas (SVS), and Russell's Gregory Palamas and the Making of Palamism in the Modern Age (Oxford). Palamas's section grows from 2 to 7 entries.",
+  "Cappadocian and Maximian roots of the distinction each get one thematic title: Russell's Doctrine of Deification on Basil, Beeley's Gregory of Nazianzus on the Trinity and the Knowledge of God on Gregory the Theologian, Louth's Origins of the Christian Mystical Tradition on Gregory of Nyssa, Thunberg's Microcosm and Mediator on Maximus.",
+  "Every new ASIN in this patch was verified against Amazon before shipping. Books that could not be confirmed or that fell outside the Orthodox / trusted academic editorial filter were dropped from the batch.",
+  "Footer + home hero chip + /whats-new chip step to v6.7.",
+ ],
+ },
+ {
+ version: "v6.6",
+ kind: "Licensed Works on the saints",
+ date: "May 28, 2026",
+ blurb:
+ "Each saint's profile can now point readers to printed books beyond the public-domain corpus Purify hosts directly. Where a work is licensed by an Orthodox or scholarly publisher (St. Vladimir's, Paulist, Holy Hesychasterion, Cambridge, Routledge, CUA Press), we link out to a vetted edition on Amazon so readers can buy an authoritative copy. This solves the 'book searching problem' many Orthodox Christians and inquirers face when they want to go deeper than the app itself can carry. Every link in the section participates in the Amazon Associates program, so a click that turns into a purchase quietly funds the next saint Purify ships.",
+ items: [
+  "New Licensed Works section on saint profiles, beneath the Writings browser. Renders only when curated entries exist for that saint, so profiles without licensed editions stay clean.",
+  "Editorial filter, strict and non-negotiable. Books in this section come from St. Vladimir's Seminary Press (Popular Patristics), Paulist Press's Classics of Western Spirituality, Holy Trinity Monastery, Holy Hesychasterion, Ancient Faith Publishing, Cistercian Studies, Catholic University of America's Fathers of the Church, Routledge's Early Church Fathers, or established academic patrology (Andrew Louth, John Behr, John McGuckin, Paul Blowers, Robert Wilken, Benedicta Ward, Eugenia Scarvelis Constantinou). No Sophiology, no schismatic press, no AI-generated reprint mills.",
+  "Initial coverage of eighteen saints with verified Amazon ASINs: Athanasius the Great, Basil the Great, Gregory the Theologian, Gregory of Nyssa, Gregory Palamas, John Chrysostom, John of Damascus, Cyril of Alexandria, Cyril of Jerusalem, Irenaeus of Lyons, Maximus the Confessor, Symeon the New Theologian, Ignatius of Antioch, Polycarp of Smyrna, Anthony the Great, Mary of Egypt, Seraphim of Sarov, Paisios the Athonite, Nektarios of Aegina, and the Apostle John. Every ASIN was checked against Amazon before shipping to catch typos and ensure the link resolves to the correct book.",
+  "FTC-compliant disclosure runs in two places: a small italic line inside every Licensed Works section ('As an Amazon Associate, Purify earns from qualifying purchases') and a quiet global line in the site footer. Outbound links carry rel=\"noopener nofollow sponsored\" and open in a new tab.",
+  "Plumbing for growth, not just data. A new lib/affiliate/amazon.ts helper builds tagged URLs from ASIN + NEXT_PUBLIC_AMAZON_AFFILIATE_TAG, and a per-saint data/saints/{slug}/licensed-works.json file is the only thing needed to add another saint or another book — no code changes, no migration, no admin UI yet.",
+  "Footer + home hero chip + /whats-new chip step to v6.6.",
+ ],
+ },
+ {
  version: "v6.5",
  kind: "Bump the saints, fortified perimeter",
  date: "May 28, 2026",
@@ -803,7 +869,7 @@ export default async function WhatsNewPage() {
  {t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
- v6.5 &middot; Bump the saints, fortified perimeter
+ v6.9 &middot; Deutsch — the German patch lands
  </p>
  </div>
 

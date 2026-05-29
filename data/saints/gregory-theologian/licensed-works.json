@@ -1,0 +1,40 @@
+{
+  "works": [
+    {
+      "slug": "on-god-and-christ",
+      "title": "On God and Christ",
+      "subtitle": "The Five Theological Orations and Two Letters to Cledonius",
+      "author": "Gregory of Nazianzus",
+      "authorRole": "by",
+      "publisher": "St. Vladimir's Seminary Press",
+      "year": 2002,
+      "blurb": "The orations that earned Gregory the title 'the Theologian' — the dogmatic backbone of the Cappadocian doctrine of the Trinity and the two natures of Christ. Williams and Wickham translation.",
+      "topics": ["trinity", "christology", "orations"],
+      "amazonAsin": "0881412406"
+    },
+    {
+      "slug": "festal-orations",
+      "title": "Festal Orations",
+      "subtitle": "Popular Patristics Series, Vol. 36",
+      "author": "Gregory of Nazianzus",
+      "authorRole": "by",
+      "publisher": "St. Vladimir's Seminary Press",
+      "year": 2008,
+      "blurb": "The homilies appointed for Nativity, Theophany, Pascha, and Pentecost — poetic, dense, and woven directly into Byzantine hymnography. Nonna Verna Harrison's translation.",
+      "topics": ["liturgy", "homilies", "feasts"],
+      "amazonAsin": "0881413259"
+    },
+    {
+      "slug": "beeley-trinity-knowledge-of-god",
+      "title": "Gregory of Nazianzus on the Trinity and the Knowledge of God",
+      "subtitle": "In Your Light We Shall See Light · Oxford Studies in Historical Theology",
+      "author": "Christopher A. Beeley",
+      "authorRole": "about",
+      "publisher": "Oxford University Press",
+      "year": 2008,
+      "blurb": "Beeley's comprehensive study of the Theologian's doctrine of the Trinity and the soul's apophatic ascent to its knowledge — the patristic depth on which the later essence-energies distinction depends, read in its native habitat.",
+      "topics": ["trinity", "apophasis", "essence-energies"],
+      "amazonAsin": "0195313976"
+    }
+  ]
+}

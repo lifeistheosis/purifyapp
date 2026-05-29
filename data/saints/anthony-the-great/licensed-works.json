@@ -1,0 +1,16 @@
+{
+  "works": [
+    {
+      "slug": "life-of-antony-gregg",
+      "title": "Athanasius: The Life of Antony and the Letter to Marcellinus",
+      "subtitle": "Classics of Western Spirituality",
+      "author": "Athanasius of Alexandria",
+      "authorRole": "by",
+      "publisher": "Paulist Press",
+      "year": 1980,
+      "blurb": "Athanasius's vita of his contemporary, the father of Christian monasticism — the book that converted Augustine's friends in Milan and shaped every monastic tradition that followed. Robert C. Gregg's translation.",
+      "topics": ["monasticism", "desert-fathers", "biography"],
+      "amazonAsin": "0809122952"
+    }
+  ]
+}
