@@ -37,6 +37,25 @@ const features = [
  },
 ];
 
+const featuresDe = [
+ {
+ title: "Mit den Vätern lesen",
+ body: "Die Septuaginta und die King-James-Bibel, das Griechische neben dem Englischen, mit dem heiligen Johannes Chrysostomus Vers für Vers über vierzehn Bücher des Neuen Testaments.",
+ },
+ {
+ title: "Leben der Heiligen",
+ body: "Sechsundfünfzig Profile, mit ihren Schriften, ganz zu lesen, vom heiligen Chrysostomus und Athanasius bis zur Gottesgebärerin und den Wüstenvätern.",
+ },
+ {
+ title: "Der heilige Kalender",
+ body: "Jeder Tag des Kirchenjahres, der Heilige und das Fasten, in der Neuen und Alten (Julianischen) Reckonung. Das ganze Menologion auf einen Blick.",
+ },
+ {
+ title: "Gebet, das atmet",
+ body: "Die Morgen- und Abendregel, das Jesusgebet und die Gebete, die die Christen seit sechzehn Jahrhunderten getragen haben.",
+ },
+];
+
 // Two per pillar, Scripture, Saints, Calendar, Prayer.
 const categories: { label: string; href: string }[] = [
  { label: "The Gospel of John", href: "/bible/john/1" },
@@ -47,6 +66,17 @@ const categories: { label: string; href: string }[] = [
  { label: "Today", href: "/prayers/today" },
  { label: "Morning prayers", href: "/prayers/morning" },
  { label: "The Jesus Prayer", href: "/prayers/learning/jesus-prayer" },
+];
+
+const categoriesDe: { label: string; href: string }[] = [
+ { label: "Das Evangelium nach Johannes", href: "/bible/john/1" },
+ { label: "Der Psalter", href: "/bible/psalms/1" },
+ { label: "Leben der Heiligen", href: "/saints" },
+ { label: "Hl. Johannes Chrysostomus", href: "/saints/john-chrysostom" },
+ { label: "Der heilige Kalender", href: "/calendar" },
+ { label: "Heute", href: "/prayers/today" },
+ { label: "Morgengebete", href: "/prayers/morning" },
+ { label: "Das Jesusgebet", href: "/prayers/learning/jesus-prayer" },
 ];
 
 const challenges: {
@@ -75,6 +105,32 @@ const challenges: {
  },
 ];
 
+const challengesDe: {
+ eyebrow: string;
+ title: string;
+ body: string;
+ href: string;
+}[] = [
+ {
+ eyebrow: "Sechzehn Jahrhunderte des Lesens",
+ title: "Das Evangelium mit Chrysostomus lesen",
+ body: "Schlag das Evangelium nach Johannes auf, und die achtundachtzig Homilien des heiligen Johannes Chrysostomus lesen mit dir, Vers für Vers, in der Studienspalte.",
+ href: "/bible/john/1",
+ },
+ {
+ eyebrow: "Vierzigtägige Reise",
+ title: "Die große Fastenzeit mit den Vätern",
+ body: "Geh das große Fasten mit den Heiligen, die seine Gottesdienste geprägt haben. Jeder Sonntag nennt einen Vater; jede Woche nennt ein Thema.",
+ href: "/calendar",
+ },
+ {
+ eyebrow: "Das Gebet des Herzens",
+ title: "Lerne das Jesusgebet",
+ body: "Ein kurzes Gebet, das orthodoxe Christen seit sechzehn Jahrhunderten getragen hat. Bete es im Atem; das Zurückbringen ist die halbe Arbeit.",
+ href: "/prayers/learning/jesus-prayer",
+ },
+];
+
 // Each section: full viewport min-height, snap-aligned, flex-centered.
 // pt offsets the 72px sticky navbar so content centers in the visible area.
 // Padding tightened ~20% as part of the v6.1.1 home polish (less shouty).
@@ -83,7 +139,11 @@ const sectionBase =
 
 export default async function Home() {
  const locale = await getServerLocale();
+ const isDe = locale === "de";
  const m = getMessages(locale);
+ const homeFeatures = isDe ? featuresDe : features;
+ const homeCategories = isDe ? categoriesDe : categories;
+ const homeChallenges = isDe ? challengesDe : challenges;
  return (
  <>
  {/* MOBILE: app-shell Today hero. Hidden on md+ where the marketing
@@ -122,7 +182,7 @@ export default async function Home() {
  className="group inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.06] px-3 py-1.5 mb-5 hover:bg-paper/10 hover:border-paper/35 transition-colors duration-150"
  >
  <span className="font-sans text-[10px] font-semibold uppercase tracking-[1.5px] px-2 py-0.5 rounded-pill bg-gold text-night">
- New
+ {isDe ? "Neu" : "New"}
  </span>
  <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
  <span className="sm:hidden">v6.10 · Deutsch, der Rest</span>
@@ -164,14 +224,16 @@ export default async function Home() {
  <div className="mx-auto max-w-[1240px] w-full">
  <div className="text-center max-w-[720px] mx-auto mb-16">
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
- Why Purify
+ {isDe ? "Warum Purify" : "Why Purify"}
  </p>
  <h2 className="font-sans text-[26px] md:text-[36px] lg:text-[46px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
- Four pillars, one quiet place.
+ {isDe
+ ? "Vier Säulen, ein stiller Ort."
+ : "Four pillars, one quiet place."}
  </h2>
  </div>
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
- {features.map((f) => (
+ {homeFeatures.map((f) => (
  <div key={f.title} className="text-center">
  <div className="mx-auto mb-6 h-14 w-14 rounded-pill bg-paper/10 flex items-center justify-center text-gold">
  <Cross size={24} />
@@ -192,7 +254,9 @@ export default async function Home() {
  <section className={`${sectionBase} bg-paper text-center`}>
  <div className="mx-auto max-w-[820px] w-full">
  <p className="font-serif text-[28px] md:text-[42px] leading-[1.15] tracking-[-0.01em] text-night">
- &ldquo;The Lord is good to those who trust in him.&rdquo;
+ {isDe
+ ? "„Der Herr ist gut zu denen, die auf ihn vertrauen.“"
+ : "“The Lord is good to those who trust in him.”"}
  </p>
  <Link
  href="/bible/nahum/1#v7"
@@ -208,14 +272,14 @@ export default async function Home() {
  <div className="mx-auto max-w-[1240px] w-full">
  <div className="mb-12">
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
- Where to begin
+ {isDe ? "Wo anfangen" : "Where to begin"}
  </p>
  <h2 className="font-sans text-[26px] md:text-[36px] lg:text-[46px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
- Begin where you stand.
+ {isDe ? "Fang an, wo du stehst." : "Begin where you stand."}
  </h2>
  </div>
  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
- {categories.map((c) => (
+ {homeCategories.map((c) => (
  <Link
  key={c.label}
  href={c.href}
@@ -233,14 +297,16 @@ export default async function Home() {
  <div className="mx-auto max-w-[1240px] w-full">
  <div className="mb-12">
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
- Paths to walk
+ {isDe ? "Wege zu gehen" : "Paths to walk"}
  </p>
  <h2 className="font-sans text-[26px] md:text-[36px] lg:text-[46px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
- Where would you like to begin?
+ {isDe
+ ? "Wo möchtest du anfangen?"
+ : "Where would you like to begin?"}
  </h2>
  </div>
  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
- {challenges.map((ch) => (
+ {homeChallenges.map((ch) => (
  <Link
  key={ch.title}
  href={ch.href}
@@ -256,7 +322,7 @@ export default async function Home() {
  {ch.body}
  </p>
  <span className="font-sans text-[13px] font-medium text-paper/75 group-hover:text-gold transition-colors">
- Begin →
+ {isDe ? "Anfangen →" : "Begin →"}
  </span>
  </Link>
  ))}
@@ -271,15 +337,16 @@ export default async function Home() {
  <section className={`${sectionBase} bg-night`}>
  <div className="mx-auto max-w-[1100px] w-full">
  <h2 className="font-sans text-[32px] md:text-[46px] lg:text-[60px] font-bold text-paper leading-[1.02] tracking-[-0.03em]">
- Open Purify.
+ {isDe ? "Purify öffnen." : "Open Purify."}
  </h2>
  <p className="mt-5 font-serif text-[15px] md:text-[18px] text-paper/75 leading-[1.6] max-w-[640px]">
- Begin where you stand, at a prayer, at the saint of the day, at
- a verse of the Gospel.
+ {isDe
+ ? "Fang an, wo du stehst — bei einem Gebet, beim Heiligen des Tages, bei einem Vers des Evangeliums."
+ : "Begin where you stand, at a prayer, at the saint of the day, at a verse of the Gospel."}
  </p>
  <div className="mt-10">
  <ComingSoonCTA variant="inverse" className="text-[16px]">
- Open Purify
+ {isDe ? "Purify öffnen" : "Open Purify"}
  </ComingSoonCTA>
  </div>
  </div>
