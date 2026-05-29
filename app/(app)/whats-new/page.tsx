@@ -23,6 +23,22 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v6.10",
+ kind: "Deutsch, the rest of the site",
+ date: "May 29, 2026",
+ blurb:
+ "The German edition gets the long-prose pages a casual reader actually visits: /about, /faq, /privacy, /support, /pricing, and /topics all ship in editorial German prose, replacing the v6.4.3 'Übersetzung im Werden' banner on those surfaces with hand-written copy that mirrors the English structure section for section. The Nicene Council documents gain locale-aware loading, with the Symbol of the Faith (the original 325 Creed plus the Eusebian baptismal creed) shipping in German first; the remaining council canons (the Twenty Canons of Nicaea, the Synodal Letter, plus all of Constantinople I / Ephesus / Chalcedon) keep the banner and queue for the next German push. Hosted patristic works (~30 of them) also remain in banner-mode for now; each will move out as it is translated.",
+ items: [
+  "Long-prose pages translated end-to-end into German: /about (six sections, manifesto through doxology), /faq (all twelve Q&As — Orthodox alignment, Bible choice, Greek text, calendar, fasting, prayers, saints, akathists, privacy, install/feedback), /privacy (every field, every third party, every retention window named), /support (the live BMC goal block, the donate cards, the expense breakdown, the free-forever footer), /pricing (the core-stays-free statement), and /topics index (with the per-topic citation counts).",
+  "Translation register: editorial German in calm catechetical voice, written by hand without machine output. Orthodox-aware terminology: wesensgleich, Theotokos, Pascha, der Heilige Geist, das Glaubensbekenntnis, das Konzil. Liturgical formulae follow the established wording of the Diözese Berlin und Deutschland (ROCOR) and the Metropolie von Wien — the same source the v6.9 prayer rules cited.",
+  "Council documents gain locale-aware loading: lib/councils/load.ts now reads data/councils/{slug}/i18n/{locale}/{document}.json before falling back to the English source. The document reader page passes the server locale and surfaces the ContentNotYetTranslated banner when the variant is missing. Section labels (\"Abschnitt N\") and the back-to-council link both translate.",
+  "First council document in German: the Symbol of the Faith of the First Council of Nicaea (325) — the original 318-Father Creed with the anathemas, the editorial notes on ὁμοούσιον and the Arian slogan being condemned, plus the Eusebian baptismal creed preserved as the third section. The remaining Nicaea documents (Twenty Canons + Synodal Letter) and the canons of Constantinople I / Ephesus / Chalcedon stay in banner-mode and queue for the next German push.",
+  "TranslationDisclaimer banner stops rendering on the now-translated long-prose pages — the surfaces that have full German prose no longer need the v6.4.3 'translation in progress' notice. Pages still in English (the work reader for an untranslated work, the /whats-new historical entries) keep the banner.",
+  "Still queued for the next German wave: ~30 hosted patristic works (everything except the v6.8 essence-and-energies florilegium), the remaining 3 council documents of Nicaea plus all 3 other councils' canons, the Jesus Prayer learning module, the Akathists hub, the Hours preview, and the /whats-new historical entry bodies. The Bible itself is intentionally out of scope (German Orthodox readers cross-check with Luther / Schlachter / Septuaginta Deutsch).",
+  "Footer + home hero chip + /whats-new chip step to v6.10.",
+ ],
+ },
+ {
  version: "v6.9",
  kind: "Deutsch — the German patch lands",
  date: "May 29, 2026",
@@ -869,7 +885,7 @@ export default async function WhatsNewPage() {
  {t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
- v6.9 &middot; Deutsch — the German patch lands
+ v6.10 &middot; Deutsch, the rest of the site
  </p>
  </div>
 

@@ -1,6 +1,7 @@
 import "server-only";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { DEFAULT_LOCALE, type LocaleCode } from "@/lib/i18n/locales";
 
 // The shape of a single document JSON under data/councils/{council}/{doc}.json.
 // Mirrors the saints WritingContent schema deliberately so the reader UI
@@ -37,11 +38,32 @@ const DATA_DIR = path.join(process.cwd(), "data", "councils");
 export async function loadCouncilDocument(
  councilSlug: string,
  documentSlug: string,
-): Promise<CouncilDocumentContent | null> {
+ locale: LocaleCode = DEFAULT_LOCALE,
+): Promise<{ content: CouncilDocumentContent; isLocalized: boolean } | null> {
+ // Try the locale variant first
+ // (data/councils/{council}/i18n/{locale}/{document}.json),
+ // fall back to the English source. Editorial guardrail: only locale
+ // variants that have been hand-translated land here; absent files fall
+ // through to English without ceremony.
+ if (locale !== DEFAULT_LOCALE) {
+ try {
+ const localeFile = path.join(
+ DATA_DIR,
+ councilSlug,
+ "i18n",
+ locale,
+ `${documentSlug}.json`,
+ );
+ const raw = await fs.readFile(localeFile, "utf8");
+ return { content: JSON.parse(raw) as CouncilDocumentContent, isLocalized: true };
+ } catch {
+ /* fall through to English */
+ }
+ }
  try {
  const file = path.join(DATA_DIR, councilSlug, `${documentSlug}.json`);
  const raw = await fs.readFile(file, "utf8");
- return JSON.parse(raw) as CouncilDocumentContent;
+ return { content: JSON.parse(raw) as CouncilDocumentContent, isLocalized: false };
  } catch {
  return null;
  }

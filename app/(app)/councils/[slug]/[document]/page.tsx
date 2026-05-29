@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { COUNCILS, getCouncil } from "@/lib/councils/councils";
 import { loadCouncilDocument } from "@/lib/councils/load";
+import { getServerLocale } from "@/lib/i18n/server";
+import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 
 export function generateStaticParams() {
  return COUNCILS.flatMap((c) =>
@@ -34,8 +36,11 @@ export default async function CouncilDocumentPage({
  if (!c) notFound();
  const docRef = c.documents.find((d) => d.slug === document);
  if (!docRef) notFound();
- const content = await loadCouncilDocument(slug, document);
- if (!content) notFound();
+ const locale = await getServerLocale();
+ const loaded = await loadCouncilDocument(slug, document, locale);
+ if (!loaded) notFound();
+ const { content, isLocalized } = loaded;
+ const isDe = locale === "de";
 
  return (
  <section className="bg-night px-5 md:px-8 py-16 md:py-24">
@@ -43,7 +48,7 @@ export default async function CouncilDocumentPage({
  {/* Breadcrumb */}
  <p className="font-sans text-[12px] uppercase tracking-[1.5px] text-paper/45 mb-6">
  <Link href="/councils" className="hover:text-paper transition-colors">
- The Councils
+ {isDe ? "Die Konzile" : "The Councils"}
  </Link>
  <span className="mx-2 text-paper/30">/</span>
  <Link
@@ -53,6 +58,9 @@ export default async function CouncilDocumentPage({
  {c.byname}
  </Link>
  </p>
+ {!isLocalized && locale !== "en" && (
+ <ContentNotYetTranslated locale={locale} kind="work" />
+ )}
 
  <h1 className="font-display-serif text-[36px] md:text-[48px] text-paper leading-[1.1] tracking-[-0.01em]">
  {content.title}
@@ -73,7 +81,7 @@ export default async function CouncilDocumentPage({
  {content.sections.map((s) => (
  <section key={s.n}>
  <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-gold/70 font-semibold mb-2">
- Section {s.n}
+ {isDe ? `Abschnitt ${s.n}` : `Section ${s.n}`}
  </p>
  <h2 className="font-display-serif text-[24px] md:text-[28px] text-paper leading-[1.2]">
  {s.title}
@@ -110,7 +118,7 @@ export default async function CouncilDocumentPage({
  href={`/councils/${c.slug}`}
  className="font-sans text-[14px] text-paper/65 hover:text-paper transition-colors"
  >
- ← Back to {c.byname}
+ {isDe ? "← Zurück zu" : "← Back to"} {c.byname}
  </Link>
  </div>
  </article>

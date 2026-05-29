@@ -47,34 +47,54 @@ export default async function SupportPage() {
  Math.max(0, raised / SUPPORT.monthlyGoalUsd),
  );
  const locale = await getServerLocale();
+ const isDe = locale === "de";
  const m = getMessages(locale);
 
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- {t(m, "support.eyebrow")}
+ {isDe ? "Unterstützung" : t(m, "support.eyebrow")}
  </p>
  <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- {t(m, "support.h1")}
+ {isDe
+ ? "Was das Werk trägt, und wie du es mitträgst."
+ : t(m, "support.h1")}
  </h1>
  <p className="mt-6 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ {isDe ? (
+ <>
+ Der Kern von Purify &mdash; die Heiligen, die Schriften, die
+ Gebete, der Kalender &mdash; ist frei und bleibt frei.
+ Hosting, Speicher, Beschaffung und die Menschen, die die
+ Arbeit tun, kosten Geld. Wenn die Seite dir geholfen hat,
+ kannst du das Licht anhalten oder beschleunigen, was wir als
+ Nächstes bauen.
+ </>
+ ) : (
+ <>
  The core of Purify, the saints, the Scriptures, the
  prayers, the calendar, is free, and stays free. Hosting,
  storage, sourcing, and the people who do the work all cost
- money. If the site has helped you, you can keep the lights on,
- or speed up the next thing we build.
+ money. If the site has helped you, you can keep the lights
+ on, or speed up the next thing we build.
+ </>
+ )}
  </p>
 
  {/* Live goal */}
  <section className="mt-12 rounded-lg border border-paper/12 bg-paper/[0.03] p-6 md:p-8">
  <div className="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
  <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55">
- This month&rsquo;s goal
+ {isDe ? "Ziel dieses Monats" : "This month’s goal"}
  </p>
  <p className="font-sans text-[11px] text-paper/40">
  {live
- ? `Live · refreshed ${ago(live.fetchedAt)}`
+ ? isDe
+ ? `Live · aktualisiert vor ${ago(live.fetchedAt)}`
+ : `Live · refreshed ${ago(live.fetchedAt)}`
+ : isDe
+ ? `Aktualisiert ${SUPPORT.lastUpdated}`
  : `Updated ${SUPPORT.lastUpdated}`}
  </p>
  </div>
@@ -82,7 +102,7 @@ export default async function SupportPage() {
  <p className="font-sans text-[28px] md:text-[32px] font-bold text-paper tabular-nums">
  {formatUsd(raised)}
  <span className="text-paper/45 text-[18px] font-normal">
- {" "}of {formatUsd(SUPPORT.monthlyGoalUsd)}
+ {" "}{isDe ? "von" : "of"} {formatUsd(SUPPORT.monthlyGoalUsd)}
  </span>
  </p>
  <p className="font-sans text-[13px] text-gold font-semibold tabular-nums">
@@ -97,6 +117,20 @@ export default async function SupportPage() {
  </div>
  <p className="mt-3 font-sans text-[12.5px] text-paper/55">
  {live ? (
+ isDe ? (
+ <>
+ Echte Zahlen, gezogen von Buy Me a Coffee.
+ {live.supporters > 0 ? (
+ <>
+ {" "}
+ {live.supporters}{" "}
+ {live.supporters === 1 ? "Unterstützer" : "Unterstützer"}{" "}
+ in diesem Monat.
+ </>
+ ) : null}{" "}
+ Das Ziel bewegt sich mit den monatlichen Ausgaben unten.
+ </>
+ ) : (
  <>
  Real numbers, pulled from Buy Me a Coffee.
  {live.supporters > 0 ? (
@@ -108,6 +142,12 @@ export default async function SupportPage() {
  </>
  ) : null}{" "}
  The goal moves with the monthly expenses below.
+ </>
+ )
+ ) : isDe ? (
+ <>
+ Wir nennen echte Zahlen, keine Schaubilanzen. Das Ziel bewegt
+ sich mit den tatsächlichen monatlichen Ausgaben unten.
  </>
  ) : (
  <>
@@ -121,7 +161,7 @@ export default async function SupportPage() {
  {/* How to give */}
  <section className="mt-10">
  <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- How to give
+ {isDe ? "Wie du gibst" : "How to give"}
  </p>
  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
  {SUPPORT.donateLinks.map((d) => (
@@ -141,7 +181,7 @@ export default async function SupportPage() {
  {d.note}
  </p>
  <p className="mt-4 font-sans text-[12px] font-medium text-paper/65 group-hover:text-gold transition-colors">
- Open →
+ {isDe ? "Öffnen →" : "Open →"}
  </p>
  </Link>
  ))}
@@ -151,7 +191,7 @@ export default async function SupportPage() {
  {/* Or join the community, Discord + Instagram */}
  <section className="mt-10">
  <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- Or join the community
+ {isDe ? "Oder tritt der Gemeinschaft bei" : "Or join the community"}
  </p>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <a
@@ -166,12 +206,13 @@ export default async function SupportPage() {
  Discord
  </p>
  <p className="mt-2 font-sans text-[13.5px] text-paper/70 leading-[1.6]">
- Prayer requests, akathist suggestions, content questions,
- and a place to be heard. Open to everyone.
+ {isDe
+ ? "Gebetsanliegen, Vorschläge für Akathiste, Fragen zum Inhalt — ein Ort, gehört zu werden. Offen für jeden."
+ : "Prayer requests, akathist suggestions, content questions, and a place to be heard. Open to everyone."}
  </p>
  </div>
  <span className="shrink-0 font-sans text-[13px] font-medium text-[#a4adff] group-hover:text-[#c7cdff] transition-colors mt-1">
- Open ↗
+ {isDe ? "Öffnen ↗" : "Open ↗"}
  </span>
  </div>
  </a>
@@ -187,13 +228,13 @@ export default async function SupportPage() {
  Instagram &middot; @purifymylife
  </p>
  <p className="mt-2 font-sans text-[13.5px] text-paper/70 leading-[1.6]">
- The day&rsquo;s saint, the day&rsquo;s fast, and the
- occasional small note from Edgar. No reels, no chasing
- the algorithm.
+ {isDe
+ ? "Der Heilige des Tages, das Fasten des Tages und gelegentlich eine kleine Notiz von Edgar. Keine Reels, kein Hinterherlaufen hinter dem Algorithmus."
+ : "The day’s saint, the day’s fast, and the occasional small note from Edgar. No reels, no chasing the algorithm."}
  </p>
  </div>
  <span className="shrink-0 font-sans text-[13px] font-medium text-gold/85 group-hover:text-gold transition-colors mt-1">
- Open ↗
+ {isDe ? "Öffnen ↗" : "Open ↗"}
  </span>
  </div>
  </a>
@@ -203,13 +244,24 @@ export default async function SupportPage() {
  {/* Expense breakdown */}
  <section className="mt-14">
  <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- Where the money goes
+ {isDe ? "Wohin das Geld geht" : "Where the money goes"}
  </p>
  <p className="font-serif text-[17px] text-paper/80 leading-[1.7] mb-6">
+ {isDe ? (
+ <>
+ Jede Zeile ist echt. Die monatlichen Gesamtkosten zum Stand{" "}
+ {SUPPORT.lastUpdated} betragen {formatUsd(totalMonthlyExpense)}.
+ Das Förderziel oben ist auf {formatUsd(SUPPORT.monthlyGoalUsd)}{" "}
+ gesetzt, um Spielraum für die unvorhersehbaren Monate zu lassen.
+ </>
+ ) : (
+ <>
  Every line is real. Total monthly cost as of{" "}
  {SUPPORT.lastUpdated} is {formatUsd(totalMonthlyExpense)}. The
  funding goal above is set at {formatUsd(SUPPORT.monthlyGoalUsd)}
  {" "}to leave some margin for the unpredictable months.
+ </>
+ )}
  </p>
  <ul className="divide-y divide-paper/8 border border-paper/12 rounded-md overflow-hidden">
  {SUPPORT.expenses.map((e) => (
@@ -228,16 +280,16 @@ export default async function SupportPage() {
  )}
  </div>
  <p className="shrink-0 font-sans text-[15px] font-semibold text-gold tabular-nums">
- {formatUsd(e.monthlyUsd)}/mo
+ {formatUsd(e.monthlyUsd)}{isDe ? "/Mon." : "/mo"}
  </p>
  </li>
  ))}
  <li className="px-5 py-4 flex items-baseline justify-between gap-4 bg-paper/[0.06]">
  <p className="font-sans text-[14.5px] font-bold text-paper">
- Monthly total
+ {isDe ? "Monatlicher Gesamtbetrag" : "Monthly total"}
  </p>
  <p className="font-sans text-[16px] font-bold text-paper tabular-nums">
- {formatUsd(totalMonthlyExpense)}/mo
+ {formatUsd(totalMonthlyExpense)}{isDe ? "/Mon." : "/mo"}
  </p>
  </li>
  </ul>
@@ -246,22 +298,41 @@ export default async function SupportPage() {
  {/* Free-forever note */}
  <section className="mt-14 rounded-lg border border-paper/12 bg-paper/[0.02] p-6">
  <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
- The core stays free
+ {isDe ? "Der Kern bleibt frei" : "The core stays free"}
  </p>
  <p className="font-serif text-[17px] text-paper/85 leading-[1.7]">
- The saints, the Scriptures with the Greek beside them, the daily
- prayers, and the calendar will remain free of charge to anyone
- who needs them. Gifts on this page are freewill offerings that
- cover running costs; they unlock nothing and are never required.
- A heavier infrastructure layer is on the way under proper
- licensing, and when it arrives as an optional, subscription-funded
- tier, what is free today will still be free then.
+ {isDe ? (
+ <>
+ Die Heiligen, die Schriften mit dem Griechischen daneben, die
+ täglichen Gebete und der Kalender bleiben unentgeltlich für
+ jeden, der sie braucht. Die Gaben auf dieser Seite sind
+ freiwillige Opfer, die die laufenden Kosten decken; sie
+ schalten nichts frei und werden nie verlangt. Eine schwerere
+ Infrastrukturschicht ist unter ordentlicher Lizenzierung im
+ Werden, und wenn sie als freiwilliger, durch Abonnement
+ getragener Bereich kommt, wird das, was heute frei ist, dann
+ noch frei sein.
+ </>
+ ) : (
+ <>
+ The saints, the Scriptures with the Greek beside them, the
+ daily prayers, and the calendar will remain free of charge to
+ anyone who needs them. Gifts on this page are freewill
+ offerings that cover running costs; they unlock nothing and
+ are never required. A heavier infrastructure layer is on the
+ way under proper licensing, and when it arrives as an
+ optional, subscription-funded tier, what is free today will
+ still be free then.
+ </>
+ )}
  </p>
  </section>
 
  {/* Closing */}
  <p className="mt-14 font-serif italic text-center text-[18px] text-paper/70">
- Whatever you give, or do not give, we are glad you are here.
+ {isDe
+ ? "Was du auch gibst oder nicht gibst, wir sind froh, daß du da bist."
+ : "Whatever you give, or do not give, we are glad you are here."}
  </p>
  </article>
  </section>
