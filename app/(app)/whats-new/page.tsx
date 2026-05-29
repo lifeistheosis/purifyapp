@@ -856,26 +856,116 @@ function groupByDate(entries: Entry[]): { date: string; entries: Entry[] }[] {
 export default async function WhatsNewPage() {
  const groups = groupByDate(ENTRIES);
  const locale = await getServerLocale();
+ const isDe = locale === "de";
  const m = getMessages(locale);
 
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
- <TranslationDisclaimer />
+ {!isDe && <TranslationDisclaimer />}
  {/* Eyebrow + version */}
  <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55">
- {t(m, "whatsnew.eyebrow")}
+ {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
  v6.9 &middot; Deutsch — the site speaks German now
  </p>
  </div>
 
+ {isDe ? (
+ <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ Die ganze Seite spricht jetzt Deutsch.
+ </h1>
+ ) : (
  <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  Tell us which saints to translate next. And a quieter, sturdier app underneath.
  </h1>
+ )}
 
+ {isDe ? (
+ <>
+ <p className="mt-8 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ Wenn du neu hier bist, willkommen. Wir sehen in dieser Woche
+ eine echte Welle neuer Leser kommen, und wir sind sehr froh,
+ daß du gekommen bist. Purify ist klein, von Hand gebaut und
+ wird von einem kleinen Team von Entwicklern und Redakteuren
+ getragen — jeder Einzelne, der hereinschaut, zählt. Gieß dir
+ eine Tasse Kaffee ein, schau dich um, und wenn etwas kaputt
+ ist oder fehlt, sag uns Bescheid. Wir möchten, daß du dich
+ zuhause fühlst.
+ </p>
+
+ <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ Der beste Ort, mit uns zu sprechen, Fragen zu stellen, einen
+ Heiligen vorzuschlagen, einen Tippfehler zu melden oder
+ einfach mit anderen orthodoxen Lesern zu beten, ist unser
+ Discord. Es ist der Raum, in dem die Redaktion täglich lebt,
+ wo du siehst, woran als Nächstes gearbeitet wird, und wo
+ deine Stimme ändert, was geliefert wird. Wir können nicht
+ genug betonen, wie sehr es hilft, wenn du dort dabei bist.
+ Tritt{" "}
+ <a
+ href="https://discord.gg/VzBYYUsNJ6"
+ target="_blank"
+ rel="noopener noreferrer"
+ className="text-sky-400 underline underline-offset-2 decoration-sky-400/50 hover:decoration-sky-300 hover:text-sky-300"
+ >
+ hier
+ </a>{" "}
+ bei.
+ </p>
+
+ <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ v6.9 ist ein großes Release: die deutsche Ausgabe von Purify.
+ Wähle Deutsch im Fußbereich, und die ganze Seite wechselt die
+ Sprache. Die Startseite, der Gebets-Bereich, der Kalender,{" "}
+ <Link
+ href="/about"
+ className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
+ >
+ /about
+ </Link>
+ , /faq, /privacy, /support, /pricing, /topics — jede Seite,
+ die ein gewöhnlicher Leser tatsächlich öffnet — erscheint in
+ redaktionellem Deutsch, von Hand geschrieben, nicht
+ maschinell übersetzt. Alle sechsundfünfzig Heiligenviten, die
+ Morgen- und Abendregel, das Wesens-Energien-Florilegium aus
+ v6.8 und das Nicänische Glaubensbekenntnis von 325 liefern
+ wir gleich mit aus.
+ </p>
+
+ <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ Voice und Terminologie folgen dem etablierten Wortlaut der
+ Diözese Berlin und Deutschland (ROCOR) und der Metropolie
+ von Wien. Wo redaktionelles Deutsch noch nicht geschrieben
+ ist — die meisten gehosteten Väterwerke, das Lern-Modul, die
+ Akathiste, die Bibel selbst —, benennt ein kleines ehrliches
+ Banner (Übersetzung im Werden) die Lücke und liefert den
+ englischen Urtext aus. Keine maschinelle Übersetzung der
+ Schrift oder der Väter, ohne daß ein Redakteur sie geprüft
+ hat.
+ </p>
+
+ <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ Die Arbeit darunter bleibt dieselbe. Gebet, Schrift, die
+ Heiligen, die Konzile und das Kirchenjahr — schlicht
+ hingestellt, ohne Verfolgung und ohne Werbung. Bete mit der
+ Kirche. Lies mit den Vätern. Geh durch das Jahr. Wir sind
+ geehrt, daß du irgend etwas davon mit uns tust.
+ </p>
+
+ <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ Die vollständige Versionsliste lebt unten, nach Datum
+ geordnet und voreingestellt zugeklappt. Klappe einen Eintrag
+ auf, wenn du die Einzelheiten möchtest. Die historischen
+ Einträge sind weiterhin auf Englisch — sie beschreiben
+ frühere Veröffentlichungen einer englisch entwickelten App
+ und werden nicht rückwirkend übersetzt.
+ </p>
+ </>
+ ) : (
+ <>
  <p className="mt-8 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
  If you are new here, welcome. We are seeing a real wave of new
  readers arrive this week, and we are so glad you came. Purify is
@@ -947,18 +1037,21 @@ export default async function WhatsNewPage() {
  The full release-by-release log lives below, grouped by date and
  collapsed by default. Pop one open when you want the detail.
  </p>
+ </>
+ )}
 
  {/* Closing + signature */}
  <div className="mt-16 pt-10 border-t border-paper/10">
  <p className="font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- Thank you for staying with us through six majors. Glory to God
- for all things.
+ {isDe
+ ? "Danke, daß du bis hierher mit uns durchgehalten hast. Ehre sei Gott für alles."
+ : "Thank you for staying with us through six majors. Glory to God for all things."}
  </p>
 
  <p
  className="mt-10 font-serif italic text-[20px] md:text-[22px] tracking-wide text-gold"
  >
- From Edgar, the Purify Team.
+ {isDe ? "Von Edgar, dem Purify-Team." : "From Edgar, the Purify Team."}
  </p>
  </div>
 
@@ -966,14 +1059,14 @@ export default async function WhatsNewPage() {
  <section className="mt-20 pt-10 border-t border-paper/10" data-changelog>
  <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
  <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55">
- Release notes
+ {isDe ? "Versionshinweise" : "Release notes"}
  </p>
  <ChangelogControls />
  </div>
  <p className="font-sans text-[13px] text-paper/45 mb-8 leading-[1.65]">
- Grouped by date. The most recent day is open by default; tap any
- other day to expand. Inside each day, tap a release to read its
- full item list.
+ {isDe
+ ? "Nach Datum geordnet. Der jüngste Tag ist voreingestellt geöffnet; tippe jeden anderen Tag an, um ihn aufzuklappen. Innerhalb eines Tages tippe auf eine Version, um die vollständige Liste zu lesen. Die Einträge selbst sind weiterhin auf Englisch."
+ : "Grouped by date. The most recent day is open by default; tap any other day to expand. Inside each day, tap a release to read its full item list."}
  </p>
 
  <div className="space-y-3">
@@ -989,7 +1082,14 @@ export default async function WhatsNewPage() {
  {g.date}
  </span>
  <span className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/45">
- {g.entries.length} update{g.entries.length === 1 ? "" : "s"}
+ {g.entries.length}{" "}
+ {isDe
+ ? g.entries.length === 1
+ ? "Aktualisierung"
+ : "Aktualisierungen"
+ : g.entries.length === 1
+ ? "update"
+ : "updates"}
  </span>
  </span>
  <span
