@@ -1,4 +1,5 @@
 import { Cross } from "@/components/ui/icons/Cross";
+import { getServerLocale } from "@/lib/i18n/server";
 
 const ITEMS: { title: string; body: string }[] = [
   {
@@ -27,25 +28,57 @@ const ITEMS: { title: string; body: string }[] = [
   },
 ];
 
-export function MadeOfStrip() {
+const ITEMS_DE: { title: string; body: string }[] = [
+  {
+    title: "Der ganze orthodoxe Kanon",
+    body: "Septuaginta-Altes Testament (Brenton, 1851) mit dem Deuterokanon und der angeordneten Psalterzählung, gepaart mit dem King-James-Neuen-Testament.",
+  },
+  {
+    title: "Polytonisches Koine-griechisches Neues Testament",
+    body: "Nestle 1904 mit Strong-Nummern und Robinson-Morphologie auf jedem Wort. Klicke ein griechisches Wort an für Lemma, Parsing und Kurzdefinition.",
+  },
+  {
+    title: "Patristischer Kommentar",
+    body: "Auswahl aus Schaffs Ante-Nicene und Nicene Fathers: Athanasius, Chrysostomus, Augustinus, die Kappadokier, Johannes von Damaskus, Maximus und weitere.",
+  },
+  {
+    title: "Tägliches Gebet im gemeinen Wortlaut",
+    body: "Die Morgen- und Abendregel im Wortlaut, den die Jordanville-, Hl.-Tichon- und Hapgood-Service-Book-Überlieferung trägt, mit einem geführten Jesusgebet-Zähler. Deutsche Wiedergabe nach der Diözese Berlin und Deutschland (ROCOR) und der Metropolie von Wien.",
+  },
+  {
+    title: "Der Kalender in beiden Reckonungen",
+    body: "Voreingestellt der Neue (Revidierte Julianische) des Ökumenischen Patriarchats; eine Umschaltung auf den Alten (Julianischen) für die russische, serbische, athonitische und jerusalemische Überlieferung. Pascha ist beiden gemein.",
+  },
+  {
+    title: "Keine Verfolgung. Keine Werbung. Konto freiwillig.",
+    body: "Deine Markierungen, Notizen, Lesezeichen und Gebets-Strähnen leben voreingestellt auf deinem Gerät. Melde dich an, um sie über Geräte hinweg abzugleichen. Wir betreiben keine Analytik und verkaufen keinen Werbeplatz, so oder so. Gebaut für das betende Leben, nicht für Bindung.",
+  },
+];
+
+export async function MadeOfStrip() {
+  const locale = await getServerLocale();
+  const isDe = locale === "de";
+  const items = isDe ? ITEMS_DE : ITEMS;
   return (
     <section className="snap-start md:[min-height:100dvh] flex items-center px-5 md:px-8 pt-24 md:pt-20 pb-10 md:pb-12 bg-night">
       <div className="mx-auto max-w-[1080px] w-full">
         <div className="text-center max-w-[680px] mx-auto mb-6 md:mb-8">
           <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.8px] text-paper/55 mb-2">
-            What we are made of
+            {isDe ? "Woraus wir gemacht sind" : "What we are made of"}
           </p>
           <h2 className="font-sans text-[26px] md:text-[32px] font-bold text-paper tracking-[-0.02em] leading-[1.15]">
-            Public domain, plain-text, all the way down.
+            {isDe
+              ? "Gemeinfrei, Klartext, durch und durch."
+              : "Public domain, plain-text, all the way down."}
           </h2>
           <p className="mt-3 font-sans text-[14px] text-paper/65 leading-[1.6]">
-            We tell you what we used and where it came from. No black-box
-            translations, no proprietary lock-in, no scriptural choices
-            hidden from you.
+            {isDe
+              ? "Wir sagen dir, was wir verwendet haben und woher es kommt. Keine Blackbox-Übersetzungen, keine geschützten Einbindungen, keine vor dir versteckten Schriftentscheidungen."
+              : "We tell you what we used and where it came from. No black-box translations, no proprietary lock-in, no scriptural choices hidden from you."}
           </p>
         </div>
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-          {ITEMS.map((it) => (
+          {items.map((it) => (
             <li
               key={it.title}
               className="rounded-md border border-paper/12 bg-paper/[0.03] p-4"
