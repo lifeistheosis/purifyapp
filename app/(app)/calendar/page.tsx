@@ -24,6 +24,7 @@ import { DayScroll } from "@/components/calendar/DayScroll";
 import { OrnamentRule } from "@/components/calendar/OrnamentRule";
 import { Colophon } from "@/components/calendar/Colophon";
 import { SectionLabel } from "@/components/calendar/SectionLabel";
+import { getServerLocale } from "@/lib/i18n/server";
 
 export const metadata = {
  title: "Orthodox Calendar",
@@ -100,13 +101,20 @@ async function resolveReadings(refs: ReadingRef[]): Promise<ResolvedReading[]> {
 function ReadingPanel({
  reading,
  size = "md",
+ isDe = false,
 }: {
  reading: ResolvedReading;
  size?: "sm" | "md";
+ isDe?: boolean;
 }) {
  const { ref, passage } = reading;
- const kindLabel =
- ref.kind === "epistle"
+ const kindLabel = isDe
+ ? ref.kind === "epistle"
+ ? "Apostel"
+ : ref.kind === "ot"
+ ? "Altes Testament"
+ : "Evangelium"
+ : ref.kind === "epistle"
  ? "Epistle"
  : ref.kind === "ot"
  ? "Old Testament"
@@ -141,7 +149,7 @@ function ReadingPanel({
  </p>
  ) : (
  <p className="font-sans text-[13px] text-paper/45 italic mt-4">
- Verse text unavailable.
+ {isDe ? "Versetext nicht verfügbar." : "Verse text unavailable."}
  </p>
  )}
 
@@ -149,11 +157,20 @@ function ReadingPanel({
  href={`/bible/${ref.book}/${ref.chapter}#v${ref.from}`}
  className="mt-auto pt-4 inline-block font-sans text-[12px] font-medium text-gold/80 hover:text-gold transition-colors"
  >
- Read full passage →
+ {isDe ? "Vollständigen Abschnitt lesen →" : "Read full passage →"}
  </Link>
  </div>
  );
 }
+
+const MONTH_NAMES_EN = [
+ "January", "February", "March", "April", "May", "June",
+ "July", "August", "September", "October", "November", "December",
+];
+const MONTH_NAMES_DE = [
+ "Januar", "Februar", "März", "April", "Mai", "Juni",
+ "Juli", "August", "September", "Oktober", "November", "Dezember",
+];
 
 export default async function CalendarPage({
  searchParams,
@@ -161,6 +178,8 @@ export default async function CalendarPage({
  searchParams: SearchParams;
 }) {
  const params = await searchParams;
+ const locale = await getServerLocale();
+ const isDe = locale === "de";
  // Resolve the calendar style:
  //   1. ?style= query (per-visit toggle wins)
  //   2. user preference cookie (ProfileSettings writes it)
@@ -218,13 +237,21 @@ export default async function CalendarPage({
 
  const paschaPrimary =
  pascha.daysAway === 0
- ? "Today"
+ ? isDe
+ ? "Heute"
+ : "Today"
  : pascha.daysAway > 0
- ? `${pascha.daysAway} days`
+ ? isDe
+ ? `${pascha.daysAway} Tage`
+ : `${pascha.daysAway} days`
+ : isDe
+ ? "Vergangen"
  : "Passed";
  const paschaSecondary =
  pascha.daysAway > 0
- ? `Until ${formatMonthDay(pascha.date)}, ${pascha.date.getUTCFullYear()}`
+ ? isDe
+ ? `Bis zum ${formatMonthDay(pascha.date)}, ${pascha.date.getUTCFullYear()}`
+ : `Until ${formatMonthDay(pascha.date)}, ${pascha.date.getUTCFullYear()}`
  : pascha.label;
 
  // Toggle hrefs (preserve month/day, flip style).
@@ -248,7 +275,11 @@ export default async function CalendarPage({
  <section className="px-5 md:px-8 pt-10 md:pt-14 pb-10 border-b border-white/8">
  <div className="mx-auto max-w-[1280px] w-full">
  <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
- <SectionLabel>Orthodox Calendar · Today</SectionLabel>
+ <SectionLabel>
+ {isDe
+ ? "Orthodoxer Kalender · Heute"
+ : "Orthodox Calendar · Today"}
+ </SectionLabel>
  {/* Typographic style toggle, no eyebrow label. */}
  <div className="inline-flex items-baseline gap-3">
  <Link
@@ -260,7 +291,7 @@ export default async function CalendarPage({
  : "text-paper/55 hover:text-paper"
  }`}
  >
- New
+ {isDe ? "Neu" : "New"}
  </Link>
  <span aria-hidden className="text-gold/35 text-[12px]">·</span>
  <Link
@@ -272,7 +303,7 @@ export default async function CalendarPage({
  : "text-paper/55 hover:text-paper"
  }`}
  >
- Old
+ {isDe ? "Alt" : "Old"}
  </Link>
  </div>
  </div>
@@ -285,12 +316,14 @@ export default async function CalendarPage({
  fast={todayFast}
  paschaPrimary={paschaPrimary}
  paschaSecondary={paschaSecondary}
+ locale={locale}
  />
 
  {style === "old" && (
  <p className="mt-4 font-serif italic text-[12.5px] text-paper/55 text-right max-w-[1280px]">
- On the Old (Julian) calendar, today&rsquo;s liturgical date is
- thirteen days behind the civil date. Both are shown above.
+ {isDe
+ ? "Im Alten (Julianischen) Kalender steht das liturgische Datum heute dreizehn Tage hinter dem bürgerlichen Datum. Beide sind oben angegeben."
+ : "On the Old (Julian) calendar, today’s liturgical date is thirteen days behind the civil date. Both are shown above."}
  </p>
  )}
  </div>
@@ -301,20 +334,24 @@ export default async function CalendarPage({
  <section className="px-5 md:px-8 py-10 md:py-12 border-b border-white/8 bg-night-soft">
  <div className="mx-auto max-w-[1280px] w-full">
  <div className="text-center mb-7">
- <SectionLabel>Today&rsquo;s readings</SectionLabel>
+ <SectionLabel>
+ {isDe ? "Lesungen für heute" : "Today’s readings"}
+ </SectionLabel>
  <h2 className="mt-2 font-display-serif text-[24px] md:text-[30px] text-paper">
- The Word for {formatMonthDay(today)}
+ {isDe
+ ? `Das Wort für den ${formatMonthDay(today)}`
+ : `The Word for ${formatMonthDay(today)}`}
  </h2>
  <OrnamentRule className="mt-4 max-w-[420px] mx-auto" />
  </div>
  {todayReadings.length === 1 ? (
  <div className="max-w-[560px] mx-auto">
- <ReadingPanel reading={todayReadings[0]} size="md" />
+ <ReadingPanel reading={todayReadings[0]} size="md" isDe={isDe} />
  </div>
  ) : (
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-[920px] mx-auto">
  {todayReadings.map((r, i) => (
- <ReadingPanel key={i} reading={r} size="md" />
+ <ReadingPanel key={i} reading={r} size="md" isDe={isDe} />
  ))}
  </div>
  )}
@@ -328,10 +365,7 @@ export default async function CalendarPage({
  <header className="flex items-end justify-between mb-8 gap-4 flex-wrap">
  <div className="min-w-0">
  <h2 className="font-display-serif text-[44px] md:text-[64px] text-paper leading-[0.95] tracking-[-0.01em]">
- {[
- "January", "February", "March", "April", "May", "June",
- "July", "August", "September", "October", "November", "December",
- ][month]}{" "}
+ {(isDe ? MONTH_NAMES_DE : MONTH_NAMES_EN)[month]}{" "}
  <span className="text-paper/55 font-normal">{year}</span>
  </h2>
  <p
@@ -347,21 +381,21 @@ export default async function CalendarPage({
  href={prevMonthHref(year, month)}
  className="font-sans text-[12px] tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
  >
- ‹ Prev
+ {isDe ? "‹ Zurück" : "‹ Prev"}
  </Link>
  <span aria-hidden className="text-gold/35 text-[12px]">·</span>
  <Link
  href="/calendar"
  className="font-sans text-[12px] tracking-[0.5px] text-paper/85 hover:text-paper transition-colors"
  >
- Today
+ {isDe ? "Heute" : "Today"}
  </Link>
  <span aria-hidden className="text-gold/35 text-[12px]">·</span>
  <Link
  href={nextMonthHref(year, month)}
  className="font-sans text-[12px] tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
  >
- Next ›
+ {isDe ? "Weiter ›" : "Next ›"}
  </Link>
  </nav>
  </header>
@@ -381,6 +415,7 @@ export default async function CalendarPage({
  tone={selectedTone}
  fast={selectedFast}
  commemorations={selectedCommemorations}
+ locale={locale}
  readings={
  selectedReadings.length > 0 ? (
  /* Compact citation list, no verse teasers in the
@@ -389,8 +424,13 @@ export default async function CalendarPage({
  column doesn't leave a big empty rail. */
  <ul className="divide-y divide-paper/8 border-t border-b border-paper/10">
  {selectedReadings.map((r, i) => {
- const kindLabel =
- r.ref.kind === "epistle"
+ const kindLabel = isDe
+ ? r.ref.kind === "epistle"
+ ? "Apostel"
+ : r.ref.kind === "ot"
+ ? "Altes Testament"
+ : "Evangelium"
+ : r.ref.kind === "epistle"
  ? "Epistle"
  : r.ref.kind === "ot"
  ? "Old Testament"
@@ -423,21 +463,16 @@ export default async function CalendarPage({
  {/* COLOPHON */}
  <section className="px-5 md:px-8 py-14 md:py-16">
  <div className="mx-auto max-w-[760px] w-full">
- <Colophon />
+ <Colophon locale={locale} />
  <p className="mt-10 font-serif text-[13px] text-paper/55 leading-[1.7]">
- Two reckonings are available via the toggle above. The default,
- New (Revised Julian), is used by the Ecumenical Patriarchate of
- Constantinople and the majority of canonical Orthodox jurisdictions
- for fixed feasts. The Old (Julian) option is used by the Russian,
- Serbian, Jerusalem, and Athonite traditions, and runs thirteen days
- behind for fixed feasts. Pascha and its moveable cycle are shared
- between both, computed by the Julian-based algorithm common to
- every canonical Orthodox church.
+ {isDe
+ ? "Zwei Reckonungen stehen über die Umschaltung oben zur Verfügung. Die voreingestellte, Neue (Revidierte Julianische), wird vom Ökumenischen Patriarchat von Konstantinopel und der Mehrheit der kanonischen orthodoxen Jurisdiktionen für die festen Feste gebraucht. Die Alte (Julianische) Wahl wird von der russischen, serbischen, jerusalemischen und athonitischen Überlieferung gebraucht und steht für die festen Feste dreizehn Tage zurück. Pascha und sein beweglicher Zyklus sind beiden gemein, berechnet nach dem Julianisch gegründeten Algorithmus, der allen kanonischen orthodoxen Kirchen gemein ist."
+ : "Two reckonings are available via the toggle above. The default, New (Revised Julian), is used by the Ecumenical Patriarchate of Constantinople and the majority of canonical Orthodox jurisdictions for fixed feasts. The Old (Julian) option is used by the Russian, Serbian, Jerusalem, and Athonite traditions, and runs thirteen days behind for fixed feasts. Pascha and its moveable cycle are shared between both, computed by the Julian-based algorithm common to every canonical Orthodox church."}
  </p>
  <p className="mt-3 font-sans text-[12px] text-paper/40 leading-[1.6]">
- Fasting rules are a simplified reading of common Eastern Orthodox
- (Greek tradition) practice for daily orientation. Your priest&rsquo;s
- direction takes precedence for any individual question.
+ {isDe
+ ? "Die Fastenregeln sind eine vereinfachte Lesung gemeiner ostorthodoxer (griechischer) Praxis zur täglichen Orientierung. Die Anweisung deines Priesters hat in jeder einzelnen Frage Vorrang."
+ : "Fasting rules are a simplified reading of common Eastern Orthodox (Greek tradition) practice for daily orientation. Your priest’s direction takes precedence for any individual question."}
  </p>
  </div>
  </section>

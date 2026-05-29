@@ -19,6 +19,7 @@ export function FeastPanel({
  fast,
  paschaPrimary,
  paschaSecondary,
+ locale = "en",
 }: {
  dateLabel: string;
  headline: Commemoration | null;
@@ -27,7 +28,9 @@ export function FeastPanel({
  fast: { kind: FastKind; label: string; rule: string };
  paschaPrimary: string;
  paschaSecondary: string;
+ locale?: string;
 }) {
+ const isDe = locale === "de";
  // When a real saint icon is available, render a two-column layout
  // (icon + text). When not, drop the icon column entirely, no Cross
  // fallback, no glow, and let the text column run the full panel width.
@@ -84,12 +87,14 @@ export function FeastPanel({
  </>
  ) : (
  <p className="mt-4 font-serif text-[17px] text-paper/65 leading-[1.6]">
- No saints indexed for this day yet.{" "}
+ {isDe
+ ? "Für diesen Tag ist noch kein Heiliger verzeichnet. "
+ : "No saints indexed for this day yet. "}
  <Link
  href="/saints"
  className="text-gold hover:text-gold/80 underline-offset-2 hover:underline"
  >
- Browse all saints
+ {isDe ? "Alle Heiligen durchsuchen" : "Browse all saints"}
  </Link>
  </p>
  )}
@@ -99,7 +104,7 @@ export function FeastPanel({
  <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-5 clear-left">
  <div className="border-t border-paper/10 pt-3">
  <p className="font-sans text-[10.5px] uppercase tracking-[2px] text-gold/70 font-semibold">
- The Fast
+ {isDe ? "Das Fasten" : "The Fast"}
  </p>
  <p className="mt-1 font-display-serif text-[18px] text-paper leading-tight">
  {fast.label}
@@ -126,7 +131,7 @@ export function FeastPanel({
  {others.length > 0 && (
  <div className="px-6 md:px-10 pb-7 pt-4 border-t border-paper/10">
  <p className="font-sans text-[10.5px] uppercase tracking-[2px] text-gold/70 font-semibold mb-3.5 text-center md:text-left">
- Also commemorated today
+ {isDe ? "Heute ebenfalls gedacht" : "Also commemorated today"}
  </p>
  <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-1.5">
  {others.map((c, i) => (
