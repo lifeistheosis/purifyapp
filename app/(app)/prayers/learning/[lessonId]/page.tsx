@@ -5,6 +5,7 @@ import {
   allLessonParams,
   getLesson,
 } from "@/lib/prayers/learning";
+import { getServerLocale } from "@/lib/i18n/server";
 
 type Params = Promise<{ lessonId: string }>;
 
@@ -14,6 +15,8 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Params }) {
   const { lessonId } = await params;
+  // Metadata generation runs without a locale context — fall back to English
+  // titles. The page itself reads the cookie and renders the right language.
   const l = getLesson(lessonId);
   if (!l) return { title: "Learn to pray" };
   return {
@@ -24,9 +27,11 @@ export async function generateMetadata({ params }: { params: Params }) {
 
 export default async function LessonPage({ params }: { params: Params }) {
   const { lessonId } = await params;
-  const lesson = getLesson(lessonId);
+  const locale = await getServerLocale();
+  const isDe = locale === "de";
+  const lesson = getLesson(lessonId, locale);
   if (!lesson) notFound();
-  const { prev, next } = adjacentLessons(lessonId);
+  const { prev, next } = adjacentLessons(lessonId, locale);
 
   return (
     <section className="bg-night px-5 md:px-8 py-12 md:py-20">
@@ -35,12 +40,13 @@ export default async function LessonPage({ params }: { params: Params }) {
           href="/prayers/learning"
           className="inline-flex items-center font-sans text-[12px] uppercase tracking-[1.5px] text-paper/50 hover:text-paper transition-colors"
         >
-          ← Learn to pray
+          {isDe ? "← Beten lernen" : "← Learn to pray"}
         </Link>
 
         <header className="mt-6 mb-10">
           <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/50">
-            Lesson {lesson.order} · {lesson.estimatedMinutes} min
+            {isDe ? "Lektion" : "Lesson"} {lesson.order} · {lesson.estimatedMinutes}{" "}
+            {isDe ? "Min." : "min"}
           </p>
           <h1 className="mt-2 font-sans text-[36px] md:text-[48px] font-bold leading-[1.05] tracking-[-0.02em] text-paper">
             {lesson.title}
@@ -56,7 +62,7 @@ export default async function LessonPage({ params }: { params: Params }) {
         {lesson.prayer && (
           <div className="mt-10 rounded-lg border border-paper/12 bg-paper/[0.04] p-6 md:p-8">
             <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/50 mb-4">
-              The prayer
+              {isDe ? "Das Gebet" : "The prayer"}
             </p>
             <div className="font-serif text-[18px] md:text-[19px] leading-[1.75] text-paper/95 whitespace-pre-line">
               {lesson.prayer}
@@ -67,7 +73,7 @@ export default async function LessonPage({ params }: { params: Params }) {
         {lesson.tryThis && (
           <div className="mt-10 rounded-lg border border-accent/30 bg-accent/[0.06] p-6">
             <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-accent/80 mb-3">
-              Try this
+              {isDe ? "Versuch das" : "Try this"}
             </p>
             <p className="font-serif text-[16px] leading-[1.65] text-paper/85">
               {lesson.tryThis}
@@ -82,7 +88,7 @@ export default async function LessonPage({ params }: { params: Params }) {
               className="font-sans text-[14px] text-paper/70 hover:text-paper transition-colors"
             >
               <span className="block text-[11px] uppercase tracking-[1.5px] text-paper/40">
-                Previous lesson
+                {isDe ? "Vorige Lektion" : "Previous lesson"}
               </span>
               <span className="block mt-1">← {prev.title}</span>
             </Link>
@@ -95,7 +101,7 @@ export default async function LessonPage({ params }: { params: Params }) {
               className="font-sans text-[14px] text-paper/70 hover:text-paper transition-colors text-right"
             >
               <span className="block text-[11px] uppercase tracking-[1.5px] text-paper/40">
-                Next lesson
+                {isDe ? "Nächste Lektion" : "Next lesson"}
               </span>
               <span className="block mt-1">{next.title} →</span>
             </Link>

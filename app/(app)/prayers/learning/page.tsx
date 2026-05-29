@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { LESSONS } from "@/lib/prayers/learning";
+import { lessonsFor } from "@/lib/prayers/learning";
 import { Badge } from "@/components/ui/Badge";
+import { getServerLocale } from "@/lib/i18n/server";
 
 export const metadata = {
   title: "Learn to pray",
@@ -8,27 +9,30 @@ export const metadata = {
     "An Orthodox beginner's path to prayer: the Sign of the Cross, the Jesus Prayer, the Trisagion, and a simple morning and evening rule.",
 };
 
-export default function LearnToPrayPage() {
+export default async function LearnToPrayPage() {
+  const locale = await getServerLocale();
+  const isDe = locale === "de";
+  const lessons = lessonsFor(locale);
   return (
     <section className="bg-night px-5 md:px-8 py-12 md:py-20">
       <div className="mx-auto max-w-[920px] w-full">
         <div className="flex items-center gap-3 mb-4">
           <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/60">
-            Prayer
+            {isDe ? "Gebet" : "Prayer"}
           </p>
-          <Badge variant="free">Free</Badge>
+          <Badge variant="free">{isDe ? "Frei" : "Free"}</Badge>
         </div>
         <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
-          Learn to pray
+          {isDe ? "Beten lernen" : "Learn to pray"}
         </h1>
         <p className="mt-5 max-w-[640px] font-sans text-[16px] text-paper/75">
-          An Orthodox beginner&rsquo;s path. Each lesson is short, with one or
-          two prayers to learn by heart. Go in order, or jump to what you need.
-          Most of these have carried Christians for over a thousand years.
+          {isDe
+            ? "Ein orthodoxer Einsteiger-Weg. Jede Lektion ist kurz, mit ein oder zwei Gebeten, die man auswendig lernt. Geh in der Reihenfolge — oder spring zu dem, was du brauchst. Die meisten dieser Gebete haben Christen seit über tausend Jahren getragen."
+            : "An Orthodox beginner’s path. Each lesson is short, with one or two prayers to learn by heart. Go in order, or jump to what you need. Most of these have carried Christians for over a thousand years."}
         </p>
 
         <ol className="mt-12 space-y-3">
-          {LESSONS.map((l) => (
+          {lessons.map((l) => (
             <li key={l.id}>
               <Link
                 href={`/prayers/learning/${l.id}`}
@@ -46,7 +50,7 @@ export default function LearnToPrayPage() {
                       {l.summary}
                     </p>
                     <p className="mt-2 font-sans text-[11px] uppercase tracking-[1.2px] text-paper/35">
-                      {l.estimatedMinutes} min
+                      {l.estimatedMinutes} {isDe ? "Min." : "min"}
                     </p>
                   </div>
                   <span
@@ -62,8 +66,9 @@ export default function LearnToPrayPage() {
         </ol>
 
         <p className="mt-10 font-sans text-[12px] text-paper/40 leading-[1.6] max-w-[640px]">
-          More lessons coming: the Prayer Rope, your icon corner, prayers before
-          meals, praying with the saints, and the seasons of the Church year.
+          {isDe
+            ? "Weitere Lektionen kommen: das Gebetsseil, deine Ikonenecke, Gebete vor den Mahlzeiten, das Beten mit den Heiligen und die Zeiten des Kirchenjahres."
+            : "More lessons coming: the Prayer Rope, your icon corner, prayers before meals, praying with the saints, and the seasons of the Church year."}
         </p>
       </div>
     </section>
