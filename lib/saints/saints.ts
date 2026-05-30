@@ -2865,6 +2865,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "justin-martyr",
  byname: "The Philosopher",
+ iconUrl: "/saints/icons/justin-martyr.jpg",
  name: "St. Justin Martyr",
  epithet: "Philosopher and Martyr · Apologist of the Second Century",
  born: "c. 100 (Flavia Neapolis, Samaria)",
@@ -2925,6 +2926,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "isaac-the-syrian",
  byname: "of Nineveh",
+ iconUrl: "/saints/icons/isaac-the-syrian.jpg",
  name: "St. Isaac the Syrian",
  epithet: "Bishop of Nineveh · Hermit of the Mountain",
  born: "7th c. (Beth Qatraye)",
@@ -2945,6 +2947,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "mark-of-ephesus",
  byname: "Mark Eugenikos",
+ iconUrl: "/saints/icons/mark-of-ephesus.jpg",
  name: "St. Mark of Ephesus",
  epithet: "Metropolitan of Ephesus · Pillar of Orthodoxy",
  born: "1392 (Constantinople)",
@@ -2965,6 +2968,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "nikon-metanoeite",
  byname: "Metanoeite (Repent)",
+ iconUrl: "/saints/icons/nikon-metanoeite.jpg",
  name: "St. Nikon the Metanoeite",
  epithet: "Preacher of Repentance · Enlightener of Crete and Sparta",
  born: "c. 930 (Pontus)",
