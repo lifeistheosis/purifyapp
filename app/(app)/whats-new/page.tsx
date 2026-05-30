@@ -1078,7 +1078,7 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- St. Mark of Ephesus,{" "}
+ <Link href="/saints/mark-of-ephesus" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">St. Mark of Ephesus</Link>,{" "}
  <Link href="/saints/isaac-the-syrian" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">St. Isaac the Syrian</Link>,
  and{" "}
  <Link href="/saints/nikon-metanoeite" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">St. Nikon the Metanoeite</Link>{" "}
