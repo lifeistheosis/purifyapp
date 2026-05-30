@@ -1,0 +1,81 @@
+import { getVerseOfDay } from "@/lib/today/verseOfDay";
+import { VerseCardActions } from "./VerseCardActions";
+
+/**
+ * Verse-of-the-day card on the mobile Today shell.
+ *
+ * Dark card with a warm rust radial-gradient backdrop bleeding from the
+ * lower right, a small label, a bold reference, and the verse text in a
+ * large serif treatment that fades to transparent at the bottom (mask).
+ * Bottom: a 4-action footer (favourite, share, more, expand) handled by
+ * the small client island VerseCardActions.
+ *
+ * Verse text is rendered server-side from Purify's public-domain Bible
+ * (Brenton LXX / KJV) via lib/today/verseOfDay.ts. No copyrighted
+ * translation is reproduced anywhere on this surface.
+ */
+export async function VerseOfDayCard({
+  labelTop = "Verse of the Day",
+}: {
+  labelTop?: string;
+}) {
+  const vod = await getVerseOfDay();
+  const text = vod.passage?.verses
+    .map((v) => v.text.trim())
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return (
+    <article
+      className="relative overflow-hidden rounded-2xl border border-paper/10 p-5 pt-5"
+      style={{
+        background:
+          "radial-gradient(120% 80% at 80% 90%, rgba(193,39,45,0.20) 0%, transparent 60%), linear-gradient(180deg, #18120f 0%, #0a0606 100%)",
+      }}
+    >
+      {/* Soft wave shape at lower-right, owned SVG */}
+      <svg
+        aria-hidden
+        viewBox="0 0 400 200"
+        className="pointer-events-none absolute inset-x-0 bottom-0 w-full opacity-50"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M0 160 C 80 120, 160 200, 240 150 S 400 120, 400 160 L 400 200 L 0 200 Z"
+          fill="rgba(20,8,8,0.85)"
+        />
+      </svg>
+
+      <div className="relative">
+        <p className="font-sans text-[13px] text-paper/65">{labelTop}</p>
+        <p className="mt-0.5 font-sans text-[18px] font-bold text-paper">
+          {vod.ref.label}
+        </p>
+
+        <div
+          className="mt-5 font-serif text-[22px] leading-[1.35] text-paper/95"
+          style={{
+            // Fade the body to transparent near the bottom so it reads
+            // as a teaser, the full chapter is one tap away via Expand.
+            WebkitMaskImage:
+              "linear-gradient(180deg, #000 0%, #000 65%, transparent 100%)",
+            maskImage:
+              "linear-gradient(180deg, #000 0%, #000 65%, transparent 100%)",
+            maxHeight: "230px",
+            overflow: "hidden",
+          }}
+        >
+          {text ?? <span className="text-paper/45 italic">Loading verse…</span>}
+        </div>
+
+        <VerseCardActions
+          refLabel={vod.ref.label}
+          href={vod.href}
+          shareText={text ?? vod.ref.label}
+          shareUrl={vod.href}
+        />
+      </div>
+    </article>
+  );
+}

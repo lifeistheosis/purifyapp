@@ -299,6 +299,59 @@ export default async function PrivacyPage() {
  </li>
  </ul>
 
+ {/* Prayer features — what's local, what's synced */}
+ <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ The prayer features
+ </p>
+ <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ The morning and evening rules, the prayer rope, the Jesus
+ Prayer lessons, and the diptychs are all local-first. By default
+ every count, every check-off, every name on your diptych lives
+ in your browser&rsquo;s <code>localStorage</code> on this device
+ and never reaches us. Specifically:
+ </p>
+ <ul className="mt-3 space-y-2 font-serif text-[18px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <li>
+ <em>Rule completions</em>: the dates you finished the morning
+ or evening rule, kept under{" "}
+ <code className="font-mono text-[14px] text-paper/70">
+ purify.prayers.&#123;ruleId&#125;.dates
+ </code>{" "}
+ (a rolling 30-day list, no streak integer).
+ </li>
+ <li>
+ <em>Prayer rope sessions</em>: each session&rsquo;s knot count
+ and the prayer line you chose, under{" "}
+ <code className="font-mono text-[14px] text-paper/70">
+ purify.rope.sessions
+ </code>.
+ </li>
+ <li>
+ <em>Diptychs</em>: the lists of those for whom you pray (living
+ + reposed), under{" "}
+ <code className="font-mono text-[14px] text-paper/70">
+ purify.intentions.living
+ </code>{" "}
+ and{" "}
+ <code className="font-mono text-[14px] text-paper/70">
+ purify.intentions.departed
+ </code>. These are plain JSON in your browser; we are not
+ pretending they are encrypted at rest.
+ </li>
+ </ul>
+ <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ If you sign in to a public account, the same shapes mirror to
+ four Supabase tables &mdash;{" "}
+ <code className="font-mono text-[14px] text-paper/70">prayer_completions</code>,{" "}
+ <code className="font-mono text-[14px] text-paper/70">intentions_living</code>,{" "}
+ <code className="font-mono text-[14px] text-paper/70">intentions_departed</code>,{" "}
+ <code className="font-mono text-[14px] text-paper/70">rope_sessions</code>{" "}
+ &mdash; so the data follows you across devices. Each has the
+ same row-level lock as bookmarks and annotations (your rows only
+ visible to your <code>auth.uid()</code>). They are never joined to
+ the anonymous analytics tables.
+ </p>
+
  {/* AI bots */}
  <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
  The AI-crawler policy

@@ -19,7 +19,7 @@
  * really about the runtime caches below — bumping it changes cache names
  * and the activate handler drops the old names).
  */
-const CACHE_VERSION = "purify-v6.1.0";
+const CACHE_VERSION = "purify-v7.2.0";
 const HTML_CACHE = `${CACHE_VERSION}-html`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const ASSETS_CACHE = `${CACHE_VERSION}-assets`;
@@ -35,6 +35,12 @@ const NEVER_CACHE = [
   "/_next/data/",
   ".supabase.co",
   "api.scripture.api.bible",
+];
+
+// Exceptions to NEVER_CACHE — endpoints that ARE safe to cache because
+// they return public, deterministic content (no auth, no PII).
+const ALWAYS_CACHE_API = [
+  "/api/prayer/rule/", // localized rule JSON for morning / evening
 ];
 
 self.addEventListener("install", (event) => {
@@ -59,6 +65,7 @@ self.addEventListener("activate", (event) => {
 });
 
 function shouldBypass(url) {
+  if (ALWAYS_CACHE_API.some((pat) => url.pathname.startsWith(pat))) return false;
   return NEVER_CACHE.some((pat) => url.href.includes(pat));
 }
 

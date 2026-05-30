@@ -1,6 +1,7 @@
 import { AppNav } from "@/components/nav/AppNav";
 import { Footer } from "@/components/layout/Footer";
 import { SyncBridge } from "@/components/profile/SyncBridge";
+import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
@@ -16,6 +17,7 @@ export default function AppGroupLayout({
         <AppNav />
       </div>
       <SyncBridge />
+      <PrayerSyncBridge />
       {/* safe-pb gives mobile scroll containers room to clear the tab bar
           + iOS home indicator; the utility is a no-op on md+. */}
       <main className="flex-1 safe-pb">{children}</main>

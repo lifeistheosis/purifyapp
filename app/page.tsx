@@ -7,7 +7,7 @@ import { HeroChristIcon } from "@/components/marketing/HeroChristIcon";
 import { SeasonBanner } from "@/components/marketing/SeasonBanner";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
 import { Cross } from "@/components/ui/icons/Cross";
-import { TodayMenologionHero } from "@/components/today/TodayMenologionHero";
+import { TodayMobileV3 } from "@/components/today/TodayMobileV3";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { getServerLocale } from "@/lib/i18n/server";
@@ -150,7 +150,7 @@ export default async function Home() {
  home below takes over. The hero is wrapped here so the marketing
  sections (rich, long) don't double-load on phones. */}
  <div className="md:hidden flex-1 safe-pb">
- <TodayMenologionHero />
+ <TodayMobileV3 />
  </div>
 
  {/* DESKTOP: existing marketing home, unchanged. Hidden on phones. */}

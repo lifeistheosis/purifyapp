@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { readPrayedDates } from "@/lib/prayers/storage";
 
 /**
  * Live counters drawn from localStorage. Reads on mount and any time a
@@ -58,15 +59,19 @@ export function ProfileStats() {
       } catch {
         /* ignore */
       }
-      const morningStreak = parseInt(
-        window.localStorage.getItem("purify.prayers.morning.streak") ?? "0",
-        10,
-      ) || 0;
-      const eveningStreak = parseInt(
-        window.localStorage.getItem("purify.prayers.evening.streak") ?? "0",
-        10,
-      ) || 0;
-      const bothStreak = Math.min(morningStreak, eveningStreak);
+      // Volume metric, not streak: how many of the last 14 days the rule
+      // was completed. Reads from the rolling dates[] array maintained by
+      // lib/prayers/storage.ts. Never panics on a skipped day.
+      const morningDates = readPrayedDates("morning");
+      const eveningDates = readPrayedDates("evening");
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - 14);
+      const isWithin = (d: string) => new Date(d + "T00:00:00") >= cutoff;
+      const morningStreak = morningDates.filter(isWithin).length;
+      const eveningStreak = eveningDates.filter(isWithin).length;
+      const bothStreak = morningDates.filter(
+        (d) => isWithin(d) && eveningDates.includes(d),
+      ).length;
       setStats({
         verses,
         paragraphs,
@@ -83,12 +88,12 @@ export function ProfileStats() {
     }
     window.addEventListener("purify:annotation", on);
     window.addEventListener("purify:bookmark", on);
-    window.addEventListener("purify:prayer-streak", on);
+    window.addEventListener("purify:prayer-completed", on);
     window.addEventListener("storage", on);
     return () => {
       window.removeEventListener("purify:annotation", on);
       window.removeEventListener("purify:bookmark", on);
-      window.removeEventListener("purify:prayer-streak", on);
+      window.removeEventListener("purify:prayer-completed", on);
       window.removeEventListener("storage", on);
     };
   }, []);
@@ -100,9 +105,9 @@ export function ProfileStats() {
     { label: "Bookmarks saved", value: stats.bookmarks },
   ];
   const prayerItems = [
-    { label: "Morning rule streak", value: stats.morningStreak, suffix: stats.morningStreak === 1 ? "day" : "days" },
-    { label: "Evening rule streak", value: stats.eveningStreak, suffix: stats.eveningStreak === 1 ? "day" : "days" },
-    { label: "Both rules, in a row", value: stats.bothStreak, suffix: stats.bothStreak === 1 ? "day" : "days" },
+    { label: "Morning rule · last 14 days", value: stats.morningStreak, suffix: stats.morningStreak === 1 ? "day" : "days" },
+    { label: "Evening rule · last 14 days", value: stats.eveningStreak, suffix: stats.eveningStreak === 1 ? "day" : "days" },
+    { label: "Both rules · last 14 days", value: stats.bothStreak, suffix: stats.bothStreak === 1 ? "day" : "days" },
   ];
 
   return (

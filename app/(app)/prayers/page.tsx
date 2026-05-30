@@ -313,6 +313,51 @@ export default async function PrayersPage() {
  </div>
  </section>
 
+ {/* ===== Prayer rope + Diptychs ===== */}
+ <section>
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+ <Link
+ href="/prayers/rope"
+ className="group rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-6 flex flex-col"
+ >
+ <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-gold/85 mb-2">
+ {isDe ? "Gebetsschnur" : "Prayer rope"}
+ </p>
+ <h2 className="font-serif text-[24px] md:text-[28px] text-paper leading-tight">
+ {isDe ? "Die Schnur des Mönchs." : "The monk's rope."}
+ </h2>
+ <p className="mt-3 font-sans text-[13.5px] text-paper/70 leading-[1.6] flex-1">
+ {isDe
+ ? "Zähle das Jesusgebet auf einer digitalen Komvoschini. 33, 50 oder 100 Knoten. Keine Streaks, kein Lärm."
+ : "Count the Jesus Prayer on a digital komvoschini. 33, 50, or 100 knots. No streaks, no noise."}
+ </p>
+ <p className="mt-4 font-sans text-[13px] font-medium text-paper/75 group-hover:text-gold transition-colors">
+ {isDe ? "Schnur öffnen →" : "Open the rope →"}
+ </p>
+ </Link>
+
+ <Link
+ href="/prayers/personal"
+ className="group rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-6 flex flex-col"
+ >
+ <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-gold/85 mb-2">
+ {isDe ? "Diptychen" : "Diptychs"}
+ </p>
+ <h2 className="font-serif text-[24px] md:text-[28px] text-paper leading-tight">
+ {isDe ? "Die Namen, die du trägst." : "The names you carry."}
+ </h2>
+ <p className="mt-3 font-sans text-[13.5px] text-paper/70 leading-[1.6] flex-1">
+ {isDe
+ ? "Zwei Listen: die Lebenden und die Entschlafenen. Namenstage und Jahrestage erscheinen auf /heute."
+ : "Two lists: the living and the reposed. Namedays and anniversaries surface on /today."}
+ </p>
+ <p className="mt-4 font-sans text-[13px] font-medium text-paper/75 group-hover:text-gold transition-colors">
+ {isDe ? "Diptychen öffnen →" : "Open the diptychs →"}
+ </p>
+ </Link>
+ </div>
+ </section>
+
  {/* ===== The Liturgical Hours ===== */}
  <section>
  <div className="mb-8 flex items-end justify-between gap-3 flex-wrap">
