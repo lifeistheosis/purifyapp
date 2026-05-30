@@ -14,6 +14,7 @@ import { SaintIcon } from "@/components/saints/SaintIcon";
 import { getSaint } from "@/lib/saints/saints";
 import { PrayerIcon } from "@/components/prayers/PrayerIcon";
 import { PrayerSlideshowHero } from "@/components/prayers/PrayerSlideshow";
+import { PrayersMobile } from "@/components/mobile/PrayersMobile";
 import { getServerLocale } from "@/lib/i18n/server";
 
 export const metadata = {
@@ -110,7 +111,9 @@ export default async function PrayersPage() {
  const hours = isDe ? HOURS_DE : HOURS;
 
  return (
- <div className="bg-night">
+ <>
+ <PrayersMobile />
+ <div className="hidden md:block bg-night">
  <MobileTopBar title={isDe ? "Gebete" : "Prayers"} />
  <PrayersSubTabs />
  {/* ============== HERO ============== */}
@@ -499,6 +502,7 @@ export default async function PrayersPage() {
  </p>
  </div>
  </div>
+ </>
  );
 }
 

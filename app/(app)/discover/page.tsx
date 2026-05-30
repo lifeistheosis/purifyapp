@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { DiscoverMobile } from "@/components/mobile/DiscoverMobile";
 import { Cross } from "@/components/ui/icons/Cross";
 import { Codex } from "@/components/ui/icons/Codex";
 import { Halo } from "@/components/ui/icons/Halo";
@@ -74,6 +75,8 @@ export default async function DiscoverPage() {
 
   return (
     <>
+      <DiscoverMobile />
+      <div className="hidden md:contents">
       <MobileTopBar title={t(m, "discover.h1").replace(/\.$/, "")} />
       <section className="bg-night min-h-[calc(100dvh-72px)] md:px-8 md:py-16">
         <article className="mx-auto max-w-[820px] w-full px-5 pt-6 pb-10 md:pt-0 md:pb-0">
@@ -131,6 +134,7 @@ export default async function DiscoverPage() {
           </p>
         </article>
       </section>
+      </div>
     </>
   );
 }

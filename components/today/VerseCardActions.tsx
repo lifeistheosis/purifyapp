@@ -21,36 +21,111 @@ export function VerseCardActions({
   href,
   shareText,
   shareUrl,
+  book,
+  bookName,
+  chapter,
+  verse,
 }: {
   refLabel: string;
   href: string;
   shareText: string;
   shareUrl: string;
+  /** Optional verse locator so Favourite writes to the global bookmarks list. */
+  book?: string;
+  bookName?: string;
+  chapter?: number;
+  verse?: number;
 }) {
-  const key = `purify:vod:fav:${refLabel}`;
   const [fav, setFav] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [more, setMore] = useState(false);
 
-  useEffect(() => {
+  const STORAGE_KEY = "purify:bookmarks";
+  const EVENT = "purify:bookmark";
+
+  type AnyBookmark = { id: string; kind: string; [k: string]: unknown };
+
+  function readAll(): AnyBookmark[] {
     try {
-      if (localStorage.getItem(key) === "1") setFav(true);
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? (parsed as AnyBookmark[]) : [];
+    } catch {
+      return [];
+    }
+  }
+  function writeAll(items: AnyBookmark[]) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      window.dispatchEvent(new CustomEvent(EVENT, { detail: { items } }));
     } catch {
       /* ignore */
     }
-  }, [key]);
+  }
+  function matchesThisVerse(b: AnyBookmark): boolean {
+    if (b.kind !== "bible-verse") return false;
+    return b.book === book && b.chapter === chapter && b.verse === verse;
+  }
 
-  function toggleFav() {
-    setFav((v) => {
-      const next = !v;
+  useEffect(() => {
+    if (!book || !chapter || !verse) return;
+    try {
+      const present = readAll().some(matchesThisVerse);
+      setFav(present);
+    } catch {
+      /* ignore */
+    }
+    function onSync() {
       try {
-        if (next) localStorage.setItem(key, "1");
-        else localStorage.removeItem(key);
+        setFav(readAll().some(matchesThisVerse));
       } catch {
         /* ignore */
       }
-      return next;
-    });
+    }
+    window.addEventListener(EVENT, onSync);
+    window.addEventListener("storage", onSync);
+    return () => {
+      window.removeEventListener(EVENT, onSync);
+      window.removeEventListener("storage", onSync);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [book, chapter, verse]);
+
+  function toggleFav() {
+    // If the locator isn't available, silently do nothing — Favourite
+    // requires a verse locator so /saved can resolve it.
+    if (!book || !chapter || !verse) {
+      setToast("Cannot favourite this verse");
+      setTimeout(() => setToast(null), 1500);
+      return;
+    }
+    const all = readAll();
+    const existing = all.find(matchesThisVerse);
+    if (existing) {
+      writeAll(all.filter((b) => b.id !== existing.id));
+      setFav(false);
+      setToast("Removed from saved");
+    } else {
+      const id =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      const entry: AnyBookmark = {
+        id,
+        kind: "bible-verse",
+        addedAt: Date.now(),
+        label: refLabel,
+        book,
+        bookName: bookName ?? book,
+        chapter,
+        verse,
+      };
+      writeAll([entry, ...all]);
+      setFav(true);
+      setToast("Saved to bookmarks");
+    }
+    setTimeout(() => setToast(null), 1500);
   }
 
   async function share() {

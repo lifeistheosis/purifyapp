@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { UnsignedAccount } from "@/components/profile/UnsignedAccount";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
+import { YouMobile } from "@/components/mobile/YouMobile";
 
 export const metadata = {
   title: "Your account",
@@ -32,7 +33,9 @@ export default async function AccountPage() {
   const m = getMessages(locale);
 
   return (
-    <section className={`${SECTION} bg-night min-h-[calc(100dvh-72px)]`}>
+    <>
+    <YouMobile />
+    <section className={`${SECTION} bg-night min-h-[calc(100dvh-72px)] hidden md:block`}>
       <article className="mx-auto max-w-[1080px] w-full">
         <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
           {t(m, "account.eyebrow")}
@@ -63,5 +66,6 @@ export default async function AccountPage() {
         </p>
       </article>
     </section>
+    </>
   );
 }

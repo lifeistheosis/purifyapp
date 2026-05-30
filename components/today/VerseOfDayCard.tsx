@@ -48,7 +48,18 @@ export async function VerseOfDayCard({
       </svg>
 
       <div className="relative">
-        <p className="font-sans text-[13px] text-paper/65">{labelTop}</p>
+        <p className="font-sans text-[13px] text-paper/65">
+          {labelTop}
+          {vod.source !== "rotation" && (
+            <span className="ml-2 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.04] px-2 py-[1px] font-sans text-[10px] font-semibold uppercase tracking-[1px] text-paper/60 align-middle">
+              {vod.source === "gospel"
+                ? "Gospel"
+                : vod.source === "epistle"
+                  ? "Epistle"
+                  : "OT"}
+            </span>
+          )}
+        </p>
         <p className="mt-0.5 font-sans text-[18px] font-bold text-paper">
           {vod.ref.label}
         </p>
@@ -74,6 +85,10 @@ export async function VerseOfDayCard({
           href={vod.href}
           shareText={text ?? vod.ref.label}
           shareUrl={vod.href}
+          book={vod.ref.book}
+          bookName={vod.passage?.name ?? vod.ref.book}
+          chapter={vod.ref.chapter}
+          verse={vod.ref.from}
         />
       </div>
     </article>

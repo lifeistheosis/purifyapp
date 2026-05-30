@@ -5,6 +5,7 @@ import {
   getOldTestamentCategories,
   getNewTestamentCategories,
 } from "@/lib/bible/books";
+import { BibleMobile } from "@/components/mobile/BibleMobile";
 
 export const metadata = {
   title: "The Orthodox Bible",
@@ -18,6 +19,11 @@ const SECTION = "px-5 md:px-8 py-16 md:py-20";
 export default function BiblePage() {
   return (
     <>
+      {/* Mobile shell — md:hidden inside, so this collapses to nothing on desktop. */}
+      <BibleMobile />
+
+      {/* Desktop — hidden on mobile. */}
+      <div className="hidden md:block">
       {/* Hero */}
       <section className={HERO + " bg-night"}>
         <div className="mx-auto max-w-[860px] w-full text-center">
@@ -96,6 +102,7 @@ export default function BiblePage() {
           </ul>
         </div>
       </section>
+      </div>
     </>
   );
 }
