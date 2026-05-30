@@ -1,0 +1,33 @@
+{
+  "id": "third-hour",
+  "kind": "hour",
+  "title": "The Third Hour",
+  "subtitle": "Terce, prayed around 9 a.m. — the hour of the descent of the Holy Spirit at Pentecost.",
+  "intro": "The Third Hour commemorates the coming of the Holy Spirit upon the disciples on the day of Pentecost. Short — about five minutes.",
+  "estimatedMinutes": 5,
+  "source": "Common Orthodox Horologion. The Psalm and Troparion text is shipped in shell form; the full text drops in the next content patch.",
+  "prayers": [
+    {
+      "id": "opening",
+      "title": "Opening blessing",
+      "text": "Through the prayers of our holy fathers, O Lord Jesus Christ our God, have mercy on us. Amen."
+    },
+    {
+      "id": "psalms",
+      "title": "The three Psalms of the Third Hour",
+      "instruction": "Psalms 16, 24, and 50. Read in full when time allows.",
+      "text": "Psalm 16 (Hear, O Lord, my righteousness) · Psalm 24 (Unto Thee, O Lord, have I lifted up my soul) · Psalm 50 (Have mercy on me, O God)."
+    },
+    {
+      "id": "troparion",
+      "title": "Troparion of Pentecost",
+      "instruction": "Read at every Third Hour as the standard Troparion of the Hour.",
+      "text": "O Lord, who at the third hour didst send down Thy Most Holy Spirit upon Thine Apostles: take Him not from us, O Good One, but renew Him in us who pray unto Thee."
+    },
+    {
+      "id": "dismissal",
+      "title": "Dismissal of the Hour",
+      "text": "Through the prayers of Thy most pure Mother and of all the saints, have mercy on us and save us, for Thou art good and the Lover of mankind. Amen."
+    }
+  ]
+}

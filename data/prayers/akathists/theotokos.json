@@ -1,0 +1,32 @@
+{
+  "id": "akathist-theotokos",
+  "kind": "akathist",
+  "title": "Akathist to the Most Holy Theotokos",
+  "subtitle": "The original Akathist of the seventh century.",
+  "intro": "Stand if you are able. The Akathist is sung or read; the refrain at the end of each stanza is repeated by the congregation. This corpus is being typeset; only the opening Kontakion and the first Ikos are shipped today. The remaining twelve Ikoi and twelve Kontakia will follow in a separate content drop.",
+  "estimatedMinutes": 35,
+  "source": "Hapgood Service Book (1906), public domain; refrain wording per the Jordanville Prayer Book.",
+  "refrain": "Rejoice, O Bride Unwedded!",
+  "prayers": [
+    {
+      "id": "kontakion-1",
+      "title": "Kontakion 1",
+      "instruction": "Opening hymn. The kontakion is read; the people respond with the refrain.",
+      "text": "To Thee, the Champion Leader, do we Thy servants dedicate a feast of victory and of thanksgiving, as ones rescued out of sufferings, O Theotokos; but as Thou art one with might which is invincible, from all dangers that can be do Thou deliver us, that we may cry to Thee:",
+      "refrain": "Rejoice, O Bride Unwedded!"
+    },
+    {
+      "id": "ikos-1",
+      "title": "Ikos 1",
+      "instruction": "Read or sung. The salutations build toward the refrain; pause briefly between them.",
+      "text": "An archangel was sent from Heaven to say to the Theotokos: Rejoice! And beholding Thee, O Lord, taking bodily form, he was amazed and with his bodiless voice he stood crying to Her such things as these:\n\nRejoice, Thou through whom joy will shine forth;\nRejoice, Thou through whom the curse will cease.\nRejoice, recalling of fallen Adam;\nRejoice, redemption of the tears of Eve.\nRejoice, height inaccessible to human thoughts;\nRejoice, depth undiscernible even for the eyes of angels.\nRejoice, for Thou art the throne of the King;\nRejoice, for Thou bearest Him who beareth all.\nRejoice, star that causest the Sun to appear;\nRejoice, womb of the divine Incarnation.\nRejoice, Thou through whom creation is renewed;\nRejoice, Thou through whom we worship the Creator.",
+      "refrain": "Rejoice, O Bride Unwedded!"
+    },
+    {
+      "id": "needs-content",
+      "title": "The remaining stanzas",
+      "instruction": "Editorial placeholder.",
+      "text": "The Akathist continues for twelve more Kontakia and twelve more Ikoi, culminating in the closing Kontakion (a repetition of the opening). They will be added in a forthcoming content drop, cross-checked against the Hapgood typesetting. If you can help typeset, write team@purify.app."
+    }
+  ]
+}

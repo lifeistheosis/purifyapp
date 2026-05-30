@@ -1,0 +1,32 @@
+{
+  "id": "ninth-hour",
+  "kind": "hour",
+  "title": "The Ninth Hour",
+  "subtitle": "None, prayed around 3 p.m. — the hour of the death of Christ.",
+  "intro": "The Ninth Hour remembers the hour at which the Lord gave up His spirit on the Cross. The day's prayers turn toward Vespers from here. About five minutes.",
+  "estimatedMinutes": 5,
+  "source": "Common Orthodox Horologion. Shell shipping today; full Psalm and Troparion text drops in the next content patch.",
+  "prayers": [
+    {
+      "id": "opening",
+      "title": "Opening blessing",
+      "text": "Through the prayers of our holy fathers, O Lord Jesus Christ our God, have mercy on us. Amen."
+    },
+    {
+      "id": "psalms",
+      "title": "The three Psalms of the Ninth Hour",
+      "instruction": "Psalms 83, 84, and 85. Read in full when time allows.",
+      "text": "Psalm 83 (How beloved are Thy dwellings) · Psalm 84 (Thou hast been gracious, O Lord, unto Thy land) · Psalm 85 (Bow down Thine ear, O Lord)."
+    },
+    {
+      "id": "troparion",
+      "title": "Troparion of the death of Christ",
+      "text": "O Thou who at the ninth hour for our sake didst taste of death in the flesh: mortify the wisdom of our flesh, O Christ God, and save us."
+    },
+    {
+      "id": "dismissal",
+      "title": "Dismissal of the Hour",
+      "text": "Through the prayers of Thy most pure Mother and of all the saints, have mercy on us and save us. Amen."
+    }
+  ]
+}

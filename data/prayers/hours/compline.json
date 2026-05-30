@@ -1,0 +1,38 @@
+{
+  "id": "compline",
+  "kind": "compline",
+  "title": "Small Compline",
+  "subtitle": "The night prayers — Apodeipnon. After the evening meal and before bed.",
+  "intro": "Compline (Apodeipnon, &lsquo;after-supper&rsquo;) prepares the soul for sleep. Pair with the Evening Rule, or pray it alone when the rule has already been read. About eight minutes.",
+  "estimatedMinutes": 8,
+  "source": "Common Orthodox Horologion. Structural shell today; full Psalm and Canon text drops in the next content patch.",
+  "prayers": [
+    {
+      "id": "opening",
+      "title": "Opening blessing",
+      "text": "Through the prayers of our holy fathers, O Lord Jesus Christ our God, have mercy on us. Amen."
+    },
+    {
+      "id": "psalms",
+      "title": "The three Psalms of Compline",
+      "instruction": "Psalms 50, 69, and 142. Read in full when time allows.",
+      "text": "Psalm 50 (Have mercy on me, O God) · Psalm 69 (O God, be attentive unto helping me) · Psalm 142 (O Lord, hear my prayer)."
+    },
+    {
+      "id": "creed",
+      "title": "The Nicene-Constantinopolitan Creed",
+      "instruction": "Recited at every Compline. Use the version you say at Liturgy.",
+      "text": "I believe in one God, the Father Almighty, Maker of heaven and earth, and of all things visible and invisible. And in one Lord Jesus Christ, the Son of God, the Only-begotten, begotten of the Father before all ages; Light of Light, true God of true God, begotten, not made, of one essence with the Father, through whom all things were made… (continue through the full Creed)."
+    },
+    {
+      "id": "petitions",
+      "title": "It is truly meet · the petitions",
+      "text": "It is truly meet to bless thee, the Theotokos, ever-blessed and most-pure, and the Mother of our God. More honorable than the Cherubim, and beyond compare more glorious than the Seraphim, who without corruption gavest birth to God the Word: true Theotokos, we magnify thee."
+    },
+    {
+      "id": "dismissal",
+      "title": "Closing prayer",
+      "text": "Into Thy hands, O Lord Jesus Christ my God, I commend my spirit. Do Thou bless me, do Thou have mercy on me, and grant me everlasting life. Amen."
+    }
+  ]
+}

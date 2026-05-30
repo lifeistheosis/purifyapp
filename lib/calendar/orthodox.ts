@@ -11,6 +11,7 @@
 import { SAINTS, getSaint, type Saint } from "@/lib/saints/saints";
 import dailyCommemorations from "@/data/calendar/daily-saints.json";
 import dailyReadings from "@/data/calendar/daily-readings.json";
+import movableReadings from "@/data/calendar/movable-readings.json";
 
 // ----- Pascha -----
 
@@ -379,14 +380,51 @@ const READINGS: Record<string, ReadingRef[]> = dailyReadings as Record<
  ReadingRef[]
 >;
 
+type MovableEntry = { label: string; readings: ReadingRef[] };
+const MOVABLE: Record<string, MovableEntry> = (
+ movableReadings as { offsets: Record<string, MovableEntry> }
+).offsets;
+
+/**
+ * Number of days from Pascha (negative = before, 0 = Pascha, positive = after).
+ */
+function daysFromPascha(date: Date): number {
+ const pascha = orthodoxPascha(date.getUTCFullYear());
+ // Both at UTC noon to dodge DST; diffDays is integer-rounded.
+ return diffDays(date, pascha);
+}
+
 /**
  * Returns the lectionary references (Epistle and Gospel, occasionally OT)
- * appointed for a given calendar date. Readings are paired thematically with
- * the day's commemoration; major fixed feasts carry their proper Liturgy
- * readings. The full Pascha-relative cycle is not encoded here.
+ * appointed for a given calendar date. Composes from:
+ *   - fixed MM-DD readings in data/calendar/daily-readings.json
+ *   - movable Pascha-relative readings in data/calendar/movable-readings.json
+ *
+ * Movable wins when the day is a named Sunday or feast in the Paschal cycle,
+ * so a Sunday of the Triodion / Pentecostarion shows its Sunday readings
+ * regardless of the fixed-cycle entry.
  */
 export function readingsOn(date: Date): ReadingRef[] {
+ // Movable cycle: a window of ±90 days around Pascha so the Paschal
+ // calendar reaches the Sunday of All Saints (+56) on one side and the
+ // pre-Triodion Sunday of Zacchaeus (−70) on the other without bleeding
+ // into the next/prior year's cycle.
+ const offset = daysFromPascha(date);
+ if (offset >= -90 && offset <= 90) {
+ const movable = MOVABLE[String(offset)];
+ if (movable) return movable.readings;
+ }
  return READINGS[mmdd(date)] ?? [];
+}
+
+/**
+ * If the day is a named Pascha-cycle Sunday, return its display label.
+ * Useful for headers ("Sunday of the Paralytic") and the calendar grid.
+ */
+export function movableLabelOn(date: Date): string | null {
+ const offset = daysFromPascha(date);
+ if (offset < -90 || offset > 90) return null;
+ return MOVABLE[String(offset)]?.label ?? null;
 }
 
 // ----- Month grid -----

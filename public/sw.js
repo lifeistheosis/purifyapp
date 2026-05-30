@@ -19,7 +19,7 @@
  * really about the runtime caches below — bumping it changes cache names
  * and the activate handler drops the old names).
  */
-const CACHE_VERSION = "purify-v7.2.0";
+const CACHE_VERSION = "purify-v7.3.0";
 const HTML_CACHE = `${CACHE_VERSION}-html`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const ASSETS_CACHE = `${CACHE_VERSION}-assets`;
@@ -148,4 +148,38 @@ self.addEventListener("fetch", (event) => {
 
   // Everything else: try cache, fall back to network silently.
   event.respondWith(staleWhileRevalidate(request, ASSETS_CACHE));
+});
+
+// Web Push handler — opt-in prayer reminders. Payload is a small JSON
+// object: { title, body, url }. The notification opens `url` on click.
+self.addEventListener("push", (event) => {
+  let payload = { title: "Prayer reminder", body: "", url: "/prayers" };
+  try {
+    if (event.data) payload = { ...payload, ...event.data.json() };
+  } catch {
+    /* ignore malformed payloads */
+  }
+  event.waitUntil(
+    self.registration.showNotification(payload.title, {
+      body: payload.body,
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
+      tag: payload.kind || "prayer",
+      data: { url: payload.url },
+      requireInteraction: false,
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || "/prayers";
+  event.waitUntil(
+    self.clients.matchAll({ type: "window" }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url.endsWith(url) && "focus" in client) return client.focus();
+      }
+      if (self.clients.openWindow) return self.clients.openWindow(url);
+    }),
+  );
 });

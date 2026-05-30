@@ -35,24 +35,28 @@ const FAST_DOT: Record<FastKind, string> = {
 
 const HOURS = [
  {
+ slug: "first-hour",
  icon: "christ-enthroned",
  label: "First Hour",
  time: "6 a.m.",
  body: "The rising of the sun. The Light has come into the world.",
  },
  {
+ slug: "third-hour",
  icon: "pentecost",
  label: "Third Hour",
  time: "9 a.m.",
  body: "Mid-morning. The descent of the Holy Spirit at Pentecost.",
  },
  {
+ slug: "sixth-hour",
  icon: "crucifixion",
  label: "Sixth Hour",
  time: "Noon",
  body: "The Lord on the Cross at the brightest hour of the day.",
  },
  {
+ slug: "ninth-hour",
  icon: "entombment",
  label: "Ninth Hour",
  time: "3 p.m.",
@@ -62,24 +66,28 @@ const HOURS = [
 
 const HOURS_DE = [
  {
+ slug: "first-hour",
  icon: "christ-enthroned",
  label: "Erste Stunde",
  time: "6 Uhr",
  body: "Der Aufgang der Sonne. Das Licht ist in die Welt gekommen.",
  },
  {
+ slug: "third-hour",
  icon: "pentecost",
  label: "Dritte Stunde",
  time: "9 Uhr",
  body: "Vormittag. Die Herabkunft des Heiligen Geistes zu Pfingsten.",
  },
  {
+ slug: "sixth-hour",
  icon: "crucifixion",
  label: "Sechste Stunde",
  time: "Mittag",
  body: "Der Herr am Kreuz in der hellsten Stunde des Tages.",
  },
  {
+ slug: "ninth-hour",
  icon: "entombment",
  label: "Neunte Stunde",
  time: "15 Uhr",
@@ -369,15 +377,19 @@ export default async function PrayersPage() {
  {isDe ? "Durch den Tag stehen." : "Standing through the day."}
  </h2>
  </div>
- <p className="font-sans text-[11px] uppercase tracking-[1.2px] text-paper/40">
- {isDe ? "In Vorbereitung" : "Coming soon"}
- </p>
+ <Link
+ href="/prayers/hours"
+ className="font-sans text-[12.5px] font-medium text-gold hover:text-paper underline underline-offset-4 decoration-gold/40 hover:decoration-paper transition-colors"
+ >
+ {isDe ? "Alle Horen →" : "All Hours →"}
+ </Link>
  </div>
  <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
  {hours.map((h) => (
- <li
- key={h.label}
- className="rounded-md border border-paper/8 bg-paper/[0.02] p-5 flex flex-col gap-4"
+ <li key={h.label}>
+ <Link
+ href={`/prayers/hours/${h.slug}`}
+ className="group rounded-md border border-paper/12 bg-paper/[0.02] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-5 flex flex-col gap-4 h-full"
  >
  <PrayerIcon slug={h.icon} size="sm" />
  <div>
@@ -390,7 +402,11 @@ export default async function PrayersPage() {
  <p className="font-serif text-[14.5px] text-paper/80 leading-[1.55]">
  {h.body}
  </p>
+ <p className="mt-3 font-sans text-[12px] font-medium text-paper/65 group-hover:text-gold transition-colors">
+ {isDe ? "Öffnen →" : "Open →"}
+ </p>
  </div>
+ </Link>
  </li>
  ))}
  </ul>
@@ -403,25 +419,25 @@ export default async function PrayersPage() {
  {isDe ? "Die Akathiste" : "The Akathists"}
  </p>
  <h2 className="font-serif text-[34px] md:text-[42px] leading-[1.05] text-paper">
- {isDe ? "Folgen als nächstes." : "Coming next."}
+ {isDe ? "Standhymnen der Kirche." : "The standing hymns of the Church."}
  </h2>
  </div>
- <a
- href="mailto:team@purify.app?subject=Akathists"
- className="group flex flex-col sm:flex-row gap-6 rounded-lg border border-paper/12 bg-paper/[0.02] hover:border-paper/30 hover:bg-paper/[0.04] transition-colors p-6 md:p-7"
+ <Link
+ href="/prayers/akathists"
+ className="group flex flex-col sm:flex-row gap-6 rounded-lg border border-paper/12 bg-paper/[0.02] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-6 md:p-7"
  >
  <PrayerIcon slug="theotokos-of-vladimir" size="md" />
  <div className="min-w-0 flex-1">
  <p className="font-serif text-[18px] md:text-[19px] text-paper/85 leading-[1.65]">
  {isDe
- ? "Akathiste an Christus, an die Gottesgebärerin und an die meistgebetenen Heiligen sind der nächste große Inhalts-Wurf. Geschriebene Ikoi und Kontakia in dem Wortlaut, den die Kirche seit Jahrhunderten trägt. Schreib uns, wenn du benachrichtigt werden möchtest, sobald sie landen."
- : "Akathists to Christ, to the Theotokos, and to the most-asked-for saints are the next major content drop. Written ikoi and kontakia in the wording the Church has carried for centuries. Email us if you want to be told when they land."}
+ ? "Die Akathiste sind lange Lobgesänge, die im Stehen gebetet werden. Der Akathist an die Gottesgebärerin ist das Urbild aus dem siebten Jahrhundert; weitere kommen Stück für Stück."
+ : "The Akathists are long hymns of praise prayed standing throughout. The Akathist to the Theotokos is the seventh-century original; others land piece by piece."}
  </p>
- <p className="mt-5 font-sans text-[13px] font-medium text-paper/65 group-hover:text-paper transition-colors">
- {isDe ? "Benachrichtige mich →" : "Notify me →"}
+ <p className="mt-5 font-sans text-[13px] font-medium text-paper/65 group-hover:text-gold transition-colors">
+ {isDe ? "Akathiste öffnen →" : "Open the akathists →"}
  </p>
  </div>
- </a>
+ </Link>
  </section>
 
  {/* ===== Learn to Pray ===== */}

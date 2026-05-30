@@ -1,0 +1,153 @@
+{
+  "_comment": "Pascha-relative lectionary. Keys are integer day-offsets from Orthodox Pascha (negative = before Pascha, 0 = Pascha itself, positive = after). Each entry is the appointed liturgical reading(s) for that day. Sundays of the Triodion (pre-Lent + Lent) and Pentecostarion (Pascha → Sunday of All Saints) carry distinct readings. This is a starter set covering the major Sundays; weekday and ferial readings drop in a content patch.",
+  "_source": "Standard Byzantine Sunday lectionary (Eastern Orthodox Church), public-domain church-bulletin form. Verses are Septuagint / KJV numbering as used elsewhere on this site.",
+  "offsets": {
+    "-70": {
+      "label": "Sunday of Zacchaeus (pre-Triodion)",
+      "readings": [
+        { "kind": "epistle", "book": "1-timothy", "chapter": 4, "from": 9, "to": 15, "label": "1 Timothy 4:9-15" },
+        { "kind": "gospel", "book": "luke", "chapter": 19, "from": 1, "to": 10, "label": "Luke 19:1-10" }
+      ]
+    },
+    "-63": {
+      "label": "Sunday of the Publican and the Pharisee",
+      "readings": [
+        { "kind": "epistle", "book": "2-timothy", "chapter": 3, "from": 10, "to": 15, "label": "2 Timothy 3:10-15" },
+        { "kind": "gospel", "book": "luke", "chapter": 18, "from": 10, "to": 14, "label": "Luke 18:10-14" }
+      ]
+    },
+    "-56": {
+      "label": "Sunday of the Prodigal Son",
+      "readings": [
+        { "kind": "epistle", "book": "1-corinthians", "chapter": 6, "from": 12, "to": 20, "label": "1 Corinthians 6:12-20" },
+        { "kind": "gospel", "book": "luke", "chapter": 15, "from": 11, "to": 32, "label": "Luke 15:11-32" }
+      ]
+    },
+    "-49": {
+      "label": "Sunday of the Last Judgment (Meatfare)",
+      "readings": [
+        { "kind": "epistle", "book": "1-corinthians", "chapter": 8, "from": 8, "to": 13, "label": "1 Corinthians 8:8-13; 9:1-2" },
+        { "kind": "gospel", "book": "matthew", "chapter": 25, "from": 31, "to": 46, "label": "Matthew 25:31-46" }
+      ]
+    },
+    "-42": {
+      "label": "Forgiveness Sunday (Cheesefare)",
+      "readings": [
+        { "kind": "epistle", "book": "romans", "chapter": 13, "from": 11, "to": 14, "label": "Romans 13:11-14:4" },
+        { "kind": "gospel", "book": "matthew", "chapter": 6, "from": 14, "to": 21, "label": "Matthew 6:14-21" }
+      ]
+    },
+    "-35": {
+      "label": "Sunday of Orthodoxy (1st of Great Lent)",
+      "readings": [
+        { "kind": "epistle", "book": "hebrews", "chapter": 11, "from": 24, "to": 26, "label": "Hebrews 11:24-26, 32-12:2" },
+        { "kind": "gospel", "book": "john", "chapter": 1, "from": 43, "to": 51, "label": "John 1:43-51" }
+      ]
+    },
+    "-28": {
+      "label": "Sunday of St Gregory Palamas (2nd of Great Lent)",
+      "readings": [
+        { "kind": "epistle", "book": "hebrews", "chapter": 1, "from": 10, "to": 14, "label": "Hebrews 1:10-2:3" },
+        { "kind": "gospel", "book": "mark", "chapter": 2, "from": 1, "to": 12, "label": "Mark 2:1-12" }
+      ]
+    },
+    "-21": {
+      "label": "Sunday of the Holy Cross (3rd of Great Lent)",
+      "readings": [
+        { "kind": "epistle", "book": "hebrews", "chapter": 4, "from": 14, "to": 16, "label": "Hebrews 4:14-5:6" },
+        { "kind": "gospel", "book": "mark", "chapter": 8, "from": 34, "to": 38, "label": "Mark 8:34-9:1" }
+      ]
+    },
+    "-14": {
+      "label": "Sunday of St John of the Ladder (4th of Great Lent)",
+      "readings": [
+        { "kind": "epistle", "book": "hebrews", "chapter": 6, "from": 13, "to": 20, "label": "Hebrews 6:13-20" },
+        { "kind": "gospel", "book": "mark", "chapter": 9, "from": 17, "to": 31, "label": "Mark 9:17-31" }
+      ]
+    },
+    "-7": {
+      "label": "Sunday of St Mary of Egypt (5th of Great Lent)",
+      "readings": [
+        { "kind": "epistle", "book": "hebrews", "chapter": 9, "from": 11, "to": 14, "label": "Hebrews 9:11-14" },
+        { "kind": "gospel", "book": "mark", "chapter": 10, "from": 32, "to": 45, "label": "Mark 10:32-45" }
+      ]
+    },
+    "-6": {
+      "label": "Lazarus Saturday",
+      "readings": [
+        { "kind": "epistle", "book": "hebrews", "chapter": 12, "from": 28, "to": 29, "label": "Hebrews 12:28-13:8" },
+        { "kind": "gospel", "book": "john", "chapter": 11, "from": 1, "to": 45, "label": "John 11:1-45" }
+      ]
+    },
+    "-5": {
+      "label": "Palm Sunday — Entry of the Lord into Jerusalem",
+      "readings": [
+        { "kind": "epistle", "book": "philippians", "chapter": 4, "from": 4, "to": 9, "label": "Philippians 4:4-9" },
+        { "kind": "gospel", "book": "john", "chapter": 12, "from": 1, "to": 18, "label": "John 12:1-18" }
+      ]
+    },
+    "0": {
+      "label": "Pascha — the Feast of Feasts",
+      "readings": [
+        { "kind": "epistle", "book": "acts", "chapter": 1, "from": 1, "to": 8, "label": "Acts 1:1-8" },
+        { "kind": "gospel", "book": "john", "chapter": 1, "from": 1, "to": 17, "label": "John 1:1-17" }
+      ]
+    },
+    "7": {
+      "label": "Sunday of St Thomas (Antipascha)",
+      "readings": [
+        { "kind": "epistle", "book": "acts", "chapter": 5, "from": 12, "to": 20, "label": "Acts 5:12-20" },
+        { "kind": "gospel", "book": "john", "chapter": 20, "from": 19, "to": 31, "label": "John 20:19-31" }
+      ]
+    },
+    "14": {
+      "label": "Sunday of the Myrrh-Bearing Women",
+      "readings": [
+        { "kind": "epistle", "book": "acts", "chapter": 6, "from": 1, "to": 7, "label": "Acts 6:1-7" },
+        { "kind": "gospel", "book": "mark", "chapter": 15, "from": 43, "to": 47, "label": "Mark 15:43-16:8" }
+      ]
+    },
+    "21": {
+      "label": "Sunday of the Paralytic",
+      "readings": [
+        { "kind": "epistle", "book": "acts", "chapter": 9, "from": 32, "to": 42, "label": "Acts 9:32-42" },
+        { "kind": "gospel", "book": "john", "chapter": 5, "from": 1, "to": 15, "label": "John 5:1-15" }
+      ]
+    },
+    "28": {
+      "label": "Sunday of the Samaritan Woman",
+      "readings": [
+        { "kind": "epistle", "book": "acts", "chapter": 11, "from": 19, "to": 30, "label": "Acts 11:19-30" },
+        { "kind": "gospel", "book": "john", "chapter": 4, "from": 5, "to": 42, "label": "John 4:5-42" }
+      ]
+    },
+    "35": {
+      "label": "Sunday of the Blind Man",
+      "readings": [
+        { "kind": "epistle", "book": "acts", "chapter": 16, "from": 16, "to": 34, "label": "Acts 16:16-34" },
+        { "kind": "gospel", "book": "john", "chapter": 9, "from": 1, "to": 38, "label": "John 9:1-38" }
+      ]
+    },
+    "42": {
+      "label": "Sunday of the Holy Fathers of the First Ecumenical Council",
+      "readings": [
+        { "kind": "epistle", "book": "acts", "chapter": 20, "from": 16, "to": 18, "label": "Acts 20:16-18, 28-36" },
+        { "kind": "gospel", "book": "john", "chapter": 17, "from": 1, "to": 13, "label": "John 17:1-13" }
+      ]
+    },
+    "49": {
+      "label": "Pentecost — Descent of the Holy Spirit",
+      "readings": [
+        { "kind": "epistle", "book": "acts", "chapter": 2, "from": 1, "to": 11, "label": "Acts 2:1-11" },
+        { "kind": "gospel", "book": "john", "chapter": 7, "from": 37, "to": 52, "label": "John 7:37-52; 8:12" }
+      ]
+    },
+    "56": {
+      "label": "Sunday of All Saints",
+      "readings": [
+        { "kind": "epistle", "book": "hebrews", "chapter": 11, "from": 33, "to": 40, "label": "Hebrews 11:33-12:2" },
+        { "kind": "gospel", "book": "matthew", "chapter": 10, "from": 32, "to": 38, "label": "Matthew 10:32-33, 37-38; 19:27-30" }
+      ]
+    }
+  }
+}

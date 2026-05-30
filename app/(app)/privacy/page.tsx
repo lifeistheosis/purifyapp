@@ -338,6 +338,20 @@ export default async function PrivacyPage() {
  </code>. These are plain JSON in your browser; we are not
  pretending they are encrypted at rest.
  </li>
+ <li>
+ <em>Push reminders (opt-in)</em>: if you turn on prayer
+ reminders in /account, the browser&rsquo;s native Web Push API
+ negotiates a subscription endpoint with your push service
+ (Google for Chrome / Firefox / Edge; Mozilla for Firefox on
+ Linux; Apple for Safari). We store that endpoint, the keys it
+ returned, and the two times you picked, in a{" "}
+ <code className="font-mono text-[14px] text-paper/70">
+ push_subscriptions
+ </code>{" "}
+ table. We do not send notification content through any third
+ party; the payload is signed with our VAPID key directly from
+ our server. Turn it off at any time on the same page.
+ </li>
  </ul>
  <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
  If you sign in to a public account, the same shapes mirror to

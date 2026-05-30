@@ -1,0 +1,32 @@
+{
+  "id": "sixth-hour",
+  "kind": "hour",
+  "title": "The Sixth Hour",
+  "subtitle": "Sext, prayed at midday — the hour of the Crucifixion.",
+  "intro": "The Sixth Hour stands at the noon of the day and remembers the nailing of Christ to the Cross. About five minutes.",
+  "estimatedMinutes": 5,
+  "source": "Common Orthodox Horologion. Shell shipping today; full Psalm and Troparion text drops in the next content patch.",
+  "prayers": [
+    {
+      "id": "opening",
+      "title": "Opening blessing",
+      "text": "Through the prayers of our holy fathers, O Lord Jesus Christ our God, have mercy on us. Amen."
+    },
+    {
+      "id": "psalms",
+      "title": "The three Psalms of the Sixth Hour",
+      "instruction": "Psalms 53, 54, and 90. Read in full when time allows.",
+      "text": "Psalm 53 (O God, in Thy name save me) · Psalm 54 (Give ear, O God, unto my prayer) · Psalm 90 (He that dwelleth in the help of the Most High)."
+    },
+    {
+      "id": "troparion",
+      "title": "Troparion of the Crucifixion",
+      "text": "O Thou who on the sixth day and the sixth hour didst nail to the Cross the daring sin of Adam in paradise: tear asunder also the bond of our transgressions, O Christ God, and save us."
+    },
+    {
+      "id": "dismissal",
+      "title": "Dismissal of the Hour",
+      "text": "Through the prayers of Thy most pure Mother and of all the saints, have mercy on us and save us. Amen."
+    }
+  ]
+}

@@ -9,7 +9,7 @@
 // writes a `kind: 'prayer'` row to localStorage (and to Supabase if
 // the user is signed in, via the existing bookmarks sync bridge).
 
-import { useMemo, useSyncExternalStore } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { cn } from "@/lib/cn";
 import { RhythmStrip } from "./RhythmStrip";
 import {
@@ -28,6 +28,10 @@ export type Prayer = {
   title: string;
   instruction?: string;
   text: string;
+  /** Optional MP3 path under /public, e.g. "/audio/prayers/morning/trisagion.mp3". */
+  audio?: string;
+  /** For akathists: the refrain spoken after this stanza. */
+  refrain?: string;
 };
 
 export type Rule = {
@@ -38,6 +42,10 @@ export type Rule = {
   estimatedMinutes: number;
   source: string;
   prayers: Prayer[];
+  /** Optional refrain spoken after every odd-indexed stanza (akathist pattern). */
+  refrain?: string;
+  /** Kind of rule — controls headings and UI affordances. */
+  kind?: "rule" | "akathist" | "hour" | "compline";
 };
 
 type Snap = { done: string[]; today: string };
@@ -212,6 +220,38 @@ export function PrayerRuleReader({ rule }: { rule: Rule }) {
   );
 }
 
+// ── AudioRow ────────────────────────────────────────────────────────────────
+// Minimal inline audio control. Uses the native <audio> element so the
+// browser handles streaming, scrubbing, and accessibility for free. No
+// vendor SDK, no autoplay, no analytics. If the file is missing (404)
+// the row stays hidden via the onError handler.
+function AudioRow({ src }: { src: string }) {
+  const [errored, setErrored] = useState(false);
+  if (errored) {
+    return (
+      <p className="mt-3 font-sans text-[11px] text-paper/40 italic">
+        Audio recording not yet shipped for this prayer.
+      </p>
+    );
+  }
+  return (
+    <div className="mt-4 rounded-md border border-paper/10 bg-paper/[0.03] p-3">
+      <p className="font-sans text-[10.5px] uppercase tracking-[1.2px] text-paper/45 mb-2">
+        Sung / Chanted
+      </p>
+      <audio
+        controls
+        preload="none"
+        src={src}
+        onError={() => setErrored(true)}
+        className="w-full h-8"
+      >
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+  );
+}
+
 function PrayerCard({
   ruleId,
   prayer,
@@ -288,6 +328,12 @@ function PrayerCard({
             {prayer.text}
           </div>
         )}
+        {prayer.refrain && (
+          <p className="mt-4 font-serif italic text-[16px] text-gold/85 leading-[1.55] border-l-2 border-gold/30 pl-3">
+            {prayer.refrain}
+          </p>
+        )}
+        {prayer.audio && <AudioRow src={prayer.audio} />}
         <div className="mt-5">
           <button
             type="button"
