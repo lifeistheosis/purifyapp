@@ -49,7 +49,7 @@ export function ContentNotYetTranslated({
   kind: Kind;
 }) {
   if (locale === "en") return null;
-  const m = MESSAGES[locale]?.[kind] ?? MESSAGES.de!?.[kind];
+  const m = MESSAGES[locale]?.[kind] ?? MESSAGES.de?.[kind];
   if (!m || !m.body) return null;
   return (
     <div

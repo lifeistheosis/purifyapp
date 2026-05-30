@@ -69,8 +69,8 @@ export default async function SupportPage() {
  <p className="mt-6 font-serif text-[17px] text-paper/85 leading-[1.7]">
  {isDe ? (
  <>
- Der Kern von Purify &mdash; die Heiligen, die Schriften, die
- Gebete, der Kalender &mdash; ist frei und bleibt frei.
+ Der Kern von Purify, die Heiligen, die Schriften, die
+ Gebete, der Kalender, ist frei und bleibt frei.
  Hosting, Speicher, Beschaffung und die Menschen, die die
  Arbeit tun, kosten Geld. Wenn die Seite dir geholfen hat,
  kannst du das Licht anhalten oder beschleunigen, was wir als
@@ -212,7 +212,7 @@ export default async function SupportPage() {
  </p>
  <p className="mt-2 font-sans text-[13.5px] text-paper/70 leading-[1.6]">
  {isDe
- ? "Gebetsanliegen, Vorschläge für Akathiste, Fragen zum Inhalt — ein Ort, gehört zu werden. Offen für jeden."
+ ? "Gebetsanliegen, Vorschläge für Akathiste, Fragen zum Inhalt, ein Ort, gehört zu werden. Offen für jeden."
  : "Prayer requests, akathist suggestions, content questions, and a place to be heard. Open to everyone."}
  </p>
  </div>

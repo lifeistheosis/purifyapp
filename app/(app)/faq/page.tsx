@@ -288,7 +288,7 @@ const QUESTIONS_DE: QA[] = [
  <>
  <p>
  Das Alte Testament ist Brentons englische Übersetzung der
- Septuaginta von 1851 &mdash; des griechischen Alten Testaments,
+ Septuaginta von 1851, des griechischen Alten Testaments,
  das die Apostel, die Väter und die Kirche in ihren Gottesdiensten
  gelesen haben. Es trägt die deuterokanonischen Bücher (Tobit,
  Judith, Weisheit, Sirach, Baruch, die Makkabäer) und die
@@ -320,7 +320,7 @@ const QUESTIONS_DE: QA[] = [
  ),
  },
  {
- q: "Das griechische Neue Testament, das ihr zeigt, ist Nestle 1904 — warum nicht Byzantinisch?",
+ q: "Das griechische Neue Testament, das ihr zeigt, ist Nestle 1904, warum nicht Byzantinisch?",
  a: (
  <p>
  Wir begannen mit Robinsons Byzantinischer Mehrheitstext und
@@ -406,7 +406,7 @@ const QUESTIONS_DE: QA[] = [
  <>
  <p>
  Konten und Geräteabgleich kamen in v3.3. Die Anmeldung geschieht
- durch einen per E-Mail gesandten Magic Link &mdash; du legst nie
+ durch einen per E-Mail gesandten Magic Link, du legst nie
  ein Paßwort an. Ohne Konto bleiben jede Markierung, jede Notiz,
  jedes Lesezeichen und jede Gebetsregel-Strähne in deinem Browser
  auf diesem Gerät. Mit Konto folgen dir dieselben Dinge über

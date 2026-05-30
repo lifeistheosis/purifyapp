@@ -72,8 +72,8 @@ function PricingDe() {
           Lizenzierung wird verbessert, damit sie ehrlich angeboten werden
           kann. Wenn diese freiwillige, durch Abonnement getragene Schicht
           kommt, wird sie ausschließlich dazu da sein, die Arbeit zu bezahlen,
-          die sie verlangt &mdash; die Server, die Produktion, die Rechte
-          &mdash; und den Kern für immer offen zu halten. Was heute frei ist,
+          die sie verlangt, die Server, die Produktion, die Rechte
+         , und den Kern für immer offen zu halten. Was heute frei ist,
           wird dann noch frei sein.
         </p>
         <p className="font-sans text-[15px] text-paper/60 mt-6 leading-relaxed">

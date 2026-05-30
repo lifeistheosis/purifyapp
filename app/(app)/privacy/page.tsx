@@ -533,8 +533,8 @@ function PrivacyDe() {
  in Summe zu unterscheiden.
  </li>
  <li>
- Eine <em>grobe, städtische Verortung</em> &mdash; Land, Region,
- Stadt und die ungefähre geographische Lage der Stadt &mdash;,
+ Eine <em>grobe, städtische Verortung</em>, Land, Region,
+ Stadt und die ungefähre geographische Lage der Stadt,,
  hergeleitet aus deiner Anfrage-IP über{" "}
  <a
  href="https://ipwho.is/"
@@ -639,16 +639,16 @@ function PrivacyDe() {
  </p>
  <ul className="mt-3 space-y-3 font-serif text-[18px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
- <strong>Supabase</strong> &mdash; gehostetes Postgres und Auth.
+ <strong>Supabase</strong>, gehostetes Postgres und Auth.
  Speichert deine Abgleichsdaten und die anonymen
  Analytik-Tabellen.
  </li>
  <li>
- <strong>Render</strong> &mdash; Webhosting. Sieht denselben
+ <strong>Render</strong>, Webhosting. Sieht denselben
  HTTP-Anfrageverkehr, den jeder Hoster sieht.
  </li>
  <li>
- <strong>API.Bible</strong> (American Bible Society) &mdash;
+ <strong>API.Bible</strong> (American Bible Society),
  wenn du die NKJV, NIV oder NLT liest, holen wir dieses einzelne
  Kapitel zur Anfragezeit von API.Bible und senden das vom Verlag
  verlangte FUMS-Nutzungs-Token. Gemeinfreie Übersetzungen (KJV,
@@ -662,14 +662,14 @@ function PrivacyDe() {
  für die Lizenz-Einzelheiten.
  </li>
  <li>
- <strong>ipwho.is</strong> &mdash; freie serverseitige
+ <strong>ipwho.is</strong>, freie serverseitige
  IP&rarr;Stadt-Auflösung, nur beim ersten Treffer einer anonymen
  Sitzung gebraucht, danach sechs Stunden lang serverseitig
  zwischengespeichert, damit die IP nicht erneut nachgeschlagen
  wird.
  </li>
  <li>
- <strong>Buy Me a Coffee</strong> &mdash; nur auf{" "}
+ <strong>Buy Me a Coffee</strong>, nur auf{" "}
  <Link
  href="/support"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
@@ -682,11 +682,11 @@ function PrivacyDe() {
  deine Identität.
  </li>
  <li>
- <strong>Discord</strong> &mdash; ein externer Verweis, nicht
+ <strong>Discord</strong>, ein externer Verweis, nicht
  eingebettet. Kein Discord-Code läuft auf Purify.
  </li>
  <li>
- <strong>Amazon-Partner-Programm</strong> &mdash; wenn ein
+ <strong>Amazon-Partner-Programm</strong>, wenn ein
  Eintrag der lizenzierten Werke auf einem Heiligen-Profil oder
  anderswo auf ein Buch bei amazon.com verweist, trägt der
  Verweis unsere Partner-Kennung. Purify nimmt am
@@ -712,7 +712,7 @@ function PrivacyDe() {
  Unsere Robots-Datei
  </Link>{" "}
  sperrt die zweiundzwanzig namentlich bekannten KI-Crawler aus
- der ganzen Seite aus &mdash; GPTBot, OAI-SearchBot, ChatGPT-User,
+ der ganzen Seite aus, GPTBot, OAI-SearchBot, ChatGPT-User,
  CCBot, Google-Extended, anthropic-ai, ClaudeBot, Claude-Web,
  PerplexityBot, Applebot-Extended, Bytespider, Amazonbot,
  Meta-ExternalAgent, cohere-ai, Diffbot, FacebookBot, YouBot,

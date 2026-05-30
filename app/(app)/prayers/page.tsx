@@ -136,7 +136,7 @@ export default async function PrayersPage() {
  </p>
  <p className="mt-8 max-w-[620px] font-serif text-[18px] md:text-[19px] text-paper/85 leading-[1.65]">
  {isDe
- ? "Die täglichen Regeln, das Gebet des Herzens, die Akathiste und die Horen — die Gestalt eines Lebens mit Gott. Schlag die Seite auf, wenn du aufstehst; schlag sie auf, wenn du dich niederlegst."
+ ? "Die täglichen Regeln, das Gebet des Herzens, die Akathiste und die Horen, die Gestalt eines Lebens mit Gott. Schlag die Seite auf, wenn du aufstehst; schlag sie auf, wenn du dich niederlegst."
  : "The daily rules, the prayer of the heart, the Akathists, and the hours, the shape of a life with God. Open the page when you rise; open it when you lie down."}
  </p>
 
@@ -401,8 +401,8 @@ export default async function PrayersPage() {
  Ein kurzer Einsteiger-Weg durch das Kreuzzeichen, das
  Jesusgebet, das Trisagion und eine einfache Morgen- und
  Abendregel. {LESSONS.length} Lektionen. Die Drei Hierarchen
- auf dieser Karte — Basilius, Gregor der Theologe und Johannes
- Chrysostomus — sind in der orthodoxen Überlieferung die
+ auf dieser Karte, Basilius, Gregor der Theologe und Johannes
+ Chrysostomus, sind in der orthodoxen Überlieferung die
  Patrone der Theologie und des Gebets.
  </>
  ) : (

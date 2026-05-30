@@ -261,7 +261,7 @@ export default async function AboutPage() {
  );
 }
 
-// German render — full editorial translation, no machine output. Mirrors
+// German render, full editorial translation, no machine output. Mirrors
 // the English structure section for section so cross-checking is easy.
 function AboutDe() {
  return (
