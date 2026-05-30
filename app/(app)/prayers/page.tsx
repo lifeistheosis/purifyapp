@@ -13,7 +13,7 @@ import {
 import { SaintIcon } from "@/components/saints/SaintIcon";
 import { getSaint } from "@/lib/saints/saints";
 import { PrayerIcon } from "@/components/prayers/PrayerIcon";
-import { PrayerSlideshow } from "@/components/prayers/PrayerSlideshow";
+import { PrayerSlideshowHero } from "@/components/prayers/PrayerSlideshow";
 import { getServerLocale } from "@/lib/i18n/server";
 
 export const metadata = {
@@ -121,7 +121,7 @@ export default async function PrayersPage() {
  dark gradient. The most universally-recognized Orthodox
  icon, and the One we pray to without ceasing. */}
  <div className="absolute inset-0">
- <PrayerIcon slug="christ-pantocrator" size="hero" priority />
+ <PrayerSlideshowHero priority />
  <div
  aria-hidden
  className="absolute inset-0"
@@ -282,7 +282,7 @@ export default async function PrayersPage() {
  <section className="text-center">
  <div className="mx-auto max-w-[720px] rounded-lg border border-paper/10 bg-paper/[0.02] px-6 py-12 md:py-16">
  <div className="flex justify-center mb-8">
- <PrayerSlideshow />
+ <PrayerIcon slug="christ-pantocrator" size="lg" />
  </div>
  <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.8px] text-gold/85 mb-6">
  {isDe ? "Das Gebet des Herzens" : "The prayer of the heart"}
