@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SUPPORT } from "@/data/support/support";
 import { fetchBmcTotal } from "@/lib/support/buymeacoffee";
+import { getExpenseLines, getMonthlyGoalUsd } from "@/lib/support/expenses";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 
@@ -36,15 +37,19 @@ function ago(iso: string): string {
 }
 
 export default async function SupportPage() {
- const live = await fetchBmcTotal();
+ const [live, expenses, monthlyGoalUsd] = await Promise.all([
+   fetchBmcTotal(),
+   getExpenseLines(),
+   getMonthlyGoalUsd(),
+ ]);
  const raised = live?.monthlyRaisedUsd ?? SUPPORT.monthlyRaisedUsd;
- const totalMonthlyExpense = SUPPORT.expenses.reduce(
+ const totalMonthlyExpense = expenses.reduce(
  (s, e) => s + e.monthlyUsd,
  0,
  );
  const pct = Math.min(
  1,
- Math.max(0, raised / SUPPORT.monthlyGoalUsd),
+ Math.max(0, raised / monthlyGoalUsd),
  );
  const locale = await getServerLocale();
  const isDe = locale === "de";
@@ -102,7 +107,7 @@ export default async function SupportPage() {
  <p className="font-sans text-[28px] md:text-[32px] font-bold text-paper tabular-nums">
  {formatUsd(raised)}
  <span className="text-paper/45 text-[18px] font-normal">
- {" "}{isDe ? "von" : "of"} {formatUsd(SUPPORT.monthlyGoalUsd)}
+ {" "}{isDe ? "von" : "of"} {formatUsd(monthlyGoalUsd)}
  </span>
  </p>
  <p className="font-sans text-[13px] text-gold font-semibold tabular-nums">
@@ -251,20 +256,20 @@ export default async function SupportPage() {
  <>
  Jede Zeile ist echt. Die monatlichen Gesamtkosten zum Stand{" "}
  {SUPPORT.lastUpdated} betragen {formatUsd(totalMonthlyExpense)}.
- Das Förderziel oben ist auf {formatUsd(SUPPORT.monthlyGoalUsd)}{" "}
+ Das Förderziel oben ist auf {formatUsd(monthlyGoalUsd)}{" "}
  gesetzt, um Spielraum für die unvorhersehbaren Monate zu lassen.
  </>
  ) : (
  <>
  Every line is real. Total monthly cost as of{" "}
  {SUPPORT.lastUpdated} is {formatUsd(totalMonthlyExpense)}. The
- funding goal above is set at {formatUsd(SUPPORT.monthlyGoalUsd)}
+ funding goal above is set at {formatUsd(monthlyGoalUsd)}
  {" "}to leave some margin for the unpredictable months.
  </>
  )}
  </p>
  <ul className="divide-y divide-paper/8 border border-paper/12 rounded-md overflow-hidden">
- {SUPPORT.expenses.map((e) => (
+ {expenses.map((e) => (
  <li
  key={e.label}
  className="px-5 py-4 flex items-baseline justify-between gap-4 bg-paper/[0.02]"

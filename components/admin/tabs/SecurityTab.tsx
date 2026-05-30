@@ -31,6 +31,12 @@ type Payload = {
     windowHour: { category: string; total: number }[];
     topKeysHour: { key: string; windowStart: string; count: number }[];
     last24hHits: number;
+    topOffenders7d: { key: string; count: number }[];
+  };
+  accounts: {
+    total: number;
+    signups30d: number;
+    signupSeries: { day: string; count: number }[];
   };
   flags: { adminDebugEnabled: boolean };
 };
@@ -106,6 +112,54 @@ export function SecurityTab() {
           </p>
         </Card>
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card title="Total accounts">
+          <p className="font-sans text-[40px] font-bold tabular-nums leading-none text-paper">
+            <CountUp value={data.accounts.total} />
+          </p>
+        </Card>
+        <Card title="Signups · 30d">
+          <p className="font-sans text-[40px] font-bold tabular-nums leading-none text-paper">
+            <CountUp value={data.accounts.signups30d} />
+          </p>
+        </Card>
+        <Card title="Signups by day · 30d">
+          <BarChart
+            rows={data.accounts.signupSeries.map((s) => ({
+              label: s.day.slice(5),
+              value: s.count,
+            }))}
+          />
+        </Card>
+      </div>
+
+      <Card
+        title={`Rate-limit top offenders · 7d · ${data.rateLimits.topOffenders7d.length}`}
+        subtitle="Aggregated key totals (category:identifier) across the last seven days."
+      >
+        <DataTable
+          rows={data.rateLimits.topOffenders7d}
+          rowKey={(r) => r.key}
+          csvFilename="rate-limit-offenders-7d.csv"
+          empty="No rate-limit activity in the last seven days."
+          columns={[
+            {
+              key: "key",
+              label: "Key",
+              render: (r) => <span className="font-mono text-[11px]">{r.key}</span>,
+              csv: (r) => r.key,
+            },
+            {
+              key: "count",
+              label: "Hits",
+              align: "right",
+              render: (r) => r.count,
+              csv: (r) => r.count,
+            },
+          ]}
+        />
+      </Card>
 
       <Card title="System flags">
         <ul className="space-y-2 font-sans text-[13px] text-paper/85">
