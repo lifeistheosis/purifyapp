@@ -1167,7 +1167,24 @@ export const SAINTS: Saint[] = [
  "In the days of the emperor Trajan, and again under his successor Hadrian, she was brought before the authorities and commanded to sacrifice to the idols. She confessed Christ boldly, and was subjected to torture; but the tradition relates that her tormentors were themselves converted by the wonders that attended her sufferings, and that she healed even those who had been sent to harm her.",
  "After long endurance she gave up her soul to God at Ephesus around the year 117. The Church honors her on the fourth of September as a virgin and martyr, and as one of the prophesying daughters of an apostle, a living link between the age of the Twelve and the Church of the Fathers.",
  ],
- works: [],
+ works: [
+ {
+ slug: "life-of-hermione",
+ title: "The Life of St. Hermione, Daughter of the Apostle Philip",
+ subtitle: "From Acts, Eusebius's preservation of Polycrates, and the Synaxarion",
+ blurb:
+ "A four-section vita drawn from the documented public-domain sources in order of antiquity: Acts 21:8-9 (KJV), the letter of Polycrates of Ephesus to Pope Victor preserved by Eusebius (Ecclesiastical History III.31 and V.24, McGiffert NPNF 1890), and the Synaxarion of Constantinople for September 4. The later Passion narrative known as the Acts of Hermione is named in its place as a Byzantine devotional source, not as a primary witness, and the older identification problem (Philip of the Twelve versus Philip of the Seven) is set out without being resolved.",
+ topics: [
+ "Hagiography",
+ "Apostolic Age",
+ "Prophesying Daughters",
+ "Acts 21:9",
+ "Eusebius",
+ "Polycrates of Ephesus",
+ "Synaxarion",
+ ],
+ },
+ ],
  },
  {
  slug: "isidora-of-tabenna",
