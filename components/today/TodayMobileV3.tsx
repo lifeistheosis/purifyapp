@@ -1,10 +1,14 @@
+import { cookies } from "next/headers";
 import {
   commemorationsOn,
   fastingStatus,
   paschaInfo,
   readingsOn,
+  shiftForStyle,
   startOfDayUtc,
+  type CalStyle,
 } from "@/lib/calendar/orthodox";
+import { CALENDAR_STYLE_COOKIE } from "@/lib/calendar/styleDefault";
 import { getSaint } from "@/lib/saints/saints";
 import { getServerLocale } from "@/lib/i18n/server";
 import { MobileTopTabs } from "./MobileTopTabs";
@@ -17,22 +21,24 @@ import { TodayReadingsCard } from "./TodayReadingsCard";
 import { PaschaCountdownCard } from "./PaschaCountdownCard";
 
 /**
- * Mobile-only Today shell (v6.10 rework). Replaces TodayMenologionHero.
+ * Mobile-only Today shell (v6.10 rework).
  *
- * Dark / timeline aesthetic: top-tab nav (Today / Calendar) with a
- * rubric-red underline + streak + bell + avatar, a "Daily Refresh"
- * eyebrow, then a sequence of cards (Verse of the Day, Today's Saint,
- * the Fast, Today's Readings, Pascha countdown) stacked along a
- * vertical timeline rail running down the left margin.
+ * Reads the user's calendar-style preference (`purify_calendar_style`
+ * cookie, set by ProfileSettings) and shifts the fixed-cycle lookups
+ * (saint of the day, fast) accordingly — matching the calendar page.
  *
- * Server component, all data pure and cacheable. The interactive
- * elements (favourite toggle, share, more sheet, the streak readout,
- * the avatar) live in small client islands.
+ * Pascha-relative readings stay on the civil date because both calendar
+ * styles compute Pascha from the same Julian algorithm.
  */
 export async function TodayMobileV3() {
+  const cookieStore = await cookies();
+  const cookieStyle = cookieStore.get(CALENDAR_STYLE_COOKIE)?.value;
+  const style: CalStyle = cookieStyle === "old" ? "old" : "new";
+
   const today = startOfDayUtc(new Date());
-  const commemorations = commemorationsOn(today);
-  const fast = fastingStatus(today);
+  const lookup = shiftForStyle(today, style);
+  const commemorations = commemorationsOn(lookup);
+  const fast = fastingStatus(lookup);
   const readings = readingsOn(today);
   const pascha = paschaInfo(today);
   const locale = await getServerLocale();
@@ -56,6 +62,7 @@ export async function TodayMobileV3() {
         readings: "Lesungen für heute",
         readingsEmpty: "Keine Lesungen angesetzt.",
         pascha: "Pascha",
+        noSaint: "Für diesen Tag ist noch kein Heiliger verzeichnet.",
       }
     : {
         eyebrow: "Daily Refresh",
@@ -65,6 +72,7 @@ export async function TodayMobileV3() {
         readings: "Today's Readings",
         readingsEmpty: "No readings appointed.",
         pascha: "Pascha",
+        noSaint: "No saint indexed for this day.",
       };
 
   const paschaSecondary =
@@ -92,6 +100,17 @@ export async function TodayMobileV3() {
                 saint={headlineSaint}
                 eyebrow={labels.saint}
               />
+            ) : headline ? (
+              // Commemorated but not deeply profiled in our registry.
+              // Render the headline so the user sees the saint's name
+              // instead of an "empty" message. Tap-through goes to the
+              // calendar day, which shows fuller commemoration text.
+              <TodaySaintCard
+                key="saint-no-profile"
+                eyebrow={labels.saint}
+                fallbackName={headline.name}
+                fallbackNote={headline.note}
+              />
             ) : (
               <div
                 key="saint-empty"
@@ -101,9 +120,7 @@ export async function TodayMobileV3() {
                   {labels.saint}
                 </p>
                 <p className="mt-2 font-sans text-[14px] text-paper/55 italic">
-                  {isDe
-                    ? "Für diesen Tag ist noch kein Heiliger verzeichnet."
-                    : "No saint indexed for this day."}
+                  {labels.noSaint}
                 </p>
               </div>
             ),

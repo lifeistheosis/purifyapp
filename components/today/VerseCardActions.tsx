@@ -129,26 +129,26 @@ export function VerseCardActions({
   }
 
   async function share() {
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: refLabel,
-          text: shareText,
-          url: shareUrl,
-        });
-        return;
+    // Copy the deep link to the clipboard. We deliberately bypass
+    // navigator.share so taps on this button always do the same thing
+    // (the system share sheet was a sometimes-yes / sometimes-no
+    // surprise depending on platform support).
+    void shareText;
+    let url = shareUrl;
+    if (typeof window !== "undefined") {
+      try {
+        url = new URL(shareUrl, window.location.origin).toString();
+      } catch {
+        /* ignore — fall back to the raw shareUrl */
       }
-    } catch {
-      /* ignore */
     }
     try {
-      await navigator.clipboard.writeText(`${refLabel}\n${shareUrl}`);
+      await navigator.clipboard.writeText(url);
       setToast("Link copied");
-      setTimeout(() => setToast(null), 1500);
     } catch {
-      setToast("Could not share");
-      setTimeout(() => setToast(null), 1500);
+      setToast("Could not copy");
     }
+    setTimeout(() => setToast(null), 1500);
   }
 
   async function copyText() {

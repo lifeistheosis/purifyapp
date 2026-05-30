@@ -5,6 +5,11 @@ import type { ReadingRef } from "@/lib/calendar/orthodox";
  * Fourth card in the mobile Today timeline: the appointed readings
  * (Epistle + Gospel + OT where present), each linking into the full
  * chapter in the Bible reader.
+ *
+ * Row layout: small uppercase kind chip sits inline next to the
+ * reference text so the two read as one phrase ("GOSPEL · Matthew
+ * 11:27-30"). A chevron pushes to the far right of each row to keep
+ * the tap affordance.
  */
 export function TodayReadingsCard({
   readings,
@@ -19,7 +24,9 @@ export function TodayReadingsCard({
     return (
       <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4">
         <p className="font-sans text-[12px] text-paper/55">{eyebrow}</p>
-        <p className="mt-2 font-sans text-[14px] text-paper/55 italic">{emptyLabel}</p>
+        <p className="mt-2 font-sans text-[14px] text-paper/55 italic">
+          {emptyLabel}
+        </p>
       </div>
     );
   }
@@ -32,19 +39,25 @@ export function TodayReadingsCard({
             r.kind === "epistle"
               ? "Epistle"
               : r.kind === "ot"
-              ? "Old Testament"
-              : "Gospel";
+                ? "OT"
+                : "Gospel";
           return (
             <li key={i}>
               <Link
                 href={`/bible/${r.book}/${r.chapter}#v${r.from}`}
-                className="flex items-baseline justify-between gap-3 py-2.5 group"
+                className="flex items-center gap-3 py-2.5 group"
               >
-                <span className="font-sans text-[10.5px] uppercase tracking-[1.5px] text-paper/45 font-semibold">
+                <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.04] px-2 py-[1px] font-sans text-[10px] font-semibold uppercase tracking-[1.5px] text-paper/65">
                   {kind}
                 </span>
-                <span className="font-serif text-[15px] text-paper text-right group-hover:text-gold transition-colors">
+                <span className="font-serif text-[15px] text-paper truncate flex-1 group-hover:text-gold transition-colors">
                   {r.label}
+                </span>
+                <span
+                  aria-hidden
+                  className="shrink-0 text-paper/35 text-[16px] group-hover:text-paper transition-colors"
+                >
+                  ›
                 </span>
               </Link>
             </li>

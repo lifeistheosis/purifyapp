@@ -36,6 +36,22 @@ export function orthodoxPascha(year: number): Date {
  return julianDate;
 }
 
+// ----- Calendar style ----------------------------------------------------
+// Fixed-cycle commemorations + the fast table are keyed by Gregorian
+// MM-DD. Users observing the Old (Julian) calendar see the same data
+// shifted back 13 days. Pascha-relative content is the same for both
+// styles because both compute Pascha from the Julian algorithm.
+
+export type CalStyle = "new" | "old";
+export const JULIAN_OFFSET_DAYS = 13;
+
+export function shiftForStyle(d: Date, style: CalStyle): Date {
+ if (style === "new") return d;
+ const out = new Date(d);
+ out.setUTCDate(out.getUTCDate() - JULIAN_OFFSET_DAYS);
+ return out;
+}
+
 // ----- Day helpers (calendar math in UTC noon to dodge DST) -----
 
 export function startOfDayUtc(d: Date): Date {
