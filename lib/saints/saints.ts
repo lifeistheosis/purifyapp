@@ -1208,7 +1208,24 @@ export const SAINTS: Saint[] = [
  "The Patriarch Nectarius ordained her deaconess of the Great Church, though she was barely thirty, and in that ministry she served the women of the Church, the sick, and the needy. When St. John Chrysostom came to the throne of Constantinople, he found in her a daughter and a fellow-laborer; she gathered a community of devout women about her near the cathedral, living in fasting, prayer, and works of mercy.",
  "When Chrysostom was driven into exile, Olympias remained steadfastly loyal to him, and for this she was persecuted, slandered, fined, and at last banished from the city. From his exile the saint wrote her a long series of letters, seventeen of which survive, comforting her in her afflictions and bidding her not to grieve. She died in exile at Nicomedia around 408, worn out by sorrow and labor; the Church honors her on the twenty-fifth of July as a deaconess and a confessor.",
  ],
- works: [],
+ works: [
+ {
+ slug: "life-of-olympias",
+ title: "The Life of the Holy Deaconess Olympias",
+ subtitle: "A synaxarion-style vita drawn from the surviving primary witnesses",
+ blurb:
+ "A careful vita of the Deaconess of the Great Church and friend of St. John Chrysostom, compiled from documented public-domain sources: Palladius's Dialogue and Lausiac History, the anonymous fifth-century Life of Olympias (Vita Olympiadis), Sozomen's Ecclesiastical History, the seventeen Letters of St. John Chrysostom addressed to her, and the Synaxarion of Constantinople for July 25. Each section's notes name the primary witness, so every claim is checkable against an actual public-domain source.",
+ topics: [
+ "Hagiography",
+ "Deaconess",
+ "Almsgiving",
+ "St. John Chrysostom",
+ "Widowhood",
+ "Constantinople",
+ "Confessor",
+ ],
+ },
+ ],
  },
  {
  slug: "gregory-of-nyssa",
