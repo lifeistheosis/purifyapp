@@ -1187,7 +1187,23 @@ export const SAINTS: Saint[] = [
  "Her hidden sanctity was revealed when an angel appeared to the great anchorite Pitirim of Porphyrite, telling him that a woman more pleasing to God than he dwelt at Tabennisi, wearing a crown upon her head. Coming to the convent, the old man asked to see all the sisters; and when Isidora was at last brought forward against her will, he bowed to the ground before her and asked her blessing, declaring that she was the holy one the angel had shown him.",
  "The sisters, astonished, fell at her feet and begged forgiveness for their long mistreatment. But Isidora, unable to bear the honor and praise of men, secretly left the monastery and was never found again; whether she withdrew into the desert or fell asleep in the Lord no one knew. The Church keeps her memory on the first of May and honors her as the first of the fools-for-Christ, who counted the world's esteem as nothing for the sake of humility.",
  ],
- works: [],
+ works: [
+ {
+ slug: "life-of-isidora",
+ title: "The Life of the Holy Mother Isidora, Fool-for-Christ",
+ subtitle: "From Palladius's account of the Tabennesiot sisterhood",
+ blurb:
+ "A careful five-section vita drawn from Palladius of Helenopolis, Lausiac History ch. xxxiv (Lowther Clarke 1918, public domain), the single ancient witness to her life. Palladius gives her no name; the name Isidora is supplied by the Synaxarion of Constantinople for the first of May. Every section's notes name what Palladius reports and where he stops.",
+ topics: [
+ "Hagiography",
+ "Fool-for-Christ",
+ "Humility",
+ "Tabennesi",
+ "Egyptian Monasticism",
+ "Palladius",
+ ],
+ },
+ ],
  },
  {
  slug: "olympias-the-deaconess",
