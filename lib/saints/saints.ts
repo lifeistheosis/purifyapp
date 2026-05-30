@@ -1538,6 +1538,24 @@ export const SAINTS: Saint[] = [
  ],
  works: [
  {
+ slug: "life-of-the-theologian",
+ title: "The Life of St. John the Theologian",
+ subtitle: "From the New Testament, Polycrates, Irenaeus, Tertullian, Clement, Eusebius, and Jerome",
+ blurb:
+ "A careful five-section vita drawn from documented public-domain sources in order of antiquity: the Gospel, Epistles, Apocalypse, and Acts as autobiographical witness (KJV); Polycrates of Ephesus (Eusebius H.E. III.31, V.24); Tertullian, De Praescriptione Haereticorum 36 (ANF 3); Irenaeus, Against Heresies II.22.5, III.1.1, III.3.4, V.30.3 (ANF 1); Clement of Alexandria, Quis Dives Salvetur 42 via Eusebius (H.E. III.23); Papias via Eusebius (H.E. III.39); Eusebius, H.E. III.18, III.23, III.31 (McGiffert NPNF 1890); and Jerome on Galatians 6:10 (NPNF II.3). The apocryphal Acts of John is named as a second-century devotional composition. The question of John the Apostle vs the Elder is set out and the older five-fold attribution is followed without pretending the Papias-and-Dionysius question has not been asked.",
+ topics: [
+ "Hagiography",
+ "Apostolic Age",
+ "Beloved Disciple",
+ "Ephesus",
+ "Patmos",
+ "Apocalypse",
+ "Domitian",
+ "Polycrates",
+ "Irenaeus",
+ ],
+ },
+ {
  slug: "selected-passages",
  title: "Selected Passages from the Gospel and First Epistle",
  subtitle: "From the Theologian's Gospel and his catholic epistles",
