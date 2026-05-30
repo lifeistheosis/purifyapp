@@ -750,6 +750,23 @@ export const SAINTS: Saint[] = [
  ],
  works: [
  {
+ slug: "life-of-ignatius",
+ title: "The Life of St. Ignatius the God-bearer, Bishop of Antioch",
+ subtitle: "From his own letters and the witness of Polycarp, Irenaeus, Origen, and Eusebius",
+ blurb:
+ "A careful four-section vita drawn from documented public-domain sources in order of antiquity: Ignatius's own letters as autobiographical witness (Lightfoot 1885-1890, ANF 1885); Polycarp's Epistle to the Philippians IX and XIII; Irenaeus, Against Heresies V.28.4; Origen, Homily VI on Luke; and Eusebius, Ecclesiastical History III.22, III.36, IV.14-15 (McGiffert NPNF 1890). The Theophorus-as-the-child-of-Matt.18 legend is identified as a ninth-century Symeon-Metaphrastes addition rather than as biography; the later Martyrium Ignatii is named in its place as a fifth- or sixth-century devotional composition.",
+ topics: [
+ "Hagiography",
+ "Apostolic Fathers",
+ "Bishopric",
+ "Martyrdom",
+ "Antioch",
+ "Theophorus",
+ "Polycarp",
+ "Eusebius",
+ ],
+ },
+ {
  slug: "epistle-to-the-ephesians",
  title: "Epistle to the Ephesians",
  subtitle: "On the bishop, the bread, and the silent God",
