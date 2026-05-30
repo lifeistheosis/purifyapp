@@ -108,12 +108,18 @@ export function KpiCard({
   trend,
   delta,
   accent,
+  subtitle,
+  hint,
 }: {
   label: string;
   value: string | number;
   trend?: number[];
   delta?: { value: number; positive: boolean };
   accent?: boolean;
+  /** Small caption above the big number (e.g. "since 2026-05-18"). */
+  subtitle?: string;
+  /** Small caption below the big number, replaces delta when both set. */
+  hint?: ReactNode;
 }) {
   return (
     <div
@@ -132,6 +138,11 @@ export function KpiCard({
       >
         {label}
       </p>
+      {subtitle && (
+        <p className="mt-0.5 font-sans text-[10.5px] text-paper/45 tabular-nums">
+          {subtitle}
+        </p>
+      )}
       <div className="mt-2 flex items-end justify-between gap-2">
         <p
           className={
@@ -145,17 +156,67 @@ export function KpiCard({
           <Sparkline data={trend} width={90} height={28} />
         )}
       </div>
-      {delta && (
-        <p
-          className={
-            "mt-2 font-sans text-[11px] tabular-nums " +
-            (delta.positive ? "text-emerald-400" : "text-rose-400")
-          }
-        >
-          {delta.positive ? "▲" : "▼"} {Math.abs(delta.value)}% vs prior
-        </p>
-      )}
+      {hint
+        ? <p className="mt-2 font-sans text-[11px] text-paper/55">{hint}</p>
+        : delta && (
+            <p
+              className={
+                "mt-2 font-sans text-[11px] tabular-nums " +
+                (delta.positive ? "text-emerald-400" : "text-rose-400")
+              }
+            >
+              {delta.positive ? "▲" : "▼"} {Math.abs(delta.value)}% vs prior
+            </p>
+          )}
     </div>
+  );
+}
+
+// ── ChartFrame ──────────────────────────────────────────────────────────────
+// Thin wrapper for chart cards: a Card with a built-in slot for a small
+// range selector or legend hint and consistent empty-state copy. Tabs use
+// this so chart layout stays the same across the panel.
+export function ChartFrame({
+  title,
+  subtitle,
+  rangeSelector,
+  legendHint,
+  children,
+  empty,
+  isEmpty,
+  accent,
+}: {
+  title?: string;
+  subtitle?: string;
+  rangeSelector?: ReactNode;
+  legendHint?: ReactNode;
+  children: ReactNode;
+  empty?: string;
+  isEmpty?: boolean;
+  accent?: boolean;
+}) {
+  return (
+    <Card
+      title={title}
+      subtitle={subtitle}
+      accent={accent}
+      action={rangeSelector}
+    >
+      {isEmpty ? (
+        <p className="font-sans text-[13px] text-paper/40 py-8 text-center">
+          {empty ?? "No data in range."}
+        </p>
+      ) : (
+        <>
+          {children}
+          {legendHint && (
+            <p className="mt-3 font-sans text-[11px] text-paper/45">
+              {legendHint}
+            </p>
+          )}
+        </>
+      )}
+    </Card>
   );
 }
 

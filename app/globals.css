@@ -36,6 +36,13 @@
  --color-grad-violet: #362774;
  --color-grad-pink: #d90068;
 
+ /* Admin chart tokens. Kept here so a single tweak propagates across
+  every panel (gridlines, axis text, hover marker). */
+ --chart-grid: rgba(245, 235, 210, 0.08);
+ --chart-axis: rgba(245, 235, 210, 0.55);
+ --chart-hover: rgba(245, 235, 210, 0.2);
+ --chart-empty: rgba(245, 235, 210, 0.05);
+
  --font-sans: var(--font-dm-sans), system-ui, -apple-system, "Segoe UI",
  sans-serif;
  --font-serif: var(--font-lora), Georgia, serif;
