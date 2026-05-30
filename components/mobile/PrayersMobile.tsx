@@ -10,6 +10,8 @@ import { MobileHeader } from "./MobileHeader";
 import { MobileHeroCard } from "./MobileHeroCard";
 import { MobileSectionLabel } from "./MobileSectionLabel";
 import { JesusPrayerCounter } from "./JesusPrayerCounter";
+import { DayClock } from "./DayClock";
+import { DiptychPreview } from "./DiptychPreview";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 
 type HeroMode = "morning" | "midday" | "evening";
@@ -21,64 +23,52 @@ function heroModeFor(d: Date): HeroMode {
   return "evening";
 }
 
+const TINT: Record<HeroMode, "gold" | "warm" | "deep"> = {
+  morning: "gold",
+  midday: "warm",
+  evening: "deep",
+};
+
 const HERO_COPY: Record<
   HeroMode,
-  {
-    tint: "gold" | "warm" | "deep";
-    eyebrow: string;
-    kicker: string;
-    headline: string;
-    body: string;
-    href: string;
-  }
+  { eyebrow: string; headline: string; body: string }
 > = {
   morning: {
-    tint: "gold",
-    eyebrow: "Right now",
-    kicker: "Begin the day",
-    headline: "Morning Rule",
-    body: "Stand for a few minutes before God before the day takes you. Sign of the Cross, Heavenly King, Trisagion, the Lord's Prayer, the Jesus Prayer, dismissal.",
-    href: "/prayers/morning",
+    eyebrow: "The day, ahead",
+    headline: "Stand for a few minutes before God before the day takes you.",
+    body: "Sign of the Cross, Heavenly King, Trisagion, the Lord's Prayer, the Jesus Prayer, dismissal.",
   },
   midday: {
-    tint: "warm",
-    eyebrow: "Right now",
-    kicker: "The prayer of the heart",
-    headline: "The Jesus Prayer",
-    body: "Pray it in the breath. The bringing-back is half the work. The counter below is a quiet aid; the work is yours.",
-    href: "/prayers/learning/jesus-prayer",
+    eyebrow: "The day, underway",
+    headline: "Pray it in the breath. The bringing-back is half the work.",
+    body: "The Jesus Prayer carries through the middle of the day.",
   },
   evening: {
-    tint: "deep",
-    eyebrow: "Right now",
-    kicker: "Lay the day down",
-    headline: "Evening Rule",
-    body: "Trisagion, a brief examination of the day, the Jesus Prayer, Into Thy hands, dismissal.",
-    href: "/prayers/evening",
+    eyebrow: "The day, laid down",
+    headline: "Trisagion, examination of the day, Into Thy hands.",
+    body: "Close the day with the same quiet you opened it with.",
   },
 };
 
 /**
- * Prayers mobile shell, reworked with a time-of-day hero plus a
- * Jesus Prayer counter widget immediately under it. The rule and
- * akathist cards then sit in the usual timeline below.
+ * Prayers mobile shell — "the rule of life."
  *
- * Hero tint flips by the hour:
- *   - before noon UTC: gold (morning rule)
- *   - noon to 19:00:    warm (midday, the Jesus Prayer)
- *   - 19:00 onward:     deep (evening rule)
- *
- * The Jesus Prayer counter is a small client island that persists to
- * localStorage; no server roundtrip and no sharing.
+ *   1. DayClock hero: a small SVG arc of the four canonical Hours +
+ *      Compline with the current local time pulsing in rubric red. The
+ *      kicker reads "Now: <Hour>" or "Coming up: <Hour>." Tint flips
+ *      gold/warm/deep by time of day.
+ *   2. JesusPrayerCounter (the user's primary one-tap action).
+ *   3. DiptychPreview: a horizontal row of names from the user's
+ *      diptychs, rendered only when local lists are non-empty.
+ *   4. "The daily rules" — calmer timeline of morning / evening / rope /
+ *      diptychs / Hours / akathists / learn, body tightened to one
+ *      sentence each.
  */
 export function PrayersMobile() {
   const today = startOfDayUtc(new Date());
   const fast = fastingStatus(today);
   const mode = heroModeFor(new Date());
-  const hero = HERO_COPY[mode];
-
-  const morningAccent = mode === "morning";
-  const eveningAccent = mode === "evening";
+  const copy = HERO_COPY[mode];
 
   return (
     <MobileShell
@@ -86,16 +76,23 @@ export function PrayersMobile() {
       eyebrow={formatLongDate(today)}
     >
       <MobileHeroCard
-        tint={hero.tint}
-        eyebrow={hero.eyebrow}
-        kicker={hero.kicker}
-        headline={hero.headline}
-        body={hero.body}
-        href={hero.href}
+        tint={TINT[mode]}
+        eyebrow={copy.eyebrow}
+        headline={<span>{copy.headline}</span>}
+        body={<span>{copy.body}</span>}
+        aside={
+          <div className="shrink-0">
+            <DayClock />
+          </div>
+        }
       />
 
       <div className="mt-5">
         <JesusPrayerCounter />
+      </div>
+
+      <div className="mt-5">
+        <DiptychPreview />
       </div>
 
       <div className="mt-7">
@@ -109,12 +106,8 @@ export function PrayersMobile() {
               href="/prayers/today"
               tint="warm"
             >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.55]">
-                {fast.label}. Date, saint, fast, the appointed readings, and
-                your diptychs in one screen.
-              </p>
-              <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
-                Open today &rarr;
+              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+                {fast.label}. Date, saint, readings, diptychs in one screen.
               </p>
             </MobileCard>,
             <MobileCard
@@ -122,14 +115,9 @@ export function PrayersMobile() {
               eyebrow="Morning rule"
               title="Begin the day with God"
               href="/prayers/morning"
-              tint={morningAccent ? "gold" : "default"}
             >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.55]">
-                Sign of the Cross, Heavenly King, Trisagion, the Lord&rsquo;s
-                Prayer, the Jesus Prayer, dismissal. About 8 minutes.
-              </p>
-              <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
-                Open the rule &rarr;
+              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+                Sign of the Cross through dismissal. About 8 minutes.
               </p>
             </MobileCard>,
             <MobileCard
@@ -137,14 +125,9 @@ export function PrayersMobile() {
               eyebrow="Evening rule"
               title="Lay the day down"
               href="/prayers/evening"
-              tint={eveningAccent ? "gold" : "default"}
             >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.55]">
-                Trisagion, examination of the day, the Jesus Prayer, Into
-                Thy hands, dismissal. About 8 minutes.
-              </p>
-              <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
-                Open the rule &rarr;
+              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+                Trisagion, examination, Into Thy hands. About 8 minutes.
               </p>
             </MobileCard>,
             <MobileCard
@@ -154,12 +137,8 @@ export function PrayersMobile() {
               href="/prayers/rope"
               tint="gold"
             >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.55]">
-                A digital komvoschini. 33, 50, or 100 knots. No streaks, no
-                noise.
-              </p>
-              <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
-                Open the rope &rarr;
+              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+                33, 50, or 100 knots. No streaks, no noise.
               </p>
             </MobileCard>,
             <MobileCard
@@ -168,12 +147,8 @@ export function PrayersMobile() {
               title="The names you carry"
               href="/prayers/personal"
             >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.55]">
-                Two lists, for the living and for the reposed. Namedays and
-                repose anniversaries surface on /today.
-              </p>
-              <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
-                Open the diptychs &rarr;
+              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+                Living and reposed.
               </p>
             </MobileCard>,
             <MobileCard
@@ -182,12 +157,8 @@ export function PrayersMobile() {
               title="Standing through the day"
               href="/prayers/hours"
             >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.55]">
-                First, Third, Sixth, Ninth, and Small Compline. Five short
-                prayers that sanctify the daylight.
-              </p>
-              <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
-                Open the Hours &rarr;
+              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+                First, Third, Sixth, Ninth, Compline.
               </p>
             </MobileCard>,
             <MobileCard
@@ -196,12 +167,8 @@ export function PrayersMobile() {
               title="The standing hymns"
               href="/prayers/akathists"
             >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.55]">
-                The Akathist to the Theotokos and others. Sung or read,
-                standing throughout.
-              </p>
-              <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
-                Open the akathists &rarr;
+              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+                The Akathist to the Theotokos and others.
               </p>
             </MobileCard>,
             <MobileCard
@@ -210,12 +177,8 @@ export function PrayersMobile() {
               title="Six short lessons"
               href="/prayers/learning"
             >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.55]">
-                What prayer is, the sign of the Cross, the Jesus Prayer, the
-                Trisagion prayers, the morning and evening rules.
-              </p>
-              <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
-                Open the lessons &rarr;
+              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+                The sign of the Cross, the Jesus Prayer, the rules.
               </p>
             </MobileCard>,
           ]}

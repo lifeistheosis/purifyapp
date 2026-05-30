@@ -1,25 +1,29 @@
 "use client";
 
-// You / Account mobile shell. Renders client-side so it can read
-// localStorage (rule rhythm, bookmark counts) and surface the signed-in
-// state from Supabase auth.
+// You / Account mobile shell — "the personal dashboard."
 //
-// Reworked with a profile-led hero card (avatar + display name +
-// member-since) and a 2x2 stat grid below, matching the Today / Bible /
-// Discover / Prayers vocabulary while giving /you its own colour
-// identity (violet tint).
+//   1. Violet profile hero (avatar + display name + member-since).
+//   2. 3-tile MobileStatGrid (Morning 14d / Evening 14d / Knots YTD).
+//      Bookmarks moved into the SavedPreview block below so the stat
+//      grid stays focused on the prayer life.
+//   3. RhythmHeatmap — 30 cells, one per day, lit when prayed.
+//   4. SavedPreview — three most-recent bookmarks with kind chips.
+//   5. SettingsList — iOS-style row list (Account, Notifications,
+//      Language, Privacy, Support, What's new, About, Sign out).
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { MobileShell } from "./MobileShell";
-import { MobileTimeline } from "./MobileTimeline";
 import { MobileCard } from "./MobileCard";
 import { MobileHeader } from "./MobileHeader";
 import { MobileHeroCard } from "./MobileHeroCard";
 import { MobileStatGrid } from "./MobileStatGrid";
 import { MobileSectionLabel } from "./MobileSectionLabel";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
+import { RhythmHeatmap } from "./RhythmHeatmap";
+import { SavedPreview } from "./SavedPreview";
+import { SettingsList, type SettingsItem } from "./SettingsList";
 import {
   readPrayedDates,
   readIntentions,
@@ -29,7 +33,12 @@ import {
 type AuthState =
   | { kind: "loading" }
   | { kind: "anon" }
-  | { kind: "signed-in"; email: string; displayName: string; joinedAt: string | null };
+  | {
+      kind: "signed-in";
+      email: string;
+      displayName: string;
+      joinedAt: string | null;
+    };
 
 function formatJoined(iso: string | null): string {
   if (!iso) return "";
@@ -49,13 +58,9 @@ export function YouMobile() {
   const [counts, setCounts] = useState({
     morningLast14: 0,
     eveningLast14: 0,
-    bookmarks: 0,
     intentions: 0,
     ropeKnotsYTD: 0,
   });
-  const [savedPreview, setSavedPreview] = useState<
-    { id: string; label?: string }[]
-  >([]);
 
   useEffect(() => {
     (async () => {
@@ -90,18 +95,6 @@ export function YouMobile() {
       const within = (d: string) => new Date(d + "T00:00:00") >= cutoff;
       const morningLast14 = readPrayedDates("morning").filter(within).length;
       const eveningLast14 = readPrayedDates("evening").filter(within).length;
-      let bookmarks = 0;
-      let preview: { id: string; label?: string }[] = [];
-      try {
-        const raw = localStorage.getItem("purify:bookmarks");
-        const parsed = raw ? JSON.parse(raw) : [];
-        if (Array.isArray(parsed)) {
-          bookmarks = parsed.length;
-          preview = parsed.slice(0, 3) as { id: string; label?: string }[];
-        }
-      } catch {
-        /* ignore */
-      }
       const intentions =
         readIntentions("living").length + readIntentions("departed").length;
       const yearStart = new Date(new Date().getFullYear(), 0, 1).getTime();
@@ -111,24 +104,20 @@ export function YouMobile() {
       setCounts({
         morningLast14,
         eveningLast14,
-        bookmarks,
         intentions,
         ropeKnotsYTD,
       });
-      setSavedPreview(preview);
     }
     recompute();
     function on() {
       recompute();
     }
     window.addEventListener("purify:prayer-completed", on);
-    window.addEventListener("purify:bookmark", on);
     window.addEventListener("purify:intentions", on);
     window.addEventListener("purify:rope", on);
     window.addEventListener("storage", on);
     return () => {
       window.removeEventListener("purify:prayer-completed", on);
-      window.removeEventListener("purify:bookmark", on);
       window.removeEventListener("purify:intentions", on);
       window.removeEventListener("purify:rope", on);
       window.removeEventListener("storage", on);
@@ -138,6 +127,60 @@ export function YouMobile() {
   const signedIn = auth.kind === "signed-in";
   const displayName = signedIn ? auth.displayName : "Local profile";
   const memberSince = signedIn ? formatJoined(auth.joinedAt) : "";
+
+  const settings: SettingsItem[] = [
+    {
+      label: signedIn ? "Account" : "Sign in",
+      href: signedIn ? "/account" : "/signin?next=/account",
+      hint: signedIn ? "Email, password, sessions, data export" : "Sync across devices (optional)",
+      icon: <Glyph kind="user" />,
+    },
+    {
+      label: "Diptychs",
+      href: "/prayers/personal",
+      hint: `${counts.intentions} names you carry`,
+      icon: <Glyph kind="halo" />,
+    },
+    {
+      label: "Notifications",
+      href: "/account/(signed)/data",
+      hint: "Prayer reminders, off by default",
+      icon: <Glyph kind="bell" />,
+    },
+    {
+      label: "Privacy",
+      href: "/privacy",
+      hint: "What we record and what we don't",
+      icon: <Glyph kind="lock" />,
+    },
+    {
+      label: "Support",
+      href: "/support",
+      hint: "Help keep the work going",
+      icon: <Glyph kind="heart" />,
+    },
+    {
+      label: "What's new",
+      href: "/whats-new",
+      hint: "Release notes",
+      icon: <Glyph kind="bolt" />,
+    },
+    {
+      label: "About",
+      href: "/about",
+      hint: "What Purify is, and why",
+      icon: <Glyph kind="cross" />,
+    },
+  ];
+
+  if (signedIn) {
+    settings.push({
+      label: "Sign out",
+      href: "/auth/signout",
+      destructive: true,
+      icon: <Glyph kind="signout" />,
+    });
+  }
 
   return (
     <MobileShell
@@ -166,13 +209,13 @@ export function YouMobile() {
         body={
           signedIn ? (
             <span>
-              Your bookmarks, highlights, prayer rhythm, and bumps are kept
-              with your account and synced across every device you sign in on.
+              Your bookmarks, highlights, prayer rhythm, and bumps stay with
+              your account, synced across every device you sign in on.
             </span>
           ) : auth.kind === "anon" ? (
             <span>
               Everything you save lives in this browser. Sign in to carry it
-              across devices &mdash; or keep it local; both paths are honoured.
+              across devices, or keep it local; both paths are honoured.
             </span>
           ) : null
         }
@@ -200,11 +243,6 @@ export function YouMobile() {
         <MobileStatGrid
           stats={[
             {
-              label: "Bookmarks",
-              value: counts.bookmarks,
-              href: "/saved",
-            },
-            {
               label: "Morning · 14d",
               value: counts.morningLast14,
               href: "/prayers/morning",
@@ -225,145 +263,109 @@ export function YouMobile() {
         />
       </div>
 
-      <div className="mt-7">
-        <MobileSectionLabel>Saved &amp; settings</MobileSectionLabel>
-        <MobileTimeline>
-          {[
-            <MobileCard
-              key="saved"
-              eyebrow={`Saved · ${counts.bookmarks}`}
-              title="Verses, chapters, writing sections"
-              href="/saved"
-            >
-              {savedPreview.length > 0 ? (
-                <ul className="mt-2 space-y-1">
-                  {savedPreview.map((b) => (
-                    <li
-                      key={b.id}
-                      className="font-sans text-[13px] text-paper/75 truncate"
-                    >
-                      {b.label ?? "Bookmark"}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="mt-2 font-sans text-[13.5px] text-paper/55 italic">
-                  Nothing saved yet. Tap the heart on any verse to bookmark it.
-                </p>
-              )}
-              <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
-                Open saved &rarr;
-              </p>
-            </MobileCard>,
-            <MobileCard
-              key="diptychs"
-              eyebrow="Diptychs"
-              title={`${counts.intentions} names`}
-              href="/prayers/personal"
-            >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.55]">
-                The people, living and reposed, you carry through the rule.
-              </p>
-              <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
-                Open diptychs &rarr;
-              </p>
-            </MobileCard>,
-            <MobileCard
-              key="account"
-              eyebrow={signedIn ? "Account" : "Sign in"}
-              title={
-                signedIn ? "Manage your account" : "Sync across devices"
-              }
-              href={signedIn ? "/account" : "/signin?next=/account"}
-            >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.55]">
-                {signedIn
-                  ? "Email, password, sessions, data export, sign out."
-                  : "Optional. Local-first still works without an account."}
-              </p>
-              <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
-                Open account &rarr;
-              </p>
-            </MobileCard>,
-            <MobileCard
-              key="preferences"
-              eyebrow="Preferences"
-              title="Font, calendar style, interlinear"
-              href="/account#preferences"
-            >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.55]">
-                Reader preferences carry across the Bible and the saint
-                writings.
-              </p>
-              <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
-                Open preferences &rarr;
-              </p>
-            </MobileCard>,
-          ]}
-        </MobileTimeline>
+      <div className="mt-5">
+        <RhythmHeatmap />
+      </div>
+
+      <div className="mt-5">
+        <SavedPreview />
       </div>
 
       <div className="mt-7">
-        <MobileSectionLabel>The project</MobileSectionLabel>
-        <MobileTimeline>
-          {[
-            <MobileCard
-              key="support"
-              eyebrow="Support"
-              title="Help keep the work going"
-              href="/support"
-              tint="gold"
-            >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.55]">
-                The core stays free. Donations cover hosting, licensing, and
-                iconographer commissions.
-              </p>
-              <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
-                Open support &rarr;
-              </p>
-            </MobileCard>,
-            <MobileCard
-              key="whats-new"
-              eyebrow="What's new"
-              title="Release notes"
-              href="/whats-new"
-            >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.55]">
-                Patch notes from the Purify team.
-              </p>
-              <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
-                Open release notes &rarr;
-              </p>
-            </MobileCard>,
-            <MobileCard
-              key="about"
-              eyebrow="About"
-              title="What Purify is, and why"
-              href="/about"
-            >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.55]">
-                One quiet home for the Orthodox life between Liturgies.
-              </p>
-              <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
-                Open about &rarr;
-              </p>
-            </MobileCard>,
-            <MobileCard
-              key="privacy"
-              eyebrow="Privacy"
-              title="What we record and what we don't"
-              href="/privacy"
-            >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.55]">
-                No third-party trackers, no ads, no behavioural profile.
-              </p>
-              <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
-                Open privacy &rarr;
-              </p>
-            </MobileCard>,
-          ]}
-        </MobileTimeline>
+        <MobileSectionLabel>Settings</MobileSectionLabel>
+        <SettingsList items={settings} />
+      </div>
+
+      <div className="mt-7">
+        <MobileCard
+          eyebrow="Diptychs"
+          title="The names you carry"
+          href="/prayers/personal"
+          tint="gold"
+        >
+          <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+            {counts.intentions === 0
+              ? "Add the people you pray for, living and reposed."
+              : `${counts.intentions} names. Anniversaries and namedays surface on /prayers/today.`}
+          </p>
+        </MobileCard>
       </div>
     </MobileShell>
   );
+}
+
+// Small inline icon set so SettingsList rows have a left affordance.
+function Glyph({
+  kind,
+}: {
+  kind: "user" | "halo" | "bell" | "lock" | "heart" | "bolt" | "cross" | "signout";
+}) {
+  const props = {
+    width: 14,
+    height: 14,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.8,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    "aria-hidden": true,
+  };
+  switch (kind) {
+    case "user":
+      return (
+        <svg {...props}>
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      );
+    case "halo":
+      return (
+        <svg {...props}>
+          <circle cx="12" cy="12" r="3" />
+          <circle cx="12" cy="12" r="9" />
+        </svg>
+      );
+    case "bell":
+      return (
+        <svg {...props}>
+          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+        </svg>
+      );
+    case "lock":
+      return (
+        <svg {...props}>
+          <rect x="3" y="11" width="18" height="11" rx="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+      );
+    case "heart":
+      return (
+        <svg {...props}>
+          <path d="M12 21s-7-4.35-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.65-9.5 9-9.5 9z" />
+        </svg>
+      );
+    case "bolt":
+      return (
+        <svg {...props}>
+          <path d="M13 2 3 14h8l-1 8 10-12h-8z" />
+        </svg>
+      );
+    case "cross":
+      return (
+        <svg {...props}>
+          <path d="M12 3v18" />
+          <path d="M5 8h14" />
+        </svg>
+      );
+    case "signout":
+      return (
+        <svg {...props}>
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <path d="m16 17 5-5-5-5" />
+          <path d="M21 12H9" />
+        </svg>
+      );
+  }
 }

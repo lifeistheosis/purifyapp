@@ -15,9 +15,17 @@ type Stat = {
  * The "accent" variant tints the number rubric-red so the streak or
  * the most actionable stat reads from across the screen.
  */
-export function MobileStatGrid({ stats }: { stats: Stat[] }) {
+export function MobileStatGrid({
+  stats,
+  cols = 2,
+}: {
+  stats: Stat[];
+  cols?: 2 | 3 | 4;
+}) {
+  const colClass =
+    cols === 3 ? "grid-cols-3" : cols === 4 ? "grid-cols-4" : "grid-cols-2";
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className={"grid gap-3 " + colClass}>
       {stats.map((s, i) => {
         const inner = (
           <>
