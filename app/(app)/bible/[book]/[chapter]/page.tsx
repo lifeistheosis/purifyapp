@@ -181,13 +181,14 @@ export default async function BibleChapterPage({
  {showInterlinear && <InterlinearToggle />}
  </div>
  </div>
- {/* Row 2, mobile only: Interlinear pill (NT) on the left, gear on
- the right. Un-buries the Interlinear toggle from the gear menu. */}
- <div className="md:hidden mb-4 flex items-center gap-3">
+ {/* Row 2, mobile only: Interlinear pill (NT) + Reader chip sit as a
+ pair at the start of the row, matching the Translation + Book
+ cluster above. Previously the Reader chip floated to the far right
+ via ml-auto, which read as "misplaced" against the otherwise
+ left-aligned chips. */}
+ <div className="md:hidden mb-4 flex items-center gap-3 flex-wrap">
  {showInterlinear && <InterlinearToggle />}
- <div className="ml-auto">
  <ReaderSettingsMenu showInterlinear={showInterlinear} />
- </div>
  </div>
  <div className="mb-6">
  <BibleSearch />
