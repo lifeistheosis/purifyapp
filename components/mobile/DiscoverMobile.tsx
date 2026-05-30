@@ -17,7 +17,16 @@ import { MobileSectionLabel } from "./MobileSectionLabel";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { DayBadge } from "./DayBadge";
 import { SaintStrip } from "./SaintStrip";
-import { BodyGrid, type BodyTile } from "./BodyGrid";
+import { DiscoverIndex, type DiscoverEntry } from "./DiscoverIndex";
+import { Halo } from "@/components/ui/icons/Halo";
+import { Cross } from "@/components/ui/icons/Cross";
+import { Lampada } from "@/components/ui/icons/Lampada";
+import { Octogram } from "@/components/ui/icons/Octogram";
+import { Codex } from "@/components/ui/icons/Codex";
+import { Wheat } from "@/components/ui/icons/Wheat";
+import { Grapes } from "@/components/ui/icons/Grapes";
+import { getServerLocale } from "@/lib/i18n/server";
+import { getMessages, t } from "@/lib/i18n";
 
 function dayOfYearUtc(d: Date): number {
   const start = Date.UTC(d.getUTCFullYear(), 0, 0);
@@ -34,16 +43,21 @@ function firstSentence(s: string): string {
  * Discover mobile shell — "the menologion."
  *
  *   1. Deep-slate hero with the saint icon + DayBadge as `aside`.
- *   2. SaintStrip — horizontal scroll of the next seven days' headline
- *      saints.
- *   3. Featured today (topic + council), two parchment-tinted cards.
- *   4. BodyGrid — 2×2 grid of the four bodies. No long timeline.
+ *   2. The library — a menologion list of every library destination
+ *      (saints, councils, calendar, topics, daily readings, psalter,
+ *      patristic). The page's centerpiece.
+ *   3. SaintStrip — horizontal scroll of the next seven days' saints.
+ *   4. Featured today (topic + council), two parchment-tinted cards.
+ *   5. Closing colophon.
  */
 export async function DiscoverMobile() {
   const today = startOfDayUtc(new Date());
   const commemorations = commemorationsOn(today);
   const fast = fastingStatus(today);
   const pascha = paschaInfo(today);
+
+  const locale = await getServerLocale();
+  const m = getMessages(locale);
 
   const headline =
     commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
@@ -58,30 +72,57 @@ export async function DiscoverMobile() {
     ? COUNCILS[dayOfYearUtc(today) % COUNCILS.length]
     : null;
 
-  const saintTotal = SAINTS.length;
-  const tiles: BodyTile[] = [
+  // The library index. Order reads like a menologion table of contents:
+  // people first (saints, councils), then the year, the topical threads,
+  // the daily readings, the Psalter, and the patristic commentary that
+  // ties it together. Saints + Calendar carry a live blurb; the rest reuse
+  // the shared `discover.tile.*` strings.
+  const entries: DiscoverEntry[] = [
     {
-      label: "The Saints",
-      blurb: `${saintTotal} indexed lives.`,
+      label: t(m, "discover.tile.saints"),
       href: "/saints",
-      accent: true,
+      blurb: `${SAINTS.length} indexed lives, with their works to read in full.`,
+      Icon: Halo,
     },
     {
-      label: "The Calendar",
-      blurb: `${fast.label}. ${
-        pascha.daysAway > 0 ? `Pascha in ${pascha.daysAway} days.` : pascha.label
-      }`,
-      href: "/calendar",
-    },
-    {
-      label: "The Councils",
-      blurb: "The Seven Ecumenical Councils, in the Fathers' own words.",
+      label: t(m, "discover.tile.councils"),
       href: "/councils",
+      blurb: t(m, "discover.tile.councilsBlurb"),
+      Icon: Cross,
     },
     {
-      label: "Topics",
-      blurb: "One thread, traced across the Fathers side by side.",
+      label: t(m, "discover.tile.calendar"),
+      href: "/calendar",
+      blurb: `${fast.label}. ${
+        pascha.daysAway > 0
+          ? `Pascha in ${pascha.daysAway} days.`
+          : pascha.label
+      }`,
+      Icon: Lampada,
+    },
+    {
+      label: t(m, "discover.tile.topics"),
       href: "/topics",
+      blurb: t(m, "discover.tile.topicsBlurb"),
+      Icon: Octogram,
+    },
+    {
+      label: t(m, "discover.tile.dailyReadings"),
+      href: "/prayers/today",
+      blurb: t(m, "discover.tile.dailyReadingsBlurb"),
+      Icon: Codex,
+    },
+    {
+      label: t(m, "discover.tile.psalter"),
+      href: "/bible/psalms/1",
+      blurb: t(m, "discover.tile.psalterBlurb"),
+      Icon: Wheat,
+    },
+    {
+      label: t(m, "discover.tile.patristic"),
+      href: "/bible/john/1",
+      blurb: t(m, "discover.tile.patristicBlurb"),
+      Icon: Grapes,
     },
   ];
 
@@ -114,7 +155,12 @@ export async function DiscoverMobile() {
         href={headlineSaint ? `/saints/${headlineSaint.slug}` : "/saints"}
       />
 
-      <div className="mt-6">
+      <div className="mt-7">
+        <MobileSectionLabel>The library</MobileSectionLabel>
+        <DiscoverIndex entries={entries} />
+      </div>
+
+      <div className="mt-7">
         <SaintStrip />
       </div>
 
@@ -156,10 +202,11 @@ export async function DiscoverMobile() {
         </div>
       )}
 
-      <div className="mt-7">
-        <MobileSectionLabel>The four bodies</MobileSectionLabel>
-        <BodyGrid tiles={tiles} />
-      </div>
+      <p className="mt-10 text-center font-display-serif italic text-[13.5px] text-paper/45 leading-[1.55]">
+        Through the prayers of our holy Fathers,
+        <br />
+        Lord Jesus Christ our God, have mercy on us.
+      </p>
     </MobileShell>
   );
 }
