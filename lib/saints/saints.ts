@@ -2862,6 +2862,126 @@ export const SAINTS: Saint[] = [
  },
  ],
  },
+ {
+ slug: "justin-martyr",
+ byname: "The Philosopher",
+ name: "St. Justin Martyr",
+ epithet: "Philosopher and Martyr · Apologist of the Second Century",
+ born: "c. 100 (Flavia Neapolis, Samaria)",
+ reposed: "c. 165 (Rome)",
+ feastDays: ["June 1"],
+ see: "Rome (martyred)",
+ shortBio:
+ "The first great Christian philosopher, a convert who kept the philosopher's cloak and gave his life at Rome, leaving the earliest full defense of the faith and the oldest description we possess of Baptism and the Eucharist.",
+ life: [
+ "Justin was born around the year 100 at Flavia Neapolis in Samaria, the ancient Shechem and the modern Nablus, to a pagan Greek family. From his youth he was seized by the longing to know God, and he passed in turn through the schools of the philosophers, the Stoics, the Peripatetics, the Pythagoreans, and at last the Platonists, hoping by reason to come to the vision of the divine.",
+ "His conversion he tells in his own words in the Dialogue with Trypho. Walking one day by the sea, he met an old man who questioned his confidence in the philosophers and pointed him beyond them to the Hebrew prophets, who had spoken by the Spirit of God and foretold Christ. The old man bade him pray that the gates of light be opened to him. Reading the Prophets, and seeing the steadfastness of the Christians under persecution, Justin found the philosophy he had long sought, and was baptized.",
+ "He did not lay aside the philosopher's cloak but wore it still as a Christian, holding that Christ is the Word, the Logos, in whom all reason shares, so that whatever truth the Greeks had spoken belonged already to Christ. He travelled and taught, and settled at last in Rome, where he opened a school and disputed publicly with pagans and heretics, among them Crescens the Cynic, whose enmity, the tradition says, brought about his death.",
+ "From Rome he addressed his two Apologies, the first to the emperor Antoninus Pius and the Roman Senate around the year 155, the second occasioned by the unjust execution of Christians under the prefect Urbicus. In them he asked only that Christians be judged by their deeds and not condemned for the name alone, and he set down for all time the shape of Christian worship and the meaning of the Mysteries (the sacraments).",
+ "Denounced as a Christian, Justin was brought with six companions before Rusticus, the prefect of Rome, around the year 165. He confessed Christ without wavering, refused to sacrifice to the gods, and was scourged and beheaded. The record of his trial, the Acts of Justin, survives from the hand of those who witnessed it. The Church honours him as Justin the Philosopher and Martyr, and keeps his memory on the first of June.",
+ ],
+ works: [
+ {
+ slug: "first-apology",
+ title: "The First Apology",
+ subtitle: "To the Emperor Antoninus Pius, in defense of the Christians",
+ year: "c. 155",
+ blurb:
+ "Justin's open letter to the emperor and the Roman Senate: a plea that Christians be tried for their deeds and not their name, an answer to the charges of atheism and immorality, and the earliest full account we possess of how Christians baptize and celebrate the Eucharist.",
+ topics: ["Apologetics", "Eucharist", "Baptism", "Worship", "The Logos"],
+ },
+ {
+ slug: "second-apology",
+ title: "The Second Apology",
+ subtitle: "To the Roman Senate, on the punishment of Christians",
+ year: "c. 155",
+ blurb:
+ "A shorter appeal, written after three Christians were put to death at Rome, pressing the injustice of punishing the name alone and teaching that the seed of the Word is sown in all people, so that whatever was rightly said by anyone belongs to Christians.",
+ topics: ["Apologetics", "Martyrdom", "Providence", "The Logos", "Reason"],
+ },
+ {
+ slug: "dialogue-with-trypho",
+ title: "Dialogue with Trypho the Jew",
+ subtitle: "The longest surviving second-century dialogue between a Christian and a Jew",
+ year: "c. 160",
+ blurb:
+ "Justin's record of a two-day conversation at Ephesus with Trypho, a learned Jew: his own road through philosophy to Christ, and a long argument from the Hebrew Scriptures that Jesus is the promised Messiah, that a new covenant has been given, and that the Church is the true Israel.",
+ topics: ["Scripture", "Prophecy", "Christ", "Covenant", "The Church"],
+ },
+ ],
+ quotes: [
+ {
+ text: "But straightway a flame was kindled in my soul; and a love of the prophets, and of those men who are friends of Christ, possessed me; and whilst revolving his words in my mind, I found this philosophy alone to be safe and profitable.",
+ source: "Dialogue with Trypho, Chapter 8, on his conversion",
+ href: "/saints/justin-martyr/dialogue-with-trypho",
+ },
+ {
+ text: "Whatever things were rightly said among all men, are the property of us Christians.",
+ source: "The Second Apology, Chapter 13",
+ href: "/saints/justin-martyr/second-apology",
+ },
+ ],
+ },
+ {
+ slug: "isaac-the-syrian",
+ byname: "of Nineveh",
+ name: "St. Isaac the Syrian",
+ epithet: "Bishop of Nineveh · Hermit of the Mountain",
+ born: "7th c. (Beth Qatraye)",
+ reposed: "Late 7th c. (Mesopotamia)",
+ feastDays: ["January 28"],
+ see: "Nineveh",
+ shortBio:
+ "The seventh-century hermit-bishop whose homilies on repentance, stillness, and the boundless mercy of God became one of the most beloved guides to the inner life across the whole Orthodox world.",
+ life: [
+ "Isaac was born in the seventh century in Beth Qatraye, the region along the western shore of the Persian Gulf, near the modern Qatar. From his youth he embraced the monastic life, devoting himself to the reading of Scripture, to silence, and to unceasing prayer, until his holiness became widely known.",
+ "He was consecrated bishop of Nineveh, in the land of the Assyrians, by the Catholicos George. But after only five months he asked to lay down the office and return to the solitude he loved. He withdrew to the wilderness of the mountain of Matout, and afterward to the monastery of Rabban Shabur in the mountains of Khuzistan, where he gave himself wholly to ascetic struggle and the contemplation of God.",
+ "In his old age, the tradition relates, he lost his sight from his constant reading and weeping over the Scriptures, and he dictated his teachings to his disciples. He reposed in great old age and was buried at the monastery of Rabban Shabur. His writings, gathered as the Ascetical Homilies, treat of repentance and compunction, of tears and stillness, of humility, and above all of the mercy of God, which he calls a heart burning for all creation.",
+ "Isaac lived and served within the Church of the East, beyond the eastern frontier of the Roman empire, in a body separated from the imperial Church by the controversies of the fifth century. Yet his ascetical writings, free of those disputes and wholly given to the life of prayer, were received with love throughout the Orthodox Church. Translated into Greek at the Lavra of St. Sabas, they passed into Slavonic and into every Orthodox land, and have been treasured by the monks of Athos, by the elders of Optina, and by countless faithful, as among the surest guides to the heart's return to God.",
+ "The Greek and Slavic Churches keep his memory on the twenty-eighth of January, with St. Ephraim the Syrian, honouring the two great fathers of the Syriac East together.",
+ ],
+ works: [],
+ },
+ {
+ slug: "mark-of-ephesus",
+ byname: "Mark Eugenikos",
+ name: "St. Mark of Ephesus",
+ epithet: "Metropolitan of Ephesus · Pillar of Orthodoxy",
+ born: "1392 (Constantinople)",
+ reposed: "June 23, 1444 (Constantinople)",
+ feastDays: ["January 19"],
+ see: "Ephesus",
+ shortBio:
+ "The metropolitan who stood alone against the union of Florence, refusing to sign away the Orthodox faith on the Filioque and the other points dividing East and West, and so was honoured by the Church as the Pillar of Orthodoxy.",
+ life: [
+ "Mark was born in Constantinople in 1392 and baptized Manuel, the son of a deacon of the Great Church. He received the finest education the imperial city could give, studying rhetoric and philosophy, and in time opened his own school. Drawn to the monastic life, he was tonsured with the name Mark and withdrew to a monastery, giving himself to prayer, fasting, and the study of the Fathers.",
+ "Ordained priest and known for his learning and holiness, he was raised, against his own wish, to be Metropolitan of Ephesus. When the emperor John VIII and the Patriarch resolved to seek union with the Church of Rome, hoping for aid against the Turks who pressed upon a dying Constantinople, Mark was chosen as one of the chief spokesmen for the Orthodox at the council that gathered in Italy.",
+ "At the Council of Ferrara-Florence, in the years 1438 and 1439, Mark contended for the faith of the Fathers against the Latin teaching. He defended the Creed against the addition of the Filioque, the clause that the Holy Spirit proceeds from the Father and the Son, which the East had never confessed; and he opposed the Latin doctrine of purgatory, the use of unleavened bread in the Eucharist, and the claims of the papacy over the whole Church.",
+ "When the decree of union was drawn up, every other Orthodox bishop present subscribed it, some from conviction, many from weariness, fear, or the emperor's pressure. Mark alone refused his signature. On hearing that Mark had not signed, the pope is said to have declared, We have accomplished nothing. Returning home, Mark became the rallying point of all who rejected the union; he would not concelebrate with those who had signed, and the faithful of the City looked to him as the guardian of Orthodoxy.",
+ "Worn by his labours and by exile, Mark reposed on the twenty-third of June, 1444, at the age of fifty-two, charging his disciple George Scholarios, afterward Patriarch Gennadius, to defend the faith in his stead. Within a few years the union collapsed utterly, and the Church glorified Mark of Ephesus as a saint and confessor, the Pillar and Defender of Orthodoxy, keeping his memory on the nineteenth of January.",
+ ],
+ works: [],
+ },
+ {
+ slug: "nikon-metanoeite",
+ byname: "Metanoeite (Repent)",
+ name: "St. Nikon the Metanoeite",
+ epithet: "Preacher of Repentance · Enlightener of Crete and Sparta",
+ born: "c. 930 (Pontus)",
+ reposed: "c. 998 (Lacedaemon)",
+ feastDays: ["November 26"],
+ see: "Lacedaemon (Sparta)",
+ shortBio:
+ "The tenth-century wandering preacher whose single cry, Metanoeite, Repent, called whole regions back to Christ, from the mountains of Pontus to newly delivered Crete and the cities of the Peloponnese.",
+ life: [
+ "Nikon was born about the year 930 in Pontus, in the region of Polemonion on the southern shore of the Black Sea, the son of a wealthy landowner. While still young he fled his father's house and his inheritance, longing for God alone, and entered the monastery of Chrysopetro, the Golden Rock, on the border of Pontus and Paphlagonia, where he was tonsured and trained in the ascetic life.",
+ "After twelve years his abbot sent him out to preach repentance to the world. He went through the towns and villages of Asia Minor crying the one word that became his name, Metanoeite, Repent, and at that word multitudes turned from their sins. He passed through Paphlagonia, Pontus, and Armenia, calling all to amendment of life and to the mercy of God.",
+ "When the general Nikephoros Phokas recovered Crete from the Arabs in the year 961, after long generations of Saracen rule, Nikon crossed to the island and preached there for some seven years, baptizing, instructing, and restoring the Christian faith to a people who had nearly lost it. From Crete he went on to the Peloponnese, to Euboea and the islands, and at last to Lacedaemon, the old Sparta, where he settled.",
+ "At Lacedaemon he built a church of the Saviour's Transfiguration and gathered disciples about him. The tradition records many wonders worked through him, healings of the sick and the deliverance of the city from a deadly plague when the people heeded his call to repentance. He guided the city as a father, rebuking the powerful and comforting the lowly, until his repose around the year 998.",
+ "His Life was written by Gregory, abbot of the monastery Nikon founded at Sparta, and from it the Church has kept his memory. He is honoured as Nikon the Metanoeite, the Preacher of Repentance, on the twenty-sixth of November.",
+ ],
+ works: [],
+ },
 ];
 
 export function getSaint(slug: string): Saint | null {

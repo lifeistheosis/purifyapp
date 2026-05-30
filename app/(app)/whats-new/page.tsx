@@ -23,6 +23,24 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v7.5",
+ kind: "Four saints: Justin the Philosopher in full, plus Mark of Ephesus, Isaac the Syrian, and Nikon",
+ date: "May 30, 2026",
+ blurb:
+ "A reader on the Discord asked for his patron, St. Mark of Ephesus, and recommended four more corpora alongside him: St. Isaac the Syrian's Ascetical Homilies, St. Justin Martyr's two Apologies and his Dialogue with Trypho, and the Life of St. Nikon the Metanoeite. We took the request the way the whole saints library is built, by the one hard rule that a saint's own words ship only as verbatim public-domain text, never paraphrased, never modernized, never filled in by a model. That rule split the request cleanly. St. Justin Martyr ships in full: a new profile and all three of his works, the First Apology, the Second Apology, and the Dialogue with Trypho the Jew, taken word for word from the Roberts-Donaldson translation in the Ante-Nicene Fathers (1885) by way of Wikisource. St. Mark of Ephesus, St. Isaac the Syrian, and St. Nikon the Metanoeite each get a full profile and a hagiographic life now, with their writings held back honestly until a clean public-domain English text exists, rather than shipping a paraphrase or a corrupted scan. Justin is the earliest voice in the library to describe Baptism and the Eucharist as the Church already practiced them by the year 155, so this is a real deepening of the second-century shelf.",
+ items: [
+  "New saint: St. Justin Martyr, the Philosopher, with a five-paragraph life that follows the convert-philosopher through the schools he passed through, the old man by the sea, his school at Rome, and his martyrdom under the prefect Rusticus. Two quotes drawn verbatim from the source text: the flame kindled in his soul from the Dialogue, and 'Whatever things were rightly said among all men, are the property of us Christians' from the Second Apology.",
+  "New hosted work: The First Apology, all 68 chapters, addressed to the emperor Antoninus Pius around the year 155. Includes the earliest full description we possess of the Eucharist and of Baptism, set under their own chapter headings, with a one-line editorial framing on the opening address and the verbatim Greek (Εὐχαριστία) preserved where the translator left it.",
+  "New hosted work: The Second Apology, all 15 chapters, the shorter appeal to the Roman Senate occasioned by the execution of three Christians under the prefect Urbicus. This is where Justin teaches that the whole race shares in the seed of the Word, the Logos, so that whatever was rightly said by anyone belongs to Christians.",
+  "New hosted work: The Dialogue with Trypho the Jew, all 142 chapters, the longest surviving second-century conversation between a Christian and a Jew, set at Ephesus over two days. Justin recounts his own search through the schools of philosophy and argues from the Hebrew Scriptures that Jesus is the Christ and that the Church is the true Israel.",
+  "New saint: St. Mark of Ephesus (Mark Eugenikos), Pillar of Orthodoxy, with a life covering his learning, his elevation to Ephesus, the Council of Ferrara-Florence of 1438 to 1439, his lone refusal to sign the Union, and the Church's glorification of him. His works, the Encyclical, the Confession of Faith, and the writings against the Filioque, are deferred: the standard English (Pogodin) is under copyright, and no clean public-domain English translation exists yet. The profile renders without a works browser until one does.",
+  "New saint: St. Isaac the Syrian, of Nineveh, hermit and bishop, with a life that notes honestly and briefly that he lived in the Church of the East yet his ascetical writings were received and loved throughout the Orthodox Church. His Ascetical Homilies are deferred: the only public-domain English (Wensinck, 1923) survives as corrupted OCR that could not be made exact without inventing corrections, which the verbatim rule forbids. The work ships the day a clean text surfaces.",
+  "New saint: St. Nikon the Metanoeite, the preacher of repentance who carried the cry 'Metanoeite' through Asia Minor, newly reconquered Crete, and the Peloponnese, settling at last in Lacedaemon. The Life written by the abbot Gregory is deferred: its only English (Sullivan, 1987) is under copyright.",
+  "Editorial note on the deferrals: three of the four corpora are blocked by the absence of a clean public-domain English source, not by effort. Each profile says so plainly. The honest empty shelf is the point, not a paraphrase dressed up as the saint's own voice.",
+  "Footer + home hero chip + /whats-new chip step to v7.5.",
+ ],
+ },
+ {
  version: "v7.0",
  kind: "The prayer rope, the diptychs, the Hours, the akathists",
  date: "May 30, 2026",
@@ -894,7 +912,7 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
- v6.9 &middot; Deutsch, the site speaks German now
+ v7.5 &middot; Four saints, Justin the Philosopher in full
  </p>
  </div>
 
@@ -904,7 +922,7 @@ export default async function WhatsNewPage() {
  </h1>
  ) : (
  <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Tell us which saints to translate next. And a quieter, sturdier app underneath.
+ St. Justin Martyr, in full. And three more saints you asked for.
  </h1>
  )}
 
@@ -1033,34 +1051,45 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- v6.5 is a big release with two pieces. The first is the{" "}
- <Link href="/saints" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Saint Bump system</Link>:
- every saint profile now has a one-tap &ldquo;Bump&rdquo; button.
- Bumping a saint tells the editorial team{" "}
- <em className="text-gold">I want more of this saint&rsquo;s works translated and published.</em>{" "}
- We translate corpora in the order readers ask for them, so this
- turns our queue into something public and transparent: you can
- see the count, you can change your vote any time, and the saints
- whose corpus we have already shipped end-to-end retire the button
- to a gold &ldquo;Fully published&rdquo; badge. Nothing is theater here. The
- next time we sit down to translate, we will look at which saints
- have the most bumps.
+ v7.5 answers a request that came in on the Discord. A reader
+ asked for his patron,{" "}
+ <Link href="/saints/mark-of-ephesus" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">St. Mark of Ephesus</Link>,
+ and recommended four more saints alongside him. We took it the
+ way the whole saints library is built, by one hard rule: a
+ saint&rsquo;s own words ship only as verbatim public-domain text,
+ never paraphrased, never modernized, never filled in by a model.
+ That rule decided how much of the request we could ship today.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- The second piece is a comprehensive security pass. Every public
- API now sits behind atomic, Supabase-backed rate limits that hold
- across our server fleet. Every page ships with HSTS, a strict
- Content-Security-Policy, X-Frame-Options DENY, a locked-down
- Permissions-Policy, and the rest of the modern header set. Every
- route body that takes user input is validated with Zod before it
- touches the database. Admin debug routes are invisible unless we
- explicitly turn them on. A new SECURITY.md at the repo root names
- how to report a vulnerability and what we promise in return.
- Purify now scores A+ on Mozilla Observatory and securityheaders.com,
- and `npm audit` runs clean for production dependencies. None of
- this changes how the site reads or feels; it just means the perimeter
- is finally as serious as the content inside it.
+ <Link href="/saints/justin-martyr" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">St. Justin Martyr</Link>,
+ the Philosopher, ships in full: a new profile and all three of
+ his works, the{" "}
+ <Link href="/saints/justin-martyr/first-apology" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">First Apology</Link>,
+ the{" "}
+ <Link href="/saints/justin-martyr/second-apology" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Second Apology</Link>,
+ and the{" "}
+ <Link href="/saints/justin-martyr/dialogue-with-trypho" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Dialogue with Trypho the Jew</Link>,
+ taken word for word from the Roberts-Donaldson translation in the
+ Ante-Nicene Fathers of 1885. Justin is the earliest voice in this
+ library to describe Baptism and the Eucharist as the Church
+ already practiced them by the year 155, so the whole
+ second-century shelf gets deeper with him.
+ </p>
+
+ <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ St. Mark of Ephesus,{" "}
+ <Link href="/saints/isaac-the-syrian" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">St. Isaac the Syrian</Link>,
+ and{" "}
+ <Link href="/saints/nikon-metanoeite" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">St. Nikon the Metanoeite</Link>{" "}
+ each get a full profile and a life now, with their writings held
+ back honestly until a clean public-domain English text exists.
+ Mark&rsquo;s standard English is under copyright, Isaac&rsquo;s
+ one public-domain translation survives only as a corrupted scan,
+ and Nikon&rsquo;s Life has no public-domain English at all. We
+ would rather show you an honest empty shelf than dress a
+ paraphrase up as the saint&rsquo;s own voice. Each profile says so
+ plainly, and the works land the day a real text surfaces.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
@@ -1083,8 +1112,8 @@ export default async function WhatsNewPage() {
  <div className="mt-16 pt-10 border-t border-paper/10">
  <p className="font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
  {isDe
- ? "Danke, daß du durch sechs Major-Versionen bei uns geblieben bist. Ehre sei Gott für alles."
- : "Thank you for staying with us through six majors. Glory to God for all things."}
+ ? "Danke, daß du durch sieben Major-Versionen bei uns geblieben bist. Ehre sei Gott für alles."
+ : "Thank you for staying with us through seven majors. Glory to God for all things."}
  </p>
 
  <p

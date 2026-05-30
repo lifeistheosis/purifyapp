@@ -185,8 +185,8 @@ export default async function Home() {
  {isDe ? "Neu" : "New"}
  </span>
  <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
- <span className="sm:hidden">v7.0 · The prayer rope</span>
- <span className="hidden sm:inline">v7.0 · The prayer rope, the diptychs, the Hours, the akathists</span>
+ <span className="sm:hidden">v7.5 · St. Justin Martyr</span>
+ <span className="hidden sm:inline">v7.5 · St. Justin Martyr in full, plus three more saints</span>
  </span>
  <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
  →

@@ -48,6 +48,10 @@
  --font-serif: var(--font-lora), Georgia, serif;
  /* Available as `font-display-serif` for big ornate headings if needed. */
  --font-display-serif: var(--font-dm-serif), Georgia, serif;
+ /* Standard bold heading font: Lora, the verse-of-the-day serif. Applied
+    to all headings sitewide via the unlayered h1-h6 rule below, and
+    available as the `font-heading` utility. */
+ --font-heading: var(--font-lora), Georgia, serif;
 
  --text-h1: 56px;
  --text-h1--line-height: 1.08;
@@ -148,6 +152,20 @@
  -webkit-font-smoothing: antialiased;
  -moz-osx-font-smoothing: grayscale;
  }
+}
+
+/* Standard bold heading font, sitewide. Lora (the verse-of-the-day serif).
+   Unlayered on purpose: unlayered declarations beat anything in @layer
+   utilities, so this overrides per-element `font-sans` / `font-display-serif`
+   utility classes without having to edit every heading. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+ font-family: var(--font-heading);
+ font-weight: 700;
 }
 
 *:focus-visible {
