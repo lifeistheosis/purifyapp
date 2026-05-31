@@ -335,14 +335,17 @@ export const COUNCILS: Council[] = [
  role: "Patriarch of Alexandria; presider of the Council; author of the Second and Third Letters to Nestorius and the Twelve Anathemas. The principal theological voice of the Council from its first session.",
  },
  {
+ slug: "memnon-of-ephesus",
  name: "St. Memnon of Ephesus",
  role: "Bishop of Ephesus, host of the Council in the great Church of the Theotokos in his city; deposed by John of Antioch's counter-synod and restored.",
  },
  {
+ slug: "juvenal-of-jerusalem",
  name: "St. Juvenal of Jerusalem",
  role: "Patriarch of Jerusalem; one of the senior bishops at the Council; ratified the Theotokos and the deposition of Nestorius.",
  },
  {
+ slug: "celestine-of-rome",
  name: "St. Celestine of Rome",
  role: "Pope of Rome; condemned Nestorius at the Roman synod of 430 in advance of the Ecumenical Council, and entrusted the execution of the sentence to Cyril. Represented at Ephesus by his legates Arcadius, Projectus, and Philip.",
  },
@@ -414,21 +417,29 @@ export const COUNCILS: Council[] = [
  ],
  principalFathers: [
  {
+ slug: "leo-the-great",
  name: "St. Pope Leo I (the Great)",
  role: "Pope of Rome; not present at the Council in person but present through his Tome, the dogmatic letter on Christology he had sent to Flavian in 449. When the Tome was finally read at the Council's Second Session, the assembled Fathers cried, \"Peter has spoken through Leo.\"",
  },
  {
+ slug: "anatolius-of-constantinople",
  name: "St. Anatolius of Constantinople",
  role: "Patriarch of Constantinople; one of the four presiders alongside the papal legates. Carried the work of the Council on the Eastern side.",
  },
  {
- slug: "cyril-of-jerusalem",
+ slug: "juvenal-of-jerusalem",
  name: "St. Juvenal of Jerusalem",
- role: "Patriarch of Jerusalem; secured at this Council the elevation of Jerusalem from a metropolitanate of Caesarea Palaestina to one of the five great sees (the Pentarchy). (Cross-link is to St. Cyril of Jerusalem, the predecessor whose Catechetical Lectures shaped the see's catechetical tradition.)",
+ role: "Patriarch of Jerusalem; secured at this Council the elevation of Jerusalem from a metropolitanate of Caesarea Palaestina to one of the five great sees (the Pentarchy).",
  },
  {
- name: "St. Marcian and St. Pulcheria",
- role: "Eastern Emperor and Empress; summoned the Council, attended in person at the Sixth Session, ratified the Definition of Faith, and gave the Council the imperial weight by which its decrees became civil as well as ecclesial law throughout the Eastern half of the empire.",
+ slug: "marcian-the-emperor",
+ name: "St. Marcian the Emperor",
+ role: "Eastern Emperor; with St. Pulcheria summoned the Council, attended in person at the Sixth Session, ratified the Definition of Faith, and gave the Council the imperial weight by which its decrees became civil as well as ecclesial law throughout the Eastern half of the empire.",
+ },
+ {
+ slug: "pulcheria-the-empress",
+ name: "St. Pulcheria the Empress",
+ role: "Eastern Empress; sister of Theodosius II and wife of Marcian, the most theologically learned of the imperial family. With Marcian she summoned the Council and ratified its Definition of Faith.",
  },
  ],
  principalOpposed: [
@@ -493,10 +504,12 @@ export const COUNCILS: Council[] = [
  ],
  principalFathers: [
  {
+ slug: "justinian-the-great",
  name: "St. Justinian the Great",
  role: "Emperor; summoned the Council, and through his theological edicts and his treatise against the Three Chapters framed its work. Author of the hymn \"Only-begotten Son and Word of God,\" which confesses the Theopaschite faith the Council sealed.",
  },
  {
+ slug: "eutychius-of-constantinople",
  name: "St. Eutychius of Constantinople",
  role: "Patriarch of Constantinople; presided over the Council. Later exiled and restored, he is commemorated as a confessor.",
  },
@@ -577,14 +590,17 @@ export const COUNCILS: Council[] = [
  role: "Not present, having reposed in 662, mutilated and exiled for the Faith; but the Council was the vindication of his theology. He, more than any other, articulated that will and operation follow nature, and that the free submission of Christ's human will is the healing of Adam's fall.",
  },
  {
+ slug: "agatho-of-rome",
  name: "St. Agatho of Rome",
  role: "Pope of Rome; his dogmatic Letter, with the synodal letter of his Roman council of 125 bishops, was the charter the Council received as the confession of the Apostolic see. The Council acclaimed it as the voice of Peter.",
  },
  {
+ slug: "sophronius-of-jerusalem",
  name: "St. Sophronius of Jerusalem",
  role: "Patriarch of Jerusalem; the first to raise the alarm against the formula of one operation and one will, and the early standard-bearer of the two-wills confession the Council defined.",
  },
  {
+ slug: "martin-the-confessor",
  name: "St. Martin the Confessor",
  role: "Pope of Rome; convened the Lateran Synod of 649 that condemned Monothelitism, for which he was seized by the imperial power and died in exile. His synod prepared the doctrinal ground for the Council.",
  },
@@ -656,14 +672,17 @@ export const COUNCILS: Council[] = [
  role: "Not present, having reposed around 749, but the Council was the vindication of his theology. His Three Treatises on the Divine Images gave the defence of the icons its classic form: that the invisible God, made visible in the flesh, may be depicted, and that the honour of the image passes to its prototype.",
  },
  {
+ slug: "tarasius-of-constantinople",
  name: "St. Tarasius of Constantinople",
  role: "Patriarch of Constantinople; presided over the Council, received the penitent iconoclast bishops, and steered the restoration of the icons in concert with the Empress and the other patriarchates.",
  },
  {
- name: "St. Irene",
+ slug: "irene-the-empress",
+ name: "St. Irene the Empress",
  role: "Empress, regent for her son Constantine VI; summoned the Council and was the imperial author of the restoration of the icons after the first Iconoclast persecution.",
  },
  {
+ slug: "adrian-of-rome",
  name: "St. Adrian I of Rome",
  role: "Pope of Rome; sent his legates and his letters in support of the veneration of images, lending the consent of the Apostolic see that the false council of Hieria had lacked.",
  },
