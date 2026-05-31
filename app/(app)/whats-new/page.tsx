@@ -23,6 +23,21 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v8.1",
+ kind: "The Council Fathers, now saints in their own right",
+ date: "May 31, 2026",
+ blurb:
+ "v8.0 brought the Seven Ecumenical Councils complete, and each council page names the Fathers who stood at it. Fifteen of those Fathers had no profile of their own, so their names rendered as plain text while the rest deep-linked to a saint you could actually read. That gap is closed. Every Father named on a council page now has a profile, built the one way the saints library is always built, an honest life in house voice, and the saint's own words only as verbatim public-domain text, never paraphrased, never modernized, never filled in by a model. Two of the fifteen carry their works already, the Tome of Leo and the Letter to the Emperors of Agatho of Rome, both rendered word for word from the Nicene and Post-Nicene Fathers. The other thirteen ship works-deferred, with the honest empty shelf, until a clean public-domain text surfaces. The councils now deep-link every Father they name, and the joint commemoration of the Emperor Marcian and the Empress Pulcheria is given two profiles so each can be read on his own.",
+ items: [
+  "Fifteen new saint profiles, the Fathers and sovereigns of the later councils who until now rendered as plain text on the council pages. Third Council (Ephesus, 431): St. Celestine of Rome, St. Memnon of Ephesus, St. Juvenal of Jerusalem. Fourth Council (Chalcedon, 451): St. Leo the Great, St. Anatolius of Constantinople, St. Marcian the Emperor, St. Pulcheria the Empress. Fifth Council (Constantinople II, 553): St. Justinian the Great, St. Eutychius of Constantinople. Sixth Council (Constantinople III, 680 to 681): St. Agatho of Rome, St. Sophronius of Jerusalem, St. Martin the Confessor. Seventh Council (Nicaea II, 787): St. Tarasius of Constantinople, St. Irene the Empress, St. Adrian of Rome.",
+  "Two verbatim works ship with the new profiles. The Tome of Leo, his Letter to Flavian read and acclaimed at Chalcedon in 451, and the Letter to the Emperors of St. Agatho of Rome, the confession of two wills received at the Sixth Council, both rendered word for word from the public-domain Nicene and Post-Nicene Fathers, Series 2, Volume 14.",
+  "The other thirteen profiles ship works-deferred, the same discipline as the rest of the library. Each carries a full life and, where the source gives them, a verbatim quote, but no hosted work browser until a clean public-domain text of their writings is confirmed. The honest empty shelf is the point, not a paraphrase dressed up as the saint's own voice.",
+  "Council pages now deep-link every Father they name. The principalFathers of all seven councils resolve to their saint profiles, so a reader can move from a council straight to the life of the bishop or sovereign who stood at it, with no dead plain-text names left.",
+  "The joint commemoration of St. Marcian and St. Pulcheria, kept together by the Church on February 17, is split into two profiles, the soldier raised to the purple and the virgin empress, each with his own life, so neither is read only as the other's consort.",
+  "Footer + home hero chip + /whats-new chip step to v8.1.",
+ ],
+ },
+ {
  version: "v8.0",
  kind: "The Seven Ecumenical Councils, complete, in the councils' own words",
  date: "May 31, 2026",
@@ -940,7 +955,7 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
- v8.0 &middot; The Seven Ecumenical Councils, complete
+ v8.1 &middot; The Council Fathers, now saints
  </p>
  </div>
 
