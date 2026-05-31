@@ -939,7 +939,7 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
- v7.6 &middot; The miracles of the saints, verbatim
+ v8.0 &middot; The Seven Ecumenical Councils, complete
  </p>
  </div>
 
@@ -949,7 +949,7 @@ export default async function WhatsNewPage() {
  </h1>
  ) : (
  <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- The miracles of the saints, in the exact words of those who saw them.
+ The Seven Ecumenical Councils, complete, in the councils&rsquo; own words.
  </h1>
  )}
 
