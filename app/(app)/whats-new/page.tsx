@@ -1110,65 +1110,6 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- v7.6 adds a Miracles section to the saints. When a saint is
- glorified as a wonderworker, the section tells the story of his
- signs, and it tells it in the exact words of the source, never a
- paraphrase and never a model&rsquo;s retelling. It appears only
- when a verbatim public-domain account exists. It ships first
- for{" "}
- <Link href="/saints/anthony-the-great" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">St. Anthony the Great</Link>,
- with ten accounts taken word for word from the Life of Antony by
- St. Athanasius, who knew him. The same rule held two saints back:
- the miracle texts the app already carries for St. Nicholas and
- St. Mary of Egypt are honest retellings, not verbatim
- public-domain translations, so they wait for a clean source
- rather than stand in for the eyewitness. The empty shelf is the
- point.
- </p>
-
- <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- v7.5 answers a request that came in on the Discord. A reader
- asked for his patron,{" "}
- <Link href="/saints/mark-of-ephesus" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">St. Mark of Ephesus</Link>,
- and recommended four more saints alongside him. We took it the
- way the whole saints library is built, by one hard rule: a
- saint&rsquo;s own words ship only as verbatim public-domain text,
- never paraphrased, never modernized, never filled in by a model.
- That rule decided how much of the request we could ship today.
- </p>
-
- <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- <Link href="/saints/justin-martyr" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">St. Justin Martyr</Link>,
- the Philosopher, ships in full: a new profile and all three of
- his works, the{" "}
- <Link href="/saints/justin-martyr/first-apology" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">First Apology</Link>,
- the{" "}
- <Link href="/saints/justin-martyr/second-apology" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Second Apology</Link>,
- and the{" "}
- <Link href="/saints/justin-martyr/dialogue-with-trypho" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Dialogue with Trypho the Jew</Link>,
- taken word for word from the Roberts-Donaldson translation in the
- Ante-Nicene Fathers of 1885. Justin is the earliest voice in this
- library to describe Baptism and the Eucharist as the Church
- already practiced them by the year 155, so the whole
- second-century shelf gets deeper with him.
- </p>
-
- <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
- <Link href="/saints/mark-of-ephesus" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">St. Mark of Ephesus</Link>,{" "}
- <Link href="/saints/isaac-the-syrian" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">St. Isaac the Syrian</Link>,
- and{" "}
- <Link href="/saints/nikon-metanoeite" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">St. Nikon the Metanoeite</Link>{" "}
- each get a full profile and a life now, with their writings held
- back honestly until a clean public-domain English text exists.
- Mark&rsquo;s standard English is under copyright, Isaac&rsquo;s
- one public-domain translation survives only as a corrupted scan,
- and Nikon&rsquo;s Life has no public-domain English at all. We
- would rather show you an honest empty shelf than dress a
- paraphrase up as the saint&rsquo;s own voice. Each profile says so
- plainly, and the works land the day a real text surfaces.
- </p>
-
- <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
  The work underneath stays the same. Prayer, Scripture, the
  saints, the Councils, and the year of the Church laid out
  plainly, with no tracking and no advertising. Pray with the
