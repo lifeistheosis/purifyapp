@@ -27,7 +27,7 @@ const ENTRIES: Entry[] = [
  kind: "The Seven Ecumenical Councils, complete, in the councils' own words",
  date: "May 31, 2026",
  blurb:
- "For a year the councils section stopped at four, with a standing notice that the rest were coming. They are here. Purify now carries all Seven Ecumenical Councils, the full conciliar foundation the Orthodox Church confesses, each one built the only way the rest of the site is built: the defining texts, the Definitions, the Anathemas, the Canons, ship verbatim from a public-domain source, never paraphrased, never modernized, never filled in by a model. The Fifth Council at Constantinople in 553, the Sixth at Constantinople in 680 and 681, and the Seventh at Nicaea in 787 join the four already present, with their own dogmatic documents rendered word for word from the Nicene and Post-Nicene Fathers, Series 2, Volume 14, the Schaff and Wace edition of the Seven Ecumenical Councils, public domain. The honest editorial work, the historical narrative, the lists of what each council defined and condemned, and the cross-links to the Fathers, is ours and in house voice. The texts themselves are the councils' own. With the seventh in place, the coming soon notice on the councils page has retired itself.",
+ "For a while the councils section stopped at four, with a standing notice that the rest were coming. They are here. Purify now carries all Seven Ecumenical Councils, the full conciliar foundation the Orthodox Church confesses, each one built the only way the rest of the site is built: the defining texts, the Definitions, the Anathemas, the Canons, ship verbatim from a public-domain source, never paraphrased, never modernized, never filled in by a model. The Fifth Council at Constantinople in 553, the Sixth at Constantinople in 680 and 681, and the Seventh at Nicaea in 787 join the four already present, with their own dogmatic documents rendered word for word from the Nicene and Post-Nicene Fathers, Series 2, Volume 14, the Schaff and Wace edition of the Seven Ecumenical Councils, public domain. The honest editorial work, the historical narrative, the lists of what each council defined and condemned, and the cross-links to the Fathers, is ours and in house voice. The texts themselves are the councils' own. With the seventh in place, the coming soon notice on the councils page has retired itself.",
  items: [
   "Fifth Ecumenical Council, Constantinople II, 553, summoned by St. Justinian. It reads Chalcedon through St. Cyril of Alexandria, confesses that one of the Holy Trinity suffered in the flesh, and condemns the Three Chapters and the errors of Origen. Ships with its Fourteen Anathemas, the Capitula, rendered verbatim from the Nicene and Post-Nicene Fathers, Volume 14, with St. Cyril cross-linked where his Christology is named the standard.",
   "Sixth Ecumenical Council, Constantinople III, 680 to 681. Against Monothelitism it defines two natural wills and two natural operations in Christ, the human will freely subject to the divine, and it names the authors of the error, Honorius of Rome among them, exactly as the council named them. Ships with its Definition of Faith, the two-wills horos, verbatim from Volume 14, and cross-links St. Maximus the Confessor, who died for this doctrine before the council vindicated it.",
@@ -1078,6 +1078,37 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ v8.0 is the big one. For a while the{" "}
+ <Link href="/councils" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Councils</Link>{" "}
+ section stopped at four, with a standing notice that the rest
+ were coming. They are here. Purify now carries all Seven
+ Ecumenical Councils, the full conciliar foundation the Orthodox
+ Church confesses, and each one is built the only way the rest of
+ this site is built. The defining texts, the Definitions, the
+ Anathemas, the Canons, ship verbatim from a public-domain source,
+ never paraphrased, never modernized, never filled in by a model.
+ The Fifth Council at{" "}
+ <Link href="/councils/second-constantinople" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Constantinople in 553</Link>,
+ the Sixth at{" "}
+ <Link href="/councils/third-constantinople" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Constantinople in 680 and 681</Link>,
+ and the Seventh at{" "}
+ <Link href="/councils/second-nicaea" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Nicaea in 787</Link>{" "}
+ join the four already present, their dogmatic documents rendered
+ word for word from the Nicene and Post-Nicene Fathers, Volume 14,
+ the Schaff and Wace edition of the Seven Ecumenical Councils.
+ Constantinople II confesses that one of the Holy Trinity suffered
+ in the flesh and condemns the Three Chapters. Constantinople III
+ defines two natural wills in Christ, the human freely subject to
+ the divine, against Monothelitism. Nicaea II defines the
+ veneration of the holy icons, the honor that passes to the
+ prototype, distinguished from the worship due to God alone. The
+ historical narrative, the lists of what each council defined and
+ condemned, and the cross-links to the Fathers are ours and in our
+ voice. The conciliar texts are the councils&rsquo; own. With the
+ seventh in place, the coming-soon notice has retired itself.
+ </p>
+
+ <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
  v7.6 adds a Miracles section to the saints. When a saint is
  glorified as a wonderworker, the section tells the story of his
  signs, and it tells it in the exact words of the source, never a
@@ -1156,8 +1187,8 @@ export default async function WhatsNewPage() {
  <div className="mt-16 pt-10 border-t border-paper/10">
  <p className="font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
  {isDe
- ? "Danke, daß du durch sieben Major-Versionen bei uns geblieben bist. Ehre sei Gott für alles."
- : "Thank you for staying with us through seven majors. Glory to God for all things."}
+ ? "Danke, daß du durch acht Major-Versionen bei uns geblieben bist. Ehre sei Gott für alles."
+ : "Thank you for staying with us through eight majors. Glory to God for all things."}
  </p>
 
  <p
