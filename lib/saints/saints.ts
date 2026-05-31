@@ -42,6 +42,15 @@ export type Saint = {
  */
  quotes?: Quote[];
  /**
+ * When `true`, the saint has a verbatim, public-domain account of his or her
+ * proclaimed miracles at `data/saints/{slug}/miracles.json` (shaped as the
+ * `WritingContent`/`Section` types in `lib/saints/load.ts`). Gates the
+ * Miracles section on the profile. Leave unset when no public-domain official
+ * account exists; the section is then simply absent. The verbatim text is
+ * never paraphrased or model-written, exactly like the saint's `works`.
+ */
+ hasMiracles?: boolean;
+ /**
  * Optional path to a real icon image, e.g. "/saints/icons/john-chrysostom.png".
  * If absent, the SaintIcon component renders a styled placeholder
  * (halo + initials on a wood-and-gold panel).
@@ -182,6 +191,7 @@ export const SAINTS: Saint[] = [
  slug: "anthony-the-great",
  byname: "Father of Monasticism",
  iconUrl: "/saints/icons/anthony-the-great.jpg",
+ hasMiracles: true,
  name: "St. Anthony the Great",
  epithet: "Father of Monks · The Great",
  born: "c. 251 (Coma, Lower Egypt)",

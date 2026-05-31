@@ -462,6 +462,241 @@ export const COUNCILS: Council[] = [
  },
  ],
  },
+ {
+ slug: "second-constantinople",
+ ordinal: 5,
+ name: "The Fifth Ecumenical Council",
+ byname: "Second Council of Constantinople",
+ year: 553,
+ location: "Constantinople (modern İstanbul, Türkiye)",
+ presidingEmperor: "St. Justinian the Great",
+ bishopsAttending: "Approximately 165 Holy Fathers",
+ shortBio:
+ "The Fifth Council, called by St. Justinian in 553 to settle the long controversy over the Three Chapters and to seal the reading of Chalcedon in the precise Cyrilline key. It confessed that one of the Holy Trinity suffered in the flesh, anathematized the Three Chapters, and condemned the errors of Origen.",
+ defined: [
+ "The Cyrilline (neo-Chalcedonian) reading of Chalcedon: that the union of the Word with the flesh is hypostatic and synthetic, not a relative conjunction of two persons, so that the natures are confessed without division and without confusion in the one hypostasis of the Word.",
+ "The Theopaschite confession, that one of the Holy Trinity, God the Word, was crucified in the flesh and is true God and Lord of Glory (the tenth anathema), reconciling the orthodox formula \"One of the Trinity suffered in the flesh\" with the Faith of Chalcedon.",
+ "That the holy Virgin is in the strict and true sense Theotokos and ever-virgin (ἀειπάρθενος), against every relative or qualified use of the title.",
+ ],
+ condemned: [
+ "The Three Chapters: the person and the writings of Theodore of Mopsuestia (the teacher whose Christology lay behind Nestorianism); the writings of Theodoret of Cyrus against St. Cyril and the First Council of Ephesus; and the Letter said to have been written by Ibas to Maris the Persian. The Council condemned the errors while distinguishing the cases of Theodoret and Ibas, who had been received at Chalcedon, from that of Theodore.",
+ "Origenism: the speculative errors associated with Origen, Didymus, and Evagrius (the pre-existence of souls, the eventual restoration of all things), named with the prior heretics in the eleventh anathema and condemned in the wider synodal acts.",
+ "Arius, Eunomius, Macedonius, Apollinaris, Nestorius, and Eutyches, renewed by name as already condemned by the four prior councils.",
+ ],
+ life: [
+ "A century after Chalcedon the Eastern Church was still not at peace. The Definition of 451, that Christ is acknowledged in two natures, had been received by the imperial Church, but a large body of the faithful in Egypt and Syria held to the strict formula of St. Cyril, \"one incarnate nature of the divine Word,\" and read the two-natures language of Chalcedon as a concession to Nestorianism. The separation hardened into the non-Chalcedonian communion. The Emperor St. Justinian, the most theologically engaged of all the Christian emperors, devoted much of his long reign to the reconciliation of these churches without surrendering the Faith of Chalcedon.",
+ "His instrument was the demonstration that Chalcedon, rightly read, taught nothing other than Cyril. To make the point he turned against three bodies of writing that the non-Chalcedonians cited as evidence that Chalcedon had sheltered Nestorianism: the works of Theodore of Mopsuestia, whose Christology had been the seed of the Nestorian error; the polemics of Theodoret of Cyrus against Cyril; and the Letter ascribed to Ibas of Edessa, which praised the Antiochene party and reproached Cyril. These three together were called the Three Chapters. Justinian condemned them by edict around 544 and pressed the bishops of the whole Church to subscribe.",
+ "The condemnation met resistance, above all in the West, where it was feared that to condemn writings of men who had died in the peace of the Church, and two of whom (Theodoret and Ibas) had been personally received at Chalcedon, was to reopen and dishonour the Fourth Council. Pope Vigilius of Rome, brought to Constantinople, vacillated for years: he condemned the Chapters, then withdrew the condemnation under Western pressure, then withheld his assent from the Council itself. Justinian summoned the Ecumenical Council to settle the matter conciliarly.",
+ "The Council opened in the great church at Constantinople in May of 553 under the presidency of the Patriarch Eutychius, with about one hundred and sixty-five bishops, overwhelmingly Eastern. It examined the writings of Theodore and found in them the blasphemies set out at length in its twelfth anathema; it condemned the writings of Theodoret against Cyril and the Letter to Maris, while carefully distinguishing the persons of Theodoret and Ibas, received at Chalcedon upon their anathematizing of Nestorius, from the condemned writings. It issued fourteen anathematisms (the Capitula) confessing the Trinitarian and Christological Faith in the precise key Justinian had sought and condemning the Three Chapters by name.",
+ "Pope Vigilius, who had refused to attend, at first published a Constitutum withholding his assent; the Council removed his name from the diptychs while keeping communion with the Roman see. Some months later Vigilius reversed himself, accepting the Council and its condemnation of the Three Chapters; his successor Pelagius defended it in the West. The Council's reception there was slow and painful, occasioning a temporary schism of the churches of northern Italy, but in time the whole Church received it as the Fifth of the Seven.",
+ "The Council is also remembered for its condemnation of Origenism. The speculative system associated with Origen and developed by Evagrius, the pre-existence of souls and the apokatastasis or final restoration of all rational creatures including the demons, had spread among the monks of Palestine. A series of fifteen anathemas against the Origenists is associated with the synod, and the name of Origen stands in the eleventh of the conciliar Capitula among the heretics the Council anathematized. With Chalcedon thus secured in its Cyrilline reading and the errors of Origen condemned, the Council closed the Christological labour of the sixth century, though the reconciliation of the non-Chalcedonian churches that Justinian sought was not achieved and remains the work of dialogue to this day.",
+ ],
+ principalFathers: [
+ {
+ name: "St. Justinian the Great",
+ role: "Emperor; summoned the Council, and through his theological edicts and his treatise against the Three Chapters framed its work. Author of the hymn \"Only-begotten Son and Word of God,\" which confesses the Theopaschite faith the Council sealed.",
+ },
+ {
+ name: "St. Eutychius of Constantinople",
+ role: "Patriarch of Constantinople; presided over the Council. Later exiled and restored, he is commemorated as a confessor.",
+ },
+ {
+ slug: "cyril-of-alexandria",
+ name: "St. Cyril of Alexandria",
+ role: "Though reposed in 444, his Christology was the standard against which the Council measured Chalcedon. His Twelve Chapters and his letters against Nestorius are named as the rule of right faith, and the Council's whole work is the vindication of his reading of the union.",
+ },
+ ],
+ principalOpposed: [
+ {
+ name: "The Three Chapters and their defenders",
+ teaching: "The person and writings of Theodore of Mopsuestia, the anti-Cyrilline writings of Theodoret of Cyrus, and the Letter ascribed to Ibas of Edessa, together with those who defended them as having been vindicated at Chalcedon. The Council condemned the writings while distinguishing the persons received at Chalcedon.",
+ },
+ {
+ name: "Origen, Didymus, and Evagrius",
+ teaching: "The Origenist speculation of the pre-existence of souls and the final restoration of all rational beings, spread among the Palestinian monks. Condemned by the Council with the prior heretics.",
+ },
+ {
+ name: "Pope Vigilius (in his resistance)",
+ teaching: "Pope of Rome, brought to Constantinople; vacillated for years over the condemnation of the Three Chapters and withheld assent from the Council in his first Constitutum. He afterward accepted the Council and its decrees, and his successor Pelagius defended it.",
+ },
+ ],
+ documents: [
+ {
+ slug: "the-capitula",
+ title: "The Capitula (The Fourteen Anathemas)",
+ subtitle: "The dogmatic anathematisms of the Council, 553",
+ blurb:
+ "All fourteen anathematisms of the Fifth Council in full. The first ten confess the Trinitarian and Christological Faith in the precise Cyrilline key, including the Theopaschite confession that one of the Holy Trinity was crucified in the flesh. The eleventh lists the condemned heretics and adds Origen; the last three condemn the Three Chapters by name, the person and writings of Theodore of Mopsuestia, the writings of Theodoret against Cyril, and the Letter ascribed to Ibas to Maris the Persian.",
+ topics: ["Anathemas", "Christology", "Three Chapters", "Theopaschism", "Origenism", "Theotokos"],
+ },
+ ],
+ pendingDocuments: [
+ {
+ title: "The Fifteen Anathemas against the Origenists",
+ note: "The fifteen anathemas condemning the Origenist speculation (pre-existence of souls, the final restoration of all things), associated with the synod and its monastic context. Pending a clean public-domain source.",
+ },
+ {
+ title: "The Sentence of the Synod (the synodal acts against the Three Chapters)",
+ note: "The Council's full sentence setting out the case against Theodore, Theodoret's writings, and the Letter of Ibas, with its detailed reasoning. Pending a clean PD source.",
+ },
+ ],
+ },
+ {
+ slug: "third-constantinople",
+ ordinal: 6,
+ name: "The Sixth Ecumenical Council",
+ byname: "Third Council of Constantinople",
+ year: 681,
+ location: "Constantinople (modern İstanbul, Türkiye), in the domed hall (Trullus) of the imperial palace",
+ presidingEmperor: "Constantine IV (Pogonatus)",
+ bishopsAttending: "Approximately 170 Holy Fathers",
+ shortBio:
+ "The Sixth Council, called by Constantine IV in 680 to settle the controversy over the will and operation of Christ. It confessed two natural wills and two natural operations in the one Christ, the human will freely submitting to the divine, and condemned Monothelitism with its authors by name. It vindicated the confession for which St. Maximus the Confessor had suffered.",
+ defined: [
+ "That in the one Lord Jesus Christ there are two natural wills and two natural operations (energies), indivisibly, inconvertibly, inseparably, and inconfusedly, according to the reality of each of His two natures.",
+ "That the two wills are not contrary the one to the other; rather the human will follows, and is subject to, His divine and omnipotent will, not as resisting and reluctant but as deified, the proper will of the flesh of God the Word.",
+ "The full reception of the five prior councils and of the Letter of Pope St. Agatho and his Roman synod of 125 bishops, received as consonant with Chalcedon, the Tome of St. Leo, and the letters of St. Cyril.",
+ ],
+ condemned: [
+ "Monothelitism and Monoenergism: the teaching that in Christ there is but one will and one operation, devised in the seventh century as a formula to reconcile the non-Chalcedonians and shown by the Council to destroy the perfection of His humanity.",
+ "The authors of the heresy by name: Theodore of Pharan; Sergius, Pyrrhus, Paul, and Peter, Archbishops of Constantinople; Cyrus of Alexandria; and Macarius of Antioch with his disciple Stephen.",
+ "Honorius, who was Pope of the elder Rome, named in the Council's Definition among those through whom the author of evil had worked, for his support of the doctrine of one will in his correspondence with Sergius.",
+ ],
+ life: [
+ "The Christological labour did not end with the reconciling formula of two natures. In the early seventh century, with Egypt and Syria still divided from the imperial Church over Chalcedon and the Empire pressed hard by Persia and then by the Arab conquests, the Patriarch Sergius of Constantinople and the Emperor Heraclius sought a formula that might draw the non-Chalcedonians back into communion. They proposed that, whatever was said of His two natures, in Christ there is but one operation, and then one will. To confess a single energy and a single will, it was hoped, would satisfy those who feared that two natures meant two acting subjects.",
+ "The formula was at first widely accepted, and Cyrus of Alexandria used it to bring a body of the Egyptian church into union. But a monk of Palestine, St. Sophronius, soon to be Patriarch of Jerusalem, saw at once that it imperilled the Faith: a Christ with only a divine will and operation is a Christ whose humanity does not truly will or act, and therefore does not truly save. If He has no human will, then the human will, the seat of our fall, is not assumed and not healed.",
+ "The defence of the two wills fell above all to St. Maximus, called the Confessor, the greatest theologian of the age. Against Monothelitism he set out that will and operation follow upon nature, not upon person: as Christ has two natures whole and entire, so He has a divine will and a human will, and the salvation of man consists precisely in this, that in Gethsemane the human will of Christ, free and unconstrained, submitted itself to the will of the Father, healing in itself the rebellion of Adam. Pope St. Martin I held a great synod at the Lateran in 649 that condemned Monothelitism. For their confession Martin and Maximus were seized by the imperial power, tried, and cruelly punished: Martin died in exile, and Maximus, his tongue cut out and his right hand cut off so that he could neither speak nor write the Faith, died in 662. The Council that vindicated them met nineteen years after his repose.",
+ "The Emperor Constantine IV, seeking peace in the Church after the Monothelite policy had failed to reunite the lost provinces now under Arab rule, summoned the Ecumenical Council. It opened in November of 680 in the domed hall (Trullus) of the imperial palace at Constantinople, with about one hundred and seventy bishops, and sat through eighteen sessions into September of 681. Pope St. Agatho sent a dogmatic Letter, the fruit of a Roman synod of 125 bishops, setting out the two wills and two operations as the Faith of the Apostolic see; when it was read, the Council received it as Agatho's confession of the unchanging Faith.",
+ "The Council examined the patristic witness and the record of the controversy and issued its Definition: in the one Christ there are two natural wills and two natural operations, undivided and unconfused, the human will not abolished by its union with the divine but preserved and deified, following the divine will freely and without reluctance. The four alpha-privatives of Chalcedon were thus extended from the natures to the wills and the energies, completing the Church's confession of the wholeness of Christ's humanity.",
+ "The Council condemned Monothelitism and anathematized its authors by name, Theodore of Pharan, the Patriarchs Sergius, Pyrrhus, Paul, and Peter of Constantinople, Cyrus of Alexandria, and Macarius of Antioch, and, in its Definition, Honorius who had been Pope of Rome, for the support he had lent the doctrine of one will in his letters to Sergius. Purify names the condemnation of Honorius exactly as the Council named it: the Sixth Council, with the assent of the legates of Agatho's successor, placed him among the condemned. The doctrine for which St. Maximus had been mutilated and exiled was now the confession of the whole Church.",
+ ],
+ principalFathers: [
+ {
+ slug: "maximus-the-confessor",
+ name: "St. Maximus the Confessor",
+ role: "Not present, having reposed in 662, mutilated and exiled for the Faith; but the Council was the vindication of his theology. He, more than any other, articulated that will and operation follow nature, and that the free submission of Christ's human will is the healing of Adam's fall.",
+ },
+ {
+ name: "St. Agatho of Rome",
+ role: "Pope of Rome; his dogmatic Letter, with the synodal letter of his Roman council of 125 bishops, was the charter the Council received as the confession of the Apostolic see. The Council acclaimed it as the voice of Peter.",
+ },
+ {
+ name: "St. Sophronius of Jerusalem",
+ role: "Patriarch of Jerusalem; the first to raise the alarm against the formula of one operation and one will, and the early standard-bearer of the two-wills confession the Council defined.",
+ },
+ {
+ name: "St. Martin the Confessor",
+ role: "Pope of Rome; convened the Lateran Synod of 649 that condemned Monothelitism, for which he was seized by the imperial power and died in exile. His synod prepared the doctrinal ground for the Council.",
+ },
+ ],
+ principalOpposed: [
+ {
+ name: "Monothelitism (Sergius, Cyrus, and the Patriarchs)",
+ teaching: "The doctrine of one will and one operation in Christ, devised by Patriarch Sergius of Constantinople and Cyrus of Alexandria under the Emperor Heraclius as a formula to reconcile the non-Chalcedonians. Condemned by the Council with its authors Theodore of Pharan, Sergius, Pyrrhus, Paul, and Peter of Constantinople, Cyrus, and Macarius of Antioch named by name.",
+ },
+ {
+ name: "Pope Honorius of Rome",
+ teaching: "Pope of Rome (d. 638); in his correspondence with Sergius he lent support to the formula of one will. The Sixth Council named him in its Definition among those through whom the author of evil had worked, and anathematized him with the other authors of the heresy.",
+ },
+ ],
+ documents: [
+ {
+ slug: "the-definition-of-faith",
+ title: "The Definition of Faith",
+ subtitle: "The horos of the Council on the two wills and two operations, 681",
+ blurb:
+ "The dogmatic Definition of the Sixth Council in full, from its Eighteenth Session. It receives the five prior councils and the Letter of Pope St. Agatho, names and condemns the authors of Monothelitism including Honorius of Rome, and defines that in the one Christ there are two natural wills and two natural operations, the human will freely subject to the divine and not suppressed but deified.",
+ topics: ["Definition", "Christology", "Two Wills", "Monothelitism", "Dyothelitism"],
+ },
+ ],
+ pendingDocuments: [
+ {
+ title: "The Letter of St. Agatho to the Emperor",
+ note: "The dogmatic Letter of Pope St. Agatho, with the synodal letter of his Roman council of 125 bishops, received by the Council as the confession of the Apostolic see and acclaimed as the voice of Peter. Pending a clean public-domain source.",
+ },
+ {
+ title: "The Prosphonetic Address to the Emperor",
+ note: "The Council's closing oration to Constantine IV, recounting its labours and its sentence against the Monothelites. Pending a clean PD source.",
+ },
+ ],
+ },
+ {
+ slug: "second-nicaea",
+ ordinal: 7,
+ name: "The Seventh Ecumenical Council",
+ byname: "Second Council of Nicaea",
+ year: 787,
+ location: "Nicaea in Bithynia (modern İznik, Türkiye)",
+ presidingEmperor: "St. Constantine VI and St. Irene (Empress regent)",
+ bishopsAttending: "Approximately 350 Holy Fathers",
+ shortBio:
+ "The Seventh and last of the Councils, called by St. Irene and St. Constantine VI in 787 to restore the holy icons after the first Iconoclast persecution. It defined the veneration (proskynesis) of the holy images, distinguished from the worship (latreia) due to God alone, on the ground that the honour paid to the image passes to its prototype. It vindicated the icon-theology of St. John of Damascus.",
+ defined: [
+ "That the venerable and holy images, like the figure of the precious and life-giving Cross, are to be set up in the churches, on the sacred vessels and vestments, on walls and in houses and by the wayside, the image of Christ, of the Theotokos, of the angels, and of all the saints.",
+ "That to these images is due salutation and honourable reverence (ἀσπασμὸν καὶ τιμητικὴν προσκύνησιν), not the true worship of faith (latreia, λατρείαν) which belongs to the divine nature alone, this reverence being shown also by incense and lights according to ancient pious custom.",
+ "That the honour paid to the image passes to its prototype, and he who venerates the image venerates in it the person represented, so that the making and honouring of icons is a confession that the Word of God truly became flesh and was seen.",
+ ],
+ condemned: [
+ "Iconoclasm: the heresy of the breakers of icons, the \"traducers of the Christians,\" who styled the holy images by the same name as the idols of the heathen and stripped them from the churches.",
+ "The iconoclast council of Hieria (754): the assembly under the Emperor Constantine V that had claimed the authority of an Ecumenical Council to condemn the icons. The Seventh Council refuted and annulled it as a false synod that had gathered without the consent of the other patriarchates.",
+ "The leaders of the iconoclast party, whose writings against the holy images the Council ordered delivered up and locked away (Canon IX).",
+ ],
+ life: [
+ "In the year 726 the Emperor Leo III, the Isaurian, began to move against the holy icons, and around 730 he ordered their removal and destruction. The reasons were tangled: a genuine if misguided zeal against what was thought to be idolatry, the reproach of Jews and Muslims that the Christians worshipped images, and the will of a soldier-emperor to discipline the Church. So began the first Iconoclast period, which under Leo and still more under his son Constantine V (called by his enemies Copronymus) became a fierce persecution. Icons were whitewashed and burned; the monks, who were the icons' chief defenders, were beaten, exiled, and in some cases killed.",
+ "The theological defence of the icons was given its classic form, outside the reach of the iconoclast emperors, by St. John of Damascus, a monk of the monastery of St. Sabbas near Jerusalem under Muslim rule. In his Three Treatises on the Divine Images he set out the case the Council would receive: the second commandment forbids the image of the invisible and unknowable God, but in Christ the invisible God has become visible, has taken flesh and been seen, and therefore may be depicted. To deny the icon of Christ is to deny the reality of His incarnation. And the honour given to an icon is not the worship due to God; it is a relative veneration that passes to the person represented, as the honour given to the emperor's image is given to the emperor.",
+ "In 754 Constantine V convened a great assembly of bishops at Hieria, across the water from Constantinople, which condemned the icons and claimed for itself the title of the Seventh Ecumenical Council. But it had been gathered by the imperial will alone; none of the other four patriarchs, nor the Pope of Rome, took part or consented. The defenders of the icons never received it, and the Seventh Council would later refute it point by point and deny it the name of an Ecumenical Synod.",
+ "Constantine V died in 775. His son Leo IV was more moderate, and when Leo died in 780 the regency passed to his widow, the Empress St. Irene, who ruled for their young son Constantine VI. Irene was resolved to restore the icons. With the Patriarch St. Tarasius, freshly raised to the see of Constantinople, and in concert with Pope Adrian I and the Eastern patriarchs, she summoned an Ecumenical Council. A first attempt to convene it at Constantinople in 786 was broken up by iconoclast soldiers of the guard; the troops were dispersed, and the Council met the following year in safety at Nicaea, the city of the First Council, in September of 787.",
+ "About three hundred and fifty bishops attended, with the legates of Pope Adrian and representatives of the Eastern patriarchates. Tarasius presided. The Council heard the scriptural and patristic witness to the images, examined and refuted the acts of the false council of Hieria, and received the penitent iconoclast bishops who renounced their error. At its seventh session it issued the Decree: that the holy icons are to be set up and given honourable reverence and veneration, but not the worship that belongs to God alone, for the honour passes to the prototype. The Fathers cried out their assent and pronounced anathema on those who would call the icons idols or deny them veneration.",
+ "The Council also enacted twenty-two disciplinary canons, among the best of the conciliar age, restoring the order of the Church after the long persecution. But the peace it won was not final. A second Iconoclast period opened under Leo V in 815 and lasted until 843, when the Empress St. Theodora and the Patriarch St. Methodius restored the icons for good. That final victory is commemorated every year on the first Sunday of Great Lent as the Triumph of Orthodoxy, the feast of the whole Faith of the Seven Councils, of which the Decree of Nicaea II is the seal.",
+ ],
+ principalFathers: [
+ {
+ slug: "john-of-damascus",
+ name: "St. John of Damascus",
+ role: "Not present, having reposed around 749, but the Council was the vindication of his theology. His Three Treatises on the Divine Images gave the defence of the icons its classic form: that the invisible God, made visible in the flesh, may be depicted, and that the honour of the image passes to its prototype.",
+ },
+ {
+ name: "St. Tarasius of Constantinople",
+ role: "Patriarch of Constantinople; presided over the Council, received the penitent iconoclast bishops, and steered the restoration of the icons in concert with the Empress and the other patriarchates.",
+ },
+ {
+ name: "St. Irene",
+ role: "Empress, regent for her son Constantine VI; summoned the Council and was the imperial author of the restoration of the icons after the first Iconoclast persecution.",
+ },
+ {
+ name: "St. Adrian I of Rome",
+ role: "Pope of Rome; sent his legates and his letters in support of the veneration of images, lending the consent of the Apostolic see that the false council of Hieria had lacked.",
+ },
+ ],
+ principalOpposed: [
+ {
+ name: "Iconoclasm and the council of Hieria (754)",
+ teaching: "The heresy of the breakers of icons, raised under the Emperors Leo III and Constantine V, which condemned the veneration of images as idolatry and stripped them from the churches. Its council at Hieria claimed to be the Seventh Ecumenical Council; the Seventh Council refuted and annulled it as a false synod gathered without the other patriarchates.",
+ },
+ {
+ name: "Constantine V (Copronymus)",
+ teaching: "Emperor and the fiercest of the iconoclast persecutors; convened the council of Hieria and waged a sustained persecution of the icons and their monastic defenders. His acts were overturned by the Council.",
+ },
+ ],
+ documents: [
+ {
+ slug: "the-decree-on-the-holy-icons",
+ title: "The Decree on the Holy Icons",
+ subtitle: "The Definition of the Council on the veneration of the images, 787",
+ blurb:
+ "The dogmatic Decree of the Seventh Council in full. After receiving the six prior councils and anathematizing the heresies they condemned, it defines that the holy images are to be set up and given honourable reverence and veneration (proskynesis), distinguished from the worship (latreia) due to God alone, because the honour paid to the image passes to its prototype. The closing acclamations of the Fathers are appended.",
+ topics: ["Decree", "Icons", "Veneration", "Iconoclasm", "Incarnation"],
+ },
+ {
+ slug: "the-twenty-two-canons",
+ title: "The Twenty-Two Canons",
+ subtitle: "The disciplinary canons of the Council, 787",
+ blurb:
+ "All twenty-two canons of the Seventh Council in full, each followed by the Ancient Epitome. Harnack judged them the best canons of any Ecumenical Synod. They bind the bishops to the whole prior canonical tradition and to the knowledge of Scripture, forbid the choice of bishops by secular princes and the buying and selling of ordination, order the consecration of churches with relics and the locking up of iconoclast writings, and regulate the monastic life.",
+ topics: ["Canons", "Discipline", "Episcopate", "Monasticism", "Simony"],
+ },
+ ],
+ },
 ];
 
 export function getCouncil(slug: string): Council | null {

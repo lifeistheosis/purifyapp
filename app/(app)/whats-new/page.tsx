@@ -23,6 +23,33 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v8.0",
+ kind: "The Seven Ecumenical Councils, complete, in the councils' own words",
+ date: "May 31, 2026",
+ blurb:
+ "For a year the councils section stopped at four, with a standing notice that the rest were coming. They are here. Purify now carries all Seven Ecumenical Councils, the full conciliar foundation the Orthodox Church confesses, each one built the only way the rest of the site is built: the defining texts, the Definitions, the Anathemas, the Canons, ship verbatim from a public-domain source, never paraphrased, never modernized, never filled in by a model. The Fifth Council at Constantinople in 553, the Sixth at Constantinople in 680 and 681, and the Seventh at Nicaea in 787 join the four already present, with their own dogmatic documents rendered word for word from the Nicene and Post-Nicene Fathers, Series 2, Volume 14, the Schaff and Wace edition of the Seven Ecumenical Councils, public domain. The honest editorial work, the historical narrative, the lists of what each council defined and condemned, and the cross-links to the Fathers, is ours and in house voice. The texts themselves are the councils' own. With the seventh in place, the coming soon notice on the councils page has retired itself.",
+ items: [
+  "Fifth Ecumenical Council, Constantinople II, 553, summoned by St. Justinian. It reads Chalcedon through St. Cyril of Alexandria, confesses that one of the Holy Trinity suffered in the flesh, and condemns the Three Chapters and the errors of Origen. Ships with its Fourteen Anathemas, the Capitula, rendered verbatim from the Nicene and Post-Nicene Fathers, Volume 14, with St. Cyril cross-linked where his Christology is named the standard.",
+  "Sixth Ecumenical Council, Constantinople III, 680 to 681. Against Monothelitism it defines two natural wills and two natural operations in Christ, the human will freely subject to the divine, and it names the authors of the error, Honorius of Rome among them, exactly as the council named them. Ships with its Definition of Faith, the two-wills horos, verbatim from Volume 14, and cross-links St. Maximus the Confessor, who died for this doctrine before the council vindicated it.",
+  "Seventh Ecumenical Council, Nicaea II, 787, under St. Tarasius and the Empress Irene. It defines the veneration of the holy icons, the proskynesis given to the image that passes to its prototype, distinguished from the worship, the latreia, due to God alone, against the iconoclasts and the council of Hieria of 754. Ships with two verbatim documents from Volume 14, the Decree on the Holy Icons and the Twenty-Two Canons, the latter carrying the Ancient Epitome of each canon in the notes, and cross-links St. John of Damascus.",
+  "The councils page now lists all seven in order, with the correct ordinal eyebrow on each new profile, Fifth, Sixth, Seventh, and the more councils are coming notice has retired itself now that the set is complete.",
+  "Footer + home hero chip + /whats-new chip step to v8.0.",
+ ],
+ },
+ {
+ version: "v7.6",
+ kind: "The miracles of the saints, in the exact words of those who saw them",
+ date: "May 30, 2026",
+ blurb:
+ "When the Church glorifies a saint as a wonderworker, the honest question is what actually happened, and who said so. Purify now answers it the only way the rest of the saints library is built: by handing you the exact account in the exact words of the source, never a paraphrase, never modernized, never filled in by a model. A new Miracles section appears on a saint's profile, and only when a verbatim public-domain account of his proclaimed signs exists. It ships first for St. Anthony the Great, whose miracles were written down by St. Athanasius, who knew him, attended him, and poured water on his hands, in the Life of Antony. Ten accounts render word for word from the Nicene and Post-Nicene Fathers, each carrying its chapter citation, each closing on the point Athanasius himself keeps making, that the healing belonged to the Lord and never to the man. The same rule that built the library kept two saints off this release: the accounts of St. Nicholas the Wonderworker and St. Mary of Egypt that the app already carries are editorial retellings, not verbatim public-domain text, and the whole point of a Miracles section is that it is the eyewitness's own words. They wait for a clean source. The empty shelf is the point.",
+ items: [
+  "New Miracles section on saint profiles. It renders between a saint's quotes and his disciples, only when a verbatim public-domain account of his miracles exists, and degrades to nothing, silently and with no error, when it does not. Same data and rendering machinery as the saints' hosted works: a title, the source citation in gold, an editor's framing where context is needed, and the verbatim account itself, never altered beyond the whitespace and footnote-marker cleanup every hosted text already gets.",
+  "St. Anthony the Great ships first, with ten accounts taken word for word from St. Athanasius's Life of Antony in the Nicene and Post-Nicene Fathers (Series 2, Vol. 4, Schaff and Wace, public domain): the officer's daughter freed from the demon, water welling up in the waterless desert, the healing of Fronto and of the child of Busiris, Polycratia of Laodicea relieved at the very hour of his prayer, the youth hidden on the ship, the man brought in chains, the woman at the city gate, the warning that overtook the persecutor Balacius within five days, and Athanasius's own insistence that Antony healed not by commanding but by prayer and the name of Christ.",
+  "Honest deferral, the same discipline as the hosted works. St. Nicholas the Wonderworker and St. Mary of Egypt are not in this release. The texts the app already carries for them are editorial retellings of the Synaxarion and of the Life by St. Sophronius, not verbatim public-domain translations, and a Miracles section that paraphrased the eyewitness would defeat its own reason for existing. Both ship the day a clean public-domain text is confirmed.",
+  "Footer + home hero chip + /whats-new chip step to v7.6.",
+ ],
+ },
+ {
  version: "v7.5",
  kind: "Four saints: Justin the Philosopher in full, plus Mark of Ephesus, Isaac the Syrian, and Nikon",
  date: "May 30, 2026",
@@ -912,7 +939,7 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
- v7.5 &middot; Four saints, Justin the Philosopher in full
+ v7.6 &middot; The miracles of the saints, verbatim
  </p>
  </div>
 
@@ -922,7 +949,7 @@ export default async function WhatsNewPage() {
  </h1>
  ) : (
  <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- St. Justin Martyr, in full. And three more saints you asked for.
+ The miracles of the saints, in the exact words of those who saw them.
  </h1>
  )}
 
@@ -1048,6 +1075,23 @@ export default async function WhatsNewPage() {
  here
  </a>
  .
+ </p>
+
+ <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ v7.6 adds a Miracles section to the saints. When a saint is
+ glorified as a wonderworker, the section tells the story of his
+ signs, and it tells it in the exact words of the source, never a
+ paraphrase and never a model&rsquo;s retelling. It appears only
+ when a verbatim public-domain account exists. It ships first
+ for{" "}
+ <Link href="/saints/anthony-the-great" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">St. Anthony the Great</Link>,
+ with ten accounts taken word for word from the Life of Antony by
+ St. Athanasius, who knew him. The same rule held two saints back:
+ the miracle texts the app already carries for St. Nicholas and
+ St. Mary of Egypt are honest retellings, not verbatim
+ public-domain translations, so they wait for a clean source
+ rather than stand in for the eyewitness. The empty shelf is the
+ point.
  </p>
 
  <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">

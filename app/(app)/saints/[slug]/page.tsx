@@ -7,6 +7,7 @@ import { LifeSection } from "@/components/saints/LifeSection";
 import { TitlesSection } from "@/components/saints/TitlesSection";
 import { GreatFeastsSection } from "@/components/saints/GreatFeastsSection";
 import { QuotesSection } from "@/components/saints/QuotesSection";
+import { MiraclesSection } from "@/components/saints/MiraclesSection";
 import { DisciplesSection } from "@/components/saints/DisciplesSection";
 import { SaintWorksBrowser } from "@/components/saints/SaintWorksBrowser";
 import { LicensedWorksSection } from "@/components/saints/LicensedWorksSection";
@@ -115,6 +116,7 @@ export default async function SaintPage({ params }: { params: Params }) {
           <GreatFeastsSection feasts={effectiveSaint.greatFeasts} pronoun={saint.pronoun} />
         ) : null}
         {saint.quotes?.length ? <QuotesSection quotes={saint.quotes} pronoun={saint.pronoun} /> : null}
+        {saint.hasMiracles ? <MiraclesSection slug={saint.slug} /> : null}
         {saint.disciples?.length ? (
           <DisciplesSection saint={saint} disciples={saint.disciples} />
         ) : null}
