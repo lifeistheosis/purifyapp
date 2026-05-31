@@ -185,8 +185,8 @@ export default async function Home() {
  {isDe ? "Neu" : "New"}
  </span>
  <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
- <span className="sm:hidden">v8.1 · The Council Fathers, now saints</span>
- <span className="hidden sm:inline">v8.1 · The Council Fathers of all seven, now saints in their own right</span>
+ <span className="sm:hidden">v8.0 · The Seven Ecumenical Councils, complete</span>
+ <span className="hidden sm:inline">v8.0 · The Seven Ecumenical Councils, complete, in their own words</span>
  </span>
  <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
  →
