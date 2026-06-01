@@ -1,8 +1,11 @@
 import type { SVGProps } from "react";
 
 /**
- * Hand-drawn rising sun. Used as the "Today" tab icon in the mobile
- * tab bar. Inherits `currentColor`.
+ * Rising sun over a horizon — the dawning of the liturgical day, used as
+ * the "Today" tab icon. Deliberately NOT the generic full-disc-with-8-rays
+ * weather glyph (which also collided visually with the haloed "You" icon);
+ * a half-disc on a horizon line reads specifically as daybreak. Inherits
+ * `currentColor` and the shared 1.6 stroke of the tab-bar set.
  */
 export function Sun({
   size = 20,
@@ -15,21 +18,21 @@ export function Sun({
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={2.2}
+      strokeWidth={1.6}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
       {...props}
     >
-      <circle cx="12" cy="12" r="4.25" />
-      <path d="M12 3v2.2" />
-      <path d="M12 18.8V21" />
-      <path d="M3 12h2.2" />
-      <path d="M18.8 12H21" />
-      <path d="M5.6 5.6l1.55 1.55" />
-      <path d="M16.85 16.85l1.55 1.55" />
-      <path d="M5.6 18.4l1.55-1.55" />
-      <path d="M16.85 7.15l1.55-1.55" />
+      {/* half-sun resting on the horizon */}
+      <path d="M7.4 16.5 a4.6 4.6 0 0 1 9.2 0" />
+      {/* horizon, with a fainter ground line beneath */}
+      <line x1="3" y1="16.5" x2="21" y2="16.5" />
+      <line x1="6.5" y1="20" x2="17.5" y2="20" strokeOpacity="0.5" />
+      {/* three rays above the dome */}
+      <line x1="12" y1="3.4" x2="12" y2="5.6" />
+      <line x1="5.5" y1="6.4" x2="7" y2="7.9" />
+      <line x1="18.5" y1="6.4" x2="17" y2="7.9" />
     </svg>
   );
 }

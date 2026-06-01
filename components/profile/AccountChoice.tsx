@@ -49,9 +49,9 @@ export function AccountChoice() {
             On this device only
           </p>
           <p className="mt-4 font-serif text-ui text-paper/85 leading-[1.65]">
-            Everything you save (highlights, notes, bookmarks, prayer
-            streak, reader prefs) is kept in your browser&rsquo;s local
-            storage. Nothing leaves this device.
+            Everything you save (highlights, notes, bookmarks, reader
+            prefs) is kept in your browser&rsquo;s local storage. Nothing
+            leaves this device.
           </p>
           <ul className="mt-4 space-y-1.5 font-sans text-detail text-paper/70 leading-[1.55]">
             <li>+ No email, no sign-in.</li>

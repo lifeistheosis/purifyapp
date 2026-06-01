@@ -9,7 +9,6 @@ import { MobileCard } from "./MobileCard";
 import { MobileHeader } from "./MobileHeader";
 import { MobileHeroCard } from "./MobileHeroCard";
 import { MobileSectionLabel } from "./MobileSectionLabel";
-import { JesusPrayerCounter } from "./JesusPrayerCounter";
 import { DayClock } from "./DayClock";
 import { DiptychPreview } from "./DiptychPreview";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
@@ -44,7 +43,7 @@ const HERO_COPY: Record<
     body: "The Jesus Prayer carries through the middle of the day.",
   },
   evening: {
-    eyebrow: "The day, laid down",
+    eyebrow: "The day, behind",
     headline: "Trisagion, examination of the day, Into Thy hands.",
     body: "Close the day with the same quiet you opened it with.",
   },
@@ -53,14 +52,15 @@ const HERO_COPY: Record<
 /**
  * Prayers mobile shell — "the rule of life."
  *
- *   1. DayClock hero: a small SVG arc of the four canonical Hours +
- *      Compline with the current local time pulsing in rubric red. The
- *      kicker reads "Now: <Hour>" or "Coming up: <Hour>." Tint flips
- *      gold/warm/deep by time of day.
- *   2. JesusPrayerCounter (the user's primary one-tap action).
- *   3. DiptychPreview: a horizontal row of names from the user's
+ *   1. Hero: eyebrow + headline + body span the full card width, with the
+ *      DayClock (an SVG arc of the four canonical Hours + Compline, the
+ *      current local time pulsing in rubric red) centered beneath them.
+ *      Stacked rather than set beside the text so the headline isn't
+ *      crushed into a sliver on narrow phones. Tint flips gold/warm/deep
+ *      by time of day.
+ *   2. DiptychPreview: a horizontal row of names from the user's
  *      diptychs, rendered only when local lists are non-empty.
- *   4. "The daily rules" — calmer timeline of morning / evening / rope /
+ *   3. "The daily rules" — calmer timeline of morning / evening / rope /
  *      diptychs / Hours / akathists / learn, body tightened to one
  *      sentence each.
  */
@@ -79,17 +79,15 @@ export function PrayersMobile() {
         tint={TINT[mode]}
         eyebrow={copy.eyebrow}
         headline={<span>{copy.headline}</span>}
-        body={<span>{copy.body}</span>}
-        aside={
-          <div className="shrink-0">
-            <DayClock />
-          </div>
+        body={
+          <>
+            <p>{copy.body}</p>
+            <div className="mt-6 flex justify-center">
+              <DayClock />
+            </div>
+          </>
         }
       />
-
-      <div className="mt-5">
-        <JesusPrayerCounter />
-      </div>
 
       <div className="mt-5">
         <DiptychPreview />

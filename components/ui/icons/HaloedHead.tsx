@@ -1,10 +1,12 @@
 import type { SVGProps } from "react";
 
 /**
- * Haloed head silhouette, a face inside a halo ring with eight small
- * radiating points. Reads as a saint's portrait icon at small size and
- * communicates personhood-before-God for the You tab. Replaces the
- * generic User glyph (a circle-and-shoulders shape used in every app).
+ * Haloed bust — a head with a halo ring and shoulders, used for the
+ * "You" tab. Reads as a saint's portrait icon (personhood-before-God)
+ * rather than the generic user glyph. The earlier version had eight
+ * radiating points, which made it a near-twin of the rayed "Sun" icon;
+ * the rays are gone and the shoulders are emphasised so it reads as a
+ * person. Shares the 1.6 stroke of the tab-bar set.
  */
 export function HaloedHead({
   size = 22,
@@ -17,27 +19,18 @@ export function HaloedHead({
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.4}
+      strokeWidth={1.6}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
       {...props}
     >
-      {/* halo ring */}
-      <circle cx="12" cy="10" r="6" />
-      {/* head silhouette inside the halo */}
-      <circle cx="12" cy="10" r="3.4" strokeOpacity="0.85" />
-      {/* eight radiating points around the halo */}
-      <line x1="12" y1="2.4" x2="12" y2="3.6" />
-      <line x1="12" y1="16.4" x2="12" y2="17.6" />
-      <line x1="4.4" y1="10" x2="5.6" y2="10" />
-      <line x1="18.4" y1="10" x2="19.6" y2="10" />
-      <line x1="6.6" y1="4.6" x2="7.5" y2="5.5" />
-      <line x1="16.5" y1="14.5" x2="17.4" y2="15.4" />
-      <line x1="17.4" y1="4.6" x2="16.5" y2="5.5" />
-      <line x1="7.5" y1="14.5" x2="6.6" y2="15.4" />
-      {/* shoulders, faint */}
-      <path d="M6 21 C 8 18.5, 16 18.5, 18 21" strokeOpacity="0.55" />
+      {/* halo ring behind the head */}
+      <circle cx="12" cy="8.5" r="4.7" strokeOpacity="0.55" />
+      {/* head */}
+      <circle cx="12" cy="8.5" r="2.7" />
+      {/* shoulders / bust */}
+      <path d="M5.4 20.5 C6.6 16.4 17.4 16.4 18.6 20.5" />
     </svg>
   );
 }

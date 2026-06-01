@@ -491,8 +491,8 @@ export default async function PrayersPage() {
  {/* ===== Sign-in nudge ===== */}
  <p className="text-center font-sans text-caption text-paper/45 leading-[1.65] pt-4">
  {isDe
- ? "Deine Gebetsregel-Strähnen und Markierungen leben auf diesem Gerät. Melde dich an, um sie über Geräte hinweg zu behalten."
- : "Your prayer-rule streaks and highlights live on this device. Sign in to keep them across devices."}{" "}
+ ? "Deine Lesezeichen, Notizen und Markierungen leben auf diesem Gerät. Melde dich an, um sie über Geräte hinweg zu behalten."
+ : "Your bookmarks, notes, and highlights live on this device. Sign in to keep them across devices."}{" "}
  <Link
  href="/account"
  className="text-paper/65 hover:text-paper underline underline-offset-2 decoration-paper/25"

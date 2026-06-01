@@ -6,7 +6,7 @@ import { cn } from "@/lib/cn";
 import { Sun } from "@/components/ui/icons/Sun";
 import { Codex } from "@/components/ui/icons/Codex";
 import { Octogram } from "@/components/ui/icons/Octogram";
-import { Orans } from "@/components/ui/icons/Orans";
+import { PrayerRope } from "@/components/ui/icons/PrayerRope";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -68,7 +68,7 @@ export function MobileTabBar() {
       key: "prayers",
       label: t("nav.prayers"),
       href: "/prayers",
-      Icon: Orans,
+      Icon: PrayerRope,
       matches: (p) =>
         (p === "/prayers" || p.startsWith("/prayers/")) && p !== "/prayers/today",
     },

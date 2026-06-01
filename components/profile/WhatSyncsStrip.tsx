@@ -15,8 +15,8 @@ export function WhatSyncsStrip() {
       body: "Verses, chapters, and saint-writing sections you've kept.",
     },
     {
-      label: "Prayer streaks",
-      body: "Morning and evening rule completions, days in a row.",
+      label: "Diptychs",
+      body: "The names you carry — the living and the reposed — in your prayers.",
     },
   ];
   return (

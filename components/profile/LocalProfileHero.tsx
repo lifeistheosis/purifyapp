@@ -73,9 +73,9 @@ export function LocalProfileHero() {
       </div>
 
       <p className="mt-5 font-serif text-body text-paper/80 leading-[1.7]">
-        Highlights, notes, bookmarks, and your prayer streak live in
-        this browser only. They will not follow you to another device.
-        Either of these is a real, reversible move:
+        Highlights, notes, and bookmarks live in this browser only. They
+        will not follow you to another device. Either of these is a real,
+        reversible move:
       </p>
 
       <div className="mt-5 flex flex-col sm:flex-row gap-3">
@@ -110,9 +110,8 @@ export function LocalProfileHero() {
 
       <p className="mt-5 font-sans text-caption text-paper/45 leading-[1.55]">
         Upgrading will sync your local highlights, notes, and bookmarks
-        to your account the first time you sign in. Prayer streaks and
-        reader settings stay on this device for now (no server table
-        for them yet).
+        to your account the first time you sign in. Reader settings stay
+        on this device for now (no server table for them yet).
       </p>
     </section>
   );

@@ -99,7 +99,7 @@
   "account.h1": "Setzen Sie dort fort, wo Sie aufgehört haben.",
   "account.localProfile": "Lokales Profil",
   "account.publicAccount": "Öffentliches Konto",
-  "account.localProfileDescription": "Markierungen, Notizen, Lesezeichen und Ihre Gebetsserie bleiben nur in diesem Browser. Keine serverseitige Aufzeichnung.",
+  "account.localProfileDescription": "Markierungen, Notizen und Lesezeichen bleiben nur in diesem Browser. Keine serverseitige Aufzeichnung.",
   "account.publicAccountDescription": "Synchronisieren Sie Notizen und Lesezeichen geräteübergreifend mit einem öffentlichen Konto, geschützt durch Zeilenebene-Sicherheit.",
   "account.tabs.profile": "Profil",
   "account.tabs.security": "Sicherheit",
@@ -121,7 +121,7 @@
   "signin.comingSoon": "Demnächst",
 
   "signup.h1": "Erstellen Sie Ihr Konto.",
-  "signup.subtitle": "Synchronisieren Sie Notizen, Lesezeichen und Gebetsserie geräteübergreifend.",
+  "signup.subtitle": "Synchronisieren Sie Notizen, Lesezeichen und Markierungen geräteübergreifend.",
   "signup.submit": "Konto erstellen",
   "signup.alreadyHaveAccount": "Schon ein Konto? Anmelden →",
 

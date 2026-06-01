@@ -1,33 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
-import { Bolt } from "@/components/ui/icons/Bolt";
-
-const STREAK_KEY = "purify:prayer-streak";
-const STREAK_EVENT = "purify:prayer-streak";
-
-function subscribeStreak(callback: () => void) {
-  if (typeof window === "undefined") return () => {};
-  window.addEventListener("storage", callback);
-  window.addEventListener(STREAK_EVENT, callback);
-  return () => {
-    window.removeEventListener("storage", callback);
-    window.removeEventListener(STREAK_EVENT, callback);
-  };
-}
-
-function readStreak(): number {
-  if (typeof window === "undefined") return 0;
-  try {
-    const raw = window.localStorage.getItem(STREAK_KEY);
-    if (!raw) return 0;
-    const parsed = JSON.parse(raw) as { both?: number };
-    return typeof parsed?.both === "number" ? parsed.both : 0;
-  } catch {
-    return 0;
-  }
-}
 
 /**
  * Mobile top bar for the Today shell.
@@ -35,12 +8,8 @@ function readStreak(): number {
  * Left: two text tabs (Today / Calendar). The active one carries a 2px
  * rubric-red underline (#c1272d). Tapping Calendar routes to /calendar.
  *
- * Right: small lightning glyph + the prayer-rule streak count, a bell
- * button linking to /whats-new, and a circular avatar slot.
- *
- * The streak count reads from the same localStorage key the v5.4
- * ProfileStats reads ("purify:prayer-streak", a JSON blob). Falls back
- * to 0 when missing.
+ * Right: a bell button linking to /whats-new, and a circular avatar slot.
+ * No streak counter — prayer life is not scored back to the user.
  */
 export function MobileTopTabs({
   active,
@@ -51,12 +20,6 @@ export function MobileTopTabs({
   labels: { today: string; calendar: string };
   avatar: React.ReactNode;
 }) {
-  const streak = useSyncExternalStore(
-    subscribeStreak,
-    readStreak,
-    () => 0,
-  );
-
   return (
     <header className="sticky top-0 z-30 bg-night/95 backdrop-blur-sm border-b border-paper/8">
       <div className="flex items-center justify-between px-5 pt-3 pb-2">
@@ -70,14 +33,8 @@ export function MobileTopTabs({
           />
         </nav>
 
-        {/* Right cluster: streak, bell, avatar */}
+        {/* Right cluster: bell, avatar */}
         <div className="flex items-center gap-3">
-          <div className="inline-flex items-center gap-1 text-crimson">
-            <Bolt size={14} />
-            <span className="font-sans text-ui font-semibold tabular-nums">
-              {streak}
-            </span>
-          </div>
           <Link
             href="/whats-new"
             aria-label="What's new"

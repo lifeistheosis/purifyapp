@@ -2,16 +2,15 @@
 
 // Prayer rule reader — morning / evening / future hours + akathists.
 //
-// Per-prayer "Mark prayed" toggle (today's set is in localStorage). When
-// the whole rule is marked done, the date is appended to the rolling
-// dates[] array — no streak integer. The RhythmStrip below shows the
-// last 14 days as dots. Each prayer also carries a bookmark star that
-// writes a `kind: 'prayer'` row to localStorage (and to Supabase if
-// the user is signed in, via the existing bookmarks sync bridge).
+// Per-prayer "Mark prayed" toggle (today's set is in localStorage),
+// shown as a simple "X of N prayed today" progress for the current
+// session only — no streaks, no history grid. Each prayer also carries
+// a bookmark star that writes a `kind: 'prayer'` row to localStorage
+// (and to Supabase if the user is signed in, via the existing bookmarks
+// sync bridge).
 
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { cn } from "@/lib/cn";
-import { RhythmStrip } from "./RhythmStrip";
 import {
   markRuleCompletedToday,
   readTodayDone,
@@ -182,11 +181,6 @@ export function PrayerRuleReader({ rule }: { rule: Rule }) {
             style={{ width: `${Math.round(progress * 100)}%` }}
           />
         </div>
-      </div>
-
-      {/* Rhythm strip — 14-day pattern */}
-      <div className="mb-6 rounded-md border border-paper/12 bg-paper/[0.03] p-4">
-        <RhythmStrip ruleId={rule.id} />
       </div>
 
       {/* Completion banner */}

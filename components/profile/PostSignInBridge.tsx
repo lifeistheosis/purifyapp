@@ -89,8 +89,8 @@ export function PostSignInBridge() {
         <p className="font-serif text-body text-paper/90 leading-[1.65]">
           Your highlights, notes, and bookmarks from this device are being
           pushed to your account now. They&rsquo;ll show up on any device
-          you sign in on. Prayer streaks and reader settings stay on this
-          device for now (no server table yet).
+          you sign in on. Reader settings stay on this device for now (no
+          server table yet).
         </p>
       </div>
       <button

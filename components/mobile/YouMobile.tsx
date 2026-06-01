@@ -3,13 +3,12 @@
 // You / Account mobile shell — "the personal dashboard."
 //
 //   1. Violet profile hero (avatar + display name + member-since).
-//   2. 3-tile MobileStatGrid (Morning 14d / Evening 14d / Knots YTD).
-//      Bookmarks moved into the SavedPreview block below so the stat
-//      grid stays focused on the prayer life.
-//   3. RhythmHeatmap — 30 cells, one per day, lit when prayed.
-//   4. SavedPreview — three most-recent bookmarks with kind chips.
-//   5. SettingsList — iOS-style row list (Account, Notifications,
+//   2. SavedPreview — three most-recent bookmarks with kind chips.
+//   3. SettingsList — iOS-style row list (Account, Notifications,
 //      Language, Privacy, Support, What's new, About, Sign out).
+//
+// No streak counters or rhythm grids: the rule is the rule, the day is
+// the day. Prayer life is not scored back to the user.
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -18,17 +17,11 @@ import { MobileShell } from "./MobileShell";
 import { MobileCard } from "./MobileCard";
 import { MobileHeader } from "./MobileHeader";
 import { MobileHeroCard } from "./MobileHeroCard";
-import { MobileStatGrid } from "./MobileStatGrid";
 import { MobileSectionLabel } from "./MobileSectionLabel";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
-import { RhythmHeatmap } from "./RhythmHeatmap";
 import { SavedPreview } from "./SavedPreview";
 import { SettingsList, type SettingsItem } from "./SettingsList";
-import {
-  readPrayedDates,
-  readIntentions,
-  readRopeSessions,
-} from "@/lib/prayers/storage";
+import { readIntentions } from "@/lib/prayers/storage";
 
 type AuthState =
   | { kind: "loading" }
@@ -56,10 +49,7 @@ function formatJoined(iso: string | null): string {
 export function YouMobile() {
   const [auth, setAuth] = useState<AuthState>({ kind: "loading" });
   const [counts, setCounts] = useState({
-    morningLast14: 0,
-    eveningLast14: 0,
     intentions: 0,
-    ropeKnotsYTD: 0,
   });
 
   useEffect(() => {
@@ -90,36 +80,18 @@ export function YouMobile() {
     })();
 
     function recompute() {
-      const cutoff = new Date();
-      cutoff.setDate(cutoff.getDate() - 14);
-      const within = (d: string) => new Date(d + "T00:00:00") >= cutoff;
-      const morningLast14 = readPrayedDates("morning").filter(within).length;
-      const eveningLast14 = readPrayedDates("evening").filter(within).length;
       const intentions =
         readIntentions("living").length + readIntentions("departed").length;
-      const yearStart = new Date(new Date().getFullYear(), 0, 1).getTime();
-      const ropeKnotsYTD = readRopeSessions()
-        .filter((s) => Date.parse(s.startedAt) >= yearStart)
-        .reduce((a, s) => a + s.knots, 0);
-      setCounts({
-        morningLast14,
-        eveningLast14,
-        intentions,
-        ropeKnotsYTD,
-      });
+      setCounts({ intentions });
     }
     recompute();
     function on() {
       recompute();
     }
-    window.addEventListener("purify:prayer-completed", on);
     window.addEventListener("purify:intentions", on);
-    window.addEventListener("purify:rope", on);
     window.addEventListener("storage", on);
     return () => {
-      window.removeEventListener("purify:prayer-completed", on);
       window.removeEventListener("purify:intentions", on);
-      window.removeEventListener("purify:rope", on);
       window.removeEventListener("storage", on);
     };
   }, []);
@@ -238,34 +210,6 @@ export function YouMobile() {
         }
         href={signedIn ? "/account" : undefined}
       />
-
-      <div className="mt-5">
-        <MobileStatGrid
-          stats={[
-            {
-              label: "Morning · 14d",
-              value: counts.morningLast14,
-              href: "/prayers/morning",
-              accent: counts.morningLast14 >= 10,
-            },
-            {
-              label: "Evening · 14d",
-              value: counts.eveningLast14,
-              href: "/prayers/evening",
-              accent: counts.eveningLast14 >= 10,
-            },
-            {
-              label: "Knots · YTD",
-              value: counts.ropeKnotsYTD.toLocaleString(),
-              href: "/prayers/rope",
-            },
-          ]}
-        />
-      </div>
-
-      <div className="mt-5">
-        <RhythmHeatmap />
-      </div>
 
       <div className="mt-5">
         <SavedPreview />

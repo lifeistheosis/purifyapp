@@ -2,10 +2,11 @@ import type { SVGProps } from "react";
 
 /**
  * Eight-pointed star (Theotokos / Star of Bethlehem). Two overlapping
- * squares rotated 45° to each other, a glyph found across Orthodox
+ * squares rotated 45° to each other — a glyph found across Orthodox
  * iconography on the Theotokos's veil and as the star above the
- * Nativity. Replaces the generic Compass icon for the Discover tab so
- * the mobile nav reads in the same vocabulary as the iconography.
+ * Nativity. Uses MITER joins (not round) so the eight points stay
+ * sharp; rounded joins made the overlapping squares read as a flower.
+ * Shares the 1.6 stroke of the tab-bar set.
  */
 export function Octogram({
   size = 22,
@@ -18,16 +19,16 @@ export function Octogram({
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.4}
+      strokeWidth={1.6}
       strokeLinecap="round"
-      strokeLinejoin="round"
+      strokeLinejoin="miter"
       aria-hidden="true"
       {...props}
     >
       {/* upright square */}
-      <rect x="5.5" y="5.5" width="13" height="13" />
-      {/* same square, rotated 45° around center (12, 12) */}
-      <polygon points="12,2.8 21.2,12 12,21.2 2.8,12" />
+      <rect x="5.6" y="5.6" width="12.8" height="12.8" />
+      {/* same square, rotated 45° around the center (12, 12) */}
+      <polygon points="12,2.5 21.5,12 12,21.5 2.5,12" />
     </svg>
   );
 }

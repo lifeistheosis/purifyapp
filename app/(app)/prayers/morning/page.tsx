@@ -7,7 +7,7 @@ import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslat
 export const metadata = {
   title: "Morning Rule",
   description:
-    "A short Orthodox morning prayer rule for daily use, prayer by prayer with a streak counter.",
+    "A short Orthodox morning prayer rule for daily use, prayer by prayer.",
 };
 
 export default async function MorningRulePage() {

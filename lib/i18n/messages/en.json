@@ -99,7 +99,7 @@
   "account.h1": "Pick up where you left off.",
   "account.localProfile": "Local profile",
   "account.publicAccount": "Public account",
-  "account.localProfileDescription": "Highlights, notes, bookmarks, and your prayer streak live in this browser only. No server-side row.",
+  "account.localProfileDescription": "Highlights, notes, and bookmarks live in this browser only. No server-side row.",
   "account.publicAccountDescription": "Sync your notes and bookmarks across devices via a public account, behind row-level security.",
   "account.tabs.profile": "Profile",
   "account.tabs.security": "Security",
@@ -121,7 +121,7 @@
   "signin.comingSoon": "Coming soon",
 
   "signup.h1": "Create your account.",
-  "signup.subtitle": "Sync your notes, bookmarks, and prayer streak across devices.",
+  "signup.subtitle": "Sync your notes, bookmarks, and highlights across devices.",
   "signup.submit": "Create account",
   "signup.alreadyHaveAccount": "Already have an account? Sign in →",
 

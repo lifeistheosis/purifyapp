@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { readPrayedDates } from "@/lib/prayers/storage";
 
 /**
  * Live counters drawn from localStorage. Reads on mount and any time a
@@ -11,6 +10,7 @@ import { readPrayedDates } from "@/lib/prayers/storage";
  * Four cards: verses highlighted, paragraphs highlighted, notes written,
  * bookmarks saved. The numbers update without a reload because every
  * highlight, note, or bookmark change broadcasts an event we listen to.
+ * No prayer-streak counters: the rule is the rule, the day is the day.
  */
 export function ProfileStats() {
   const [stats, setStats] = useState({
@@ -18,9 +18,6 @@ export function ProfileStats() {
     paragraphs: 0,
     notes: 0,
     bookmarks: 0,
-    morningStreak: 0,
-    eveningStreak: 0,
-    bothStreak: 0,
   });
 
   useEffect(() => {
@@ -59,27 +56,11 @@ export function ProfileStats() {
       } catch {
         /* ignore */
       }
-      // Volume metric, not streak: how many of the last 14 days the rule
-      // was completed. Reads from the rolling dates[] array maintained by
-      // lib/prayers/storage.ts. Never panics on a skipped day.
-      const morningDates = readPrayedDates("morning");
-      const eveningDates = readPrayedDates("evening");
-      const cutoff = new Date();
-      cutoff.setDate(cutoff.getDate() - 14);
-      const isWithin = (d: string) => new Date(d + "T00:00:00") >= cutoff;
-      const morningStreak = morningDates.filter(isWithin).length;
-      const eveningStreak = eveningDates.filter(isWithin).length;
-      const bothStreak = morningDates.filter(
-        (d) => isWithin(d) && eveningDates.includes(d),
-      ).length;
       setStats({
         verses,
         paragraphs,
         notes,
         bookmarks,
-        morningStreak,
-        eveningStreak,
-        bothStreak,
       });
     }
     recompute();
@@ -88,12 +69,10 @@ export function ProfileStats() {
     }
     window.addEventListener("purify:annotation", on);
     window.addEventListener("purify:bookmark", on);
-    window.addEventListener("purify:prayer-completed", on);
     window.addEventListener("storage", on);
     return () => {
       window.removeEventListener("purify:annotation", on);
       window.removeEventListener("purify:bookmark", on);
-      window.removeEventListener("purify:prayer-completed", on);
       window.removeEventListener("storage", on);
     };
   }, []);
@@ -104,12 +83,6 @@ export function ProfileStats() {
     { label: "Notes written", value: stats.notes },
     { label: "Bookmarks saved", value: stats.bookmarks },
   ];
-  const prayerItems = [
-    { label: "Morning rule · last 14 days", value: stats.morningStreak, suffix: stats.morningStreak === 1 ? "day" : "days" },
-    { label: "Evening rule · last 14 days", value: stats.eveningStreak, suffix: stats.eveningStreak === 1 ? "day" : "days" },
-    { label: "Both rules · last 14 days", value: stats.bothStreak, suffix: stats.bothStreak === 1 ? "day" : "days" },
-  ];
-
   return (
     <>
       <section className="mt-8">
@@ -124,30 +97,6 @@ export function ProfileStats() {
             >
               <p className="font-sans text-heading md:text-display-sm font-bold text-gold tabular-nums leading-none">
                 {it.value}
-              </p>
-              <p className="mt-2 font-sans text-caption text-paper/65 leading-[1.4]">
-                {it.label}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="mt-6">
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-          Your prayer
-        </p>
-        <ul className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {prayerItems.map((it) => (
-            <li
-              key={it.label}
-              className="rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-5"
-            >
-              <p className="font-sans text-heading md:text-display-sm font-bold text-gold tabular-nums leading-none">
-                {it.value}
-                <span className="ml-1.5 align-baseline font-sans text-detail font-normal text-paper/55 tracking-normal">
-                  {it.suffix}
-                </span>
               </p>
               <p className="mt-2 font-sans text-caption text-paper/65 leading-[1.4]">
                 {it.label}

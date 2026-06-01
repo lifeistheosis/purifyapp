@@ -118,8 +118,8 @@ export function ProfileSyncStatus() {
           )}
           {!err && last && (
             <p className="mt-1 font-sans text-caption text-paper/45">
-              Your highlights, notes, bookmarks, and prayer streaks are saved
-              to the server and pulled back on every device.
+              Your highlights, notes, and bookmarks are saved to the server
+              and pulled back on every device.
             </p>
           )}
         </div>
