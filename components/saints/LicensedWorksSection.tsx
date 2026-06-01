@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { LicensedWork } from "@/lib/saints/licensedWorks";
 import { buildAmazonUrl, getAmazonCoverUrl } from "@/lib/affiliate/amazon";
+import { LicensedWorkCover } from "./LicensedWorkCover";
 
 const ROLE_LABEL: Record<NonNullable<LicensedWork["authorRole"]>, string> = {
   by: "By",
@@ -52,14 +53,13 @@ function LicensedWorkCard({ work }: { work: LicensedWork }) {
         className="block group"
       >
         <div className="aspect-[2/3] w-full overflow-hidden rounded-md bg-night border border-paper/8 flex items-center justify-center">
-          {/* Plain <img> intentional: Amazon product covers aren't whitelisted
-              for next/image and the size is small enough that LCP is fine. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          {/* Amazon product covers aren't whitelisted for next/image; the
+              client cover handles Amazon's 1×1 "no image" placeholder by
+              falling back to a typographic tile. */}
+          <LicensedWorkCover
             src={cover}
-            alt={`Cover of ${work.title}`}
-            loading="lazy"
-            className="h-full w-full object-cover group-hover:opacity-90 transition-opacity duration-200"
+            title={work.title}
+            author={work.author}
           />
         </div>
       </a>
