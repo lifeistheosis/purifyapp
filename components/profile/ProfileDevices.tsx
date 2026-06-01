@@ -45,39 +45,39 @@ export function ProfileDevices() {
 
   return (
     <section className="mt-6">
-      <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
         Devices
       </p>
       <div className="rounded-md border border-paper/12 bg-paper/[0.03] divide-y divide-paper/8 overflow-hidden">
         <div className="px-5 py-4">
-          <p className="font-sans text-[14.5px] font-semibold text-paper">
+          <p className="font-sans text-ui font-semibold text-paper">
             {label}
-            <span className="ml-2 font-sans text-[11px] font-normal uppercase tracking-[1.2px] text-gold/80">
+            <span className="ml-2 font-sans text-eyebrow font-normal uppercase tracking-[1.2px] text-gold/80">
               This device
             </span>
           </p>
-          <p className="mt-1 font-sans text-[12px] text-paper/55">
+          <p className="mt-1 font-sans text-caption text-paper/55">
             Active session
           </p>
         </div>
         <div className="px-5 py-4 flex items-center justify-between gap-4 flex-wrap">
           <div className="min-w-0">
-            <p className="font-sans text-[14px] font-medium text-paper">
+            <p className="font-sans text-ui font-medium text-paper">
               Sign out of all other devices
             </p>
-            <p className="mt-1 font-sans text-[12.5px] text-paper/55 leading-[1.5] max-w-[480px]">
+            <p className="mt-1 font-sans text-caption text-paper/55 leading-[1.5] max-w-[480px]">
               Revokes every active session except this one. Your data stays
               put; only the sign-in tokens are invalidated.
             </p>
             {msg && (
-              <p className="mt-2 font-sans text-[12.5px] text-paper/80">{msg}</p>
+              <p className="mt-2 font-sans text-caption text-paper/80">{msg}</p>
             )}
           </div>
           <button
             type="button"
             onClick={signOutOthers}
             disabled={busy}
-            className="shrink-0 font-sans text-[13px] font-medium rounded-pill border border-paper/25 bg-paper/[0.06] text-paper px-4 py-2 hover:bg-paper/10 hover:border-paper/45 disabled:opacity-60 transition-colors"
+            className="shrink-0 font-sans text-detail font-medium rounded-pill border border-paper/25 bg-paper/[0.06] text-paper px-4 py-2 hover:bg-paper/10 hover:border-paper/45 disabled:opacity-60 transition-colors"
           >
             {busy ? "Working…" : "Sign out others"}
           </button>

@@ -10,6 +10,7 @@ import { StudyRail } from "@/components/bible/StudyRail";
 import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
 import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
 import { ReadingProgressBar } from "@/components/bible/ReadingProgressBar";
+import { BibleLastVisitWriter } from "@/components/bible/BibleLastVisitWriter";
 import { ChapterStickyHeader } from "@/components/bible/ChapterStickyHeader";
 import { MobileChapterStrip } from "@/components/bible/MobileChapterStrip";
 import { MobileChapterPill } from "@/components/bible/MobileChapterPill";
@@ -147,6 +148,7 @@ export default async function BibleChapterPage({
  />
  <div className="bg-night flex">
  <ChapterKeyNav slug={book} chapter={chapterNum} />
+ <BibleLastVisitWriter slug={book} bookName={b!.name} chapter={chapterNum} />
  <VerseFocusFlash />
  <ReadingProgressBar
  bookName={b!.name}
@@ -199,10 +201,10 @@ export default async function BibleChapterPage({
  {/* Reader column */}
  <div className="min-w-0">
  <header id="chapter-title" className="mb-6">
- <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+ <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
  {b!.name}
  </p>
- <h1 className="mt-1 font-serif text-[36px] md:text-[44px] leading-none text-paper">
+ <h1 className="mt-1 font-serif text-display-sm md:text-display leading-none text-paper">
  Chapter {chapterNum}
  </h1>
  </header>
@@ -211,17 +213,17 @@ export default async function BibleChapterPage({
  {intro && (
  <details className="mb-10 group rounded-md border border-paper/10 bg-paper/[0.03] open:bg-paper/[0.05] transition-colors">
  <summary className="cursor-pointer list-none px-6 py-4 flex items-center justify-between">
- <span className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 group-open:text-paper/75 transition-colors">
+ <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 group-open:text-paper/75 transition-colors">
  About this book
  </span>
  <span
  aria-hidden
- className="text-paper/40 group-open:rotate-180 transition-transform duration-200 text-[12px]"
+ className="text-paper/40 group-open:rotate-180 transition-transform duration-200 text-caption"
  >
  ▾
  </span>
  </summary>
- <div className="px-6 pb-6 -mt-1 font-serif text-[16px] leading-[1.7] text-paper/80 whitespace-pre-line">
+ <div className="px-6 pb-6 -mt-1 font-serif text-body leading-[1.7] text-paper/80 whitespace-pre-line">
  {intro}
  </div>
  </details>
@@ -251,13 +253,13 @@ export default async function BibleChapterPage({
  <ChapterPager slug={book} chapter={chapterNum} />
 
  {!usingLicensed && (
- <p className="hidden md:block mt-10 mb-3 font-sans text-[11px] text-paper/40 leading-[1.6]">
+ <p className="hidden md:block mt-10 mb-3 font-sans text-eyebrow text-paper/40 leading-[1.6]">
  ← → chapters · drag across words to highlight a phrase · click any Greek word for definition · Cmd+Enter to save a note
  </p>
  )}
 
  {!usingLicensed && (
- <p className="mt-6 md:mt-3 font-sans text-[11px] text-paper/35 leading-[1.6]">
+ <p className="mt-6 md:mt-3 font-sans text-eyebrow text-paper/35 leading-[1.6]">
  Old Testament: Brenton&rsquo;s English Septuagint (1851, public domain).
  New Testament: King James Version (public domain). Patristic
  commentary from Schaff&rsquo;s Ante-Nicene and Nicene Fathers
@@ -273,7 +275,7 @@ export default async function BibleChapterPage({
  {hasCommentary && (
  <aside className="hidden lg:block">
  <div className="sticky top-[88px] max-h-[calc(100dvh-104px)] overflow-y-auto scrollbar-thin pr-2 -mr-2">
- <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  Patristic commentary
  </p>
  <StudyRail commentary={commentary} />

@@ -58,15 +58,15 @@ export default async function SupportPage() {
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
- <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  {isDe ? "Unterstützung" : t(m, "support.eyebrow")}
  </p>
- <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  {isDe
  ? "Was das Werk trägt, und wie du es mitträgst."
  : t(m, "support.h1")}
  </h1>
- <p className="mt-6 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-6 font-serif text-body text-paper/85 leading-[1.7]">
  {isDe ? (
  <>
  Der Kern von Purify, die Heiligen, die Schriften, die
@@ -90,10 +90,10 @@ export default async function SupportPage() {
  {/* Live goal */}
  <section className="mt-12 rounded-lg border border-paper/12 bg-paper/[0.03] p-6 md:p-8">
  <div className="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
- <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+ <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
  {isDe ? "Ziel dieses Monats" : "This month’s goal"}
  </p>
- <p className="font-sans text-[11px] text-paper/40">
+ <p className="font-sans text-eyebrow text-paper/40">
  {live
  ? isDe
  ? `Live · aktualisiert vor ${ago(live.fetchedAt)}`
@@ -104,13 +104,13 @@ export default async function SupportPage() {
  </p>
  </div>
  <div className="flex items-baseline justify-between gap-3 mb-3">
- <p className="font-sans text-[28px] md:text-[32px] font-bold text-paper tabular-nums">
+ <p className="font-sans text-title md:text-heading font-bold text-paper tabular-nums">
  {formatUsd(raised)}
- <span className="text-paper/45 text-[18px] font-normal">
+ <span className="text-paper/45 text-lede font-normal">
  {" "}{isDe ? "von" : "of"} {formatUsd(monthlyGoalUsd)}
  </span>
  </p>
- <p className="font-sans text-[13px] text-gold font-semibold tabular-nums">
+ <p className="font-sans text-detail text-gold font-semibold tabular-nums">
  {Math.round(pct * 100)}%
  </p>
  </div>
@@ -120,7 +120,7 @@ export default async function SupportPage() {
  style={{ width: `${Math.round(pct * 100)}%` }}
  />
  </div>
- <p className="mt-3 font-sans text-[12.5px] text-paper/55">
+ <p className="mt-3 font-sans text-caption text-paper/55">
  {live ? (
  isDe ? (
  <>
@@ -165,7 +165,7 @@ export default async function SupportPage() {
 
  {/* How to give */}
  <section className="mt-10">
- <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  {isDe ? "Wie du gibst" : "How to give"}
  </p>
  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -179,13 +179,13 @@ export default async function SupportPage() {
  }
  className="group rounded-md border border-paper/15 bg-paper/[0.03] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-5"
  >
- <p className="font-sans text-[16px] font-semibold text-paper leading-tight">
+ <p className="font-sans text-body font-semibold text-paper leading-tight">
  {d.label}
  </p>
- <p className="mt-2 font-sans text-[12.5px] text-paper/65 leading-[1.55]">
+ <p className="mt-2 font-sans text-caption text-paper/65 leading-[1.55]">
  {d.note}
  </p>
- <p className="mt-4 font-sans text-[12px] font-medium text-paper/65 group-hover:text-gold transition-colors">
+ <p className="mt-4 font-sans text-caption font-medium text-paper/65 group-hover:text-gold transition-colors">
  {isDe ? "Öffnen →" : "Open →"}
  </p>
  </Link>
@@ -195,7 +195,7 @@ export default async function SupportPage() {
 
  {/* Or join the community, Discord + Instagram */}
  <section className="mt-10">
- <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  {isDe ? "Oder tritt der Gemeinschaft bei" : "Or join the community"}
  </p>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -207,16 +207,16 @@ export default async function SupportPage() {
  >
  <div className="flex items-start justify-between gap-4">
  <div className="min-w-0">
- <p className="font-sans text-[16px] font-semibold text-paper leading-tight">
+ <p className="font-sans text-body font-semibold text-paper leading-tight">
  Discord
  </p>
- <p className="mt-2 font-sans text-[13.5px] text-paper/70 leading-[1.6]">
+ <p className="mt-2 font-sans text-detail text-paper/70 leading-[1.6]">
  {isDe
  ? "Gebetsanliegen, Vorschläge für Akathiste, Fragen zum Inhalt, ein Ort, gehört zu werden. Offen für jeden."
  : "Prayer requests, akathist suggestions, content questions, and a place to be heard. Open to everyone."}
  </p>
  </div>
- <span className="shrink-0 font-sans text-[13px] font-medium text-[#a4adff] group-hover:text-[#c7cdff] transition-colors mt-1">
+ <span className="shrink-0 font-sans text-detail font-medium text-link group-hover:text-link-soft transition-colors mt-1">
  {isDe ? "Öffnen ↗" : "Open ↗"}
  </span>
  </div>
@@ -229,16 +229,16 @@ export default async function SupportPage() {
  >
  <div className="flex items-start justify-between gap-4">
  <div className="min-w-0">
- <p className="font-sans text-[16px] font-semibold text-paper leading-tight">
+ <p className="font-sans text-body font-semibold text-paper leading-tight">
  Instagram &middot; @purifymylife
  </p>
- <p className="mt-2 font-sans text-[13.5px] text-paper/70 leading-[1.6]">
+ <p className="mt-2 font-sans text-detail text-paper/70 leading-[1.6]">
  {isDe
  ? "Der Heilige des Tages, das Fasten des Tages und gelegentlich eine kleine Notiz von Edgar. Keine Reels, kein Hinterherlaufen hinter dem Algorithmus."
  : "The day’s saint, the day’s fast, and the occasional small note from Edgar. No reels, no chasing the algorithm."}
  </p>
  </div>
- <span className="shrink-0 font-sans text-[13px] font-medium text-gold/85 group-hover:text-gold transition-colors mt-1">
+ <span className="shrink-0 font-sans text-detail font-medium text-gold/85 group-hover:text-gold transition-colors mt-1">
  {isDe ? "Öffnen ↗" : "Open ↗"}
  </span>
  </div>
@@ -248,10 +248,10 @@ export default async function SupportPage() {
 
  {/* Expense breakdown */}
  <section className="mt-14">
- <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  {isDe ? "Wohin das Geld geht" : "Where the money goes"}
  </p>
- <p className="font-serif text-[17px] text-paper/80 leading-[1.7] mb-6">
+ <p className="font-serif text-body text-paper/80 leading-[1.7] mb-6">
  {isDe ? (
  <>
  Jede Zeile ist echt. Die monatlichen Gesamtkosten zum Stand{" "}
@@ -275,25 +275,25 @@ export default async function SupportPage() {
  className="px-5 py-4 flex items-baseline justify-between gap-4 bg-paper/[0.02]"
  >
  <div className="min-w-0">
- <p className="font-sans text-[14.5px] font-semibold text-paper leading-tight">
+ <p className="font-sans text-ui font-semibold text-paper leading-tight">
  {e.label}
  </p>
  {e.note && (
- <p className="mt-1 font-sans text-[12.5px] text-paper/55 leading-[1.55]">
+ <p className="mt-1 font-sans text-caption text-paper/55 leading-[1.55]">
  {e.note}
  </p>
  )}
  </div>
- <p className="shrink-0 font-sans text-[15px] font-semibold text-gold tabular-nums">
+ <p className="shrink-0 font-sans text-ui font-semibold text-gold tabular-nums">
  {formatUsd(e.monthlyUsd)}{isDe ? "/Mon." : "/mo"}
  </p>
  </li>
  ))}
  <li className="px-5 py-4 flex items-baseline justify-between gap-4 bg-paper/[0.06]">
- <p className="font-sans text-[14.5px] font-bold text-paper">
+ <p className="font-sans text-ui font-bold text-paper">
  {isDe ? "Monatlicher Gesamtbetrag" : "Monthly total"}
  </p>
- <p className="font-sans text-[16px] font-bold text-paper tabular-nums">
+ <p className="font-sans text-body font-bold text-paper tabular-nums">
  {formatUsd(totalMonthlyExpense)}{isDe ? "/Mon." : "/mo"}
  </p>
  </li>
@@ -302,10 +302,10 @@ export default async function SupportPage() {
 
  {/* Free-forever note */}
  <section className="mt-14 rounded-lg border border-paper/12 bg-paper/[0.02] p-6">
- <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+ <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
  {isDe ? "Der Kern bleibt frei" : "The core stays free"}
  </p>
- <p className="font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="font-serif text-body text-paper/85 leading-[1.7]">
  {isDe ? (
  <>
  Die Heiligen, die Schriften mit dem Griechischen daneben, die
@@ -334,7 +334,7 @@ export default async function SupportPage() {
  </section>
 
  {/* Closing */}
- <p className="mt-14 font-serif italic text-center text-[18px] text-paper/70">
+ <p className="mt-14 font-serif italic text-center text-lede text-paper/70">
  {isDe
  ? "Was du auch gibst oder nicht gibst, wir sind froh, daß du da bist."
  : "Whatever you give, or do not give, we are glad you are here."}

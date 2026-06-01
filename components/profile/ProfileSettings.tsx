@@ -33,7 +33,7 @@ export function ProfileSettings() {
 
   return (
     <section className="mt-10 rounded-lg border border-paper/12 bg-paper/[0.02] p-6 md:p-7">
-      <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
         Settings
       </p>
 
@@ -95,7 +95,7 @@ function Toggle({
       onClick={onChange}
       aria-pressed={on}
       className={
-        "inline-flex items-center gap-2 rounded-pill border px-4 h-[36px] font-sans text-[13px] font-medium transition-colors " +
+        "inline-flex items-center gap-2 rounded-pill border px-4 h-[36px] font-sans text-detail font-medium transition-colors " +
         (on
           ? "border-gold text-night bg-gold hover:bg-gold/90"
           : "border-paper/15 bg-paper/[0.04] text-paper/85 hover:bg-paper/10 hover:border-paper/30")
@@ -131,11 +131,11 @@ function Row({
       }`}
     >
       <div className="min-w-0">
-        <p className="font-sans text-[14.5px] font-semibold text-paper leading-tight">
+        <p className="font-sans text-ui font-semibold text-paper leading-tight">
           {label}
         </p>
         {description && (
-          <p className="mt-1 font-sans text-[12.5px] text-paper/55 leading-[1.55]">
+          <p className="mt-1 font-sans text-caption text-paper/55 leading-[1.55]">
             {description}
           </p>
         )}
@@ -163,7 +163,7 @@ function SegGroup<T extends string>({
           onClick={() => onChange(o.value)}
           aria-pressed={value === o.value}
           className={
-            "font-sans text-[13px] font-medium rounded-pill px-3 py-1 transition-colors duration-150 " +
+            "font-sans text-detail font-medium rounded-pill px-3 py-1 transition-colors duration-150 " +
             (value === o.value
               ? "bg-paper text-night"
               : "text-paper/65 hover:text-paper")

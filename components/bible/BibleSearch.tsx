@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search } from "@/components/ui/icons/Search";
 import { searchBible, type SearchHit } from "@/lib/bible/books";
 
 /**
@@ -90,14 +90,14 @@ export function BibleSearch({
           onKeyDown={onKey}
           placeholder={placeholder}
           aria-label="Search the Bible"
-          className="w-full bg-paper/[0.04] border border-paper/15 rounded-pill pl-10 pr-4 py-3 font-sans text-[15px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/40 transition-colors duration-150"
+          className="w-full bg-paper/[0.04] border border-paper/15 rounded-pill pl-10 pr-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/40 transition-colors duration-150"
         />
       </div>
 
       {showDropdown && (
         <div className="absolute z-50 mt-2 left-0 right-0 rounded-md border border-paper/15 bg-night shadow-lg overflow-hidden">
           {hits.length === 0 ? (
-            <p className="px-4 py-3 font-sans text-[14px] text-paper/55">
+            <p className="px-4 py-3 font-sans text-ui text-paper/55">
               No matches.
             </p>
           ) : (
@@ -137,14 +137,14 @@ export function BibleSearch({
                         setQ("");
                       }}
                       className={
-                        "block px-4 py-3 font-sans text-[15px] " +
+                        "block px-4 py-3 font-sans text-ui " +
                         (i === activeIdx
                           ? "bg-paper/10 text-paper"
                           : "text-paper/85 hover:bg-paper/5")
                       }
                     >
                       <span className="font-medium">{label}</span>
-                      <span className="block text-[12px] text-paper/45 mt-0.5">
+                      <span className="block text-caption text-paper/45 mt-0.5">
                         {sub}
                       </span>
                     </Link>

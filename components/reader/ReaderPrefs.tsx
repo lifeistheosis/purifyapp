@@ -28,10 +28,10 @@ const PREFS_EVENT = "purify:reader-prefs";
 
 // Verse-body text classes per size.
 export const SIZE_CLASSES: Record<ReaderSize, string> = {
-  sm: "text-[15px] md:text-[16px] leading-[1.55]",
-  md: "text-[17px] md:text-[18px] leading-[1.6]",
-  lg: "text-[19px] md:text-[20px] leading-[1.65]",
-  xl: "text-[21px] md:text-[23px] leading-[1.7]",
+  sm: "text-ui md:text-body leading-[1.55]",
+  md: "text-body md:text-lede leading-[1.6]",
+  lg: "text-lede md:text-lede leading-[1.65]",
+  xl: "text-title-sm md:text-title-sm leading-[1.7]",
 };
 
 // Font-family classes per preset.
@@ -154,9 +154,9 @@ export function ReaderFontSizeButton() {
       onClick={cycleSize}
       title={`Text size: ${sizeLabel}. Click to change.`}
       aria-label={`Text size: ${sizeLabel}. Click to change.`}
-      className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-[13px] font-medium text-paper transition-colors"
+      className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
     >
-      <span className="font-sans text-[10.5px] font-semibold uppercase tracking-[1.2px] text-paper/50">
+      <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/50">
         Size
       </span>
       <span aria-hidden className="flex items-end gap-[3px]">
@@ -175,7 +175,7 @@ export function ReaderFontSizeButton() {
           );
         })}
       </span>
-      <span className="font-sans text-[12.5px] text-paper/70">{sizeLabel}</span>
+      <span className="font-sans text-caption text-paper/70">{sizeLabel}</span>
     </button>
   );
 }
@@ -193,9 +193,9 @@ export function ReaderFontFamilyButton() {
       onClick={cycleFont}
       title={`Font: ${fontLabel}. Click to change.`}
       aria-label={`Font: ${fontLabel}. Click to change.`}
-      className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-[13px] font-medium text-paper transition-colors"
+      className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
     >
-      <span className="font-sans text-[10.5px] font-semibold uppercase tracking-[1.2px] text-paper/50">
+      <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/50">
         Font
       </span>
       <span
@@ -205,10 +205,10 @@ export function ReaderFontFamilyButton() {
           previewClass,
         )}
       >
-        <span className="text-[14px] leading-none">A</span>
-        <span className="text-[10px] leading-none">a</span>
+        <span className="text-ui leading-none">A</span>
+        <span className="text-eyebrow leading-none">a</span>
       </span>
-      <span className="font-sans text-[12.5px] text-paper/70">{fontLabel}</span>
+      <span className="font-sans text-caption text-paper/70">{fontLabel}</span>
     </button>
   );
 }

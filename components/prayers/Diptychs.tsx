@@ -63,10 +63,10 @@ function DiptychSection({
     <section className="rounded-lg border border-paper/12 bg-paper/[0.02] p-5 md:p-6">
       <header className="flex items-baseline justify-between gap-3 flex-wrap mb-3">
         <div>
-          <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+          <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
             Diptych
           </p>
-          <h2 className="mt-1 font-sans text-[22px] md:text-[26px] font-bold text-paper">
+          <h2 className="mt-1 font-sans text-title-sm md:text-title font-bold text-paper">
             {heading}
           </h2>
         </div>
@@ -76,12 +76,12 @@ function DiptychSection({
             setEditingId(null);
             setAdding(true);
           }}
-          className="inline-flex items-center gap-1.5 rounded-pill border border-gold/40 bg-gold/[0.08] text-gold px-4 py-1.5 font-sans text-[13px] font-semibold hover:bg-gold/[0.14] transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-pill border border-gold/40 bg-gold/[0.08] text-gold px-4 py-1.5 font-sans text-detail font-semibold hover:bg-gold/[0.14] transition-colors"
         >
           + Add
         </button>
       </header>
-      <p className="font-serif text-[15px] text-paper/75 leading-[1.6] mb-4">
+      <p className="font-serif text-ui text-paper/75 leading-[1.6] mb-4">
         {intro}
       </p>
 
@@ -91,7 +91,7 @@ function DiptychSection({
           placeholder="Search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full mb-4 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-[13px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
+          className="w-full mb-4 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
         />
       )}
 
@@ -108,7 +108,7 @@ function DiptychSection({
 
       <ul className="space-y-2">
         {filtered.length === 0 && !adding && (
-          <li className="font-sans text-[13px] text-paper/40 italic py-4">
+          <li className="font-sans text-detail text-paper/40 italic py-4">
             {items.length === 0
               ? "No entries yet."
               : "No matches."}
@@ -161,20 +161,20 @@ function IntentionCard({
     <li className="rounded-md border border-paper/10 bg-paper/[0.02] px-4 py-3 group">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="font-sans text-[15.5px] font-semibold text-paper leading-snug">
+          <p className="font-sans text-ui font-semibold text-paper leading-snug">
             {entry.name}
             {entry.relationship && (
-              <span className="ml-2 font-normal text-paper/55 text-[13px]">
+              <span className="ml-2 font-normal text-paper/55 text-detail">
                 {entry.relationship}
               </span>
             )}
           </p>
           {entry.note && (
-            <p className="mt-1 font-serif italic text-[14px] text-paper/65 leading-[1.5]">
+            <p className="mt-1 font-serif italic text-ui text-paper/65 leading-[1.5]">
               {entry.note}
             </p>
           )}
-          <p className="mt-1.5 font-sans text-[11.5px] text-paper/45">
+          <p className="mt-1.5 font-sans text-caption text-paper/45">
             {kind === "living" && entry.nameday && (
               <>Nameday {formatMmDd(entry.nameday)} · </>
             )}
@@ -190,14 +190,14 @@ function IntentionCard({
           <button
             type="button"
             onClick={onEdit}
-            className="font-sans text-[11px] text-paper/55 hover:text-paper transition-colors"
+            className="font-sans text-eyebrow text-paper/55 hover:text-paper transition-colors"
           >
             Edit
           </button>
           <button
             type="button"
             onClick={onDelete}
-            className="font-sans text-[11px] text-rose-300/75 hover:text-rose-300 transition-colors"
+            className="font-sans text-eyebrow text-rose-300/75 hover:text-rose-300 transition-colors"
           >
             Remove
           </button>
@@ -252,13 +252,13 @@ function IntentionForm({
           placeholder="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="md:col-span-2 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-[14px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
+          className="md:col-span-2 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
         />
         <input
           placeholder="Relationship (optional)"
           value={relationship}
           onChange={(e) => setRelationship(e.target.value)}
-          className="rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-[14px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
+          className="rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
         />
       </div>
       <textarea
@@ -267,7 +267,7 @@ function IntentionForm({
         rows={2}
         value={note}
         onChange={(e) => setNote(e.target.value)}
-        className="w-full rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-[13.5px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
+        className="w-full rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
       />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {kind === "living" ? (
@@ -276,7 +276,7 @@ function IntentionForm({
             value={nameday}
             onChange={(e) => setNameday(e.target.value)}
             pattern="\d{2}-\d{2}"
-            className="rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-[14px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
+            className="rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
           />
         ) : (
           <input
@@ -284,21 +284,21 @@ function IntentionForm({
             placeholder="Reposed YYYY-MM-DD"
             value={repose}
             onChange={(e) => setRepose(e.target.value)}
-            className="rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-[14px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
+            className="rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
           />
         )}
         <input
           placeholder="Tags (comma-separated, optional)"
           value={tagText}
           onChange={(e) => setTagText(e.target.value)}
-          className="rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-[14px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
+          className="rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
         />
       </div>
       <div className="flex justify-end gap-2">
         <button
           type="button"
           onClick={onCancel}
-          className="font-sans text-[12.5px] text-paper/65 hover:text-paper transition-colors px-3"
+          className="font-sans text-caption text-paper/65 hover:text-paper transition-colors px-3"
         >
           Cancel
         </button>
@@ -306,7 +306,7 @@ function IntentionForm({
           type="button"
           onClick={handleSave}
           disabled={!name.trim()}
-          className="rounded-pill border border-gold/45 bg-gold/[0.1] text-gold font-sans text-[12.5px] font-semibold px-4 py-1.5 hover:bg-gold/[0.18] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="rounded-pill border border-gold/45 bg-gold/[0.1] text-gold font-sans text-caption font-semibold px-4 py-1.5 hover:bg-gold/[0.18] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           Save
         </button>

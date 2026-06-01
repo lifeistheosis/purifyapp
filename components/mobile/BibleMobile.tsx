@@ -44,10 +44,10 @@ export function BibleMobile() {
 
       {(gospel || epistle || ot) && (
         <div className="mt-3 rounded-2xl border border-paper/10 bg-paper/[0.03] p-3">
-          <p className="font-sans text-[10.5px] uppercase tracking-[1.5px] text-paper/45 mb-2">
+          <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/45 mb-2">
             Appointed today
           </p>
-          <div className="flex flex-wrap gap-x-3 gap-y-1.5 text-[13px]">
+          <div className="flex flex-wrap gap-x-3 gap-y-1.5 text-detail">
             {gospel && <ReadingChip kind="Gospel" reading={gospel} />}
             {epistle && <ReadingChip kind="Epistle" reading={epistle} />}
             {ot && <ReadingChip kind="OT" reading={ot} />}

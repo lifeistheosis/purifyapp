@@ -106,7 +106,7 @@ export function PrayersMobile() {
               href="/prayers/today"
               tint="warm"
             >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+              <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
                 {fast.label}. Date, saint, readings, diptychs in one screen.
               </p>
             </MobileCard>,
@@ -116,7 +116,7 @@ export function PrayersMobile() {
               title="Begin the day with God"
               href="/prayers/morning"
             >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+              <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
                 Sign of the Cross through dismissal. About 8 minutes.
               </p>
             </MobileCard>,
@@ -126,7 +126,7 @@ export function PrayersMobile() {
               title="Lay the day down"
               href="/prayers/evening"
             >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+              <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
                 Trisagion, examination, Into Thy hands. About 8 minutes.
               </p>
             </MobileCard>,
@@ -137,7 +137,7 @@ export function PrayersMobile() {
               href="/prayers/rope"
               tint="gold"
             >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+              <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
                 33, 50, or 100 knots. No streaks, no noise.
               </p>
             </MobileCard>,
@@ -147,7 +147,7 @@ export function PrayersMobile() {
               title="The names you carry"
               href="/prayers/personal"
             >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+              <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
                 Living and reposed.
               </p>
             </MobileCard>,
@@ -157,7 +157,7 @@ export function PrayersMobile() {
               title="Standing through the day"
               href="/prayers/hours"
             >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+              <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
                 First, Third, Sixth, Ninth, Compline.
               </p>
             </MobileCard>,
@@ -167,7 +167,7 @@ export function PrayersMobile() {
               title="The standing hymns"
               href="/prayers/akathists"
             >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+              <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
                 The Akathist to the Theotokos and others.
               </p>
             </MobileCard>,
@@ -177,7 +177,7 @@ export function PrayersMobile() {
               title="Six short lessons"
               href="/prayers/learning"
             >
-              <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+              <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
                 The sign of the Cross, the Jesus Prayer, the rules.
               </p>
             </MobileCard>,

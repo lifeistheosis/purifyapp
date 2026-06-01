@@ -55,7 +55,7 @@ export function MobileChapterSheet({
       title={pickedBook ? pickedBook.name : "Pick a book"}
     >
       {/* OT / NT toggle */}
-      <div className="mb-3 inline-flex rounded-pill border border-paper/15 bg-paper/[0.03] p-0.5 text-[12px] font-medium">
+      <div className="mb-3 inline-flex rounded-pill border border-paper/15 bg-paper/[0.03] p-0.5 text-caption font-medium">
         {(["OT", "NT"] as const).map((t) => (
           <button
             key={t}
@@ -84,7 +84,7 @@ export function MobileChapterSheet({
                   type="button"
                   onClick={() => setPickedBookSlug(b.slug)}
                   className={
-                    "w-full text-left rounded-md px-3 py-2 font-sans text-[13.5px] truncate " +
+                    "w-full text-left rounded-md px-3 py-2 font-sans text-detail truncate " +
                     (isPicked
                       ? "bg-gold/15 text-paper border border-gold/45"
                       : "text-paper/75 hover:bg-paper/[0.04] border border-transparent")
@@ -101,7 +101,7 @@ export function MobileChapterSheet({
       {/* Step 2: chapter grid for the picked book */}
       {pickedBook ? (
         <div>
-          <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
             Chapter
           </p>
           <ul className="grid grid-cols-6 gap-1.5 sm:grid-cols-8">
@@ -115,7 +115,7 @@ export function MobileChapterSheet({
                       type="button"
                       onClick={() => go(pickedBookSlug, n)}
                       className={
-                        "w-full aspect-square inline-flex items-center justify-center rounded-md font-sans text-[13px] font-semibold tabular-nums transition-colors " +
+                        "w-full aspect-square inline-flex items-center justify-center rounded-md font-sans text-detail font-semibold tabular-nums transition-colors " +
                         (isCurrent
                           ? "bg-gold text-night"
                           : "bg-paper/[0.04] text-paper/85 hover:bg-paper/10 border border-paper/10")

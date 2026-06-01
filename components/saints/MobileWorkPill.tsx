@@ -82,14 +82,14 @@ export function MobileWorkPill({
             "calc(var(--tab-bar-h) + env(safe-area-inset-bottom, 0px) + 12px)",
         }}
       >
-        <div className="pointer-events-auto inline-flex items-center gap-1 rounded-pill bg-night/95 backdrop-blur border border-white/15 shadow-[0_8px_24px_rgba(0,0,0,0.45)] pl-1 pr-1 py-1 max-w-[92vw]">
+        <div className="pointer-events-auto inline-flex items-center gap-1 rounded-pill bg-night/95 backdrop-blur border border-white/15 shadow-raise pl-1 pr-1 py-1 max-w-[92vw]">
           <button
             type="button"
             aria-label={prev ? `Previous: ${prev.title}` : "No previous section"}
             disabled={!prev}
             onClick={() => prev && jumpTo(prev.n)}
             className={
-              "h-10 w-10 inline-flex items-center justify-center font-sans text-[20px] leading-none " +
+              "h-10 w-10 inline-flex items-center justify-center font-sans text-lede leading-none " +
               (prev ? "text-paper/85 hover:text-paper" : "text-paper/25")
             }
           >
@@ -98,7 +98,7 @@ export function MobileWorkPill({
           <button
             type="button"
             onClick={() => setTocOpen(true)}
-            className="px-3 h-10 inline-flex items-center font-sans text-[13px] font-semibold text-paper truncate max-w-[60vw]"
+            className="px-3 h-10 inline-flex items-center font-sans text-detail font-semibold text-paper truncate max-w-[60vw]"
           >
             Section {current.n} of {total}
           </button>
@@ -108,7 +108,7 @@ export function MobileWorkPill({
             disabled={!next}
             onClick={() => next && jumpTo(next.n)}
             className={
-              "h-10 w-10 inline-flex items-center justify-center font-sans text-[20px] leading-none " +
+              "h-10 w-10 inline-flex items-center justify-center font-sans text-lede leading-none " +
               (next ? "text-paper/85 hover:text-paper" : "text-paper/25")
             }
           >
@@ -118,7 +118,7 @@ export function MobileWorkPill({
       </div>
 
       <Sheet open={tocOpen} onClose={() => setTocOpen(false)} title="Contents">
-        <ol className="grid grid-cols-1 gap-y-1 font-sans text-[14px]">
+        <ol className="grid grid-cols-1 gap-y-1 font-sans text-ui">
           {sections.map((s, i) => {
             const active = i === currentIdx;
             return (

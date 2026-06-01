@@ -16,20 +16,20 @@ export function Colophon({
  return (
  <div className={`text-center ${className}`}>
  <OrnamentRule className="mx-auto mb-6 max-w-[300px]" />
- <p className="font-display-serif italic text-[20px] md:text-[22px] text-paper/85 leading-[1.5]">
+ <p className="font-display-serif italic text-lede md:text-title-sm text-paper/85 leading-[1.5]">
  {isDe ? "Ehre sei Gott für alles." : "Glory to God for all things."}
  </p>
- <p aria-hidden className="my-3 text-gold/70 text-[14px]">
+ <p aria-hidden className="my-3 text-gold/70 text-ui">
  ✦
  </p>
- <p className="font-display-serif italic text-[16px] md:text-[17px] text-paper/65 leading-[1.55]">
+ <p className="font-display-serif italic text-body md:text-body text-paper/65 leading-[1.55]">
  {isDe
  ? "Auf die Gebete unserer heiligen Väter, Herr Jesus Christus, unser Gott, erbarme Dich unser."
  : "Through the prayers of our holy fathers, Lord Jesus Christ our God, have mercy on us."}
  </p>
  <p
  lang="grc"
- className="mt-3 font-serif italic text-[13px] md:text-[14px] text-paper/45 leading-[1.55]"
+ className="mt-3 font-serif italic text-detail md:text-ui text-paper/45 leading-[1.55]"
  style={{ fontFamily: "var(--font-greek), serif" }}
  >
  Δι&rsquo; εὐχῶν τῶν ἁγίων πατέρων ἡμῶν, Κύριε Ἰησοῦ Χριστὲ ὁ Θεός,

@@ -29,7 +29,7 @@ function NoteText({ text }: { text: string }) {
  {text.split(/\n\n+/).map((para, j) => (
  <p
  key={j}
- className="font-serif text-[14.5px] leading-[1.6] text-paper/85"
+ className="font-serif text-ui leading-[1.6] text-paper/85"
  >
  {para}
  </p>
@@ -45,10 +45,10 @@ function SingleNote({ author, work, text }: Note) {
  <div className="flex items-center gap-2 mb-2">
  <SaintIcon author={author} size="sm" />
  <div className="min-w-0 flex-1 leading-tight">
- <p className="font-sans text-[10.5px] font-semibold uppercase tracking-[1px] text-paper/75 truncate">
+ <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/75 truncate">
  {author}
  </p>
- <p className="font-sans text-[11px] italic text-paper/50 truncate">
+ <p className="font-sans text-eyebrow italic text-paper/50 truncate">
  {work}
  </p>
  </div>
@@ -70,13 +70,13 @@ function WorkCard({ work, text }: { work: string; text: string }) {
  aria-expanded={open}
  className="w-full flex items-center gap-2 p-3 text-left hover:bg-paper/[0.05] transition-colors"
  >
- <p className="min-w-0 flex-1 font-sans text-[11px] italic text-paper/60 truncate">
+ <p className="min-w-0 flex-1 font-sans text-eyebrow italic text-paper/60 truncate">
  {work}
  </p>
  <span
  aria-hidden
  className={
- "text-[12px] text-paper/40 transition-transform duration-200 " +
+ "text-caption text-paper/40 transition-transform duration-200 " +
  (open ? "rotate-180" : "")
  }
  >
@@ -101,10 +101,10 @@ function FatherGroup({ author, items }: { author: string; items: Note[] }) {
  <div className="flex items-center gap-2 mb-2 px-0.5">
  <SaintIcon author={author} size="sm" />
  <div className="min-w-0 flex-1 leading-tight">
- <p className="font-sans text-[10.5px] font-semibold uppercase tracking-[1px] text-paper/75 truncate">
+ <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/75 truncate">
  {author}
  </p>
- <p className="font-sans text-[11px] italic text-paper/50 truncate">
+ <p className="font-sans text-eyebrow italic text-paper/50 truncate">
  {items.length} commentaries
  </p>
  </div>
@@ -222,13 +222,13 @@ export function MobileCommentarySheet({
  {/* Header */}
  <div className="flex items-center justify-between px-5 pt-2 pb-3 border-b border-paper/10">
  <div className="min-w-0">
- <p className="font-sans text-[10.5px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+ <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
  Patristic commentary
  </p>
- <p className="mt-0.5 font-serif text-[17px] text-paper truncate">
+ <p className="mt-0.5 font-serif text-body text-paper truncate">
  {bookName} {chapter}:{verse}
  {notes.length > 0 && (
- <span className="ml-2 align-middle rounded-full bg-paper/10 px-1.5 py-0.5 font-sans text-[10px] font-semibold tabular-nums text-paper/55">
+ <span className="ml-2 align-middle rounded-full bg-paper/10 px-1.5 py-0.5 font-sans text-eyebrow font-semibold tabular-nums text-paper/55">
  {notes.length}
  </span>
  )}
@@ -240,14 +240,14 @@ export function MobileCommentarySheet({
  aria-label="Close"
  className="shrink-0 h-11 w-11 rounded-full flex items-center justify-center text-paper/65 hover:text-paper hover:bg-paper/[0.06] transition-colors"
  >
- <span aria-hidden className="text-[20px] leading-none">×</span>
+ <span aria-hidden className="text-lede leading-none">×</span>
  </button>
  </div>
 
  {/* Scroll body */}
  <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 space-y-3">
  {notes.length === 0 ? (
- <p className="font-sans text-[13px] text-paper/55 text-center py-10">
+ <p className="font-sans text-detail text-paper/55 text-center py-10">
  No commentary for this verse.
  </p>
  ) : (

@@ -52,7 +52,7 @@ export function ContentHealthTab() {
   }, []);
 
   if (!data) {
-    return <p className="font-sans text-[13px] text-paper/40 py-8 text-center">Loading…</p>;
+    return <p className="font-sans text-detail text-paper/40 py-8 text-center">Loading…</p>;
   }
 
   const filtered = data.saints.rows.filter((r) => {
@@ -90,18 +90,18 @@ export function ContentHealthTab() {
       </div>
 
       <Card title="Calendar coverage">
-        <p className="font-sans text-[14px] text-paper/85">
+        <p className="font-sans text-ui text-paper/85">
           <span className="tabular-nums font-semibold text-paper">
             {data.calendar.days}
           </span>{" "}
           / {data.calendar.expectedDays} days have entries in{" "}
-          <span className="font-mono text-[11px]">
+          <span className="font-mono text-eyebrow">
             data/calendar/daily-saints.json
           </span>
           .
         </p>
         {data.calendar.missingExamples.length > 0 && (
-          <p className="mt-2 font-sans text-[12px] text-paper/55">
+          <p className="mt-2 font-sans text-caption text-paper/55">
             First gaps:{" "}
             <span className="font-mono">
               {data.calendar.missingExamples.join(", ")}
@@ -111,7 +111,7 @@ export function ContentHealthTab() {
       </Card>
 
       <Card title="Bible book coverage" subtitle="Chapters per book directory under data/bible/.">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-1 font-sans text-[12px]">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-1 font-sans text-caption">
           {data.bible.books.map((b) => (
             <div key={b.book} className="flex justify-between border-b border-paper/[0.06] py-1">
               <span className="text-paper/75">{b.book}</span>
@@ -155,7 +155,7 @@ export function ContentHealthTab() {
               render: (r) => (
                 <div>
                   <p className="font-semibold text-paper">{r.name}</p>
-                  <p className="font-mono text-[11px] text-paper/45">{r.slug}</p>
+                  <p className="font-mono text-eyebrow text-paper/45">{r.slug}</p>
                 </div>
               ),
               csv: (r) => r.name,
@@ -238,7 +238,7 @@ function FilterChip({
       type="button"
       onClick={() => set(value)}
       className={
-        "rounded-md border px-2.5 py-1 font-sans text-[11px] font-semibold transition-colors " +
+        "rounded-md border px-2.5 py-1 font-sans text-eyebrow font-semibold transition-colors " +
         (active
           ? "border-gold/40 bg-gold/[0.08] text-gold"
           : "border-paper/20 bg-paper/[0.04] text-paper/65 hover:text-paper")

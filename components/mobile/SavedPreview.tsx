@@ -79,18 +79,18 @@ export function SavedPreview() {
   return (
     <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4">
       <div className="flex items-baseline justify-between gap-2 mb-3">
-        <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-paper/55">
+        <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/55">
           Recently saved
         </p>
         <Link
           href="/saved"
-          className="font-sans text-[12px] text-paper/65 active:text-paper transition-colors"
+          className="font-sans text-caption text-paper/65 active:text-paper transition-colors"
         >
           {total > 0 ? `All ${total} →` : "Saved →"}
         </Link>
       </div>
       {items.length === 0 ? (
-        <p className="font-sans text-[13px] text-paper/55 italic">
+        <p className="font-sans text-detail text-paper/55 italic">
           Star a verse, chapter, prayer, or writing to keep it here.
         </p>
       ) : (
@@ -101,10 +101,10 @@ export function SavedPreview() {
                 href={hrefFor(b)}
                 className="flex items-center justify-between gap-3 rounded-md border border-paper/8 bg-paper/[0.02] px-3 py-2.5 active:scale-[0.99] transition-transform"
               >
-                <span className="font-sans text-[13.5px] text-paper truncate flex-1">
+                <span className="font-sans text-detail text-paper truncate flex-1">
                   {b.label ?? "Bookmark"}
                 </span>
-                <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.04] px-2 py-[1px] font-sans text-[10px] font-semibold uppercase tracking-[1px] text-paper/65">
+                <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.04] px-2 py-[1px] font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/65">
                   {KIND_LABEL[b.kind] ?? b.kind}
                 </span>
               </Link>

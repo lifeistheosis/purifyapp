@@ -21,7 +21,7 @@ export function WhatSyncsStrip() {
   ];
   return (
     <section className="mt-10">
-      <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
         What syncs
       </p>
       <ul className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -30,16 +30,16 @@ export function WhatSyncsStrip() {
             key={it.label}
             className="rounded-md border border-paper/12 bg-paper/[0.03] px-4 py-4"
           >
-            <p className="font-display-serif text-[16px] text-paper leading-tight">
+            <p className="font-display-serif text-body text-paper leading-tight">
               {it.label}
             </p>
-            <p className="mt-1.5 font-sans text-[12.5px] text-paper/65 leading-[1.55]">
+            <p className="mt-1.5 font-sans text-caption text-paper/65 leading-[1.55]">
               {it.body}
             </p>
           </li>
         ))}
       </ul>
-      <p className="mt-5 font-serif italic text-[14px] text-paper/55 leading-[1.6]">
+      <p className="mt-5 font-serif italic text-ui text-paper/55 leading-[1.6]">
         No password to remember. No tracking. Delete your account at any time
         and every server row goes with it.
       </p>

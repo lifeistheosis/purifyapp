@@ -31,11 +31,11 @@ function CommentaryCard({
  >
  {iconAuthor && <SaintIcon author={iconAuthor} size="sm" />}
  <div className="min-w-0 flex-1 leading-tight">
- <p className="font-sans text-[10.5px] font-semibold uppercase tracking-[1px] text-paper/70 truncate">
+ <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/70 truncate">
  {title}
  </p>
  {subtitle && (
- <p className="font-sans text-[11px] italic text-paper/45 truncate">
+ <p className="font-sans text-eyebrow italic text-paper/45 truncate">
  {subtitle}
  </p>
  )}
@@ -43,7 +43,7 @@ function CommentaryCard({
  <span
  aria-hidden
  className={
- "text-[11px] text-paper/40 transition-transform duration-200 " +
+ "text-eyebrow text-paper/40 transition-transform duration-200 " +
  (open ? "rotate-180" : "")
  }
  >
@@ -55,7 +55,7 @@ function CommentaryCard({
  {text.split(/\n\n+/).map((para, i) => (
  <p
  key={i}
- className="font-serif text-[13.5px] leading-[1.55] text-paper/80"
+ className="font-serif text-detail leading-[1.55] text-paper/80"
  >
  {para}
  </p>
@@ -93,10 +93,10 @@ function FatherGroup({ author, items }: { author: string; items: Note[] }) {
  <div className="flex items-center gap-2 px-0.5 mb-1.5">
  <SaintIcon author={author} size="sm" />
  <div className="min-w-0 flex-1 leading-tight">
- <p className="font-sans text-[10.5px] font-semibold uppercase tracking-[1px] text-paper/70 truncate">
+ <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/70 truncate">
  {author}
  </p>
- <p className="font-sans text-[11px] italic text-paper/45 truncate">
+ <p className="font-sans text-eyebrow italic text-paper/45 truncate">
  {items.length} commentaries
  </p>
  </div>
@@ -130,26 +130,26 @@ function VerseSection({
  type="button"
  onClick={() => setOpen((v) => !v)}
  aria-expanded={open}
- className="group/vs flex flex-1 items-center gap-2 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 hover:text-paper transition-colors"
+ className="group/vs flex flex-1 items-center gap-2 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 hover:text-paper transition-colors"
  >
  <span
  aria-hidden
  className={
- "text-[10px] text-paper/40 transition-transform duration-200 " +
+ "text-eyebrow text-paper/40 transition-transform duration-200 " +
  (open ? "" : "-rotate-90")
  }
  >
  ▾
  </span>
  <span>Verse {verse}</span>
- <span className="rounded-full bg-paper/10 px-1.5 py-0.5 text-[9.5px] font-semibold tabular-nums text-paper/55 group-hover/vs:bg-paper/15 group-hover/vs:text-paper/75 transition-colors">
+ <span className="rounded-full bg-paper/10 px-1.5 py-0.5 text-eyebrow font-semibold tabular-nums text-paper/55 group-hover/vs:bg-paper/15 group-hover/vs:text-paper/75 transition-colors">
  {notes.length}
  </span>
  </button>
  <a
  href={`#v${verse}`}
  aria-label={`Jump to verse ${verse} in the text`}
- className="shrink-0 text-paper/30 hover:text-paper/70 transition-colors text-[11px] px-1"
+ className="shrink-0 text-paper/30 hover:text-paper/70 transition-colors text-eyebrow px-1"
  >
  ↑
  </a>
@@ -191,7 +191,7 @@ export function StudyRail({
 
  if (verses.length === 0) {
  return (
- <div className="px-2 py-6 text-center font-sans text-[12px] text-paper/40">
+ <div className="px-2 py-6 text-center font-sans text-caption text-paper/40">
  No patristic commentary for this chapter yet.
  </div>
  );

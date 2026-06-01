@@ -69,7 +69,7 @@ export function ReadingProgressBar({
  <>
  {/* Mobile-only context strip, sits just under the 48px MobileTopBar. */}
  <div className="md:hidden fixed top-12 left-0 right-0 z-30 bg-night/90 backdrop-blur border-b border-white/8 px-4 py-1.5 pointer-events-none">
- <p className="font-sans text-[11px] text-paper/65 leading-none flex items-center gap-1.5">
+ <p className="font-sans text-eyebrow text-paper/65 leading-none flex items-center gap-1.5">
  <span className="font-semibold text-paper/85">
  {bookName} {chapter}
  </span>

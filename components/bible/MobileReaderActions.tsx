@@ -66,18 +66,18 @@ export function MobileReaderActions() {
       >
         <div className="space-y-4 py-2">
           <div>
-            <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
               Typeface
             </p>
             <ReaderFontFamilyButton />
           </div>
           <div>
-            <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
               Size
             </p>
             <ReaderFontSizeButton />
           </div>
-          <p className="font-sans text-[12px] text-paper/45 leading-[1.55] pt-2">
+          <p className="font-sans text-caption text-paper/45 leading-[1.55] pt-2">
             Your choices are saved on this device and apply to the
             saint-works reader as well.
           </p>

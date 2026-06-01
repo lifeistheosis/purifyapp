@@ -74,7 +74,7 @@ export function ContentTab() {
   }
 
   if (!data) {
-    return <p className="font-sans text-[13px] text-paper/40 py-8 text-center">Loading…</p>;
+    return <p className="font-sans text-detail text-paper/40 py-8 text-center">Loading…</p>;
   }
 
   const grid = data.saintGrid
@@ -248,7 +248,7 @@ export function ContentTab() {
                   href={r.path}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-mono text-[12px] hover:text-gold"
+                  className="font-mono text-caption hover:text-gold"
                 >
                   {r.path}
                 </a>
@@ -277,7 +277,7 @@ export function ContentTab() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search…"
-              className="rounded-md border border-paper/20 bg-paper/[0.04] px-2 py-1 font-sans text-[12px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/60"
+              className="rounded-md border border-paper/20 bg-paper/[0.04] px-2 py-1 font-sans text-caption text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/60"
             />
             <ToolbarButton
               variant={filter === "all" ? "primary" : "default"}

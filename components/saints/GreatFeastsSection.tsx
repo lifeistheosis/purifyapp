@@ -18,16 +18,16 @@ export function GreatFeastsSection({
     <section className="py-12 border-b border-paper/8">
       <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
         <div>
-          <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+          <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
             {t("saints.theChurchYear")}
           </p>
-          <h2 className="font-sans text-[28px] md:text-[36px] font-bold text-paper tracking-[-0.02em]">
+          <h2 className="font-sans text-title md:text-display-sm font-bold text-paper tracking-[-0.02em]">
             {heading}
           </h2>
         </div>
         <Link
           href="/prayers"
-          className="font-sans text-[14px] font-medium text-gold hover:text-gold/80 transition-colors"
+          className="font-sans text-ui font-medium text-gold hover:text-gold/80 transition-colors"
         >
           Pray the Akathist to the Theotokos →
         </Link>
@@ -36,10 +36,10 @@ export function GreatFeastsSection({
         {feasts.map((f) => {
           const inner = (
             <>
-              <span className="font-serif text-[18px] text-paper leading-tight">
+              <span className="font-serif text-lede text-paper leading-tight">
                 {f.name}
               </span>
-              <span className="shrink-0 font-sans text-[12px] font-semibold uppercase tracking-[1.2px] text-gold/85">
+              <span className="shrink-0 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-gold/85">
                 {f.date}
               </span>
             </>
@@ -51,7 +51,7 @@ export function GreatFeastsSection({
               {f.href ? (
                 <Link
                   href={f.href}
-                  className={cls + " hover:border-gold/40 hover:-translate-y-0.5 transition-all duration-200"}
+                  className={cls + " hover:border-gold/40 transition-all duration-200"}
                 >
                   {inner}
                 </Link>

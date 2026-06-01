@@ -38,7 +38,7 @@ export function HealthTab() {
   }, []);
 
   if (!data) {
-    return <p className="font-sans text-[13px] text-paper/40 py-8 text-center">Probing…</p>;
+    return <p className="font-sans text-detail text-paper/40 py-8 text-center">Probing…</p>;
   }
 
   const failing = data.probes.filter((p) => p.status === "fail").length;
@@ -66,15 +66,15 @@ export function HealthTab() {
               className="py-3 flex items-center justify-between gap-3 flex-wrap"
             >
               <div className="min-w-0">
-                <p className="font-sans text-[14px] font-semibold text-paper">
+                <p className="font-sans text-ui font-semibold text-paper">
                   {p.service}
                 </p>
-                <p className="font-mono text-[11px] text-paper/55 truncate max-w-[640px]">
+                <p className="font-mono text-eyebrow text-paper/55 truncate max-w-[640px]">
                   {p.detail}
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <span className="font-sans text-[12px] tabular-nums text-paper/55">
+                <span className="font-sans text-caption tabular-nums text-paper/55">
                   {p.latencyMs !== null ? `${p.latencyMs}ms` : "—"}
                 </span>
                 {p.status === "ok" && <Pill tone="emerald">OK</Pill>}
@@ -87,24 +87,24 @@ export function HealthTab() {
       </Card>
 
       <Card title="Notes" subtitle="What each probe tells you, and what's missing.">
-        <ul className="space-y-2 font-sans text-[13px] text-paper/85">
+        <ul className="space-y-2 font-sans text-detail text-paper/85">
           <li>
             <strong>Supabase</strong> — service-role select against{" "}
-            <span className="font-mono text-[12px]">profiles</span>. Fails mean the DB is unreachable or the service-role key is wrong.
+            <span className="font-mono text-caption">profiles</span>. Fails mean the DB is unreachable or the service-role key is wrong.
           </li>
           <li>
-            <strong>API.Bible</strong> — hits <span className="font-mono text-[12px]">/v1/bibles</span> with the publisher key. A fail here disables NKJV/NIV/NLT reading and risks the FUMS contract.
+            <strong>API.Bible</strong> — hits <span className="font-mono text-caption">/v1/bibles</span> with the publisher key. A fail here disables NKJV/NIV/NLT reading and risks the FUMS contract.
           </li>
           <li>
-            <strong>Buy Me a Coffee</strong> — hits <span className="font-mono text-[12px]">/supporters</span>. The Sustainability tab and /support fall back to the static figure when this fails.
+            <strong>Buy Me a Coffee</strong> — hits <span className="font-mono text-caption">/supporters</span>. The Sustainability tab and /support fall back to the static figure when this fails.
           </li>
           <li>
             <strong>ipwho.is</strong> — geo enrichment for analytics_sessions. Fail = new sessions store null country/region rows.
           </li>
           <li>
             <strong>Render</strong> — pulls the latest deploy status + commit short SHA. Skipped if{" "}
-            <span className="font-mono text-[12px]">RENDER_API_KEY</span> /{" "}
-            <span className="font-mono text-[12px]">RENDER_SERVICE_ID</span> aren&rsquo;t set.
+            <span className="font-mono text-caption">RENDER_API_KEY</span> /{" "}
+            <span className="font-mono text-caption">RENDER_SERVICE_ID</span> aren&rsquo;t set.
           </li>
         </ul>
       </Card>

@@ -229,7 +229,7 @@ export function YouMobile() {
             <div className="mt-4 pt-4 border-t border-paper/8">
               <Link
                 href="/signin?next=/account"
-                className="block w-full text-center rounded-full bg-paper text-night px-4 py-2.5 font-sans text-[14px] font-semibold"
+                className="block w-full text-center rounded-full bg-paper text-night px-4 py-2.5 font-sans text-ui font-semibold"
               >
                 Sign in
               </Link>
@@ -283,7 +283,7 @@ export function YouMobile() {
           href="/prayers/personal"
           tint="gold"
         >
-          <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.5]">
+          <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
             {counts.intentions === 0
               ? "Add the people you pray for, living and reposed."
               : `${counts.intentions} names. Anniversaries and namedays surface on /prayers/today.`}

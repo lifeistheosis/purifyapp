@@ -110,8 +110,8 @@ export function JesusPrayerCounter() {
       className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5"
       aria-label="Jesus Prayer counter"
     >
-      <p className="font-sans text-[12px] text-paper/55">The prayer of the heart</p>
-      <p className="mt-0.5 font-sans text-[14px] text-paper/85 leading-snug">
+      <p className="font-sans text-caption text-paper/55">The prayer of the heart</p>
+      <p className="mt-0.5 font-sans text-ui text-paper/85 leading-snug">
         Lord Jesus Christ, Son of God, have mercy on me, a sinner.
       </p>
 
@@ -132,22 +132,22 @@ export function JesusPrayerCounter() {
             className={
               "block h-4 w-4 rounded-full transition-colors " +
               (i < pos
-                ? "bg-[#c1272d]"
+                ? "bg-crimson"
                 : "border border-paper/25 bg-night")
             }
           />
         ))}
       </button>
 
-      <p className="mt-4 text-center font-sans text-[12px] text-paper/55 tabular-nums">
-        <span className="text-paper font-semibold text-[20px] block leading-none">
+      <p className="mt-4 text-center font-sans text-caption text-paper/55 tabular-nums">
+        <span className="text-paper font-semibold text-lede block leading-none">
           {count}
         </span>
         <span className="mt-1 block">
           full rounds today · {pos}/9 in this round
         </span>
       </p>
-      <p className="mt-2 text-center font-sans text-[10.5px] uppercase tracking-[1.5px] text-paper/35">
+      <p className="mt-2 text-center font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/35">
         Long-press to reset
       </p>
     </section>

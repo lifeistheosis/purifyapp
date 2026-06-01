@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search } from "@/components/ui/icons/Search";
 import { SAINTS } from "@/lib/saints/saints";
 
 /**
@@ -130,14 +130,14 @@ export function SaintSearch({ className }: { className?: string }) {
  onKeyDown={onKey}
  placeholder="Search saints and writings"
  aria-label="Search saints and writings"
- className="w-full bg-paper/[0.04] border border-paper/15 rounded-pill pl-10 pr-4 py-3 font-sans text-[15px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/40 transition-colors duration-150"
+ className="w-full bg-paper/[0.04] border border-paper/15 rounded-pill pl-10 pr-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/40 transition-colors duration-150"
  />
  </div>
 
  {showDropdown && (
  <div className="absolute z-50 mt-2 left-0 right-0 rounded-md border border-paper/15 bg-night shadow-lg overflow-hidden">
  {hits.length === 0 ? (
- <p className="px-4 py-3 font-sans text-[14px] text-paper/55">
+ <p className="px-4 py-3 font-sans text-ui text-paper/55">
  No matches.
  </p>
  ) : (
@@ -152,7 +152,7 @@ export function SaintSearch({ className }: { className?: string }) {
  setQ("");
  }}
  className={
- "flex items-center gap-3 px-4 py-3 font-sans text-[15px] " +
+ "flex items-center gap-3 px-4 py-3 font-sans text-ui " +
  (i === activeIdx
  ? "bg-paper/10 text-paper"
  : "text-paper/85 hover:bg-paper/5")
@@ -163,12 +163,12 @@ export function SaintSearch({ className }: { className?: string }) {
  {h.label}
  </span>
  {h.sub && (
- <span className="block text-[12px] text-paper/45 mt-0.5 truncate">
+ <span className="block text-caption text-paper/45 mt-0.5 truncate">
  {h.sub}
  </span>
  )}
  </span>
- <span className="shrink-0 rounded-pill border border-paper/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[1px] text-paper/55">
+ <span className="shrink-0 rounded-pill border border-paper/15 px-2 py-0.5 text-eyebrow font-semibold uppercase tracking-[1px] text-paper/55">
  {h.type === "saint" ? "Saint" : "Work"}
  </span>
  </Link>

@@ -56,10 +56,10 @@ export function ContentNotYetTranslated({
       role="status"
       className="my-6 rounded-md border border-gold/30 bg-gold/[0.04] px-4 py-3"
     >
-      <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-gold/85 mb-1">
+      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold/85 mb-1">
         {m.title}
       </p>
-      <p className="font-serif text-[14px] text-paper/80 leading-relaxed">
+      <p className="font-serif text-ui text-paper/80 leading-relaxed">
         {m.body}
       </p>
     </div>

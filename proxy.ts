@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import {
   isLocaleReady,
@@ -8,7 +8,7 @@ import { buildCsp, generateNonce, NONCE_HEADER } from "@/lib/security/headers";
 
 const LOCALE_COOKIE = "purify_locale";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // Per-request nonce for the Content-Security-Policy. Thread it via a
   // request header so the root layout can read it from headers() and
   // attach it to any inline <script> it renders.

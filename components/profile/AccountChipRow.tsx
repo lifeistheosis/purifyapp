@@ -17,9 +17,9 @@ import { Compass } from "@/components/ui/icons/Compass";
  */
 const CHIPS: { label: string; href: string; Icon: typeof Cross; tint: string }[] = [
   { label: "Saved", href: "/saved", Icon: Cross, tint: "text-gold" },
-  { label: "Prayer", href: "/prayers/today", Icon: Hands, tint: "text-[#a4adff]" },
-  { label: "Saints", href: "/saints", Icon: Halo, tint: "text-[#f4dc91]" },
-  { label: "Discover", href: "/discover", Icon: Compass, tint: "text-[#bfd6cc]" },
+  { label: "Prayer", href: "/prayers/today", Icon: Hands, tint: "text-link" },
+  { label: "Saints", href: "/saints", Icon: Halo, tint: "text-gold-pale" },
+  { label: "Discover", href: "/discover", Icon: Compass, tint: "text-sage-soft" },
 ];
 
 export function AccountChipRow() {
@@ -34,7 +34,7 @@ export function AccountChipRow() {
             <span className={tint}>
               <Icon size={20} />
             </span>
-            <span className="font-sans text-[11px] text-paper/85">{label}</span>
+            <span className="font-sans text-eyebrow text-paper/85">{label}</span>
           </Link>
         </li>
       ))}

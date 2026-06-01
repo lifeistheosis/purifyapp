@@ -48,10 +48,10 @@ export async function VerseOfDayCard({
       </svg>
 
       <div className="relative">
-        <p className="font-sans text-[13px] text-paper/65">
+        <p className="font-sans text-detail text-paper/65">
           {labelTop}
           {vod.source !== "rotation" && (
-            <span className="ml-2 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.04] px-2 py-[1px] font-sans text-[10px] font-semibold uppercase tracking-[1px] text-paper/60 align-middle">
+            <span className="ml-2 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.04] px-2 py-[1px] font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/60 align-middle">
               {vod.source === "gospel"
                 ? "Gospel"
                 : vod.source === "epistle"
@@ -60,12 +60,12 @@ export async function VerseOfDayCard({
             </span>
           )}
         </p>
-        <p className="mt-0.5 font-sans text-[18px] font-bold text-paper">
+        <p className="mt-0.5 font-sans text-lede font-bold text-paper">
           {vod.ref.label}
         </p>
 
         <div
-          className="mt-5 font-serif text-[22px] leading-[1.35] text-paper/95"
+          className="mt-5 font-serif text-title-sm leading-[1.35] text-paper/95"
           style={{
             // Fade the body to transparent near the bottom so it reads
             // as a teaser, the full chapter is one tap away via Expand.

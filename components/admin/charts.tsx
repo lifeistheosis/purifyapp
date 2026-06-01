@@ -130,7 +130,7 @@ export function Sparkline({
       </svg>
       {interactive && hover !== null && (
         <span
-          className="absolute -top-7 px-1.5 py-0.5 rounded-md bg-night border border-paper/15 font-sans text-[10px] text-paper whitespace-nowrap pointer-events-none tabular-nums"
+          className="absolute -top-7 px-1.5 py-0.5 rounded-md bg-night border border-paper/15 font-sans text-eyebrow text-paper whitespace-nowrap pointer-events-none tabular-nums"
           style={{
             left: Math.max(0, Math.min(width - 60, hover * stepX - 30)),
           }}
@@ -214,7 +214,7 @@ function CartesianPlot({
   const all = series.flatMap((s) => s.data);
   if (!all.length) {
     return (
-      <p className="font-sans text-[13px] text-paper/40 py-8 text-center">
+      <p className="font-sans text-detail text-paper/40 py-8 text-center">
         No data in range.
       </p>
     );
@@ -409,7 +409,7 @@ function CartesianPlot({
               className="inline-block h-[3px] w-4 rounded-full"
               style={{ background: s.color }}
             />
-            <span className="font-sans text-[11px] text-paper/65 tabular-nums">
+            <span className="font-sans text-eyebrow text-paper/65 tabular-nums">
               {s.name}
               {hover !== null && (
                 <>
@@ -447,7 +447,7 @@ export function BarChart({
 }) {
   if (!rows.length) {
     return (
-      <p className="font-sans text-[13px] text-paper/40 py-8 text-center">
+      <p className="font-sans text-detail text-paper/40 py-8 text-center">
         No data.
       </p>
     );
@@ -489,7 +489,7 @@ function HorizontalBars({
             className="grid grid-cols-[minmax(140px,1fr)_3fr_auto] items-center gap-3"
           >
             <span
-              className="font-sans text-[12px] text-paper/85 truncate"
+              className="font-sans text-caption text-paper/85 truncate"
               title={r.label}
             >
               {r.label}
@@ -510,12 +510,12 @@ function HorizontalBars({
                 }}
               />
               {labelInside && (
-                <span className="absolute inset-y-0 left-2.5 flex items-center font-sans text-[11px] font-semibold text-paper tabular-nums">
+                <span className="absolute inset-y-0 left-2.5 flex items-center font-sans text-eyebrow font-semibold text-paper tabular-nums">
                   {r.value.toLocaleString()}
                 </span>
               )}
             </div>
-            <span className="font-sans text-[12px] text-paper/55 tabular-nums w-12 text-right">
+            <span className="font-sans text-caption text-paper/55 tabular-nums w-12 text-right">
               {labelInside ? "" : r.value.toLocaleString()}
             </span>
           </div>
@@ -727,7 +727,7 @@ export function Donut({
               className="inline-block h-2 w-2 rounded-full"
               style={{ background: s.color }}
             />
-            <span className="font-sans text-[12px] text-paper/85">
+            <span className="font-sans text-caption text-paper/85">
               {s.name}{" "}
               <span className="text-paper/45 tabular-nums">
                 {Math.round((s.value / total) * 100)}%
@@ -857,7 +857,7 @@ export function CalendarHeatmap({
 
       {hover && (
         <div
-          className="absolute z-10 px-2 py-1 rounded-md bg-night border border-paper/15 font-sans text-[11px] text-paper whitespace-nowrap pointer-events-none tabular-nums shadow"
+          className="absolute z-10 px-2 py-1 rounded-md bg-night border border-paper/15 font-sans text-eyebrow text-paper whitespace-nowrap pointer-events-none tabular-nums shadow"
           style={
             {
               top: hover.y - 30,
@@ -873,7 +873,7 @@ export function CalendarHeatmap({
       )}
 
       {/* Legend */}
-      <div className="flex items-center gap-2 mt-2 font-sans text-[10px] text-paper/45 uppercase tracking-[1px]">
+      <div className="flex items-center gap-2 mt-2 font-sans text-eyebrow text-paper/45 uppercase tracking-[1px]">
         <span>Less</span>
         {[0, 0.25, 0.5, 0.75, 1].map((a, i) => (
           <span

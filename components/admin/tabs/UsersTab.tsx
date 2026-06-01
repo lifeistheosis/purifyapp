@@ -49,7 +49,7 @@ export function UsersTab() {
   }, [offset, debouncedSearch]);
 
   if (!data) {
-    return <p className="font-sans text-[13px] text-paper/40 py-8 text-center">Loading…</p>;
+    return <p className="font-sans text-detail text-paper/40 py-8 text-center">Loading…</p>;
   }
 
   const lastPage = Math.max(0, Math.floor((data.total - 1) / data.pageSize) * data.pageSize);
@@ -58,7 +58,7 @@ export function UsersTab() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card title="Total users">
-          <p className="font-sans text-[40px] font-bold tabular-nums leading-none text-paper">
+          <p className="font-sans text-display-sm font-bold tabular-nums leading-none text-paper">
             <CountUp value={data.total} />
           </p>
         </Card>
@@ -104,7 +104,7 @@ export function UsersTab() {
                 setOffset(0);
               }}
               placeholder="Search email…"
-              className="rounded-md border border-paper/20 bg-paper/[0.04] px-2 py-1 font-sans text-[12px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/60 w-44"
+              className="rounded-md border border-paper/20 bg-paper/[0.04] px-2 py-1 font-sans text-caption text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/60 w-44"
             />
             <ToolbarButton
               onClick={() => setOffset(0)}

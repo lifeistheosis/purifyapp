@@ -50,10 +50,10 @@ function greetingForHour(h: number): string {
 
 /** Tone for the date eyebrow: rubric red on fast days, gold otherwise. */
 const DATE_TONE: Record<FastKind, string> = {
-  strict: "text-[#c1272d]",
+  strict: "text-crimson",
   "wine-oil": "text-gold",
   fish: "text-gold",
-  fast: "text-[#c1272d]/85",
+  fast: "text-crimson/85",
   "fast-free": "text-emerald-300/85",
   normal: "text-gold/85",
 };
@@ -124,12 +124,12 @@ export async function TodayMenologionHero() {
       <section className="relative px-5 pt-10 pb-6">
         {/* Greeting + date. Date in tonal rubric on fast days, gold otherwise. */}
         {greeting ? (
-          <p className="font-display-serif italic text-[16px] text-paper/75 mb-3">
+          <p className="font-display-serif italic text-body text-paper/75 mb-3">
             {greeting}
           </p>
         ) : null}
         <p
-          className={`font-sans text-[11px] font-semibold uppercase tracking-[1.6px] ${DATE_TONE[fast.kind]}`}
+          className={`font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] ${DATE_TONE[fast.kind]}`}
         >
           {formatLongDate(today)}
         </p>
@@ -141,14 +141,14 @@ export async function TodayMenologionHero() {
             href={headlineSaint ? `/saints/${headlineSaint.slug}` : undefined}
           />
         ) : (
-          <h1 className="mt-3 font-display-serif text-[28px] md:text-[40px] leading-[1.08] text-paper">
+          <h1 className="mt-3 font-display-serif text-title md:text-display-sm leading-[1.08] text-paper">
             A quiet day with the Church.
           </h1>
         )}
 
         {/* First sentence of the bio as a serif tease. */}
         {headlineSaint?.life?.[0] ? (
-          <p className="mt-4 font-serif text-[15.5px] text-paper/80 leading-[1.65]">
+          <p className="mt-4 font-serif text-ui text-paper/80 leading-[1.65]">
             {firstSentence(headlineSaint.life[0])}
           </p>
         ) : null}
@@ -160,12 +160,12 @@ export async function TodayMenologionHero() {
       {/* FAST block, plain-words instruction. */}
       <section className="px-5 pt-4 pb-2">
         <p
-          className="font-sans text-[11px] font-semibold uppercase tracking-[1.6px] mb-2"
+          className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] mb-2"
           style={{ color: "rgb(var(--tone))" }}
         >
           Fast · {fast.label}
         </p>
-        <p className="font-serif text-[15.5px] text-paper/85 leading-[1.6]">
+        <p className="font-serif text-ui text-paper/85 leading-[1.6]">
           {fast.rule}
         </p>
       </section>
@@ -173,18 +173,18 @@ export async function TodayMenologionHero() {
       {/* APPOINTED READINGS. Citation + 'Read the full passage' link. */}
       {(epistle || gospel) ? (
         <section className="px-5 pt-6 pb-2">
-          <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.6px] text-gold/85 mb-3">
+          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-gold/85 mb-3">
             Appointed readings
           </p>
           <ul className="space-y-3">
             {epistle ? (
               <li>
-                <p className="font-sans text-[10.5px] uppercase tracking-[1.4px] text-paper/50">
+                <p className="font-sans text-eyebrow uppercase tracking-[1.4px] text-paper/50">
                   Epistle
                 </p>
                 <Link
                   href={`/bible/${epistle.book}/${epistle.chapter}#v${epistle.from}-${epistle.to}`}
-                  className="font-display-serif text-[18px] text-paper hover:text-gold transition-colors"
+                  className="font-display-serif text-lede text-paper hover:text-gold transition-colors"
                 >
                   {epistle.label}
                 </Link>
@@ -192,12 +192,12 @@ export async function TodayMenologionHero() {
             ) : null}
             {gospel ? (
               <li>
-                <p className="font-sans text-[10.5px] uppercase tracking-[1.4px] text-paper/50">
+                <p className="font-sans text-eyebrow uppercase tracking-[1.4px] text-paper/50">
                   Gospel
                 </p>
                 <Link
                   href={`/bible/${gospel.book}/${gospel.chapter}#v${gospel.from}-${gospel.to}`}
-                  className="font-display-serif text-[18px] text-paper hover:text-gold transition-colors"
+                  className="font-display-serif text-lede text-paper hover:text-gold transition-colors"
                 >
                   {gospel.label}
                 </Link>
@@ -211,22 +211,22 @@ export async function TodayMenologionHero() {
           attribution. Falls back to a Desert Fathers saying on plain
           days when the headline saint has no quote. */}
       <section className="px-5 pt-8 pb-4">
-        <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.6px] text-paper/50 mb-3">
+        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/50 mb-3">
           A word for today
         </p>
         <blockquote className="relative">
           <span
             aria-hidden
-            className="absolute -left-2 -top-1 font-display-serif text-[28px] text-gold/70 leading-none"
+            className="absolute -left-2 -top-1 font-display-serif text-title text-gold/70 leading-none"
           >
             &ldquo;
           </span>
-          <p className="font-display-serif italic text-[18px] md:text-[19px] leading-[1.55] text-paper/90 pl-4">
+          <p className="font-display-serif italic text-lede md:text-lede leading-[1.55] text-paper/90 pl-4">
             {quoteText}
           </p>
         </blockquote>
         <p
-          className="mt-3 pl-4 font-sans text-[11px] uppercase tracking-[1.5px]"
+          className="mt-3 pl-4 font-sans text-eyebrow uppercase tracking-[1.5px]"
           style={{ color: "rgb(var(--tone) / 0.85)" }}
         >
           {quoteHref ? (
@@ -244,10 +244,10 @@ export async function TodayMenologionHero() {
         <div className="flex justify-center mb-2">
           <Cross size={22} className="text-gold" />
         </div>
-        <p className="text-center font-sans text-[11px] font-semibold uppercase tracking-[1.6px] text-gold/85">
+        <p className="text-center font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-gold/85">
           Pascha
         </p>
-        <p className="text-center font-display-serif text-[24px] md:text-[26px] text-paper mt-1">
+        <p className="text-center font-display-serif text-title-sm md:text-title text-paper mt-1">
           {pascha.daysAway > 1
             ? `${pascha.daysAway} days`
             : pascha.daysAway === 1
@@ -257,7 +257,7 @@ export async function TodayMenologionHero() {
                 : "Pascha has passed"}
         </p>
         {pascha.daysAway > 0 ? (
-          <p className="text-center font-sans text-[11px] uppercase tracking-[1.5px] text-paper/55 mt-1">
+          <p className="text-center font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/55 mt-1">
             {pascha.date.toLocaleDateString(undefined, {
               month: "long",
               day: "numeric",
@@ -274,14 +274,14 @@ export async function TodayMenologionHero() {
         <div className="flex flex-col sm:flex-row gap-3">
           <Link
             href="/prayers/today"
-            className="inline-flex items-center justify-center rounded-pill bg-gold text-night font-sans text-[14px] font-semibold px-5 py-3 hover:bg-gold-soft transition-colors flex-1"
+            className="inline-flex items-center justify-center rounded-pill bg-gold text-night font-sans text-ui font-semibold px-5 py-3 hover:bg-gold-soft transition-colors flex-1"
           >
             Open today&rsquo;s prayers
           </Link>
           {headlineSaint ? (
             <Link
               href={`/saints/${headlineSaint.slug}`}
-              className="inline-flex items-center justify-center rounded-pill border border-paper/25 text-paper/85 font-sans text-[14px] font-medium px-5 py-3 hover:border-paper/55 hover:text-paper transition-colors flex-1"
+              className="inline-flex items-center justify-center rounded-pill border border-paper/25 text-paper/85 font-sans text-ui font-medium px-5 py-3 hover:border-paper/55 hover:text-paper transition-colors flex-1"
             >
               Read the life
             </Link>
@@ -291,7 +291,7 @@ export async function TodayMenologionHero() {
 
       {/* Quiet colophon at the foot, printed-book idiom. */}
       <section className="px-8 pt-10 pb-4 text-center">
-        <p className="font-display-serif italic text-[14px] text-paper/55 leading-[1.55]">
+        <p className="font-display-serif italic text-ui text-paper/55 leading-[1.55]">
           Through the prayers of our holy Fathers,
           <br />
           Lord Jesus Christ our God, have mercy on us.

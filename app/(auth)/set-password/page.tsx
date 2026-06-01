@@ -20,10 +20,10 @@ export default async function SetPasswordPage() {
 
   return (
     <div>
-      <h1 className="font-sans text-[28px] font-bold text-paper leading-tight mb-2">
+      <h1 className="font-sans text-title font-bold text-paper leading-tight mb-2">
         One quick thing
       </h1>
-      <p className="font-serif text-[15px] text-paper/80 leading-[1.65] mb-7">
+      <p className="font-serif text-ui text-paper/80 leading-[1.65] mb-7">
         Purify recently moved from email magic-links to real passwords
         plus optional Google / Apple sign-in. Choose a password for
         your account and you won&rsquo;t see this again.

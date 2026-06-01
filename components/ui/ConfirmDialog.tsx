@@ -98,7 +98,7 @@ export function ConfirmDialog({
   if (!mounted) return null;
 
   const confirmAccent = destructive
-    ? "bg-[#c1272d]/[0.10] border-[#c1272d]/55 text-[#f8cac7] hover:bg-[#c1272d]/[0.20] hover:border-[#c1272d]/80"
+    ? "bg-crimson/[0.10] border-crimson/55 text-crimson-soft hover:bg-crimson/[0.20] hover:border-crimson/80"
     : "bg-gold/15 border-gold/50 text-gold hover:bg-gold/25 hover:border-gold/75";
 
   return (
@@ -153,11 +153,11 @@ export function ConfirmDialog({
         <div className="p-6 md:p-7">
           <h2
             id="confirm-dialog-title"
-            className="font-display-serif text-[22px] md:text-[24px] text-paper leading-[1.2] tracking-[-0.01em]"
+            className="font-display-serif text-title-sm md:text-title-sm text-paper leading-[1.2] tracking-[-0.01em]"
           >
             {title}
           </h2>
-          <p className="mt-3 font-sans text-[14px] text-paper/70 leading-[1.6]">
+          <p className="mt-3 font-sans text-ui text-paper/70 leading-[1.6]">
             {description}
           </p>
 
@@ -167,7 +167,7 @@ export function ConfirmDialog({
               type="button"
               onClick={onCancel}
               disabled={pending}
-              className="font-sans text-[13px] font-medium rounded-pill border border-paper/20 bg-paper/[0.04] text-paper/85 hover:bg-paper/10 hover:border-paper/40 px-5 py-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="font-sans text-detail font-medium rounded-pill border border-paper/20 bg-paper/[0.04] text-paper/85 hover:bg-paper/10 hover:border-paper/40 px-5 py-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {cancelLabel}
             </button>
@@ -176,7 +176,7 @@ export function ConfirmDialog({
               onClick={onConfirm}
               disabled={pending}
               className={
-                "font-sans text-[13px] font-semibold rounded-pill border px-5 py-2 disabled:opacity-60 disabled:cursor-wait transition-colors " +
+                "font-sans text-detail font-semibold rounded-pill border px-5 py-2 disabled:opacity-60 disabled:cursor-wait transition-colors " +
                 confirmAccent
               }
             >

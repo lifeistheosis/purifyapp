@@ -941,27 +941,27 @@ export default async function WhatsNewPage() {
  {!isDe && <TranslationDisclaimer />}
  {/* Eyebrow + version */}
  <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
- <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+ <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
- <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
+ <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
  v8.0 &middot; The Seven Ecumenical Councils, complete
  </p>
  </div>
 
  {isDe ? (
- <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  Sag uns, welche Heiligen wir als nächste übersetzen sollen. Und eine stillere, festere App darunter.
  </h1>
  ) : (
- <h1 className="font-sans text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  The Seven Ecumenical Councils, complete, in the councils&rsquo; own words.
  </h1>
  )}
 
  {isDe ? (
  <>
- <p className="mt-8 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ <p className="mt-8 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  Wenn du neu hier bist, willkommen. Wir sehen in dieser Woche
  eine echte Welle neuer Leser ankommen, und wir sind sehr
  froh, daß du gekommen bist. Purify ist klein, von Hand gebaut
@@ -972,7 +972,7 @@ export default async function WhatsNewPage() {
  Bescheid. Wir möchten, daß du dich zuhause fühlst.
  </p>
 
- <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  Der mit Abstand beste Ort, um mit uns zu sprechen, Fragen zu
  stellen, einen Heiligen vorzuschlagen, einen Tippfehler zu
  melden oder einfach mit anderen orthodoxen Lesern zu beten,
@@ -992,7 +992,7 @@ export default async function WhatsNewPage() {
  bei.
  </p>
 
- <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  v6.5 ist ein großes Release mit zwei Teilen. Der erste ist
  das{" "}
  <Link
@@ -1020,7 +1020,7 @@ export default async function WhatsNewPage() {
  Bumps haben.
  </p>
 
- <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  Der zweite Teil ist eine umfassende Sicherheits-Durchsicht.
  Jede öffentliche API sitzt jetzt hinter atomaren, von Supabase
  gestützten Rate-Limits, die über unsere Serverflotte hinweg
@@ -1039,7 +1039,7 @@ export default async function WhatsNewPage() {
  der Außenmantel endlich so ernsthaft ist wie der Inhalt darin.
  </p>
 
- <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  Die Arbeit darunter bleibt dieselbe. Gebet, Schrift, die
  Heiligen, die Konzile und das Jahr der Kirche, schlicht
  hingestellt, ohne Verfolgung und ohne Werbung. Bete mit der
@@ -1048,7 +1048,7 @@ export default async function WhatsNewPage() {
  geehrt, daß du irgend etwas davon mit uns tust.
  </p>
 
- <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  Das vollständige Versionsprotokoll lebt unten, nach Datum
  gruppiert und voreingestellt zugeklappt. Klappe einen Eintrag
  auf, wenn du die Einzelheiten möchtest.
@@ -1056,7 +1056,7 @@ export default async function WhatsNewPage() {
  </>
  ) : (
  <>
- <p className="mt-8 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ <p className="mt-8 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  If you are new here, welcome. We are seeing a real wave of new
  readers arrive this week, and we are so glad you came. Purify is
  small, hand-built, and ran by a small team of developers and
@@ -1065,7 +1065,7 @@ export default async function WhatsNewPage() {
  want you to feel at home.
  </p>
 
- <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  The single best place to talk to us, ask questions, request a
  saint, surface a typo, or just pray with other Orthodox readers
  is our Discord. It is the room where the editorial team lives
@@ -1083,7 +1083,7 @@ export default async function WhatsNewPage() {
  .
  </p>
 
- <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  v8.0 is the big one. For a while the{" "}
  <Link href="/councils" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Councils</Link>{" "}
  section stopped at four, with a standing notice that the rest
@@ -1114,7 +1114,7 @@ export default async function WhatsNewPage() {
  seventh in place, the coming-soon notice has retired itself.
  </p>
 
- <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  The work underneath stays the same. Prayer, Scripture, the
  saints, the Councils, and the year of the Church laid out
  plainly, with no tracking and no advertising. Pray with the
@@ -1123,7 +1123,7 @@ export default async function WhatsNewPage() {
  any of it with us.
  </p>
 
- <p className="mt-5 font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  The full release-by-release log lives below, grouped by date and
  collapsed by default. Pop one open when you want the detail.
  </p>
@@ -1132,14 +1132,14 @@ export default async function WhatsNewPage() {
 
  {/* Closing + signature */}
  <div className="mt-16 pt-10 border-t border-paper/10">
- <p className="font-serif text-[19px] md:text-[20px] text-paper/85 leading-[1.7]">
+ <p className="font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  {isDe
  ? "Danke, daß du durch acht Major-Versionen bei uns geblieben bist. Ehre sei Gott für alles."
  : "Thank you for staying with us through eight majors. Glory to God for all things."}
  </p>
 
  <p
- className="mt-10 font-serif italic text-[20px] md:text-[22px] tracking-wide text-gold"
+ className="mt-10 font-serif italic text-lede md:text-title-sm tracking-wide text-gold"
  >
  {isDe ? "Von Edgar, dem Purify-Team." : "From Edgar, the Purify Team."}
  </p>
@@ -1148,12 +1148,12 @@ export default async function WhatsNewPage() {
  {/* Changelog: dates collapse, releases inside also collapse. */}
  <section className="mt-20 pt-10 border-t border-paper/10" data-changelog>
  <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
- <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+ <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
  {isDe ? "Versionshinweise" : "Release notes"}
  </p>
  <ChangelogControls />
  </div>
- <p className="font-sans text-[13px] text-paper/45 mb-8 leading-[1.65]">
+ <p className="font-sans text-detail text-paper/45 mb-8 leading-[1.65]">
  {isDe
  ? "Nach Datum gruppiert. Der jüngste Tag ist voreingestellt offen; tippe jeden anderen Tag an, um ihn aufzuklappen. Innerhalb eines Tages tippe auf eine Version, um ihre vollständige Liste zu lesen."
  : "Grouped by date. The most recent day is open by default; tap any other day to expand. Inside each day, tap a release to read its full item list."}
@@ -1168,10 +1168,10 @@ export default async function WhatsNewPage() {
  >
  <summary className="cursor-pointer list-none px-5 py-4 flex items-center justify-between gap-3">
  <span className="flex items-baseline gap-3 min-w-0">
- <span className="font-sans text-[15px] font-semibold text-paper truncate">
+ <span className="font-sans text-ui font-semibold text-paper truncate">
  {g.date}
  </span>
- <span className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/45">
+ <span className="font-sans text-caption uppercase tracking-[1.2px] text-paper/45">
  {g.entries.length}{" "}
  {isDe
  ? g.entries.length === 1
@@ -1184,7 +1184,7 @@ export default async function WhatsNewPage() {
  </span>
  <span
  aria-hidden
- className="text-paper/45 group-open:rotate-180 transition-transform duration-200 text-[12px]"
+ className="text-paper/45 group-open:rotate-180 transition-transform duration-200 text-caption"
  >
  ▾
  </span>
@@ -1208,24 +1208,24 @@ function ReleaseDetails({ entry: e }: { entry: Entry }) {
  <details className="group/rel rounded-md border border-paper/10 bg-night-soft/40 open:bg-night-soft/70 transition-colors">
  <summary className="cursor-pointer list-none px-4 py-3">
  <div className="flex items-baseline gap-3 flex-wrap">
- <span className="font-sans text-[16px] font-bold text-paper tracking-[-0.01em]">
+ <span className="font-sans text-body font-bold text-paper tracking-[-0.01em]">
  {e.version}
  </span>
- <span className="font-sans text-[11px] uppercase tracking-[1.2px] text-paper/50">
+ <span className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/50">
  {e.kind}
  </span>
  <span
  aria-hidden
- className="ml-auto text-paper/40 group-open/rel:rotate-180 transition-transform duration-200 text-[11px]"
+ className="ml-auto text-paper/40 group-open/rel:rotate-180 transition-transform duration-200 text-eyebrow"
  >
  ▾
  </span>
  </div>
- <p className="mt-1.5 font-sans text-[13.5px] text-paper/65 leading-[1.55] group-open/rel:text-paper/80 transition-colors">
+ <p className="mt-1.5 font-sans text-detail text-paper/65 leading-[1.55] group-open/rel:text-paper/80 transition-colors">
  {e.blurb}
  </p>
  </summary>
- <ul className="px-4 pb-4 pt-1 space-y-2 font-sans text-[14px] text-paper/85 leading-[1.6] list-disc pl-9 marker:text-paper/30">
+ <ul className="px-4 pb-4 pt-1 space-y-2 font-sans text-ui text-paper/85 leading-[1.6] list-disc pl-9 marker:text-paper/30">
  {e.items.map((it) => (
  <li key={it}>{it}</li>
  ))}

@@ -94,7 +94,7 @@ export function AppNav() {
       <div className="mx-auto max-w-[1240px] h-full flex items-center justify-between gap-6 px-5 md:px-8">
         <Link
           href="/"
-          className="font-sans text-[22px] font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors duration-150"
+          className="font-sans text-title-sm font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors duration-150"
         >
           Purify
         </Link>
@@ -105,7 +105,7 @@ export function AppNav() {
               key={it.key}
               href={it.href}
               className={cn(
-                "font-sans text-[15px] font-medium transition-colors duration-150",
+                "font-sans text-ui font-medium transition-colors duration-150",
                 isActive(it.href)
                   ? "text-paper"
                   : "text-paper/65 hover:text-paper",
@@ -122,7 +122,7 @@ export function AppNav() {
               key={it.key}
               href={it.href}
               className={cn(
-                "font-sans text-[14px] font-medium transition-colors duration-150",
+                "font-sans text-ui font-medium transition-colors duration-150",
                 isActive(it.href)
                   ? "text-paper"
                   : "text-paper/65 hover:text-paper",
@@ -148,7 +148,7 @@ export function AppNav() {
                   "linear-gradient(155deg, #2a1f10 0%, #3b2a14 50%, #5a3f1c 100%)",
               }}
             >
-              <span className="font-display-serif text-[12px] text-[#f5e6d3] tracking-[0.04em]">
+              <span className="font-display-serif text-caption text-cream tracking-[0.04em]">
                 {initials}
               </span>
             </Link>
@@ -159,7 +159,7 @@ export function AppNav() {
             <Link
               href="/account"
               className={cn(
-                "font-sans text-[14px] font-medium transition-colors duration-150",
+                "font-sans text-ui font-medium transition-colors duration-150",
                 isActive("/account")
                   ? "text-paper"
                   : "text-paper/65 hover:text-paper",
@@ -168,7 +168,7 @@ export function AppNav() {
               {t("nav.account")}
             </Link>
           )}
-          <ComingSoonCTA variant="inverse" className="!py-2.5 !px-5 text-[14px]">
+          <ComingSoonCTA variant="inverse" className="!py-2.5 !px-5 text-ui">
             {t("nav.openPurify")}
           </ComingSoonCTA>
         </div>
@@ -180,7 +180,7 @@ export function AppNav() {
           className="md:hidden inline-flex items-center justify-center h-11 w-11 rounded-pill border border-paper/20 text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
           onClick={() => setOpen((v) => !v)}
         >
-          <span className="text-[18px]">{open ? "✕" : "≡"}</span>
+          <span className="text-lede">{open ? "✕" : "≡"}</span>
         </button>
       </div>
 
@@ -193,7 +193,7 @@ export function AppNav() {
                   key={it.key}
                   href={it.href}
                   onClick={() => setOpen(false)}
-                  className="font-sans text-[16px] font-medium text-paper/85 hover:text-paper py-3 border-b border-white/5 last:border-0"
+                  className="font-sans text-body font-medium text-paper/85 hover:text-paper py-3 border-b border-white/5 last:border-0"
                 >
                   {it.label}
                 </Link>

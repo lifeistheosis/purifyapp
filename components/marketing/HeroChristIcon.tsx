@@ -213,7 +213,7 @@ export function HeroChristIcon() {
       {!introDone ? (
         <div
           aria-hidden
-          className="absolute pointer-events-none rounded-full border border-[#c1272d]/85 motion-reduce:hidden"
+          className="absolute pointer-events-none rounded-full border border-crimson/85 motion-reduce:hidden"
           style={{
             top: "50%",
             left: "50%",

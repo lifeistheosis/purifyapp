@@ -38,7 +38,7 @@ export function BibleMobileContinue() {
   if (!last) {
     return (
       <MobileCard eyebrow="Continue reading">
-        <p className="mt-2 font-sans text-[13.5px] text-paper/55 italic">
+        <p className="mt-2 font-sans text-detail text-paper/55 italic">
           Open any chapter and this card will remember where you left off.
         </p>
       </MobileCard>
@@ -52,10 +52,10 @@ export function BibleMobileContinue() {
       title={`${cap} ${last.chapter}`}
       href={`/bible/${last.book}/${last.chapter}`}
     >
-      <p className="mt-2 font-sans text-[13px] text-paper/55">
+      <p className="mt-2 font-sans text-detail text-paper/55">
         Pick up where you left off.
       </p>
-      <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
+      <p className="mt-3 font-sans text-detail font-medium text-paper/75">
         Open chapter →
       </p>
     </MobileCard>

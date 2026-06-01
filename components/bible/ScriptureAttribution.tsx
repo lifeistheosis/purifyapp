@@ -26,7 +26,7 @@ export function ScriptureAttribution({
 }) {
  const pub = PUBLISHER[transId];
  return (
- <footer className="mt-10 pt-6 border-t border-paper/10 space-y-2 font-sans text-[12px] leading-relaxed text-paper/55">
+ <footer className="mt-10 pt-6 border-t border-paper/10 space-y-2 font-sans text-caption leading-relaxed text-paper/55">
  {copyright && <p>{copyright}</p>}
  {pub && (
  <p>

@@ -31,9 +31,9 @@ import { User } from "@/components/ui/icons/User";
  */
 
 const FAST_TONE: Record<FastKind, string> = {
-  strict: "border-[#c1272d]/45 text-[#f8cac7]",
-  "wine-oil": "border-gold/55 text-[#f4dc91]",
-  fish: "border-[#7b9b8f]/55 text-[#bfd6cc]",
+  strict: "border-crimson/45 text-crimson-soft",
+  "wine-oil": "border-gold/55 text-gold-pale",
+  fish: "border-sage/55 text-sage-soft",
   fast: "border-paper/25 text-paper/85",
   "fast-free": "border-emerald-500/50 text-emerald-200",
   normal: "border-paper/20 text-paper/75",
@@ -122,25 +122,25 @@ export async function TodayMobileHero() {
         />
         <div className="relative px-5 pt-10 pb-8">
           {greeting ? (
-            <p className="font-serif text-[15px] italic text-paper/80 mb-1">
+            <p className="font-serif text-ui italic text-paper/80 mb-1">
               {greeting}
             </p>
           ) : null}
-          <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/65">
+          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/65">
             {formatLongDate(today)}
           </p>
-          <h1 className="mt-2 font-sans text-[28px] font-bold leading-[1.1] tracking-[-0.02em] text-paper">
+          <h1 className="mt-2 font-sans text-title font-bold leading-[1.1] tracking-[-0.02em] text-paper">
             {headline ? headline.name : "A quiet day with the Church."}
           </h1>
           {headline?.kind ? (
-            <p className="mt-2 font-sans text-[12px] uppercase tracking-[1.5px] text-paper/55">
+            <p className="mt-2 font-sans text-caption uppercase tracking-[1.5px] text-paper/55">
               {headline.kind === "feast" ? "Feast" : "Commemoration"}
             </p>
           ) : null}
 
           <div className="mt-5 flex flex-wrap items-center gap-2">
             <span
-              className={`inline-flex items-center rounded-pill border px-3 py-1.5 font-sans text-[12px] font-semibold ${FAST_TONE[fast.kind]}`}
+              className={`inline-flex items-center rounded-pill border px-3 py-1.5 font-sans text-caption font-semibold ${FAST_TONE[fast.kind]}`}
             >
               {fast.label}
             </span>
@@ -149,14 +149,14 @@ export async function TodayMobileHero() {
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
             <Link
               href="/prayers/today"
-              className="inline-flex items-center justify-center rounded-pill bg-gold text-night font-sans text-[14px] font-semibold px-5 py-3 hover:bg-gold-soft transition-colors"
+              className="inline-flex items-center justify-center rounded-pill bg-gold text-night font-sans text-ui font-semibold px-5 py-3 hover:bg-gold-soft transition-colors"
             >
               Open today&rsquo;s prayers
             </Link>
             {headlineSaint ? (
               <Link
                 href={`/saints/${headlineSaint.slug}`}
-                className="inline-flex items-center justify-center rounded-pill border border-paper/25 text-paper/85 font-sans text-[14px] font-medium px-5 py-3 hover:border-paper/55 hover:text-paper transition-colors"
+                className="inline-flex items-center justify-center rounded-pill border border-paper/25 text-paper/85 font-sans text-ui font-medium px-5 py-3 hover:border-paper/55 hover:text-paper transition-colors"
               >
                 Read the life
               </Link>
@@ -182,7 +182,7 @@ export async function TodayMobileHero() {
                 className="flex flex-col items-center justify-center gap-1.5 h-[68px] w-[78px] rounded-2xl border border-paper/12 bg-paper/[0.04] hover:bg-paper/[0.08] hover:border-paper/25 transition-colors"
               >
                 <Icon size={20} />
-                <span className="font-sans text-[11px] text-paper/85">
+                <span className="font-sans text-eyebrow text-paper/85">
                   {label}
                 </span>
               </Link>
@@ -200,14 +200,14 @@ export async function TodayMobileHero() {
         const cite = q ? `${headlineSaint?.name ?? ""}${q.source ? ` · ${q.source}` : ""}` : "St. Seraphim of Sarov";
         return (
           <section className="px-5 pt-6 pb-2">
-            <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
               A word for today
             </p>
             <blockquote className="rounded-lg border border-paper/12 bg-paper/[0.03] p-5">
-              <p className="font-serif text-[17px] leading-[1.55] text-paper/90">
+              <p className="font-serif text-body leading-[1.55] text-paper/90">
                 &ldquo;{text}&rdquo;
               </p>
-              <p className="mt-3 font-sans text-[11px] uppercase tracking-[1.5px] text-paper/50">
+              <p className="mt-3 font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/50">
                 {cite}
               </p>
             </blockquote>

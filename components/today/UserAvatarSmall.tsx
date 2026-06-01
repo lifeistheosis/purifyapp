@@ -69,7 +69,7 @@ export function UserAvatarSmall() {
             "linear-gradient(155deg, #2a1f10 0%, #3b2a14 50%, #5a3f1c 100%)",
         }}
       >
-        <span className="font-display-serif text-[11px] text-[#f5e6d3] tracking-[0.04em]">
+        <span className="font-display-serif text-eyebrow text-cream tracking-[0.04em]">
           {initials}
         </span>
       </Link>

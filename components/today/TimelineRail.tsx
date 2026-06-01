@@ -27,7 +27,7 @@ export function TimelineRail({ children }: { children: ReactNode[] }) {
               className={
                 "absolute left-[5px] top-7 h-[11px] w-[11px] rounded-full " +
                 (i === 0
-                  ? "bg-[#c1272d]"
+                  ? "bg-crimson"
                   : "border border-paper/30 bg-night")
               }
             />

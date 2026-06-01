@@ -39,13 +39,13 @@ export function ChapterPager({
  >
  <div className="flex items-center justify-between gap-6">
  <div className="min-w-0">
- <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-gold/85 mb-2">
+ <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold/85 mb-2">
  Continue reading
  </p>
- <h3 className="font-serif text-[26px] md:text-[32px] text-paper leading-tight">
+ <h3 className="font-serif text-title md:text-heading text-paper leading-tight">
  {nextBookName} {next.chapter}
  </h3>
- <p className="mt-2 font-sans text-[12.5px] text-paper/55">
+ <p className="mt-2 font-sans text-caption text-paper/55">
  {next.slug === slug
  ? "Next chapter"
  : `Next book, ${nextBookName} 1`}
@@ -53,7 +53,7 @@ export function ChapterPager({
  </div>
  <span
  aria-hidden
- className="shrink-0 text-paper/55 group-hover:text-gold transition-colors text-[28px]"
+ className="shrink-0 text-paper/55 group-hover:text-gold transition-colors text-title"
  >
  →
  </span>
@@ -67,10 +67,10 @@ export function ChapterPager({
  href={`/bible/${prev.slug}/${prev.chapter}`}
  className="mt-3 block rounded-md border border-paper/10 bg-paper/[0.02] hover:border-paper/30 hover:bg-paper/[0.04] transition-colors px-5 py-3"
  >
- <span className="block font-sans text-[10.5px] uppercase tracking-[1.5px] text-paper/45">
+ <span className="block font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/45">
  Previous chapter
  </span>
- <span className="block mt-1 font-sans text-[14px] text-paper/75">
+ <span className="block mt-1 font-sans text-ui text-paper/75">
  ← {prevBookName} {prev.chapter}
  </span>
  </Link>
@@ -81,7 +81,7 @@ export function ChapterPager({
  {(pBook || nBook) && (
  <nav
  aria-label="Jump between books"
- className="mt-6 pt-5 border-t border-white/5 flex items-center justify-between gap-4 font-sans text-[12.5px] text-paper/55"
+ className="mt-6 pt-5 border-t border-white/5 flex items-center justify-between gap-4 font-sans text-caption text-paper/55"
  >
  {pBook ? (
  <Link

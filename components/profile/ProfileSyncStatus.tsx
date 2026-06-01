@@ -100,24 +100,24 @@ export function ProfileSyncStatus() {
 
   return (
     <section className="mt-6">
-      <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
         Cross-device sync
       </p>
       <div className="rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-4 flex items-center justify-between gap-4 flex-wrap">
         <div className="min-w-0">
-          <p className="font-sans text-[13.5px] text-paper">
+          <p className="font-sans text-detail text-paper">
             <span className="text-paper/55">Last synced </span>
             <span className="font-semibold tabular-nums">
               {relativeShort(last)}
             </span>
           </p>
           {err && (
-            <p className="mt-1.5 font-sans text-[12px] text-[#f8cac7] leading-[1.45]">
+            <p className="mt-1.5 font-sans text-caption text-crimson-soft leading-[1.45]">
               Last attempt failed: {err}
             </p>
           )}
           {!err && last && (
-            <p className="mt-1 font-sans text-[12px] text-paper/45">
+            <p className="mt-1 font-sans text-caption text-paper/45">
               Your highlights, notes, bookmarks, and prayer streaks are saved
               to the server and pulled back on every device.
             </p>
@@ -127,7 +127,7 @@ export function ProfileSyncStatus() {
           type="button"
           onClick={syncNow}
           disabled={busy}
-          className="shrink-0 font-sans text-[13px] font-medium rounded-pill border border-paper/25 bg-paper/[0.06] text-paper px-4 py-2 hover:bg-paper/10 hover:border-paper/45 disabled:opacity-60 transition-colors"
+          className="shrink-0 font-sans text-detail font-medium rounded-pill border border-paper/25 bg-paper/[0.06] text-paper px-4 py-2 hover:bg-paper/10 hover:border-paper/45 disabled:opacity-60 transition-colors"
         >
           {busy ? "Syncing…" : "Sync now"}
         </button>

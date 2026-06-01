@@ -19,7 +19,7 @@ export function MobilePill({
     <Link
       href={href}
       className={
-        "inline-flex items-center rounded-full border px-3 py-1.5 font-sans text-[12.5px] font-medium transition-colors " +
+        "inline-flex items-center rounded-full border px-3 py-1.5 font-sans text-caption font-medium transition-colors " +
         (accent
           ? "border-gold/45 bg-gold/[0.08] text-gold hover:bg-gold/[0.14]"
           : "border-paper/15 bg-paper/[0.04] text-paper/85 hover:border-paper/30 hover:bg-paper/[0.08]")

@@ -77,7 +77,7 @@ export function SaintIcon({
  }}
  />
  <span
- className="font-serif text-[#f5e6d3] mt-2 tracking-[0.05em]"
+ className="font-serif text-cream mt-2 tracking-[0.05em]"
  style={{ fontSize: d.text, lineHeight: 1 }}
  >
  {initials}

@@ -82,13 +82,13 @@ export default async function DiscoverPage() {
         <article className="mx-auto max-w-[820px] w-full px-5 pt-6 pb-10 md:pt-0 md:pb-0">
           <header className="text-center mb-8 md:mb-12">
             <OrnamentHeadpiece className="mx-auto mb-5 max-w-[400px]" />
-            <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.6px] text-gold/85 mb-3">
+            <p className="font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/85 mb-3">
               {t(m, "discover.eyebrow")}
             </p>
-            <h1 className="font-display-serif text-[34px] md:text-[44px] text-paper leading-[1.05]">
+            <h1 className="font-display-serif text-heading md:text-display text-paper leading-[1.05]">
               {t(m, "discover.h1")}
             </h1>
-            <p className="mt-4 font-serif italic text-[15px] md:text-[16px] text-paper/70 max-w-[520px] mx-auto leading-[1.65]">
+            <p className="mt-4 font-serif italic text-ui md:text-body text-paper/70 max-w-[520px] mx-auto leading-[1.65]">
               {t(m, "discover.subtitle")}
             </p>
           </header>
@@ -108,16 +108,16 @@ export default async function DiscoverPage() {
                     <Icon size={28} />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-display-serif text-[20px] md:text-[22px] text-paper leading-tight group-hover:text-gold transition-colors">
+                    <p className="font-display-serif text-lede md:text-title-sm text-paper leading-tight group-hover:text-gold transition-colors">
                       {label}
                     </p>
-                    <p className="mt-1.5 font-serif italic text-[13.5px] md:text-[14px] text-paper/65 leading-[1.55]">
+                    <p className="mt-1.5 font-serif italic text-detail md:text-ui text-paper/65 leading-[1.55]">
                       {blurb}
                     </p>
                   </div>
                   <span
                     aria-hidden
-                    className="shrink-0 self-center font-serif text-[18px] text-paper/30 group-hover:text-gold transition-colors"
+                    className="shrink-0 self-center font-serif text-lede text-paper/30 group-hover:text-gold transition-colors"
                   >
                     →
                   </span>
@@ -127,7 +127,7 @@ export default async function DiscoverPage() {
           </ul>
 
           {/* Quiet colophon to close the page. */}
-          <p className="mt-10 text-center font-display-serif italic text-[14px] text-paper/45 leading-[1.55]">
+          <p className="mt-10 text-center font-display-serif italic text-ui text-paper/45 leading-[1.55]">
             Through the prayers of our holy Fathers,
             <br />
             Lord Jesus Christ our God, have mercy on us.

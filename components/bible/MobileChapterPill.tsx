@@ -23,7 +23,7 @@ function Arrow({
     return (
       <span
         aria-hidden
-        className="h-10 w-10 inline-flex items-center justify-center text-paper/25 font-sans text-[20px] leading-none"
+        className="h-10 w-10 inline-flex items-center justify-center text-paper/25 font-sans text-lede leading-none"
       >
         {dir}
       </span>
@@ -33,7 +33,7 @@ function Arrow({
     <Link
       href={`/bible/${target.slug}/${target.chapter}`}
       aria-label={label}
-      className="h-10 w-10 inline-flex items-center justify-center text-paper/85 hover:text-paper font-sans text-[20px] leading-none"
+      className="h-10 w-10 inline-flex items-center justify-center text-paper/85 hover:text-paper font-sans text-lede leading-none"
     >
       {dir}
     </Link>
@@ -72,7 +72,7 @@ export function MobileChapterPill({
             "calc(var(--tab-bar-h) + env(safe-area-inset-bottom, 0px) + 12px)",
         }}
       >
-        <div className="pointer-events-auto inline-flex items-center gap-1 rounded-pill bg-night/95 backdrop-blur border border-white/15 shadow-[0_8px_24px_rgba(0,0,0,0.45)] pl-1 pr-1 py-1">
+        <div className="pointer-events-auto inline-flex items-center gap-1 rounded-pill bg-night/95 backdrop-blur border border-white/15 shadow-raise pl-1 pr-1 py-1">
           <Arrow
             target={prev}
             label={
@@ -86,7 +86,7 @@ export function MobileChapterPill({
             type="button"
             onClick={() => setSheetOpen(true)}
             aria-label={`Pick a chapter, currently ${book.name} ${chapter}`}
-            className="px-3 h-10 inline-flex items-center font-sans text-[14px] font-semibold text-paper"
+            className="px-3 h-10 inline-flex items-center font-sans text-ui font-semibold text-paper"
           >
             {book.name} {chapter}
           </button>

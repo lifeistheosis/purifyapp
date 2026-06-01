@@ -38,7 +38,7 @@ export function PasswordInput({
     <div>
       <label
         htmlFor={id}
-        className="font-sans text-[12px] font-medium text-paper/75 block mb-1.5"
+        className="font-sans text-caption font-medium text-paper/75 block mb-1.5"
       >
         {label}
       </label>
@@ -52,7 +52,7 @@ export function PasswordInput({
           placeholder={placeholder}
           minLength={minLength}
           required
-          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill pl-4 pr-12 py-3 font-sans text-[15px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
+          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill pl-4 pr-12 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
         />
         <button
           type="button"
@@ -72,7 +72,7 @@ function StrengthMeter({ score, value }: { score: 0 | 1 | 2 | 3 | 4; value: stri
   const labels = ["", "Too short", "Weak", "Okay", "Strong"];
   const tones = [
     "bg-paper/10",
-    "bg-[#c1272d]/70",
+    "bg-crimson/70",
     "bg-[#e3a7a7]",
     "bg-gold/65",
     "bg-emerald-500/75",
@@ -90,7 +90,7 @@ function StrengthMeter({ score, value }: { score: 0 | 1 | 2 | 3 | 4; value: stri
           />
         ))}
       </div>
-      <span className="font-sans text-[11px] text-paper/55 min-w-[64px] text-right">
+      <span className="font-sans text-eyebrow text-paper/55 min-w-[64px] text-right">
         {value.length > 0 ? labels[score] : ""}
       </span>
     </div>

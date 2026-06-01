@@ -159,13 +159,13 @@ export function PrayerRope() {
   return (
     <section className="min-h-[calc(100dvh-72px)] bg-night text-paper relative select-none">
       <header className="px-5 md:px-8 pt-10">
-        <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
           Prayer rope
         </p>
-        <h1 className="mt-1 font-sans text-[28px] md:text-[32px] font-bold text-paper">
+        <h1 className="mt-1 font-sans text-title md:text-heading font-bold text-paper">
           {settings.line}
         </h1>
-        <p className="mt-1 font-sans text-[12px] text-paper/40">
+        <p className="mt-1 font-sans text-caption text-paper/40">
           {knotCount}-knot rope · tap the rope or press space.{" "}
           <button
             type="button"
@@ -270,7 +270,7 @@ export function PrayerRope() {
       </div>
 
       {bellNote && (
-        <p className="absolute top-4 right-4 font-sans text-[12px] text-gold animate-pulse">
+        <p className="absolute top-4 right-4 font-sans text-caption text-gold animate-pulse">
           {bellNote}
         </p>
       )}
@@ -290,21 +290,21 @@ export function PrayerRope() {
             type="button"
             onClick={commit}
             disabled={count === 0}
-            className="inline-flex items-center gap-2 rounded-pill border border-gold/40 bg-gold/[0.08] text-gold px-5 py-2 font-sans text-[13px] font-semibold hover:bg-gold/[0.14] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 rounded-pill border border-gold/40 bg-gold/[0.08] text-gold px-5 py-2 font-sans text-detail font-semibold hover:bg-gold/[0.14] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Save session
           </button>
           <button
             type="button"
             onClick={() => setCount((c) => Math.max(0, c - 1))}
-            className="inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.04] text-paper/75 px-4 py-2 font-sans text-[13px] hover:bg-paper/10 transition-colors"
+            className="inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.04] text-paper/75 px-4 py-2 font-sans text-detail hover:bg-paper/10 transition-colors"
           >
             ← one back
           </button>
           <button
             type="button"
             onClick={() => setCount(0)}
-            className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.02] text-paper/55 px-4 py-2 font-sans text-[13px] hover:text-paper transition-colors"
+            className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.02] text-paper/55 px-4 py-2 font-sans text-detail hover:text-paper transition-colors"
           >
             Reset
           </button>
@@ -325,10 +325,10 @@ export function PrayerRope() {
 function Stat({ label, value, accent }: { label: string; value: number; accent?: boolean }) {
   return (
     <div className={`rounded-md border ${accent ? "border-gold/35 bg-gold/[0.06]" : "border-paper/10 bg-paper/[0.02]"} p-4 text-center`}>
-      <p className={`font-sans text-[11px] uppercase tracking-[1.2px] ${accent ? "text-gold/80" : "text-paper/45"}`}>
+      <p className={`font-sans text-eyebrow uppercase tracking-[1.2px] ${accent ? "text-gold/80" : "text-paper/45"}`}>
         {label}
       </p>
-      <p className={`mt-1 font-sans text-[24px] font-bold tabular-nums ${accent ? "text-gold" : "text-paper"}`}>
+      <p className={`mt-1 font-sans text-title-sm font-bold tabular-nums ${accent ? "text-gold" : "text-paper"}`}>
         {value.toLocaleString()}
       </p>
     </div>
@@ -354,13 +354,13 @@ function SettingsDrawer({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-5">
-          <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+          <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
             Rope settings
           </p>
           <button
             type="button"
             onClick={onClose}
-            className="text-paper/55 hover:text-paper text-[18px]"
+            className="text-paper/55 hover:text-paper text-lede"
             aria-label="Close"
           >
             ×
@@ -368,7 +368,7 @@ function SettingsDrawer({
         </div>
 
         <fieldset className="mb-5">
-          <legend className="font-sans text-[12px] text-paper/55 mb-2">Knots</legend>
+          <legend className="font-sans text-caption text-paper/55 mb-2">Knots</legend>
           <div className="flex gap-2 flex-wrap">
             {[33, 50, 100].map((k) => (
               <button
@@ -376,7 +376,7 @@ function SettingsDrawer({
                 type="button"
                 onClick={() => onChange({ ...settings, knotCount: k as 33 | 50 | 100 })}
                 className={
-                  "rounded-pill px-4 py-1.5 font-sans text-[13px] border transition-colors " +
+                  "rounded-pill px-4 py-1.5 font-sans text-detail border transition-colors " +
                   (settings.knotCount === k
                     ? "border-gold/45 bg-gold/[0.08] text-gold"
                     : "border-paper/15 bg-paper/[0.03] text-paper/75 hover:bg-paper/10")
@@ -389,7 +389,7 @@ function SettingsDrawer({
         </fieldset>
 
         <fieldset className="mb-5">
-          <legend className="font-sans text-[12px] text-paper/55 mb-2">Prayer line</legend>
+          <legend className="font-sans text-caption text-paper/55 mb-2">Prayer line</legend>
           <div className="space-y-2">
             {LINES.map((l) => (
               <label
@@ -403,7 +403,7 @@ function SettingsDrawer({
                   onChange={() => onChange({ ...settings, line: l })}
                   className="mt-1 accent-[var(--color-gold)]"
                 />
-                <span className="font-serif text-[14.5px] text-paper/85 leading-snug">
+                <span className="font-serif text-ui text-paper/85 leading-snug">
                   {l}
                 </span>
               </label>
@@ -412,11 +412,11 @@ function SettingsDrawer({
         </fieldset>
 
         <fieldset className="space-y-2 mb-5">
-          <legend className="font-sans text-[12px] text-paper/55 mb-2">Aids</legend>
+          <legend className="font-sans text-caption text-paper/55 mb-2">Aids</legend>
           <label className="flex items-center justify-between gap-3 cursor-pointer">
-            <span className="font-sans text-[13.5px] text-paper">
+            <span className="font-sans text-detail text-paper">
               Vibrate on each knot
-              <span className="block text-[11px] text-paper/45">
+              <span className="block text-eyebrow text-paper/45">
                 Subtle haptic on supported devices.
               </span>
             </span>
@@ -428,9 +428,9 @@ function SettingsDrawer({
             />
           </label>
           <label className="flex items-center justify-between gap-3 cursor-pointer">
-            <span className="font-sans text-[13.5px] text-paper">
+            <span className="font-sans text-detail text-paper">
               Bell every 25 knots
-              <span className="block text-[11px] text-paper/45">
+              <span className="block text-eyebrow text-paper/45">
                 Quiet sine-wave tone, ~0.6s.
               </span>
             </span>
@@ -443,7 +443,7 @@ function SettingsDrawer({
           </label>
         </fieldset>
 
-        <p className="font-sans text-[11px] text-paper/40 leading-relaxed">
+        <p className="font-sans text-eyebrow text-paper/40 leading-relaxed">
           Counts are stored on this device. Signed-in users sync sessions
           across devices automatically.
         </p>

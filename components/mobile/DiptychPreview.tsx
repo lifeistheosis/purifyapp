@@ -45,7 +45,7 @@ export function DiptychPreview() {
       ))}
       <Link
         href="/prayers/personal"
-        className="inline-flex items-center justify-center h-[44px] px-3 rounded-md border border-paper/15 bg-paper/[0.03] text-paper/65 font-sans text-[11.5px] uppercase tracking-[1px] active:scale-[0.97] transition-transform"
+        className="inline-flex items-center justify-center h-[44px] px-3 rounded-md border border-paper/15 bg-paper/[0.03] text-paper/65 font-sans text-caption uppercase tracking-[1px] active:scale-[0.97] transition-transform"
       >
         Manage →
       </Link>
@@ -56,10 +56,10 @@ export function DiptychPreview() {
 function Chip({ name, note }: { name: string; note: string }) {
   return (
     <div className="inline-flex flex-col justify-center h-[44px] px-3 rounded-md border border-paper/12 bg-paper/[0.03] shrink-0">
-      <span className="font-sans text-[13px] font-semibold text-paper leading-tight max-w-[140px] truncate">
+      <span className="font-sans text-detail font-semibold text-paper leading-tight max-w-[140px] truncate">
         {name}
       </span>
-      <span className="font-sans text-[10px] uppercase tracking-[1px] text-paper/45 mt-0.5">
+      <span className="font-sans text-eyebrow uppercase tracking-[1px] text-paper/45 mt-0.5">
         {note}
       </span>
     </div>

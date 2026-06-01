@@ -17,15 +17,15 @@ export function SavedList() {
   if (bookmarks.length === 0) {
     return (
       <div className="mt-12 rounded-lg border border-paper/10 bg-paper/[0.02] p-8 md:p-10">
-        <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
+        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
           Nothing saved yet
         </p>
-        <p className="font-serif text-[18px] text-paper/80 leading-[1.65] max-w-[560px]">
+        <p className="font-serif text-lede text-paper/80 leading-[1.65] max-w-[560px]">
           Open a Bible chapter and tap the ☆ on a verse, or right-click and
           choose <em className="not-italic text-paper">Bookmark verse</em>. The
           same on any saint writing section. What you save lands here.
         </p>
-        <p className="mt-4 font-sans text-[13.5px] text-paper/55 leading-[1.55]">
+        <p className="mt-4 font-sans text-detail text-paper/55 leading-[1.55]">
           Bookmarks live in your browser. When you sign in, they sync across
           devices.
         </p>
@@ -72,10 +72,10 @@ function Group({
   return (
     <section>
       <div className="flex items-baseline justify-between mb-4">
-        <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
           {title}
         </p>
-        <p className="font-sans text-[12px] text-paper/40 tabular-nums">
+        <p className="font-sans text-caption text-paper/40 tabular-nums">
           {count}
         </p>
       </div>
@@ -126,12 +126,12 @@ function Row({
           href={hrefFor(bookmark)}
           className="block group"
         >
-          <p className="font-sans text-[15.5px] font-semibold text-paper group-hover:text-paper transition-colors truncate">
+          <p className="font-sans text-ui font-semibold text-paper group-hover:text-paper transition-colors truncate">
             {bookmark.kind === "writing-section"
               ? bookmark.sectionTitle
               : bookmark.label}
           </p>
-          <p className="mt-1 font-sans text-[12.5px] text-paper/55 truncate">
+          <p className="mt-1 font-sans text-caption text-paper/55 truncate">
             {sub} · added {dateLabel(bookmark.addedAt)}
           </p>
         </Link>
@@ -141,7 +141,7 @@ function Row({
         onClick={onRemove}
         aria-label="Remove bookmark"
         title="Remove bookmark"
-        className="shrink-0 h-9 w-9 rounded-full border border-paper/15 text-paper/55 hover:bg-[#c1272d]/20 hover:border-[#c1272d]/40 hover:text-[#f8cac7] flex items-center justify-center text-[14px] transition-colors duration-150"
+        className="shrink-0 h-9 w-9 rounded-full border border-paper/15 text-paper/55 hover:bg-crimson/20 hover:border-crimson/40 hover:text-crimson-soft flex items-center justify-center text-ui transition-colors duration-150"
       >
         ×
       </button>

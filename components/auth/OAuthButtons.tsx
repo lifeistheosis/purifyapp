@@ -47,7 +47,7 @@ export function OAuthButtons() {
           type="button"
           disabled={pendingGoogle}
           onClick={go}
-          className="inline-flex items-center justify-center gap-2 h-11 rounded-pill border border-paper/20 bg-paper/[0.04] hover:bg-paper/10 hover:border-paper/35 disabled:opacity-50 disabled:cursor-wait transition-colors font-sans text-[14px] font-medium text-paper"
+          className="inline-flex items-center justify-center gap-2 h-11 rounded-pill border border-paper/20 bg-paper/[0.04] hover:bg-paper/10 hover:border-paper/35 disabled:opacity-50 disabled:cursor-wait transition-colors font-sans text-ui font-medium text-paper"
         >
           <GoogleGlyph />
           {pendingGoogle ? "Connecting…" : "Continue with Google"}
@@ -57,14 +57,14 @@ export function OAuthButtons() {
           disabled
           aria-disabled="true"
           title="Sign in with Apple is coming soon"
-          className="inline-flex items-center justify-center gap-2 h-11 rounded-pill border border-paper/15 bg-paper/[0.02] cursor-not-allowed font-sans text-[14px] font-medium text-paper/45"
+          className="inline-flex items-center justify-center gap-2 h-11 rounded-pill border border-paper/15 bg-paper/[0.02] cursor-not-allowed font-sans text-ui font-medium text-paper/45"
         >
           <AppleGlyph />
           Apple · Coming soon
         </button>
       </div>
       {error ? (
-        <p className="mt-3 font-sans text-[12.5px] text-[#f8cac7] leading-[1.5]">
+        <p className="mt-3 font-sans text-caption text-crimson-soft leading-[1.5]">
           {error}
         </p>
       ) : null}

@@ -15,7 +15,7 @@ export function MobileHeader({
 }) {
   return (
     <header className="flex items-center justify-between px-5 pt-4 pb-2">
-      <h1 className="font-sans text-[20px] font-bold tracking-[-0.01em] text-paper">
+      <h1 className="font-sans text-lede font-bold tracking-[-0.01em] text-paper">
         {title}
       </h1>
       {trailing && <div className="flex items-center gap-3">{trailing}</div>}

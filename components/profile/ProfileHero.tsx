@@ -104,12 +104,12 @@ export function ProfileHero({
               "linear-gradient(155deg, #2a1f10 0%, #3b2a14 50%, #5a3f1c 100%)",
           }}
         >
-          <span className="font-display-serif text-[24px] text-[#f5e6d3] tracking-[0.04em]">
+          <span className="font-display-serif text-title-sm text-cream tracking-[0.04em]">
             {initials}
           </span>
         </div>
         <div className="min-w-0 flex-1">
-          <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+          <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
             Welcome back
           </p>
           {!editing ? (
@@ -122,9 +122,9 @@ export function ProfileHero({
               className="text-left group"
               aria-label="Edit display name"
             >
-              <h2 className="font-display-serif text-[28px] md:text-[36px] text-paper leading-[1.05] tracking-[-0.01em]">
+              <h2 className="font-display-serif text-title md:text-display-sm text-paper leading-[1.05] tracking-[-0.01em]">
                 {displayName}
-                <span className="ml-3 align-middle font-sans text-[11px] uppercase tracking-[1.2px] text-paper/35 group-hover:text-paper/65 transition-colors">
+                <span className="ml-3 align-middle font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/35 group-hover:text-paper/65 transition-colors">
                   Edit
                 </span>
               </h2>
@@ -151,14 +151,14 @@ export function ProfileHero({
               }
             }}
             maxLength={60}
-            className="flex-1 min-w-0 bg-paper/[0.06] border border-paper/30 rounded-pill px-4 py-2 font-sans text-[22px] md:text-[26px] text-paper focus:outline-none focus:border-paper/60 transition-colors"
+            className="flex-1 min-w-0 bg-paper/[0.06] border border-paper/30 rounded-pill px-4 py-2 font-sans text-title-sm md:text-title text-paper focus:outline-none focus:border-paper/60 transition-colors"
           />
           <div className="flex gap-2">
             <button
               type="button"
               onClick={save}
               disabled={saving}
-              className="font-sans text-[13px] font-medium bg-paper text-night rounded-pill px-4 py-2 hover:bg-paper/90 disabled:opacity-60 transition-colors"
+              className="font-sans text-detail font-medium bg-paper text-night rounded-pill px-4 py-2 hover:bg-paper/90 disabled:opacity-60 transition-colors"
             >
               {saving ? "Saving…" : "Save"}
             </button>
@@ -168,7 +168,7 @@ export function ProfileHero({
                 setDraft(displayName);
                 setEditing(false);
               }}
-              className="font-sans text-[13px] text-paper/55 hover:text-paper transition-colors px-3 py-2"
+              className="font-sans text-detail text-paper/55 hover:text-paper transition-colors px-3 py-2"
             >
               Cancel
             </button>
@@ -177,29 +177,29 @@ export function ProfileHero({
       ) : null}
       <dl className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
-          <dt className="font-sans text-[11px] font-semibold uppercase tracking-[1.2px] text-paper/45">
+          <dt className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/45">
             Email
           </dt>
-          <dd className="mt-1 font-sans text-[14.5px] text-paper truncate">
+          <dd className="mt-1 font-sans text-ui text-paper truncate">
             {email}
           </dd>
         </div>
         {memberSince && (
           <div>
-            <dt className="font-sans text-[11px] font-semibold uppercase tracking-[1.2px] text-paper/45">
+            <dt className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/45">
               Member since
             </dt>
-            <dd className="mt-1 font-sans text-[14.5px] text-paper">
+            <dd className="mt-1 font-sans text-ui text-paper">
               {memberSince}
             </dd>
           </div>
         )}
         {lastSeen && (
           <div>
-            <dt className="font-sans text-[11px] font-semibold uppercase tracking-[1.2px] text-paper/45">
+            <dt className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/45">
               Last signed in
             </dt>
-            <dd className="mt-1 font-sans text-[14.5px] text-paper">
+            <dd className="mt-1 font-sans text-ui text-paper">
               {lastSeen}
             </dd>
           </div>

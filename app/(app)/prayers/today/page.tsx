@@ -24,9 +24,9 @@ export const metadata = {
 export const revalidate = 3600;
 
 const FAST_CHIP: Record<FastKind, string> = {
-  strict: "bg-[#c1272d]/15 border-[#c1272d]/40 text-[#f8cac7]",
-  "wine-oil": "bg-gold/15 border-gold/45 text-[#f4dc91]",
-  fish: "bg-[#7b9b8f]/15 border-[#7b9b8f]/45 text-[#bfd6cc]",
+  strict: "bg-crimson/15 border-crimson/40 text-crimson-soft",
+  "wine-oil": "bg-gold/15 border-gold/45 text-gold-pale",
+  fish: "bg-sage/15 border-sage/45 text-sage-soft",
   fast: "bg-paper/[0.06] border-paper/20 text-paper/80",
   "fast-free": "bg-emerald-500/15 border-emerald-500/40 text-emerald-200",
   normal: "bg-paper/[0.04] border-paper/15 text-paper/70",
@@ -50,23 +50,23 @@ export default async function PrayersTodayPage() {
       {/* HERO STRIP */}
       <section className="px-5 md:px-8 pt-10 md:pt-14 pb-8 border-b border-white/8">
         <div className="mx-auto max-w-[1080px] w-full">
-          <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+          <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
             {t(m, "prayers.today.eyebrow")}
           </p>
-          <h1 className="font-sans text-[28px] md:text-[36px] font-bold text-paper leading-[1.1] tracking-[-0.02em]">
+          <h1 className="font-sans text-title md:text-display-sm font-bold text-paper leading-[1.1] tracking-[-0.02em]">
             {formatLongDate(today)}
           </h1>
 
           <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Fast */}
             <div className={`rounded-md border p-4 ${FAST_CHIP[fast.kind]}`}>
-              <p className="font-sans text-[11px] uppercase tracking-[1.5px] opacity-70 mb-1">
+              <p className="font-sans text-eyebrow uppercase tracking-[1.5px] opacity-70 mb-1">
                 {t(m, "prayers.today.fast")}
               </p>
-              <p className="font-sans text-[16px] font-semibold leading-tight">
+              <p className="font-sans text-body font-semibold leading-tight">
                 {fast.label}
               </p>
-              <p className="mt-1.5 font-sans text-[12.5px] opacity-90 leading-[1.55]">
+              <p className="mt-1.5 font-sans text-caption opacity-90 leading-[1.55]">
                 {fast.rule}
               </p>
             </div>
@@ -78,16 +78,16 @@ export default async function PrayersTodayPage() {
               ) : (
                 <span
                   aria-hidden
-                  className="shrink-0 h-12 w-12 rounded-full flex items-center justify-center bg-gold/15 text-[#f4dc91] border border-gold/35 text-[18px]"
+                  className="shrink-0 h-12 w-12 rounded-full flex items-center justify-center bg-gold/15 text-gold-pale border border-gold/35 text-lede"
                 >
                   {headline?.kind === "feast" ? "✦" : "+"}
                 </span>
               )}
               <div className="min-w-0 flex-1">
-                <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-paper/55 mb-1">
+                <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/55 mb-1">
                   {t(m, "prayers.today.commemoratedToday")}
                 </p>
-                <p className="font-sans text-[15px] font-semibold text-paper leading-tight">
+                <p className="font-sans text-ui font-semibold text-paper leading-tight">
                   {headline ? (
                     headlineSaint ? (
                       <Link
@@ -104,7 +104,7 @@ export default async function PrayersTodayPage() {
                   )}
                 </p>
                 {headline?.note && (
-                  <p className="mt-1 font-serif italic text-[13px] text-paper/65 leading-[1.45]">
+                  <p className="mt-1 font-serif italic text-detail text-paper/65 leading-[1.45]">
                     {headline.note}
                   </p>
                 )}
@@ -117,7 +117,7 @@ export default async function PrayersTodayPage() {
       {/* PRAYER RULES + ROPE */}
       <section className="px-5 md:px-8 py-10 md:py-12">
         <div className="mx-auto max-w-[1080px] w-full">
-          <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+          <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
             {t(m, "prayers.today.pray")}
           </p>
 
@@ -128,16 +128,16 @@ export default async function PrayersTodayPage() {
             >
               <PrayerIcon slug="anastasis" size="sm" />
               <div className="min-w-0 flex-1">
-                <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-gold/85 mb-2">
+                <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/85 mb-2">
                   {t(m, "prayers.morningRule")}
                 </p>
-                <h2 className="font-serif text-[24px] text-paper leading-tight">
+                <h2 className="font-serif text-title-sm text-paper leading-tight">
                   {t(m, "prayers.today.morningTitle")}
                 </h2>
-                <p className="mt-3 font-sans text-[13px] text-paper/65 leading-[1.6]">
+                <p className="mt-3 font-sans text-detail text-paper/65 leading-[1.6]">
                   {t(m, "prayers.today.morningBlurb")}
                 </p>
-                <p className="mt-4 font-sans text-[13px] font-medium text-paper/75 group-hover:text-gold transition-colors">
+                <p className="mt-4 font-sans text-detail font-medium text-paper/75 group-hover:text-gold transition-colors">
                   {t(m, "prayers.today.openRule")}
                 </p>
               </div>
@@ -149,16 +149,16 @@ export default async function PrayersTodayPage() {
             >
               <PrayerIcon slug="theotokos-of-vladimir" size="sm" />
               <div className="min-w-0 flex-1">
-                <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-gold/85 mb-2">
+                <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/85 mb-2">
                   {t(m, "prayers.eveningRule")}
                 </p>
-                <h2 className="font-serif text-[24px] text-paper leading-tight">
+                <h2 className="font-serif text-title-sm text-paper leading-tight">
                   {t(m, "prayers.today.eveningTitle")}
                 </h2>
-                <p className="mt-3 font-sans text-[13px] text-paper/65 leading-[1.6]">
+                <p className="mt-3 font-sans text-detail text-paper/65 leading-[1.6]">
                   {t(m, "prayers.today.eveningBlurb")}
                 </p>
-                <p className="mt-4 font-sans text-[13px] font-medium text-paper/75 group-hover:text-gold transition-colors">
+                <p className="mt-4 font-sans text-detail font-medium text-paper/75 group-hover:text-gold transition-colors">
                   {t(m, "prayers.today.openRule")}
                 </p>
               </div>
@@ -168,13 +168,13 @@ export default async function PrayersTodayPage() {
           {/* The Jesus Prayer + Rope card */}
           <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="rounded-lg border border-paper/12 bg-paper/[0.03] p-5">
-              <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-gold/85 mb-2">
+              <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/85 mb-2">
                 {t(m, "prayers.jesusPrayer")}
               </p>
-              <p className="font-serif text-[20px] md:text-[22px] text-paper leading-[1.4]">
+              <p className="font-serif text-lede md:text-title-sm text-paper leading-[1.4]">
                 {t(m, "prayers.today.jesusPrayerText")}
               </p>
-              <p className="mt-3 font-sans text-[13px] text-paper/65 leading-[1.6]">
+              <p className="mt-3 font-sans text-detail text-paper/65 leading-[1.6]">
                 {t(m, "prayers.today.jesusPrayerBlurb")}{" "}
                 <Link
                   href="/prayers/learning/jesus-prayer"
@@ -190,14 +190,14 @@ export default async function PrayersTodayPage() {
               className="group rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-5 flex flex-col justify-between"
             >
               <div>
-                <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-gold/85 mb-2">
+                <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/85 mb-2">
                   {t(m, "prayers.rope")}
                 </p>
-                <p className="font-sans text-[13px] text-paper/65 leading-[1.6]">
+                <p className="font-sans text-detail text-paper/65 leading-[1.6]">
                   {t(m, "prayers.today.ropeBlurb")}
                 </p>
               </div>
-              <p className="mt-4 font-sans text-[13px] font-medium text-paper/75 group-hover:text-gold transition-colors">
+              <p className="mt-4 font-sans text-detail font-medium text-paper/75 group-hover:text-gold transition-colors">
                 {t(m, "prayers.today.openRope")}
               </p>
             </Link>
@@ -217,7 +217,7 @@ export default async function PrayersTodayPage() {
       {readings.length > 0 && (
         <section className="px-5 md:px-8 py-10 md:py-12 border-t border-white/8 bg-night-soft">
           <div className="mx-auto max-w-[1080px] w-full">
-            <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+            <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
               {t(m, "prayers.today.readings")}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -234,13 +234,13 @@ export default async function PrayersTodayPage() {
                     href={`/bible/${r.book}/${r.chapter}#v${r.from}`}
                     className="group rounded-md border border-paper/12 bg-paper/[0.03] hover:border-gold/55 hover:bg-gold/[0.05] transition-colors p-4"
                   >
-                    <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-paper/55 mb-1.5">
+                    <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/55 mb-1.5">
                       {kindLabel}
                     </p>
-                    <p className="font-sans text-[15px] font-semibold text-paper">
+                    <p className="font-sans text-ui font-semibold text-paper">
                       {r.label}
                     </p>
-                    <p className="mt-2 font-sans text-[12px] text-paper/55 group-hover:text-gold transition-colors">
+                    <p className="mt-2 font-sans text-caption text-paper/55 group-hover:text-gold transition-colors">
                       {t(m, "prayers.today.readPassage")}
                     </p>
                   </Link>
@@ -256,24 +256,24 @@ export default async function PrayersTodayPage() {
         <div className="mx-auto max-w-[1080px] w-full grid grid-cols-1 sm:grid-cols-3 gap-3 text-center sm:text-left">
           <Link
             href="/bible/psalms/1"
-            className="rounded-md border border-paper/10 bg-paper/[0.02] hover:bg-paper/[0.06] hover:border-paper/30 transition-colors px-4 py-3 font-sans text-[14px] text-paper/75 hover:text-paper"
+            className="rounded-md border border-paper/10 bg-paper/[0.02] hover:bg-paper/[0.06] hover:border-paper/30 transition-colors px-4 py-3 font-sans text-ui text-paper/75 hover:text-paper"
           >
             {t(m, "prayers.today.psalter")}
           </Link>
           <Link
             href="/saints"
-            className="rounded-md border border-paper/10 bg-paper/[0.02] hover:bg-paper/[0.06] hover:border-paper/30 transition-colors px-4 py-3 font-sans text-[14px] text-paper/75 hover:text-paper"
+            className="rounded-md border border-paper/10 bg-paper/[0.02] hover:bg-paper/[0.06] hover:border-paper/30 transition-colors px-4 py-3 font-sans text-ui text-paper/75 hover:text-paper"
           >
             {t(m, "prayers.today.browseSaints")}
           </Link>
           <Link
             href="/prayers/learning"
-            className="rounded-md border border-paper/10 bg-paper/[0.02] hover:bg-paper/[0.06] hover:border-paper/30 transition-colors px-4 py-3 font-sans text-[14px] text-paper/75 hover:text-paper"
+            className="rounded-md border border-paper/10 bg-paper/[0.02] hover:bg-paper/[0.06] hover:border-paper/30 transition-colors px-4 py-3 font-sans text-ui text-paper/75 hover:text-paper"
           >
             {t(m, "prayers.today.learnLink")}
           </Link>
         </div>
-        <p className="mx-auto max-w-[1080px] mt-6 font-sans text-[11px] text-paper/35">
+        <p className="mx-auto max-w-[1080px] mt-6 font-sans text-eyebrow text-paper/35">
           {pascha.daysAway > 0
             ? t(m, "prayers.today.paschaInDays").replace(
                 "{days}",

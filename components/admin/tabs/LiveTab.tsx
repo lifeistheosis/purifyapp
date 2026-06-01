@@ -84,18 +84,18 @@ export function LiveTab() {
   return (
     <div className="space-y-6">
       <div className="flex items-baseline justify-end">
-        <p className="font-sans text-[11px] text-paper/40">
+        <p className="font-sans text-eyebrow text-paper/40">
           {error ? "reconnecting…" : stats ? `live · updated ${timeAgo(stats.generatedAt)}` : "loading…"}
         </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div className="rounded-lg border border-gold/30 bg-gold/[0.06] p-5 col-span-2 md:col-span-1">
-          <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.2px] text-gold/80 flex items-center gap-2">
+          <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-gold/80 flex items-center gap-2">
             <span className="inline-block h-2 w-2 rounded-full bg-gold animate-pulse" />
             Live now
           </p>
-          <p className="mt-2 font-sans text-[44px] font-bold tabular-nums leading-none text-gold">
+          <p className="mt-2 font-sans text-display font-bold tabular-nums leading-none text-gold">
             <CountUp value={stats?.liveCount ?? "—"} />
           </p>
         </div>
@@ -109,7 +109,7 @@ export function LiveTab() {
 
       <Card title="Active visitors" subtitle={`${stats?.sessions.length ?? 0} on the site right now`}>
         {stats && stats.sessions.length === 0 && (
-          <p className="font-sans text-[14px] text-paper/45">No one on the site right now.</p>
+          <p className="font-sans text-ui text-paper/45">No one on the site right now.</p>
         )}
         <ul className="space-y-2 max-h-[420px] overflow-y-auto">
           {stats?.sessions.map((s) => (
@@ -117,14 +117,14 @@ export function LiveTab() {
               key={s.id}
               className="flex items-center gap-3 rounded-md border border-paper/[0.08] bg-paper/[0.02] px-3 py-2.5"
             >
-              <span className="text-[18px] leading-none">{flag(s.countryCode)}</span>
+              <span className="text-lede leading-none">{flag(s.countryCode)}</span>
               <div className="min-w-0 flex-1">
-                <p className="font-sans text-[14px] text-paper truncate">
+                <p className="font-sans text-ui text-paper truncate">
                   {[s.city, s.country].filter(Boolean).join(", ") || "Unknown location"}
                 </p>
-                <p className="font-sans text-[12px] text-paper/45 truncate">{s.path ?? "—"}</p>
+                <p className="font-sans text-caption text-paper/45 truncate">{s.path ?? "—"}</p>
               </div>
-              <span className="shrink-0 font-sans text-[11px] text-paper/40 tabular-nums">
+              <span className="shrink-0 font-sans text-eyebrow text-paper/40 tabular-nums">
                 {timeAgo(s.lastSeen)}
               </span>
             </li>

@@ -15,7 +15,7 @@ export function ChangelogControls() {
   }
 
   return (
-    <div className="flex items-center gap-3 font-sans text-[12px] text-paper/55">
+    <div className="flex items-center gap-3 font-sans text-caption text-paper/55">
       <button
         type="button"
         onClick={() => setAll(true)}

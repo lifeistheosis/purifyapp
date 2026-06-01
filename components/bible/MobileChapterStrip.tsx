@@ -47,9 +47,9 @@ export function MobileChapterStrip({
  href={`/bible/${book.slug}/${ch}`}
  aria-current={active ? "page" : undefined}
  className={cn(
- "shrink-0 snap-start min-w-[42px] h-[36px] rounded-pill border flex items-center justify-center font-sans text-[13px] font-medium transition-colors",
+ "shrink-0 snap-start min-w-[42px] h-[36px] rounded-pill border flex items-center justify-center font-sans text-detail font-medium transition-colors",
  active
- ? "bg-gold/20 border-gold/55 text-[#f4dc91]"
+ ? "bg-gold/20 border-gold/55 text-gold-pale"
  : "border-paper/15 bg-paper/[0.04] text-paper/75 hover:bg-paper/10 hover:text-paper",
  )}
  >

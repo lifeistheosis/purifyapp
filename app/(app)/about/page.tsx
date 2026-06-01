@@ -19,18 +19,18 @@ export default async function AboutPage() {
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
  <TranslationDisclaimer />
- <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  {t(m, "about.eyebrow")}
  </p>
- <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  {t(m, "about.h1")}
  </h1>
 
  {/* §1 Manifesto / North Star */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  The north star
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  Purify is not an app, not a Bible reader, not a calendar, not a
  prayer book. It is one quiet home for all of those, set together
  so that no part stands alone. The Scriptures with the Fathers in
@@ -39,12 +39,12 @@ export default async function AboutPage() {
  in either reckoning. The morning and evening rules in the wording
  the diaspora has carried.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  The Liturgy is where the Church gathers. This is the room you
  come into between Liturgies: to pray when you rise, to read when
  you have an hour, to walk the year, to keep the fast.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Built for the praying life, not for retention loops. There are no
  analytics watching you read, no advertising in the margins, no
  notifications pulling you back. The site is plain on purpose. It
@@ -53,18 +53,18 @@ export default async function AboutPage() {
  </p>
 
  {/* §2 Radical Textual Honesty */}
- <p className="mt-12 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  What it is made of
  </p>
- <h2 className="mt-2 font-sans text-[26px] md:text-[30px] font-bold text-paper tracking-[-0.02em] leading-[1.15]">
+ <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
  Every text named. Every source open.
  </h2>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Purify hides nothing about what it puts in front of you. The
  Scriptures, the prayers, and the Fathers are drawn from sources
  you can verify line by line.
  </p>
- <ul className="mt-4 space-y-3 font-serif text-[17px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
  <strong className="text-paper">Old Testament</strong>, Brenton&rsquo;s
  1851 English Septuagint, with the deuterocanonical books and
@@ -97,7 +97,7 @@ export default async function AboutPage() {
  shared by all canonical Orthodox churches.
  </li>
  </ul>
- <p className="mt-5 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-5 font-serif text-body text-paper/85 leading-[1.7]">
  Over ninety per cent of the textual treasury is in the public
  domain. The site also carries three modern translations under
  proper license, the New King James, the New International,
@@ -106,7 +106,7 @@ export default async function AboutPage() {
  intact. Nothing is repackaged. No translation is concealed inside
  a black-box rendering. There are no proprietary lock-ins.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Where the Orthodox jurisdictions disagree on a point of practice
 , most often the calendar and the fast, Purify
  surfaces both readings and does not arbitrate. The Church has not
@@ -114,23 +114,23 @@ export default async function AboutPage() {
  </p>
 
  {/* §3 Ethical Privacy Covenant */}
- <p className="mt-12 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Your reading life is yours
  </p>
- <h2 className="mt-2 font-sans text-[26px] md:text-[30px] font-bold text-paper tracking-[-0.02em] leading-[1.15]">
+ <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
  A covenant on privacy.
  </h2>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  What you highlight, what you note, what you bookmark, the length
  of your prayer streak, these belong to you and only to you.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  By default, all of it lives on your device, in the local storage
  of the browser you are reading in. There is no server row, no
  profile, no copy elsewhere. Purify cannot read it because Purify
  never receives it.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  If you want your notes and bookmarks to follow you between phone
  and laptop, you may open a{" "}
  <strong className="text-paper">public account</strong>, your
@@ -148,7 +148,7 @@ export default async function AboutPage() {
  </Link>
  , and is reversible in either direction.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  There is no analytics layer. No third-party tracker. No advertising
  network. The full details, with every field and every third party
  named, are set out on the{" "}
@@ -162,26 +162,26 @@ export default async function AboutPage() {
  </p>
 
  {/* §4 Stewardship & the Road Ahead */}
- <p className="mt-12 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  How it is kept
  </p>
- <h2 className="mt-2 font-sans text-[26px] md:text-[30px] font-bold text-paper tracking-[-0.02em] leading-[1.15]">
+ <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
  Mission-first, independently built.
  </h2>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  This work is kept by an independent steward, not a company. There
  is no investor to satisfy, no growth team to feed, and no incentive
  to keep you on the page longer than you came to be. What ships,
  and what does not, is decided for the sake of the Faith confessed
  by the Fathers and for the sake of the readers who pray with us.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  The{" "}
  <a
  href="https://discord.gg/VzBYYUsNJ6"
  target="_blank"
  rel="noopener noreferrer"
- className="text-[#a4adff] hover:text-paper underline underline-offset-2 decoration-[#a4adff]/35"
+ className="text-link hover:text-paper underline underline-offset-2 decoration-link/35"
  >
  Discord server
  </a>{" "}
@@ -198,7 +198,7 @@ export default async function AboutPage() {
  about the texts, about the saints, about the year, that
  is what they are for.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Purify is funded today by freewill gifts, transparently itemized
  on the{" "}
  <Link
@@ -212,7 +212,7 @@ export default async function AboutPage() {
  Greek beside them, the daily prayers, the calendar, will
  remain free of charge, always.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  A heavier infrastructure layer is on the way, and the licensing
  is being upgraded so that it can be offered honestly. When that
  optional, subscription-funded layer arrives, it will exist solely
@@ -223,20 +223,20 @@ export default async function AboutPage() {
  </p>
 
  {/* §5 Contributors */}
- <p className="mt-12 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Readers who have shaped Purify
  </p>
- <h2 className="mt-2 font-sans text-[26px] md:text-[30px] font-bold text-paper tracking-[-0.02em] leading-[1.15]">
+ <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
  Contributors
  </h2>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Purify is editorially small, but it is not alone. Readers in the
  Discord and through /contact regularly send patristic citations,
  corrections, and theological notes that the editors take seriously
  and that shape what ships. The following readers contributed
  substantively to specific patches:
  </p>
- <ul className="mt-4 space-y-3 font-serif text-[17px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
  <strong className="text-paper">ChristosAnesti</strong>, the
  florilegium on the essence-energies distinction (v6.8), including
@@ -244,7 +244,7 @@ export default async function AboutPage() {
  page on Gregory Palamas&rsquo;s profile.
  </li>
  </ul>
- <p className="mt-4 font-serif text-[15px] text-paper/55 leading-[1.65] italic">
+ <p className="mt-4 font-serif text-ui text-paper/55 leading-[1.65] italic">
  If you have contributed a citation, a translation note, or an
  editorial correction that shipped, and you do not see your handle
  here, write us; we want to keep this list honest.
@@ -252,7 +252,7 @@ export default async function AboutPage() {
 
  {/* §6 Closing Doxology */}
  <div className="mt-16 pt-10 border-t border-paper/10 text-center">
- <p className="font-serif italic text-[22px] md:text-[26px] tracking-wide leading-[1.4] max-w-[560px] mx-auto text-gold">
+ <p className="font-serif italic text-title-sm md:text-title tracking-wide leading-[1.4] max-w-[560px] mx-auto text-gold">
  Glory to God for all things.
  </p>
  </div>
@@ -267,18 +267,18 @@ function AboutDe() {
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
- <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  Über
  </p>
- <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  Eine Wohnung für das orthodoxe Leben.
  </h1>
 
  {/* §1 Manifest / Nordstern */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Der Nordstern
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  Purify ist nicht eine App, nicht ein Bibelleser, nicht ein
  Kalender, nicht ein Gebetbuch. Es ist eine stille Wohnung für
  dies alles, so beieinander, daß kein Teil allein steht. Die
@@ -287,13 +287,13 @@ function AboutDe() {
  Fasten und Fest, nach beiden Reckonungen. Die Morgen- und
  Abendregel im Wortlaut, den die Diaspora getragen hat.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Die göttliche Liturgie ist der Ort, wo die Kirche sich versammelt.
  Dies ist die Kammer, in die du zwischen den Liturgien hineingehst:
  um zu beten, wenn du aufstehst, um zu lesen, wenn du eine Stunde
  hast, um das Jahr zu gehen, um das Fasten zu halten.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Für das betende Leben gebaut, nicht für Rückbindungsschleifen. Es
  gibt keine Analytik, die dich beim Lesen beobachtet, keine Werbung
  am Rand, keine Benachrichtigungen, die dich zurückziehen. Die Seite
@@ -303,18 +303,18 @@ function AboutDe() {
  </p>
 
  {/* §2 Radikale Texttreue */}
- <p className="mt-12 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Woraus es gemacht ist
  </p>
- <h2 className="mt-2 font-sans text-[26px] md:text-[30px] font-bold text-paper tracking-[-0.02em] leading-[1.15]">
+ <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
  Jeder Text genannt. Jede Quelle offen.
  </h2>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Purify verbirgt nichts darüber, was es dir vorlegt. Die Schriften,
  die Gebete und die Väter sind aus Quellen geschöpft, die du Zeile
  für Zeile prüfen kannst.
  </p>
- <ul className="mt-4 space-y-3 font-serif text-[17px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
  <strong className="text-paper">Altes Testament</strong>, Brentons
  englische Septuaginta von 1851, mit den deuterokanonischen Büchern
@@ -348,7 +348,7 @@ function AboutDe() {
  alle kanonischen orthodoxen Kirchen teilen.
  </li>
  </ul>
- <p className="mt-5 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-5 font-serif text-body text-paper/85 leading-[1.7]">
  Über neunzig Prozent des Textschatzes liegen gemeinfrei. Die Seite
  trägt außerdem drei moderne Übersetzungen unter ordentlicher
  Lizenz, die New King James, die New International und
@@ -358,7 +358,7 @@ function AboutDe() {
  umverpackt. Keine Übersetzung wird in einer Blackbox versteckt.
  Es gibt keine geschützten Einbindungen.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Wo die orthodoxen Jurisdiktionen in einem Punkt der Praxis
  voneinander abweichen, meistens im Kalender und im Fasten
 ,, legt Purify beide Lesarten vor und richtet nicht. Die
@@ -366,24 +366,24 @@ function AboutDe() {
  </p>
 
  {/* §3 Ethischer Privatheitsbund */}
- <p className="mt-12 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Dein Lese-Leben gehört dir
  </p>
- <h2 className="mt-2 font-sans text-[26px] md:text-[30px] font-bold text-paper tracking-[-0.02em] leading-[1.15]">
+ <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
  Ein Bund über die Privatheit.
  </h2>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Was du markierst, was du dir notierst, was du als Lesezeichen
  setzt, die Länge deiner Gebets-Strähne, das gehört dir
  und nur dir.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Voreingestellt lebt all das auf deinem Gerät, im Lokalspeicher des
  Browsers, in dem du gerade liest. Es gibt keine Zeile auf einem
  Server, kein Profil, keine Kopie anderswo. Purify kann es nicht
  lesen, weil Purify es niemals empfängt.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Wenn du möchtest, daß deine Notizen und Lesezeichen dir zwischen
  Telefon und Laptop folgen, kannst du ein{" "}
  <strong className="text-paper">öffentliches Konto</strong> öffnen
@@ -402,7 +402,7 @@ function AboutDe() {
  </Link>{" "}
  schlicht benannt und ist in beide Richtungen umkehrbar.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Es gibt keine Analytik-Schicht. Keinen Tracker eines Dritten. Kein
  Werbenetz. Die vollen Einzelheiten, mit jedem Feld und jedem
  Dritten beim Namen, findest du auf der{" "}
@@ -416,13 +416,13 @@ function AboutDe() {
  </p>
 
  {/* §4 Verwaltung und der Weg voraus */}
- <p className="mt-12 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Wie es bewahrt wird
  </p>
- <h2 className="mt-2 font-sans text-[26px] md:text-[30px] font-bold text-paper tracking-[-0.02em] leading-[1.15]">
+ <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
  Sendungsorientiert, unabhängig gebaut.
  </h2>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Dieses Werk wird von einer unabhängigen Verwaltung gehalten, nicht
  von einer Firma. Es gibt keinen Investor zu befriedigen, kein
  Wachstumsteam zu speisen und keinen Anreiz, dich länger auf der
@@ -431,13 +431,13 @@ function AboutDe() {
  entschieden, der von den Vätern bekannt ist, und um der Leser
  willen, die mit uns beten.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Der{" "}
  <a
  href="https://discord.gg/VzBYYUsNJ6"
  target="_blank"
  rel="noopener noreferrer"
- className="text-[#a4adff] hover:text-paper underline underline-offset-2 decoration-[#a4adff]/35"
+ className="text-link hover:text-paper underline underline-offset-2 decoration-link/35"
  >
  Discord-Server
  </a>{" "}
@@ -454,7 +454,7 @@ function AboutDe() {
  über die Texte, über die Heiligen, über das Jahr, dafür
  sind sie.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Purify wird heute durch freiwillige Gaben getragen, die auf der{" "}
  <Link
  href="/support"
@@ -467,7 +467,7 @@ function AboutDe() {
  Väter, die Schriften mit dem Griechischen daneben, die täglichen
  Gebete, der Kalender, wird immer unentgeltlich bleiben.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Eine schwerere Infrastrukturschicht ist im Werden, und die
  Lizenzierung wird verbessert, damit sie ehrlich angeboten werden
  kann. Wenn diese freiwillige, durch Abonnement getragene Schicht
@@ -479,20 +479,20 @@ function AboutDe() {
  </p>
 
  {/* §5 Mitarbeiter */}
- <p className="mt-12 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Leser, die Purify mitgeprägt haben
  </p>
- <h2 className="mt-2 font-sans text-[26px] md:text-[30px] font-bold text-paper tracking-[-0.02em] leading-[1.15]">
+ <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
  Mitwirkende
  </h2>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Purify ist redaktionell klein, aber nicht allein. Leser im Discord
  und über /contact schicken regelmäßig patristische Zitate,
  Korrekturen und theologische Anmerkungen, die die Redaktion ernst
  nimmt und die prägen, was geliefert wird. Die folgenden Leser
  haben wesentlich zu bestimmten Patches beigetragen:
  </p>
- <ul className="mt-4 space-y-3 font-serif text-[17px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
  <strong className="text-paper">ChristosAnesti</strong>, das
  Florilegium zur Wesens-Energien-Unterscheidung (v6.8), samt der
@@ -500,7 +500,7 @@ function AboutDe() {
  Profil des heiligen Gregor Palamas zugrunde liegen.
  </li>
  </ul>
- <p className="mt-4 font-serif text-[15px] text-paper/55 leading-[1.65] italic">
+ <p className="mt-4 font-serif text-ui text-paper/55 leading-[1.65] italic">
  Wenn du ein Zitat, eine Übersetzungsanmerkung oder eine
  redaktionelle Korrektur beigetragen hast, die geliefert wurde, und
  deinen Namen hier nicht siehst, schreib uns; wir wollen diese
@@ -509,7 +509,7 @@ function AboutDe() {
 
  {/* §6 Schluss-Doxologie */}
  <div className="mt-16 pt-10 border-t border-paper/10 text-center">
- <p className="font-serif italic text-[22px] md:text-[26px] tracking-wide leading-[1.4] max-w-[560px] mx-auto text-gold">
+ <p className="font-serif italic text-title-sm md:text-title tracking-wide leading-[1.4] max-w-[560px] mx-auto text-gold">
  Ehre sei Gott für alles.
  </p>
  </div>

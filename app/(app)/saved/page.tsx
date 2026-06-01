@@ -12,13 +12,13 @@ export default function SavedPage() {
   return (
     <section className={`${SECTION} bg-night min-h-[calc(100dvh-72px)]`}>
       <article className="mx-auto max-w-[760px] w-full">
-        <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+        <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
           Your saved
         </p>
-        <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+        <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
           What you&rsquo;ve kept.
         </h1>
-        <p className="mt-6 font-serif text-[18px] text-paper/80 leading-[1.7] max-w-[620px]">
+        <p className="mt-6 font-serif text-lede text-paper/80 leading-[1.7] max-w-[620px]">
           The verses, chapters, and saint writings you bookmarked, newest
           first. Tap a row to open. Sign in to sync across devices.
         </p>

@@ -38,10 +38,10 @@ export function ForgotForm() {
   if (sent) {
     return (
       <div className="rounded-lg border border-gold/35 bg-gold/[0.06] p-5">
-        <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-gold mb-2">
+        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-2">
           Reset link sent
         </p>
-        <p className="font-serif text-[16px] text-paper/90 leading-[1.65]">
+        <p className="font-serif text-body text-paper/90 leading-[1.65]">
           If <span className="font-semibold text-paper">{email.trim()}</span>{" "}
           is registered with us, you&rsquo;ll get a link to set a new
           password. The link is good for one hour.
@@ -55,7 +55,7 @@ export function ForgotForm() {
       <div>
         <label
           htmlFor="forgot-email"
-          className="font-sans text-[12px] font-medium text-paper/75 block mb-1.5"
+          className="font-sans text-caption font-medium text-paper/75 block mb-1.5"
         >
           Email
         </label>
@@ -68,20 +68,20 @@ export function ForgotForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@somewhere.com"
-          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-[15px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
+          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
         />
       </div>
       {error ? (
-        <p className="font-sans text-[13px] text-[#f8cac7]">{error}</p>
+        <p className="font-sans text-detail text-crimson-soft">{error}</p>
       ) : null}
       <button
         type="submit"
         disabled={pending}
-        className="rounded-pill bg-paper text-night font-sans text-[14px] font-semibold py-3 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
+        className="rounded-pill bg-paper text-night font-sans text-ui font-semibold py-3 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
       >
         {pending ? "Sending…" : "Send reset link"}
       </button>
-      <p className="text-center font-sans text-[12.5px] text-paper/55">
+      <p className="text-center font-sans text-caption text-paper/55">
         <Link href="/signin" className="hover:text-paper">
           ← Back to sign in
         </Link>

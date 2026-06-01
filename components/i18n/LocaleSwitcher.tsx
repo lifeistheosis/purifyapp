@@ -39,7 +39,7 @@ export function LocaleSwitcher() {
   }
 
   return (
-    <label className="inline-flex items-center gap-2 font-sans text-[12px] text-paper/55">
+    <label className="inline-flex items-center gap-2 font-sans text-caption text-paper/55">
       <span className="sr-only">{t("footer.languageLabel")}</span>
       <select
         aria-label={t("footer.languageLabel")}

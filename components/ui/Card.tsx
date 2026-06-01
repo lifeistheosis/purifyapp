@@ -9,16 +9,16 @@ type CardProps = React.HTMLAttributes<HTMLDivElement> & {
 
 const variants: Record<Variant, string> = {
   default:
-    "bg-paper border border-line shadow-sm hover:shadow-md hover:-translate-y-0.5",
-  warm: "bg-paper-warm border border-line hover:shadow-md hover:-translate-y-0.5",
-  dark: "bg-night text-paper border-0 hover:-translate-y-0.5",
+    "bg-paper border border-line shadow-sm hover:shadow-md",
+  warm: "bg-paper-warm border border-line hover:shadow-md",
+  dark: "bg-night text-paper border-0",
 };
 
 export function Card({ variant = "default", className, ...props }: CardProps) {
   return (
     <div
       className={cn(
-        "rounded-lg p-7 transition-[box-shadow,transform] duration-200 ease-out",
+        "rounded-lg p-7 transition-[box-shadow,border-color] duration-200 ease-out",
         variants[variant],
         className,
       )}
@@ -35,7 +35,7 @@ export function CardTitle({
   return (
     <h3
       className={cn(
-        "font-sans text-h3 font-semibold text-ink mb-2",
+        "font-sans text-title-sm leading-[1.25] font-semibold text-ink mb-2",
         className,
       )}
       {...props}
@@ -50,6 +50,6 @@ export function CardBody({
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <p className={cn("font-sans text-body text-ink-soft", className)} {...props} />
+    <p className={cn("font-sans text-body leading-[1.55] text-ink-soft", className)} {...props} />
   );
 }

@@ -65,12 +65,12 @@ export function ResetForm() {
         autoComplete="new-password"
       />
       {error ? (
-        <p className="font-sans text-[13px] text-[#f8cac7]">{error}</p>
+        <p className="font-sans text-detail text-crimson-soft">{error}</p>
       ) : null}
       <button
         type="submit"
         disabled={pending}
-        className="rounded-pill bg-paper text-night font-sans text-[14px] font-semibold py-3 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
+        className="rounded-pill bg-paper text-night font-sans text-ui font-semibold py-3 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
       >
         {pending ? "Saving…" : "Set new password"}
       </button>

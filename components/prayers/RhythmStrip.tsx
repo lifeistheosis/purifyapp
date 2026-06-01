@@ -23,7 +23,7 @@ export function RhythmStrip({
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between gap-3 flex-wrap">
-        <p className="font-sans text-[12.5px] text-paper/65">
+        <p className="font-sans text-caption text-paper/65">
           <span className="font-semibold text-paper tabular-nums">{count}</span>
           <span className="text-paper/55">
             {" "}
@@ -31,7 +31,7 @@ export function RhythmStrip({
           </span>
         </p>
         {since !== null && (
-          <p className="font-sans text-[11px] text-paper/45 tabular-nums">
+          <p className="font-sans text-eyebrow text-paper/45 tabular-nums">
             {since === 0
               ? "Prayed today."
               : since === 1

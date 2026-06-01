@@ -98,7 +98,7 @@ export function VerseContextMenu({
  role="menu"
  tabIndex={-1}
  aria-label="Verse actions"
- className="fixed z-50 rounded-md border border-paper/15 bg-night-soft shadow-[0_8px_32px_rgba(0,0,0,0.5)] py-1 backdrop-blur-sm"
+ className="fixed z-50 rounded-md border border-paper/15 bg-night-soft shadow-pop py-1 backdrop-blur-sm"
  style={{ width: MENU_W, left, top }}
  // Suppress the native right-click on the menu itself so a second
  // right-click on a menu item doesn't open the browser's context menu.
@@ -119,17 +119,17 @@ export function VerseContextMenu({
  onClose();
  }}
  className={cn(
- "w-full text-left flex items-center justify-between gap-3 px-3 py-[7px] font-sans text-[13.5px] transition-colors",
+ "w-full text-left flex items-center justify-between gap-3 px-3 py-[7px] font-sans text-detail transition-colors",
  it.disabled
  ? "text-paper/30 cursor-not-allowed"
  : it.destructive
- ? "text-paper/85 hover:bg-[#c1272d]/20 hover:text-[#f8cac7]"
+ ? "text-paper/85 hover:bg-crimson/20 hover:text-crimson-soft"
  : "text-paper/85 hover:bg-paper/8 hover:text-paper",
  )}
  >
  <span className="truncate">{it.label}</span>
  {it.hint && (
- <span className="shrink-0 font-sans text-[11px] text-paper/40 tabular-nums">
+ <span className="shrink-0 font-sans text-eyebrow text-paper/40 tabular-nums">
  {it.hint}
  </span>
  )}

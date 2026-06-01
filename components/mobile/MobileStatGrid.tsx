@@ -31,13 +31,13 @@ export function MobileStatGrid({
           <>
             <p
               className={
-                "font-sans text-[28px] font-bold tabular-nums leading-none " +
-                (s.accent ? "text-[#c1272d]" : "text-paper")
+                "font-sans text-title font-bold tabular-nums leading-none " +
+                (s.accent ? "text-crimson" : "text-paper")
               }
             >
               {s.value}
             </p>
-            <p className="mt-1.5 font-sans text-[11.5px] uppercase tracking-[1.5px] text-paper/55">
+            <p className="mt-1.5 font-sans text-caption uppercase tracking-[1.5px] text-paper/55">
               {s.label}
             </p>
           </>

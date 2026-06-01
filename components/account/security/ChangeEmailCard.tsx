@@ -39,10 +39,10 @@ export function ChangeEmailCard({ currentEmail }: { currentEmail: string }) {
 
   return (
     <section className="rounded-lg border border-paper/12 bg-paper/[0.02] p-6">
-      <h2 className="font-sans text-[16px] font-semibold text-paper mb-1">
+      <h2 className="font-sans text-body font-semibold text-paper mb-1">
         Change email
       </h2>
-      <p className="font-sans text-[13px] text-paper/60 mb-5 leading-[1.55]">
+      <p className="font-sans text-detail text-paper/60 mb-5 leading-[1.55]">
         Current:{" "}
         <span className="text-paper/85 font-medium">{currentEmail}</span>.
         We&rsquo;ll send a confirmation link to the new address; the
@@ -52,7 +52,7 @@ export function ChangeEmailCard({ currentEmail }: { currentEmail: string }) {
         <div>
           <label
             htmlFor="new-email"
-            className="font-sans text-[12px] font-medium text-paper/75 block mb-1.5"
+            className="font-sans text-caption font-medium text-paper/75 block mb-1.5"
           >
             New email
           </label>
@@ -65,14 +65,14 @@ export function ChangeEmailCard({ currentEmail }: { currentEmail: string }) {
             value={next}
             onChange={(e) => setNext(e.target.value)}
             placeholder="new@somewhere.com"
-            className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-[15px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
+            className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
           />
         </div>
         {error ? (
-          <p className="font-sans text-[13px] text-[#f8cac7]">{error}</p>
+          <p className="font-sans text-detail text-crimson-soft">{error}</p>
         ) : null}
         {sent ? (
-          <p className="font-sans text-[13px] text-emerald-300">
+          <p className="font-sans text-detail text-emerald-300">
             Sent. Open the confirmation in <strong>{next.trim()}</strong> to
             finish the change.
           </p>
@@ -80,7 +80,7 @@ export function ChangeEmailCard({ currentEmail }: { currentEmail: string }) {
         <button
           type="submit"
           disabled={pending}
-          className="self-start rounded-pill bg-paper text-night font-sans text-[13.5px] font-semibold px-5 py-2.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
+          className="self-start rounded-pill bg-paper text-night font-sans text-detail font-semibold px-5 py-2.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
         >
           {pending ? "Sending…" : "Send confirmation"}
         </button>

@@ -113,7 +113,7 @@ export function ProfileStats() {
   return (
     <>
       <section className="mt-8">
-        <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
           Your reading
         </p>
         <ul className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -122,10 +122,10 @@ export function ProfileStats() {
               key={it.label}
               className="rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-5"
             >
-              <p className="font-sans text-[32px] md:text-[36px] font-bold text-gold tabular-nums leading-none">
+              <p className="font-sans text-heading md:text-display-sm font-bold text-gold tabular-nums leading-none">
                 {it.value}
               </p>
-              <p className="mt-2 font-sans text-[12.5px] text-paper/65 leading-[1.4]">
+              <p className="mt-2 font-sans text-caption text-paper/65 leading-[1.4]">
                 {it.label}
               </p>
             </li>
@@ -134,7 +134,7 @@ export function ProfileStats() {
       </section>
 
       <section className="mt-6">
-        <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
           Your prayer
         </p>
         <ul className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -143,13 +143,13 @@ export function ProfileStats() {
               key={it.label}
               className="rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-5"
             >
-              <p className="font-sans text-[32px] md:text-[36px] font-bold text-gold tabular-nums leading-none">
+              <p className="font-sans text-heading md:text-display-sm font-bold text-gold tabular-nums leading-none">
                 {it.value}
-                <span className="ml-1.5 align-baseline font-sans text-[13px] font-normal text-paper/55 tracking-normal">
+                <span className="ml-1.5 align-baseline font-sans text-detail font-normal text-paper/55 tracking-normal">
                   {it.suffix}
                 </span>
               </p>
-              <p className="mt-2 font-sans text-[12.5px] text-paper/65 leading-[1.4]">
+              <p className="mt-2 font-sans text-caption text-paper/65 leading-[1.4]">
                 {it.label}
               </p>
             </li>

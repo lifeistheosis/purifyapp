@@ -120,10 +120,10 @@ export function ProfileData({ signedIn }: { signedIn: boolean }) {
 
   return (
     <section className="mt-10 rounded-lg border border-paper/12 bg-paper/[0.02] p-6 md:p-7">
-      <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
         Your data
       </p>
-      <p className="font-sans text-[13.5px] text-paper/65 leading-[1.55] mb-5 max-w-[560px]">
+      <p className="font-sans text-detail text-paper/65 leading-[1.55] mb-5 max-w-[560px]">
         Take what you&rsquo;ve made with you. Export downloads a JSON file
         with every Purify entry on this device; import merges one back in.
       </p>
@@ -132,7 +132,7 @@ export function ProfileData({ signedIn }: { signedIn: boolean }) {
           type="button"
           onClick={doExport}
           disabled={busy !== "idle"}
-          className="font-sans text-[13px] font-medium bg-paper text-night rounded-pill px-4 py-2 hover:bg-paper/90 disabled:opacity-60 transition-colors"
+          className="font-sans text-detail font-medium bg-paper text-night rounded-pill px-4 py-2 hover:bg-paper/90 disabled:opacity-60 transition-colors"
         >
           {busy === "export" ? "Exporting…" : "Export"}
         </button>
@@ -140,7 +140,7 @@ export function ProfileData({ signedIn }: { signedIn: boolean }) {
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={busy !== "idle"}
-          className="font-sans text-[13px] font-medium border border-paper/25 text-paper rounded-pill px-4 py-2 hover:bg-paper/10 disabled:opacity-60 transition-colors"
+          className="font-sans text-detail font-medium border border-paper/25 text-paper rounded-pill px-4 py-2 hover:bg-paper/10 disabled:opacity-60 transition-colors"
         >
           {busy === "import" ? "Importing…" : "Import…"}
         </button>
@@ -156,13 +156,13 @@ export function ProfileData({ signedIn }: { signedIn: boolean }) {
             type="button"
             onClick={doSync}
             disabled={busy !== "idle"}
-            className="font-sans text-[13px] font-medium border border-gold/40 text-gold rounded-pill px-4 py-2 hover:bg-gold/10 disabled:opacity-60 transition-colors"
+            className="font-sans text-detail font-medium border border-gold/40 text-gold rounded-pill px-4 py-2 hover:bg-gold/10 disabled:opacity-60 transition-colors"
           >
             {busy === "sync" ? "Syncing…" : "Sync now"}
           </button>
         )}
         {msg && (
-          <p className="font-sans text-[13px] text-paper/65 leading-[1.55]">
+          <p className="font-sans text-detail text-paper/65 leading-[1.55]">
             {msg}
           </p>
         )}

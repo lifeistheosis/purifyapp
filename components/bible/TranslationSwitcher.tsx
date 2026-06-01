@@ -158,18 +158,18 @@ export function TranslationSwitcher({
  onClick={() => setOpen((v) => !v)}
  aria-haspopup="listbox"
  aria-expanded={open}
- className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-[13px] font-medium text-paper transition-colors"
+ className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
  >
- <span className="font-sans text-[10.5px] font-semibold uppercase tracking-[1.2px] text-paper/50">
+ <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/50">
  Translation
  </span>
- <span className="font-sans text-[13px] font-medium text-paper">
+ <span className="font-sans text-detail font-medium text-paper">
  {current.shortLabel}
  </span>
  <span
  aria-hidden
  className={cn(
- "text-[10px] text-paper/55 transition-transform duration-200",
+ "text-eyebrow text-paper/55 transition-transform duration-200",
  open && "rotate-180",
  )}
  >
@@ -181,10 +181,10 @@ export function TranslationSwitcher({
  <div
  role="dialog"
  aria-label="Switch translation"
- className="absolute left-0 top-[calc(100%+8px)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-lg border border-paper/15 bg-night shadow-[0_24px_48px_rgba(0,0,0,0.6)] overflow-hidden"
+ className="absolute left-0 top-[calc(100%+8px)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-lg border border-paper/15 bg-night shadow-overlay overflow-hidden"
  >
  <div className="px-4 pt-3 pb-2 border-b border-paper/10">
- <p className="font-sans text-[10.5px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+ <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
  {testament === "OT" ? "Old Testament" : "New Testament"}
  </p>
  </div>
@@ -219,18 +219,18 @@ export function TranslationSwitcher({
  >
  <div className="flex items-center justify-between gap-3">
  <div className="min-w-0">
- <p className="font-sans text-[13.5px] font-medium text-paper">
+ <p className="font-sans text-detail font-medium text-paper">
  {t.fullLabel}
  </p>
  {(needsSetup || t.note) && (
- <p className="mt-0.5 font-sans text-[11.5px] text-paper/50">
+ <p className="mt-0.5 font-sans text-caption text-paper/50">
  {needsSetup ? "Requires setup" : t.note}
  </p>
  )}
  </div>
  <span
  className={cn(
- "font-sans text-[10.5px] uppercase tracking-[1px] shrink-0 px-2 py-0.5 rounded-full border",
+ "font-sans text-eyebrow uppercase tracking-[1px] shrink-0 px-2 py-0.5 rounded-full border",
  isCurrent
  ? "border-accent/40 text-accent bg-accent/8"
  : selectable
@@ -254,7 +254,7 @@ export function TranslationSwitcher({
  );
  })}
  </ul>
- <div className="border-t border-paper/10 px-3 py-2 font-sans text-[10.5px] text-paper/40">
+ <div className="border-t border-paper/10 px-3 py-2 font-sans text-eyebrow text-paper/40">
  More translations coming as licensing lands.
  </div>
  </div>

@@ -36,7 +36,7 @@ export function Card({
           {title && (
             <p
               className={
-                "font-sans text-[12px] font-semibold uppercase tracking-[1.2px] " +
+                "font-sans text-caption font-semibold uppercase tracking-[1.2px] " +
                 (accent ? "text-gold/80" : "text-paper/45")
               }
             >
@@ -47,7 +47,7 @@ export function Card({
         </div>
       )}
       {subtitle && (
-        <p className="font-sans text-[11px] text-paper/40 mb-4">{subtitle}</p>
+        <p className="font-sans text-eyebrow text-paper/40 mb-4">{subtitle}</p>
       )}
       {!subtitle && (title || action) && <div className="mb-4" />}
       {children}
@@ -79,7 +79,7 @@ export function StatCard({
     >
       <p
         className={
-          "font-sans text-[12px] font-semibold uppercase tracking-[1.2px] " +
+          "font-sans text-caption font-semibold uppercase tracking-[1.2px] " +
           (accent ? "text-gold/80" : "text-paper/45")
         }
       >
@@ -87,14 +87,14 @@ export function StatCard({
       </p>
       <p
         className={
-          "mt-2 font-sans text-[34px] font-bold tabular-nums leading-none " +
+          "mt-2 font-sans text-heading font-bold tabular-nums leading-none " +
           (accent ? "text-gold" : "text-paper")
         }
       >
         <CountUp value={value} />
       </p>
       {hint && (
-        <p className="mt-1.5 font-sans text-[11px] text-paper/45">{hint}</p>
+        <p className="mt-1.5 font-sans text-eyebrow text-paper/45">{hint}</p>
       )}
     </div>
   );
@@ -132,21 +132,21 @@ export function KpiCard({
     >
       <p
         className={
-          "font-sans text-[12px] font-semibold uppercase tracking-[1.2px] " +
+          "font-sans text-caption font-semibold uppercase tracking-[1.2px] " +
           (accent ? "text-gold/80" : "text-paper/45")
         }
       >
         {label}
       </p>
       {subtitle && (
-        <p className="mt-0.5 font-sans text-[10.5px] text-paper/45 tabular-nums">
+        <p className="mt-0.5 font-sans text-eyebrow text-paper/45 tabular-nums">
           {subtitle}
         </p>
       )}
       <div className="mt-2 flex items-end justify-between gap-2">
         <p
           className={
-            "font-sans text-[32px] font-bold tabular-nums leading-none " +
+            "font-sans text-heading font-bold tabular-nums leading-none " +
             (accent ? "text-gold" : "text-paper")
           }
         >
@@ -157,11 +157,11 @@ export function KpiCard({
         )}
       </div>
       {hint
-        ? <p className="mt-2 font-sans text-[11px] text-paper/55">{hint}</p>
+        ? <p className="mt-2 font-sans text-eyebrow text-paper/55">{hint}</p>
         : delta && (
             <p
               className={
-                "mt-2 font-sans text-[11px] tabular-nums " +
+                "mt-2 font-sans text-eyebrow tabular-nums " +
                 (delta.positive ? "text-emerald-400" : "text-rose-400")
               }
             >
@@ -203,14 +203,14 @@ export function ChartFrame({
       action={rangeSelector}
     >
       {isEmpty ? (
-        <p className="font-sans text-[13px] text-paper/40 py-8 text-center">
+        <p className="font-sans text-detail text-paper/40 py-8 text-center">
           {empty ?? "No data in range."}
         </p>
       ) : (
         <>
           {children}
           {legendHint && (
-            <p className="mt-3 font-sans text-[11px] text-paper/45">
+            <p className="mt-3 font-sans text-eyebrow text-paper/45">
               {legendHint}
             </p>
           )}
@@ -240,7 +240,7 @@ export function ToolbarButton({
   title?: string;
 }) {
   const base =
-    "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 font-sans text-[11px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
+    "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 font-sans text-eyebrow font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
   const variants = {
     default:
       "border-paper/20 bg-paper/[0.04] text-paper/75 hover:border-gold/50 hover:text-gold",
@@ -325,14 +325,14 @@ export function DataTable<T>({
         </ToolbarButton>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full font-sans text-[13px]">
+        <table className="w-full font-sans text-detail">
           <thead>
             <tr className="border-b border-paper/10">
               {columns.map((c) => (
                 <th
                   key={c.key}
                   className={
-                    "px-3 py-2 font-semibold uppercase tracking-[1px] text-[10px] text-paper/45 " +
+                    "px-3 py-2 font-semibold uppercase tracking-[1px] text-eyebrow text-paper/45 " +
                     (c.align === "right" ? "text-right" : "text-left")
                   }
                 >
@@ -346,7 +346,7 @@ export function DataTable<T>({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-3 py-6 text-center text-paper/45 text-[13px]"
+                  className="px-3 py-6 text-center text-paper/45 text-detail"
                 >
                   {empty}
                 </td>
@@ -395,7 +395,7 @@ export function Pill({
   return (
     <span
       className={
-        "inline-flex items-center rounded-full border px-2 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-[1px] " +
+        "inline-flex items-center rounded-full border px-2 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] " +
         tones[tone]
       }
     >

@@ -68,7 +68,7 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
       </div>
 
       {visible.length === 0 && (
-        <p className="mt-12 font-sans text-[15px] text-paper/55 text-center">
+        <p className="mt-12 font-sans text-ui text-paper/55 text-center">
           No saints in the current filter.
         </p>
       )}

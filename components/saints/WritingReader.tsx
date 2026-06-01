@@ -66,7 +66,7 @@ export function WritingReader({
  <article
  className={`pt-12 md:pt-16 pb-24 safe-pb-reader ${FONT_CLASSES[font]} ${SIZE_CLASSES[size]}`}
  >
- <nav className="mb-10 flex items-center gap-2 font-sans text-[13px] text-paper/55">
+ <nav className="mb-10 flex items-center gap-2 font-sans text-detail text-paper/55">
  <Link
  href="/saints"
  className="hover:text-paper transition-colors duration-150"
@@ -85,14 +85,14 @@ export function WritingReader({
  </nav>
 
  <header className="pb-10 border-b border-paper/8">
- <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  {saint.name}
  </p>
- <h1 className="font-serif text-[40px] md:text-[52px] text-paper leading-[1.1] tracking-[-0.01em]">
+ <h1 className="font-serif text-display-sm md:text-display text-paper leading-[1.1] tracking-[-0.01em]">
  {content.title}
  </h1>
  {content.subtitle && (
- <p className="mt-4 font-sans text-[17px] text-paper/65 italic">
+ <p className="mt-4 font-sans text-body text-paper/65 italic">
  {content.subtitle}
  </p>
  )}
@@ -106,21 +106,21 @@ export function WritingReader({
  >
  <summary className="cursor-pointer list-none px-5 py-3.5 flex items-center justify-between">
  <span className="flex items-baseline gap-3">
- <span className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+ <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
  Contents
  </span>
- <span className="font-sans text-[12px] text-paper/40">
+ <span className="font-sans text-caption text-paper/40">
  {content.sections.length} sections
  </span>
  </span>
  <span
  aria-hidden
- className="text-paper/40 group-open:rotate-180 transition-transform duration-200 text-[12px]"
+ className="text-paper/40 group-open:rotate-180 transition-transform duration-200 text-caption"
  >
  ▾
  </span>
  </summary>
- <ol className="px-5 pb-4 pt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 font-sans text-[13.5px]">
+ <ol className="px-5 pb-4 pt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 font-sans text-detail">
  {content.sections.map((sec) => (
  <li key={sec.n}>
  <a
@@ -164,16 +164,16 @@ export function WritingReader({
  aria-expanded={expanded}
  className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-paper/[0.04] transition-colors"
  >
- <span className="font-sans text-[12px] font-semibold uppercase tracking-[1.2px] text-paper/40 tabular-nums">
+ <span className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/40 tabular-nums">
  {String(sec.n).padStart(2, "0")}
  </span>
- <span className="flex-1 min-w-0 font-sans text-[17px] md:text-[19px] font-semibold text-paper tracking-[-0.01em]">
+ <span className="flex-1 min-w-0 font-sans text-body md:text-lede font-semibold text-paper tracking-[-0.01em]">
  {sec.title}
  </span>
  <span
  aria-hidden
  className={
- "shrink-0 text-paper/40 text-[12px] transition-transform duration-200 " +
+ "shrink-0 text-paper/40 text-caption transition-transform duration-200 " +
  (expanded ? "rotate-180" : "")
  }
  >
@@ -197,12 +197,12 @@ export function WritingReader({
  >
  <div className="min-w-0">
  <div className="mb-6 flex items-baseline gap-4">
- <span className="font-sans text-[12px] font-semibold uppercase tracking-[1.2px] text-paper/40 tabular-nums">
+ <span className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/40 tabular-nums">
  {String(sec.n).padStart(2, "0")}
  </span>
  <h2
  id={`s-${sec.n}`}
- className="font-sans text-[22px] md:text-[26px] font-semibold text-paper tracking-[-0.01em] flex-1 min-w-0"
+ className="font-sans text-title-sm md:text-title font-semibold text-paper tracking-[-0.01em] flex-1 min-w-0"
  >
  {sec.title}
  </h2>
@@ -223,14 +223,14 @@ export function WritingReader({
  aria-label={`Notes on ${sec.title}`}
  className="lg:pt-1 lg:border-l lg:border-paper/10 lg:pl-8"
  >
- <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45 mb-4">
+ <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-4">
  Notes
  </p>
  <ul className="space-y-4">
  {sec.notes.map((note, i) => (
  <li
  key={i}
- className="font-sans text-[14px] text-paper/70 leading-[1.55]"
+ className="font-sans text-ui text-paper/70 leading-[1.55]"
  >
  {note}
  </li>
@@ -244,7 +244,7 @@ export function WritingReader({
  </div>
 
  <footer className="max-w-[680px] pt-8 border-t border-paper/8">
- <p className="font-sans text-[12px] text-paper/40">
+ <p className="font-sans text-caption text-paper/40">
  Source: {content.source}
  </p>
  </footer>
@@ -284,14 +284,14 @@ function SectionBody({
  <SectionParagraphs saint={saint} content={content} sec={sec} />
  {sec.notes?.length ? (
  <div className="mt-6 pt-5 border-t border-paper/10">
- <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
+ <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
  Notes
  </p>
  <ul className="space-y-3">
  {sec.notes.map((note, i) => (
  <li
  key={i}
- className="font-sans text-[14px] text-paper/70 leading-[1.55]"
+ className="font-sans text-ui text-paper/70 leading-[1.55]"
  >
  {note}
  </li>
@@ -317,17 +317,17 @@ function SectionParagraphs({
  <>
  {sec.framing && (
  <div className="mb-8 pl-4 border-l-2 border-paper/15">
- <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45 mb-2">
+ <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-2">
  Editor&rsquo;s note
  </p>
- <p className="font-sans text-[15px] md:text-[16px] text-paper/70 leading-[1.65] italic">
+ <p className="font-sans text-ui md:text-body text-paper/70 leading-[1.65] italic">
  {sec.framing}
  </p>
  </div>
  )}
 
  {sec.citation && (
- <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-gold/85 mb-4">
+ <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold/85 mb-4">
  {sec.citation}
  </p>
  )}

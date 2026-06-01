@@ -35,7 +35,7 @@ export function AccountTabs() {
                 href={t.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "inline-block px-4 py-2.5 font-sans text-[13.5px] font-medium transition-colors",
+                  "inline-block px-4 py-2.5 font-sans text-detail font-medium transition-colors",
                   "border-b-2 -mb-px",
                   active
                     ? "text-paper border-gold"

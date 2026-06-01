@@ -46,11 +46,11 @@ export function TodaySaintCard({
         className="flex items-stretch gap-4 rounded-2xl border border-paper/10 bg-paper/[0.03] p-4 transition-colors hover:bg-paper/[0.06]"
       >
         <div className="min-w-0 flex-1">
-          <p className="font-sans text-[12px] text-paper/55">{eyebrow}</p>
-          <h3 className="mt-1 font-serif text-[20px] leading-[1.2] text-paper">
+          <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
+          <h3 className="mt-1 font-serif text-lede leading-[1.2] text-paper">
             {saint.name}
           </h3>
-          <p className="mt-3 inline-flex items-center gap-1.5 font-sans text-[12px] text-paper/55">
+          <p className="mt-3 inline-flex items-center gap-1.5 font-sans text-caption text-paper/55">
             <ClockIcon />
             <span>{minutes} min</span>
           </p>
@@ -76,23 +76,23 @@ export function TodaySaintCard({
         className="flex items-stretch gap-4 rounded-2xl border border-paper/10 bg-paper/[0.03] p-4 transition-colors hover:bg-paper/[0.06]"
       >
         <div className="min-w-0 flex-1">
-          <p className="font-sans text-[12px] text-paper/55">{eyebrow}</p>
-          <h3 className="mt-1 font-serif text-[18.5px] leading-[1.25] text-paper">
+          <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
+          <h3 className="mt-1 font-serif text-lede leading-[1.25] text-paper">
             {fallbackName}
           </h3>
           {fallbackNote && (
-            <p className="mt-2 font-serif italic text-[13.5px] text-paper/65 leading-[1.45]">
+            <p className="mt-2 font-serif italic text-detail text-paper/65 leading-[1.45]">
               {fallbackNote}
             </p>
           )}
-          <p className="mt-3 inline-flex items-center gap-1.5 font-sans text-[12px] text-paper/55">
+          <p className="mt-3 inline-flex items-center gap-1.5 font-sans text-caption text-paper/55">
             Open in calendar
           </p>
         </div>
         <div className="relative shrink-0 self-stretch flex items-center">
           <span
             aria-hidden
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-paper/15 bg-night text-gold/85 text-[20px]"
+            className="flex h-12 w-12 items-center justify-center rounded-full border border-paper/15 bg-night text-gold/85 text-lede"
           >
             ✦
           </span>

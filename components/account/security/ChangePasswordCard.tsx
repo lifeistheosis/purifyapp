@@ -94,10 +94,10 @@ export function ChangePasswordCard({
   if (!hasPassword) {
     return (
       <section id="change-password" className="rounded-lg border border-gold/35 bg-gold/[0.05] p-6 scroll-mt-24">
-        <h2 className="font-sans text-[16px] font-semibold text-paper mb-1">
+        <h2 className="font-sans text-body font-semibold text-paper mb-1">
           Set a password
         </h2>
-        <p className="font-sans text-[13px] text-paper/70 mb-5 leading-[1.55]">
+        <p className="font-sans text-detail text-paper/70 mb-5 leading-[1.55]">
           Your account was created before passwords existed on Purify
           (magic-link era). Pick one now and you&rsquo;ll be able to sign
           in with email + password from anywhere.
@@ -117,17 +117,17 @@ export function ChangePasswordCard({
             autoComplete="new-password"
           />
           {error ? (
-            <p className="font-sans text-[13px] text-[#f8cac7]">{error}</p>
+            <p className="font-sans text-detail text-crimson-soft">{error}</p>
           ) : null}
           {done ? (
-            <p className="font-sans text-[13px] text-emerald-300">
+            <p className="font-sans text-detail text-emerald-300">
               Password set. Reloading…
             </p>
           ) : null}
           <button
             type="submit"
             disabled={pending}
-            className="self-start rounded-pill bg-paper text-night font-sans text-[13.5px] font-semibold px-5 py-2.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
+            className="self-start rounded-pill bg-paper text-night font-sans text-detail font-semibold px-5 py-2.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
           >
             {pending ? "Saving…" : "Set password"}
           </button>
@@ -138,10 +138,10 @@ export function ChangePasswordCard({
 
   return (
     <section id="change-password" className="rounded-lg border border-paper/12 bg-paper/[0.02] p-6 scroll-mt-24">
-      <h2 className="font-sans text-[16px] font-semibold text-paper mb-1">
+      <h2 className="font-sans text-body font-semibold text-paper mb-1">
         Change password
       </h2>
-      <p className="font-sans text-[13px] text-paper/60 mb-5 leading-[1.55]">
+      <p className="font-sans text-detail text-paper/60 mb-5 leading-[1.55]">
         We&rsquo;ll verify your current password first.
       </p>
       <form onSubmit={submit} className="flex flex-col gap-3.5 max-w-[420px]">
@@ -165,17 +165,17 @@ export function ChangePasswordCard({
           autoComplete="new-password"
         />
         {error ? (
-          <p className="font-sans text-[13px] text-[#f8cac7]">{error}</p>
+          <p className="font-sans text-detail text-crimson-soft">{error}</p>
         ) : null}
         {done ? (
-          <p className="font-sans text-[13px] text-emerald-300">
+          <p className="font-sans text-detail text-emerald-300">
             Password updated.
           </p>
         ) : null}
         <button
           type="submit"
           disabled={pending}
-          className="self-start rounded-pill bg-paper text-night font-sans text-[13.5px] font-semibold px-5 py-2.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
+          className="self-start rounded-pill bg-paper text-night font-sans text-detail font-semibold px-5 py-2.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
         >
           {pending ? "Saving…" : "Update password"}
         </button>

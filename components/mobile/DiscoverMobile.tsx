@@ -175,10 +175,10 @@ export async function DiscoverMobile() {
                 href={`/topics/${featuredTopic.slug}`}
                 tint="warm"
               >
-                <p className="mt-2 font-serif italic text-[14.5px] text-paper/75 leading-[1.5]">
+                <p className="mt-2 font-serif italic text-ui text-paper/75 leading-[1.5]">
                   {firstSentence(featuredTopic.definition)}
                 </p>
-                <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
+                <p className="mt-3 font-sans text-detail font-medium text-paper/75">
                   {featuredTopic.citations.length} citations from the Fathers →
                 </p>
               </MobileCard>
@@ -190,10 +190,10 @@ export async function DiscoverMobile() {
                 href={`/councils/${featuredCouncil.slug}`}
                 tint="gold"
               >
-                <p className="mt-2 font-sans text-[13.5px] text-paper/65 leading-[1.55]">
+                <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.55]">
                   Read the canons, the creed, and the editorial framing.
                 </p>
-                <p className="mt-3 font-sans text-[13px] font-medium text-paper/75">
+                <p className="mt-3 font-sans text-detail font-medium text-paper/75">
                   Open the council →
                 </p>
               </MobileCard>
@@ -202,7 +202,7 @@ export async function DiscoverMobile() {
         </div>
       )}
 
-      <p className="mt-10 text-center font-display-serif italic text-[13.5px] text-paper/45 leading-[1.55]">
+      <p className="mt-10 text-center font-display-serif italic text-detail text-paper/45 leading-[1.55]">
         Through the prayers of our holy Fathers,
         <br />
         Lord Jesus Christ our God, have mercy on us.

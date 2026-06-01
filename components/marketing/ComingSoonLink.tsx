@@ -62,7 +62,7 @@ export function ComingSoonLink({
         )}
         style={{ background: "rgba(22, 18, 25, 0.92)" }}
       >
-        <span className="font-sans text-[14px] font-semibold uppercase tracking-[1.5px] text-paper">
+        <span className="font-sans text-ui font-semibold uppercase tracking-[1.5px] text-paper">
           Coming soon
         </span>
       </div>

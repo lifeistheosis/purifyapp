@@ -31,7 +31,7 @@ export function DayScroll({
       style={toneVars(tone)}
     >
       <SectionLabel>{isDe ? "Ausgewählter Tag" : "Selected day"}</SectionLabel>
-      <h3 className="mt-2.5 font-display-serif text-[24px] md:text-[26px] text-paper leading-tight">
+      <h3 className="mt-2.5 font-display-serif text-title-sm md:text-title text-paper leading-tight">
         {dateLabel}
       </h3>
 
@@ -51,7 +51,7 @@ export function DayScroll({
           ))}
         </ul>
       ) : (
-        <p className="font-sans text-[13px] text-paper/55">
+        <p className="font-sans text-detail text-paper/55">
           {isDe
             ? "Für diesen Tag ist kein Gedenken vermerkt."
             : "No commemoration listed for this day."}

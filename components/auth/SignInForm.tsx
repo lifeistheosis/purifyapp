@@ -47,7 +47,7 @@ export function SignInForm({ next }: { next?: string }) {
       <div>
         <label
           htmlFor="signin-email"
-          className="font-sans text-[12px] font-medium text-paper/75 block mb-1.5"
+          className="font-sans text-caption font-medium text-paper/75 block mb-1.5"
         >
           Email
         </label>
@@ -60,7 +60,7 @@ export function SignInForm({ next }: { next?: string }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@somewhere.com"
-          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-[15px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
+          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
         />
       </div>
       <PasswordInput
@@ -70,17 +70,17 @@ export function SignInForm({ next }: { next?: string }) {
         autoComplete="current-password"
       />
       {error ? (
-        <p className="font-sans text-[13px] text-[#f8cac7]">{error}</p>
+        <p className="font-sans text-detail text-crimson-soft">{error}</p>
       ) : null}
       <button
         type="submit"
         disabled={pending}
-        className="rounded-pill bg-paper text-night font-sans text-[14px] font-semibold py-3 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
+        className="rounded-pill bg-paper text-night font-sans text-ui font-semibold py-3 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
       >
         {pending ? "Signing in…" : "Sign in"}
       </button>
 
-      <div className="flex items-center justify-between text-[12.5px] font-sans">
+      <div className="flex items-center justify-between text-caption font-sans">
         <Link
           href="/forgot"
           className="text-paper/65 hover:text-paper underline underline-offset-2 decoration-paper/25"
@@ -97,7 +97,7 @@ export function SignInForm({ next }: { next?: string }) {
 
       <div className="relative my-3">
         <span className="absolute inset-x-0 top-1/2 h-px bg-paper/12" />
-        <span className="relative bg-night px-3 text-[11px] uppercase tracking-[1.5px] text-paper/45 mx-auto inline-block left-1/2 -translate-x-1/2">
+        <span className="relative bg-night px-3 text-eyebrow uppercase tracking-[1.5px] text-paper/45 mx-auto inline-block left-1/2 -translate-x-1/2">
           or
         </span>
       </div>

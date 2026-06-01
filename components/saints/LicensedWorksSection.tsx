@@ -15,13 +15,13 @@ export function LicensedWorksSection({ works }: { works: LicensedWork[] }) {
   return (
     <section className="py-14 border-t border-paper/8">
       <div className="mb-6">
-        <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+        <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
           Licensed Works
         </p>
-        <h2 className="font-sans text-[28px] md:text-[36px] font-bold text-paper tracking-[-0.02em]">
+        <h2 className="font-sans text-title md:text-display-sm font-bold text-paper tracking-[-0.02em]">
           Books in print
         </h2>
-        <p className="mt-4 max-w-[720px] font-serif italic text-[14px] text-paper/55 leading-relaxed">
+        <p className="mt-4 max-w-[720px] font-serif italic text-ui text-paper/55 leading-relaxed">
           These works are licensed and copyrighted by their publishers and
           cannot be hosted on Purify. As an Amazon Associate, Purify earns
           from qualifying purchases.
@@ -65,24 +65,24 @@ function LicensedWorkCard({ work }: { work: LicensedWork }) {
       </a>
 
       <div className="flex flex-col gap-1.5">
-        <h3 className="font-serif text-[19px] text-paper leading-tight">
+        <h3 className="font-serif text-lede text-paper leading-tight">
           {work.title}
         </h3>
         {work.subtitle ? (
-          <p className="font-sans text-[13px] text-paper/60 italic">
+          <p className="font-sans text-detail text-paper/60 italic">
             {work.subtitle}
           </p>
         ) : null}
-        <p className="font-sans text-[13px] text-paper/70">
+        <p className="font-sans text-detail text-paper/70">
           {roleLabel} {work.author}
         </p>
-        <p className="font-sans text-[12px] uppercase tracking-[1.2px] text-paper/45">
+        <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/45">
           {work.publisher}
           {work.year ? ` · ${work.year}` : ""}
         </p>
       </div>
 
-      <p className="font-serif text-[15px] text-paper/80 leading-relaxed">
+      <p className="font-serif text-ui text-paper/80 leading-relaxed">
         {work.blurb}
       </p>
 
@@ -91,7 +91,7 @@ function LicensedWorkCard({ work }: { work: LicensedWork }) {
           href={amazonHref}
           target="_blank"
           rel="noopener nofollow sponsored"
-          className="font-sans text-[14px] font-medium text-gold/85 hover:text-gold transition-colors"
+          className="font-sans text-ui font-medium text-gold/85 hover:text-gold transition-colors"
         >
           Buy on Amazon →
         </a>
@@ -100,7 +100,7 @@ function LicensedWorkCard({ work }: { work: LicensedWork }) {
             href={work.directPublisherUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-sans text-[13px] text-paper/55 hover:text-paper transition-colors"
+            className="font-sans text-detail text-paper/55 hover:text-paper transition-colors"
           >
             Buy direct from {work.publisher}
           </Link>

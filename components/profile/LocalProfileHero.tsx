@@ -46,13 +46,13 @@ export function LocalProfileHero() {
 
   return (
     <section className="mt-10 rounded-lg border border-paper/15 bg-paper/[0.03] p-6 md:p-7">
-      <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
         Local profile, on this device only
       </p>
       <div className="flex items-center gap-4">
         <span
           aria-hidden
-          className="inline-flex h-14 w-14 items-center justify-center rounded-full border-2 border-paper/30 font-display-serif text-[18px] text-paper/85"
+          className="inline-flex h-14 w-14 items-center justify-center rounded-full border-2 border-paper/30 font-display-serif text-lede text-paper/85"
           style={{
             background:
               "linear-gradient(155deg, #1d1a22 0%, #2c2730 55%, #3a323f 100%)",
@@ -61,18 +61,18 @@ export function LocalProfileHero() {
           {initials}
         </span>
         <div className="min-w-0">
-          <p className="font-sans text-[22px] font-bold text-paper leading-tight truncate">
+          <p className="font-sans text-title-sm font-bold text-paper leading-tight truncate">
             {account.name}
           </p>
           {created ? (
-            <p className="mt-1 font-sans text-[12.5px] text-paper/55">
+            <p className="mt-1 font-sans text-caption text-paper/55">
               Claimed locally on {created}
             </p>
           ) : null}
         </div>
       </div>
 
-      <p className="mt-5 font-serif text-[16px] text-paper/80 leading-[1.7]">
+      <p className="mt-5 font-serif text-body text-paper/80 leading-[1.7]">
         Highlights, notes, bookmarks, and your prayer streak live in
         this browser only. They will not follow you to another device.
         Either of these is a real, reversible move:
@@ -82,14 +82,14 @@ export function LocalProfileHero() {
         <button
           type="button"
           onClick={() => setUpgrading(true)}
-          className="font-sans text-[14px] font-semibold rounded-pill px-5 py-3 bg-gold text-night hover:bg-gold-soft transition-colors"
+          className="font-sans text-ui font-semibold rounded-pill px-5 py-3 bg-gold text-night hover:bg-gold-soft transition-colors"
         >
           Upgrade to a public account →
         </button>
         <button
           type="button"
           onClick={() => setConfirmingRelease(true)}
-          className="font-sans text-[14px] font-medium rounded-pill px-5 py-3 border border-paper/25 text-paper/80 hover:border-paper/55 hover:text-paper transition-colors"
+          className="font-sans text-ui font-medium rounded-pill px-5 py-3 border border-paper/25 text-paper/80 hover:border-paper/55 hover:text-paper transition-colors"
         >
           Release this local profile
         </button>
@@ -108,7 +108,7 @@ export function LocalProfileHero() {
         }}
       />
 
-      <p className="mt-5 font-sans text-[12.5px] text-paper/45 leading-[1.55]">
+      <p className="mt-5 font-sans text-caption text-paper/45 leading-[1.55]">
         Upgrading will sync your local highlights, notes, and bookmarks
         to your account the first time you sign in. Prayer streaks and
         reader settings stay on this device for now (no server table

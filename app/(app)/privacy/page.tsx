@@ -19,13 +19,13 @@ export default async function PrivacyPage() {
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
  <TranslationDisclaimer />
- <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  {t(m, "privacy.eyebrow")}
  </p>
- <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  {t(m, "privacy.h1")}
  </h1>
- <p className="mt-6 font-serif text-[17px] text-paper/65 leading-[1.7]">
+ <p className="mt-6 font-serif text-body text-paper/65 leading-[1.7]">
  The short version is on the{" "}
  <Link
  href="/about"
@@ -40,10 +40,10 @@ export default async function PrivacyPage() {
  </p>
 
  {/* Two account paths */}
- <h2 className="mt-12 font-sans text-[24px] md:text-[28px] font-bold text-paper leading-[1.15]">
+ <h2 className="mt-12 font-sans text-title-sm md:text-title font-bold text-paper leading-[1.15]">
  Local profile vs public account
  </h2>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  When you open{" "}
  <Link
  href="/account"
@@ -56,57 +56,57 @@ export default async function PrivacyPage() {
  </p>
  <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="rounded-md border border-paper/12 bg-paper/[0.02] p-5">
- <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+ <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
  Local profile
  </p>
- <p className="font-serif text-[16px] text-paper/85 leading-[1.65]">
+ <p className="font-serif text-body text-paper/85 leading-[1.65]">
  Highlights, notes, bookmarks, your prayer streak, and reader
  preferences (font, size) are stored in your browser&rsquo;s{" "}
- <code className="font-mono text-[14px] text-paper/70">localStorage</code>.
+ <code className="font-mono text-ui text-paper/70">localStorage</code>.
  We do not see or receive any of it. There is no row for you in
  our database. The trade-off: it lives on this device only, and
  goes away if you clear browser data.
  </p>
- <p className="mt-3 font-sans text-[12.5px] text-paper/55 leading-[1.55]">
+ <p className="mt-3 font-sans text-caption text-paper/55 leading-[1.55]">
  To release a local profile, open /account and click &ldquo;Release
  this local profile.&rdquo; To wipe all local data, clear site
  data for this origin in your browser settings.
  </p>
  </div>
  <div className="rounded-md border border-gold/30 bg-gold/[0.04] p-5">
- <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-gold mb-2">
+ <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-2">
  Public account
  </p>
- <p className="font-serif text-[16px] text-paper/85 leading-[1.65]">
+ <p className="font-serif text-body text-paper/85 leading-[1.65]">
  The same items go to our Supabase Postgres database so they
  sync across every device you sign in on. We store: your email
  (used to sign you in and to send confirmations on
  password/email changes), an Argon2 hash of your password
  (never the password itself), a display name, and a
- <code className="font-mono text-[14px] text-paper/70"> profiles </code>
+ <code className="font-mono text-ui text-paper/70"> profiles </code>
  row with your account creation date plus a boolean flag for
  whether you&rsquo;ve set a password. Highlights, notes,
  bookmarks, and prayer-rule check-offs travel as their own rows.
  If you sign in with Google or Apple, we additionally store an
- <code className="font-mono text-[14px] text-paper/70"> identities </code>
+ <code className="font-mono text-ui text-paper/70"> identities </code>
  row linking your account to that provider; we never see your
  Google/Apple password, only the OAuth token.
  </p>
- <p className="mt-3 font-sans text-[12.5px] text-paper/55 leading-[1.55]">
+ <p className="mt-3 font-sans text-caption text-paper/55 leading-[1.55]">
  To delete the account and every server-side row it created,
  use the &ldquo;Delete account&rdquo; button on /account. The
  deletion is immediate and cascades.
  </p>
  </div>
  </div>
- <p className="mt-5 font-serif text-[17px] text-paper/80 leading-[1.7]">
+ <p className="mt-5 font-serif text-body text-paper/80 leading-[1.7]">
  If you upgrade from a local profile to a public account, your
  existing highlights, notes, and bookmarks are pushed to your
  account on first sign-in. Prayer streaks, reader preferences, and
  calendar style stay on this device only, they have no server
  table yet.
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/80 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
  Nothing in either path is sold, shared, or used to train models.
  The analytics described below are separate from both: they record
  page views in aggregate, without your account identity, whether you
@@ -114,16 +114,16 @@ export default async function PrivacyPage() {
  </p>
 
  {/* What we record */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  What we record
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  The only thing the site records about a visit is an anonymous,
  ephemeral session, used for the small &ldquo;who is reading
  right now&rdquo; view that helps us understand whether the work
  is finding anyone. From your browser, on every page load:
  </p>
- <ul className="mt-3 space-y-2 font-serif text-[18px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
  A random <em>session id</em> the browser generates on first
  visit, kept in <code>sessionStorage</code> for the tab&rsquo;s
@@ -139,11 +139,11 @@ export default async function PrivacyPage() {
  see when a link from elsewhere brought someone in.
  </li>
  </ul>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  On the server, when a session is first seen, we additionally
  derive and store:
  </p>
- <ul className="mt-3 space-y-2 font-serif text-[18px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
  Your <em>user-agent</em> string (browser + OS), truncated to
  300 characters. Used to tell phones from desktops in aggregate.
@@ -155,7 +155,7 @@ export default async function PrivacyPage() {
  href="https://ipwho.is/"
  target="_blank"
  rel="noopener noreferrer"
- className="text-[#a4adff] hover:text-paper underline underline-offset-2"
+ className="text-link hover:text-paper underline underline-offset-2"
  >ipwho.is</a>. Your IP itself is <em>not</em> stored; only the
  city-level fields above are.
  </li>
@@ -168,7 +168,7 @@ export default async function PrivacyPage() {
  already keep is retained.
  </li>
  </ul>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  If you sign in to sync your highlights and bookmarks, Supabase
  stores the email address you signed in with and the rows you
  create (highlights, notes, prayer-rule check-offs, bookmarks).
@@ -177,10 +177,10 @@ export default async function PrivacyPage() {
  </p>
 
  {/* What we don't */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  What we don&rsquo;t
  </p>
- <ul className="mt-3 space-y-3 font-serif text-[18px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>No third-party advertising. No ad SDKs, no ad cookies.</li>
  <li>No behavioral profile, no cross-site tracking, no fingerprinting.</li>
  <li>No sale or sharing of any user data with any third party.</li>
@@ -207,10 +207,10 @@ export default async function PrivacyPage() {
  </ul>
 
  {/* Where it lives */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Where it lives
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  All session and pageview rows are written to a Supabase Postgres
  database we control, in two tables: <code>analytics_sessions</code>{" "}
  (one row per session, with the coarse geo + user-agent) and{" "}
@@ -222,10 +222,10 @@ export default async function PrivacyPage() {
  </p>
 
  {/* Retention */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  How long we keep it
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  Anonymous session and pageview rows older than 90 days are
  deleted by a scheduled job. Sync data tied to your account
  (highlights, bookmarks, etc.) is kept as long as your account
@@ -240,10 +240,10 @@ export default async function PrivacyPage() {
  </p>
 
  {/* Third parties */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Third parties the site touches
  </p>
- <ul className="mt-3 space-y-3 font-serif text-[18px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
  <strong>Supabase</strong>, hosted Postgres and auth. Stores
  your sync data and the anonymous analytics tables.
@@ -300,21 +300,21 @@ export default async function PrivacyPage() {
  </ul>
 
  {/* Prayer features — what's local, what's synced */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  The prayer features
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  The morning and evening rules, the prayer rope, the Jesus
  Prayer lessons, and the diptychs are all local-first. By default
  every count, every check-off, every name on your diptych lives
  in your browser&rsquo;s <code>localStorage</code> on this device
  and never reaches us. Specifically:
  </p>
- <ul className="mt-3 space-y-2 font-serif text-[18px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
  <em>Rule completions</em>: the dates you finished the morning
  or evening rule, kept under{" "}
- <code className="font-mono text-[14px] text-paper/70">
+ <code className="font-mono text-ui text-paper/70">
  purify.prayers.&#123;ruleId&#125;.dates
  </code>{" "}
  (a rolling 30-day list, no streak integer).
@@ -322,18 +322,18 @@ export default async function PrivacyPage() {
  <li>
  <em>Prayer rope sessions</em>: each session&rsquo;s knot count
  and the prayer line you chose, under{" "}
- <code className="font-mono text-[14px] text-paper/70">
+ <code className="font-mono text-ui text-paper/70">
  purify.rope.sessions
  </code>.
  </li>
  <li>
  <em>Diptychs</em>: the lists of those for whom you pray (living
  + reposed), under{" "}
- <code className="font-mono text-[14px] text-paper/70">
+ <code className="font-mono text-ui text-paper/70">
  purify.intentions.living
  </code>{" "}
  and{" "}
- <code className="font-mono text-[14px] text-paper/70">
+ <code className="font-mono text-ui text-paper/70">
  purify.intentions.departed
  </code>. These are plain JSON in your browser; we are not
  pretending they are encrypted at rest.
@@ -345,7 +345,7 @@ export default async function PrivacyPage() {
  (Google for Chrome / Firefox / Edge; Mozilla for Firefox on
  Linux; Apple for Safari). We store that endpoint, the keys it
  returned, and the two times you picked, in a{" "}
- <code className="font-mono text-[14px] text-paper/70">
+ <code className="font-mono text-ui text-paper/70">
  push_subscriptions
  </code>{" "}
  table. We do not send notification content through any third
@@ -353,13 +353,13 @@ export default async function PrivacyPage() {
  our server. Turn it off at any time on the same page.
  </li>
  </ul>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  If you sign in to a public account, the same shapes mirror to
  four Supabase tables &mdash;{" "}
- <code className="font-mono text-[14px] text-paper/70">prayer_completions</code>,{" "}
- <code className="font-mono text-[14px] text-paper/70">intentions_living</code>,{" "}
- <code className="font-mono text-[14px] text-paper/70">intentions_departed</code>,{" "}
- <code className="font-mono text-[14px] text-paper/70">rope_sessions</code>{" "}
+ <code className="font-mono text-ui text-paper/70">prayer_completions</code>,{" "}
+ <code className="font-mono text-ui text-paper/70">intentions_living</code>,{" "}
+ <code className="font-mono text-ui text-paper/70">intentions_departed</code>,{" "}
+ <code className="font-mono text-ui text-paper/70">rope_sessions</code>{" "}
  &mdash; so the data follows you across devices. Each has the
  same row-level lock as bookmarks and annotations (your rows only
  visible to your <code>auth.uid()</code>). They are never joined to
@@ -367,10 +367,10 @@ export default async function PrivacyPage() {
  </p>
 
  {/* AI bots */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  The AI-crawler policy
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  The licensed-Scripture publishers require that we don&rsquo;t let
  their text be ingested into language-model training corpora, and
  we extend the same posture to the patristic and public-domain
@@ -388,10 +388,10 @@ export default async function PrivacyPage() {
  </p>
 
  {/* Browser storage */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  What lives in your browser
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  If you aren&rsquo;t signed in, your reader preferences (font,
  size, translation choice), your bookmarks, and any streak counters
  are kept in your browser&rsquo;s <code>localStorage</code> on
@@ -400,10 +400,10 @@ export default async function PrivacyPage() {
  </p>
 
  {/* Changes */}
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Changes to this page
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  If we change what is recorded, or add a third party that sees
  your traffic, this page is updated first and the change is
  listed in the next{" "}
@@ -417,24 +417,24 @@ export default async function PrivacyPage() {
  </p>
 
  {/* Offline cache */}
- <h2 className="mt-16 font-sans text-[24px] md:text-[28px] font-bold text-paper leading-[1.15]">
+ <h2 className="mt-16 font-sans text-title-sm md:text-title font-bold text-paper leading-[1.15]">
  Offline cache (the service worker)
  </h2>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  If you add Purify to your home screen, a small service worker
- (<code className="font-mono text-[15px] text-paper/70">/sw.js</code>)
+ (<code className="font-mono text-ui text-paper/70">/sw.js</code>)
  caches the pages and assets you&rsquo;ve already visited so the
  app keeps working on a bad signal. Caches are named
- {" "}<code className="font-mono text-[15px] text-paper/70">purify-v*-html</code>,
- {" "}<code className="font-mono text-[15px] text-paper/70">purify-v*-static</code>,
- and {" "}<code className="font-mono text-[15px] text-paper/70">purify-v*-assets</code>.
+ {" "}<code className="font-mono text-ui text-paper/70">purify-v*-html</code>,
+ {" "}<code className="font-mono text-ui text-paper/70">purify-v*-static</code>,
+ and {" "}<code className="font-mono text-ui text-paper/70">purify-v*-assets</code>.
  They store only public, public-domain page HTML, the Next.js
  build output, fonts, saint icons, and the manifest. Authenticated
  API calls (Supabase, our analytics endpoint, the licensed
  translation API) are never intercepted and never cached, so your
  session stays on the network where it belongs.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  To clear the cache, uninstall the home-screen app, or in your
  browser settings, clear site data for the Purify origin. We can
  also bump the cache version on a release, which evicts the old
@@ -443,7 +443,7 @@ export default async function PrivacyPage() {
 
  {/* Closing */}
  <div className="mt-16 pt-10 border-t border-paper/10">
- <p className="font-serif text-[17px] text-paper/65 leading-[1.7]">
+ <p className="font-serif text-body text-paper/65 leading-[1.7]">
  Questions, corrections, or a privacy concern? Write to{" "}
  <a
  href="mailto:team@purify.app"
@@ -463,13 +463,13 @@ function PrivacyDe() {
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
- <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  Datenschutz
  </p>
- <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  Was wir aufzeichnen und was nicht.
  </h1>
- <p className="mt-6 font-serif text-[17px] text-paper/65 leading-[1.7]">
+ <p className="mt-6 font-serif text-body text-paper/65 leading-[1.7]">
  Die Kurzfassung steht auf der{" "}
  <Link
  href="/about"
@@ -483,10 +483,10 @@ function PrivacyDe() {
  schreib uns; wir bringen es in Ordnung.
  </p>
 
- <h2 className="mt-12 font-sans text-[24px] md:text-[28px] font-bold text-paper leading-[1.15]">
+ <h2 className="mt-12 font-sans text-title-sm md:text-title font-bold text-paper leading-[1.15]">
  Lokales Profil gegen öffentliches Konto
  </h2>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Wenn du{" "}
  <Link
  href="/account"
@@ -499,19 +499,19 @@ function PrivacyDe() {
  </p>
  <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="rounded-md border border-paper/12 bg-paper/[0.02] p-5">
- <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+ <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
  Lokales Profil
  </p>
- <p className="font-serif text-[16px] text-paper/85 leading-[1.65]">
+ <p className="font-serif text-body text-paper/85 leading-[1.65]">
  Markierungen, Notizen, Lesezeichen, deine Gebets-Strähne und die
  Lese-Einstellungen (Schrift, Größe) werden im{" "}
- <code className="font-mono text-[14px] text-paper/70">localStorage</code>{" "}
+ <code className="font-mono text-ui text-paper/70">localStorage</code>{" "}
  deines Browsers gespeichert. Wir sehen oder empfangen nichts
  davon. Es gibt keine Zeile für dich in unserer Datenbank. Der
  Tausch: es lebt nur auf diesem Gerät und geht weg, wenn du
  Browserdaten löschst.
  </p>
- <p className="mt-3 font-sans text-[12.5px] text-paper/55 leading-[1.55]">
+ <p className="mt-3 font-sans text-caption text-paper/55 leading-[1.55]">
  Um ein lokales Profil aufzulösen, öffne /account und klicke auf
  &bdquo;Dieses lokale Profil aufgeben&ldquo;. Um alle lokalen
  Daten zu löschen, lösche die Seitendaten für diese Herkunft in
@@ -519,27 +519,27 @@ function PrivacyDe() {
  </p>
  </div>
  <div className="rounded-md border border-gold/30 bg-gold/[0.04] p-5">
- <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-gold mb-2">
+ <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-2">
  Öffentliches Konto
  </p>
- <p className="font-serif text-[16px] text-paper/85 leading-[1.65]">
+ <p className="font-serif text-body text-paper/85 leading-[1.65]">
  Dieselben Posten gehen in unsere Supabase-Postgres-Datenbank,
  damit sie sich auf jedem Gerät abgleichen, auf dem du dich
  anmeldest. Wir speichern: deine E-Mail (um dich anzumelden und
  um Bestätigungen bei Paßwort- oder E-Mail-Änderungen zu
  senden), einen Argon2-Hash deines Paßworts (nie das Paßwort
  selbst), einen Anzeigenamen und eine{" "}
- <code className="font-mono text-[14px] text-paper/70">profiles</code>{" "}
+ <code className="font-mono text-ui text-paper/70">profiles</code>{" "}
  -Zeile mit dem Erstellungsdatum deines Kontos sowie ein
  Boolesches Kennzeichen, ob du ein Paßwort gesetzt hast.
  Markierungen, Notizen, Lesezeichen und
  Gebetsregel-Abhakungen wandern als eigene Zeilen. Wenn du dich
  mit Google oder Apple anmeldest, speichern wir zusätzlich eine{" "}
- <code className="font-mono text-[14px] text-paper/70">identities</code>{" "}
+ <code className="font-mono text-ui text-paper/70">identities</code>{" "}
  -Zeile, die dein Konto mit jenem Anbieter verbindet; wir sehen
  nie dein Google- oder Apple-Paßwort, nur das OAuth-Token.
  </p>
- <p className="mt-3 font-sans text-[12.5px] text-paper/55 leading-[1.55]">
+ <p className="mt-3 font-sans text-caption text-paper/55 leading-[1.55]">
  Um das Konto und jede serverseitige Zeile, die es geschaffen
  hat, zu löschen, benutze die Schaltfläche &bdquo;Konto
  löschen&ldquo; auf /account. Die Löschung ist sofort und
@@ -547,31 +547,31 @@ function PrivacyDe() {
  </p>
  </div>
  </div>
- <p className="mt-5 font-serif text-[17px] text-paper/80 leading-[1.7]">
+ <p className="mt-5 font-serif text-body text-paper/80 leading-[1.7]">
  Wenn du von einem lokalen Profil zu einem öffentlichen Konto
  wechselst, werden deine bestehenden Markierungen, Notizen und
  Lesezeichen bei der ersten Anmeldung in dein Konto geschoben.
  Gebets-Strähnen, Lese-Einstellungen und Kalenderstil bleiben nur
  auf diesem Gerät; sie haben noch keine Servertabelle.
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/80 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
  Nichts auf beiden Wegen wird verkauft, geteilt oder zum Training
  von Modellen gebraucht. Die unten beschriebene Analytik ist von
  beiden getrennt: sie zeichnet Seitenaufrufe in Summe auf, ohne
  deine Konto-Identität, ob du angemeldet bist oder nicht.
  </p>
 
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Was wir aufzeichnen
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  Das Einzige, was die Seite über einen Besuch aufzeichnet, ist eine
  anonyme, vergängliche Sitzung, die für die kleine &bdquo;Wer liest
  gerade jetzt&ldquo;-Ansicht gebraucht wird, die uns hilft zu
  verstehen, ob die Arbeit jemanden findet. Vom Browser, bei jedem
  Seitenaufruf:
  </p>
- <ul className="mt-3 space-y-2 font-serif text-[18px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
  Eine zufällige <em>Sitzungs-Kennung</em>, die der Browser beim
  ersten Besuch erzeugt, in <code>sessionStorage</code> für die
@@ -589,11 +589,11 @@ function PrivacyDe() {
  hereingebracht hat.
  </li>
  </ul>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Auf dem Server leiten wir zusätzlich, wenn eine Sitzung erstmals
  gesehen wird, ab und speichern:
  </p>
- <ul className="mt-3 space-y-2 font-serif text-[18px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
  Deinen <em>User-Agent</em>-String (Browser + Betriebssystem),
  auf 300 Zeichen gekürzt. Wird benutzt, um Telefone von Desktops
@@ -607,7 +607,7 @@ function PrivacyDe() {
  href="https://ipwho.is/"
  target="_blank"
  rel="noopener noreferrer"
- className="text-[#a4adff] hover:text-paper underline underline-offset-2"
+ className="text-link hover:text-paper underline underline-offset-2"
  >
  ipwho.is
  </a>
@@ -624,7 +624,7 @@ function PrivacyDe() {
  bereits halten, wird behalten.
  </li>
  </ul>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Wenn du dich anmeldest, um deine Markierungen und Lesezeichen
  abzugleichen, speichert Supabase die E-Mail-Adresse, mit der du
  dich angemeldet hast, sowie die Zeilen, die du erstellst
@@ -634,10 +634,10 @@ function PrivacyDe() {
  gesetzt.
  </p>
 
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Was wir nicht tun
  </p>
- <ul className="mt-3 space-y-3 font-serif text-[18px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>Keine Drittwerbung. Keine Werbe-SDKs, keine Werbe-Cookies.</li>
  <li>
  Kein Verhaltensprofil, keine seitenübergreifende Verfolgung,
@@ -667,10 +667,10 @@ function PrivacyDe() {
  </li>
  </ul>
 
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Wo es wohnt
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  Alle Sitzungs- und Seitenaufrufzeilen werden in eine
  Supabase-Postgres-Datenbank geschrieben, die wir verwalten, in
  zwei Tabellen: <code>analytics_sessions</code> (eine Zeile je
@@ -683,10 +683,10 @@ function PrivacyDe() {
  einzige Leserin.
  </p>
 
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Wie lange wir es behalten
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  Anonyme Sitzungs- und Seitenaufruf-Zeilen, die älter als 90 Tage
  sind, werden von einem geplanten Auftrag gelöscht. Abgleichsdaten,
  die an dein Konto gebunden sind (Markierungen, Lesezeichen usw.),
@@ -701,10 +701,10 @@ function PrivacyDe() {
  entfernt diese Zeilen.
  </p>
 
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Dritte, die die Seite berührt
  </p>
- <ul className="mt-3 space-y-3 font-serif text-[18px] text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
  <strong>Supabase</strong>, gehostetes Postgres und Auth.
  Speichert deine Abgleichsdaten und die anonymen
@@ -764,10 +764,10 @@ function PrivacyDe() {
  </li>
  </ul>
 
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Die KI-Crawler-Regel
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  Die Verleger der lizenzierten Schrift verlangen, daß ihr Text
  nicht in Trainings-Korpora für Sprachmodelle eingespeist wird,
  und wir dehnen dieselbe Haltung auf die patristische und gemeinfreie
@@ -787,10 +787,10 @@ function PrivacyDe() {
  fügen weitere hinzu, sobald wir von ihnen erfahren.
  </p>
 
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Was in deinem Browser wohnt
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  Wenn du nicht angemeldet bist, werden deine Lese-Einstellungen
  (Schrift, Größe, Übersetzungswahl), deine Lesezeichen und alle
  Strähnen-Zähler im <code>localStorage</code> deines Browsers auf
@@ -798,10 +798,10 @@ function PrivacyDe() {
  Seitendaten, und sie setzen sich zurück; wir haben keine Kopie.
  </p>
 
- <p className="mt-10 font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
  Änderungen an dieser Seite
  </p>
- <p className="mt-3 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  Wenn wir ändern, was aufgezeichnet wird, oder einen Dritten
  hinzufügen, der deinen Verkehr sieht, wird diese Seite zuerst
  aktualisiert und die Änderung im nächsten{" "}
@@ -814,19 +814,19 @@ function PrivacyDe() {
  -Brief aufgeführt. Wir ändern die Haltung nicht im stillen.
  </p>
 
- <h2 className="mt-16 font-sans text-[24px] md:text-[28px] font-bold text-paper leading-[1.15]">
+ <h2 className="mt-16 font-sans text-title-sm md:text-title font-bold text-paper leading-[1.15]">
  Offline-Zwischenspeicher (der Service-Worker)
  </h2>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Wenn du Purify auf deinen Startbildschirm legst, speichert ein
  kleiner Service-Worker (
- <code className="font-mono text-[15px] text-paper/70">/sw.js</code>
+ <code className="font-mono text-ui text-paper/70">/sw.js</code>
  ) die bereits besuchten Seiten und Anlagen zwischen, damit die
  App bei schlechtem Signal weiterläuft. Die Zwischenspeicher heißen{" "}
- <code className="font-mono text-[15px] text-paper/70">purify-v*-html</code>,{" "}
- <code className="font-mono text-[15px] text-paper/70">purify-v*-static</code>{" "}
+ <code className="font-mono text-ui text-paper/70">purify-v*-html</code>,{" "}
+ <code className="font-mono text-ui text-paper/70">purify-v*-static</code>{" "}
  und{" "}
- <code className="font-mono text-[15px] text-paper/70">purify-v*-assets</code>.
+ <code className="font-mono text-ui text-paper/70">purify-v*-assets</code>.
  Sie speichern nur öffentliches, gemeinfreies Seiten-HTML, die
  Next.js-Bauausgabe, Schriften, Heiligen-Ikonen und das Manifest.
  Authentifizierte API-Aufrufe (Supabase, unser Analytik-Endpunkt,
@@ -834,7 +834,7 @@ function PrivacyDe() {
  zwischengespeichert, damit deine Sitzung im Netz bleibt, wo sie
  hingehört.
  </p>
- <p className="mt-4 font-serif text-[17px] text-paper/85 leading-[1.7]">
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Um den Zwischenspeicher zu leeren, deinstalliere die
  Startbildschirm-App, oder lösche in deinen Browser-Einstellungen
  die Seitendaten für die Purify-Herkunft. Wir können auch die
@@ -844,7 +844,7 @@ function PrivacyDe() {
  </p>
 
  <div className="mt-16 pt-10 border-t border-paper/10">
- <p className="font-serif text-[17px] text-paper/65 leading-[1.7]">
+ <p className="font-serif text-body text-paper/65 leading-[1.7]">
  Fragen, Korrekturen oder ein Datenschutz-Anliegen? Schreib an{" "}
  <a
  href="mailto:team@purify.app"

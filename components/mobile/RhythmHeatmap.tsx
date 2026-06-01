@@ -48,16 +48,16 @@ export function RhythmHeatmap() {
     <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4">
       <div className="flex items-baseline justify-between gap-2 mb-3">
         <div>
-          <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-paper/55">
+          <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/55">
             Rhythm · last 30 days
           </p>
-          <p className="mt-0.5 font-sans text-[15px] font-bold text-paper">
+          <p className="mt-0.5 font-sans text-ui font-bold text-paper">
             {count} <span className="text-paper/55 font-normal">of 30</span>
           </p>
         </div>
         <Link
           href="/prayers/today"
-          className="font-sans text-[12px] text-paper/65 active:text-paper transition-colors"
+          className="font-sans text-caption text-paper/65 active:text-paper transition-colors"
         >
           Today →
         </Link>

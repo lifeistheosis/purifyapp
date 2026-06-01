@@ -28,7 +28,7 @@ export function IconCornerCard() {
  <Link
  href="/prayers/today"
  aria-label="Open today's prayer"
- className="group relative block overflow-hidden rounded-[28px] shadow-[0_24px_60px_rgba(0,0,0,0.55)] transition-opacity duration-200 hover:opacity-95"
+ className="group relative block overflow-hidden rounded-card shadow-[0_24px_60px_rgba(0,0,0,0.55)] transition-opacity duration-200 hover:opacity-95"
  style={{
  background:
  "linear-gradient(170deg, #0a0a0a 0%, #141414 50%, #0a0a0a 100%)",
@@ -48,10 +48,10 @@ export function IconCornerCard() {
 
  <div className="relative h-full flex flex-col px-6 py-7">
  {/* Eyebrow */}
- <p className="font-sans text-[10.5px] uppercase tracking-[2px] text-white/80 font-semibold">
+ <p className="font-sans text-eyebrow uppercase tracking-[2px] text-white/80 font-semibold">
  Today
  </p>
- <p className="mt-1 font-sans text-[12.5px] text-white/55">
+ <p className="mt-1 font-sans text-caption text-white/55">
  {formatLongDate(today)}
  </p>
 
@@ -152,24 +152,24 @@ export function IconCornerCard() {
  />
  </svg>
  </div>
- <p className="mt-5 font-serif italic text-[13px] text-white/65 leading-snug max-w-[200px] line-clamp-2">
+ <p className="mt-5 font-serif italic text-detail text-white/65 leading-snug max-w-[200px] line-clamp-2">
  {headline?.name ?? "A quiet day"}
  </p>
  </div>
 
  {/* Bottom: fast + Pascha */}
  <div className="mt-auto space-y-2.5">
- <div className="rounded-pill border border-white/25 bg-white/[0.06] px-3 py-1.5 text-center font-sans text-[12px] font-medium text-white/85">
+ <div className="rounded-pill border border-white/25 bg-white/[0.06] px-3 py-1.5 text-center font-sans text-caption font-medium text-white/85">
  {fast.label}
  </div>
- <p className="font-sans text-[11px] text-white/50 text-center">
+ <p className="font-sans text-eyebrow text-white/50 text-center">
  {pascha.daysAway > 0
  ? `${pascha.daysAway} days until Pascha`
  : pascha.daysAway === 0
  ? "Pascha is today"
  : "Pascha has passed"}
  </p>
- <p className="font-sans text-[12px] font-semibold text-white text-center group-hover:underline underline-offset-2">
+ <p className="font-sans text-caption font-semibold text-white text-center group-hover:underline underline-offset-2">
  Open today&rsquo;s prayer →
  </p>
  </div>

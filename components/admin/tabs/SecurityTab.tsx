@@ -85,29 +85,29 @@ export function SecurityTab() {
   }
 
   if (!data) {
-    return <p className="font-sans text-[13px] text-paper/40 py-8 text-center">Loading…</p>;
+    return <p className="font-sans text-detail text-paper/40 py-8 text-center">Loading…</p>;
   }
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card title="Active CSP reports" accent={data.csp.active.length > 0}>
-          <p className="font-sans text-[40px] font-bold tabular-nums leading-none text-paper">
+          <p className="font-sans text-display-sm font-bold tabular-nums leading-none text-paper">
             <CountUp value={data.csp.active.length} />
           </p>
         </Card>
         <Card title="Dismissed">
-          <p className="font-sans text-[40px] font-bold tabular-nums leading-none text-paper/65">
+          <p className="font-sans text-display-sm font-bold tabular-nums leading-none text-paper/65">
             <CountUp value={data.csp.dismissed.length} />
           </p>
         </Card>
         <Card title="Rate-limit hits · 1h">
-          <p className="font-sans text-[40px] font-bold tabular-nums leading-none text-paper">
+          <p className="font-sans text-display-sm font-bold tabular-nums leading-none text-paper">
             <CountUp value={data.rateLimits.windowHour.reduce((a, b) => a + b.total, 0)} />
           </p>
         </Card>
         <Card title="Rate-limit hits · 24h">
-          <p className="font-sans text-[40px] font-bold tabular-nums leading-none text-paper">
+          <p className="font-sans text-display-sm font-bold tabular-nums leading-none text-paper">
             <CountUp value={data.rateLimits.last24hHits} />
           </p>
         </Card>
@@ -115,12 +115,12 @@ export function SecurityTab() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card title="Total accounts">
-          <p className="font-sans text-[40px] font-bold tabular-nums leading-none text-paper">
+          <p className="font-sans text-display-sm font-bold tabular-nums leading-none text-paper">
             <CountUp value={data.accounts.total} />
           </p>
         </Card>
         <Card title="Signups · 30d">
-          <p className="font-sans text-[40px] font-bold tabular-nums leading-none text-paper">
+          <p className="font-sans text-display-sm font-bold tabular-nums leading-none text-paper">
             <CountUp value={data.accounts.signups30d} />
           </p>
         </Card>
@@ -147,7 +147,7 @@ export function SecurityTab() {
             {
               key: "key",
               label: "Key",
-              render: (r) => <span className="font-mono text-[11px]">{r.key}</span>,
+              render: (r) => <span className="font-mono text-eyebrow">{r.key}</span>,
               csv: (r) => r.key,
             },
             {
@@ -162,7 +162,7 @@ export function SecurityTab() {
       </Card>
 
       <Card title="System flags">
-        <ul className="space-y-2 font-sans text-[13px] text-paper/85">
+        <ul className="space-y-2 font-sans text-detail text-paper/85">
           <li className="flex items-center justify-between gap-3">
             <span>Admin debug endpoints</span>
             {data.flags.adminDebugEnabled ? (
@@ -222,7 +222,7 @@ export function SecurityTab() {
               key: "directive",
               label: "Directive",
               render: (r) => (
-                <span className="font-mono text-[11px]">{r.violated_directive ?? "—"}</span>
+                <span className="font-mono text-eyebrow">{r.violated_directive ?? "—"}</span>
               ),
               csv: (r) => r.violated_directive ?? "",
             },
@@ -230,7 +230,7 @@ export function SecurityTab() {
               key: "blocked",
               label: "Blocked URI",
               render: (r) => (
-                <span className="font-mono text-[11px] truncate max-w-[280px] inline-block">
+                <span className="font-mono text-eyebrow truncate max-w-[280px] inline-block">
                   {r.blocked_uri ?? "—"}
                 </span>
               ),
@@ -276,7 +276,7 @@ export function SecurityTab() {
             {
               key: "key",
               label: "Key",
-              render: (r) => <span className="font-mono text-[11px]">{r.key}</span>,
+              render: (r) => <span className="font-mono text-eyebrow">{r.key}</span>,
               csv: (r) => r.key,
             },
             {
@@ -314,7 +314,7 @@ export function SecurityTab() {
                 key: "directive",
                 label: "Directive",
                 render: (r) => (
-                  <span className="font-mono text-[11px]">{r.violated_directive ?? "—"}</span>
+                  <span className="font-mono text-eyebrow">{r.violated_directive ?? "—"}</span>
                 ),
                 csv: (r) => r.violated_directive ?? "",
               },
@@ -322,7 +322,7 @@ export function SecurityTab() {
                 key: "blocked",
                 label: "Blocked",
                 render: (r) => (
-                  <span className="font-mono text-[11px] truncate max-w-[280px] inline-block">
+                  <span className="font-mono text-eyebrow truncate max-w-[280px] inline-block">
                     {r.blocked_uri ?? "—"}
                   </span>
                 ),

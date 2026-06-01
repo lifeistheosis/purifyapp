@@ -63,11 +63,11 @@ function RollingInfo() {
       <span
         aria-label="What does 'rolling' mean?"
         tabIndex={0}
-        className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-paper/30 text-paper/55 text-[9px] font-bold leading-none cursor-help focus:outline-none focus:ring-1 focus:ring-gold"
+        className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-paper/30 text-paper/55 text-eyebrow font-bold leading-none cursor-help focus:outline-none focus:ring-1 focus:ring-gold"
       >
         i
       </span>
-      <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-1 w-[220px] rounded-md border border-paper/15 bg-night p-2 font-sans text-[11px] text-paper/85 leading-snug opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity z-10 shadow">
+      <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-1 w-[220px] rounded-md border border-paper/15 bg-night p-2 font-sans text-eyebrow text-paper/85 leading-snug opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity z-10 shadow">
         Sum of the last 14 calendar days. At every UTC midnight, the oldest
         day rolls off and a fresh day (starts at 0) enters — so this number
         can drop. The lifetime counters above never do.
@@ -121,11 +121,11 @@ export function OverviewTab() {
       {/* Hero — lifetime cumulative. These only grow. */}
       <div>
         <div className="flex items-baseline justify-between gap-3 mb-3">
-          <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+          <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
             Lifetime
           </p>
           {totals?.oldestSessionAt && (
-            <p className="font-sans text-[11px] text-paper/40 tabular-nums">
+            <p className="font-sans text-eyebrow text-paper/40 tabular-nums">
               data since {ymd(totals.oldestSessionAt)}
             </p>
           )}
@@ -158,11 +158,11 @@ export function OverviewTab() {
       {/* Trend — rolling 14d. Labeled honestly. */}
       <div>
         <div className="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
-          <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+          <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
             Rolling 14-day window
             <RollingInfo />
           </p>
-          <p className="font-sans text-[11px] text-paper/40">
+          <p className="font-sans text-eyebrow text-paper/40">
             vs. prior 14 days
           </p>
         </div>
@@ -201,20 +201,20 @@ export function OverviewTab() {
       <Card title="Today so far · UTC">
         <div className="grid grid-cols-3 gap-4 font-sans">
           <div>
-            <p className="text-[11px] uppercase tracking-[1.2px] text-paper/45">Visitors</p>
-            <p className="mt-1 text-[26px] font-bold tabular-nums text-paper">
+            <p className="text-eyebrow uppercase tracking-[1.2px] text-paper/45">Visitors</p>
+            <p className="mt-1 text-title font-bold tabular-nums text-paper">
               {stats?.today.visitors ?? "—"}
             </p>
           </div>
           <div>
-            <p className="text-[11px] uppercase tracking-[1.2px] text-paper/45">Pageviews</p>
-            <p className="mt-1 text-[26px] font-bold tabular-nums text-paper">
+            <p className="text-eyebrow uppercase tracking-[1.2px] text-paper/45">Pageviews</p>
+            <p className="mt-1 text-title font-bold tabular-nums text-paper">
               {stats?.today.views ?? "—"}
             </p>
           </div>
           <div>
-            <p className="text-[11px] uppercase tracking-[1.2px] text-paper/45">Signups</p>
-            <p className="mt-1 text-[26px] font-bold tabular-nums text-paper">
+            <p className="text-eyebrow uppercase tracking-[1.2px] text-paper/45">Signups</p>
+            <p className="mt-1 text-title font-bold tabular-nums text-paper">
               {stats?.today.signups ?? "—"}
             </p>
           </div>

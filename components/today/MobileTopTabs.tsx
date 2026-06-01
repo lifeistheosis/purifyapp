@@ -72,9 +72,9 @@ export function MobileTopTabs({
 
         {/* Right cluster: streak, bell, avatar */}
         <div className="flex items-center gap-3">
-          <div className="inline-flex items-center gap-1 text-[#c1272d]">
+          <div className="inline-flex items-center gap-1 text-crimson">
             <Bolt size={14} />
-            <span className="font-sans text-[14px] font-semibold tabular-nums">
+            <span className="font-sans text-ui font-semibold tabular-nums">
               {streak}
             </span>
           </div>
@@ -118,13 +118,13 @@ function Tab({
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className="relative inline-block py-1 font-sans text-[20px] font-bold tracking-[-0.01em] transition-colors"
+      className="relative inline-block py-1 font-sans text-lede font-bold tracking-[-0.01em] transition-colors"
     >
       <span className={active ? "text-paper" : "text-paper/45"}>{label}</span>
       {active && (
         <span
           aria-hidden
-          className="absolute left-0 right-0 -bottom-[2px] h-[2px] rounded-full bg-[#c1272d]"
+          className="absolute left-0 right-0 -bottom-[2px] h-[2px] rounded-full bg-crimson"
         />
       )}
     </Link>

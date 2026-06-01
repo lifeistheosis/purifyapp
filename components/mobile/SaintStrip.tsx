@@ -46,10 +46,10 @@ export function SaintStrip() {
           className="inline-flex flex-col items-center w-[88px] shrink-0 active:scale-[0.97] transition-transform"
         >
           <SaintIcon saint={saint} size="sm" />
-          <span className="mt-2 font-sans text-[10.5px] uppercase tracking-[1px] text-[#c1272d] font-semibold">
+          <span className="mt-2 font-sans text-eyebrow uppercase tracking-[1px] text-crimson font-semibold">
             {label}
           </span>
-          <span className="mt-1 font-sans text-[11.5px] text-paper/85 text-center leading-tight line-clamp-2">
+          <span className="mt-1 font-sans text-caption text-paper/85 text-center leading-tight line-clamp-2">
             {saint.name}
           </span>
         </Link>

@@ -45,20 +45,20 @@ export function BibleSearchTrigger() {
           className="fixed inset-0 z-50 bg-night/95 backdrop-blur-sm flex flex-col"
         >
           <header className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-paper/10">
-            <p className="font-sans text-[12px] uppercase tracking-[1.5px] text-paper/55">
+            <p className="font-sans text-caption uppercase tracking-[1.5px] text-paper/55">
               Search
             </p>
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="font-sans text-[13px] text-paper/75 hover:text-paper"
+              className="font-sans text-detail text-paper/75 hover:text-paper"
             >
               Cancel
             </button>
           </header>
           <div className="px-5 pt-6 pb-10 flex-1 overflow-y-auto">
             <BibleSearch />
-            <p className="mt-3 font-sans italic text-[12px] text-paper/45">
+            <p className="mt-3 font-sans italic text-caption text-paper/45">
               Try: &lsquo;John 3:16&rsquo; · &lsquo;1 Cor 13&rsquo; · &lsquo;Psalm 23&rsquo;
             </p>
           </div>

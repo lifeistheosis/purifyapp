@@ -45,7 +45,7 @@ export function MobileTopBar({
               onClick={() => router.back()}
               className="h-10 w-10 inline-flex items-center justify-center rounded-pill text-paper/80 hover:text-paper"
             >
-              <span aria-hidden className="text-[20px] leading-none">‹</span>
+              <span aria-hidden className="text-lede leading-none">‹</span>
             </button>
           ) : (
             <Link
@@ -53,13 +53,13 @@ export function MobileTopBar({
               aria-label="Back"
               className="h-10 w-10 inline-flex items-center justify-center rounded-pill text-paper/80 hover:text-paper"
             >
-              <span aria-hidden className="text-[20px] leading-none">‹</span>
+              <span aria-hidden className="text-lede leading-none">‹</span>
             </Link>
           )
         ) : null}
       </div>
       <h1
-        className="flex-1 text-center font-sans text-[15px] font-semibold text-paper tracking-[-0.005em] truncate"
+        className="flex-1 text-center font-sans text-ui font-semibold text-paper tracking-[-0.005em] truncate"
         title={title}
       >
         {title}

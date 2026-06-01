@@ -3,6 +3,8 @@ import { SAINTS, getSaint } from "@/lib/saints/saints";
 import { createClient } from "@/lib/supabase/server";
 import { getEffectiveComplete } from "@/lib/admin/saintOverrides";
 import { SaintHero } from "@/components/saints/SaintHero";
+import { SaintStudyRail } from "@/components/saints/SaintStudyRail";
+import { ContentShell } from "@/components/layout/ContentShell";
 import { LifeSection } from "@/components/saints/LifeSection";
 import { TitlesSection } from "@/components/saints/TitlesSection";
 import { GreatFeastsSection } from "@/components/saints/GreatFeastsSection";
@@ -104,24 +106,28 @@ export default async function SaintPage({ params }: { params: Params }) {
   return (
     <section className="bg-night px-5 md:px-8">
       <div className="mx-auto max-w-[1100px] w-full">
-        <SaintHero saint={effectiveSaint} bump={bump} />
+        <SaintHero saint={effectiveSaint} bump={bump} compactFacts />
         {locale !== "en" && !bioIsLocalized ? (
           <ContentNotYetTranslated locale={locale} kind="bio" />
         ) : null}
-        {effectiveSaint.titles?.length ? (
-          <TitlesSection titles={effectiveSaint.titles} pronoun={saint.pronoun} />
-        ) : null}
-        <LifeSection paragraphs={effectiveSaint.life} pronoun={saint.pronoun} />
-        {effectiveSaint.greatFeasts?.length ? (
-          <GreatFeastsSection feasts={effectiveSaint.greatFeasts} pronoun={saint.pronoun} />
-        ) : null}
-        {saint.quotes?.length ? <QuotesSection quotes={saint.quotes} pronoun={saint.pronoun} /> : null}
-        {saint.hasMiracles ? <MiraclesSection slug={saint.slug} /> : null}
-        {saint.disciples?.length ? (
-          <DisciplesSection saint={saint} disciples={saint.disciples} />
-        ) : null}
-        {saint.works.length > 0 && <SaintWorksBrowser saint={saint} />}
-        <LicensedWorksSection works={licensedWorks} />
+        <ContentShell rail={<SaintStudyRail saint={effectiveSaint} />}>
+          {effectiveSaint.titles?.length ? (
+            <TitlesSection titles={effectiveSaint.titles} pronoun={saint.pronoun} />
+          ) : null}
+          <LifeSection paragraphs={effectiveSaint.life} pronoun={saint.pronoun} />
+          {effectiveSaint.greatFeasts?.length ? (
+            <div className="lg:hidden">
+              <GreatFeastsSection feasts={effectiveSaint.greatFeasts} pronoun={saint.pronoun} />
+            </div>
+          ) : null}
+          {saint.quotes?.length ? <QuotesSection quotes={saint.quotes} pronoun={saint.pronoun} /> : null}
+          {saint.hasMiracles ? <MiraclesSection slug={saint.slug} /> : null}
+          {saint.disciples?.length ? (
+            <DisciplesSection saint={saint} disciples={saint.disciples} />
+          ) : null}
+          {saint.works.length > 0 && <SaintWorksBrowser saint={saint} />}
+          <LicensedWorksSection works={licensedWorks} />
+        </ContentShell>
       </div>
     </section>
   );

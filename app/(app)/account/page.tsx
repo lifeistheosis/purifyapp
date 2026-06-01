@@ -37,13 +37,13 @@ export default async function AccountPage() {
     <YouMobile />
     <section className={`${SECTION} bg-night min-h-[calc(100dvh-72px)] hidden md:block`}>
       <article className="mx-auto max-w-[1080px] w-full">
-        <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+        <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
           {t(m, "account.eyebrow")}
         </p>
-        <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+        <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
           {t(m, "account.h1")}
         </h1>
-        <p className="mt-6 font-serif text-[17px] text-paper/85 leading-[1.7] max-w-[640px]">
+        <p className="mt-6 font-serif text-body text-paper/85 leading-[1.7] max-w-[640px]">
           Two real ways to use Purify, both free and both private. Keep
           everything on this device, or sync across devices with email
           and password (or Google / Apple). Either choice is reversible.
@@ -53,7 +53,7 @@ export default async function AccountPage() {
           <UnsignedAccount />
         </div>
 
-        <p className="mt-10 font-sans text-[14px] text-paper/55 leading-[1.65] max-w-[640px]">
+        <p className="mt-10 font-sans text-ui text-paper/55 leading-[1.65] max-w-[640px]">
           The full data-handling rules, with every field stored and every
           third party named, are on the{" "}
           <Link

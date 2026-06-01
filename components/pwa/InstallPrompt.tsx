@@ -155,10 +155,10 @@ export function InstallPrompt() {
     >
       <div className="rounded-2xl border border-gold/45 bg-night/95 backdrop-blur shadow-[0_12px_36px_rgba(0,0,0,0.55)] p-4 flex items-center gap-3">
         <div className="min-w-0 flex-1">
-          <p className="font-sans text-[13.5px] font-semibold text-paper leading-tight">
+          <p className="font-sans text-detail font-semibold text-paper leading-tight">
             Add Purify to your home screen
           </p>
-          <p className="mt-1 font-sans text-[12px] text-paper/70 leading-[1.5]">
+          <p className="mt-1 font-sans text-caption text-paper/70 leading-[1.5]">
             {iosHint
               ? "Tap Share, then Add to Home Screen."
               : "Install for a full-screen, offline-ready app."}
@@ -169,7 +169,7 @@ export function InstallPrompt() {
             <button
               type="button"
               onClick={install}
-              className="rounded-pill bg-gold text-night font-sans text-[13px] font-semibold px-4 py-2"
+              className="rounded-pill bg-gold text-night font-sans text-detail font-semibold px-4 py-2"
             >
               Install
             </button>

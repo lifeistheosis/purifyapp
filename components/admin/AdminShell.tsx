@@ -107,10 +107,10 @@ export function AdminShell({ adminEmail }: { adminEmail: string }) {
       {/* Page header */}
       <header className="flex items-end justify-between flex-wrap gap-4">
         <div>
-          <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+          <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
             Admin · {currentMeta?.eyebrow}
           </p>
-          <h1 className="font-sans text-[32px] md:text-[40px] font-bold text-paper tracking-[-0.02em]">
+          <h1 className="font-sans text-heading md:text-display-sm font-bold text-paper tracking-[-0.02em]">
             {currentMeta?.label}
           </h1>
         </div>
@@ -129,7 +129,7 @@ export function AdminShell({ adminEmail }: { adminEmail: string }) {
               Home
             </ToolbarButton>
           </Toolbar>
-          <p className="font-sans text-[12px] text-paper/40">
+          <p className="font-sans text-caption text-paper/40">
             {rebuildStatus ?? adminEmail}
           </p>
         </div>
@@ -147,7 +147,7 @@ export function AdminShell({ adminEmail }: { adminEmail: string }) {
                   onClick={() => setActive(t.id)}
                   aria-current={isActive ? "page" : undefined}
                   className={
-                    "px-4 py-2.5 font-sans text-[13px] font-semibold transition-colors relative " +
+                    "px-4 py-2.5 font-sans text-detail font-semibold transition-colors relative " +
                     (isActive
                       ? "text-gold"
                       : "text-paper/55 hover:text-paper")

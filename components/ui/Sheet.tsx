@@ -112,7 +112,7 @@ export function Sheet({
         </div>
         {/* Title bar */}
         <div className="px-4 pb-2 flex items-center justify-between gap-3">
-          <p className="font-sans text-[14px] font-semibold text-paper truncate">
+          <p className="font-sans text-ui font-semibold text-paper truncate">
             {title}
           </p>
           <button

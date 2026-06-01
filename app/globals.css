@@ -4,8 +4,8 @@
  /* Hybrid brand. Two committed surface palettes:
  - DARK "sacred" surfaces (home/marketing, Bible reader, prayers, calendar):
  night backgrounds + `gold` accent.
- - WARM-LIGHT "study" surfaces (saints, account, info pages):
- paper/paper-warm + `ink` text + `gold-deep` accent + `accent` (red) for CTAs.
+ - WARM-LIGHT "study" surfaces (UI kit, prayers, account, info pages):
+ paper/paper-warm + `ink` text + `accent` (red) for CTAs.
  Tokens below; pick the set that matches the surface. */
 
  /* Warm-light study surfaces */
@@ -18,17 +18,26 @@
 
  --color-accent: #dc372d;
  --color-accent-deep: #a3261f;
- --color-accent-tint: #f8cac7;
 
  /* Dark sacred surfaces */
  --color-night: #161219;
  --color-night-soft: #38323c;
 
- /* Gold, the signature accent. Use `gold` on dark surfaces; `gold-deep`
- on warm-light surfaces (plain gold fails contrast on white). */
+ /* Gold, the signature accent on dark surfaces. */
  --color-gold: #d4af37;
- --color-gold-deep: #c89e2c;
  --color-gold-soft: #e6cd6a;
+ --color-gold-pale: #f4dc91; /* pale-gold text on dark (chips, highlights) */
+
+ /* Repeated semantic accents — previously hand-typed as arbitrary hex in
+  ~30 files. Named here so the hue is single-sourced and opacity modifiers
+  (e.g. `bg-crimson/15`) stay consistent across every surface. */
+ --color-crimson: #c1272d;      /* liturgical/alert red: strict fast, delete, error */
+ --color-crimson-soft: #f8cac7; /* its light text on dark surfaces */
+ --color-sage: #7b9b8f;         /* fish-allowed fast green */
+ --color-sage-soft: #bfd6cc;    /* its light text on dark surfaces */
+ --color-cream: #f5e6d3;        /* warm serif text on dark heroes/avatars */
+ --color-link: #a4adff;         /* periwinkle link on dark info pages */
+ --color-link-soft: #c7cdff;    /* its hover/lighter variant */
 
  /* Gradient stops used in hero / feature cards */
  --color-grad-teal: #008171;
@@ -53,25 +62,38 @@
     available as the `font-heading` utility. */
  --font-heading: var(--font-lora), Georgia, serif;
 
- --text-h1: 56px;
- --text-h1--line-height: 1.08;
- --text-h2: 40px;
- --text-h2--line-height: 1.15;
- --text-h3: 24px;
- --text-h3--line-height: 1.25;
- --text-body: 17px;
- --text-body--line-height: 1.55;
- --text-small: 14px;
- --text-small--line-height: 1.5;
+ /* Type scale — size only (line-height stays per-element via leading-*). */
+ --text-eyebrow: 11px;       /* labels, kickers, micro-UI            */
+ --text-caption: 12px;       /* captions, meta, dense UI             */
+ --text-detail: 13px;        /* secondary body, list detail          */
+ --text-ui: 14px;            /* default UI text, buttons, nav        */
+ --text-body: 17px;          /* reading body                         */
+ --text-lede: 19px;          /* intro/lede paragraphs                */
+ --text-title-sm: 22px;      /* card titles, small headings          */
+ --text-title: 28px;         /* section titles                       */
+ --text-heading: 32px;       /* page headings                        */
+ --text-display-sm: 40px;    /* sub-hero display                     */
+ --text-display: 48px;       /* hero display                         */
+ --text-display-lg: 56px;    /* largest hero                         */
 
  --radius-sm: 8px;
  --radius-md: 12px;
  --radius-lg: 20px;
+ --radius-card: 28px; /* large marketing/icon cards (bespoke name so it
+  doesn't shadow Tailwind's default rounded-xl, still used at 12px) */
  --radius-pill: 999px;
 
+ /* Paper-surface elevation: ink-tinted, subtle. */
  --shadow-sm: 0 1px 2px rgba(73, 66, 78, 0.06);
  --shadow-md: 0 8px 24px rgba(73, 66, 78, 0.08);
  --shadow-lg: 0 16px 48px rgba(73, 66, 78, 0.12);
+
+ /* Dark-surface elevation: black drop shadows for floating chrome on
+  night backgrounds. One token per tier so a single tweak propagates,
+  the way the chart tokens above do. */
+ --shadow-raise: 0 8px 24px rgba(0, 0, 0, 0.45);   /* pills, FABs */
+ --shadow-pop: 0 8px 32px rgba(0, 0, 0, 0.5);      /* popovers, menus */
+ --shadow-overlay: 0 24px 48px rgba(0, 0, 0, 0.6); /* large dropdowns */
 }
 
 /* ----------------------------------------------------------------------

@@ -6,12 +6,21 @@ import { SectionScroller } from "@/components/SectionScroller";
 import { HeroChristIcon } from "@/components/marketing/HeroChristIcon";
 import { SeasonBanner } from "@/components/marketing/SeasonBanner";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
-import { Cross } from "@/components/ui/icons/Cross";
+import { Codex } from "@/components/ui/icons/Codex";
+import { HaloedHead } from "@/components/ui/icons/HaloedHead";
+import { Sun } from "@/components/ui/icons/Sun";
+import { Orans } from "@/components/ui/icons/Orans";
 import { TodayMobileV3 } from "@/components/today/TodayMobileV3";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
+import { numberToWordsCapitalized } from "@/lib/i18n/numberWords";
+import { SAINTS } from "@/lib/saints/saints";
+
+// Single source of truth for the saints corpus size: derive it from the
+// data so the home copy can never drift from what /saints actually renders.
+const SAINT_COUNT = SAINTS.length;
 
 // ISR so the live home-page surface (Today card, daily wisdom, season
 // banner, paschal greeting) refreshes daily without a redeploy.
@@ -25,7 +34,7 @@ const features = [
  },
  {
  title: "Lives of the saints",
- body: "Twenty-four profiles, with their writings to read in full, from Chrysostom and Athanasius to the Theotokos and the desert fathers.",
+ body: `${numberToWordsCapitalized(SAINT_COUNT, "en")} profiles, with their writings to read in full, from Chrysostom and Athanasius to the Theotokos and the desert fathers.`,
  },
  {
  title: "The Sacred Calendar",
@@ -44,7 +53,7 @@ const featuresDe = [
  },
  {
  title: "Leben der Heiligen",
- body: "Sechsundfünfzig Profile, mit ihren Schriften, ganz zu lesen, vom heiligen Chrysostomus und Athanasius bis zur Gottesgebärerin und den Wüstenvätern.",
+ body: `${numberToWordsCapitalized(SAINT_COUNT, "de")} Profile, mit ihren Schriften, ganz zu lesen, vom heiligen Chrysostomus und Athanasius bis zur Gottesgebärerin und den Wüstenvätern.`,
  },
  {
  title: "Der heilige Kalender",
@@ -142,6 +151,10 @@ export default async function Home() {
  const isDe = locale === "de";
  const m = getMessages(locale);
  const homeFeatures = isDe ? featuresDe : features;
+ // One distinct glyph per pillar, drawn from the app's own icon set, so the
+ // features row reads as four different things rather than four identical
+ // marks: Scripture (Codex), saints (HaloedHead), calendar (Sun), prayer (Orans).
+ const featureIcons = [Codex, HaloedHead, Sun, Orans];
  const homeCategories = isDe ? categoriesDe : categories;
  const homeChallenges = isDe ? challengesDe : challenges;
  return (
@@ -181,21 +194,21 @@ export default async function Home() {
  href="/whats-new"
  className="group inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.06] px-3 py-1.5 mb-5 hover:bg-paper/10 hover:border-paper/35 transition-colors duration-150"
  >
- <span className="font-sans text-[10px] font-semibold uppercase tracking-[1.5px] px-2 py-0.5 rounded-pill bg-gold text-night">
+ <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] px-2 py-0.5 rounded-pill bg-gold text-night">
  {isDe ? "Neu" : "New"}
  </span>
- <span className="font-sans text-[12px] sm:text-[13px] text-paper/85 group-hover:text-paper transition-colors">
+ <span className="font-sans text-caption sm:text-detail text-paper/85 group-hover:text-paper transition-colors">
  <span className="sm:hidden">v8.0 · The Seven Ecumenical Councils, complete</span>
  <span className="hidden sm:inline">v8.0 · The Seven Ecumenical Councils, complete, in their own words</span>
  </span>
- <span className="text-paper/55 group-hover:text-paper transition-colors text-[13px]">
+ <span className="text-paper/55 group-hover:text-paper transition-colors text-detail">
  →
  </span>
  </Link>
- <h1 className="font-sans text-[32px] md:text-[42px] lg:text-[52px] font-bold leading-[1.05] tracking-[-0.025em]">
+ <h1 className="font-sans text-heading md:text-display-sm lg:text-display font-bold leading-[1.05] tracking-[-0.025em]">
  {t(m, "home.heroH1")}
  </h1>
- <p className="font-sans text-[14px] md:text-[15px] text-paper/85 mt-4 max-w-[520px]">
+ <p className="font-sans text-ui md:text-ui text-paper/85 mt-4 max-w-[520px]">
  {t(m, "home.heroSubtitle")}
  </p>
  <div className="mt-7 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
@@ -204,7 +217,7 @@ export default async function Home() {
  </ComingSoonCTA>
  <Link
  href="/calendar"
- className="font-sans text-[14px] font-medium text-paper/80 hover:text-paper transition-colors"
+ className="font-sans text-ui font-medium text-paper/80 hover:text-paper transition-colors"
  >
  {t(m, "home.seeToday")}
  </Link>
@@ -223,29 +236,32 @@ export default async function Home() {
  <section className={`${sectionBase} bg-night`}>
  <div className="mx-auto max-w-[1240px] w-full">
  <div className="text-center max-w-[720px] mx-auto mb-16">
- <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
+ <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
  {isDe ? "Warum Purify" : "Why Purify"}
  </p>
- <h2 className="font-sans text-[26px] md:text-[36px] lg:text-[46px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
+ <h2 className="font-sans text-title md:text-display-sm lg:text-display font-bold text-paper tracking-[-0.025em] leading-[1.05]">
  {isDe
  ? "Vier Säulen, ein stiller Ort."
  : "Four pillars, one quiet place."}
  </h2>
  </div>
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
- {homeFeatures.map((f) => (
+ {homeFeatures.map((f, i) => {
+ const Icon = featureIcons[i] ?? Codex;
+ return (
  <div key={f.title} className="text-center">
  <div className="mx-auto mb-6 h-14 w-14 rounded-pill bg-paper/10 flex items-center justify-center text-gold">
- <Cross size={24} />
+ <Icon size={24} />
  </div>
- <h3 className="font-sans text-[18px] font-semibold text-paper mb-3">
+ <h3 className="font-sans text-lede font-semibold text-paper mb-3">
  {f.title}
  </h3>
- <p className="font-sans text-[14px] text-paper/70 max-w-[300px] mx-auto leading-[1.55]">
+ <p className="font-sans text-ui text-paper/70 max-w-[300px] mx-auto leading-[1.55]">
  {f.body}
  </p>
  </div>
- ))}
+ );
+ })}
  </div>
  </div>
  </section>
@@ -253,14 +269,14 @@ export default async function Home() {
  {/* SCRIPTURE - white rhythm break */}
  <section className={`${sectionBase} bg-paper text-center`}>
  <div className="mx-auto max-w-[820px] w-full">
- <p className="font-serif text-[28px] md:text-[42px] leading-[1.15] tracking-[-0.01em] text-night">
+ <p className="font-serif text-title md:text-display-sm leading-[1.15] tracking-[-0.01em] text-night">
  {isDe
  ? "„Der Herr ist gut zu denen, die auf ihn vertrauen.“"
  : "“The Lord is good to those who trust in him.”"}
  </p>
  <Link
  href="/bible/nahum/1#v7"
- className="inline-block mt-7 font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-ink-soft hover:text-night transition-colors underline-offset-4 hover:underline"
+ className="inline-block mt-7 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-ink-soft hover:text-night transition-colors underline-offset-4 hover:underline"
  >
  Nahum 1:7
  </Link>
@@ -271,10 +287,10 @@ export default async function Home() {
  <section className={`${sectionBase} bg-night`}>
  <div className="mx-auto max-w-[1240px] w-full">
  <div className="mb-12">
- <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
+ <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
  {isDe ? "Wo anfangen" : "Where to begin"}
  </p>
- <h2 className="font-sans text-[26px] md:text-[36px] lg:text-[46px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
+ <h2 className="font-sans text-title md:text-display-sm lg:text-display font-bold text-paper tracking-[-0.025em] leading-[1.05]">
  {isDe ? "Fang an, wo du stehst." : "Begin where you stand."}
  </h2>
  </div>
@@ -283,7 +299,7 @@ export default async function Home() {
  <Link
  key={c.label}
  href={c.href}
- className="block rounded-pill border border-paper/15 bg-paper/[0.04] px-5 py-4 font-sans text-[15px] font-medium text-paper text-center hover:bg-paper/10 hover:border-paper/30 transition-colors duration-150"
+ className="block rounded-pill border border-paper/15 bg-paper/[0.04] px-5 py-4 font-sans text-ui font-medium text-paper text-center hover:bg-paper/10 hover:border-paper/30 transition-colors duration-150"
  >
  {c.label}
  </Link>
@@ -296,10 +312,10 @@ export default async function Home() {
  <section className={`${sectionBase} bg-night-soft`}>
  <div className="mx-auto max-w-[1240px] w-full">
  <div className="mb-12">
- <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
+ <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
  {isDe ? "Wege zu gehen" : "Paths to walk"}
  </p>
- <h2 className="font-sans text-[26px] md:text-[36px] lg:text-[46px] font-bold text-paper tracking-[-0.025em] leading-[1.05]">
+ <h2 className="font-sans text-title md:text-display-sm lg:text-display font-bold text-paper tracking-[-0.025em] leading-[1.05]">
  {isDe
  ? "Wo möchtest du anfangen?"
  : "Where would you like to begin?"}
@@ -312,16 +328,16 @@ export default async function Home() {
  href={ch.href}
  className="group block rounded-lg bg-night border border-paper/8 p-8 hover:border-gold/45 hover:bg-gold/[0.04] transition-colors duration-200"
  >
- <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-gold/85 mb-4">
+ <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold/85 mb-4">
  {ch.eyebrow}
  </p>
- <h3 className="font-sans text-[18px] md:text-[20px] font-semibold text-paper mb-3">
+ <h3 className="font-sans text-lede md:text-lede font-semibold text-paper mb-3">
  {ch.title}
  </h3>
- <p className="font-sans text-[14px] text-paper/65 leading-[1.6] mb-5">
+ <p className="font-sans text-ui text-paper/65 leading-[1.6] mb-5">
  {ch.body}
  </p>
- <span className="font-sans text-[13px] font-medium text-paper/75 group-hover:text-gold transition-colors">
+ <span className="font-sans text-detail font-medium text-paper/75 group-hover:text-gold transition-colors">
  {isDe ? "Anfangen →" : "Begin →"}
  </span>
  </Link>
@@ -336,16 +352,16 @@ export default async function Home() {
  {/* FINAL CTA */}
  <section className={`${sectionBase} bg-night`}>
  <div className="mx-auto max-w-[1100px] w-full">
- <h2 className="font-sans text-[32px] md:text-[46px] lg:text-[60px] font-bold text-paper leading-[1.02] tracking-[-0.03em]">
+ <h2 className="font-sans text-heading md:text-display lg:text-display-lg font-bold text-paper leading-[1.02] tracking-[-0.03em]">
  {isDe ? "Purify öffnen." : "Open Purify."}
  </h2>
- <p className="mt-5 font-serif text-[15px] md:text-[18px] text-paper/75 leading-[1.6] max-w-[640px]">
+ <p className="mt-5 font-serif text-ui md:text-lede text-paper/75 leading-[1.6] max-w-[640px]">
  {isDe
  ? "Fang an, wo du stehst, bei einem Gebet, beim Heiligen des Tages, bei einem Vers des Evangeliums."
  : "Begin where you stand, at a prayer, at the saint of the day, at a verse of the Gospel."}
  </p>
  <div className="mt-10">
- <ComingSoonCTA variant="inverse" className="text-[16px]">
+ <ComingSoonCTA variant="inverse" className="text-body">
  {isDe ? "Purify öffnen" : "Open Purify"}
  </ComingSoonCTA>
  </div>

@@ -8,10 +8,10 @@ export const metadata = {
 export default function SignUpPage() {
   return (
     <div>
-      <h1 className="font-sans text-[28px] font-bold text-paper leading-tight mb-2">
+      <h1 className="font-sans text-title font-bold text-paper leading-tight mb-2">
         Create an account
       </h1>
-      <p className="font-serif text-[15px] text-paper/75 mb-7">
+      <p className="font-serif text-ui text-paper/75 mb-7">
         Sync your highlights, notes, bookmarks, and prayer streak
         across devices. Free, ad-free, deletable any time.
       </p>

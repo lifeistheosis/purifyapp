@@ -181,7 +181,7 @@ export function VerseCardActions({
         {toast && (
           <div
             role="status"
-            className="absolute left-1/2 -translate-x-1/2 -top-9 rounded-full bg-paper text-night px-3 py-1 font-sans text-[12px] font-semibold shadow-lg"
+            className="absolute left-1/2 -translate-x-1/2 -top-9 rounded-full bg-paper text-night px-3 py-1 font-sans text-caption font-semibold shadow-lg"
           >
             {toast}
           </div>
@@ -206,7 +206,7 @@ export function VerseCardActions({
               aria-hidden
               className="mx-auto mb-3 h-1 w-10 rounded-full bg-paper/20"
             />
-            <p className="font-sans text-[11px] uppercase tracking-[1.5px] text-paper/45 mb-3">
+            <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/45 mb-3">
               {refLabel}
             </p>
             <SheetItem
@@ -227,7 +227,7 @@ export function VerseCardActions({
             <button
               type="button"
               onClick={() => setMore(false)}
-              className="mt-2 w-full rounded-md border border-paper/15 bg-paper/[0.04] py-3 font-sans text-[14px] font-semibold text-paper/80"
+              className="mt-2 w-full rounded-md border border-paper/15 bg-paper/[0.04] py-3 font-sans text-ui font-semibold text-paper/80"
             >
               Cancel
             </button>
@@ -254,7 +254,7 @@ function ActionBtn({
       className="flex flex-col items-center gap-1.5 text-paper/80 hover:text-paper transition-colors"
     >
       {children}
-      <span className="font-sans text-[12px]">{label}</span>
+      <span className="font-sans text-caption">{label}</span>
     </button>
   );
 }
@@ -274,7 +274,7 @@ function ActionLink({
       className="flex flex-col items-center gap-1.5 text-paper/80 hover:text-paper transition-colors"
     >
       {children}
-      <span className="font-sans text-[12px]">{label}</span>
+      <span className="font-sans text-caption">{label}</span>
     </Link>
   );
 }
@@ -284,7 +284,7 @@ function SheetItem({ label, onClick }: { label: string; onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="w-full rounded-md px-3 py-3 text-left font-sans text-[15px] text-paper hover:bg-paper/[0.05] transition-colors"
+      className="w-full rounded-md px-3 py-3 text-left font-sans text-ui text-paper hover:bg-paper/[0.05] transition-colors"
     >
       {label}
     </button>

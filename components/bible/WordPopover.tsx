@@ -190,14 +190,14 @@ export function WordPopover({
  ref={ref}
  role="dialog"
  aria-label={`Word details: ${token.w}`}
- className="fixed z-50 rounded-lg border border-paper/20 bg-night-soft shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4"
+ className="fixed z-50 rounded-lg border border-paper/20 bg-night-soft shadow-pop p-4"
  style={{ width: POPOVER_W, left, top }}
  >
  <button
  type="button"
  onClick={onClose}
  aria-label="Close"
- className="absolute top-2 right-2 h-7 w-7 rounded-full text-paper/60 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-[14px]"
+ className="absolute top-2 right-2 h-7 w-7 rounded-full text-paper/60 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui"
  >
  ×
  </button>
@@ -206,18 +206,18 @@ export function WordPopover({
  <p
  lang="grc"
  style={{ fontFamily: "var(--font-greek), serif" }}
- className="text-[22px] text-paper font-semibold leading-tight pr-7"
+ className="text-title-sm text-paper font-semibold leading-tight pr-7"
  >
  {token.w}
  </p>
 
  {/* Lemma (dictionary form) + transliteration */}
  {entry && (
- <p className="mt-2 font-sans text-[14px] text-paper/80">
+ <p className="mt-2 font-sans text-ui text-paper/80">
  <span
  lang="grc"
  style={{ fontFamily: "var(--font-greek), serif" }}
- className="text-[16px] text-paper"
+ className="text-body text-paper"
  >
  {entry.l}
  </span>
@@ -228,25 +228,25 @@ export function WordPopover({
 
  {/* Short gloss */}
  {entry?.d && (
- <p className="mt-3 font-sans text-[14px] text-paper/85 leading-[1.5]">
+ <p className="mt-3 font-sans text-ui text-paper/85 leading-[1.5]">
  {entry.d.trim()}
  </p>
  )}
 
  {/* Parse (small, scholar-friendly) + Strong's badge */}
  <div className="mt-4 flex items-center justify-between gap-2 pt-3 border-t border-paper/10">
- <p className="font-sans text-[12px] text-paper/55 leading-tight">
+ <p className="font-sans text-caption text-paper/55 leading-tight">
  {token.p ? friendlyParse(token.p) : " "}
  </p>
  {token.s && (
- <span className="shrink-0 font-sans text-[11px] font-semibold uppercase tracking-[1px] rounded-pill bg-paper/10 text-paper/80 px-2 py-0.5">
+ <span className="shrink-0 font-sans text-eyebrow font-semibold uppercase tracking-[1px] rounded-pill bg-paper/10 text-paper/80 px-2 py-0.5">
  Strong&rsquo;s G{token.s}
  </span>
  )}
  </div>
 
  {!entry && (
- <p className="mt-3 font-sans text-[13px] text-paper/55 italic">
+ <p className="mt-3 font-sans text-detail text-paper/55 italic">
  No lexicon entry found for this Strong&rsquo;s number.
  </p>
  )}

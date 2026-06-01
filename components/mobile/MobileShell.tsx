@@ -26,7 +26,7 @@ export function MobileShell({
     <div className="flex flex-col bg-night md:hidden">
       {header}
       <div className="px-5 pt-6 pb-10">
-        <p className="font-sans text-[11px] uppercase tracking-[2px] text-paper/55 mb-4">
+        <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-4">
           {eyebrow}
         </p>
         {children}

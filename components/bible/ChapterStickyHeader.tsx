@@ -96,7 +96,7 @@ export function ChapterStickyHeader({
       // 72px AppNav on desktop.
       className="fixed left-0 right-0 top-12 md:top-[72px] z-40 backdrop-blur-md bg-night/85 border-b border-paper/8"
     >
-      <div className="mx-auto max-w-[1200px] px-5 md:px-10 py-2 flex items-center justify-between gap-3 font-sans text-[12px]">
+      <div className="mx-auto max-w-[1200px] px-5 md:px-10 py-2 flex items-center justify-between gap-3 font-sans text-caption">
         <span className="text-paper/85 font-semibold truncate">
           {bookName} {chapter}
         </span>

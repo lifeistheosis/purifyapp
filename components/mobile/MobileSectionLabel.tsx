@@ -5,7 +5,7 @@
  */
 export function MobileSectionLabel({ children }: { children: string }) {
   return (
-    <p className="font-sans text-[11px] uppercase tracking-[2px] text-paper/55 mb-3 mt-2">
+    <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-3 mt-2">
       {children}
     </p>
   );

@@ -33,12 +33,12 @@ export default async function SignedAccountLayout({
       <section className="px-5 md:px-8 py-10 md:py-14 bg-night min-h-[calc(100dvh-72px)]">
         <article className="mx-auto max-w-[820px] w-full">
           <div className="mb-6 flex items-center justify-between gap-4">
-            <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+            <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
               Your account
             </p>
             <Link
               href="/account"
-              className="font-sans text-[12px] text-paper/45 hover:text-paper transition-colors"
+              className="font-sans text-caption text-paper/45 hover:text-paper transition-colors"
             >
               ← Back to chooser
             </Link>

@@ -56,7 +56,7 @@ export function AudienceTab() {
   }, []);
 
   if (!data) {
-    return <p className="font-sans text-[13px] text-paper/40 py-8 text-center">Loading…</p>;
+    return <p className="font-sans text-detail text-paper/40 py-8 text-center">Loading…</p>;
   }
 
   return (

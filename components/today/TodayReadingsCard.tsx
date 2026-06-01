@@ -23,8 +23,8 @@ export function TodayReadingsCard({
   if (!readings.length) {
     return (
       <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4">
-        <p className="font-sans text-[12px] text-paper/55">{eyebrow}</p>
-        <p className="mt-2 font-sans text-[14px] text-paper/55 italic">
+        <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
+        <p className="mt-2 font-sans text-ui text-paper/55 italic">
           {emptyLabel}
         </p>
       </div>
@@ -32,7 +32,7 @@ export function TodayReadingsCard({
   }
   return (
     <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4">
-      <p className="font-sans text-[12px] text-paper/55">{eyebrow}</p>
+      <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
       <ul className="mt-2 divide-y divide-paper/8">
         {readings.map((r, i) => {
           const kind =
@@ -47,15 +47,15 @@ export function TodayReadingsCard({
                 href={`/bible/${r.book}/${r.chapter}#v${r.from}`}
                 className="flex items-center gap-3 py-2.5 group"
               >
-                <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.04] px-2 py-[1px] font-sans text-[10px] font-semibold uppercase tracking-[1.5px] text-paper/65">
+                <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.04] px-2 py-[1px] font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/65">
                   {kind}
                 </span>
-                <span className="font-serif text-[15px] text-paper truncate flex-1 group-hover:text-gold transition-colors">
+                <span className="font-serif text-ui text-paper truncate flex-1 group-hover:text-gold transition-colors">
                   {r.label}
                 </span>
                 <span
                   aria-hidden
-                  className="shrink-0 text-paper/35 text-[16px] group-hover:text-paper transition-colors"
+                  className="shrink-0 text-paper/35 text-body group-hover:text-paper transition-colors"
                 >
                   ›
                 </span>

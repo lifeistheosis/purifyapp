@@ -27,16 +27,16 @@ export function DiscoverIndex({ entries }: { entries: DiscoverEntry[] }) {
               <Icon size={26} />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="font-display-serif text-[19px] text-paper leading-tight group-active:text-gold transition-colors">
+              <p className="font-display-serif text-lede text-paper leading-tight group-active:text-gold transition-colors">
                 {label}
               </p>
-              <p className="mt-1 font-serif italic text-[13.5px] text-paper/65 leading-[1.5]">
+              <p className="mt-1 font-serif italic text-detail text-paper/65 leading-[1.5]">
                 {blurb}
               </p>
             </div>
             <span
               aria-hidden
-              className="shrink-0 self-center font-serif text-[17px] text-paper/30 group-active:text-gold transition-colors"
+              className="shrink-0 self-center font-serif text-body text-paper/30 group-active:text-gold transition-colors"
             >
               →
             </span>

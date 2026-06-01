@@ -83,7 +83,7 @@ function TabButton({
       aria-selected={active}
       onClick={onClick}
       className={
-        "rounded-full py-2 font-sans text-[13px] font-semibold transition-colors " +
+        "rounded-full py-2 font-sans text-detail font-semibold transition-colors " +
         (active ? "bg-paper text-night" : "text-paper/65 hover:text-paper")
       }
     >
@@ -95,7 +95,7 @@ function TabButton({
 function CategoryBlock({ cat }: { cat: BookCategory }) {
   return (
     <section>
-      <p className="font-sans text-[10.5px] uppercase tracking-[1.8px] text-paper/45 mb-2 px-1">
+      <p className="font-sans text-eyebrow uppercase tracking-[1.8px] text-paper/45 mb-2 px-1">
         {cat.label}
       </p>
       <ul className="rounded-2xl border border-paper/10 bg-paper/[0.03] overflow-hidden">
@@ -108,10 +108,10 @@ function CategoryBlock({ cat }: { cat: BookCategory }) {
               href={`/bible/${b.slug}/1`}
               className="flex items-center justify-between gap-3 px-4 py-3 active:bg-paper/[0.04] transition-colors"
             >
-              <span className="font-sans text-[15px] text-paper leading-tight">
+              <span className="font-sans text-ui text-paper leading-tight">
                 {b.name}
               </span>
-              <span className="shrink-0 font-sans text-[11.5px] tabular-nums text-paper/45">
+              <span className="shrink-0 font-sans text-caption tabular-nums text-paper/45">
                 {b.chapters} ch
               </span>
             </Link>

@@ -39,7 +39,7 @@ function SettingsRow({ item }: { item: SettingsItem }) {
           className={cn(
             "shrink-0 inline-flex items-center justify-center h-7 w-7 rounded-md",
             item.destructive
-              ? "bg-[#c1272d]/15 text-[#f8cac7]"
+              ? "bg-crimson/15 text-crimson-soft"
               : "bg-paper/[0.06] text-paper/75",
           )}
         >
@@ -49,20 +49,20 @@ function SettingsRow({ item }: { item: SettingsItem }) {
       <div className="min-w-0 flex-1">
         <p
           className={cn(
-            "font-sans text-[14.5px] leading-tight",
-            item.destructive ? "text-[#f8cac7]" : "text-paper",
+            "font-sans text-ui leading-tight",
+            item.destructive ? "text-crimson-soft" : "text-paper",
           )}
         >
           {item.label}
         </p>
         {item.hint && (
-          <p className="mt-0.5 font-sans text-[11.5px] text-paper/55 leading-tight">
+          <p className="mt-0.5 font-sans text-caption text-paper/55 leading-tight">
             {item.hint}
           </p>
         )}
       </div>
       {!item.destructive && (
-        <span aria-hidden className="shrink-0 text-paper/35 text-[18px]">
+        <span aria-hidden className="shrink-0 text-paper/35 text-lede">
           ›
         </span>
       )}

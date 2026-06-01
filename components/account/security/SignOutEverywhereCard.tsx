@@ -32,11 +32,11 @@ export function SignOutEverywhereCard() {
   }
 
   return (
-    <section className="rounded-lg border border-[#c1272d]/35 bg-[#c1272d]/[0.04] p-6">
-      <h2 className="font-sans text-[16px] font-semibold text-paper mb-1">
+    <section className="rounded-lg border border-crimson/35 bg-crimson/[0.04] p-6">
+      <h2 className="font-sans text-body font-semibold text-paper mb-1">
         Sign out everywhere
       </h2>
-      <p className="font-sans text-[13px] text-paper/65 mb-5 leading-[1.55]">
+      <p className="font-sans text-detail text-paper/65 mb-5 leading-[1.55]">
         Useful if you signed in on a device you no longer have. Invalidates
         every active session for this account.
       </p>
@@ -44,12 +44,12 @@ export function SignOutEverywhereCard() {
         type="button"
         onClick={() => setConfirming(true)}
         disabled={pending}
-        className="rounded-pill border border-[#c1272d]/60 text-[#f8cac7] font-sans text-[13.5px] font-semibold px-5 py-2.5 hover:bg-[#c1272d]/15 disabled:opacity-60 disabled:cursor-wait transition-colors"
+        className="rounded-pill border border-crimson/60 text-crimson-soft font-sans text-detail font-semibold px-5 py-2.5 hover:bg-crimson/15 disabled:opacity-60 disabled:cursor-wait transition-colors"
       >
         {pending ? "Signing out…" : "Sign out everywhere"}
       </button>
       {error ? (
-        <p className="mt-3 font-sans text-[13px] text-[#f8cac7]">{error}</p>
+        <p className="mt-3 font-sans text-detail text-crimson-soft">{error}</p>
       ) : null}
       <ConfirmDialog
         open={confirming}

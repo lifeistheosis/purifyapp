@@ -38,14 +38,14 @@ export function FastBadge({
           </span>
         ) : null}
         <p
-          className="font-sans text-[15px] font-semibold leading-tight"
+          className="font-sans text-ui font-semibold leading-tight"
           style={{ color: `rgb(${meta.rgb})` }}
         >
           {label}
         </p>
       </div>
       {rule && (
-        <p className="mt-1.5 font-sans text-[12.5px] text-paper/70 leading-[1.5]">
+        <p className="mt-1.5 font-sans text-caption text-paper/70 leading-[1.5]">
           {rule}
         </p>
       )}

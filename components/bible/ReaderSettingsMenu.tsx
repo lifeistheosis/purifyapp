@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Settings2 } from "lucide-react";
+import { Sliders } from "@/components/ui/icons/Sliders";
 import { useInterlinear } from "@/lib/bible/interlinear";
 import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
 import type { ReaderSize, ReaderFont } from "@/components/reader/ReaderPrefs";
@@ -64,9 +64,9 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label="Reader settings"
-        className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 px-3.5 h-[42px] font-sans text-[13px] font-medium text-paper transition-colors"
+        className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 px-3.5 h-[42px] font-sans text-detail font-medium text-paper transition-colors"
       >
-        <Settings2 aria-hidden className="h-4 w-4" />
+        <Sliders aria-hidden className="h-4 w-4" />
         <span>Reader</span>
         {/* Always reserve the dot's space so the button width is stable
             whether or not interlinear is on (prevents the row shifting). */}
@@ -87,11 +87,11 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
           ref={panelRef}
           role="dialog"
           aria-label="Reader settings"
-          className="absolute right-0 mt-2 w-[260px] z-50 rounded-lg border border-paper/20 bg-night-soft shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-4"
+          className="absolute right-0 mt-2 w-[260px] z-50 rounded-lg border border-paper/20 bg-night-soft shadow-pop p-4 space-y-4"
         >
           {/* Text size */}
           <div>
-            <p className="font-sans text-[10.5px] font-semibold uppercase tracking-[1.2px] text-paper/55 mb-2">
+            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55 mb-2">
               Text size
             </p>
             <div className="grid grid-cols-4 gap-1.5">
@@ -101,7 +101,7 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
                   type="button"
                   onClick={() => setSize(s.v)}
                   className={cn(
-                    "rounded-md border py-2 font-sans text-[12px] font-medium transition-colors",
+                    "rounded-md border py-2 font-sans text-caption font-medium transition-colors",
                     size === s.v
                       ? "bg-paper/15 border-paper/45 text-paper"
                       : "border-paper/12 text-paper/65 hover:bg-paper/8 hover:text-paper",
@@ -115,7 +115,7 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
 
           {/* Font family */}
           <div>
-            <p className="font-sans text-[10.5px] font-semibold uppercase tracking-[1.2px] text-paper/55 mb-2">
+            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55 mb-2">
               Font
             </p>
             <div className="grid grid-cols-3 gap-1.5">
@@ -125,7 +125,7 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
                   type="button"
                   onClick={() => setFont(f.v)}
                   className={cn(
-                    "rounded-md border py-2 font-sans text-[12px] font-medium transition-colors",
+                    "rounded-md border py-2 font-sans text-caption font-medium transition-colors",
                     font === f.v
                       ? "bg-paper/15 border-paper/45 text-paper"
                       : "border-paper/12 text-paper/65 hover:bg-paper/8 hover:text-paper",
@@ -145,9 +145,9 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
                 onClick={toggleInterlinear}
                 aria-pressed={interlinearOn}
                 className={cn(
-                  "w-full inline-flex items-center justify-between gap-3 rounded-pill border h-[40px] px-3.5 font-sans text-[13px] font-medium transition-colors",
+                  "w-full inline-flex items-center justify-between gap-3 rounded-pill border h-[40px] px-3.5 font-sans text-detail font-medium transition-colors",
                   interlinearOn
-                    ? "border-gold text-[#161219] bg-gold hover:bg-[#c89e2c]"
+                    ? "border-gold text-night bg-gold hover:bg-[#c89e2c]"
                     : "border-paper/15 bg-paper/[0.04] text-paper/85 hover:bg-paper/10 hover:border-paper/30",
                 )}
               >
@@ -156,7 +156,7 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
                     aria-hidden
                     className={cn(
                       "inline-block w-2 h-2 rounded-full",
-                      interlinearOn ? "bg-[#161219]" : "bg-paper/30",
+                      interlinearOn ? "bg-night" : "bg-paper/30",
                     )}
                   />
                   Interlinear Greek

@@ -25,7 +25,7 @@ export async function MiraclesSection({ slug }: { slug: string }) {
 
  return (
   <section className="py-14 border-b border-paper/8">
-   <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-8">
+   <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-8">
     {eyebrow}
    </p>
 
@@ -33,24 +33,24 @@ export async function MiraclesSection({ slug }: { slug: string }) {
     {content.sections.map((sec) => (
      <article key={sec.n}>
       {sec.title && (
-       <h3 className="font-serif text-[24px] md:text-[26px] text-paper mb-5 leading-[1.2]">
+       <h3 className="font-serif text-title-sm md:text-title text-paper mb-5 leading-[1.2]">
         {sec.title}
        </h3>
       )}
 
       {sec.framing && (
        <div className="mb-6 pl-4 border-l-2 border-paper/15">
-        <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45 mb-2">
+        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-2">
          Editor&rsquo;s note
         </p>
-        <p className="font-sans text-[15px] md:text-[16px] text-paper/70 leading-[1.65] italic">
+        <p className="font-sans text-ui md:text-body text-paper/70 leading-[1.65] italic">
          {sec.framing}
         </p>
        </div>
       )}
 
       {sec.citation && (
-       <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-gold/85 mb-4">
+       <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold/85 mb-4">
         {sec.citation}
        </p>
       )}
@@ -59,7 +59,7 @@ export async function MiraclesSection({ slug }: { slug: string }) {
        {sec.paragraphs.map((p, i) => (
         <p
          key={i}
-         className="font-serif text-[19px] text-paper/85 leading-[1.7]"
+         className="font-serif text-lede text-paper/85 leading-[1.7]"
         >
          {p}
         </p>
@@ -71,7 +71,7 @@ export async function MiraclesSection({ slug }: { slug: string }) {
         {sec.notes.map((note, i) => (
          <li
           key={i}
-          className="font-sans text-[14px] text-paper/55 leading-[1.6]"
+          className="font-sans text-ui text-paper/55 leading-[1.6]"
          >
           {note}
          </li>
@@ -82,7 +82,7 @@ export async function MiraclesSection({ slug }: { slug: string }) {
     ))}
    </div>
 
-   <p className="mt-10 font-sans text-[12px] uppercase tracking-[1.2px] text-paper/40">
+   <p className="mt-10 font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
     {content.source}
    </p>
   </section>

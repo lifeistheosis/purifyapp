@@ -108,7 +108,7 @@ export function MobileTabBar() {
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "h-full flex flex-col items-center justify-center gap-1 px-1",
-                  "font-sans text-[10.5px] font-medium tracking-[0.02em]",
+                  "font-sans text-eyebrow font-medium tracking-[0.02em]",
                   "transition-colors duration-150",
                   active
                     ? "text-gold"

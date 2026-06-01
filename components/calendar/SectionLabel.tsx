@@ -15,7 +15,7 @@ export function SectionLabel({
   return (
     <p
       className={cn(
-        "inline-flex items-center gap-2 font-sans text-[11px] font-semibold uppercase tracking-[2px] text-gold/75",
+        "inline-flex items-center gap-2 font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/75",
         className,
       )}
     >

@@ -16,13 +16,13 @@ export default function AuthLayout({
       <header className="px-6 py-5 flex items-center justify-between">
         <Link
           href="/"
-          className="font-sans text-[18px] font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors"
+          className="font-sans text-lede font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors"
         >
           Purify
         </Link>
         <Link
           href="/privacy"
-          className="font-sans text-[12px] text-paper/55 hover:text-paper transition-colors"
+          className="font-sans text-caption text-paper/55 hover:text-paper transition-colors"
         >
           Privacy
         </Link>
@@ -30,7 +30,7 @@ export default function AuthLayout({
       <main className="flex-1 flex items-center justify-center px-5 py-10">
         <div className="w-full max-w-[420px]">{children}</div>
       </main>
-      <footer className="px-6 py-5 text-center font-serif italic text-[12.5px] text-paper/45">
+      <footer className="px-6 py-5 text-center font-serif italic text-caption text-paper/45">
         Glory to God for all things.
       </footer>
     </div>

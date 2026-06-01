@@ -14,9 +14,9 @@ export function FastTodayCard({
   eyebrow?: string;
 }) {
   const dot: Record<FastKind, string> = {
-    strict: "bg-[#c1272d]",
+    strict: "bg-crimson",
     "wine-oil": "bg-gold",
-    fish: "bg-[#7b9b8f]",
+    fish: "bg-sage",
     fast: "bg-paper/40",
     "fast-free": "bg-emerald-400",
     normal: "bg-paper/30",
@@ -26,11 +26,11 @@ export function FastTodayCard({
       href="/calendar"
       className="block rounded-2xl border border-paper/10 bg-paper/[0.03] p-4 transition-colors hover:bg-paper/[0.06]"
     >
-      <p className="font-sans text-[12px] text-paper/55">{eyebrow}</p>
-      <h3 className="mt-1 font-serif text-[20px] leading-[1.2] text-paper">
+      <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
+      <h3 className="mt-1 font-serif text-lede leading-[1.2] text-paper">
         {fast.label}
       </h3>
-      <p className="mt-2 flex items-center gap-2 font-sans text-[13px] text-paper/70">
+      <p className="mt-2 flex items-center gap-2 font-sans text-detail text-paper/70">
         <span aria-hidden className={`inline-block h-2 w-2 rounded-full ${dot[fast.kind]}`} />
         <span>{fast.rule}</span>
       </p>

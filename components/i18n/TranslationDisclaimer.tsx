@@ -15,10 +15,10 @@ export function TranslationDisclaimer() {
       className="mb-8 rounded-md border border-paper/12 bg-paper/[0.04] px-4 py-3"
       role="note"
     >
-      <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.2px] text-gold/85 mb-1">
+      <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-gold/85 mb-1">
         {t("translationDisclaimer.title")}
       </p>
-      <p className="font-serif text-[14px] text-paper/70 leading-[1.6]">
+      <p className="font-serif text-ui text-paper/70 leading-[1.6]">
         {t("translationDisclaimer.body")}
       </p>
     </aside>

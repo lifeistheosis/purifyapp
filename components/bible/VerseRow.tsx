@@ -408,7 +408,7 @@ export function VerseRow({
  aria-label={`Open commentary on verse ${verse.n}`}
  title="Open commentary"
  >
- <sup className="font-sans text-[10px] font-semibold tracking-[0.05em] group-hover/cmt:underline underline-offset-2">
+ <sup className="font-sans text-eyebrow font-semibold tracking-[0.05em] group-hover/cmt:underline underline-offset-2">
  {verse.n}
  </sup>
  <span
@@ -426,7 +426,7 @@ export function VerseRow({
  className="lg:hidden group/cmt inline-flex items-baseline text-accent/75 active:text-accent transition-colors"
  aria-label={`Open commentary on verse ${verse.n}`}
  >
- <sup className="font-sans text-[10px] font-semibold tracking-[0.05em]">
+ <sup className="font-sans text-eyebrow font-semibold tracking-[0.05em]">
  {verse.n}
  </sup>
  <span
@@ -436,7 +436,7 @@ export function VerseRow({
  </button>
  </span>
  ) : (
- <sup className="font-sans text-[10px] font-medium text-paper/40 tracking-[0.05em] mr-1.5 align-super">
+ <sup className="font-sans text-eyebrow font-medium text-paper/40 tracking-[0.05em] mr-1.5 align-super">
  {verse.n}
  </sup>
  )}
@@ -564,7 +564,7 @@ export function VerseRow({
  style={{ fontFamily: "var(--font-greek), serif" }}
  className="indent-0 min-w-0 text-paper/85"
  >
- <sup className="font-sans text-[10px] font-medium text-paper/30 tracking-[0.05em] mr-1.5 align-super">
+ <sup className="font-sans text-eyebrow font-medium text-paper/30 tracking-[0.05em] mr-1.5 align-super">
  {verse.n}
  </sup>
  {hasTokens
@@ -730,7 +730,7 @@ export function VerseRow({
  aria-pressed={!!ann.highlighted}
  title={ann.highlighted ? "Remove highlight" : "Highlight verse"}
  className={
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-[14px] md:text-[12px] transition-colors duration-150 " +
+ "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150 " +
  (ann.highlighted
  ? "bg-gold/30 border-gold/60 text-gold"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper")
@@ -744,7 +744,7 @@ export function VerseRow({
  onClick={ann.clearWords}
  aria-label="Clear word highlights"
  title="Clear word highlights"
- className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-[14px] md:text-[12px] transition-colors duration-150"
+ className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui md:text-caption transition-colors duration-150"
  >
  ⌫
  </button>
@@ -755,7 +755,7 @@ export function VerseRow({
  aria-label={copied ? "Verse link copied" : "Copy verse link"}
  title={copied ? "Copied" : "Copy verse link"}
  className={cn(
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-[14px] md:text-[12px] transition-colors duration-150",
+ "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  copied
  ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-300"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
@@ -772,7 +772,7 @@ export function VerseRow({
  aria-pressed={isVerseBookmarked}
  title={isVerseBookmarked ? "Remove bookmark" : "Bookmark verse"}
  className={cn(
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-[14px] md:text-[12px] transition-colors duration-150",
+ "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  isVerseBookmarked
  ? "bg-gold/25 border-gold/55 text-gold"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
@@ -790,7 +790,7 @@ export function VerseRow({
  aria-pressed={editing}
  title={ann.note ? "Edit note" : "Add note"}
  className={
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-[14px] md:text-[12px] transition-colors duration-150 " +
+ "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150 " +
  (ann.note
  ? "bg-paper/15 border-paper/30 text-paper"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper")
@@ -804,10 +804,10 @@ export function VerseRow({
  {/* User note (saved) */}
  {ann.note && !editing && (
  <div className="mt-2 rounded-md border border-paper/15 bg-paper/[0.04] px-3 py-2">
- <p className="font-sans text-[10px] uppercase tracking-[1.2px] text-paper/45 mb-1">
+ <p className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45 mb-1">
  Your note
  </p>
- <p className="font-sans text-[13px] text-paper/85 leading-[1.55] whitespace-pre-wrap">
+ <p className="font-sans text-detail text-paper/85 leading-[1.55] whitespace-pre-wrap">
  {ann.note}
  </p>
  </div>
@@ -831,10 +831,10 @@ export function VerseRow({
  }}
  placeholder="Add a note for this verse…"
  rows={3}
- className="w-full bg-transparent border-0 outline-none resize-y font-sans text-[14px] text-paper placeholder:text-paper/40 leading-[1.55]"
+ className="w-full bg-transparent border-0 outline-none resize-y font-sans text-ui text-paper placeholder:text-paper/40 leading-[1.55]"
  />
  <div className="mt-2 flex items-center justify-between gap-2">
- <span className="font-sans text-[11px] text-paper/40">
+ <span className="font-sans text-eyebrow text-paper/40">
  {draft.length > 0 ? "⌘+Enter to save · Esc to cancel" : "Esc to close"}
  </span>
  <div className="flex items-center gap-2">
@@ -846,7 +846,7 @@ export function VerseRow({
  setDraft("");
  setEditing(false);
  }}
- className="font-sans text-[12px] text-paper/55 hover:text-paper transition-colors px-2 py-1"
+ className="font-sans text-caption text-paper/55 hover:text-paper transition-colors px-2 py-1"
  >
  Delete
  </button>
@@ -854,14 +854,14 @@ export function VerseRow({
  <button
  type="button"
  onClick={cancelEdit}
- className="font-sans text-[12px] text-paper/55 hover:text-paper transition-colors px-2 py-1"
+ className="font-sans text-caption text-paper/55 hover:text-paper transition-colors px-2 py-1"
  >
  Cancel
  </button>
  <button
  type="button"
  onClick={saveNote}
- className="font-sans text-[12px] font-medium bg-paper text-night rounded-pill px-3 py-1 hover:bg-paper/90 transition-colors"
+ className="font-sans text-caption font-medium bg-paper text-night rounded-pill px-3 py-1 hover:bg-paper/90 transition-colors"
  >
  Save
  </button>

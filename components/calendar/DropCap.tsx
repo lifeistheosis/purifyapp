@@ -39,7 +39,7 @@ export function DropCap({
  </>
  );
  return (
- <h1 className="mt-3 font-display-serif text-[30px] md:text-[42px] leading-[1.08] text-paper">
+ <h1 className="mt-3 font-display-serif text-heading md:text-display-sm leading-[1.08] text-paper">
  {href ? (
  <Link href={href} className="hover:text-gold transition-colors">
  {inner}

@@ -87,7 +87,7 @@ export async function TodayMobileV3() {
       <MobileTopTabs active="today" labels={tabs} avatar={<UserAvatarSmall />} />
 
       <div className="px-5 pt-6 pb-10">
-        <p className="font-sans text-[11px] uppercase tracking-[2px] text-paper/55 mb-4">
+        <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-4">
           {labels.eyebrow}
         </p>
 
@@ -116,10 +116,10 @@ export async function TodayMobileV3() {
                 key="saint-empty"
                 className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4"
               >
-                <p className="font-sans text-[12px] text-paper/55">
+                <p className="font-sans text-caption text-paper/55">
                   {labels.saint}
                 </p>
-                <p className="mt-2 font-sans text-[14px] text-paper/55 italic">
+                <p className="mt-2 font-sans text-ui text-paper/55 italic">
                   {labels.noSaint}
                 </p>
               </div>

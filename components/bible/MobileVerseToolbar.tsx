@@ -96,7 +96,7 @@ export function MobileVerseToolbar({
  aria-label={state.highlighted ? "Remove highlight" : "Highlight verse"}
  aria-pressed={state.highlighted}
  className={
- "h-11 w-11 rounded-full border flex items-center justify-center text-[16px] transition-colors duration-150 " +
+ "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
  ringIfActive(state.highlighted)
  }
  >
@@ -108,7 +108,7 @@ export function MobileVerseToolbar({
  onClick={() => handle("clearWords")}
  aria-label="Clear word highlights"
  className={
- "h-11 w-11 rounded-full border flex items-center justify-center text-[16px] transition-colors duration-150 " +
+ "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
  ringIfActive(false)
  }
  >
@@ -120,7 +120,7 @@ export function MobileVerseToolbar({
  onClick={() => handle("copyLink")}
  aria-label={state.copied ? "Verse link copied" : "Copy verse link"}
  className={
- "h-11 w-11 rounded-full border flex items-center justify-center text-[16px] transition-colors duration-150 " +
+ "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
  (state.copied
  ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-300"
  : "border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10")
@@ -138,7 +138,7 @@ export function MobileVerseToolbar({
  aria-label={state.bookmarked ? "Remove bookmark" : "Bookmark verse"}
  aria-pressed={state.bookmarked}
  className={
- "h-11 w-11 rounded-full border flex items-center justify-center text-[16px] transition-colors duration-150 " +
+ "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
  ringIfActive(state.bookmarked)
  }
  >
@@ -154,7 +154,7 @@ export function MobileVerseToolbar({
  aria-label={state.hasNote ? "Edit note" : "Add note"}
  aria-pressed={state.hasNote}
  className={
- "h-11 w-11 rounded-full border flex items-center justify-center text-[16px] transition-colors duration-150 " +
+ "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
  (state.hasNote
  ? "bg-paper/15 border-paper/30 text-paper"
  : "border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10")

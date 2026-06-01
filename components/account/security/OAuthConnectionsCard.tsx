@@ -268,10 +268,10 @@ export function OAuthConnectionsCard({
 
   return (
     <section className="rounded-lg border border-paper/12 bg-paper/[0.02] p-6">
-      <h2 className="font-sans text-[16px] font-semibold text-paper mb-1">
+      <h2 className="font-sans text-body font-semibold text-paper mb-1">
         Connected accounts
       </h2>
-      <p className="font-sans text-[13px] text-paper/60 mb-5 leading-[1.55]">
+      <p className="font-sans text-detail text-paper/60 mb-5 leading-[1.55]">
         Sign in faster by linking Google to your account. You can still
         sign in with email + password at any time.
       </p>
@@ -279,10 +279,10 @@ export function OAuthConnectionsCard({
         {/* Google, live */}
         <li className="flex items-center justify-between gap-4 rounded-md border border-paper/10 bg-paper/[0.02] px-4 py-3">
           <div className="min-w-0">
-            <p className="font-sans text-[13.5px] font-medium text-paper">
+            <p className="font-sans text-detail font-medium text-paper">
               Google
             </p>
-            <p className="font-sans text-[12px] text-paper/55">
+            <p className="font-sans text-caption text-paper/55">
               {googleIdentity ? "Connected" : "Not connected"}
             </p>
           </div>
@@ -292,7 +292,7 @@ export function OAuthConnectionsCard({
                 type="button"
                 onClick={() => setConfirmingUnlink(true)}
                 disabled={pending !== null}
-                className="font-sans text-[12.5px] font-semibold rounded-pill border border-[#c1272d]/55 text-[#f8cac7] bg-[#c1272d]/[0.06] hover:bg-[#c1272d]/[0.15] hover:border-[#c1272d]/75 px-4 py-1.5 disabled:opacity-50 disabled:cursor-wait transition-colors"
+                className="font-sans text-caption font-semibold rounded-pill border border-crimson/55 text-crimson-soft bg-crimson/[0.06] hover:bg-crimson/[0.15] hover:border-crimson/75 px-4 py-1.5 disabled:opacity-50 disabled:cursor-wait transition-colors"
               >
                 {pending === "google" ? "Working…" : "Unlink"}
               </button>
@@ -300,7 +300,7 @@ export function OAuthConnectionsCard({
               <button
                 type="button"
                 onClick={focusPasswordCard}
-                className="font-sans text-[12.5px] font-medium rounded-pill border border-gold/45 text-gold bg-gold/[0.06] hover:bg-gold/[0.12] hover:border-gold/70 px-4 py-1.5 transition-colors"
+                className="font-sans text-caption font-medium rounded-pill border border-gold/45 text-gold bg-gold/[0.06] hover:bg-gold/[0.12] hover:border-gold/70 px-4 py-1.5 transition-colors"
               >
                 Set a password first →
               </button>
@@ -310,7 +310,7 @@ export function OAuthConnectionsCard({
               type="button"
               onClick={connectGoogle}
               disabled={pending !== null}
-              className="font-sans text-[12.5px] font-semibold rounded-pill bg-paper text-night px-4 py-1.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
+              className="font-sans text-caption font-semibold rounded-pill bg-paper text-night px-4 py-1.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
             >
               {pending === "google" ? "Opening…" : "Connect"}
             </button>
@@ -320,17 +320,17 @@ export function OAuthConnectionsCard({
         {/* Apple, coming soon */}
         <li className="flex items-center justify-between gap-4 rounded-md border border-paper/10 bg-paper/[0.02] px-4 py-3 opacity-70">
           <div className="min-w-0">
-            <p className="font-sans text-[13.5px] font-medium text-paper">
+            <p className="font-sans text-detail font-medium text-paper">
               Apple
             </p>
-            <p className="font-sans text-[12px] text-paper/55">
+            <p className="font-sans text-caption text-paper/55">
               {appleIdentity ? "Connected" : "Coming soon"}
             </p>
           </div>
           <span
             aria-disabled="true"
             title="Sign in with Apple is coming soon"
-            className="font-sans text-[12.5px] font-medium text-paper/40 cursor-not-allowed"
+            className="font-sans text-caption font-medium text-paper/40 cursor-not-allowed"
           >
             Coming soon
           </span>
@@ -340,15 +340,15 @@ export function OAuthConnectionsCard({
           newcomer understands the disabled state BEFORE clicking. */}
       {googleIdentity && !hasPassword ? (
         <div className="mt-4 rounded-md border border-gold/30 bg-gold/[0.05] p-4">
-          <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.2px] text-gold/85 mb-1.5">
+          <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-gold/85 mb-1.5">
             Why can&rsquo;t I unlink Google?
           </p>
-          <p className="font-sans text-[13.5px] text-paper/80 leading-[1.6]">
+          <p className="font-sans text-detail text-paper/80 leading-[1.6]">
             Google is the only way you can sign in to this account right
             now. If you unlinked it, you&rsquo;d be locked out the next
             time you sign out.
           </p>
-          <p className="mt-2 font-sans text-[13.5px] text-paper/80 leading-[1.6]">
+          <p className="mt-2 font-sans text-detail text-paper/80 leading-[1.6]">
             Set a password in the{" "}
             <button
               type="button"
@@ -365,29 +365,29 @@ export function OAuthConnectionsCard({
 
       {error === "needs-password" ? (
         <div className="mt-4 rounded-md border border-gold/45 bg-gold/[0.08] p-4">
-          <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.2px] text-gold/90 mb-1.5">
+          <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-gold/90 mb-1.5">
             One step before you can do that
           </p>
-          <p className="font-sans text-[14px] text-paper/85 leading-[1.6]">
+          <p className="font-sans text-ui text-paper/85 leading-[1.6]">
             We can&rsquo;t unlink Google yet. Right now, Google is the
             only way you can sign in to this account, removing
             it would lock you out.
           </p>
-          <p className="mt-2 font-sans text-[14px] text-paper/85 leading-[1.6]">
+          <p className="mt-2 font-sans text-ui text-paper/85 leading-[1.6]">
             Set a password first so you have email + password as a
             backup. Then come back here and Unlink will work.
           </p>
           <button
             type="button"
             onClick={focusPasswordCard}
-            className="mt-3 inline-flex items-center gap-1.5 rounded-pill border border-gold/55 bg-gold/15 text-gold font-sans text-[13px] font-semibold px-4 py-2 hover:bg-gold/25 hover:border-gold/80 transition-colors"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-pill border border-gold/55 bg-gold/15 text-gold font-sans text-detail font-semibold px-4 py-2 hover:bg-gold/25 hover:border-gold/80 transition-colors"
           >
             Set a password
             <span aria-hidden>→</span>
           </button>
         </div>
       ) : error ? (
-        <p className="mt-3 font-sans text-[13px] text-[#f8cac7] leading-[1.55]">
+        <p className="mt-3 font-sans text-detail text-crimson-soft leading-[1.55]">
           {error}
         </p>
       ) : null}

@@ -34,7 +34,7 @@ export function CrawlersTab() {
   }, []);
 
   if (!data) {
-    return <p className="font-sans text-[13px] text-paper/40 py-8 text-center">Loading…</p>;
+    return <p className="font-sans text-detail text-paper/40 py-8 text-center">Loading…</p>;
   }
 
   return (
@@ -56,7 +56,7 @@ export function CrawlersTab() {
 
       {data.totalBlocked > 0 && (
         <Card title="What this means" accent>
-          <p className="font-sans text-[13px] text-paper/85 leading-relaxed">
+          <p className="font-sans text-detail text-paper/85 leading-relaxed">
             These UAs reached the analytics tracker, which means they fetched at
             least one page despite the robots.txt disallow. Robots is advisory
             &mdash; honored bots stay away on their own. Hits here mean the bot
@@ -69,7 +69,7 @@ export function CrawlersTab() {
 
       <Card title={`Blocked-bot UAs · ${data.windowDays}d`}>
         {data.blocked.length === 0 ? (
-          <p className="font-sans text-[12.5px] text-emerald-300">
+          <p className="font-sans text-caption text-emerald-300">
             Zero blocked-bot UAs in the last {data.windowDays} days. Robots is being honored.
           </p>
         ) : (
@@ -106,7 +106,7 @@ export function CrawlersTab() {
               key: "ua",
               label: "User-agent (truncated)",
               render: (r) => (
-                <span className="font-mono text-[11px] text-paper/85 break-all">
+                <span className="font-mono text-eyebrow text-paper/85 break-all">
                   {r.userAgent}
                 </span>
               ),

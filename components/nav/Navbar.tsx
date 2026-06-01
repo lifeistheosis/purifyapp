@@ -41,7 +41,7 @@ export function Navbar() {
       <div className="mx-auto max-w-[1240px] h-full flex items-center justify-between gap-4 px-5 md:px-8">
         <Link
           href="/"
-          className="font-sans text-[22px] font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors duration-150"
+          className="font-sans text-title-sm font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors duration-150"
         >
           Purify
         </Link>
@@ -51,7 +51,7 @@ export function Navbar() {
             <Link
               key={item.key}
               href={item.href}
-              className="font-sans text-[15px] font-medium text-paper/85 hover:text-paper transition-colors duration-150"
+              className="font-sans text-ui font-medium text-paper/85 hover:text-paper transition-colors duration-150"
             >
               {item.label}
             </Link>
@@ -63,12 +63,12 @@ export function Navbar() {
             <Link
               key={item.key}
               href={item.href}
-              className="font-sans text-[14px] font-medium text-paper/85 hover:text-paper transition-colors duration-150"
+              className="font-sans text-ui font-medium text-paper/85 hover:text-paper transition-colors duration-150"
             >
               {item.label}
             </Link>
           ))}
-          <ComingSoonCTA variant="inverse" className="!py-2.5 !px-5 text-[14px]">
+          <ComingSoonCTA variant="inverse" className="!py-2.5 !px-5 text-ui">
             {t("nav.openPurify")}
           </ComingSoonCTA>
         </div>
@@ -81,7 +81,7 @@ export function Navbar() {
           className="sm:hidden inline-flex items-center justify-center h-11 w-11 rounded-pill border border-paper/20 text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
           onClick={() => setOpen((v) => !v)}
         >
-          <span className="text-[20px]">{open ? "✕" : "≡"}</span>
+          <span className="text-lede">{open ? "✕" : "≡"}</span>
         </button>
       </div>
 
@@ -93,13 +93,13 @@ export function Navbar() {
                 key={it.key}
                 href={it.href}
                 onClick={() => setOpen(false)}
-                className="font-sans text-[16px] font-medium text-paper/85 hover:text-paper py-3.5 border-b border-white/5 last:border-0"
+                className="font-sans text-body font-medium text-paper/85 hover:text-paper py-3.5 border-b border-white/5 last:border-0"
               >
                 {it.label}
               </Link>
             ))}
             <div className="mt-4 mb-2">
-              <ComingSoonCTA variant="inverse" className="w-full !py-3 text-[15px]">
+              <ComingSoonCTA variant="inverse" className="w-full !py-3 text-ui">
                 {t("nav.openPurify")}
               </ComingSoonCTA>
             </div>

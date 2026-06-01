@@ -122,7 +122,7 @@ function ReadingPanel({
  const firstVerse = passage?.verses?.[0];
  const moreVerses = (passage?.verses?.length ?? 0) > 1;
  const verseText =
- size === "sm" ? "text-[13.5px]" : "text-[15px] md:text-[16px]";
+ size === "sm" ? "text-detail" : "text-ui md:text-body";
  const accent =
  ref.kind === "gospel" ? "border-gold/30 bg-gold/[0.05]" : "border-paper/12 bg-paper/[0.03]";
  return (
@@ -130,10 +130,10 @@ function ReadingPanel({
  {/* Eyebrow + citation stack on the same left rail, clean vertical
  rhythm, no baseline tug-of-war between an 11px caps label and a
  14px proper noun. */}
- <p className="font-sans text-[10.5px] uppercase tracking-[2px] text-gold/75 font-semibold leading-none">
+ <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold/75 font-semibold leading-none">
  {kindLabel}
  </p>
- <p className="mt-2 font-display-serif text-[18px] md:text-[19px] text-paper leading-tight">
+ <p className="mt-2 font-display-serif text-lede md:text-lede text-paper leading-tight">
  {ref.label}
  </p>
 
@@ -141,21 +141,21 @@ function ReadingPanel({
  <p
  className={`font-serif text-paper/85 ${verseText} leading-[1.65] mt-4`}
  >
- <span className="font-sans text-[10px] font-semibold text-gold/65 tracking-[0.05em] mr-2 align-baseline">
+ <span className="font-sans text-eyebrow font-semibold text-gold/65 tracking-[0.05em] mr-2 align-baseline">
  {firstVerse.n}
  </span>
  {firstVerse.text}
  {moreVerses && <span className="text-paper/40"> …</span>}
  </p>
  ) : (
- <p className="font-sans text-[13px] text-paper/45 italic mt-4">
+ <p className="font-sans text-detail text-paper/45 italic mt-4">
  {isDe ? "Versetext nicht verfügbar." : "Verse text unavailable."}
  </p>
  )}
 
  <Link
  href={`/bible/${ref.book}/${ref.chapter}#v${ref.from}`}
- className="mt-auto pt-4 inline-block font-sans text-[12px] font-medium text-gold/80 hover:text-gold transition-colors"
+ className="mt-auto pt-4 inline-block font-sans text-caption font-medium text-gold/80 hover:text-gold transition-colors"
  >
  {isDe ? "Vollständigen Abschnitt lesen →" : "Read full passage →"}
  </Link>
@@ -285,7 +285,7 @@ export default async function CalendarPage({
  <Link
  href={newStyleHref}
  aria-current={style === "new" ? "true" : undefined}
- className={`font-sans text-[12px] tracking-[0.5px] transition-colors ${
+ className={`font-sans text-caption tracking-[0.5px] transition-colors ${
  style === "new"
  ? "kalendrium-active"
  : "text-paper/55 hover:text-paper"
@@ -293,11 +293,11 @@ export default async function CalendarPage({
  >
  {isDe ? "Neu" : "New"}
  </Link>
- <span aria-hidden className="text-gold/35 text-[12px]">·</span>
+ <span aria-hidden className="text-gold/35 text-caption">·</span>
  <Link
  href={oldStyleHref}
  aria-current={style === "old" ? "true" : undefined}
- className={`font-sans text-[12px] tracking-[0.5px] transition-colors ${
+ className={`font-sans text-caption tracking-[0.5px] transition-colors ${
  style === "old"
  ? "kalendrium-active"
  : "text-paper/55 hover:text-paper"
@@ -320,7 +320,7 @@ export default async function CalendarPage({
  />
 
  {style === "old" && (
- <p className="mt-4 font-serif italic text-[12.5px] text-paper/55 text-right max-w-[1280px]">
+ <p className="mt-4 font-serif italic text-caption text-paper/55 text-right max-w-[1280px]">
  {isDe
  ? "Im Alten (Julianischen) Kalender steht das liturgische Datum heute dreizehn Tage hinter dem bürgerlichen Datum. Beide sind oben angegeben."
  : "On the Old (Julian) calendar, today’s liturgical date is thirteen days behind the civil date. Both are shown above."}
@@ -337,7 +337,7 @@ export default async function CalendarPage({
  <SectionLabel>
  {isDe ? "Lesungen für heute" : "Today’s readings"}
  </SectionLabel>
- <h2 className="mt-2 font-display-serif text-[24px] md:text-[30px] text-paper">
+ <h2 className="mt-2 font-display-serif text-title-sm md:text-heading text-paper">
  {isDe
  ? `Das Wort für den ${formatMonthDay(today)}`
  : `The Word for ${formatMonthDay(today)}`}
@@ -364,13 +364,13 @@ export default async function CalendarPage({
  <div className="mx-auto max-w-[1280px] w-full">
  <header className="flex items-end justify-between mb-8 gap-4 flex-wrap">
  <div className="min-w-0">
- <h2 className="font-display-serif text-[44px] md:text-[64px] text-paper leading-[0.95] tracking-[-0.01em]">
+ <h2 className="font-display-serif text-display md:text-display-lg text-paper leading-[0.95] tracking-[-0.01em]">
  {(isDe ? MONTH_NAMES_DE : MONTH_NAMES_EN)[month]}{" "}
  <span className="text-paper/55 font-normal">{year}</span>
  </h2>
  <p
  lang="grc"
- className="mt-2 font-serif uppercase tracking-[3px] text-[11.5px] text-gold/65 leading-none"
+ className="mt-2 font-serif uppercase tracking-[3px] text-caption text-gold/65 leading-none"
  style={{ fontFamily: "var(--font-greek), serif" }}
  >
  {greekMonthName(month)}
@@ -379,21 +379,21 @@ export default async function CalendarPage({
  <nav className="flex items-baseline gap-4">
  <Link
  href={prevMonthHref(year, month)}
- className="font-sans text-[12px] tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
+ className="font-sans text-caption tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
  >
  {isDe ? "‹ Zurück" : "‹ Prev"}
  </Link>
- <span aria-hidden className="text-gold/35 text-[12px]">·</span>
+ <span aria-hidden className="text-gold/35 text-caption">·</span>
  <Link
  href="/calendar"
- className="font-sans text-[12px] tracking-[0.5px] text-paper/85 hover:text-paper transition-colors"
+ className="font-sans text-caption tracking-[0.5px] text-paper/85 hover:text-paper transition-colors"
  >
  {isDe ? "Heute" : "Today"}
  </Link>
- <span aria-hidden className="text-gold/35 text-[12px]">·</span>
+ <span aria-hidden className="text-gold/35 text-caption">·</span>
  <Link
  href={nextMonthHref(year, month)}
- className="font-sans text-[12px] tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
+ className="font-sans text-caption tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
  >
  {isDe ? "Weiter ›" : "Next ›"}
  </Link>
@@ -441,10 +441,10 @@ export default async function CalendarPage({
  href={`/bible/${r.ref.book}/${r.ref.chapter}#v${r.ref.from}`}
  className="group flex items-baseline justify-between gap-3 py-2.5"
  >
- <span className="font-sans text-[10.5px] uppercase tracking-[2px] text-gold/75 font-semibold">
+ <span className="font-sans text-eyebrow uppercase tracking-[2px] text-gold/75 font-semibold">
  {kindLabel}
  </span>
- <span className="font-display-serif text-[15px] text-paper group-hover:text-gold transition-colors text-right">
+ <span className="font-display-serif text-ui text-paper group-hover:text-gold transition-colors text-right">
  {r.ref.label}
  </span>
  </Link>
@@ -464,12 +464,12 @@ export default async function CalendarPage({
  <section className="px-5 md:px-8 py-14 md:py-16">
  <div className="mx-auto max-w-[760px] w-full">
  <Colophon locale={locale} />
- <p className="mt-10 font-serif text-[13px] text-paper/55 leading-[1.7]">
+ <p className="mt-10 font-serif text-detail text-paper/55 leading-[1.7]">
  {isDe
  ? "Zwei Reckonungen stehen über die Umschaltung oben zur Verfügung. Die voreingestellte, Neue (Revidierte Julianische), wird vom Ökumenischen Patriarchat von Konstantinopel und der Mehrheit der kanonischen orthodoxen Jurisdiktionen für die festen Feste gebraucht. Die Alte (Julianische) Wahl wird von der russischen, serbischen, jerusalemischen und athonitischen Überlieferung gebraucht und steht für die festen Feste dreizehn Tage zurück. Pascha und sein beweglicher Zyklus sind beiden gemein, berechnet nach dem Julianisch gegründeten Algorithmus, der allen kanonischen orthodoxen Kirchen gemein ist."
  : "Two reckonings are available via the toggle above. The default, New (Revised Julian), is used by the Ecumenical Patriarchate of Constantinople and the majority of canonical Orthodox jurisdictions for fixed feasts. The Old (Julian) option is used by the Russian, Serbian, Jerusalem, and Athonite traditions, and runs thirteen days behind for fixed feasts. Pascha and its moveable cycle are shared between both, computed by the Julian-based algorithm common to every canonical Orthodox church."}
  </p>
- <p className="mt-3 font-sans text-[12px] text-paper/40 leading-[1.6]">
+ <p className="mt-3 font-sans text-caption text-paper/40 leading-[1.6]">
  {isDe
  ? "Die Fastenregeln sind eine vereinfachte Lesung gemeiner ostorthodoxer (griechischer) Praxis zur täglichen Orientierung. Die Anweisung deines Priesters hat in jeder einzelnen Frage Vorrang."
  : "Fasting rules are a simplified reading of common Eastern Orthodox (Greek tradition) practice for daily orientation. Your priest’s direction takes precedence for any individual question."}

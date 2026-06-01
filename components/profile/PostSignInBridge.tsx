@@ -83,10 +83,10 @@ export function PostSignInBridge() {
       className="mt-6 rounded-lg border border-gold/45 bg-gold/[0.06] p-5 flex items-start gap-4"
     >
       <div className="min-w-0 flex-1">
-        <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-gold mb-2">
+        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-2">
           Welcome, your local data is syncing
         </p>
-        <p className="font-serif text-[16px] text-paper/90 leading-[1.65]">
+        <p className="font-serif text-body text-paper/90 leading-[1.65]">
           Your highlights, notes, and bookmarks from this device are being
           pushed to your account now. They&rsquo;ll show up on any device
           you sign in on. Prayer streaks and reader settings stay on this

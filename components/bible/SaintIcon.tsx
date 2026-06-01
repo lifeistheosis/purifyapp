@@ -28,26 +28,17 @@ function initialsOf(author: string): string {
   return letters.join("");
 }
 
-const TINTS = [
-  "bg-grad-teal/25 text-grad-teal",
-  "bg-grad-purple/25 text-paper",
-  "bg-grad-violet/30 text-paper",
-  "bg-grad-pink/25 text-paper",
-  "bg-accent/20 text-accent",
-];
-function tintFor(author: string): string {
-  let h = 0;
-  for (let i = 0; i < author.length; i++) {
-    h = (h * 31 + author.charCodeAt(i)) >>> 0;
-  }
-  return TINTS[h % TINTS.length];
-}
+// One dignified monochrome treatment for every initials fallback. A
+// per-author rotating tint read as a "generated avatar" and undercut the
+// iconography; a single quiet paper-on-dark chip sits closer to a framed
+// icon placeholder than a social-app avatar.
+const FALLBACK_TINT = "bg-paper/[0.06] text-paper/70";
 
 type Size = "sm" | "md";
 
 const SIZE_CLASSES: Record<Size, string> = {
-  sm: "h-7 w-7 text-[10px]",
-  md: "h-10 w-10 text-[13px]",
+  sm: "h-7 w-7 text-eyebrow",
+  md: "h-10 w-10 text-detail",
 };
 
 export function SaintIcon({
@@ -105,7 +96,7 @@ export function SaintIcon({
       title={author}
       className={cn(
         "rounded-full flex items-center justify-center shrink-0 font-sans font-semibold tracking-[0.5px] ring-1 ring-paper/15",
-        tintFor(author),
+        FALLBACK_TINT,
         sizeCls,
         className,
       )}

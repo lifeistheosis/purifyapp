@@ -496,13 +496,13 @@ export default async function FaqPage() {
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
  {!isDe && <TranslationDisclaimer />}
- <p className="font-sans text-[13px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  {isDe ? "Häufige Fragen" : t(m, "faq.eyebrow")}
  </p>
- <h1 className="font-sans text-[36px] md:text-[46px] font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  {isDe ? "Ehrliche Antworten auf häufige Fragen." : t(m, "faq.h1")}
  </h1>
- <p className="mt-6 font-serif text-[17px] text-paper/75 leading-[1.7]">
+ <p className="mt-6 font-serif text-body text-paper/75 leading-[1.7]">
  {isDe
  ? "Ehrliche Antworten. Die erste ist offen; tippe auf jede andere, um sie zu öffnen."
  : "Honest answers. The first one is open; tap any other to expand."}
@@ -516,17 +516,17 @@ export default async function FaqPage() {
  className="group rounded-md border border-paper/12 bg-paper/[0.03] open:bg-paper/[0.05] transition-colors"
  >
  <summary className="cursor-pointer list-none px-5 py-4 flex items-center justify-between gap-4">
- <span className="font-sans text-[16px] md:text-[17px] font-semibold text-paper leading-tight">
+ <span className="font-sans text-body md:text-body font-semibold text-paper leading-tight">
  {qa.q}
  </span>
  <span
  aria-hidden
- className="text-paper/45 group-open:rotate-180 transition-transform duration-200 text-[12px] shrink-0"
+ className="text-paper/45 group-open:rotate-180 transition-transform duration-200 text-caption shrink-0"
  >
  ▾
  </span>
  </summary>
- <div className="px-5 pb-5 -mt-1 font-serif text-[17px] text-paper/85 leading-[1.7] space-y-4">
+ <div className="px-5 pb-5 -mt-1 font-serif text-body text-paper/85 leading-[1.7] space-y-4">
  {qa.a}
  </div>
  </details>

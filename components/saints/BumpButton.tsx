@@ -49,7 +49,7 @@ function HelpPopover({ children, label }: { children: React.ReactNode; label: st
         aria-expanded={open}
         aria-label={label}
         className={
-          "inline-flex h-6 w-6 items-center justify-center rounded-full border text-[12px] font-bold leading-none transition-colors " +
+          "inline-flex h-6 w-6 items-center justify-center rounded-full border text-caption font-bold leading-none transition-colors " +
           (open
             ? "border-gold/70 bg-gold/15 text-gold"
             : "border-paper/25 bg-paper/[0.03] text-paper/65 hover:border-gold/60 hover:text-gold")
@@ -60,7 +60,7 @@ function HelpPopover({ children, label }: { children: React.ReactNode; label: st
       {open && (
         <div
           role="dialog"
-          className="absolute left-0 top-[calc(100%+8px)] z-20 w-[280px] rounded-lg border border-paper/15 bg-night p-4 shadow-[0_8px_32px_rgba(0,0,0,0.5)] font-sans text-[12.5px] leading-relaxed text-paper/85"
+          className="absolute left-0 top-[calc(100%+8px)] z-20 w-[280px] rounded-lg border border-paper/15 bg-night p-4 shadow-pop font-sans text-caption leading-relaxed text-paper/85"
         >
           {children}
         </div>
@@ -69,17 +69,17 @@ function HelpPopover({ children, label }: { children: React.ReactNode; label: st
   );
 }
 
-const BUMP_EXPLAINER = (
+const REQUEST_EXPLAINER = (
   <>
-    <p className="font-semibold text-paper mb-2">What&rsquo;s a bump?</p>
+    <p className="font-semibold text-paper mb-2">Requesting more writings</p>
     <p>
-      A bump is a one-tap vote that tells our editorial team{" "}
-      <em className="text-gold">&ldquo;I want more of this saint&rsquo;s works published.&rdquo;</em>
+      A request tells our editorial team{" "}
+      <em className="text-gold">&ldquo;I would like more of this saint&rsquo;s writings published.&rdquo;</em>
     </p>
     <p className="mt-2">
-      We translate and ship corpora in the order readers ask for them. Bumping a
-      saint moves them up the queue. One bump per signed-in account; tap again
-      to take yours back.
+      We translate and publish each saint&rsquo;s corpus in the order readers ask
+      for it; a request moves this saint forward in that work. One request per
+      signed-in account; tap again to withdraw it.
     </p>
   </>
 );
@@ -89,7 +89,7 @@ const COMPLETE_EXPLAINER = (
     <p className="font-semibold text-paper mb-2">Fully published</p>
     <p>
       Every known work attributed to this saint has been translated and shipped
-      on Purify. There&rsquo;s nothing left to request for him — so the bump button
+      on Purify. There&rsquo;s nothing left to request — so the request button
       retires and this badge takes its place.
     </p>
     <p className="mt-2 text-paper/65">
@@ -121,15 +121,15 @@ export function BumpButton({
     return (
       <div className="inline-flex items-center gap-2">
         <div
-          className="inline-flex items-center gap-2.5 rounded-full border border-gold/40 bg-gold/[0.08] px-5 py-2.5 font-sans text-[14px] font-semibold text-gold"
+          className="inline-flex items-center gap-2.5 rounded-full border border-gold/40 bg-gold/[0.08] px-5 py-2.5 font-sans text-ui font-semibold text-gold"
           aria-label={`${saintName}'s works are fully published`}
         >
-          <span aria-hidden="true" className="text-[16px] leading-none">
+          <span aria-hidden="true" className="text-body leading-none">
             ✓
           </span>
           <span>Fully published</span>
         </div>
-        <HelpPopover label="What does fully published mean?">
+        <HelpPopover label="What does Fully published mean?">
           {COMPLETE_EXPLAINER}
         </HelpPopover>
       </div>
@@ -142,18 +142,18 @@ export function BumpButton({
       <div className="inline-flex flex-col items-start gap-1.5">
         <div className="inline-flex items-center gap-2">
           <div className="inline-flex items-center gap-3 rounded-full border border-paper/15 bg-paper/[0.03] px-4 py-2">
-            <span className="font-sans text-[14px] text-paper/70">
+            <span className="font-sans text-ui text-paper/70">
               <span className="tabular-nums font-semibold text-paper">{total}</span>{" "}
-              {total === 1 ? "bump" : "bumps"}
+              {total === 1 ? "reader asking" : "readers asking"}
             </span>
             <Link
               href={`/signin?next=${encodeURIComponent(next)}`}
-              className="font-sans text-[13px] font-semibold text-gold hover:underline"
+              className="font-sans text-detail font-semibold text-gold hover:underline"
             >
-              Sign in to bump
+              Sign in to request
             </Link>
           </div>
-          <HelpPopover label="What is a bump?">{BUMP_EXPLAINER}</HelpPopover>
+          <HelpPopover label="What does requesting do?">{REQUEST_EXPLAINER}</HelpPopover>
         </div>
       </div>
     );
@@ -189,29 +189,31 @@ export function BumpButton({
           type="button"
           onClick={toggle}
           aria-pressed={bumped}
-          aria-label={`${bumped ? "Remove bump for" : "Bump"} ${saintName}`}
+          aria-label={`${bumped ? "Withdraw your request for more of" : "Request more of"} ${saintName}'s writings`}
           disabled={pending}
           className={
-            "inline-flex items-center gap-2.5 rounded-full px-5 py-2.5 font-sans text-[14px] font-semibold transition-colors " +
+            "inline-flex items-center gap-2.5 rounded-full px-5 py-2.5 font-sans text-ui font-semibold transition-colors " +
             (bumped
               ? "bg-gold text-night hover:bg-gold/90"
               : "border border-paper/20 bg-paper/[0.04] text-paper hover:border-gold/60 hover:text-gold") +
             (pending ? " opacity-70" : "")
           }
         >
-          <span aria-hidden="true" className="text-[16px] leading-none">
+          <span aria-hidden="true" className="text-body leading-none">
             {bumped ? "▲" : "△"}
           </span>
-          <span>{bumped ? "Bumped" : "Bump"}</span>
+          <span>{bumped ? "Requested" : "Request writings"}</span>
           <span className="tabular-nums opacity-80">{total}</span>
         </button>
-        <HelpPopover label="What is a bump?">{BUMP_EXPLAINER}</HelpPopover>
+        <HelpPopover label="What does requesting do?">{REQUEST_EXPLAINER}</HelpPopover>
       </div>
-      <p className="font-sans text-[11px] text-paper/45 ms-1">
-        {bumped ? "Thanks — we hear you." : "Want more of his/her works? Bump it."}
+      <p className="font-sans text-eyebrow text-paper/45 ms-1">
+        {bumped
+          ? "Thank you — your request is noted."
+          : "Ask our editors to publish more of this saint's writings."}
       </p>
       {error && (
-        <p className="font-sans text-[11px] text-rose-400 ms-1">
+        <p className="font-sans text-eyebrow text-rose-400 ms-1">
           Something went wrong. Try again.
         </p>
       )}

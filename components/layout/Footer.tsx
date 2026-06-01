@@ -70,7 +70,7 @@ export function Footer() {
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10">
      {cols.map((col) => (
       <div key={col.heading}>
-       <h4 className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+       <h4 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
         {col.heading}
        </h4>
        <ul className="flex flex-col gap-3">
@@ -80,7 +80,7 @@ export function Footer() {
            href={l.href}
            target={l.external ? "_blank" : undefined}
            rel={l.external ? "noopener noreferrer" : undefined}
-           className="font-sans text-[14px] text-paper/75 hover:text-paper transition-colors duration-150"
+           className="font-sans text-ui text-paper/75 hover:text-paper transition-colors duration-150"
           >
            {l.label}
            {l.external && (
@@ -97,7 +97,7 @@ export function Footer() {
     </div>
     {/* Community strip. */}
     <div className="mt-12 pt-6 border-t border-white/8 flex flex-col items-center gap-4">
-     <p className="font-sans text-[12px] uppercase tracking-[1.5px] text-paper/45">
+     <p className="font-sans text-caption uppercase tracking-[1.5px] text-paper/45">
       {t("footer.findUs")}
      </p>
      <div className="flex items-center gap-3">
@@ -106,7 +106,7 @@ export function Footer() {
        target="_blank"
        rel="noopener noreferrer"
        aria-label="Discord"
-       className="inline-flex items-center gap-2 rounded-pill border border-[#5865F2]/35 bg-[#5865F2]/[0.06] px-4 py-2 font-sans text-[13px] text-[#a4adff] hover:bg-[#5865F2]/[0.12] hover:border-[#5865F2]/55 hover:text-paper transition-colors"
+       className="inline-flex items-center gap-2 rounded-pill border border-[#5865F2]/35 bg-[#5865F2]/[0.06] px-4 py-2 font-sans text-detail text-link hover:bg-[#5865F2]/[0.12] hover:border-[#5865F2]/55 hover:text-paper transition-colors"
       >
        <Discord size={14} />
        {t("footer.discord")}
@@ -116,7 +116,7 @@ export function Footer() {
        target="_blank"
        rel="noopener noreferrer"
        aria-label="Instagram"
-       className="inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.04] px-4 py-2 font-sans text-[13px] text-paper/85 hover:bg-paper/10 hover:border-paper/45 hover:text-paper transition-colors"
+       className="inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.04] px-4 py-2 font-sans text-detail text-paper/85 hover:bg-paper/10 hover:border-paper/45 hover:text-paper transition-colors"
       >
        <Instagram size={14} />
        @purifymylife
@@ -131,14 +131,14 @@ export function Footer() {
     <div className="mt-8 pt-6 border-t border-white/8 flex flex-col sm:flex-row items-center justify-between gap-4">
      <Link
       href="/"
-      className="font-sans text-[20px] font-bold tracking-[-0.01em] text-paper"
+      className="font-sans text-lede font-bold tracking-[-0.01em] text-paper"
      >
       Purify
      </Link>
-     <p className="font-serif italic text-[14px] text-paper/65 text-center">
+     <p className="font-serif italic text-ui text-paper/65 text-center">
       {t("footer.glory")}
      </p>
-     <p className="font-sans text-[12px] text-paper/45 text-center sm:text-right">
+     <p className="font-sans text-caption text-paper/45 text-center sm:text-right">
       © {new Date().getFullYear()} · v8.0 · {t("footer.copyright")}
      </p>
     </div>

@@ -49,10 +49,10 @@ export function MobileCard({
       style={bg ? { background: bg } : undefined}
     >
       {eyebrow && (
-        <p className="font-sans text-[12px] text-paper/55">{eyebrow}</p>
+        <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
       )}
       {title && (
-        <p className="mt-0.5 font-sans text-[17px] font-bold text-paper leading-tight">
+        <p className="mt-0.5 font-sans text-body font-bold text-paper leading-tight">
           {title}
         </p>
       )}

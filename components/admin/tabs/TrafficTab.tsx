@@ -83,12 +83,12 @@ export function TrafficTab() {
                 className="inline-block h-[3px] w-4 rounded-full"
                 style={{ background: SERIES_COLORS[i === 2 ? 3 : i] }}
               />
-              <span className="font-sans text-[12px] text-paper/70 capitalize">{k}</span>
+              <span className="font-sans text-caption text-paper/70 capitalize">{k}</span>
             </label>
           ))}
         </div>
         {loading ? (
-          <p className="font-sans text-[13px] text-paper/40 py-8 text-center">Loading…</p>
+          <p className="font-sans text-detail text-paper/40 py-8 text-center">Loading…</p>
         ) : (
           <LineChart
             labels={points.map((p) => p.date.slice(5))}

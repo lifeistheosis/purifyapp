@@ -113,18 +113,18 @@ export function ProfileActivity() {
   return (
     <section className="mt-6">
       <div className="flex items-baseline justify-between gap-3 mb-4">
-        <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55">
+        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
           Last saved
         </p>
         <Link
           href="/saved"
-          className="font-sans text-[12px] text-paper/55 hover:text-paper transition-colors"
+          className="font-sans text-caption text-paper/55 hover:text-paper transition-colors"
         >
           See all →
         </Link>
       </div>
       {hydrated && items.length === 0 ? (
-        <div className="rounded-md border border-paper/12 bg-paper/[0.02] px-5 py-6 font-serif italic text-[14.5px] text-paper/55 leading-[1.55]">
+        <div className="rounded-md border border-paper/12 bg-paper/[0.02] px-5 py-6 font-serif italic text-ui text-paper/55 leading-[1.55]">
           Nothing saved yet. Bookmark a verse on any chapter, or a section in a
           saint&apos;s writing, and it will show up here.
         </div>
@@ -136,17 +136,17 @@ export function ProfileActivity() {
                 href={hrefFor(b)}
                 className="group block h-full rounded-md border border-paper/12 bg-paper/[0.03] hover:border-gold/45 hover:bg-gold/[0.04] transition-colors px-4 py-4"
               >
-                <p className="font-sans text-[10.5px] uppercase tracking-[1.5px] text-gold/75 font-semibold">
+                <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/75 font-semibold">
                   {b.kind === "bible-verse"
                     ? "Verse"
                     : b.kind === "bible-chapter"
                       ? "Chapter"
                       : "Writing"}
                 </p>
-                <p className="mt-1.5 font-display-serif text-[16px] text-paper leading-tight line-clamp-2">
+                <p className="mt-1.5 font-display-serif text-body text-paper leading-tight line-clamp-2">
                   {b.label || hrefFor(b)}
                 </p>
-                <p className="mt-2 font-sans text-[11.5px] text-paper/45">
+                <p className="mt-2 font-sans text-caption text-paper/45">
                   {relativeShort(b.addedAt)}
                 </p>
               </Link>

@@ -73,7 +73,7 @@ export function CalendarCell({
  <div className="flex items-start justify-between gap-1">
  <span
  className={cn(
- "font-display-serif text-[14px] md:text-[16px] leading-none",
+ "font-display-serif text-ui md:text-body leading-none",
  cell.hasFeast ? "rubric" : "text-paper/85",
  )}
  style={
@@ -110,7 +110,7 @@ export function CalendarCell({
  {label && (
  <span
  className={cn(
- "mt-auto font-serif text-[9.5px] md:text-[10.5px] leading-[1.2] line-clamp-2",
+ "mt-auto font-serif text-eyebrow md:text-eyebrow leading-[1.2] line-clamp-2",
  "[overflow-wrap:anywhere] hyphens-auto",
  cell.hasFeast ? "rubric opacity-90" : "text-paper/60",
  )}

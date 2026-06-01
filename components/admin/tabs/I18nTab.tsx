@@ -61,7 +61,7 @@ export function I18nTab() {
   }
 
   if (!data) {
-    return <p className="font-sans text-[13px] text-paper/40 py-8 text-center">Loading…</p>;
+    return <p className="font-sans text-detail text-paper/40 py-8 text-center">Loading…</p>;
   }
 
   const shipped = data.locales.filter((l) => l.status === "shipped").length;
@@ -96,7 +96,7 @@ export function I18nTab() {
                   className="text-left"
                 >
                   <p className="font-semibold text-paper">{r.nativeLabel}</p>
-                  <p className="font-mono text-[11px] text-paper/45">
+                  <p className="font-mono text-eyebrow text-paper/45">
                     {r.code} · {r.englishLabel}
                   </p>
                 </button>
@@ -177,17 +177,17 @@ export function I18nTab() {
           >
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
               <div>
-                <p className="font-sans text-[11px] uppercase tracking-[1px] text-paper/45">File</p>
-                <p className="font-mono text-[12px] text-paper">
+                <p className="font-sans text-eyebrow uppercase tracking-[1px] text-paper/45">File</p>
+                <p className="font-mono text-caption text-paper">
                   lib/i18n/messages/{row.code}.json{" "}
                   {!row.fileExists && <Pill tone="rose">missing</Pill>}
                 </p>
               </div>
               <div>
-                <p className="font-sans text-[11px] uppercase tracking-[1px] text-paper/45">
+                <p className="font-sans text-eyebrow uppercase tracking-[1px] text-paper/45">
                   Registry .ready flag
                 </p>
-                <p className="font-sans text-[13px] text-paper">
+                <p className="font-sans text-detail text-paper">
                   {row.registryReady ? (
                     <Pill tone="emerald">true</Pill>
                   ) : (
@@ -196,27 +196,27 @@ export function I18nTab() {
                 </p>
               </div>
               <div>
-                <p className="font-sans text-[11px] uppercase tracking-[1px] text-paper/45">
+                <p className="font-sans text-eyebrow uppercase tracking-[1px] text-paper/45">
                   Extra keys (not in en)
                 </p>
-                <p className="font-sans text-[13px] text-paper tabular-nums">{row.extraCount}</p>
+                <p className="font-sans text-detail text-paper tabular-nums">{row.extraCount}</p>
               </div>
               <div>
-                <p className="font-sans text-[11px] uppercase tracking-[1px] text-paper/45">
+                <p className="font-sans text-eyebrow uppercase tracking-[1px] text-paper/45">
                   Reviewer
                 </p>
-                <p className="font-sans text-[13px] text-paper">{row.reviewerEmail ?? "—"}</p>
+                <p className="font-sans text-detail text-paper">{row.reviewerEmail ?? "—"}</p>
               </div>
             </div>
-            <p className="font-sans text-[12px] uppercase tracking-[1px] text-paper/45 mb-2">
+            <p className="font-sans text-caption uppercase tracking-[1px] text-paper/45 mb-2">
               First {row.missingExamples.length} missing keys
             </p>
             {row.missingExamples.length === 0 ? (
-              <p className="font-sans text-[12px] text-emerald-300">
+              <p className="font-sans text-caption text-emerald-300">
                 Nothing missing.
               </p>
             ) : (
-              <ul className="font-mono text-[11px] text-paper/75 space-y-0.5 max-h-[260px] overflow-y-auto">
+              <ul className="font-mono text-eyebrow text-paper/75 space-y-0.5 max-h-[260px] overflow-y-auto">
                 {row.missingExamples.map((k) => (
                   <li key={k}>{k}</li>
                 ))}
@@ -243,7 +243,7 @@ function CoverageBar({ pct }: { pct: number }) {
       <div className="flex-1 h-1.5 rounded-full bg-paper/[0.08] overflow-hidden">
         <div className={`h-full ${color}`} style={{ width: `${pct}%` }} />
       </div>
-      <span className="font-sans text-[12px] tabular-nums text-paper/85 w-9 text-right">
+      <span className="font-sans text-caption tabular-nums text-paper/85 w-9 text-right">
         {pct}%
       </span>
     </div>

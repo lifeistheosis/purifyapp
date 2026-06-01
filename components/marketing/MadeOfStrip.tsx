@@ -63,15 +63,15 @@ export async function MadeOfStrip() {
     <section className="snap-start md:[min-height:100dvh] flex items-center px-5 md:px-8 pt-24 md:pt-20 pb-10 md:pb-12 bg-night">
       <div className="mx-auto max-w-[1080px] w-full">
         <div className="text-center max-w-[680px] mx-auto mb-6 md:mb-8">
-          <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.8px] text-paper/55 mb-2">
+          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55 mb-2">
             {isDe ? "Woraus wir gemacht sind" : "What we are made of"}
           </p>
-          <h2 className="font-sans text-[26px] md:text-[32px] font-bold text-paper tracking-[-0.02em] leading-[1.15]">
+          <h2 className="font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
             {isDe
               ? "Gemeinfrei, Klartext, durch und durch."
               : "Public domain, plain-text, all the way down."}
           </h2>
-          <p className="mt-3 font-sans text-[14px] text-paper/65 leading-[1.6]">
+          <p className="mt-3 font-sans text-ui text-paper/65 leading-[1.6]">
             {isDe
               ? "Wir sagen dir, was wir verwendet haben und woher es kommt. Keine Blackbox-Übersetzungen, keine geschützten Einbindungen, keine vor dir versteckten Schriftentscheidungen."
               : "We tell you what we used and where it came from. No black-box translations, no proprietary lock-in, no scriptural choices hidden from you."}
@@ -86,10 +86,10 @@ export async function MadeOfStrip() {
               <div className="flex items-start gap-3">
                 <Cross size={14} className="shrink-0 mt-0.5 text-gold" />
                 <div className="min-w-0">
-                  <p className="font-sans text-[14.5px] font-semibold text-paper leading-tight">
+                  <p className="font-sans text-ui font-semibold text-paper leading-tight">
                     {it.title}
                   </p>
-                  <p className="mt-1 font-sans text-[13px] text-paper/70 leading-[1.55]">
+                  <p className="mt-1 font-sans text-detail text-paper/70 leading-[1.55]">
                     {it.body}
                   </p>
                 </div>

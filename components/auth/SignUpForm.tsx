@@ -74,10 +74,10 @@ export function SignUpForm() {
   if (sentTo) {
     return (
       <div className="rounded-lg border border-gold/35 bg-gold/[0.06] p-5">
-        <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-gold mb-2">
+        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-2">
           Check your inbox
         </p>
-        <p className="font-serif text-[16px] text-paper/90 leading-[1.65]">
+        <p className="font-serif text-body text-paper/90 leading-[1.65]">
           We sent a confirmation link to{" "}
           <span className="font-semibold text-paper">{sentTo}</span>. Open it
           on this device to finish creating your account.
@@ -91,7 +91,7 @@ export function SignUpForm() {
       <div>
         <label
           htmlFor="signup-name"
-          className="font-sans text-[12px] font-medium text-paper/75 block mb-1.5"
+          className="font-sans text-caption font-medium text-paper/75 block mb-1.5"
         >
           Display name <span className="text-paper/45">(optional)</span>
         </label>
@@ -103,13 +103,13 @@ export function SignUpForm() {
           onChange={(e) => setDisplayName(e.target.value)}
           placeholder="Edgar"
           maxLength={64}
-          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-[15px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
+          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
         />
       </div>
       <div>
         <label
           htmlFor="signup-email"
-          className="font-sans text-[12px] font-medium text-paper/75 block mb-1.5"
+          className="font-sans text-caption font-medium text-paper/75 block mb-1.5"
         >
           Email
         </label>
@@ -122,7 +122,7 @@ export function SignUpForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@somewhere.com"
-          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-[15px] text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
+          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
         />
       </div>
       <PasswordInput
@@ -139,17 +139,17 @@ export function SignUpForm() {
         autoComplete="new-password"
       />
       {error ? (
-        <p className="font-sans text-[13px] text-[#f8cac7]">{error}</p>
+        <p className="font-sans text-detail text-crimson-soft">{error}</p>
       ) : null}
       <button
         type="submit"
         disabled={pending}
-        className="rounded-pill bg-paper text-night font-sans text-[14px] font-semibold py-3 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
+        className="rounded-pill bg-paper text-night font-sans text-ui font-semibold py-3 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
       >
         {pending ? "Creating account…" : "Create account"}
       </button>
 
-      <p className="text-center font-sans text-[12.5px] text-paper/55">
+      <p className="text-center font-sans text-caption text-paper/55">
         Already have one?{" "}
         <Link
           href="/signin"
@@ -161,7 +161,7 @@ export function SignUpForm() {
 
       <div className="relative my-3">
         <span className="absolute inset-x-0 top-1/2 h-px bg-paper/12" />
-        <span className="relative bg-night px-3 text-[11px] uppercase tracking-[1.5px] text-paper/45 mx-auto inline-block left-1/2 -translate-x-1/2">
+        <span className="relative bg-night px-3 text-eyebrow uppercase tracking-[1.5px] text-paper/45 mx-auto inline-block left-1/2 -translate-x-1/2">
           or
         </span>
       </div>

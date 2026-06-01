@@ -32,7 +32,7 @@ export function CommemorationRow({ c }: { c: Commemoration }) {
         </span>
       )}
       <div className="min-w-0 flex-1 pt-0.5">
-        <p className="font-serif text-[15.5px] text-paper leading-snug">
+        <p className="font-serif text-ui text-paper leading-snug">
           {saint ? (
             <Link
               href={`/saints/${saint.slug}`}
@@ -45,7 +45,7 @@ export function CommemorationRow({ c }: { c: Commemoration }) {
           )}
         </p>
         {c.note && (
-          <p className="mt-0.5 font-sans text-[12px] text-paper/55 leading-[1.5]">
+          <p className="mt-0.5 font-sans text-caption text-paper/55 leading-[1.5]">
             {c.note}
           </p>
         )}

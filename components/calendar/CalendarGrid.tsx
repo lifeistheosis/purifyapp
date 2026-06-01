@@ -37,7 +37,7 @@ export function CalendarGrid({
         {WEEKDAYS.map((d) => (
           <div
             key={d}
-            className="border-r border-b border-gold/15 py-1.5 font-sans text-[10.5px] font-semibold uppercase tracking-[1.8px] text-gold/70 text-center"
+            className="border-r border-b border-gold/15 py-1.5 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/70 text-center"
           >
             {d}
           </div>
@@ -63,7 +63,7 @@ export function CalendarGrid({
       </div>
 
       {/* Legend */}
-      <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2.5 font-sans text-[11.5px] text-paper/55">
+      <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2.5 font-sans text-caption text-paper/55">
         <span className="inline-flex items-center gap-1.5">
           <Cross size={14} className="text-gold" />
           Major feast

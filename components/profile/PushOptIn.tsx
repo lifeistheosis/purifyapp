@@ -154,25 +154,25 @@ export function PushOptIn() {
 
   return (
     <section className="rounded-md border border-paper/12 bg-paper/[0.03] p-5">
-      <p className="font-sans text-[12px] font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
         Prayer reminders
       </p>
-      <p className="font-serif text-[16px] text-paper/85 leading-[1.6] mb-4">
+      <p className="font-serif text-body text-paper/85 leading-[1.6] mb-4">
         One nudge in the morning, one in the evening. Off by default. No
         third-party notification provider; the Web Push API runs in your
         browser only.
       </p>
       {state.kind === "loading" && (
-        <p className="font-sans text-[13px] text-paper/55 italic">Checking…</p>
+        <p className="font-sans text-detail text-paper/55 italic">Checking…</p>
       )}
       {state.kind === "unsupported" && (
-        <p className="font-sans text-[13px] text-paper/55">
+        <p className="font-sans text-detail text-paper/55">
           Your browser does not support Web Push. Try a recent Chrome,
           Edge, or Firefox.
         </p>
       )}
       {state.kind === "denied" && (
-        <p className="font-sans text-[13px] text-paper/55">
+        <p className="font-sans text-detail text-paper/55">
           Notifications are blocked at the browser level. Re-enable them in
           your site settings and refresh.
         </p>
@@ -182,7 +182,7 @@ export function PushOptIn() {
           type="button"
           onClick={subscribe}
           disabled={busy}
-          className="rounded-pill border border-gold/40 bg-gold/[0.08] text-gold px-5 py-2 font-sans text-[13px] font-semibold hover:bg-gold/[0.14] transition-colors disabled:opacity-40"
+          className="rounded-pill border border-gold/40 bg-gold/[0.08] text-gold px-5 py-2 font-sans text-detail font-semibold hover:bg-gold/[0.14] transition-colors disabled:opacity-40"
         >
           {busy ? "Subscribing…" : "Turn on reminders"}
         </button>
@@ -191,7 +191,7 @@ export function PushOptIn() {
         <div className="space-y-3">
           <div className="flex gap-4 flex-wrap items-end">
             <label className="flex flex-col gap-1">
-              <span className="font-sans text-[12px] text-paper/55">
+              <span className="font-sans text-caption text-paper/55">
                 Morning
               </span>
               <input
@@ -200,11 +200,11 @@ export function PushOptIn() {
                 onBlur={(e) =>
                   updateTimes(e.target.value, state.eveningTime ?? "21:00")
                 }
-                className="rounded-md border border-paper/15 bg-night px-3 py-1.5 font-sans text-[13px] text-paper"
+                className="rounded-md border border-paper/15 bg-night px-3 py-1.5 font-sans text-detail text-paper"
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="font-sans text-[12px] text-paper/55">
+              <span className="font-sans text-caption text-paper/55">
                 Evening
               </span>
               <input
@@ -213,7 +213,7 @@ export function PushOptIn() {
                 onBlur={(e) =>
                   updateTimes(state.morningTime ?? "07:00", e.target.value)
                 }
-                className="rounded-md border border-paper/15 bg-night px-3 py-1.5 font-sans text-[13px] text-paper"
+                className="rounded-md border border-paper/15 bg-night px-3 py-1.5 font-sans text-detail text-paper"
               />
             </label>
           </div>
@@ -221,7 +221,7 @@ export function PushOptIn() {
             type="button"
             onClick={unsubscribe}
             disabled={busy}
-            className="font-sans text-[12.5px] text-paper/55 hover:text-paper transition-colors disabled:opacity-40"
+            className="font-sans text-caption text-paper/55 hover:text-paper transition-colors disabled:opacity-40"
           >
             Turn off reminders
           </button>

@@ -120,7 +120,7 @@ export function SustainabilityTab() {
   }
 
   if (!data) {
-    return <p className="font-sans text-[13px] text-paper/40 py-8 text-center">Loading…</p>;
+    return <p className="font-sans text-detail text-paper/40 py-8 text-center">Loading…</p>;
   }
 
   const pct =
@@ -137,7 +137,7 @@ export function SustainabilityTab() {
     <div className="space-y-6">
       {!data.current.live && (
         <Card title="BMC unreachable" accent>
-          <p className="font-sans text-[13px] text-paper/75">
+          <p className="font-sans text-detail text-paper/75">
             The Buy Me a Coffee Developer API didn&rsquo;t return a value for
             this month. Check <span className="font-mono">BMC_ACCESS_TOKEN</span>{" "}
             and the /support page is currently showing the fallback figure.
@@ -186,7 +186,7 @@ export function SustainabilityTab() {
         }
       >
         {data.history.length === 0 ? (
-          <p className="font-sans text-[12px] text-paper/45 py-4">
+          <p className="font-sans text-caption text-paper/45 py-4">
             No snapshots yet. Run <span className="font-mono">/api/cron/bmc-snapshot</span> or wait for the daily job.
           </p>
         ) : (
@@ -246,7 +246,7 @@ export function SustainabilityTab() {
               render: (r) => (
                 <div>
                   <p className="font-semibold text-paper">{r.label}</p>
-                  {r.note && <p className="text-[11px] text-paper/50 mt-0.5">{r.note}</p>}
+                  {r.note && <p className="text-eyebrow text-paper/50 mt-0.5">{r.note}</p>}
                 </div>
               ),
               csv: (r) => r.label,
@@ -322,32 +322,32 @@ function ExpenseEditor({
   return (
     <div className="rounded-md border border-gold/30 bg-gold/[0.04] p-4 mb-4 grid grid-cols-1 md:grid-cols-12 gap-3">
       <input
-        className="md:col-span-4 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-[13px] text-paper"
+        className="md:col-span-4 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper"
         placeholder="Label"
         value={label}
         onChange={(e) => setLabel(e.target.value)}
       />
       <input
-        className="md:col-span-2 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-[13px] text-paper tabular-nums"
+        className="md:col-span-2 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper tabular-nums"
         placeholder="USD/mo"
         value={usdValue}
         onChange={(e) => setUsdValue(e.target.value)}
         inputMode="decimal"
       />
       <input
-        className="md:col-span-2 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-[13px] text-paper"
+        className="md:col-span-2 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper"
         placeholder="Category"
         value={category}
         onChange={(e) => setCategory(e.target.value)}
       />
       <input
-        className="md:col-span-1 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-[13px] text-paper tabular-nums"
+        className="md:col-span-1 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper tabular-nums"
         placeholder="Sort"
         value={sortOrder}
         onChange={(e) => setSortOrder(e.target.value)}
         inputMode="numeric"
       />
-      <label className="md:col-span-1 inline-flex items-center gap-2 font-sans text-[12px] text-paper/70">
+      <label className="md:col-span-1 inline-flex items-center gap-2 font-sans text-caption text-paper/70">
         <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} />
         Active
       </label>
@@ -371,7 +371,7 @@ function ExpenseEditor({
         </ToolbarButton>
       </div>
       <textarea
-        className="md:col-span-12 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-[12px] text-paper/85"
+        className="md:col-span-12 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-caption text-paper/85"
         placeholder="Note (shown under the label on /support)"
         value={note}
         onChange={(e) => setNote(e.target.value)}

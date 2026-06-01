@@ -26,11 +26,11 @@ export function PaschaCountdownCard({
     >
       <ThreeBarCross />
       <div className="min-w-0 flex-1">
-        <p className="font-sans text-[12px] text-paper/55">{eyebrow}</p>
-        <h3 className="mt-0.5 font-serif text-[20px] leading-[1.2] text-paper">
+        <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
+        <h3 className="mt-0.5 font-serif text-lede leading-[1.2] text-paper">
           {primary}
         </h3>
-        <p className="mt-0.5 font-sans text-[12px] text-paper/55">{label}</p>
+        <p className="mt-0.5 font-sans text-caption text-paper/55">{label}</p>
       </div>
     </Link>
   );

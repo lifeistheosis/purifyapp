@@ -58,13 +58,13 @@ export function TodayStrip() {
     <section className="px-5 md:px-8 py-8 md:py-10 border-y border-white/8 bg-night">
       <div className="mx-auto max-w-[1280px] w-full">
         <div className="flex items-baseline justify-between flex-wrap gap-3 mb-5">
-          <p className="inline-flex items-center gap-2 font-sans text-[11px] font-semibold uppercase tracking-[2px] text-gold/75">
+          <p className="inline-flex items-center gap-2 font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/75">
             <Cross size={13} className="text-gold/70" />
             Today
           </p>
           <Link
             href="/calendar"
-            className="font-sans text-[12px] font-medium text-paper/55 hover:text-paper transition-colors"
+            className="font-sans text-caption font-medium text-paper/55 hover:text-paper transition-colors"
           >
             Open the calendar →
           </Link>
@@ -92,7 +92,7 @@ export function TodayStrip() {
                   {isFeast ? <Halo size={18} /> : <Cross size={15} />}
                 </span>
               )}
-              <p className="min-w-0 font-serif text-[14.5px] text-paper leading-snug line-clamp-2">
+              <p className="min-w-0 font-serif text-ui text-paper leading-snug line-clamp-2">
                 {headline?.name ?? "Browse the calendar"}
               </p>
             </div>
@@ -113,7 +113,7 @@ export function TodayStrip() {
                 {FastIcon ? <FastIcon size={18} /> : <Cross size={15} />}
               </span>
               <p
-                className="min-w-0 font-serif text-[14.5px] leading-snug line-clamp-2"
+                className="min-w-0 font-serif text-ui leading-snug line-clamp-2"
                 style={{ color: `rgb(${fastMeta.rgb})` }}
               >
                 {fast.label}
@@ -137,7 +137,7 @@ export function TodayStrip() {
               >
                 <Cross size={15} />
               </span>
-              <p className="min-w-0 font-serif text-[14.5px] text-paper leading-snug line-clamp-2">
+              <p className="min-w-0 font-serif text-ui text-paper leading-snug line-clamp-2">
                 {gospelRef
                   ? gospelRef.label
                   : "The Gospel of John"}
@@ -148,10 +148,10 @@ export function TodayStrip() {
           {/* 4. Pascha */}
           <TileLink href="/calendar" eyebrow="Pascha">
             <div className="min-w-0">
-              <p className="font-display-serif text-[20px] md:text-[22px] text-paper leading-tight">
+              <p className="font-display-serif text-lede md:text-title-sm text-paper leading-tight">
                 {paschaPrimary}
               </p>
-              <p className="mt-0.5 font-sans text-[12px] text-paper/55 leading-[1.4] line-clamp-1">
+              <p className="mt-0.5 font-sans text-caption text-paper/55 leading-[1.4] line-clamp-1">
                 {paschaSecondary}
               </p>
             </div>
@@ -177,7 +177,7 @@ function TileLink({
       href={href}
       className="group block rounded-lg border border-paper/10 bg-paper/[0.025] hover:bg-paper/[0.05] hover:border-paper/20 transition-colors p-4"
     >
-      <p className="font-sans text-[10px] font-semibold uppercase tracking-[1.5px] text-gold/65 mb-2.5">
+      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold/65 mb-2.5">
         {eyebrow}
       </p>
       {children}

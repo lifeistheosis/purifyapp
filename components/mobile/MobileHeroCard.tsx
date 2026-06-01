@@ -89,19 +89,19 @@ export function MobileHeroCard({
         <div className={aside ? "flex items-start gap-4" : ""}>
           <div className={aside ? "min-w-0 flex-1" : ""}>
             {eyebrow && (
-              <p className="font-sans text-[13px] text-paper/65">{eyebrow}</p>
+              <p className="font-sans text-detail text-paper/65">{eyebrow}</p>
             )}
             {kicker && (
-              <p className="mt-0.5 font-sans text-[16px] font-bold text-paper">
+              <p className="mt-0.5 font-sans text-body font-bold text-paper">
                 {kicker}
               </p>
             )}
-            <h2 className="mt-3 font-serif text-[22px] leading-[1.25] text-paper/95">
+            <h2 className="mt-3 font-serif text-title-sm leading-[1.25] text-paper/95">
               {headline}
             </h2>
             {body && (
               <div
-                className="mt-3 font-serif text-[17px] leading-[1.45] text-paper/85"
+                className="mt-3 font-serif text-body leading-[1.45] text-paper/85"
                 style={
                   bodyFades
                     ? {

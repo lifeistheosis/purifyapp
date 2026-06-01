@@ -22,12 +22,12 @@ export type SpineTint =
 
 const BAND: Record<SpineTint, string> = {
   pentateuch: "bg-[#c89e2c]",
-  history: "bg-[#7b9b8f]",
+  history: "bg-sage",
   wisdom: "bg-[#d4af37]",
   majorProphets: "bg-[#6b85b5]",
   minorProphets: "bg-[#4f6b8c]",
   deuterocanon: "bg-[#a86c6c]",
-  gospel: "bg-[#c1272d]",
+  gospel: "bg-crimson",
   acts: "bg-[#b5854a]",
   paulineEpistle: "bg-[#8a6c2a]",
   catholicEpistle: "bg-[#6b6470]",
@@ -59,10 +59,10 @@ export function BookSpine({
         aria-hidden
         className={cn("absolute inset-y-0 left-0 w-[4px]", BAND[tint])}
       />
-      <span className="px-2 pt-2 pl-3 font-sans text-[12.5px] font-semibold text-paper leading-[1.15]">
+      <span className="px-2 pt-2 pl-3 font-sans text-caption font-semibold text-paper leading-[1.15]">
         {name}
       </span>
-      <span className="px-2 pb-2 pl-3 font-sans text-[10px] uppercase tracking-[1px] text-paper/45">
+      <span className="px-2 pb-2 pl-3 font-sans text-eyebrow uppercase tracking-[1px] text-paper/45">
         {chapters} ch
       </span>
     </Link>
