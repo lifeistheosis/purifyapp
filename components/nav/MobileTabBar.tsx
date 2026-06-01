@@ -107,24 +107,17 @@ export function MobileTabBar() {
                 href={href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "h-full flex flex-col items-center justify-center gap-1 px-1",
-                  "font-sans text-eyebrow font-medium tracking-[0.02em]",
+                  "h-full flex flex-col items-center justify-center gap-0.5 px-1",
+                  "font-sans text-eyebrow font-medium tracking-[0.01em]",
                   "transition-colors duration-150",
                   active
                     ? "text-gold"
-                    : "text-paper/55 hover:text-paper/85",
+                    : "text-paper/45 hover:text-paper/75",
                 )}
               >
-                {/* Soft gold halo behind the active glyph so the row
-                    reads as filled, like the Hallow tab bar. */}
-                <span
-                  className={cn(
-                    "inline-flex items-center justify-center h-8 w-10 rounded-pill transition-colors",
-                    active ? "bg-gold/12" : "bg-transparent",
-                  )}
-                >
-                  <Icon size={22} />
-                </span>
+                {/* Minimalist: icon + label, active state by colour only —
+                    no filled halo. */}
+                <Icon size={19} />
                 <span className="leading-none">{label}</span>
               </Link>
             </li>
