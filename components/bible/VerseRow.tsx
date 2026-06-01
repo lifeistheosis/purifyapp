@@ -33,6 +33,7 @@ export function VerseRow({
  bookName,
  chapter,
  verse,
+ dropCap = false,
  hasCommentary = false,
  onOpenCommentary,
  originalText,
@@ -46,6 +47,10 @@ export function VerseRow({
  bookName: string;
  chapter: number;
  verse: Verse;
+ /** When true, render this verse as the chapter opening: suppress the
+  *  leading verse number and set the first letter as an illuminated
+  *  gold drop cap. Only takes effect outside interlinear mode. */
+ dropCap?: boolean;
  hasCommentary?: boolean;
  /** Mobile callback: when set, the verse-number badge opens a bottom-sheet
  * with this verse's commentary on tap instead of routing to `#rail-vN`
@@ -86,6 +91,9 @@ export function VerseRow({
  const hasInterlinear =
  showInterlinear && (!!originalText || (originalTokens?.length ?? 0) > 0);
  const hasTokens = (originalTokens?.length ?? 0) > 0;
+ // Drop cap only on the plain reading view, never inside the 2-column
+ // interlinear layout (where a floated initial would break the grid).
+ const showDropCap = dropCap && !hasInterlinear;
  const hasEnglishTokens =
  hasInterlinear && (englishTokens?.length ?? 0) > 0;
 
@@ -386,6 +394,8 @@ export function VerseRow({
  <p
  className={cn(
  "indent-0 min-w-0 transition-colors duration-150",
+ showDropCap &&
+ "overflow-hidden first-letter:float-left first-letter:mr-2.5 first-letter:mt-[0.06em] first-letter:font-display-serif first-letter:font-normal first-letter:not-italic first-letter:text-gold first-letter:text-[2.6em] first-letter:leading-[0.78]",
  dragging && "select-none",
  showTools &&
  "bg-gold/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(212,175,55,0.35)]",
@@ -398,7 +408,7 @@ export function VerseRow({
  onTouchCancel={onWordsTouchEnd}
  onContextMenu={openContextMenu}
  >
- {hasCommentary ? (
+ {showDropCap ? null : hasCommentary ? (
  // Desktop: anchor link to the sticky right-rail section.
  // Mobile (`lg:hidden`): a button that opens the bottom sheet.
  <span className="inline-flex items-baseline mr-1.5 align-super">

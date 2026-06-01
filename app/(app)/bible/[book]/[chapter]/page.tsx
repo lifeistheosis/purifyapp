@@ -199,7 +199,7 @@ export default async function BibleChapterPage({
 
  <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
  {/* Reader column */}
- <div className="min-w-0">
+ <div className="min-w-0 mx-auto w-full max-w-[680px]">
  <header id="chapter-title" className="mb-6">
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
  {b!.name}

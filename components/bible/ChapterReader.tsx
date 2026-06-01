@@ -56,14 +56,15 @@ export function ChapterReader({
           SIZE_CLASSES[size],
         )}
       >
-        <div className="space-y-1.5">
-          {verses.map((v) => (
+        <div className="space-y-2">
+          {verses.map((v, i) => (
             <VerseRow
               key={v.n}
               book={book}
               bookName={bookName}
               chapter={chapter}
               verse={v}
+              dropCap={i === 0}
               hasCommentary={has.has(v.n)}
               onOpenCommentary={
                 has.has(v.n) ? () => setOpenVerse(v.n) : undefined
