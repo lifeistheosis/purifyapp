@@ -10,6 +10,7 @@ import {
   type FastKind,
 } from "@/lib/calendar/orthodox";
 import { PrayerIcon } from "@/components/prayers/PrayerIcon";
+import { PrayerSlideshowHero } from "@/components/prayers/PrayerSlideshow";
 import { PrayersMobile } from "@/components/mobile/PrayersMobile";
 import {
   PrayerPage,
@@ -65,7 +66,20 @@ export default async function PrayersPage() {
       <PrayersMobile />
       <div className="hidden md:block">
         <MobileTopBar title={isDe ? "Gebete" : "Prayers"} />
-        <PrayerPage width="index">
+        <PrayerPage
+          width="index"
+          backdrop={
+            <div
+              className="pointer-events-none absolute inset-x-0 top-0 h-[520px]"
+              aria-hidden
+            >
+              <PrayerSlideshowHero priority className="opacity-[0.14]" />
+              {/* Fade the wash down into the night so the page still reads
+                  like a book, not a hero. */}
+              <div className="absolute inset-0 bg-gradient-to-b from-night/55 via-night/75 to-night" />
+            </div>
+          }
+        >
           <PrayerMasthead
             align="center"
             eyebrow={isDe ? "Das Gebet" : "The Prayer"}

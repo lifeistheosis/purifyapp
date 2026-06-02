@@ -25,16 +25,29 @@ export function PrayerPage({
   children,
   width = "index",
   className,
+  backdrop,
 }: {
   children: ReactNode;
   width?: keyof typeof WIDTHS;
   className?: string;
+  /**
+   * Optional full-bleed node rendered behind the content — e.g. a faint
+   * crossfading wash of prayer icons. Kept low and fading into the night so
+   * the page still reads like a book, not a hero.
+   */
+  backdrop?: ReactNode;
 }) {
   return (
-    <section className={cn("bg-night min-h-screen", className)}>
+    <section
+      className={cn(
+        "relative isolate overflow-hidden bg-night min-h-screen",
+        className,
+      )}
+    >
+      {backdrop}
       <div
         className={cn(
-          "mx-auto w-full px-6 md:px-8 py-16 md:py-24",
+          "relative z-10 mx-auto w-full px-6 md:px-8 py-16 md:py-24",
           WIDTHS[width],
         )}
       >

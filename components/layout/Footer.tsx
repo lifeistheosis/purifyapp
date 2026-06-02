@@ -15,8 +15,8 @@ export function Footer() {
   {
    heading: t("footer.bible"),
    links: [
-    { label: "Old Testament", href: "/bible#ot" },
-    { label: "New Testament", href: "/bible#nt" },
+    { label: t("footer.oldTestament"), href: "/bible#ot" },
+    { label: t("footer.newTestament"), href: "/bible#nt" },
     { label: t("discover.tile.psalter"), href: "/bible/psalms/1" },
     { label: t("common.search"), href: "/bible" },
    ],
@@ -25,7 +25,7 @@ export function Footer() {
    heading: t("footer.saints"),
    links: [
     { label: t("footer.saints"), href: "/saints" },
-    { label: "The Fathers", href: "/saints" },
+    { label: t("footer.theFathers"), href: "/saints" },
     { label: t("saints.writings"), href: "/saints" },
     { label: t("discover.tile.patristic"), href: "/bible/john/1" },
    ],
@@ -34,9 +34,9 @@ export function Footer() {
    heading: t("footer.calendar"),
    links: [
     { label: t("nav.today"), href: "/calendar" },
-    { label: "This month", href: "/calendar" },
+    { label: t("footer.thisMonth"), href: "/calendar" },
     { label: t("calendar.pascha"), href: "/calendar" },
-    { label: "The fasts", href: "/calendar" },
+    { label: t("footer.theFasts"), href: "/calendar" },
    ],
   },
   {

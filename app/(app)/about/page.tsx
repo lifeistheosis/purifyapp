@@ -250,6 +250,37 @@ export default async function AboutPage() {
  here, write us; we want to keep this list honest.
  </p>
 
+ {/* §5b Promoters */}
+ <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ Readers who have spread the word
+ </p>
+ <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
+ Promoters
+ </h2>
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ Purify has no advertising budget and buys no reach. It grows because
+ readers tell other readers. The following have gone out of their way
+ to point people here:
+ </p>
+ <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <li>
+ <strong className="text-paper">Wojack</strong> (
+ <a
+ href="https://www.tiktok.com/@spyridons.ponder"
+ target="_blank"
+ rel="noopener noreferrer"
+ className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
+ >
+ @Spyridons.ponder
+ </a>
+ ), for sharing Purify with his audience on TikTok.
+ </li>
+ </ul>
+ <p className="mt-4 font-serif text-ui text-paper/55 leading-[1.65] italic">
+ If you have shared Purify somewhere and would like to be named here,
+ write us; we are grateful for every reader you send.
+ </p>
+
  {/* §6 Closing Doxology */}
  <div className="mt-16 pt-10 border-t border-paper/10 text-center">
  <p className="font-serif italic text-title-sm md:text-title tracking-wide leading-[1.4] max-w-[560px] mx-auto text-gold">
@@ -505,6 +536,38 @@ function AboutDe() {
  redaktionelle Korrektur beigetragen hast, die geliefert wurde, und
  deinen Namen hier nicht siehst, schreib uns; wir wollen diese
  Liste ehrlich halten.
+ </p>
+
+ {/* §5b Förderer */}
+ <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ Leser, die Purify bekannt gemacht haben
+ </p>
+ <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
+ Förderer
+ </h2>
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ Purify hat kein Werbebudget und kauft keine Reichweite. Es wächst,
+ weil Leser anderen Lesern davon erzählen. Die folgenden haben sich
+ besondere Mühe gegeben, Menschen hierher zu weisen:
+ </p>
+ <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <li>
+ <strong className="text-paper">Wojack</strong> (
+ <a
+ href="https://www.tiktok.com/@spyridons.ponder"
+ target="_blank"
+ rel="noopener noreferrer"
+ className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
+ >
+ @Spyridons.ponder
+ </a>
+ ), dafür, daß er Purify mit seinem Publikum auf TikTok geteilt hat.
+ </li>
+ </ul>
+ <p className="mt-4 font-serif text-ui text-paper/55 leading-[1.65] italic">
+ Wenn du Purify irgendwo geteilt hast und hier genannt werden
+ möchtest, schreib uns; wir sind für jeden Leser dankbar, den du
+ schickst.
  </p>
 
  {/* §6 Schluss-Doxologie */}
