@@ -22,7 +22,7 @@ export async function generateMetadata({
   };
 }
 
-const SECTION = "px-5 md:px-8 py-16 md:py-20";
+const SECTION = "px-6 md:px-8 py-16 md:py-24 min-h-screen";
 
 export default async function AkathistPage({
   params,

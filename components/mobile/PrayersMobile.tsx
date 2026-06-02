@@ -1,17 +1,18 @@
+import Link from "next/link";
 import {
   fastingStatus,
   formatLongDate,
   startOfDayUtc,
 } from "@/lib/calendar/orthodox";
 import { MobileShell } from "./MobileShell";
-import { MobileTimeline } from "./MobileTimeline";
-import { MobileCard } from "./MobileCard";
 import { MobileHeader } from "./MobileHeader";
-import { MobileHeroCard } from "./MobileHeroCard";
-import { MobileSectionLabel } from "./MobileSectionLabel";
-import { DayClock } from "./DayClock";
 import { DiptychPreview } from "./DiptychPreview";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
+import {
+  PrayerSectionLabel,
+  PrayerIndex,
+  PrayerIndexRow,
+} from "@/components/prayers/PrayerBook";
 
 type HeroMode = "morning" | "midday" | "evening";
 
@@ -22,165 +23,122 @@ function heroModeFor(d: Date): HeroMode {
   return "evening";
 }
 
-const TINT: Record<HeroMode, "gold" | "warm" | "deep"> = {
-  morning: "gold",
-  midday: "warm",
-  evening: "deep",
-};
-
-const HERO_COPY: Record<
-  HeroMode,
-  { eyebrow: string; headline: string; body: string }
-> = {
-  morning: {
-    eyebrow: "The day, ahead",
-    headline: "Stand for a few minutes before God before the day takes you.",
-    body: "Sign of the Cross, Heavenly King, Trisagion, the Lord's Prayer, the Jesus Prayer, dismissal.",
-  },
-  midday: {
-    eyebrow: "The day, underway",
-    headline: "Pray it in the breath. The bringing-back is half the work.",
-    body: "The Jesus Prayer carries through the middle of the day.",
-  },
-  evening: {
-    eyebrow: "The day, behind",
-    headline: "Trisagion, examination of the day, Into Thy hands.",
-    body: "Close the day with the same quiet you opened it with.",
-  },
+const TIME_LINE: Record<HeroMode, string> = {
+  morning: "Stand for a few minutes before God before the day takes you.",
+  midday: "Pray it in the breath. The bringing-back is half the work.",
+  evening: "Close the day with the same quiet you opened it with.",
 };
 
 /**
- * Prayers mobile shell — "the rule of life."
+ * Prayers mobile shell, in the quiet prayer-book register.
  *
- *   1. Hero: eyebrow + headline + body span the full card width, with the
- *      DayClock (an SVG arc of the four canonical Hours + Compline, the
- *      current local time pulsing in rubric red) centered beneath them.
- *      Stacked rather than set beside the text so the headline isn't
- *      crushed into a sliver on narrow phones. Tint flips gold/warm/deep
- *      by time of day.
- *   2. DiptychPreview: a horizontal row of names from the user's
- *      diptychs, rendered only when local lists are non-empty.
- *   3. "The daily rules" — calmer timeline of morning / evening / rope /
- *      diptychs / Hours / akathists / learn, body tightened to one
- *      sentence each.
+ * A calm masthead (no tinted gradient card), the prayer of the heart, the
+ * user's diptychs when present, and the rest of the section as hairline
+ * index rows grouped under quiet labels — the same vocabulary the desktop
+ * hub uses, so the two read as one design.
  */
 export function PrayersMobile() {
   const today = startOfDayUtc(new Date());
   const fast = fastingStatus(today);
   const mode = heroModeFor(new Date());
-  const copy = HERO_COPY[mode];
 
   return (
     <MobileShell
       header={<MobileHeader title="Prayers" trailing={<UserAvatarSmall />} />}
       eyebrow={formatLongDate(today)}
     >
-      <MobileHeroCard
-        tint={TINT[mode]}
-        eyebrow={copy.eyebrow}
-        headline={<span>{copy.headline}</span>}
-        body={
-          <>
-            <p>{copy.body}</p>
-            <div className="mt-6 flex justify-center">
-              <DayClock />
-            </div>
-          </>
-        }
-      />
+      {/* Quiet masthead */}
+      <header className="text-center pt-1">
+        <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-4">
+          The Prayer
+        </p>
+        <h1 className="font-serif text-title leading-[1.15] tracking-[-0.01em] text-paper">
+          Pray without ceasing.
+        </h1>
+        <p className="mt-3 font-serif italic text-detail text-paper/45">
+          1 Thessalonians 5:17
+        </p>
+        <div aria-hidden className="mx-auto mt-6 h-px w-10 bg-gold/50" />
+        <p className="mx-auto mt-6 max-w-[40ch] font-serif text-body text-paper/70 leading-[1.75]">
+          {TIME_LINE[mode]}
+        </p>
+      </header>
 
-      <div className="mt-5">
-        <DiptychPreview />
+      {/* The prayer of the heart */}
+      <div className="my-10 text-center">
+        <p className="font-serif text-title-sm leading-[1.5] text-paper/90">
+          Lord Jesus Christ,
+          <br />
+          Son of God,
+          <br />
+          have mercy on me, a sinner.
+        </p>
+        <p className="mt-5">
+          <Link
+            href="/prayers/learning/jesus-prayer"
+            className="font-sans text-detail font-medium text-gold/80 underline decoration-gold/30 underline-offset-4"
+          >
+            Learn how to pray it →
+          </Link>
+        </p>
       </div>
 
-      <div className="mt-7">
-        <MobileSectionLabel>The daily rules</MobileSectionLabel>
-        <MobileTimeline>
-          {[
-            <MobileCard
-              key="today"
-              eyebrow="Today's prayer"
-              title="Open the snapshot"
-              href="/prayers/today"
-              tint="warm"
-            >
-              <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
-                {fast.label}. Date, saint, readings, diptychs in one screen.
-              </p>
-            </MobileCard>,
-            <MobileCard
-              key="morning"
-              eyebrow="Morning rule"
-              title="Begin the day with God"
-              href="/prayers/morning"
-            >
-              <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
-                Sign of the Cross through dismissal. About 8 minutes.
-              </p>
-            </MobileCard>,
-            <MobileCard
-              key="evening"
-              eyebrow="Evening rule"
-              title="Lay the day down"
-              href="/prayers/evening"
-            >
-              <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
-                Trisagion, examination, Into Thy hands. About 8 minutes.
-              </p>
-            </MobileCard>,
-            <MobileCard
-              key="rope"
-              eyebrow="Prayer rope"
-              title="Count the Jesus Prayer"
-              href="/prayers/rope"
-              tint="gold"
-            >
-              <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
-                33, 50, or 100 knots. No streaks, no noise.
-              </p>
-            </MobileCard>,
-            <MobileCard
-              key="personal"
-              eyebrow="Diptychs"
-              title="The names you carry"
-              href="/prayers/personal"
-            >
-              <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
-                Living and reposed.
-              </p>
-            </MobileCard>,
-            <MobileCard
-              key="hours"
-              eyebrow="The Hours"
-              title="Standing through the day"
-              href="/prayers/hours"
-            >
-              <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
-                First, Third, Sixth, Ninth, Compline.
-              </p>
-            </MobileCard>,
-            <MobileCard
-              key="akathists"
-              eyebrow="Akathists"
-              title="The standing hymns"
-              href="/prayers/akathists"
-            >
-              <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
-                The Akathist to the Theotokos and others.
-              </p>
-            </MobileCard>,
-            <MobileCard
-              key="learn"
-              eyebrow="Learn to pray"
-              title="Six short lessons"
-              href="/prayers/learning"
-            >
-              <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
-                The sign of the Cross, the Jesus Prayer, the rules.
-              </p>
-            </MobileCard>,
-          ]}
-        </MobileTimeline>
+      <DiptychPreview />
+
+      <div className="mt-2">
+        <PrayerSectionLabel>The daily rules</PrayerSectionLabel>
+        <PrayerIndex>
+          <PrayerIndexRow
+            href="/prayers/today"
+            title="Today's prayer"
+            description={`${fast.label}. Date, saint, and readings in one screen.`}
+          />
+          <PrayerIndexRow
+            href="/prayers/morning"
+            title="Morning rule"
+            description="Begin the day with God — the Sign of the Cross through dismissal."
+            meta="~8 min"
+          />
+          <PrayerIndexRow
+            href="/prayers/evening"
+            title="Evening rule"
+            description="Lay the day down — examination of the day and Into Thy hands."
+            meta="~8 min"
+          />
+        </PrayerIndex>
+
+        <PrayerSectionLabel>Through the day</PrayerSectionLabel>
+        <PrayerIndex>
+          <PrayerIndexRow
+            href="/prayers/rope"
+            title="Prayer rope"
+            description="Count the Jesus Prayer on a digital komvoschini."
+          />
+          <PrayerIndexRow
+            href="/prayers/personal"
+            title="Diptychs"
+            description="The names you carry — the living and the reposed."
+          />
+          <PrayerIndexRow
+            href="/prayers/hours"
+            title="The Hours"
+            description="Short prayers that sanctify the daylight."
+          />
+          <PrayerIndexRow
+            href="/prayers/akathists"
+            title="The Akathists"
+            description="Long hymns of praise, prayed standing throughout."
+          />
+        </PrayerIndex>
+
+        <PrayerSectionLabel>Beginning</PrayerSectionLabel>
+        <PrayerIndex>
+          <PrayerIndexRow
+            href="/prayers/learning"
+            title="Learn to pray"
+            description="A short, beginner's path through Orthodox prayer."
+          />
+        </PrayerIndex>
       </div>
     </MobileShell>
   );

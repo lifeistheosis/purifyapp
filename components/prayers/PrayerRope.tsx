@@ -158,14 +158,15 @@ export function PrayerRope() {
 
   return (
     <section className="min-h-[calc(100dvh-72px)] bg-night text-paper relative select-none">
-      <header className="px-5 md:px-8 pt-10">
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
-          Prayer rope
+      <header className="mx-auto w-full max-w-[600px] px-6 md:px-8 pt-14 text-center">
+        <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-4">
+          Prayer · the Rope
         </p>
-        <h1 className="mt-1 font-sans text-title md:text-heading font-bold text-paper">
+        <h1 className="font-serif text-title-sm md:text-title leading-snug text-paper/90">
           {settings.line}
         </h1>
-        <p className="mt-1 font-sans text-caption text-paper/40">
+        <div aria-hidden className="mx-auto mt-6 h-px w-10 bg-gold/50" />
+        <p className="mt-5 font-sans text-caption text-paper/40">
           {knotCount}-knot rope · tap the rope or press space.{" "}
           <button
             type="button"
@@ -275,8 +276,8 @@ export function PrayerRope() {
         </p>
       )}
 
-      <footer className="px-5 md:px-8 pb-10">
-        <div className="grid grid-cols-3 gap-3 max-w-[600px] mx-auto">
+      <footer className="mx-auto w-full max-w-[600px] px-6 md:px-8 pb-12">
+        <div className="grid grid-cols-3 border-y border-paper/10 py-6">
           <Stat label="This session" value={count} />
           <Stat label="Last 7 days" value={stats.weekKnots + count} />
           <Stat
@@ -285,26 +286,26 @@ export function PrayerRope() {
             accent
           />
         </div>
-        <div className="mt-5 flex items-center justify-center gap-3 flex-wrap">
+        <div className="mt-7 flex items-center justify-center gap-6 flex-wrap font-sans text-detail">
           <button
             type="button"
             onClick={commit}
             disabled={count === 0}
-            className="inline-flex items-center gap-2 rounded-pill border border-gold/40 bg-gold/[0.08] text-gold px-5 py-2 font-sans text-detail font-semibold hover:bg-gold/[0.14] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-gold/85 hover:text-paper transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
             Save session
           </button>
           <button
             type="button"
             onClick={() => setCount((c) => Math.max(0, c - 1))}
-            className="inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.04] text-paper/75 px-4 py-2 font-sans text-detail hover:bg-paper/10 transition-colors"
+            className="text-paper/50 hover:text-paper transition-colors"
           >
             ← one back
           </button>
           <button
             type="button"
             onClick={() => setCount(0)}
-            className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.02] text-paper/55 px-4 py-2 font-sans text-detail hover:text-paper transition-colors"
+            className="text-paper/40 hover:text-paper transition-colors"
           >
             Reset
           </button>
@@ -324,12 +325,12 @@ export function PrayerRope() {
 
 function Stat({ label, value, accent }: { label: string; value: number; accent?: boolean }) {
   return (
-    <div className={`rounded-md border ${accent ? "border-gold/35 bg-gold/[0.06]" : "border-paper/10 bg-paper/[0.02]"} p-4 text-center`}>
-      <p className={`font-sans text-eyebrow uppercase tracking-[1.2px] ${accent ? "text-gold/80" : "text-paper/45"}`}>
-        {label}
-      </p>
-      <p className={`mt-1 font-sans text-title-sm font-bold tabular-nums ${accent ? "text-gold" : "text-paper"}`}>
+    <div className="text-center">
+      <p className={`font-serif text-title-sm tabular-nums ${accent ? "text-gold/90" : "text-paper/90"}`}>
         {value.toLocaleString()}
+      </p>
+      <p className="mt-1.5 font-sans text-eyebrow uppercase tracking-[2px] text-paper/40">
+        {label}
       </p>
     </div>
   );

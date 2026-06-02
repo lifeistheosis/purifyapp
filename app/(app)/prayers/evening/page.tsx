@@ -19,12 +19,12 @@ export default async function EveningRulePage() {
   const rule = loaded?.data ?? (eveningRule as Rule);
   const isLocalized = loaded?.isLocalized ?? false;
   return (
-    <section className="bg-night px-5 md:px-8 py-12 md:py-16 min-h-screen">
-      <div className="mx-auto max-w-[760px] w-full">
-        {locale !== "en" && !isLocalized ? (
+    <section className="bg-night min-h-screen px-6 md:px-8 py-16 md:py-24">
+      {locale !== "en" && !isLocalized ? (
+        <div className="mx-auto mb-10 w-full max-w-[640px]">
           <ContentNotYetTranslated locale={locale} kind="prayer" />
-        ) : null}
-      </div>
+        </div>
+      ) : null}
       <PrayerRuleReader rule={rule} />
     </section>
   );

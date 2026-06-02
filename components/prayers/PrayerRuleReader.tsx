@@ -127,72 +127,72 @@ export function PrayerRuleReader({ rule }: { rule: Rule }) {
   }
 
   return (
-    <article className="mx-auto max-w-[760px] w-full">
-      <header className="mb-8">
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-          Daily prayer
+    <article className="mx-auto w-full max-w-[640px]">
+      <header className="mb-12 md:mb-14">
+        <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-5">
+          {eyebrowFor(rule)}
         </p>
-        <h1 className="font-sans text-display-sm md:text-display font-bold text-paper leading-[1.05] tracking-[-0.02em]">
+        <h1 className="font-serif text-title md:text-heading leading-[1.15] tracking-[-0.01em] text-paper">
           {rule.title}
         </h1>
         {rule.subtitle && (
-          <p className="mt-3 font-serif italic text-body text-paper/65">
+          <p className="mt-4 font-serif italic text-detail text-paper/45">
             {rule.subtitle}
           </p>
         )}
-        <p className="mt-5 font-serif text-body text-paper/80 leading-[1.65]">
-          {rule.intro}
-        </p>
-        <p className="mt-3 font-sans text-caption text-paper/45">
-          About {rule.estimatedMinutes} minutes
+        <div aria-hidden className="mt-7 h-px w-10 bg-gold/50" />
+        {rule.intro && (
+          <p className="mt-7 font-serif text-body text-paper/70 leading-[1.8]">
+            {rule.intro}
+          </p>
+        )}
+        <p className="mt-4 font-sans text-caption text-paper/35">
+          About {rule.estimatedMinutes} min · {total}{" "}
+          {total === 1 ? "prayer" : "prayers"}
         </p>
       </header>
 
-      {/* Progress strip — today */}
-      <div className="mb-4 rounded-md border border-paper/12 bg-paper/[0.03] p-4">
-        <div className="flex items-center justify-between mb-2 gap-3 flex-wrap">
-          <p className="font-sans text-detail text-paper/75">
-            <span className="font-semibold text-paper">{completedCount}</span>
-            <span className="text-paper/55"> of {total} prayed today</span>
-          </p>
-          <div className="flex items-center gap-3 text-caption font-sans">
-            <button
-              type="button"
-              onClick={markAll}
-              disabled={!hydrated || allDone}
-              className="text-paper/60 hover:text-paper transition-colors disabled:opacity-40 disabled:hover:text-paper/60"
-            >
-              Mark all
-            </button>
-            <span className="text-paper/25">·</span>
-            <button
-              type="button"
-              onClick={reset}
-              disabled={!hydrated || completedCount === 0}
-              className="text-paper/60 hover:text-paper transition-colors disabled:opacity-40 disabled:hover:text-paper/60"
-            >
-              Reset
-            </button>
-          </div>
-        </div>
-        <div className="h-[3px] rounded-full bg-paper/8 overflow-hidden">
-          <div
-            className="h-full bg-gold transition-[width] duration-300 ease-out"
-            style={{ width: `${Math.round(progress * 100)}%` }}
-          />
+      {/* Progress — today. A quiet line over a hairline, not a card. */}
+      <div className="mb-2 flex items-center justify-between gap-4">
+        <p className="font-sans text-detail text-paper/50">
+          <span className="text-paper/85 tabular-nums">{completedCount}</span> of{" "}
+          {total} prayed today
+        </p>
+        <div className="flex items-center gap-3 font-sans text-caption">
+          <button
+            type="button"
+            onClick={markAll}
+            disabled={!hydrated || allDone}
+            className="text-paper/45 hover:text-paper transition-colors disabled:opacity-30 disabled:hover:text-paper/45"
+          >
+            Mark all
+          </button>
+          <span className="text-paper/20">·</span>
+          <button
+            type="button"
+            onClick={reset}
+            disabled={!hydrated || completedCount === 0}
+            className="text-paper/45 hover:text-paper transition-colors disabled:opacity-30 disabled:hover:text-paper/45"
+          >
+            Reset
+          </button>
         </div>
       </div>
+      <div className="h-px w-full bg-paper/10 overflow-hidden">
+        <div
+          className="h-full bg-gold/70 transition-[width] duration-300 ease-out"
+          style={{ width: `${Math.round(progress * 100)}%` }}
+        />
+      </div>
 
-      {/* Completion banner */}
+      {/* Completion — a quiet doxology, no banner. */}
       {allDone && (
-        <div className="mb-6 rounded-md border border-gold/40 bg-gold/[0.08] p-4 text-center">
-          <p className="font-serif text-body text-paper">
-            Glory to God. Rule complete for today.
-          </p>
-        </div>
+        <p className="mt-8 text-center font-serif italic text-detail text-gold/70">
+          Glory to God. The rule is complete for today.
+        </p>
       )}
 
-      <div className="space-y-2.5">
+      <div className="mt-2 border-t border-paper/10">
         {rule.prayers.map((p) => (
           <PrayerCard
             key={p.id}
@@ -205,13 +205,25 @@ export function PrayerRuleReader({ rule }: { rule: Rule }) {
         ))}
       </div>
 
-      <footer className="mt-12 pt-6 border-t border-paper/10">
-        <p className="font-sans text-caption text-paper/40">
+      <footer className="mt-14">
+        <p className="font-sans text-caption text-paper/30">
           Source: {rule.source}
         </p>
       </footer>
     </article>
   );
+}
+
+function eyebrowFor(rule: Rule): string {
+  switch (rule.kind) {
+    case "akathist":
+      return "Prayer · Akathist";
+    case "hour":
+    case "compline":
+      return "Prayer · the Hours";
+    default:
+      return "Prayer · Daily rule";
+  }
 }
 
 // ── AudioRow ────────────────────────────────────────────────────────────────
@@ -223,14 +235,14 @@ function AudioRow({ src }: { src: string }) {
   const [errored, setErrored] = useState(false);
   if (errored) {
     return (
-      <p className="mt-3 font-sans text-eyebrow text-paper/40 italic">
+      <p className="mt-4 font-serif italic text-detail text-paper/35">
         Audio recording not yet shipped for this prayer.
       </p>
     );
   }
   return (
-    <div className="mt-4 rounded-md border border-paper/10 bg-paper/[0.03] p-3">
-      <p className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45 mb-2">
+    <div className="mt-5 border-t border-paper/10 pt-4">
+      <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/40 mb-2">
         Sung / Chanted
       </p>
       <audio
@@ -266,26 +278,17 @@ function PrayerCard({
   );
 
   return (
-    <details
-      id={prayer.id}
-      open
-      className={cn(
-        "group rounded-md border transition-colors",
-        isDone
-          ? "border-emerald-500/30 bg-emerald-500/[0.04]"
-          : "border-paper/12 bg-paper/[0.03] open:bg-paper/[0.05]",
-      )}
-    >
-      <summary className="cursor-pointer list-none px-5 py-3.5 flex items-center justify-between gap-3">
+    <details id={prayer.id} open className="group border-b border-paper/10">
+      <summary className="cursor-pointer list-none py-4 flex items-center justify-between gap-3">
         <span
           className={cn(
-            "font-sans text-ui font-semibold leading-tight transition-colors",
-            isDone ? "text-paper/55 line-through" : "text-paper",
+            "font-serif text-title-sm leading-snug transition-colors",
+            isDone ? "text-paper/40 line-through" : "text-paper/90",
           )}
         >
           {prayer.title}
         </span>
-        <span className="flex items-center gap-2">
+        <span className="flex shrink-0 items-center gap-3">
           <button
             type="button"
             onClick={(e) => {
@@ -297,52 +300,54 @@ function PrayerCard({
             aria-label={bookmarked ? "Remove bookmark" : "Bookmark this prayer"}
             title={bookmarked ? "Bookmarked" : "Bookmark"}
             className={cn(
-              "text-ui transition-colors px-1.5",
-              bookmarked ? "text-gold" : "text-paper/35 hover:text-paper",
+              "text-ui transition-colors",
+              bookmarked ? "text-gold/90" : "text-paper/30 hover:text-paper",
             )}
           >
             {bookmarked ? "★" : "☆"}
           </button>
           <span
             aria-hidden
-            className="text-paper/35 text-eyebrow group-open:rotate-180 transition-transform duration-200"
+            className="text-paper/30 text-eyebrow group-open:rotate-180 transition-transform duration-200"
           >
             ▾
           </span>
         </span>
       </summary>
-      <div className="px-5 pb-5 -mt-1">
+      <div className="pb-7">
         {prayer.instruction && (
-          <p className="font-sans italic text-detail text-paper/55 leading-[1.55] mb-3">
+          <p className="font-serif italic text-detail text-paper/45 leading-[1.55] mb-4">
             {prayer.instruction}
           </p>
         )}
         {prayer.text && (
-          <div className="font-serif text-body md:text-lede text-paper/90 leading-[1.7] whitespace-pre-line">
+          <div className="font-serif text-body text-paper/85 leading-[1.85] whitespace-pre-line">
             {prayer.text}
           </div>
         )}
         {prayer.refrain && (
-          <p className="mt-4 font-serif italic text-body text-gold/85 leading-[1.55] border-l-2 border-gold/30 pl-3">
+          <p className="mt-5 border-l border-gold/30 pl-4 font-serif italic text-body text-gold/80 leading-[1.6]">
             {prayer.refrain}
           </p>
         )}
         {prayer.audio && <AudioRow src={prayer.audio} />}
-        <div className="mt-5">
+        <div className="mt-6">
           <button
             type="button"
             onClick={onToggle}
             disabled={!hydrated}
             aria-pressed={isDone}
             className={cn(
-              "inline-flex items-center gap-2 rounded-pill border h-[36px] px-4 font-sans text-detail font-medium transition-colors",
+              "inline-flex items-center gap-2 font-sans text-detail transition-colors",
               isDone
-                ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-200"
-                : "border-paper/15 bg-paper/[0.04] text-paper/85 hover:bg-paper/10 hover:border-paper/30",
+                ? "text-gold/80 hover:text-paper"
+                : "text-paper/50 hover:text-paper",
             )}
           >
-            <span aria-hidden>{isDone ? "✓" : "○"}</span>
-            {isDone ? "Prayed" : "Mark prayed"}
+            <span aria-hidden className="text-caption">
+              {isDone ? "✓" : "○"}
+            </span>
+            {isDone ? "Prayed today" : "Mark prayed"}
           </button>
         </div>
       </div>

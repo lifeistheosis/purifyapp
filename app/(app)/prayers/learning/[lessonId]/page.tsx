@@ -34,54 +34,53 @@ export default async function LessonPage({ params }: { params: Params }) {
   const { prev, next } = adjacentLessons(lessonId, locale);
 
   return (
-    <section className="bg-night px-5 md:px-8 py-12 md:py-20">
-      <div className="mx-auto max-w-[720px] w-full">
+    <section className="bg-night min-h-screen px-6 md:px-8 py-16 md:py-24">
+      <div className="mx-auto max-w-[620px] w-full">
         <Link
           href="/prayers/learning"
-          className="inline-flex items-center font-sans text-caption uppercase tracking-[1.5px] text-paper/50 hover:text-paper transition-colors"
+          className="inline-flex items-center font-sans text-eyebrow uppercase tracking-[2px] text-paper/40 hover:text-paper transition-colors"
         >
           {isDe ? "← Beten lernen" : "← Learn to pray"}
         </Link>
 
-        <header className="mt-6 mb-10">
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/50">
+        <header className="mt-8 mb-12 md:mb-14">
+          <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-5">
             {isDe ? "Lektion" : "Lesson"} {lesson.order} · {lesson.estimatedMinutes}{" "}
             {isDe ? "Min." : "min"}
           </p>
-          <h1 className="mt-2 font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.02em] text-paper">
+          <h1 className="font-serif text-title md:text-heading leading-[1.15] tracking-[-0.01em] text-paper">
             {lesson.title}
           </h1>
+          <div aria-hidden className="mt-7 h-px w-10 bg-gold/50" />
         </header>
 
-        <hr className="mb-10 border-0 h-px bg-white/10" />
-
-        <div className="font-serif text-body leading-[1.7] text-paper/85 whitespace-pre-line">
+        <div className="font-serif text-body leading-[1.85] text-paper/75 whitespace-pre-line">
           {lesson.intro}
         </div>
 
         {lesson.prayer && (
-          <div className="mt-10 rounded-lg border border-paper/12 bg-paper/[0.04] p-6 md:p-8">
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/50 mb-4">
+          <div className="mt-12 border-l border-gold/30 pl-6">
+            <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-4">
               {isDe ? "Das Gebet" : "The prayer"}
             </p>
-            <div className="font-serif text-lede md:text-lede leading-[1.75] text-paper/95 whitespace-pre-line">
+            <div className="font-serif text-lede leading-[1.8] text-paper/90 whitespace-pre-line">
               {lesson.prayer}
             </div>
           </div>
         )}
 
         {lesson.tryThis && (
-          <div className="mt-10 rounded-lg border border-accent/30 bg-accent/[0.06] p-6">
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-accent/80 mb-3">
+          <div className="mt-12">
+            <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-3">
               {isDe ? "Versuch das" : "Try this"}
             </p>
-            <p className="font-serif text-body leading-[1.65] text-paper/85">
+            <p className="font-serif italic text-body leading-[1.7] text-paper/70">
               {lesson.tryThis}
             </p>
           </div>
         )}
 
-        <nav className="mt-16 pt-8 border-t border-white/8 flex items-center justify-between gap-4">
+        <nav className="mt-16 pt-8 border-t border-paper/10 flex items-center justify-between gap-4">
           {prev ? (
             <Link
               href={`/prayers/learning/${prev.id}`}

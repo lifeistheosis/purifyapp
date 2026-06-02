@@ -19,7 +19,7 @@ export async function generateMetadata({
   return { title: h.title, description: h.intro.slice(0, 160) };
 }
 
-const SECTION = "px-5 md:px-8 py-16 md:py-20";
+const SECTION = "px-6 md:px-8 py-16 md:py-24 min-h-screen";
 
 export default async function HourPage({
   params,
