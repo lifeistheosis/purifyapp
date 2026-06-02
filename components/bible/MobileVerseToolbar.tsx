@@ -32,12 +32,23 @@ export function MobileVerseToolbar({
  state,
  onAction,
  onClose,
+ itemNoun = "verse",
+ bookmarkNoun,
 }: {
  reference: string;
  state: ActionState;
  onAction: (a: MobileVerseAction) => void;
  onClose: () => void;
+ /** What a single annotatable unit is called, for accurate a11y labels.
+ * Defaults to "verse" (Bible reader); the Fathers reader passes
+ * "paragraph". */
+ itemNoun?: string;
+ /** What the bookmark targets, when it differs from `itemNoun`. The
+ * Fathers reader bookmarks the whole section, not the paragraph. */
+ bookmarkNoun?: string;
 }) {
+ const bmNoun = bookmarkNoun ?? itemNoun;
+ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
  // Close on Escape.
  useEffect(() => {
  function onKey(e: KeyboardEvent) {
@@ -68,11 +79,11 @@ export function MobileVerseToolbar({
  : "border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10";
 
  return (
- <div className="md:hidden fixed inset-0 z-[55]" role="dialog" aria-modal="false" aria-label={`Verse actions, ${reference}`}>
+ <div className="md:hidden fixed inset-0 z-[55]" role="dialog" aria-modal="false" aria-label={`${cap(itemNoun)} actions, ${reference}`}>
  {/* Transparent backdrop to capture outside taps. */}
  <button
  type="button"
- aria-label="Dismiss verse actions"
+ aria-label={`Dismiss ${itemNoun} actions`}
  onClick={onClose}
  className="absolute inset-0 bg-transparent"
  />
@@ -93,7 +104,7 @@ export function MobileVerseToolbar({
  <button
  type="button"
  onClick={() => handle("highlight")}
- aria-label={state.highlighted ? "Remove highlight" : "Highlight verse"}
+ aria-label={state.highlighted ? "Remove highlight" : `Highlight ${itemNoun}`}
  aria-pressed={state.highlighted}
  className={
  "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
@@ -118,7 +129,7 @@ export function MobileVerseToolbar({
  <button
  type="button"
  onClick={() => handle("copyLink")}
- aria-label={state.copied ? "Verse link copied" : "Copy verse link"}
+ aria-label={state.copied ? "Link copied" : `Copy ${itemNoun} link`}
  className={
  "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
  (state.copied
@@ -135,7 +146,7 @@ export function MobileVerseToolbar({
  <button
  type="button"
  onClick={() => handle("bookmark")}
- aria-label={state.bookmarked ? "Remove bookmark" : "Bookmark verse"}
+ aria-label={state.bookmarked ? "Remove bookmark" : `Bookmark ${bmNoun}`}
  aria-pressed={state.bookmarked}
  className={
  "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +

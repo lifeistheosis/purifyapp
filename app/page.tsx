@@ -199,7 +199,7 @@ export default async function Home() {
  <Link
  href="/whats-new"
  style={{ animationDelay: "120ms" }}
- className="hero-copy-in group inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.06] px-3 py-1.5 mb-5 hover:bg-paper/10 hover:border-paper/35 transition-colors duration-150"
+ className="hero-copy-in group inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.06] px-3 py-1.5 mb-7 hover:bg-paper/10 hover:border-paper/35 transition-colors duration-150"
  >
  <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] px-2 py-0.5 rounded-pill bg-gold text-night">
  {isDe ? "Neu" : "New"}
@@ -220,13 +220,13 @@ export default async function Home() {
  </h1>
  <p
  style={{ animationDelay: "340ms" }}
- className="hero-copy-in font-sans text-ui md:text-ui text-paper/85 mt-4 max-w-[520px]"
+ className="hero-copy-in font-sans text-ui md:text-ui text-paper/85 mt-6 max-w-[520px]"
  >
  {t(m, "home.heroSubtitle")}
  </p>
  <div
  style={{ animationDelay: "440ms" }}
- className="hero-copy-in mt-7 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4"
+ className="hero-copy-in mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4"
  >
  <ComingSoonCTA variant="inverse">
  {t(m, "nav.openPurify")}

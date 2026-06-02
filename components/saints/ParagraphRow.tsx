@@ -7,6 +7,10 @@ import {
  VerseContextMenu,
  type ContextMenuGroup,
 } from "@/components/bible/VerseContextMenu";
+import {
+ MobileVerseToolbar,
+ type MobileVerseAction,
+} from "@/components/bible/MobileVerseToolbar";
 import { cn } from "@/lib/cn";
 
 /**
@@ -59,6 +63,49 @@ export function ParagraphRow({
  null,
  );
  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+ // Mobile gesture state. A long-press opens the floating action toolbar;
+ // a bare tap (or a tap that turns into a scroll) leaves the UI untouched.
+ // Mirrors the Bible VerseRow so the two readers feel identical on touch.
+ const [showTools, setShowTools] = useState(false);
+ const pressTimerRef = useRef<number | null>(null);
+ const pressOriginRef = useRef<{ x: number; y: number } | null>(null);
+ const LONG_PRESS_MS = 400;
+ const SCROLL_SLOP_PX = 8;
+
+ function clearPressTimer() {
+ if (pressTimerRef.current !== null) {
+ window.clearTimeout(pressTimerRef.current);
+ pressTimerRef.current = null;
+ }
+ }
+ function cancelPress() {
+ clearPressTimer();
+ pressOriginRef.current = null;
+ }
+ function onTouchStart(e: React.TouchEvent) {
+ const t = e.touches[0];
+ if (!t) return;
+ pressOriginRef.current = { x: t.clientX, y: t.clientY };
+ clearPressTimer();
+ pressTimerRef.current = window.setTimeout(() => {
+ pressTimerRef.current = null;
+ setShowTools(true);
+ try {
+ navigator.vibrate?.(15);
+ } catch {
+ /* no-op */
+ }
+ }, LONG_PRESS_MS);
+ }
+ function onTouchMove(e: React.TouchEvent) {
+ const t = e.touches[0];
+ const origin = pressOriginRef.current;
+ if (!t || !origin) return;
+ const dx = Math.abs(t.clientX - origin.x);
+ const dy = Math.abs(t.clientY - origin.y);
+ if (dy > SCROLL_SLOP_PX || dx > SCROLL_SLOP_PX * 2) cancelPress();
+ }
 
  useEffect(() => {
  if (!editing) return;
@@ -138,21 +185,31 @@ export function ParagraphRow({
  >
  <div className="flex items-start gap-2">
  <p
- className="font-serif text-lede md:text-lede text-paper/90 leading-[1.7] flex-1 min-w-0"
+ className={cn(
+ "font-serif text-lede md:text-lede text-paper/90 leading-[1.7] flex-1 min-w-0 transition-colors duration-150",
+ showTools &&
+ "bg-gold/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(212,175,55,0.35)]",
+ )}
+ style={{ touchAction: "pan-y" }}
  onContextMenu={openContextMenu}
+ onTouchStart={onTouchStart}
+ onTouchMove={onTouchMove}
+ onTouchEnd={cancelPress}
+ onTouchCancel={cancelPress}
  >
  {text}
  </p>
 
- {/* Toolbar, touch always shows; md+ shows on hover. Matches the
- VerseRow toolbar opacity logic so the saint reader feels like
- an extension of the Bible reader. */}
+ {/* Desktop-only inline toolbar, hover-revealed at md+. On mobile the
+ same actions live in the MobileVerseToolbar popup opened by a
+ long-press (see below), so the text gets the full column width.
+ Mirrors the Bible VerseRow. */}
  <div
  className={cn(
- "flex items-center gap-1 shrink-0 transition-opacity duration-150",
+ "hidden md:flex items-center gap-1 shrink-0 transition-opacity duration-150",
  ann.highlighted || ann.note || editing
- ? "opacity-100"
- : "opacity-100 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100",
+ ? "md:opacity-100"
+ : "md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100",
  )}
  >
  <button
@@ -318,6 +375,42 @@ export function ParagraphRow({
  ],
  ] as ContextMenuGroup[]
  }
+ />
+ )}
+
+ {/* Mobile long-press action bar. Same floating component the Bible
+ reader uses; bookmark maps to the section-level bookmark (paragraphs
+ are too granular to save individually). */}
+ {showTools && (
+ <MobileVerseToolbar
+ reference={reference()}
+ itemNoun="paragraph"
+ bookmarkNoun="section"
+ state={{
+ highlighted: !!ann.highlighted,
+ bookmarked: sectionBookmarked,
+ hasNote: !!ann.note,
+ hasWordHighlights: false,
+ copied,
+ }}
+ onAction={(a: MobileVerseAction) => {
+ switch (a) {
+ case "highlight":
+ ann.toggleHighlight();
+ break;
+ case "bookmark":
+ toggleSectionBookmark();
+ break;
+ case "copyLink":
+ copyParagraphLink();
+ break;
+ case "note":
+ setDraft(ann.note ?? "");
+ setEditing(true);
+ break;
+ }
+ }}
+ onClose={() => setShowTools(false)}
  />
  )}
  </div>

@@ -64,9 +64,12 @@ export function WritingReader({
 
  return (
  <article
- className={`pt-12 md:pt-16 pb-24 safe-pb-reader ${FONT_CLASSES[font]} ${SIZE_CLASSES[size]}`}
+ className={`pt-6 md:pt-16 pb-24 safe-pb-reader ${FONT_CLASSES[font]} ${SIZE_CLASSES[size]}`}
  >
- <nav className="mb-10 flex items-center gap-2 font-sans text-detail text-paper/55">
+ {/* Breadcrumb, desktop only. On mobile the MobileTopBar already shows
+ the back arrow + work title, so this just duplicates chrome and
+ steals vertical space. */}
+ <nav className="mb-10 hidden md:flex items-center gap-2 font-sans text-detail text-paper/55">
  <Link
  href="/saints"
  className="hover:text-paper transition-colors duration-150"
@@ -84,7 +87,7 @@ export function WritingReader({
  <span className="text-paper truncate">{content.title}</span>
  </nav>
 
- <header className="pb-10 border-b border-paper/8">
+ <header className="pb-7 md:pb-10 border-b border-paper/8">
  <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  {saint.name}
  </p>
@@ -98,10 +101,12 @@ export function WritingReader({
  )}
  </header>
 
- {/* Table of contents, only for longer works (4+ sections). */}
+ {/* Table of contents, desktop only and only for longer works (4+
+ sections). On mobile the floating MobileWorkPill opens a contents
+ sheet, so this in-page block would be redundant. */}
  {content.sections.length >= 4 && (
  <details
- className="mt-8 group rounded-md border border-paper/12 bg-paper/[0.02] open:bg-paper/[0.04] transition-colors"
+ className="hidden md:block mt-8 group rounded-md border border-paper/12 bg-paper/[0.02] open:bg-paper/[0.04] transition-colors"
  open={!isLong}
  >
  <summary className="cursor-pointer list-none px-5 py-3.5 flex items-center justify-between">
