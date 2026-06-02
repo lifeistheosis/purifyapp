@@ -1,23 +1,25 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { UnsignedAccount } from "@/components/profile/UnsignedAccount";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { YouMobile } from "@/components/mobile/YouMobile";
+import { DesktopAccountGate } from "@/components/profile/DesktopAccountGate";
 
 export const metadata = {
   title: "Your account",
   description:
-    "Sign in to sync your highlights, notes, bookmarks, and prayer streaks across devices. Or keep everything local on this device. Your choice.",
+    "Sign in to sync your highlights, notes, and bookmarks across devices. Or keep everything local on this device. Your choice.",
 };
 
 const SECTION = "px-5 md:px-8 py-16 md:py-24";
 
 /**
- * Leaf `/account`. Signed-in users redirect into the tabbed dashboard.
- * Signed-out (or local-only) users see the dual chooser (local profile
- * vs public account).
+ * Leaf `/account`. On mobile this is the native "You" shell for both
+ * signed-in and local-only visitors (YouMobile branches client-side).
+ * On desktop, signed-in users are routed to the fuller dashboard at
+ * /account/profile (DesktopAccountGate, viewport-aware so mobile is
+ * untouched); signed-out visitors see the dual chooser.
  */
 export default async function AccountPage() {
   const supabase = await createClient();
@@ -25,12 +27,17 @@ export default async function AccountPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user) {
-    redirect("/account/profile");
-  }
-
   const locale = await getServerLocale();
   const m = getMessages(locale);
+
+  if (user) {
+    return (
+      <>
+        <YouMobile />
+        <DesktopAccountGate />
+      </>
+    );
+  }
 
   return (
     <>

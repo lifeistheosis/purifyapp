@@ -2,10 +2,16 @@
 
 // You / Account mobile shell — "the personal dashboard."
 //
-//   1. Violet profile hero (avatar + display name + member-since).
-//   2. SavedPreview — three most-recent bookmarks with kind chips.
-//   3. SettingsList — iOS-style row list (Account, Notifications,
-//      Language, Privacy, Support, What's new, About, Sign out).
+// Signed-in users get a native mobile experience here (the desktop
+// dashboard at /account/profile is reachable via the "Account &
+// security" row), built from three concerns:
+//
+//   1. Identity — violet welcome-back hero: avatar, display name,
+//      member-since.
+//   2. Reading life — a 2×2 stat grid (verses, paragraphs, notes,
+//      bookmarks) plus the most-recent saves.
+//   3. Account & sync — a settings list led by Account & security,
+//      then the rest (notifications, privacy, support, sign out).
 //
 // No streak counters or rhythm grids: the rule is the rule, the day is
 // the day. Prayer life is not scored back to the user.
@@ -14,10 +20,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { MobileShell } from "./MobileShell";
-import { MobileCard } from "./MobileCard";
 import { MobileHeader } from "./MobileHeader";
 import { MobileHeroCard } from "./MobileHeroCard";
 import { MobileSectionLabel } from "./MobileSectionLabel";
+import { MobileStatGrid } from "./MobileStatGrid";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { SavedPreview } from "./SavedPreview";
 import { SettingsList, type SettingsItem } from "./SettingsList";
@@ -33,6 +39,13 @@ type AuthState =
       joinedAt: string | null;
     };
 
+type ReadingStats = {
+  verses: number;
+  paragraphs: number;
+  notes: number;
+  bookmarks: number;
+};
+
 function formatJoined(iso: string | null): string {
   if (!iso) return "";
   try {
@@ -46,10 +59,51 @@ function formatJoined(iso: string | null): string {
   }
 }
 
+/** Scan localStorage for the same reading counters the desktop dashboard shows. */
+function readReadingStats(): ReadingStats {
+  let verses = 0;
+  let paragraphs = 0;
+  let notes = 0;
+  let bookmarks = 0;
+  if (typeof window === "undefined")
+    return { verses, paragraphs, notes, bookmarks };
+  try {
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const k = window.localStorage.key(i);
+      if (!k) continue;
+      try {
+        if (k.startsWith("purify:bible:")) {
+          const v = JSON.parse(window.localStorage.getItem(k) ?? "{}");
+          if (v.highlighted) verses++;
+          if (typeof v.note === "string" && v.note.trim().length > 0) notes++;
+        } else if (k.startsWith("purify:saint:")) {
+          const v = JSON.parse(window.localStorage.getItem(k) ?? "{}");
+          if (v.highlighted) paragraphs++;
+          if (typeof v.note === "string" && v.note.trim().length > 0) notes++;
+        }
+      } catch {
+        /* skip malformed key */
+      }
+    }
+    const raw = window.localStorage.getItem("purify:bookmarks");
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) bookmarks = arr.length;
+    }
+  } catch {
+    /* storage blocked */
+  }
+  return { verses, paragraphs, notes, bookmarks };
+}
+
 export function YouMobile() {
   const [auth, setAuth] = useState<AuthState>({ kind: "loading" });
-  const [counts, setCounts] = useState({
-    intentions: 0,
+  const [intentions, setIntentions] = useState(0);
+  const [reading, setReading] = useState<ReadingStats>({
+    verses: 0,
+    paragraphs: 0,
+    notes: 0,
+    bookmarks: 0,
   });
 
   useEffect(() => {
@@ -80,18 +134,23 @@ export function YouMobile() {
     })();
 
     function recompute() {
-      const intentions =
-        readIntentions("living").length + readIntentions("departed").length;
-      setCounts({ intentions });
+      setIntentions(
+        readIntentions("living").length + readIntentions("departed").length,
+      );
+      setReading(readReadingStats());
     }
     recompute();
     function on() {
       recompute();
     }
     window.addEventListener("purify:intentions", on);
+    window.addEventListener("purify:annotation", on);
+    window.addEventListener("purify:bookmark", on);
     window.addEventListener("storage", on);
     return () => {
       window.removeEventListener("purify:intentions", on);
+      window.removeEventListener("purify:annotation", on);
+      window.removeEventListener("purify:bookmark", on);
       window.removeEventListener("storage", on);
     };
   }, []);
@@ -100,22 +159,37 @@ export function YouMobile() {
   const displayName = signedIn ? auth.displayName : "Local profile";
   const memberSince = signedIn ? formatJoined(auth.joinedAt) : "";
 
-  const settings: SettingsItem[] = [
-    {
-      label: signedIn ? "Account" : "Sign in",
-      href: signedIn ? "/account" : "/signin?next=/account",
-      hint: signedIn ? "Email, password, sessions, data export" : "Sync across devices (optional)",
+  const settings: SettingsItem[] = [];
+
+  if (signedIn) {
+    settings.push({
+      label: "Account & security",
+      href: "/account/profile",
+      hint: "Profile, password, sessions, data export",
       icon: <Glyph kind="user" />,
-    },
+    });
+  } else {
+    settings.push({
+      label: "Sign in",
+      href: "/signin?next=/account",
+      hint: "Sync across devices (optional)",
+      icon: <Glyph kind="user" />,
+    });
+  }
+
+  settings.push(
     {
       label: "Diptychs",
       href: "/prayers/personal",
-      hint: `${counts.intentions} names you carry`,
+      hint:
+        intentions === 0
+          ? "The names you carry, living and reposed"
+          : `${intentions} names you carry`,
       icon: <Glyph kind="halo" />,
     },
     {
       label: "Notifications",
-      href: "/account/(signed)/data",
+      href: "/account/data",
       hint: "Prayer reminders, off by default",
       icon: <Glyph kind="bell" />,
     },
@@ -143,7 +217,7 @@ export function YouMobile() {
       hint: "What Purify is, and why",
       icon: <Glyph kind="cross" />,
     },
-  ];
+  );
 
   if (signedIn) {
     settings.push({
@@ -167,8 +241,10 @@ export function YouMobile() {
     >
       <MobileHeroCard
         tint="violet"
-        eyebrow={signedIn ? "Signed in" : "Sign in to sync"}
-        kicker={signedIn && memberSince ? `Member since ${memberSince}` : undefined}
+        eyebrow={signedIn ? "Welcome back" : "Sign in to sync"}
+        kicker={
+          signedIn && memberSince ? `Member since ${memberSince}` : undefined
+        }
         headline={
           signedIn ? (
             <span>{displayName}</span>
@@ -181,8 +257,8 @@ export function YouMobile() {
         body={
           signedIn ? (
             <span>
-              Your bookmarks, highlights, prayer rhythm, and bumps stay with
-              your account, synced across every device you sign in on.
+              Your highlights, notes, and bookmarks sync to every device you
+              sign in on. Manage your profile, password, and sessions below.
             </span>
           ) : auth.kind === "anon" ? (
             <span>
@@ -208,31 +284,39 @@ export function YouMobile() {
             </div>
           ) : undefined
         }
-        href={signedIn ? "/account" : undefined}
       />
 
-      <div className="mt-5">
-        <SavedPreview />
-      </div>
+      {signedIn ? (
+        <div className="mt-6">
+          <MobileSectionLabel>Your reading</MobileSectionLabel>
+          <MobileStatGrid
+            cols={2}
+            stats={[
+              { label: "Verses", value: reading.verses, href: "/saved" },
+              {
+                label: "Paragraphs",
+                value: reading.paragraphs,
+                href: "/saved",
+              },
+              { label: "Notes", value: reading.notes, href: "/saved" },
+              { label: "Bookmarks", value: reading.bookmarks, href: "/saved" },
+            ]}
+          />
+          <div className="mt-4">
+            <SavedPreview />
+          </div>
+        </div>
+      ) : (
+        <div className="mt-5">
+          <SavedPreview />
+        </div>
+      )}
 
       <div className="mt-7">
-        <MobileSectionLabel>Settings</MobileSectionLabel>
+        <MobileSectionLabel>
+          {signedIn ? "Account" : "Settings"}
+        </MobileSectionLabel>
         <SettingsList items={settings} />
-      </div>
-
-      <div className="mt-7">
-        <MobileCard
-          eyebrow="Diptychs"
-          title="The names you carry"
-          href="/prayers/personal"
-          tint="gold"
-        >
-          <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.5]">
-            {counts.intentions === 0
-              ? "Add the people you pray for, living and reposed."
-              : `${counts.intentions} names. Anniversaries and namedays surface on /prayers/today.`}
-          </p>
-        </MobileCard>
       </div>
     </MobileShell>
   );
