@@ -73,7 +73,7 @@ export default async function PrayersPage() {
               className="pointer-events-none absolute inset-x-0 top-0 h-[520px]"
               aria-hidden
             >
-              <PrayerSlideshowHero priority className="opacity-[0.14]" />
+              <PrayerSlideshowHero priority className="opacity-[0.22]" />
               {/* Fade the wash down into the night so the page still reads
                   like a book, not a hero. */}
               <div className="absolute inset-0 bg-gradient-to-b from-night/55 via-night/75 to-night" />
