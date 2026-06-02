@@ -10,8 +10,8 @@ import { StudyRail } from "@/components/bible/StudyRail";
 import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
 import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
 import { ReadingProgressBar } from "@/components/bible/ReadingProgressBar";
-import { BibleLastVisitWriter } from "@/components/bible/BibleLastVisitWriter";
 import { ChapterStickyHeader } from "@/components/bible/ChapterStickyHeader";
+import { ChapterBookmarkButton } from "@/components/bible/ChapterBookmarkButton";
 import { MobileChapterStrip } from "@/components/bible/MobileChapterStrip";
 import { MobileChapterPill } from "@/components/bible/MobileChapterPill";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
@@ -144,13 +144,13 @@ export default async function BibleChapterPage({
  <MobileTopBar
  title={`${b!.name} ${chapterNum}`}
  back="/bible"
- trailing={<MobileReaderActions />}
+ trailing={<MobileReaderActions book={book} bookName={b!.name} chapter={chapterNum} />}
  />
  <div className="bg-night flex">
  <ChapterKeyNav slug={book} chapter={chapterNum} />
- <BibleLastVisitWriter slug={book} bookName={b!.name} chapter={chapterNum} />
  <VerseFocusFlash />
  <ReadingProgressBar
+ slug={book}
  bookName={b!.name}
  chapter={chapterNum}
  totalVerses={totalVerses}
@@ -181,6 +181,7 @@ export default async function BibleChapterPage({
  <ReaderFontSizeButton />
  <ReaderFontFamilyButton />
  {showInterlinear && <InterlinearToggle />}
+ <ChapterBookmarkButton book={book} bookName={b!.name} chapter={chapterNum} />
  </div>
  </div>
  {/* Row 2, mobile only: Interlinear pill (NT) + Reader chip sit as a

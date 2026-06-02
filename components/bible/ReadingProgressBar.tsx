@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { writeLastRead } from "@/lib/bible/lastRead";
 
 /**
  * Slim sticky progress bar at the top of a chapter, plus a mobile-only
@@ -10,12 +11,18 @@ import { useEffect, useRef, useState } from "react";
  * - Current-verse detection: the topmost <div id="v..."> below the
  * navbar offset is "current".
  * - Throttled with requestAnimationFrame.
+ * - Persists the live in-view verse to `purify:bible:last` (debounced) so the
+ * mobile "Continue reading" card can resume at the verse, not the chapter top.
+ * This is the sole writer of that key (it runs `compute()` on mount, so it
+ * records the chapter immediately too).
  */
 export function ReadingProgressBar({
+ slug,
  bookName,
  chapter,
  totalVerses,
 }: {
+ slug: string;
  bookName: string;
  chapter: number;
  totalVerses: number;
@@ -26,6 +33,37 @@ export function ReadingProgressBar({
 
  useEffect(() => {
  const NAV_OFFSET = 88; // 72 navbar + a little breathing room
+
+ let lastWriteTs = 0;
+ let pendingVerse = 1;
+ let writeTimer: ReturnType<typeof setTimeout> | null = null;
+
+ function write(verse: number) {
+ lastWriteTs = Date.now();
+ writeLastRead({ book: slug, bookName, chapter, verse, totalVerses, ts: lastWriteTs });
+ }
+
+ // Throttle: write at most ~once/750ms so scrolling doesn't thrash
+ // localStorage. A trailing timer guarantees the final position lands.
+ function persist(verse: number) {
+ pendingVerse = verse;
+ if (Date.now() - lastWriteTs >= 750) {
+ write(verse);
+ } else if (!writeTimer) {
+ writeTimer = setTimeout(() => {
+ writeTimer = null;
+ write(pendingVerse);
+ }, 750);
+ }
+ }
+
+ function flush() {
+ if (writeTimer) {
+ clearTimeout(writeTimer);
+ writeTimer = null;
+ }
+ write(pendingVerse);
+ }
 
  function compute() {
  tickingRef.current = false;
@@ -48,6 +86,7 @@ export function ReadingProgressBar({
  }
  }
  setCurrentVerse(cur);
+ persist(cur);
  }
 
  function onScroll() {
@@ -56,14 +95,23 @@ export function ReadingProgressBar({
  requestAnimationFrame(compute);
  }
 
+ function onHide() {
+ if (document.visibilityState === "hidden") flush();
+ }
+
  compute();
  window.addEventListener("scroll", onScroll, { passive: true });
  window.addEventListener("resize", onScroll);
+ window.addEventListener("pagehide", flush);
+ document.addEventListener("visibilitychange", onHide);
  return () => {
  window.removeEventListener("scroll", onScroll);
  window.removeEventListener("resize", onScroll);
+ window.removeEventListener("pagehide", flush);
+ document.removeEventListener("visibilitychange", onHide);
+ if (writeTimer) clearTimeout(writeTimer);
  };
- }, []);
+ }, [slug, bookName, chapter, totalVerses]);
 
  return (
  <>

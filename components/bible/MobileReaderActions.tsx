@@ -8,15 +8,18 @@ import {
   ReaderFontFamilyButton,
   ReaderFontSizeButton,
 } from "@/components/reader/ReaderPrefs";
+import { useBookmarks } from "@/lib/bookmarks";
+import { cn } from "@/lib/cn";
 
 /**
  * Mobile-only trailing-slot action cluster for the Bible reader top
  * bar. Two stub-or-live affordances modeled on the YouVersion top
  * right cluster:
  *
- *  - Bookmark: stub icon. Real persistence lands in a follow-up.
- *    Tapping briefly flashes a "saved" hint but doesn't yet write
- *    anywhere, the prompt explicitly says to stub.
+ *  - Bookmark: toggles a `bible-chapter` bookmark via the shared
+ *    useBookmarks hook (so it appears on /saved and syncs when the
+ *    reader is signed in). Filled gold when the current chapter is
+ *    already saved; tapping again removes it.
  *  - Settings: opens the existing `ReaderFontFamilyButton` +
  *    `ReaderFontSizeButton` controls inside a bottom Sheet. These
  *    are the same controls the saints reader uses, so a reader's
@@ -24,13 +27,27 @@ import {
  *
  * Hidden on `md+`, desktop has the inline control row.
  */
-export function MobileReaderActions() {
+export function MobileReaderActions({
+  book,
+  bookName,
+  chapter,
+}: {
+  book: string;
+  bookName: string;
+  chapter: number;
+}) {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [bookmarkFlash, setBookmarkFlash] = useState(false);
+  const bookmarks = useBookmarks();
+  const isOn = bookmarks.isBookmarked({ kind: "bible-chapter", book, chapter });
 
-  function flashBookmark() {
-    setBookmarkFlash(true);
-    setTimeout(() => setBookmarkFlash(false), 900);
+  function toggleBookmark() {
+    bookmarks.toggle({
+      kind: "bible-chapter",
+      book,
+      bookName,
+      chapter,
+      label: `${bookName} ${chapter}`,
+    });
   }
 
   return (
@@ -38,16 +55,15 @@ export function MobileReaderActions() {
       <div className="flex items-center gap-0.5">
         <button
           type="button"
-          aria-label="Bookmark this chapter"
-          onClick={flashBookmark}
-          className={
-            "h-10 w-10 inline-flex items-center justify-center rounded-pill transition-colors " +
-            (bookmarkFlash
-              ? "text-gold"
-              : "text-paper/70 hover:text-paper")
-          }
+          aria-pressed={isOn}
+          aria-label={isOn ? "Remove chapter bookmark" : "Bookmark this chapter"}
+          onClick={toggleBookmark}
+          className={cn(
+            "h-10 w-10 inline-flex items-center justify-center rounded-pill transition-colors",
+            isOn ? "text-gold" : "text-paper/70 hover:text-paper",
+          )}
         >
-          <Bookmark size={18} />
+          <Bookmark size={18} fill={isOn ? "currentColor" : "none"} />
         </button>
         <button
           type="button"
