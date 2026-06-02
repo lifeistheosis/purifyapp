@@ -23,6 +23,23 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v8.1",
+ kind: "The prayer section, rebuilt as a quiet prayer book",
+ date: "June 2, 2026",
+ blurb:
+ "The prayers were all there, but the section around them read like a landing page: a full-bleed hero, big marketing prose, chunky tinted cards. This release strips all of that. The whole prayer section, the hub, the mobile shell, every index, and every reader, is rebuilt into one calm visual world that reads like a prayer book rather than a product page. Serif mastheads sit over a single thin gold rule, lists become hairline-divided indexes with quiet right-arrows, gold is used sparingly, the type is smaller, and the negative space is larger. Nothing functional changed. The Morning and Evening Rule still track what you have prayed today, the prayer rope still counts, your diptychs still surface namedays and anniversaries on Today, and bookmarks, audio, and the bilingual German copy all carry through untouched. This is a design patch, plainly: the same prayers, given a quieter room to be said in.",
+ items: [
+  "Prayer hub (/prayers) and the mobile prayer shell rebuilt. The slideshow hero and the gold-bordered hover cards are gone, replaced by a centered serif masthead (Pray without ceasing. · 1 Thessalonians 5:17) over a thin gold rule, a quiet Today line, the Jesus Prayer set centered as the prayer of the heart, and three hairline-divided indexes: the daily rules, through the day, and the beginning.",
+  "Today (/prayers/today) recomposed onto the same prayer-book vocabulary. A calm two-up for the fast and the day's commemoration, a Pray index into the morning and evening rules and the rope, the Jesus Prayer passage, your diptych namedays and anniversaries, and the appointed readings, with all of the calendar, fasting, saint, and reading data preserved exactly.",
+  "The five index pages, Diptychs, the Hours, the Akathists, and Learn to pray, restyled to the shared masthead-and-index pattern. Smaller type, more space, the chunky chips and tinted cards retired.",
+  "The rule reader (Morning Rule, Evening Rule, the Hours, the akathists) quieted. The bold sans display title becomes a serif masthead, the gold-boxed progress card becomes a single line over a one-pixel gold rule, the completion banner becomes a quiet doxology, and each prayer is a hairline-divided entry rather than a tinted box. Mark-prayed, the bookmark star, and the audio control all behave exactly as before.",
+  "The prayer rope (/prayers/rope) given a centered serif masthead and a calmer footer. The stat boxes flatten to plain figures inside a single hairline group, and the pill buttons become quiet text links. The counter, the bell, the haptics, and cross-device session sync are unchanged.",
+  "The lesson reader (/prayers/learning) quieted to match. A masthead with a gold rule, the prayer set off by a gold left-border rather than a boxed card, and Try this rendered as a quiet italic note. Bilingual copy preserved.",
+  "Cache version bumped to v8.1.0 so the redesigned section evicts the old buckets on this release.",
+  "Footer + home hero chip + /whats-new chip step to v8.1.",
+ ],
+ },
+ {
  version: "v8.0",
  kind: "The Seven Ecumenical Councils, complete, and their Fathers made saints",
  date: "May 31, 2026",
@@ -945,7 +962,7 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
- v8.0 &middot; The Seven Ecumenical Councils, complete
+ v8.1 &middot; The prayer section, rebuilt as a quiet prayer book
  </p>
  </div>
 
@@ -955,7 +972,7 @@ export default async function WhatsNewPage() {
  </h1>
  ) : (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- The Seven Ecumenical Councils, complete, in the councils&rsquo; own words.
+ The prayer section, rebuilt as a quiet prayer book.
  </h1>
  )}
 
@@ -1084,34 +1101,28 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v8.0 is the big one. For a while the{" "}
- <Link href="/councils" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Councils</Link>{" "}
- section stopped at four, with a standing notice that the rest
- were coming. They are here. Purify now carries all Seven
- Ecumenical Councils, the full conciliar foundation the Orthodox
- Church confesses, and each one is built the only way the rest of
- this site is built. The defining texts, the Definitions, the
- Anathemas, the Canons, ship verbatim from a public-domain source,
- never paraphrased, never modernized, never filled in by a model.
- The Fifth Council at{" "}
- <Link href="/councils/second-constantinople" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Constantinople in 553</Link>,
- the Sixth at{" "}
- <Link href="/councils/third-constantinople" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Constantinople in 680 and 681</Link>,
- and the Seventh at{" "}
- <Link href="/councils/second-nicaea" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Nicaea in 787</Link>{" "}
- join the four already present, their dogmatic documents rendered
- word for word from the Nicene and Post-Nicene Fathers, Volume 14,
- the Schaff and Wace edition of the Seven Ecumenical Councils.
- Constantinople II confesses that one of the Holy Trinity suffered
- in the flesh and condemns the Three Chapters. Constantinople III
- defines two natural wills in Christ, the human freely subject to
- the divine, against Monothelitism. Nicaea II defines the
- veneration of the holy icons, the honor that passes to the
- prototype, distinguished from the worship due to God alone. The
- historical narrative, the lists of what each council defined and
- condemned, and the cross-links to the Fathers are ours and in our
- voice. The conciliar texts are the councils&rsquo; own. With the
- seventh in place, the coming-soon notice has retired itself.
+ v8.1 is a quieter kind of release. The prayers were all here, the
+ morning and evening rules, the{" "}
+ <Link href="/prayers/rope" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">rope</Link>,
+ the{" "}
+ <Link href="/prayers/hours" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Hours</Link>,
+ the{" "}
+ <Link href="/prayers/akathists" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">akathists</Link>,
+ your{" "}
+ <Link href="/prayers/personal" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">diptychs</Link>,
+ but the section around them read like a landing page: a full-bleed
+ hero, marketing prose, chunky tinted cards. This release strips all
+ of that. The whole{" "}
+ <Link href="/prayers" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">prayer section</Link>{" "}
+ is rebuilt into one calm visual world that reads like a prayer book
+ rather than a product page. Serif mastheads sit over a single thin
+ gold rule, lists become hairline-divided indexes, gold is used
+ sparingly, the type is smaller, and the negative space is larger.
+ Nothing functional changed: the rules still track what you have
+ prayed today, the rope still counts, your diptychs still surface
+ namedays and anniversaries on Today, and bookmarks, audio, and the
+ German copy all carry through untouched. The same prayers, given a
+ quieter room to be said in.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
