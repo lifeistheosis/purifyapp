@@ -1,553 +1,267 @@
 import Link from "next/link";
 import { LESSONS } from "@/lib/prayers/learning";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
-import { PrayersSubTabs } from "@/components/nav/PrayersSubTabs";
 import {
- commemorationsOn,
- fastingStatus,
- formatMonthDay,
- paschaInfo,
- startOfDayUtc,
- type FastKind,
+  commemorationsOn,
+  fastingStatus,
+  formatMonthDay,
+  paschaInfo,
+  startOfDayUtc,
+  type FastKind,
 } from "@/lib/calendar/orthodox";
-import { SaintIcon } from "@/components/saints/SaintIcon";
-import { getSaint } from "@/lib/saints/saints";
 import { PrayerIcon } from "@/components/prayers/PrayerIcon";
-import { PrayerSlideshowHero } from "@/components/prayers/PrayerSlideshow";
 import { PrayersMobile } from "@/components/mobile/PrayersMobile";
+import {
+  PrayerPage,
+  PrayerMasthead,
+  PrayerSectionLabel,
+  PrayerIndex,
+  PrayerIndexRow,
+  PrayerNote,
+} from "@/components/prayers/PrayerBook";
 import { getServerLocale } from "@/lib/i18n/server";
 
 export const metadata = {
- title: "Prayer",
- description:
- "Daily prayer in the Orthodox tradition: today's rule, morning and evening rules, the prayer of the heart, akathists, the liturgical hours, and a beginner's path, each anchored by a traditional Byzantine icon.",
+  title: "Prayer",
+  description:
+    "Daily prayer in the Orthodox tradition: today's rule, morning and evening rules, the prayer of the heart, akathists, the liturgical hours, and a beginner's path.",
 };
 
 // Hourly ISR so the day strip rolls forward without a redeploy.
 export const revalidate = 3600;
 
 const FAST_DOT: Record<FastKind, string> = {
- strict: "bg-crimson",
- "wine-oil": "bg-gold",
- fish: "bg-sage",
- fast: "bg-paper/40",
- "fast-free": "bg-emerald-400",
- normal: "bg-paper/30",
+  strict: "bg-crimson",
+  "wine-oil": "bg-gold",
+  fish: "bg-sage",
+  fast: "bg-paper/40",
+  "fast-free": "bg-emerald-400",
+  normal: "bg-paper/30",
 };
 
-const HOURS = [
- {
- slug: "first-hour",
- icon: "christ-enthroned",
- label: "First Hour",
- time: "6 a.m.",
- body: "The rising of the sun. The Light has come into the world.",
- },
- {
- slug: "third-hour",
- icon: "pentecost",
- label: "Third Hour",
- time: "9 a.m.",
- body: "Mid-morning. The descent of the Holy Spirit at Pentecost.",
- },
- {
- slug: "sixth-hour",
- icon: "crucifixion",
- label: "Sixth Hour",
- time: "Noon",
- body: "The Lord on the Cross at the brightest hour of the day.",
- },
- {
- slug: "ninth-hour",
- icon: "entombment",
- label: "Ninth Hour",
- time: "3 p.m.",
- body: "The Lord's repose. The door between this day and the next.",
- },
-];
-
-const HOURS_DE = [
- {
- slug: "first-hour",
- icon: "christ-enthroned",
- label: "Erste Stunde",
- time: "6 Uhr",
- body: "Der Aufgang der Sonne. Das Licht ist in die Welt gekommen.",
- },
- {
- slug: "third-hour",
- icon: "pentecost",
- label: "Dritte Stunde",
- time: "9 Uhr",
- body: "Vormittag. Die Herabkunft des Heiligen Geistes zu Pfingsten.",
- },
- {
- slug: "sixth-hour",
- icon: "crucifixion",
- label: "Sechste Stunde",
- time: "Mittag",
- body: "Der Herr am Kreuz in der hellsten Stunde des Tages.",
- },
- {
- slug: "ninth-hour",
- icon: "entombment",
- label: "Neunte Stunde",
- time: "15 Uhr",
- body: "Die Ruhe des Herrn. Die Tür zwischen diesem Tag und dem nächsten.",
- },
-];
-
 export default async function PrayersPage() {
- const locale = await getServerLocale();
- const isDe = locale === "de";
- const today = startOfDayUtc(new Date());
- const fast = fastingStatus(today);
- const pascha = paschaInfo(today);
- const commemorations = commemorationsOn(today);
- const headline =
- commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
- const headlineSaint =
- headline?.saint ?? (headline?.slug ? getSaint(headline.slug) : null);
- const hours = isDe ? HOURS_DE : HOURS;
+  const locale = await getServerLocale();
+  const isDe = locale === "de";
+  const today = startOfDayUtc(new Date());
+  const fast = fastingStatus(today);
+  const pascha = paschaInfo(today);
+  const commemorations = commemorationsOn(today);
+  const headline =
+    commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
 
- return (
- <>
- <PrayersMobile />
- <div className="hidden md:block bg-night">
- <MobileTopBar title={isDe ? "Gebete" : "Prayers"} />
- <PrayersSubTabs />
- {/* ============== HERO ============== */}
- <section className="relative overflow-hidden border-b border-paper/8">
- {/* Christ Pantocrator (Sinai, 6th c.) backdrop, the strongest
- single-figure composition in the set: a tight, frontal bust
- of Christ with warm gold tones that read beautifully under a
- dark gradient. The most universally-recognized Orthodox
- icon, and the One we pray to without ceasing. */}
- <div className="absolute inset-0">
- <PrayerSlideshowHero priority />
- <div
- aria-hidden
- className="absolute inset-0"
- style={{
- background:
- "linear-gradient(180deg, rgba(22,18,25,0.55) 0%, rgba(22,18,25,0.70) 35%, rgba(22,18,25,0.92) 75%, rgba(22,18,25,1) 100%)",
- }}
- />
- </div>
+  const paschaLine =
+    pascha.daysAway > 0
+      ? isDe
+        ? `${pascha.daysAway} Tage bis Pascha`
+        : `${pascha.daysAway} days to Pascha`
+      : pascha.daysAway === 0
+        ? isDe
+          ? "Pascha ist heute"
+          : "Pascha is today"
+        : pascha.label;
 
- <div className="relative px-5 md:px-8 pt-20 md:pt-28 pb-12 md:pb-16">
- <div className="mx-auto max-w-[1080px] w-full">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/85 mb-4">
- {isDe ? "Das Gebet" : "The Prayer"}
- </p>
- <h1 className="font-serif text-display-lg md:text-[88px] leading-[0.95] tracking-[-0.02em] text-paper max-w-[760px]">
- {isDe ? "Betet ohne Unterlaß." : "Pray without ceasing."}
- </h1>
- <p className="mt-5 font-sans text-detail text-paper/55 italic">
- {isDe ? "1. Thessalonicher 5,17" : "1 Thessalonians 5:17 · KJV"}
- </p>
- <p className="mt-8 max-w-[620px] font-serif text-lede md:text-lede text-paper/85 leading-[1.65]">
- {isDe
- ? "Die täglichen Regeln, das Gebet des Herzens, die Akathiste und die Horen, die Gestalt eines Lebens mit Gott. Schlag die Seite auf, wenn du aufstehst; schlag sie auf, wenn du dich niederlegst."
- : "The daily rules, the prayer of the heart, the Akathists, and the hours, the shape of a life with God. Open the page when you rise; open it when you lie down."}
- </p>
+  return (
+    <>
+      <PrayersMobile />
+      <div className="hidden md:block">
+        <MobileTopBar title={isDe ? "Gebete" : "Prayers"} />
+        <PrayerPage width="index">
+          <PrayerMasthead
+            align="center"
+            eyebrow={isDe ? "Das Gebet" : "The Prayer"}
+            title={isDe ? "Betet ohne Unterlaß." : "Pray without ceasing."}
+            scripture={
+              isDe ? "1. Thessalonicher 5,17" : "1 Thessalonians 5:17"
+            }
+            intro={
+              <p className="mx-auto max-w-[46ch] text-center">
+                {isDe
+                  ? "Schlag die Seite auf, wenn du aufstehst; schlag sie auf, wenn du dich niederlegst."
+                  : "Open the page when you rise; open it when you lie down."}
+              </p>
+            }
+          >
+            <PrayerIcon slug="christ-pantocrator" size="md" priority />
+          </PrayerMasthead>
 
- {/* Day strip, sits at the bottom of the hero like a candle in
- front of the icon */}
- <Link
- href="/prayers/today"
- className="group mt-12 inline-flex items-center gap-4 rounded-md border border-gold/45 bg-night/75 backdrop-blur-sm px-5 py-4 hover:border-gold/75 hover:bg-night/85 transition-colors max-w-full"
- >
- <div className="shrink-0 flex flex-col items-center justify-center w-12 h-12 rounded-md border border-gold/50 bg-night text-center">
- <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/85 leading-none">
- {formatMonthDay(today).split(" ")[0].slice(0, 3).toUpperCase()}
- </p>
- <p className="font-sans text-lede font-bold text-paper leading-none mt-0.5 tabular-nums">
- {today.getUTCDate()}
- </p>
- </div>
- {headlineSaint && (
- <div className="shrink-0 hidden sm:block">
- <SaintIcon saint={headlineSaint} size="sm" />
- </div>
- )}
- <div className="min-w-0 flex-1">
- <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/85 mb-1">
- {isDe ? "Heute" : "Today"}
- </p>
- <p className="font-sans text-ui font-semibold text-paper truncate">
- {headline?.name ??
- (isDe ? "Mit der Kirche beten" : "Pray with the Church")}
- </p>
- <p className="mt-0.5 font-sans text-caption text-paper/65 flex items-center gap-2 truncate">
- <span
- aria-hidden
- className={`inline-block w-1.5 h-1.5 rounded-full ${FAST_DOT[fast.kind]}`}
- />
- <span>{fast.label}</span>
- <span className="text-paper/30">&middot;</span>
- <span>
- {pascha.daysAway > 0
- ? isDe
- ? `${pascha.daysAway} Tage bis Pascha`
- : `${pascha.daysAway} days to Pascha`
- : pascha.daysAway === 0
- ? isDe
- ? "Pascha ist heute"
- : "Pascha is today"
- : pascha.label}
- </span>
- </p>
- </div>
- <span
- aria-hidden
- className="shrink-0 font-sans text-lede text-paper/55 group-hover:text-gold transition-colors"
- >
- →
- </span>
- </Link>
- </div>
- </div>
- </section>
+          {/* Today — one quiet row, not a glowing card. */}
+          <Link
+            href="/prayers/today"
+            className="group flex items-center gap-4 rounded-md border border-paper/12 px-5 py-4 transition-colors hover:border-paper/25"
+          >
+            <span className="flex w-11 shrink-0 flex-col items-center text-center">
+              <span className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/70 leading-none">
+                {formatMonthDay(today).split(" ")[0].slice(0, 3).toUpperCase()}
+              </span>
+              <span className="mt-1 font-serif text-title-sm text-paper leading-none tabular-nums">
+                {today.getUTCDate()}
+              </span>
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-serif text-ui text-paper truncate">
+                {headline?.name ??
+                  (isDe ? "Mit der Kirche beten" : "Pray with the Church")}
+              </span>
+              <span className="mt-1 flex items-center gap-2 font-sans text-caption text-paper/45">
+                <span
+                  aria-hidden
+                  className={`inline-block h-1.5 w-1.5 rounded-full ${FAST_DOT[fast.kind]}`}
+                />
+                <span className="truncate">
+                  {fast.label}
+                  <span className="text-paper/25"> · </span>
+                  {paschaLine}
+                </span>
+              </span>
+            </span>
+            <span
+              aria-hidden
+              className="shrink-0 font-serif text-lede text-paper/25 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-gold/70"
+            >
+              →
+            </span>
+          </Link>
 
- {/* ============== BODY ============== */}
- <div className="mx-auto max-w-[1080px] w-full px-5 md:px-8 py-16 md:py-20 space-y-20">
- {/* ===== Today CTA ===== */}
- <section>
- <Link
- href="/prayers/today"
- className="group block rounded-lg border border-gold/35 bg-gold/[0.06] p-7 md:p-8 hover:border-gold/60 hover:bg-gold/[0.10] transition-colors"
- >
- <div className="flex items-start justify-between gap-6 flex-wrap">
- <div className="min-w-0">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold mb-3">
- {isDe ? "Tägliches Gebet" : "Daily prayer"}
- </p>
- <h2 className="font-serif text-heading md:text-display-sm leading-[1.05] text-paper">
- {isDe ? "Heute" : "Today"}
- </h2>
- <p className="mt-3 font-serif text-body md:text-body text-paper/85 leading-[1.65] max-w-[600px]">
- {isDe
- ? "Das Datum, der Heilige, das Fasten, die festgesetzten Lesungen und Ein-Klick-Verweise auf die Morgenregel, die Abendregel und das Jesusgebet."
- : "The date, the saint, the fast, the appointed readings, and one-tap links into the morning rule, the evening rule, and the Jesus Prayer."}
- </p>
- </div>
- <span aria-hidden className="text-paper/55 text-title mt-1">
- →
- </span>
- </div>
- </Link>
- </section>
+          {/* The prayer of the heart — a calm centered passage. */}
+          <div className="my-16 text-center">
+            <p className="mb-6 font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40">
+              {isDe ? "Das Gebet des Herzens" : "The prayer of the heart"}
+            </p>
+            <p className="font-serif text-title-sm md:text-title leading-[1.5] text-paper/90">
+              {isDe ? (
+                <>
+                  Herr Jesus Christus,
+                  <br />
+                  Sohn Gottes,
+                  <br />
+                  erbarme Dich meiner, eines Sünders.
+                </>
+              ) : (
+                <>
+                  Lord Jesus Christ,
+                  <br />
+                  Son of God,
+                  <br />
+                  have mercy on me, a sinner.
+                </>
+              )}
+            </p>
+            <p className="mx-auto mt-6 max-w-[44ch] font-serif italic text-detail text-paper/55 leading-[1.7]">
+              {isDe
+                ? "Bete es im Atem, mit dem Herzen, zu jeder Zeit. Die Väter sagen, das Zurückbringen sei die halbe Arbeit."
+                : "Pray it in the breath, with the heart, at any time. The Fathers say the bringing-back is half the work."}
+            </p>
+            <p className="mt-5">
+              <Link
+                href="/prayers/learning/jesus-prayer"
+                className="font-sans text-detail font-medium text-gold/80 underline decoration-gold/30 underline-offset-4 transition-colors hover:text-paper hover:decoration-paper"
+              >
+                {isDe ? "Lerne, es zu beten →" : "Learn how to pray it →"}
+              </Link>
+            </p>
+          </div>
 
- {/* ===== The Daily Rules ===== */}
- <section>
- <div className="mb-8">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/85 mb-3">
- {isDe ? "Die täglichen Regeln" : "The Daily Rules"}
- </p>
- <h2 className="font-serif text-heading md:text-display-sm leading-[1.05] text-paper">
- {isDe
- ? "Morgens und abends vor Gott."
- : "Morning and evening before God."}
- </h2>
- </div>
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- <RuleCard
- eyebrow={isDe ? "Morgenregel" : "Morning rule"}
- title={isDe ? "Den Tag mit Gott beginnen" : "Begin the day with God"}
- body={
- isDe
- ? "Kreuzzeichen · Himmlischer König · Trisagion · Vaterunser · Aufstehen aus dem Schlaf · Jesusgebet · Theotokos-Hymnus · Entlassung."
- : "Sign of the Cross · O Heavenly King · the Trisagion · the Lord's Prayer · Rising from Sleep · the Jesus Prayer · the Theotokos hymn · dismissal."
- }
- duration={isDe ? "Etwa 8 Minuten" : "About 8 minutes"}
- href="/prayers/morning"
- iconSlug="anastasis"
- openLabel={isDe ? "Die Regel öffnen →" : "Open the rule →"}
- />
- <RuleCard
- eyebrow={isDe ? "Abendregel" : "Evening rule"}
- title={isDe ? "Den Tag niederlegen" : "Lay the day down"}
- body={
- isDe
- ? "Trisagion · Vaterunser · Tageserforschung · Jesusgebet · In deine Hände · Entlassung. Oft mit der Gottesgebärerin beschlossen."
- : "The Trisagion · the Lord's Prayer · examination of the day · the Jesus Prayer · Into Thy hands · dismissal. Often closed by the Theotokos."
- }
- duration={isDe ? "Etwa 8 Minuten" : "About 8 minutes"}
- href="/prayers/evening"
- iconSlug="theotokos-of-vladimir"
- openLabel={isDe ? "Die Regel öffnen →" : "Open the rule →"}
- />
- </div>
- </section>
+          <PrayerSectionLabel>
+            {isDe ? "Die täglichen Regeln" : "The daily rules"}
+          </PrayerSectionLabel>
+          <PrayerIndex>
+            <PrayerIndexRow
+              href="/prayers/morning"
+              title={isDe ? "Morgenregel" : "Morning rule"}
+              description={
+                isDe
+                  ? "Den Tag mit Gott beginnen — Kreuzzeichen bis Entlassung."
+                  : "Begin the day with God — the Sign of the Cross through dismissal."
+              }
+              meta={isDe ? "~8 Min." : "~8 min"}
+            />
+            <PrayerIndexRow
+              href="/prayers/evening"
+              title={isDe ? "Abendregel" : "Evening rule"}
+              description={
+                isDe
+                  ? "Den Tag niederlegen — Tageserforschung und In deine Hände."
+                  : "Lay the day down — examination of the day and Into Thy hands."
+              }
+              meta={isDe ? "~8 Min." : "~8 min"}
+            />
+          </PrayerIndex>
 
- {/* ===== The Jesus Prayer, contemplative panel ===== */}
- <section className="text-center">
- <div className="mx-auto max-w-[720px] rounded-lg border border-paper/10 bg-paper/[0.02] px-6 py-12 md:py-16">
- <div className="flex justify-center mb-8">
- <PrayerIcon slug="christ-pantocrator" size="lg" />
- </div>
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/85 mb-6">
- {isDe ? "Das Gebet des Herzens" : "The prayer of the heart"}
- </p>
- <p className="font-serif text-title-sm md:text-title leading-[1.5] text-paper">
- {isDe ? (
- <>
- Herr Jesus Christus,
- <br />
- Sohn Gottes,
- <br />
- erbarme Dich meiner, eines Sünders.
- </>
- ) : (
- <>
- Lord Jesus Christ,
- <br />
- Son of God,
- <br />
- have mercy on me, a sinner.
- </>
- )}
- </p>
- <p className="mt-8 font-serif italic text-ui md:text-body text-paper/65 leading-[1.65] max-w-[480px] mx-auto">
- {isDe
- ? "Bete es im Atem, mit dem Herzen, zu jeder Zeit. Die Mönche nennen es das Gebet des Herzens; die Väter sagen, das Zurückbringen sei die halbe Arbeit."
- : "Pray it in the breath, with the heart, at any time. The monastics call it the prayer of the heart; the Fathers say the bringing-back is half the work."}
- </p>
- <p className="mt-6">
- <Link
- href="/prayers/learning/jesus-prayer"
- className="font-sans text-detail font-medium text-gold hover:text-paper underline underline-offset-4 decoration-gold/40 hover:decoration-paper transition-colors"
- >
- {isDe ? "Lerne, es zu beten →" : "Learn how to pray it →"}
- </Link>
- </p>
- </div>
- </section>
+          <PrayerSectionLabel>
+            {isDe ? "Durch den Tag" : "Through the day"}
+          </PrayerSectionLabel>
+          <PrayerIndex>
+            <PrayerIndexRow
+              href="/prayers/rope"
+              title={isDe ? "Gebetsschnur" : "Prayer rope"}
+              description={
+                isDe
+                  ? "Zähle das Jesusgebet auf einer digitalen Komvoschini."
+                  : "Count the Jesus Prayer on a digital komvoschini."
+              }
+            />
+            <PrayerIndexRow
+              href="/prayers/personal"
+              title={isDe ? "Diptychen" : "Diptychs"}
+              description={
+                isDe
+                  ? "Die Namen, die du trägst — die Lebenden und die Entschlafenen."
+                  : "The names you carry — the living and the reposed."
+              }
+            />
+            <PrayerIndexRow
+              href="/prayers/hours"
+              title={isDe ? "Die Horen" : "The Hours"}
+              description={
+                isDe
+                  ? "Kurze Gebete, die den Tag heiligen."
+                  : "Short prayers that sanctify the daylight."
+              }
+            />
+            <PrayerIndexRow
+              href="/prayers/akathists"
+              title={isDe ? "Die Akathiste" : "The Akathists"}
+              description={
+                isDe
+                  ? "Lange Lobgesänge, im Stehen gebetet."
+                  : "Long hymns of praise, prayed standing throughout."
+              }
+            />
+          </PrayerIndex>
 
- {/* ===== Prayer rope + Diptychs ===== */}
- <section>
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- <Link
- href="/prayers/rope"
- className="group rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-6 flex flex-col"
- >
- <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/85 mb-2">
- {isDe ? "Gebetsschnur" : "Prayer rope"}
- </p>
- <h2 className="font-serif text-title-sm md:text-title text-paper leading-tight">
- {isDe ? "Die Schnur des Mönchs." : "The monk's rope."}
- </h2>
- <p className="mt-3 font-sans text-detail text-paper/70 leading-[1.6] flex-1">
- {isDe
- ? "Zähle das Jesusgebet auf einer digitalen Komvoschini. 33, 50 oder 100 Knoten. Keine Streaks, kein Lärm."
- : "Count the Jesus Prayer on a digital komvoschini. 33, 50, or 100 knots. No streaks, no noise."}
- </p>
- <p className="mt-4 font-sans text-detail font-medium text-paper/75 group-hover:text-gold transition-colors">
- {isDe ? "Schnur öffnen →" : "Open the rope →"}
- </p>
- </Link>
+          <PrayerSectionLabel>
+            {isDe ? "Der Anfang" : "Beginning"}
+          </PrayerSectionLabel>
+          <PrayerIndex>
+            <PrayerIndexRow
+              href="/prayers/learning"
+              title={isDe ? "Beten lernen" : "Learn to pray"}
+              description={
+                isDe
+                  ? "Ein kurzer Einsteiger-Weg durch das Gebet."
+                  : "A short, beginner's path through Orthodox prayer."
+              }
+              meta={
+                isDe
+                  ? `${LESSONS.length} Lektionen`
+                  : `${LESSONS.length} lessons`
+              }
+            />
+          </PrayerIndex>
 
- <Link
- href="/prayers/personal"
- className="group rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-6 flex flex-col"
- >
- <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/85 mb-2">
- {isDe ? "Diptychen" : "Diptychs"}
- </p>
- <h2 className="font-serif text-title-sm md:text-title text-paper leading-tight">
- {isDe ? "Die Namen, die du trägst." : "The names you carry."}
- </h2>
- <p className="mt-3 font-sans text-detail text-paper/70 leading-[1.6] flex-1">
- {isDe
- ? "Zwei Listen: die Lebenden und die Entschlafenen. Namenstage und Jahrestage erscheinen auf /heute."
- : "Two lists: the living and the reposed. Namedays and anniversaries surface on /today."}
- </p>
- <p className="mt-4 font-sans text-detail font-medium text-paper/75 group-hover:text-gold transition-colors">
- {isDe ? "Diptychen öffnen →" : "Open the diptychs →"}
- </p>
- </Link>
- </div>
- </section>
-
- {/* ===== The Liturgical Hours ===== */}
- <section>
- <div className="mb-8 flex items-end justify-between gap-3 flex-wrap">
- <div>
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/85 mb-3">
- {isDe ? "Die Horen" : "The Hours"}
- </p>
- <h2 className="font-serif text-heading md:text-display-sm leading-[1.05] text-paper">
- {isDe ? "Durch den Tag stehen." : "Standing through the day."}
- </h2>
- </div>
- <Link
- href="/prayers/hours"
- className="font-sans text-caption font-medium text-gold hover:text-paper underline underline-offset-4 decoration-gold/40 hover:decoration-paper transition-colors"
- >
- {isDe ? "Alle Horen →" : "All Hours →"}
- </Link>
- </div>
- <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
- {hours.map((h) => (
- <li key={h.label}>
- <Link
- href={`/prayers/hours/${h.slug}`}
- className="group rounded-md border border-paper/12 bg-paper/[0.02] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-5 flex flex-col gap-4 h-full"
- >
- <PrayerIcon slug={h.icon} size="sm" />
- <div>
- <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/85 mb-1">
- {h.label}
- </p>
- <p className="font-sans text-caption text-paper/55 mb-2">
- {h.time}
- </p>
- <p className="font-serif text-ui text-paper/80 leading-[1.55]">
- {h.body}
- </p>
- <p className="mt-3 font-sans text-caption font-medium text-paper/65 group-hover:text-gold transition-colors">
- {isDe ? "Öffnen →" : "Open →"}
- </p>
- </div>
- </Link>
- </li>
- ))}
- </ul>
- </section>
-
- {/* ===== The Akathists ===== */}
- <section>
- <div className="mb-8">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/85 mb-3">
- {isDe ? "Die Akathiste" : "The Akathists"}
- </p>
- <h2 className="font-serif text-heading md:text-display-sm leading-[1.05] text-paper">
- {isDe ? "Standhymnen der Kirche." : "The standing hymns of the Church."}
- </h2>
- </div>
- <Link
- href="/prayers/akathists"
- className="group flex flex-col sm:flex-row gap-6 rounded-lg border border-paper/12 bg-paper/[0.02] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-6 md:p-7"
- >
- <PrayerIcon slug="theotokos-of-vladimir" size="md" />
- <div className="min-w-0 flex-1">
- <p className="font-serif text-lede md:text-lede text-paper/85 leading-[1.65]">
- {isDe
- ? "Die Akathiste sind lange Lobgesänge, die im Stehen gebetet werden. Der Akathist an die Gottesgebärerin ist das Urbild aus dem siebten Jahrhundert; weitere kommen Stück für Stück."
- : "The Akathists are long hymns of praise prayed standing throughout. The Akathist to the Theotokos is the seventh-century original; others land piece by piece."}
- </p>
- <p className="mt-5 font-sans text-detail font-medium text-paper/65 group-hover:text-gold transition-colors">
- {isDe ? "Akathiste öffnen →" : "Open the akathists →"}
- </p>
- </div>
- </Link>
- </section>
-
- {/* ===== Learn to Pray ===== */}
- <section>
- <Link
- href="/prayers/learning"
- className="group flex flex-col sm:flex-row gap-6 rounded-lg border border-accent/30 bg-accent/[0.06] hover:border-accent/55 hover:bg-accent/[0.10] transition-colors p-6 md:p-7"
- >
- <PrayerIcon slug="three-hierarchs" size="md" />
- <div className="min-w-0 flex-1">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-accent mb-3">
- {isDe
- ? "Neu im orthodoxen Gebet? Hier anfangen."
- : "New to Orthodox prayer? Start here."}
- </p>
- <h3 className="font-serif text-title-sm md:text-title text-paper leading-tight">
- {isDe ? "Beten lernen" : "Learn to pray"}
- </h3>
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.65] max-w-[560px]">
- {isDe ? (
- <>
- Ein kurzer Einsteiger-Weg durch das Kreuzzeichen, das
- Jesusgebet, das Trisagion und eine einfache Morgen- und
- Abendregel. {LESSONS.length} Lektionen. Die Drei Hierarchen
- auf dieser Karte, Basilius, Gregor der Theologe und Johannes
- Chrysostomus, sind in der orthodoxen Überlieferung die
- Patrone der Theologie und des Gebets.
- </>
- ) : (
- <>
- A short, beginner&rsquo;s path through the Sign of the Cross,
- the Jesus Prayer, the Trisagion, and a simple morning and
- evening rule. {LESSONS.length} lessons. The Three Hierarchs of
- this card, Basil, Gregory the Theologian, and John
- Chrysostom, are the patrons of theology and prayer in
- the Orthodox tradition.
- </>
- )}
- </p>
- <p className="mt-4 font-sans text-detail font-medium text-paper/75 group-hover:text-accent transition-colors">
- {isDe ? "Die Lektionen öffnen →" : "Open the lessons →"}
- </p>
- </div>
- </Link>
- </section>
-
- {/* ===== Sign-in nudge ===== */}
- <p className="text-center font-sans text-caption text-paper/45 leading-[1.65] pt-4">
- {isDe
- ? "Deine Lesezeichen, Notizen und Markierungen leben auf diesem Gerät. Melde dich an, um sie über Geräte hinweg zu behalten."
- : "Your bookmarks, notes, and highlights live on this device. Sign in to keep them across devices."}{" "}
- <Link
- href="/account"
- className="text-paper/65 hover:text-paper underline underline-offset-2 decoration-paper/25"
- >
- {isDe ? "Dein Konto →" : "Your account →"}
- </Link>
- </p>
- </div>
- </div>
- </>
- );
-}
-
-function RuleCard({
- eyebrow,
- title,
- body,
- duration,
- href,
- iconSlug,
- openLabel,
-}: {
- eyebrow: string;
- title: string;
- body: string;
- duration: string;
- href: string;
- iconSlug: string;
- openLabel: string;
-}) {
- return (
- <Link
- href={href}
- className="group flex gap-6 rounded-lg border border-paper/12 bg-paper/[0.03] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-6"
- >
- <PrayerIcon slug={iconSlug} size="md" className="self-stretch" />
- <div className="min-w-0 flex-1 flex flex-col">
- <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/85 mb-2">
- {eyebrow}
- </p>
- <h3 className="font-serif text-title-sm md:text-title text-paper leading-tight">
- {title}
- </h3>
- <p className="mt-3 font-sans text-detail text-paper/70 leading-[1.65]">
- {body}
- </p>
- <p className="mt-auto pt-4 flex items-center justify-between">
- <span className="font-sans text-caption text-paper/55">
- {duration}
- </span>
- <span className="font-sans text-detail font-medium text-paper/75 group-hover:text-gold transition-colors">
- {openLabel}
- </span>
- </p>
- </div>
- </Link>
- );
+          <PrayerNote>
+            {isDe
+              ? "Deine Lesezeichen, Notizen und Markierungen leben auf diesem Gerät. Melde dich an, um sie über Geräte hinweg zu behalten."
+              : "Your bookmarks, notes, and highlights live on this device. Sign in to keep them across devices."}{" "}
+            <Link
+              href="/account"
+              className="text-paper/55 underline decoration-paper/25 underline-offset-2 hover:text-paper"
+            >
+              {isDe ? "Dein Konto →" : "Your account →"}
+            </Link>
+          </PrayerNote>
+        </PrayerPage>
+      </div>
+    </>
+  );
 }

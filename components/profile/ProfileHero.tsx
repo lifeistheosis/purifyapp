@@ -91,7 +91,27 @@ export function ProfileHero({
   const lastSeen = lastSignedInAt ? relativeTime(lastSignedInAt) : "";
 
   return (
-    <header className="rounded-lg border border-paper/12 bg-paper/[0.03] p-6 md:p-8">
+    <header
+      className="relative overflow-hidden rounded-2xl border border-paper/10 p-6 md:p-8"
+      style={{
+        // Violet tint — matches MobileHeroCard's "violet" mood for the
+        // You / account surface, so desktop reads as the same family.
+        background:
+          "radial-gradient(120% 80% at 80% 90%, rgba(150,100,200,0.18) 0%, transparent 60%), linear-gradient(180deg, #14101c 0%, #08060d 100%)",
+      }}
+    >
+      <svg
+        aria-hidden
+        viewBox="0 0 400 200"
+        className="pointer-events-none absolute inset-x-0 bottom-0 w-full opacity-50"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M0 160 C 80 120, 160 200, 240 150 S 400 120, 400 160 L 400 200 L 0 200 Z"
+          fill="rgba(14,8,18,0.85)"
+        />
+      </svg>
+      <div className="relative">
       <div className="flex items-start gap-5">
         {/* Gold-ringed initials disc, SaintIcon-style fallback. */}
         <div
@@ -205,6 +225,7 @@ export function ProfileHero({
           </div>
         )}
       </dl>
+      </div>
     </header>
   );
 }

@@ -4,6 +4,7 @@ import { ProfileStats } from "@/components/profile/ProfileStats";
 import { ProfileActivity } from "@/components/profile/ProfileActivity";
 import { SyncOnMount } from "@/components/profile/SyncOnMount";
 import { AccountChipRow } from "@/components/profile/AccountChipRow";
+import { AccountSettingsLinks } from "@/components/profile/AccountSettingsLinks";
 import { PostSignInBridge } from "@/components/profile/PostSignInBridge";
 
 export const metadata = { title: "Profile" };
@@ -43,6 +44,7 @@ export default async function ProfileTabPage() {
       />
       <ProfileStats />
       <ProfileActivity />
+      <AccountSettingsLinks />
     </>
   );
 }

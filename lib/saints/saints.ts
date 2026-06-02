@@ -2976,6 +2976,83 @@ export const SAINTS: Saint[] = [
  works: [],
  },
  {
+ slug: "photius-the-great",
+ byname: "The Great",
+ name: "St. Photius the Great",
+ epithet: "Patriarch of Constantinople · Pillar of Orthodoxy · Defender of the Procession of the Spirit",
+ born: "c. 810 (Constantinople)",
+ reposed: "February 6, 893 (Armenia)",
+ feastDays: ["February 6"],
+ see: "Constantinople",
+ shortBio:
+ "The most learned man of his age and twice Patriarch of Constantinople, who answered the Frankish addition of the Filioque to the Creed with the first full Eastern treatise on the procession of the Holy Spirit, presided over the great reconciling council of 879-880, and sent the mission of Cyril and Methodius to the Slavs. The Church honours him as one of the three Pillars of Orthodoxy, with St. Gregory Palamas and St. Mark of Ephesus.",
+ life: [
+ "Photius was born in Constantinople around the year 810, into a noble and devout family that suffered for the holy icons during the second iconoclast persecution; his great-uncle was St. Tarasius, the Patriarch who had presided over the Seventh Ecumenical Council. He received and then surpassed the finest education the empire could give, mastering grammar, rhetoric, philosophy, theology, medicine, and the natural sciences, and was reckoned by his own and later ages the most learned man of the Byzantine world. He taught publicly in Constantinople, numbering among his hearers Constantine, the future St. Cyril, apostle of the Slavs, and rose to be chief secretary of state and a senator.",
+ "In 858 the Emperor's government deposed the Patriarch Ignatius, and Photius, still a layman, was raised through the clerical orders in a few days and enthroned as Patriarch of Constantinople. The disputed manner of his elevation, and the rival claims of the partisans of Ignatius, set off a long contest with Rome. Pope Nicholas I, intervening in the affair and pressing the claims of the Roman see over the East, declared against Photius; Photius in turn, in 867, denounced as an innovation the Frankish insertion of the Filioque, the clause that the Holy Spirit proceeds from the Father and the Son, which the missionaries in Bulgaria had begun to teach.",
+ "Set aside for a time when Ignatius was restored, and reconciled with him before Ignatius's death, Photius was recognised again as Patriarch, and in 879-880 a great council of some three hundred and eighty bishops met in Constantinople, with the legates of Pope John VIII consenting, and restored full communion between the Churches, condemned any addition to the Creed, and vindicated Photius. Many in the Orthodox East have counted this as the Eighth Ecumenical Council, the last at which East and West confessed the Creed together without the Frankish addition.",
+ "Against that addition Photius wrote the Mystagogy of the Holy Spirit, the first systematic Eastern answer to the Filioque, arguing from Scripture and the Fathers that the Spirit proceeds from the Father alone, as the Lord Himself had taught. His vast learning he set down in the Bibliotheca, or Myriobiblon, a review of some two hundred and eighty volumes of ancient pagan and Christian literature he and his circle had read, which preserves for us the substance of many works since lost. He gathered his replies on Scripture and doctrine in the Amphilochia, a long series of questions answered for his friend Amphilochius of Cyzicus; he compiled a Lexicon of difficult words for students of the older Greek; and he left a great body of Homilies, among them the two famous sermons preached when the fleet of the Rus' first threatened the City in 860, and many Letters of pastoral and theological weight.",
+ "He was a missionary patriarch. Under him the Bulgarians were brought into the Church, and he sent the brothers Constantine, his own pupil, and Methodius to evangelise the Slavs of Moravia in their own tongue, the beginning of the Christian enlightenment of the whole Slavic world. He reposed in exile at a monastery in Armenia on the sixth of February, 893, and was in time glorified by the Church. The Orthodox keep his memory on the sixth of February and honour him, with Gregory Palamas and Mark of Ephesus, as one of the three great Pillars of Orthodoxy who in three different ages defended the faith against the innovations of the West.",
+ ],
+ quotes: [
+ {
+ text: "Regarding the fulfilment of your request as a sacred obligation, we engaged a secretary, and set down all the summaries we could recollect.",
+ source: "The Bibliotheca, prefatory letter to his brother Tarasius (tr. J. H. Freese, 1920, PD)",
+ href: "/saints/photius-the-great/the-bibliotheca",
+ },
+ ],
+ // The Bibliotheca is shipped in the public-domain English of J. H. Freese
+ // (SPCK, 1920). Photius's other chief writings — the Mystagogy of the Holy
+ // Spirit, the Amphilochia, the Lexicon, and the Homilies and Letters — are
+ // pending: their only English translations are modern and under copyright,
+ // so they are described in the life above and await a confirmed
+ // public-domain source before any verbatim text is ingested.
+ works: [
+ {
+ slug: "the-bibliotheca",
+ title: "The Bibliotheca",
+ subtitle: "His review of the books he had read, with the prefatory letter to his brother Tarasius",
+ year: "9th c. (tr. Freese, 1920)",
+ blurb:
+ "Photius's reading journal: short notices of the hundreds of pagan and Christian volumes his circle had read, dictated from memory for his brother Tarasius. It is the single richest witness to what the ninth-century East had read, and the only trace of many ancient books now lost. This selection gives his prefatory letter and representative codices — on the writings of Dionysius the Areopagite, the Acts of the Ecumenical Councils, Gregory of Nyssa, and Origen — in the public-domain English of J. H. Freese (1920).",
+ topics: [
+ "Bibliotheca",
+ "Patristics",
+ "Ecumenical Councils",
+ "Scholarship",
+ "Lost Works",
+ "Constantinople",
+ ],
+ },
+ ],
+ },
+ {
+ slug: "cyril-and-methodius",
+ name: "Saints Cyril and Methodius",
+ byname: "Equals-to-the-Apostles",
+ epithet: "Equals-to-the-Apostles · Enlighteners of the Slavs · Teachers of the Slavonic Letters",
+ born: "c. 815 (Methodius) and c. 827 (Cyril), Thessaloniki",
+ reposed: "February 14, 869 (Cyril, Rome) and April 6, 885 (Methodius, Moravia)",
+ feastDays: ["May 11", "February 14", "April 6"],
+ see: "Moravia (mission); Methodius, Archbishop of Sirmium",
+ shortBio:
+ "The two brothers from Thessaloniki who carried the Gospel to the Slavs in their own tongue. To do it they devised the first Slavic alphabet and rendered the Scriptures and the services of the Church into Slavonic, becoming the fathers of an entire Christian civilisation and the patrons of all the Slavic peoples.",
+ life: [
+ "Constantine, who took the name Cyril at the end of his life, and his elder brother Methodius were born in Thessaloniki, the sons of a senior officer of the city, around the years 827 and 815. Thessaloniki was ringed by Slavic settlements, and the brothers grew up knowing the Slavic speech of the region as well as their native Greek. Methodius first followed his father into the imperial service and governed a Slavic province, then withdrew to the monastic life on Mount Olympus in Bithynia. Constantine, called 'the Philosopher' for his learning, studied at Constantinople under the future Patriarch Photius and others, was ordained, and taught philosophy in the capital; he was sent on imperial embassies to the Arabs and, with his brother, to the Khazars, disputing in defence of the Faith.",
+ "About the year 862 Prince Rastislav of Great Moravia asked the Emperor and the Patriarch Photius for teachers who could instruct his people in the Christian faith in their own language. The brothers were chosen. Before they set out, Constantine devised an alphabet fitted to the sounds of the Slavic tongue, the Glagolitic letters, and with it began to put the word of God into Slavonic. As a preface to the Gospel he composed the Proglas, a poem in Slavonic verse in praise of the letters and of the Scriptures in the people's own speech, the first original poem of Slavic literature.",
+ "In Moravia the brothers translated and taught. They rendered into Old Church Slavonic the Gospel and the New Testament, the Psalter, and the liturgical books needed for the services, so that the Slavs could hear the Liturgy and the Hours in a tongue they understood. With these they gave the young Church its law as well as its worship: the Zakon Sudnyj Ljudem, the Court Law for the People, the earliest Slavic legal code, and a Slavonic Nomocanon, the canons of the Church arranged for the governance of the new Christian nation. After Cyril's death Methodius carried on the labour, completing the translation of nearly the whole of the Old Testament.",
+ "Summoned to Rome to answer those who held that God might be worshipped only in Hebrew, Greek, and Latin, the brothers defended the right of every people to praise God in its own tongue, and Pope Adrian II blessed the Slavonic books. At Rome Constantine fell ill, took the monastic habit with the name Cyril, and reposed on the fourteenth of February, 869, charging Methodius to finish their work. Methodius was consecrated archbishop for the Slavs and laboured on amid bitter opposition from the Frankish clergy, who imprisoned him for a time; he reposed in Moravia on the sixth of April, 885. Their disciples, driven out after Methodius's death, carried the Slavonic letters south to Bulgaria and Ohrid, where the alphabet now called Cyrillic took its mature form and spread to the Serbs, the Bulgarians, and at last the Russians.",
+ "The Church honours Cyril and Methodius as Equals-to-the-Apostles and Enlighteners of the Slavs, keeping their joint memory on the eleventh of May, with Cyril remembered also on the fourteenth of February and Methodius on the sixth of April. From their work descends the whole tradition of Slavic Orthodox Christianity and letters.",
+ ],
+ // Work files are pending. The brothers' legacy (the Glagolitic alphabet,
+ // the Proglas, the Old Church Slavonic translations of the New Testament,
+ // Psalter, liturgical books and Old Testament, the Zakon Sudnyj Ljudem
+ // legal code, and the Slavonic Nomocanon) is described in the life above.
+ // A confirmed public-domain English source for any of these texts must be
+ // secured before verbatim content is ingested into
+ // data/saints/cyril-and-methodius/; the works index is left empty until then.
+ works: [],
+ },
+ {
  slug: "nikon-metanoeite",
  byname: "Metanoeite (Repent)",
  iconUrl: "/saints/icons/nikon-metanoeite.jpg",

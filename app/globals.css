@@ -646,37 +646,43 @@ div[data-hl="true"] {
  z-index: 1;
 }
 
-/* ----------------------------------------------------------------------
- Hero Christ icon intro: a crimson droplet falls, lands, splashes, and
- the portrait reveals from the negative space of the expanding wash.
- Used by components/marketing/HeroChristIcon.tsx. All layers are
- gated by `prefers-reduced-motion` at the call site.
- ---------------------------------------------------------------------- */
-@keyframes hero-drop-fall {
- 0% { transform: translate(-50%, -260%) rotate(-2deg); opacity: 0; }
- 8% { opacity: 1; }
- 50% { transform: translate(-50%, -10%) rotate(2deg); opacity: 1; }
- 58% { transform: translate(-50%, 0%) rotate(0deg); opacity: 0; }
- 100% { opacity: 0; }
+/* Hero cross entrance: a fade + slide-in from the right on first paint,
+ timed to match the left-hand copy cascade. Pure CSS so it fires without
+ client JS (and in background tabs).
+ Used by components/marketing/HeroChristIcon.tsx (the hero cross). */
+@keyframes hero-cross-in {
+ from { opacity: 0; transform: translateX(80px); }
+ to { opacity: 1; transform: translateX(0); }
 }
-@keyframes hero-splash-ring {
- 0%, 54% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
- 60% { opacity: 0.9; }
- 85% { transform: translate(-50%, -50%) scale(1.18); opacity: 0; }
- 100% { transform: translate(-50%, -50%) scale(1.18); opacity: 0; }
+.hero-cross-in {
+ animation: hero-cross-in 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+ animation-delay: 240ms;
 }
-@keyframes hero-wash-bloom {
- 0%, 48% { transform: scale(0); opacity: 0; }
- 65% { opacity: 0.85; }
- 100% { transform: scale(1); opacity: 0.55; }
+@media (prefers-reduced-motion: reduce) {
+ .hero-cross-in {
+ animation: none;
+ opacity: 1;
+ transform: none;
+ }
 }
-/* The icon's straight opacity fade. Holds invisible while the drop
- falls (0–55%), then fades in once the drop has landed and the
- wash starts to spread (55%→100%). Simpler than a mask reveal,
- and more obviously a "transition." */
-@keyframes hero-icon-fade {
- 0%, 55% { opacity: 0; }
- 100% { opacity: 1; }
+
+/* Hero copy entrance: a gentle fade + rise on first paint. Staggered via
+ inline animation-delay on each element (badge first, then heading and
+ CTAs) so the left column settles in as a quiet cascade. Pure CSS so it
+ fires without client JS. Used by the copy block in app/page.tsx. */
+@keyframes hero-copy-in {
+ from { opacity: 0; transform: translateY(14px); }
+ to { opacity: 1; transform: translateY(0); }
+}
+.hero-copy-in {
+ animation: hero-copy-in 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+ .hero-copy-in {
+ animation: none;
+ opacity: 1;
+ transform: none;
+ }
 }
 
 @keyframes halo-breathe {

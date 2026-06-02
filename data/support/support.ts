@@ -11,7 +11,7 @@ export const SUPPORT = {
  /** Currency code displayed on the page. */
  currency: "USD",
  /** Current month's funding goal in USD. */
- monthlyGoalUsd: 375,
+ monthlyGoalUsd: 275,
  /** Donations received toward this month's goal in USD. */
  monthlyRaisedUsd: 42,
  /** Last update of these numbers (human-readable). */
@@ -57,11 +57,6 @@ export const SUPPORT = {
  label: "Patristic-translation sourcing time",
  monthlyUsd: 80,
  note: "Hours spent ingesting, cross-checking, and proofreading public-domain Father texts before they ship.",
- },
- {
- label: "Iconographer commissions",
- monthlyUsd: 100,
- note: "When a saint has no good public-domain icon, we commission new ones from contemporary Orthodox iconographers.",
  },
  {
  label: "Akathist audio (planned)",

@@ -188,11 +188,18 @@ export default async function Home() {
  ].join(", "),
  }}
  >
- <div className="mx-auto max-w-[1240px] w-full grid grid-cols-1 xl:grid-cols-2 gap-12 items-center">
- <div className="text-paper">
+ {/* Off-canvas cross. Bled off the right edge of the viewport and
+ layered behind the copy; clipped by the section's overflow-hidden.
+ Hidden below xl where there's no room. */}
+ <div className="hidden xl:block absolute top-1/2 right-0 -translate-y-1/2 -translate-x-[4%] pointer-events-none">
+ <HeroChristIcon />
+ </div>
+ <div className="mx-auto max-w-[1240px] w-full relative z-10">
+ <div className="text-paper max-w-[620px]">
  <Link
  href="/whats-new"
- className="group inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.06] px-3 py-1.5 mb-5 hover:bg-paper/10 hover:border-paper/35 transition-colors duration-150"
+ style={{ animationDelay: "120ms" }}
+ className="hero-copy-in group inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.06] px-3 py-1.5 mb-5 hover:bg-paper/10 hover:border-paper/35 transition-colors duration-150"
  >
  <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] px-2 py-0.5 rounded-pill bg-gold text-night">
  {isDe ? "Neu" : "New"}
@@ -205,13 +212,22 @@ export default async function Home() {
  →
  </span>
  </Link>
- <h1 className="font-sans text-heading md:text-display-sm lg:text-display font-bold leading-[1.05] tracking-[-0.025em]">
+ <h1
+ style={{ animationDelay: "240ms" }}
+ className="hero-copy-in font-sans text-heading md:text-display-sm lg:text-display font-bold leading-[1.05] tracking-[-0.025em]"
+ >
  {t(m, "home.heroH1")}
  </h1>
- <p className="font-sans text-ui md:text-ui text-paper/85 mt-4 max-w-[520px]">
+ <p
+ style={{ animationDelay: "340ms" }}
+ className="hero-copy-in font-sans text-ui md:text-ui text-paper/85 mt-4 max-w-[520px]"
+ >
  {t(m, "home.heroSubtitle")}
  </p>
- <div className="mt-7 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+ <div
+ style={{ animationDelay: "440ms" }}
+ className="hero-copy-in mt-7 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4"
+ >
  <ComingSoonCTA variant="inverse">
  {t(m, "nav.openPurify")}
  </ComingSoonCTA>
@@ -222,9 +238,6 @@ export default async function Home() {
  {t(m, "home.seeToday")}
  </Link>
  </div>
- </div>
- <div className="hidden xl:flex justify-center items-center">
- <HeroChristIcon />
  </div>
  </div>
  </section>
