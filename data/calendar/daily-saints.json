@@ -79,7 +79,8 @@
   "01-10": [
     {
       "name": "St. Gregory of Nyssa",
-      "note": "Cappadocian, brother of Basil the Great, +ca. 395"
+      "note": "Cappadocian, brother of Basil the Great, +ca. 395",
+      "slug": "gregory-of-nyssa"
     },
     {
       "name": "St. Dometian, Bishop of Melitene",
@@ -127,13 +128,15 @@
   "01-16": [
     {
       "name": "Veneration of the Chains of the Apostle Peter",
-      "kind": "feast"
+      "kind": "feast",
+      "slug": "apostle-peter"
     }
   ],
   "01-17": [
     {
       "name": "St. Anthony the Great",
-      "note": "father of monasticism, +356"
+      "note": "father of monasticism, +356",
+      "slug": "anthony-the-great"
     },
     {
       "name": "St. Theodosius the Great, Emperor of the Romans",
@@ -217,7 +220,8 @@
   "01-28": [
     {
       "name": "St. Ephraim the Syrian",
-      "note": "the lyre of the Holy Spirit, +373"
+      "note": "the lyre of the Holy Spirit, +373",
+      "slug": "ephraim-the-syrian"
     }
   ],
   "01-29": [
@@ -355,7 +359,8 @@
   "02-18": [
     {
       "name": "St. Leo, Pope of Rome",
-      "note": "his Tome was received at Chalcedon, +461"
+      "note": "his Tome was received at Chalcedon, +461",
+      "slug": "leo-the-great"
     }
   ],
   "02-19": [
@@ -390,7 +395,8 @@
   "02-23": [
     {
       "name": "Hieromartyr Polycarp of Smyrna",
-      "note": "disciple of John the Theologian, +156"
+      "note": "disciple of John the Theologian, +156",
+      "slug": "polycarp-of-smyrna"
     }
   ],
   "02-24": [
@@ -402,7 +408,8 @@
   "02-25": [
     {
       "name": "St. Tarasius, Patriarch of Constantinople",
-      "note": "presided over the Seventh Ecumenical Council, +806"
+      "note": "presided over the Seventh Ecumenical Council, +806",
+      "slug": "tarasius-of-constantinople"
     }
   ],
   "02-26": [
@@ -492,7 +499,8 @@
   "03-11": [
     {
       "name": "St. Sophronius, Patriarch of Jerusalem",
-      "note": "defender against Monothelitism, +638"
+      "note": "defender against Monothelitism, +638",
+      "slug": "sophronius-of-jerusalem"
     }
   ],
   "03-12": [
@@ -582,7 +590,8 @@
   "03-25": [
     {
       "name": "The Annunciation of the Most Holy Theotokos",
-      "kind": "feast"
+      "kind": "feast",
+      "slug": "theotokos"
     }
   ],
   "03-26": [
@@ -624,7 +633,8 @@
   "04-01": [
     {
       "name": "St. Mary of Egypt",
-      "note": "the great repentant, +522"
+      "note": "the great repentant, +522",
+      "slug": "mary-of-egypt"
     }
   ],
   "04-02": [
@@ -654,7 +664,8 @@
   "04-06": [
     {
       "name": "St. Eutychius, Patriarch of Constantinople",
-      "note": "+582"
+      "note": "+582",
+      "slug": "eutychius-of-constantinople"
     }
   ],
   "04-07": [
@@ -702,7 +713,8 @@
   "04-14": [
     {
       "name": "St. Martin the Confessor, Pope of Rome",
-      "note": "defender of orthodoxy against Monothelitism, +655"
+      "note": "defender of orthodoxy against Monothelitism, +655",
+      "slug": "martin-the-confessor"
     }
   ],
   "04-15": [
@@ -801,7 +813,8 @@
     {
       "name": "Apostle James, brother of John the Theologian",
       "kind": "feast",
-      "note": "first apostle to be martyred, +44"
+      "note": "first apostle to be martyred, +44",
+      "slug": "apostle-james-zebedee"
     }
   ],
   "05-01": [
@@ -897,7 +910,8 @@
     {
       "name": "Apostle and Evangelist John the Theologian",
       "kind": "feast",
-      "note": "his repose at Ephesus"
+      "note": "his repose at Ephesus",
+      "slug": "apostle-john"
     },
     {
       "name": "Ven. Arsenius the Great",
@@ -908,7 +922,8 @@
     {
       "name": "Translation of the Relics of St. Nicholas of Myra to Bari",
       "kind": "feast",
-      "note": "in the year 1087"
+      "note": "in the year 1087",
+      "slug": "nicholas-the-wonderworker"
     },
     {
       "name": "Prophet Isaiah",
@@ -922,7 +937,8 @@
   "05-10": [
     {
       "name": "Apostle Simon the Zealot",
-      "note": "+1st c."
+      "note": "+1st c.",
+      "slug": "apostle-simon-zealot"
     },
     {
       "name": "St. Simon, Bishop of Vladimir and Suzdal",
@@ -1176,7 +1192,8 @@
   "06-01": [
     {
       "name": "Martyr Justin the Philosopher",
-      "note": "the first apologist, +166"
+      "note": "the first apologist, +166",
+      "slug": "justin-martyr"
     },
     {
       "name": "Ven. Dionysius, Abbot of Glushitsa",
@@ -1363,7 +1380,8 @@
   "06-19": [
     {
       "name": "Apostle Jude, brother of the Lord",
-      "kind": "feast"
+      "kind": "feast",
+      "slug": "apostle-jude"
     },
     {
       "name": "Ven. Paisius the Great",
@@ -1493,7 +1511,8 @@
     },
     {
       "name": "St. Juvenal, Patriarch of Jerusalem",
-      "note": "+458"
+      "note": "+458",
+      "slug": "juvenal-of-jerusalem"
     }
   ],
   "07-03": [
@@ -1503,7 +1522,8 @@
     },
     {
       "name": "St. Anatolius, Patriarch of Constantinople",
-      "note": "+458"
+      "note": "+458",
+      "slug": "anatolius-of-constantinople"
     }
   ],
   "07-04": [
@@ -1707,7 +1727,8 @@
     {
       "name": "St. Mary Magdalene, Equal-to-the-Apostles",
       "kind": "feast",
-      "note": "the myrrh-bearer and first witness of the Resurrection"
+      "note": "the myrrh-bearer and first witness of the Resurrection",
+      "slug": "mary-magdalene"
     },
     {
       "name": "Virgin-martyr Markella of Chios",
@@ -1886,7 +1907,8 @@
     {
       "name": "Apostle Matthias",
       "kind": "feast",
-      "note": "chosen to replace Judas Iscariot, +ca. 63"
+      "note": "chosen to replace Judas Iscariot, +ca. 63",
+      "slug": "apostle-matthias"
     },
     {
       "name": "St. Herman of Alaska",
@@ -1947,7 +1969,8 @@
   "08-15": [
     {
       "name": "Dormition of the Most Holy Theotokos",
-      "kind": "feast"
+      "kind": "feast",
+      "slug": "theotokos"
     }
   ],
   "08-16": [
@@ -2040,7 +2063,8 @@
   "08-25": [
     {
       "name": "Translation of Relics of Apostle Bartholomew",
-      "kind": "feast"
+      "kind": "feast",
+      "slug": "apostle-bartholomew"
     },
     {
       "name": "Apostle Titus of the Seventy, Bishop of Crete",
@@ -2192,7 +2216,8 @@
   "09-08": [
     {
       "name": "Nativity of Our Most Holy Lady the Theotokos",
-      "kind": "feast"
+      "kind": "feast",
+      "slug": "theotokos"
     }
   ],
   "09-09": [
@@ -2212,7 +2237,8 @@
     },
     {
       "name": "St. Pulcheria the Empress",
-      "note": "of Constantinople, +453"
+      "note": "of Constantinople, +453",
+      "slug": "pulcheria-the-empress"
     }
   ],
   "09-11": [
@@ -2366,7 +2392,8 @@
     {
       "name": "Repose of the Apostle and Evangelist John the Theologian",
       "kind": "feast",
-      "note": "+ca. 105"
+      "note": "+ca. 105",
+      "slug": "apostle-john"
     }
   ],
   "09-27": [
@@ -2413,7 +2440,8 @@
     {
       "name": "Protection of Our Most Holy Lady the Theotokos",
       "kind": "feast",
-      "note": "at Blachernae, 10th c."
+      "note": "at Blachernae, 10th c.",
+      "slug": "theotokos"
     },
     {
       "name": "Apostle Ananias",
@@ -2468,7 +2496,8 @@
     {
       "name": "Holy and Glorious Apostle Thomas",
       "kind": "feast",
-      "note": "preacher in Parthia and India, +1st c."
+      "note": "preacher in Parthia and India, +1st c.",
+      "slug": "apostle-thomas"
     },
     {
       "name": "St. Innocent, Enlightener of the Aleuts and Apostle to America",
@@ -2499,7 +2528,8 @@
     {
       "name": "Holy Apostle James, son of Alphaeus",
       "kind": "feast",
-      "note": "of the Twelve, +1st c."
+      "note": "of the Twelve, +1st c.",
+      "slug": "apostle-james-alphaeus"
     },
     {
       "name": "Righteous Abraham the Patriarch and his nephew Lot",
@@ -2883,7 +2913,8 @@
     {
       "name": "Holy Apostle Philip",
       "kind": "feast",
-      "note": "of the Twelve, +1st c."
+      "note": "of the Twelve, +1st c.",
+      "slug": "apostle-philip"
     },
     {
       "name": "Beginning of the Nativity Fast",
@@ -2909,7 +2940,8 @@
     {
       "name": "Holy Apostle and Evangelist Matthew",
       "kind": "feast",
-      "note": "+ca. 60"
+      "note": "+ca. 60",
+      "slug": "apostle-matthew"
     }
   ],
   "11-17": [
@@ -2959,7 +2991,8 @@
   "11-21": [
     {
       "name": "Entrance of the Most Holy Theotokos into the Temple",
-      "kind": "feast"
+      "kind": "feast",
+      "slug": "theotokos"
     }
   ],
   "11-22": [
@@ -3047,7 +3080,8 @@
     {
       "name": "Holy Apostle Andrew the First-Called",
       "kind": "feast",
-      "note": "brother of Peter, preacher to Byzantium and Greece"
+      "note": "brother of Peter, preacher to Byzantium and Greece",
+      "slug": "apostle-andrew"
     },
     {
       "name": "St. Frumentius, Enlightener of Abyssinia",
@@ -3300,7 +3334,8 @@
   "12-26": [
     {
       "name": "Synaxis of the Most Holy Theotokos",
-      "kind": "feast"
+      "kind": "feast",
+      "slug": "theotokos"
     }
   ],
   "12-27": [
