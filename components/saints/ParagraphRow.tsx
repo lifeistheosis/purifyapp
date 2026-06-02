@@ -186,7 +186,11 @@ export function ParagraphRow({
  <div className="flex items-start gap-2">
  <p
  className={cn(
- "font-serif text-lede md:text-lede text-paper/90 leading-[1.7] flex-1 min-w-0 transition-colors duration-150",
+ // Font family + size are inherited from the reader container
+				// (FONT_CLASSES/SIZE_CLASSES on the WritingReader <article>) so the
+				// Size and Font controls actually change the body text — mirrors the
+				// Bible VerseRow, which sets no font/size here either.
+				"text-paper/90 leading-[1.7] flex-1 min-w-0 transition-colors duration-150",
  showTools &&
  "bg-gold/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(212,175,55,0.35)]",
  )}
