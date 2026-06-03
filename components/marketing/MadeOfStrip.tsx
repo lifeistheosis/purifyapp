@@ -4,54 +4,54 @@ import { getServerLocale } from "@/lib/i18n/server";
 const ITEMS: { title: string; body: string }[] = [
   {
     title: "The whole Orthodox canon",
-    body: "Septuagint Old Testament (Brenton, 1851) with the deuterocanon and the appointed Psalter numbering, paired with the King James New Testament.",
+    body: "Brenton Septuagint with the deuterocanon, paired with the King James.",
   },
   {
-    title: "Polytonic Koine Greek New Testament",
-    body: "Nestle 1904 with Strong's numbers and Robinson morphology on every word. Click any Greek word for the lemma, parse, and short definition.",
+    title: "Greek New Testament",
+    body: "Nestle 1904. Tap any word for its parse and meaning.",
   },
   {
     title: "Patristic commentary",
-    body: "Selections from Schaff's Ante-Nicene and Nicene Fathers: Athanasius, Chrysostom, Augustine, the Cappadocians, John of Damascus, Maximus, and more.",
+    body: "Athanasius, Chrysostom, Augustine, the Cappadocians, and more.",
   },
   {
-    title: "Daily prayer in the common form",
-    body: "The Morning and Evening Rules in the wording carried by the Jordanville, St. Tikhon's, and Hapgood Service Book traditions, with a guided Jesus Prayer counter.",
+    title: "Daily prayer",
+    body: "The Morning and Evening Rules, with a guided Jesus Prayer counter.",
   },
   {
-    title: "The calendar in both reckonings",
-    body: "New (Revised Julian) of the Ecumenical Patriarchate by default; an Old (Julian) toggle for the Russian, Serbian, Athonite, and Jerusalem traditions. Pascha is shared.",
+    title: "Both calendars",
+    body: "New and Old (Julian) reckonings. Shared Pascha.",
   },
   {
-    title: "No tracking. No advertising. Optional account.",
-    body: "Your highlights, notes, bookmarks, and prayer streaks live on your device by default. Sign in to sync them across devices. We don't run analytics or sell ad placement, either way. Built for the praying life, not for engagement.",
+    title: "No tracking, no ads",
+    body: "Your notes stay on your device. Sign in to sync. No analytics, ever.",
   },
 ];
 
 const ITEMS_DE: { title: string; body: string }[] = [
   {
     title: "Der ganze orthodoxe Kanon",
-    body: "Septuaginta-Altes Testament (Brenton, 1851) mit dem Deuterokanon und der angeordneten Psalterzählung, gepaart mit dem King-James-Neuen-Testament.",
+    body: "Brenton-Septuaginta mit Deuterokanon, gepaart mit der King-James-Bibel.",
   },
   {
-    title: "Polytonisches Koine-griechisches Neues Testament",
-    body: "Nestle 1904 mit Strong-Nummern und Robinson-Morphologie auf jedem Wort. Klicke ein griechisches Wort an für Lemma, Parsing und Kurzdefinition.",
+    title: "Griechisches Neues Testament",
+    body: "Nestle 1904. Tippe ein Wort für Parsing und Bedeutung.",
   },
   {
     title: "Patristischer Kommentar",
-    body: "Auswahl aus Schaffs Ante-Nicene und Nicene Fathers: Athanasius, Chrysostomus, Augustinus, die Kappadokier, Johannes von Damaskus, Maximus und weitere.",
+    body: "Athanasius, Chrysostomus, Augustinus, die Kappadokier und mehr.",
   },
   {
-    title: "Tägliches Gebet im gemeinen Wortlaut",
-    body: "Die Morgen- und Abendregel im Wortlaut, den die Jordanville-, Hl.-Tichon- und Hapgood-Service-Book-Überlieferung trägt, mit einem geführten Jesusgebet-Zähler. Deutsche Wiedergabe nach der Diözese Berlin und Deutschland (ROCOR) und der Metropolie von Wien.",
+    title: "Tägliches Gebet",
+    body: "Die Morgen- und Abendregel, mit geführtem Jesusgebet-Zähler.",
   },
   {
-    title: "Der Kalender in beiden Reckonungen",
-    body: "Voreingestellt der Neue (Revidierte Julianische) des Ökumenischen Patriarchats; eine Umschaltung auf den Alten (Julianischen) für die russische, serbische, athonitische und jerusalemische Überlieferung. Pascha ist beiden gemein.",
+    title: "Beide Kalender",
+    body: "Neue und Alte (Julianische) Zählung. Gemeinsames Pascha.",
   },
   {
-    title: "Keine Verfolgung. Keine Werbung. Konto freiwillig.",
-    body: "Deine Markierungen, Notizen, Lesezeichen und Gebets-Strähnen leben voreingestellt auf deinem Gerät. Melde dich an, um sie über Geräte hinweg abzugleichen. Wir betreiben keine Analytik und verkaufen keinen Werbeplatz, so oder so. Gebaut für das betende Leben, nicht für Bindung.",
+    title: "Kein Tracking, keine Werbung",
+    body: "Deine Notizen bleiben auf dem Gerät. Anmelden zum Abgleich. Keine Analytik.",
   },
 ];
 
