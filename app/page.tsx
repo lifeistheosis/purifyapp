@@ -152,10 +152,10 @@ export default async function Home() {
  // One custom illustration per pillar, keyed by index to homeFeatures:
  // Scripture (Fathers/LXX-KJV), saints, calendar, prayer.
  const featureIcons = [
- { src: "/fathers_widget.png", alt: "" },
- { src: "/saint_widget.png", alt: "" },
- { src: "/calendar_widget.png", alt: "" },
- { src: "/pray_widget.png", alt: "" },
+ { src: "/fathers_widget_v2.png", alt: "" },
+ { src: "/saint_widget_v2.png", alt: "" },
+ { src: "/calendar_widget_v2.png", alt: "" },
+ { src: "/pray_widget_v2.png", alt: "" },
  ];
  const homeCategories = isDe ? categoriesDe : categories;
  const homeChallenges = isDe ? challengesDe : challenges;
