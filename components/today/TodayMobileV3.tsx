@@ -86,8 +86,8 @@ export async function TodayMobileV3() {
     <div className="flex flex-col bg-night">
       <MobileTopTabs active="today" labels={tabs} avatar={<UserAvatarSmall />} />
 
-      <div className="px-5 pt-6 pb-10">
-        <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-4">
+      <div className="px-5 pt-5 pb-8">
+        <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-3">
           {labels.eyebrow}
         </p>
 
@@ -114,7 +114,7 @@ export async function TodayMobileV3() {
             ) : (
               <div
                 key="saint-empty"
-                className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4"
+                className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5"
               >
                 <p className="font-sans text-caption text-paper/55">
                   {labels.saint}

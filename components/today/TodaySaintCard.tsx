@@ -43,20 +43,20 @@ export function TodaySaintCard({
     return (
       <Link
         href={`/saints/${saint.slug}`}
-        className="flex items-stretch gap-4 rounded-2xl border border-paper/10 bg-paper/[0.03] p-4 transition-colors hover:bg-paper/[0.06]"
+        className="flex items-stretch gap-3 rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5 transition-colors hover:bg-paper/[0.06]"
       >
         <div className="min-w-0 flex-1">
           <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
-          <h3 className="mt-1 font-serif text-lede leading-[1.2] text-paper">
+          <h3 className="mt-1 font-serif text-ui leading-[1.2] text-paper">
             {saint.name}
           </h3>
-          <p className="mt-3 inline-flex items-center gap-1.5 font-sans text-caption text-paper/55">
+          <p className="mt-2.5 inline-flex items-center gap-1.5 font-sans text-caption text-paper/55">
             <ClockIcon />
             <span>{minutes} min</span>
           </p>
         </div>
         <div className="relative shrink-0 self-stretch flex items-center">
-          <SaintIcon saint={saint} size="md" />
+          <SaintIcon saint={saint} size="sm" />
           <span
             aria-hidden
             className="absolute bottom-1 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-night/85 border border-paper/20 text-paper"
@@ -73,11 +73,11 @@ export function TodaySaintCard({
     return (
       <Link
         href="/calendar"
-        className="flex items-stretch gap-4 rounded-2xl border border-paper/10 bg-paper/[0.03] p-4 transition-colors hover:bg-paper/[0.06]"
+        className="flex items-stretch gap-3 rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5 transition-colors hover:bg-paper/[0.06]"
       >
         <div className="min-w-0 flex-1">
           <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
-          <h3 className="mt-1 font-serif text-lede leading-[1.25] text-paper">
+          <h3 className="mt-1 font-serif text-ui leading-[1.25] text-paper">
             {fallbackName}
           </h3>
           {fallbackNote && (
@@ -92,7 +92,7 @@ export function TodaySaintCard({
         <div className="relative shrink-0 self-stretch flex items-center">
           <span
             aria-hidden
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-paper/15 bg-night text-gold/85 text-lede"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-paper/15 bg-night text-gold/85 text-ui"
           >
             ✦
           </span>

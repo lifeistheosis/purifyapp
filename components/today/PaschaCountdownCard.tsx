@@ -22,12 +22,12 @@ export function PaschaCountdownCard({
   return (
     <Link
       href="/calendar"
-      className="flex items-center gap-4 rounded-2xl border border-paper/10 bg-paper/[0.03] p-4 transition-colors hover:bg-paper/[0.06]"
+      className="flex items-center gap-3 rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5 transition-colors hover:bg-paper/[0.06]"
     >
       <ThreeBarCross />
       <div className="min-w-0 flex-1">
         <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
-        <h3 className="mt-0.5 font-serif text-lede leading-[1.2] text-paper">
+        <h3 className="mt-0.5 font-serif text-ui leading-[1.2] text-paper">
           {primary}
         </h3>
         <p className="mt-0.5 font-sans text-caption text-paper/55">{label}</p>
@@ -39,8 +39,8 @@ export function PaschaCountdownCard({
 function ThreeBarCross() {
   return (
     <svg
-      width={28}
-      height={28}
+      width={24}
+      height={24}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"

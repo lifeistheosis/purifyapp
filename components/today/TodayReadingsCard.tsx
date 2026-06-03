@@ -22,7 +22,7 @@ export function TodayReadingsCard({
 }) {
   if (!readings.length) {
     return (
-      <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4">
+      <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5">
         <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
         <p className="mt-2 font-sans text-ui text-paper/55 italic">
           {emptyLabel}
@@ -31,7 +31,7 @@ export function TodayReadingsCard({
     );
   }
   return (
-    <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4">
+    <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5">
       <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
       <ul className="mt-2 divide-y divide-paper/8">
         {readings.map((r, i) => {
@@ -45,7 +45,7 @@ export function TodayReadingsCard({
             <li key={i}>
               <Link
                 href={`/bible/${r.book}/${r.chapter}#v${r.from}`}
-                className="flex items-center gap-3 py-2.5 group"
+                className="flex items-center gap-3 py-2 group"
               >
                 <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.04] px-2 py-[1px] font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/65">
                   {kind}

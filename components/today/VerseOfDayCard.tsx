@@ -28,7 +28,7 @@ export async function VerseOfDayCard({
 
   return (
     <article
-      className="relative overflow-hidden rounded-2xl border border-paper/10 p-5 pt-5"
+      className="relative overflow-hidden rounded-2xl border border-paper/10 p-4 pt-4"
       style={{
         background:
           "radial-gradient(120% 80% at 80% 90%, rgba(193,39,45,0.20) 0%, transparent 60%), linear-gradient(180deg, #18120f 0%, #0a0606 100%)",
@@ -60,12 +60,12 @@ export async function VerseOfDayCard({
             </span>
           )}
         </p>
-        <p className="mt-0.5 font-sans text-lede font-bold text-paper">
+        <p className="mt-0.5 font-sans text-ui font-bold text-paper">
           {vod.ref.label}
         </p>
 
         <div
-          className="mt-5 font-serif text-title-sm leading-[1.35] text-paper/95"
+          className="mt-3 font-serif text-lede leading-[1.4] text-paper/95"
           style={{
             // Fade the body to transparent near the bottom so it reads
             // as a teaser, the full chapter is one tap away via Expand.
@@ -73,7 +73,7 @@ export async function VerseOfDayCard({
               "linear-gradient(180deg, #000 0%, #000 65%, transparent 100%)",
             maskImage:
               "linear-gradient(180deg, #000 0%, #000 65%, transparent 100%)",
-            maxHeight: "230px",
+            maxHeight: "160px",
             overflow: "hidden",
           }}
         >
