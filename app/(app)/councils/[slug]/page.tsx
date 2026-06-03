@@ -155,7 +155,16 @@ export default async function CouncilProfilePage({
  {c.principalOpposed.map((o, i) => (
  <li key={i} className="rounded-md border border-paper/10 bg-paper/[0.015] px-5 py-4">
  <p className="font-sans text-ui font-semibold text-paper/85">
+ {o.slug ? (
+ <Link
+ href={`/heresies/${o.slug}`}
+ className="hover:text-gold transition-colors underline underline-offset-4 decoration-gold/40 hover:decoration-gold"
+ >
  {o.name}
+ </Link>
+ ) : (
+ o.name
+ )}
  </p>
  <p className="mt-2 font-serif text-ui text-paper/70 leading-[1.6]">
  {o.teaching}

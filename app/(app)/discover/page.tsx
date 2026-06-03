@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { DiscoverMobile } from "@/components/mobile/DiscoverMobile";
 import { Cross } from "@/components/ui/icons/Cross";
+import { Bolt } from "@/components/ui/icons/Bolt";
 import { Codex } from "@/components/ui/icons/Codex";
 import { Halo } from "@/components/ui/icons/Halo";
 import { Lampada } from "@/components/ui/icons/Lampada";
@@ -46,6 +47,12 @@ export default async function DiscoverPage() {
       href: "/councils",
       blurb: t(m, "discover.tile.councilsBlurb"),
       Icon: Cross,
+    },
+    {
+      label: t(m, "discover.tile.heresies"),
+      href: "/heresies",
+      blurb: t(m, "discover.tile.heresiesBlurb"),
+      Icon: Bolt,
     },
     {
       label: t(m, "discover.tile.calendar"),

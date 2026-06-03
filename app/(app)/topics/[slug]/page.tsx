@@ -1,13 +1,11 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   loadAllTopics,
   loadTopic,
   partitionCitations,
-  type TopicCitation,
 } from "@/lib/topics/topics";
-import { loadWriting } from "@/lib/saints/load";
-import { getSaint } from "@/lib/saints/saints";
+import { resolveCitations } from "@/lib/citations/resolve";
+import { CitationCard } from "@/components/citations/CitationCard";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 
@@ -30,73 +28,14 @@ export async function generateMetadata({ params }: { params: Params }) {
   };
 }
 
-/** Resolve one citation into the data needed to render its card. */
-async function resolveCitation(c: TopicCitation) {
-  const saint = getSaint(c.saintSlug);
-  if (!saint) return null;
-  const writing = await loadWriting(c.saintSlug, c.workSlug);
-  if (!writing) return null;
-  const section = writing.sections.find((s) => s.n === c.sectionN);
-  if (!section) return null;
-  const paragraph =
-    typeof c.paragraphIndex === "number"
-      ? section.paragraphs[c.paragraphIndex]
-      : section.paragraphs[0];
-  return {
-    saintName: saint.name,
-    saintIcon: saint.iconUrl,
-    workTitle: writing.title,
-    sectionTitle: section.title,
-    citation: section.citation,
-    paragraph: paragraph ?? "",
-    href: `/saints/${c.saintSlug}/${c.workSlug}#s${c.sectionN}`,
-    gloss: c.gloss,
-  };
-}
-
-type ResolvedCitation = NonNullable<Awaited<ReturnType<typeof resolveCitation>>>;
-
-function CitationCard({ c }: { c: ResolvedCitation }) {
-  return (
-    <Link
-      href={c.href}
-      className="block rounded-lg border border-paper/12 bg-paper/[0.03] p-5 hover:border-gold/40 transition-all duration-200"
-    >
-      {c.gloss ? (
-        <p className="font-sans text-caption uppercase tracking-[1.2px] text-gold/85 mb-3">
-          {c.gloss}
-        </p>
-      ) : null}
-      <blockquote className="font-serif italic text-body text-paper/90 leading-[1.65]">
-        &ldquo;{c.paragraph}&rdquo;
-      </blockquote>
-      <p className="mt-3 font-sans text-caption text-paper/55">
-        {c.saintName}
-        <span className="text-paper/30 mx-2">&middot;</span>
-        <span className="text-paper/70">{c.workTitle}</span>
-        {c.citation ? (
-          <>
-            <span className="text-paper/30 mx-2">&middot;</span>
-            <span className="text-paper/55">{c.citation}</span>
-          </>
-        ) : null}
-      </p>
-    </Link>
-  );
-}
-
 export default async function TopicPage({ params }: { params: Params }) {
   const { slug } = await params;
   const topic = await loadTopic(slug);
   if (!topic) notFound();
 
   const { affirming, refuting } = partitionCitations(topic);
-  const resolvedAffirming = (
-    await Promise.all(affirming.map(resolveCitation))
-  ).filter((c): c is ResolvedCitation => c !== null);
-  const resolvedRefuting = (
-    await Promise.all(refuting.map(resolveCitation))
-  ).filter((c): c is ResolvedCitation => c !== null);
+  const resolvedAffirming = await resolveCitations(affirming);
+  const resolvedRefuting = await resolveCitations(refuting);
   const locale = await getServerLocale();
   const m = getMessages(locale);
 

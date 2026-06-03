@@ -47,6 +47,9 @@ export type CouncilFather = {
 };
 
 export type CouncilOpposition = {
+ /** Slug of a heresy profile in lib/heresies/heresies.ts, when one exists.
+  * When set, the council profile links the opposing party to /heresies/{slug}. */
+ slug?: string;
  /** Display name of the heresy or its principal teacher. */
  name: string;
  /** Plain-English one-sentence summary of what they taught. */
@@ -150,6 +153,7 @@ export const COUNCILS: Council[] = [
  ],
  principalOpposed: [
  {
+ slug: "arianism",
  name: "Arius of Alexandria",
  teaching: "Presbyter of Alexandria; taught that the Son was a creature, the first and highest of all that the Father had made, but not eternal, \"there was when He was not\", and not of the same essence as the Father.",
  },
@@ -251,6 +255,7 @@ export const COUNCILS: Council[] = [
  ],
  principalOpposed: [
  {
+ slug: "macedonianism",
  name: "The Pneumatomachi (Macedonians)",
  teaching: "Took their name from Macedonius, deposed bishop of Constantinople in 360, though the position outlived him; taught that the Holy Spirit is a creature, the highest of the angelic powers but not God. Thirty-six Macedonian bishops attended the Council at first and withdrew before subscribing to the new Creed.",
  },
@@ -352,6 +357,7 @@ export const COUNCILS: Council[] = [
  ],
  principalOpposed: [
  {
+ slug: "nestorianism",
  name: "Nestorius, Patriarch of Constantinople",
  teaching: "Preached publicly that Mary is rightly called Christotokos (Mother of Christ) but not Theotokos (Mother of God), and taught that the union of the divine and human natures in Christ is a conjunction of two distinct persons in one prosopon of dignity, rather than a hypostatic union in the person of the Word. Deposed by the Council and exiled.",
  },
@@ -444,6 +450,7 @@ export const COUNCILS: Council[] = [
  ],
  principalOpposed: [
  {
+ slug: "eutychianism",
  name: "Eutyches of Constantinople",
  teaching: "Aged Archimandrite of a great monastery near Constantinople; taught that in Christ, after the union, there is only one nature, the divine nature having absorbed the human. The Council deposed him by name and condemned the formula.",
  },
@@ -525,6 +532,7 @@ export const COUNCILS: Council[] = [
  teaching: "The person and writings of Theodore of Mopsuestia, the anti-Cyrilline writings of Theodoret of Cyrus, and the Letter ascribed to Ibas of Edessa, together with those who defended them as having been vindicated at Chalcedon. The Council condemned the writings while distinguishing the persons received at Chalcedon.",
  },
  {
+ slug: "origenism",
  name: "Origen, Didymus, and Evagrius",
  teaching: "The Origenist speculation of the pre-existence of souls and the final restoration of all rational beings, spread among the Palestinian monks. Condemned by the Council with the prior heretics.",
  },
@@ -607,6 +615,7 @@ export const COUNCILS: Council[] = [
  ],
  principalOpposed: [
  {
+ slug: "monothelitism",
  name: "Monothelitism (Sergius, Cyrus, and the Patriarchs)",
  teaching: "The doctrine of one will and one operation in Christ, devised by Patriarch Sergius of Constantinople and Cyrus of Alexandria under the Emperor Heraclius as a formula to reconcile the non-Chalcedonians. Condemned by the Council with its authors Theodore of Pharan, Sergius, Pyrrhus, Paul, and Peter of Constantinople, Cyrus, and Macarius of Antioch named by name.",
  },
@@ -689,6 +698,7 @@ export const COUNCILS: Council[] = [
  ],
  principalOpposed: [
  {
+ slug: "iconoclasm",
  name: "Iconoclasm and the council of Hieria (754)",
  teaching: "The heresy of the breakers of icons, raised under the Emperors Leo III and Constantine V, which condemned the veneration of images as idolatry and stripped them from the churches. Its council at Hieria claimed to be the Seventh Ecumenical Council; the Seventh Council refuted and annulled it as a false synod gathered without the other patriarchates.",
  },

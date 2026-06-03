@@ -23,6 +23,22 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v8.5",
+ kind: "The Heresies archive, cross-linked with the Councils",
+ date: "June 3, 2026",
+ blurb:
+  "Every Ecumenical Council is defined as much by the error it condemned as by the doctrine it confessed, but until now those errors lived only as inline prose on the council pages. This release gives them a section of their own. The new Heresies archive profiles the seven chief errors the councils condemned, one for each of the Seven Ecumenical Councils: Arianism, Macedonianism, Nestorianism, Eutychianism, Origenism, Monothelitism, and Iconoclasm. Each profile defines the error in plain English, names the council that condemned it, links across to the orthodox teaching it denied in the Topics index, and, where the corpus already holds them, answers it in the Fathers' own words as verbatim deep-links. It is built exactly like Topics: a thin index, editorial in-house definitions, no hosted heretical text, every quotation a deep-link into a section of a work the saints library already carries word for word. And the link runs both ways, the council pages now link their named opposing parties straight to the heresy profile.",
+ items: [
+  "New /heresies archive, surfaced on Discover (desktop and mobile) beside the Councils and Topics. Seven profiles, one per Ecumenical Council: Arianism (Nicaea I), Macedonianism (Constantinople I), Nestorianism (Ephesus), Eutychianism (Chalcedon), Origenism and the Three Chapters (Constantinople II), Monothelitism (Constantinople III), and Iconoclasm (Nicaea II).",
+  "Each profile gives a plain-English definition of the error and the Church's answer in house voice, links to the council(s) that condemned it, and where the orthodox mirror exists links across to the Topics page that confesses the opposite, the Holy Trinity for Arianism and Macedonianism, the Theotokos for Nestorianism, the Incarnation for Eutychianism and Monothelitism.",
+  "The Fathers' refutations are verbatim deep-links, the same discipline as Topics. Arianism is answered by St. Athanasius against the Arians, on the Nicene Definition, and his history of the Arian opinions, and by St. Alexander of Alexandria; Nestorianism by St. Cyril's Second Letter, his Twelfth Anathema, and his refutation of the division of Christ into two sons; Eutychianism by the Tome of St. Leo. The four whose verbatim refutation is not yet in the corpus ship honestly with their definition and council links and no padded quotes.",
+  "The councils now link out to the heresies. The principal opposing parties named on each council page, Arius on Nicaea, the Pneumatomachi on Constantinople, Nestorius on Ephesus, Eutyches on Chalcedon, and the rest, now deep-link to the matching heresy profile, so a reader can move from the council to the error and back.",
+  "No heretical text is hosted, and nothing is generated. The definitions are in-house editorial prose, exactly like the council condemned bullets; every quotation is a deep-link into a Father's verbatim, already-hosted words, and any citation that cannot resolve is silently dropped rather than faked.",
+  "Cache version bumped to v8.5.0 so the new heresy pages evict the old buckets on this release.",
+  "Footer + home hero chip + /whats-new chip step to v8.5.",
+ ],
+ },
+ {
  version: "v8.4",
  kind: "The Topics index, grown from one entry to five",
  date: "June 3, 2026",
@@ -1008,17 +1024,17 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
- v8.4 &middot; The Topics index, grown from one entry to five
+ v8.5 &middot; The Heresies archive, cross-linked with the Councils
  </p>
  </div>
 
  {isDe ? (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Der Themenindex, von einem Eintrag auf fünf gewachsen.
+ Das Häresien-Archiv, mit den Konzilen verknüpft.
  </h1>
  ) : (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- The Topics index, grown from one entry to five.
+ The Heresies archive, cross-linked with the Councils.
  </h1>
  )}
 
@@ -1056,31 +1072,29 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v8.4 erweitert den{" "}
- <Link href="/topics" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Themenindex</Link>{" "}
- von einem einzigen Starteintrag auf fünf. Der Themenindex ist
- eine Recherchefläche: ein dogmatischer Begriff, eine kurze
- orthodoxe Definition in klarem Deutsch und dann die
- patristischen Belege, die ihn bekennen, mit den Belegen, die
- sein Gegenteil widerlegen, daneben gestellt, wo die Frage
- ausgefochten wurde. Es ist ein schlanker Index, kein neues
- Korpus. Jeder Beleg ist ein Tieflink in einen nummerierten
- Abschnitt eines Werkes, das die Heiligenbibliothek bereits
- wortgetreu beherbergt, niemals eine Verdopplung und niemals
- eine Umschreibung. Diese Ausgabe fügt vier zentrale
- Bekenntnisse des Glaubens hinzu, die{" "}
- <Link href="/topics/the-holy-trinity" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Heilige Dreifaltigkeit</Link>,
- die{" "}
- <Link href="/topics/the-theotokos" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Gottesgebärerin</Link>,
- die{" "}
- <Link href="/topics/theosis" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Theosis</Link>{" "}
- und die{" "}
- <Link href="/topics/the-eucharist" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Eucharistie</Link>,
- neunundzwanzig Belege insgesamt, von denen jeder einzelne
- geprüft wurde und auf einen echten Abschnitt eines
- beherbergten Vaters verweist. Nichts hier ist generiert; der
- Index ordnet die Lehre schlicht den Worten zu, die die Kirche
- bereits liest.
+ v8.5 eröffnet das{" "}
+ <Link href="/heresies" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Häresien-Archiv</Link>,
+ das Spiegelbild des Themenindex. Jedes Ökumenische Konzil ist
+ ebenso durch den Irrtum bestimmt, den es verurteilte, wie durch
+ die Lehre, die es bekannte, und diese Ausgabe stellt die sieben
+ Hauptirrtümer dar, die die Konzile beantworteten, einen für
+ jedes Konzil:{" "}
+ <Link href="/heresies/arianism" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Arianismus</Link>,
+ Makedonianismus,{" "}
+ <Link href="/heresies/nestorianism" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Nestorianismus</Link>,
+ Eutychianismus, Origenismus, Monotheletismus und{" "}
+ <Link href="/heresies/iconoclasm" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Ikonoklasmus</Link>.
+ Jedes Profil legt den Irrtum in klarem Deutsch dar, nennt das{" "}
+ <Link href="/councils" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Konzil</Link>,
+ das ihn verurteilte, verweist auf die orthodoxe Lehre, die er
+ leugnete, und beantwortet ihn, wo das Korpus sie bereits
+ enthält, mit den eigenen Worten der Väter. Es ist genau wie der
+ Themenindex gebaut, ein schlanker Index, redaktionelle
+ Definitionen in eigener Stimme, kein beherbergter Häretikertext,
+ jedes Zitat ein Tieflink in einen Abschnitt, den ein Väterwerk
+ bereits wortgetreu trägt. Und die Verknüpfung geht in beide
+ Richtungen: die Konzilseiten verweisen ihre genannten
+ Gegenparteien nun direkt auf das Häresien-Profil.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
@@ -1127,26 +1141,26 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v8.4 grows the{" "}
- <Link href="/topics" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Topics index</Link>{" "}
- from a single starter entry to five. The Topics index is a research
- surface: a doctrinal term, a short Orthodox definition in plain
- English, and then the patristic citations that confess it, with the
- citations that refute its opposite set beside them where the question
- was fought out. It is a thin index, not a new corpus. Every citation
- is a deep link into a numbered section of a work the saints library
- already hosts verbatim, never a duplicate and never a paraphrase. This
- release adds four central confessions of the faith, the{" "}
- <Link href="/topics/the-holy-trinity" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Holy Trinity</Link>,
- the{" "}
- <Link href="/topics/the-theotokos" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Theotokos</Link>,
- {" "}
- <Link href="/topics/theosis" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Theosis</Link>,
- and the{" "}
- <Link href="/topics/the-eucharist" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Eucharist</Link>,
- twenty-nine citations in all, every one of them verified to resolve to
- a real section of a hosted Father. Nothing here is generated; the
- index simply maps the doctrine to the words the Church already reads.
+ v8.5 opens the{" "}
+ <Link href="/heresies" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Heresies archive</Link>,
+ the mirror image of the Topics index. Every Ecumenical Council is
+ defined as much by the error it condemned as by the doctrine it
+ confessed, and this release profiles the seven chief errors the
+ councils answered, one for each council:{" "}
+ <Link href="/heresies/arianism" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Arianism</Link>,
+ Macedonianism,{" "}
+ <Link href="/heresies/nestorianism" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Nestorianism</Link>,
+ Eutychianism, Origenism, Monothelitism, and{" "}
+ <Link href="/heresies/iconoclasm" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Iconoclasm</Link>.
+ Each profile defines the error in plain English, names the{" "}
+ <Link href="/councils" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">council</Link>{" "}
+ that condemned it, links across to the orthodox teaching it denied,
+ and, where the corpus already holds them, answers it in the Fathers&rsquo;
+ own words. It is built exactly like Topics, a thin index, editorial
+ definitions in house voice, no hosted heretical text, every quotation
+ a deep link into a section a Father&rsquo;s work already carries verbatim.
+ And the link runs both ways: the council pages now send their named
+ opposing parties straight to the heresy profile.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">

@@ -20,6 +20,7 @@ import { SaintStrip } from "./SaintStrip";
 import { DiscoverIndex, type DiscoverEntry } from "./DiscoverIndex";
 import { Halo } from "@/components/ui/icons/Halo";
 import { Cross } from "@/components/ui/icons/Cross";
+import { Bolt } from "@/components/ui/icons/Bolt";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Octogram } from "@/components/ui/icons/Octogram";
 import { Codex } from "@/components/ui/icons/Codex";
@@ -105,6 +106,12 @@ export async function DiscoverMobile() {
       href: "/topics",
       blurb: t(m, "discover.tile.topicsBlurb"),
       Icon: Octogram,
+    },
+    {
+      label: t(m, "discover.tile.heresies"),
+      href: "/heresies",
+      blurb: t(m, "discover.tile.heresiesBlurb"),
+      Icon: Bolt,
     },
     {
       label: t(m, "discover.tile.dailyReadings"),
