@@ -20,7 +20,7 @@ export default function HeresiesPage() {
         <p className="mt-5 max-w-[720px] font-serif text-lede md:text-lede text-paper/80 leading-[1.65]">
           Every Ecumenical Council is defined as much by the error it
           condemned as by the doctrine it confessed. Here are the seven chief
-          heresies, one for each of the seven councils &mdash; each defined in
+          heresies, one for each of the seven councils, each defined in
           plain English, linked to the council that condemned it and the
           orthodox teaching it denied, and answered, where the corpus holds
           them, in the Fathers&rsquo; own words.
