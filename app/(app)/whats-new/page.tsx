@@ -23,6 +23,21 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v8.2",
+ kind: "Chrysostom's Homilies on Matthew, now in the reader",
+ date: "June 3, 2026",
+ blurb:
+ "The Bible reader carries patristic commentary in the study rail, but Matthew had only a handful of scattered notes. This release fills the whole Gospel. St. John Chrysostom's Homilies on the Gospel of Matthew, the earliest complete commentary on the First Gospel to survive, now sits beside the text across all twenty-eight chapters, and the work itself joins his profile in the saints library. The text ships the only way the rest of the library is built: verbatim from a public-domain source, the Nicene and Post-Nicene Fathers, Series 1, Volume 10, the Schaff edition, never paraphrased, never modernized, never filled in by a model. One honest limitation is named plainly: the NPNF Matthew volume, unlike the John volume, does not mark its text verse by verse, so each homily is anchored to the opening verse of the passage it expounds rather than split across every verse. That is coarser than the John commentary, but it is real, correctly-cited Chrysostom, with no invented verse mapping. The existing hand-curated notes on Matthew were preserved; only the prior Chrysostom-on-Matthew notes were refreshed.",
+ items: [
+  "St. John Chrysostom's Homilies on the Gospel of Matthew added to the Bible reader's commentary across all twenty-eight chapters of Matthew. Where before only chapters 1, 5, 6, 13, and 25 carried any notes, every chapter now shows Chrysostom in the desktop study rail and the mobile commentary sheet, each note citing NPNF1-10.",
+  "The work joins Chrysostom's profile in the saints library as Homilies on the Gospel of Matthew, the complete ninety homilies, readable end to end like his Homilies on John, Romans, Acts, and the rest of his hosted corpus.",
+  "Honest granularity, named in the source notes. The NPNF Matthew transcription lacks the line-leading verse markers the John pipeline relies on, so each homily is keyed to the first verse of the passage it treats rather than sub-split per verse. Real, verbatim, cited text; no fabricated verse mapping. The four homilies the public-domain transcription merges into their neighbors (53, 54, 58, 79) keep their true homily numbers by roman-numeral derivation, so nothing is mis-cited.",
+  "The pre-existing curated Matthew notes were preserved through the merge; only prior Chrysostom-on-Matthew notes were replaced. The Fathers badge on Matthew was already present and is unchanged.",
+  "Cache version bumped to v8.2.0 so the new commentary evicts the old buckets on this release.",
+  "Footer + home hero chip + /whats-new chip step to v8.2.",
+ ],
+ },
+ {
  version: "v8.1",
  kind: "The prayer section, rebuilt as a quiet prayer book",
  date: "June 2, 2026",
@@ -962,17 +977,17 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
- v8.1 &middot; The prayer section, rebuilt as a quiet prayer book
+ v8.2 &middot; Chrysostom&apos;s Homilies on Matthew, now in the reader
  </p>
  </div>
 
  {isDe ? (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Sag uns, welche Heiligen wir als nächste übersetzen sollen. Und eine stillere, festere App darunter.
+ Chrysostomos&apos; Homilien über Matthäus, jetzt im Leser.
  </h1>
  ) : (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- The prayer section, rebuilt as a quiet prayer book.
+ Chrysostom&apos;s Homilies on Matthew, now in the reader.
  </h1>
  )}
 
@@ -1010,58 +1025,35 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v6.5 ist ein großes Release mit zwei Teilen. Der erste ist
- das{" "}
- <Link
- href="/saints"
- className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
- >
- Heiligen-Bump-System
- </Link>
- : jedes Heiligenprofil hat jetzt eine
- Ein-Klick-&bdquo;Bump&ldquo;-Schaltfläche. Einen Heiligen zu
- bumpen sagt der Redaktion:{" "}
- <em className="text-gold">
- Ich möchte mehr von den Werken dieses Heiligen übersetzt und
- veröffentlicht haben.
- </em>{" "}
- Wir übersetzen die Korpora in der Reihenfolge, in der die
- Leser danach fragen, so daß dies unsere Warteschlange in
- etwas Öffentliches und Durchsichtiges verwandelt: du kannst
- die Zahl sehen, du kannst deine Stimme jederzeit ändern, und
- die Heiligen, deren Korpus wir bereits vollständig
- ausgeliefert haben, ersetzen die Schaltfläche durch ein
- goldenes &bdquo;Vollständig veröffentlicht&ldquo;-Abzeichen.
- Hier ist nichts inszeniert. Wenn wir das nächste Mal zum
- Übersetzen ansetzen, schauen wir, welche Heiligen die meisten
- Bumps haben.
- </p>
-
- <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- Der zweite Teil ist eine umfassende Sicherheits-Durchsicht.
- Jede öffentliche API sitzt jetzt hinter atomaren, von Supabase
- gestützten Rate-Limits, die über unsere Serverflotte hinweg
- halten. Jede Seite liefert HSTS aus, eine strenge
- Content-Security-Policy, X-Frame-Options DENY, eine
- abgeriegelte Permissions-Policy und den Rest des modernen
- Header-Sets. Jeder Route-Body, der Nutzereingaben annimmt,
- wird mit Zod validiert, bevor er die Datenbank berührt.
- Admin-Debug-Routen sind unsichtbar, sofern wir sie nicht
- ausdrücklich einschalten. Eine neue SECURITY.md im Wurzelpfad
- nennt, wie man eine Schwachstelle meldet und was wir im
- Gegenzug versprechen. Purify erreicht jetzt A+ bei Mozilla
- Observatory und securityheaders.com, und `npm audit` läuft
- sauber für die Produktionsabhängigkeiten. Nichts davon ändert,
- wie sich die Seite liest oder anfühlt; es bedeutet bloß, daß
- der Außenmantel endlich so ernsthaft ist wie der Inhalt darin.
+ v8.2 füllt eine echte Lücke im{" "}
+ <Link href="/bible/matthew/1" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Leser</Link>.
+ Die Bibel trägt in ihrer Studienspalte den Kommentar der
+ Väter, doch Matthäus hatte nur eine Handvoll verstreuter
+ Anmerkungen. Jetzt stehen die{" "}
+ <Link href="/saints/john-chrysostom" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Homilien über das Matthäusevangelium</Link>{" "}
+ des heiligen Johannes Chrysostomos, der älteste vollständige
+ Kommentar zum ersten Evangelium, der erhalten ist, neben dem
+ Text über alle achtundzwanzig Kapitel hinweg, und das Werk
+ selbst tritt seinem Profil in der Heiligen-Bibliothek bei. Es
+ wird so ausgeliefert, wie der Rest der Bibliothek gebaut ist:
+ wortgetreu aus einer gemeinfreien Quelle, den Nicene and
+ Post-Nicene Fathers, Serie 1, Band 10, niemals umschrieben,
+ niemals modernisiert, niemals von einem Modell ergänzt. Eine
+ ehrliche Einschränkung wird offen genannt: der NPNF-Band zu
+ Matthäus markiert seinen Text, anders als der zu Johannes,
+ nicht Vers für Vers, daher ist jede Homilie am Anfangsvers des
+ Abschnitts verankert, den sie auslegt, statt über jeden Vers
+ verteilt zu sein. Das ist gröber als der Johannes-Kommentar,
+ aber es ist echter, korrekt zitierter Chrysostomos, ohne
+ erfundene Verszuordnung. Die bestehenden kuratierten
+ Anmerkungen zu Matthäus blieben unangetastet erhalten.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  Die Arbeit darunter bleibt dieselbe. Gebet, Schrift, die
  Heiligen, die Konzile und das Jahr der Kirche, schlicht
  hingestellt, ohne Verfolgung und ohne Werbung. Bete mit der
- Kirche. Lies mit den Vätern. Geh durch das Jahr. Bumpe die
- Heiligen, deren Worte du am liebsten hören möchtest. Wir sind
+ Kirche. Lies mit den Vätern. Geh durch das Jahr. Wir sind
  geehrt, daß du irgend etwas davon mit uns tust.
  </p>
 
@@ -1101,28 +1093,25 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v8.1 is a quieter kind of release. The prayers were all here, the
- morning and evening rules, the{" "}
- <Link href="/prayers/rope" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">rope</Link>,
- the{" "}
- <Link href="/prayers/hours" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Hours</Link>,
- the{" "}
- <Link href="/prayers/akathists" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">akathists</Link>,
- your{" "}
- <Link href="/prayers/personal" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">diptychs</Link>,
- but the section around them read like a landing page: a full-bleed
- hero, marketing prose, chunky tinted cards. This release strips all
- of that. The whole{" "}
- <Link href="/prayers" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">prayer section</Link>{" "}
- is rebuilt into one calm visual world that reads like a prayer book
- rather than a product page. Serif mastheads sit over a single thin
- gold rule, lists become hairline-divided indexes, gold is used
- sparingly, the type is smaller, and the negative space is larger.
- Nothing functional changed: the rules still track what you have
- prayed today, the rope still counts, your diptychs still surface
- namedays and anniversaries on Today, and bookmarks, audio, and the
- German copy all carry through untouched. The same prayers, given a
- quieter room to be said in.
+ v8.2 fills a real gap in the{" "}
+ <Link href="/bible/matthew/1" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">reader</Link>.
+ The Bible carries patristic commentary in its study rail, but
+ Matthew had only a handful of scattered notes. Now St. John
+ Chrysostom&apos;s{" "}
+ <Link href="/saints/john-chrysostom" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Homilies on the Gospel of Matthew</Link>,
+ the earliest complete commentary on the First Gospel to survive,
+ sits beside the text across all twenty-eight chapters, and the work
+ itself joins his profile in the saints library. It ships the only
+ way the rest of the library is built: verbatim from a public-domain
+ source, the Nicene and Post-Nicene Fathers, Series 1, Volume 10,
+ never paraphrased, never modernized, never filled in by a model. One
+ honest limitation is named plainly: the NPNF Matthew volume, unlike
+ the John volume, does not mark its text verse by verse, so each
+ homily is anchored to the opening verse of the passage it expounds
+ rather than split across every verse. That is coarser than the John
+ commentary, but it is real, correctly-cited Chrysostom, with no
+ invented verse mapping. The existing curated notes on Matthew were
+ preserved untouched.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">

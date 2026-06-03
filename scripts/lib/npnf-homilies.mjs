@@ -168,8 +168,14 @@ function parseHomilies(region, headerRe = DEFAULT_HEADER_RE) {
  const h = heads[i];
  const bodyStart = h.idx + h.headerLen;
  const bodyEnd = i + 1 < heads.length ? heads[i + 1].idx : region.length;
+ // Number from the roman numeral, not the loop index, so a volume with a
+ // missing/merged section header in the source (e.g. NPNF1-10 Matthew lacks
+ // standalone headers for Homilies 53, 54, 58, 79) keeps every later homily's
+ // true number — otherwise the count would silently shift and mislabel
+ // citations. For gapless volumes (John, Romans, ...) this equals i + 1.
+ const num = romanToInt(h.roman);
  homilies.push({
- n: i + 1,
+ n: Number.isFinite(num) && num > 0 ? num : i + 1,
  roman: h.roman,
  block: region.slice(bodyStart, bodyEnd),
  });

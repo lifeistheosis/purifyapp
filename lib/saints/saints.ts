@@ -397,6 +397,15 @@ export const SAINTS: Saint[] = [
  topics: ["Priesthood", "Humility", "Pride", "Eucharist", "Vocation"],
  },
  {
+ slug: "homilies-on-matthew",
+ title: "Homilies on the Gospel of Matthew",
+ subtitle: "The complete ninety homilies",
+ year: "c. 390",
+ blurb:
+ "The earliest complete commentary on Matthew to survive: Chrysostom's homilies through the whole First Gospel, on the Sermon on the Mount, the parables, and the discipleship of the Kingdom.",
+ topics: ["Kingdom", "Almsgiving", "Repentance", "Discipleship", "Scripture", "Theology"],
+ },
+ {
  slug: "homilies-on-john",
  title: "Homilies on the Gospel of John",
  subtitle: "The complete eighty-eight homilies",

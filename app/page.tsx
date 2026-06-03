@@ -205,8 +205,8 @@ export default async function Home() {
  {isDe ? "Neu" : "New"}
  </span>
  <span className="font-sans text-caption sm:text-detail text-paper/85 group-hover:text-paper transition-colors">
- <span className="sm:hidden">v8.1 · The prayer section, a quiet prayer book</span>
- <span className="hidden sm:inline">v8.1 · The prayer section, rebuilt as a quiet prayer book</span>
+ <span className="sm:hidden">v8.2 · Chrysostom on Matthew, in the reader</span>
+ <span className="hidden sm:inline">v8.2 · Chrysostom&apos;s Homilies on Matthew, now in the reader</span>
  </span>
  <span className="text-paper/55 group-hover:text-paper transition-colors text-detail">
  →
