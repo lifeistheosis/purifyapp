@@ -23,6 +23,37 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v8.4",
+ kind: "The Topics index, grown from one entry to five",
+ date: "June 3, 2026",
+ blurb:
+ "The Topics index is a research surface for enquirers and apologists: a doctrinal term, a short Orthodox definition written in plain English, and then the patristic citations that confess it, with the citations that refute its opposite set beside them where the question was fought out. It is a thin index, not a new corpus. Every citation is a deep link into a numbered section of a work the saints library already hosts verbatim, never a duplicate of the text and never a paraphrase. Until now it carried a single starter entry, the Incarnation. This release adds four of the central confessions of the faith: the Holy Trinity, the Theotokos, Theosis, and the Eucharist, twenty-nine citations in all, every one of them pointing at a real section of a hosted Father that resolves on click. Nothing here is generated; the index simply maps the doctrine to the words the Church already reads.",
+ items: [
+  "The Holy Trinity. One God in three Persons, defined at Nicaea and Constantinople against the Arian denial of the Son's deity. Affirming citations from St. Cyril of Jerusalem's Catechesis IV, St. Athanasius on the Nicene Definition, St. Gregory the Theologian's First Theological Oration, St. John of Damascus, and St. Alexander of Alexandria; with St. Athanasius against the Arians and his history of Arian opinions set in the refuting column.",
+  "The Theotokos. Why the Virgin is rightly called the one who gave birth to God, the test of orthodoxy at Ephesus in 431. Affirming citations from St. Cyril of Alexandria on the title Theotokos, the Magnificat, the Scholia on the name Emmanuel, and the Tome of Leo on the twofold nativity; with St. Cyril's Second Letter to Nestorius, his Twelfth Anathema, and his refutation of the division of Christ into two sons set against the Nestorian error.",
+  "Theosis. The goal of the Christian life: by grace a partaker of the divine nature, sharing not the unknowable essence but the uncreated energies of God. Affirming citations from St. Athanasius on the Incarnation, St. Gregory Palamas on essence and energies and the Triads, and St. Symeon the New Theologian on the light that was seen; with Palamas, citing St. Cyril against created energies, set against the reduction of grace to a creature.",
+  "The Eucharist. The bread and wine truly become the Body and Blood of Christ, held from the beginning. Affirming citations from St. Ignatius of Antioch to the Smyrnaeans and the Philadelphians around the year 107, St. Justin Martyr's First Apology around 155, St. Cyril of Jerusalem's Mystagogical Catechesis V, and St. Cyril of Alexandria on the life-giving flesh.",
+  "Every citation was verified to resolve. All twenty-nine deep links across the four new topics point at a real numbered section of a hosted work; the page silently drops any citation it cannot resolve, so a broken pointer would simply vanish rather than mislead, and none do.",
+  "Cache version bumped to v8.4.0 so the new topic pages evict the old buckets on this release.",
+  "Footer + home hero chip + /whats-new chip step to v8.4.",
+ ],
+ },
+ {
+ version: "v8.3",
+ kind: "Chrysostom's Homilies on Acts, now in the reader",
+ date: "June 3, 2026",
+ blurb:
+ "Hard on the heels of Matthew, the same work for Acts. The Bible reader's commentary on the Acts of the Apostles had only five scattered chapters; St. John Chrysostom's Homilies on the Acts of the Apostles, the only complete patristic commentary on Acts to survive, now sits beside the text across the whole book. The fifty-five homilies ship verbatim from the public-domain Nicene and Post-Nicene Fathers, Series 1, Volume 11, the Schaff edition, never paraphrased, never modernized, never filled in by a model. As with Matthew, the NPNF Acts volume does not mark its text verse by verse, so each homily is anchored to the opening verse of the passage it expounds rather than split across every verse. Where Acts previously carried short hand-written summaries of Chrysostom, those are now superseded by his actual words; the notes from the other Fathers on Acts, St. Gregory the Theologian on Pentecost, St. Augustine, St. Basil, and St. Maximus, were preserved untouched.",
+ items: [
+  "St. John Chrysostom's Homilies on the Acts of the Apostles added to the Bible reader's commentary, growing Acts coverage from five chapters to twenty-seven (chapters 1 through 26 and 28). Each note cites NPNF1-11 and shows in the desktop study rail and the mobile commentary sheet.",
+  "The prior hand-curated Chrysostom summaries on Acts were replaced by the verbatim homily text. The other Fathers already present on Acts, St. Gregory the Theologian (Oration 41 on Pentecost), St. Augustine, St. Basil, and St. Maximus the Confessor, were kept exactly as they were.",
+  "Honest granularity, the same as Matthew. The NPNF Acts transcription lacks the line-leading verse markers the John pipeline relies on, so each homily is keyed to the first verse of the passage it treats rather than sub-split per verse. Real, verbatim, cited text; no fabricated verse mapping. Acts 27, the voyage and shipwreck, has no homily lemma opening within it and so carries no new note.",
+  "The readable work on Chrysostom's profile, Homilies on the Acts of the Apostles, the complete fifty-five homilies, was already present and is unchanged; this release wires its text into the reader as well.",
+  "Cache version bumped to v8.3.0 so the new commentary evicts the old buckets on this release.",
+  "Footer + home hero chip + /whats-new chip step to v8.3.",
+ ],
+ },
+ {
  version: "v8.2",
  kind: "Chrysostom's Homilies on Matthew, now in the reader",
  date: "June 3, 2026",
@@ -977,17 +1008,17 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
- v8.2 &middot; Chrysostom&apos;s Homilies on Matthew, now in the reader
+ v8.4 &middot; The Topics index, grown from one entry to five
  </p>
  </div>
 
  {isDe ? (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Chrysostomos&apos; Homilien über Matthäus, jetzt im Leser.
+ Der Themenindex, von einem Eintrag auf fünf gewachsen.
  </h1>
  ) : (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Chrysostom&apos;s Homilies on Matthew, now in the reader.
+ The Topics index, grown from one entry to five.
  </h1>
  )}
 
@@ -1025,28 +1056,31 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v8.2 füllt eine echte Lücke im{" "}
- <Link href="/bible/matthew/1" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Leser</Link>.
- Die Bibel trägt in ihrer Studienspalte den Kommentar der
- Väter, doch Matthäus hatte nur eine Handvoll verstreuter
- Anmerkungen. Jetzt stehen die{" "}
- <Link href="/saints/john-chrysostom" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Homilien über das Matthäusevangelium</Link>{" "}
- des heiligen Johannes Chrysostomos, der älteste vollständige
- Kommentar zum ersten Evangelium, der erhalten ist, neben dem
- Text über alle achtundzwanzig Kapitel hinweg, und das Werk
- selbst tritt seinem Profil in der Heiligen-Bibliothek bei. Es
- wird so ausgeliefert, wie der Rest der Bibliothek gebaut ist:
- wortgetreu aus einer gemeinfreien Quelle, den Nicene and
- Post-Nicene Fathers, Serie 1, Band 10, niemals umschrieben,
- niemals modernisiert, niemals von einem Modell ergänzt. Eine
- ehrliche Einschränkung wird offen genannt: der NPNF-Band zu
- Matthäus markiert seinen Text, anders als der zu Johannes,
- nicht Vers für Vers, daher ist jede Homilie am Anfangsvers des
- Abschnitts verankert, den sie auslegt, statt über jeden Vers
- verteilt zu sein. Das ist gröber als der Johannes-Kommentar,
- aber es ist echter, korrekt zitierter Chrysostomos, ohne
- erfundene Verszuordnung. Die bestehenden kuratierten
- Anmerkungen zu Matthäus blieben unangetastet erhalten.
+ v8.4 erweitert den{" "}
+ <Link href="/topics" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Themenindex</Link>{" "}
+ von einem einzigen Starteintrag auf fünf. Der Themenindex ist
+ eine Recherchefläche: ein dogmatischer Begriff, eine kurze
+ orthodoxe Definition in klarem Deutsch und dann die
+ patristischen Belege, die ihn bekennen, mit den Belegen, die
+ sein Gegenteil widerlegen, daneben gestellt, wo die Frage
+ ausgefochten wurde. Es ist ein schlanker Index, kein neues
+ Korpus. Jeder Beleg ist ein Tieflink in einen nummerierten
+ Abschnitt eines Werkes, das die Heiligenbibliothek bereits
+ wortgetreu beherbergt, niemals eine Verdopplung und niemals
+ eine Umschreibung. Diese Ausgabe fügt vier zentrale
+ Bekenntnisse des Glaubens hinzu, die{" "}
+ <Link href="/topics/the-holy-trinity" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Heilige Dreifaltigkeit</Link>,
+ die{" "}
+ <Link href="/topics/the-theotokos" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Gottesgebärerin</Link>,
+ die{" "}
+ <Link href="/topics/theosis" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Theosis</Link>{" "}
+ und die{" "}
+ <Link href="/topics/the-eucharist" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Eucharistie</Link>,
+ neunundzwanzig Belege insgesamt, von denen jeder einzelne
+ geprüft wurde und auf einen echten Abschnitt eines
+ beherbergten Vaters verweist. Nichts hier ist generiert; der
+ Index ordnet die Lehre schlicht den Worten zu, die die Kirche
+ bereits liest.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
@@ -1093,25 +1127,26 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v8.2 fills a real gap in the{" "}
- <Link href="/bible/matthew/1" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">reader</Link>.
- The Bible carries patristic commentary in its study rail, but
- Matthew had only a handful of scattered notes. Now St. John
- Chrysostom&apos;s{" "}
- <Link href="/saints/john-chrysostom" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Homilies on the Gospel of Matthew</Link>,
- the earliest complete commentary on the First Gospel to survive,
- sits beside the text across all twenty-eight chapters, and the work
- itself joins his profile in the saints library. It ships the only
- way the rest of the library is built: verbatim from a public-domain
- source, the Nicene and Post-Nicene Fathers, Series 1, Volume 10,
- never paraphrased, never modernized, never filled in by a model. One
- honest limitation is named plainly: the NPNF Matthew volume, unlike
- the John volume, does not mark its text verse by verse, so each
- homily is anchored to the opening verse of the passage it expounds
- rather than split across every verse. That is coarser than the John
- commentary, but it is real, correctly-cited Chrysostom, with no
- invented verse mapping. The existing curated notes on Matthew were
- preserved untouched.
+ v8.4 grows the{" "}
+ <Link href="/topics" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Topics index</Link>{" "}
+ from a single starter entry to five. The Topics index is a research
+ surface: a doctrinal term, a short Orthodox definition in plain
+ English, and then the patristic citations that confess it, with the
+ citations that refute its opposite set beside them where the question
+ was fought out. It is a thin index, not a new corpus. Every citation
+ is a deep link into a numbered section of a work the saints library
+ already hosts verbatim, never a duplicate and never a paraphrase. This
+ release adds four central confessions of the faith, the{" "}
+ <Link href="/topics/the-holy-trinity" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Holy Trinity</Link>,
+ the{" "}
+ <Link href="/topics/the-theotokos" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Theotokos</Link>,
+ {" "}
+ <Link href="/topics/theosis" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Theosis</Link>,
+ and the{" "}
+ <Link href="/topics/the-eucharist" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Eucharist</Link>,
+ twenty-nine citations in all, every one of them verified to resolve to
+ a real section of a hosted Father. Nothing here is generated; the
+ index simply maps the doctrine to the words the Church already reads.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">

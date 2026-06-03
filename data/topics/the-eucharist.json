@@ -1,0 +1,45 @@
+{
+  "slug": "the-eucharist",
+  "title": "The Eucharist",
+  "definition": "In the Eucharist the bread and wine offered in the Divine Liturgy truly become the Body and Blood of Christ. This is not a symbol or a memorial only but the real participation in the Lord who gave himself for the life of the world. The Church has held this from the beginning, gathering around the one altar and the one cup as the very medicine of immortality.",
+  "tradition": "The earliest Christian witnesses, from the generation that knew the apostles, already confess the Eucharist as the real Body and Blood of Christ and as the center of the Church's unity. The fathers cited here range from St. Ignatius of Antioch (c. 107) to the great teachers of the catechumenate, showing the unbroken faith of the Church.",
+  "citations": [
+    {
+      "saintSlug": "ignatius-of-antioch",
+      "workSlug": "epistle-to-the-smyrnaeans",
+      "sectionN": 7,
+      "stance": "affirms",
+      "gloss": "c. 107: the heretics 'abstain from the Eucharist, because they confess not that it is the flesh of our Saviour.'"
+    },
+    {
+      "saintSlug": "ignatius-of-antioch",
+      "workSlug": "epistle-to-the-philadelphians",
+      "sectionN": 5,
+      "stance": "affirms",
+      "gloss": "One flesh of our Lord, one cup, one altar: the Eucharist as the bond of the Church's unity."
+    },
+    {
+      "saintSlug": "justin-martyr",
+      "workSlug": "first-apology",
+      "sectionN": 66,
+      "stance": "affirms",
+      "gloss": "c. 155, 'Of the Eucharist': the food is the flesh and blood of the Jesus who was made flesh."
+    },
+    {
+      "saintSlug": "cyril-of-jerusalem",
+      "workSlug": "the-catechist-of-jerusalem",
+      "sectionN": 4,
+      "stance": "affirms",
+      "gloss": "Mystagogical Catechesis V, instructing the newly baptized on the holy mysteries."
+    },
+    {
+      "saintSlug": "cyril-of-alexandria",
+      "workSlug": "five-tomes-against-nestorius",
+      "sectionN": 5,
+      "stance": "affirms",
+      "gloss": "Book V: the Eucharist proves the union, for the flesh we receive is the Word's own, and life-giving."
+    }
+  ],
+  "curatedBy": "Editorial",
+  "curatedOn": "2026-06-03"
+}

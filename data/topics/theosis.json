@@ -1,0 +1,45 @@
+{
+  "slug": "theosis",
+  "title": "Theosis (Deification)",
+  "definition": "Theosis is the goal of the Christian life: by grace, the human person is united to God and made a partaker of the divine nature, becoming by adoption what Christ is by nature. We do not become God in His essence, which remains forever unknowable, but we truly share in His uncreated energies, His life and light and glory. As the fathers put it, God became man so that man might become god.",
+  "tradition": "The promise of partaking in the divine nature (2 Peter 1:4) was given its mature theological account by St. Gregory Palamas in the 14th century, against Barlaam, who reduced grace to a created gift and denied that the saints truly see the uncreated light. The Church confessed the distinction between God's unknowable essence and His uncreated energies, by which He is genuinely shared.",
+  "citations": [
+    {
+      "saintSlug": "athanasius-the-great",
+      "workSlug": "on-the-incarnation",
+      "sectionN": 1,
+      "stance": "affirms",
+      "gloss": "The classic formula: He became man that we might be made god."
+    },
+    {
+      "saintSlug": "gregory-palamas",
+      "workSlug": "essence-and-energies",
+      "sectionN": 1,
+      "stance": "affirms",
+      "gloss": "The doctrine in one sentence: God is wholly unknowable in essence, truly shared in His energies."
+    },
+    {
+      "saintSlug": "gregory-palamas",
+      "workSlug": "the-holy-hesychast",
+      "sectionN": 4,
+      "stance": "affirms",
+      "gloss": "The teaching of the Triads: the saints truly see and are transfigured by the uncreated light."
+    },
+    {
+      "saintSlug": "symeon-the-new-theologian",
+      "workSlug": "discourse-on-faith",
+      "sectionN": 2,
+      "stance": "affirms",
+      "gloss": "The Light That Was Seen: a firsthand account of being filled with the divine light."
+    },
+    {
+      "saintSlug": "gregory-palamas",
+      "workSlug": "essence-and-energies",
+      "sectionN": 7,
+      "stance": "refutes",
+      "gloss": "Cyril of Alexandria against created energies: grace is God's own life, not a creature."
+    }
+  ],
+  "curatedBy": "Editorial",
+  "curatedOn": "2026-06-03"
+}

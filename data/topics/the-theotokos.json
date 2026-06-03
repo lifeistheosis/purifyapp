@@ -1,0 +1,59 @@
+{
+  "slug": "the-theotokos",
+  "title": "The Theotokos",
+  "definition": "The Virgin Mary is rightly called Theotokos, 'the one who gave birth to God,' because the child she bore is not a mere man joined to God but the eternal Son of God himself, made man in her womb. The title does not exalt her above her Son; it confesses who her Son is. To deny her this name is to divide the one Christ into two.",
+  "tradition": "The title Theotokos became the test of orthodoxy at the Third Ecumenical Council in Ephesus (431), against Nestorius, who preferred to call Mary 'Christ-bearer' and so split Christ into two persons. St. Cyril of Alexandria led the Church's confession that the one born of Mary is one and the same Son, God and man.",
+  "citations": [
+    {
+      "saintSlug": "cyril-of-alexandria",
+      "workSlug": "five-tomes-against-nestorius",
+      "sectionN": 3,
+      "stance": "affirms",
+      "gloss": "Book II, on the title Theotokos: why the Virgin truly gave birth to God."
+    },
+    {
+      "saintSlug": "theotokos",
+      "workSlug": "the-magnificat",
+      "sectionN": 1,
+      "stance": "affirms",
+      "gloss": "Her own words: 'all generations shall call me blessed.'"
+    },
+    {
+      "saintSlug": "cyril-of-alexandria",
+      "workSlug": "scholia-on-the-incarnation",
+      "sectionN": 1,
+      "stance": "affirms",
+      "gloss": "On the name Emmanuel, 'God with us': the child of the Virgin is God in our midst."
+    },
+    {
+      "saintSlug": "leo-the-great",
+      "workSlug": "the-tome-of-leo",
+      "sectionN": 3,
+      "stance": "affirms",
+      "gloss": "On the twofold nativity: born of the Father before the ages, born of the Virgin in time."
+    },
+    {
+      "saintSlug": "cyril-of-alexandria",
+      "workSlug": "three-epistles-to-nestorius",
+      "sectionN": 1,
+      "stance": "refutes",
+      "gloss": "The Second Letter to Nestorius: the one Christ may not be divided into two sons."
+    },
+    {
+      "saintSlug": "cyril-of-alexandria",
+      "workSlug": "three-epistles-to-nestorius",
+      "sectionN": 5,
+      "stance": "refutes",
+      "gloss": "The Twelfth Anathema, against any who refuse to confess the Word suffered in the flesh."
+    },
+    {
+      "saintSlug": "cyril-of-alexandria",
+      "workSlug": "five-tomes-against-nestorius",
+      "sectionN": 2,
+      "stance": "refutes",
+      "gloss": "Against the division of Christ into two sons, the root error of Nestorianism."
+    }
+  ],
+  "curatedBy": "Editorial",
+  "curatedOn": "2026-06-03"
+}

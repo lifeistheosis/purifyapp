@@ -1,0 +1,59 @@
+{
+  "slug": "the-holy-trinity",
+  "title": "The Holy Trinity",
+  "definition": "God is one in essence and three in Persons: the Father, the Son, and the Holy Spirit. The three share one undivided divine nature, equal in glory and co-eternal in majesty, yet they are not three gods but one God. The Father is unbegotten, the Son is eternally begotten of the Father, and the Spirit eternally proceeds from the Father. This is the God the Orthodox Church worships and confesses in the Creed.",
+  "tradition": "The Church's confession of the Trinity was forged against the Arian denial that the Son is truly God. The First Ecumenical Council at Nicaea (325) declared the Son to be 'of one essence' (homoousios) with the Father, and the Second at Constantinople (381) completed the confession of the Spirit's deity. The fathers cited here stand on both sides of that crisis.",
+  "citations": [
+    {
+      "saintSlug": "cyril-of-jerusalem",
+      "workSlug": "the-catechist-of-jerusalem",
+      "sectionN": 3,
+      "stance": "affirms",
+      "gloss": "Catechesis IV, taught to those preparing for baptism: the one God in three Persons."
+    },
+    {
+      "saintSlug": "athanasius-the-great",
+      "workSlug": "on-the-nicene-definition",
+      "sectionN": 1,
+      "stance": "affirms",
+      "gloss": "The defence of the word 'of one essence' against those who called it unscriptural."
+    },
+    {
+      "saintSlug": "gregory-theologian",
+      "workSlug": "first-theological-oration",
+      "sectionN": 1,
+      "stance": "affirms",
+      "gloss": "On who may rightly speak of God: theology begins in purity and prayer, not idle debate."
+    },
+    {
+      "saintSlug": "john-of-damascus",
+      "workSlug": "exact-exposition-of-the-orthodox-faith",
+      "sectionN": 1,
+      "stance": "affirms",
+      "gloss": "The Deity is incomprehensible: what we confess of the Trinity, and what exceeds our knowing."
+    },
+    {
+      "saintSlug": "alexander-of-alexandria",
+      "workSlug": "encyclical-against-arius",
+      "sectionN": 3,
+      "stance": "affirms",
+      "gloss": "The bishop who first condemned Arius sets out the teaching of the Church on the eternal Son."
+    },
+    {
+      "saintSlug": "athanasius-the-great",
+      "workSlug": "four-discourses-against-the-arians",
+      "sectionN": 1,
+      "stance": "refutes",
+      "gloss": "Against Arianism: there was no time when the Son was not."
+    },
+    {
+      "saintSlug": "athanasius-the-great",
+      "workSlug": "on-the-councils",
+      "sectionN": 2,
+      "stance": "refutes",
+      "gloss": "A history of the Arian opinions, traced and refuted from their own words."
+    }
+  ],
+  "curatedBy": "Editorial",
+  "curatedOn": "2026-06-03"
+}
