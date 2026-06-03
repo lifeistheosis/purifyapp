@@ -250,13 +250,13 @@ export default async function Home() {
  const icon = featureIcons[i] ?? featureIcons[0];
  return (
  <div key={f.title} className="text-center">
- <div className="mx-auto mb-6 h-20 w-20 flex items-center justify-center">
+ <div className="mx-auto mb-6 h-28 w-28 flex items-center justify-center">
  <Image
  src={icon.src}
  alt={icon.alt}
- width={80}
- height={80}
- className="h-20 w-20 object-contain"
+ width={112}
+ height={112}
+ className="h-28 w-28 object-contain"
  />
  </div>
  <h3 className="font-sans text-lede font-semibold text-paper mb-3">
