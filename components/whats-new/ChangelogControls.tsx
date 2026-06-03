@@ -1,10 +1,22 @@
 "use client";
 
+import { useEffect } from "react";
+import { CURRENT_VERSION } from "@/lib/whatsNew/version";
+import { markWhatsNewSeen } from "@/lib/whatsNew/seenStore";
+
 /**
  * Two small text buttons that expand or collapse every <details> inside
  * the data-changelog section (both date groups and release entries).
+ *
+ * Also clears the hero "New" badge: reaching this page by any route means
+ * the reader has seen the current release, so we record it. The badge in
+ * WhatsNewChip re-arms on the next CURRENT_VERSION bump.
  */
 export function ChangelogControls() {
+  useEffect(() => {
+    markWhatsNewSeen(CURRENT_VERSION);
+  }, []);
+
   function setAll(open: boolean) {
     const root = document.querySelector("[data-changelog]");
     if (!root) return;

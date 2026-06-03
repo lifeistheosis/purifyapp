@@ -4,6 +4,7 @@ import { Navbar } from "@/components/nav/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SectionScroller } from "@/components/SectionScroller";
 import { HeroChristIcon } from "@/components/marketing/HeroChristIcon";
+import { WhatsNewChip } from "@/components/marketing/WhatsNewChip";
 import { SeasonBanner } from "@/components/marketing/SeasonBanner";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
 import { Codex } from "@/components/ui/icons/Codex";
@@ -196,22 +197,7 @@ export default async function Home() {
  </div>
  <div className="mx-auto max-w-[1240px] w-full relative z-10">
  <div className="text-paper max-w-[620px]">
- <Link
- href="/whats-new"
- style={{ animationDelay: "120ms" }}
- className="hero-copy-in group inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.06] px-3 py-1.5 mb-7 hover:bg-paper/10 hover:border-paper/35 transition-colors duration-150"
- >
- <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] px-2 py-0.5 rounded-pill bg-gold text-night">
- {isDe ? "Neu" : "New"}
- </span>
- <span className="font-sans text-caption sm:text-detail text-paper/85 group-hover:text-paper transition-colors">
- <span className="sm:hidden">v8.5 · The Heresies, cross-linked with the Councils</span>
- <span className="hidden sm:inline">v8.5 · The Heresies archive, cross-linked with the Councils</span>
- </span>
- <span className="text-paper/55 group-hover:text-paper transition-colors text-detail">
- →
- </span>
- </Link>
+ <WhatsNewChip isDe={isDe} />
  <h1
  style={{ animationDelay: "240ms" }}
  className="hero-copy-in font-sans text-heading md:text-display-sm lg:text-display font-bold leading-[1.05] tracking-[-0.025em]"
