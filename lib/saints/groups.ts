@@ -33,7 +33,7 @@ export const SAINT_GROUPS: { id: SaintGroupId; label: string; blurb: string }[] 
     },
     {
       id: "equals-to-apostles",
-      label: "Equals-to-the-Apostles",
+      label: "Equals to the Apostles",
       blurb: "Those whose missionary labors rank with the Apostles' own.",
     },
     {
