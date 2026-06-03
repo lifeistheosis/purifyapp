@@ -1,5 +1,29 @@
 [
   {
+    "id": "beta-1-1",
+    "version": "Beta 1.1",
+    "date": "2026-06-03",
+    "title": "A little tidying",
+    "intro": "A small housekeeping patch. Nothing new to learn, just a few surfaces made calmer and easier to move through. Glory to God for the quiet weeks that let us polish what is already here.",
+    "sections": [
+      {
+        "heading": "The saints, sorted",
+        "body": "The saints index now lets you filter by kind, not only by century. Browse the Apostles, the Cappadocian Fathers, the Church Fathers, the Desert and monastic saints, the Fathers of the Councils, the Martyrs, the Wonderworkers, the Holy Women, and more. A saint can belong to several of these at once, and the counts on each filter update as you narrow down. Both the 'By kind' and 'By century' rows fold away with a tap when you want them out of the way. The Most Holy Theotokos remains pinned at the top, as the most perfect of the saints."
+      },
+      {
+        "heading": "A lighter Today",
+        "body": "The cards on the mobile Today screen, the verse of the day, the saint, the fast, the readings, and the Pascha countdown, have been tightened up so more of the day fits on the screen at once without feeling cramped."
+      },
+      {
+        "heading": "Home polish",
+        "body": "The four 'Why Purify' pillars now carry hand-drawn illustrations instead of plain glyphs, and the 'What we are made of' provenance cards have been trimmed to a single clear line each. Less to read, the same honesty about where every text comes from."
+      }
+    ],
+    "future": [],
+    "closing": "Small as it is, every patch is offered with thanks for the people praying alongside this work. If something feels off, or there is a feature you wish existed, write to me at lifeistheosis@gmail.com. I read every email.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
     "id": "beta-1-0",
     "version": "Beta 1.0",
     "date": "2026-05-15",
