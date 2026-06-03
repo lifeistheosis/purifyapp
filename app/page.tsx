@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
 import { Navbar } from "@/components/nav/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -7,10 +8,6 @@ import { HeroChristIcon } from "@/components/marketing/HeroChristIcon";
 import { WhatsNewChip } from "@/components/marketing/WhatsNewChip";
 import { SeasonBanner } from "@/components/marketing/SeasonBanner";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
-import { Codex } from "@/components/ui/icons/Codex";
-import { HaloedHead } from "@/components/ui/icons/HaloedHead";
-import { Sun } from "@/components/ui/icons/Sun";
-import { Orans } from "@/components/ui/icons/Orans";
 import { TodayMobileV3 } from "@/components/today/TodayMobileV3";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
@@ -152,10 +149,14 @@ export default async function Home() {
  const isDe = locale === "de";
  const m = getMessages(locale);
  const homeFeatures = isDe ? featuresDe : features;
- // One distinct glyph per pillar, drawn from the app's own icon set, so the
- // features row reads as four different things rather than four identical
- // marks: Scripture (Codex), saints (HaloedHead), calendar (Sun), prayer (Orans).
- const featureIcons = [Codex, HaloedHead, Sun, Orans];
+ // One custom illustration per pillar, keyed by index to homeFeatures:
+ // Scripture (Fathers/LXX-KJV), saints, calendar, prayer.
+ const featureIcons = [
+ { src: "/fathers_widget.png", alt: "" },
+ { src: "/saint_widget.png", alt: "" },
+ { src: "/calendar_widget.png", alt: "" },
+ { src: "/pray_widget.png", alt: "" },
+ ];
  const homeCategories = isDe ? categoriesDe : categories;
  const homeChallenges = isDe ? challengesDe : challenges;
  return (
@@ -246,11 +247,17 @@ export default async function Home() {
  </div>
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
  {homeFeatures.map((f, i) => {
- const Icon = featureIcons[i] ?? Codex;
+ const icon = featureIcons[i] ?? featureIcons[0];
  return (
  <div key={f.title} className="text-center">
- <div className="mx-auto mb-6 h-14 w-14 rounded-pill bg-paper/10 flex items-center justify-center text-gold">
- <Icon size={24} />
+ <div className="mx-auto mb-6 h-20 w-20 flex items-center justify-center">
+ <Image
+ src={icon.src}
+ alt={icon.alt}
+ width={80}
+ height={80}
+ className="h-20 w-20 object-contain"
+ />
  </div>
  <h3 className="font-sans text-lede font-semibold text-paper mb-3">
  {f.title}
