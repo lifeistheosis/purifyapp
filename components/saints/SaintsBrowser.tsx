@@ -8,9 +8,11 @@ import {
 } from "@/lib/saints/saints";
 import {
   SAINT_GROUPS,
+  SAINT_GROUP_LABELS,
   type SaintGroupId,
   groupsForSlug,
 } from "@/lib/saints/groups";
+import { cn } from "@/lib/cn";
 import { SaintCard } from "./SaintCard";
 import { FeaturedSaintCard } from "./FeaturedSaintCard";
 import { FilterPill } from "./FilterPill";
@@ -18,6 +20,7 @@ import { FilterPill } from "./FilterPill";
 export function SaintsBrowser({ saints }: { saints: Saint[] }) {
   const [activeGroup, setActiveGroup] = useState<SaintGroupId | null>(null);
   const [activeCentury, setActiveCentury] = useState<number | null>(null);
+  const [kindOpen, setKindOpen] = useState(true);
 
   const featured = useMemo(() => saints.filter((s) => s.featured), [saints]);
   const rest = useMemo(() => saints.filter((s) => !s.featured), [saints]);
@@ -78,30 +81,61 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
           </div>
         ))}
 
-      {/* By kind */}
+      {/* By kind (collapsible) */}
       <div className="mt-10">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
-          By kind
-        </p>
-        <div className="flex flex-wrap gap-2.5">
-          <FilterPill
-            label="All"
-            count={activeCentury == null ? totalAll : groupAllCount}
-            active={activeGroup == null}
-            onClick={() => setActiveGroup(null)}
-          />
-          {groupPills.map((g) => (
-            <FilterPill
-              key={g.id}
-              label={g.label}
-              count={g.count}
-              active={activeGroup === g.id}
-              onClick={() =>
-                setActiveGroup((cur) => (cur === g.id ? null : g.id))
-              }
+        <button
+          type="button"
+          onClick={() => setKindOpen((o) => !o)}
+          aria-expanded={kindOpen}
+          className="group flex items-center gap-1.5 mb-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 hover:text-paper/70 transition-colors focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-[3px] rounded-sm"
+        >
+          <svg
+            viewBox="0 0 16 16"
+            width="12"
+            height="12"
+            aria-hidden="true"
+            className={cn(
+              "transition-transform duration-150",
+              kindOpen ? "rotate-90" : "rotate-0",
+            )}
+          >
+            <path
+              d="M6 4l4 4-4 4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
-          ))}
-        </div>
+          </svg>
+          <span>By kind</span>
+          {activeGroup != null && !kindOpen && (
+            <span className="text-paper/70 normal-case tracking-normal">
+              · {SAINT_GROUP_LABELS[activeGroup]}
+            </span>
+          )}
+        </button>
+        {kindOpen && (
+          <div className="flex flex-wrap gap-2.5">
+            <FilterPill
+              label="All"
+              count={activeCentury == null ? totalAll : groupAllCount}
+              active={activeGroup == null}
+              onClick={() => setActiveGroup(null)}
+            />
+            {groupPills.map((g) => (
+              <FilterPill
+                key={g.id}
+                label={g.label}
+                count={g.count}
+                active={activeGroup === g.id}
+                onClick={() =>
+                  setActiveGroup((cur) => (cur === g.id ? null : g.id))
+                }
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* By century */}
