@@ -21,6 +21,7 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
   const [activeGroup, setActiveGroup] = useState<SaintGroupId | null>(null);
   const [activeCentury, setActiveCentury] = useState<number | null>(null);
   const [kindOpen, setKindOpen] = useState(true);
+  const [centuryOpen, setCenturyOpen] = useState(true);
 
   const featured = useMemo(() => saints.filter((s) => s.featured), [saints]);
   const rest = useMemo(() => saints.filter((s) => !s.featured), [saints]);
@@ -138,11 +139,41 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
         )}
       </div>
 
-      {/* By century */}
+      {/* By century (collapsible) */}
       <div className="mt-6">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
-          By century
-        </p>
+        <button
+          type="button"
+          onClick={() => setCenturyOpen((o) => !o)}
+          aria-expanded={centuryOpen}
+          className="group flex items-center gap-1.5 mb-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 hover:text-paper/70 transition-colors focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-[3px] rounded-sm"
+        >
+          <svg
+            viewBox="0 0 16 16"
+            width="12"
+            height="12"
+            aria-hidden="true"
+            className={cn(
+              "transition-transform duration-150",
+              centuryOpen ? "rotate-90" : "rotate-0",
+            )}
+          >
+            <path
+              d="M6 4l4 4-4 4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span>By century</span>
+          {activeCentury != null && !centuryOpen && (
+            <span className="text-paper/70 normal-case tracking-normal">
+              · {centuryLabel(activeCentury)}
+            </span>
+          )}
+        </button>
+        {centuryOpen && (
         <div className="flex flex-wrap gap-2.5">
           <FilterPill
             label="All"
@@ -162,6 +193,7 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
             />
           ))}
         </div>
+        )}
       </div>
 
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
