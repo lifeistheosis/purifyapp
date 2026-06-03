@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { COUNCILS, getCouncil } from "@/lib/councils/councils";
+import { HERESIES } from "@/lib/heresies/heresies";
 
 const ORDINAL_NAMES = [
  "",
@@ -39,6 +40,10 @@ export default async function CouncilProfilePage({
  const { slug } = await params;
  const c = getCouncil(slug);
  if (!c) notFound();
+
+ const condemnedHeresies = HERESIES.filter((h) =>
+  h.condemnedBy.includes(c.slug),
+ );
 
  return (
  <section className="bg-night px-5 md:px-8 py-16 md:py-24">
@@ -169,6 +174,32 @@ export default async function CouncilProfilePage({
  <p className="mt-2 font-serif text-ui text-paper/70 leading-[1.6]">
  {o.teaching}
  </p>
+ </li>
+ ))}
+ </ul>
+ </div>
+ )}
+
+ {/* Heresies condemned */}
+ {condemnedHeresies.length > 0 && (
+ <div className="mt-14">
+ <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+ Heresies condemned
+ </h2>
+ <ul className="space-y-3">
+ {condemnedHeresies.map((h) => (
+ <li key={h.slug}>
+ <Link
+ href={`/heresies/${h.slug}`}
+ className="group block rounded-md border border-paper/12 bg-paper/[0.03] hover:border-gold/45 hover:bg-gold/[0.04] transition-colors px-5 py-4"
+ >
+ <p className="font-display-serif text-lede text-paper group-hover:text-gold transition-colors">
+ {h.name}
+ </p>
+ <p className="mt-2 font-serif text-ui text-paper/75 leading-[1.6]">
+ {h.shortBio}
+ </p>
+ </Link>
  </li>
  ))}
  </ul>

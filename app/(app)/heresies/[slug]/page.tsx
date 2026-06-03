@@ -103,7 +103,7 @@ export default async function HeresyProfilePage({
           </section>
         )}
 
-        {/* Refuted by the Fathers — only when the corpus holds a refutation. */}
+        {/* Refuted by the Fathers: only when the corpus holds a refutation. */}
         {resolvedRefutations.length > 0 && (
           <section className="mt-12">
             <p
