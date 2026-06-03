@@ -11,12 +11,9 @@ import { TrafficTab } from "./tabs/TrafficTab";
 import { AudienceTab } from "./tabs/AudienceTab";
 import { ContentTab } from "./tabs/ContentTab";
 import { UsersTab } from "./tabs/UsersTab";
-import { SecurityTab } from "./tabs/SecurityTab";
 import { SustainabilityTab } from "./tabs/SustainabilityTab";
 import { ContentHealthTab } from "./tabs/ContentHealthTab";
-import { I18nTab } from "./tabs/I18nTab";
 import { HealthTab } from "./tabs/HealthTab";
-import { CrawlersTab } from "./tabs/CrawlersTab";
 import { Toolbar, ToolbarButton } from "./primitives";
 
 type TabId =
@@ -26,12 +23,9 @@ type TabId =
   | "audience"
   | "content"
   | "users"
-  | "security"
   | "sustainability"
   | "content-health"
-  | "i18n"
-  | "health"
-  | "crawlers";
+  | "health";
 
 const TABS: { id: TabId; label: string; eyebrow: string; component: ComponentType }[] = [
   { id: "overview", label: "Overview", eyebrow: "At a glance", component: OverviewTab },
@@ -42,10 +36,7 @@ const TABS: { id: TabId; label: string; eyebrow: string; component: ComponentTyp
   { id: "users", label: "Users", eyebrow: "Profiles", component: UsersTab },
   { id: "sustainability", label: "Sustainability", eyebrow: "Paying for itself", component: SustainabilityTab },
   { id: "content-health", label: "Content Health", eyebrow: "Gaps in the data tree", component: ContentHealthTab },
-  { id: "i18n", label: "i18n", eyebrow: "Locale coverage", component: I18nTab },
   { id: "health", label: "Service Health", eyebrow: "Outbound deps", component: HealthTab },
-  { id: "crawlers", label: "Crawlers", eyebrow: "Robots audit", component: CrawlersTab },
-  { id: "security", label: "Security", eyebrow: "Perimeter", component: SecurityTab },
 ];
 
 function isTabId(s: string | null): s is TabId {

@@ -3,16 +3,18 @@
 // Users tab — paginated, searchable profile list + signup chart + OAuth mix.
 
 import { useEffect, useState } from "react";
-import { Card, DataTable, Toolbar, ToolbarButton } from "../primitives";
+import { Card, DataTable, Pill, Toolbar, ToolbarButton } from "../primitives";
 import { LineChart, Donut, SERIES_COLORS } from "../charts";
 import { CountUp } from "../CountUp";
 
+type Provider = "google" | "apple" | "email" | "other";
 type Profile = {
   id: string;
   email: string | null;
   display_name: string | null;
   joined_at: string;
   has_password: boolean | null;
+  provider: Provider | null;
 };
 type Payload = {
   total: number;
@@ -35,24 +37,53 @@ export function UsersTab() {
     return () => clearTimeout(id);
   }, [search]);
 
+  const [error, setError] = useState(false);
+
   useEffect(() => {
     let alive = true;
     const params = new URLSearchParams({ offset: String(offset) });
     if (debouncedSearch) params.set("q", debouncedSearch);
     fetch(`/api/admin/users?${params}`, { cache: "no-store" })
       .then((r) => r.json())
-      .then((j) => alive && setData(j))
-      .catch(() => {});
+      .then((j) => {
+        if (!alive) return;
+        if (j && typeof j.total === "number") {
+          setData(j);
+          setError(false);
+        } else {
+          setError(true);
+        }
+      })
+      .catch(() => alive && setError(true));
     return () => {
       alive = false;
     };
   }, [offset, debouncedSearch]);
 
+  if (error) {
+    return (
+      <p className="font-sans text-detail text-rose-300/80 py-8 text-center">
+        Couldn’t load users. You may not have an admin session.
+      </p>
+    );
+  }
   if (!data) {
     return <p className="font-sans text-detail text-paper/40 py-8 text-center">Loading…</p>;
   }
 
   const lastPage = Math.max(0, Math.floor((data.total - 1) / data.pageSize) * data.pageSize);
+  const providerLabel: Record<Provider, string> = {
+    google: "Google",
+    apple: "Apple",
+    email: "Email",
+    other: "Other",
+  };
+  const providerTone: Record<Provider, "neutral" | "gold" | "rose" | "emerald"> = {
+    google: "gold",
+    apple: "neutral",
+    email: "emerald",
+    other: "rose",
+  };
 
   return (
     <div className="space-y-6">
@@ -62,7 +93,7 @@ export function UsersTab() {
             <CountUp value={data.total} />
           </p>
         </Card>
-        <Card title="OAuth provider mix · sample" subtitle="Most recent 200 users.">
+        <Card title="Sign-in methods" subtitle="Across all users.">
           <Donut
             segments={[
               { name: "Email", value: data.providers.email, color: SERIES_COLORS[0] },
@@ -147,11 +178,19 @@ export function UsersTab() {
             },
             {
               key: "auth",
-              label: "Auth",
+              label: "Sign-in",
               render: (r) =>
-                r.has_password ? "password" : r.has_password === false ? "OAuth" : "—",
+                r.provider ? (
+                  <Pill tone={providerTone[r.provider]}>
+                    {providerLabel[r.provider]}
+                  </Pill>
+                ) : r.has_password ? (
+                  <Pill tone="emerald">Email</Pill>
+                ) : (
+                  "—"
+                ),
               csv: (r) =>
-                r.has_password ? "password" : r.has_password === false ? "OAuth" : "",
+                r.provider ?? (r.has_password ? "email" : ""),
             },
             {
               key: "joined",

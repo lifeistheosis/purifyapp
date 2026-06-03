@@ -28,25 +28,40 @@ export async function GET(req: NextRequest) {
 
   const { data: profiles, count: total } = await query;
 
-  // OAuth provider mix — count distinct providers across `auth.users` via
-  // a lightweight RPC-free approach: ask Supabase admin for the identities
-  // of the most recent batch (small sample). Best-effort, used for the donut.
+  // Build one authoritative id→provider map by walking the full auth.users
+  // set (paginated). Used for BOTH the donut (whole population, not a sample)
+  // and the per-row Auth label, so the table and chart can never disagree.
+  type Provider = "google" | "apple" | "email" | "other";
+  const providerById = new Map<string, Provider>();
   const providerCounts = { google: 0, apple: 0, email: 0, other: 0 };
   try {
-    const { data: adminUsers } = await supa.auth.admin.listUsers({
-      page: 1,
-      perPage: 200,
-    });
-    for (const u of adminUsers?.users ?? []) {
-      const provs = (u.identities ?? []).map((i) => i.provider);
-      if (provs.includes("google")) providerCounts.google += 1;
-      else if (provs.includes("apple")) providerCounts.apple += 1;
-      else if (provs.includes("email")) providerCounts.email += 1;
-      else providerCounts.other += 1;
+    const PER = 200;
+    for (let page = 1; page <= 50; page++) {
+      const { data: batch } = await supa.auth.admin.listUsers({ page, perPage: PER });
+      const users = batch?.users ?? [];
+      for (const u of users) {
+        const provs = (u.identities ?? []).map((i) => i.provider);
+        const p: Provider = provs.includes("google")
+          ? "google"
+          : provs.includes("apple")
+            ? "apple"
+            : provs.includes("email")
+              ? "email"
+              : "other";
+        providerById.set(u.id, p);
+        providerCounts[p] += 1;
+      }
+      if (users.length < PER) break; // last page reached
     }
   } catch {
-    // ignore — keeps zeros.
+    // ignore — keeps zeros and falls back to has_password in the table.
   }
+
+  // Attach the resolved provider to each profile row in the current page.
+  const profileRows = (profiles ?? []).map((p) => ({
+    ...p,
+    provider: providerById.get(p.id) ?? null,
+  }));
 
   // Signup buckets by day across the last 30d for the funnel chart.
   const since30 = new Date(Date.now() - 30 * 86_400_000);
@@ -78,7 +93,7 @@ export async function GET(req: NextRequest) {
       offset,
       pageSize: PAGE,
       query: q,
-      profiles: profiles ?? [],
+      profiles: profileRows,
       providers: providerCounts,
       signupsByDay,
       generatedAt: new Date().toISOString(),
