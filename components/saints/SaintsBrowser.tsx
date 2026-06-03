@@ -6,59 +6,128 @@ import {
   centuryFor,
   centuryLabel,
 } from "@/lib/saints/saints";
+import {
+  SAINT_GROUPS,
+  type SaintGroupId,
+  groupsForSlug,
+} from "@/lib/saints/groups";
 import { SaintCard } from "./SaintCard";
 import { FeaturedSaintCard } from "./FeaturedSaintCard";
 import { FilterPill } from "./FilterPill";
 
 export function SaintsBrowser({ saints }: { saints: Saint[] }) {
+  const [activeGroup, setActiveGroup] = useState<SaintGroupId | null>(null);
   const [activeCentury, setActiveCentury] = useState<number | null>(null);
 
-  // Featured saints (the Theotokos) are pinned above the grid; the century
-  // filter and grid operate on the rest.
   const featured = useMemo(() => saints.filter((s) => s.featured), [saints]);
   const rest = useMemo(() => saints.filter((s) => !s.featured), [saints]);
 
-  // Per-century counts (sorted by century ascending).
-  const buckets = useMemo(() => {
+  const isFiltering = activeGroup != null || activeCentury != null;
+
+  // Predicates for the two independent filter dimensions.
+  const inGroup = (s: Saint) =>
+    activeGroup == null || groupsForSlug(s.slug).includes(activeGroup);
+  const inCentury = (s: Saint) =>
+    activeCentury == null || centuryFor(s) === activeCentury;
+
+  // "By kind" pills: each count reflects the *other* active filter (century)
+  // so the numbers stay truthful as the user narrows down. Only groups with at
+  // least one matching saint are shown.
+  const groupPills = useMemo(() => {
+    return SAINT_GROUPS.map((g) => ({
+      ...g,
+      count: saints.filter(
+        (s) => inCentury(s) && groupsForSlug(s.slug).includes(g.id),
+      ).length,
+    })).filter((g) => g.count > 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [saints, activeCentury]);
+
+  // "By century" pills: counts reflect the active group filter.
+  const centuryPills = useMemo(() => {
     const map = new Map<number, number>();
-    for (const s of rest) {
+    for (const s of saints) {
+      if (!inGroup(s)) continue;
       const c = centuryFor(s);
       if (c == null) continue;
       map.set(c, (map.get(c) ?? 0) + 1);
     }
     return Array.from(map.entries()).sort((a, b) => a[0] - b[0]);
-  }, [rest]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [saints, activeGroup]);
 
+  // The grid. With no filter we show the non-featured corpus (the Theotokos is
+  // pinned above as the most perfect of the saints). Once any filter is active
+  // we fold featured saints back into the grid so they appear where they match.
   const visible = useMemo(() => {
-    if (activeCentury == null) return rest;
-    return rest.filter((s) => centuryFor(s) === activeCentury);
-  }, [rest, activeCentury]);
+    const pool = isFiltering ? saints : rest;
+    return pool.filter((s) => inGroup(s) && inCentury(s));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [saints, rest, isFiltering, activeGroup, activeCentury]);
+
+  const totalAll = saints.length;
+  const groupAllCount = saints.filter(inCentury).length;
+  const centuryAllCount = saints.filter(inGroup).length;
 
   return (
     <>
-      {activeCentury == null &&
+      {!isFiltering &&
         featured.map((s) => (
           <div key={s.slug} className="mt-10">
             <FeaturedSaintCard saint={s} />
           </div>
         ))}
 
-      <div className="mt-10 flex flex-wrap gap-2.5">
-        <FilterPill
-          label="All"
-          count={saints.length}
-          active={activeCentury == null}
-          onClick={() => setActiveCentury(null)}
-        />
-        {buckets.map(([c, n]) => (
+      {/* By kind */}
+      <div className="mt-10">
+        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
+          By kind
+        </p>
+        <div className="flex flex-wrap gap-2.5">
           <FilterPill
-            key={c}
-            label={centuryLabel(c)}
-            count={n}
-            active={activeCentury === c}
-            onClick={() => setActiveCentury(c)}
+            label="All"
+            count={activeCentury == null ? totalAll : groupAllCount}
+            active={activeGroup == null}
+            onClick={() => setActiveGroup(null)}
           />
-        ))}
+          {groupPills.map((g) => (
+            <FilterPill
+              key={g.id}
+              label={g.label}
+              count={g.count}
+              active={activeGroup === g.id}
+              onClick={() =>
+                setActiveGroup((cur) => (cur === g.id ? null : g.id))
+              }
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* By century */}
+      <div className="mt-6">
+        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
+          By century
+        </p>
+        <div className="flex flex-wrap gap-2.5">
+          <FilterPill
+            label="All"
+            count={activeGroup == null ? totalAll : centuryAllCount}
+            active={activeCentury == null}
+            onClick={() => setActiveCentury(null)}
+          />
+          {centuryPills.map(([c, n]) => (
+            <FilterPill
+              key={c}
+              label={centuryLabel(c)}
+              count={n}
+              active={activeCentury === c}
+              onClick={() =>
+                setActiveCentury((cur) => (cur === c ? null : c))
+              }
+            />
+          ))}
+        </div>
       </div>
 
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
