@@ -104,7 +104,7 @@
  content from being trapped beneath it and the iOS home indicator.
  ---------------------------------------------------------------------- */
 :root {
- --tab-bar-h: 54px;
+ --tab-bar-h: 86px;
 }
 
 /* Padding for any scroll container that sits behind the mobile tab bar. */
