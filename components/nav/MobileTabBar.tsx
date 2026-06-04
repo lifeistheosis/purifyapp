@@ -81,6 +81,10 @@ export function MobileTabBar() {
         p.startsWith("/saints/") ||
         p === "/councils" ||
         p.startsWith("/councils/") ||
+        p === "/topics" ||
+        p.startsWith("/topics/") ||
+        p === "/heresies" ||
+        p.startsWith("/heresies/") ||
         p === "/calendar" ||
         p.startsWith("/calendar/"),
     },

@@ -67,6 +67,7 @@ export function AppNav() {
   const NAV = [
     { key: "today", label: t("nav.today"), href: "/prayers/today" },
     { key: "bible", label: t("nav.bible"), href: "/bible" },
+    { key: "discover", label: t("nav.discover"), href: "/discover" },
     { key: "prayers", label: t("nav.prayers"), href: "/prayers" },
     { key: "saints", label: t("nav.saints"), href: "/saints" },
     { key: "councils", label: t("nav.councils"), href: "/councils" },

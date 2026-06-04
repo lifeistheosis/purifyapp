@@ -74,10 +74,11 @@ export async function DiscoverMobile() {
     : null;
 
   // The library index. Order reads like a menologion table of contents:
-  // people first (saints, councils), then the year, the topical threads,
-  // the daily readings, the Psalter, and the patristic commentary that
-  // ties it together. Saints + Calendar carry a live blurb; the rest reuse
-  // the shared `discover.tile.*` strings.
+  // people first (saints), then the doctrinal record together (the councils,
+  // the topics they confessed, the heresies they condemned), then the year,
+  // the daily readings, the Psalter, and the patristic commentary that ties
+  // it together. Saints + Calendar carry a live blurb; the rest reuse the
+  // shared `discover.tile.*` strings.
   const entries: DiscoverEntry[] = [
     {
       label: t(m, "discover.tile.saints"),
@@ -92,16 +93,6 @@ export async function DiscoverMobile() {
       Icon: Cross,
     },
     {
-      label: t(m, "discover.tile.calendar"),
-      href: "/calendar",
-      blurb: `${fast.label}. ${
-        pascha.daysAway > 0
-          ? `Pascha in ${pascha.daysAway} days.`
-          : pascha.label
-      }`,
-      Icon: Lampada,
-    },
-    {
       label: t(m, "discover.tile.topics"),
       href: "/topics",
       blurb: t(m, "discover.tile.topicsBlurb"),
@@ -112,6 +103,16 @@ export async function DiscoverMobile() {
       href: "/heresies",
       blurb: t(m, "discover.tile.heresiesBlurb"),
       Icon: Bolt,
+    },
+    {
+      label: t(m, "discover.tile.calendar"),
+      href: "/calendar",
+      blurb: `${fast.label}. ${
+        pascha.daysAway > 0
+          ? `Pascha in ${pascha.daysAway} days.`
+          : pascha.label
+      }`,
+      Icon: Lampada,
     },
     {
       label: t(m, "discover.tile.dailyReadings"),

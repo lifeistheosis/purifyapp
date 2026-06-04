@@ -31,6 +31,15 @@ export function Footer() {
    ],
   },
   {
+   heading: t("footer.library"),
+   links: [
+    { label: t("nav.discover"), href: "/discover" },
+    { label: t("discover.tile.councils"), href: "/councils" },
+    { label: t("discover.tile.topics"), href: "/topics" },
+    { label: t("discover.tile.heresies"), href: "/heresies" },
+   ],
+  },
+  {
    heading: t("footer.calendar"),
    links: [
     { label: t("nav.today"), href: "/calendar" },
@@ -67,7 +76,7 @@ export function Footer() {
  return (
   <footer className="bg-night border-t border-white/8">
    <div className="mx-auto max-w-[1240px] px-5 md:px-8 py-16 md:py-20">
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10">
      {cols.map((col) => (
       <div key={col.heading}>
        <h4 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">

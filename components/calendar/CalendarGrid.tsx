@@ -62,28 +62,32 @@ export function CalendarGrid({
         })}
       </div>
 
-      {/* Legend */}
-      <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2.5 font-sans text-caption text-paper/55">
-        <span className="inline-flex items-center gap-1.5">
-          <Cross size={14} className="text-gold" />
-          Major feast
-        </span>
-        <span className="inline-flex items-center gap-1.5" style={{ color: "rgb(193 39 45)" }}>
-          <Wheat size={14} />
-          <span className="text-paper/55">Strict fast</span>
-        </span>
-        <span className="inline-flex items-center gap-1.5 text-gold">
-          <Grapes size={14} />
-          <span className="text-paper/55">Wine &amp; oil</span>
-        </span>
-        <span className="inline-flex items-center gap-1.5" style={{ color: "rgb(123 155 143)" }}>
-          <Fish size={14} />
-          <span className="text-paper/55">Fish allowed</span>
-        </span>
-        <span className="inline-flex items-center gap-1.5" style={{ color: "rgb(16 185 129)" }}>
-          <Lampada size={14} />
-          <span className="text-paper/55">Fast-free</span>
-        </span>
+      {/* Legend. Seated on a black panel so the liturgical tints read warmly;
+          each chip colours its icon AND label together (currentColor), instead
+          of the old grey labels. */}
+      <div className="mt-6 rounded-xl bg-black border border-white/8 px-4 py-3">
+        <div className="flex flex-wrap gap-x-5 gap-y-2.5 font-sans text-caption">
+          <span className="inline-flex items-center gap-1.5 text-gold">
+            <Cross size={14} />
+            Major feast
+          </span>
+          <span className="inline-flex items-center gap-1.5" style={{ color: "rgb(224 86 86)" }}>
+            <Wheat size={14} />
+            Strict fast
+          </span>
+          <span className="inline-flex items-center gap-1.5" style={{ color: "rgb(214 158 78)" }}>
+            <Grapes size={14} />
+            Wine &amp; oil
+          </span>
+          <span className="inline-flex items-center gap-1.5" style={{ color: "rgb(96 184 172)" }}>
+            <Fish size={14} />
+            Fish allowed
+          </span>
+          <span className="inline-flex items-center gap-1.5" style={{ color: "rgb(40 200 140)" }}>
+            <Lampada size={14} />
+            Fast-free
+          </span>
+        </div>
       </div>
     </div>
   );

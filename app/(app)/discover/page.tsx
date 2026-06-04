@@ -3,6 +3,7 @@ import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { DiscoverMobile } from "@/components/mobile/DiscoverMobile";
 import { Cross } from "@/components/ui/icons/Cross";
 import { Bolt } from "@/components/ui/icons/Bolt";
+import { Octogram } from "@/components/ui/icons/Octogram";
 import { Codex } from "@/components/ui/icons/Codex";
 import { Halo } from "@/components/ui/icons/Halo";
 import { Lampada } from "@/components/ui/icons/Lampada";
@@ -32,9 +33,10 @@ export default async function DiscoverPage() {
   const m = getMessages(locale);
 
   // Order chosen so the index reads like a menologion table of contents:
-  // the people first (saints, councils), then the year, then the daily
-  // readings, then the Psalter, then the patristic commentary that
-  // ties it all together.
+  // the people first (saints), then the doctrinal record together (the
+  // councils, the topics they confessed, the heresies they condemned),
+  // then the year, the daily readings, the Psalter, and the patristic
+  // commentary that ties it all together.
   const ENTRIES: Entry[] = [
     {
       label: t(m, "discover.tile.saints"),
@@ -47,6 +49,12 @@ export default async function DiscoverPage() {
       href: "/councils",
       blurb: t(m, "discover.tile.councilsBlurb"),
       Icon: Cross,
+    },
+    {
+      label: t(m, "discover.tile.topics"),
+      href: "/topics",
+      blurb: t(m, "discover.tile.topicsBlurb"),
+      Icon: Octogram,
     },
     {
       label: t(m, "discover.tile.heresies"),
