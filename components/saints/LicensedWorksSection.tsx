@@ -45,41 +45,43 @@ function LicensedWorkCard({ work }: { work: LicensedWork }) {
 
   return (
     <li className="rounded-lg border border-paper/10 bg-night/40 p-5 flex flex-col gap-4 hover:border-gold/40 transition-colors duration-200">
-      <a
-        href={amazonHref}
-        target="_blank"
-        rel="noopener nofollow sponsored"
-        aria-label={`Buy ${work.title} on Amazon`}
-        className="block group"
-      >
-        <div className="aspect-[2/3] w-full overflow-hidden rounded-md bg-night border border-paper/8 flex items-center justify-center">
-          {/* Amazon product covers aren't whitelisted for next/image; the
-              client cover handles Amazon's 1×1 "no image" placeholder by
-              falling back to a typographic tile. */}
-          <LicensedWorkCover
-            src={cover}
-            title={work.title}
-            author={work.author}
-          />
-        </div>
-      </a>
+      <div className="flex gap-4">
+        <a
+          href={amazonHref}
+          target="_blank"
+          rel="noopener nofollow sponsored"
+          aria-label={`Buy ${work.title} on Amazon`}
+          className="block group shrink-0"
+        >
+          <div className="aspect-[2/3] w-20 sm:w-24 overflow-hidden rounded-md bg-night border border-paper/8 flex items-center justify-center">
+            {/* Amazon product covers aren't whitelisted for next/image; the
+                client cover handles Amazon's 1×1 "no image" placeholder by
+                falling back to a typographic tile. */}
+            <LicensedWorkCover
+              src={cover}
+              title={work.title}
+              author={work.author}
+            />
+          </div>
+        </a>
 
-      <div className="flex flex-col gap-1.5">
-        <h3 className="font-serif text-lede text-paper leading-tight">
-          {work.title}
-        </h3>
-        {work.subtitle ? (
-          <p className="font-sans text-detail text-paper/60 italic">
-            {work.subtitle}
+        <div className="flex flex-col gap-1.5 min-w-0">
+          <h3 className="font-serif text-lede text-paper leading-tight">
+            {work.title}
+          </h3>
+          {work.subtitle ? (
+            <p className="font-sans text-detail text-paper/60 italic">
+              {work.subtitle}
+            </p>
+          ) : null}
+          <p className="font-sans text-detail text-paper/70">
+            {roleLabel} {work.author}
           </p>
-        ) : null}
-        <p className="font-sans text-detail text-paper/70">
-          {roleLabel} {work.author}
-        </p>
-        <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/45">
-          {work.publisher}
-          {work.year ? ` · ${work.year}` : ""}
-        </p>
+          <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/45">
+            {work.publisher}
+            {work.year ? ` · ${work.year}` : ""}
+          </p>
+        </div>
       </div>
 
       <p className="font-serif text-ui text-paper/80 leading-relaxed">
