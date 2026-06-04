@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
 import { Sun } from "@/components/ui/icons/Sun";
 import { Codex } from "@/components/ui/icons/Codex";
@@ -38,6 +39,16 @@ const ACCENT = "#e0a82e";
 // Matches the `gap-1` gutter between tabs; used to keep the sliding
 // indicator's geometry exactly in step with the flex cells.
 const GAP = 4;
+
+// Module-scoped memory of the last active tab. The bar is mounted in two
+// separate layout subtrees — `app/page.tsx` (Today, "/") and the (app)
+// group layout (Bible/Discover/Prayers/You) — so crossing that boundary
+// REMOUNTS the component. A fresh mount has no prior `left` for CSS to
+// transition from, which made the indicator jump on Today<->Bible. By
+// remembering the previous index here (it survives remounts within the
+// same page session), a remounted bar can render at the OLD slot first and
+// then glide to the new one, so the animation is seamless either way.
+let lastActiveIndex = 0;
 
 export function MobileTabBar() {
   const pathname = usePathname() ?? "/";
@@ -99,6 +110,28 @@ export function MobileTabBar() {
     TABS.findIndex(({ matches }) => matches(pathname)),
   );
 
+  // `renderIndex` drives the indicator's position. It starts at the slot
+  // the user was last on (which may differ from `activeIndex` right after a
+  // cross-subtree remount), so the first paint lands at the OLD slot. A
+  // double rAF then advances it to `activeIndex`, giving CSS a real "from"
+  // value to transition out of — the indicator always glides, never jumps.
+  const [renderIndex, setRenderIndex] = useState(lastActiveIndex);
+
+  useEffect(() => {
+    lastActiveIndex = activeIndex;
+    if (renderIndex === activeIndex) return;
+    // Nested rAF: let the browser paint the current (old) slot once, THEN
+    // advance to the target so the transition has a frame to animate from.
+    let inner = 0;
+    const outer = requestAnimationFrame(() => {
+      inner = requestAnimationFrame(() => setRenderIndex(activeIndex));
+    });
+    return () => {
+      cancelAnimationFrame(outer);
+      cancelAnimationFrame(inner);
+    };
+  }, [activeIndex, renderIndex]);
+
   // Geometry for the single sliding highlight + pill. The bar is N equal
   // flex cells separated by the GAP gutter, so one slot is
   //   cell = (100% - (N-1)*gap) / N
@@ -107,8 +140,8 @@ export function MobileTabBar() {
   // transition animates it gliding to the newly selected section.
   const N = TABS.length;
   const cell = `((100% - ${(N - 1) * GAP}px) / ${N})`;
-  const slotLeft = `calc(${activeIndex} * (${cell} + ${GAP}px))`;
-  const pillLeft = `calc(${activeIndex} * (${cell} + ${GAP}px) + ${cell} / 2)`;
+  const slotLeft = `calc(${renderIndex} * (${cell} + ${GAP}px))`;
+  const pillLeft = `calc(${renderIndex} * (${cell} + ${GAP}px) + ${cell} / 2)`;
 
   return (
     <nav
