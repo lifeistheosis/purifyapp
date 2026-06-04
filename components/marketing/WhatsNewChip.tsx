@@ -38,7 +38,7 @@ export function WhatsNewChip({ isDe }: { isDe: boolean }) {
       className="hero-copy-in group inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.06] px-3 py-1.5 mb-7 hover:bg-paper/10 hover:border-paper/35 transition-colors duration-150"
     >
       {isUnseen && (
-        <span className="new-glow font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] px-2 py-0.5 rounded-pill bg-gold text-night">
+        <span className="new-glow font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] px-2 py-0.5 rounded-pill bg-[#d4af37] text-night">
           {isDe ? "Neu" : "New"}
         </span>
       )}
