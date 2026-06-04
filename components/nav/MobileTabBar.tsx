@@ -35,6 +35,10 @@ type Tab = {
 // the live tab reads as a warm highlight against the dark glass bar.
 const ACCENT = "#e0a82e";
 
+// Matches the `gap-1` gutter between tabs; used to keep the sliding
+// indicator's geometry exactly in step with the flex cells.
+const GAP = 4;
+
 export function MobileTabBar() {
   const pathname = usePathname() ?? "/";
   const { t } = useTranslate();
@@ -90,6 +94,22 @@ export function MobileTabBar() {
     },
   ];
 
+  const activeIndex = Math.max(
+    0,
+    TABS.findIndex(({ matches }) => matches(pathname)),
+  );
+
+  // Geometry for the single sliding highlight + pill. The bar is N equal
+  // flex cells separated by the GAP gutter, so one slot is
+  //   cell = (100% - (N-1)*gap) / N
+  // and slot i starts at i * (cell + gap). Driving `left` off these calc
+  // strings keeps the indicator pixel-aligned at any bar width while a CSS
+  // transition animates it gliding to the newly selected section.
+  const N = TABS.length;
+  const cell = `((100% - ${(N - 1) * GAP}px) / ${N})`;
+  const slotLeft = `calc(${activeIndex} * (${cell} + ${GAP}px))`;
+  const pillLeft = `calc(${activeIndex} * (${cell} + ${GAP}px) + ${cell} / 2)`;
+
   return (
     <nav
       aria-label="Primary"
@@ -112,38 +132,52 @@ export function MobileTabBar() {
             "linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.012))",
         }}
       >
-        <ul className="flex items-stretch gap-1">
+        <ul className="relative flex items-stretch gap-1">
+          {/* Sliding compartment: one shared highlight that glides between
+              slots instead of popping in/out per tab. Sits behind the links
+              (z-0); the links are lifted to z-10. */}
+          <span
+            aria-hidden
+            className={cn(
+              "absolute top-0 bottom-0 z-0 rounded-[26px]",
+              "border border-white/12 bg-white/[0.05]",
+              "transition-[left] duration-300 ease-out motion-reduce:transition-none",
+            )}
+            style={{ width: `calc(${cell})`, left: slotLeft }}
+          />
+          {/* Sliding gold pill seated on the bar's top edge, centered over
+              the live tab — travels with the compartment. */}
+          <span
+            aria-hidden
+            className={cn(
+              "absolute top-[-9px] z-0 h-[5px] w-9 -translate-x-1/2 rounded-full",
+              "transition-[left] duration-300 ease-out motion-reduce:transition-none",
+            )}
+            style={{
+              left: pillLeft,
+              backgroundColor: ACCENT,
+              boxShadow: `0 0 12px ${ACCENT}88`,
+            }}
+          />
           {TABS.map(({ key, label, href, Icon, matches }) => {
             const active = matches(pathname);
             return (
-              <li key={key} className="flex-1 relative">
-                {/* Active indicator: a short gold pill seated on the bar's
-                    top edge, centered over the live tab. */}
-                {active && (
-                  <span
-                    aria-hidden
-                    className="absolute left-1/2 top-[-9px] -translate-x-1/2 h-[5px] w-9 rounded-full"
-                    style={{
-                      backgroundColor: ACCENT,
-                      boxShadow: `0 0 12px ${ACCENT}88`,
-                    }}
-                  />
-                )}
+              <li key={key} className="relative z-10 flex-1">
                 <Link
                   href={href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
                     "h-[58px] flex flex-col items-center justify-center gap-1.5 rounded-[26px]",
-                    "font-sans text-eyebrow tracking-[0.01em] transition-colors duration-150",
+                    "font-sans text-eyebrow tracking-[0.01em] transition-colors duration-200",
                     active
-                      ? // Highlighted compartment around the live tab.
-                        "border border-white/12 bg-white/[0.05] font-semibold"
-                      : "border border-transparent text-paper/45 hover:text-paper/70 font-medium",
+                      ? "font-semibold"
+                      : "text-paper/45 hover:text-paper/70 font-medium",
                   )}
                   style={active ? { color: ACCENT } : undefined}
                 >
                   <Icon
                     size={22}
+                    className="transition-[filter] duration-200"
                     style={
                       active
                         ? { filter: `drop-shadow(0 0 7px ${ACCENT}66)` }
