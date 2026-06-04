@@ -3,7 +3,6 @@ import {
  commemorationsOn,
  currentSeason,
  fastingStatus,
- formatLongDate,
  formatLongDateDual,
  formatMonthDay,
  greekMonthName,
@@ -170,6 +169,12 @@ const MONTH_NAMES_EN = [
 const MONTH_NAMES_DE = [
  "Januar", "Februar", "März", "April", "Mai", "Juni",
  "Juli", "August", "September", "Oktober", "November", "Dezember",
+];
+const WEEKDAY_NAMES_EN = [
+ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
+];
+const WEEKDAY_NAMES_DE = [
+ "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag",
 ];
 
 export default async function CalendarPage({
@@ -411,7 +416,8 @@ export default async function CalendarPage({
 
  <aside className="lg:sticky lg:top-[88px]">
  <DayScroll
- dateLabel={formatLongDate(selectedDay)}
+ weekday={(isDe ? WEEKDAY_NAMES_DE : WEEKDAY_NAMES_EN)[selectedDay.getUTCDay()]}
+ dateLabel={`${(isDe ? MONTH_NAMES_DE : MONTH_NAMES_EN)[selectedDay.getUTCMonth()]} ${selectedDay.getUTCDate()}, ${selectedDay.getUTCFullYear()}`}
  tone={selectedTone}
  fast={selectedFast}
  commemorations={selectedCommemorations}

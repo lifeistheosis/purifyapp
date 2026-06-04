@@ -6,10 +6,14 @@ import { FastBadge } from "./FastBadge";
 import { CommemorationRow } from "./CommemorationRow";
 
 /**
- * The selected-day "illuminated page": ornament header, the day's fast tablet,
- * its commemorations as a haloed serif list, and (optionally) its readings.
+ * The selected-day "illuminated page": a weekday eyebrow + big date, a
+ * centered three-bar Cross rule, then clearly labelled sections — the
+ * day's fast tablet, its commemorations as a haloed serif list, and
+ * (optionally) its readings. Calm, sectioned chrome; our own serif and
+ * sans faces throughout.
  */
 export function DayScroll({
+  weekday,
   dateLabel,
   tone,
   fast,
@@ -17,6 +21,7 @@ export function DayScroll({
   readings,
   locale = "en",
 }: {
+  weekday: string;
   dateLabel: string;
   tone: Tone;
   fast: { kind: FastKind; label: string; rule: string };
@@ -27,19 +32,26 @@ export function DayScroll({
   const isDe = locale === "de";
   return (
     <div
-      className="rounded-xl border border-gold/15 bg-paper/[0.025] p-5 md:p-6"
+      className="rounded-xl border border-gold/15 bg-paper/[0.025] p-6 md:p-7"
       style={toneVars(tone)}
     >
-      <SectionLabel>{isDe ? "Ausgewählter Tag" : "Selected day"}</SectionLabel>
-      <h3 className="mt-2.5 font-display-serif text-title-sm md:text-title text-paper leading-tight">
+      {/* Weekday eyebrow + big date */}
+      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2.5px] text-gold/70">
+        {weekday}
+      </p>
+      <h3 className="mt-2 font-display-serif text-title-sm md:text-title text-paper leading-tight">
         {dateLabel}
       </h3>
 
-      <OrnamentRule className="my-4" tinted />
+      <OrnamentRule className="my-5" tinted />
 
+      {/* Fasting — kept explicit (the reference omitted it). */}
+      <div className="mb-3">
+        <SectionLabel>{isDe ? "Fasten" : "Fasting"}</SectionLabel>
+      </div>
       <FastBadge kind={fast.kind} label={fast.label} rule={fast.rule} />
 
-      <div className="mt-6 mb-3.5">
+      <div className="mt-7 mb-3.5">
         <SectionLabel>{isDe ? "Gedenken" : "Commemorations"}</SectionLabel>
       </div>
       {commemorations.length > 0 ? (
@@ -60,7 +72,7 @@ export function DayScroll({
 
       {readings && (
         <>
-          <div className="mt-6 mb-3.5">
+          <div className="mt-7 mb-3.5">
             <SectionLabel>{isDe ? "Lesungen" : "Readings"}</SectionLabel>
           </div>
           {readings}
