@@ -365,7 +365,7 @@ export default async function CalendarPage({
  )}
 
  {/* GRID + DAY DETAIL */}
- <section className="px-5 md:px-8 py-10 md:py-14">
+ <section className="px-5 md:px-8 py-10 md:py-14 bg-black">
  <div className="mx-auto max-w-[1280px] w-full">
  <header className="flex items-end justify-between mb-8 gap-4 flex-wrap">
  <div className="min-w-0">
