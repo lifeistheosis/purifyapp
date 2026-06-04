@@ -1,7 +1,6 @@
 import {
   commemorationsOn,
   fastingStatus,
-  formatLongDate,
   paschaInfo,
   startOfDayUtc,
 } from "@/lib/calendar/orthodox";
@@ -16,8 +15,8 @@ import { MobileHeroCard } from "./MobileHeroCard";
 import { MobileSectionLabel } from "./MobileSectionLabel";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { DayBadge } from "./DayBadge";
-import { SaintStrip } from "./SaintStrip";
 import { DiscoverIndex, type DiscoverEntry } from "./DiscoverIndex";
+import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
 import { Halo } from "@/components/ui/icons/Halo";
 import { Cross } from "@/components/ui/icons/Cross";
 import { Bolt } from "@/components/ui/icons/Bolt";
@@ -43,11 +42,12 @@ function firstSentence(s: string): string {
 /**
  * Discover mobile shell — "the menologion."
  *
- *   1. Deep-slate hero with the saint icon + DayBadge as `aside`.
- *   2. The library — a menologion list of every library destination
+ *   1. Masthead — ornament headpiece + "THE WHOLE LIBRARY" / "Discover." /
+ *      subtitle, matching the desktop Discover page.
+ *   2. Deep-slate hero with the saint icon + DayBadge as `aside`.
+ *   3. The library — a menologion list of every library destination
  *      (saints, councils, calendar, topics, daily readings, psalter,
  *      patristic). The page's centerpiece.
- *   3. SaintStrip — horizontal scroll of the next seven days' saints.
  *   4. Featured today (topic + council), two parchment-tinted cards.
  *   5. Closing colophon.
  */
@@ -137,8 +137,22 @@ export async function DiscoverMobile() {
   return (
     <MobileShell
       header={<MobileHeader title="Discover" trailing={<UserAvatarSmall />} />}
-      eyebrow={formatLongDate(today)}
     >
+      {/* Masthead — mirrors the desktop Discover page so the tab opens with
+          the calm "whole library" identity. */}
+      <header className="text-center mb-7">
+        <OrnamentHeadpiece className="mx-auto mb-4 max-w-[320px]" />
+        <p className="font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/85 mb-2">
+          {t(m, "discover.eyebrow")}
+        </p>
+        <h1 className="font-display-serif text-heading text-paper leading-[1.05]">
+          {t(m, "discover.h1")}
+        </h1>
+        <p className="mt-3 font-serif italic text-ui text-paper/70 max-w-[420px] mx-auto leading-[1.6]">
+          {t(m, "discover.subtitle")}
+        </p>
+      </header>
+
       <MobileHeroCard
         tint="deep"
         eyebrow="Today's Commemoration"
@@ -166,10 +180,6 @@ export async function DiscoverMobile() {
       <div className="mt-7">
         <MobileSectionLabel>The library</MobileSectionLabel>
         <DiscoverIndex entries={entries} />
-      </div>
-
-      <div className="mt-7">
-        <SaintStrip />
       </div>
 
       {(featuredTopic || featuredCouncil) && (

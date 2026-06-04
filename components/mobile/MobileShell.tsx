@@ -17,8 +17,9 @@ export function MobileShell({
 }: {
   /** Top header (top tabs OR a "Bible / Discover / Prayers / You" title row). */
   header: ReactNode;
-  /** Small uppercase caption above the timeline (e.g. "Daily Refresh"). */
-  eyebrow: string;
+  /** Small uppercase caption above the timeline (e.g. "Daily Refresh").
+      Optional: screens that lead with their own masthead can omit it. */
+  eyebrow?: string;
   /** Stacked cards. Use `MobileTimeline` or render plain children. */
   children: ReactNode;
 }) {
@@ -26,9 +27,11 @@ export function MobileShell({
     <div className="flex flex-col bg-night md:hidden">
       {header}
       <div className="px-5 pt-6 pb-10">
-        <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-4">
-          {eyebrow}
-        </p>
+        {eyebrow && (
+          <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-4">
+            {eyebrow}
+          </p>
+        )}
         {children}
       </div>
     </div>
