@@ -395,7 +395,7 @@ export function VerseRow({
  className={cn(
  "indent-0 min-w-0 transition-colors duration-150",
  showDropCap &&
- "overflow-hidden first-letter:float-left first-letter:mr-2.5 first-letter:mt-[0.06em] first-letter:font-display-serif first-letter:font-normal first-letter:not-italic first-letter:text-gold first-letter:text-[2.6em] first-letter:leading-[0.78]",
+ "overflow-hidden first-letter:float-left first-letter:mr-2.5 first-letter:mt-[0.06em] first-letter:font-display-serif first-letter:font-normal first-letter:not-italic first-letter:text-[#d4af37] first-letter:text-[2.6em] first-letter:leading-[0.78]",
  dragging && "select-none",
  showTools &&
  "bg-gold/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(183,176,163,0.35)]",
