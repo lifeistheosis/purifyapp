@@ -369,7 +369,7 @@ export function VerseRow({
  return (
  <div
  id={`v${verse.n}`}
- className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out data-[hl=true]:shadow-[inset_3px_0_0_var(--color-gold)] data-[focus=true]:bg-gold/12 data-[focus=true]:shadow-[0_0_0_2px_rgba(212,175,55,0.55),0_0_24px_rgba(212,175,55,0.35)]"
+ className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out data-[hl=true]:shadow-[inset_3px_0_0_var(--color-gold)] data-[focus=true]:bg-gold/12 data-[focus=true]:shadow-[0_0_0_2px_rgba(183,176,163,0.55),0_0_24px_rgba(183,176,163,0.35)]"
  data-hl={ann.highlighted ? "true" : undefined}
  >
  <div className="flex items-start gap-2">
@@ -398,7 +398,7 @@ export function VerseRow({
  "overflow-hidden first-letter:float-left first-letter:mr-2.5 first-letter:mt-[0.06em] first-letter:font-display-serif first-letter:font-normal first-letter:not-italic first-letter:text-gold first-letter:text-[2.6em] first-letter:leading-[0.78]",
  dragging && "select-none",
  showTools &&
- "bg-gold/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(212,175,55,0.35)]",
+ "bg-gold/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(183,176,163,0.35)]",
  )}
  style={{ touchAction: "pan-y" }}
  onMouseDown={onWordsMouseDown}
@@ -515,9 +515,9 @@ export function VerseRow({
  style={
  matched
  ? {
- backgroundColor: "rgba(212,175,55,0.45)",
+ backgroundColor: "rgba(183,176,163,0.45)",
  color: "#fff",
- boxShadow: "0 0 10px rgba(212,175,55,0.55)",
+ boxShadow: "0 0 10px rgba(183,176,163,0.55)",
  }
  : undefined
  }
@@ -531,7 +531,7 @@ export function VerseRow({
  }
  style={
  bridgeMatched
- ? { backgroundColor: "rgba(212,175,55,0.45)" }
+ ? { backgroundColor: "rgba(183,176,163,0.45)" }
  : undefined
  }
  >
@@ -626,8 +626,8 @@ export function VerseRow({
  style={
  gMatched
  ? {
- backgroundColor: "rgba(212,175,55,0.45)",
- boxShadow: "0 0 10px rgba(212,175,55,0.55)",
+ backgroundColor: "rgba(183,176,163,0.45)",
+ boxShadow: "0 0 10px rgba(183,176,163,0.55)",
  }
  : undefined
  }

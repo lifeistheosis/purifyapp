@@ -36,8 +36,8 @@ export function WorldMap({ points }: { points: MapPoint[] }) {
         </Geographies>
         {points.map((p) => (
           <Marker key={p.id} coordinates={[p.lng, p.lat]}>
-            <circle r={6} fill="#d4af37" fillOpacity={0.18} />
-            <circle r={2.6} fill="#d4af37">
+            <circle r={6} fill="#b7b0a3" fillOpacity={0.18} />
+            <circle r={2.6} fill="#b7b0a3">
               <animate
                 attributeName="r"
                 values="2.6;4.2;2.6"

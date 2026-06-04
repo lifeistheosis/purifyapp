@@ -12,7 +12,7 @@ const BACKDROPS: Record<Tint, string> = {
   violet:
     "radial-gradient(120% 80% at 80% 90%, rgba(150,100,200,0.18) 0%, transparent 60%), linear-gradient(180deg, #14101c 0%, #08060d 100%)",
   gold:
-    "radial-gradient(120% 80% at 20% 0%, rgba(212,175,55,0.16) 0%, transparent 60%), linear-gradient(180deg, #18140b 0%, #0a0805 100%)",
+    "radial-gradient(120% 80% at 20% 0%, rgba(183,176,163,0.16) 0%, transparent 60%), linear-gradient(180deg, #18140b 0%, #0a0805 100%)",
 };
 
 const WAVE_FILLS: Record<Tint, string> = {

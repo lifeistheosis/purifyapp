@@ -27,7 +27,7 @@ export function DropCap({
  style={{
  fontSize: "1.25em",
  lineHeight: 0.95,
- textShadow: "0 0 14px rgba(212, 175, 55, 0.18)",
+ textShadow: "0 0 14px rgba(183, 176, 163, 0.18)",
  }}
  >
  {first}

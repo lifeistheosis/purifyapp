@@ -192,7 +192,7 @@ export function ParagraphRow({
 				// Bible VerseRow, which sets no font/size here either.
 				"text-paper/90 leading-[1.7] flex-1 min-w-0 transition-colors duration-150",
  showTools &&
- "bg-gold/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(212,175,55,0.35)]",
+ "bg-gold/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(183,176,163,0.35)]",
  )}
  style={{ touchAction: "pan-y" }}
  onContextMenu={openContextMenu}

@@ -43,7 +43,7 @@ export function DayScroll({
         {dateLabel}
       </h3>
 
-      <OrnamentRule className="my-5" tinted />
+      <OrnamentRule className="my-5" />
 
       {/* Fasting — kept explicit (the reference omitted it). */}
       <div className="mb-3">

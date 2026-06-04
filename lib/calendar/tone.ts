@@ -22,10 +22,10 @@ export function toneFor(opts: { hasFeast: boolean; fast: FastKind }): Tone {
 
 // Space-separated RGB triplets for use as `rgb(var(--tone) / <alpha>)`.
 export const TONE_RGB: Record<Tone, string> = {
- gold: "212 175 55",
+ gold: "183 176 163",
  crimson: "193 39 45",
  green: "16 185 129",
- muted: "212 175 55",
+ muted: "183 176 163",
 };
 
 /** Inline style object that sets the `--tone` variable for a subtree. */

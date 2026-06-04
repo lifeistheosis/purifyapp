@@ -258,9 +258,9 @@ export function OAuthConnectionsCard({
     // Brief gold attention pulse so the eye knows what just moved.
     el.animate(
       [
-        { boxShadow: "0 0 0 0 rgba(212,175,55,0)" },
-        { boxShadow: "0 0 0 6px rgba(212,175,55,0.28)" },
-        { boxShadow: "0 0 0 0 rgba(212,175,55,0)" },
+        { boxShadow: "0 0 0 0 rgba(183,176,163,0)" },
+        { boxShadow: "0 0 0 6px rgba(183,176,163,0.28)" },
+        { boxShadow: "0 0 0 0 rgba(183,176,163,0)" },
       ],
       { duration: 1100, easing: "ease-out" },
     );

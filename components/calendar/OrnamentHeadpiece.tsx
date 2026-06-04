@@ -14,7 +14,7 @@ export function OrnamentHeadpiece({
  className?: string;
  tinted?: boolean;
 }) {
- const stroke = tinted ? "rgb(var(--tone, 212 175 55))" : "rgb(212 175 55)";
+ const stroke = tinted ? "rgb(var(--tone, 183 176 163))" : "rgb(183 176 163)";
  return (
  <svg
  role="presentation"

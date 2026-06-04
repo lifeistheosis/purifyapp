@@ -17,9 +17,9 @@ export const FAST_META: Record<
   { short: string; Icon: IconCmp | null; rgb: string }
 > = {
   strict: { short: "Strict fast", Icon: Wheat, rgb: "193 39 45" },
-  "wine-oil": { short: "Wine & oil", Icon: Grapes, rgb: "212 175 55" },
+  "wine-oil": { short: "Wine & oil", Icon: Grapes, rgb: "183 176 163" },
   fish: { short: "Fish allowed", Icon: Fish, rgb: "123 155 143" },
   fast: { short: "Fast", Icon: Wheat, rgb: "203 198 210" },
   "fast-free": { short: "Fast-free", Icon: Lampada, rgb: "16 185 129" },
-  normal: { short: "No fast", Icon: null, rgb: "212 175 55" },
+  normal: { short: "No fast", Icon: null, rgb: "183 176 163" },
 };

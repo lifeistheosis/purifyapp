@@ -19,7 +19,7 @@ import { useState, type CSSProperties } from "react";
 // Semantic names so tabs can pick "positive" or "warning" without
 // remembering hex codes. Bound to the same hues as the rest of the app.
 export const chartColors = {
-  primary: "rgb(212,175,55)", // gold — the signature accent
+  primary: "rgb(183,176,163)", // gold — the signature accent
   accent: "rgb(230,205,106)", // soft gold
   info: "rgb(120,180,240)", // sky
   positive: "rgb(120,200,150)", // moss / success

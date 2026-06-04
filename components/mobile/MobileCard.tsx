@@ -36,7 +36,7 @@ export function MobileCard({
     tint === "warm"
       ? "radial-gradient(120% 80% at 80% 90%, rgba(193,39,45,0.18) 0%, transparent 60%), linear-gradient(180deg, #18120f 0%, #0a0606 100%)"
       : tint === "gold"
-        ? "radial-gradient(120% 80% at 20% 0%, rgba(212,175,55,0.10) 0%, transparent 60%), linear-gradient(180deg, #16131a 0%, #0a0810 100%)"
+        ? "radial-gradient(120% 80% at 20% 0%, rgba(183,176,163,0.10) 0%, transparent 60%), linear-gradient(180deg, #16131a 0%, #0a0810 100%)"
         : undefined;
   return (
     <Outer

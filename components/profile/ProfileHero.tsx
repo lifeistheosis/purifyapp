@@ -116,7 +116,7 @@ export function ProfileHero({
         {/* Gold-ringed initials disc, SaintIcon-style fallback. */}
         <div
           aria-hidden
-          className="shrink-0 relative rounded-full border-2 border-gold/65 shadow-[0_0_24px_rgba(212,175,55,0.18)] flex items-center justify-center"
+          className="shrink-0 relative rounded-full border-2 border-gold/65 shadow-[0_0_24px_rgba(183,176,163,0.18)] flex items-center justify-center"
           style={{
             width: 64,
             height: 64,

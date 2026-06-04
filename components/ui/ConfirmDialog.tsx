@@ -146,7 +146,7 @@ export function ConfirmDialog({
           className="absolute inset-x-6 top-0 h-px"
           style={{
             background:
-              "linear-gradient(90deg, transparent 0%, rgba(212,175,55,0.45) 50%, transparent 100%)",
+              "linear-gradient(90deg, transparent 0%, rgba(183,176,163,0.45) 50%, transparent 100%)",
           }}
         />
 

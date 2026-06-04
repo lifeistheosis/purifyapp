@@ -35,7 +35,7 @@ export function SaintHero({ saint, bump, compactFacts }: Props) {
           saint={saint}
           size="lg"
           priority
-          className={saint.featured ? "ring-2 ring-gold/50 shadow-[0_0_40px_rgba(212,175,55,0.18)]" : undefined}
+          className={saint.featured ? "ring-2 ring-gold/50 shadow-[0_0_40px_rgba(183,176,163,0.18)]" : undefined}
         />
         <div className="min-w-0 flex-1">
           {saint.byname && (

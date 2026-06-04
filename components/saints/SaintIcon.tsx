@@ -72,8 +72,8 @@ export function SaintIcon({
  width: d.halo,
  height: d.halo,
  background:
- "radial-gradient(circle, rgba(212,175,55,0.35) 0%, rgba(212,175,55,0) 75%)",
- boxShadow: "0 0 12px rgba(212,175,55,0.35)",
+ "radial-gradient(circle, rgba(183,176,163,0.35) 0%, rgba(183,176,163,0) 75%)",
+ boxShadow: "0 0 12px rgba(183,176,163,0.35)",
  }}
  />
  <span
