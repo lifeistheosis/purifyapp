@@ -23,6 +23,23 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v8.9",
+ kind: "A quieter palette, a redrawn calendar, and a floating mobile bar",
+ date: "June 4, 2026",
+ blurb:
+  "No new texts this time, this is a design release, top to bottom. Three things change the way Purify feels to sit with. First, the calendar's day panel is redrawn as an illuminated page: a weekday eyebrow over the big date, a centered three-bar Orthodox cross rule, and then clearly labelled sections for the day's fast, its commemorations as a haloed serif list, and its readings, all in our own serif and sans rather than a borrowed face. The fasting tablet stays, the cross is the proper three-bar cross, and every saint still links exactly where it did. Second, the whole app steps off its old signature gold and onto a calm, neutral palette, a warm grey in place of the bright gold across every surface, so the chrome recedes and the content carries the page; the one place colour still means something, the fast badges, keeps its semantic reds and greens untouched. Third, the mobile bottom bar is rebuilt as a floating stadium bar with a single gold-accented live tab, and that highlight now glides smoothly from section to section instead of snapping. Nothing about what the app does changed; this is the same rooms, lit more quietly.",
+ items: [
+  "The calendar day panel is rebuilt as an illuminated page: a small-caps weekday eyebrow, the full date in our display serif, a centered three-bar Orthodox cross rule, then sectioned blocks for Fasting, Commemorations, and Readings. The fasting tablet that the reference design dropped is kept on purpose, the rule cross is the correct three-bar Slavonic cross rather than a Latin one, the typography stays on our own Lora serif and sans throughout, and every commemoration still deep-links to the right saint.",
+  "The app-wide palette goes neutral. The signature gold token and every gold literal across the calendar, navigation, saints, Bible, profile, and admin surfaces are retuned to a warm, paper-toned grey, so the interface reads as calm and monochrome and the words do the work. The change is a single design-token retune plus a mechanical swap of the old colour values, with no layout or behaviour change anywhere.",
+  "Fast colours stay meaningful. The one place colour still carries information, the fasting badges, keeps its semantic palette, strict-fast crimson, fish sage, wine-and-oil and fast-free greens, so the discipline of the day is still legible at a glance against the new neutral chrome.",
+  "The mobile bottom navigation is rebuilt as a floating stadium bar: a glass-dark panel lifted off the content with a soft shadow and a faint top sheen, a bordered compartment around the live tab, and a short gold pill seated on the bar's top edge over the active section. The active tab's icon and label carry the same warm gold, scoped to the bar alone so it does not disturb the new neutral palette elsewhere.",
+  "The live-tab highlight now animates. Instead of popping in and out per tab, a single shared compartment and pill glide between sections on a smooth transition, with the icon glow and label colour cross-fading alongside. The motion is disabled automatically for readers who prefer reduced motion, and the bar handles the move correctly even across the Today boundary, where the navigation is mounted in a separate part of the app.",
+  "A small fix on the saints' Licensed Works shelf: book covers that were rendering as a thin stretched sliver now sit as a proper compact thumbnail beside the title and details.",
+  "Cache version bumped to v8.9.1 across the run so the redesigned surfaces evict the old buckets on this release.",
+  "Footer + home hero chip + /whats-new chip step to v8.9.",
+ ],
+ },
+ {
  version: "v8.5",
  kind: "The Heresies archive, cross-linked with the Councils",
  date: "June 3, 2026",

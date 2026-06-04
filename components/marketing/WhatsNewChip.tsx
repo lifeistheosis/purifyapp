@@ -44,10 +44,10 @@ export function WhatsNewChip({ isDe }: { isDe: boolean }) {
       )}
       <span className="font-sans text-caption sm:text-detail text-paper/85 group-hover:text-paper transition-colors">
         <span className="sm:hidden">
-          {CURRENT_VERSION} · The Heresies, cross-linked with the Councils
+          {CURRENT_VERSION} · A quieter palette and a floating mobile bar
         </span>
         <span className="hidden sm:inline">
-          {CURRENT_VERSION} · The Heresies archive, cross-linked with the Councils
+          {CURRENT_VERSION} · A quieter palette, a redrawn calendar, and a floating mobile bar
         </span>
       </span>
       <span className="text-paper/55 group-hover:text-paper transition-colors text-detail">
