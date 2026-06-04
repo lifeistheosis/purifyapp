@@ -1,0 +1,19 @@
+{
+  "works": [
+    {
+      "slug": "the-ascetical-homilies",
+      "title": "The Ascetical Homilies of Saint Isaac the Syrian",
+      "author": "Isaac the Syrian",
+      "authorRole": "by",
+      "publisher": "Holy Transfiguration Monastery",
+      "year": 2011,
+      "blurb": "The classic of the inner desert: homilies on stillness, tears, and the merciful heart that 'burns for all creation.' The standard English text from Holy Transfiguration Monastery.",
+      "topics": [
+        "asceticism",
+        "prayer",
+        "compunction"
+      ],
+      "amazonAsin": "B0062BZ1EG"
+    }
+  ]
+}

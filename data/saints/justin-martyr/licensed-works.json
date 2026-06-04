@@ -1,0 +1,20 @@
+{
+  "works": [
+    {
+      "slug": "the-first-and-second-apologies",
+      "title": "The First and Second Apologies",
+      "subtitle": "Ancient Christian Writers",
+      "author": "Justin Martyr",
+      "authorRole": "by",
+      "publisher": "Paulist Press",
+      "year": 1997,
+      "blurb": "A philosopher turned confessor pleads the Christian cause before the Roman emperor, defending the faith as the true philosophy and leaving us the earliest description of the Eucharist outside the New Testament.",
+      "topics": [
+        "apologetics",
+        "logos",
+        "martyrdom"
+      ],
+      "amazonAsin": "0809104725"
+    }
+  ]
+}

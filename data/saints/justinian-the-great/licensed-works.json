@@ -1,0 +1,20 @@
+{
+  "works": [
+    {
+      "slug": "on-the-person-of-christ",
+      "title": "On the Person of Christ",
+      "subtitle": "The Christology of Emperor Justinian",
+      "author": "Emperor Justinian",
+      "authorRole": "by",
+      "publisher": "St. Vladimir's Seminary Press",
+      "year": 1991,
+      "blurb": "Three imperial theological documents in which the emperor of the Code labors to read Chalcedon through the lens of St. Cyril — the dogmatic mind behind the Fifth Council. Translated by Kenneth Paul Wesche.",
+      "topics": [
+        "christology",
+        "chalcedon",
+        "fifth-council"
+      ],
+      "amazonAsin": "0881410896"
+    }
+  ]
+}

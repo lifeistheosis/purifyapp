@@ -1,0 +1,19 @@
+{
+  "works": [
+    {
+      "slug": "the-mystagogy-of-the-holy-spirit",
+      "title": "The Mystagogy of the Holy Spirit",
+      "author": "Photios the Great",
+      "authorRole": "by",
+      "publisher": "Studion Publishers",
+      "year": 1983,
+      "blurb": "The patriarch's careful treatise on the procession of the Holy Spirit from the Father — the theological heart of the response to the Filioque, argued from Scripture and the Fathers.",
+      "topics": [
+        "holy-spirit",
+        "filioque",
+        "triadology"
+      ],
+      "amazonAsin": "091658688X"
+    }
+  ]
+}

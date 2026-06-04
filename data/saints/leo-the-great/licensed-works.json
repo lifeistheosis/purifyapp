@@ -1,0 +1,20 @@
+{
+  "works": [
+    {
+      "slug": "sermons",
+      "title": "Sermons",
+      "subtitle": "The Fathers of the Church",
+      "author": "Leo the Great",
+      "authorRole": "by",
+      "publisher": "Catholic University of America Press",
+      "year": 1996,
+      "blurb": "The festal preaching of the pope whose Tome steadied Chalcedon: clear, measured homilies on the Nativity, the Passion, and the Ascension that confess the two natures of the one Christ.",
+      "topics": [
+        "incarnation",
+        "feasts",
+        "preaching"
+      ],
+      "amazonAsin": "0813200938"
+    }
+  ]
+}

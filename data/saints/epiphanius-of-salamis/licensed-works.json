@@ -1,0 +1,20 @@
+{
+  "works": [
+    {
+      "slug": "the-panarion-selected-passages",
+      "title": "The Panarion of St. Epiphanius, Bishop of Salamis",
+      "subtitle": "Selected Passages",
+      "author": "Epiphanius of Salamis",
+      "authorRole": "by",
+      "publisher": "Oxford University Press",
+      "year": 1990,
+      "blurb": "The 'medicine chest' against the heresies of the fourth century, from the great defender of Nicaea — Philip Amidon's accessible selection from the vast catalogue of doctrine and error.",
+      "topics": [
+        "heresiology",
+        "doctrine",
+        "fourth-century"
+      ],
+      "amazonAsin": "0195062914"
+    }
+  ]
+}

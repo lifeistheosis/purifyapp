@@ -1,0 +1,19 @@
+{
+  "works": [
+    {
+      "slug": "the-holy-angels",
+      "title": "The Holy Angels",
+      "author": "Mother Alexandra",
+      "authorRole": "about",
+      "publisher": "Ancient Faith Publishing",
+      "year": 2017,
+      "blurb": "The whole teaching of the Church on the bodiless powers, gathered from Scripture, the Fathers, hymnography, and iconography — the nature of the angels and their part in our salvation, led by the Archistrategos Michael.",
+      "topics": [
+        "angels",
+        "bodiless-powers",
+        "theology"
+      ],
+      "amazonAsin": "194496777X"
+    }
+  ]
+}

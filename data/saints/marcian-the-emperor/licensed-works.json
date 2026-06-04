@@ -1,0 +1,19 @@
+{
+  "works": [
+    {
+      "slug": "the-lives-of-the-saints",
+      "title": "The Lives of the Saints for Orthodox Christians",
+      "author": "Dean Marais",
+      "authorRole": "edited",
+      "publisher": "Orthodox Christian Publications",
+      "year": 2024,
+      "blurb": "A single-volume synaxarion of six hundred saints, including the soldier-emperor who, with St. Pulcheria, convened the Fourth Council.",
+      "topics": [
+        "synaxarion",
+        "lives",
+        "orthodoxy"
+      ],
+      "amazonAsin": "B0FDGNWL3W"
+    }
+  ]
+}

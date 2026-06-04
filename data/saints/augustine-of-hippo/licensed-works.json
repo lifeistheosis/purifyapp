@@ -1,0 +1,20 @@
+{
+  "works": [
+    {
+      "slug": "confessions",
+      "title": "Confessions",
+      "subtitle": "Ignatius Critical Editions",
+      "author": "Augustine of Hippo",
+      "authorRole": "by",
+      "publisher": "Ignatius Press",
+      "year": 2012,
+      "blurb": "The first true autobiography of the soul: Augustine's restless search told as one long prayer, from a stolen pear to the garden in Milan. 'Our heart is restless until it rests in Thee.'",
+      "topics": [
+        "repentance",
+        "grace",
+        "conversion"
+      ],
+      "amazonAsin": "1586176838"
+    }
+  ]
+}

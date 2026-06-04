@@ -1,0 +1,20 @@
+{
+  "works": [
+    {
+      "slug": "the-life-of-the-virgin",
+      "title": "The Life of the Virgin",
+      "subtitle": "Attributed to Maximus the Confessor",
+      "author": "Maximus the Confessor",
+      "authorRole": "by",
+      "publisher": "Yale University Press",
+      "year": 2012,
+      "blurb": "The earliest complete biography of the Mother of God, a seventh-century Life that follows her from her own conception to the Dormition, dwelling tenderly on her share in the Passion. Stephen Shoemaker's translation from the Old Georgian.",
+      "topics": [
+        "theotokos",
+        "dormition",
+        "compassion"
+      ],
+      "amazonAsin": "0300175043"
+    }
+  ]
+}

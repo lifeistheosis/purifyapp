@@ -1,0 +1,19 @@
+{
+  "works": [
+    {
+      "slug": "the-lives-of-the-holy-apostles",
+      "title": "The Lives of the Holy Apostles",
+      "author": "Holy Apostles Convent",
+      "authorRole": "about",
+      "publisher": "Holy Apostles Convent",
+      "year": 1997,
+      "blurb": "Drawn from St. Dimitri of Rostov and the Great Synaxaristes: the full life of the son of thunder, first of the apostles to drink the cup of martyrdom, set among all the Twelve and the Seventy.",
+      "topics": [
+        "apostle",
+        "synaxarion",
+        "mission"
+      ],
+      "amazonAsin": "0944359000"
+    }
+  ]
+}
