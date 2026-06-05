@@ -100,7 +100,8 @@ export function AppNav() {
             type="button"
             aria-label={t("common.back")}
             onClick={() => router.back()}
-            className="inline-flex items-center justify-center h-9 w-9 rounded-pill border border-paper/20 text-paper/70 hover:text-paper hover:border-paper/40 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
+            style={{ animationDelay: "0ms" }}
+            className="appnav-in inline-flex items-center justify-center h-9 w-9 rounded-pill border border-paper/20 text-paper/70 hover:text-paper hover:border-paper/40 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
           >
             <svg
               width={18}
@@ -118,19 +119,21 @@ export function AppNav() {
           </button>
           <Link
             href="/"
-            className="font-sans text-title-sm font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors duration-150"
+            style={{ animationDelay: "40ms" }}
+            className="appnav-in font-sans text-title-sm font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors duration-150"
           >
             Purify
           </Link>
         </div>
 
         <nav className="hidden md:flex items-center gap-7">
-          {NAV.map((it) => (
+          {NAV.map((it, i) => (
             <Link
               key={it.key}
               href={it.href}
+              style={{ animationDelay: `${80 + i * 35}ms` }}
               className={cn(
-                "font-sans text-ui font-medium transition-colors duration-150",
+                "appnav-in font-sans text-ui font-medium transition-colors duration-150",
                 isActive(it.href)
                   ? "text-paper"
                   : "text-paper/65 hover:text-paper",
@@ -141,7 +144,10 @@ export function AppNav() {
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-5">
+        <div
+          className="appnav-in hidden md:flex items-center gap-5"
+          style={{ animationDelay: `${80 + NAV.length * 35}ms` }}
+        >
           {SECONDARY.map((it) => (
             <Link
               key={it.key}
