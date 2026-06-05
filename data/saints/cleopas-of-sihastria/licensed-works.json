@@ -1,0 +1,27 @@
+{
+  "works": [
+    {
+      "slug": "truth-of-our-faith-vol-1",
+      "title": "The Truth of Our Faith, Vol. 1",
+      "subtitle": "Discourses from Holy Scripture on the Tenets of Christian Orthodoxy",
+      "author": "Elder Cleopa of Romania",
+      "authorRole": "by",
+      "publisher": "Uncut Mountain Press",
+      "year": 2022,
+      "blurb": "Elder Cleopa answers the questions of believers and the heterodox, grounding each reply in Holy Scripture and the Fathers. A warm, conversational catechism on the Orthodox faith from one of the great Romanian elders of the twentieth century.",
+      "topics": ["catechism", "apologetics", "Orthodox faith"],
+      "amazonAsin": "1639410007"
+    },
+    {
+      "slug": "truth-of-our-faith-vol-2",
+      "title": "The Truth of Our Faith, Vol. 2",
+      "subtitle": "On the Christian Mysteries",
+      "author": "Elder Cleopa of Romania",
+      "authorRole": "by",
+      "publisher": "Uncut Mountain Press",
+      "blurb": "The second volume continues Elder Cleopa's scriptural discourses, turning to the holy mysteries (sacraments) of the Church and the life of grace they convey.",
+      "topics": ["sacraments", "mysteries", "Orthodox faith"],
+      "amazonAsin": "9608677823"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "works": [
+    {
+      "slug": "little-russian-philokalia-vol-4",
+      "title": "Little Russian Philokalia, Vol. IV: St. Paisius Velichkovsky",
+      "author": "St. Paisius Velichkovsky",
+      "authorRole": "by",
+      "publisher": "St. Herman of Alaska Brotherhood",
+      "year": 1994,
+      "blurb": "A collection of the writings and counsels of St. Paisius, the renewer of Hesychasm and the Jesus Prayer in the Slavic lands, gathered in the Brotherhood's Little Russian Philokalia series.",
+      "topics": ["Hesychasm", "Jesus Prayer", "monasticism"],
+      "amazonAsin": "0938635336"
+    },
+    {
+      "slug": "blessed-paisius-velichkovsky-bio",
+      "title": "Blessed Paisius Velichkovsky",
+      "subtitle": "The Man Behind the Philokalia",
+      "author": "Schemamonk Metrophanes",
+      "authorRole": "about",
+      "publisher": "St. Herman of Alaska Brotherhood",
+      "year": 1994,
+      "blurb": "The classic life of St. Paisius, tracing his journey from Ukraine to Mount Athos and Moldavia, and his labors translating the Philokalia that rekindled the prayer of the heart across Orthodoxy.",
+      "topics": ["biography", "Hesychasm", "Philokalia"],
+      "amazonAsin": "0938635131"
+    }
+  ]
+}
