@@ -714,6 +714,18 @@ div[data-hl="true"] {
  }
 }
 
+/* Gentle vertical nudge for the home "next section" scroll control, a
+   small hint that the button advances the page one panel at a time. */
+@keyframes scroller-nudge {
+ 0%,
+ 100% {
+ transform: translate(-50%, 0);
+ }
+ 50% {
+ transform: translate(-50%, 4px);
+ }
+}
+
 @keyframes halo-breathe {
  0%,
  100% {

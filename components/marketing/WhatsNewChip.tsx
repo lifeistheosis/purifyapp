@@ -8,7 +8,7 @@
 // flash; the badge returns on its own the next time we ship a bump.
 
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { CURRENT_VERSION } from "@/lib/whatsNew/version";
 import {
   subscribeSeen,
@@ -23,12 +23,16 @@ export function WhatsNewChip({ isDe }: { isDe: boolean }) {
     getSeenSnapshot,
     getServerSeenSnapshot,
   );
-  // Show the badge whenever the stored version isn't the current one. A reader
-  // with no record yet (fresh browser, or seenVersion === null on the server
-  // snapshot) counts as unseen, so the badge greets them; useSyncExternalStore
-  // swaps in the real localStorage value after hydration with no mismatch
-  // warning, quietly removing it for anyone who has already opened this release.
-  const isUnseen = seenVersion !== CURRENT_VERSION;
+  // Hold the badge back until the component has mounted on the client. The
+  // server can't read localStorage, so an SSR render of the badge would show
+  // it to *everyone* on first paint and then yank it away once hydration
+  // learns the reader has already seen this release, the split-second "New"
+  // flash. Gating on `mounted` means the first paint never carries the badge;
+  // it then appears (and stays) only for readers who genuinely haven't opened
+  // the current version. No flash, no flicker.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const isUnseen = mounted && seenVersion !== CURRENT_VERSION;
 
   return (
     <Link

@@ -67,8 +67,6 @@ export function Footer() {
     { label: t("footer.support"), href: "/support" },
     { label: t("footer.whatsNew"), href: "/whats-new" },
     { label: t("nav.account"), href: "/account" },
-    { label: t("footer.discord"), href: "https://discord.gg/VzBYYUsNJ6", external: true },
-    { label: t("footer.instagram"), href: "https://instagram.com/purifymylife", external: true },
    ],
   },
  ];

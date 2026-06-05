@@ -7,6 +7,7 @@ import { HeroChristIcon } from "@/components/marketing/HeroChristIcon";
 import { WhatsNewChip } from "@/components/marketing/WhatsNewChip";
 import { SeasonBanner } from "@/components/marketing/SeasonBanner";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
+import { HomeSectionScroller } from "@/components/marketing/HomeSectionScroller";
 import { TodayMobileV3 } from "@/components/today/TodayMobileV3";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
@@ -373,6 +374,9 @@ export default async function Home() {
  </section>
  </main>
  <Footer />
+ {/* One-tap "next section" control; advances the full-viewport home
+ panels one at a time and flips to back-to-top at the end. */}
+ <HomeSectionScroller />
  </div>
  {/* Bottom tab bar + PWA install prompt mount on the mobile shell.
  Both render md:hidden internally, so they're inert on desktop. */}
