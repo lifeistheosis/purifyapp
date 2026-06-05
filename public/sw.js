@@ -19,7 +19,7 @@
  * really about the runtime caches below — bumping it changes cache names
  * and the activate handler drops the old names).
  */
-const CACHE_VERSION = "purify-v8.9.5";
+const CACHE_VERSION = "purify-v8.9.6";
 const HTML_CACHE = `${CACHE_VERSION}-html`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const ASSETS_CACHE = `${CACHE_VERSION}-assets`;

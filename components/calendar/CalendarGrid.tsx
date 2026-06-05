@@ -67,7 +67,7 @@ export function CalendarGrid({
           of the old grey labels. */}
       <div className="mt-6 rounded-xl bg-black border border-white/8 px-4 py-3">
         <div className="flex flex-wrap gap-x-5 gap-y-2.5 font-sans text-caption">
-          <span className="inline-flex items-center gap-1.5 text-gold">
+          <span className="inline-flex items-center gap-1.5 text-[#d4af37]">
             <Cross size={14} />
             Major feast
           </span>

@@ -364,18 +364,10 @@ export default async function CalendarPage({
  </section>
  )}
 
- {/* GRID + DAY DETAIL. Black panel that fades in from the grey (bg-night)
-     above and back out into the grey colophon below, so there's no hard
-     seam at either edge. The gradient is `transparent` at top and bottom,
-     letting the page's bg-night show through; this softening is scoped to
-     this section only. */}
- <section
-  className="px-5 md:px-8 py-10 md:py-14"
-  style={{
-   backgroundImage:
-    "linear-gradient(to bottom, transparent 0%, #000 160px, #000 calc(100% - 160px), transparent 100%)",
-  }}
- >
+ {/* GRID + DAY DETAIL. Solid-black panel edge to edge — matches the legend
+     panel (bg-black) and the dark day-detail card, so the whole grid +
+     day-detail block reads on one uninterrupted #000 surface. */}
+ <section className="px-5 md:px-8 py-10 md:py-14 bg-black">
  <div className="mx-auto max-w-[1280px] w-full">
  <header className="flex items-end justify-between mb-8 gap-4 flex-wrap">
  <div className="min-w-0">

@@ -98,9 +98,11 @@ export function CalendarCell({
  </span>
  )}
  {cell.hasFeast && (
+ // Hardcoded festal gold (#d4af37): keeps the feast marker truly gold,
+ // independent of the app-wide neutralized `--color-gold` (warm grey).
  <Cross
  size={12}
- className="text-gold mt-[1px]"
+ className="text-[#d4af37] mt-[1px]"
  aria-label="Feast"
  />
  )}
