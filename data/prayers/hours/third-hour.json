@@ -2,8 +2,8 @@
   "id": "third-hour",
   "kind": "hour",
   "title": "The Third Hour",
-  "subtitle": "Terce, prayed around 9 a.m. — the hour of the descent of the Holy Spirit at Pentecost.",
-  "intro": "The Third Hour commemorates the coming of the Holy Spirit upon the disciples on the day of Pentecost. Short — about five minutes.",
+  "subtitle": "Terce, prayed around 9 a.m., the hour of the descent of the Holy Spirit at Pentecost.",
+  "intro": "The Third Hour commemorates the coming of the Holy Spirit upon the disciples on the day of Pentecost. Short, about five minutes.",
   "estimatedMinutes": 5,
   "source": "Common Orthodox Horologion. The Psalm and Troparion text is shipped in shell form; the full text drops in the next content patch.",
   "prayers": [

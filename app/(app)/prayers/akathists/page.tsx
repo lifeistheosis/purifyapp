@@ -10,7 +10,7 @@ import {
 export const metadata = {
   title: "Akathists",
   description:
-    "The Akathists — long-form hymns of praise that stand in their own genre. The Akathist to the Theotokos is the original; others follow.",
+    "The Akathists, long-form hymns of praise that stand in their own genre. The Akathist to the Theotokos is the original; others follow.",
 };
 
 export default function AkathistsPage() {
@@ -23,7 +23,7 @@ export default function AkathistsPage() {
         intro={
           <p>
             The Akathist is the long-form hymn the Church sings standing
-            throughout — &ldquo;not seated&rdquo; (a-kathisma). Thirteen
+            throughout, &ldquo;not seated&rdquo; (a-kathisma). Thirteen
             Kontakia alternate with twelve Ikoi, sung in full at stations along
             the Church year, and in pieces, quietly, in personal rule.
           </p>

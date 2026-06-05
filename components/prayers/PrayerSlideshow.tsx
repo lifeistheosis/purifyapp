@@ -25,7 +25,7 @@ const FRAMES: Frame[] = [
   },
   {
     src: "/saints/icons/praying3.jpg",
-    alt: "The Agony in the Garden — Christ kneeling at the rock in Gethsemane.",
+    alt: "The Agony in the Garden, Christ kneeling at the rock in Gethsemane.",
   },
   {
     src: "/saints/icons/icon4.jpg",

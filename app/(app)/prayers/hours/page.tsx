@@ -10,7 +10,7 @@ import {
 export const metadata = {
   title: "The Hours",
   description:
-    "The Liturgical Hours — short prayers that sanctify the day. First, Third, Sixth, Ninth, and Compline.",
+    "The Liturgical Hours, short prayers that sanctify the day. First, Third, Sixth, Ninth, and Compline.",
 };
 
 export default function HoursPage() {
@@ -23,7 +23,7 @@ export default function HoursPage() {
         intro={
           <p>
             The Hours sanctify the daylight at its natural breaks. They are
-            short by design — five to eight minutes — held together by three
+            short by design, five to eight minutes, held together by three
             appointed Psalms, a Troparion, and a dismissal.
           </p>
         }
@@ -41,7 +41,7 @@ export default function HoursPage() {
       </PrayerIndex>
       <PrayerNote>
         Full Psalm and Troparion text is being typeset into each hour; the
-        structural shell is correct today. Help wanted — team@purify.app.
+        structural shell is correct today. Help wanted: team@purify.app.
       </PrayerNote>
     </PrayerPage>
   );

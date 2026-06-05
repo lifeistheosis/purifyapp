@@ -25,7 +25,7 @@ export default async function LearnToPrayPage() {
         intro={
           <p>
             {isDe
-              ? "Ein orthodoxer Einsteiger-Weg. Jede Lektion ist kurz, mit ein oder zwei Gebeten, die man auswendig lernt. Geh in der Reihenfolge — oder spring zu dem, was du brauchst."
+              ? "Ein orthodoxer Einsteiger-Weg. Jede Lektion ist kurz, mit ein oder zwei Gebeten, die man auswendig lernt. Geh in der Reihenfolge, oder spring zu dem, was du brauchst."
               : "An Orthodox beginner's path. Each lesson is short, with one or two prayers to learn by heart. Go in order, or jump to what you need."}
           </p>
         }

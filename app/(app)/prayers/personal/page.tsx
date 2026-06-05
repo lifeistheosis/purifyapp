@@ -6,7 +6,7 @@ import {
 } from "@/components/prayers/PrayerBook";
 
 export const metadata = {
-  title: "Diptychs — your prayer list",
+  title: "Diptychs: your prayer list",
   description:
     "Two lists: those for whom you pray daily, and those who have fallen asleep in the Lord. Local on your device by default; signed-in users sync across devices.",
 };
