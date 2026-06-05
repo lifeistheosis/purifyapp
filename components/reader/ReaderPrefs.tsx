@@ -26,12 +26,15 @@ const SIZE_KEY = "purify.reader.size";
 const FONT_KEY = "purify.reader.font";
 const PREFS_EVENT = "purify:reader-prefs";
 
-// Verse-body text classes per size.
+// Verse-body text classes per size. Each step must be a distinct size at
+// BOTH breakpoints — previously md and lg both mapped to md:text-lede, so
+// "Large" was a no-op on desktop. Scale (mobile → desktop):
+//   sm 14→17 · md 17→19 · lg 19→22 · xl 22→28
 export const SIZE_CLASSES: Record<ReaderSize, string> = {
   sm: "text-ui md:text-body leading-[1.55]",
   md: "text-body md:text-lede leading-[1.6]",
-  lg: "text-lede md:text-lede leading-[1.65]",
-  xl: "text-title-sm md:text-title-sm leading-[1.7]",
+  lg: "text-lede md:text-title-sm leading-[1.65]",
+  xl: "text-title-sm md:text-title leading-[1.7]",
 };
 
 // Font-family classes per preset.
