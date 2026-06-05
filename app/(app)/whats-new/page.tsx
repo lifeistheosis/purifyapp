@@ -23,6 +23,24 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v9.0",
+ kind: "A reading hub, a fuller prayer book, six Serbian saints, and a few quiet fixes",
+ date: "June 5, 2026",
+ blurb:
+  "A larger release that gathers the library into a place to sit and read, and grows the prayers from a list of pages into something nearer a prayer book. The new Reading hub at /reading is a calm, reading-first surface rather than a feed: it remembers where you left off, suggests a next read along curated paths through the Fathers, gathers the works the library already carries, and points deeper into the councils, topics, and thematic collections. The prayer section gains a registry of rules grouped the way a prayer book is, the day's hours, the table, repentance, the seasons of the Church, with the texts seeded only as verbatim public-domain prayers and the categories we cannot yet source honestly marked as planned rather than invented. St. Ephrem's Lenten prayer ships with a genuine variant switcher, the Jordanville and the St. Tikhon's translations set side by side, never merged. The hub now remembers what you last opened and quietly suggests a prayer for the time of day and the season. Six Serbian saints join the library at a reader's request from the Discord. And a handful of small fixes: the footer carries Reddit and a calmer TikTok mark, and the language menu no longer runs off the top of the screen.",
+ items: [
+  "New Reading hub at /reading. A reading-first surface in the prayer-book vocabulary: a serif masthead, a Continue reading shelf that remembers where you left off, a Your Next Read rail that guides you along curated paths through the Fathers (finished St. Athanasius? continue into St. Cyril), a Popular reads shelf, and hairline rows that open deeper into the patristic works, the saints' writings, the councils, the topics, and the thematic collections. Reading history is kept on your own device, never uploaded.",
+  "The prayer section grows toward a prayer book. A registry now groups the rules the way a prayer book is ordered, the daily rules, prayers through the day (upon waking, the table, before sleep), repentance, and the seasons of the Church (Lent, Pascha). Each rule that ships carries a real verbatim public-domain text with its source named; the categories that cannot yet be sourced word for word are marked plainly as planned rather than filled in by a model.",
+  "St. Ephrem the Syrian's Lenten prayer ships with a variant switcher, two genuine public-domain translations set side by side, the Jordanville (ROCOR) and the St. Tikhon's (OCA), each with its own source line and never merged into a composite. The same discipline holds across the section: Orthodox prayers only, original wording preserved, nothing generated, nothing rewritten, nothing blended.",
+  "Discovery in the prayers, kept quiet. A Continue praying shelf surfaces what you last opened, and a Suggested for today line reads the time of day and the liturgical season (a Lenten prayer in Lent, the Paschal hours in Pascha, a fast-day prayer on a fast) and offers one fitting rule, with no streaks, no badges, and no nudges. Rules can now be bookmarked with the same star that saves verses and writings.",
+  "Six Serbian saints join the library at the request of a reader on the Discord (ChristosAnesti): St. Simeon the Myrrh-streaming, St. Sava the Enlightener of Serbia, the Holy Great-Martyr Lazar, St. Basil of Ostrog, St. Nikolaj Velimirovic, and St. Justin Popovic. Each ships with an editorial life in house voice; their writings are held back honestly, the medieval Serbian fathers have no confirmed public-domain English text, and Ss. Nikolaj and Justin are twentieth-century and firmly under copyright, so no work browser is shown until a clean source exists.",
+  "Footer fixes: the TikTok mark is now monochrome rather than its brand red, and a Reddit link (@purifymylife) joins the community strip in Reddit orange.",
+  "The language menu no longer runs off the top of the screen. Because it opens upward from the footer, the full list of locales could overflow above the viewport with no way to reach the top entries; it is now height-capped and scrolls.",
+  "Cache version bumped to v9.0.0 so the new surfaces evict the old buckets on this release.",
+  "Footer + home hero chip + /whats-new chip step to v9.0.",
+ ],
+ },
+ {
  version: "v8.9.2",
  kind: "Housekeeping: the language menu, the back-to-top control, and a calmer scroll",
  date: "June 5, 2026",

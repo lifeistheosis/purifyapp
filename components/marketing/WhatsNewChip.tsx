@@ -48,10 +48,10 @@ export function WhatsNewChip({ isDe }: { isDe: boolean }) {
       )}
       <span className="font-sans text-caption sm:text-detail text-paper/85 group-hover:text-paper transition-colors">
         <span className="sm:hidden">
-          {CURRENT_VERSION} · A quieter palette and a floating mobile bar
+          {CURRENT_VERSION} · A reading hub and a fuller prayer book
         </span>
         <span className="hidden sm:inline">
-          {CURRENT_VERSION} · A quieter palette, a redrawn calendar, and a floating mobile bar
+          {CURRENT_VERSION} · A reading hub, a fuller prayer book, and the Serbian saints
         </span>
       </span>
       <span className="text-paper/55 group-hover:text-paper transition-colors text-detail">

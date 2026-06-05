@@ -100,7 +100,7 @@ export function LocaleSwitcher() {
         <ul
           role="listbox"
           aria-label={t("footer.languageLabel")}
-          className="absolute bottom-full left-0 z-50 mb-2 w-[20rem] max-w-[92vw] overflow-hidden rounded-lg border border-paper/12 bg-night-soft py-1.5 shadow-xl shadow-black/40"
+          className="absolute bottom-full left-0 z-50 mb-2 w-[20rem] max-w-[92vw] max-h-[min(60vh,22rem)] overflow-y-auto overscroll-contain rounded-lg border border-paper/12 bg-night-soft py-1.5 shadow-xl shadow-black/40 [scrollbar-width:thin]"
         >
           {/* Menu title */}
           <li
