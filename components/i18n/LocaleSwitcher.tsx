@@ -1,14 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LOCALES } from "@/lib/i18n/locales";
 import { useTranslate } from "./MessagesProvider";
 
 /**
- * Tiny <select> dropdown for switching locales. Writes the
+ * Custom locale dropdown for switching languages. Writes the
  * `purify_locale` cookie and does a hard reload so the new language
  * sticks across every subsequent navigation, not just the current
  * page.
+ *
+ * Why a custom popover instead of a native <select>:
+ * The native control renders the OS-default option list, which ignores
+ * the app's dark/gold palette and looks foreign in the footer. This
+ * builds a small themed menu (trigger + popover) while preserving the
+ * cookie + hard-reload semantics described below.
  *
  * Why a hard reload instead of router.refresh():
  * The root layout mounts a single <MessagesProvider> with the locale
@@ -26,8 +32,33 @@ import { useTranslate } from "./MessagesProvider";
 export function LocaleSwitcher() {
   const { locale, t } = useTranslate();
   const [pending, setPending] = useState(false);
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  const options = LOCALES.filter((l) => l.ready);
+  const current = options.find((l) => l.code === locale) ?? options[0];
+
+  // Close on outside click or Escape.
+  useEffect(() => {
+    if (!open) return;
+    function onDown(e: MouseEvent) {
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   function setLocale(next: string) {
+    setOpen(false);
     if (next === locale) return;
     setPending(true);
     // 1 year, root path, non-httpOnly so the client can read.
@@ -39,21 +70,107 @@ export function LocaleSwitcher() {
   }
 
   return (
-    <label className="inline-flex items-center gap-2 font-sans text-caption text-paper/55">
+    <div ref={rootRef} className="relative inline-block text-left">
       <span className="sr-only">{t("footer.languageLabel")}</span>
-      <select
+      <button
+        type="button"
         aria-label={t("footer.languageLabel")}
-        className="bg-night-soft border border-paper/15 rounded px-2 py-1 text-paper/80 hover:border-paper/35 focus:outline-none focus:border-gold/55 transition-colors disabled:opacity-50"
-        value={locale}
+        aria-haspopup="listbox"
+        aria-expanded={open}
         disabled={pending}
-        onChange={(e) => setLocale(e.target.value)}
+        onClick={() => setOpen((v) => !v)}
+        className="inline-flex items-center gap-2 rounded-lg border border-paper/15 bg-night-soft px-3 py-1.5 font-sans text-caption text-paper/85 hover:border-paper/35 hover:text-paper focus:outline-none focus-visible:border-gold/55 focus-visible:outline-2 focus-visible:outline-gold/40 focus-visible:outline-offset-1 transition-colors disabled:opacity-50"
       >
-        {LOCALES.filter((l) => l.ready).map((l) => (
-          <option key={l.code} value={l.code}>
-            {l.nativeLabel}
-          </option>
-        ))}
-      </select>
-    </label>
+        <Globe className="h-3.5 w-3.5 shrink-0 text-paper/50" />
+        <span className="min-w-[64px] text-left">{current?.nativeLabel}</span>
+        <Chevron
+          className={`h-3.5 w-3.5 shrink-0 text-paper/40 transition-transform duration-200 ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <ul
+          role="listbox"
+          aria-label={t("footer.languageLabel")}
+          className="absolute bottom-full left-0 z-50 mb-2 min-w-full overflow-hidden rounded-lg border border-paper/12 bg-night-soft py-1 shadow-xl shadow-black/40"
+        >
+          {options.map((l) => {
+            const active = l.code === locale;
+            return (
+              <li key={l.code} role="option" aria-selected={active}>
+                <button
+                  type="button"
+                  onClick={() => setLocale(l.code)}
+                  dir={l.dir}
+                  className={`flex w-full items-center justify-between gap-3 px-3 py-2 text-left font-sans text-caption transition-colors ${
+                    active
+                      ? "text-gold"
+                      : "text-paper/75 hover:bg-paper/[0.06] hover:text-paper"
+                  }`}
+                >
+                  <span>{l.nativeLabel}</span>
+                  {active ? <Check className="h-3.5 w-3.5 shrink-0" /> : null}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function Globe({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12 H21" />
+      <path d="M12 3 C15 6.5 15 17.5 12 21 C9 17.5 9 6.5 12 3 Z" />
+    </svg>
+  );
+}
+
+function Chevron({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M6 9 L12 15 L18 9" />
+    </svg>
+  );
+}
+
+function Check({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M5 12.5 L10 17.5 L19 6.5" />
+    </svg>
   );
 }
