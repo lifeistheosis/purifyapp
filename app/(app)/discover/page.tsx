@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { DiscoverMobile } from "@/components/mobile/DiscoverMobile";
-import { Cross } from "@/components/ui/icons/Cross";
-import { Bolt } from "@/components/ui/icons/Bolt";
-import { Octogram } from "@/components/ui/icons/Octogram";
+import { HaloedHead } from "@/components/ui/icons/HaloedHead";
+import { Church } from "@/components/ui/icons/Church";
+import { Book } from "@/components/ui/icons/Book";
+import { Scroll } from "@/components/ui/icons/Scroll";
+import { Calendar } from "@/components/ui/icons/Calendar";
 import { Codex } from "@/components/ui/icons/Codex";
-import { Halo } from "@/components/ui/icons/Halo";
-import { Lampada } from "@/components/ui/icons/Lampada";
-import { Wheat } from "@/components/ui/icons/Wheat";
-import { Grapes } from "@/components/ui/icons/Grapes";
+import { Lyre } from "@/components/ui/icons/Lyre";
+import { Quill } from "@/components/ui/icons/Quill";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
@@ -25,7 +25,7 @@ type Entry = {
   label: string;
   href: string;
   blurb: string;
-  Icon: typeof Cross;
+  Icon: typeof Codex;
 };
 
 export default async function DiscoverPage() {
@@ -42,31 +42,31 @@ export default async function DiscoverPage() {
       label: t(m, "discover.tile.saints"),
       href: "/saints",
       blurb: t(m, "discover.tile.saintsBlurb"),
-      Icon: Halo,
+      Icon: HaloedHead,
     },
     {
       label: t(m, "discover.tile.councils"),
       href: "/councils",
       blurb: t(m, "discover.tile.councilsBlurb"),
-      Icon: Cross,
+      Icon: Church,
     },
     {
       label: t(m, "discover.tile.topics"),
       href: "/topics",
       blurb: t(m, "discover.tile.topicsBlurb"),
-      Icon: Octogram,
+      Icon: Book,
     },
     {
       label: t(m, "discover.tile.heresies"),
       href: "/heresies",
       blurb: t(m, "discover.tile.heresiesBlurb"),
-      Icon: Bolt,
+      Icon: Scroll,
     },
     {
       label: t(m, "discover.tile.calendar"),
       href: "/calendar",
       blurb: t(m, "discover.tile.calendarBlurb"),
-      Icon: Lampada,
+      Icon: Calendar,
     },
     {
       label: t(m, "discover.tile.dailyReadings"),
@@ -78,13 +78,13 @@ export default async function DiscoverPage() {
       label: t(m, "discover.tile.psalter"),
       href: "/bible/psalms/1",
       blurb: t(m, "discover.tile.psalterBlurb"),
-      Icon: Wheat,
+      Icon: Lyre,
     },
     {
       label: t(m, "discover.tile.patristic"),
       href: "/bible/john/1",
       blurb: t(m, "discover.tile.patristicBlurb"),
-      Icon: Grapes,
+      Icon: Quill,
     },
   ];
 

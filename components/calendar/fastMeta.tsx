@@ -16,10 +16,10 @@ export const FAST_META: Record<
   FastKind,
   { short: string; Icon: IconCmp | null; rgb: string }
 > = {
-  strict: { short: "Strict fast", Icon: Wheat, rgb: "193 39 45" },
-  "wine-oil": { short: "Wine & oil", Icon: Grapes, rgb: "183 176 163" },
-  fish: { short: "Fish allowed", Icon: Fish, rgb: "123 155 143" },
-  fast: { short: "Fast", Icon: Wheat, rgb: "203 198 210" },
-  "fast-free": { short: "Fast-free", Icon: Lampada, rgb: "16 185 129" },
+  strict: { short: "Strict fast", Icon: Wheat, rgb: "224 86 86" },
+  "wine-oil": { short: "Wine & oil", Icon: Grapes, rgb: "214 158 78" },
+  fish: { short: "Fish allowed", Icon: Fish, rgb: "96 184 172" },
+  fast: { short: "Fast", Icon: Wheat, rgb: "212 175 110" },
+  "fast-free": { short: "Fast-free", Icon: Lampada, rgb: "40 200 140" },
   normal: { short: "No fast", Icon: null, rgb: "183 176 163" },
 };
