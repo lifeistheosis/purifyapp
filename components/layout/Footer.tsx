@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Instagram } from "@/components/ui/icons/Instagram";
 import { Discord } from "@/components/ui/icons/Discord";
+import { TikTok } from "@/components/ui/icons/TikTok";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 
@@ -127,6 +128,16 @@ export function Footer() {
       >
        <Instagram size={14} />
        @purifymylife
+      </a>
+      <a
+       href="https://www.tiktok.com/@purify.app"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="TikTok"
+       className="inline-flex items-center gap-2 rounded-pill border border-[#FE2C55]/40 bg-[#FE2C55]/[0.07] px-4 py-2 font-sans text-detail text-[#FE2C55] hover:bg-[#FE2C55]/[0.13] hover:border-[#FE2C55]/65 hover:text-paper transition-colors"
+      >
+       <TikTok size={14} />
+       @purify.app
       </a>
      </div>
      {/* Locale switcher, sits below the community strip so it's
