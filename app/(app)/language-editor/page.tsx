@@ -75,6 +75,29 @@ const COPY: Record<LocaleCode, Copy> = {
   cta: "Discord beitreten →",
   closing: "Eine Sprache nach der anderen. Vielleicht deine als nächste.",
  },
+ fr: {
+  eyebrow: "Devenez éditeur de langue",
+  h1: "Nous avons besoin de vous.",
+  lead: "Purify ne parle pas encore votre langue. C’est là que vous intervenez.",
+  reason:
+   "Les saints, les Écritures, les prières et le calendrier sont aujourd’hui en anglais et en allemand. Nous préférons ne rien publier plutôt qu’une traduction automatique d’une théologie que personne n’a lue.",
+  workTitle: "En quoi consiste la tâche",
+  workBody:
+   "Vous ne traduisez pas toute l’application. Nous réalisons la traduction de votre langue ; vous la relisez. Vous lisez votre propre langue d’un œil attentif, repérez ce qui sonne faux dans les prières et nous le signalez. Nous corrigeons, et c’est mis en ligne.",
+  howTitle: "Comment ça marche",
+  steps: [
+   "Rejoignez notre Discord.",
+   "Dites-nous quelle langue vous porteriez.",
+   "Nous vous envoyons un brouillon de l’application dans cette langue.",
+   "Vous le relisez ; nous corrigeons ce que vous signalez.",
+   "Quand cela se lit bien, nous l’activons pour tous.",
+  ],
+  ctaTitle: "Tout commence sur le Discord.",
+  ctaBody:
+   "Aucun diplôme de théologie requis. Il nous faut un lecteur natif attentif qui sait comment l’Église parle dans votre langue. Venez dire bonjour et nommez votre langue.",
+  cta: "Rejoindre le Discord →",
+  closing: "Une langue à la fois. La vôtre, peut-être, la prochaine.",
+ },
  es: {
   eyebrow: "Conviértete en editor de idioma",
   h1: "Te necesitamos.",

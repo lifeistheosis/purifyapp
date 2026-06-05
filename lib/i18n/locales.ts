@@ -63,7 +63,7 @@ export const LOCALES: Locale[] = [
   { code: "fr", nativeLabel: "Français", englishLabel: "French", ready: false, dir: "ltr", comingSoon: "Bientôt" },
   { code: "de", nativeLabel: "Deutsch", englishLabel: "German", ready: true, dir: "ltr", comingSoon: "Demnächst" },
   { code: "sr", nativeLabel: "Српски", englishLabel: "Serbian", ready: false, dir: "ltr", comingSoon: "Ускоро" },
-  { code: "uk", nativeLabel: "Українська", englishLabel: "Ukrainian", ready: false, dir: "ltr", comingSoon: "Скоро" },
+  { code: "uk", nativeLabel: "Українська", englishLabel: "Ukrainian", ready: false, dir: "ltr", comingSoon: "Незабаром" },
   { code: "it", nativeLabel: "Italiano", englishLabel: "Italian", ready: false, dir: "ltr", comingSoon: "Prossimamente" },
   { code: "pt", nativeLabel: "Português", englishLabel: "Portuguese", ready: false, dir: "ltr", comingSoon: "Em breve" },
   { code: "bg", nativeLabel: "Български", englishLabel: "Bulgarian", ready: false, dir: "ltr", comingSoon: "Скоро" },

@@ -36,15 +36,13 @@ export function LocaleSwitcher() {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  // Show every locale in the menu; the not-yet-translated ones render as
-  // disabled "Coming soon" rows (ready ones first, then the rest).
-  const options = [...LOCALES].sort(
-    (a, b) => Number(b.ready) - Number(a.ready),
-  );
+  // Two explicit groups in the menu: ready locales (selectable) under an
+  // "Available" header, then the not-yet-translated ones under "Coming soon".
+  const ready = LOCALES.filter((l) => l.ready);
+  const notReady = LOCALES.filter((l) => !l.ready);
   const current =
-    LOCALES.find((l) => l.code === locale && l.ready) ??
-    LOCALES.find((l) => l.ready) ??
-    LOCALES[0];
+    LOCALES.find((l) => l.code === locale && l.ready) ?? ready[0] ?? LOCALES[0];
+  const availableLabel = locale === "de" ? "Verfügbar" : "Available";
 
   // Close on outside click or Escape.
   useEffect(() => {
@@ -102,47 +100,82 @@ export function LocaleSwitcher() {
         <ul
           role="listbox"
           aria-label={t("footer.languageLabel")}
-          className="absolute bottom-full left-0 z-50 mb-2 w-max min-w-full max-w-[min(85vw,18rem)] overflow-hidden rounded-lg border border-paper/12 bg-night-soft py-1 shadow-xl shadow-black/40"
+          className="absolute bottom-full left-0 z-50 mb-2 w-[20rem] max-w-[92vw] overflow-hidden rounded-lg border border-paper/12 bg-night-soft py-1.5 shadow-xl shadow-black/40"
         >
-          {options.map((l) => {
+          {/* Menu title */}
+          <li
+            role="presentation"
+            className="px-3 pb-2 pt-1.5 font-sans text-[10px] font-semibold uppercase tracking-[0.12em] text-paper/40"
+          >
+            {t("footer.languageLabel")}
+          </li>
+
+          {/* Available */}
+          <li
+            role="presentation"
+            className="px-3 pb-1 pt-1 font-sans text-[10px] uppercase tracking-[0.1em] text-paper/30"
+          >
+            {availableLabel}
+          </li>
+          {ready.map((l) => {
             const active = l.code === locale;
-            if (!l.ready) {
-              // Not-yet-translated languages route to the "become a language
-              // editor" page (personalized by ?lang=) instead of switching.
-              return (
-                <li key={l.code} role="option" aria-selected={false}>
-                  <Link
-                    href={`/language-editor?lang=${l.code}`}
-                    onClick={() => setOpen(false)}
-                    dir={l.dir}
-                    className="flex w-full items-center justify-between gap-3 whitespace-nowrap px-3 py-2 text-left font-sans text-caption text-paper/55 transition-colors hover:bg-paper/[0.06] hover:text-paper"
-                  >
-                    <span>{l.nativeLabel}</span>
-                    <span className="shrink-0 rounded-full border border-paper/15 px-1.5 py-0.5 text-[10px] uppercase tracking-[0.04em] text-paper/45">
-                      {l.comingSoon}
-                    </span>
-                  </Link>
-                </li>
-              );
-            }
             return (
               <li key={l.code} role="option" aria-selected={active}>
                 <button
                   type="button"
                   onClick={() => setLocale(l.code)}
                   dir={l.dir}
-                  className={`flex w-full items-center justify-between gap-3 px-3 py-2 text-left font-sans text-caption transition-colors ${
-                    active
-                      ? "text-gold"
-                      : "text-paper/75 hover:bg-paper/[0.06] hover:text-paper"
+                  className={`flex h-11 w-full items-center gap-3 px-3 text-left font-sans text-caption transition-colors ${
+                    active ? "bg-paper/[0.04]" : "hover:bg-paper/[0.06]"
                   }`}
                 >
-                  <span>{l.nativeLabel}</span>
-                  {active ? <Check className="h-3.5 w-3.5 shrink-0" /> : null}
+                  <span className="min-w-0 flex-1 truncate">
+                    <span className={active ? "text-gold" : "text-paper/90"}>
+                      {l.nativeLabel}
+                    </span>
+                    {l.englishLabel !== l.nativeLabel && (
+                      <span className="ml-1.5 text-[11px] text-paper/35">
+                        ({l.englishLabel})
+                      </span>
+                    )}
+                  </span>
+                  {active ? (
+                    <Check className="h-3.5 w-3.5 shrink-0 text-gold" />
+                  ) : null}
                 </button>
               </li>
             );
           })}
+
+          {/* Coming soon */}
+          <li
+            role="presentation"
+            className="mt-1 border-t border-paper/8 px-3 pb-1 pt-2.5 font-sans text-[10px] uppercase tracking-[0.1em] text-paper/30"
+          >
+            {t("signin.comingSoon")}
+          </li>
+          {notReady.map((l) => (
+            // Not-yet-translated languages route to the "become a language
+            // editor" page (personalized by ?lang=) instead of switching.
+            <li key={l.code} role="option" aria-selected={false}>
+              <Link
+                href={`/language-editor?lang=${l.code}`}
+                onClick={() => setOpen(false)}
+                dir={l.dir}
+                className="flex h-11 w-full items-center gap-3 px-3 text-left font-sans text-caption transition-colors hover:bg-paper/[0.06]"
+              >
+                <span className="min-w-0 flex-1 truncate">
+                  <span className="text-paper/85">{l.nativeLabel}</span>
+                  <span className="ml-1.5 text-[11px] text-paper/35">
+                    ({l.englishLabel})
+                  </span>
+                </span>
+                <span className="inline-flex h-5 w-[6.5rem] shrink-0 items-center justify-center rounded-full bg-paper/[0.07] text-[10px] uppercase tracking-[0.02em] text-paper/55">
+                  {l.comingSoon}
+                </span>
+              </Link>
+            </li>
+          ))}
         </ul>
       )}
     </div>
