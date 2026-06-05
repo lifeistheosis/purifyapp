@@ -23,6 +23,23 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v8.9.2",
+ kind: "Housekeeping: the language menu, the back-to-top control, and a calmer scroll",
+ date: "June 5, 2026",
+ blurb:
+  "No new texts, just a handful of fixes to how the app moves and reads. The language menu now lists every tongue we intend to carry, with the ones still in translation marked plainly as coming soon rather than hidden. The desktop back-to-top control moved to the middle of the left edge, where the eye expects it, and fades in instead of sliding. On the marketing home the old scroll-snapping behaviour that fought the wheel and stranded a section half-shown is gone; scrolling is just scrolling now. On a phone the page no longer jitters and settles when you tap through to it, and the top bar keeps clear of the iPhone status bar and notch. The saints browser opens with its filters folded away, the footer's Instagram link wears its own brand colour, and the support page drops the duplicate Discord and Instagram buttons the footer already carries.",
+ items: [
+  "The language switcher now lists every locale Purify intends to carry. English and Deutsch stay selectable at the top; the rest render as quiet, disabled 'Coming soon' rows, so a reader can see what is on the way without being handed an untranslated page.",
+  "The desktop back-to-top button sits at the vertical middle of the left edge rather than the bottom corner, and fades in once you have scrolled past the fold instead of sliding up into place.",
+  "A back arrow sits beside the Purify wordmark in the desktop top bar, returning you to the previous page.",
+  "The marketing home's scroll behaviour is fixed. The old section-snapping that hijacked the wheel, stopped a section short, and would not carry all the way back to the top has been removed; the page scrolls normally now.",
+  "Two phone fixes: tapping through to a page no longer makes it jitter into place, and the top bar clears the iPhone status bar and notch instead of sitting beneath them.",
+  "The saints browser opens with the By kind and By century filters collapsed, so the list leads and the filters are there the moment you want them.",
+  "On the saints' Licensed Works shelf, the book cards step from three columns to two in the rail-constrained layout, so the titles and blurbs are readable again.",
+  "The footer's Instagram link now carries the Instagram brand colour, and the support page drops its Discord and Instagram buttons, which the site footer already carries.",
+ ],
+ },
+ {
  version: "v8.9",
  kind: "A quieter palette, a redrawn calendar, and a floating mobile bar",
  date: "June 4, 2026",
