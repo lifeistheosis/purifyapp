@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { SyncBridge } from "@/components/profile/SyncBridge";
 import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
+import { ScrollToTop } from "@/components/nav/ScrollToTop";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
 export default function AppGroupLayout({
@@ -25,6 +26,7 @@ export default function AppGroupLayout({
         <Footer />
       </div>
       <MobileTabBar />
+      <ScrollToTop />
       <InstallPrompt />
     </>
   );
