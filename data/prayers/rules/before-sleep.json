@@ -1,0 +1,27 @@
+{
+  "id": "before-sleep",
+  "title": "Before Sleep",
+  "subtitle": "A short surrender of the night",
+  "intro": "At the end of the day, make the Sign of the Cross, forgive all, and lay the night down into God's hands.",
+  "estimatedMinutes": 2,
+  "source": "Common Orthodox prayer book (PD English; the prayers before sleep, carried in nearly identical form in the Jordanville and St. Tikhon's traditions).",
+  "prayers": [
+    {
+      "id": "forgive",
+      "title": "Forgiveness",
+      "instruction": "Before resting, forgive all who have wronged you:",
+      "text": "O Lord our God, in what I have sinned this day in word, deed, or thought, do Thou, as good and the Lover of mankind, forgive me. Grant me peaceful sleep, free from disturbance; send Thy guardian angel to shelter and keep me from all evil; for Thou art the guardian of our souls and bodies, and to Thee we send up glory: to the Father, and to the Son, and to the Holy Spirit, now and ever, and unto ages of ages. Amen."
+    },
+    {
+      "id": "into-thy-hands",
+      "title": "Into Thy hands",
+      "text": "Into Thy hands, O Lord Jesus Christ my God, I commend my spirit; do Thou bless me, do Thou have mercy on me, and grant me life eternal. Amen."
+    },
+    {
+      "id": "jesus-prayer-block",
+      "title": "The Jesus Prayer",
+      "instruction": "As you close your eyes:",
+      "text": "Lord Jesus Christ, Son of God, have mercy on me, a sinner. (3x)"
+    }
+  ]
+}

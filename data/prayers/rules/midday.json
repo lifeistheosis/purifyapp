@@ -1,0 +1,48 @@
+{
+  "id": "midday",
+  "title": "Midday Prayers",
+  "subtitle": "A short rule for noon",
+  "intro": "Pause at the middle of the day. Make the Sign of the Cross, and pray slowly, recalling that at the sixth hour the Lord was nailed to the Cross.",
+  "estimatedMinutes": 5,
+  "source": "Horologion, the Sixth Hour (PD English; common to the Jordanville and Hapgood Service Book traditions).",
+  "prayers": [
+    {
+      "id": "glory-to-thee",
+      "title": "Glory to Thee, our God",
+      "text": "Glory to Thee, our God, glory to Thee."
+    },
+    {
+      "id": "trisagion",
+      "title": "The Trisagion",
+      "instruction": "Three times, with a small bow at each:",
+      "text": "Holy God, Holy Mighty, Holy Immortal, have mercy on us. (3x)\n\nGlory to the Father, and to the Son, and to the Holy Spirit, both now and ever, and unto ages of ages. Amen.\n\nMost Holy Trinity, have mercy on us. Lord, cleanse us from our sins. Master, pardon our iniquities. Holy God, visit and heal our infirmities, for Thy Name's sake.\n\nLord, have mercy. (3x)\n\nGlory to the Father, and to the Son, and to the Holy Spirit, both now and ever, and unto ages of ages. Amen."
+    },
+    {
+      "id": "our-father",
+      "title": "The Lord's Prayer",
+      "text": "Our Father, who art in heaven, hallowed be Thy Name. Thy kingdom come. Thy will be done, on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from the evil one."
+    },
+    {
+      "id": "sixth-hour-troparion",
+      "title": "Troparion of the Sixth Hour",
+      "instruction": "Recalling the Crucifixion at the sixth hour:",
+      "text": "O Thou who on the sixth day and hour didst nail to the Cross the sin which rebellious Adam committed in Paradise: tear asunder also the bond of our iniquities, O Christ our God, and save us."
+    },
+    {
+      "id": "jesus-prayer-block",
+      "title": "The Jesus Prayer",
+      "instruction": "Slowly, with attention, as many times as you wish:",
+      "text": "Lord Jesus Christ, Son of God, have mercy on me, a sinner. (12x)"
+    },
+    {
+      "id": "theotokos-hymn",
+      "title": "To the Theotokos",
+      "text": "It is truly meet to bless thee, O Theotokos, ever-blessed and most blameless, and the Mother of our God. More honorable than the Cherubim, and more glorious beyond compare than the Seraphim, who without corruption gavest birth to God the Word: true Theotokos, we magnify thee."
+    },
+    {
+      "id": "dismissal",
+      "title": "Dismissal",
+      "text": "Glory to the Father, and to the Son, and to the Holy Spirit, both now and ever, and unto ages of ages. Amen.\n\nLord, have mercy. (3x) Bless.\n\nThrough the prayers of our holy fathers, O Lord Jesus Christ our God, have mercy on us. Amen."
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "id": "upon-waking",
+  "title": "Upon Waking",
+  "subtitle": "The first words of the day",
+  "intro": "Before you rise, while still on your bed, make the Sign of the Cross and offer the first thought of the day to God.",
+  "estimatedMinutes": 2,
+  "source": "Common Orthodox prayer book (PD English; the morning rule's opening, carried in nearly identical form in the Jordanville and St. Tikhon's traditions).",
+  "prayers": [
+    {
+      "id": "sign-of-cross",
+      "title": "The Sign of the Cross",
+      "instruction": "As you wake, before rising:",
+      "text": "In the name of the Father, and of the Son, and of the Holy Spirit. Amen."
+    },
+    {
+      "id": "first-words",
+      "title": "O Lord, cleanse me",
+      "text": "O Lord, cleanse me a sinner, for I have done nothing good in Thy sight; deliver me from the evil one, and let Thy will be done in me, that I may open my unworthy mouth without condemnation, and praise Thy holy Name: of the Father, and of the Son, and of the Holy Spirit, now and ever, and unto ages of ages. Amen."
+    },
+    {
+      "id": "rising-from-sleep",
+      "title": "Rising from Sleep",
+      "text": "Rising from sleep, I thank Thee, O Holy Trinity, for through Thy great goodness and patience Thou wast not wroth with me, an idle and sinful one, neither hast Thou destroyed me with my iniquities, but hast shown Thy customary love for mankind, and hast raised me up as I lay in heedlessness, that I might sing my morning hymn and glorify Thy might."
+    },
+    {
+      "id": "jesus-prayer-block",
+      "title": "The Jesus Prayer",
+      "instruction": "As you rise, carry the Name with you:",
+      "text": "Lord Jesus Christ, Son of God, have mercy on me, a sinner. (3x)"
+    }
+  ]
+}

@@ -23,6 +23,7 @@ import { useSyncExternalStore } from "react";
 export const PRAYER_EVENT = "purify:prayer-completed";
 export const INTENTIONS_EVENT = "purify:intentions";
 export const ROPE_EVENT = "purify:rope";
+export const RECENTS_EVENT = "purify:prayer-recents";
 
 // ── Date helpers ────────────────────────────────────────────────────────────
 function ymd(d: Date = new Date()): string {
@@ -173,6 +174,55 @@ export function daysSinceLast(ruleId: RuleId): number | null {
     (today.getTime() - lastDate.getTime()) / 86_400_000,
   );
   return Math.max(0, diff);
+}
+
+// ── Continue Praying (recents) ──────────────────────────────────────────────
+// A most-recent-first list of opened prayer rules, deduped by id, capped at
+// 12. Powers the "Continue Praying" rail on the hub. Mirrors the reading-hub
+// history store but lives under the prayers namespace.
+
+const RECENTS_KEY = "purify.prayers.recents";
+const RECENTS_CAP = 12;
+
+export type RecentPrayer = {
+  id: RuleId;
+  title: string;
+  href: string;
+  at: number;
+};
+
+export function readRecentPrayers(): RecentPrayer[] {
+  return readJson<RecentPrayer[]>(RECENTS_KEY, []);
+}
+
+export function recordPrayerOpened(entry: Omit<RecentPrayer, "at">) {
+  if (typeof window === "undefined") return;
+  const list = readRecentPrayers().filter((r) => r.id !== entry.id);
+  list.unshift({ ...entry, at: Date.now() });
+  writeJson(RECENTS_KEY, list.slice(0, RECENTS_CAP), RECENTS_EVENT);
+}
+
+export function useRecentPrayers(): RecentPrayer[] {
+  const raw = useSyncExternalStore(
+    subscribeRecents,
+    () => JSON.stringify(readRecentPrayers()),
+    () => JSON.stringify([]),
+  );
+  try {
+    return JSON.parse(raw) as RecentPrayer[];
+  } catch {
+    return [];
+  }
+}
+
+function subscribeRecents(cb: () => void): () => void {
+  if (typeof window === "undefined") return EMPTY_SUBSCRIBE();
+  window.addEventListener(RECENTS_EVENT, cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    window.removeEventListener(RECENTS_EVENT, cb);
+    window.removeEventListener("storage", cb);
+  };
 }
 
 // ── Intentions (diptychs) ───────────────────────────────────────────────────

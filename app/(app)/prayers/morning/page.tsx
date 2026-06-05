@@ -1,4 +1,5 @@
 import { PrayerRuleReader, type Rule } from "@/components/prayers/PrayerRuleReader";
+import { RecordPrayerOpened } from "@/components/prayers/RecordPrayerOpened";
 import morningRule from "@/data/prayers/rules/morning.json";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getLocalizedPrayerJson } from "@/lib/i18n/localizedContent";
@@ -25,7 +26,8 @@ export default async function MorningRulePage() {
           <ContentNotYetTranslated locale={locale} kind="prayer" />
         </div>
       ) : null}
-      <PrayerRuleReader rule={rule} />
+      <RecordPrayerOpened id="morning" title="Morning prayers" href="/prayers/morning" />
+      <PrayerRuleReader rule={rule} ruleHref="/prayers/morning" />
     </section>
   );
 }

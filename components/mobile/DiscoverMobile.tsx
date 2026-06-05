@@ -153,6 +153,22 @@ export async function DiscoverMobile() {
         </p>
       </header>
 
+      {/* Reading hub — prominent entry to the new reading room, above the
+          commemoration so "sitting down to read" leads the surface. */}
+      <MobileCard
+        eyebrow={t(m, "reading.eyebrow")}
+        title={t(m, "reading.h1").replace(/\.$/, "")}
+        href="/reading"
+        tint="gold"
+      >
+        <p className="mt-2 font-serif italic text-ui text-paper/75 leading-[1.5]">
+          {t(m, "reading.subtitle")}
+        </p>
+        <p className="mt-3 font-sans text-detail font-medium text-paper/75">
+          {t(m, "reading.enterReadingRoom")} →
+        </p>
+      </MobileCard>
+
       <MobileHeroCard
         tint="deep"
         eyebrow="Today's Commemoration"

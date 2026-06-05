@@ -136,12 +136,42 @@ export function PrayerIndexRow({
   title,
   description,
   meta,
+  planned = false,
+  plannedLabel = "Planned",
 }: {
   href: string;
   title: ReactNode;
   description?: ReactNode;
   meta?: ReactNode;
+  /**
+   * A surface we have not yet seeded with verbatim text. Rendered as a quiet,
+   * non-interactive row labeled "Planned" — surfaced honestly, never filled
+   * with invented prayers (the project's content-integrity rule).
+   */
+  planned?: boolean;
+  plannedLabel?: ReactNode;
 }) {
+  if (planned) {
+    return (
+      <li className="border-b border-paper/10">
+        <div className="flex items-baseline gap-5 py-5 md:py-6">
+          <div className="min-w-0 flex-1">
+            <h2 className="font-serif text-title-sm text-paper/45 leading-snug">
+              {title}
+            </h2>
+            {description && (
+              <p className="mt-1.5 font-sans text-detail text-paper/35 leading-[1.6]">
+                {description}
+              </p>
+            )}
+          </div>
+          <span className="shrink-0 font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/30">
+            {plannedLabel}
+          </span>
+        </div>
+      </li>
+    );
+  }
   return (
     <li className="border-b border-paper/10">
       <Link href={href} className="group flex items-baseline gap-5 py-5 md:py-6">

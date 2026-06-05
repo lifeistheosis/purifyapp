@@ -1,0 +1,20 @@
+{
+  "id": "after-meals",
+  "title": "After Meals",
+  "subtitle": "Thanksgiving when the meal is ended",
+  "intro": "When the meal is finished, give thanks to God who nourishes all things.",
+  "estimatedMinutes": 2,
+  "source": "Horologion / common Orthodox prayer book (PD English; the prayer of thanksgiving after eating, carried in nearly identical form across jurisdictions).",
+  "prayers": [
+    {
+      "id": "thanksgiving",
+      "title": "Prayer of Thanksgiving",
+      "text": "We thank Thee, O Christ our God, that Thou hast satisfied us with Thy earthly gifts. Deprive us not of Thy heavenly Kingdom, but as Thou camest among Thy disciples, O Savior, and gavest them peace, so come also to us and save us."
+    },
+    {
+      "id": "theotokos-hymn",
+      "title": "To the Theotokos",
+      "text": "It is truly meet to bless thee, O Theotokos, ever-blessed and most blameless, and the Mother of our God. More honorable than the Cherubim, and more glorious beyond compare than the Seraphim, who without corruption gavest birth to God the Word: true Theotokos, we magnify thee.\n\nGlory to the Father, and to the Son, and to the Holy Spirit, both now and ever, and unto ages of ages. Amen.\n\nLord, have mercy. (3x) Bless."
+    }
+  ]
+}

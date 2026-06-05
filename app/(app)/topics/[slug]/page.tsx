@@ -8,6 +8,7 @@ import { resolveCitations } from "@/lib/citations/resolve";
 import { CitationCard } from "@/components/citations/CitationCard";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
+import { RecordRead } from "@/components/reading/RecordRead";
 
 type Params = Promise<{ slug: string }>;
 
@@ -41,6 +42,12 @@ export default async function TopicPage({ params }: { params: Params }) {
 
   return (
     <section className="bg-night px-5 md:px-8 py-16 md:py-24">
+      <RecordRead
+        kind="topic"
+        href={`/topics/${topic.slug}`}
+        label={topic.title}
+        topics={[topic.title, topic.title.replace(/^The\s+/i, "")]}
+      />
       <article className="mx-auto max-w-[760px] w-full">
         <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
           {t(m, "topics.eyebrow")}

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  fastingStatus,
   formatLongDate,
   startOfDayUtc,
 } from "@/lib/calendar/orthodox";
@@ -13,6 +12,15 @@ import {
   PrayerIndex,
   PrayerIndexRow,
 } from "@/components/prayers/PrayerBook";
+import { ContinuePraying } from "@/components/prayers/ContinuePraying";
+import { SuggestedToday } from "@/components/prayers/SuggestedToday";
+import {
+  RULE_CATEGORY_ORDER,
+  RULE_CATEGORY_LABEL,
+  rulesByCategory,
+  popularRules,
+} from "@/lib/prayers/rules";
+import { seasonFor, isFastDay } from "@/lib/prayers/season";
 
 type HeroMode = "morning" | "midday" | "evening";
 
@@ -39,8 +47,9 @@ const TIME_LINE: Record<HeroMode, string> = {
  */
 export function PrayersMobile() {
   const today = startOfDayUtc(new Date());
-  const fast = fastingStatus(today);
   const mode = heroModeFor(new Date());
+  const season = seasonFor(today);
+  const isFast = isFastDay(today);
 
   return (
     <MobileShell
@@ -86,38 +95,57 @@ export function PrayersMobile() {
       <DiptychPreview />
 
       <div className="mt-2">
-        <PrayerSectionLabel>The daily rules</PrayerSectionLabel>
+        <ContinuePraying label="Continue praying" />
+
+        <SuggestedToday season={season} isFast={isFast} label="Suggested for today" />
+
+        {popularRules().length > 0 && (
+          <>
+            <PrayerSectionLabel>Popular prayer rules</PrayerSectionLabel>
+            <PrayerIndex>
+              {popularRules().map((r) => (
+                <PrayerIndexRow
+                  key={r.id}
+                  href={r.href}
+                  title={r.title}
+                  description={r.description}
+                  meta={r.estimatedMinutes ? `~${r.estimatedMinutes} min` : undefined}
+                />
+              ))}
+            </PrayerIndex>
+          </>
+        )}
+
+        {RULE_CATEGORY_ORDER.map((category) => {
+          const rules = rulesByCategory(category);
+          if (rules.length === 0) return null;
+          return (
+            <div key={category}>
+              <PrayerSectionLabel>
+                {RULE_CATEGORY_LABEL[category].en}
+              </PrayerSectionLabel>
+              <PrayerIndex>
+                {rules.map((r) => (
+                  <PrayerIndexRow
+                    key={r.id}
+                    href={r.href}
+                    title={r.title}
+                    description={r.description}
+                    planned={r.planned}
+                    meta={r.estimatedMinutes ? `~${r.estimatedMinutes} min` : undefined}
+                  />
+                ))}
+              </PrayerIndex>
+            </div>
+          );
+        })}
+
+        <PrayerSectionLabel>Also in this book</PrayerSectionLabel>
         <PrayerIndex>
           <PrayerIndexRow
             href="/prayers/today"
-            title="Today's prayer"
-            description={`${fast.label}. Date, saint, and readings in one screen.`}
-          />
-          <PrayerIndexRow
-            href="/prayers/morning"
-            title="Morning rule"
-            description="Begin the day with God — the Sign of the Cross through dismissal."
-            meta="~8 min"
-          />
-          <PrayerIndexRow
-            href="/prayers/evening"
-            title="Evening rule"
-            description="Lay the day down — examination of the day and Into Thy hands."
-            meta="~8 min"
-          />
-        </PrayerIndex>
-
-        <PrayerSectionLabel>Through the day</PrayerSectionLabel>
-        <PrayerIndex>
-          <PrayerIndexRow
-            href="/prayers/rope"
-            title="Prayer rope"
-            description="Count the Jesus Prayer on a digital komvoschini."
-          />
-          <PrayerIndexRow
-            href="/prayers/personal"
-            title="Diptychs"
-            description="The names you carry — the living and the reposed."
+            title="Today"
+            description="Today's fast, commemorations, and namedays."
           />
           <PrayerIndexRow
             href="/prayers/hours"
@@ -129,10 +157,6 @@ export function PrayersMobile() {
             title="The Akathists"
             description="Long hymns of praise, prayed standing throughout."
           />
-        </PrayerIndex>
-
-        <PrayerSectionLabel>Beginning</PrayerSectionLabel>
-        <PrayerIndex>
           <PrayerIndexRow
             href="/prayers/learning"
             title="Learn to pray"

@@ -77,6 +77,8 @@ export function MobileTabBar() {
       matches: (p) =>
         p === "/discover" ||
         p.startsWith("/discover/") ||
+        p === "/reading" ||
+        p.startsWith("/reading/") ||
         p === "/saints" ||
         p.startsWith("/saints/") ||
         p === "/councils" ||

@@ -1,0 +1,21 @@
+{
+  "id": "before-meals",
+  "title": "Before Meals",
+  "subtitle": "The blessing of the table",
+  "intro": "Stand before the meal, make the Sign of the Cross, and bless the table with thanksgiving.",
+  "estimatedMinutes": 2,
+  "source": "Horologion / common Orthodox prayer book (PD English; the Our Father and the table troparion are carried in nearly identical form across jurisdictions).",
+  "prayers": [
+    {
+      "id": "our-father",
+      "title": "The Lord's Prayer",
+      "instruction": "Before the meal it is customary to pray:",
+      "text": "Our Father, who art in heaven, hallowed be Thy Name. Thy kingdom come. Thy will be done, on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from the evil one."
+    },
+    {
+      "id": "table-blessing",
+      "title": "Blessing of the Table",
+      "text": "Glory to the Father, and to the Son, and to the Holy Spirit, both now and ever, and unto ages of ages. Amen.\n\nLord, have mercy. (3x)\n\nO Christ God, bless the food and drink of Thy servants, for Thou art holy, always, now and ever, and unto ages of ages. Amen.\n\nThe poor shall eat and be satisfied, and they that seek the Lord shall praise Him; their hearts shall live for ever and ever."
+    }
+  ]
+}

@@ -14,7 +14,19 @@ type PrayerBookmark = {
   prayerId: string;
 };
 
-type AnyBookmark = PrayerBookmark | { id: string; kind: string; [k: string]: unknown };
+type PrayerRuleBookmark = {
+  id: string;
+  kind: "prayer-rule";
+  addedAt: number;
+  label: string;
+  ruleId: string;
+  href: string;
+};
+
+type AnyBookmark =
+  | PrayerBookmark
+  | PrayerRuleBookmark
+  | { id: string; kind: string; [k: string]: unknown };
 
 const STORAGE_KEY = "purify:bookmarks";
 const EVENT = "purify:bookmark";
@@ -55,6 +67,36 @@ export function isBookmarked(ruleId: string, prayerId: string): boolean {
       (b as PrayerBookmark).ruleId === ruleId &&
       (b as PrayerBookmark).prayerId === prayerId,
   );
+}
+
+export function isRuleBookmarked(ruleId: string): boolean {
+  return readAll().some(
+    (b) => b.kind === "prayer-rule" && (b as PrayerRuleBookmark).ruleId === ruleId,
+  );
+}
+
+export function toggleRuleBookmark(
+  ruleId: string,
+  ruleTitle: string,
+  href: string,
+): void {
+  const all = readAll();
+  const existing = all.find(
+    (b) => b.kind === "prayer-rule" && (b as PrayerRuleBookmark).ruleId === ruleId,
+  );
+  if (existing) {
+    writeAll(all.filter((b) => b.id !== existing.id));
+    return;
+  }
+  const entry: PrayerRuleBookmark = {
+    id: uid(),
+    kind: "prayer-rule",
+    addedAt: Date.now(),
+    label: ruleTitle,
+    ruleId,
+    href,
+  };
+  writeAll([entry, ...all]);
 }
 
 export function togglePrayerBookmark(

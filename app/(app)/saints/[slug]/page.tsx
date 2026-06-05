@@ -17,6 +17,7 @@ import { getLicensedWorks } from "@/lib/saints/licensedWorks";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getSaintBioOverrides } from "@/lib/i18n/localizedContent";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
+import { RecordRead } from "@/components/reading/RecordRead";
 
 type Params = Promise<{ slug: string }>;
 
@@ -105,6 +106,12 @@ export default async function SaintPage({ params }: { params: Params }) {
 
   return (
     <section className="bg-night px-5 md:px-8">
+      <RecordRead
+        kind="saint"
+        href={`/saints/${saint.slug}`}
+        label={saint.name}
+        saintSlug={saint.slug}
+      />
       <div className="mx-auto max-w-[1100px] w-full">
         <SaintHero saint={effectiveSaint} bump={bump} compactFacts />
         {locale !== "en" && !bioIsLocalized ? (

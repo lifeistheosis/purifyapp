@@ -1,0 +1,31 @@
+{
+  "id": "pascha",
+  "title": "Paschal Prayers",
+  "subtitle": "Christ is risen",
+  "intro": "During the forty days of Pascha, the prayer rule begins not with 'O Heavenly King' but with the Paschal troparion, sung three times.",
+  "estimatedMinutes": 3,
+  "source": "Pentecostarion, the Paschal hours and troparion (PD English; carried in nearly identical form across jurisdictions).",
+  "prayers": [
+    {
+      "id": "paschal-troparion",
+      "title": "The Paschal Troparion",
+      "instruction": "Sung three times:",
+      "text": "Christ is risen from the dead, trampling down death by death, and upon those in the tombs bestowing life! (3x)"
+    },
+    {
+      "id": "paschal-verses",
+      "title": "The Paschal Verses",
+      "text": "Let God arise, and let His enemies be scattered, and let those who hate Him flee from before His face.\n\nAs smoke vanisheth, so let them vanish; as wax melteth before the fire.\n\nSo let sinners perish at the presence of God, but let the righteous be glad.\n\nThis is the day which the Lord hath made; let us rejoice and be glad therein."
+    },
+    {
+      "id": "hypakoe",
+      "title": "Hypakoe of Pascha",
+      "text": "Before the dawn, Mary and the women came and found the stone rolled away from the tomb, and they heard the angelic voice: Why seek ye among the dead, as though He were mortal man, Him who abideth in everlasting light? Behold the grave-clothes. Go quickly and proclaim to the world that the Lord is risen, and hath put death to death; for He is the Son of God, who saveth the race of man."
+    },
+    {
+      "id": "paschal-dismissal",
+      "title": "Paschal Dismissal",
+      "text": "Christ is risen from the dead, trampling down death by death, and upon those in the tombs bestowing life!\n\nGlory to the Father, and to the Son, and to the Holy Spirit, both now and ever, and unto ages of ages. Amen.\n\nLord, have mercy. (3x)"
+    }
+  ]
+}

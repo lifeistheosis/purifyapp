@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Instagram } from "@/components/ui/icons/Instagram";
 import { Discord } from "@/components/ui/icons/Discord";
 import { TikTok } from "@/components/ui/icons/TikTok";
+import { Reddit } from "@/components/ui/icons/Reddit";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 
@@ -34,6 +35,7 @@ export function Footer() {
   {
    heading: t("footer.library"),
    links: [
+    { label: t("nav.reading"), href: "/reading" },
     { label: t("nav.discover"), href: "/discover" },
     { label: t("discover.tile.councils"), href: "/councils" },
     { label: t("discover.tile.topics"), href: "/topics" },
@@ -134,10 +136,20 @@ export function Footer() {
        target="_blank"
        rel="noopener noreferrer"
        aria-label="TikTok"
-       className="inline-flex items-center gap-2 rounded-pill border border-[#FE2C55]/40 bg-[#FE2C55]/[0.07] px-4 py-2 font-sans text-detail text-[#FE2C55] hover:bg-[#FE2C55]/[0.13] hover:border-[#FE2C55]/65 hover:text-paper transition-colors"
+       className="inline-flex items-center gap-2 rounded-pill border border-paper/30 bg-paper/[0.06] px-4 py-2 font-sans text-detail text-paper/85 hover:bg-paper/[0.12] hover:border-paper/50 hover:text-paper transition-colors"
       >
        <TikTok size={14} />
        @purify.app
+      </a>
+      <a
+       href="https://www.reddit.com/user/purifymylife"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="Reddit"
+       className="inline-flex items-center gap-2 rounded-pill border border-[#FF4500]/40 bg-[#FF4500]/[0.07] px-4 py-2 font-sans text-detail text-[#FF4500] hover:bg-[#FF4500]/[0.13] hover:border-[#FF4500]/65 hover:text-paper transition-colors"
+      >
+       <Reddit size={14} />
+       @purifymylife
       </a>
      </div>
      {/* Locale switcher, sits below the community strip so it's

@@ -1,0 +1,39 @@
+{
+  "id": "lent-ephrem",
+  "title": "The Prayer of St. Ephrem the Syrian",
+  "subtitle": "The prayer of Great Lent",
+  "intro": "Prayed throughout Great Lent at the weekday services and in the home rule. Make a prostration after each of the three petitions, then twelve small bows with 'O God, cleanse me a sinner,' and a final prostration.",
+  "estimatedMinutes": 3,
+  "source": "Two verbatim public-domain English translations are given below, each kept distinct with its own attribution. They are not merged.",
+  "prayers": [
+    {
+      "id": "ephrem",
+      "title": "The Prayer of St. Ephrem",
+      "instruction": "Make a prostration after each petition. Choose the wording your parish uses; both are given verbatim.",
+      "variants": [
+        {
+          "jurisdiction": "ROCOR (Jordanville)",
+          "source": "Jordanville Prayer Book (Holy Trinity Monastery), public domain.",
+          "text": "O Lord and Master of my life, take from me the spirit of sloth, faint-heartedness, lust of power, and idle talk. (Prostration)\n\nBut give rather the spirit of chastity, humility, patience, and love to Thy servant. (Prostration)\n\nYea, O Lord and King, grant me to see my own errors and not to judge my brother, for blessed art Thou, unto ages of ages. Amen. (Prostration)"
+        },
+        {
+          "jurisdiction": "OCA (St. Tikhon's)",
+          "source": "St. Tikhon's Monastery / OCA service texts, public domain.",
+          "text": "O Lord and Master of my life, give me not the spirit of sloth, despair, lust of power, and idle talk. (Prostration)\n\nBut give rather the spirit of chastity, humility, patience, and love to Thy servant. (Prostration)\n\nYea, O Lord and King, grant me to see my own transgressions, and not to judge my brother; for blessed art Thou unto ages of ages. Amen. (Prostration)"
+        }
+      ]
+    },
+    {
+      "id": "cleanse-me",
+      "title": "O God, cleanse me",
+      "instruction": "Then twelve times, with a small bow at each:",
+      "text": "O God, cleanse me a sinner. (12x)"
+    },
+    {
+      "id": "ephrem-repeat",
+      "title": "The Prayer of St. Ephrem, once more",
+      "instruction": "Then the whole prayer once again, with a single prostration at the end.",
+      "text": "O Lord and Master of my life, take from me the spirit of sloth, faint-heartedness, lust of power, and idle talk; but give rather the spirit of chastity, humility, patience, and love to Thy servant. Yea, O Lord and King, grant me to see my own errors and not to judge my brother, for blessed art Thou, unto ages of ages. Amen. (Prostration)"
+    }
+  ]
+}

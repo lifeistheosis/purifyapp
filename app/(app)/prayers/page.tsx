@@ -20,7 +20,25 @@ import {
   PrayerIndexRow,
   PrayerNote,
 } from "@/components/prayers/PrayerBook";
+import { ContinuePraying } from "@/components/prayers/ContinuePraying";
+import { SuggestedToday } from "@/components/prayers/SuggestedToday";
+import {
+  RULE_CATEGORY_ORDER,
+  RULE_CATEGORY_LABEL,
+  rulesByCategory,
+  popularRules,
+  type RuleMeta,
+} from "@/lib/prayers/rules";
+import { seasonFor, isFastDay } from "@/lib/prayers/season";
 import { getServerLocale } from "@/lib/i18n/server";
+
+function titleOf(r: RuleMeta, isDe: boolean): string {
+  return isDe ? r.titleDe ?? r.title : r.title;
+}
+
+function descriptionOf(r: RuleMeta, isDe: boolean): string | undefined {
+  return isDe ? r.descriptionDe ?? r.description : r.description;
+}
 
 export const metadata = {
   title: "Prayer",
@@ -46,6 +64,8 @@ export default async function PrayersPage() {
   const today = startOfDayUtc(new Date());
   const fast = fastingStatus(today);
   const pascha = paschaInfo(today);
+  const season = seasonFor(today);
+  const isFast = isFastDay(today);
   const commemorations = commemorationsOn(today);
   const headline =
     commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
@@ -175,52 +195,83 @@ export default async function PrayersPage() {
             </p>
           </div>
 
-          <PrayerSectionLabel>
-            {isDe ? "Die täglichen Regeln" : "The daily rules"}
-          </PrayerSectionLabel>
-          <PrayerIndex>
-            <PrayerIndexRow
-              href="/prayers/morning"
-              title={isDe ? "Morgenregel" : "Morning rule"}
-              description={
-                isDe
-                  ? "Den Tag mit Gott beginnen — Kreuzzeichen bis Entlassung."
-                  : "Begin the day with God — the Sign of the Cross through dismissal."
-              }
-              meta={isDe ? "~8 Min." : "~8 min"}
-            />
-            <PrayerIndexRow
-              href="/prayers/evening"
-              title={isDe ? "Abendregel" : "Evening rule"}
-              description={
-                isDe
-                  ? "Den Tag niederlegen — Tageserforschung und In deine Hände."
-                  : "Lay the day down — examination of the day and Into Thy hands."
-              }
-              meta={isDe ? "~8 Min." : "~8 min"}
-            />
-          </PrayerIndex>
+          {/* Discovery — resume, then today's context, then the commonly prayed. */}
+          <ContinuePraying label={isDe ? "Weiterbeten" : "Continue praying"} />
 
+          <SuggestedToday
+            season={season}
+            isFast={isFast}
+            label={isDe ? "Für heute empfohlen" : "Suggested for today"}
+          />
+
+          {popularRules().length > 0 && (
+            <>
+              <PrayerSectionLabel>
+                {isDe ? "Häufig gebetet" : "Popular prayer rules"}
+              </PrayerSectionLabel>
+              <PrayerIndex>
+                {popularRules().map((r) => (
+                  <PrayerIndexRow
+                    key={r.id}
+                    href={r.href}
+                    title={titleOf(r, isDe)}
+                    description={descriptionOf(r, isDe)}
+                    meta={
+                      r.estimatedMinutes
+                        ? isDe
+                          ? `~${r.estimatedMinutes} Min.`
+                          : `~${r.estimatedMinutes} min`
+                        : undefined
+                    }
+                  />
+                ))}
+              </PrayerIndex>
+            </>
+          )}
+
+          {/* The book proper — every prayer rule, by category. */}
+          {RULE_CATEGORY_ORDER.map((category) => {
+            const rules = rulesByCategory(category);
+            if (rules.length === 0) return null;
+            const cat = RULE_CATEGORY_LABEL[category];
+            return (
+              <div key={category}>
+                <PrayerSectionLabel>{isDe ? cat.de : cat.en}</PrayerSectionLabel>
+                <PrayerIndex>
+                  {rules.map((r) => (
+                    <PrayerIndexRow
+                      key={r.id}
+                      href={r.href}
+                      title={titleOf(r, isDe)}
+                      description={descriptionOf(r, isDe)}
+                      planned={r.planned}
+                      plannedLabel={isDe ? "Geplant" : "Planned"}
+                      meta={
+                        r.estimatedMinutes
+                          ? isDe
+                            ? `~${r.estimatedMinutes} Min.`
+                            : `~${r.estimatedMinutes} min`
+                          : undefined
+                      }
+                    />
+                  ))}
+                </PrayerIndex>
+              </div>
+            );
+          })}
+
+          {/* Also in this book — the surfaces with their own dedicated UI. */}
           <PrayerSectionLabel>
-            {isDe ? "Durch den Tag" : "Through the day"}
+            {isDe ? "Auch in diesem Buch" : "Also in this book"}
           </PrayerSectionLabel>
           <PrayerIndex>
             <PrayerIndexRow
-              href="/prayers/rope"
-              title={isDe ? "Gebetsschnur" : "Prayer rope"}
+              href="/prayers/today"
+              title={isDe ? "Heute" : "Today"}
               description={
                 isDe
-                  ? "Zähle das Jesusgebet auf einer digitalen Komvoschini."
-                  : "Count the Jesus Prayer on a digital komvoschini."
-              }
-            />
-            <PrayerIndexRow
-              href="/prayers/personal"
-              title={isDe ? "Diptychen" : "Diptychs"}
-              description={
-                isDe
-                  ? "Die Namen, die du trägst — die Lebenden und die Entschlafenen."
-                  : "The names you carry — the living and the reposed."
+                  ? "Fasten, Gedächtnisse und Namenstage des heutigen Tages."
+                  : "Today's fast, commemorations, and namedays."
               }
             />
             <PrayerIndexRow
@@ -241,12 +292,6 @@ export default async function PrayersPage() {
                   : "Long hymns of praise, prayed standing throughout."
               }
             />
-          </PrayerIndex>
-
-          <PrayerSectionLabel>
-            {isDe ? "Der Anfang" : "Beginning"}
-          </PrayerSectionLabel>
-          <PrayerIndex>
             <PrayerIndexRow
               href="/prayers/learning"
               title={isDe ? "Beten lernen" : "Learn to pray"}

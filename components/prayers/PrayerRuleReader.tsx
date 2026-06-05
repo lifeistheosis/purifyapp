@@ -20,32 +20,13 @@ import {
 import {
   isBookmarked as isPrayerBookmarked,
   togglePrayerBookmark,
+  isRuleBookmarked,
+  toggleRuleBookmark,
 } from "@/lib/prayers/bookmarks";
+import type { Prayer, PrayerVariant, Rule } from "@/lib/prayers/types";
 
-export type Prayer = {
-  id: string;
-  title: string;
-  instruction?: string;
-  text: string;
-  /** Optional MP3 path under /public, e.g. "/audio/prayers/morning/trisagion.mp3". */
-  audio?: string;
-  /** For akathists: the refrain spoken after this stanza. */
-  refrain?: string;
-};
-
-export type Rule = {
-  id: string;
-  title: string;
-  subtitle?: string;
-  intro: string;
-  estimatedMinutes: number;
-  source: string;
-  prayers: Prayer[];
-  /** Optional refrain spoken after every odd-indexed stanza (akathist pattern). */
-  refrain?: string;
-  /** Kind of rule — controls headings and UI affordances. */
-  kind?: "rule" | "akathist" | "hour" | "compline";
-};
+// Re-exported for back-compat: morning/evening pages import these as types.
+export type { Prayer, PrayerVariant, Rule } from "@/lib/prayers/types";
 
 type Snap = { done: string[]; today: string };
 const SERVER_SNAP: Snap = { done: [], today: "" };
@@ -89,7 +70,14 @@ function subscribe(cb: () => void): () => void {
   };
 }
 
-export function PrayerRuleReader({ rule }: { rule: Rule }) {
+export function PrayerRuleReader({
+  rule,
+  ruleHref,
+}: {
+  rule: Rule;
+  /** When set, the header shows a star to bookmark the whole rule. */
+  ruleHref?: string;
+}) {
   const snap = useSyncExternalStore(
     subscribe,
     () => readSnap(rule.id),
@@ -97,6 +85,12 @@ export function PrayerRuleReader({ rule }: { rule: Rule }) {
   );
   const done = useMemo(() => new Set(snap.done), [snap.done]);
   const hydrated = snap.today !== "";
+
+  const ruleBookmarked = useSyncExternalStore(
+    subscribe,
+    () => (ruleHref ? isRuleBookmarked(rule.id) : false),
+    () => false,
+  );
 
   const total = rule.prayers.length;
   const completedCount = done.size;
@@ -132,9 +126,30 @@ export function PrayerRuleReader({ rule }: { rule: Rule }) {
         <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-5">
           {eyebrowFor(rule)}
         </p>
-        <h1 className="font-serif text-title md:text-heading leading-[1.15] tracking-[-0.01em] text-paper">
-          {rule.title}
-        </h1>
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="font-serif text-title md:text-heading leading-[1.15] tracking-[-0.01em] text-paper">
+            {rule.title}
+          </h1>
+          {ruleHref && (
+            <button
+              type="button"
+              onClick={() => toggleRuleBookmark(rule.id, rule.title, ruleHref)}
+              aria-pressed={ruleBookmarked}
+              aria-label={
+                ruleBookmarked ? "Remove rule bookmark" : "Bookmark this rule"
+              }
+              title={ruleBookmarked ? "Bookmarked" : "Bookmark this rule"}
+              className={cn(
+                "mt-1 shrink-0 text-title-sm transition-colors",
+                ruleBookmarked
+                  ? "text-gold/90"
+                  : "text-paper/30 hover:text-paper",
+              )}
+            >
+              {ruleBookmarked ? "★" : "☆"}
+            </button>
+          )}
+        </div>
         {rule.subtitle && (
           <p className="mt-4 font-serif italic text-detail text-paper/45">
             {rule.subtitle}
@@ -149,6 +164,7 @@ export function PrayerRuleReader({ rule }: { rule: Rule }) {
         <p className="mt-4 font-sans text-caption text-paper/35">
           About {rule.estimatedMinutes} min · {total}{" "}
           {total === 1 ? "prayer" : "prayers"}
+          {rule.jurisdiction ? ` · ${rule.jurisdiction}` : ""}
         </p>
       </header>
 
@@ -277,6 +293,19 @@ function PrayerCard({
     () => false,
   );
 
+  const variants = prayer.variants ?? [];
+  const hasVariants = variants.length > 0;
+  const [variantIdx, setVariantIdx] = useState(0);
+  const active: PrayerVariant | undefined = hasVariants
+    ? variants[Math.min(variantIdx, variants.length - 1)]
+    : undefined;
+
+  // What the reader actually shows: the selected variant when present,
+  // otherwise the prayer's single text. Variant wordings are never merged.
+  const shownInstruction = active?.instruction ?? prayer.instruction;
+  const shownText = active?.text ?? prayer.text;
+  const shownRefrain = active?.refrain ?? prayer.refrain;
+
   return (
     <details id={prayer.id} open className="group border-b border-paper/10">
       <summary className="cursor-pointer list-none py-4 flex items-center justify-between gap-3">
@@ -315,19 +344,52 @@ function PrayerCard({
         </span>
       </summary>
       <div className="pb-7">
-        {prayer.instruction && (
-          <p className="font-serif italic text-detail text-paper/45 leading-[1.55] mb-4">
-            {prayer.instruction}
-          </p>
-        )}
-        {prayer.text && (
-          <div className="font-serif text-body text-paper/85 leading-[1.85] whitespace-pre-line">
-            {prayer.text}
+        {hasVariants && (
+          <div
+            role="tablist"
+            aria-label="Jurisdiction wordings"
+            className="mb-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-paper/10 pb-3"
+          >
+            {variants.map((v, i) => {
+              const selected = i === Math.min(variantIdx, variants.length - 1);
+              return (
+                <button
+                  key={v.jurisdiction}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  onClick={() => setVariantIdx(i)}
+                  className={cn(
+                    "font-sans text-detail transition-colors",
+                    selected
+                      ? "text-gold/90"
+                      : "text-paper/40 hover:text-paper/70",
+                  )}
+                >
+                  {v.jurisdiction}
+                </button>
+              );
+            })}
           </div>
         )}
-        {prayer.refrain && (
+        {shownInstruction && (
+          <p className="font-serif italic text-detail text-paper/45 leading-[1.55] mb-4">
+            {shownInstruction}
+          </p>
+        )}
+        {shownText && (
+          <div className="font-serif text-body text-paper/85 leading-[1.85] whitespace-pre-line">
+            {shownText}
+          </div>
+        )}
+        {shownRefrain && (
           <p className="mt-5 border-l border-gold/30 pl-4 font-serif italic text-body text-gold/80 leading-[1.6]">
-            {prayer.refrain}
+            {shownRefrain}
+          </p>
+        )}
+        {active && (
+          <p className="mt-4 font-sans text-caption text-paper/30">
+            {active.jurisdiction} · {active.source}
           </p>
         )}
         {prayer.audio && <AudioRow src={prayer.audio} />}
