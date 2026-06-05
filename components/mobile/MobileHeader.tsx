@@ -14,7 +14,7 @@ export function MobileHeader({
   trailing?: ReactNode;
 }) {
   return (
-    <header className="flex items-center justify-between px-5 pt-4 pb-2">
+    <header className="flex items-center justify-between px-5 pt-[calc(env(safe-area-inset-top,0px)+1rem)] pb-2">
       <h1 className="font-sans text-lede font-bold tracking-[-0.01em] text-paper">
         {title}
       </h1>

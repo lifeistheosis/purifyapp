@@ -3,7 +3,6 @@ import Image from "next/image";
 import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
 import { Navbar } from "@/components/nav/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { SectionScroller } from "@/components/SectionScroller";
 import { HeroChristIcon } from "@/components/marketing/HeroChristIcon";
 import { WhatsNewChip } from "@/components/marketing/WhatsNewChip";
 import { SeasonBanner } from "@/components/marketing/SeasonBanner";
@@ -170,7 +169,6 @@ export default async function Home() {
 
  {/* DESKTOP: existing marketing home, unchanged. Hidden on phones. */}
  <div className="hidden md:contents">
- <SectionScroller />
  <Navbar />
  <main className="flex-1">
  {/* HERO. Black-and-white surface (the older blue twilight was

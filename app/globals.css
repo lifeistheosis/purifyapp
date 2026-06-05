@@ -132,7 +132,12 @@
 
 @layer base {
  html {
- scroll-behavior: smooth;
+ /* Keep route-change scroll resets instant. A global `smooth` made
+    Next.js animate the scroll-to-top on every navigation, so the page
+    you tapped into visibly slid/jittered before settling. Buttons that
+    want a smooth glide (back-to-top, nav back) pass behavior:"smooth"
+    to scrollTo explicitly, so they're unaffected. */
+ scroll-behavior: auto;
  scroll-padding-top: 72px;
  }
 

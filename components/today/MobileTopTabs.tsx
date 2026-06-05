@@ -22,7 +22,7 @@ export function MobileTopTabs({
 }) {
   return (
     <header className="sticky top-0 z-30 bg-night/95 backdrop-blur-sm border-b border-paper/8">
-      <div className="flex items-center justify-between px-5 pt-3 pb-2">
+      <div className="flex items-center justify-between px-5 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-2">
         {/* Tab pair */}
         <nav className="flex items-baseline gap-5">
           <Tab href="/" active={active === "today"} label={labels.today} />

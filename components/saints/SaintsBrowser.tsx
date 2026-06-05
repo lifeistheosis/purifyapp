@@ -20,8 +20,8 @@ import { FilterPill } from "./FilterPill";
 export function SaintsBrowser({ saints }: { saints: Saint[] }) {
   const [activeGroup, setActiveGroup] = useState<SaintGroupId | null>(null);
   const [activeCentury, setActiveCentury] = useState<number | null>(null);
-  const [kindOpen, setKindOpen] = useState(true);
-  const [centuryOpen, setCenturyOpen] = useState(true);
+  const [kindOpen, setKindOpen] = useState(false);
+  const [centuryOpen, setCenturyOpen] = useState(false);
 
   const featured = useMemo(() => saints.filter((s) => s.featured), [saints]);
   const rest = useMemo(() => saints.filter((s) => !s.featured), [saints]);
