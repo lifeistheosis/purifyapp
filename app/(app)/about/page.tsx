@@ -264,7 +264,7 @@ export default async function AboutPage() {
  </p>
  <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
- <strong className="text-paper">Wojack</strong> (
+ <strong className="text-paper">Harrison Hill</strong> (
  <a
  href="https://www.tiktok.com/@spyridons.ponder"
  target="_blank"
@@ -274,6 +274,19 @@ export default async function AboutPage() {
  @Spyridons.ponder
  </a>
  ), for sharing Purify with his audience on TikTok.
+ </li>
+ <li>
+ <strong className="text-paper">Markos</strong> (
+ <a
+ href="https://www.tiktok.com/@orthodoxyordeath2"
+ target="_blank"
+ rel="noopener noreferrer"
+ className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
+ >
+ @orthodoxyordeath2
+ </a>{" "}
+ on TikTok, @monotheistic.aristotelian on Discord), for
+ spreading the word about Purify.
  </li>
  </ul>
  <p className="mt-4 font-serif text-ui text-paper/55 leading-[1.65] italic">
@@ -552,7 +565,7 @@ function AboutDe() {
  </p>
  <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
- <strong className="text-paper">Wojack</strong> (
+ <strong className="text-paper">Harrison Hill</strong> (
  <a
  href="https://www.tiktok.com/@spyridons.ponder"
  target="_blank"
@@ -562,6 +575,19 @@ function AboutDe() {
  @Spyridons.ponder
  </a>
  ), dafür, daß er Purify mit seinem Publikum auf TikTok geteilt hat.
+ </li>
+ <li>
+ <strong className="text-paper">Markos</strong> (
+ <a
+ href="https://www.tiktok.com/@orthodoxyordeath2"
+ target="_blank"
+ rel="noopener noreferrer"
+ className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
+ >
+ @orthodoxyordeath2
+ </a>{" "}
+ auf TikTok, @monotheistic.aristotelian auf Discord), dafür,
+ daß er Purify bekannt gemacht hat.
  </li>
  </ul>
  <p className="mt-4 font-serif text-ui text-paper/55 leading-[1.65] italic">

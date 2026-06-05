@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
 import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
@@ -58,6 +58,7 @@ function useAccountInitials(): string | null {
 
 export function AppNav() {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const scrolled = useScrolled();
   const initials = useAccountInitials();
@@ -93,12 +94,34 @@ export function AppNav() {
       )}
     >
       <div className="mx-auto max-w-[1240px] h-full flex items-center justify-between gap-6 px-5 md:px-8">
-        <Link
-          href="/"
-          className="font-sans text-title-sm font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors duration-150"
-        >
-          Purify
-        </Link>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            aria-label={t("common.back")}
+            onClick={() => router.back()}
+            className="inline-flex items-center justify-center h-9 w-9 rounded-pill border border-paper/20 text-paper/70 hover:text-paper hover:border-paper/40 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
+          >
+            <svg
+              width={18}
+              height={18}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.8}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M15 5 L8 12 L15 19" />
+            </svg>
+          </button>
+          <Link
+            href="/"
+            className="font-sans text-title-sm font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors duration-150"
+          >
+            Purify
+          </Link>
+        </div>
 
         <nav className="hidden md:flex items-center gap-7">
           {NAV.map((it) => (
