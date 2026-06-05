@@ -101,7 +101,7 @@ export function LocaleSwitcher() {
         <ul
           role="listbox"
           aria-label={t("footer.languageLabel")}
-          className="absolute bottom-full left-0 z-50 mb-2 min-w-full overflow-hidden rounded-lg border border-paper/12 bg-night-soft py-1 shadow-xl shadow-black/40"
+          className="absolute bottom-full left-0 z-50 mb-2 w-max min-w-full max-w-[min(85vw,18rem)] overflow-hidden rounded-lg border border-paper/12 bg-night-soft py-1 shadow-xl shadow-black/40"
         >
           {options.map((l) => {
             const active = l.code === locale;
@@ -110,11 +110,11 @@ export function LocaleSwitcher() {
                 <li key={l.code} role="option" aria-selected={false} aria-disabled>
                   <div
                     dir={l.dir}
-                    className="flex w-full cursor-not-allowed items-center justify-between gap-3 px-3 py-2 text-left font-sans text-caption text-paper/35"
+                    className="flex w-full cursor-not-allowed items-center justify-between gap-3 whitespace-nowrap px-3 py-2 text-left font-sans text-caption text-paper/35"
                   >
                     <span>{l.nativeLabel}</span>
-                    <span className="shrink-0 rounded-full border border-paper/15 px-1.5 py-0.5 text-[10px] uppercase tracking-[0.06em] text-paper/40">
-                      {t("signin.comingSoon")}
+                    <span className="shrink-0 rounded-full border border-paper/15 px-1.5 py-0.5 text-[10px] uppercase tracking-[0.04em] text-paper/40">
+                      {l.comingSoon}
                     </span>
                   </div>
                 </li>

@@ -41,6 +41,9 @@ export type Locale = {
   ready: boolean;
   /** Writing direction. Arabic is rtl; everything else ltr. */
   dir: "ltr" | "rtl";
+  /** "Coming soon" rendered in this locale's own language (used by the
+   *  locale switcher to mark not-yet-ready languages). */
+  comingSoon: string;
   /** Optional note about the locale's status. */
   status?: string;
 };
@@ -52,19 +55,19 @@ export const DEFAULT_LOCALE: LocaleCode = "en";
 // to a known shape; isLocaleReady() is the gate. They will return
 // when the editorial team has hand-checked their catalogs.
 export const LOCALES: Locale[] = [
-  { code: "en", nativeLabel: "English", englishLabel: "English", ready: true, dir: "ltr" },
-  { code: "es", nativeLabel: "Español", englishLabel: "Spanish", ready: false, dir: "ltr" },
-  { code: "ro", nativeLabel: "Română", englishLabel: "Romanian", ready: false, dir: "ltr" },
-  { code: "el", nativeLabel: "Ελληνικά", englishLabel: "Greek", ready: false, dir: "ltr" },
-  { code: "ru", nativeLabel: "Русский", englishLabel: "Russian", ready: false, dir: "ltr" },
-  { code: "fr", nativeLabel: "Français", englishLabel: "French", ready: false, dir: "ltr" },
-  { code: "de", nativeLabel: "Deutsch", englishLabel: "German", ready: true, dir: "ltr" },
-  { code: "sr", nativeLabel: "Српски", englishLabel: "Serbian", ready: false, dir: "ltr" },
-  { code: "uk", nativeLabel: "Українська", englishLabel: "Ukrainian", ready: false, dir: "ltr" },
-  { code: "it", nativeLabel: "Italiano", englishLabel: "Italian", ready: false, dir: "ltr" },
-  { code: "pt", nativeLabel: "Português", englishLabel: "Portuguese", ready: false, dir: "ltr" },
-  { code: "bg", nativeLabel: "Български", englishLabel: "Bulgarian", ready: false, dir: "ltr" },
-  { code: "ar", nativeLabel: "العربية", englishLabel: "Arabic", ready: false, dir: "rtl" },
+  { code: "en", nativeLabel: "English", englishLabel: "English", ready: true, dir: "ltr", comingSoon: "Coming soon" },
+  { code: "es", nativeLabel: "Español", englishLabel: "Spanish", ready: false, dir: "ltr", comingSoon: "Próximamente" },
+  { code: "ro", nativeLabel: "Română", englishLabel: "Romanian", ready: false, dir: "ltr", comingSoon: "În curând" },
+  { code: "el", nativeLabel: "Ελληνικά", englishLabel: "Greek", ready: false, dir: "ltr", comingSoon: "Σύντομα" },
+  { code: "ru", nativeLabel: "Русский", englishLabel: "Russian", ready: false, dir: "ltr", comingSoon: "Скоро" },
+  { code: "fr", nativeLabel: "Français", englishLabel: "French", ready: false, dir: "ltr", comingSoon: "Bientôt" },
+  { code: "de", nativeLabel: "Deutsch", englishLabel: "German", ready: true, dir: "ltr", comingSoon: "Demnächst" },
+  { code: "sr", nativeLabel: "Српски", englishLabel: "Serbian", ready: false, dir: "ltr", comingSoon: "Ускоро" },
+  { code: "uk", nativeLabel: "Українська", englishLabel: "Ukrainian", ready: false, dir: "ltr", comingSoon: "Скоро" },
+  { code: "it", nativeLabel: "Italiano", englishLabel: "Italian", ready: false, dir: "ltr", comingSoon: "Prossimamente" },
+  { code: "pt", nativeLabel: "Português", englishLabel: "Portuguese", ready: false, dir: "ltr", comingSoon: "Em breve" },
+  { code: "bg", nativeLabel: "Български", englishLabel: "Bulgarian", ready: false, dir: "ltr", comingSoon: "Скоро" },
+  { code: "ar", nativeLabel: "العربية", englishLabel: "Arabic", ready: false, dir: "rtl", comingSoon: "قريباً" },
 ];
 
 /** True if a locale is considered shippable today. */

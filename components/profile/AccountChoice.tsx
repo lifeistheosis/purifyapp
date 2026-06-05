@@ -31,14 +31,6 @@ export function AccountChoice() {
 
   return (
     <div className="mt-10">
-      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-        Pick how you want to use Purify
-      </p>
-      <p className="font-serif text-body text-paper/80 leading-[1.65] max-w-[640px] mb-7">
-        Two real choices, both free, both private. Either way nothing
-        is sold and nothing is shared.
-      </p>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* LOCAL */}
         <section className="rounded-lg border border-paper/15 bg-paper/[0.03] p-6 md:p-7 flex flex-col">
