@@ -1,12 +1,16 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
+import { DEFAULT_HIGHLIGHT_COLOR } from "./highlightColors";
 
 /**
  * Per-verse annotations stored in localStorage.
  * Schema:
  *   highlighted?:      boolean       (whole-verse left bar)
  *   highlightedWords?: number[]      (sorted word-index list for word-level tints)
+ *   color?:            string        (highlight color id; applies to the bar
+ *                                     AND this verse's word tints. Defaults to
+ *                                     yellow when a highlight is created.)
  *   note?:             string
  * Key: purify:bible:{book}:{chapter}:{verse}
  *
@@ -19,6 +23,7 @@ import { useCallback, useSyncExternalStore } from "react";
 export type VerseAnnotation = {
   highlighted?: boolean;
   highlightedWords?: number[];
+  color?: string;
   note?: string;
 };
 
@@ -103,9 +108,38 @@ export function useVerseAnnotation(
     [k, book, chapter, verse],
   );
 
-  const toggleHighlight = useCallback(() => {
-    persist({ ...data, highlighted: !data.highlighted });
-  }, [data, persist]);
+  const toggleHighlight = useCallback(
+    (color?: string) => {
+      const turningOn = !data.highlighted;
+      persist({
+        ...data,
+        highlighted: turningOn,
+        color: turningOn
+          ? (color ?? data.color ?? DEFAULT_HIGHLIGHT_COLOR)
+          : data.color,
+      });
+    },
+    [data, persist],
+  );
+
+  // Turn the whole-verse highlight on with an explicit color (used by the
+  // color picker when nothing is highlighted yet).
+  const setHighlight = useCallback(
+    (color: string) => {
+      persist({ ...data, highlighted: true, color });
+    },
+    [data, persist],
+  );
+
+  // Recolor the existing annotation (bar + this verse's word tints) without
+  // toggling anything on/off. A color with no highlight/words/note is dropped
+  // by persist()'s empty check, so this is a no-op on an unmarked verse.
+  const setColor = useCallback(
+    (color: string) => {
+      persist({ ...data, color });
+    },
+    [data, persist],
+  );
 
   const setNote = useCallback(
     (note: string) => {
@@ -138,6 +172,9 @@ export function useVerseAnnotation(
       persist({
         ...data,
         highlightedWords: arr.length > 0 ? arr : undefined,
+        // First word highlight on an uncolored verse adopts the default color.
+        color:
+          arr.length > 0 ? (data.color ?? DEFAULT_HIGHLIGHT_COLOR) : data.color,
       });
     },
     [data, persist],
@@ -150,6 +187,8 @@ export function useVerseAnnotation(
   return {
     ...data,
     toggleHighlight,
+    setHighlight,
+    setColor,
     setNote,
     toggleWordRange,
     clearWords,

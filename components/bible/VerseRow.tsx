@@ -4,6 +4,11 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import type { Verse, Token } from "@/lib/bible/load";
 import type { StrongsEntry } from "@/lib/bible/strongs";
 import { useVerseAnnotation } from "@/lib/bible/annotations";
+import {
+ HIGHLIGHT_COLORS,
+ colorById,
+ useHighlightLegend,
+} from "@/lib/bible/highlightColors";
 import { useInterlinear } from "@/lib/bible/interlinear";
 import { useBookmarks } from "@/lib/bookmarks";
 import { WordPopover } from "./WordPopover";
@@ -69,6 +74,18 @@ export function VerseRow({
  strongs?: Record<string, StrongsEntry>;
 }) {
  const ann = useVerseAnnotation(book, chapter, verse.n);
+ const hl = colorById(ann.color);
+ const { labelFor } = useHighlightLegend();
+ const [showSwatches, setShowSwatches] = useState(false);
+ // Apply a color: if the verse isn't marked yet, the pick turns the
+ // whole-verse highlight on; otherwise it just recolors what's there
+ // (the bar and this verse's word tints share `ann.color`).
+ function applyColor(id: string) {
+ const marked = ann.highlighted || (ann.highlightedWords?.length ?? 0) > 0;
+ if (marked) ann.setColor(id);
+ else ann.setHighlight(id);
+ setShowSwatches(false);
+ }
  const bookmarks = useBookmarks();
  const verseLocator = {
  kind: "bible-verse" as const,
@@ -369,8 +386,14 @@ export function VerseRow({
  return (
  <div
  id={`v${verse.n}`}
- className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out data-[hl=true]:shadow-[inset_3px_0_0_var(--color-gold)] data-[focus=true]:bg-gold/12 data-[focus=true]:shadow-[0_0_0_2px_rgba(183,176,163,0.55),0_0_24px_rgba(183,176,163,0.35)]"
+ className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out data-[hl=true]:shadow-[inset_3px_0_0_var(--hl-bar)] data-[focus=true]:bg-gold/12 data-[focus=true]:shadow-[0_0_0_2px_rgba(183,176,163,0.55),0_0_24px_rgba(183,176,163,0.35)]"
  data-hl={ann.highlighted ? "true" : undefined}
+ style={
+ {
+ "--hl-bar": hl.bar,
+ "--hl-word": hl.wordBg,
+ } as React.CSSProperties
+ }
  >
  <div className="flex items-start gap-2">
  <div
@@ -498,7 +521,6 @@ export function VerseRow({
  }}
  className={cn(
  "cursor-pointer transition-colors duration-100",
- me && "bg-gold/30",
  // Round + extend only on the outer ends of a run, so
  // adjacent highlighted words look like one bar.
  me && !mePrev && "rounded-l-[3px] pl-[1px] -ml-[1px]",
@@ -515,10 +537,14 @@ export function VerseRow({
  style={
  matched
  ? {
+ // Flat, continuous pill — the background bridges between adjacent
+ // matched words. No per-word glow: it stacked halos across a
+ // wrapped run and bled vertically onto the next line.
  backgroundColor: "rgba(183,176,163,0.45)",
  color: "#fff",
- boxShadow: "0 0 10px rgba(183,176,163,0.55)",
  }
+ : me
+ ? { backgroundColor: "var(--hl-word)" }
  : undefined
  }
  >
@@ -526,12 +552,11 @@ export function VerseRow({
  </span>
  {i < englishTokens!.length - 1 && (
  <span
- className={
- bridgeMe && !bridgeMatched ? "bg-gold/30" : ""
- }
  style={
  bridgeMatched
  ? { backgroundColor: "rgba(183,176,163,0.45)" }
+ : bridgeMe
+ ? { backgroundColor: "var(--hl-word)" }
  : undefined
  }
  >
@@ -551,15 +576,19 @@ export function VerseRow({
  data-word-idx={i}
  className={cn(
  "cursor-pointer transition-colors",
- me && "bg-gold/30",
  me && !prev && "rounded-l-[3px] pl-[1px] -ml-[1px]",
  me && !next && "rounded-r-[3px] pr-[1px] -mr-[1px]",
  )}
+ style={me ? { backgroundColor: "var(--hl-word)" } : undefined}
  >
  {w}
  </span>
  {i < words.length - 1 && (
- <span className={me && next ? "bg-gold/30" : ""}>
+ <span
+ style={
+ me && next ? { backgroundColor: "var(--hl-word)" } : undefined
+ }
+ >
  {" "}
  </span>
  )}
@@ -679,7 +708,7 @@ export function VerseRow({
  label: ann.highlighted
  ? "Remove highlight"
  : "Highlight verse",
- onClick: ann.toggleHighlight,
+ onClick: () => ann.toggleHighlight(),
  destructive: !!ann.highlighted,
  },
  {
@@ -690,6 +719,10 @@ export function VerseRow({
  },
  },
  ];
+ const colorGroup: ContextMenuGroup = HIGHLIGHT_COLORS.map((c) => ({
+ label: `${ann.color === c.id ? "✓ " : ""}${labelFor(c.id)}`,
+ onClick: () => applyColor(c.id),
+ }));
  const bookmarkGroup: ContextMenuGroup = [
  {
  label: isVerseBookmarked ? "Remove bookmark" : "Bookmark verse",
@@ -700,6 +733,7 @@ export function VerseRow({
  const groups: ContextMenuGroup[] = [
  copyGroup,
  annotateGroup,
+ colorGroup,
  bookmarkGroup,
  ];
  if (hasCommentary) {
@@ -735,19 +769,64 @@ export function VerseRow({
  >
  <button
  type="button"
- onClick={ann.toggleHighlight}
+ onClick={() => ann.toggleHighlight()}
  aria-label={ann.highlighted ? "Remove highlight" : "Highlight verse"}
  aria-pressed={!!ann.highlighted}
  title={ann.highlighted ? "Remove highlight" : "Highlight verse"}
  className={
  "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150 " +
  (ann.highlighted
- ? "bg-gold/30 border-gold/60 text-gold"
+ ? ""
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper")
+ }
+ style={
+ ann.highlighted
+ ? {
+ backgroundColor: hl.wordBg,
+ borderColor: hl.bar,
+ color: hl.bar,
+ }
+ : undefined
  }
  >
  ✦
  </button>
+ {/* Highlight color picker. The dot shows the verse's current (or
+ default) color; the popover recolors an existing highlight or
+ starts one in the chosen color. */}
+ <div className="relative flex items-center">
+ <button
+ type="button"
+ onClick={() => setShowSwatches((v) => !v)}
+ aria-label="Choose highlight color"
+ aria-expanded={showSwatches}
+ title="Highlight color"
+ className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 flex items-center justify-center transition-colors duration-150"
+ >
+ <span
+ className="h-3 w-3 rounded-full"
+ style={{ backgroundColor: hl.swatch }}
+ />
+ </button>
+ {showSwatches && (
+ <div className="absolute top-full right-0 mt-1 z-20 flex items-center gap-1.5 rounded-full border border-paper/15 bg-night/95 backdrop-blur px-2 py-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.5)]">
+ {HIGHLIGHT_COLORS.map((c) => (
+ <button
+ key={c.id}
+ type="button"
+ onClick={() => applyColor(c.id)}
+ aria-label={labelFor(c.id)}
+ title={labelFor(c.id)}
+ className={cn(
+ "h-5 w-5 rounded-full border-2 transition-transform hover:scale-110",
+ ann.color === c.id ? "border-paper/80" : "border-transparent",
+ )}
+ style={{ backgroundColor: c.swatch }}
+ />
+ ))}
+ </div>
+ )}
+ </div>
  {(ann.highlightedWords?.length ?? 0) > 0 && (
  <button
  type="button"
@@ -883,6 +962,13 @@ export function VerseRow({
  {showTools && (
  <MobileVerseToolbar
  reference={reference()}
+ palette={HIGHLIGHT_COLORS.map((c) => ({
+ id: c.id,
+ swatch: c.swatch,
+ label: labelFor(c.id),
+ }))}
+ activeColor={ann.color}
+ onColor={(id) => applyColor(id)}
  state={{
  highlighted: !!ann.highlighted,
  bookmarked: isVerseBookmarked,

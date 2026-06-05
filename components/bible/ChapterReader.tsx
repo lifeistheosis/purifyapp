@@ -5,6 +5,7 @@ import type { Verse, Token, ChapterCommentary } from "@/lib/bible/load";
 import type { StrongsEntry } from "@/lib/bible/strongs";
 import { VerseRow } from "./VerseRow";
 import { MobileCommentarySheet } from "./MobileCommentarySheet";
+import { HighlightLegend } from "./HighlightLegend";
 import {
   FONT_CLASSES,
   SIZE_CLASSES,
@@ -76,6 +77,7 @@ export function ChapterReader({
             />
           ))}
         </div>
+        <HighlightLegend />
       </article>
       {commentary && (
         <MobileCommentarySheet

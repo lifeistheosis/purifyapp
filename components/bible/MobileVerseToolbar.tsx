@@ -27,6 +27,8 @@ type ActionState = {
  * Only renders below the `md:` breakpoint, the per-verse hover-revealed
  * desktop toolbar in VerseRow is untouched.
  */
+export type HighlightSwatch = { id: string; swatch: string; label: string };
+
 export function MobileVerseToolbar({
  reference,
  state,
@@ -34,11 +36,21 @@ export function MobileVerseToolbar({
  onClose,
  itemNoun = "verse",
  bookmarkNoun,
+ palette,
+ activeColor,
+ onColor,
 }: {
  reference: string;
  state: ActionState;
  onAction: (a: MobileVerseAction) => void;
  onClose: () => void;
+ /** Highlight color choices. When provided (Bible reader), a swatch row
+ * sits above the action pill so the reader can recolor a highlight. */
+ palette?: HighlightSwatch[];
+ /** Currently selected color id, for the active ring on its swatch. */
+ activeColor?: string;
+ /** Pick a color. Closes the toolbar after applying, like other actions. */
+ onColor?: (id: string) => void;
  /** What a single annotatable unit is called, for accurate a11y labels.
  * Defaults to "verse" (Bible reader); the Fathers reader passes
  * "paragraph". */
@@ -92,12 +104,33 @@ export function MobileVerseToolbar({
  MobileChapterPill so the two pills stack predictably when both
  are visible. */}
  <div
- className="absolute inset-x-0 px-4 flex justify-center pointer-events-none"
+ className="absolute inset-x-0 px-4 flex flex-col items-center gap-2 pointer-events-none"
  style={{
  bottom:
  "calc(var(--tab-bar-h) + env(safe-area-inset-bottom, 0px) + 12px)",
  }}
  >
+ {palette && palette.length > 0 && onColor && (
+ <div className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-paper/15 bg-night/95 backdrop-blur px-3 py-2 shadow-[0_12px_32px_rgba(0,0,0,0.55)]">
+ {palette.map((c) => (
+ <button
+ key={c.id}
+ type="button"
+ onClick={() => {
+ onColor(c.id);
+ onClose();
+ }}
+ aria-label={`Highlight color: ${c.label}`}
+ aria-pressed={activeColor === c.id}
+ className={
+ "h-7 w-7 rounded-full border-2 transition-transform active:scale-95 " +
+ (activeColor === c.id ? "border-paper/80" : "border-transparent")
+ }
+ style={{ backgroundColor: c.swatch }}
+ />
+ ))}
+ </div>
+ )}
  <div
  className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full border border-paper/15 bg-night/95 backdrop-blur px-2 py-2 shadow-[0_12px_32px_rgba(0,0,0,0.55)]"
  >
