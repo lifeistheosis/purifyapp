@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { LOCALES } from "@/lib/i18n/locales";
 import { useTranslate } from "./MessagesProvider";
 
@@ -106,17 +107,21 @@ export function LocaleSwitcher() {
           {options.map((l) => {
             const active = l.code === locale;
             if (!l.ready) {
+              // Not-yet-translated languages route to the "become a language
+              // editor" page (personalized by ?lang=) instead of switching.
               return (
-                <li key={l.code} role="option" aria-selected={false} aria-disabled>
-                  <div
+                <li key={l.code} role="option" aria-selected={false}>
+                  <Link
+                    href={`/language-editor?lang=${l.code}`}
+                    onClick={() => setOpen(false)}
                     dir={l.dir}
-                    className="flex w-full cursor-not-allowed items-center justify-between gap-3 whitespace-nowrap px-3 py-2 text-left font-sans text-caption text-paper/35"
+                    className="flex w-full items-center justify-between gap-3 whitespace-nowrap px-3 py-2 text-left font-sans text-caption text-paper/55 transition-colors hover:bg-paper/[0.06] hover:text-paper"
                   >
                     <span>{l.nativeLabel}</span>
-                    <span className="shrink-0 rounded-full border border-paper/15 px-1.5 py-0.5 text-[10px] uppercase tracking-[0.04em] text-paper/40">
+                    <span className="shrink-0 rounded-full border border-paper/15 px-1.5 py-0.5 text-[10px] uppercase tracking-[0.04em] text-paper/45">
                       {l.comingSoon}
                     </span>
-                  </div>
+                  </Link>
                 </li>
               );
             }
