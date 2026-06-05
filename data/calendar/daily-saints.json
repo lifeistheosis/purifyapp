@@ -2275,6 +2275,11 @@
     {
       "name": "Universal Exaltation of the Honorable and Life-Giving Cross",
       "kind": "feast"
+    },
+    {
+      "name": "St. Sofian of Antim",
+      "slug": "sofian-of-antim",
+      "note": "abbot of Antim, iconographer and confessor, +2002"
     }
   ],
   "09-15": [
@@ -2483,6 +2488,11 @@
     }
   ],
   "10-05": [
+    {
+      "name": "St. Dumitru Stăniloae",
+      "slug": "dumitru-staniloae",
+      "note": "priest, theologian, editor of the Romanian Philokalia, +1993"
+    },
     {
       "name": "Martyr Charitina of Amisus",
       "note": "+304"
@@ -2928,6 +2938,11 @@
   ],
   "11-15": [
     {
+      "name": "St. Paisius Velichkovsky",
+      "slug": "paisius-velichkovsky",
+      "note": "Elder of Neamț, translator of the Slavonic Philokalia, +1794"
+    },
+    {
       "name": "Confessors Gurias, Samonas, and Habibus",
       "note": "of Edessa, +ca. 322"
     },
@@ -3058,6 +3073,11 @@
   ],
   "11-28": [
     {
+      "name": "St. Arsenius of Prislop",
+      "slug": "arsenius-of-prislop",
+      "note": "hieromonk of Prislop, confessor and iconographer, +1989"
+    },
+    {
       "name": "Venerable-martyr Stephen the New, Confessor",
       "note": "iconophile, +767"
     },
@@ -3099,6 +3119,11 @@
     }
   ],
   "12-02": [
+    {
+      "name": "St. Cleopas of Sihăstria",
+      "slug": "cleopas-of-sihastria",
+      "note": "archimandrite, spiritual father of Romanian monasticism, +1998"
+    },
     {
       "name": "Prophet Habakkuk",
       "note": "of the Twelve, +7th c. BC"
