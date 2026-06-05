@@ -35,8 +35,15 @@ export function LocaleSwitcher() {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  const options = LOCALES.filter((l) => l.ready);
-  const current = options.find((l) => l.code === locale) ?? options[0];
+  // Show every locale in the menu; the not-yet-translated ones render as
+  // disabled "Coming soon" rows (ready ones first, then the rest).
+  const options = [...LOCALES].sort(
+    (a, b) => Number(b.ready) - Number(a.ready),
+  );
+  const current =
+    LOCALES.find((l) => l.code === locale && l.ready) ??
+    LOCALES.find((l) => l.ready) ??
+    LOCALES[0];
 
   // Close on outside click or Escape.
   useEffect(() => {
@@ -98,6 +105,21 @@ export function LocaleSwitcher() {
         >
           {options.map((l) => {
             const active = l.code === locale;
+            if (!l.ready) {
+              return (
+                <li key={l.code} role="option" aria-selected={false} aria-disabled>
+                  <div
+                    dir={l.dir}
+                    className="flex w-full cursor-not-allowed items-center justify-between gap-3 px-3 py-2 text-left font-sans text-caption text-paper/35"
+                  >
+                    <span>{l.nativeLabel}</span>
+                    <span className="shrink-0 rounded-full border border-paper/15 px-1.5 py-0.5 text-[10px] uppercase tracking-[0.06em] text-paper/40">
+                      {t("signin.comingSoon")}
+                    </span>
+                  </div>
+                </li>
+              );
+            }
             return (
               <li key={l.code} role="option" aria-selected={active}>
                 <button
