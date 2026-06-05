@@ -140,14 +140,14 @@ export function Footer() {
     <div className="mt-8 pt-6 border-t border-white/8 flex flex-col sm:flex-row items-center justify-between gap-4">
      <Link
       href="/"
-      className="font-sans text-lede font-bold tracking-[-0.01em] text-paper"
+      className="font-sans text-lede font-bold tracking-[-0.01em] text-paper sm:flex-1"
      >
       Purify
      </Link>
      <p className="font-serif italic text-ui text-paper/65 text-center">
       {t("footer.glory")}
      </p>
-     <p className="font-sans text-caption text-paper/45 text-center sm:text-right">
+     <p className="font-sans text-caption text-paper/45 text-center sm:flex-1 sm:text-right">
       © {new Date().getFullYear()} · v8.9 · {t("footer.copyright")}
      </p>
     </div>
