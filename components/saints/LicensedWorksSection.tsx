@@ -29,7 +29,7 @@ export function LicensedWorksSection({ works }: { works: LicensedWork[] }) {
         </p>
       </div>
 
-      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <ul className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {works.map((w) => (
           <LicensedWorkCard key={w.slug} work={w} />
         ))}
