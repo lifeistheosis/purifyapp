@@ -39,7 +39,7 @@ export function LicensedChapterReader({
  transId: string;
  translationLabel: string;
 }) {
- const { size, font } = useReaderPrefs();
+ const { size, font, leadingValue } = useReaderPrefs();
  const contentRef = useRef<HTMLDivElement>(null);
  const notesRef = useRef<HTMLDivElement>(null);
 
@@ -107,7 +107,8 @@ export function LicensedChapterReader({
  // inline-note fallback, without altering the delivered text.
  "licensed-scripture",
  )}
- dangerouslySetInnerHTML={{ __html: chapter.html }}
+ style={leadingValue ? { lineHeight: leadingValue } : undefined}
+         dangerouslySetInnerHTML={{ __html: chapter.html }}
  />
  {/* Footnotes & cross-references, relocated here after hydration. */}
  <div ref={notesRef} className={cn(FONT_CLASSES.sans)} />

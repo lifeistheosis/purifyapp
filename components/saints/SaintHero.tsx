@@ -1,6 +1,7 @@
 import type { Saint } from "@/lib/saints/saints";
 import { SaintIcon } from "./SaintIcon";
 import { BumpButton } from "./BumpButton";
+import { Cross } from "@/components/ui/icons/Cross";
 
 type Props = {
   saint: Saint;
@@ -22,14 +23,17 @@ export function SaintHero({ saint, bump, compactFacts }: Props) {
 
   return (
     <header className="pt-12 md:pt-16 pb-10 border-b border-paper/8">
-      <p
-        className={
-          "font-sans text-detail font-semibold uppercase tracking-[1.5px] mb-6 " +
-          (saint.featured ? "text-gold" : "text-paper/55")
-        }
-      >
-        {saint.featured ? "The Mother of God" : "Saints"}
-      </p>
+      <div className="mb-6 flex items-center gap-2.5">
+        <Cross size={18} aria-hidden className="text-gold" />
+        <p
+          className={
+            "font-sans text-detail font-semibold uppercase tracking-[1.5px] " +
+            (saint.featured ? "text-gold" : "text-paper/55")
+          }
+        >
+          {saint.featured ? "The Mother of God" : "Saints"}
+        </p>
+      </div>
       <div className="flex flex-col md:flex-row md:items-start gap-8">
         <SaintIcon
           saint={saint}
@@ -43,10 +47,10 @@ export function SaintHero({ saint, bump, compactFacts }: Props) {
               &ldquo;{saint.byname}&rdquo;
             </p>
           )}
-          <h1 className="font-sans text-display-sm md:text-display-lg font-bold text-paper tracking-[-0.025em] leading-[1.05]">
+          <h1 className="font-display-serif text-display md:text-display-lg text-paper tracking-[-0.01em] leading-[1.0]">
             {saint.name}
           </h1>
-          <p className="mt-3 font-serif text-lede md:text-title-sm text-paper/75 italic">
+          <p className="mt-4 font-serif text-lede md:text-title-sm text-paper/70 italic leading-snug">
             {saint.epithet}
           </p>
           <p className="mt-6 max-w-[640px] font-sans text-body text-paper/80 leading-relaxed">

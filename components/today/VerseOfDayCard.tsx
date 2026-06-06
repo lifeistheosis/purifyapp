@@ -4,11 +4,11 @@ import { VerseCardActions } from "./VerseCardActions";
 /**
  * Verse-of-the-day card on the mobile Today shell.
  *
- * Dark card with a warm rust radial-gradient backdrop bleeding from the
- * lower right, a small label, a bold reference, and the verse text in a
- * large serif treatment that fades to transparent at the bottom (mask).
- * Bottom: a 4-action footer (favourite, share, more, expand) handled by
- * the small client island VerseCardActions.
+ * Dark card with a faint warm candle-glow bleeding from the lower right,
+ * a small label, a bold reference, and the verse text in a large serif
+ * treatment that fades to transparent at the bottom (mask). Bottom: a
+ * quiet two-action footer (Save + overflow) handled by the small client
+ * island VerseCardActions.
  *
  * Verse text is rendered server-side from Purify's public-domain Bible
  * (Brenton LXX / KJV) via lib/today/verseOfDay.ts. No copyrighted
@@ -31,7 +31,7 @@ export async function VerseOfDayCard({
       className="relative overflow-hidden rounded-2xl border border-paper/10 p-4 pt-4"
       style={{
         background:
-          "radial-gradient(120% 80% at 80% 90%, rgba(193,39,45,0.20) 0%, transparent 60%), linear-gradient(180deg, #18120f 0%, #0a0606 100%)",
+          "radial-gradient(120% 80% at 80% 90%, rgba(212,175,55,0.06) 0%, transparent 55%), linear-gradient(180deg, #14100c 0%, #0a0707 100%)",
       }}
     >
       {/* Soft wave shape at lower-right, owned SVG */}
@@ -43,7 +43,7 @@ export async function VerseOfDayCard({
       >
         <path
           d="M0 160 C 80 120, 160 200, 240 150 S 400 120, 400 160 L 400 200 L 0 200 Z"
-          fill="rgba(20,8,8,0.85)"
+          fill="rgba(10,8,7,0.85)"
         />
       </svg>
 

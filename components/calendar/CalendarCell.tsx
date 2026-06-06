@@ -46,7 +46,7 @@ export function CalendarCell({
  const rgb = TONE_RGB[tone];
 
  const baseClasses =
- "group relative aspect-square min-h-[58px] md:min-h-[84px] flex flex-col p-1.5 overflow-hidden border-r border-b transition-colors duration-150";
+ "group relative aspect-square min-h-[58px] md:min-h-[84px] flex flex-col justify-center md:justify-start p-1.5 overflow-hidden border-r border-b transition-colors duration-150";
 
  return (
  <Link
@@ -112,7 +112,7 @@ export function CalendarCell({
  {label && (
  <span
  className={cn(
- "mt-auto font-serif text-eyebrow md:text-eyebrow leading-[1.2] line-clamp-2",
+ "mt-auto font-serif text-eyebrow leading-[1.2] hidden md:line-clamp-2",
  "[overflow-wrap:anywhere] hyphens-auto",
  cell.hasFeast ? "rubric opacity-90" : "text-paper/60",
  )}

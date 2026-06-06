@@ -45,7 +45,7 @@ export function ChapterReader({
   /** Strong's mini-lexicon: only entries used in this chapter. */
   strongs?: Record<string, StrongsEntry>;
 }) {
-  const { size, font } = useReaderPrefs();
+  const { size, font, leadingValue } = useReaderPrefs();
   const has = new Set(commentaryVerses ?? []);
   const [openVerse, setOpenVerse] = useState<number | null>(null);
   return (
@@ -56,6 +56,7 @@ export function ChapterReader({
           FONT_CLASSES[font],
           SIZE_CLASSES[size],
         )}
+        style={leadingValue ? { lineHeight: leadingValue } : undefined}
       >
         <div className="space-y-2">
           {verses.map((v, i) => (

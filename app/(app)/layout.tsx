@@ -14,7 +14,7 @@ export default function AppGroupLayout({
   return (
     <>
       {/* Desktop chrome. Hidden on phones, the MobileTabBar replaces it. */}
-      <div className="hidden md:block">
+      <div className="hidden md:block" data-app-chrome>
         <AppNav />
       </div>
       <SyncBridge />
@@ -22,10 +22,12 @@ export default function AppGroupLayout({
       {/* safe-pb gives mobile scroll containers room to clear the tab bar
           + iOS home indicator; the utility is a no-op on md+. */}
       <main className="flex-1 safe-pb">{children}</main>
-      <div className="hidden md:block">
+      <div className="hidden md:block" data-app-chrome>
         <Footer />
       </div>
-      <MobileTabBar />
+      <div data-app-chrome className="contents">
+        <MobileTabBar />
+      </div>
       <ScrollToTop />
       <InstallPrompt />
     </>

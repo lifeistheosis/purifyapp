@@ -806,3 +806,22 @@ div[data-hl="true"] {
  animation: none;
  }
 }
+
+/* ── Reader focus mode ───────────────────────────────────────────────
+   The Bible reader's ReaderFocusController toggles `html.reader-focus`.
+   When set, every element tagged as chrome (app nav, footer, mobile tab
+   bar, and the reader's own toolbars/sidebars/search) is removed so only
+   the scripture column remains, and the reader grid collapses to a single
+   centered measure. The class is ONLY ever present on the Bible reader
+   route, so these rules can never reach into another surface. */
+html.reader-focus [data-app-chrome],
+html.reader-focus [data-reader-chrome] {
+ display: none !important;
+}
+html.reader-focus .reader-grid {
+ display: block !important;
+}
+/* Give the lone reading column a little more breathing room in focus. */
+html.reader-focus main {
+ padding-top: 0;
+}

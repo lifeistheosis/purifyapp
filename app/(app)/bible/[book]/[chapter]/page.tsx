@@ -22,6 +22,9 @@ import {
  ReaderFontFamilyButton,
  ReaderFontSizeButton,
  ReaderPrefsProvider,
+ ReaderLeadingButton,
+ ReaderFocusButton,
+ ReaderFocusController,
 } from "@/components/reader/ReaderPrefs";
 import { allChapterParams, getBook } from "@/lib/bible/books";
 import {
@@ -138,6 +141,7 @@ export default async function BibleChapterPage({
 
  return (
  <ReaderPrefsProvider>
+ <ReaderFocusController />
  {/* Mobile-only YouVersion-style top bar: back to /bible, book +
  chapter as the title, trailing icon cluster (bookmark stub +
  settings sheet). Hidden on md+; desktop uses the AppNav. */}
@@ -161,7 +165,9 @@ export default async function BibleChapterPage({
  totalVerses={totalVerses}
  />
  <MobileChapterPill slug={book} chapter={chapterNum} />
+ <div data-reader-chrome className="contents">
  <BookChapterSidebar book={b!} current={chapterNum} />
+ </div>
  {/* Extra mobile top padding accounts for the fixed ReadingProgressBar
  context strip (~28px) sitting under the 72px sticky navbar. */}
  <section className="flex-1 px-5 md:px-10 pt-14 md:pt-16 pb-10 md:pb-16 safe-pb-reader min-w-0">
@@ -171,16 +177,18 @@ export default async function BibleChapterPage({
  their right. On mobile that cluster is split off into row 2 below.
  Switchers are kept at content width (not stretched) so they don't
  shift as the book name length changes. */}
- <div className="mb-4 flex items-center gap-3">
+ <div className="mb-4 flex items-center gap-3" data-reader-chrome>
  <TranslationSwitcher
  currentSlug={book}
  configuredLicensed={configuredLicensed}
  />
  <BookSwitcher currentSlug={book} />
- <div className="hidden md:flex items-center gap-3 ml-auto">
+ <div className="hidden md:flex flex-wrap items-center justify-end gap-2.5 ml-auto">
  <ReaderFontSizeButton />
  <ReaderFontFamilyButton />
+ <ReaderLeadingButton />
  {showInterlinear && <InterlinearToggle />}
+ <ReaderFocusButton />
  <ChapterBookmarkButton book={book} bookName={b!.name} chapter={chapterNum} />
  </div>
  </div>
@@ -189,16 +197,18 @@ export default async function BibleChapterPage({
  cluster above. Previously the Reader chip floated to the far right
  via ml-auto, which read as "misplaced" against the otherwise
  left-aligned chips. */}
- <div className="md:hidden mb-4 flex items-center gap-3 flex-wrap">
+ <div className="md:hidden mb-4 flex items-center gap-3 flex-wrap" data-reader-chrome>
  {showInterlinear && <InterlinearToggle />}
  <ReaderSettingsMenu showInterlinear={showInterlinear} />
  </div>
- <div className="mb-6">
+ <div className="mb-6" data-reader-chrome>
  <BibleSearch />
  </div>
+ <div data-reader-chrome className="contents">
  <MobileChapterStrip book={b!} current={chapterNum} />
+ </div>
 
- <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
+ <div className="reader-grid lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
  {/* Reader column */}
  <div className="min-w-0 mx-auto w-full max-w-[680px]">
  <header id="chapter-title" className="mb-6">
@@ -254,7 +264,7 @@ export default async function BibleChapterPage({
  <ChapterPager slug={book} chapter={chapterNum} />
 
  {!usingLicensed && (
- <p className="hidden md:block mt-10 mb-3 font-sans text-eyebrow text-paper/40 leading-[1.6]">
+ <p className="hidden md:block mt-10 mb-3 font-sans text-eyebrow text-paper/40 leading-[1.6]" data-reader-chrome>
  ← → chapters · drag across words to highlight a phrase · click any Greek word for definition · Cmd+Enter to save a note
  </p>
  )}
@@ -274,7 +284,7 @@ export default async function BibleChapterPage({
 
  {/* Desktop study rail */}
  {hasCommentary && (
- <aside className="hidden lg:block">
+ <aside className="hidden lg:block" data-reader-chrome>
  <div className="sticky top-[88px] max-h-[calc(100dvh-104px)] overflow-y-auto scrollbar-thin pr-2 -mr-2">
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  Patristic commentary

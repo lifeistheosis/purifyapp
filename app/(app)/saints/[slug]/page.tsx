@@ -18,6 +18,7 @@ import { getServerLocale } from "@/lib/i18n/server";
 import { getSaintBioOverrides } from "@/lib/i18n/localizedContent";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 import { RecordRead } from "@/components/reading/RecordRead";
+import { SaintIntercession } from "@/components/saints/SaintIntercession";
 
 type Params = Promise<{ slug: string }>;
 
@@ -135,6 +136,7 @@ export default async function SaintPage({ params }: { params: Params }) {
           {saint.works.length > 0 && <SaintWorksBrowser saint={saint} />}
           <LicensedWorksSection works={licensedWorks} />
         </ContentShell>
+        <SaintIntercession saint={saint} />
       </div>
     </section>
   );

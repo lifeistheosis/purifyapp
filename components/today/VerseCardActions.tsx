@@ -1,17 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 
 /**
- * Client island for the four-action footer row inside the Verse of Day card.
+ * Client island for the quiet footer row inside the Verse of Day card.
  *
- * - Favourite: toggles a localStorage bookmark for this verse reference. Heart
- *   fills rubric-red when active.
- * - Share: navigator.share() when supported, else copy a deep link with a
- *   small inline toast.
- * - More: opens a simple bottom sheet with three actions.
- * - Expand: navigates to the full chapter in the Bible reader.
+ * - Save: toggles a localStorage bookmark for this verse reference. Heart
+ *   fills rubric-red when active; label reads Save / Saved.
+ * - More (overflow): opens a bottom sheet — Open chapter, Copy verse text,
+ *   Copy link.
  *
  * The verse text + reference are server-rendered; only the interactive
  * footer lives on the client.
@@ -165,19 +162,24 @@ export function VerseCardActions({
 
   return (
     <>
-      <div className="relative grid grid-cols-4 gap-2 pt-4 mt-4 border-t border-paper/8">
-        <ActionBtn onClick={toggleFav} label="Favourite">
+      <div className="relative flex items-center justify-between pt-4 mt-4 border-t border-paper/8">
+        <button
+          type="button"
+          onClick={toggleFav}
+          aria-pressed={fav}
+          className="flex items-center gap-2 text-paper/75 hover:text-paper transition-colors"
+        >
           <HeartIcon filled={fav} />
-        </ActionBtn>
-        <ActionBtn onClick={share} label="Share">
-          <ShareIcon />
-        </ActionBtn>
-        <ActionBtn onClick={() => setMore(true)} label="More">
+          <span className="font-sans text-ui">{fav ? "Saved" : "Save"}</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setMore(true)}
+          aria-label="More actions"
+          className="flex h-9 w-9 items-center justify-center rounded-full text-paper/55 hover:text-paper hover:bg-paper/[0.06] transition-colors"
+        >
           <MoreIcon />
-        </ActionBtn>
-        <ActionLink href={href} label="Expand">
-          <ExpandIcon />
-        </ActionLink>
+        </button>
         {toast && (
           <div
             role="status"
@@ -218,9 +220,9 @@ export function VerseCardActions({
             />
             <SheetItem label="Copy verse text" onClick={copyText} />
             <SheetItem
-              label="Add to bookmarks"
+              label="Copy link"
               onClick={() => {
-                toggleFav();
+                void share();
                 setMore(false);
               }}
             />
@@ -235,47 +237,6 @@ export function VerseCardActions({
         </div>
       )}
     </>
-  );
-}
-
-function ActionBtn({
-  onClick,
-  label,
-  children,
-}: {
-  onClick: () => void;
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex flex-col items-center gap-1.5 text-paper/80 hover:text-paper transition-colors"
-    >
-      {children}
-      <span className="font-sans text-caption">{label}</span>
-    </button>
-  );
-}
-
-function ActionLink({
-  href,
-  label,
-  children,
-}: {
-  href: string;
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className="flex flex-col items-center gap-1.5 text-paper/80 hover:text-paper transition-colors"
-    >
-      {children}
-      <span className="font-sans text-caption">{label}</span>
-    </Link>
   );
 }
 
@@ -309,26 +270,6 @@ function HeartIcon({ filled }: { filled: boolean }) {
   );
 }
 
-function ShareIcon() {
-  return (
-    <svg
-      width={22}
-      height={22}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M12 16V4" />
-      <path d="m7 9 5-5 5 5" />
-      <path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />
-    </svg>
-  );
-}
-
 function MoreIcon() {
   return (
     <svg
@@ -341,27 +282,6 @@ function MoreIcon() {
       <circle cx="5" cy="12" r="1.6" />
       <circle cx="12" cy="12" r="1.6" />
       <circle cx="19" cy="12" r="1.6" />
-    </svg>
-  );
-}
-
-function ExpandIcon() {
-  return (
-    <svg
-      width={22}
-      height={22}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M14 4h6v6" />
-      <path d="M20 4 13 11" />
-      <path d="M10 20H4v-6" />
-      <path d="M4 20l7-7" />
     </svg>
   );
 }

@@ -4,7 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { Sliders } from "@/components/ui/icons/Sliders";
 import { useInterlinear } from "@/lib/bible/interlinear";
 import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
-import type { ReaderSize, ReaderFont } from "@/components/reader/ReaderPrefs";
+import type {
+  ReaderSize,
+  ReaderFont,
+  ReaderLeading,
+} from "@/components/reader/ReaderPrefs";
 import { cn } from "@/lib/cn";
 
 const SIZES: { v: ReaderSize; label: string }[] = [
@@ -20,6 +24,12 @@ const FONTS: { v: ReaderFont; label: string }[] = [
   { v: "sans", label: "Sans" },
 ];
 
+const LEADINGS: { v: ReaderLeading; label: string }[] = [
+  { v: "normal", label: "Normal" },
+  { v: "relaxed", label: "Relaxed" },
+  { v: "loose", label: "Loose" },
+];
+
 /**
  * Mobile-only consolidated menu: font size, font family, and
  * (when NT) interlinear toggle. Single ⚙ button collapses what
@@ -29,7 +39,8 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const { size, setSize, font, setFont } = useReaderPrefs();
+  const { size, setSize, font, setFont, leading, setLeading, focus, toggleFocus } =
+    useReaderPrefs();
   const { on: interlinearOn, toggle: toggleInterlinear } = useInterlinear();
 
   useEffect(() => {
@@ -135,6 +146,60 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Line spacing */}
+          <div>
+            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55 mb-2">
+              Line spacing
+            </p>
+            <div className="grid grid-cols-3 gap-1.5">
+              {LEADINGS.map((l) => (
+                <button
+                  key={l.v}
+                  type="button"
+                  onClick={() => setLeading(l.v)}
+                  className={cn(
+                    "rounded-md border py-2 font-sans text-caption font-medium transition-colors",
+                    leading === l.v
+                      ? "bg-paper/15 border-paper/45 text-paper"
+                      : "border-paper/12 text-paper/65 hover:bg-paper/8 hover:text-paper",
+                  )}
+                >
+                  {l.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Focus reading */}
+          <div className="pt-3 border-t border-paper/10">
+            <button
+              type="button"
+              onClick={() => {
+                toggleFocus();
+                setOpen(false);
+              }}
+              aria-pressed={focus}
+              className={cn(
+                "w-full inline-flex items-center justify-between gap-3 rounded-pill border h-[40px] px-3.5 font-sans text-detail font-medium transition-colors",
+                focus
+                  ? "border-gold text-night bg-gold hover:bg-[#c89e2c]"
+                  : "border-paper/15 bg-paper/[0.04] text-paper/85 hover:bg-paper/10 hover:border-paper/30",
+              )}
+            >
+              <span className="inline-flex items-center gap-2">
+                <span
+                  aria-hidden
+                  className={cn(
+                    "inline-block w-2 h-2 rounded-full",
+                    focus ? "bg-night" : "bg-paper/30",
+                  )}
+                />
+                Focus reading
+              </span>
+              <span className="font-semibold">{focus ? "On" : "Off"}</span>
+            </button>
           </div>
 
           {/* Interlinear (NT only) */}

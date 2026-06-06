@@ -271,17 +271,18 @@ export default async function Home() {
  </div>
  </section>
 
- {/* SCRIPTURE - white rhythm break */}
- <section className={`${sectionBase} bg-paper text-center`}>
+ {/* SCRIPTURE — one verse held on black, like a single illuminated page.
+            (Was a full-bleed white band that broke the candlelit palette.) */}
+ <section className={`${sectionBase} bg-black text-center`}>
  <div className="mx-auto max-w-[820px] w-full">
- <p className="font-serif text-title md:text-display-sm leading-[1.15] tracking-[-0.01em] text-night">
+ <p className="font-serif text-title md:text-display-sm leading-[1.15] tracking-[-0.01em] text-paper">
  {isDe
  ? "„Der Herr ist gut zu denen, die auf ihn vertrauen.“"
  : "“The Lord is good to those who trust in him.”"}
  </p>
  <Link
  href="/bible/nahum/1#v7"
- className="inline-block mt-7 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-ink-soft hover:text-night transition-colors underline-offset-4 hover:underline"
+ className="inline-block mt-7 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-[#d4af37]/70 hover:text-[#d4af37] transition-colors underline-offset-4 hover:underline"
  >
  Nahum 1:7
  </Link>
