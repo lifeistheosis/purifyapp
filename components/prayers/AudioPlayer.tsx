@@ -280,27 +280,49 @@ function LyricsPanel({
     box.scrollTo({ top: box.scrollTop + delta, behavior: "smooth" });
   }, [activeIdx, synced]);
 
+  // Fade the whole panel in on open.
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setShown(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  // Top/bottom fade so lines dissolve at the edges as they scroll past.
+  const edgeFade =
+    "linear-gradient(to bottom, transparent 0, #000 18%, #000 82%, transparent 100%)";
+
   return (
     <div
       ref={containerRef}
-      className="relative mt-5 max-h-[260px] overflow-y-auto rounded-lg border border-paper/10 bg-night/40 px-5 py-6 [scrollbar-width:thin]"
+      className={`relative mt-5 max-h-[300px] overflow-y-auto rounded-lg border border-paper/10 bg-night/40 px-5 py-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden transition-all duration-700 ease-out ${
+        shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+      }`}
+      style={{ maskImage: edgeFade, WebkitMaskImage: edgeFade }}
     >
-      <div className="space-y-3 text-center">
+      <div className="space-y-4 text-center">
         {lyrics.map((line, i) => {
           const isActive = synced && i === activeIdx;
-          const isPast = synced && i < activeIdx;
           const clickable = synced && typeof line.time === "number";
-          const cls = `block w-full font-serif transition-all duration-300 ${
-            clickable ? "cursor-pointer hover:text-paper" : ""
-          } ${
+          const dist = synced && activeIdx >= 0 ? Math.abs(i - activeIdx) : 0;
+          const cls = [
+            "block w-full font-serif leading-[1.5] transition-all duration-700 ease-out",
+            clickable ? "cursor-pointer hover:text-paper" : "",
             !synced
               ? "text-ui text-paper/80"
               : isActive
-                ? "text-lede text-gold"
-                : isPast
-                  ? "text-ui text-paper/40"
-                  : "text-ui text-paper/55"
-          }`;
+                ? "text-lede font-medium text-gold"
+                : `text-ui text-paper ${dist >= 3 ? "blur-[1.2px]" : ""}`,
+          ].join(" ");
+          // Active line glows and lifts; the rest dim by distance from it.
+          const style: React.CSSProperties | undefined = !synced
+            ? undefined
+            : isActive
+              ? {
+                  transform: "scale(1.05)",
+                  textShadow:
+                    "0 0 22px rgba(183,176,163,0.55), 0 0 8px rgba(183,176,163,0.4)",
+                }
+              : { opacity: Math.max(0.16, 0.62 - dist * 0.13) };
           if (clickable) {
             return (
               <button
@@ -313,6 +335,7 @@ function LyricsPanel({
                 type="button"
                 onClick={() => onSeek(line.time as number)}
                 className={cls}
+                style={style}
               >
                 {line.text || " "}
               </button>
@@ -327,8 +350,9 @@ function LyricsPanel({
                   : undefined
               }
               className={cls}
+              style={style}
             >
-              {line.text || "·"}
+              {line.text || " "}
             </p>
           );
         })}
