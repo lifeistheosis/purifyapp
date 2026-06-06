@@ -309,7 +309,7 @@ function LyricsPanel({
                 onClick={() => onSeek(line.time as number)}
                 className={cls}
               >
-                {line.text || "·"}
+                {line.text || " "}
               </button>
             );
           }

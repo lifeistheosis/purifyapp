@@ -4,7 +4,7 @@ import { ANTHEM_LYRICS } from "@/lib/prayers/anthemLyrics";
 export const metadata = {
   title: "The Prayer Rope Anthem",
   description:
-    "A hymn for the prayer rope — a song to accompany the Jesus Prayer. Play it with looping and follow along with the lyrics.",
+    "The English Prayer Rope Anthem, a contemporary Orthodox chant sung while telling the rope, lifting the Trinity, Christ, the Theotokos, and the saints, verse by verse. Play it, loop it, and follow the words.",
 };
 
 export default function AnthemPage() {
@@ -19,10 +19,18 @@ export default function AnthemPage() {
             The Prayer Rope Anthem
           </h1>
           <div aria-hidden className="mx-auto mt-6 h-px w-10 bg-gold/50" />
-          <p className="mx-auto mt-6 max-w-[48ch] font-serif italic text-detail text-paper/60 leading-[1.7]">
-            A song to keep beside the rope — not the Jesus Prayer itself, but a
-            hymn to carry the heart along while you tell it. Loop it softly and
-            follow the words.
+          <p className="mx-auto mt-6 max-w-[58ch] font-serif text-detail text-paper/70 leading-[1.8]">
+            The English Prayer Rope Anthem is a contemporary Orthodox chant for
+            the prayer rope, sung knot by knot as the rope is told. Verse by
+            verse it lifts the rope&rsquo;s short prayers: to the Holy Trinity,
+            to the Lord Jesus, to the Most Holy Theotokos, to St John the
+            Baptist, and to all the saints and holy angels, each closing on the
+            same refrain.
+          </p>
+          <p className="mx-auto mt-4 max-w-[58ch] font-serif italic text-detail text-paper/50 leading-[1.8]">
+            No single author is recorded for it; the anthem spread across the
+            Orthodox world and is sung in Serbian, Greek, Russian, and this
+            English setting. Loop it softly, and follow the words below.
           </p>
         </header>
 
