@@ -2961,7 +2961,24 @@ export const SAINTS: Saint[] = [
  "Isaac lived and served within the Church of the East, beyond the eastern frontier of the Roman empire, in a body separated from the imperial Church by the controversies of the fifth century. Yet his ascetical writings, free of those disputes and wholly given to the life of prayer, were received with love throughout the Orthodox Church. Translated into Greek at the Lavra of St. Sabas, they passed into Slavonic and into every Orthodox land, and have been treasured by the monks of Athos, by the elders of Optina, and by countless faithful, as among the surest guides to the heart's return to God.",
  "The Greek and Slavic Churches keep his memory on the twenty-eighth of January, with St. Ephraim the Syrian, honouring the two great fathers of the Syriac East together.",
  ],
- works: [],
+ works: [
+ {
+ slug: "mystic-treatises",
+ title: "Mystic Treatises",
+ subtitle: "Six Treatises on the Behaviour of Excellence — opening homilies",
+ year: "7th c.",
+ blurb:
+ "The opening homilies of Isaac's great corpus on the inner life — fear of God as the foundation of every virtue, the soul's stillness in the desert, the ladder of the Kingdom hidden within the heart. Verbatim public-domain English from A. J. Wensinck's 1923 translation, with more homilies to follow as the text is sourced.",
+ topics: [
+ "Asceticism",
+ "Stillness",
+ "Repentance",
+ "Prayer",
+ "Humility",
+ "The Inner Life",
+ ],
+ },
+ ],
  },
  {
  slug: "mark-of-ephesus",
