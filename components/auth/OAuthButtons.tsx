@@ -74,7 +74,13 @@ export function OAuthButtons() {
 
 function GoogleGlyph() {
   return (
-    <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden>
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 48 48"
+      aria-hidden
+      className="shrink-0"
+    >
       <path
         fill="#FFC107"
         d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.4-.4-3.5z"
@@ -97,7 +103,14 @@ function GoogleGlyph() {
 
 function AppleGlyph() {
   return (
-    <svg width="14" height="16" viewBox="0 0 14 16" aria-hidden fill="currentColor">
+    <svg
+      width="14"
+      height="16"
+      viewBox="0 0 14 16"
+      aria-hidden
+      fill="currentColor"
+      className="shrink-0"
+    >
       <path d="M9.5 0c.1.9-.3 1.8-.9 2.5-.6.7-1.6 1.2-2.4 1.1-.1-.9.4-1.8.9-2.4C7.7.6 8.7.1 9.5 0zM12.5 11.7c-.4 1-.6 1.4-1.1 2.3-.7 1.2-1.7 2.6-2.9 2.6-1.1 0-1.4-.7-2.9-.7-1.5 0-1.8.7-2.9.7-1.2 0-2.2-1.3-2.9-2.5C-.6 11.5-.8 7.5 1.1 5.4c.9-1 2.2-1.6 3.4-1.6 1.2 0 2 .7 3 .7s1.7-.7 3.1-.7c1 0 2.1.6 2.9 1.6-2.5 1.4-2 4.9-.9 6.3z" />
     </svg>
   );

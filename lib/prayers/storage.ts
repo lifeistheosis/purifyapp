@@ -202,6 +202,12 @@ export function recordPrayerOpened(entry: Omit<RecentPrayer, "at">) {
   writeJson(RECENTS_KEY, list.slice(0, RECENTS_CAP), RECENTS_EVENT);
 }
 
+/** Clear the Continue-Praying recents log. */
+export function clearRecentPrayers() {
+  if (typeof window === "undefined") return;
+  writeJson(RECENTS_KEY, [], RECENTS_EVENT);
+}
+
 export function useRecentPrayers(): RecentPrayer[] {
   const raw = useSyncExternalStore(
     subscribeRecents,

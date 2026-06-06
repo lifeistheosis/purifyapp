@@ -19,8 +19,9 @@ export default function SavedPage() {
           What you&rsquo;ve kept.
         </h1>
         <p className="mt-6 font-serif text-lede text-paper/80 leading-[1.7] max-w-[620px]">
-          The verses, chapters, and saint writings you bookmarked, newest
-          first. Tap a row to open. Sign in to sync across devices.
+          What you&rsquo;ve bookmarked, and what you&rsquo;ve recently read and
+          prayed. Tap a row to open. Sign in to sync your saved items across
+          devices.
         </p>
         <SavedList />
       </article>

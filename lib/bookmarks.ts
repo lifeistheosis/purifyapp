@@ -51,6 +51,16 @@ export type Bookmark =
  workTitle: string;
  sectionN: number;
  sectionTitle: string;
+ })
+ | (BookmarkBase & {
+ kind: "prayer";
+ ruleId: string;
+ prayerId: string;
+ })
+ | (BookmarkBase & {
+ kind: "prayer-rule";
+ ruleId: string;
+ href: string;
  });
 
 // Distributive Omit: TypeScript's built-in Omit treats unions as a single
@@ -105,13 +115,65 @@ function matches(b: Bookmark, loc: BookmarkLocator): boolean {
  return false;
 }
 
+/**
+ * Canonical identity key for a bookmark: kind + its locating fields with keys
+ * sorted, so two entries that point at the same thing hash identically even if
+ * their fields were serialized in a different order (the cause of the duplicate
+ * spam when server rows merged back with a different jsonb key order).
+ */
+export function bookmarkKey(b: Bookmark): string {
+ let loc: Record<string, unknown>;
+ switch (b.kind) {
+ case "bible-verse":
+ loc = { book: b.book, chapter: b.chapter, verse: b.verse };
+ break;
+ case "bible-chapter":
+ loc = { book: b.book, chapter: b.chapter };
+ break;
+ case "writing-section":
+ loc = { saintSlug: b.saintSlug, workSlug: b.workSlug, sectionN: b.sectionN };
+ break;
+ case "prayer":
+ loc = { ruleId: b.ruleId, prayerId: b.prayerId };
+ break;
+ case "prayer-rule":
+ loc = { ruleId: b.ruleId };
+ break;
+ default:
+ loc = {};
+ }
+ const sorted = Object.keys(loc)
+ .sort()
+ .map((k) => `${k}:${String(loc[k])}`)
+ .join("|");
+ return `${b.kind}|${sorted}`;
+}
+
+/**
+ * Collapse entries that point at the same thing, keeping the earliest-added
+ * one (stable, so an item's original "added" date survives). Cleans up any
+ * historical duplicates the moment the list is read.
+ */
+function dedupe(items: Bookmark[]): Bookmark[] {
+ const seen = new Map<string, Bookmark>();
+ for (const b of items) {
+ const key = bookmarkKey(b);
+ const existing = seen.get(key);
+ if (!existing || (b.addedAt ?? 0) < (existing.addedAt ?? 0)) {
+ seen.set(key, b);
+ }
+ }
+ // Preserve newest-first ordering by addedAt across the deduped set.
+ return [...seen.values()].sort((a, b) => (b.addedAt ?? 0) - (a.addedAt ?? 0));
+}
+
 function readAll(): Bookmark[] {
  if (typeof window === "undefined") return [];
  try {
  const raw = window.localStorage.getItem(STORAGE_KEY);
  if (!raw) return [];
  const parsed = JSON.parse(raw);
- return Array.isArray(parsed) ? (parsed as Bookmark[]) : [];
+ return Array.isArray(parsed) ? dedupe(parsed as Bookmark[]) : [];
  } catch {
  return [];
  }
@@ -148,7 +210,7 @@ function readSnapshot(): Bookmark[] {
  }
  try {
  const parsed = JSON.parse(raw);
- snapVal = Array.isArray(parsed) ? (parsed as Bookmark[]) : EMPTY_LIST;
+ snapVal = Array.isArray(parsed) ? dedupe(parsed as Bookmark[]) : EMPTY_LIST;
  } catch {
  snapVal = EMPTY_LIST;
  }

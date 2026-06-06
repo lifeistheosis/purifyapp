@@ -40,16 +40,37 @@ function writeLocal(items: Bookmark[]) {
  }
 }
 
+// Only these kinds carry a server-syncable locator. Prayer bookmarks
+// (kind "prayer" / "prayer-rule") are device-local and skipped.
+const SYNCABLE_KINDS = new Set(["bible-verse", "bible-chapter", "writing-section"]);
+
 function locatorOf(b: Bookmark) {
  if (b.kind === "bible-verse")
  return { book: b.book, chapter: b.chapter, verse: b.verse };
  if (b.kind === "bible-chapter")
  return { book: b.book, chapter: b.chapter };
+ if (b.kind === "writing-section")
  return {
  saintSlug: b.saintSlug,
  workSlug: b.workSlug,
  sectionN: b.sectionN,
  };
+ return {};
+}
+
+/**
+ * Order-independent key for a (kind, locator) pair. JSON.stringify alone is
+ * unstable because the local locator and the server's jsonb column can carry
+ * the same fields in a different key order, which silently defeated dedup and
+ * re-appended every server row into localStorage on each sign-in. Sorting the
+ * keys first makes both sides hash identically.
+ */
+function canonicalKey(kind: string, loc: Record<string, unknown>): string {
+ const sorted = Object.keys(loc)
+ .sort()
+ .map((k) => `${k}:${String(loc[k])}`)
+ .join("|");
+ return `${kind}|${sorted}`;
 }
 
 /**
@@ -63,7 +84,7 @@ export async function pushAllLocalBookmarks() {
  data: { user },
  } = await supabase.auth.getUser();
  if (!user) return;
- const items = readLocal();
+ const items = readLocal().filter((b) => SYNCABLE_KINDS.has(b.kind));
  if (items.length === 0) return;
  const rows = items.map((b) => ({
  user_id: user.id,
@@ -103,12 +124,17 @@ export async function pullServerBookmarks() {
  const local = readLocal();
  const localByLoc = new Map<string, Bookmark>();
  for (const b of local) {
- localByLoc.set(`${b.kind}|${JSON.stringify(locatorOf(b))}`, b);
+ localByLoc.set(canonicalKey(b.kind, locatorOf(b)), b);
  }
  const merged: Bookmark[] = [...local];
  for (const row of data) {
- const key = `${row.kind}|${JSON.stringify(row.locator)}`;
+ const key = canonicalKey(
+ String(row.kind),
+ (row.locator as Record<string, unknown>) ?? {},
+ );
  if (localByLoc.has(key)) continue;
+ // Guard against duplicate server rows within this same pull.
+ localByLoc.set(key, {} as Bookmark);
  // Reconstruct the discriminated-union shape from the locator.
  const loc = row.locator as Record<string, unknown>;
  const base = {
