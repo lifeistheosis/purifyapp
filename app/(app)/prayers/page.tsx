@@ -1,43 +1,13 @@
-import Link from "next/link";
-import { LESSONS } from "@/lib/prayers/learning";
-import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import {
   commemorationsOn,
   fastingStatus,
-  formatMonthDay,
   paschaInfo,
   startOfDayUtc,
-  type FastKind,
 } from "@/lib/calendar/orthodox";
-import { PrayerIcon } from "@/components/prayers/PrayerIcon";
-import { PrayerSlideshowHero } from "@/components/prayers/PrayerSlideshow";
 import { PrayersMobile } from "@/components/mobile/PrayersMobile";
-import {
-  PrayerMasthead,
-  PrayerSectionLabel,
-  PrayerIndex,
-  PrayerIndexRow,
-  PrayerNote,
-} from "@/components/prayers/PrayerBook";
-import { ContinuePraying } from "@/components/prayers/ContinuePraying";
-import { SuggestedToday } from "@/components/prayers/SuggestedToday";
-import {
-  RULE_CATEGORY_ORDER,
-  RULE_CATEGORY_LABEL,
-  rulesByCategory,
-  popularRules,
-  type RuleMeta,
-} from "@/lib/prayers/rules";
+import { PrayerHubDesktop } from "@/components/prayers/PrayerHubDesktop";
 import { seasonFor, isFastDay } from "@/lib/prayers/season";
 import { getServerLocale } from "@/lib/i18n/server";
-
-function titleOf(r: RuleMeta, isDe: boolean): string {
-  return isDe ? r.titleDe ?? r.title : r.title;
-}
-
-function descriptionOf(r: RuleMeta, isDe: boolean): string | undefined {
-  return isDe ? r.descriptionDe ?? r.description : r.description;
-}
 
 export const metadata = {
   title: "Prayer",
@@ -47,15 +17,6 @@ export const metadata = {
 
 // Hourly ISR so the day strip rolls forward without a redeploy.
 export const revalidate = 3600;
-
-const FAST_DOT: Record<FastKind, string> = {
-  strict: "bg-crimson",
-  "wine-oil": "bg-gold",
-  fish: "bg-sage",
-  fast: "bg-paper/40",
-  "fast-free": "bg-emerald-400",
-  normal: "bg-paper/30",
-};
 
 export default async function PrayersPage() {
   const locale = await getServerLocale();
@@ -80,297 +41,19 @@ export default async function PrayersPage() {
           : "Pascha is today"
         : pascha.label;
 
-  // "Also in this book" — the surfaces with their own dedicated UI, shown as
-  // tiles on the desktop grid.
-  const alsoEntries: {
-    href: string;
-    title: string;
-    description: string;
-    meta?: string;
-  }[] = [
-    {
-      href: "/prayers/today",
-      title: isDe ? "Heute" : "Today",
-      description: isDe
-        ? "Fasten, Gedächtnisse und Namenstage des heutigen Tages."
-        : "Today's fast, commemorations, and namedays.",
-    },
-    {
-      href: "/prayers/hours",
-      title: isDe ? "Die Horen" : "The Hours",
-      description: isDe
-        ? "Kurze Gebete, die den Tag heiligen."
-        : "Short prayers that sanctify the daylight.",
-    },
-    {
-      href: "/prayers/akathists",
-      title: isDe ? "Die Akathiste" : "The Akathists",
-      description: isDe
-        ? "Lange Lobgesänge, im Stehen gebetet."
-        : "Long hymns of praise, prayed standing throughout.",
-    },
-    {
-      href: "/prayers/rope",
-      title: isDe ? "Das Gebetsseil" : "The prayer rope",
-      description: isDe
-        ? "Zähle das Jesusgebet am Knotenseil."
-        : "Tell the Jesus Prayer on the knotted rope.",
-    },
-    {
-      href: "/prayers/anthem",
-      title: isDe ? "Die Gebetsseil-Hymne" : "The Prayer Rope Anthem",
-      description: isDe
-        ? "Eine Hymne zum Gebetsseil, mit Liedtext."
-        : "A hymn to accompany the rope, with lyrics to follow.",
-    },
-    {
-      href: "/prayers/learning",
-      title: isDe ? "Beten lernen" : "Learn to pray",
-      description: isDe
-        ? "Ein kurzer Einsteiger-Weg durch das Gebet."
-        : "A short, beginner's path through Orthodox prayer.",
-      meta: isDe ? `${LESSONS.length} Lektionen` : `${LESSONS.length} lessons`,
-    },
-  ];
-
   return (
     <>
       <PrayersMobile />
       <div className="hidden md:block">
-        <MobileTopBar title={isDe ? "Gebete" : "Prayers"} />
-        <section className="relative isolate overflow-hidden bg-night min-h-screen">
-          <div
-            className="pointer-events-none absolute inset-x-0 top-0 h-[460px]"
-            aria-hidden
-          >
-            <PrayerSlideshowHero priority className="opacity-[0.16]" />
-            <div className="absolute inset-0 bg-gradient-to-b from-night/55 via-night/80 to-night" />
-          </div>
-
-          <div className="relative z-10 mx-auto w-full max-w-[1200px] px-8 lg:px-12 py-16 lg:py-20">
-            <PrayerMasthead
-              align="center"
-              eyebrow={isDe ? "Das Gebet" : "The Prayer"}
-              title={isDe ? "Betet ohne Unterlaß." : "Pray without ceasing."}
-              scripture={
-                isDe ? "1. Thessalonicher 5,17" : "1 Thessalonians 5:17"
-              }
-              intro={
-                <p className="mx-auto max-w-[46ch] text-center">
-                  {isDe
-                    ? "Schlag die Seite auf, wenn du aufstehst; schlag sie auf, wenn du dich niederlegst."
-                    : "Open the page when you rise; open it when you lie down."}
-                </p>
-              }
-            >
-              <PrayerIcon slug="christ-pantocrator" size="md" priority />
-            </PrayerMasthead>
-
-            {/* Hero band: the prayer of the heart beside the day, two columns. */}
-            <div className="grid items-stretch gap-6 lg:grid-cols-[1.55fr_1fr] lg:gap-8">
-              {/* The prayer of the heart — a calm feature panel. */}
-              <div className="flex flex-col justify-center rounded-xl border border-paper/12 bg-paper/[0.02] px-8 py-12 text-center">
-                <p className="mb-6 font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40">
-                  {isDe ? "Das Gebet des Herzens" : "The prayer of the heart"}
-                </p>
-                <p className="font-serif text-title-sm lg:text-title leading-[1.5] text-paper/90">
-                  {isDe ? (
-                    <>
-                      Herr Jesus Christus,
-                      <br />
-                      Sohn Gottes,
-                      <br />
-                      erbarme Dich meiner, eines Sünders.
-                    </>
-                  ) : (
-                    <>
-                      Lord Jesus Christ,
-                      <br />
-                      Son of God,
-                      <br />
-                      have mercy on me, a sinner.
-                    </>
-                  )}
-                </p>
-                <p className="mx-auto mt-6 max-w-[44ch] font-serif italic text-detail text-paper/55 leading-[1.7]">
-                  {isDe
-                    ? "Bete es im Atem, mit dem Herzen, zu jeder Zeit. Die Väter sagen, das Zurückbringen sei die halbe Arbeit."
-                    : "Pray it in the breath, with the heart, at any time. The Fathers say the bringing-back is half the work."}
-                </p>
-                <p className="mt-6">
-                  <Link
-                    href="/prayers/learning/jesus-prayer"
-                    className="font-sans text-detail font-medium text-gold/80 underline decoration-gold/30 underline-offset-4 transition-colors hover:text-paper hover:decoration-paper"
-                  >
-                    {isDe ? "Lerne, es zu beten →" : "Learn how to pray it →"}
-                  </Link>
-                </p>
-              </div>
-
-              {/* The day, as a card. */}
-              <Link
-                href="/prayers/today"
-                className="group flex flex-col justify-between rounded-xl border border-paper/12 bg-paper/[0.03] px-7 py-8 transition-colors hover:border-paper/30"
-              >
-                <div>
-                  <p className="mb-5 font-sans text-eyebrow uppercase tracking-[2.5px] text-gold/70">
-                    {isDe ? "Heute" : "Today"}
-                  </p>
-                  <div className="flex items-baseline gap-3">
-                    <span className="font-serif text-display-sm text-paper leading-none tabular-nums">
-                      {today.getUTCDate()}
-                    </span>
-                    <span className="font-serif text-title-sm text-paper/70">
-                      {formatMonthDay(today).split(" ")[0]}
-                    </span>
-                  </div>
-                  <p className="mt-5 font-serif text-ui text-paper leading-snug">
-                    {headline?.name ??
-                      (isDe ? "Mit der Kirche beten" : "Pray with the Church")}
-                  </p>
-                  <p className="mt-2.5 flex items-center gap-2 font-sans text-caption text-paper/45">
-                    <span
-                      aria-hidden
-                      className={`inline-block h-1.5 w-1.5 rounded-full ${FAST_DOT[fast.kind]}`}
-                    />
-                    <span>
-                      {fast.label}
-                      <span className="text-paper/25"> · </span>
-                      {paschaLine}
-                    </span>
-                  </p>
-                </div>
-                <span className="mt-8 inline-flex items-center gap-1.5 font-sans text-detail font-medium text-gold/80 transition-colors group-hover:text-paper">
-                  {isDe ? "Heute öffnen" : "Open today"}
-                  <span
-                    aria-hidden
-                    className="transition-transform duration-200 group-hover:translate-x-0.5"
-                  >
-                    →
-                  </span>
-                </span>
-              </Link>
-            </div>
-
-            {/* Discovery rails — resume + today's context, side by side. */}
-            <div className="mt-6 grid gap-x-12 lg:grid-cols-2">
-              <div>
-                <ContinuePraying
-                  label={isDe ? "Weiterbeten" : "Continue praying"}
-                />
-              </div>
-              <div>
-                <SuggestedToday
-                  season={season}
-                  isFast={isFast}
-                  label={isDe ? "Für heute empfohlen" : "Suggested for today"}
-                />
-              </div>
-            </div>
-
-            {popularRules().length > 0 && (
-              <div className="mt-16">
-                <PrayerSectionLabel>
-                  {isDe ? "Häufig gebetet" : "Popular prayer rules"}
-                </PrayerSectionLabel>
-                <PrayerIndex>
-                  {popularRules().map((r) => (
-                    <PrayerIndexRow
-                      key={r.id}
-                      href={r.href}
-                      title={titleOf(r, isDe)}
-                      description={descriptionOf(r, isDe)}
-                      meta={
-                        r.estimatedMinutes
-                          ? isDe
-                            ? `~${r.estimatedMinutes} Min.`
-                            : `~${r.estimatedMinutes} min`
-                          : undefined
-                      }
-                    />
-                  ))}
-                </PrayerIndex>
-              </div>
-            )}
-
-            {/* The book proper — every prayer rule, by category, two columns. */}
-            <div className="mt-8 grid gap-x-12 gap-y-10 md:grid-cols-2">
-              {RULE_CATEGORY_ORDER.map((category) => {
-                const rules = rulesByCategory(category);
-                if (rules.length === 0) return null;
-                const cat = RULE_CATEGORY_LABEL[category];
-                return (
-                  <div key={category}>
-                    <PrayerSectionLabel>
-                      {isDe ? cat.de : cat.en}
-                    </PrayerSectionLabel>
-                    <PrayerIndex>
-                      {rules.map((r) => (
-                        <PrayerIndexRow
-                          key={r.id}
-                          href={r.href}
-                          title={titleOf(r, isDe)}
-                          description={descriptionOf(r, isDe)}
-                          planned={r.planned}
-                          plannedLabel={isDe ? "Geplant" : "Planned"}
-                          meta={
-                            r.estimatedMinutes
-                              ? isDe
-                                ? `~${r.estimatedMinutes} Min.`
-                                : `~${r.estimatedMinutes} min`
-                              : undefined
-                          }
-                        />
-                      ))}
-                    </PrayerIndex>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Also in this book — surfaces with their own UI, as tiles. */}
-            <div className="mt-16">
-              <PrayerSectionLabel>
-                {isDe ? "Auch in diesem Buch" : "Also in this book"}
-              </PrayerSectionLabel>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {alsoEntries.map((e) => (
-                  <Link
-                    key={e.href}
-                    href={e.href}
-                    className="group flex flex-col rounded-lg border border-paper/12 bg-paper/[0.02] px-5 py-5 transition-colors hover:border-paper/30 hover:bg-paper/[0.04]"
-                  >
-                    <div className="flex items-baseline justify-between gap-3">
-                      <h2 className="font-serif text-title-sm text-paper/90 leading-snug transition-colors group-hover:text-paper">
-                        {e.title}
-                      </h2>
-                      {e.meta && (
-                        <span className="shrink-0 font-sans text-caption text-paper/35 tabular-nums">
-                          {e.meta}
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-2 font-sans text-detail text-paper/50 leading-[1.6]">
-                      {e.description}
-                    </p>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            <PrayerNote>
-              {isDe
-                ? "Deine Lesezeichen, Notizen und Markierungen leben auf diesem Gerät. Melde dich an, um sie über Geräte hinweg zu behalten."
-                : "Your bookmarks, notes, and highlights live on this device. Sign in to keep them across devices."}{" "}
-              <Link
-                href="/account"
-                className="text-paper/55 underline decoration-paper/25 underline-offset-2 hover:text-paper"
-              >
-                {isDe ? "Dein Konto →" : "Your account →"}
-              </Link>
-            </PrayerNote>
-          </div>
-        </section>
+        <PrayerHubDesktop
+          isDe={isDe}
+          today={today}
+          fast={fast}
+          headlineName={headline?.name}
+          paschaLine={paschaLine}
+          season={season}
+          isFast={isFast}
+        />
       </div>
     </>
   );
