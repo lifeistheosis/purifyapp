@@ -265,20 +265,25 @@ function LyricsPanel({
   }
 
   // Auto-scroll the active line to the center of the panel (Apple Music feel).
+  // Use rect deltas rather than el.offsetTop: offsetTop is relative to the
+  // nearest positioned ancestor, which isn't guaranteed to be this scroll box,
+  // and using it scrolled the panel straight to the bottom.
   useEffect(() => {
-    if (!synced) return;
+    if (!synced || activeIdx < 0) return;
     const el = activeRef.current;
     const box = containerRef.current;
     if (!el || !box) return;
-    const top =
-      el.offsetTop - box.clientHeight / 2 + el.clientHeight / 2;
-    box.scrollTo({ top, behavior: "smooth" });
+    const elRect = el.getBoundingClientRect();
+    const boxRect = box.getBoundingClientRect();
+    const delta =
+      elRect.top - boxRect.top - (box.clientHeight / 2 - el.clientHeight / 2);
+    box.scrollTo({ top: box.scrollTop + delta, behavior: "smooth" });
   }, [activeIdx, synced]);
 
   return (
     <div
       ref={containerRef}
-      className="mt-5 max-h-[260px] overflow-y-auto rounded-lg border border-paper/10 bg-night/40 px-5 py-6 [scrollbar-width:thin]"
+      className="relative mt-5 max-h-[260px] overflow-y-auto rounded-lg border border-paper/10 bg-night/40 px-5 py-6 [scrollbar-width:thin]"
     >
       <div className="space-y-3 text-center">
         {lyrics.map((line, i) => {
