@@ -377,14 +377,24 @@ function FocusGlyph() {
  */
 export function ReaderFocusController() {
   const { focus, setFocus } = useReaderPrefs();
+
+  // Sync `html.reader-focus` with the `focus` preference. Uses the View
+  // Transitions API when available so the browser crossfades the entire page
+  // between its before/after layout snapshots — produces a true cinematic
+  // dissolve in BOTH directions (entering and exiting focus) instead of
+  // trying to animate dozens of chrome elements, some of which use
+  // `display: contents` and can't be opacity-transitioned. Chrome 111+,
+  // Safari 18+. Older browsers fall back to an instant snap.
+  //
+  // Critically, this effect has NO cleanup for the class toggle. Earlier we
+  // returned `() => el.classList.remove("reader-focus")`, but useEffect
+  // cleanup runs on every dependency change — so when focus flipped from
+  // true to false, the cleanup would strip the class instantly BEFORE the
+  // new effect's startViewTransition could snapshot it, killing the exit
+  // animation. The class is now toggled solely by the effect body, and the
+  // separate mount-only effect below handles unmount safety.
   useEffect(() => {
     const el = document.documentElement;
-    // Use the View Transitions API when available so the browser crossfades
-    // the entire page between its before/after layout snapshots — produces a
-    // true cinematic dissolve instead of trying to animate dozens of chrome
-    // elements (some of which use `display: contents` and can't be opacity-
-    // transitioned). Chrome 111+, Safari 18+. Older browsers fall back to an
-    // instant snap, which is still functional.
     type Doc = Document & {
       startViewTransition?: (cb: () => void) => { finished: Promise<void> };
     };
@@ -396,10 +406,17 @@ export function ReaderFocusController() {
     } else {
       el.classList.toggle("reader-focus", focus);
     }
-    return () => {
-      el.classList.remove("reader-focus");
-    };
   }, [focus]);
+
+  // Safety: if the controller unmounts (e.g. user navigates away while focus
+  // is on), strip the class so it doesn't leak onto other surfaces. Empty
+  // deps ensures this cleanup only fires on actual unmount, never on a
+  // focus-toggle re-render.
+  useEffect(() => {
+    return () => {
+      document.documentElement.classList.remove("reader-focus");
+    };
+  }, []);
   if (!focus) return null;
   return (
     <button
