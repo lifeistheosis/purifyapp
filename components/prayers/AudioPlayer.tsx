@@ -12,6 +12,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+/**
+ * One line of lyrics. `time` (seconds) is optional: when present on every
+ * line, the panel runs in synced "now-playing" mode (Apple Music / Spotify
+ * style) — the active line brightens, the rest dim, the view auto-scrolls,
+ * and tapping a line seeks to it. With no times, it's a plain scrolling sheet.
+ */
+export type LyricLine = { time?: number; text: string };
+
 type LoopMode = "off" | "inf" | 3 | 7 | 12;
 
 const LOOP_OPTIONS: { value: LoopMode; label: string }[] = [
@@ -33,10 +41,12 @@ export function AudioPlayer({
   src,
   title,
   subtitle,
+  lyrics,
 }: {
   src: string;
   title: string;
   subtitle?: string;
+  lyrics?: LyricLine[];
 }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -44,6 +54,8 @@ export function AudioPlayer({
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
   const [loop, setLoop] = useState<LoopMode>("off");
+  const [showLyrics, setShowLyrics] = useState(false);
+  const hasLyrics = Array.isArray(lyrics) && lyrics.length > 0;
   // Remaining replays for a finite loop count. Lives in a ref so the `ended`
   // handler reads the latest value without re-binding the listener.
   const repeatsLeft = useRef(0);
@@ -110,6 +122,14 @@ export function AudioPlayer({
     if (a) a.volume = v;
   };
 
+  const seekTo = useCallback((t: number) => {
+    const a = audioRef.current;
+    if (!a) return;
+    a.currentTime = t;
+    setCurrent(t);
+    if (a.paused) void a.play();
+  }, []);
+
   const pct = duration > 0 ? (current / duration) * 100 : 0;
 
   return (
@@ -133,7 +153,26 @@ export function AudioPlayer({
             </p>
           )}
         </div>
+        {hasLyrics && (
+          <button
+            type="button"
+            onClick={() => setShowLyrics((v) => !v)}
+            aria-pressed={showLyrics}
+            className={`shrink-0 inline-flex items-center gap-1.5 rounded-pill border px-3 py-1.5 font-sans text-caption transition-colors ${
+              showLyrics
+                ? "border-gold/40 bg-gold/[0.1] text-gold"
+                : "border-paper/15 bg-paper/[0.03] text-paper/60 hover:text-paper hover:border-paper/35"
+            }`}
+          >
+            <LyricsIcon />
+            Lyrics
+          </button>
+        )}
       </div>
+
+      {hasLyrics && showLyrics && (
+        <LyricsPanel lyrics={lyrics!} current={current} onSeek={seekTo} />
+      )}
 
       {/* Scrubber */}
       <div className="mt-5 flex items-center gap-3">
@@ -198,6 +237,121 @@ export function AudioPlayer({
         </label>
       </div>
     </div>
+  );
+}
+
+/* ── Lyrics ────────────────────────────────────────────────────────────── */
+
+function LyricsPanel({
+  lyrics,
+  current,
+  onSeek,
+}: {
+  lyrics: LyricLine[];
+  current: number;
+  onSeek: (t: number) => void;
+}) {
+  const synced = lyrics.every((l) => typeof l.time === "number");
+  const containerRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef<HTMLElement>(null);
+
+  // Index of the active line: the last line whose time has passed.
+  let activeIdx = -1;
+  if (synced) {
+    for (let i = 0; i < lyrics.length; i++) {
+      if ((lyrics[i].time ?? 0) <= current + 0.15) activeIdx = i;
+      else break;
+    }
+  }
+
+  // Auto-scroll the active line to the center of the panel (Apple Music feel).
+  useEffect(() => {
+    if (!synced) return;
+    const el = activeRef.current;
+    const box = containerRef.current;
+    if (!el || !box) return;
+    const top =
+      el.offsetTop - box.clientHeight / 2 + el.clientHeight / 2;
+    box.scrollTo({ top, behavior: "smooth" });
+  }, [activeIdx, synced]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="mt-5 max-h-[260px] overflow-y-auto rounded-lg border border-paper/10 bg-night/40 px-5 py-6 [scrollbar-width:thin]"
+    >
+      <div className="space-y-3 text-center">
+        {lyrics.map((line, i) => {
+          const isActive = synced && i === activeIdx;
+          const isPast = synced && i < activeIdx;
+          const clickable = synced && typeof line.time === "number";
+          const cls = `block w-full font-serif transition-all duration-300 ${
+            clickable ? "cursor-pointer hover:text-paper" : ""
+          } ${
+            !synced
+              ? "text-ui text-paper/80"
+              : isActive
+                ? "text-lede text-gold"
+                : isPast
+                  ? "text-ui text-paper/40"
+                  : "text-ui text-paper/55"
+          }`;
+          if (clickable) {
+            return (
+              <button
+                key={i}
+                ref={
+                  isActive
+                    ? (activeRef as React.RefObject<HTMLButtonElement>)
+                    : undefined
+                }
+                type="button"
+                onClick={() => onSeek(line.time as number)}
+                className={cls}
+              >
+                {line.text || "·"}
+              </button>
+            );
+          }
+          return (
+            <p
+              key={i}
+              ref={
+                isActive
+                  ? (activeRef as React.RefObject<HTMLParagraphElement>)
+                  : undefined
+              }
+              className={cls}
+            >
+              {line.text || "·"}
+            </p>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function LyricsIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      className="shrink-0"
+    >
+      <path d="M4 6h11" />
+      <path d="M4 12h8" />
+      <path d="M4 18h6" />
+      <circle cx="18" cy="16" r="2.5" />
+      <path d="M20.5 16V9l1.5 1.2" />
+    </svg>
   );
 }
 

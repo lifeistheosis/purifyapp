@@ -297,8 +297,17 @@ export default async function PrayersPage() {
               title={isDe ? "Das Gebetsseil" : "The prayer rope"}
               description={
                 isDe
-                  ? "Zähle das Jesusgebet am Knotenseil, mit der Hymne."
-                  : "Tell the Jesus Prayer on the knotted rope, with the anthem."
+                  ? "Zähle das Jesusgebet am Knotenseil."
+                  : "Tell the Jesus Prayer on the knotted rope."
+              }
+            />
+            <PrayerIndexRow
+              href="/prayers/anthem"
+              title={isDe ? "Die Gebetsseil-Hymne" : "The Prayer Rope Anthem"}
+              description={
+                isDe
+                  ? "Eine Hymne zum Gebetsseil, mit Liedtext."
+                  : "A hymn to accompany the rope, with lyrics to follow."
               }
             />
             <PrayerIndexRow

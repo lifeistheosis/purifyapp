@@ -160,7 +160,12 @@ export function PrayersMobile() {
           <PrayerIndexRow
             href="/prayers/rope"
             title="The prayer rope"
-            description="Tell the Jesus Prayer on the knotted rope, with the anthem."
+            description="Tell the Jesus Prayer on the knotted rope."
+          />
+          <PrayerIndexRow
+            href="/prayers/anthem"
+            title="The Prayer Rope Anthem"
+            description="A hymn to accompany the rope, with lyrics to follow."
           />
           <PrayerIndexRow
             href="/prayers/learning"
