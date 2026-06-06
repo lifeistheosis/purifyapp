@@ -10,6 +10,7 @@ import { LiveTab } from "./tabs/LiveTab";
 import { TrafficTab } from "./tabs/TrafficTab";
 import { AudienceTab } from "./tabs/AudienceTab";
 import { ContentTab } from "./tabs/ContentTab";
+import { EngagementTab } from "./tabs/EngagementTab";
 import { UsersTab } from "./tabs/UsersTab";
 import { SustainabilityTab } from "./tabs/SustainabilityTab";
 import { ContentHealthTab } from "./tabs/ContentHealthTab";
@@ -22,6 +23,7 @@ type TabId =
   | "traffic"
   | "audience"
   | "content"
+  | "engagement"
   | "users"
   | "sustainability"
   | "content-health"
@@ -33,6 +35,7 @@ const TABS: { id: TabId; label: string; eyebrow: string; component: ComponentTyp
   { id: "traffic", label: "Traffic", eyebrow: "Time-series", component: TrafficTab },
   { id: "audience", label: "Audience", eyebrow: "Who's reading", component: AudienceTab },
   { id: "content", label: "Content", eyebrow: "What's working", component: ContentTab },
+  { id: "engagement", label: "Engagement", eyebrow: "Repeat visits", component: EngagementTab },
   { id: "users", label: "Users", eyebrow: "Profiles", component: UsersTab },
   { id: "sustainability", label: "Sustainability", eyebrow: "Paying for itself", component: SustainabilityTab },
   { id: "content-health", label: "Content Health", eyebrow: "Gaps in the data tree", component: ContentHealthTab },
