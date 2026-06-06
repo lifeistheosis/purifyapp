@@ -31,11 +31,23 @@ const LEADINGS: { v: ReaderLeading; label: string }[] = [
 ];
 
 /**
- * Mobile-only consolidated menu: font size, font family, and
- * (when NT) interlinear toggle. Single ⚙ button collapses what
- * was three buttons on the chrome row.
+ * Consolidated reader menu: text size, font family, line spacing, and
+ * (on mobile) the Focus + Interlinear toggles. Collapses what would
+ * otherwise be 3–5 chrome chips down to a single "Reader" pill.
+ *
+ * `embedded` is set true on desktop where Focus and Interlinear are
+ * already shown as their own dedicated pills next to this menu — in
+ * that mode we hide the in-panel Focus + Interlinear sections AND the
+ * gold status dot on the button, so the same control doesn't appear
+ * twice on the row.
  */
-export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boolean }) {
+export function ReaderSettingsMenu({
+  showInterlinear,
+  embedded = false,
+}: {
+  showInterlinear: boolean;
+  embedded?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -79,18 +91,22 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
       >
         <Sliders aria-hidden className="h-4 w-4" />
         <span>Reader</span>
-        {/* Always reserve the dot's space so the button width is stable
-            whether or not interlinear is on (prevents the row shifting). */}
-        <span
-          aria-hidden
-          className={cn(
-            "inline-block w-1.5 h-1.5 rounded-full transition-colors",
-            interlinearOn && showInterlinear
-              ? "bg-gold"
-              : "bg-transparent",
-          )}
-          title={interlinearOn && showInterlinear ? "Interlinear is on" : undefined}
-        />
+        {/* Status dot: reserved space so the button width never shifts as
+            interlinear toggles. Suppressed in embedded mode (desktop), where
+            Interlinear has its own dedicated pill next to this menu and a
+            second indicator here would be a duplicate signal. */}
+        {!embedded && (
+          <span
+            aria-hidden
+            className={cn(
+              "inline-block w-1.5 h-1.5 rounded-full transition-colors",
+              interlinearOn && showInterlinear
+                ? "bg-gold"
+                : "bg-transparent",
+            )}
+            title={interlinearOn && showInterlinear ? "Interlinear is on" : undefined}
+          />
+        )}
       </button>
 
       {open && (
@@ -172,7 +188,9 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
             </div>
           </div>
 
-          {/* Focus reading */}
+          {/* Focus reading. Hidden on desktop (embedded), where Focus is
+              its own dedicated pill on the toolbar and would duplicate here. */}
+          {!embedded && (
           <div className="pt-3 border-t border-paper/10">
             <button
               type="button"
@@ -201,9 +219,11 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
               <span className="font-semibold">{focus ? "On" : "Off"}</span>
             </button>
           </div>
+          )}
 
-          {/* Interlinear (NT only) */}
-          {showInterlinear && (
+          {/* Interlinear (NT only). Hidden on desktop (embedded) for the same
+              reason as Focus above — it has its own dedicated pill there. */}
+          {!embedded && showInterlinear && (
             <div className="pt-3 border-t border-paper/10">
               <button
                 type="button"

@@ -19,10 +19,7 @@ import { MobileReaderActions } from "@/components/bible/MobileReaderActions";
 import { ReaderSettingsMenu } from "@/components/bible/ReaderSettingsMenu";
 import { VerseFocusFlash } from "@/components/bible/VerseFocusFlash";
 import {
- ReaderFontFamilyButton,
- ReaderFontSizeButton,
  ReaderPrefsProvider,
- ReaderLeadingButton,
  ReaderFocusButton,
  ReaderFocusController,
 } from "@/components/reader/ReaderPrefs";
@@ -177,29 +174,37 @@ export default async function BibleChapterPage({
  their right. On mobile that cluster is split off into row 2 below.
  Switchers are kept at content width (not stretched) so they don't
  shift as the book name length changes. */}
- {/* Desktop toolbar: two deliberate left-aligned rows so both edges
-   line up with the scripture column below. Top row is "which scripture"
-   (Translation · Book · Save); second row is "how to read it" (Size ·
-   Font · Spacing · Interlinear · Focus). Both rows wrap independently
-   if pinched. */}
- <div className="mb-4 flex flex-col gap-2.5" data-reader-chrome>
- <div className="flex items-center gap-2.5 flex-wrap">
+ {/* Desktop toolbar: a single tidy row, two semantic groups —
+   "which scripture" on the left (Translation · Book · Save) and
+   "how to read it" on the right (Reader prefs menu · Interlinear ·
+   Focus). The three reader-preference cycle-pills (Size, Font, Spacing)
+   are collapsed inside the Reader menu so the row stays at six controls
+   instead of eight, matching how Kindle/Apple Books/Medium handle
+   set-and-forget prefs. Wraps as a unit if pinched. */}
+ <div
+ className="mb-4 hidden md:flex items-center gap-2.5 flex-wrap"
+ data-reader-chrome
+ >
  <TranslationSwitcher
  currentSlug={book}
  configuredLicensed={configuredLicensed}
  />
  <BookSwitcher currentSlug={book} />
- <span className="hidden md:inline-block">
  <ChapterBookmarkButton book={book} bookName={b!.name} chapter={chapterNum} />
- </span>
- </div>
- <div className="hidden md:flex items-center gap-2.5 flex-wrap">
- <ReaderFontSizeButton />
- <ReaderFontFamilyButton />
- <ReaderLeadingButton />
+ <div className="ml-auto flex items-center gap-2.5 flex-wrap justify-end">
+ <ReaderSettingsMenu showInterlinear={showInterlinear} embedded />
  {showInterlinear && <InterlinearToggle />}
  <ReaderFocusButton />
  </div>
+ </div>
+ {/* Mobile keeps its own compact row (the menu carries Focus and
+   Interlinear inside on mobile). Identical to before. */}
+ <div className="md:hidden mb-4 flex items-center gap-2.5 flex-wrap" data-reader-chrome>
+ <TranslationSwitcher
+ currentSlug={book}
+ configuredLicensed={configuredLicensed}
+ />
+ <BookSwitcher currentSlug={book} />
  </div>
  {/* Row 2, mobile only: Interlinear pill (NT) + Reader chip sit as a
  pair at the start of the row, matching the Translation + Book
