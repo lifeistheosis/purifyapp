@@ -293,6 +293,15 @@ export default async function PrayersPage() {
               }
             />
             <PrayerIndexRow
+              href="/prayers/rope"
+              title={isDe ? "Das Gebetsseil" : "The prayer rope"}
+              description={
+                isDe
+                  ? "Zähle das Jesusgebet am Knotenseil, mit der Hymne."
+                  : "Tell the Jesus Prayer on the knotted rope, with the anthem."
+              }
+            />
+            <PrayerIndexRow
               href="/prayers/learning"
               title={isDe ? "Beten lernen" : "Learn to pray"}
               description={

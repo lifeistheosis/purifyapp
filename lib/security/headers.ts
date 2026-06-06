@@ -34,6 +34,8 @@ export function buildCsp(nonce: string): string {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://*.supabase.co https://*.buymeacoffee.com https://img.buymeacoffee.com",
     "font-src 'self' data:",
+    // Self-hosted prayer audio (e.g. the prayer-rope anthem).
+    "media-src 'self'",
     "connect-src 'self' https://*.supabase.co",
     "frame-ancestors 'none'",
     "base-uri 'self'",

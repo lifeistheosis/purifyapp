@@ -27,6 +27,7 @@ import {
   writeRopeSettings,
   type RopeSettings,
 } from "@/lib/prayers/storage";
+import { AudioPlayer } from "@/components/prayers/AudioPlayer";
 
 const LINES = [
   "Lord Jesus Christ, Son of God, have mercy on me, a sinner.",
@@ -309,6 +310,18 @@ export function PrayerRope() {
           >
             Reset
           </button>
+        </div>
+
+        {/* The anthem — sung while telling the rope. Loop it to keep pace. */}
+        <div className="mt-10">
+          <p className="mb-3 font-sans text-eyebrow uppercase tracking-[2px] text-paper/40 text-center">
+            The anthem
+          </p>
+          <AudioPlayer
+            src="/audio/prayer-rope-anthem.mp3"
+            title="The English Prayer Rope Anthem"
+            subtitle="Play it softly as you tell the rope · loop to keep pace"
+          />
         </div>
       </footer>
 

@@ -119,6 +119,11 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return; // Don't intercept CDNs.
   if (shouldBypass(url)) return;
 
+  // Audio is served with HTTP Range requests (206 Partial Content). The Cache
+  // API rejects partial responses, so let the browser handle media natively
+  // rather than routing it through a runtime cache.
+  if (url.pathname.startsWith("/audio/")) return;
+
   // HTML navigations.
   if (request.mode === "navigate") {
     event.respondWith(networkFirst(request, HTML_CACHE));

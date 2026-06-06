@@ -3,6 +3,76 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useBookmarks, type Bookmark } from "@/lib/bookmarks";
+
+/* ── Verse text (lazy, on demand) ──────────────────────────────────────── */
+
+// Cache fetched verse text for the session so toggling Show text on/off, or
+// re-rendering, never refetches the same verse.
+const verseTextCache = new Map<string, string>();
+
+function verseCacheKey(book: string, chapter: number, verse: number) {
+  return `${book}:${chapter}:${verse}`;
+}
+
+function VerseText({
+  book,
+  chapter,
+  verse,
+}: {
+  book: string;
+  chapter: number;
+  verse: number;
+}) {
+  const key = verseCacheKey(book, chapter, verse);
+  const [text, setText] = useState<string | null>(
+    () => verseTextCache.get(key) ?? null,
+  );
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (verseTextCache.has(key)) {
+      setText(verseTextCache.get(key)!);
+      return;
+    }
+    let alive = true;
+    fetch(
+      `/api/bible/verse?book=${encodeURIComponent(book)}&chapter=${chapter}&verse=${verse}`,
+    )
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("bad"))))
+      .then((data: { verses?: { n: number; text: string }[] }) => {
+        if (!alive) return;
+        const t = data.verses?.[0]?.text?.trim() ?? "";
+        verseTextCache.set(key, t);
+        setText(t);
+      })
+      .catch(() => {
+        if (alive) setError(true);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [key, book, chapter, verse]);
+
+  if (error) {
+    return (
+      <p className="mt-2 font-sans text-caption text-paper/35 italic">
+        Couldn&rsquo;t load the text.
+      </p>
+    );
+  }
+  if (text === null) {
+    return (
+      <p className="mt-2 font-sans text-caption text-paper/35 italic">
+        Loading…
+      </p>
+    );
+  }
+  return (
+    <p className="mt-2 font-serif text-detail text-paper/75 leading-[1.6]">
+      {text}
+    </p>
+  );
+}
 import { useReadingHistory, clearReadingHistory } from "@/lib/reading/history";
 import { useRecentPrayers, clearRecentPrayers } from "@/lib/prayers/storage";
 
@@ -126,6 +196,8 @@ function SavedTab({
   bookmarks: Bookmark[];
   onRemove: (id: string) => void;
 }) {
+  const [showVerseText, setShowVerseText] = useState(false);
+
   const verses = bookmarks.filter((b) => b.kind === "bible-verse");
   const chapters = bookmarks.filter((b) => b.kind === "bible-chapter");
   const writings = bookmarks.filter((b) => b.kind === "writing-section");
@@ -154,9 +226,27 @@ function SavedTab({
   return (
     <div className="space-y-12">
       {verses.length > 0 && (
-        <Group title="Verses" count={verses.length}>
+        <Group
+          title="Verses"
+          count={verses.length}
+          action={
+            <button
+              type="button"
+              onClick={() => setShowVerseText((v) => !v)}
+              aria-pressed={showVerseText}
+              className="font-sans text-caption text-paper/45 hover:text-paper transition-colors"
+            >
+              {showVerseText ? "Hide text" : "Show text"}
+            </button>
+          }
+        >
           {verses.map((b) => (
-            <Row key={b.id} bookmark={b} onRemove={() => onRemove(b.id)} />
+            <Row
+              key={b.id}
+              bookmark={b}
+              onRemove={() => onRemove(b.id)}
+              showText={showVerseText}
+            />
           ))}
         </Group>
       )}
@@ -188,21 +278,26 @@ function SavedTab({
 function Group({
   title,
   count,
+  action,
   children,
 }: {
   title: string;
   count: number;
+  action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <section>
-      <div className="flex items-baseline justify-between mb-4">
+      <div className="flex items-baseline justify-between gap-3 mb-4">
         <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
           {title}
         </p>
-        <p className="font-sans text-caption text-paper/40 tabular-nums">
-          {count}
-        </p>
+        <div className="flex items-baseline gap-4">
+          {action}
+          <p className="font-sans text-caption text-paper/40 tabular-nums">
+            {count}
+          </p>
+        </div>
       </div>
       <ul className="divide-y divide-paper/8 border border-paper/12 rounded-md overflow-hidden">
         {children}
@@ -265,9 +360,11 @@ function dateLabel(ms: number): string {
 function Row({
   bookmark,
   onRemove,
+  showText,
 }: {
   bookmark: Bookmark;
   onRemove: () => void;
+  showText?: boolean;
 }) {
   return (
     <li className="px-5 py-4 bg-paper/[0.02] flex items-center gap-4">
@@ -280,6 +377,13 @@ function Row({
             {subFor(bookmark)} · added {dateLabel(bookmark.addedAt)}
           </p>
         </Link>
+        {showText && bookmark.kind === "bible-verse" && (
+          <VerseText
+            book={bookmark.book}
+            chapter={bookmark.chapter}
+            verse={bookmark.verse}
+          />
+        )}
       </div>
       <button
         type="button"

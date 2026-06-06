@@ -158,6 +158,11 @@ export function PrayersMobile() {
             description="Long hymns of praise, prayed standing throughout."
           />
           <PrayerIndexRow
+            href="/prayers/rope"
+            title="The prayer rope"
+            description="Tell the Jesus Prayer on the knotted rope, with the anthem."
+          />
+          <PrayerIndexRow
             href="/prayers/learning"
             title="Learn to pray"
             description="A short, beginner's path through Orthodox prayer."
