@@ -813,15 +813,83 @@ div[data-hl="true"] {
    bar, and the reader's own toolbars/sidebars/search) is removed so only
    the scripture column remains, and the reader grid collapses to a single
    centered measure. The class is ONLY ever present on the Bible reader
-   route, so these rules can never reach into another surface. */
+   route, so these rules can never reach into another surface.
+
+   Cinematic entrance: rather than snapping, the chrome fades + drifts
+   upward, then the scripture column rises into its new centered position
+   a beat behind it; the floating "Exit focus" pill arrives last. Reduced-
+   motion users get the instant snap, no animation. */
+
+/* Chrome elements always carry the transition definition; it lies dormant
+   until the .reader-focus class flips the relevant properties, so there's
+   no effect on normal page rendering. `transition-behavior: allow-discrete`
+   defers the discrete `display: none` change until after opacity + transform
+   have animated — modern browsers (Chrome 117+, Safari 17.4+, Firefox 129+);
+   older browsers degrade gracefully to an instant snap. */
+[data-app-chrome],
+[data-reader-chrome] {
+ transition:
+ opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
+ transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+ display 320ms allow-discrete;
+}
+
 html.reader-focus [data-app-chrome],
 html.reader-focus [data-reader-chrome] {
- display: none !important;
+ opacity: 0;
+ transform: translateY(-6px);
+ pointer-events: none;
+ display: none;
 }
+
+/* The reading column rises into its centered position. The scripture
+   itself does the cinematic — chrome melted away, page settled. */
+@keyframes reader-page-rise {
+ from {
+ opacity: 0;
+ transform: translateY(10px) scale(0.985);
+ filter: blur(0.6px);
+ }
+ to {
+ opacity: 1;
+ transform: translateY(0) scale(1);
+ filter: blur(0);
+ }
+}
+
 html.reader-focus .reader-grid {
  display: block !important;
 }
-/* Give the lone reading column a little more breathing room in focus. */
 html.reader-focus main {
  padding-top: 0;
+ animation: reader-page-rise 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+ animation-delay: 80ms;
+ transform-origin: 50% 0;
+}
+
+/* The "Exit focus" pill arrives last, once the page has settled. */
+@keyframes reader-exit-pill {
+ from {
+ opacity: 0;
+ transform: translateY(-10px);
+ }
+ to {
+ opacity: 1;
+ transform: translateY(0);
+ }
+}
+html.reader-focus [data-reader-exit] {
+ animation: reader-exit-pill 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+ animation-delay: 260ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+ [data-app-chrome],
+ [data-reader-chrome] {
+ transition: none;
+ }
+ html.reader-focus main,
+ html.reader-focus [data-reader-exit] {
+ animation: none;
+ }
 }

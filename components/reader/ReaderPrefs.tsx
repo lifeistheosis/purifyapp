@@ -390,6 +390,7 @@ export function ReaderFocusController() {
       type="button"
       onClick={() => setFocus(false)}
       aria-label="Exit focus reading"
+      data-reader-exit
       className="fixed right-3 top-3 z-[70] inline-flex h-[38px] items-center gap-2 rounded-pill border border-paper/25 bg-night/85 px-3.5 font-sans text-detail font-medium text-paper/85 shadow-pop backdrop-blur transition-colors hover:border-paper/45 hover:text-paper"
     >
       <svg
