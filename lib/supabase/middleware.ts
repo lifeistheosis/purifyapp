@@ -34,6 +34,22 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
   let response = NextResponse.next({ request });
 
+  // Build a redirect that carries over any auth cookies Supabase just
+  // refreshed onto `response`. Critical: when getUser() rotates the
+  // refresh token, the new token pair is written to `response` via the
+  // setAll callback below. A bare NextResponse.redirect() would drop
+  // those cookies, leaving the browser holding the OLD (already-rotated)
+  // refresh token. Supabase then rejects the next refresh as a reused
+  // token and revokes the whole session, signing the user out. Copying
+  // the cookies onto the redirect keeps the rotation intact.
+  const redirectWithSession = (url: URL) => {
+    const redirect = NextResponse.redirect(url);
+    for (const cookie of response.cookies.getAll()) {
+      redirect.cookies.set(cookie);
+    }
+    return redirect;
+  };
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -65,7 +81,7 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/signin";
     url.searchParams.set("next", pathname);
-    return NextResponse.redirect(url);
+    return redirectWithSession(url);
   }
 
   // Signed-in users hitting an auth flow surface → /account/profile.
@@ -75,7 +91,7 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/account/profile";
     url.search = "";
-    return NextResponse.redirect(url);
+    return redirectWithSession(url);
   }
 
   // Forced password gate: if signed-in and `has_password` is false,
@@ -94,7 +110,7 @@ export async function updateSession(request: NextRequest) {
         const url = request.nextUrl.clone();
         url.pathname = "/set-password";
         url.search = "";
-        return NextResponse.redirect(url);
+        return redirectWithSession(url);
       }
     } catch {
       /* swallow, fail open */
