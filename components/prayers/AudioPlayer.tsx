@@ -319,8 +319,7 @@ function LyricsPanel({
             : isActive
               ? {
                   transform: "scale(1.05)",
-                  textShadow:
-                    "0 0 22px rgba(183,176,163,0.55), 0 0 8px rgba(183,176,163,0.4)",
+                  textShadow: "0 0 18px rgba(183,176,163,0.35)",
                 }
               : { opacity: Math.max(0.16, 0.62 - dist * 0.13) };
           if (clickable) {
