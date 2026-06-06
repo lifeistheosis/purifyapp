@@ -177,19 +177,27 @@ export default async function BibleChapterPage({
  their right. On mobile that cluster is split off into row 2 below.
  Switchers are kept at content width (not stretched) so they don't
  shift as the book name length changes. */}
- <div className="mb-4 flex items-center gap-3" data-reader-chrome>
+ <div className="mb-4 flex items-center gap-x-3 gap-y-2.5 flex-wrap" data-reader-chrome>
+ {/* Left cluster: which scripture (chapter context + save-this-chapter). */}
+ <div className="flex items-center gap-2.5 flex-wrap">
  <TranslationSwitcher
  currentSlug={book}
  configuredLicensed={configuredLicensed}
  />
  <BookSwitcher currentSlug={book} />
- <div className="hidden md:flex flex-wrap items-center justify-end gap-2.5 ml-auto">
+ <span className="hidden md:inline-block">
+ <ChapterBookmarkButton book={book} bookName={b!.name} chapter={chapterNum} />
+ </span>
+ </div>
+ {/* Right cluster: how to read it (reader preferences). Sits as one
+   group so when the row wraps it wraps as a unit, never orphaning a
+   single chip on a new line. */}
+ <div className="hidden md:flex items-center gap-2.5 ml-auto flex-wrap justify-end">
  <ReaderFontSizeButton />
  <ReaderFontFamilyButton />
  <ReaderLeadingButton />
  {showInterlinear && <InterlinearToggle />}
  <ReaderFocusButton />
- <ChapterBookmarkButton book={book} bookName={b!.name} chapter={chapterNum} />
  </div>
  </div>
  {/* Row 2, mobile only: Interlinear pill (NT) + Reader chip sit as a
