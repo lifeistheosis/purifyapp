@@ -825,13 +825,22 @@ div[data-hl="true"] {
    no effect on normal page rendering. `transition-behavior: allow-discrete`
    defers the discrete `display: none` change until after opacity + transform
    have animated — modern browsers (Chrome 117+, Safari 17.4+, Firefox 129+);
-   older browsers degrade gracefully to an instant snap. */
+   older browsers degrade gracefully to an instant snap.
+
+   We deliberately do NOT animate the reading column itself. The cinematic
+   moment is the chrome melting away; the scripture stays put while the
+   layout settles around it. A rising/scaling animation on <main> caused
+   the column to jump to its "from" state at T=0 (before chrome had even
+   started fading), producing a visible flicker as the chapter title and
+   text snapped to a displaced position and then animated back. Stillness
+   is the right answer — focus mode is about removing distraction, not
+   adding theatrics on top of it. */
 [data-app-chrome],
 [data-reader-chrome] {
  transition:
- opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
- transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
- display 320ms allow-discrete;
+ opacity 360ms cubic-bezier(0.22, 1, 0.36, 1),
+ transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+ display 360ms allow-discrete;
 }
 
 html.reader-focus [data-app-chrome],
@@ -842,36 +851,22 @@ html.reader-focus [data-reader-chrome] {
  display: none;
 }
 
-/* The reading column rises into its centered position. The scripture
-   itself does the cinematic — chrome melted away, page settled. */
-@keyframes reader-page-rise {
- from {
- opacity: 0;
- transform: translateY(10px) scale(0.985);
- filter: blur(0.6px);
- }
- to {
- opacity: 1;
- transform: translateY(0) scale(1);
- filter: blur(0);
- }
-}
-
+/* Reader grid collapses to a single column once chrome is gone. No
+   animation here — the visible chrome around it does all the easing,
+   and the scripture column just inherits the freed measure. */
 html.reader-focus .reader-grid {
  display: block !important;
 }
 html.reader-focus main {
  padding-top: 0;
- animation: reader-page-rise 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
- animation-delay: 80ms;
- transform-origin: 50% 0;
 }
 
-/* The "Exit focus" pill arrives last, once the page has settled. */
+/* The "Exit focus" pill is the only added element. It fades in after
+   the chrome has fully left so it doesn't compete with the fade-out. */
 @keyframes reader-exit-pill {
  from {
  opacity: 0;
- transform: translateY(-10px);
+ transform: translateY(-8px);
  }
  to {
  opacity: 1;
@@ -879,8 +874,8 @@ html.reader-focus main {
  }
 }
 html.reader-focus [data-reader-exit] {
- animation: reader-exit-pill 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
- animation-delay: 260ms;
+ animation: reader-exit-pill 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+ animation-delay: 280ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -888,7 +883,6 @@ html.reader-focus [data-reader-exit] {
  [data-reader-chrome] {
  transition: none;
  }
- html.reader-focus main,
  html.reader-focus [data-reader-exit] {
  animation: none;
  }
