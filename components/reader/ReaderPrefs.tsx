@@ -379,7 +379,23 @@ export function ReaderFocusController() {
   const { focus, setFocus } = useReaderPrefs();
   useEffect(() => {
     const el = document.documentElement;
-    el.classList.toggle("reader-focus", focus);
+    // Use the View Transitions API when available so the browser crossfades
+    // the entire page between its before/after layout snapshots — produces a
+    // true cinematic dissolve instead of trying to animate dozens of chrome
+    // elements (some of which use `display: contents` and can't be opacity-
+    // transitioned). Chrome 111+, Safari 18+. Older browsers fall back to an
+    // instant snap, which is still functional.
+    type Doc = Document & {
+      startViewTransition?: (cb: () => void) => { finished: Promise<void> };
+    };
+    const doc = document as Doc;
+    if (typeof doc.startViewTransition === "function") {
+      doc.startViewTransition(() => {
+        el.classList.toggle("reader-focus", focus);
+      });
+    } else {
+      el.classList.toggle("reader-focus", focus);
+    }
     return () => {
       el.classList.remove("reader-focus");
     };
