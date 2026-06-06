@@ -177,8 +177,12 @@ export default async function BibleChapterPage({
  their right. On mobile that cluster is split off into row 2 below.
  Switchers are kept at content width (not stretched) so they don't
  shift as the book name length changes. */}
- <div className="mb-4 flex items-center gap-x-3 gap-y-2.5 flex-wrap" data-reader-chrome>
- {/* Left cluster: which scripture (chapter context + save-this-chapter). */}
+ {/* Desktop toolbar: two deliberate left-aligned rows so both edges
+   line up with the scripture column below. Top row is "which scripture"
+   (Translation · Book · Save); second row is "how to read it" (Size ·
+   Font · Spacing · Interlinear · Focus). Both rows wrap independently
+   if pinched. */}
+ <div className="mb-4 flex flex-col gap-2.5" data-reader-chrome>
  <div className="flex items-center gap-2.5 flex-wrap">
  <TranslationSwitcher
  currentSlug={book}
@@ -189,10 +193,7 @@ export default async function BibleChapterPage({
  <ChapterBookmarkButton book={book} bookName={b!.name} chapter={chapterNum} />
  </span>
  </div>
- {/* Right cluster: how to read it (reader preferences). Sits as one
-   group so when the row wraps it wraps as a unit, never orphaning a
-   single chip on a new line. */}
- <div className="hidden md:flex items-center gap-2.5 ml-auto flex-wrap justify-end">
+ <div className="hidden md:flex items-center gap-2.5 flex-wrap">
  <ReaderFontSizeButton />
  <ReaderFontFamilyButton />
  <ReaderLeadingButton />
