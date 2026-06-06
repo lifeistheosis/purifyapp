@@ -63,28 +63,34 @@ export function HomeSectionScroller() {
     });
   }
 
+  // Centered via a full-width flex wrapper rather than `left-1/2 + translate`,
+  // so the button lands on the content's true center (the page content centers
+  // within the viewport minus the scrollbar; a raw viewport-center left it
+  // sitting slightly off). The wrapper is click-through; only the button isn't.
   return (
-    <button
-      type="button"
-      onClick={onTap}
-      aria-label={atEnd ? "Back to top" : "Next section"}
-      className="hidden md:flex fixed bottom-8 left-1/2 -translate-x-1/2 z-40 items-center justify-center h-11 w-11 rounded-full border border-paper/20 bg-night/85 backdrop-blur text-paper/70 shadow-lg transition-colors duration-200 hover:text-paper hover:border-gold/50 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2 motion-safe:animate-[scroller-nudge_2.4s_ease-in-out_infinite]"
-    >
-      <svg
-        width={20}
-        height={20}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={1.8}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-        className={atEnd ? "rotate-180" : ""}
+    <div className="hidden md:flex fixed inset-x-0 bottom-8 z-40 justify-center pointer-events-none">
+      <button
+        type="button"
+        onClick={onTap}
+        aria-label={atEnd ? "Back to top" : "Next section"}
+        className="pointer-events-auto flex items-center justify-center h-11 w-11 rounded-full border border-paper/20 bg-night/85 backdrop-blur text-paper/70 shadow-lg transition-colors duration-200 hover:text-paper hover:border-gold/50 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2 motion-safe:animate-[scroller-nudge_2.4s_ease-in-out_infinite]"
       >
-        <path d="M12 5 L12 18" />
-        <path d="M6 12 L12 19 L18 12" />
-      </svg>
-    </button>
+        <svg
+          width={20}
+          height={20}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.8}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          className={atEnd ? "rotate-180" : ""}
+        >
+          <path d="M12 5 L12 18" />
+          <path d="M6 12 L12 19 L18 12" />
+        </svg>
+      </button>
+    </div>
   );
 }

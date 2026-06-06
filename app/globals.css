@@ -741,10 +741,10 @@ div[data-hl="true"] {
 @keyframes scroller-nudge {
  0%,
  100% {
- transform: translate(-50%, 0);
+ transform: translateY(0);
  }
  50% {
- transform: translate(-50%, 4px);
+ transform: translateY(4px);
  }
 }
 
