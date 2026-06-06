@@ -4,10 +4,12 @@ import { useScrolled } from "@/lib/useScrolled";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
- * Desktop-only "back to top" control. Sits fixed at the vertical middle of
- * the left edge and fades in once the page has been scrolled well past the
- * fold; clicking it smooth-scrolls the window to the top. Hidden on phones
- * (the mobile tab bar owns that area) via `hidden md:inline-flex`.
+ * Desktop-only "back to top" control. Anchored to the bottom-right corner
+ * (previously vertical-middle left, which collided with the Bible reader's
+ * chapter grid in the left rail). Fades in once the page has been scrolled
+ * well past the fold; clicking it smooth-scrolls the window to the top.
+ * Hidden on phones (the mobile tab bar owns the bottom area) via
+ * `hidden md:inline-flex`.
  */
 export function ScrollToTop() {
   const scrolled = useScrolled(480);
@@ -44,7 +46,7 @@ export function ScrollToTop() {
 
 function cnVisible(scrolled: boolean): string {
   const base =
-    "hidden md:inline-flex fixed left-7 top-1/2 -translate-y-1/2 z-40 items-center justify-center h-11 w-11 rounded-full border border-paper/20 bg-night/85 backdrop-blur text-paper/70 shadow-lg transition-opacity duration-200 hover:text-paper hover:border-gold/50 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2";
+    "hidden md:inline-flex fixed right-7 bottom-7 z-40 items-center justify-center h-11 w-11 rounded-full border border-paper/20 bg-night/85 backdrop-blur text-paper/70 shadow-lg transition-opacity duration-200 hover:text-paper hover:border-gold/50 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2";
   return scrolled
     ? `${base} opacity-100 pointer-events-auto`
     : `${base} opacity-0 pointer-events-none`;
