@@ -20,19 +20,19 @@ export const AMBIENCE_TRACKS: AmbienceTrack[] = [
   {
     id: "campfire",
     label: "Campfire",
-    subtitle: "A fire crackling in the woods",
+    subtitle: "A steady fire to pray beside.",
     src: "/audio/ambience/campfire.mp3",
   },
   {
     id: "shadows-of-evil",
     label: "Shadows of Evil",
-    subtitle: "A low, brooding atmosphere",
+    subtitle: "Slow piano and strings for the evening.",
     src: "/audio/ambience/shadows-of-evil.mp3",
   },
   {
     id: "bo2",
     label: "BO2",
-    subtitle: "An ambient score",
+    subtitle: "A long, slow orchestral piece.",
     src: "/audio/ambience/bo2.mp3",
   },
 ];
