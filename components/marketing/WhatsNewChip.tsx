@@ -54,10 +54,10 @@ export function WhatsNewChip({ isDe }: { isDe: boolean }) {
       )}
       <span className="font-sans text-caption sm:text-detail text-paper/85 group-hover:text-paper transition-colors">
         <span className="sm:hidden">
-          {CURRENT_VERSION} · Install Purify, St. Isaac the Syrian, a cinematic reader
+          {CURRENT_VERSION} · The Prayer Rope Anthem, Install Purify, St. Isaac the Syrian
         </span>
         <span className="hidden sm:inline">
-          {CURRENT_VERSION} · Install Purify on your desktop, St. Isaac the Syrian, and a cinematic reader
+          {CURRENT_VERSION} · The Prayer Rope Anthem with lyrics, Install Purify on your desktop, St. Isaac the Syrian
         </span>
       </span>
       <span className="text-paper/55 group-hover:text-paper transition-colors text-detail">

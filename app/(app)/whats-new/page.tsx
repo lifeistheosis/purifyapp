@@ -24,11 +24,12 @@ type Entry = {
 const ENTRIES: Entry[] = [
  {
  version: "v9.5",
- kind: "Install Purify on your desktop, St. Isaac the Syrian, and a cinematic reader",
+ kind: "The Prayer Rope Anthem, Install Purify, St. Isaac the Syrian, and a cinematic reader",
  date: "June 6, 2026",
  blurb:
-  "A larger release than the version number suggests, gathered from a steady run of work since v9.0. The desktop home gets a real Download Purify button that installs the app as its own standalone window with its own dock icon and offline reading, replacing the placeholder that flashed Coming soon. St. Isaac the Syrian, the seventh-century hermit-bishop of Nineveh and one of the foundational fathers of the inward life, joins the corpus with the first two homilies of his Mystic Treatises in A. J. Wensinck's 1923 public-domain English. The Bible reader is rebuilt: a single tidy toolbar row, the size, font, and line-spacing controls collapsed into a Reader menu in the established Kindle/Apple Books pattern, a new Focus reading mode that crossfades the entire page into a single centered column via the browser's View Transitions API in and out, and a back-to-top button that no longer sits on top of the chapter grid. The Saints index and every saint profile get a signature masthead in the calendar's display-serif idiom, with a closing veneration intercession at the foot of each saint. The Pricing page is rebuilt from an empty void into a composed honest support panel; the home verse card is calmed onto solid black with one quiet two-action footer; the mobile calendar grid is de-densified. A small ambient-soundscape player joins the layout for prayer and study, ungated for the pre-release.",
+  "A larger release than the version number suggests, gathered from a steady run of work since v9.0. The Prayer Rope Anthem, the contemporary Orthodox chant sung knot by knot to the Holy Trinity, to Christ, to the Theotokos, and to all the saints, joins the prayer book with its own audio player and synced lyrics, lifted out of the long index tile grid and given a gold-accented featured band right under the prayer of the heart so it is the first thing a reader meets after the Jesus Prayer. The desktop home gets a real Download Purify button that installs the app as its own standalone window with its own dock icon and offline reading, replacing the placeholder that flashed Coming soon. St. Isaac the Syrian, the seventh-century hermit-bishop of Nineveh and one of the foundational fathers of the inward life, joins the corpus with the first two homilies of his Mystic Treatises in A. J. Wensinck's 1923 public-domain English. The Bible reader is rebuilt: a single tidy toolbar row, the size, font, and line-spacing controls collapsed into a Reader menu in the established Kindle/Apple Books pattern, a new Focus reading mode that crossfades the entire page into a single centered column via the browser's View Transitions API in and out, and a back-to-top button that no longer sits on top of the chapter grid. The Saints index and every saint profile get a signature masthead in the calendar's display-serif idiom, with a closing veneration intercession at the foot of each saint. The Pricing page is rebuilt from an empty void into a composed honest support panel; the home verse card is calmed onto solid black with one quiet two-action footer; the mobile calendar grid is de-densified. A small ambient-soundscape player joins the layout for prayer and study, ungated for the pre-release, sitting as a floating speaker in the corner so it can be layered quietly underneath the anthem, a Bible chapter, or a homily of the Fathers.",
  items: [
+  "The Prayer Rope Anthem is featured prominently in the prayer section. The contemporary Orthodox chant for the rope, sung knot by knot to the Holy Trinity, to Christ, to the Theotokos, to St John the Baptist, and to all the saints and holy angels, lives at /prayers/anthem with its own audio player and the full English lyrics. Play it, loop it, and follow the words line by line as the rope is told. Previously a small tile at the foot of the Also-in-this-book grid where most readers never saw it; now a gold-accented featured band right under the prayer of the heart on the desktop hub and the mobile shell, with a play-disc, eyebrow A hymn for the prayer rope, and a one-tap link into the chant. The single most visible promotion in the prayer section.",
   "New Download Purify button on the desktop home. Replaces both Coming-soon CTAs (hero and final) with a real install affordance that triggers Chrome/Edge/Brave/Arc's native PWA install dialog. The app installs as a standalone desktop application with its own window, its own dock or Start-menu icon, and offline reading through the existing service worker. After install the button flips to Open Purify and links straight to today's prayers.",
   "A friendly modal handles the browsers that don't support the install prompt: Firefox desktop, older Safari, Safari 17+ (which gets Add to Dock instructions from the Share menu), iPad in desktop-UA mode, and Chromium when the prompt has been suppressed by a recent dismiss. Every variant of the modal offers an Open in browser link so a user is never trapped.",
   "Mobile install banner refactored to consume the same beforeinstallprompt event as the desktop CTA, through a single module-level singleton store. The two consumers can never race for the one-shot event; whichever the user clicks first wins, the other cleanly falls back. The visit-count gate, the 30-day dismiss memory, and the iOS Add-to-Home-Screen hint are unchanged.",
@@ -41,7 +42,7 @@ const ENTRIES: Entry[] = [
   "Home verse-of-the-day card is calmed: the white quote band that broke the dark palette mid-page is gone, the card now reads as verse-on-black with a quiet two-action footer (Save + overflow menu), and the gradient is softened to a barely-there radial wash in the corner.",
   "Mobile calendar month grid de-densified. Phone cells now show the day number and a small gold cross marker when a feast falls; the feast name itself appears in the day-detail card below the grid on tap. Desktop cells continue to show the feast name in line. The standard mobile pattern of marker + detail-on-tap, instead of the previous cluttered text-in-cell.",
   "Bible reader's desktop back-to-top button moved from middle-left to bottom-right; it was sitting on top of the chapter grid in the left rail and overlapping numbered links. Still desktop-only and fades in past 480px.",
-  "Ambient soundscapes for prayer and study. A small floating control mounted once in the app layout (so the audio persists across navigation) plays a looping background track — campfire, an ambient score, or a low brooding atmosphere — at a remembered volume. Ungated for the pre-release; planned as a subscriber-only feature at public launch. One track, valley, ships as a registry placeholder; its source audio is held back from the repo for size until external hosting is wired.",
+  "Ambient soundscapes for prayer and study, layered under everything else. A small circular speaker control sits at the bottom-left of every page in the app, mounted once in the (app) layout so the audio persists across navigation. Tap it to open a panel with three tracks — Campfire (a fire crackling in the woods), BO2 (an ambient score), and Shadows of Evil (a low brooding atmosphere) — plus a volume slider. The audio plays as an independent layer behind whatever else is on the page, so the same speaker can sit underneath the Prayer Rope Anthem, a Bible chapter being read in Focus mode, or a homily of St. Isaac the Syrian. Ungated for the pre-release; planned as a subscriber-only feature at public launch. One track, valley, is held back at the registry until its 64MB source audio moves to external hosting.",
   "Cache version bumped to v9.5.0 so the redesigned reader, the new desktop install affordance, and the Mystic Treatises evict the old buckets on this release.",
   "Footer + home hero chip + /whats-new chip step to v9.5.",
  ],
@@ -1100,17 +1101,17 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
- v9.5 &middot; Install Purify, St. Isaac the Syrian, and a cinematic reader
+ v9.5 &middot; The Prayer Rope Anthem, Install Purify, and St. Isaac the Syrian
  </p>
  </div>
 
  {isDe ? (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Purify installieren, der heilige Isaak der Syrer, und ein filmischer Leser.
+ Die Gebetsseil-Hymne, Purify installieren, und der heilige Isaak der Syrer.
  </h1>
  ) : (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Install Purify, St. Isaac the Syrian, and a cinematic reader.
+ The Prayer Rope Anthem, Install Purify, and St. Isaac the Syrian.
  </h1>
  )}
 
@@ -1216,17 +1217,25 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v9.5 carries three things worth the click. First, you can now
- install Purify on your desktop. The Download Purify button on
- the home page triggers your browser&rsquo;s install dialog and
- sets up Purify as its own standalone application with its own
- dock or Start-menu icon and offline reading; the existing
- service worker handles the rest. Second,{" "}
+ v9.5 carries four things worth the click. First, the{" "}
+ <Link href="/prayers/anthem" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Prayer Rope Anthem</Link>,
+ the contemporary Orthodox chant sung knot by knot to the Holy
+ Trinity, to Christ, to the Theotokos, and to all the saints,
+ is featured prominently in the prayer section with its own
+ audio player and the full English lyrics, lifted out of the
+ long tile grid where it was hiding and given a gold-accented
+ band right under the prayer of the heart so it is the first
+ thing a reader meets after the Jesus Prayer. Play it, loop it,
+ follow the words. Second, you can now install Purify on your
+ desktop, the Download Purify button on the home page triggers
+ your browser&rsquo;s install dialog and sets up Purify as its
+ own standalone application with its own dock or Start-menu
+ icon and offline reading. Third,{" "}
  <Link href="/saints/isaac-the-syrian/mystic-treatises" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">St. Isaac the Syrian</Link>{" "}
  joins the library with the opening homilies of his Mystic
  Treatises in verbatim public-domain English (A. J. Wensinck,
  1923), one of the cornerstone voices of the inward life and
- a foundational father of the Philokalia. Third, the{" "}
+ a foundational father of the Philokalia. Fourth, the{" "}
  <Link href="/bible/matthew/1" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Bible reader</Link>{" "}
  is rebuilt: a single tidy toolbar with the reading preferences
  collapsed into one Reader menu, a new Focus mode that
@@ -1236,8 +1245,8 @@ export default async function WhatsNewPage() {
  and every saint profile in a signature masthead with a closing
  intercession, the Pricing page rebuilt into an honest support
  panel, the home verse card calmed onto solid black, the mobile
- calendar grid de-densified, and a small ambient-soundscape
- player for prayer and study.
+ calendar grid de-densified, and an ambient-soundscape player
+ in the corner that layers quietly underneath any of it.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
