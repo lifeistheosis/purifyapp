@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
+import { DesktopInstallCTA } from "@/components/pwa/DesktopInstallCTA";
 import { useScrolled } from "@/lib/useScrolled";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -69,9 +69,9 @@ export function Navbar() {
               {item.label}
             </Link>
           ))}
-          <ComingSoonCTA variant="inverse" className="!py-2.5 !px-5 text-ui">
+          <DesktopInstallCTA variant="inverse" className="!py-2.5 !px-5 text-ui">
             {t("nav.openPurify")}
-          </ComingSoonCTA>
+          </DesktopInstallCTA>
         </div>
 
         {/* Mobile hamburger */}
@@ -100,9 +100,9 @@ export function Navbar() {
               </Link>
             ))}
             <div className="mt-4 mb-2">
-              <ComingSoonCTA variant="inverse" className="w-full !py-3 text-ui">
+              <DesktopInstallCTA variant="inverse" className="w-full !py-3 text-ui">
                 {t("nav.openPurify")}
-              </ComingSoonCTA>
+              </DesktopInstallCTA>
             </div>
           </nav>
         </div>
