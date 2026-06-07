@@ -12,7 +12,9 @@
     "test:unit:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "lhci": "lhci autorun"
+    "lhci": "lhci autorun",
+    "discord:scan": "node scripts/discord-scan.mjs",
+    "discord:list": "node scripts/discord-scan.mjs --list"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",
