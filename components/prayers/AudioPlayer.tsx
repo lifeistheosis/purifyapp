@@ -1,26 +1,37 @@
 "use client";
 
-// A small, reverent music player. Built on a single <audio> element with a
-// custom UI so it matches the prayer-book palette rather than the browser's
-// default chrome. Supports play/pause, scrubbing, volume, and loop options:
+// A small, reverent music player. Renders against the persistent audio
+// store in `lib/prayers/persistentAudioStore`, which owns a single
+// `HTMLAudioElement` at module scope. The audio element is never inserted
+// into the React tree, so playback survives page navigation: pressing
+// play on the anthem and then walking to /bible/matthew/1 keeps the
+// chant going without a beat missed.
+//
+// Supports play/pause, scrubbing, volume, and loop options:
 //   Off  — play once and stop
 //   Loop — repeat indefinitely
 //   3× / 7× / 12× — repeat a set number of times, then stop
-//
-// The repeat counts echo numbers that recur in prayer practice; the rope is
-// often told in loops, so the anthem can keep pace.
+// The repeat counts echo numbers that recur in prayer practice; the rope
+// is often told in loops, so the anthem can keep pace.
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  setTrack,
+  toggle as toggleAudio,
+  seek as seekAudio,
+  setVolume as setStoreVolume,
+  setLoopMode as setStoreLoopMode,
+  usePersistentAudio,
+  type LoopMode,
+} from "@/lib/prayers/persistentAudioStore";
 
 /**
  * One line of lyrics. `time` (seconds) is optional: when present on every
  * line, the panel runs in synced "now-playing" mode (Apple Music / Spotify
- * style) — the active line brightens, the rest dim, the view auto-scrolls,
+ * style), the active line brightens, the rest dim, the view auto-scrolls,
  * and tapping a line seeks to it. With no times, it's a plain scrolling sheet.
  */
 export type LyricLine = { time?: number; text: string };
-
-type LoopMode = "off" | "inf" | 3 | 7 | 12;
 
 const LOOP_OPTIONS: { value: LoopMode; label: string }[] = [
   { value: "off", label: "Off" },
@@ -48,94 +59,49 @@ export function AudioPlayer({
   subtitle?: string;
   lyrics?: LyricLine[];
 }) {
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [playing, setPlaying] = useState(false);
-  const [current, setCurrent] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1);
-  const [loop, setLoop] = useState<LoopMode>("off");
+  const snap = usePersistentAudio();
   const [showLyrics, setShowLyrics] = useState(false);
   const hasLyrics = Array.isArray(lyrics) && lyrics.length > 0;
-  // Remaining replays for a finite loop count. Lives in a ref so the `ended`
-  // handler reads the latest value without re-binding the listener.
-  const repeatsLeft = useRef(0);
 
-  // Keep <audio>.loop in sync for the indefinite case (browser handles it
-  // gaplessly); finite counts are handled in the `ended` listener below.
+  // The store treats the same-src case as a no-op (preserves playback
+  // position + play state), so re-mounting this component on the same
+  // page does not interrupt the audio. A truly different src loads a
+  // new track and resets to 0.
   useEffect(() => {
-    const a = audioRef.current;
-    if (!a) return;
-    a.loop = loop === "inf";
-    repeatsLeft.current = typeof loop === "number" ? loop : 0;
-  }, [loop]);
+    setTrack(src, { title, artist: "Purify" });
+  }, [src, title]);
 
-  useEffect(() => {
-    const a = audioRef.current;
-    if (!a) return;
-    const onTime = () => setCurrent(a.currentTime);
-    const onMeta = () => setDuration(a.duration);
-    const onPlay = () => setPlaying(true);
-    const onPause = () => setPlaying(false);
-    const onEnded = () => {
-      if (repeatsLeft.current > 0) {
-        repeatsLeft.current -= 1;
-        a.currentTime = 0;
-        void a.play();
-        return;
-      }
-      setPlaying(false);
-      setCurrent(0);
-    };
-    a.addEventListener("timeupdate", onTime);
-    a.addEventListener("loadedmetadata", onMeta);
-    a.addEventListener("play", onPlay);
-    a.addEventListener("pause", onPause);
-    a.addEventListener("ended", onEnded);
-    return () => {
-      a.removeEventListener("timeupdate", onTime);
-      a.removeEventListener("loadedmetadata", onMeta);
-      a.removeEventListener("play", onPlay);
-      a.removeEventListener("pause", onPause);
-      a.removeEventListener("ended", onEnded);
-    };
-  }, []);
+  // Whether the player's notion of which track is showing matches the
+  // store's. If the store is playing a different track than what this
+  // page is documenting, the UI shows zeros until setTrack catches up.
+  const isThisTrack = snap.src === src || snap.src?.endsWith(src);
+  const playing = isThisTrack && snap.playing;
+  const current = isThisTrack ? snap.currentTime : 0;
+  const duration = isThisTrack ? snap.duration : 0;
 
   const toggle = useCallback(() => {
-    const a = audioRef.current;
-    if (!a) return;
-    if (a.paused) void a.play();
-    else a.pause();
+    toggleAudio();
   }, []);
 
   const onSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const a = audioRef.current;
-    if (!a) return;
-    const t = Number(e.target.value);
-    a.currentTime = t;
-    setCurrent(t);
+    seekAudio(Number(e.target.value));
   };
 
   const onVolume = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const a = audioRef.current;
-    const v = Number(e.target.value);
-    setVolume(v);
-    if (a) a.volume = v;
+    setStoreVolume(Number(e.target.value));
   };
 
   const seekTo = useCallback((t: number) => {
-    const a = audioRef.current;
-    if (!a) return;
-    a.currentTime = t;
-    setCurrent(t);
-    if (a.paused) void a.play();
-  }, []);
+    seekAudio(t);
+    // If the user taps a lyric line while paused, start playback so
+    // the line lights up rather than just seeking silently.
+    if (!playing) toggleAudio();
+  }, [playing]);
 
   const pct = duration > 0 ? (current / duration) * 100 : 0;
 
   return (
     <div className="rounded-lg border border-paper/12 bg-paper/[0.03] p-5 md:p-6">
-      <audio ref={audioRef} src={src} preload="metadata" />
-
       <div className="flex items-center gap-4">
         <button
           type="button"
@@ -208,10 +174,10 @@ export function AudioPlayer({
               <button
                 key={String(opt.value)}
                 type="button"
-                onClick={() => setLoop(opt.value)}
-                aria-pressed={loop === opt.value}
+                onClick={() => setStoreLoopMode(opt.value)}
+                aria-pressed={snap.loopMode === opt.value}
                 className={`rounded-pill px-3 py-1 font-sans text-caption transition-colors ${
-                  loop === opt.value
+                  snap.loopMode === opt.value
                     ? "bg-gold/[0.12] text-gold"
                     : "text-paper/55 hover:text-paper/85"
                 }`}
@@ -229,7 +195,7 @@ export function AudioPlayer({
             min={0}
             max={1}
             step={0.01}
-            value={volume}
+            value={snap.volume}
             onChange={onVolume}
             aria-label="Volume"
             className="h-1 w-24 cursor-pointer appearance-none rounded-full accent-[var(--color-gold)]"
@@ -336,7 +302,7 @@ function LyricsPanel({
                 className={cls}
                 style={style}
               >
-                {line.text || " "}
+                {line.text || " "}
               </button>
             );
           }
