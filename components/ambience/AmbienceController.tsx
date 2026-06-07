@@ -62,23 +62,23 @@ export function AmbienceController() {
   const rootRef = useRef<HTMLDivElement>(null);
 
   // Restore the last-chosen track + volume after mount (no autoplay — browsers
-  // block sound until a user gesture, so we resume on the next tap). The
-  // restore state flips are deferred via a 0-delay timer so they happen
-  // outside the effect body (react-hooks/set-state-in-effect).
+  // block sound until a user gesture, so we resume on the next tap). Wrapped
+  // with the same eslint-disable pattern as ConfirmDialog: this is one-time
+  // initialisation from localStorage, not a synchronisation effect, and the
+  // react-hooks/set-state-in-effect rule's recommended refactors don't apply.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setMounted(true);
-    const tm = setTimeout(() => {
-      try {
-        const v = Number(localStorage.getItem(AMBIENCE_KEYS.volume));
-        if (Number.isFinite(v) && v >= 0 && v <= 1) setVolume(v);
-        const t = localStorage.getItem(AMBIENCE_KEYS.track);
-        if (t && getAmbienceTrack(t)) setCurrentId(t);
-      } catch {
-        /* ignore */
-      }
-    }, 0);
-    return () => clearTimeout(tm);
+    try {
+      const v = Number(localStorage.getItem(AMBIENCE_KEYS.volume));
+      if (Number.isFinite(v) && v >= 0 && v <= 1) setVolume(v);
+      const t = localStorage.getItem(AMBIENCE_KEYS.track);
+      if (t && getAmbienceTrack(t)) setCurrentId(t);
+    } catch {
+      /* ignore */
+    }
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Close the panel on outside click / Escape.
   useEffect(() => {
