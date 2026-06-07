@@ -1100,17 +1100,17 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
- v8.5 &middot; The Heresies archive, cross-linked with the Councils
+ v9.5 &middot; Install Purify, St. Isaac the Syrian, and a cinematic reader
  </p>
  </div>
 
  {isDe ? (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Das Häresien-Archiv, mit den Konzilen verknüpft.
+ Purify installieren, der heilige Isaak der Syrer, und ein filmischer Leser.
  </h1>
  ) : (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- The Heresies archive, cross-linked with the Councils.
+ Install Purify, St. Isaac the Syrian, and a cinematic reader.
  </h1>
  )}
 
