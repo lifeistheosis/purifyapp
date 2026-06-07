@@ -14,7 +14,6 @@
   "nav.openPurify": "Открыть Purify",
   "nav.menuToggle": "Открыть меню",
   "nav.yourAccount": "Ваш аккаунт",
-
   "common.signIn": "Войти",
   "common.signUp": "Создать аккаунт",
   "common.signOut": "Выйти",
@@ -41,7 +40,6 @@
   "common.learnMore": "Узнать больше",
   "common.readMore": "Читать далее",
   "common.seeAll": "Все",
-
   "home.heroH1": "Вся православная жизнь в одном тихом месте.",
   "home.heroSubtitle": "Молитесь с Церковью. Читайте со святыми отцами. Идите через год. Бесплатно, без рекламы, ваше навсегда.",
   "home.seeToday": "Сегодня →",
@@ -53,7 +51,6 @@
   "home.whereWouldYouLikeToBegin": "С чего вы хотели бы начать?",
   "home.openPurify": "Открыть Purify.",
   "home.openPurifySub": "Начните там, где вы стоите, с молитвы, со святого дня, со стиха Евангелия.",
-
   "footer.bible": "Библия",
   "footer.saints": "Святые",
   "footer.calendar": "Календарь",
@@ -69,7 +66,6 @@
   "footer.glory": "Слава Богу за всё.",
   "footer.copyright": "Тексты общественного достояния, если не указано иное.",
   "footer.languageLabel": "Язык",
-
   "about.eyebrow": "О сайте",
   "about.h1": "Тихая обитель православной жизни вне Литургии.",
   "about.northStar": "Полярная звезда",
@@ -79,23 +75,18 @@
   "about.covenantOnPrivacy": "Завет о конфиденциальности.",
   "about.howItIsKept": "Как это хранится",
   "about.missionFirst": "Сначала миссия, независимая разработка.",
-
   "pricing.eyebrow": "Цены",
   "pricing.h1": "Главное, бесплатно, всегда.",
   "pricing.supportLink": "вы можете поддержать",
-
   "support.eyebrow": "Поддержать работу",
   "support.h1": "Бесплатно сейчас. Пожертвования приветствуются.",
   "support.thisMonthsGoal": "Цель месяца",
   "support.coreStaysFree": "Главное остаётся бесплатным",
   "support.thankYou": "Что бы вы ни дали, или не дали, мы рады, что вы здесь.",
-
   "faq.eyebrow": "Вопросы и ответы",
   "faq.h1": "Часто задаваемые вопросы.",
-
   "privacy.eyebrow": "Конфиденциальность",
   "privacy.h1": "Что Purify хранит, и чего нет.",
-
   "account.eyebrow": "Ваш аккаунт",
   "account.h1": "Продолжите с того места, где остановились.",
   "account.localProfile": "Локальный профиль",
@@ -110,7 +101,6 @@
   "account.deleteAccount": "Удалить аккаунт",
   "account.exportData": "Экспортировать данные",
   "account.importData": "Импортировать данные",
-
   "signin.h1": "С возвращением.",
   "signin.subtitle": "Войдите, чтобы синхронизировать вашу читательскую жизнь между устройствами.",
   "signin.submit": "Войти",
@@ -120,19 +110,15 @@
   "signin.continueWithApple": "Продолжить с Apple",
   "signin.continueWithEmail": "Продолжить по email",
   "signin.comingSoon": "Скоро",
-
   "signup.h1": "Создайте аккаунт.",
   "signup.subtitle": "Синхронизируйте заметки, закладки и счётчик молитвы между устройствами.",
   "signup.submit": "Создать аккаунт",
   "signup.alreadyHaveAccount": "Уже есть аккаунт? Войти →",
-
   "forgot.h1": "Сброс пароля.",
   "forgot.subtitle": "Мы отправим ссылку для сброса по email.",
   "forgot.submit": "Отправить ссылку",
-
   "reset.h1": "Установите новый пароль.",
   "reset.submit": "Установить пароль",
-
   "topics.eyebrow": "Тематический указатель",
   "topics.h1": "Отцы, по вопросам, на которые они отвечали.",
   "topics.intro": "Догматический указатель для вопрошающих, оглашенных и мирян-апологетов. Выберите тему и прочитайте, что исповедовали Отцы, каждая цитата ведёт прямо к произведению, из которого она взята.",
@@ -142,7 +128,6 @@
   "topics.confessed": "Исповедано Отцами",
   "topics.refuted": "Опровергнуто Отцами",
   "topics.curatedBy": "Куратор: {who}",
-
   "discover.eyebrow": "Вся библиотека",
   "discover.h1": "Открыть.",
   "discover.subtitle": "Святые, соборы, календарь и вход во всю библиотеку. Нажмите на плитку, чтобы начать.",
@@ -159,7 +144,6 @@
   "discover.tile.psalterBlurb": "Сто пятьдесят псалмов в нумерации Септуагинты.",
   "discover.tile.patristic": "Святоотеческое толкование",
   "discover.tile.patristicBlurb": "Святитель Иоанн Златоуст стих за стихом, рядом с Евангелием.",
-
   "calendar.eyebrow": "Священный календарь",
   "calendar.h1": "Каждый день церковного года.",
   "calendar.today": "Сегодня",
@@ -174,7 +158,6 @@
   "calendar.fast.fish": "Разрешается рыба",
   "calendar.fast.fastFree": "Без поста",
   "calendar.fast.none": "Без поста",
-
   "prayers.eyebrow": "Непрестанно молитесь",
   "prayers.h1": "Молитвы.",
   "prayers.morningRule": "Утреннее правило",
@@ -188,7 +171,6 @@
   "prayers.sixthHour": "Шестой час",
   "prayers.ninthHour": "Девятый час",
   "prayers.openTodaysPrayer": "Открыть молитву на сегодня →",
-
   "saints.eyebrow": "Жития и творения",
   "saints.h1": "Святые.",
   "saints.searchPlaceholder": "Искать среди святых…",
@@ -213,19 +195,26 @@
   "saints.hisDisciples": "Его ученики и преемники",
   "saints.herDisciples": "Её ученики и преемницы",
   "saints.writings": "Творения",
-
   "councils.eyebrow": "Вселенские Соборы",
   "councils.h1": "Вера, исповеданная Отцами.",
   "councils.first": "Первый",
   "councils.second": "Второй",
   "councils.third": "Третий",
   "councils.fourth": "Четвёртый",
-
   "whatsnew.eyebrow": "Что нового",
   "whatsnew.releaseNotes": "Заметки о выпуске",
   "whatsnew.fromTheTeam": "От Эдгара, команды Purify.",
-
   "translationDisclaimer.title": "Перевод в работе",
   "translationDisclaimer.body": "Интерфейс переведён; основной текст этой страницы пока остаётся на английском, пока завершается редакторская проверка богословской точности.",
-  "translationDisclaimer.dismiss": "Закрыть"
+  "translationDisclaimer.dismiss": "Закрыть",
+  "pwa.install.download": "Download Purify",
+  "pwa.install.open": "Open Purify",
+  "pwa.install.openInBrowser": "Open in browser",
+  "pwa.install.modal.title": "Install Purify on your computer",
+  "pwa.install.modal.firefox": "Firefox doesn't yet support installing Purify directly. Open this page in Chrome, Edge, Brave, or Arc and tap Download Purify again.",
+  "pwa.install.modal.safari17": "Click the Share button in Safari's toolbar, then choose Add to Dock. Purify will install with its own icon and window.",
+  "pwa.install.modal.safariOld": "Your Safari version doesn't support adding Purify to the Dock. Update macOS to Sonoma or later, or open this page in Chrome, Edge, or Brave to install.",
+  "pwa.install.modal.chromiumSuppressed": "Purify may already be installed, or your browser paused the install prompt. Open it from your Applications or Start menu.",
+  "pwa.install.modal.ipad": "On iPad, tap the Share button in Safari's toolbar, then choose Add to Home Screen.",
+  "pwa.install.modal.close": "Close"
 }

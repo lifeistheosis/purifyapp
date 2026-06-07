@@ -297,5 +297,16 @@
 
   "translationDisclaimer.title": "Translation in progress",
   "translationDisclaimer.body": "The UI is translated; the body of this page is still in English while editorial review for theological precision completes.",
-  "translationDisclaimer.dismiss": "Dismiss"
+  "translationDisclaimer.dismiss": "Dismiss",
+
+  "pwa.install.download": "Download Purify",
+  "pwa.install.open": "Open Purify",
+  "pwa.install.openInBrowser": "Open in browser",
+  "pwa.install.modal.title": "Install Purify on your computer",
+  "pwa.install.modal.firefox": "Firefox doesn't yet support installing Purify directly. Open this page in Chrome, Edge, Brave, or Arc and tap Download Purify again.",
+  "pwa.install.modal.safari17": "Click the Share button in Safari's toolbar, then choose Add to Dock. Purify will install with its own icon and window.",
+  "pwa.install.modal.safariOld": "Your Safari version doesn't support adding Purify to the Dock. Update macOS to Sonoma or later, or open this page in Chrome, Edge, or Brave to install.",
+  "pwa.install.modal.chromiumSuppressed": "Purify may already be installed, or your browser paused the install prompt. Open it from your Applications or Start menu.",
+  "pwa.install.modal.ipad": "On iPad, tap the Share button in Safari's toolbar, then choose Add to Home Screen.",
+  "pwa.install.modal.close": "Close"
 }

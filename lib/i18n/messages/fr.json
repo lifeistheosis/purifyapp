@@ -14,7 +14,6 @@
   "nav.openPurify": "Ouvrir Purify",
   "nav.menuToggle": "Ouvrir le menu",
   "nav.yourAccount": "Votre compte",
-
   "common.signIn": "Se connecter",
   "common.signUp": "Créer un compte",
   "common.signOut": "Se déconnecter",
@@ -41,7 +40,6 @@
   "common.learnMore": "En savoir plus",
   "common.readMore": "Lire la suite",
   "common.seeAll": "Tout voir",
-
   "home.heroH1": "Toute la vie orthodoxe, en un seul lieu paisible.",
   "home.heroSubtitle": "Priez avec l'Église. Lisez avec les Pères. Parcourez l'année. Gratuit, sans publicité, à vous pour toujours.",
   "home.seeToday": "Voir aujourd'hui →",
@@ -53,7 +51,6 @@
   "home.whereWouldYouLikeToBegin": "Par où aimeriez-vous commencer ?",
   "home.openPurify": "Ouvrir Purify.",
   "home.openPurifySub": "Commencez là où vous êtes, par une prière, par le saint du jour, par un verset de l'Évangile.",
-
   "footer.bible": "La Bible",
   "footer.saints": "Les Saints",
   "footer.calendar": "Le Calendrier",
@@ -69,7 +66,6 @@
   "footer.glory": "Gloire à Dieu pour toutes choses.",
   "footer.copyright": "Textes du domaine public, sauf mention contraire.",
   "footer.languageLabel": "Langue",
-
   "about.eyebrow": "À propos de cette œuvre",
   "about.h1": "Un sanctuaire pour la vie orthodoxe en dehors de la Divine Liturgie.",
   "about.northStar": "L'étoile polaire",
@@ -79,23 +75,18 @@
   "about.covenantOnPrivacy": "Une alliance sur la confidentialité.",
   "about.howItIsKept": "Comment c'est maintenu",
   "about.missionFirst": "La mission d'abord, bâti de manière indépendante.",
-
   "pricing.eyebrow": "Tarifs",
   "pricing.h1": "L'essentiel est gratuit, toujours.",
   "pricing.supportLink": "vous pouvez le soutenir",
-
   "support.eyebrow": "Soutenir cette œuvre",
   "support.h1": "Gratuit aujourd'hui. Dons bienvenus.",
   "support.thisMonthsGoal": "L'objectif du mois",
   "support.coreStaysFree": "L'essentiel reste gratuit",
   "support.thankYou": "Quoi que vous donniez, ou non, nous sommes heureux de votre présence.",
-
   "faq.eyebrow": "FAQ",
   "faq.h1": "Questions fréquentes.",
-
   "privacy.eyebrow": "Confidentialité",
   "privacy.h1": "Ce que Purify garde, et ce qu'il ne garde pas.",
-
   "account.eyebrow": "Votre compte",
   "account.h1": "Reprenez là où vous vous êtes arrêté.",
   "account.localProfile": "Profil local",
@@ -110,7 +101,6 @@
   "account.deleteAccount": "Supprimer le compte",
   "account.exportData": "Exporter les données",
   "account.importData": "Importer les données",
-
   "signin.h1": "Bon retour.",
   "signin.subtitle": "Connectez-vous pour synchroniser votre vie de lecture entre vos appareils.",
   "signin.submit": "Se connecter",
@@ -120,19 +110,15 @@
   "signin.continueWithApple": "Continuer avec Apple",
   "signin.continueWithEmail": "Continuer avec l'e-mail",
   "signin.comingSoon": "Bientôt",
-
   "signup.h1": "Créez votre compte.",
   "signup.subtitle": "Synchronisez notes, signets et série de prières entre vos appareils.",
   "signup.submit": "Créer le compte",
   "signup.alreadyHaveAccount": "Déjà un compte ? Se connecter →",
-
   "forgot.h1": "Réinitialisez votre mot de passe.",
   "forgot.subtitle": "Nous vous enverrons un lien de réinitialisation par e-mail.",
   "forgot.submit": "Envoyer le lien",
-
   "reset.h1": "Définissez un nouveau mot de passe.",
   "reset.submit": "Définir le mot de passe",
-
   "topics.eyebrow": "Index thématique",
   "topics.h1": "Les Pères, par les questions auxquelles ils ont répondu.",
   "topics.intro": "Un index doctrinal pour chercheurs, catéchumènes et apologistes laïcs. Choisissez un thème et lisez ce que les Pères ont confessé, chaque citation renvoyant directement à l'œuvre dont elle provient.",
@@ -142,7 +128,6 @@
   "topics.confessed": "Confessé par les Pères",
   "topics.refuted": "Réfuté par les Pères",
   "topics.curatedBy": "Édité par {who}",
-
   "discover.eyebrow": "Toute la bibliothèque",
   "discover.h1": "Découvrir.",
   "discover.subtitle": "Saints, conciles, calendrier et une entrée vers la bibliothèque entière. Touchez une tuile pour commencer.",
@@ -159,7 +144,6 @@
   "discover.tile.psalterBlurb": "Les cent cinquante psaumes, selon la numérotation de la Septante.",
   "discover.tile.patristic": "Commentaire patristique",
   "discover.tile.patristicBlurb": "Saint Jean Chrysostome verset par verset, à côté de l'Évangile.",
-
   "calendar.eyebrow": "Le Calendrier sacré",
   "calendar.h1": "Chaque jour de l'année de l'Église.",
   "calendar.today": "Aujourd'hui",
@@ -174,7 +158,6 @@
   "calendar.fast.fish": "Poisson permis",
   "calendar.fast.fastFree": "Sans jeûne",
   "calendar.fast.none": "Sans jeûne",
-
   "prayers.eyebrow": "Priez sans cesse",
   "prayers.h1": "Prières.",
   "prayers.morningRule": "Règle du matin",
@@ -188,7 +171,6 @@
   "prayers.sixthHour": "Sixième Heure",
   "prayers.ninthHour": "Neuvième Heure",
   "prayers.openTodaysPrayer": "Ouvrir la prière d'aujourd'hui →",
-
   "saints.eyebrow": "Vies et écrits",
   "saints.h1": "Les Saints.",
   "saints.searchPlaceholder": "Chercher parmi les saints…",
@@ -213,19 +195,26 @@
   "saints.hisDisciples": "Ses disciples et successeurs",
   "saints.herDisciples": "Ses disciples et successeurs",
   "saints.writings": "Écrits",
-
   "councils.eyebrow": "Les Conciles Œcuméniques",
   "councils.h1": "La Foi confessée par les Pères.",
   "councils.first": "Premier",
   "councils.second": "Deuxième",
   "councils.third": "Troisième",
   "councils.fourth": "Quatrième",
-
   "whatsnew.eyebrow": "Nouveautés",
   "whatsnew.releaseNotes": "Notes de version",
   "whatsnew.fromTheTeam": "D'Edgar, l'équipe Purify.",
-
   "translationDisclaimer.title": "Traduction en cours",
   "translationDisclaimer.body": "L'interface est traduite ; le corps de cette page reste en anglais en attendant la fin de la révision éditoriale pour la précision théologique.",
-  "translationDisclaimer.dismiss": "Fermer"
+  "translationDisclaimer.dismiss": "Fermer",
+  "pwa.install.download": "Download Purify",
+  "pwa.install.open": "Open Purify",
+  "pwa.install.openInBrowser": "Open in browser",
+  "pwa.install.modal.title": "Install Purify on your computer",
+  "pwa.install.modal.firefox": "Firefox doesn't yet support installing Purify directly. Open this page in Chrome, Edge, Brave, or Arc and tap Download Purify again.",
+  "pwa.install.modal.safari17": "Click the Share button in Safari's toolbar, then choose Add to Dock. Purify will install with its own icon and window.",
+  "pwa.install.modal.safariOld": "Your Safari version doesn't support adding Purify to the Dock. Update macOS to Sonoma or later, or open this page in Chrome, Edge, or Brave to install.",
+  "pwa.install.modal.chromiumSuppressed": "Purify may already be installed, or your browser paused the install prompt. Open it from your Applications or Start menu.",
+  "pwa.install.modal.ipad": "On iPad, tap the Share button in Safari's toolbar, then choose Add to Home Screen.",
+  "pwa.install.modal.close": "Close"
 }

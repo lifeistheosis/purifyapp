@@ -15,7 +15,6 @@
   "nav.openPurify": "Purify öffnen",
   "nav.menuToggle": "Menü öffnen",
   "nav.yourAccount": "Ihr Konto",
-
   "common.signIn": "Anmelden",
   "common.signUp": "Konto erstellen",
   "common.signOut": "Abmelden",
@@ -42,7 +41,6 @@
   "common.learnMore": "Mehr erfahren",
   "common.readMore": "Weiterlesen",
   "common.seeAll": "Alle ansehen",
-
   "home.heroH1": "Das ganze orthodoxe Leben, an einem stillen Ort.",
   "home.heroSubtitle": "Beten Sie mit der Kirche. Lesen Sie mit den Vätern. Gehen Sie durch das Jahr. Kostenlos, werbefrei, für immer Ihr.",
   "home.seeToday": "Heute sehen →",
@@ -54,7 +52,6 @@
   "home.whereWouldYouLikeToBegin": "Wo möchten Sie beginnen?",
   "home.openPurify": "Purify öffnen.",
   "home.openPurifySub": "Beginnen Sie dort, wo Sie stehen, bei einem Gebet, beim Heiligen des Tages, bei einem Vers des Evangeliums.",
-
   "footer.bible": "Die Bibel",
   "footer.saints": "Die Heiligen",
   "footer.library": "Die Bibliothek",
@@ -76,7 +73,6 @@
   "footer.thisMonth": "Dieser Monat",
   "footer.theFasts": "Die Fastenzeiten",
   "footer.languageLabel": "Sprache",
-
   "about.eyebrow": "Über dieses Werk",
   "about.h1": "Ein Heiligtum für das orthodoxe Leben außerhalb der Göttlichen Liturgie.",
   "about.northStar": "Der Polarstern",
@@ -86,23 +82,18 @@
   "about.covenantOnPrivacy": "Ein Bund zum Datenschutz.",
   "about.howItIsKept": "Wie es gepflegt wird",
   "about.missionFirst": "Mission zuerst, unabhängig gebaut.",
-
   "pricing.eyebrow": "Preise",
   "pricing.h1": "Der Kern ist kostenlos, immer.",
   "pricing.supportLink": "Sie können es unterstützen",
-
   "support.eyebrow": "Dieses Werk unterstützen",
   "support.h1": "Jetzt kostenlos. Spenden willkommen.",
   "support.thisMonthsGoal": "Ziel dieses Monats",
   "support.coreStaysFree": "Der Kern bleibt kostenlos",
   "support.thankYou": "Was auch immer Sie geben oder nicht geben, wir freuen uns, dass Sie hier sind.",
-
   "faq.eyebrow": "FAQ",
   "faq.h1": "Häufig gestellte Fragen.",
-
   "privacy.eyebrow": "Datenschutz",
   "privacy.h1": "Was Purify bewahrt, und was nicht.",
-
   "account.eyebrow": "Ihr Konto",
   "account.h1": "Setzen Sie dort fort, wo Sie aufgehört haben.",
   "account.localProfile": "Lokales Profil",
@@ -117,7 +108,6 @@
   "account.deleteAccount": "Konto löschen",
   "account.exportData": "Daten exportieren",
   "account.importData": "Daten importieren",
-
   "signin.h1": "Willkommen zurück.",
   "signin.subtitle": "Melden Sie sich an, um Ihr Leseleben geräteübergreifend zu synchronisieren.",
   "signin.submit": "Anmelden",
@@ -127,19 +117,15 @@
   "signin.continueWithApple": "Mit Apple fortfahren",
   "signin.continueWithEmail": "Mit E-Mail fortfahren",
   "signin.comingSoon": "Demnächst",
-
   "signup.h1": "Erstellen Sie Ihr Konto.",
   "signup.subtitle": "Synchronisieren Sie Notizen, Lesezeichen und Markierungen geräteübergreifend.",
   "signup.submit": "Konto erstellen",
   "signup.alreadyHaveAccount": "Schon ein Konto? Anmelden →",
-
   "forgot.h1": "Passwort zurücksetzen.",
   "forgot.subtitle": "Wir senden Ihnen einen Reset-Link per E-Mail.",
   "forgot.submit": "Link senden",
-
   "reset.h1": "Neues Passwort festlegen.",
   "reset.submit": "Passwort festlegen",
-
   "topics.eyebrow": "Thematischer Index",
   "topics.h1": "Die Väter, nach den Fragen, die sie beantworteten.",
   "topics.intro": "Ein Lehrindex für Suchende, Katechumenen und Laien-Apologeten. Wählen Sie ein Thema und lesen Sie, was die Väter bekannten, jedes Zitat verlinkt direkt auf das Werk, dem es entstammt.",
@@ -149,7 +135,6 @@
   "topics.confessed": "Von den Vätern bekannt",
   "topics.refuted": "Von den Vätern widerlegt",
   "topics.curatedBy": "Kuratiert von {who}",
-
   "discover.eyebrow": "Die ganze Bibliothek",
   "discover.h1": "Entdecken.",
   "discover.subtitle": "Heilige, Konzile, der Kalender und ein Eingang zur größeren Bibliothek. Tippen Sie auf eine Kachel, um zu beginnen.",
@@ -168,7 +153,6 @@
   "discover.tile.psalterBlurb": "Die hundertfünfzig Psalmen, in der Zählung der Septuaginta.",
   "discover.tile.patristic": "Patristischer Kommentar",
   "discover.tile.patristicBlurb": "Hl. Johannes Chrysostomus Vers für Vers, neben dem Evangelium.",
-
   "reading.eyebrow": "Der Leseraum",
   "reading.h1": "Lesen.",
   "reading.subtitle": "Setzen Sie sich zu den Vätern. Lesen Sie weiter, wo Sie aufgehört haben, sehen Sie, wozu andere zurückkehren, und finden Sie, was als Nächstes zu lesen ist.",
@@ -188,7 +172,6 @@
   "reading.surface.topicsBlurb": "Ein Faden, durch die Väter verfolgt, Seite an Seite.",
   "reading.surface.collections": "Thematische Sammlungen",
   "reading.surface.collectionsBlurb": "Florilegien, die Zeugnisse der Väter zu einem Thema versammelt.",
-
   "calendar.eyebrow": "Der heilige Kalender",
   "calendar.h1": "Jeder Tag des Kirchenjahres.",
   "calendar.today": "Heute",
@@ -203,7 +186,6 @@
   "calendar.fast.fish": "Fisch erlaubt",
   "calendar.fast.fastFree": "Ohne Fasten",
   "calendar.fast.none": "Kein Fasten",
-
   "prayers.eyebrow": "Betet ohne Unterlass",
   "prayers.h1": "Gebete.",
   "prayers.morningRule": "Morgenregel",
@@ -255,7 +237,6 @@
   "prayers.push.turnOff": "Erinnerungen deaktivieren",
   "prayers.push.morning": "Morgen",
   "prayers.push.evening": "Abend",
-
   "saints.eyebrow": "Leben und Schriften",
   "saints.h1": "Die Heiligen.",
   "saints.searchPlaceholder": "Unter den Heiligen suchen…",
@@ -280,19 +261,26 @@
   "saints.hisDisciples": "Seine Schüler und Nachfolger",
   "saints.herDisciples": "Ihre Schüler und Nachfolgerinnen",
   "saints.writings": "Schriften",
-
   "councils.eyebrow": "Die Ökumenischen Konzile",
   "councils.h1": "Der Glaube, bekannt von den Vätern.",
   "councils.first": "Erstes",
   "councils.second": "Zweites",
   "councils.third": "Drittes",
   "councils.fourth": "Viertes",
-
   "whatsnew.eyebrow": "Neuigkeiten",
   "whatsnew.releaseNotes": "Versionshinweise",
   "whatsnew.fromTheTeam": "Von Edgar, dem Purify-Team.",
-
   "translationDisclaimer.title": "Übersetzung in Arbeit",
   "translationDisclaimer.body": "Die Benutzeroberfläche ist übersetzt; der Haupttext dieser Seite bleibt auf Englisch, bis die redaktionelle Prüfung auf theologische Genauigkeit abgeschlossen ist.",
-  "translationDisclaimer.dismiss": "Schließen"
+  "translationDisclaimer.dismiss": "Schließen",
+  "pwa.install.download": "Download Purify",
+  "pwa.install.open": "Open Purify",
+  "pwa.install.openInBrowser": "Open in browser",
+  "pwa.install.modal.title": "Install Purify on your computer",
+  "pwa.install.modal.firefox": "Firefox doesn't yet support installing Purify directly. Open this page in Chrome, Edge, Brave, or Arc and tap Download Purify again.",
+  "pwa.install.modal.safari17": "Click the Share button in Safari's toolbar, then choose Add to Dock. Purify will install with its own icon and window.",
+  "pwa.install.modal.safariOld": "Your Safari version doesn't support adding Purify to the Dock. Update macOS to Sonoma or later, or open this page in Chrome, Edge, or Brave to install.",
+  "pwa.install.modal.chromiumSuppressed": "Purify may already be installed, or your browser paused the install prompt. Open it from your Applications or Start menu.",
+  "pwa.install.modal.ipad": "On iPad, tap the Share button in Safari's toolbar, then choose Add to Home Screen.",
+  "pwa.install.modal.close": "Close"
 }

@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { isOverlayOpen } from "@/lib/ui/overlay";
+import { isIos, isStandalone } from "@/lib/pwa/detectBrowser";
+import {
+  consumeInstallEvent,
+  useInstallStore,
+} from "@/lib/pwa/installPromptStore";
 
 /**
  * Two responsibilities, intentionally co-located so the PWA layer is a
@@ -10,11 +15,16 @@ import { isOverlayOpen } from "@/lib/ui/overlay";
  *  1. Register `/sw.js` on first mount in production. Skipped on dev so
  *     hot-reload doesn't fight the cache. Idempotent, the browser
  *     de-dupes registrations of the same script URL.
- *  2. Listen for `beforeinstallprompt` (Chromium / Android), and once
- *     the user has visited at least three times, surface a dismissible
- *     gold banner above the tab bar. iOS Safari doesn't fire this
- *     event, so iOS users get a tailored "Add to Home Screen" hint
- *     after a few visits.
+ *  2. Once the user has visited at least three times, surface a
+ *     dismissible gold banner above the tab bar that uses the shared
+ *     install-prompt store (`lib/pwa/installPromptStore`) to drive the
+ *     "Install" button. The desktop CTA uses the same store, so this
+ *     mobile banner and the desktop home CTA never race for the
+ *     single `beforeinstallprompt` event — whoever the user clicks
+ *     first wins, and the other consumer cleanly returns null.
+ *
+ *  iOS Safari doesn't fire `beforeinstallprompt`, so iOS users see a
+ *  tailored "Add to Home Screen" hint after a few visits.
  *
  *  Local-storage keys (kept in `purify_*` namespace, never sent to the
  *  server):
@@ -25,40 +35,18 @@ import { isOverlayOpen } from "@/lib/ui/overlay";
  *  No analytics fire from this component. The banner is local UI only.
  */
 
-type BIPEvent = Event & {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-};
-
 const KEY_VISITS = "purify_install_visits";
 const KEY_DISMISSED = "purify_install_dismissed_at";
 const MIN_VISITS = 3;
 const HIDE_AFTER_DISMISS_MS = 30 * 24 * 60 * 60 * 1000;
 
-function isIos(): boolean {
-  if (typeof navigator === "undefined") return false;
-  const ua = navigator.userAgent || "";
-  return /iPad|iPhone|iPod/.test(ua) && !("MSStream" in window);
-}
-
-function isStandalone(): boolean {
-  if (typeof window === "undefined") return false;
-  return (
-    window.matchMedia?.("(display-mode: standalone)").matches ||
-    // iOS-specific
-    (window.navigator as unknown as { standalone?: boolean }).standalone === true
-  );
-}
-
 export function InstallPrompt() {
-  const [bip, setBip] = useState<BIPEvent | null>(null);
-  const [show, setShow] = useState(false);
-  // Lazy initializer, read once at mount. The ref-style state lets us
-  // toggle the iOS hint on a real user interaction (the visit-count
-  // gate) without falling into the React 19 "setState in effect"
-  // anti-pattern that the new lint rule flags.
+  const { event: bip } = useInstallStore();
+  const [eligible, setEligible] = useState(false);
+  // Lazy initializer, read once at mount.
   const [iosHintEligible] = useState<boolean>(() => isIos());
   const [iosHint, setIosHint] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
 
   // 1. Register the service worker.
   useEffect(() => {
@@ -71,7 +59,10 @@ export function InstallPrompt() {
     });
   }, []);
 
-  // 2. Track visits + decide whether to surface the banner.
+  // 2. Track visits + decide whether the banner is eligible to show.
+  // Eligibility is independent of whether the install event has fired:
+  // on Chromium, the event drives the Install button; on iOS the hint
+  // string drives the banner. Either way, we need MIN_VISITS first.
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (isStandalone()) return;
@@ -87,33 +78,30 @@ export function InstallPrompt() {
 
     // Respect a recent dismiss.
     try {
-      const dismissed = Number(localStorage.getItem(KEY_DISMISSED) ?? "0");
-      if (dismissed && Date.now() - dismissed < HIDE_AFTER_DISMISS_MS) return;
+      const dismissedAt = Number(
+        localStorage.getItem(KEY_DISMISSED) ?? "0",
+      );
+      if (dismissedAt && Date.now() - dismissedAt < HIDE_AFTER_DISMISS_MS) {
+        return;
+      }
     } catch {
       /* ignore */
     }
 
     if (visits < MIN_VISITS) return;
 
-    // Chromium / Android path.
-    const onBip = (e: Event) => {
-      e.preventDefault();
-      setBip(e as BIPEvent);
-      setShow(true);
-    };
-    window.addEventListener("beforeinstallprompt", onBip);
-
-    // iOS Safari path (no beforeinstallprompt). We toggle the hint via a
-    // 0-delay timer so the state transition happens *outside* the effect
-    // body, see react-hooks/set-state-in-effect.
-    let iosTimer: ReturnType<typeof setTimeout> | null = null;
+    // Eligible. The Chromium "Install" button waits for `bip` from the
+    // store; iOS users see the Share-and-Add hint instead. Both state
+    // flips deferred via 0-delay so they happen *outside* the effect
+    // body (react-hooks/set-state-in-effect).
+    const tmEligible = setTimeout(() => setEligible(true), 0);
+    let tmIos: ReturnType<typeof setTimeout> | null = null;
     if (iosHintEligible) {
-      iosTimer = setTimeout(() => setIosHint(true), 0);
+      tmIos = setTimeout(() => setIosHint(true), 0);
     }
-
     return () => {
-      window.removeEventListener("beforeinstallprompt", onBip);
-      if (iosTimer) clearTimeout(iosTimer);
+      clearTimeout(tmEligible);
+      if (tmIos) clearTimeout(tmIos);
     };
   }, [iosHintEligible]);
 
@@ -123,22 +111,32 @@ export function InstallPrompt() {
     } catch {
       /* ignore */
     }
-    setShow(false);
+    setDismissed(true);
     setIosHint(false);
   };
 
   const install = async () => {
-    if (!bip) return;
+    // Use the shared store — if the desktop CTA prompted first, we
+    // get null back and gracefully dismiss instead of throwing.
+    const ev = consumeInstallEvent();
+    if (!ev) {
+      dismiss();
+      return;
+    }
     try {
-      await bip.prompt();
-      await bip.userChoice;
+      await ev.prompt();
+      await ev.userChoice;
     } catch {
       /* ignore */
     }
     dismiss();
   };
 
-  if (!show && !iosHint) return null;
+  // Show only when eligible, not dismissed, and we actually have
+  // something useful to offer (an install event on Chromium, or the
+  // iOS hint).
+  const show = eligible && !dismissed && (Boolean(bip) || iosHint);
+  if (!show) return null;
   // Don't compete with an open sheet / verse toolbar, those are
   // mid-task UI; the install banner can wait.
   if (isOverlayOpen()) return null;

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
+import { DesktopInstallCTA } from "@/components/pwa/DesktopInstallCTA";
 import { Navbar } from "@/components/nav/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { HeroChristIcon } from "@/components/marketing/HeroChristIcon";
@@ -214,9 +214,9 @@ export default async function Home() {
  style={{ animationDelay: "440ms" }}
  className="hero-copy-in mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4"
  >
- <ComingSoonCTA variant="inverse">
+ <DesktopInstallCTA variant="inverse">
  {t(m, "nav.openPurify")}
- </ComingSoonCTA>
+ </DesktopInstallCTA>
  <Link
  href="/calendar"
  className="font-sans text-ui font-medium text-paper/80 hover:text-paper transition-colors"
@@ -367,9 +367,9 @@ export default async function Home() {
  : "Begin where you stand, at a prayer, at the saint of the day, at a verse of the Gospel."}
  </p>
  <div className="mt-10">
- <ComingSoonCTA variant="inverse" className="text-body">
+ <DesktopInstallCTA variant="inverse" className="text-body">
  {isDe ? "Purify öffnen" : "Open Purify"}
- </ComingSoonCTA>
+ </DesktopInstallCTA>
  </div>
  </div>
  </section>

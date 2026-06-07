@@ -748,6 +748,16 @@ div[data-hl="true"] {
  }
 }
 
+@keyframes ambience-bar {
+ 0%,
+ 100% {
+ transform: scaleY(0.35);
+ }
+ 50% {
+ transform: scaleY(1);
+ }
+}
+
 @keyframes halo-breathe {
  0%,
  100% {

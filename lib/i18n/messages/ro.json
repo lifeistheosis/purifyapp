@@ -14,7 +14,6 @@
   "nav.openPurify": "Deschide Purify",
   "nav.menuToggle": "Deschide meniul",
   "nav.yourAccount": "Contul dvs.",
-
   "common.signIn": "Autentificare",
   "common.signUp": "Creați cont",
   "common.signOut": "Deconectare",
@@ -41,7 +40,6 @@
   "common.learnMore": "Aflați mai multe",
   "common.readMore": "Citește mai mult",
   "common.seeAll": "Vezi toate",
-
   "home.heroH1": "Toată viața ortodoxă, într-un loc liniștit.",
   "home.heroSubtitle": "Rugați-vă cu Biserica. Citiți cu Părinții. Mergeți prin an. Gratis, fără reclame, al dvs.",
   "home.seeToday": "Vezi astăzi →",
@@ -53,7 +51,6 @@
   "home.whereWouldYouLikeToBegin": "De unde ați dori să începeți?",
   "home.openPurify": "Deschide Purify.",
   "home.openPurifySub": "Începeți de unde sunteți, cu o rugăciune, cu sfântul zilei, cu un verset din Evanghelie.",
-
   "footer.bible": "Biblia",
   "footer.saints": "Sfinții",
   "footer.calendar": "Calendarul",
@@ -69,7 +66,6 @@
   "footer.glory": "Slavă lui Dumnezeu pentru toate.",
   "footer.copyright": "Texte în domeniul public, cu excepția cazului indicat.",
   "footer.languageLabel": "Limbă",
-
   "about.eyebrow": "Despre această lucrare",
   "about.h1": "Un sanctuar pentru viața ortodoxă în afara Sfintei Liturghii.",
   "about.northStar": "Steaua polară",
@@ -79,23 +75,18 @@
   "about.covenantOnPrivacy": "Un legământ asupra intimității.",
   "about.howItIsKept": "Cum este păstrat",
   "about.missionFirst": "Misiunea pe primul loc, construit independent.",
-
   "pricing.eyebrow": "Prețuri",
   "pricing.h1": "Esențialul este gratuit, mereu.",
   "pricing.supportLink": "îl puteți sprijini",
-
   "support.eyebrow": "Sprijiniți această lucrare",
   "support.h1": "Gratuit acum. Donațiile sunt binevenite.",
   "support.thisMonthsGoal": "Obiectivul lunii",
   "support.coreStaysFree": "Esențialul rămâne gratuit",
   "support.thankYou": "Indiferent dacă dați sau nu, ne bucurăm că sunteți aici.",
-
   "faq.eyebrow": "Întrebări frecvente",
   "faq.h1": "Întrebări frecvente.",
-
   "privacy.eyebrow": "Confidențialitate",
   "privacy.h1": "Ce păstrează Purify și ce nu.",
-
   "account.eyebrow": "Contul dvs.",
   "account.h1": "Reluați de unde ați rămas.",
   "account.localProfile": "Profil local",
@@ -110,7 +101,6 @@
   "account.deleteAccount": "Șterge contul",
   "account.exportData": "Exportă datele",
   "account.importData": "Importă datele",
-
   "signin.h1": "Bine ați revenit.",
   "signin.subtitle": "Autentificați-vă pentru a sincroniza viața dvs. de lectură între dispozitive.",
   "signin.submit": "Autentificare",
@@ -120,19 +110,15 @@
   "signin.continueWithApple": "Continuați cu Apple",
   "signin.continueWithEmail": "Continuați cu emailul",
   "signin.comingSoon": "În curând",
-
   "signup.h1": "Creați-vă contul.",
   "signup.subtitle": "Sincronizați-vă notele, marcajele și seria de rugăciuni între dispozitive.",
   "signup.submit": "Creați cont",
   "signup.alreadyHaveAccount": "Aveți deja cont? Autentificați-vă →",
-
   "forgot.h1": "Resetați-vă parola.",
   "forgot.subtitle": "Vă vom trimite un link de resetare prin email.",
   "forgot.submit": "Trimite linkul",
-
   "reset.h1": "Setați o parolă nouă.",
   "reset.submit": "Setați parola",
-
   "topics.eyebrow": "Index tematic",
   "topics.h1": "Părinții, după întrebările la care au răspuns.",
   "topics.intro": "Un index doctrinar pentru întrebători, catehumeni și apologeți laici. Alegeți o temă și citiți ce au mărturisit Părinții, cu fiecare citat legat direct la lucrarea din care provine.",
@@ -142,7 +128,6 @@
   "topics.confessed": "Mărturisit de Părinți",
   "topics.refuted": "Combătut de Părinți",
   "topics.curatedBy": "Îngrijit de {who}",
-
   "discover.eyebrow": "Întreaga bibliotecă",
   "discover.h1": "Descoperiți.",
   "discover.subtitle": "Sfinți, sinoade, calendar și o intrare în biblioteca mai largă. Atingeți o casetă pentru a începe.",
@@ -159,7 +144,6 @@
   "discover.tile.psalterBlurb": "Cei o sută cincizeci de psalmi, în numerotarea Septuagintei.",
   "discover.tile.patristic": "Comentariu patristic",
   "discover.tile.patristicBlurb": "Sfântul Ioan Gură de Aur verset cu verset, lângă Evanghelie.",
-
   "calendar.eyebrow": "Calendarul Sfânt",
   "calendar.h1": "Fiecare zi a anului bisericesc.",
   "calendar.today": "Astăzi",
@@ -174,7 +158,6 @@
   "calendar.fast.fish": "Se dezleagă la pește",
   "calendar.fast.fastFree": "Fără post",
   "calendar.fast.none": "Fără post",
-
   "prayers.eyebrow": "Rugați-vă neîncetat",
   "prayers.h1": "Rugăciuni.",
   "prayers.morningRule": "Rânduiala dimineții",
@@ -188,7 +171,6 @@
   "prayers.sixthHour": "Ceasul al șaselea",
   "prayers.ninthHour": "Ceasul al nouălea",
   "prayers.openTodaysPrayer": "Deschide rugăciunea de astăzi →",
-
   "saints.eyebrow": "Vieți și scrieri",
   "saints.h1": "Sfinții.",
   "saints.searchPlaceholder": "Caută printre sfinți…",
@@ -213,19 +195,26 @@
   "saints.hisDisciples": "Ucenicii și urmașii săi",
   "saints.herDisciples": "Ucenicii și urmașii săi",
   "saints.writings": "Scrieri",
-
   "councils.eyebrow": "Sinoadele Ecumenice",
   "councils.h1": "Credința mărturisită de Părinți.",
   "councils.first": "Întâiul",
   "councils.second": "Al doilea",
   "councils.third": "Al treilea",
   "councils.fourth": "Al patrulea",
-
   "whatsnew.eyebrow": "Noutăți",
   "whatsnew.releaseNotes": "Note de versiune",
   "whatsnew.fromTheTeam": "De la Edgar, echipa Purify.",
-
   "translationDisclaimer.title": "Traducere în curs",
   "translationDisclaimer.body": "Interfața este tradusă; conținutul acestei pagini este încă în engleză, în timp ce se finalizează revizia editorială pentru precizia teologică.",
-  "translationDisclaimer.dismiss": "Închide"
+  "translationDisclaimer.dismiss": "Închide",
+  "pwa.install.download": "Download Purify",
+  "pwa.install.open": "Open Purify",
+  "pwa.install.openInBrowser": "Open in browser",
+  "pwa.install.modal.title": "Install Purify on your computer",
+  "pwa.install.modal.firefox": "Firefox doesn't yet support installing Purify directly. Open this page in Chrome, Edge, Brave, or Arc and tap Download Purify again.",
+  "pwa.install.modal.safari17": "Click the Share button in Safari's toolbar, then choose Add to Dock. Purify will install with its own icon and window.",
+  "pwa.install.modal.safariOld": "Your Safari version doesn't support adding Purify to the Dock. Update macOS to Sonoma or later, or open this page in Chrome, Edge, or Brave to install.",
+  "pwa.install.modal.chromiumSuppressed": "Purify may already be installed, or your browser paused the install prompt. Open it from your Applications or Start menu.",
+  "pwa.install.modal.ipad": "On iPad, tap the Share button in Safari's toolbar, then choose Add to Home Screen.",
+  "pwa.install.modal.close": "Close"
 }

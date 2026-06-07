@@ -14,7 +14,6 @@
   "nav.openPurify": "افتح Purify",
   "nav.menuToggle": "افتح القائمة",
   "nav.yourAccount": "حسابك",
-
   "common.signIn": "تسجيل الدخول",
   "common.signUp": "إنشاء حساب",
   "common.signOut": "تسجيل الخروج",
@@ -41,7 +40,6 @@
   "common.learnMore": "اعرف المزيد",
   "common.readMore": "قراءة المزيد",
   "common.seeAll": "عرض الكل",
-
   "home.heroH1": "الحياة الأرثوذكسية كلها، في مكان هادئ واحد.",
   "home.heroSubtitle": "صلِّ مع الكنيسة. اقرأ مع الآباء. اعبر السنة. مجاناً، بلا إعلانات، لك إلى الأبد.",
   "home.seeToday": "← شاهد اليوم",
@@ -53,7 +51,6 @@
   "home.whereWouldYouLikeToBegin": "من أين تحب أن تبدأ؟",
   "home.openPurify": "افتح Purify.",
   "home.openPurifySub": "ابدأ من حيث أنت, بصلاة، بقديس اليوم، بآية من الإنجيل.",
-
   "footer.bible": "الكتاب المقدس",
   "footer.saints": "القديسون",
   "footer.calendar": "التقويم",
@@ -69,7 +66,6 @@
   "footer.glory": "المجد لله على كل شيء.",
   "footer.copyright": "نصوص من الملكية العامة ما لم يُذكر خلاف ذلك.",
   "footer.languageLabel": "اللغة",
-
   "about.eyebrow": "عن هذا العمل",
   "about.h1": "ملاذ للحياة الأرثوذكسية خارج القداس الإلهي.",
   "about.northStar": "النجم القطبي",
@@ -79,23 +75,18 @@
   "about.covenantOnPrivacy": "عهد بشأن الخصوصية.",
   "about.howItIsKept": "كيف يُحفظ",
   "about.missionFirst": "الرسالة أولاً، بُني باستقلالية.",
-
   "pricing.eyebrow": "الأسعار",
   "pricing.h1": "الجوهر مجاني، دائماً.",
   "pricing.supportLink": "يمكنك دعمه",
-
   "support.eyebrow": "ادعم هذا العمل",
   "support.h1": "مجاني الآن. التبرعات مرحب بها.",
   "support.thisMonthsGoal": "هدف هذا الشهر",
   "support.coreStaysFree": "الجوهر يبقى مجانياً",
   "support.thankYou": "مهما أعطيت أو لم تعطِ، نسر بوجودك هنا.",
-
   "faq.eyebrow": "الأسئلة الشائعة",
   "faq.h1": "الأسئلة المتكررة.",
-
   "privacy.eyebrow": "الخصوصية",
   "privacy.h1": "ما يحفظه Purify، وما لا يحفظه.",
-
   "account.eyebrow": "حسابك",
   "account.h1": "تابع من حيث توقفت.",
   "account.localProfile": "ملف محلي",
@@ -110,7 +101,6 @@
   "account.deleteAccount": "حذف الحساب",
   "account.exportData": "تصدير البيانات",
   "account.importData": "استيراد البيانات",
-
   "signin.h1": "أهلاً بعودتك.",
   "signin.subtitle": "سجل دخولك لمزامنة حياة قراءتك بين الأجهزة.",
   "signin.submit": "تسجيل الدخول",
@@ -120,19 +110,15 @@
   "signin.continueWithApple": "متابعة بـ Apple",
   "signin.continueWithEmail": "متابعة بالبريد",
   "signin.comingSoon": "قريباً",
-
   "signup.h1": "أنشئ حسابك.",
   "signup.subtitle": "زامن الملاحظات والإشارات وسلسلة الصلاة بين الأجهزة.",
   "signup.submit": "إنشاء حساب",
   "signup.alreadyHaveAccount": "← لديك حساب بالفعل؟ سجل الدخول",
-
   "forgot.h1": "إعادة تعيين كلمة المرور.",
   "forgot.subtitle": "سنرسل لك رابط إعادة التعيين بالبريد.",
   "forgot.submit": "أرسل الرابط",
-
   "reset.h1": "حدد كلمة مرور جديدة.",
   "reset.submit": "تحديد كلمة المرور",
-
   "topics.eyebrow": "الفهرس الموضوعي",
   "topics.h1": "الآباء، بحسب الأسئلة التي أجابوا عنها.",
   "topics.intro": "فهرس عقائدي للباحثين وموعوظي العماد والمدافعين العلمانيين. اختر موضوعاً واقرأ ما اعترف به الآباء، وكل اقتباس يربط مباشرة بالعمل الذي أُخذ منه.",
@@ -142,7 +128,6 @@
   "topics.confessed": "اعترف به الآباء",
   "topics.refuted": "دحضه الآباء",
   "topics.curatedBy": "تحرير: {who}",
-
   "discover.eyebrow": "المكتبة كلها",
   "discover.h1": "اكتشف.",
   "discover.subtitle": "القديسون والمجامع والتقويم ومدخل إلى المكتبة الأوسع. اضغط على بلاطة لتبدأ.",
@@ -159,7 +144,6 @@
   "discover.tile.psalterBlurb": "المزامير المئة والخمسون، بترقيم السبعينية.",
   "discover.tile.patristic": "التفسير الآبائي",
   "discover.tile.patristicBlurb": "القديس يوحنا الذهبي الفم آية بآية، إلى جانب الإنجيل.",
-
   "calendar.eyebrow": "التقويم المقدس",
   "calendar.h1": "كل يوم من السنة الكنسية.",
   "calendar.today": "اليوم",
@@ -174,7 +158,6 @@
   "calendar.fast.fish": "يُسمح بالسمك",
   "calendar.fast.fastFree": "بلا صوم",
   "calendar.fast.none": "بلا صوم",
-
   "prayers.eyebrow": "صلوا بلا انقطاع",
   "prayers.h1": "الصلوات.",
   "prayers.morningRule": "قاعدة الصباح",
@@ -188,7 +171,6 @@
   "prayers.sixthHour": "الساعة السادسة",
   "prayers.ninthHour": "الساعة التاسعة",
   "prayers.openTodaysPrayer": "← افتح صلاة اليوم",
-
   "saints.eyebrow": "السير والكتابات",
   "saints.h1": "القديسون.",
   "saints.searchPlaceholder": "ابحث بين القديسين…",
@@ -213,19 +195,26 @@
   "saints.hisDisciples": "تلاميذه وخلفاؤه",
   "saints.herDisciples": "تلميذاتها وخليفاتها",
   "saints.writings": "الكتابات",
-
   "councils.eyebrow": "المجامع المسكونية",
   "councils.h1": "الإيمان الذي اعترف به الآباء.",
   "councils.first": "الأول",
   "councils.second": "الثاني",
   "councils.third": "الثالث",
   "councils.fourth": "الرابع",
-
   "whatsnew.eyebrow": "الجديد",
   "whatsnew.releaseNotes": "ملاحظات الإصدار",
   "whatsnew.fromTheTeam": "من إدغار، فريق Purify.",
-
   "translationDisclaimer.title": "الترجمة قيد العمل",
   "translationDisclaimer.body": "الواجهة مترجمة؛ متن هذه الصفحة يبقى بالإنجليزية إلى حين اكتمال المراجعة التحريرية للدقة اللاهوتية.",
-  "translationDisclaimer.dismiss": "إغلاق"
+  "translationDisclaimer.dismiss": "إغلاق",
+  "pwa.install.download": "Download Purify",
+  "pwa.install.open": "Open Purify",
+  "pwa.install.openInBrowser": "Open in browser",
+  "pwa.install.modal.title": "Install Purify on your computer",
+  "pwa.install.modal.firefox": "Firefox doesn't yet support installing Purify directly. Open this page in Chrome, Edge, Brave, or Arc and tap Download Purify again.",
+  "pwa.install.modal.safari17": "Click the Share button in Safari's toolbar, then choose Add to Dock. Purify will install with its own icon and window.",
+  "pwa.install.modal.safariOld": "Your Safari version doesn't support adding Purify to the Dock. Update macOS to Sonoma or later, or open this page in Chrome, Edge, or Brave to install.",
+  "pwa.install.modal.chromiumSuppressed": "Purify may already be installed, or your browser paused the install prompt. Open it from your Applications or Start menu.",
+  "pwa.install.modal.ipad": "On iPad, tap the Share button in Safari's toolbar, then choose Add to Home Screen.",
+  "pwa.install.modal.close": "Close"
 }

@@ -14,7 +14,6 @@
   "nav.openPurify": "Abrir Purify",
   "nav.menuToggle": "Abrir menú",
   "nav.yourAccount": "Su cuenta",
-
   "common.signIn": "Iniciar sesión",
   "common.signUp": "Crear cuenta",
   "common.signOut": "Cerrar sesión",
@@ -41,7 +40,6 @@
   "common.learnMore": "Saber más",
   "common.readMore": "Leer más",
   "common.seeAll": "Ver todo",
-
   "home.heroH1": "Toda la vida ortodoxa, en un lugar tranquilo.",
   "home.heroSubtitle": "Ore con la Iglesia. Lea con los Padres. Camine el año. Gratis, sin anuncios, suyo para conservar.",
   "home.seeToday": "Ver hoy →",
@@ -53,7 +51,6 @@
   "home.whereWouldYouLikeToBegin": "¿Por dónde le gustaría empezar?",
   "home.openPurify": "Abrir Purify.",
   "home.openPurifySub": "Comience donde esté, con una oración, con el santo del día, con un versículo del Evangelio.",
-
   "footer.bible": "La Biblia",
   "footer.saints": "Los Santos",
   "footer.calendar": "El Calendario",
@@ -69,7 +66,6 @@
   "footer.glory": "Gloria a Dios por todas las cosas.",
   "footer.copyright": "Textos de dominio público salvo indicación contraria.",
   "footer.languageLabel": "Idioma",
-
   "about.eyebrow": "Sobre esta obra",
   "about.h1": "Un santuario para la vida ortodoxa fuera de la Divina Liturgia.",
   "about.northStar": "La estrella polar",
@@ -79,23 +75,18 @@
   "about.covenantOnPrivacy": "Un pacto sobre la privacidad.",
   "about.howItIsKept": "Cómo se sostiene",
   "about.missionFirst": "Misión primero, construido de forma independiente.",
-
   "pricing.eyebrow": "Precios",
   "pricing.h1": "Lo esencial es gratis, siempre.",
   "pricing.supportLink": "puede apoyarlo",
-
   "support.eyebrow": "Apoye esta obra",
   "support.h1": "Gratis hoy. Donativos bienvenidos.",
   "support.thisMonthsGoal": "Meta de este mes",
   "support.coreStaysFree": "Lo esencial permanece gratis",
   "support.thankYou": "Sea lo que dé, o no dé, nos alegra que esté aquí.",
-
   "faq.eyebrow": "Preguntas frecuentes",
   "faq.h1": "Preguntas frecuentes.",
-
   "privacy.eyebrow": "Privacidad",
   "privacy.h1": "Lo que Purify guarda, y lo que no.",
-
   "account.eyebrow": "Su cuenta",
   "account.h1": "Continúe donde lo dejó.",
   "account.localProfile": "Perfil local",
@@ -110,7 +101,6 @@
   "account.deleteAccount": "Eliminar cuenta",
   "account.exportData": "Exportar datos",
   "account.importData": "Importar datos",
-
   "signin.h1": "Bienvenido de nuevo.",
   "signin.subtitle": "Inicie sesión para sincronizar su vida de lectura entre dispositivos.",
   "signin.submit": "Iniciar sesión",
@@ -120,19 +110,15 @@
   "signin.continueWithApple": "Continuar con Apple",
   "signin.continueWithEmail": "Continuar con correo electrónico",
   "signin.comingSoon": "Próximamente",
-
   "signup.h1": "Cree su cuenta.",
   "signup.subtitle": "Sincronice sus notas, marcadores y racha de oración entre dispositivos.",
   "signup.submit": "Crear cuenta",
   "signup.alreadyHaveAccount": "¿Ya tiene cuenta? Iniciar sesión →",
-
   "forgot.h1": "Restablezca su contraseña.",
   "forgot.subtitle": "Le enviaremos un enlace de restablecimiento por correo electrónico.",
   "forgot.submit": "Enviar enlace",
-
   "reset.h1": "Establezca una nueva contraseña.",
   "reset.submit": "Establecer contraseña",
-
   "topics.eyebrow": "Índice temático",
   "topics.h1": "Los Padres, por las preguntas que respondieron.",
   "topics.intro": "Un índice doctrinal para indagadores, catecúmenos y apologistas laicos. Elija un tema y lea lo que los Padres confesaron, con cada cita enlazada directamente a la obra de la que proviene.",
@@ -142,7 +128,6 @@
   "topics.confessed": "Confesado por los Padres",
   "topics.refuted": "Refutado por los Padres",
   "topics.curatedBy": "Curado por {who}",
-
   "discover.eyebrow": "Toda la biblioteca",
   "discover.h1": "Descubrir.",
   "discover.subtitle": "Santos, concilios, el calendario y una entrada a la biblioteca completa. Toque un mosaico para comenzar.",
@@ -159,7 +144,6 @@
   "discover.tile.psalterBlurb": "Los ciento cincuenta salmos, en la numeración de la Septuaginta.",
   "discover.tile.patristic": "Comentario patrístico",
   "discover.tile.patristicBlurb": "San Juan Crisóstomo versículo por versículo, junto al Evangelio.",
-
   "calendar.eyebrow": "El Calendario Sagrado",
   "calendar.h1": "Cada día del año de la Iglesia.",
   "calendar.today": "Hoy",
@@ -174,7 +158,6 @@
   "calendar.fast.fish": "Pescado permitido",
   "calendar.fast.fastFree": "Sin ayuno",
   "calendar.fast.none": "Sin ayuno",
-
   "prayers.eyebrow": "Orad sin cesar",
   "prayers.h1": "Oraciones.",
   "prayers.morningRule": "Regla matutina",
@@ -188,7 +171,6 @@
   "prayers.sixthHour": "Sexta Hora",
   "prayers.ninthHour": "Novena Hora",
   "prayers.openTodaysPrayer": "Abrir la oración de hoy →",
-
   "saints.eyebrow": "Vidas y escritos",
   "saints.h1": "Los Santos.",
   "saints.searchPlaceholder": "Buscar entre los santos…",
@@ -213,19 +195,26 @@
   "saints.hisDisciples": "Sus discípulos y sucesores",
   "saints.herDisciples": "Sus discípulos y sucesores",
   "saints.writings": "Escritos",
-
   "councils.eyebrow": "Los Concilios Ecuménicos",
   "councils.h1": "La Fe confesada por los Padres.",
   "councils.first": "Primero",
   "councils.second": "Segundo",
   "councils.third": "Tercero",
   "councils.fourth": "Cuarto",
-
   "whatsnew.eyebrow": "Novedades",
   "whatsnew.releaseNotes": "Notas de versión",
   "whatsnew.fromTheTeam": "De Edgar, el equipo de Purify.",
-
   "translationDisclaimer.title": "Traducción en progreso",
   "translationDisclaimer.body": "La interfaz está traducida; el cuerpo de esta página sigue en inglés mientras se completa la revisión editorial para la precisión teológica.",
-  "translationDisclaimer.dismiss": "Cerrar"
+  "translationDisclaimer.dismiss": "Cerrar",
+  "pwa.install.download": "Download Purify",
+  "pwa.install.open": "Open Purify",
+  "pwa.install.openInBrowser": "Open in browser",
+  "pwa.install.modal.title": "Install Purify on your computer",
+  "pwa.install.modal.firefox": "Firefox doesn't yet support installing Purify directly. Open this page in Chrome, Edge, Brave, or Arc and tap Download Purify again.",
+  "pwa.install.modal.safari17": "Click the Share button in Safari's toolbar, then choose Add to Dock. Purify will install with its own icon and window.",
+  "pwa.install.modal.safariOld": "Your Safari version doesn't support adding Purify to the Dock. Update macOS to Sonoma or later, or open this page in Chrome, Edge, or Brave to install.",
+  "pwa.install.modal.chromiumSuppressed": "Purify may already be installed, or your browser paused the install prompt. Open it from your Applications or Start menu.",
+  "pwa.install.modal.ipad": "On iPad, tap the Share button in Safari's toolbar, then choose Add to Home Screen.",
+  "pwa.install.modal.close": "Close"
 }
