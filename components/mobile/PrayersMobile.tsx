@@ -94,27 +94,24 @@ export function PrayersMobile() {
 
       {/* Featured: The Prayer Rope Anthem. Sits high on the mobile
           scroll, right under the prayer of the heart, so the hymn is
-          visible without scrolling past the whole index. Matches the
-          desktop band's gold-accented, play-disc treatment. */}
+          visible without scrolling past the whole index. Neutral
+          paper-toned palette, no gold accents, matches the desktop
+          band's quiet emphasized treatment. */}
       <Link
         href="/prayers/anthem"
-        className="group mb-6 block rounded-xl border border-gold/35 bg-paper/[0.02] px-4 py-4 transition-colors hover:border-gold/60"
-        style={{
-          backgroundImage:
-            "radial-gradient(120% 80% at 100% 50%, rgba(212,175,55,0.10) 0%, transparent 60%)",
-        }}
+        className="group mb-6 block rounded-xl border border-paper/20 bg-paper/[0.02] px-4 py-4 transition-colors hover:border-paper/40"
       >
         <div className="flex items-center gap-4">
           <span
             aria-hidden
-            className="shrink-0 inline-flex h-12 w-12 items-center justify-center rounded-full border border-gold/55 bg-paper/[0.04] text-[#d4af37]"
+            className="shrink-0 inline-flex h-12 w-12 items-center justify-center rounded-full border border-paper/30 bg-paper/[0.04] text-paper/85"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className="translate-x-[1px]">
               <path d="M7 5.5v13l11-6.5L7 5.5z" />
             </svg>
           </span>
           <div className="min-w-0 flex-1">
-            <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-[#d4af37]/85">
+            <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/50">
               A hymn · for the rope
             </p>
             <h2 className="mt-1 font-serif text-lede text-paper leading-snug">

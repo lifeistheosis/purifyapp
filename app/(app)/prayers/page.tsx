@@ -248,26 +248,25 @@ export default async function PrayersPage() {
               </Link>
             </div>
 
-            {/* Featured: The Prayer Rope Anthem — a hymn to accompany
+            {/* Featured: The Prayer Rope Anthem, a hymn to accompany
                 the rope, lifted out of the long "Also in this book"
                 tile grid so it doesn't hide at the foot of the page.
-                Sits as a distinct gold-accented band right under the
-                hero, between the prayer of the heart and the discovery
-                rails, the natural place a hymn for the rope belongs. */}
+                Sits as a quiet emphasized band right under the hero,
+                between the prayer of the heart and the discovery
+                rails, the natural place a hymn for the rope belongs.
+                Neutral paper-toned palette throughout, no gold accents,
+                so the card emphasizes through size and position rather
+                than colour. */}
             <Link
               href="/prayers/anthem"
-              className="group mt-8 block overflow-hidden rounded-xl border border-gold/35 bg-paper/[0.02] px-7 py-7 transition-all hover:border-gold/60 hover:bg-paper/[0.04] md:px-10 md:py-8"
-              style={{
-                backgroundImage:
-                  "radial-gradient(120% 80% at 100% 50%, rgba(212,175,55,0.10) 0%, transparent 60%)",
-              }}
+              className="group mt-8 block overflow-hidden rounded-xl border border-paper/20 bg-paper/[0.02] px-7 py-7 transition-colors hover:border-paper/40 hover:bg-paper/[0.04] md:px-10 md:py-8"
             >
               <div className="flex items-center gap-5 md:gap-7">
-                {/* Decorative play-triangle inside a gold-ringed disc, the
-                    hymn-feature's only icon. */}
+                {/* Decorative play-triangle inside a paper-ringed disc,
+                    the hymn-feature's only icon. */}
                 <span
                   aria-hidden
-                  className="shrink-0 inline-flex h-14 w-14 items-center justify-center rounded-full border border-gold/55 bg-paper/[0.04] text-[#d4af37] transition-transform duration-200 group-hover:scale-[1.04] md:h-16 md:w-16"
+                  className="shrink-0 inline-flex h-14 w-14 items-center justify-center rounded-full border border-paper/30 bg-paper/[0.04] text-paper/85 transition-transform duration-200 group-hover:scale-[1.04] md:h-16 md:w-16"
                 >
                   <svg
                     width="22"
@@ -280,7 +279,7 @@ export default async function PrayersPage() {
                   </svg>
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-[#d4af37]/85">
+                  <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/50">
                     {isDe ? "Eine Hymne · für das Gebetsseil" : "A hymn · for the prayer rope"}
                   </p>
                   <h2 className="mt-2 font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-paper md:text-title">
@@ -289,12 +288,12 @@ export default async function PrayersPage() {
                   <p className="mt-2 font-serif italic text-detail text-paper/65 leading-[1.65] md:text-ui">
                     {isDe
                       ? "Gesungen Knoten für Knoten, an die Heilige Dreifaltigkeit, an Christus, an die Allheilige, an die Heiligen. Spielen, leise wiederholen, dem Text folgen."
-                      : "Sung knot by knot — to the Holy Trinity, to Christ, to the Theotokos, to all the saints. Play it, loop it, follow the lyrics."}
+                      : "Sung knot by knot. To the Holy Trinity, to Christ, to the Theotokos, to all the saints. Play it, loop it, follow the lyrics."}
                   </p>
                 </div>
                 <span
                   aria-hidden
-                  className="hidden shrink-0 self-center font-serif text-lede text-[#d4af37]/70 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-[#d4af37] md:inline-flex"
+                  className="hidden shrink-0 self-center font-serif text-lede text-paper/40 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-paper md:inline-flex"
                 >
                   →
                 </span>
