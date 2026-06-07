@@ -14,7 +14,8 @@
     "test:e2e:ui": "playwright test --ui",
     "lhci": "lhci autorun",
     "discord:scan": "node scripts/discord-scan.mjs",
-    "discord:list": "node scripts/discord-scan.mjs --list"
+    "discord:list": "node scripts/discord-scan.mjs --list",
+    "discord:all": "node scripts/discord-scan.mjs all"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",

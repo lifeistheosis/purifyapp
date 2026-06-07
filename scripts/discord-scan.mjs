@@ -1,61 +1,100 @@
 // Discord scan helper. Polls the Discord REST API for recent messages in
-// channels listed in `.env.discord` and prints them as either a compact
-// human-readable feed or as JSON.
+// text channels and forum threads of a configured guild, on demand.
 //
 // Usage:
-//   node scripts/discord-scan.mjs <channel> [--limit N] [--json] [--since ISO]
-//   node scripts/discord-scan.mjs --list
+//   node scripts/discord-scan.mjs <channel>       Scan one channel by name
+//   node scripts/discord-scan.mjs all              Scan every readable surface
+//   node scripts/discord-scan.mjs --list           List every channel + forum
 //
-// `<channel>` is the suffix of any `DISCORD_CHANNEL_*` line in .env.discord
-// (case-insensitive). `--list` enumerates the channels the bot can see.
+// Flags:
+//   --limit N        Max messages per channel/thread (default 25; cap 100)
+//   --since ISO      Only messages newer than this timestamp
+//   --json           Emit JSON instead of the human-readable feed
+//   --full           When scanning a forum, also dive into each thread's replies
+//                    (default just shows the opening post)
 //
 // Examples:
 //   node scripts/discord-scan.mjs suggestions
-//   node scripts/discord-scan.mjs forum --limit 100
-//   node scripts/discord-scan.mjs general --json
-//   node scripts/discord-scan.mjs bugs --since 2026-06-01T00:00:00Z
+//   node scripts/discord-scan.mjs all --since 2026-06-01T00:00:00Z
+//   node scripts/discord-scan.mjs forum --full --limit 50
 //   node scripts/discord-scan.mjs --list
 //
-// Why this exists: Claude (the assistant collaborating on this codebase)
+// What this exists for: Claude (the assistant collaborating on this codebase)
 // calls this script during dev sessions to see what the Purify Discord
-// community has been asking for, then folds the requests into the work in
-// flight. No long-running bot, no hosting — just a registered Discord
-// application's bot token used against the REST API on demand.
+// community has been asking for. No long-running bot, no hosting; just a
+// registered Discord application's bot token used against the REST API.
 
 import fs from "node:fs/promises";
 import path from "node:path";
 
 const ENV_PATH = path.join(process.cwd(), ".env.discord");
-const API_BASE = "https://discord.com/api/v10";
-const MAX_LIMIT = 100; // Discord's per-call cap; paginate for more.
+const API = "https://discord.com/api/v10";
+const MAX_LIMIT = 100;
+const DEFAULT_LIMIT = 25;
+
+// Discord channel types (https://discord.com/developers/docs/resources/channel)
+const TYPE = {
+  GUILD_TEXT: 0,
+  DM: 1,
+  GUILD_VOICE: 2,
+  GROUP_DM: 3,
+  GUILD_CATEGORY: 4,
+  GUILD_ANNOUNCEMENT: 5,
+  ANNOUNCEMENT_THREAD: 10,
+  PUBLIC_THREAD: 11,
+  PRIVATE_THREAD: 12,
+  GUILD_STAGE_VOICE: 13,
+  GUILD_DIRECTORY: 14,
+  GUILD_FORUM: 15,
+  GUILD_MEDIA: 16,
+};
+
+const TEXT_LIKE = new Set([TYPE.GUILD_TEXT, TYPE.GUILD_ANNOUNCEMENT]);
+const FORUM_LIKE = new Set([TYPE.GUILD_FORUM, TYPE.GUILD_MEDIA]);
+const THREAD_LIKE = new Set([
+  TYPE.PUBLIC_THREAD,
+  TYPE.PRIVATE_THREAD,
+  TYPE.ANNOUNCEMENT_THREAD,
+]);
 
 /* ─── Args ─────────────────────────────────────────────────────────────── */
 
-const args = process.argv.slice(2);
+const argv = process.argv.slice(2);
 let listOnly = false;
 let asJson = false;
-let limit = 50;
+let full = false;
+let limit = DEFAULT_LIMIT;
 let since = null;
-let channelArg = null;
+let positional = null;
 
-for (let i = 0; i < args.length; i++) {
-  const a = args[i];
+for (let i = 0; i < argv.length; i++) {
+  const a = argv[i];
   if (a === "--list") listOnly = true;
   else if (a === "--json") asJson = true;
-  else if (a === "--limit") limit = parseInt(args[++i], 10);
-  else if (a === "--since") since = args[++i];
-  else if (!a.startsWith("--")) channelArg = a;
-  else {
+  else if (a === "--full") full = true;
+  else if (a === "--limit") limit = parseInt(argv[++i], 10);
+  else if (a === "--since") since = argv[++i];
+  else if (!a.startsWith("--") && positional === null) positional = a;
+  else if (!a.startsWith("--")) {
+    console.error(`Unexpected positional: ${a}`);
+    process.exit(2);
+  } else {
     console.error(`Unknown flag: ${a}`);
     process.exit(2);
   }
 }
 
-if (!listOnly && !channelArg) {
+if (!Number.isFinite(limit) || limit <= 0) limit = DEFAULT_LIMIT;
+limit = Math.min(MAX_LIMIT, limit);
+
+if (!listOnly && !positional) {
   console.error(
-    "Usage: node scripts/discord-scan.mjs <channel> [--limit N] [--json] [--since ISO]\n" +
-      "       node scripts/discord-scan.mjs --list\n" +
-      "See .env.discord.example for setup.",
+    "Usage:\n" +
+      "  node scripts/discord-scan.mjs <channel>     Scan one channel by name\n" +
+      "  node scripts/discord-scan.mjs all            Scan every readable surface\n" +
+      "  node scripts/discord-scan.mjs --list         List every channel + forum\n" +
+      "Flags: --limit N  --since ISO  --json  --full\n" +
+      "See scripts/discord-scan.SETUP.md.",
   );
   process.exit(2);
 }
@@ -68,8 +107,7 @@ async function loadEnv() {
     text = await fs.readFile(ENV_PATH, "utf8");
   } catch {
     console.error(
-      `Missing .env.discord. Copy .env.discord.example to .env.discord and ` +
-        `fill in DISCORD_BOT_TOKEN plus your channel IDs.`,
+      "Missing .env.discord. See scripts/discord-scan.SETUP.md for setup.",
     );
     process.exit(1);
   }
@@ -80,13 +118,16 @@ async function loadEnv() {
     const eq = line.indexOf("=");
     if (eq < 0) continue;
     const k = line.slice(0, eq).trim();
-    const v = line.slice(eq + 1).trim().replace(/^["']|["']$/g, "");
+    const v = line
+      .slice(eq + 1)
+      .trim()
+      .replace(/^["']|["']$/g, "");
     env[k] = v;
   }
   return env;
 }
 
-function channelMap(env) {
+function manualChannels(env) {
   const out = {};
   for (const [k, v] of Object.entries(env)) {
     const m = k.match(/^DISCORD_CHANNEL_(.+)$/);
@@ -97,34 +138,66 @@ function channelMap(env) {
 
 /* ─── Discord REST helpers ─────────────────────────────────────────────── */
 
-async function discord(path, token) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    headers: {
-      Authorization: `Bot ${token}`,
-      "User-Agent": "PurifyDiscordScan/1.0 (+https://github.com/lifeistheosis/purifyapp)",
-    },
-  });
-  if (res.status === 401) {
-    throw new Error(
-      "Discord rejected the token (401). Check DISCORD_BOT_TOKEN in .env.discord, " +
-        "and confirm you copied the bot token (not the application client secret).",
+async function discord(p, token) {
+  // Auto-retry on 429 with the server-supplied delay, up to twice.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const res = await fetch(`${API}${p}`, {
+      headers: {
+        Authorization: `Bot ${token}`,
+        "User-Agent":
+          "PurifyDiscordScan/1.0 (+https://github.com/lifeistheosis/purifyapp)",
+      },
+    });
+    if (res.status === 401) {
+      throw new Error(
+        "Discord rejected the token (401). Check DISCORD_BOT_TOKEN in .env.discord.",
+      );
+    }
+    if (res.status === 403) {
+      throw new Error(
+        "Discord refused the request (403). The bot probably is not invited or lacks " +
+          "View Channels / Read Message History on this channel.",
+      );
+    }
+    if (res.status === 429) {
+      const retry = Number(res.headers.get("retry-after")) || 1;
+      if (attempt === 2) throw new Error(`Rate limited; gave up after retries.`);
+      await sleep(Math.ceil(retry * 1000) + 50);
+      continue;
+    }
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(
+        `Discord ${res.status} ${res.statusText}: ${body.slice(0, 200)}`,
+      );
+    }
+    return res.json();
+  }
+}
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+async function fetchGuildChannels(guildId, token) {
+  return discord(`/guilds/${guildId}/channels`, token);
+}
+
+async function fetchActiveThreads(guildId, token) {
+  const j = await discord(`/guilds/${guildId}/threads/active`, token);
+  return j.threads ?? [];
+}
+
+async function fetchArchivedPublicThreads(forumId, token) {
+  try {
+    const j = await discord(
+      `/channels/${forumId}/threads/archived/public?limit=20`,
+      token,
     );
+    return j.threads ?? [];
+  } catch {
+    return []; // 403 / 404 on some forums is fine; skip silently
   }
-  if (res.status === 403) {
-    throw new Error(
-      "Discord refused the request (403). The bot is probably not invited to the " +
-        "server or lacks View Channels / Read Message History on the channel.",
-    );
-  }
-  if (res.status === 429) {
-    const retry = res.headers.get("retry-after") || "?";
-    throw new Error(`Rate limited; retry after ${retry}s.`);
-  }
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Discord ${res.status} ${res.statusText}: ${body.slice(0, 200)}`);
-  }
-  return res.json();
 }
 
 async function fetchChannelMeta(channelId, token) {
@@ -132,12 +205,10 @@ async function fetchChannelMeta(channelId, token) {
 }
 
 async function fetchMessages(channelId, token, opts = {}) {
-  const limit = Math.min(MAX_LIMIT, Math.max(1, opts.limit ?? 50));
-  let url = `/channels/${channelId}/messages?limit=${limit}`;
-  if (opts.before) url += `&before=${opts.before}`;
+  const lim = Math.min(MAX_LIMIT, Math.max(1, opts.limit ?? DEFAULT_LIMIT));
+  const url = `/channels/${channelId}/messages?limit=${lim}`;
   const messages = await discord(url, token);
-  // Discord returns newest-first; reverse so the caller sees chronological.
-  return messages.reverse();
+  return messages.reverse(); // newest-last → chronological
 }
 
 /* ─── Rendering ────────────────────────────────────────────────────────── */
@@ -148,72 +219,88 @@ function fmtDate(iso) {
   return d.toISOString().replace("T", " ").slice(0, 19) + "Z";
 }
 
-function renderHuman(meta, messages) {
+function shortType(t) {
+  if (t === TYPE.GUILD_TEXT) return "text";
+  if (t === TYPE.GUILD_ANNOUNCEMENT) return "announce";
+  if (t === TYPE.GUILD_FORUM) return "forum";
+  if (t === TYPE.GUILD_MEDIA) return "media";
+  if (t === TYPE.GUILD_CATEGORY) return "cat";
+  if (t === TYPE.PUBLIC_THREAD) return "thread";
+  if (t === TYPE.PRIVATE_THREAD) return "thread(priv)";
+  return `?(${t})`;
+}
+
+function renderChannelHeader(meta, messageCount, indent = "") {
+  const lines = [];
+  lines.push(`${indent}# #${meta.name || "(unknown)"}  [${shortType(meta.type)}]  (${meta.id})`);
+  if (meta.topic) lines.push(`${indent}# topic: ${meta.topic}`);
+  lines.push(
+    `${indent}# ${messageCount} message${messageCount === 1 ? "" : "s"}`,
+  );
+  return lines.join("\n");
+}
+
+function renderMessages(messages, indent = "") {
   const out = [];
-  out.push(`# #${meta.name || "(unknown)"}  (${meta.id})`);
-  if (meta.topic) out.push(`# topic: ${meta.topic}`);
-  out.push(`# ${messages.length} message${messages.length === 1 ? "" : "s"}`);
-  out.push("");
   for (const m of messages) {
     const author = m.author?.global_name || m.author?.username || "unknown";
     const handle = m.author?.username ? `@${m.author.username}` : "";
-    out.push(`── ${fmtDate(m.timestamp)}  ${author} ${handle}`.trimEnd());
+    out.push(`${indent}── ${fmtDate(m.timestamp)}  ${author} ${handle}`.trimEnd());
     const content = (m.content || "").trim();
     if (content) {
-      for (const line of content.split("\n")) out.push(`   ${line}`);
+      for (const line of content.split("\n")) out.push(`${indent}   ${line}`);
     }
-    // Surface attachments + embeds + reactions briefly.
     if (m.attachments?.length) {
       for (const a of m.attachments)
-        out.push(`   [attachment] ${a.filename}  ${a.url}`);
+        out.push(`${indent}   [attachment] ${a.filename}  ${a.url}`);
     }
     if (m.embeds?.length) {
       for (const e of m.embeds) {
         const title = e.title || e.author?.name || "(embed)";
         const url = e.url ? `  ${e.url}` : "";
-        out.push(`   [embed] ${title}${url}`);
+        out.push(`${indent}   [embed] ${title}${url}`);
       }
     }
     if (m.reactions?.length) {
       const r = m.reactions
         .map((x) => `${x.emoji?.name ?? "?"}×${x.count}`)
         .join("  ");
-      out.push(`   [reactions] ${r}`);
-    }
-    if (m.thread) {
-      out.push(`   [thread] ${m.thread.name} (${m.thread.id})`);
+      out.push(`${indent}   [reactions] ${r}`);
     }
     out.push("");
   }
   return out.join("\n");
 }
 
-/* ─── Main ─────────────────────────────────────────────────────────────── */
+function applySince(messages) {
+  if (!since) return messages;
+  const sinceMs = new Date(since).getTime();
+  if (Number.isNaN(sinceMs)) return messages;
+  return messages.filter((m) => new Date(m.timestamp).getTime() >= sinceMs);
+}
 
-(async () => {
-  const env = await loadEnv();
+/* ─── List mode ────────────────────────────────────────────────────────── */
+
+async function runList(env) {
   const token = env.DISCORD_BOT_TOKEN;
-  if (!token) {
-    console.error("DISCORD_BOT_TOKEN is empty in .env.discord.");
-    process.exit(1);
-  }
-  const channels = channelMap(env);
-
-  if (listOnly) {
+  const guild = env.DISCORD_GUILD_ID;
+  if (!guild) {
+    // Fall back to listing the manual overrides only.
+    const channels = manualChannels(env);
     const names = Object.keys(channels).sort();
     if (names.length === 0) {
       console.error(
-        "No DISCORD_CHANNEL_* entries in .env.discord. Add at least one " +
-          "(e.g. DISCORD_CHANNEL_SUGGESTIONS=<id>) and re-run.",
+        "No DISCORD_GUILD_ID set, and no DISCORD_CHANNEL_* overrides. Set the " +
+          "guild ID for auto-discovery, or add at least one channel override.",
       );
       process.exit(1);
     }
-    console.log("Configured channels:");
+    console.log("Configured channels (manual overrides):");
     for (const name of names) {
       const id = channels[name];
       try {
         const meta = await fetchChannelMeta(id, token);
-        console.log(`  ${name.padEnd(14)}  #${meta.name}  (${id})`);
+        console.log(`  ${name.padEnd(14)}  #${meta.name}  [${shortType(meta.type)}]  (${id})`);
       } catch (e) {
         console.log(`  ${name.padEnd(14)}  [error: ${e.message}]  (${id})`);
       }
@@ -221,36 +308,274 @@ function renderHuman(meta, messages) {
     return;
   }
 
-  const key = channelArg.toLowerCase();
-  const channelId = channels[key];
-  if (!channelId) {
+  const channels = await fetchGuildChannels(guild, token);
+  const byParent = new Map();
+  for (const c of channels) {
+    const p = c.parent_id || "_root";
+    if (!byParent.has(p)) byParent.set(p, []);
+    byParent.get(p).push(c);
+  }
+  const categories = channels
+    .filter((c) => c.type === TYPE.GUILD_CATEGORY)
+    .sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+  const rootChildren = (byParent.get("_root") ?? [])
+    .filter((c) => c.type !== TYPE.GUILD_CATEGORY)
+    .sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+
+  console.log(`Guild ${guild} — readable surfaces`);
+  console.log("");
+  if (rootChildren.length) {
+    console.log("(uncategorised)");
+    for (const c of rootChildren) {
+      console.log(`  #${c.name.padEnd(28)} [${shortType(c.type)}]  ${c.id}`);
+    }
+  }
+  for (const cat of categories) {
+    const children = (byParent.get(cat.id) ?? []).sort(
+      (a, b) => (a.position ?? 0) - (b.position ?? 0),
+    );
+    console.log(`\n[${cat.name}]`);
+    for (const c of children) {
+      console.log(`  #${c.name.padEnd(28)} [${shortType(c.type)}]  ${c.id}`);
+    }
+  }
+
+  // Surface forum threads under their parent forum.
+  const forums = channels.filter((c) => FORUM_LIKE.has(c.type));
+  if (forums.length) {
+    console.log("\n— Forum threads —");
+    const activeThreads = await fetchActiveThreads(guild, token);
+    for (const f of forums) {
+      const threads = activeThreads.filter((t) => t.parent_id === f.id);
+      const archived = await fetchArchivedPublicThreads(f.id, token);
+      console.log(`\n  ${f.name}  (active: ${threads.length}, archived sample: ${archived.length})`);
+      for (const t of threads) {
+        console.log(`    🟢 ${t.name}  ${t.id}`);
+      }
+      for (const t of archived) {
+        console.log(`    ⚪ ${t.name}  ${t.id}`);
+      }
+    }
+  }
+}
+
+/* ─── Single-channel scan ──────────────────────────────────────────────── */
+
+async function runOne(env, name) {
+  const token = env.DISCORD_BOT_TOKEN;
+  const guild = env.DISCORD_GUILD_ID;
+  const manual = manualChannels(env);
+
+  // Resolve name → channel ID.
+  // Priority: manual override > exact channel-name match > startsWith match.
+  let id = manual[name.toLowerCase()];
+  let resolvedFrom = "manual override";
+
+  if (!id && guild) {
+    const channels = await fetchGuildChannels(guild, token);
+    const lc = name.toLowerCase();
+    const exact = channels.find((c) => c.name?.toLowerCase() === lc);
+    const partial = channels.find((c) => c.name?.toLowerCase().includes(lc));
+    const hit = exact || partial;
+    if (hit) {
+      id = hit.id;
+      resolvedFrom = `guild lookup → #${hit.name}`;
+    }
+  }
+
+  if (!id) {
+    const known = Object.keys(manual);
     console.error(
-      `Unknown channel "${channelArg}". Known: ${Object.keys(channels).join(", ") || "(none)"}.\n` +
-        `Add DISCORD_CHANNEL_${channelArg.toUpperCase()}=<id> to .env.discord.`,
+      `Unknown channel "${name}". ` +
+        (guild
+          ? `Tried guild lookup and ${known.length ? "manual overrides (" + known.join(", ") + ")" : "no overrides set"}.\n`
+          : `No DISCORD_GUILD_ID set for auto-discovery; manual overrides: ${known.join(", ") || "(none)"}.\n`) +
+        "Either set DISCORD_GUILD_ID or add a DISCORD_CHANNEL_* row.",
     );
     process.exit(1);
   }
 
-  const [meta, messages] = await Promise.all([
-    fetchChannelMeta(channelId, token),
-    fetchMessages(channelId, token, { limit }),
-  ]);
+  const meta = await fetchChannelMeta(id, token);
 
-  let filtered = messages;
-  if (since) {
-    const sinceMs = new Date(since).getTime();
-    if (!Number.isNaN(sinceMs)) {
-      filtered = messages.filter(
-        (m) => new Date(m.timestamp).getTime() >= sinceMs,
+  // Forum / media → enumerate threads, scan each.
+  if (FORUM_LIKE.has(meta.type)) {
+    await scanForum(meta, token, guild);
+    return;
+  }
+
+  // Regular text-like or thread.
+  const messages = applySince(await fetchMessages(id, token, { limit }));
+  if (asJson) {
+    console.log(
+      JSON.stringify({ resolvedFrom, channel: meta, messages }, null, 2),
+    );
+  } else {
+    console.log(`(resolved from: ${resolvedFrom})\n`);
+    console.log(renderChannelHeader(meta, messages.length));
+    console.log("");
+    console.log(renderMessages(messages));
+  }
+}
+
+async function scanForum(meta, token, guildId) {
+  const activeAll = guildId ? await fetchActiveThreads(guildId, token) : [];
+  const active = activeAll.filter((t) => t.parent_id === meta.id);
+  const archived = await fetchArchivedPublicThreads(meta.id, token);
+  const threads = [...active, ...archived];
+
+  const collected = [];
+  for (const t of threads) {
+    try {
+      const msgs = applySince(
+        await fetchMessages(t.id, token, { limit: full ? limit : 1 }),
       );
+      collected.push({ thread: t, messages: msgs });
+      await sleep(60);
+    } catch (e) {
+      collected.push({ thread: t, messages: [], error: e.message });
     }
   }
 
   if (asJson) {
-    console.log(JSON.stringify({ channel: meta, messages: filtered }, null, 2));
-  } else {
-    console.log(renderHuman(meta, filtered));
+    console.log(JSON.stringify({ forum: meta, threads: collected }, null, 2));
+    return;
   }
+  console.log(
+    `# Forum ${meta.name}  (${meta.id}) — ${threads.length} thread${threads.length === 1 ? "" : "s"} ` +
+      `(${active.length} active, ${archived.length} archived sample)`,
+  );
+  if (meta.topic) console.log(`# topic: ${meta.topic}`);
+  console.log("");
+  for (const c of collected) {
+    const t = c.thread;
+    console.log(`── thread: ${t.name}  (${t.id})`);
+    if (c.error) {
+      console.log(`   [skipped: ${c.error}]`);
+      console.log("");
+      continue;
+    }
+    if (c.messages.length === 0) {
+      console.log(`   [no messages in window]`);
+      console.log("");
+      continue;
+    }
+    console.log(renderMessages(c.messages, "   "));
+  }
+}
+
+/* ─── Scan-all ─────────────────────────────────────────────────────────── */
+
+async function runAll(env) {
+  const token = env.DISCORD_BOT_TOKEN;
+  const guild = env.DISCORD_GUILD_ID;
+  if (!guild) {
+    console.error(
+      "Cannot scan all without DISCORD_GUILD_ID. Add it to .env.discord " +
+        "(right-click the server icon in Discord → Copy Server ID).",
+    );
+    process.exit(1);
+  }
+
+  const channels = await fetchGuildChannels(guild, token);
+  const textLike = channels.filter((c) => TEXT_LIKE.has(c.type));
+  const forums = channels.filter((c) => FORUM_LIKE.has(c.type));
+
+  const result = { textChannels: [], forums: [] };
+
+  // Text-like channels.
+  for (const c of textLike) {
+    try {
+      const messages = applySince(
+        await fetchMessages(c.id, token, { limit }),
+      );
+      result.textChannels.push({ channel: c, messages });
+      await sleep(60);
+    } catch (e) {
+      result.textChannels.push({ channel: c, messages: [], error: e.message });
+    }
+  }
+
+  // Forums: enumerate threads, then scan each (just opening post by default).
+  const activeAll = await fetchActiveThreads(guild, token);
+  for (const f of forums) {
+    const active = activeAll.filter((t) => t.parent_id === f.id);
+    const archived = await fetchArchivedPublicThreads(f.id, token);
+    const threads = [...active, ...archived];
+    const collected = [];
+    for (const t of threads) {
+      try {
+        const msgs = applySince(
+          await fetchMessages(t.id, token, { limit: full ? limit : 1 }),
+        );
+        collected.push({ thread: t, messages: msgs });
+        await sleep(60);
+      } catch (e) {
+        collected.push({ thread: t, messages: [], error: e.message });
+      }
+    }
+    result.forums.push({ forum: f, threads: collected });
+  }
+
+  if (asJson) {
+    console.log(JSON.stringify(result, null, 2));
+    return;
+  }
+
+  // Human-readable feed.
+  console.log(
+    `Full scan of guild ${guild}: ${textLike.length} text channel(s), ${forums.length} forum(s)`,
+  );
+  if (since) console.log(`Since: ${since}`);
+  console.log("");
+
+  for (const { channel, messages, error } of result.textChannels) {
+    console.log(renderChannelHeader(channel, messages.length));
+    if (error) console.log(`# [skipped: ${error}]`);
+    else if (messages.length === 0) console.log(`# [no messages in window]`);
+    else {
+      console.log("");
+      console.log(renderMessages(messages));
+    }
+    console.log("");
+  }
+
+  for (const { forum, threads } of result.forums) {
+    const total = threads.reduce((n, t) => n + t.messages.length, 0);
+    console.log(
+      `# Forum ${forum.name}  (${forum.id}) — ${threads.length} thread(s), ${total} message(s)`,
+    );
+    if (forum.topic) console.log(`# topic: ${forum.topic}`);
+    console.log("");
+    for (const { thread, messages, error } of threads) {
+      console.log(`── thread: ${thread.name}  (${thread.id})`);
+      if (error) {
+        console.log(`   [skipped: ${error}]`);
+        console.log("");
+        continue;
+      }
+      if (messages.length === 0) {
+        console.log(`   [no messages in window]`);
+        console.log("");
+        continue;
+      }
+      console.log(renderMessages(messages, "   "));
+    }
+    console.log("");
+  }
+}
+
+/* ─── Main ─────────────────────────────────────────────────────────────── */
+
+(async () => {
+  const env = await loadEnv();
+  if (!env.DISCORD_BOT_TOKEN) {
+    console.error("DISCORD_BOT_TOKEN is empty in .env.discord.");
+    process.exit(1);
+  }
+
+  if (listOnly) return runList(env);
+  if (positional?.toLowerCase() === "all") return runAll(env);
+  return runOne(env, positional);
 })().catch((e) => {
   console.error(`discord-scan: ${e.message}`);
   process.exit(1);
