@@ -31,7 +31,13 @@ export function WhatsNewChip({ isDe }: { isDe: boolean }) {
   // it then appears (and stays) only for readers who genuinely haven't opened
   // the current version. No flash, no flicker.
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    // 0-delay defer keeps the state flip out of the effect body proper,
+    // matching the existing pattern in InstallPrompt etc.
+    // (react-hooks/set-state-in-effect).
+    const tm = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(tm);
+  }, []);
   const isUnseen = mounted && seenVersion !== CURRENT_VERSION;
 
   return (
@@ -48,10 +54,10 @@ export function WhatsNewChip({ isDe }: { isDe: boolean }) {
       )}
       <span className="font-sans text-caption sm:text-detail text-paper/85 group-hover:text-paper transition-colors">
         <span className="sm:hidden">
-          {CURRENT_VERSION} · A reading hub and a fuller prayer book
+          {CURRENT_VERSION} · Install Purify, St. Isaac the Syrian, a cinematic reader
         </span>
         <span className="hidden sm:inline">
-          {CURRENT_VERSION} · A reading hub, a fuller prayer book, and the Serbian saints
+          {CURRENT_VERSION} · Install Purify on your desktop, St. Isaac the Syrian, and a cinematic reader
         </span>
       </span>
       <span className="text-paper/55 group-hover:text-paper transition-colors text-detail">

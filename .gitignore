@@ -46,3 +46,8 @@ next-env.d.ts
 
 # ingestion source cache (large public-domain raw texts; not shipped)
 /scripts/.cache/
+
+# Held-back ambience asset: 64MB MP3, over GitHubs recommended max.
+# Will move to external hosting before launch; keep the file locally if
+# desired but never commit it.
+public/audio/ambience/valley.mp3

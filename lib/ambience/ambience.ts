@@ -13,12 +13,10 @@ export type AmbienceTrack = {
 };
 
 export const AMBIENCE_TRACKS: AmbienceTrack[] = [
-  {
-    id: "valley",
-    label: "Valley",
-    subtitle: "Birds and wind over open country",
-    src: "/audio/ambience/valley.mp3",
-  },
+  // "valley" is held back pre-launch: the source file is 64MB, over
+  // GitHub's recommended max, and is excluded from the repo via
+  // .gitignore. Re-add the entry once the asset is hosted externally
+  // (CDN / Supabase Storage) and the src points at a remote URL.
   {
     id: "campfire",
     label: "Campfire",
