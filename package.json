@@ -15,7 +15,8 @@
     "lhci": "lhci autorun",
     "discord:scan": "node scripts/discord-scan.mjs",
     "discord:list": "node scripts/discord-scan.mjs --list",
-    "discord:all": "node scripts/discord-scan.mjs all"
+    "discord:all": "node scripts/discord-scan.mjs all",
+    "discord:act": "node scripts/discord-act.mjs scripts/discord-actions.json"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",
