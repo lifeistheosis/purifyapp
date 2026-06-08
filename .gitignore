@@ -59,3 +59,7 @@ PURIFY_CLAUDE_HANDOFF.md
 # Suggestions audit (contains Discord handles + message content; not for redistribution).
 # Local-only living tracker.
 SUGGESTIONS_AUDIT.md
+
+# Homerun roadmap (contains strategic timing, v9.7-v10.0 plans, unannounced features).
+# Local-only; never publish.
+Homerun.md
