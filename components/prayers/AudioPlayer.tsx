@@ -14,7 +14,7 @@
 // The repeat counts echo numbers that recur in prayer practice; the rope
 // is often told in loops, so the anthem can keep pace.
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   setTrack,
   toggle as toggleAudio,
@@ -248,7 +248,15 @@ function LyricsPanel({
     const boxRect = box.getBoundingClientRect();
     const delta =
       elRect.top - boxRect.top - (box.clientHeight / 2 - el.clientHeight / 2);
-    box.scrollTo({ top: box.scrollTop + delta, behavior: "smooth" });
+    // Skip micro-scrolls (cheaper on mobile) and honor reduced-motion.
+    if (Math.abs(delta) < 4) return;
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    box.scrollTo({
+      top: box.scrollTop + delta,
+      behavior: reduce ? "auto" : "smooth",
+    });
   }, [activeIdx, synced]);
 
   // Fade the whole panel in on open.
@@ -262,72 +270,77 @@ function LyricsPanel({
   const edgeFade =
     "linear-gradient(to bottom, transparent 0, #000 18%, #000 82%, transparent 100%)";
 
-  return (
-    <div
-      ref={containerRef}
-      dir={rtl ? "rtl" : undefined}
-      className={`relative mt-5 max-h-[300px] overflow-y-auto rounded-lg border border-paper/10 bg-night/40 px-5 py-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden transition-all duration-700 ease-out ${
-        shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-      }`}
-      style={{ maskImage: edgeFade, WebkitMaskImage: edgeFade }}
-    >
-      <div className="space-y-4 text-center">
-        {lyrics.map((line, i) => {
-          const isActive = synced && i === activeIdx;
-          const clickable = synced && typeof line.time === "number";
-          const dist = synced && activeIdx >= 0 ? Math.abs(i - activeIdx) : 0;
-          const cls = [
-            "block w-full font-serif leading-[1.5] transition-all duration-700 ease-out",
-            clickable ? "cursor-pointer hover:text-paper" : "",
-            !synced
-              ? "text-ui text-paper/80"
-              : isActive
-                ? "text-lede font-medium text-gold"
-                : `text-ui text-paper ${dist >= 3 ? "blur-[1.2px]" : ""}`,
-          ].join(" ");
-          // Active line glows and lifts; the rest dim by distance from it.
-          const style: React.CSSProperties | undefined = !synced
-            ? undefined
+  // Build the line elements only when the active line changes, not on every
+  // currentTime tick (the store updates ~4x/sec). Keeps mobile smooth: no
+  // rebuild of 20+ nodes and their styles four times a second.
+  const lines = useMemo(
+    () =>
+      lyrics.map((line, i) => {
+        const isActive = synced && i === activeIdx;
+        const clickable = synced && typeof line.time === "number";
+        const dist = synced && activeIdx >= 0 ? Math.abs(i - activeIdx) : 0;
+        // Transition only cheap, composited properties (opacity/transform/
+        // color). `blur` is a filter that is expensive on mobile GPUs, so it
+        // is limited to large screens.
+        const cls = [
+          "block w-full font-serif leading-[1.5] transform-gpu transition-[opacity,transform,color] duration-500 ease-out",
+          clickable ? "cursor-pointer hover:text-paper" : "",
+          !synced
+            ? "text-ui text-paper/80"
             : isActive
-              ? {
-                  transform: "scale(1.05)",
-                  textShadow: "0 0 18px rgba(183,176,163,0.35)",
-                }
-              : { opacity: Math.max(0.16, 0.62 - dist * 0.13) };
-          if (clickable) {
-            return (
-              <button
-                key={i}
-                ref={
-                  isActive
-                    ? (activeRef as React.RefObject<HTMLButtonElement>)
-                    : undefined
-                }
-                type="button"
-                onClick={() => onSeek(line.time as number)}
-                className={cls}
-                style={style}
-              >
-                {line.text || " "}
-              </button>
-            );
-          }
-          return (
-            <p
-              key={i}
-              ref={
-                isActive
-                  ? (activeRef as React.RefObject<HTMLParagraphElement>)
-                  : undefined
+              ? "text-lede font-medium text-gold"
+              : `text-ui text-paper ${dist >= 3 ? "lg:blur-[1.2px]" : ""}`,
+        ].join(" ");
+        const style: React.CSSProperties | undefined = !synced
+          ? undefined
+          : isActive
+            ? {
+                transform: "translateZ(0) scale(1.05)",
+                textShadow: "0 0 18px rgba(183,176,163,0.35)",
               }
+            : { opacity: Math.max(0.16, 0.62 - dist * 0.13) };
+        if (clickable) {
+          return (
+            <button
+              key={i}
+              ref={isActive ? (activeRef as React.RefObject<HTMLButtonElement>) : undefined}
+              type="button"
+              onClick={() => onSeek(line.time as number)}
               className={cls}
               style={style}
             >
               {line.text || " "}
-            </p>
+            </button>
           );
-        })}
-      </div>
+        }
+        return (
+          <p
+            key={i}
+            ref={isActive ? (activeRef as React.RefObject<HTMLParagraphElement>) : undefined}
+            className={cls}
+            style={style}
+          >
+            {line.text || " "}
+          </p>
+        );
+      }),
+    [lyrics, synced, activeIdx, onSeek],
+  );
+
+  return (
+    <div
+      ref={containerRef}
+      dir={rtl ? "rtl" : undefined}
+      className={`relative mt-5 max-h-[300px] overflow-y-auto overscroll-contain transform-gpu rounded-lg border border-paper/10 bg-night/40 px-5 py-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden transition-[opacity,transform] duration-700 ease-out ${
+        shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+      }`}
+      style={{
+        maskImage: edgeFade,
+        WebkitMaskImage: edgeFade,
+        willChange: "scroll-position",
+      }}
+    >
+      <div className="space-y-4 text-center">{lines}</div>
     </div>
   );
 }
