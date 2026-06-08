@@ -1,4 +1,5 @@
 import { AnthemPlayer } from "@/components/prayers/AnthemPlayer";
+import { ShareButton } from "@/components/ui/ShareButton";
 
 export const metadata = {
   title: "The Prayer Rope Anthem",
@@ -31,6 +32,9 @@ export default function AnthemPage() {
             Orthodox world. It is offered here in English, French, and Arabic.
             Choose a language, loop it softly, and follow the words below.
           </p>
+          <div className="mt-7 flex justify-center">
+            <ShareButton title="The Prayer Rope Anthem" />
+          </div>
         </header>
 
         <div className="mt-10">

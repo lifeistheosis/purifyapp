@@ -308,5 +308,8 @@
   "pwa.install.modal.safariOld": "Your Safari version doesn't support adding Purify to the Dock. Update macOS to Sonoma or later, or open this page in Chrome, Edge, or Brave to install.",
   "pwa.install.modal.chromiumSuppressed": "Purify may already be installed, or your browser paused the install prompt. Open it from your Applications or Start menu.",
   "pwa.install.modal.ipad": "On iPad, tap the Share button in Safari's toolbar, then choose Add to Home Screen.",
-  "pwa.install.modal.close": "Close"
+  "pwa.install.modal.close": "Close",
+
+  "common.share": "Share",
+  "common.linkCopied": "Link copied"
 }

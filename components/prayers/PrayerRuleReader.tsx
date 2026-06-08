@@ -11,6 +11,7 @@
 
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { cn } from "@/lib/cn";
+import { ShareButton } from "@/components/ui/ShareButton";
 import {
   markRuleCompletedToday,
   readTodayDone,
@@ -130,25 +131,28 @@ export function PrayerRuleReader({
           <h1 className="font-serif text-title md:text-heading leading-[1.15] tracking-[-0.01em] text-paper">
             {rule.title}
           </h1>
-          {ruleHref && (
-            <button
-              type="button"
-              onClick={() => toggleRuleBookmark(rule.id, rule.title, ruleHref)}
-              aria-pressed={ruleBookmarked}
-              aria-label={
-                ruleBookmarked ? "Remove rule bookmark" : "Bookmark this rule"
-              }
-              title={ruleBookmarked ? "Bookmarked" : "Bookmark this rule"}
-              className={cn(
-                "mt-1 shrink-0 text-title-sm transition-colors",
-                ruleBookmarked
-                  ? "text-gold/90"
-                  : "text-paper/30 hover:text-paper",
-              )}
-            >
-              {ruleBookmarked ? "★" : "☆"}
-            </button>
-          )}
+          <div className="mt-1 flex shrink-0 items-center gap-3">
+            <ShareButton title={rule.title} />
+            {ruleHref && (
+              <button
+                type="button"
+                onClick={() => toggleRuleBookmark(rule.id, rule.title, ruleHref)}
+                aria-pressed={ruleBookmarked}
+                aria-label={
+                  ruleBookmarked ? "Remove rule bookmark" : "Bookmark this rule"
+                }
+                title={ruleBookmarked ? "Bookmarked" : "Bookmark this rule"}
+                className={cn(
+                  "shrink-0 text-title-sm transition-colors",
+                  ruleBookmarked
+                    ? "text-gold/90"
+                    : "text-paper/30 hover:text-paper",
+                )}
+              >
+                {ruleBookmarked ? "★" : "☆"}
+              </button>
+            )}
+          </div>
         </div>
         {rule.subtitle && (
           <p className="mt-4 font-serif italic text-detail text-paper/45">
@@ -261,6 +265,7 @@ function AudioRow({ src }: { src: string }) {
       <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/40 mb-2">
         Sung / Chanted
       </p>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption -- chanted prayer audio, no speech track to caption */}
       <audio
         controls
         preload="none"
