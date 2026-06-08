@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { getBook } from "@/lib/bible/books";
+import { writeTranslationPref } from "@/lib/bible/translationPref";
 
 type Translation = {
  id: string;
@@ -121,6 +122,8 @@ export function TranslationSwitcher({
  const params = new URLSearchParams(searchParams.toString());
  if (t.licensed) params.set("v", t.id);
  else params.delete("v");
+ // Remember the choice so it carries to the next chapter and return visits.
+ writeTranslationPref(t.licensed ? t.id : null);
  const qs = params.toString();
  router.push(qs ? `${pathname}?${qs}` : pathname);
  setOpen(false);

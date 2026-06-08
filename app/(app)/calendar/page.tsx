@@ -23,6 +23,7 @@ import { DayScroll } from "@/components/calendar/DayScroll";
 import { OrnamentRule } from "@/components/calendar/OrnamentRule";
 import { Colophon } from "@/components/calendar/Colophon";
 import { SectionLabel } from "@/components/calendar/SectionLabel";
+import { LocalTodaySync } from "@/components/calendar/LocalTodaySync";
 import { getServerLocale } from "@/lib/i18n/server";
 
 export const metadata = {
@@ -34,7 +35,14 @@ export const metadata = {
 // Hourly ISR so today rolls forward without a redeploy.
 export const revalidate = 3600;
 
-type SearchParams = Promise<{ m?: string; d?: string; style?: string }>;
+type SearchParams = Promise<{
+ m?: string;
+ d?: string;
+ style?: string;
+ /** Client's local date (YYYY-MM-DD), set by LocalTodaySync so "today" is
+  * the reader's local day rather than the server's UTC day. */
+ today?: string;
+}>;
 type CalStyle = "new" | "old";
 
 // The Old (Julian) Calendar runs 13 days behind the New (Revised Julian) for
@@ -199,7 +207,12 @@ export default async function CalendarPage({
        : cookieStyle === "old"
          ? "old"
          : "new";
- const today = startOfDayUtc(new Date());
+ // "Today" is the reader's LOCAL day when LocalTodaySync has supplied it via
+ // ?today=, otherwise the server's UTC day as a first-render fallback. This
+ // keeps the highlighted day, the Today panel, and its readings on the
+ // visitor's calendar date rather than the server's time zone.
+ const today = parseDayParam(params.today) ?? startOfDayUtc(new Date());
+ const serverTodayIso = `${today.getUTCFullYear()}-${String(today.getUTCMonth() + 1).padStart(2, "0")}-${String(today.getUTCDate()).padStart(2, "0")}`;
  const { year, month } = parseMonthParam(params.m, today);
 
  const selectedDay =
@@ -277,6 +290,7 @@ export default async function CalendarPage({
  style={calendarPageVars(todayTone, season)}
  >
  {/* HERO */}
+ <LocalTodaySync serverToday={serverTodayIso} />
  <section className="px-5 md:px-8 pt-10 md:pt-14 pb-10 border-b border-white/8">
  <div className="mx-auto max-w-[1280px] w-full">
  <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">

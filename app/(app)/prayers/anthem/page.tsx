@@ -1,10 +1,9 @@
-import { AudioPlayer } from "@/components/prayers/AudioPlayer";
-import { ANTHEM_LYRICS } from "@/lib/prayers/anthemLyrics";
+import { AnthemPlayer } from "@/components/prayers/AnthemPlayer";
 
 export const metadata = {
   title: "The Prayer Rope Anthem",
   description:
-    "The English Prayer Rope Anthem, a contemporary Orthodox chant sung while telling the rope, lifting the Trinity, Christ, the Theotokos, and the saints, verse by verse. Play it, loop it, and follow the words.",
+    "The Prayer Rope Anthem, a contemporary Orthodox chant sung while telling the rope, in English, French, and Arabic with synced lyrics. Play it, loop it, and follow the words.",
 };
 
 export default function AnthemPage() {
@@ -29,18 +28,13 @@ export default function AnthemPage() {
           </p>
           <p className="mx-auto mt-4 max-w-[58ch] font-serif italic text-detail text-paper/50 leading-[1.8]">
             No single author is recorded for it; the anthem spread across the
-            Orthodox world and is sung in Serbian, Greek, Russian, and this
-            English setting. Loop it softly, and follow the words below.
+            Orthodox world. It is offered here in English, French, and Arabic.
+            Choose a language, loop it softly, and follow the words below.
           </p>
         </header>
 
         <div className="mt-10">
-          <AudioPlayer
-            src="/audio/prayer-rope-anthem.mp3"
-            title="The English Prayer Rope Anthem"
-            subtitle="Loop to keep pace · tap Lyrics to follow along"
-            lyrics={ANTHEM_LYRICS}
-          />
+          <AnthemPlayer />
         </div>
       </article>
     </section>

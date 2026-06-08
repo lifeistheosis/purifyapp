@@ -53,11 +53,14 @@ export function AudioPlayer({
   title,
   subtitle,
   lyrics,
+  rtl = false,
 }: {
   src: string;
   title: string;
   subtitle?: string;
   lyrics?: LyricLine[];
+  /** Right-to-left lyrics (e.g. Arabic). */
+  rtl?: boolean;
 }) {
   const snap = usePersistentAudio();
   const [showLyrics, setShowLyrics] = useState(false);
@@ -137,7 +140,7 @@ export function AudioPlayer({
       </div>
 
       {hasLyrics && showLyrics && (
-        <LyricsPanel lyrics={lyrics!} current={current} onSeek={seekTo} />
+        <LyricsPanel lyrics={lyrics!} current={current} onSeek={seekTo} rtl={rtl} />
       )}
 
       {/* Scrubber */}
@@ -212,10 +215,12 @@ function LyricsPanel({
   lyrics,
   current,
   onSeek,
+  rtl = false,
 }: {
   lyrics: LyricLine[];
   current: number;
   onSeek: (t: number) => void;
+  rtl?: boolean;
 }) {
   const synced = lyrics.every((l) => typeof l.time === "number");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -260,6 +265,7 @@ function LyricsPanel({
   return (
     <div
       ref={containerRef}
+      dir={rtl ? "rtl" : undefined}
       className={`relative mt-5 max-h-[300px] overflow-y-auto rounded-lg border border-paper/10 bg-night/40 px-5 py-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden transition-all duration-700 ease-out ${
         shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
       }`}

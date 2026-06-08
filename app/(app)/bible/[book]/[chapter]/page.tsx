@@ -8,6 +8,7 @@ import { BookSwitcher } from "@/components/bible/BookSwitcher";
 import { ChapterKeyNav } from "@/components/bible/ChapterKeyNav";
 import { StudyRail } from "@/components/bible/StudyRail";
 import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
+import { RestoreTranslation } from "@/components/bible/RestoreTranslation";
 import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
 import { ReadingProgressBar } from "@/components/bible/ReadingProgressBar";
 import { ChapterStickyHeader } from "@/components/bible/ChapterStickyHeader";
@@ -222,6 +223,8 @@ export default async function BibleChapterPage({
  <MobileChapterStrip book={b!} current={chapterNum} />
  </div>
 
+ <RestoreTranslation testament={b!.testament} />
+
  <div className="reader-grid lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
  {/* Reader column */}
  <div className="min-w-0 mx-auto w-full max-w-[680px]">
@@ -275,7 +278,7 @@ export default async function BibleChapterPage({
  />
  )}
 
- <ChapterPager slug={book} chapter={chapterNum} />
+ <ChapterPager slug={book} chapter={chapterNum} v={licensedId ?? undefined} />
 
  {!usingLicensed && (
  <p className="hidden md:block mt-10 mb-3 font-sans text-eyebrow text-paper/40 leading-[1.6]" data-reader-chrome>

@@ -23,6 +23,20 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v9.6",
+ kind: "The Prayer Rope Anthem in French and Arabic, a remembered translation, and the calendar on your own time",
+ date: "June 8, 2026",
+ blurb:
+  "A focused patch shaped by the Discord. The Prayer Rope Anthem now sings in three tongues: the English setting is joined by a French version, with synchronized lyrics offered by a reader, and an Arabic version sung right to left, each with its own recording and its own lyrics that brighten line by line as the chant plays. The Bible reader now remembers your translation, so a choice of NKJV, NIV, or NLT carries from chapter to chapter and across return visits instead of resetting to the public-domain default each time you turn the page. And the calendar now keeps your own day: it reads your device's local date rather than the server's clock, so the highlighted day, the day's saint and fast, and the appointed readings all sit on the date you are actually living, not a day ahead or behind.",
+ items: [
+  "The Prayer Rope Anthem now offers three languages at /prayers/anthem: English, French, and Arabic. A small language switcher sits above the player; choosing a language swaps the recording and its synced lyrics. The French setting uses the recording and synchronized lyrics shared by BOX on the Discord; the Arabic setting, shared by Silouan, is sung and shown right to left. Each version's lyrics brighten and auto-scroll line by line, and a tap on any line seeks to it.",
+  "Your Bible translation is remembered. Choosing a licensed translation (NKJV, NIV, or NLT) now persists: it carries to the next and previous chapter, follows deep links, and is restored on your next visit, so you no longer reselect it every time you turn the page. Switching back to the public-domain text, the King James for the New Testament or Brenton's Septuagint for the Old, clears the preference. New Testament only, since the licensed translations are New Testament.",
+  "The calendar is on your time zone. It now reads your device's local date instead of the server's clock, so the highlighted day, the Today panel with its saint and fast, and the appointed readings all match the date where you are. Previously a reader west of the server could already see tomorrow's day marked; that is fixed.",
+  "Cache version bumped to v9.6.0 so the new anthem audio and the updated reader and calendar evict the old buckets on this release.",
+  "Footer + home hero chip + /whats-new chip step to v9.6.",
+ ],
+ },
+ {
  version: "v9.5",
  kind: "The Prayer Rope Anthem, Install Purify, St. Isaac the Syrian, and a cinematic reader",
  date: "June 6, 2026",
@@ -33,16 +47,16 @@ const ENTRIES: Entry[] = [
   "New Download Purify button on the desktop home. Replaces both Coming-soon CTAs (hero and final) with a real install affordance that triggers Chrome/Edge/Brave/Arc's native PWA install dialog. The app installs as a standalone desktop application with its own window, its own dock or Start-menu icon, and offline reading through the existing service worker. After install the button flips to Open Purify and links straight to today's prayers.",
   "A friendly modal handles the browsers that don't support the install prompt: Firefox desktop, older Safari, Safari 17+ (which gets Add to Dock instructions from the Share menu), iPad in desktop-UA mode, and Chromium when the prompt has been suppressed by a recent dismiss. Every variant of the modal offers an Open in browser link so a user is never trapped.",
   "Mobile install banner refactored to consume the same beforeinstallprompt event as the desktop CTA, through a single module-level singleton store. The two consumers can never race for the one-shot event; whichever the user clicks first wins, the other cleanly falls back. The visit-count gate, the 30-day dismiss memory, and the iOS Add-to-Home-Screen hint are unchanged.",
-  "St. Isaac the Syrian, the seventh-century hermit-bishop of Nineveh, joins the library with two complete homilies from the Mystic Treatises in A. J. Wensinck's 1923 English (Royal Academy of Sciences, Amsterdam). Homily I, thirty-nine aphorisms on the fear of God as the foundation of every virtue, the separation from the world, and the silencing of the senses; Homily II, thirty-three aphorisms on confession, repentance, and the ladder of the Kingdom hidden within the heart. Verbatim public domain throughout — Wensinck's archaic punctuation and original typography preserved as the 1923 edition prints them, sourced from English Wikisource where the work is published under the public-domain tag.",
+  "St. Isaac the Syrian, the seventh-century hermit-bishop of Nineveh, joins the library with two complete homilies from the Mystic Treatises in A. J. Wensinck's 1923 English (Royal Academy of Sciences, Amsterdam). Homily I, thirty-nine aphorisms on the fear of God as the foundation of every virtue, the separation from the world, and the silencing of the senses; Homily II, thirty-three aphorisms on confession, repentance, and the ladder of the Kingdom hidden within the heart. Verbatim public domain throughout. Wensinck's archaic punctuation and original typography preserved as the 1923 edition prints them, sourced from English Wikisource where the work is published under the public-domain tag.",
   "Bible reader toolbar collapses to one tidy row. Translation, Book, and Save sit on the left as the scripture-context group; a single Reader menu on the right opens text size, font family, and line spacing in one panel; Interlinear and Focus stay as their own pills next to it. The pattern follows Kindle and Apple Books, where set-and-forget reading preferences sit behind one entry point instead of crowding the chrome.",
   "A new Focus reading mode hides every chrome element across the app and the reader and collapses the grid to a single centered measure. The entrance and exit are handled by the browser's View Transitions API, which snapshots the page before and after the class flip and crossfades the two for 420ms on an ease-out curve. The result is one smooth dissolve across the whole viewport rather than a stack of per-element animations trying and failing to choreograph together.",
   "A non-destructive line-spacing axis joins the Reader menu, with Normal, Relaxed, and Loose presets. The setting overrides the column's leading via inline style only when it differs from the default, so the existing baked-in line height on each size preset is left undisturbed at Normal. Persists across sessions through the same store as size, font, and focus.",
-  "Saints index and every saint profile get a signature masthead. A bespoke three-bar Orthodox cross + eyebrow above the title, then the name set in DM Serif Display rather than the generic sans-bold, then a small Greek line (Οι Άγιοι) in gold echoing the calendar's typographic identity. Each saint page closes with a small Cross + intercession in display serif: Holy {name}, pray to God for us, or Most Holy Theotokos, save us — the universal liturgical address, freely-authored interface copy, no hosted patristic text involved.",
+  "Saints index and every saint profile get a signature masthead. A bespoke three-bar Orthodox cross + eyebrow above the title, then the name set in DM Serif Display rather than the generic sans-bold, then a small Greek line (Οι Άγιοι) in gold echoing the calendar's typographic identity. Each saint page closes with a small Cross + intercession in display serif: Holy {name}, pray to God for us, or Most Holy Theotokos, save us, the universal liturgical address, freely-authored interface copy, no hosted patristic text involved.",
   "Pricing page rebuilt from the empty void it was into a composed support panel. An Always free panel with the StarMark + everything-free list, a quiet future-layers note, and a Lamp panel with a single rounded-pill Light a lamp CTA pointing at /support. Honest about the absence of paid plans rather than promising tiers that don't exist.",
   "Home verse-of-the-day card is calmed: the white quote band that broke the dark palette mid-page is gone, the card now reads as verse-on-black with a quiet two-action footer (Save + overflow menu), and the gradient is softened to a barely-there radial wash in the corner.",
   "Mobile calendar month grid de-densified. Phone cells now show the day number and a small gold cross marker when a feast falls; the feast name itself appears in the day-detail card below the grid on tap. Desktop cells continue to show the feast name in line. The standard mobile pattern of marker + detail-on-tap, instead of the previous cluttered text-in-cell.",
   "Bible reader's desktop back-to-top button moved from middle-left to bottom-right; it was sitting on top of the chapter grid in the left rail and overlapping numbered links. Still desktop-only and fades in past 480px.",
-  "Ambient soundscapes for prayer and study, layered under everything else. A small circular speaker control sits at the bottom-left of every page in the app, mounted once in the (app) layout so the audio persists across navigation. Tap it to open a panel with three tracks — Campfire (a fire crackling in the woods), BO2 (an ambient score), and Shadows of Evil (a low brooding atmosphere) — plus a volume slider. The audio plays as an independent layer behind whatever else is on the page, so the same speaker can sit underneath the Prayer Rope Anthem, a Bible chapter being read in Focus mode, or a homily of St. Isaac the Syrian. Ungated for the pre-release; planned as a subscriber-only feature at public launch. One track, valley, is held back at the registry until its 64MB source audio moves to external hosting.",
+  "Ambient soundscapes for prayer and study, layered under everything else. A small circular speaker control sits at the bottom-left of every page in the app, mounted once in the (app) layout so the audio persists across navigation. Tap it to open a panel with three tracks: Campfire (a fire crackling in the woods), BO2 (an ambient score), and Shadows of Evil (a low brooding atmosphere), plus a volume slider. The audio plays as an independent layer behind whatever else is on the page, so the same speaker can sit underneath the Prayer Rope Anthem, a Bible chapter being read in Focus mode, or a homily of St. Isaac the Syrian. Ungated for the pre-release; planned as a subscriber-only feature at public launch. One track, valley, is held back at the registry until its 64MB source audio moves to external hosting.",
   "Cache version bumped to v9.5.0 so the redesigned reader, the new desktop install affordance, and the Mystic Treatises evict the old buckets on this release.",
   "Footer + home hero chip + /whats-new chip step to v9.5.",
  ],
@@ -1101,7 +1115,7 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
- v9.5 &middot; The Prayer Rope Anthem, Install Purify, and St. Isaac the Syrian
+ v9.6 &middot; The Anthem in French and Arabic, a remembered translation, the local calendar
  </p>
  </div>
 
@@ -1111,7 +1125,7 @@ export default async function WhatsNewPage() {
  </h1>
  ) : (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- The Prayer Rope Anthem, Install Purify, and St. Isaac the Syrian.
+ The Anthem in French and Arabic, your translation remembered, the calendar on your time.
  </h1>
  )}
 
@@ -1217,36 +1231,26 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v9.5 carries four things worth the click. First, the{" "}
- <Link href="/prayers/anthem" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Prayer Rope Anthem</Link>,
- the contemporary Orthodox chant sung knot by knot to the Holy
- Trinity, to Christ, to the Theotokos, and to all the saints,
- is featured prominently in the prayer section with its own
- audio player and the full English lyrics, lifted out of the
- long tile grid where it was hiding and given a gold-accented
- band right under the prayer of the heart so it is the first
- thing a reader meets after the Jesus Prayer. Play it, loop it,
- follow the words. Second, you can now install Purify on your
- desktop, the Download Purify button on the home page triggers
- your browser&rsquo;s install dialog and sets up Purify as its
- own standalone application with its own dock or Start-menu
- icon and offline reading. Third,{" "}
- <Link href="/saints/isaac-the-syrian/mystic-treatises" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">St. Isaac the Syrian</Link>{" "}
- joins the library with the opening homilies of his Mystic
- Treatises in verbatim public-domain English (A. J. Wensinck,
- 1923), one of the cornerstone voices of the inward life and
- a foundational father of the Philokalia. Fourth, the{" "}
+ v9.6 carries three things worth the click, all shaped by the
+ Discord. First, the{" "}
+ <Link href="/prayers/anthem" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Prayer Rope Anthem</Link>{" "}
+ now sings in three tongues. English is joined by a French
+ version and an Arabic version, each with its own recording and
+ its own synced lyrics that brighten line by line as the chant
+ plays, the French shared by BOX and the Arabic by Silouan.
+ Choose a language above the player, loop it, follow the words.
+ Second, the{" "}
  <Link href="/bible/matthew/1" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Bible reader</Link>{" "}
- is rebuilt: a single tidy toolbar with the reading preferences
- collapsed into one Reader menu, a new Focus mode that
- crossfades the entire page into a single centered scripture
- column, and a back-to-top control that no longer sits on the
- chapter grid. Smaller things ship alongside, the Saints index
- and every saint profile in a signature masthead with a closing
- intercession, the Pricing page rebuilt into an honest support
- panel, the home verse card calmed onto solid black, the mobile
- calendar grid de-densified, and an ambient-soundscape player
- in the corner that layers quietly underneath any of it.
+ now remembers your translation. A choice of NKJV, NIV, or NLT
+ carries from chapter to chapter and across return visits
+ instead of resetting to the public-domain text every time you
+ turn the page. Third, the{" "}
+ <Link href="/calendar" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">calendar</Link>{" "}
+ now keeps your own day. It reads your device&rsquo;s local date
+ rather than the server&rsquo;s clock, so the highlighted day,
+ the day&rsquo;s saint and fast, and the appointed readings all
+ sit on the date you are actually living, not a day ahead or
+ behind.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
