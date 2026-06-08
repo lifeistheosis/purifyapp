@@ -51,3 +51,7 @@ next-env.d.ts
 # Will move to external hosting before launch; keep the file locally if
 # desired but never commit it.
 public/audio/ambience/valley.mp3
+
+# Claude handoff brief (contains internal team commitments, Discord knowledge, roadmap).
+# Local-only; never publish.
+PURIFY_CLAUDE_HANDOFF.md
