@@ -55,3 +55,7 @@ public/audio/ambience/valley.mp3
 # Claude handoff brief (contains internal team commitments, Discord knowledge, roadmap).
 # Local-only; never publish.
 PURIFY_CLAUDE_HANDOFF.md
+
+# Suggestions audit (contains Discord handles + message content; not for redistribution).
+# Local-only living tracker.
+SUGGESTIONS_AUDIT.md
