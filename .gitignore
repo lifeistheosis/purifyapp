@@ -63,3 +63,8 @@ SUGGESTIONS_AUDIT.md
 # Homerun roadmap (contains strategic timing, v9.7-v10.0 plans, unannounced features).
 # Local-only; never publish.
 Homerun (v9.7-v10).md
+
+# Discord review cursor + daily review log (contain handles + message content).
+# Local-only; not for redistribution.
+scripts/.discord-review-state.json
+DISCORD_REVIEW_LOG.md

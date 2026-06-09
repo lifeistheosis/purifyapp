@@ -44,6 +44,23 @@ import path from "node:path";
 const ENV_PATH = path.join(process.cwd(), ".env.discord");
 const API = "https://discord.com/api/v10";
 
+// Reverent, em-dash-free response templates. `m` is the optional mention
+// prefix ("<@authorId> " or ""). `v` is the action's `vars` object.
+// Pick one with `"template": "<name>"` in the plan; freeform `post` overrides.
+const TEMPLATES = {
+  ship: (v, m) =>
+    `${m}Shipped in ${v.version ?? "the latest update"}. ${v.feature ? v.feature + ". " : ""}${v.link ? v.link + " " : ""}Thank you for the suggestion.`,
+  confirm: (v, m) =>
+    `${m}Confirmed for ${v.version ?? "an upcoming update"}. We will ping this thread when it ships. Thank you for the suggestion.`,
+  defer: (v, m) =>
+    `${m}Thank you for this. It is a good idea, and we are holding it for a later patch so we can give it the care it deserves. We will keep the thread in view.`,
+  reject: (v, m) =>
+    `${m}Thank you for taking the time to share this. After prayerful thought we have decided not to take it forward, for this reason: ${v.reason ?? "it falls outside what Purify is meant to be"}. We hope you understand, and we are grateful for your love for Purify and the Church.`,
+  thanks: (v, m) => `${m}Thank you, this is noted and under consideration.`,
+  info: (v, m) =>
+    `${m}Thank you. Could you say a little more about ${v.ask ?? "what you have in mind"}? It will help us scope it well.`,
+};
+
 const args = process.argv.slice(2);
 const execute = args.includes("--execute");
 const planPath = args.find((a) => !a.startsWith("--"));
@@ -90,8 +107,8 @@ async function loadPlan() {
       `Plan file ${planPath} must contain a JSON array of actions.`,
     );
   }
-  // House style: no em-dashes in posted messages.
-  const violations = [];
+  // Structural validation only. The em-dash guard runs later, on the FINAL
+  // rendered message (so template `vars` like `reason` are checked too).
   for (let i = 0; i < plan.length; i++) {
     const a = plan[i];
     if (typeof a !== "object" || a === null) {
@@ -103,19 +120,11 @@ async function loadPlan() {
     if (a.post && typeof a.post !== "string") {
       throw new Error(`Action ${i} 'post' must be a string.`);
     }
-    if (a.post && a.post.includes("—")) {
-      violations.push({ idx: i, name: a.thread_name ?? a.thread_id });
+    if (a.template && !TEMPLATES[a.template]) {
+      throw new Error(
+        `Action ${i} unknown template "${a.template}". Use one of: ${Object.keys(TEMPLATES).join(", ")}.`,
+      );
     }
-  }
-  if (violations.length) {
-    console.error(
-      "Refusing to run: the following actions contain em-dashes ('—'):",
-    );
-    for (const v of violations) {
-      console.error(`  action[${v.idx}]: ${v.name}`);
-    }
-    console.error("Replace each em-dash with a period or a comma and re-run.");
-    process.exit(1);
   }
   return plan;
 }
@@ -180,6 +189,25 @@ async function unarchiveThread(threadId, token) {
   });
 }
 
+async function starterAuthorId(threadId, token) {
+  // For forum threads the opening post's message id equals the thread id, so
+  // this fetches the original author for an @mention.
+  try {
+    const msg = await discord("GET", `/channels/${threadId}/messages/${threadId}`, token);
+    return msg?.author?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// Resolve an action's final message: freeform `post` wins; else render the
+// named template with its vars and the mention prefix.
+function renderMessage(action, mentionPrefix) {
+  if (action.post) return action.post;
+  if (action.template) return TEMPLATES[action.template](action.vars ?? {}, mentionPrefix);
+  return null;
+}
+
 async function closeThread(threadId, token) {
   // Archive AND lock so no further replies can post and Discord moves the
   // thread to the archived list.
@@ -207,23 +235,53 @@ async function closeThread(threadId, token) {
     })\n`,
   );
 
+  // Pass 1: resolve each action's thread, mention prefix, final message, and
+  // close behavior. Then guard the RENDERED text for em-dashes before anything
+  // posts. `reject` closes by default; an explicit `close` always overrides.
+  const resolved = [];
   for (let i = 0; i < plan.length; i++) {
     const a = plan[i];
-    let meta;
+    const r = { idx: i, action: a, meta: null, message: null, close: false, error: null };
     try {
-      meta = await getThread(a.thread_id, token);
+      r.meta = await getThread(a.thread_id, token);
     } catch (e) {
-      console.log(
-        `[${i + 1}/${plan.length}]  ✗  cannot reach thread ${a.thread_id}: ${e.message}`,
-      );
+      r.error = `cannot reach thread: ${e.message}`;
+      resolved.push(r);
       continue;
     }
-    const label = a.thread_name ?? meta.name ?? a.thread_id;
-    console.log(`[${i + 1}/${plan.length}]  ${label}  (${a.thread_id})`);
-    if (a.post) {
-      console.log(`         post:  ${a.post.replace(/\n/g, " ").slice(0, 200)}`);
+    let mention = "";
+    if (a.mention) {
+      const id = await starterAuthorId(a.thread_id, token);
+      if (id) mention = `<@${id}> `;
     }
-    if (a.close) {
+    r.message = renderMessage(a, mention);
+    r.close = a.close ?? a.template === "reject";
+    resolved.push(r);
+  }
+
+  const dashHits = resolved.filter((r) => r.message && r.message.includes("—"));
+  if (dashHits.length) {
+    console.error("Refusing to run: rendered messages contain em-dashes ('—'):");
+    for (const r of dashHits) {
+      console.error(`  action[${r.idx}]: ${r.action.thread_name ?? r.action.thread_id}`);
+    }
+    console.error("Replace each em-dash with a period or a comma and re-run.");
+    process.exit(1);
+  }
+
+  // Pass 2: print (and, with --execute, perform) each action.
+  for (const r of resolved) {
+    const a = r.action;
+    const label = a.thread_name ?? r.meta?.name ?? a.thread_id;
+    console.log(`[${r.idx + 1}/${plan.length}]  ${label}  (${a.thread_id})`);
+    if (r.error) {
+      console.log(`         ✗ ${r.error}\n`);
+      continue;
+    }
+    if (r.message) {
+      console.log(`         post:  ${r.message.replace(/\n/g, " ").slice(0, 220)}`);
+    }
+    if (r.close) {
       console.log(`         close: archive + lock`);
     }
 
@@ -234,19 +292,18 @@ async function closeThread(threadId, token) {
 
     try {
       // If the thread is already archived and we need to post or close,
-      // unarchive first. Without this, POST returns 403 even with Send
-      // Messages permission — Discord refuses any write on archived
-      // threads until they are revived.
-      const wasArchived = Boolean(meta.thread_metadata?.archived);
-      if (wasArchived && (a.post || a.close)) {
+      // unarchive first. Discord refuses any write on archived threads
+      // (even with Send Messages) until they are revived.
+      const wasArchived = Boolean(r.meta.thread_metadata?.archived);
+      if (wasArchived && (r.message || r.close)) {
         await unarchiveThread(a.thread_id, token);
-        await new Promise((r) => setTimeout(r, 250));
+        await new Promise((res) => setTimeout(res, 250));
       }
-      if (a.post) {
-        await postMessage(a.thread_id, a.post, token);
-        await new Promise((r) => setTimeout(r, 250)); // courtesy spacing
+      if (r.message) {
+        await postMessage(a.thread_id, r.message, token);
+        await new Promise((res) => setTimeout(res, 250)); // courtesy spacing
       }
-      if (a.close) {
+      if (r.close) {
         await closeThread(a.thread_id, token);
       }
       console.log("         ✓ done\n");
