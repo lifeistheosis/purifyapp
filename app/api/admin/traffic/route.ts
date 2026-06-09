@@ -5,9 +5,16 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Returns daily counts of visitors, pageviews, and signups over a window.
-// Used by the Traffic tab's line chart and the Overview hero sparklines.
+// Daily counts of visitors, pageviews, and signups over a window. Used by
+// the Traffic tab's line chart and the Overview hero sparklines.
 // Range: 7d | 30d | 90d (default 30d).
+//
+// v9.7: now uses the `analytics_daily_buckets` SQL function for
+// aggregation. The previous implementation fetched up to ~250k rows
+// across three tables and bucketed them in JS, which silently truncated
+// at the supabase-js row limit on active days and showed up in the chart
+// as Pageviews stuck at 0. The RPC does the same work in a single
+// round-trip and returns 0 (not null) for days with no activity.
 export async function GET(req: NextRequest) {
   const admin = await getAdminUser();
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -19,55 +26,39 @@ export async function GET(req: NextRequest) {
   since.setUTCHours(0, 0, 0, 0);
   const sinceIso = since.toISOString();
 
-  const [{ data: sess }, { data: pv }, { data: prof }] = await Promise.all([
-    supa
-      .from("analytics_sessions")
-      .select("first_seen")
-      .gte("first_seen", sinceIso)
-      .limit(50_000),
-    supa
-      .from("analytics_pageviews")
-      .select("ts")
-      .gte("ts", sinceIso)
-      .limit(200_000),
-    supa
-      .from("profiles")
-      .select("joined_at")
-      .gte("joined_at", sinceIso)
-      .limit(50_000),
-  ]);
+  const { data, error } = await supa.rpc("analytics_daily_buckets", {
+    p_since: sinceIso,
+    p_days: days,
+  });
 
-  // Bucket by UTC date (yyyy-mm-dd).
-  const dayKey = (iso: string) => iso.slice(0, 10);
-  const buckets = new Map<string, { visitors: number; views: number; signups: number }>();
-  for (let i = 0; i < days; i++) {
-    const d = new Date(since);
-    d.setUTCDate(since.getUTCDate() + i);
-    buckets.set(d.toISOString().slice(0, 10), {
-      visitors: 0,
-      views: 0,
-      signups: 0,
-    });
-  }
-  for (const r of sess ?? []) {
-    const k = dayKey(r.first_seen);
-    const b = buckets.get(k);
-    if (b) b.visitors += 1;
-  }
-  for (const r of pv ?? []) {
-    const k = dayKey(r.ts);
-    const b = buckets.get(k);
-    if (b) b.views += 1;
-  }
-  for (const r of prof ?? []) {
-    const k = dayKey(r.joined_at);
-    const b = buckets.get(k);
-    if (b) b.signups += 1;
+  if (error) {
+    // Surface the error so we can see it in Render logs. The old route
+    // silently returned an empty `pv` array on any query failure, which
+    // is exactly what produced the "stuck at 0" symptom.
+    console.error("[admin/traffic] analytics_daily_buckets failed", error);
+    return NextResponse.json(
+      {
+        range,
+        days,
+        points: [],
+        error: error.message ?? "aggregation failed",
+        generatedAt: new Date().toISOString(),
+      },
+      { status: 500, headers: { "Cache-Control": "no-store" } },
+    );
   }
 
-  const points = [...buckets.entries()]
-    .sort(([a], [b]) => (a < b ? -1 : 1))
-    .map(([date, v]) => ({ date, ...v }));
+  type Row = { day: string; visitors: number | string; views: number | string; signups: number | string };
+  const points = ((data ?? []) as Row[]).map((r) => ({
+    // The RPC returns Postgres `date` which serializes to "YYYY-MM-DD"
+    // — same shape the chart already expects.
+    date: r.day,
+    // Postgres `bigint` arrives as a string in the supabase-js JSON;
+    // coerce defensively so the chart doesn't get strings on its axis.
+    visitors: Number(r.visitors) || 0,
+    views: Number(r.views) || 0,
+    signups: Number(r.signups) || 0,
+  }));
 
   return NextResponse.json(
     { range, days, points, generatedAt: new Date().toISOString() },

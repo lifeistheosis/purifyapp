@@ -67,11 +67,14 @@ export async function POST(req: NextRequest) {
     const supa = createAdminClient();
     const now = new Date().toISOString();
 
-    const { data: existing } = await supa
+    const { data: existing, error: existingErr } = await supa
       .from("analytics_sessions")
-      .select("session_id")
+      .select("session_id, pageviews")
       .eq("session_id", sessionId)
       .maybeSingle();
+    if (existingErr) {
+      console.error("[track] session lookup failed", existingErr.message);
+    }
 
     if (!existing) {
       // First-sight write: tighter daily budget keeps a single IP from
@@ -84,27 +87,53 @@ export async function POST(req: NextRequest) {
       const acceptLanguage = parsePrimaryLanguage(
         req.headers.get("accept-language"),
       );
-      await supa.from("analytics_sessions").insert({
-        session_id: sessionId,
-        first_seen: now,
-        last_seen: now,
-        referrer: referrer ?? null,
-        user_agent: ua,
-        accept_language: acceptLanguage,
-        pageviews: 1,
-        ...(geo ?? {}),
-      });
-    } else {
-      await supa
+      const { error: insErr } = await supa
         .from("analytics_sessions")
-        .update({ last_seen: now })
+        .insert({
+          session_id: sessionId,
+          first_seen: now,
+          last_seen: now,
+          referrer: referrer ?? null,
+          user_agent: ua,
+          accept_language: acceptLanguage,
+          pageviews: 1,
+          ...(geo ?? {}),
+        });
+      if (insErr) {
+        // Don't bail on a PK conflict (race with a concurrent first
+        // POST for the same sessionId — the pageview insert below
+        // still wants to run). Anything else, log so we can see.
+        console.error("[track] session insert failed", insErr.message);
+      }
+    } else {
+      // Bump the denormalized per-session pageview counter so the
+      // Overview hero's per-session aggregates don't get stuck at 1.
+      // (The per-day totals in the chart come from analytics_pageviews
+      // and don't rely on this column.)
+      const { error: updErr } = await supa
+        .from("analytics_sessions")
+        .update({
+          last_seen: now,
+          pageviews: ((existing as { pageviews?: number }).pageviews ?? 0) + 1,
+        })
         .eq("session_id", sessionId);
+      if (updErr) {
+        console.error("[track] session update failed", updErr.message);
+      }
     }
 
-    await supa.from("analytics_pageviews").insert({ session_id: sessionId, path });
+    const { error: pvErr } = await supa
+      .from("analytics_pageviews")
+      .insert({ session_id: sessionId, path });
+    if (pvErr) {
+      // This was the silent failure mode that made the Traffic chart
+      // appear stuck at 0. Always log so future regressions surface.
+      console.error("[track] pageview insert failed", pvErr.message);
+    }
 
     return NextResponse.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
-  } catch {
+  } catch (e) {
+    console.error("[track] unhandled", (e as Error).message);
     return NextResponse.json({ ok: false }, { status: 200 });
   }
 }
