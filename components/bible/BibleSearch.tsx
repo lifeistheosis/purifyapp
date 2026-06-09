@@ -5,16 +5,22 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Search } from "@/components/ui/icons/Search";
 import { searchBible, type SearchHit } from "@/lib/bible/books";
+import { isMultiReferenceQuery } from "@/lib/bible/parseReferences";
 
 /**
  * Free-form search:
- *   - "john"            -> filter books matching "john"
- *   - "john 3"          -> /bible/john/3
- *   - "john 3:16"       -> /bible/john/3#v16
- *   - "1 cor 13"        -> /bible/1-corinthians/13
- *   - "gen 1:1"         -> /bible/genesis/1#v1
- *   - "ps 23"           -> /bible/psalms/23
- *   - "james 2:14-26"   -> /bible/james/2#v14-26   (range; flashes all)
+ *   - "john"                  -> filter books matching "john"
+ *   - "john 3"                -> /bible/john/3
+ *   - "john 3:16"             -> /bible/john/3#v16
+ *   - "1 cor 13"              -> /bible/1-corinthians/13
+ *   - "gen 1:1"               -> /bible/genesis/1#v1
+ *   - "ps 23"                 -> /bible/psalms/23
+ *   - "james 2:14-26"         -> /bible/james/2#v14-26   (range; flashes all)
+ *   - "1 Tim 2:5, Prov 8:7"   -> /bible/multi?q=...   (multi-verse florilegium)
+ *
+ * Multi-mode triggers on a comma or semicolon anywhere in the query.
+ * The dropdown switches to a single "Open N references" row and Enter
+ * routes to the result page rather than navigating to a single hit.
  */
 export function BibleSearch({
   className,
@@ -29,7 +35,21 @@ export function BibleSearch({
   const [activeIdx, setActiveIdx] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const hits: SearchHit[] = useMemo(() => searchBible(q, 8), [q]);
+  const isMulti = useMemo(() => isMultiReferenceQuery(q), [q]);
+  // In multi-mode the dropdown is a single "Open N references" row, so
+  // we don't compute fuzzy book hits — `searchBible` is single-ref only.
+  const hits: SearchHit[] = useMemo(
+    () => (isMulti ? [] : searchBible(q, 8)),
+    [q, isMulti],
+  );
+  // Cheap-but-accurate segment count for the multi-mode preview label.
+  const multiCount = useMemo(
+    () =>
+      isMulti
+        ? q.split(/[,;]/).map((s) => s.trim()).filter(Boolean).length
+        : 0,
+    [q, isMulti],
+  );
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -55,16 +75,25 @@ export function BibleSearch({
     router.push(hrefFor(h));
   }
 
+  function commitMulti() {
+    if (!q.trim()) return;
+    setOpen(false);
+    const target = `/bible/multi?q=${encodeURIComponent(q.trim())}`;
+    setQ("");
+    router.push(target);
+  }
+
   function onKey(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setActiveIdx((i) => Math.min(hits.length - 1, i + 1));
+      if (!isMulti) setActiveIdx((i) => Math.min(hits.length - 1, i + 1));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      setActiveIdx((i) => Math.max(0, i - 1));
+      if (!isMulti) setActiveIdx((i) => Math.max(0, i - 1));
     } else if (e.key === "Enter") {
       e.preventDefault();
-      commit(hits[activeIdx]);
+      if (isMulti) commitMulti();
+      else commit(hits[activeIdx]);
     } else if (e.key === "Escape") {
       setOpen(false);
     }
@@ -96,7 +125,26 @@ export function BibleSearch({
 
       {showDropdown && (
         <div className="absolute z-50 mt-2 left-0 right-0 rounded-md border border-paper/15 bg-night shadow-lg overflow-hidden">
-          {hits.length === 0 ? (
+          {isMulti ? (
+            // Multi-mode: a single deliberate row that previews the
+            // florilegium and routes to the multi-result page on Enter
+            // or click. We don't render fuzzy hits underneath because
+            // they would be irrelevant noise once the user has typed a
+            // comma.
+            <button
+              type="button"
+              onClick={commitMulti}
+              className="block w-full text-left px-4 py-3 font-sans text-ui bg-paper/10 text-paper hover:bg-paper/[0.15] transition-colors"
+            >
+              <span className="font-medium">
+                Open {multiCount} reference{multiCount === 1 ? "" : "s"}
+              </span>
+              <span className="block text-caption text-paper/55 mt-0.5">
+                Press Enter to view a stacked list of every verse, range,
+                or chapter in your query
+              </span>
+            </button>
+          ) : hits.length === 0 ? (
             <p className="px-4 py-3 font-sans text-ui text-paper/55">
               No matches.
             </p>
