@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { WritingContent, Section } from "@/lib/saints/load";
 import type { Saint } from "@/lib/saints/saints";
@@ -8,6 +8,11 @@ import { ParagraphRow } from "./ParagraphRow";
 import { SectionBookmarkButton } from "./SectionBookmarkButton";
 import { MobileWorkPill } from "./MobileWorkPill";
 import { FONT_CLASSES, SIZE_CLASSES, useReaderPrefs } from "@/components/reader/ReaderPrefs";
+import {
+  clearPosition,
+  loadPosition,
+  savePosition,
+} from "@/lib/reader/position";
 
 // Works with this many sections render as an accordion: each section's body
 // (and its per-paragraph annotation components) mounts only when the section
@@ -52,6 +57,105 @@ export function WritingReader({
  window.addEventListener("hashchange", openFromHash);
  return () => window.removeEventListener("hashchange", openFromHash);
  }, [isLong]);
+
+ // ── Save / restore reading position ──────────────────────────────────────
+ // On mount, if a saved position exists for this saint+work AND the URL
+ // doesn't already specify a section, open + scroll to the saved section.
+ // The user gets a silent resume; no toast, no modal. If the URL has a
+ // hash, that wins (the reader navigated here deliberately).
+ //
+ // The setOpen call is deferred via a 0-delay timer so it happens outside
+ // the effect body proper, matching the project's set-state-in-effect
+ // discipline (see InstallPrompt.tsx for the same pattern).
+ const lastSectionN = content.sections[content.sections.length - 1]?.n ?? 0;
+ const positionRestoredRef = useRef(false);
+ useEffect(() => {
+ if (positionRestoredRef.current) return;
+ positionRestoredRef.current = true;
+ if (typeof window === "undefined") return;
+ if (window.location.hash) return; // hash overrides resume
+ const pos = loadPosition(saint.slug, content.slug);
+ if (!pos) return;
+ // If they reached the last section, the next visit shouldn't dump
+ // them at the end again — treat as completion.
+ if (pos.sectionN >= lastSectionN) {
+ clearPosition(saint.slug, content.slug);
+ return;
+ }
+ const openTimer = isLong
+ ? setTimeout(() => {
+ setOpen((prev) => {
+ const next = new Set(prev);
+ next.add(pos.sectionN);
+ return next;
+ });
+ }, 0)
+ : null;
+ // Defer scroll so the section body has time to mount in long-work mode.
+ const r1 = requestAnimationFrame(() => {
+ requestAnimationFrame(() => {
+ document.getElementById(`s${pos.sectionN}`)?.scrollIntoView({ block: "start" });
+ });
+ });
+ return () => {
+ if (openTimer) clearTimeout(openTimer);
+ cancelAnimationFrame(r1);
+ };
+ }, [saint.slug, content.slug, isLong, lastSectionN]);
+
+ // Observe section visibility and debounce-save the most visible section.
+ // We use IntersectionObserver instead of scroll position because section
+ // heights vary wildly (one homily might be 50 lines, another 500), so a
+ // scroll-percent would lie about where the reader actually is.
+ useEffect(() => {
+ if (typeof window === "undefined") return;
+ const visibleRatios = new Map<number, number>();
+ const observer = new IntersectionObserver(
+ (entries) => {
+ for (const e of entries) {
+ const id = e.target.id;
+ const m = id.match(/^s(\d+)$/);
+ if (!m) continue;
+ visibleRatios.set(Number(m[1]), e.intersectionRatio);
+ }
+ },
+ { threshold: [0, 0.25, 0.5, 0.75, 1], rootMargin: "-20% 0px -40% 0px" },
+ );
+ for (const sec of content.sections) {
+ const el = document.getElementById(`s${sec.n}`);
+ if (el) observer.observe(el);
+ }
+ let saveTimer: ReturnType<typeof setTimeout> | null = null;
+ function scheduleSave() {
+ if (saveTimer) clearTimeout(saveTimer);
+ saveTimer = setTimeout(() => {
+ let bestN = 0;
+ let bestR = 0;
+ for (const [n, r] of visibleRatios) {
+ if (r > bestR) {
+ bestR = r;
+ bestN = n;
+ }
+ }
+ if (bestN > 0 && bestR > 0) {
+ if (bestN >= lastSectionN) {
+ // Completion: drop the saved position so a return visit
+ // doesn't put the reader back at the end.
+ clearPosition(saint.slug, content.slug);
+ } else {
+ savePosition(saint.slug, content.slug, bestN);
+ }
+ }
+ }, 800);
+ }
+ const onScroll = () => scheduleSave();
+ window.addEventListener("scroll", onScroll, { passive: true });
+ return () => {
+ if (saveTimer) clearTimeout(saveTimer);
+ window.removeEventListener("scroll", onScroll);
+ observer.disconnect();
+ };
+ }, [saint.slug, content.slug, content.sections, lastSectionN]);
 
  function toggle(n: number) {
  setOpen((prev) => {
