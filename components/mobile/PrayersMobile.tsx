@@ -12,6 +12,7 @@ import {
   PrayerIndex,
   PrayerIndexRow,
 } from "@/components/prayers/PrayerBook";
+import { PrayerSearch } from "@/components/prayers/PrayerSearch";
 import { ContinuePraying } from "@/components/prayers/ContinuePraying";
 import { SuggestedToday } from "@/components/prayers/SuggestedToday";
 import {
@@ -131,6 +132,11 @@ export function PrayersMobile() {
 
         <SuggestedToday season={season} isFast={isFast} label="Suggested for today" />
 
+        {/* Search wraps the index so a typed query replaces the
+            popular + categorized + Also-in-this-book lists with
+            filtered results. */}
+        <div className="mt-6">
+        <PrayerSearch>
         {popularRules().length > 0 && (
           <>
             <PrayerSectionLabel>Popular prayer rules</PrayerSectionLabel>
@@ -203,6 +209,8 @@ export function PrayersMobile() {
             description="A short, beginner's path through Orthodox prayer."
           />
         </PrayerIndex>
+        </PrayerSearch>
+        </div>
       </div>
     </MobileShell>
   );

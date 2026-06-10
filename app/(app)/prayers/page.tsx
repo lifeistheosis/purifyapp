@@ -19,6 +19,7 @@ import {
   PrayerIndexRow,
   PrayerNote,
 } from "@/components/prayers/PrayerBook";
+import { PrayerSearch } from "@/components/prayers/PrayerSearch";
 import { ContinuePraying } from "@/components/prayers/ContinuePraying";
 import { SuggestedToday } from "@/components/prayers/SuggestedToday";
 import {
@@ -316,8 +317,20 @@ export default async function PrayersPage() {
               </div>
             </div>
 
+            {/* Search wraps the index sections so a typed query replaces
+                the popular + categorized + "Also in this book" lists with a
+                filtered, grouped result list. When the input is empty the
+                children render unchanged. */}
+            <div className="mt-16">
+              <PrayerSearch
+                placeholder={
+                  isDe
+                    ? "Gebete, Gebetsseil, die Hymne, die Horen durchsuchen…"
+                    : "Search prayers, the rope, the Anthem, the hours..."
+                }
+              >
             {popularRules().length > 0 && (
-              <div className="mt-16">
+              <div>
                 <PrayerSectionLabel>
                   {isDe ? "Häufig gebetet" : "Popular prayer rules"}
                 </PrayerSectionLabel>
@@ -404,6 +417,8 @@ export default async function PrayersPage() {
                   </Link>
                 ))}
               </div>
+            </div>
+              </PrayerSearch>
             </div>
 
             <PrayerNote>
