@@ -63,6 +63,7 @@ const argv = process.argv.slice(2);
 let listOnly = false;
 let asJson = false;
 let full = false;
+let allHistory = false; // paginate through every page (no per-call cap)
 let limit = DEFAULT_LIMIT;
 let since = null;
 let positional = null;
@@ -72,6 +73,7 @@ for (let i = 0; i < argv.length; i++) {
   if (a === "--list") listOnly = true;
   else if (a === "--json") asJson = true;
   else if (a === "--full") full = true;
+  else if (a === "--all-history") allHistory = true;
   else if (a === "--limit") limit = parseInt(argv[++i], 10);
   else if (a === "--since") since = argv[++i];
   else if (!a.startsWith("--") && positional === null) positional = a;
@@ -209,6 +211,49 @@ async function fetchMessages(channelId, token, opts = {}) {
   const url = `/channels/${channelId}/messages?limit=${lim}`;
   const messages = await discord(url, token);
   return messages.reverse(); // newest-last → chronological
+}
+
+// Paginate to the start of the channel's history. Discord returns
+// newest-first in batches of up to 100; we walk backwards via the
+// `?before=<message_id>` parameter until a short page comes back.
+// `sinceMs` allows early exit once we've crossed the cutoff date.
+async function fetchAllMessages(channelId, token, sinceMs) {
+  const collected = [];
+  let before = null;
+  while (true) {
+    let url = `/channels/${channelId}/messages?limit=${MAX_LIMIT}`;
+    if (before) url += `&before=${before}`;
+    const page = await discord(url, token); // newest-first
+    if (page.length === 0) break;
+    let stopAfter = false;
+    for (const m of page) {
+      if (sinceMs && new Date(m.timestamp).getTime() < sinceMs) {
+        stopAfter = true;
+        continue; // skip this and everything older
+      }
+      collected.push(m);
+    }
+    if (stopAfter || page.length < MAX_LIMIT) break;
+    before = page[page.length - 1].id;
+    await sleep(80); // courtesy spacing
+  }
+  return collected.reverse(); // newest-last → chronological
+}
+
+// Skip rules for full audits: logs, tickets, automod, voice transcripts.
+// These produce huge volumes of system noise that drown out actual
+// conversation. Pattern set by name; the user can grep the live list
+// with `discord:list` and refine.
+const AUDIT_SKIP_NAME = /(-log$|-logs$|^ticket-|^automod$|^jail-log$|^messages-logs$|^server-logs$|^events-logs$|^hi-bye-logs$|^channels-logs$|^roles-logs$|^emojis-logs$|^voice-logs$|^invites-logs$|^users-logs$)/i;
+const AUDIT_SKIP_CATEGORY = /(logs?|:mods)/i;
+
+function shouldSkipForAudit(channel, categoriesById) {
+  if (AUDIT_SKIP_NAME.test(channel.name || "")) return true;
+  if (channel.parent_id) {
+    const cat = categoriesById.get(channel.parent_id);
+    if (cat && AUDIT_SKIP_CATEGORY.test(cat.name || "")) return true;
+  }
+  return false;
 }
 
 /* ─── Rendering ────────────────────────────────────────────────────────── */
@@ -477,25 +522,48 @@ async function runAll(env) {
   }
 
   const channels = await fetchGuildChannels(guild, token);
-  const textLike = channels.filter((c) => TEXT_LIKE.has(c.type));
-  const forums = channels.filter((c) => FORUM_LIKE.has(c.type));
+  const categoriesById = new Map();
+  for (const c of channels) {
+    if (c.type === TYPE.GUILD_CATEGORY) categoriesById.set(c.id, c);
+  }
+  const allTextLike = channels.filter((c) => TEXT_LIKE.has(c.type));
+  const allForums = channels.filter((c) => FORUM_LIKE.has(c.type));
 
-  const result = { textChannels: [], forums: [] };
+  // For full-history audits, drop log channels / tickets / automod /
+  // mod-private surfaces so the synthesis isn't drowned in system noise.
+  const textLike = allHistory
+    ? allTextLike.filter((c) => !shouldSkipForAudit(c, categoriesById))
+    : allTextLike;
+  const forums = allHistory
+    ? allForums.filter((c) => !shouldSkipForAudit(c, categoriesById))
+    : allForums;
+  const skipped = allHistory
+    ? [...allTextLike, ...allForums].filter((c) =>
+        shouldSkipForAudit(c, categoriesById),
+      )
+    : [];
 
-  // Text-like channels.
+  const sinceMs = since ? new Date(since).getTime() : null;
+  const sinceValid = sinceMs && !Number.isNaN(sinceMs) ? sinceMs : null;
+
+  const result = { textChannels: [], forums: [], skipped };
+
+  // Text-like channels. In --all-history mode we paginate to the start
+  // of the channel (or to `--since`); otherwise just the latest `limit`.
   for (const c of textLike) {
     try {
-      const messages = applySince(
-        await fetchMessages(c.id, token, { limit }),
-      );
+      const messages = allHistory
+        ? await fetchAllMessages(c.id, token, sinceValid)
+        : applySince(await fetchMessages(c.id, token, { limit }));
       result.textChannels.push({ channel: c, messages });
-      await sleep(60);
+      await sleep(80);
     } catch (e) {
       result.textChannels.push({ channel: c, messages: [], error: e.message });
     }
   }
 
-  // Forums: enumerate threads, then scan each (just opening post by default).
+  // Forums: enumerate threads, then scan each. In --all-history mode every
+  // thread is paginated to its start; otherwise just the latest few.
   const activeAll = await fetchActiveThreads(guild, token);
   for (const f of forums) {
     const active = activeAll.filter((t) => t.parent_id === f.id);
@@ -504,11 +572,13 @@ async function runAll(env) {
     const collected = [];
     for (const t of threads) {
       try {
-        const msgs = applySince(
-          await fetchMessages(t.id, token, { limit: full ? limit : 1 }),
-        );
+        const msgs = allHistory
+          ? await fetchAllMessages(t.id, token, sinceValid)
+          : applySince(
+              await fetchMessages(t.id, token, { limit: full ? limit : 1 }),
+            );
         collected.push({ thread: t, messages: msgs });
-        await sleep(60);
+        await sleep(80);
       } catch (e) {
         collected.push({ thread: t, messages: [], error: e.message });
       }
@@ -523,9 +593,13 @@ async function runAll(env) {
 
   // Human-readable feed.
   console.log(
-    `Full scan of guild ${guild}: ${textLike.length} text channel(s), ${forums.length} forum(s)`,
+    `Full scan of guild ${guild}: ${textLike.length} text channel(s), ${forums.length} forum(s)${allHistory ? "  [all history]" : ""}`,
   );
   if (since) console.log(`Since: ${since}`);
+  if (skipped.length) {
+    console.log(`Skipped ${skipped.length} log/ticket/mod surface(s):`);
+    for (const s of skipped) console.log(`  - #${s.name}  (${s.id})`);
+  }
   console.log("");
 
   for (const { channel, messages, error } of result.textChannels) {

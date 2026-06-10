@@ -68,3 +68,9 @@ Homerun (v9.7-v10).md
 # Local-only; not for redistribution.
 scripts/.discord-review-state.json
 DISCORD_REVIEW_LOG.md
+
+# Fable 5 operating brief (internal design + brand direction). Local-only.
+FABLE5_BRIEF.md
+
+# Fable 5 suggestions (internal audit findings + agent prompts). Local-only.
+FABLE5_SUGGESTIONS.md
