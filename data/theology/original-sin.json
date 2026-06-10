@@ -1,0 +1,179 @@
+{
+  "slug": "original-sin",
+  "title": "Original sin — reatus or culpa?",
+  "subtitle": "We inherit the consequence (corruption and death), not the personal guilt, of Adam's sin.",
+  "group": "soteriology",
+  "summary": "Whether the descendants of Adam inherit reatus (legal guilt) or culpa (corrupted nature) is the dividing line between Latin scholastic anthropology and the Orthodox patristic mind. Romans 5:12, the Greek manuscript tradition, Cyril of Alexandria, John Chrysostom, and the conciliar witness against an Augustinian transmission of personal guilt.",
+  "curatedBy": "Purify Team",
+  "curatedOn": "2026-06-10",
+  "origin": "Discord — dogma-exegesis: Why do we inherit the guilt? Do we inherit reatus or culpa?",
+  "essay": [
+    {
+      "kind": "para",
+      "text": "When we say that we sinned in Adam, we do not mean that we personally committed Adam's act of disobedience, nor that we inherit personal culpability for his choice. We inherit the guilt-bearing consequences of his transgression because we inherit his fallen human nature. Adam alone committed the act (παράβασις), consciously and willfully violating the divine command. His descendants did not participate in that deed directly. Yet, being born from him, they are born into the same corrupted condition that resulted from it."
+    },
+    {
+      "kind": "para",
+      "text": "All humanity receives from Adam not only human nature itself, but human nature as wounded and corrupted by sin. This corruption is not a mere external penalty but an inner condition, a living principle of sin (ἁμαρτία) that inclines the human will toward further transgression and renders humanity liable to death and condemnation. For this reason, Scripture calls us by nature children of wrath (Ephesians 2:3), not because God arbitrarily imputes blame, but because his righteous judgement rests upon a nature that has become subject to decay, disorder, and mortality."
+    },
+    { "kind": "heading", "text": "Romans 5:12 — death reigning over all", "level": 2 },
+    {
+      "kind": "para",
+      "text": "St Paul is explicit that death reigns even over those who did not sin as Adam sinned (Romans 5:12, 14). Blessed Theodoret of Cyrus clarifies: this includes all who never ate of the forbidden fruit, yet share in Adam's fall and its consequences simply by being born of him. The Greek of v. 12 (ἐφ' ᾧ) has been read in two ways — \"in whom\" (Augustinian) and \"because\" (Greek patristic). Even on the Greek reading, the Apostle still requires that all sin was already present in Adam, because sin precedes death, and death has indeed reached all. Sin, in this sense, is the inherited condition; the wages of that condition is death."
+    },
+    { "kind": "heading", "text": "Culpa, not reatus", "level": 2 },
+    {
+      "kind": "para",
+      "text": "The Latin scholastic distinction between reatus (legal guilt) and culpa (the fault, the wounded condition) is sharper than the Eastern Fathers tend to be, but it lets us name the dividing line. The Orthodox tradition consistently teaches culpa: a wounded, mortal, disordered human nature is transmitted from Adam to every descendant by the natural order of generation. It does not teach reatus in the Augustinian sense: that the personal moral guilt of Adam's specific act is judicially imputed to each infant at conception. St Gregory Palamas calls Adam's fall \"the common curse and condemnation … the common lot of our nature.\" Individual actions still incur reproof or praise; the inheritance is the condemned nature, not the unrepented personal sin."
+    },
+    { "kind": "heading", "text": "Infant baptism and the Orthodox catechisms", "level": 2 },
+    {
+      "kind": "para",
+      "text": "The Orthodox practice of infant baptism rests on this doctrine: infants are baptised for the cleansing of the ancestral condition, even though they have committed no personal sin. The Confession of St Peter Mogila puts it plainly: by Adam's fall, sin entered the world and \"so death passed upon all men, for that all have sinned\" — and the saving remedy is the grace of Christ given in holy Baptism. St Symeon the New Theologian: \"all people who come from the seed of Adam are participants of the ancestral sin from their very conception and birth; he who has been born in this way, even though he has not yet performed any sin, is already sinful through this ancestral sin.\" St Nektarios of Aegina draws the line precisely: ancestral sin makes a person unworthy of fellowship with God; personal culpability arises only with personal sin."
+    },
+    { "kind": "heading", "text": "Augustine, properly read", "level": 2 },
+    {
+      "kind": "para",
+      "text": "Augustine is often invoked as the patron of a transmissionist reatus; in fact his most precise formulation, in Contra Julianum, makes a more careful distinction. Adults become guilty by what they do; infants, by those from whom they take their origin. The guilt does not lie in nature as God created it, which remains good, but in nature as corrupted through Adam's fall. Augustine names the same realities as the Greek Fathers (a wounded nature inherited, original guilt distinguished from personal guilt) even if he draws the lines in his own juridical idiom."
+    }
+  ],
+  "florilegium": [
+    {
+      "author": "St Irenaeus of Lyons",
+      "saintSlug": "irenaeus-of-lyons",
+      "work": "Against Heresies",
+      "reference": "Book V.16.3",
+      "text": "For in that dread tree of suffering he did utterly dissolve the ancient disobedience of Adam's race, disobedience wrought by our first father in the tree, inasmuch as he, the Second Adam, became obedient unto death, yea unto the death of the Cross. By that same tree he also healed the disobedience wrought therein, restoring through the wood what had been overthrown by the first man. For we owed no obedience to any other, but to him against whose commandment we had transgressed from the beginning.",
+      "gloss": "Irenaeus already has the central exchange: Adam fell in the tree; the Second Adam restores in the Cross. The fall is not merely imitative but ontological, healed at the Cross.",
+      "source": "https://www.newadvent.org/fathers/0103516.htm"
+    },
+    {
+      "author": "St Symeon the New Theologian",
+      "saintSlug": "symeon-the-new-theologian",
+      "work": "Homily 37",
+      "reference": "Catechetical Discourses",
+      "text": "Human nature is sinful from its very conception. God did not create man sinful, but pure and holy. But since the first-created Adam lost this garment of sanctity from pride alone, and became corruptible and mortal, all people who come from the seed of Adam are participants of the ancestral sin from their very conception and birth. He who has been born in this way, even though he has not yet performed any sin, is already sinful through this ancestral sin.",
+      "gloss": "The classic Eastern statement: an inherited condition of sin precedes personal culpability."
+    },
+    {
+      "author": "St Gregory Palamas",
+      "saintSlug": "gregory-palamas",
+      "work": "Homily V",
+      "reference": "Homily V.1-2",
+      "text": "Before Christ we all shared the same ancestral curse and condemnation poured out on all of us from our single forefather, as if it had sprung from the root of the human race and was the common lot of our nature. Each person's individual action attracted either reproof or praise from God, but no one could do anything about the shared curse and condemnation, or the evil inheritance that had been passed down to him and through him would pass to his descendants. But Christ came, setting human nature free and changing the common curse into a shared blessing. He took upon himself our guilty nature from the most pure Virgin and united it, new and unmixed with the old seed, to his divine person. He rendered it guiltless and righteous.",
+      "gloss": "Palamas distinguishes individual reproof (which depends on personal action) from the common ancestral condemnation (which is the lot of our nature). Christ does not absolve a juridical debt of others' acts; he heals the inherited condition."
+    },
+    {
+      "author": "St Cyril of Alexandria",
+      "saintSlug": "cyril-of-alexandria",
+      "work": "Commentary on the Gospel of John",
+      "reference": "on John 1:31",
+      "text": "Through himself he receives the Spirit for us, and renews to our nature, the ancient good. As then, being by nature Life, he died in the flesh for our sakes, that he might overcome death for us, and raise up our whole nature together with himself (for all we were in him, in that he was made man), so does he also receive the Spirit for our sakes, that he may sanctify our whole nature. For he came not to profit himself, but to be to all us the Door and Beginning and Way of the heavenly goods.",
+      "gloss": "Cyril's key: \"all we were in him.\" The fall and the redemption work at the level of nature; Christ heals what was wounded in Adam.",
+      "source": "https://www.newadvent.org/fathers/2701.htm"
+    },
+    {
+      "author": "St John Chrysostom",
+      "saintSlug": "john-chrysostom",
+      "work": "Homilies on the Gospel of John",
+      "reference": "Homily 78 on John (on John 16:7)",
+      "text": "But why did the Spirit not come before he (Christ) departed? Because, inasmuch as the curse had not yet been lifted, sin had not yet been absolved, but all were still subject to punishment, he had not come.",
+      "gloss": "Chrysostom: the inherited curse stood until Christ. The Holy Spirit's coming is dependent on the Cross's resolution of the ancestral condemnation."
+    },
+    {
+      "author": "St Augustine of Hippo",
+      "saintSlug": "augustine-of-hippo",
+      "work": "Contra Julianum",
+      "reference": "Book III.13",
+      "text": "I declare that, according to the Catholic faith which the Fathers most openly defended against you before you were born, we assert that no matter whence born, a man is innocent because there is no personal sin, and he is guilty through original sin. I declared that the substance of his nature, of which God is the author, is good even in great sinners, who are evil also because of the personal sins they have added to the evil with which they were born.",
+      "gloss": "Augustine himself draws the line precisely. He affirms original sin without imputing personal sin to the infant; the substance of human nature remains good as God's creation, even when the inheritance from Adam is fallen."
+    },
+    {
+      "author": "St Augustine of Hippo",
+      "saintSlug": "augustine-of-hippo",
+      "work": "Contra Julianum",
+      "reference": "Book VI.21.67",
+      "text": "You who deny original sin must forthwith affirm God is either impotent or unjust, since under his power his image in infants, with no personal or original sin to deserve punishment, is afflicted with such evils.",
+      "gloss": "Augustine's dilemma: empirically, infants suffer. If there is no original sin (no inherited condition from Adam), then either God lacks the power to stop the suffering of the innocent or chooses not to. The doctrine of inherited culpa preserves God's justice."
+    },
+    {
+      "author": "St Jerome of Stridon",
+      "saintSlug": "jerome-of-stridon",
+      "work": "Against the Pelagians",
+      "reference": "Book III.18",
+      "text": "Tell me, pray, why little children are baptised. That their sins may be forgiven them in baptism. What sin are they guilty of? How can any one be set free who is not bound? \"Death reigned from Adam even unto Moses, even over those who did not sin after the likeness of the transgression of Adam, who is a figure of him that was to come.\" All men are held liable either on account of their ancient forefather Adam, or on their own account. He that is an infant is released in baptism from the chain which bound his father.",
+      "gloss": "Jerome catechetically: infants are baptised because they are bound by Adam, even though they have not personally sinned.",
+      "source": "https://www.newadvent.org/fathers/30043.htm"
+    },
+    {
+      "author": "St Theophan the Recluse",
+      "saintSlug": "theophan-the-recluse",
+      "work": "Interpretation of the Apostle Paul's Letter to the Romans",
+      "reference": "on Romans 5:12",
+      "text": "It is in vain to think of taking away from this passage the strength of the proof of original sin by saying that the exact translation of this place should be \"since all sinned.\" Even with this translation it is necessary to supplement the translation with \"in him,\" to fully preserve the Apostle's thought. He says: sin entered the world through one man, and death through sin, and thus death spread to all men. Sin opens the gates of death. If it has entered all, then sin preceded it in all. But sin could not precede death in all otherwise than by the fact that all sinned in him, through whom sin entered.",
+      "gloss": "The Russian patristic settlement of the ἐφ' ᾧ debate: even \"because all sinned\" requires the reader to supply \"in him.\""
+    },
+    {
+      "author": "St Justin Popović",
+      "work": "Dogmatics of the Orthodox Church",
+      "reference": "Volume II, ch. 39",
+      "text": "All men, being the offspring of Adam, do inherit his ancestral transgression, so that original sin becometh a hereditary malady. Receiving from Adam our human nature, we likewise receive its corruption, and are thus by nature children of wrath (Ephesians 2:3). For on Adam's nature, tainted by sin, doth rest the righteous wrath of God. Yet the first man alone did consciously and willfully trespass the divine commandment, while his descendants did not participate directly in that deed. Nevertheless, being born of fallen Adam, they perforce inherit the same sinful condition.",
+      "gloss": "St Justin Popović's mid-twentieth-century systematic statement: ancestral condition is inherited; personal culpability for Adam's specific act is not."
+    },
+    {
+      "author": "St Nektarios of Aegina",
+      "saintSlug": "nektarios-of-aegina",
+      "work": "Orthodox Catechism",
+      "reference": "Collected Works, vol. 14",
+      "text": "The Church teaches that ancestral sin also weighs on all the descendants of Adam, and that every person is born in a sinful condition. The person becomes truly sinful as soon as he becomes self-aware and proceeds to act on his own will's rebellion against the will of God. So ancestral sin ushers in personal guilt and culpability, making the person liable to condemnation and punishment. But ancestral sin makes a person unworthy of fellowship with God even if he does not bear the responsibility for any sins of his own. Our fathers Gregory the Theologian and Gregory of Nyssa rightly thought that even infants who died without having been baptised were unworthy of fellowship with God; at the same time, they do not deserve condemnation and punishment either, as Augustine would later speculate.",
+      "gloss": "Nektarios states the Eastern line: ancestral sin disqualifies for communion with God; personal guilt awaits personal sin; the infant who dies unbaptised is not condemned to torment."
+    },
+    {
+      "author": "Patriarch Theodore Balsamon",
+      "work": "Commentary on the Canons of the Council of Carthage (a.d. 419)",
+      "reference": "PG 138:370ABC",
+      "text": "Some were saying that newborn infants should not be baptised for the remission of sins, since they have no sin, as they cannot yet sin by nature, being unable to discern good and evil. The synod, therefore, forbids this and anathematises those who hold this view and say that those descended from Adam inherit nothing from the sin of the first parent, so that infants have no need of true cleansing through holy baptism. It confirms its reasoning by citing the judgment of the great Paul, saying that sin entered the world through one man, and through sin, death, and thus death spread to all men, in whom all have sinned.",
+      "gloss": "The Patriarch of Antioch, transmitting the conciliar canons of Carthage: those who deny the inheritance of ancestral sin are anathematised."
+    },
+    {
+      "author": "St Peter Mogila",
+      "work": "The Orthodox Confession of the Catholic and Apostolic Eastern Church",
+      "reference": "Question 20",
+      "text": "Original sin is the transgression of that Law of God which was given to Adam, the Father of all men. This original sin spreadeth over all human nature, forasmuch as we were all then contained in Adam. Wherefore by one Adam sin hath passed into us all, and we are conceived and born with this blemish. This hereditary sin cannot be rooted out or abolished by any repentance whatever, but only by the grace of God, through the work of Redemption wrought by our Lord Jesus Christ in taking upon him our flesh and pouring out his precious blood. And this is done in the mystery of holy Baptism.",
+      "gloss": "The seventeenth-century Eastern Orthodox confession: ancestral sin is real, hereditary, and remitted in baptism, not in personal repentance only."
+    }
+  ],
+  "councils": [
+    {
+      "name": "The Second Council of Orange",
+      "year": "529",
+      "reference": "Canon 1",
+      "text": "If anyone denies that it is the whole man, that is, both body and soul, that was changed for the worse through the offence of Adam's sin, but believes that the freedom of the soul remains unimpaired and that only the body is subject to corruption, he is deceived by the error of Pelagius and contradicts the Scripture which says, \"The soul that sins shall die\" (Ezekiel 18:20).",
+      "gloss": "Orange explicitly defines that Adam's fall affects the whole man, body and soul, not the body alone."
+    },
+    {
+      "name": "The Second Council of Orange",
+      "year": "529",
+      "reference": "Canon 2",
+      "text": "If anyone asserts that Adam's sin affected him alone and not his descendants also, or at least if he declares that it is only the death of the body which is the punishment for sin, and not also that sin, which is the death of the soul, passed through one man to the whole human race, he does injustice to God and contradicts the Apostle, who says, \"Therefore as sin came into the world through one man and death through sin, and so death spread to all men because all men sinned\" (Romans 5:12).",
+      "gloss": "Orange anathematises any view that Adam's sin affected only him, or that only physical death (not also the spiritual death of an estranged nature) is inherited."
+    },
+    {
+      "name": "Council of Iași (Jassy)",
+      "year": "1642",
+      "reference": "Acta Synodi apud Giasum",
+      "text": "All human nature is not only guilty of original sin (as our Church also confesses) but even of the actual sin derived from it, and specifically of mortal sin, which is called the fruit of the former. No one is excluded from this — not even the one of whom it was said that among those born of women, none has arisen greater, nor the Blessed among women, the Immaculate and ever Virgin Mary, nor any of the patriarchs, prophets, or apostles. (This is the Latin proposition the Council judged foreign to the Orthodox faith.)",
+      "gloss": "Iași sets aside, as foreign to the Orthodox faith, the proposition that all humanity — including the Theotokos and the saints — is liable to actual mortal sin descending from ancestral sin. Ancestral condition is one thing; imputed personal guilt for Adam's act is another."
+    }
+  ],
+  "scripture": [
+    { "ref": "Romans 5:12", "bibleRef": "Romans 5:12", "note": "The locus classicus. ἐφ' ᾧ — read \"in whom\" or \"because\" — death reaches all in Adam." },
+    { "ref": "Romans 5:14", "bibleRef": "Romans 5:14", "note": "Death reigned from Adam to Moses, even over those who did not sin after the likeness of Adam's transgression." },
+    { "ref": "Romans 5:19", "bibleRef": "Romans 5:19", "note": "By one man's disobedience many were made sinners; by one Man's obedience many shall be made righteous." },
+    { "ref": "Ephesians 2:3", "bibleRef": "Ephesians 2:3", "note": "By nature children of wrath — the inherited condition." },
+    { "ref": "Psalm 51:5", "bibleRef": "Psalm 51:5", "note": "In sin did my mother conceive me — the Psalmist witnesses the inheritance." },
+    { "ref": "1 John 1:8", "bibleRef": "1 John 1:8", "note": "If we say that we have no sin, we deceive ourselves — the working of inherited corruption persists even after baptism." },
+    { "ref": "John 3:5", "bibleRef": "John 3:5", "note": "Unless a man be born of water and the Spirit, he cannot enter the kingdom — the scriptural ground of infant baptism." }
+  ],
+  "related": ["theosis", "the-theotokos", "filioque"]
+}
