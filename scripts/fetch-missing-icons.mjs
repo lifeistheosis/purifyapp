@@ -16,6 +16,10 @@ const TARGETS = [
   { slug: "isidora-of-tabenna", q: "Saint Isidora fool orthodox icon" },
   { slug: "olympias-the-deaconess", q: "Saint Olympias deaconess orthodox icon" },
   { slug: "gregory-of-nyssa", q: "Saint Gregory of Nyssa orthodox icon" },
+  { slug: "moses-the-ethiopian", q: "Saint Moses the Black Ethiopian orthodox icon" },
+  { slug: "niketas-the-goth", q: "Saint Nicetas the Goth great martyr orthodox icon" },
+  { slug: "nino-of-georgia", q: "Saint Nino Nina Georgia equal apostles orthodox icon" },
+  { slug: "xenia-of-petersburg", q: "Saint Xenia of Petersburg fool for Christ orthodox icon" },
 ];
 
 const OUT = path.join(process.cwd(), "public", "saints", "icons");
