@@ -39,6 +39,14 @@ export type Locale = {
   englishLabel: string;
   /** Whether the chrome catalog has been translated and is shippable. */
   ready: boolean;
+  /**
+   * In editorial preview: the catalog is substantially translated and the
+   * locale is selectable and applied (missing keys fall back to English),
+   * but it is marked "in progress" rather than fully ready, pending the
+   * editorial team's review. `ready` locales need not set this; a locale
+   * is selectable when `ready || editorial`.
+   */
+  editorial?: boolean;
   /** Writing direction. Arabic is rtl; everything else ltr. */
   dir: "ltr" | "rtl";
   /** "Coming soon" rendered in this locale's own language (used by the
@@ -60,7 +68,7 @@ export const LOCALES: Locale[] = [
   { code: "ro", nativeLabel: "Română", englishLabel: "Romanian", ready: false, dir: "ltr", comingSoon: "În curând" },
   { code: "el", nativeLabel: "Ελληνικά", englishLabel: "Greek", ready: false, dir: "ltr", comingSoon: "Σύντομα" },
   { code: "ru", nativeLabel: "Русский", englishLabel: "Russian", ready: false, dir: "ltr", comingSoon: "Скоро" },
-  { code: "fr", nativeLabel: "Français", englishLabel: "French", ready: false, dir: "ltr", comingSoon: "Bientôt" },
+  { code: "fr", nativeLabel: "Français", englishLabel: "French", ready: false, editorial: true, dir: "ltr", comingSoon: "Bientôt", status: "Editorial preview, in progress" },
   { code: "de", nativeLabel: "Deutsch", englishLabel: "German", ready: true, dir: "ltr", comingSoon: "Demnächst" },
   { code: "sr", nativeLabel: "Српски", englishLabel: "Serbian", ready: false, dir: "ltr", comingSoon: "Ускоро" },
   { code: "uk", nativeLabel: "Українська", englishLabel: "Ukrainian", ready: false, dir: "ltr", comingSoon: "Незабаром" },
@@ -73,6 +81,20 @@ export const LOCALES: Locale[] = [
 /** True if a locale is considered shippable today. */
 export function isLocaleReady(code: string): boolean {
   return LOCALES.find((l) => l.code === code)?.ready === true;
+}
+
+/** True if a locale is in editorial preview (selectable, marked in progress). */
+export function isLocaleEditorial(code: string): boolean {
+  return LOCALES.find((l) => l.code === code)?.editorial === true;
+}
+
+/**
+ * True if a user may switch to this locale and have it applied: either fully
+ * ready, or in editorial preview. Not-yet-started locales remain unselectable.
+ */
+export function isLocaleSelectable(code: string): boolean {
+  const l = LOCALES.find((x) => x.code === code);
+  return l?.ready === true || l?.editorial === true;
 }
 
 /** Coerce an arbitrary string into a known locale code, with fallback. */

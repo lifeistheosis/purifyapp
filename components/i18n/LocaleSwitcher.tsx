@@ -36,13 +36,18 @@ export function LocaleSwitcher() {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  // Two explicit groups in the menu: ready locales (selectable) under an
-  // "Available" header, then the not-yet-translated ones under "Coming soon".
+  // Three explicit groups in the menu: fully-ready locales under "Available",
+  // editorial-preview locales (selectable, marked in progress) under "In
+  // progress", then the not-yet-started ones under "Coming soon".
   const ready = LOCALES.filter((l) => l.ready);
-  const notReady = LOCALES.filter((l) => !l.ready);
+  const editorial = LOCALES.filter((l) => !l.ready && l.editorial);
+  const notReady = LOCALES.filter((l) => !l.ready && !l.editorial);
   const current =
-    LOCALES.find((l) => l.code === locale && l.ready) ?? ready[0] ?? LOCALES[0];
+    LOCALES.find((l) => l.code === locale && (l.ready || l.editorial)) ??
+    ready[0] ??
+    LOCALES[0];
   const availableLabel = locale === "de" ? "Verfügbar" : "Available";
+  const inProgressLabel = locale === "fr" ? "En cours" : "In progress";
 
   // Close on outside click or Escape.
   useEffect(() => {
@@ -146,6 +151,51 @@ export function LocaleSwitcher() {
               </li>
             );
           })}
+
+          {/* In progress (editorial preview) — selectable, English fallback */}
+          {editorial.length > 0 && (
+            <>
+              <li
+                role="presentation"
+                className="mt-1 border-t border-paper/8 px-3 pb-1 pt-2.5 font-sans text-[10px] uppercase tracking-[0.1em] text-paper/30"
+              >
+                {inProgressLabel}
+              </li>
+              {editorial.map((l) => {
+                const active = l.code === locale;
+                return (
+                  <li key={l.code} role="option" aria-selected={active}>
+                    <button
+                      type="button"
+                      onClick={() => setLocale(l.code)}
+                      dir={l.dir}
+                      className={`flex h-11 w-full items-center gap-3 px-3 text-left font-sans text-caption transition-colors ${
+                        active ? "bg-paper/[0.04]" : "hover:bg-paper/[0.06]"
+                      }`}
+                    >
+                      <span className="min-w-0 flex-1 truncate">
+                        <span className={active ? "text-gold" : "text-paper/90"}>
+                          {l.nativeLabel}
+                        </span>
+                        {l.englishLabel !== l.nativeLabel && (
+                          <span className="ml-1.5 text-[11px] text-paper/35">
+                            ({l.englishLabel})
+                          </span>
+                        )}
+                      </span>
+                      {active ? (
+                        <Check className="h-3.5 w-3.5 shrink-0 text-gold" />
+                      ) : (
+                        <span className="inline-flex h-5 shrink-0 items-center justify-center rounded-full bg-gold/10 px-2 text-[10px] uppercase tracking-[0.02em] text-gold/70">
+                          {inProgressLabel}
+                        </span>
+                      )}
+                    </button>
+                  </li>
+                );
+              })}
+            </>
+          )}
 
           {/* Coming soon */}
           <li

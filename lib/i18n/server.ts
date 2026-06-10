@@ -8,14 +8,16 @@
 
 import "server-only";
 import { cookies } from "next/headers";
-import { DEFAULT_LOCALE, isLocaleReady, type LocaleCode } from "./locales";
+import { DEFAULT_LOCALE, isLocaleSelectable, type LocaleCode } from "./locales";
 
 const LOCALE_COOKIE = "purify_locale";
 
 export async function getServerLocale(): Promise<LocaleCode> {
   const store = await cookies();
   const value = store.get(LOCALE_COOKIE)?.value;
-  if (value && isLocaleReady(value)) {
+  // Selectable covers fully-ready locales and editorial-preview ones; missing
+  // catalog keys fall back to English in getMessages either way.
+  if (value && isLocaleSelectable(value)) {
     return value as LocaleCode;
   }
   return DEFAULT_LOCALE;

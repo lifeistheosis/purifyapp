@@ -1,7 +1,7 @@
 import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import {
-  isLocaleReady,
+  isLocaleSelectable,
   negotiateFromAcceptLanguage,
 } from "@/lib/i18n/locales";
 import { buildCsp, generateNonce, NONCE_HEADER } from "@/lib/security/headers";
@@ -23,7 +23,9 @@ export async function proxy(request: NextRequest) {
   // their Accept-Language header and set it. Subsequent requests just
   // read the cookie. No URL rewriting — locale is cookie-driven.
   const existing = request.cookies.get(LOCALE_COOKIE)?.value;
-  if (!existing || !isLocaleReady(existing)) {
+  // Keep a cookie the user has actively chosen, including editorial-preview
+  // locales; only (re)negotiate when there is no usable selection yet.
+  if (!existing || !isLocaleSelectable(existing)) {
     const negotiated = negotiateFromAcceptLanguage(
       request.headers.get("accept-language"),
     );
