@@ -20,6 +20,14 @@ const TARGETS = [
   { slug: "niketas-the-goth", q: "Saint Nicetas the Goth great martyr orthodox icon" },
   { slug: "nino-of-georgia", q: "Saint Nino Nina Georgia equal apostles orthodox icon" },
   { slug: "xenia-of-petersburg", q: "Saint Xenia of Petersburg fool for Christ orthodox icon" },
+  { slug: "john-cassian", q: "Saint John Cassian the Roman orthodox icon" },
+  { slug: "sergius-of-radonezh", q: "Saint Sergius of Radonezh orthodox icon" },
+  { slug: "nicholas-cabasilas", q: "Saint Nicholas Cabasilas orthodox icon" },
+  { slug: "silouan-the-athonite", q: "Saint Silouan the Athonite orthodox icon" },
+  { slug: "john-of-shanghai", q: "Saint John Maximovitch Shanghai San Francisco orthodox icon" },
+  { slug: "porphyrios-of-kavsokalyvia", q: "Saint Porphyrios Kavsokalyvia elder orthodox icon" },
+  { slug: "iakovos-of-evia", q: "Saint Iakovos Tsalikis of Evia orthodox icon" },
+  { slug: "sophrony-of-essex", q: "Saint Sophrony Sakharov Essex orthodox icon" },
 ];
 
 const OUT = path.join(process.cwd(), "public", "saints", "icons");
