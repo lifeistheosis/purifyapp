@@ -120,6 +120,7 @@ export const THEOLOGY_TOPICS: TheologyTopicMeta[] = [
     summary:
       "Whether the descendants of Adam inherit reatus (legal guilt) or culpa (corrupted nature) is the dividing line between Latin scholastic anthropology and the Orthodox patristic mind. Romans 5:12, the Greek manuscript tradition, Cyril of Alexandria, John Chrysostom, and the conciliar witness against Augustinian transmission of guilt.",
     estimatedMinutes: 30,
+    planned: true,
   },
   {
     slug: "papacy",
@@ -130,6 +131,7 @@ export const THEOLOGY_TOPICS: TheologyTopicMeta[] = [
     summary:
       "Universal jurisdiction, papal infallibility, and the development of supremacy at Rome are rejected on conciliar and patristic grounds. The Third Ecumenical Council, the Council in Trullo, Canon 28 of Chalcedon, the witness of Cyprian, Firmilian, and the Eastern Patriarchs' 1848 encyclical to Pius IX.",
     estimatedMinutes: 32,
+    planned: true,
   },
   {
     slug: "comma-johanneum",
@@ -140,6 +142,7 @@ export const THEOLOGY_TOPICS: TheologyTopicMeta[] = [
     summary:
       "A textual and patristic defense of the Comma Johanneum: its presence in the Vetus Latina, Cyprian's witness, the Codex Fuldensis preface, the 484 Council of Carthage, and the chain of Latin Fathers who quote it as Scripture before the Vulgate.",
     estimatedMinutes: 20,
+    planned: true,
   },
   {
     slug: "mark-longer-ending",
@@ -150,6 +153,7 @@ export const THEOLOGY_TOPICS: TheologyTopicMeta[] = [
     summary:
       "External support across 99% of the Greek manuscripts, the Old Latin and Syriac versions, and Irenaeus, Tatian, Justin, and Hippolytus, set against the narrow case from Vaticanus, Sinaiticus, and Eusebius. A defense of the Longer Ending on patristic and manuscript grounds.",
     estimatedMinutes: 22,
+    planned: true,
   },
 ];
 
