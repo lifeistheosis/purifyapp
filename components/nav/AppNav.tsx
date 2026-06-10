@@ -73,6 +73,7 @@ export function AppNav() {
     { key: "prayers", label: t("nav.prayers"), href: "/prayers" },
     { key: "saints", label: t("nav.saints"), href: "/saints" },
     { key: "councils", label: t("nav.councils"), href: "/councils" },
+    { key: "theology", label: "Theology", href: "/theology" },
     { key: "calendar", label: t("nav.calendar"), href: "/calendar" },
   ];
 

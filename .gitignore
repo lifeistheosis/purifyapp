@@ -74,3 +74,8 @@ FABLE5_BRIEF.md
 
 # Fable 5 suggestions (internal audit findings + agent prompts). Local-only.
 FABLE5_SUGGESTIONS.md
+
+# Dogma & Exegesis raw thread pulls (Discord handles + long message bodies).
+# Working material for the /theology section; not redistributed.
+.dogma-audit/
+dogma-scan.json
