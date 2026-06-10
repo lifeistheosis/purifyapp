@@ -58,15 +58,27 @@ export type CouncilOpposition = {
 
 export type Council = {
  slug: string;
- ordinal: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+ /**
+  * "ecumenical" (the seven councils received by the whole Church) or "local"
+  * (a regional / pre-Ecumenical synod). Absent is treated as ecumenical, so
+  * the seven original entries need no change.
+  */
+ kind?: "ecumenical" | "local";
+ /** The council's place in the seven. Omitted for local councils. */
+ ordinal?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
  /** Long form, e.g. "The First Ecumenical Council". */
  name: string;
  /** Short form, e.g. "First Council of Nicaea". */
  byname: string;
  year: number;
  location: string;
- /** "St. Constantine the Great", "St. Justinian the Great", etc. */
- presidingEmperor: string;
+ /**
+  * "St. Constantine the Great", "St. Justinian the Great", etc. Omitted for
+  * local councils, which were convened by bishops rather than an emperor.
+  */
+ presidingEmperor?: string;
+ /** Who summoned or presided, for local councils with no presiding emperor. */
+ convenedBy?: string;
  /** "318 Holy Fathers", traditional count + descriptor when known. */
  bishopsAttending?: string;
  /** One- or two-sentence summary shown on the index card + profile hero. */
@@ -723,6 +735,109 @@ export const COUNCILS: Council[] = [
  blurb:
  "All twenty-two canons of the Seventh Council in full, each followed by the Ancient Epitome. Harnack judged them the best canons of any Ecumenical Synod. They bind the bishops to the whole prior canonical tradition and to the knowledge of Scripture, forbid the choice of bishops by secular princes and the buying and selling of ordination, order the consecration of churches with relics and the locking up of iconoclast writings, and regulate the monastic life.",
  topics: ["Canons", "Discipline", "Episcopate", "Monasticism", "Simony"],
+ },
+ ],
+ },
+ {
+ slug: "antioch-268",
+ kind: "local",
+ name: "The Synods of Antioch against Paul of Samosata",
+ byname: "Council of Antioch (268)",
+ year: 268,
+ location: "Antioch on the Orontes (modern Antakya, Türkiye)",
+ convenedBy:
+ "The bishops of the East, in a succession of synods through the 260s, with the final session led by the presbyter Malchion",
+ bishopsAttending: "The bishops of Syria, Cappadocia, Cilicia, Palestine, and Arabia",
+ shortBio:
+ "A pre-Nicene synod of the bishops of the East, the last of several, that deposed Paul of Samosata, Bishop of Antioch, for teaching that the Son was not a distinct divine Person but an impersonal power of the Father, and that Christ was a man on whom that power rested. It is remembered both for condemning this early error about the Person of the Son and for its caution over the word homoousios, which the Fathers of Nicaea would later have to receive in its right sense.",
+ defined: [
+ "That the Son and Word of God is a true and distinct divine Person, eternally of the Father, and not merely an impersonal power, attribute, or activity of the one God.",
+ "That in Jesus Christ this eternal Son was Himself incarnate, so that Christ is God come in the flesh, and not a mere man whom a divine power visited and exalted from below.",
+ ],
+ condemned: [
+ "The teaching of Paul of Samosata, a form of what later writers called Monarchianism or adoptionism: that the Logos was an impersonal power of the Father without distinct subsistence, and that Jesus was a man, born of Mary, upon whom that power came to rest and who was advanced by grace, the denial of the Son's personal pre-existence.",
+ "Paul's use of the word homoousios (of one essence) in a sense that collapsed the distinction of the Persons. The synod's wariness of the word in his mouth is why the Fathers later had to receive it carefully at Nicaea in 325, where it was confessed in its orthodox sense.",
+ ],
+ life: [
+ "Paul of Samosata became Bishop of Antioch around the year 260, holding at the same time a high civil office under Zenobia, the queen of Palmyra who then ruled the Roman East. Contemporaries describe a man of worldly grandeur and ambition, and the synodal letter that survives reproaches both his manner of life and his doctrine. But it was his teaching on Christ that gathered the bishops of the East against him.",
+ "Paul taught, in substance, that there is one God in one Person, and that the Word and the Wisdom of God are not a distinct Person but God's own reason and power, as a word is in the man who speaks it. The Son, on this account, had no personal existence before He was born of Mary. Jesus was a man, anointed and indwelt by the impersonal divine power from His baptism, and so advanced and exalted, but a man from below rather than God come down. The Church recognised in this a denial of the very thing the Gospel confesses: that the Word who was in the beginning with God, and was God, Himself became flesh.",
+ "Several synods met at Antioch through the 260s to examine him. He was a practised and slippery debater, and more than once he satisfied his judges by ambiguous answers and kept his see. St. Gregory the Wonderworker of Neocaesarea and his brother Athenodorus were among the bishops in the earlier sessions; the aged Firmilian of Caesarea in Cappadocia, one of the most honoured bishops of the East, was twice called to Antioch and died at Tarsus on his way to the last of them.",
+ "At the final synod, about the year 268, the presbyter Malchion, a learned man who had led the Greek school at Antioch, was set to dispute with Paul in the presence of the assembled bishops, and stenographers took down the exchange. Under this examination Paul's teaching was at last laid bare beyond his power to disguise it. The synod deposed and excommunicated him, elected Domnus in his place, and wrote a synodal letter to Dionysius of Rome, to Maximus of Alexandria, and to the whole Church, setting out what had been decided.",
+ "Paul, protected by Zenobia, refused to give up the church building, and held it until the year 272, when the emperor Aurelian, having defeated Palmyra, was asked to settle the matter and ruled that the building should belong to those with whom the bishops of Italy and of Rome were in communion, a striking early appeal to communion with the wider Church as the test of the true bishop. The synod's most lasting lesson reached forward two generations: its distrust of homoousios as Paul had used it meant that when the word was needed at Nicaea against Arius, the Church had first to make plain the sense in which it confessed the Son to be of one essence with the Father.",
+ ],
+ principalFathers: [
+ {
+ name: "St. Gregory the Wonderworker",
+ role: "Bishop of Neocaesarea, the great missionary and wonderworker of Pontus, who with his brother Athenodorus took part in the earlier synods against Paul.",
+ },
+ {
+ name: "Firmilian of Caesarea",
+ role: "Bishop of Caesarea in Cappadocia, among the most honoured hierarchs of the East; twice summoned to Antioch in the matter, he died at Tarsus on the way to the final synod.",
+ },
+ {
+ name: "Malchion",
+ role: "A learned presbyter of Antioch and head of its Greek school, chosen to dispute with Paul at the last synod; the stenographic record of his examination exposed Paul's teaching.",
+ },
+ ],
+ principalOpposed: [
+ {
+ name: "Paul of Samosata",
+ teaching:
+ "Bishop of Antioch; taught that the Word was an impersonal power of the one God rather than a distinct divine Person, and that Christ was a man indwelt and exalted by that power, denying the personal pre-existence of the Son.",
+ },
+ ],
+ documents: [],
+ pendingDocuments: [
+ {
+ title: "The Synodal Letter against Paul of Samosata",
+ note: "The letter of the bishops setting out Paul's errors and his deposition, preserved in fragments by Eusebius (Ecclesiastical History VII.30). A public-domain English text exists in the Nicene and Post-Nicene Fathers (Schaff and Wace); it will be wired in once prepared.",
+ },
+ {
+ title: "Fragments of the Disputation of Malchion with Paul",
+ note: "The surviving fragments of the stenographic record of Malchion's examination of Paul. Public-domain English exists in the Ante-Nicene Fathers (Schaff); not yet shipped.",
+ },
+ ],
+ },
+ {
+ slug: "carthage-256",
+ kind: "local",
+ name: "The Councils of Carthage on the Baptism of Heretics",
+ byname: "Council of Carthage (256)",
+ year: 256,
+ location: "Carthage in Roman Africa (near modern Tunis, Tunisia)",
+ convenedBy: "St. Cyprian, Bishop of Carthage",
+ bishopsAttending: "Eighty-seven bishops of Africa, Numidia, and Mauretania",
+ shortBio:
+ "Two synods of the African Church under St. Cyprian of Carthage, the second gathering eighty-seven bishops who each gave sentence that baptism conferred outside the Church is no baptism, so that converts from heresy and schism must be baptised. Honoured for the witness of a great hieromartyr to the unity of the Church, its rigorist discipline was later moderated by the canonical tradition, which receives many converts by chrismation according to economy.",
+ defined: [
+ "That the Church is one, and that the saving grace of the Mysteries is given within her communion, so that schism and heresy cut a man off from the source of grace.",
+ "That, in the judgement of these African bishops, baptism administered outside the Church by heretics or schismatics is therefore not true baptism, and those coming to the Church from such bodies are to be baptised, since they are held not to have been baptised before.",
+ ],
+ condemned: [
+ "The practice, defended at Rome by Stephen, of receiving every heretic and schismatic who had been baptised in the name of the Trinity by the laying-on of hands alone, without baptism, which the African bishops judged to honour a baptism the Church had not given.",
+ ],
+ life: [
+ "By the middle of the third century the Church in the West was troubled by the question of how to receive those who returned or converted from heretical and schismatic bodies, a question made urgent by the Novatianist schism. Had such people received true baptism outside the Church, to be completed on their return by repentance and the laying-on of hands? Or had they received nothing, so that they must now be baptised for the first time?",
+ "St. Cyprian, Bishop of Carthage, the great pastor and teacher of the African Church, held with the African and many Eastern bishops that baptism belongs to the Church alone. \"There is no salvation outside the Church,\" he wrote; the Spirit is given within her, and what the schismatic gives he does not himself possess. Two councils met at Carthage in the year 256 to settle the discipline of the African Church on this point.",
+ "At the second of them, on the first of September, eighty-seven bishops gathered with their presbyters and deacons in the presence of the people, and each in turn gave his own sentence, beginning with the elder bishops and ending with Cyprian himself, who closed by saying that he judged no one and cut off no one from communion for differing, for every bishop must answer to God for his own flock. The assembled sentences are unanimous: those who come from heresy and schism are to be baptised, because the baptism they received outside was no baptism at all.",
+ "The decision set the African Church against Stephen, Bishop of Rome, who held to the older Roman custom of receiving such converts by the laying-on of hands without rebaptism, and who pressed his practice on Africa and the East. The dispute was sharp, but it did not break communion; Cyprian was soon arrested in the persecution of Valerian and crowned a martyr in 258, and is honoured by the whole Church as a hieromartyr and a Father.",
+ "The Church did not in the end make Cyprian's rigour her universal rule. The later canonical tradition, in the canons of St. Basil the Great and of the councils, distinguishes among those who come from outside and receives many of them not by baptism but by chrismation or by confession of faith, according to economy and the nearness of their former body to the Church, while baptising those whose baptism cannot be recognised. The Councils of Carthage of 256 stand as a powerful and honoured witness to the unity of the Church and the seriousness of the Mysteries; how a particular convert is to be received today is a question for the bishop and the priest, governed by the canons. See /about for Purify's posture on questions the Church regulates by economy.",
+ ],
+ principalFathers: [
+ {
+ name: "St. Cyprian of Carthage",
+ role: "Bishop of Carthage, teacher of the unity of the Church and hieromartyr under Valerian in 258; convened and presided over both councils and gave the last sentence.",
+ },
+ ],
+ documents: [],
+ pendingDocuments: [
+ {
+ title: "The Judgements of the Eighty-Seven Bishops (Sententiae Episcoporum)",
+ note: "The record of the sentence given by each bishop at the Seventh Council of Carthage, with Cyprian's opening and closing words. A public-domain English text exists in the Ante-Nicene Fathers (Schaff, Vol. 5); it will be wired in once prepared.",
+ },
+ {
+ title: "On the Baptism of Heretics (Cyprian, Epistles 69-75)",
+ note: "St. Cyprian's letters setting out the African position, including the correspondence with Firmilian and the dispute with Stephen of Rome. Public-domain English in the Ante-Nicene Fathers; not yet shipped.",
  },
  ],
  },

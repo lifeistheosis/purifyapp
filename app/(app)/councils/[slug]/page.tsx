@@ -57,7 +57,9 @@ export default async function CouncilProfilePage({
 
  {/* Hero */}
  <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold/80">
- {ORDINAL_NAMES[c.ordinal]} Ecumenical Council
+ {c.kind === "local"
+ ? "Local Council"
+ : `${ORDINAL_NAMES[c.ordinal ?? 0]} Ecumenical Council`}
  </p>
  <h1 className="mt-3 font-display-serif text-display-sm md:text-display-lg text-paper leading-[1.05] tracking-[-0.015em]">
  {c.byname}
@@ -68,12 +70,22 @@ export default async function CouncilProfilePage({
 
  {/* Brief facts strip */}
  <dl className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 font-sans text-ui">
+ {c.presidingEmperor && (
  <div>
  <dt className="text-paper/45 uppercase tracking-[1.2px] text-eyebrow font-semibold">
  Presiding emperor
  </dt>
  <dd className="mt-1 text-paper/85">{c.presidingEmperor}</dd>
  </div>
+ )}
+ {c.convenedBy && (
+ <div>
+ <dt className="text-paper/45 uppercase tracking-[1.2px] text-eyebrow font-semibold">
+ Convened by
+ </dt>
+ <dd className="mt-1 text-paper/85">{c.convenedBy}</dd>
+ </div>
+ )}
  {c.bishopsAttending && (
  <div>
  <dt className="text-paper/45 uppercase tracking-[1.2px] text-eyebrow font-semibold">
@@ -207,10 +219,15 @@ export default async function CouncilProfilePage({
  )}
 
  {/* Documents */}
+ {(c.documents.length > 0 ||
+ (c.pendingDocuments && c.pendingDocuments.length > 0)) && (
  <div className="mt-14">
  <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
- Read the Council&rsquo;s documents
+ {c.documents.length > 0
+ ? "Read the Council’s documents"
+ : "The Council’s documents"}
  </h2>
+ {c.documents.length > 0 && (
  <ul className="space-y-3">
  {c.documents.map((doc) => (
  <li key={doc.slug}>
@@ -233,6 +250,7 @@ export default async function CouncilProfilePage({
  </li>
  ))}
  </ul>
+ )}
 
  {c.pendingDocuments && c.pendingDocuments.length > 0 && (
  <div className="mt-5 rounded-md border border-dashed border-paper/15 bg-paper/[0.015] px-5 py-4">
@@ -254,6 +272,7 @@ export default async function CouncilProfilePage({
  </div>
  )}
  </div>
+ )}
  </article>
  </section>
  );
