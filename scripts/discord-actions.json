@@ -1,26 +1,14 @@
 [
   {
-    "thread_id": "1513290001813606511",
-    "thread_name": "Save translation",
-    "post": "<@934847776527888405> Shipped in v9.6. Your translation is now remembered: choose NKJV, NIV, or NLT and it carries from chapter to chapter and across return visits, so you never have to reselect it. Thank you for the suggestion. Closing the thread.",
+    "thread_id": "1513443886754955314",
+    "thread_name": "Nicene creed",
+    "post": "<@1208363879621460059> Shipped in v9.7. The Nicene Creed is now at https://purifyapp.net/prayers/creed, and it is set into both the Morning Rule and the Evening Rule after the Trisagion prayers. It is offered in more than one language, English and German to begin, each kept word for word with its source named and no Filioque, as the Councils gave it. More translations will follow as each verbatim public domain text is sourced. Thank you for asking, and God bless you. Closing the thread.",
     "close": true
   },
   {
-    "thread_id": "1512987476548128768",
-    "thread_name": "The Prayer Rope Anthem (French)",
-    "post": "<@859509009354194954> Shipped in v9.6. The French Prayer Rope Anthem is live at https://purifyapp.net/prayers/anthem, choose Français in the language switcher, with your synchronized lyrics highlighting line by line. Thank you for the recording and the lyrics. Closing the thread.",
-    "close": true
-  },
-  {
-    "thread_id": "1512993569131204688",
-    "thread_name": "Prayer Rope anthem in Arabic",
-    "post": "<@834904034946842755> Shipped in v9.6. The Arabic Prayer Rope Anthem is live at https://purifyapp.net/prayers/anthem, choose العربية in the language switcher, sung and shown right to left. The lyrics came from a transcription, so if you can share a verified Arabic text we will gladly refine them. Thank you for the link. Closing the thread.",
-    "close": true
-  },
-  {
-    "thread_id": "1512998698370465964",
-    "thread_name": "Time zone",
-    "post": "<@859509009354194954> Shipped in v9.6. The calendar now follows your device's local time zone, so today's date, the day's saint and fast, and the appointed readings all match where you are rather than the server. Thank you for catching this. Closing the thread.",
+    "thread_id": "1513176591591800942",
+    "thread_name": "Let us be able to search for prayers",
+    "post": "<@890360261171638292> Shipped in v9.7. You can now search the prayers: a search field sits at the top of the prayer book at https://purifyapp.net/prayers, and on a computer Ctrl+K (Cmd+K on a Mac) opens a search across prayers, saints, Scripture, and more, so there is no more scrolling to find a rule. Thank you for the suggestion. Closing the thread.",
     "close": true
   }
 ]
