@@ -6,6 +6,7 @@ import { MobileTabBar } from "@/components/nav/MobileTabBar";
 import { ScrollToTop } from "@/components/nav/ScrollToTop";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { AmbienceController } from "@/components/ambience/AmbienceController";
+import { CommandPaletteMount } from "@/components/search/CommandPaletteMount";
 
 export default function AppGroupLayout({
   children,
@@ -30,6 +31,7 @@ export default function AppGroupLayout({
         <MobileTabBar />
       </div>
       <ScrollToTop />
+      <CommandPaletteMount />
       <AmbienceController />
       <InstallPrompt />
     </>

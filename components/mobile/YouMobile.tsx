@@ -200,7 +200,7 @@ export function YouMobile() {
       icon: <Glyph kind="lock" />,
     },
     {
-      label: "Support",
+      label: "Support Purify",
       href: "/support",
       hint: "Help keep the work going",
       icon: <Glyph kind="heart" />,

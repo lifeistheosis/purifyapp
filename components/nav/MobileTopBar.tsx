@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/cn";
+import { Lampada } from "@/components/ui/icons/Lampada";
 
 /**
  * Compact 48px header for mobile-only surfaces (Discover, You, individual
@@ -14,6 +15,9 @@ import { cn } from "@/lib/cn";
  *   to the given href.
  * - `trailing` is a slot for a small action (translation switcher,
  *   settings icon, etc.).
+ * - `donate` renders a gold vigil-lamp link to /support in the trailing
+ *   slot when no explicit `trailing` is given — the mobile parallel to the
+ *   desktop nav's Support link.
  *
  * Hidden on `md+`, desktop keeps the AppNav.
  */
@@ -21,12 +25,27 @@ export function MobileTopBar({
   title,
   back,
   trailing,
+  donate,
 }: {
   title?: string;
   back?: true | string;
   trailing?: React.ReactNode;
+  donate?: boolean;
 }) {
   const router = useRouter();
+
+  const trailingContent =
+    trailing ??
+    (donate ? (
+      <Link
+        href="/support"
+        aria-label="Support Purify"
+        title="Support Purify"
+        className="h-10 w-10 inline-flex items-center justify-center rounded-pill text-gold/80 hover:text-gold transition-colors"
+      >
+        <Lampada size={20} />
+      </Link>
+    ) : null);
 
   return (
     <div
@@ -65,7 +84,7 @@ export function MobileTopBar({
         {title}
       </h1>
       <div className="min-w-[44px] flex items-center justify-end">
-        {trailing}
+        {trailingContent}
       </div>
     </div>
   );

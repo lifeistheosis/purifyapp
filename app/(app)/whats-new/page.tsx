@@ -23,6 +23,25 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v9.7",
+ kind: "Search anything, the multi-verse Bible, the Nicene Creed, and the small promises kept",
+ date: "June 10, 2026",
+ blurb:
+  "A patch of kept promises, every line of it asked for on the Discord. Bible search now takes a whole string of references at once and reads them back stacked together, a florilegium for study rather than a single jump. Search reaches across the prayer book and the saints, so a rule or a Father is a few letters away instead of a scroll. The Nicene Creed, long requested, joins the prayer book with its own page and sits inside both the Morning and the Evening Rule, offered in more than one language with each wording kept verbatim and its source named. On the desktop a command palette opens on Ctrl+K (Cmd+K on a Mac) and jumps to any saint, prayer, council, heresy, topic, or book of Scripture. Giving is now a tap away on every mobile screen. And a handful of smaller fixes ride along quietly underneath.",
+ items: [
+  "Multi-verse Bible search. The search box now accepts a comma-separated string of references, 1 Tim 2:5, Prov 8:7, John 2:21, and renders each passage stacked with its own header, text, and an open-in-chapter link. It tolerates book abbreviations (1 Tim / 1 Timothy / 1tim), ranges (John 3:16-18), and bare books (Psalm 23). A single reference still navigates straight to the chapter, unchanged. Requested by Nikoli345; committed to by the team on the thread.",
+  "Search across the prayer book and the saints. A search field at the top of /prayers (and a sticky bar on mobile) filters rules, descriptions, categories, and the anthem in real time, no round-trip. Requested by MosesLOL.",
+  "A cross-surface command palette on the desktop. Ctrl+K (Cmd+K on a Mac) opens a quick search over Scripture, saints, prayer rules, councils, heresies, topics, and key pages, grouped with Bible first; arrow keys and Enter to navigate, Escape to close. Desktop only, since the phone keeps its tab bar.",
+  "The Nicene Creed joins the prayer book at /prayers/creed, the Symbol of Faith of the First and Second Ecumenical Councils. It is set into both the Morning Rule and the Evening Rule, after the Trisagion prayers, and offered in more than one language, each wording kept verbatim with its own source named and no Filioque, as the Councils gave it. Requested by Daniel. Further jurisdictional translations will be added as each verbatim public-domain text is sourced.",
+  "Giving is reachable on mobile. A small gold vigil-lamp now sits in the header of every mobile tab and links straight to /support, and the You tab carries a Support Purify row, the mobile parallel to the desktop nav's Support link. Raised by Garxy.",
+  "Long works remember your place. The Fathers' reader (the eighty-eight homilies of St. John Chrysostom and the like) now restores where you left off on your own device, so navigating away no longer loses your place.",
+  "St. Ephraim the Syrian's icon now renders where it was missing. Flagged by Daniel.",
+  "Smaller fixes: the prayer-rope hint no longer tells phone users to press a space bar they do not have.",
+  "Cache version bumped to v9.7.0 so the new search surfaces, the command palette, and the Creed evict the old buckets on this release.",
+  "Footer + home hero chip + /whats-new chip step to v9.7.",
+ ],
+ },
+ {
  version: "v9.6",
  kind: "The Prayer Rope Anthem in French and Arabic, a remembered translation, and the calendar on your own time",
  date: "June 8, 2026",
@@ -1115,17 +1134,17 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
- v9.6 &middot; The Anthem in French and Arabic, a remembered translation, the local calendar
+ v9.7 &middot; Search anything, multi-verse Bible, the Creed, smaller fixes
  </p>
  </div>
 
  {isDe ? (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Die Gebetsseil-Hymne, Purify installieren, und der heilige Isaak der Syrer.
+ Alles durchsuchen, die Mehrvers-Bibel und das Glaubensbekenntnis.
  </h1>
  ) : (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- The Anthem in French and Arabic, your translation remembered, the calendar on your time.
+ Search anything, the multi-verse Bible, and the Creed.
  </h1>
  )}
 
@@ -1163,29 +1182,21 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v8.5 eröffnet das{" "}
- <Link href="/heresies" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Häresien-Archiv</Link>,
- das Spiegelbild des Themenindex. Jedes Ökumenische Konzil ist
- ebenso durch den Irrtum bestimmt, den es verurteilte, wie durch
- die Lehre, die es bekannte, und diese Ausgabe stellt die sieben
- Hauptirrtümer dar, die die Konzile beantworteten, einen für
- jedes Konzil:{" "}
- <Link href="/heresies/arianism" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Arianismus</Link>,
- Makedonianismus,{" "}
- <Link href="/heresies/nestorianism" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Nestorianismus</Link>,
- Eutychianismus, Origenismus, Monotheletismus und{" "}
- <Link href="/heresies/iconoclasm" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Ikonoklasmus</Link>.
- Jedes Profil legt den Irrtum in klarem Deutsch dar, nennt das{" "}
- <Link href="/councils" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Konzil</Link>,
- das ihn verurteilte, verweist auf die orthodoxe Lehre, die er
- leugnete, und beantwortet ihn, wo das Korpus sie bereits
- enthält, mit den eigenen Worten der Väter. Es ist genau wie der
- Themenindex gebaut, ein schlanker Index, redaktionelle
- Definitionen in eigener Stimme, kein beherbergter Häretikertext,
- jedes Zitat ein Tieflink in einen Abschnitt, den ein Väterwerk
- bereits wortgetreu trägt. Und die Verknüpfung geht in beide
- Richtungen: die Konzilseiten verweisen ihre genannten
- Gegenparteien nun direkt auf das Häresien-Profil.
+ v9.7 löst die kleinen Versprechen ein, alle auf dem Discord
+ erbeten. Erstens nimmt die{" "}
+ <Link href="/bible" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Bibelsuche</Link>{" "}
+ nun mehrere Verse auf einmal: Füge eine Reihe von Stellen ein
+ und lies sie gestapelt, ein Florilegium zum Studium. Zweitens
+ reicht die Suche durch das{" "}
+ <Link href="/prayers" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Gebetbuch</Link>{" "}
+ und die Heiligen, so erreichst du eine Regel oder einen Vater
+ beim Namen, und am Schreibtisch öffnet Strg+K (Cmd+K am Mac)
+ eine Befehlspalette. Drittens kommt das{" "}
+ <Link href="/prayers/creed" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Glaubensbekenntnis von Nizäa</Link>{" "}
+ hinzu, eingefügt in die Morgen- und die Abendregel, in mehreren
+ Sprachen angeboten, jede Fassung wortgetreu und mit Quelle. Und
+ das Geben ist nun auf jedem mobilen Bildschirm einen Fingertipp
+ entfernt.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
@@ -1231,26 +1242,22 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v9.6 carries three things worth the click, all shaped by the
- Discord. First, the{" "}
- <Link href="/prayers/anthem" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Prayer Rope Anthem</Link>{" "}
- now sings in three tongues. English is joined by a French
- version and an Arabic version, each with its own recording and
- its own synced lyrics that brighten line by line as the chant
- plays, the French shared by BOX and the Arabic by Silouan.
- Choose a language above the player, loop it, follow the words.
- Second, the{" "}
- <Link href="/bible/matthew/1" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Bible reader</Link>{" "}
- now remembers your translation. A choice of NKJV, NIV, or NLT
- carries from chapter to chapter and across return visits
- instead of resetting to the public-domain text every time you
- turn the page. Third, the{" "}
- <Link href="/calendar" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">calendar</Link>{" "}
- now keeps your own day. It reads your device&rsquo;s local date
- rather than the server&rsquo;s clock, so the highlighted day,
- the day&rsquo;s saint and fast, and the appointed readings all
- sit on the date you are actually living, not a day ahead or
- behind.
+ v9.7 keeps the small promises, every line of it asked for on
+ the Discord. First, the{" "}
+ <Link href="/bible" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Bible search</Link>{" "}
+ now takes more than one verse at once: paste a string of
+ references and read them back stacked together, a florilegium
+ for study rather than a single jump. Second, search reaches
+ across the{" "}
+ <Link href="/prayers" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">prayer book</Link>{" "}
+ and the saints, so a rule or a Father is a few letters away
+ instead of a scroll, and on the desktop a command palette opens
+ on Ctrl+K (Cmd+K on a Mac) to jump anywhere. Third, the{" "}
+ <Link href="/prayers/creed" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Nicene Creed</Link>{" "}
+ joins the prayer book and is set into both the Morning and the
+ Evening Rule, offered in more than one language with each
+ wording kept verbatim and its source named. And giving is now a
+ tap away on every mobile screen.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">

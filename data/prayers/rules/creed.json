@@ -1,0 +1,28 @@
+{
+  "id": "creed",
+  "title": "The Nicene Creed",
+  "subtitle": "The Symbol of Faith of the First and Second Ecumenical Councils",
+  "intro": "The Symbol of Faith confessed at Nicaea in 325 and completed at Constantinople in 381. The Church prays it at every Divine Liturgy and in the daily rule. It is offered here in more than one language; switch wordings with the tabs, each kept verbatim with its own source. The text carries no Filioque, as the Councils gave it.",
+  "estimatedMinutes": 2,
+  "jurisdiction": "Pan-Orthodox",
+  "source": "Niceno-Constantinopolitan Creed (325/381). Public-domain liturgical texts; each wording cites its own source.",
+  "prayers": [
+    {
+      "id": "symbol-of-faith",
+      "title": "The Symbol of Faith",
+      "instruction": "Said standing. One unbroken confession; the stanza breaks below are for reading only.",
+      "variants": [
+        {
+          "jurisdiction": "English",
+          "source": "Public-domain liturgical English shared by the OCA and GOARCH service books.",
+          "text": "I believe in one God, the Father Almighty, Maker of heaven and earth, and of all things visible and invisible.\n\nAnd in one Lord Jesus Christ, the Son of God, the Only-begotten, begotten of the Father before all ages; Light of Light, true God of true God, begotten, not made; of one essence with the Father, by whom all things were made;\n\nWho for us men and for our salvation came down from heaven, and was incarnate of the Holy Spirit and the Virgin Mary, and became man;\n\nAnd was crucified for us under Pontius Pilate, and suffered, and was buried;\n\nAnd the third day He rose again, according to the Scriptures;\n\nAnd ascended into heaven, and sitteth at the right hand of the Father;\n\nAnd He shall come again with glory to judge the living and the dead, whose kingdom shall have no end.\n\nAnd in the Holy Spirit, the Lord, the Giver of Life, who proceedeth from the Father; who with the Father and the Son together is worshipped and glorified; who spake by the prophets.\n\nIn one, holy, catholic, and apostolic Church.\n\nI acknowledge one baptism for the remission of sins.\n\nI look for the resurrection of the dead, and the life of the age to come. Amen."
+        },
+        {
+          "jurisdiction": "German (Deutsch)",
+          "source": "Niceno-Konstantinopolitanisches Glaubensbekenntnis. Gemeinfreie Übersetzung in der Tradition der Diözese Berlin und Deutschland (ROKA).",
+          "text": "Ich glaube an den einen Gott, den Vater, den Allmächtigen, den Schöpfer des Himmels und der Erde, alles Sichtbaren und Unsichtbaren.\n\nUnd an den einen Herrn Jesus Christus, Gottes eingeborenen Sohn, der aus dem Vater gezeugt ist vor aller Zeit: Licht vom Lichte, wahrer Gott vom wahren Gott, gezeugt, nicht geschaffen, eines Wesens mit dem Vater, durch den alles geschaffen ist;\n\nder für uns Menschen und um unseres Heiles willen von den Himmeln herabgekommen und Fleisch geworden ist aus dem Heiligen Geist und der Jungfrau Maria und Mensch geworden ist;\n\nder für uns gekreuzigt wurde unter Pontius Pilatus, gelitten hat und begraben worden ist;\n\nund am dritten Tage auferstanden ist nach der Schrift;\n\nund aufgefahren ist in die Himmel und sitzet zur Rechten des Vaters;\n\nund wiederkommen wird in Herrlichkeit, zu richten die Lebenden und die Toten; dessen Reiches kein Ende sein wird.\n\nUnd an den Heiligen Geist, den Herrn, den Lebenschaffenden, der aus dem Vater hervorgeht, der mit dem Vater und dem Sohn zugleich angebetet und verherrlicht wird, der gesprochen hat durch die Propheten.\n\nAn die eine, heilige, katholische und apostolische Kirche.\n\nIch bekenne die eine Taufe zur Vergebung der Sünden.\n\nIch erwarte die Auferstehung der Toten und das Leben der zukünftigen Welt. Amen."
+        }
+      ]
+    }
+  ]
+}

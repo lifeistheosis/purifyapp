@@ -54,10 +54,10 @@ export function WhatsNewChip({ isDe }: { isDe: boolean }) {
       )}
       <span className="font-sans text-caption sm:text-detail text-paper/85 group-hover:text-paper transition-colors">
         <span className="sm:hidden">
-          {CURRENT_VERSION} · The Anthem in French and Arabic, saved translation, local calendar
+          {CURRENT_VERSION} · Search anything, multi-verse Bible, the Creed, smaller fixes
         </span>
         <span className="hidden sm:inline">
-          {CURRENT_VERSION} · The Prayer Rope Anthem in French and Arabic, your translation remembered, the calendar on your time
+          {CURRENT_VERSION} · Multi-verse Bible search, search across prayers and saints, the Nicene Creed in Morning and Evening prayer, the small things you asked for
         </span>
       </span>
       <span className="text-paper/55 group-hover:text-paper transition-colors text-detail">

@@ -42,7 +42,15 @@ export function PrayerRope() {
   const [stats, setStats] = useState({ yearKnots: 0, weekKnots: 0, yearSessions: 0 });
   const [showSettings, setShowSettings] = useState(false);
   const [bellNote, setBellNote] = useState<string | null>(null);
+  // Touch devices have no space bar; gate that half of the hint on a
+  // fine-pointer check so phones read "tap the rope" alone.
+  const [canPressSpace, setCanPressSpace] = useState(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot pointer probe; window is client-only
+    setCanPressSpace(window.matchMedia("(pointer: fine)").matches);
+  }, []);
 
   // Stats live re-read from localStorage on every prayer event.
   useEffect(() => {
@@ -167,7 +175,7 @@ export function PrayerRope() {
         </h1>
         <div aria-hidden className="mx-auto mt-6 h-px w-10 bg-gold/50" />
         <p className="mt-5 font-sans text-caption text-paper/40">
-          {knotCount}-knot rope · tap the rope or press space.{" "}
+          {knotCount}-knot rope · tap the rope{canPressSpace ? " or press space" : ""}.{" "}
           <button
             type="button"
             onClick={() => setShowSettings(true)}
