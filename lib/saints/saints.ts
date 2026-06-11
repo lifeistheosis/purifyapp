@@ -3003,6 +3003,7 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "photius-the-great",
+ iconUrl: "/saints/icons/photius the great.jpg",
  byname: "The Great",
  name: "St. Photius the Great",
  epithet: "Patriarch of Constantinople · Pillar of Orthodoxy · Defender of the Procession of the Spirit",
@@ -3053,6 +3054,7 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "cyril-and-methodius",
+ iconUrl: "/saints/icons/cyril-&-methodius.jpg",
  name: "Saints Cyril and Methodius",
  byname: "Equals-to-the-Apostles",
  epithet: "Equals-to-the-Apostles · Enlighteners of the Slavs · Teachers of the Slavonic Letters",
@@ -3554,6 +3556,7 @@ export const SAINTS: Saint[] = [
   // a confirmed public-domain source before any verbatim text is ingested.
   {
     slug: "simeon-the-myrrh-streaming",
+    iconUrl: "/saints/icons/simeon-streaming-myrrh.jpg",
     byname: "the Myrrh-streaming",
     name: "St. Simeon the Myrrh-streaming",
     epithet: "Grand Prince of Serbia · Founder of the Nemanjić Dynasty",
@@ -3573,6 +3576,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "sava-of-serbia",
+    iconUrl: "/saints/icons/sava-of-serbia.jpg",
     byname: "Enlightener of Serbia",
     name: "St. Sava of Serbia",
     epithet: "First Archbishop of Serbia · Enlightener of the Serbs",
@@ -3593,6 +3597,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "lazar-of-serbia",
+    iconUrl: "/saints/icons/lazar-of-serbia.jpg",
     byname: "the Great Martyr",
     name: "St. Lazar of Serbia",
     epithet: "Prince of the Serbs · Holy Great-Martyr of Kosovo",
@@ -3612,6 +3617,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "basil-of-ostrog",
+    iconUrl: "/saints/icons/basil-of-ostrog.jpg",
     byname: "the Wonderworker of Ostrog",
     name: "St. Basil of Ostrog",
     epithet: "Metropolitan of Zahumlje and the Coastlands · Wonderworker",
@@ -3672,6 +3678,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "moses-the-ethiopian",
+    iconUrl: "/saints/icons/moses-the-black.jpg",
     name: "St. Moses the Ethiopian",
     byname: "Moses the Black, the Strong",
     epithet: "Desert Father of Scetis · Once a robber, then a monk and martyr",
@@ -3692,6 +3699,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "niketas-the-goth",
+    iconUrl: "/saints/icons/niketas-the-goth.jpg",
     name: "St. Niketas the Goth",
     byname: "The Great Martyr",
     epithet: "Greatmartyr among the Goths",
@@ -3712,6 +3720,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "nino-of-georgia",
+    iconUrl: "/saints/icons/nino-nina-of-georiga.jpg",
     name: "St. Nino of Georgia",
     byname: "Equal-to-the-Apostles, Enlightener of Georgia",
     epithet: "Equal-to-the-Apostles · Enlightener of Iberia",
@@ -3732,6 +3741,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "xenia-of-petersburg",
+    iconUrl: "/saints/icons/xenia-of-petersburg.jpg",
     name: "St. Xenia of St. Petersburg",
     byname: "Blessed Xenia, Fool for Christ",
     epithet: "Fool for Christ · Wonderworker of St. Petersburg",
@@ -3752,6 +3762,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "john-cassian",
+    iconUrl: "/saints/icons/john-cassian.jpg",
     name: "St. John Cassian",
     byname: "Cassian the Roman",
     epithet: "Monk of East and West · Teacher of the ascetic life",
@@ -3772,6 +3783,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "sergius-of-radonezh",
+    iconUrl: "/saints/icons/sergius-of-radonezh.jpg",
     name: "St. Sergius of Radonezh",
     byname: "Abbot of Russia, the Wonderworker",
     epithet: "Abbot of the Holy Trinity · Father of Russian monasticism",
@@ -3792,6 +3804,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "nicholas-cabasilas",
+    iconUrl: "/saints/icons/nicholas-of-cabasilas.jpg",
     name: "St. Nicholas Cabasilas",
     epithet: "Theologian of the Mysteries · Lay teacher of Thessalonica",
     born: "c. 1322 (Thessalonica)",
@@ -3811,6 +3824,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "silouan-the-athonite",
+    iconUrl: "/saints/icons/silouan-the-athonite.png",
     name: "St. Silouan the Athonite",
     epithet: "Monk of Mount Athos · He who prayed for the whole world",
     born: "1866 (Tambov province, Russia)",
@@ -3830,6 +3844,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "john-of-shanghai",
+    iconUrl: "/saints/icons/john-the-wonderworker.jpg",
     name: "St. John of Shanghai and San Francisco",
     byname: "The Wonderworker",
     epithet: "Bishop of Shanghai and San Francisco · Wonderworker of the diaspora",
@@ -3850,6 +3865,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "porphyrios-of-kavsokalyvia",
+    iconUrl: "/saints/icons/st-porphyrios-of-kavsokalyvia-324.jpg",
     name: "St. Porphyrios of Kavsokalyvia",
     byname: "The Elder Porphyrios",
     epithet: "Elder of Athos and Athens · Seer of hearts",
@@ -3870,6 +3886,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "iakovos-of-evia",
+    iconUrl: "/saints/icons/LRPSaintIakovosTsalikisofEvialevel.jpg",
     name: "St. Iakovos of Evia",
     byname: "The Elder Iakovos Tsalikis",
     epithet: "Abbot of the Monastery of St. David · Shepherd of Evia",
@@ -3890,6 +3907,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "sophrony-of-essex",
+    iconUrl: "/saints/icons/sophrony-of-essex.jpg",
     name: "St. Sophrony of Essex",
     byname: "Sophrony Sakharov",
     epithet: "Disciple of St. Silouan · Founder of the monastery in Essex",
@@ -3910,6 +3928,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "quadratus-the-apologist",
+    iconUrl: "/saints/icons/Quadratus-Athens.jpg",
     name: "St. Quadratus of Athens",
     byname: "The Apologist",
     epithet: "The earliest of the apologists · Bishop of Athens",
@@ -3930,6 +3949,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "cosmas-of-aetolia",
+    iconUrl: "/saints/icons/kosmos-aitolia.jpg",
     name: "St. Cosmas of Aetolia",
     byname: "Equal-to-the-Apostles, the New Hieromartyr",
     epithet: "Preacher and teacher of the enslaved Greeks · Martyr",
@@ -3971,6 +3991,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "theophan-the-recluse",
+    iconUrl: "/saints/icons/theophan-the-recluse.jpg",
     name: "St. Theophan the Recluse",
     byname: "Theophan the Recluse of Vysha",
     epithet: "Bishop and recluse · Teacher of the spiritual life",
@@ -3991,6 +4012,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "philoumenos-of-jacobs-well",
+    iconUrl: "/saints/icons/philoumenos-of-jacobs-well.jpg",
     name: "St. Philoumenos of Jacob's Well",
     byname: "The Hieromartyr of Jacob's Well",
     epithet: "Guardian of Jacob's Well · New hieromartyr",
@@ -4011,6 +4033,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "gabriel-of-georgia",
+    iconUrl: "/saints/icons/gabriel-of-georgia.jpg",
     name: "St. Gabriel of Georgia",
     byname: "Gabriel the Fool-for-Christ and Confessor",
     epithet: "Fool for Christ and confessor · Wonderworker of Georgia",

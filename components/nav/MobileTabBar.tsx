@@ -31,11 +31,6 @@ type Tab = {
   matches: (p: string) => boolean;
 };
 
-// The mobile nav keeps the original signature gold for its active state
-// (hardcoded here, independent of the now-neutral `--color-gold` token) so
-// the live tab reads as a warm highlight against the dark glass bar.
-const ACCENT = "#e0a82e";
-
 // Matches the `gap-1` gutter between tabs; used to keep the sliding
 // indicator's geometry exactly in step with the flex cells.
 const GAP = 4;
@@ -140,8 +135,8 @@ export function MobileTabBar() {
     };
   }, [activeIndex, renderIndex]);
 
-  // Geometry for the single sliding highlight + pill. The bar is N equal
-  // flex cells separated by the GAP gutter, so one slot is
+  // Geometry for the single sliding highlight. The bar is N equal flex
+  // cells separated by the GAP gutter, so one slot is
   //   cell = (100% - (N-1)*gap) / N
   // and slot i starts at i * (cell + gap). Driving `left` off these calc
   // strings keeps the indicator pixel-aligned at any bar width while a CSS
@@ -149,7 +144,6 @@ export function MobileTabBar() {
   const N = TABS.length;
   const cell = `((100% - ${(N - 1) * GAP}px) / ${N})`;
   const slotLeft = `calc(${renderIndex} * (${cell} + ${GAP}px))`;
-  const pillLeft = `calc(${renderIndex} * (${cell} + ${GAP}px) + ${cell} / 2)`;
 
   return (
     <nav
@@ -186,20 +180,6 @@ export function MobileTabBar() {
             )}
             style={{ width: `calc(${cell})`, left: slotLeft }}
           />
-          {/* Sliding gold pill seated on the bar's top edge, centered over
-              the live tab — travels with the compartment. */}
-          <span
-            aria-hidden
-            className={cn(
-              "absolute top-[-9px] z-0 h-[5px] w-9 -translate-x-1/2 rounded-full",
-              "transition-[left] duration-300 ease-out motion-reduce:transition-none",
-            )}
-            style={{
-              left: pillLeft,
-              backgroundColor: ACCENT,
-              boxShadow: `0 0 12px ${ACCENT}88`,
-            }}
-          />
           {TABS.map(({ key, label, href, Icon, matches }) => {
             const active = matches(pathname);
             return (
@@ -211,19 +191,13 @@ export function MobileTabBar() {
                     "h-[58px] flex flex-col items-center justify-center gap-1.5 rounded-[26px]",
                     "font-sans text-eyebrow tracking-[0.01em] transition-colors duration-200",
                     active
-                      ? "font-semibold"
+                      ? "text-paper font-semibold"
                       : "text-paper/45 hover:text-paper/70 font-medium",
                   )}
-                  style={active ? { color: ACCENT } : undefined}
                 >
                   <Icon
                     size={22}
                     className="transition-[filter] duration-200"
-                    style={
-                      active
-                        ? { filter: `drop-shadow(0 0 7px ${ACCENT}66)` }
-                        : undefined
-                    }
                   />
                   <span className="leading-none">{label}</span>
                 </Link>
