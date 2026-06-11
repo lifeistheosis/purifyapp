@@ -23,6 +23,21 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v9.8",
+ kind: "Eighteen new saints, the dogma-exegesis library, and the councils before Nicaea",
+ date: "June 11, 2026",
+ blurb:
+  "A content release, the library grown wide. Eighteen saints join the calendar and the saints index, each with a full life: desert fathers and Russian abbots, a Georgian fool for Christ and a martyr of Jacob's Well, the compiler of the Philokalia and the recluse of Vysha, the elders of Athos and of Essex of our own time. A new dogma-exegesis library opens at /theology, where a single question is traced through the Fathers and the councils in long form, from the procession of the Holy Spirit to the witness of the manuscripts. The councils section reaches back before Nicaea, to the synod of Antioch that deposed Paul of Samosata and the councils of Carthage on the baptism of heretics, in a new room for the local and regional councils beyond the seven. And French opens in editorial preview, the first language after German that the app will speak, with the rest to follow as the editorial work is done.",
+ items: [
+  "Eighteen new saints, each with a full life. Among them St. Moses the Ethiopian, St. Sergius of Radonezh, St. Silouan the Athonite, St. John of Shanghai and San Francisco, St. Porphyrios of Kavsokalyvia, St. Sophrony of Essex, St. Nikodemos the Hagiorite, St. Theophan the Recluse, St. Cosmas of Aetolia, St. Nino of Georgia, St. Xenia of St. Petersburg, St. Gabriel of Georgia, St. Philoumenos of Jacob's Well, St. Niketas the Goth, St. John Cassian, St. Nicholas Cabasilas, St. Iakovos of Evia, and St. Quadratus of Athens, the earliest of the apologists. Each was asked for on the Discord. We keep to saints glorified by an official jurisdiction of the Church; a few requested names are held until their commemoration is confirmed.",
+  "A new dogma-exegesis library at /theology. Each topic is a long-form study: a framing essay, a florilegium of attributed quotations from the Fathers, linked to their profiles where present, the conciliar witness, and the Scripture cross-references. Seven open this release: the Filioque, the Theotokos, theosis, the papacy, original sin, the Comma Johanneum, and the longer ending of Mark. Drawn from the dogma-exegesis forum on the Discord.",
+  "The councils before Nicaea. The Council of Antioch of 268, which deposed Paul of Samosata, and the Councils of Carthage of 256 on the baptism of heretics, join the councils section in a new band for the local and regional councils beyond the seven. The profiles are historical; verbatim canons follow as the public-domain texts are prepared. Requested by jadamsarma and Kompir.",
+  "French in editorial preview. French is now selectable and applied, the first language after English and German, marked in progress in the language switcher, with the chrome it does not yet carry falling back to English. The mechanism is the in-progress state the other languages will adopt as their catalogs are hand-checked.",
+  "Cache version bumped to v9.8.0 so the new saints, the theology library, and the councils evict the old buckets on this release.",
+  "Footer, home hero chip, and /whats-new chip step to v9.8.",
+ ],
+ },
+ {
  version: "v9.7",
  kind: "Search anything, the multi-verse Bible, the Nicene Creed, and the small promises kept",
  date: "June 10, 2026",

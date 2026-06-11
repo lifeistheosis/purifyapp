@@ -54,10 +54,10 @@ export function WhatsNewChip({ isDe }: { isDe: boolean }) {
       )}
       <span className="font-sans text-caption sm:text-detail text-paper/85 group-hover:text-paper transition-colors">
         <span className="sm:hidden">
-          {CURRENT_VERSION} · Search anything, multi-verse Bible, the Creed, smaller fixes
+          {CURRENT_VERSION} · Eighteen new saints, the dogma-exegesis library, the councils before Nicaea
         </span>
         <span className="hidden sm:inline">
-          {CURRENT_VERSION} · Multi-verse Bible search, search across prayers and saints, the Nicene Creed in Morning and Evening prayer, the small things you asked for
+          {CURRENT_VERSION} · Eighteen new saints from Sergius of Radonezh to Xenia of Petersburg, a new dogma-exegesis library, the councils of Antioch and Carthage, and French in editorial preview
         </span>
       </span>
       <span className="text-paper/55 group-hover:text-paper transition-colors text-detail">
