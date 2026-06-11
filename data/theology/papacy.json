@@ -6,7 +6,7 @@
   "summary": "Universal jurisdiction, papal infallibility, and the development of supremacy at Rome are rejected on conciliar and patristic grounds. The fiercest witnesses are Pope Gregory the Great himself, Cyprian of Carthage, Firmilian of Caesarea, John Chrysostom, Theodoret of Cyrus, the Synod of Douzy, and the wider conciliar settlement at Chalcedon and Constantinople IV.",
   "curatedBy": "Purify Team",
   "curatedOn": "2026-06-10",
-  "origin": "Discord — dogma-exegesis: Why does the Orthodox Church reject Papacy?",
+  "origin": "Discord, dogma-exegesis: Why does the Orthodox Church reject Papacy?",
   "essay": [
     {
       "kind": "para",
@@ -143,13 +143,13 @@
       "work": "Synodal Letter to Pope Hadrian II",
       "reference": "871 (Concilia Antiqua Galliae Supplementa, pp. 259-261)",
       "text": "We fervently beseech your authority to free us from the government of Bishop Hincmar of Laon, as from a great and incorrigible pest. And if, for the time being, it does not please you to put your seal on what we have already lawfully decided in this Synod, may he at least not be restored to his see until he first be re-tried in this province, as the rules and laws require. For until today, no decree of the Fathers has ever denied this privilege to the Churches of France and Belgium; considering especially that the decrees of Nicaea have committed the lesser clergy and even bishops to the authority of their Metropolitans. And as St Boniface explains: \"It is proper for us to be diligent guardians of the paternal rules. For no one is ignorant of the constitution of the Nicene Council which decreed that individual metropolitans ought to have jurisdiction over a single province, and that no two provinces should be under the rule of one.\"",
-      "gloss": "A Frankish synod in 871 tells the Pope of Rome that even with his goodwill it cannot surrender the right of local trial of bishops to a Roman court — and cites Nicaea against him."
+      "gloss": "A Frankish synod in 871 tells the Pope of Rome that even with his goodwill it cannot surrender the right of local trial of bishops to a Roman court, and cites Nicaea against him."
     },
     {
       "author": "The Synod of Douzy",
       "work": "Synodal Letter to Pope Hadrian II",
       "reference": "871",
-      "text": "If — far be it — by some suggestion or request, Hincmar wrest a decision from the Apostolic See to be restored to his rank as one scorning and treading upon the holy canons, we will hereafter not recognise any of his decisions, just as until now we have not communed with his deeds by resisting them. For our own holy fathers, who still live with us through their canons, being distinguished in the way of the holy Scriptures and the tradition of the apostles and inspired by the grace of the Holy Spirit, give certain judgement about these things.",
+      "text": "If, far be it, by some suggestion or request, Hincmar wrest a decision from the Apostolic See to be restored to his rank as one scorning and treading upon the holy canons, we will hereafter not recognise any of his decisions, just as until now we have not communed with his deeds by resisting them. For our own holy fathers, who still live with us through their canons, being distinguished in the way of the holy Scriptures and the tradition of the apostles and inspired by the grace of the Holy Spirit, give certain judgement about these things.",
       "gloss": "A Western synod, openly, in the ninth century: if Rome rules against the canons we will not recognise the decision."
     }
   ],
@@ -187,11 +187,11 @@
     }
   ],
   "scripture": [
-    { "ref": "Matthew 16:18-19", "bibleRef": "Matthew 16:18", "note": "Upon this rock — read by the Fathers of the faith confessed, not the chair occupied." },
-    { "ref": "John 21:15-17", "bibleRef": "John 21:15", "note": "Feed my sheep — Chrysostom and Cyprian both apply this charge to all bishops, not to Peter's single successor." },
-    { "ref": "Matthew 18:18", "bibleRef": "Matthew 18:18", "note": "Whatsoever ye shall bind on earth — the binding-and-loosing given to the apostolic body." },
-    { "ref": "Acts 15:6-29", "bibleRef": "Acts 15:6", "note": "The Council of Jerusalem — the conciliar pattern of apostolic decision, presided by James, not by Peter alone." },
-    { "ref": "Galatians 2:11", "bibleRef": "Galatians 2:11", "note": "Paul withstanding Peter to his face — the Petrine office is not exempt from correction by a brother apostle." }
+    { "ref": "Matthew 16:18-19", "bibleRef": "Matthew 16:18", "note": "Upon this rock, read by the Fathers of the faith confessed, not the chair occupied." },
+    { "ref": "John 21:15-17", "bibleRef": "John 21:15", "note": "Feed my sheep, Chrysostom and Cyprian both apply this charge to all bishops, not to Peter's single successor." },
+    { "ref": "Matthew 18:18", "bibleRef": "Matthew 18:18", "note": "Whatsoever ye shall bind on earth, the binding-and-loosing given to the apostolic body." },
+    { "ref": "Acts 15:6-29", "bibleRef": "Acts 15:6", "note": "The Council of Jerusalem, the conciliar pattern of apostolic decision, presided by James, not by Peter alone." },
+    { "ref": "Galatians 2:11", "bibleRef": "Galatians 2:11", "note": "Paul withstanding Peter to his face, the Petrine office is not exempt from correction by a brother apostle." }
   ],
   "related": ["filioque", "comma-johanneum", "the-theotokos"]
 }

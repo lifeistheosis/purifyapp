@@ -6,7 +6,7 @@
   "summary": "The most consequential single word in Christian history. A line-by-line case from the Fathers and the Councils that the Spirit proceeds from the Father alone, and that the Western insertion of \"and the Son\" into the Creed is both dogmatically and canonically void.",
   "curatedBy": "Purify Team",
   "curatedOn": "2026-06-10",
-  "origin": "Discord — dogma-exegesis: The Annihilation of the Filioque.",
+  "origin": "Discord, dogma-exegesis: The Annihilation of the Filioque.",
   "essay": [
     {
       "kind": "para",
@@ -65,7 +65,7 @@
       "saintSlug": "gregory-theologian",
       "work": "Oration 31, The Fifth Theological Oration on the Holy Spirit",
       "reference": "Oration 31",
-      "text": "Whatever in this case also is said in more lowly fashion, as that the Spirit is Given, Sent, Divided; that he is the Gift, the Bounty, the Inspiration, the Promise, the Intercession for us — and any other expressions of the sort — is to be referred to the First Cause, that it may be shewn from whom he is, and that men may not in heathen fashion admit three Principles. For it is equally impious to confuse the Persons with the Sabellians, or to divide the natures with the Arians.",
+      "text": "Whatever in this case also is said in more lowly fashion, as that the Spirit is Given, Sent, Divided; that he is the Gift, the Bounty, the Inspiration, the Promise, the Intercession for us, and any other expressions of the sort, is to be referred to the First Cause, that it may be shewn from whom he is, and that men may not in heathen fashion admit three Principles. For it is equally impious to confuse the Persons with the Sabellians, or to divide the natures with the Arians.",
       "gloss": "Economic and temporal expressions must be traced back to the First Cause. To fail this is to introduce three principles into the Godhead and fall into heathen tritheism.",
       "source": "https://www.newadvent.org/fathers/310231.htm"
     },
@@ -196,8 +196,8 @@
     { "ref": "John 14:26", "bibleRef": "John 14:26", "note": "The Father sends the Spirit in the name of the Son." },
     { "ref": "John 16:7", "bibleRef": "John 16:7", "note": "The Son sends the Spirit in time, from the Father." },
     { "ref": "John 20:22", "bibleRef": "John 20:22", "note": "The breathing of the Spirit on the disciples; an economic giving, not an eternal origin." },
-    { "ref": "Romans 8:9", "bibleRef": "Romans 8:9", "note": "The Spirit of God and the Spirit of Christ — by communion of essence, not by causation." },
-    { "ref": "Acts 2:33", "bibleRef": "Acts 2:33", "note": "Christ pours forth the Spirit at Pentecost — the economic mission." }
+    { "ref": "Romans 8:9", "bibleRef": "Romans 8:9", "note": "The Spirit of God and the Spirit of Christ, by communion of essence, not by causation." },
+    { "ref": "Acts 2:33", "bibleRef": "Acts 2:33", "note": "Christ pours forth the Spirit at Pentecost, the economic mission." }
   ],
   "related": ["the-theotokos", "papacy", "theosis"]
 }

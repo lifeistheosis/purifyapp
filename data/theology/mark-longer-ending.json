@@ -6,7 +6,7 @@
   "summary": "External support across 99% of the Greek manuscripts, the Old Latin and Syriac versions, and Irenaeus, Tatian, Justin, and Hippolytus, set against the narrow case from Vaticanus, Sinaiticus, and Eusebius. A defense of the Longer Ending on patristic and manuscript grounds.",
   "curatedBy": "Purify Team",
   "curatedOn": "2026-06-10",
-  "origin": "Discord — dogma-exegesis: The Case for Mark 16:9-20.",
+  "origin": "Discord, dogma-exegesis: The Case for Mark 16:9-20.",
   "essay": [
     {
       "kind": "para",
@@ -19,7 +19,7 @@
     { "kind": "heading", "text": "The early manuscripts that stop at v. 8", "level": 2 },
     {
       "kind": "para",
-      "text": "Codex Vaticanus (B) stops at v. 8 — but leaves an entire blank column after it. This is \"memorial space\": a scribe who knew his exemplar was missing something marked the gap with empty parchment. Codex Sinaiticus (Aleph) also stops at v. 8, with a replacement four-leaf bifolium in its own ending. Both are fourth-century Egyptian-tradition manuscripts; both carry physical signs that the scribes were aware of an ending they could not include from their exemplars. Outside Egypt, the verses are everywhere."
+      "text": "Codex Vaticanus (B) stops at v. 8, but leaves an entire blank column after it. This is \"memorial space\": a scribe who knew his exemplar was missing something marked the gap with empty parchment. Codex Sinaiticus (Aleph) also stops at v. 8, with a replacement four-leaf bifolium in its own ending. Both are fourth-century Egyptian-tradition manuscripts; both carry physical signs that the scribes were aware of an ending they could not include from their exemplars. Outside Egypt, the verses are everywhere."
     },
     { "kind": "heading", "text": "Eusebius does not know the Shorter Ending", "level": 2 },
     {
@@ -43,7 +43,7 @@
       "saintSlug": "justin-martyr",
       "work": "First Apology",
       "reference": "c. 155 (cf. Mark 16:20)",
-      "text": "His apostles, going forth from Jerusalem, preached everywhere — ἐξελθόντες πανταχοῦ ἐκήρυξαν — that the things which had been declared by them concerning Jesus Christ were certainly true.",
+      "text": "His apostles, going forth from Jerusalem, preached everywhere, ἐξελθόντες πανταχοῦ ἐκήρυξαν, that the things which had been declared by them concerning Jesus Christ were certainly true.",
       "gloss": "The Greek participle-and-verb pair occurs nowhere else in surviving Greek literature except Mark 16:20. Justin was citing a text he held in his hands, c. 200 years before Vaticanus.",
       "source": "https://www.newadvent.org/fathers/0126.htm"
     },
@@ -89,15 +89,15 @@
       "author": "James Snapp Jr",
       "work": "Authentic Case for Mark 16:9-20, Fourth Edition",
       "reference": "p. 13",
-      "text": "Out of about 1,650 Greek manuscripts of the Gospel of Mark, only three Greek manuscripts end the text at 16:8. Two of those three are early. These two early copies — Codex Vaticanus and Codex Sinaiticus — represent a form of the text of Mark which circulated in Egypt in the early 200s and was taken from there to the city of Caesarea, where it was still found in the 300s. Although the text of Mark in Codex Vaticanus stops at 16:8, the copyist left a clear indication that he recollected the absent verses: after Mark 16:8, there is a distinct blank space in Codex Vaticanus, including an entire blank column. This is an example of \"memorial space.\"",
+      "text": "Out of about 1,650 Greek manuscripts of the Gospel of Mark, only three Greek manuscripts end the text at 16:8. Two of those three are early. These two early copies, Codex Vaticanus and Codex Sinaiticus, represent a form of the text of Mark which circulated in Egypt in the early 200s and was taken from there to the city of Caesarea, where it was still found in the 300s. Although the text of Mark in Codex Vaticanus stops at 16:8, the copyist left a clear indication that he recollected the absent verses: after Mark 16:8, there is a distinct blank space in Codex Vaticanus, including an entire blank column. This is an example of \"memorial space.\"",
       "gloss": "Modern textual scholarship's case for the Longer Ending, as a summary of the manuscript record."
     }
   ],
   "scripture": [
     { "ref": "Mark 16:9-20", "bibleRef": "Mark 16:9", "note": "The Longer Ending itself." },
-    { "ref": "Mark 16:15", "bibleRef": "Mark 16:15", "note": "Go ye into all the world — the Great Commission as Mark records it." },
+    { "ref": "Mark 16:15", "bibleRef": "Mark 16:15", "note": "Go ye into all the world, the Great Commission as Mark records it." },
     { "ref": "Mark 16:16", "bibleRef": "Mark 16:16", "note": "He that believeth and is baptized shall be saved." },
-    { "ref": "Mark 16:18", "bibleRef": "Mark 16:18", "note": "They shall take up serpents — cited by Hippolytus, the Apostolic Constitutions, and the Didascalia." },
+    { "ref": "Mark 16:18", "bibleRef": "Mark 16:18", "note": "They shall take up serpents, cited by Hippolytus, the Apostolic Constitutions, and the Didascalia." },
     { "ref": "Mark 16:19", "bibleRef": "Mark 16:19", "note": "Quoted by Irenaeus in Against Heresies III.10." },
     { "ref": "Mark 16:20", "bibleRef": "Mark 16:20", "note": "Quoted in unique Greek phrasing by Justin Martyr." },
     { "ref": "Matthew 28:19", "bibleRef": "Matthew 28:19", "note": "Paired with Mark 16:15-18 in the conciliar citation of Vincentius." }

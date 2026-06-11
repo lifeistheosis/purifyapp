@@ -6,7 +6,7 @@
   "summary": "Theosis, deification by grace, is the goal of the Christian life. We participate in the uncreated energies of God without participating in his essence, and so become by grace what God is by nature.",
   "curatedBy": "Purify Team",
   "curatedOn": "2026-06-10",
-  "origin": "Discord — dogma-exegesis: On Theosis.",
+  "origin": "Discord, dogma-exegesis: On Theosis.",
   "essay": [
     {
       "kind": "para",
@@ -78,11 +78,11 @@
     }
   ],
   "scripture": [
-    { "ref": "2 Peter 1:3-4", "bibleRef": "2 Peter 1:3", "note": "Partakers of the divine nature — the key apostolic text." },
+    { "ref": "2 Peter 1:3-4", "bibleRef": "2 Peter 1:3", "note": "Partakers of the divine nature, the key apostolic text." },
     { "ref": "1 John 3:2-3", "bibleRef": "1 John 3:2", "note": "We shall be like him, for we shall see him as he is." },
     { "ref": "2 Corinthians 3:18", "bibleRef": "2 Corinthians 3:18", "note": "Transformed into the same image from glory to glory." },
-    { "ref": "John 17:21-23", "bibleRef": "John 17:21", "note": "That they may be one, even as we are one — the Lord's own prayer for our participation." },
-    { "ref": "Psalm 82:6", "bibleRef": "Psalm 82:6", "note": "Ye are gods — quoted by Christ in John 10:34." }
+    { "ref": "John 17:21-23", "bibleRef": "John 17:21", "note": "That they may be one, even as we are one, the Lord's own prayer for our participation." },
+    { "ref": "Psalm 82:6", "bibleRef": "Psalm 82:6", "note": "Ye are gods, quoted by Christ in John 10:34." }
   ],
   "related": ["the-theotokos", "filioque", "original-sin"]
 }

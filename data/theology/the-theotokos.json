@@ -6,7 +6,7 @@
   "summary": "Mary the God-bearer is the test of Christology. The doctrine of the Theotokos guards the Incarnation, the perpetual virginity, and her unique role in the economy of salvation. Drawn from Justin Martyr, Ambrose, Ephraim the Syrian, Cyril of Alexandria, John Chrysostom, and the Third Ecumenical Council.",
   "curatedBy": "Purify Team",
   "curatedOn": "2026-06-10",
-  "origin": "Discord — dogma-exegesis: The Theotokos, Glorious and Honorable more than the Seraphim and Cherubim.",
+  "origin": "Discord, dogma-exegesis: The Theotokos, Glorious and Honorable more than the Seraphim and Cherubim.",
   "essay": [
     {
       "kind": "para",
@@ -104,14 +104,14 @@
     }
   ],
   "scripture": [
-    { "ref": "Luke 1:28", "bibleRef": "Luke 1:28", "note": "Κεχαριτωμένη — \"full of grace,\" perfect-passive participle." },
+    { "ref": "Luke 1:28", "bibleRef": "Luke 1:28", "note": "Κεχαριτωμένη, \"full of grace,\" perfect-passive participle." },
     { "ref": "Luke 1:38", "bibleRef": "Luke 1:38", "note": "Her \"yes\" reverses Eve's \"no.\"" },
     { "ref": "Luke 1:44", "bibleRef": "Luke 1:44", "note": "John the Forerunner leaps before the Ark." },
-    { "ref": "Romans 5:14-21", "bibleRef": "Romans 5:14", "note": "Christ as the new Adam — Mary as the new Eve." },
+    { "ref": "Romans 5:14-21", "bibleRef": "Romans 5:14", "note": "Christ as the new Adam, Mary as the new Eve." },
     { "ref": "1 Corinthians 15:45", "bibleRef": "1 Corinthians 15:45", "note": "The last Adam, a quickening spirit." },
     { "ref": "Exodus 40:35", "bibleRef": "Exodus 40:35", "note": "The Shekinah overshadows the tabernacle." },
     { "ref": "Hebrews 9:4", "bibleRef": "Hebrews 9:4", "note": "The Ark of the Covenant typology." },
-    { "ref": "John 20:19", "bibleRef": "John 20:19", "note": "Christ passes through locked doors — mirror of the virginal birth." }
+    { "ref": "John 20:19", "bibleRef": "John 20:19", "note": "Christ passes through locked doors, mirror of the virginal birth." }
   ],
   "related": ["filioque", "original-sin", "theosis"]
 }

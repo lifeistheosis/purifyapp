@@ -1,12 +1,12 @@
 {
   "slug": "original-sin",
-  "title": "Original sin — reatus or culpa?",
+  "title": "Original sin, reatus or culpa?",
   "subtitle": "We inherit the consequence (corruption and death), not the personal guilt, of Adam's sin.",
   "group": "soteriology",
   "summary": "Whether the descendants of Adam inherit reatus (legal guilt) or culpa (corrupted nature) is the dividing line between Latin scholastic anthropology and the Orthodox patristic mind. Romans 5:12, the Greek manuscript tradition, Cyril of Alexandria, John Chrysostom, and the conciliar witness against an Augustinian transmission of personal guilt.",
   "curatedBy": "Purify Team",
   "curatedOn": "2026-06-10",
-  "origin": "Discord — dogma-exegesis: Why do we inherit the guilt? Do we inherit reatus or culpa?",
+  "origin": "Discord, dogma-exegesis: Why do we inherit the guilt? Do we inherit reatus or culpa?",
   "essay": [
     {
       "kind": "para",
@@ -16,10 +16,10 @@
       "kind": "para",
       "text": "All humanity receives from Adam not only human nature itself, but human nature as wounded and corrupted by sin. This corruption is not a mere external penalty but an inner condition, a living principle of sin (ἁμαρτία) that inclines the human will toward further transgression and renders humanity liable to death and condemnation. For this reason, Scripture calls us by nature children of wrath (Ephesians 2:3), not because God arbitrarily imputes blame, but because his righteous judgement rests upon a nature that has become subject to decay, disorder, and mortality."
     },
-    { "kind": "heading", "text": "Romans 5:12 — death reigning over all", "level": 2 },
+    { "kind": "heading", "text": "Romans 5:12, death reigning over all", "level": 2 },
     {
       "kind": "para",
-      "text": "St Paul is explicit that death reigns even over those who did not sin as Adam sinned (Romans 5:12, 14). Blessed Theodoret of Cyrus clarifies: this includes all who never ate of the forbidden fruit, yet share in Adam's fall and its consequences simply by being born of him. The Greek of v. 12 (ἐφ' ᾧ) has been read in two ways — \"in whom\" (Augustinian) and \"because\" (Greek patristic). Even on the Greek reading, the Apostle still requires that all sin was already present in Adam, because sin precedes death, and death has indeed reached all. Sin, in this sense, is the inherited condition; the wages of that condition is death."
+      "text": "St Paul is explicit that death reigns even over those who did not sin as Adam sinned (Romans 5:12, 14). Blessed Theodoret of Cyrus clarifies: this includes all who never ate of the forbidden fruit, yet share in Adam's fall and its consequences simply by being born of him. The Greek of v. 12 (ἐφ' ᾧ) has been read in two ways, \"in whom\" (Augustinian) and \"because\" (Greek patristic). Even on the Greek reading, the Apostle still requires that all sin was already present in Adam, because sin precedes death, and death has indeed reached all. Sin, in this sense, is the inherited condition; the wages of that condition is death."
     },
     { "kind": "heading", "text": "Culpa, not reatus", "level": 2 },
     {
@@ -29,7 +29,7 @@
     { "kind": "heading", "text": "Infant baptism and the Orthodox catechisms", "level": 2 },
     {
       "kind": "para",
-      "text": "The Orthodox practice of infant baptism rests on this doctrine: infants are baptised for the cleansing of the ancestral condition, even though they have committed no personal sin. The Confession of St Peter Mogila puts it plainly: by Adam's fall, sin entered the world and \"so death passed upon all men, for that all have sinned\" — and the saving remedy is the grace of Christ given in holy Baptism. St Symeon the New Theologian: \"all people who come from the seed of Adam are participants of the ancestral sin from their very conception and birth; he who has been born in this way, even though he has not yet performed any sin, is already sinful through this ancestral sin.\" St Nektarios of Aegina draws the line precisely: ancestral sin makes a person unworthy of fellowship with God; personal culpability arises only with personal sin."
+      "text": "The Orthodox practice of infant baptism rests on this doctrine: infants are baptised for the cleansing of the ancestral condition, even though they have committed no personal sin. The Confession of St Peter Mogila puts it plainly: by Adam's fall, sin entered the world and \"so death passed upon all men, for that all have sinned\", and the saving remedy is the grace of Christ given in holy Baptism. St Symeon the New Theologian: \"all people who come from the seed of Adam are participants of the ancestral sin from their very conception and birth; he who has been born in this way, even though he has not yet performed any sin, is already sinful through this ancestral sin.\" St Nektarios of Aegina draws the line precisely: ancestral sin makes a person unworthy of fellowship with God; personal culpability arises only with personal sin."
     },
     { "kind": "heading", "text": "Augustine, properly read", "level": 2 },
     {
@@ -162,18 +162,18 @@
       "name": "Council of Iași (Jassy)",
       "year": "1642",
       "reference": "Acta Synodi apud Giasum",
-      "text": "All human nature is not only guilty of original sin (as our Church also confesses) but even of the actual sin derived from it, and specifically of mortal sin, which is called the fruit of the former. No one is excluded from this — not even the one of whom it was said that among those born of women, none has arisen greater, nor the Blessed among women, the Immaculate and ever Virgin Mary, nor any of the patriarchs, prophets, or apostles. (This is the Latin proposition the Council judged foreign to the Orthodox faith.)",
-      "gloss": "Iași sets aside, as foreign to the Orthodox faith, the proposition that all humanity — including the Theotokos and the saints — is liable to actual mortal sin descending from ancestral sin. Ancestral condition is one thing; imputed personal guilt for Adam's act is another."
+      "text": "All human nature is not only guilty of original sin (as our Church also confesses) but even of the actual sin derived from it, and specifically of mortal sin, which is called the fruit of the former. No one is excluded from this, not even the one of whom it was said that among those born of women, none has arisen greater, nor the Blessed among women, the Immaculate and ever Virgin Mary, nor any of the patriarchs, prophets, or apostles. (This is the Latin proposition the Council judged foreign to the Orthodox faith.)",
+      "gloss": "Iași sets aside, as foreign to the Orthodox faith, the proposition that all humanity, including the Theotokos and the saints, is liable to actual mortal sin descending from ancestral sin. Ancestral condition is one thing; imputed personal guilt for Adam's act is another."
     }
   ],
   "scripture": [
-    { "ref": "Romans 5:12", "bibleRef": "Romans 5:12", "note": "The locus classicus. ἐφ' ᾧ — read \"in whom\" or \"because\" — death reaches all in Adam." },
+    { "ref": "Romans 5:12", "bibleRef": "Romans 5:12", "note": "The locus classicus. ἐφ' ᾧ, read \"in whom\" or \"because\", death reaches all in Adam." },
     { "ref": "Romans 5:14", "bibleRef": "Romans 5:14", "note": "Death reigned from Adam to Moses, even over those who did not sin after the likeness of Adam's transgression." },
     { "ref": "Romans 5:19", "bibleRef": "Romans 5:19", "note": "By one man's disobedience many were made sinners; by one Man's obedience many shall be made righteous." },
-    { "ref": "Ephesians 2:3", "bibleRef": "Ephesians 2:3", "note": "By nature children of wrath — the inherited condition." },
-    { "ref": "Psalm 51:5", "bibleRef": "Psalm 51:5", "note": "In sin did my mother conceive me — the Psalmist witnesses the inheritance." },
-    { "ref": "1 John 1:8", "bibleRef": "1 John 1:8", "note": "If we say that we have no sin, we deceive ourselves — the working of inherited corruption persists even after baptism." },
-    { "ref": "John 3:5", "bibleRef": "John 3:5", "note": "Unless a man be born of water and the Spirit, he cannot enter the kingdom — the scriptural ground of infant baptism." }
+    { "ref": "Ephesians 2:3", "bibleRef": "Ephesians 2:3", "note": "By nature children of wrath, the inherited condition." },
+    { "ref": "Psalm 51:5", "bibleRef": "Psalm 51:5", "note": "In sin did my mother conceive me, the Psalmist witnesses the inheritance." },
+    { "ref": "1 John 1:8", "bibleRef": "1 John 1:8", "note": "If we say that we have no sin, we deceive ourselves, the working of inherited corruption persists even after baptism." },
+    { "ref": "John 3:5", "bibleRef": "John 3:5", "note": "Unless a man be born of water and the Spirit, he cannot enter the kingdom, the scriptural ground of infant baptism." }
   ],
   "related": ["theosis", "the-theotokos", "filioque"]
 }

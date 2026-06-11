@@ -6,7 +6,7 @@
   "summary": "A textual and patristic defense of the Comma Johanneum: its presence in the Vetus Latina, Cyprian's witness, the Codex Fuldensis preface, the 484 Council of Carthage, and the chain of Latin Fathers who quote it as Scripture before the Vulgate.",
   "curatedBy": "Purify Team",
   "curatedOn": "2026-06-10",
-  "origin": "Discord — dogma-exegesis: The Case for 1 John 5:7.",
+  "origin": "Discord, dogma-exegesis: The Case for 1 John 5:7.",
   "essay": [
     {
       "kind": "para",
@@ -19,12 +19,12 @@
     },
     {
       "kind": "para",
-      "text": "Cyprian does not quote the entire Comma. He uses the shorthand \"these three are one\" (et tres unum sunt), which he expressly presents as \"written\" (scriptum est) of the Trinity. Allegorical readings of the eighth verse (water, blood, spirit) cannot account for this — he argues from express Scripture of the Father, the Son, and the Holy Spirit, the language of v. 7."
+      "text": "Cyprian does not quote the entire Comma. He uses the shorthand \"these three are one\" (et tres unum sunt), which he expressly presents as \"written\" (scriptum est) of the Trinity. Allegorical readings of the eighth verse (water, blood, spirit) cannot account for this, he argues from express Scripture of the Father, the Son, and the Holy Spirit, the language of v. 7."
     },
     { "kind": "heading", "text": "The Codex Fuldensis preface (546)", "level": 2 },
     {
       "kind": "para",
-      "text": "The Codex Fuldensis, copied in 546, contains a preface to the Canonical Epistles that explicitly defends the Comma against unfaithful copyists who had dropped the testimony of the Father, the Word, and the Spirit. The preface says: \"Where we read about the unity of the Trinity in the First Epistle of John, we have discovered that much error has arisen from unfaithful translators, who, disregarding the truth of the faith, included only the three terms — water, blood, and spirit — in their version, while omitting the testimony of the Father, the Word, and the Spirit.\" This is a sixth-century witness from the Vulgate tradition itself that the verse was being deliberately removed by some hands, not added by others."
+      "text": "The Codex Fuldensis, copied in 546, contains a preface to the Canonical Epistles that explicitly defends the Comma against unfaithful copyists who had dropped the testimony of the Father, the Word, and the Spirit. The preface says: \"Where we read about the unity of the Trinity in the First Epistle of John, we have discovered that much error has arisen from unfaithful translators, who, disregarding the truth of the faith, included only the three terms, water, blood, and spirit, in their version, while omitting the testimony of the Father, the Word, and the Spirit.\" This is a sixth-century witness from the Vulgate tradition itself that the verse was being deliberately removed by some hands, not added by others."
     },
     { "kind": "heading", "text": "The Council of Carthage, 484", "level": 2 },
     {
@@ -60,7 +60,7 @@
       "author": "Codex Fuldensis, Preface to the Canonical Epistles",
       "work": "Codex Fuldensis",
       "reference": "p. 399 (a.d. 546)",
-      "text": "Where we read about the unity of the Trinity in the First Epistle of John, we have discovered that much error has arisen from unfaithful translators, who, disregarding the truth of the faith, included only the three terms — water, blood, and spirit — in their version, while omitting the testimony of the Father, the Word, and the Spirit.",
+      "text": "Where we read about the unity of the Trinity in the First Epistle of John, we have discovered that much error has arisen from unfaithful translators, who, disregarding the truth of the faith, included only the three terms, water, blood, and spirit, in their version, while omitting the testimony of the Father, the Word, and the Spirit.",
       "original": "ubi de unitate trinitatis in prima iohannis epistula positum legimus in qua est ab infidelibus translatoribus multum erratum esse fidei ueritate conperimus trium tantummodo uocabula hoc est aquae sanguinis et spiritus in ipsa sua editione potentes et patri uerbique ac spiritus testimonium omittentes.",
       "originalLanguage": "latin",
       "gloss": "A sixth-century witness from within the Vulgate tradition that the Comma was being suppressed by some translators, not invented by later ones."
@@ -96,7 +96,7 @@
       "work": "Against Praxeas (cf. Bennett, Theology of the Early Christian Church, p. 94)",
       "reference": "cf. Adversus Praxean, on \"these three are one thing\"",
       "text": "Thus the connection of the Father in the Son, and of the Son in the Paraclete, produces three coherent Persons, who are yet distinct one from another. These three are one essence.",
-      "gloss": "Bennett shows Tertullian quoting the disputed formula in the same idiom (unum, not unus) — substance, not person — which is how Cyprian and the later Latins read 1 John 5:7.",
+      "gloss": "Bennett shows Tertullian quoting the disputed formula in the same idiom (unum, not unus), substance, not person, which is how Cyprian and the later Latins read 1 John 5:7.",
       "source": "https://www.newadvent.org/fathers/0317.htm"
     },
     {
@@ -106,7 +106,7 @@
       "text": "And what about that sin-remitting, life-giving, and sanctifying washing (baptism), without which no one will see the kingdom of heaven, which is given to the faithful in the Thrice-Blessed Name? In addition to all these, John says, \"And these three are one.\"",
       "original": "Τί δὲ καὶ τὸ τῆς ἀφέσεως τῶν ἁμαρτιῶν παρεκτικὸν, καὶ ζωοποιὸν, καὶ ἁγιαστικὸν λουτρὸν, οὗ χωρὶς οὐδεὶς ὄψεται τὴν βασιλείαν τῶν οὐρανῶν, οὐκ ἐν τῇ τρισμακαρίᾳ ὀνομασίᾳ δίδοται τοῖς πιστοῖς; Πρὸς τούτοις πᾶσιν Ἰωάννης φάσκει· «Καὶ οἱ τρεῖς τὸ ἕν εἰσιν».",
       "originalLanguage": "greek",
-      "gloss": "A Greek witness — even outside the Latin tradition — that the apostle John's formula \"the three are one\" was being read in baptismal Trinitarian context."
+      "gloss": "A Greek witness, even outside the Latin tradition, that the apostle John's formula \"the three are one\" was being read in baptismal Trinitarian context."
     }
   ],
   "councils": [
@@ -120,7 +120,7 @@
   ],
   "scripture": [
     { "ref": "1 John 5:7", "bibleRef": "1 John 5:7", "note": "The Comma itself, in its Trinitarian form." },
-    { "ref": "1 John 5:8", "bibleRef": "1 John 5:8", "note": "The earthly witnesses — water, blood, spirit — which the Fathers distinguish from the heavenly witnesses of v. 7." },
+    { "ref": "1 John 5:8", "bibleRef": "1 John 5:8", "note": "The earthly witnesses, water, blood, spirit, which the Fathers distinguish from the heavenly witnesses of v. 7." },
     { "ref": "John 10:30", "bibleRef": "John 10:30", "note": "Cyprian pairs this directly with 1 John 5:7." },
     { "ref": "Matthew 28:19", "bibleRef": "Matthew 28:19", "note": "The baptismal Trinitarian name, often paired with the Comma in patristic argument." }
   ],

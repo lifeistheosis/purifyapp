@@ -1,4 +1,4 @@
-// Theology — the deep-study surface. /topics is a thin reference index
+// Theology, the deep-study surface. /topics is a thin reference index
 // (definition + deep-links into saint works); /theology is the long-form
 // companion: framing essay, full patristic florilegium, councils cited,
 // scripture cross-refs, and links to the saint profiles for every Father
@@ -113,7 +113,7 @@ export const THEOLOGY_TOPICS: TheologyTopicMeta[] = [
   },
   {
     slug: "original-sin",
-    title: "Original sin — reatus or culpa?",
+    title: "Original sin, reatus or culpa?",
     subtitle:
       "We inherit the consequence (corruption and death), not the personal guilt, of Adam's sin.",
     group: "soteriology",

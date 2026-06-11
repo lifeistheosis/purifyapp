@@ -22,7 +22,7 @@ export type Quotation = {
   saintSlug?: string;
   /** Title of the work the quote is drawn from. */
   work?: string;
-  /** Section, book, chapter, hymn, paragraph — printed as a small caption. */
+  /** Section, book, chapter, hymn, paragraph, printed as a small caption. */
   reference?: string;
   /** Verbatim English. */
   text: string;
