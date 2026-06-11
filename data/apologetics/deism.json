@@ -1,0 +1,27 @@
+{
+  "slug": "deism",
+  "title": "On deism",
+  "subtitle": "A maker who withdrew, against the God who draws near.",
+  "group": "existence",
+  "summary": "Deism grants a first cause but denies His providence and His coming among us. The Orthodox answer holds that the God who made all things upholds them still, is present to His creation by His energies, and has entered it in the Incarnation, so that He is not the absent watchmaker but the God who is with us.",
+  "curatedBy": "Purify Team",
+  "curatedOn": "2026-06-11",
+  "origin": "Opened in v9.9 as a foundation entry. The verbatim patristic florilegium is being assembled.",
+  "essay": [
+    { "kind": "para", "text": "Deism concedes what atheism denies, that there is a God who made the world, but it strips that God of nearly everything the Christian confesses of Him. The deist's god is a first cause who, having set the world going by fixed laws, withdrew from it: he does not providentially uphold it, does not answer prayer, works no miracles, and certainly did not become man. The image often given is the watchmaker who builds the watch, winds it, and walks away. It is a god arrived at by reason and then dismissed by it." },
+    { "kind": "heading", "text": "A cause that does not sustain is not enough" },
+    { "kind": "para", "text": "The Orthodox answer begins by pressing the deist's own premise. A world that does not contain the cause of its own being does not contain the cause of its own continuance either. The same contingency that requires a Maker requires a Sustainer: creation does not merely need to have been started, it needs to be held in being at every moment, or it would lapse back into the nothing from which it was called. The God who is sufficient to create is not the kind of God who could then be absent; to uphold all things by the word of His power is not an extra labor but the continuation of the act of creation itself." },
+    { "kind": "heading", "text": "Present, yet uncircumscribed" },
+    { "kind": "para", "text": "The Church confesses that God is present to His whole creation, not as one part of it, nor as mingled with it, but by His uncreated energies, while His essence remains beyond it and beyond all knowing. This is the answer both to the deist, who pushes God away, and to the pantheist, who collapses God into the world. God is everywhere present and fills all things, as the prayer says, and yet is not contained by them. Providence is not interference in a closed system; it is the constant nearness of the One in whom the system subsists." },
+    { "kind": "para", "text": "But the deepest answer to deism is not a refinement of the argument; it is the Incarnation. The charge of deism is that God keeps His distance. The Gospel is that He did not. The Word through whom all things were made entered His own creation, was born, hungered, wept, was crucified, and rose, so that the very distance the deist takes for granted has been crossed from God's side. The name given to the child is the refutation of the absent god: Emmanuel, God with us. A God who would do this is not a watchmaker who walked away." }
+  ],
+  "florilegium": [],
+  "scripture": [
+    { "ref": "Hebrews 1:3", "bibleRef": "Hebrews 1:3", "note": "Upholding all things by the word of his power." },
+    { "ref": "Colossians 1:17", "bibleRef": "Colossians 1:17", "note": "He is before all things, and by him all things consist." },
+    { "ref": "Acts 17:28", "bibleRef": "Acts 17:28", "note": "In him we live, and move, and have our being." },
+    { "ref": "John 1:14", "bibleRef": "John 1:14", "note": "The Word was made flesh, and dwelt among us." },
+    { "ref": "Matthew 1:23", "bibleRef": "Matthew 1:23", "note": "They shall call his name Emmanuel, God with us." }
+  ],
+  "related": ["atheism"]
+}

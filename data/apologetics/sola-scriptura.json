@@ -1,0 +1,27 @@
+{
+  "slug": "sola-scriptura",
+  "title": "On sola scriptura",
+  "subtitle": "The Scriptures are the Church's, read within her life.",
+  "group": "authority",
+  "summary": "The claim that Scripture alone, apart from the Tradition and the Church, is the rule of faith is answered from Scripture itself, from history, and from the Fathers: the Church received, discerned, and canonized the Scriptures, and the same apostolic Tradition that gave us the Bible interprets it. The Bible is the Church's book, not a book above her.",
+  "curatedBy": "Purify Team",
+  "curatedOn": "2026-06-11",
+  "origin": "Opened in v9.9 as a foundation entry. The verbatim patristic florilegium (Basil, On the Holy Spirit 27; Vincent of Lerins, Commonitory; Irenaeus, Against Heresies III) is being assembled.",
+  "essay": [
+    { "kind": "para", "text": "Sola scriptura, Scripture alone, is the principle that the Bible by itself, apart from the Tradition and the authority of the Church, is the sole rule of Christian faith and practice. It arose in the sixteenth-century West as a protest against real abuses, and it remains the foundation of much of Protestantism. The Orthodox Church holds the Scriptures in the highest honor, reads them at every service, and confesses them to be the inspired word of God; but she does not accept that they stand alone, above the Church and apart from her life. The question is not whether Scripture is authoritative, but how, and within what, it is rightly read." },
+    { "kind": "heading", "text": "The Church is older than the New Testament" },
+    { "kind": "para", "text": "The first answer is historical. For a generation after Pentecost the Church lived, preached, baptized, and celebrated the Eucharist before a single book of the New Testament was written, and for centuries before the canon was settled. The Church did not receive her faith from the New Testament; she wrote the New Testament out of the faith she already held and lived. And it was the Church, in council and by the consent of the Fathers, who discerned which books were Scripture and which were not, distinguishing the four Gospels from the many, receiving this epistle and setting that one aside. The table of contents of the Bible is itself an act of the Church's Tradition. To take the book and reject the authority that gave it is to saw off the branch one is sitting on." },
+    { "kind": "heading", "text": "Scripture sends the reader to the Church" },
+    { "kind": "para", "text": "The second answer is from Scripture itself, which nowhere teaches its own sufficiency apart from the Church, and in several places teaches the opposite. The apostle bids the faithful hold the traditions they were taught, whether by word or by his epistle. He calls the Church, not the book, the pillar and ground of the truth. He warns that no prophecy of Scripture is of private interpretation. And the Scripture itself shows the need: the Ethiopian reading Isaiah is asked whether he understands what he reads, and answers, How can I, except some man should guide me? The Bible does not interpret itself in a vacuum; it is read rightly within the living community to whom it was entrusted." },
+    { "kind": "para", "text": "The fruit of the contrary principle confirms the point. Where Scripture is made the sole authority and each reader its own interpreter, the result has not been unity but endless division, multiplying communions that read the same text to opposite conclusions on the gravest matters. The Orthodox answer is not less love for the Bible but more: the Scriptures are the Church's own book, breathed by the Spirit who abides in her, handed down within the apostolic Tradition, and read in the company of the Fathers and the saints who were shaped by them. Scripture and Tradition are not two rival sources but one stream; the Bible is the heart of the Tradition, not an authority over against it." }
+  ],
+  "florilegium": [],
+  "scripture": [
+    { "ref": "2 Thessalonians 2:15", "bibleRef": "2 Thessalonians 2:15", "note": "Hold the traditions which ye have been taught, whether by word, or our epistle." },
+    { "ref": "1 Timothy 3:15", "bibleRef": "1 Timothy 3:15", "note": "The church of the living God, the pillar and ground of the truth." },
+    { "ref": "2 Peter 1:20", "bibleRef": "2 Peter 1:20", "note": "No prophecy of the scripture is of any private interpretation." },
+    { "ref": "Acts 8:30-31", "bibleRef": "Acts 8:30-31", "note": "How can I, except some man should guide me?" },
+    { "ref": "John 21:25", "bibleRef": "John 21:25", "note": "There are also many other things which Jesus did, not written in this book." }
+  ],
+  "related": []
+}

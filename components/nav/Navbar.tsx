@@ -20,6 +20,7 @@ export function Navbar() {
     { key: "saints", label: t("nav.saints"), href: "/saints" },
     { key: "councils", label: t("nav.councils"), href: "/councils" },
     { key: "theology", label: "Theology", href: "/theology" },
+    { key: "apologetics", label: "Apologetics", href: "/apologetics" },
     { key: "calendar", label: t("nav.calendar"), href: "/calendar" },
   ];
 

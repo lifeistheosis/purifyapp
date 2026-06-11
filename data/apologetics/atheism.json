@@ -1,0 +1,27 @@
+{
+  "slug": "atheism",
+  "title": "On atheism",
+  "subtitle": "The fool hath said in his heart, There is no God.",
+  "group": "existence",
+  "summary": "The classical and contemporary denial of God, and the Orthodox answer: that the order, intelligibility, and contingency of the world, and the moral and personal depths of man, point beyond themselves to their uncreated Cause, whom the Church knows not as a conclusion of argument only but as the living God.",
+  "curatedBy": "Purify Team",
+  "curatedOn": "2026-06-11",
+  "origin": "Opened in v9.9 as a foundation entry. The verbatim patristic florilegium (Athanasius, Against the Heathen; Basil, Hexaemeron; John of Damascus, Exact Exposition I) is being assembled.",
+  "essay": [
+    { "kind": "para", "text": "Atheism is the claim that there is no God: that the universe and all within it, including the mind that asks the question, came to be and will pass away with no uncreated source, no purpose given from beyond, and no judge. In its older form it was rare and argued; in its modern form it is often assumed as the default of an educated age, and dressed in the prestige of the natural sciences. The Church answers it not with contempt for the questioner, for many come to unbelief through real suffering or real disappointment with those who bore the Name, but with the witness of reason and of the saints." },
+    { "kind": "heading", "text": "What the world itself says" },
+    { "kind": "para", "text": "The first answer is the one the Scriptures themselves give: the creation declares its Maker. That the world exists at all rather than nothing, that it is ordered and not chaos, that its order is intelligible to the mind so that it can be studied, and that none of the things in it carries the cause of its own being within itself, all of this points beyond the world to a cause that is not itself caused, not contingent, not one more thing among things. The Fathers did not argue God into existence as a missing gear in the machine; they read the machine as a word, and asked who spoke it." },
+    { "kind": "para", "text": "The sciences describe how things behave; they do not, and cannot, account for why there is anything to behave at all, nor why its laws should be lawful, nor why a mind should arise within it able to know them. To answer the question of existence with the description of mechanism is to mistake the grammar of the question. The believer and the unbeliever may look at the same data; they differ on what the data is a sign of." },
+    { "kind": "heading", "text": "The witness within man" },
+    { "kind": "para", "text": "There is a second witness, nearer than the stars: the moral and personal depth of man himself. The sense that some things are owed and others forbidden, not by mere preference but in truth; the hunger for a meaning that death does not cancel; the experience of conscience as a voice and not only a feeling; the capacity for love that gives itself away, all of these strain against a world that is only matter in motion. They are, the Fathers taught, the image of God in man, answering to its Origin." },
+    { "kind": "para", "text": "The Orthodox answer, finally, is not a proof but a Person. The Church does not chiefly reason men into the existence of a first cause; she introduces them to the living God, known in prayer, in the Mysteries, in the lives of the saints who shine with a light not their own. The arguments clear the ground and answer the objector; the knowledge of God is given in the encounter. Come and see, the Gospel says, and many who could not be argued out of their unbelief have been loved out of it." }
+  ],
+  "florilegium": [],
+  "scripture": [
+    { "ref": "Psalm 14:1", "bibleRef": "Psalm 14:1", "note": "The fool hath said in his heart, There is no God." },
+    { "ref": "Romans 1:19-20", "bibleRef": "Romans 1:19-20", "note": "The invisible things of God are clearly seen, understood by the things that are made." },
+    { "ref": "Acts 17:27-28", "bibleRef": "Acts 17:27-28", "note": "He is not far from every one of us; for in him we live, and move, and have our being." },
+    { "ref": "Wisdom 13:1-5", "bibleRef": "Wisdom 13:1", "note": "By the greatness and beauty of the creatures proportionably the maker of them is seen." }
+  ],
+  "related": ["deism"]
+}
