@@ -26,6 +26,8 @@ export const COMMENTED_BOOKS: ReadonlySet<string> = new Set([
   "titus",
   "philemon",
   "hebrews",
+  // Catholic epistles (Augustine, Ten Homilies on the First Epistle of John)
+  "1-john",
 ]);
 
 export function hasCommentary(slug: string): boolean {
