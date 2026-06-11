@@ -9,6 +9,9 @@ import { Calendar } from "@/components/ui/icons/Calendar";
 import { Codex } from "@/components/ui/icons/Codex";
 import { Lyre } from "@/components/ui/icons/Lyre";
 import { Quill } from "@/components/ui/icons/Quill";
+import { Cross } from "@/components/ui/icons/Cross";
+import { Bolt } from "@/components/ui/icons/Bolt";
+import { Lampada } from "@/components/ui/icons/Lampada";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
@@ -38,6 +41,24 @@ export default async function DiscoverPage() {
   // then the year, the daily readings, the Psalter, and the patristic
   // commentary that ties it all together.
   const ENTRIES: Entry[] = [
+    {
+      label: "Theology",
+      href: "/theology",
+      blurb: "The long-form study of doctrine, the mind of the Fathers set out in essay form.",
+      Icon: Cross,
+    },
+    {
+      label: "Apologetics",
+      href: "/apologetics",
+      blurb: "The defence of the Faith, the Orthodox answer to disputed questions of doctrine and history.",
+      Icon: Bolt,
+    },
+    {
+      label: "Reading",
+      href: "/reading",
+      blurb: "The long Fathers, read at length, with the page where you left off remembered.",
+      Icon: Lampada,
+    },
     {
       label: t(m, "discover.tile.saints"),
       href: "/saints",

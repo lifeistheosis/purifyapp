@@ -8,6 +8,10 @@ import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
 import { useScrolled } from "@/lib/useScrolled";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import {
+  DiscoverDropdown,
+  DISCOVER_CHILD_HREFS,
+} from "@/components/nav/DiscoverDropdown";
 
 function initialsFromName(name: string | null | undefined): string {
   if (!name) return "?";
@@ -68,13 +72,9 @@ export function AppNav() {
   const NAV = [
     { key: "today", label: t("nav.today"), href: "/prayers/today" },
     { key: "bible", label: t("nav.bible"), href: "/bible" },
-    { key: "reading", label: t("nav.reading"), href: "/reading" },
-    { key: "discover", label: t("nav.discover"), href: "/discover" },
     { key: "prayers", label: t("nav.prayers"), href: "/prayers" },
     { key: "saints", label: t("nav.saints"), href: "/saints" },
-    { key: "councils", label: t("nav.councils"), href: "/councils" },
-    { key: "theology", label: "Theology", href: "/theology" },
-    { key: "apologetics", label: "Apologetics", href: "/apologetics" },
+    { key: "discover", label: t("nav.discover"), href: "/discover" },
     { key: "calendar", label: t("nav.calendar"), href: "/calendar" },
   ];
 
@@ -82,6 +82,11 @@ export function AppNav() {
 
   function isActive(href: string) {
     return pathname === href || pathname.startsWith(href + "/");
+  }
+
+  function isDiscoverActive() {
+    if (isActive("/discover")) return true;
+    return DISCOVER_CHILD_HREFS.some((h) => isActive(h));
   }
 
   // Always show the bg when the mobile menu is open, even at the very top.
@@ -129,21 +134,41 @@ export function AppNav() {
         </div>
 
         <nav className="hidden md:flex items-center gap-7">
-          {NAV.map((it, i) => (
-            <Link
-              key={it.key}
-              href={it.href}
-              style={{ animationDelay: `${80 + i * 35}ms` }}
-              className={cn(
-                "appnav-in font-sans text-ui font-medium transition-colors duration-150",
-                isActive(it.href)
-                  ? "text-paper"
-                  : "text-paper/65 hover:text-paper",
-              )}
-            >
-              {it.label}
-            </Link>
-          ))}
+          {NAV.map((it, i) => {
+            const delay = { animationDelay: `${80 + i * 35}ms` };
+            if (it.key === "discover") {
+              return (
+                <DiscoverDropdown
+                  key={it.key}
+                  pathname={pathname}
+                  triggerLabel={it.label}
+                  triggerHref={it.href}
+                  triggerStyle={delay}
+                  triggerClassName={cn(
+                    "appnav-in font-sans text-ui font-medium transition-colors duration-150",
+                    isDiscoverActive()
+                      ? "text-paper"
+                      : "text-paper/65 hover:text-paper",
+                  )}
+                />
+              );
+            }
+            return (
+              <Link
+                key={it.key}
+                href={it.href}
+                style={delay}
+                className={cn(
+                  "appnav-in font-sans text-ui font-medium transition-colors duration-150",
+                  isActive(it.href)
+                    ? "text-paper"
+                    : "text-paper/65 hover:text-paper",
+                )}
+              >
+                {it.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div

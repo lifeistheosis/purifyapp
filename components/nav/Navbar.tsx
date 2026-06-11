@@ -2,27 +2,39 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { DesktopInstallCTA } from "@/components/pwa/DesktopInstallCTA";
 import { useScrolled } from "@/lib/useScrolled";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import {
+  DiscoverDropdown,
+  DISCOVER_CHILD_HREFS,
+} from "@/components/nav/DiscoverDropdown";
 
 export function Navbar() {
   const scrolled = useScrolled();
   const [open, setOpen] = useState(false);
+  const pathname = usePathname() ?? "/";
   const { t } = useTranslate();
 
   const navItems = [
     { key: "today", label: t("nav.today"), href: "/prayers/today" },
     { key: "bible", label: t("nav.bible"), href: "/bible" },
-    { key: "discover", label: t("nav.discover"), href: "/discover" },
     { key: "prayers", label: t("nav.prayers"), href: "/prayers" },
     { key: "saints", label: t("nav.saints"), href: "/saints" },
-    { key: "councils", label: t("nav.councils"), href: "/councils" },
-    { key: "theology", label: "Theology", href: "/theology" },
-    { key: "apologetics", label: "Apologetics", href: "/apologetics" },
+    { key: "discover", label: t("nav.discover"), href: "/discover" },
     { key: "calendar", label: t("nav.calendar"), href: "/calendar" },
   ];
+
+  function isActive(href: string) {
+    return pathname === href || pathname.startsWith(href + "/");
+  }
+
+  function isDiscoverActive() {
+    if (isActive("/discover")) return true;
+    return DISCOVER_CHILD_HREFS.some((h) => isActive(h));
+  }
 
   const secondary = [
     { key: "support", label: t("nav.support"), href: "/support" },
@@ -50,15 +62,33 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-9">
-          {navItems.map((item) => (
-            <Link
-              key={item.key}
-              href={item.href}
-              className="font-sans text-ui font-medium text-paper/85 hover:text-paper transition-colors duration-150"
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            if (item.key === "discover") {
+              return (
+                <DiscoverDropdown
+                  key={item.key}
+                  pathname={pathname}
+                  triggerLabel={item.label}
+                  triggerHref={item.href}
+                  triggerClassName={cn(
+                    "font-sans text-ui font-medium transition-colors duration-150",
+                    isDiscoverActive()
+                      ? "text-paper"
+                      : "text-paper/85 hover:text-paper",
+                  )}
+                />
+              );
+            }
+            return (
+              <Link
+                key={item.key}
+                href={item.href}
+                className="font-sans text-ui font-medium text-paper/85 hover:text-paper transition-colors duration-150"
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="hidden sm:flex items-center gap-5">

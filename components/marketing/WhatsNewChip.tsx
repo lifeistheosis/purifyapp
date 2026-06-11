@@ -53,12 +53,7 @@ export function WhatsNewChip({ isDe }: { isDe: boolean }) {
         </span>
       )}
       <span className="font-sans text-caption sm:text-detail text-paper/85 group-hover:text-paper transition-colors">
-        <span className="sm:hidden">
-          {CURRENT_VERSION} · Eighteen new saints, the dogma-exegesis library, the councils before Nicaea
-        </span>
-        <span className="hidden sm:inline">
-          {CURRENT_VERSION} · Eighteen new saints from Sergius of Radonezh to Xenia of Petersburg, a new dogma-exegesis library, the councils of Antioch and Carthage, and French in editorial preview
-        </span>
+        {CURRENT_VERSION} · New saints, the dogma library, and the councils before Nicaea
       </span>
       <span className="text-paper/55 group-hover:text-paper transition-colors text-detail">
         →

@@ -5,7 +5,6 @@ import { Navbar } from "@/components/nav/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { HeroChristIcon } from "@/components/marketing/HeroChristIcon";
 import { WhatsNewChip } from "@/components/marketing/WhatsNewChip";
-import { SeasonBanner } from "@/components/marketing/SeasonBanner";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
 import { HomeSectionScroller } from "@/components/marketing/HomeSectionScroller";
 import { TodayMobileV3 } from "@/components/today/TodayMobileV3";
@@ -227,9 +226,6 @@ export default async function Home() {
  </div>
  </div>
  </section>
-
- {/* Season banner, auto-surfaces during major Orthodox seasons. */}
- <SeasonBanner />
 
  {/* FEATURES */}
  <section className={`${sectionBase} bg-night`}>
