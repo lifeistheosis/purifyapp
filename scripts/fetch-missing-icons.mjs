@@ -28,6 +28,12 @@ const TARGETS = [
   { slug: "porphyrios-of-kavsokalyvia", q: "Saint Porphyrios Kavsokalyvia elder orthodox icon" },
   { slug: "iakovos-of-evia", q: "Saint Iakovos Tsalikis of Evia orthodox icon" },
   { slug: "sophrony-of-essex", q: "Saint Sophrony Sakharov Essex orthodox icon" },
+  { slug: "quadratus-the-apologist", q: "Saint Quadratus apostle Athens orthodox icon" },
+  { slug: "cosmas-of-aetolia", q: "Saint Cosmas of Aetolia equal apostles orthodox icon" },
+  { slug: "nikodemos-the-hagiorite", q: "Saint Nikodemos the Hagiorite orthodox icon" },
+  { slug: "theophan-the-recluse", q: "Saint Theophan the Recluse Vysha orthodox icon" },
+  { slug: "philoumenos-of-jacobs-well", q: "Saint Philoumenos Jacob's Well hieromartyr orthodox icon" },
+  { slug: "gabriel-of-georgia", q: "Saint Gabriel Urgebadze Georgia fool for Christ orthodox icon" },
 ];
 
 const OUT = path.join(process.cwd(), "public", "saints", "icons");
