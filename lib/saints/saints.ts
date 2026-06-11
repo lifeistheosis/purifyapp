@@ -3652,6 +3652,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "justin-popovic",
+    iconUrl: "/saints/icons/justin-popovic.jpg",
     byname: "of Ćelije",
     name: "St. Justin Popović",
     epithet: "Archimandrite of Ćelije · Confessor and Theologian",
@@ -3949,6 +3950,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "nikodemos-the-hagiorite",
+    iconUrl: "/saints/icons/nikodemos-the-hagiorite.jpg",
     name: "St. Nikodemos the Hagiorite",
     byname: "Nikodemos of the Holy Mountain",
     epithet: "Compiler of the Philokalia · Teacher of the Church",

@@ -34,6 +34,14 @@ const TARGETS = [
   { slug: "theophan-the-recluse", q: "Saint Theophan the Recluse Vysha orthodox icon" },
   { slug: "philoumenos-of-jacobs-well", q: "Saint Philoumenos Jacob's Well hieromartyr orthodox icon" },
   { slug: "gabriel-of-georgia", q: "Saint Gabriel Urgebadze Georgia fool for Christ orthodox icon" },
+  { slug: "photius-the-great", q: "Saint Photios the Great patriarch Constantinople orthodox icon" },
+  { slug: "cyril-and-methodius", q: "Saints Cyril and Methodius equal apostles orthodox icon" },
+  { slug: "simeon-the-myrrh-streaming", q: "Saint Simeon the Myrrh-streaming Nemanja orthodox icon" },
+  { slug: "sava-of-serbia", q: "Saint Sava of Serbia first archbishop orthodox icon" },
+  { slug: "lazar-of-serbia", q: "Saint Lazar of Serbia prince Kosovo orthodox icon" },
+  { slug: "basil-of-ostrog", q: "Saint Basil of Ostrog wonderworker orthodox icon" },
+  { slug: "nikolaj-velimirovic", q: "Saint Nikolaj Velimirovic of Zhicha orthodox icon" },
+  { slug: "justin-popovic", q: "Saint Justin Popovic of Celije orthodox icon" },
 ];
 
 const OUT = path.join(process.cwd(), "public", "saints", "icons");
