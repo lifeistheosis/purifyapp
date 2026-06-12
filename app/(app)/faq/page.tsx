@@ -195,6 +195,34 @@ const QUESTIONS: QA[] = [
  ),
  },
  {
+ q: "Is Purify free? Will anything cost money?",
+ a: (
+ <>
+ <p>
+ Everything in the app today is free, with no account required:
+ the Scriptures, the prayers, the saints, the calendar, the
+ councils, theology, search, notes, highlights, and sync for
+ anyone who signs in. There are no ads and nothing is paywalled.
+ </p>
+ <p>
+ An optional layer called <strong>Purify Plus</strong> is planned
+ for after the mobile launch. It will fund the heavier
+ infrastructure (licensing, audio, storage) and add enhanced
+ tools: curated reading collections, custom florilegia, ambient
+ reading and prayer soundscapes, and the future audio library.
+ What is free today stays free; Plus never paywalls the core.
+ </p>
+ <p>
+ <strong>Pre-launch supporters keep lifetime cross-device
+ sync.</strong> If you supported Purify before the mobile launch,
+ sync stays yours permanently, with no subscription required.
+ That promise covers sync itself; the other Plus features above
+ are part of the subscription when it arrives.
+ </p>
+ </>
+ ),
+ },
+ {
  q: "Do you collect any of my data?",
  a: (
  <>

@@ -33,9 +33,9 @@ const EN: Omit<PricingCopy, "eyebrow" | "h1"> = {
     "The whole Church calendar, its fasts and its feasts",
   ],
   freeFoot: "No ads. No tracking. No surprise locks. For anyone who needs it.",
-  futureTitle: "What a subscription will fund",
+  futureTitle: "Purify Plus, when it arrives",
   future:
-    "A heavier infrastructure layer is on the way, and the licensing is being upgraded so it can be offered honestly. When that optional, subscription-funded layer arrives, it will exist only to pay for the work it requires: the servers, the production, the rights. The core stays forever open. What is free today will still be free then.",
+    "An optional layer called Purify Plus is planned for after the mobile launch. It will exist only to pay for the work it requires (the servers, the production, the rights) and will add enhanced tools: curated reading collections, custom florilegia, ambient soundscapes, and the future audio library. The core stays forever open; what is free today will still be free then. And a promise already made stays made: pre-launch supporters keep lifetime cross-device sync, no subscription required. That promise covers sync itself; the wider Plus tools belong to the subscription when it arrives.",
   supportKicker: "Purify is kept by those it helps.",
   supportLine:
     "If the app has carried you, you can carry it a little in return. A freewill gift is the only way money is involved today.",
@@ -56,9 +56,9 @@ const DE: PricingCopy = {
   ],
   freeFoot:
     "Keine Werbung. Keine Verfolgung. Keine überraschenden Sperren. Für jeden, der sie braucht.",
-  futureTitle: "Was ein Abonnement finanzieren wird",
+  futureTitle: "Purify Plus, wenn es kommt",
   future:
-    "Eine schwerere Infrastrukturschicht ist im Werden, und die Lizenzierung wird verbessert, damit sie ehrlich angeboten werden kann. Wenn diese freiwillige, durch Abonnement getragene Schicht kommt, wird sie nur dazu da sein, die Arbeit zu bezahlen, die sie verlangt: die Server, die Produktion, die Rechte. Der Kern bleibt für immer offen. Was heute frei ist, wird dann noch frei sein.",
+    "Eine freiwillige Schicht namens Purify Plus ist für die Zeit nach dem Mobil-Start geplant. Sie wird nur dazu da sein, die Arbeit zu bezahlen, die sie verlangt (die Server, die Produktion, die Rechte), und ergänzt erweiterte Werkzeuge: kuratierte Lesesammlungen, eigene Florilegien, Klanglandschaften und die künftige Audio-Bibliothek. Der Kern bleibt für immer offen; was heute frei ist, wird dann noch frei sein. Und ein gegebenes Versprechen bleibt bestehen: Unterstützer aus der Zeit vor dem Start behalten die geräteübergreifende Synchronisierung auf Lebenszeit, ohne Abonnement. Dieses Versprechen gilt der Synchronisierung selbst; die weiteren Plus-Werkzeuge gehören zum Abonnement, wenn es kommt.",
   supportKicker: "Purify wird von denen getragen, denen es hilft.",
   supportLine:
     "Wenn die App dich getragen hat, kannst du sie ein wenig zurücktragen. Eine freiwillige Gabe ist heute der einzige Weg, auf dem Geld eine Rolle spielt.",

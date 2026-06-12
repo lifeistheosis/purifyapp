@@ -156,7 +156,7 @@ export function YouMobile() {
   }, []);
 
   const signedIn = auth.kind === "signed-in";
-  const displayName = signedIn ? auth.displayName : "Local profile";
+  const displayName = signedIn ? auth.displayName : "On this device";
   const memberSince = signedIn ? formatJoined(auth.joinedAt) : "";
 
   const settings: SettingsItem[] = [];
@@ -235,7 +235,7 @@ export function YouMobile() {
         signedIn
           ? auth.email
           : auth.kind === "anon"
-            ? "Local profile · no account"
+            ? "Private on this device · no account needed"
             : "Loading…"
       }
     >

@@ -6,14 +6,17 @@ import { claimLocal } from "@/lib/profile/localAccount";
 
 /**
  * Two-card account chooser. Shown on `/account` when the visitor has
- * neither a Supabase session nor a claimed local profile. Both cards
+ * neither a Supabase session nor a claimed device name. Both cards
  * are real, named choices, neither is a default.
  *
- *  - LEFT: "Local profile", keeps highlights / notes / bookmarks /
- *    prayer streak / reader prefs on this device only. Writes a
- *    LocalAccount record via `claimLocal()`. No server row.
- *  - RIGHT: "Public account", Supabase magic-link email sign-in.
- *    Same items, synced across devices, deletable any time.
+ * Copy model (store-launch language; "Local profile / Public account"
+ * naming is retired):
+ *  - LEFT: "On this device" — Purify privately, no account required.
+ *    Keeps highlights / notes / bookmarks / reader prefs in local
+ *    storage. Writes a LocalAccount record via `claimLocal()`. No
+ *    server row.
+ *  - RIGHT: "Sign in to sync" — Supabase email sign-in. Same items,
+ *    synchronized across devices, deletable any time.
  *
  * The cards explicitly list trade-offs on each side so the choice is
  * informed rather than implicit.
@@ -35,15 +38,15 @@ export function AccountChoice() {
         {/* LOCAL */}
         <section className="rounded-lg border border-paper/15 bg-paper/[0.03] p-6 md:p-7 flex flex-col">
           <h2 className="font-sans text-lede font-bold text-paper leading-tight">
-            Local profile
+            On this device
           </h2>
           <p className="mt-1 font-sans text-caption uppercase tracking-[1.5px] text-paper/55">
-            On this device only
+            Private, no account required
           </p>
           <p className="mt-4 font-serif text-ui text-paper/85 leading-[1.65]">
-            Everything you save (highlights, notes, bookmarks, reader
-            prefs) is kept in your browser&rsquo;s local storage. Nothing
-            leaves this device.
+            Use Purify privately on this device. Everything you save
+            (highlights, notes, bookmarks, reader prefs) is kept in
+            local storage. Nothing leaves this device.
           </p>
           <ul className="mt-4 space-y-1.5 font-sans text-detail text-paper/70 leading-[1.55]">
             <li>+ No email, no sign-in.</li>
@@ -98,15 +101,15 @@ export function AccountChoice() {
         {/* PUBLIC */}
         <section className="rounded-lg border border-gold/35 bg-gold/[0.05] p-6 md:p-7 flex flex-col">
           <h2 className="font-sans text-lede font-bold text-paper leading-tight">
-            Public account
+            Sign in to sync
           </h2>
           <p className="mt-1 font-sans text-caption uppercase tracking-[1.5px] text-gold">
-            Synced across devices
+            Your reading, on every device
           </p>
           <p className="mt-4 font-serif text-ui text-paper/85 leading-[1.65]">
-            The same things you&rsquo;d save locally, plus a row in our
-            database so they sync to every device you sign in on. Email
-            magic-link only; no password to remember.
+            The same things you&rsquo;d save on one device, kept
+            synchronized across all of them. Sign in by email; the
+            account exists for sync and nothing else.
           </p>
           <ul className="mt-4 space-y-1.5 font-sans text-detail text-paper/70 leading-[1.55]">
             <li>+ Open the app on a new phone, sign in, find your work.</li>

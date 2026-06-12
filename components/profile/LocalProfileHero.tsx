@@ -6,16 +6,20 @@ import { AccountChoice } from "./AccountChoice";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 /**
- * Mirrors `ProfileHero` for the local-only path. Shown on `/account`
- * when a `LocalAccount` is claimed but no Supabase session exists.
+ * Mirrors `ProfileHero` for the device-only path. Shown on `/account`
+ * when a local name is claimed but no Supabase session exists.
+ *
+ * Copy model (store-launch language): Purify works privately on this
+ * device with no account; signing in exists to keep reading
+ * synchronized across devices. The old "Local profile / Public
+ * account" naming is retired.
  *
  * Surfaces:
  *  - the local display name + the date it was claimed,
- *  - an explicit "on this device only" eyebrow so it's never confusing,
- *  - an "Upgrade to a public account" affordance (flips the wrapper
- *    back into `AccountChoice` so the existing magic-link panel
- *    appears alongside the local card),
- *  - a quieter "Release this local profile" affordance for cleanup.
+ *  - an explicit "on this device" eyebrow so it's never confusing,
+ *  - a "Sign in to sync across devices" affordance (flips the wrapper
+ *    back into `AccountChoice` so the existing sign-in panel appears),
+ *  - a quieter "Remove this name" affordance for cleanup.
  *
  * Stateless w/r/t Supabase, this whole component only reads
  * localStorage.
@@ -47,7 +51,7 @@ export function LocalProfileHero() {
   return (
     <section className="mt-10 rounded-lg border border-paper/15 bg-paper/[0.03] p-6 md:p-7">
       <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-        Local profile, on this device only
+        Reading privately on this device
       </p>
       <div className="flex items-center gap-4">
         <span
@@ -73,9 +77,9 @@ export function LocalProfileHero() {
       </div>
 
       <p className="mt-5 font-serif text-body text-paper/80 leading-[1.7]">
-        Highlights, notes, and bookmarks live in this browser only. They
-        will not follow you to another device. Either of these is a real,
-        reversible move:
+        Highlights, notes, and bookmarks are saved on this device. They
+        stay yours without an account; signing in adds one thing,
+        keeping them synchronized across your devices.
       </p>
 
       <div className="mt-5 flex flex-col sm:flex-row gap-3">
@@ -84,21 +88,21 @@ export function LocalProfileHero() {
           onClick={() => setUpgrading(true)}
           className="font-sans text-ui font-semibold rounded-pill px-5 py-3 bg-gold text-night hover:bg-gold-soft transition-colors"
         >
-          Upgrade to a public account →
+          Sign in to sync across devices →
         </button>
         <button
           type="button"
           onClick={() => setConfirmingRelease(true)}
           className="font-sans text-ui font-medium rounded-pill px-5 py-3 border border-paper/25 text-paper/80 hover:border-paper/55 hover:text-paper transition-colors"
         >
-          Release this local profile
+          Remove this name
         </button>
       </div>
       <ConfirmDialog
         open={confirmingRelease}
-        title="Release this local profile?"
-        description="Your local highlights, notes, and bookmarks stay where they are, only the name and claim date are removed."
-        confirmLabel="Release profile"
+        title="Remove this name?"
+        description="Your highlights, notes, and bookmarks stay on this device, only the name and claim date are removed."
+        confirmLabel="Remove name"
         cancelLabel="Keep it"
         destructive
         onCancel={() => setConfirmingRelease(false)}
@@ -109,9 +113,9 @@ export function LocalProfileHero() {
       />
 
       <p className="mt-5 font-sans text-caption text-paper/45 leading-[1.55]">
-        Upgrading will sync your local highlights, notes, and bookmarks
-        to your account the first time you sign in. Reader settings stay
-        on this device for now (no server table for them yet).
+        Signing in syncs your local highlights, notes, and bookmarks to
+        your account the first time, nothing on this device is removed.
+        Reader settings stay on this device for now.
       </p>
     </section>
   );

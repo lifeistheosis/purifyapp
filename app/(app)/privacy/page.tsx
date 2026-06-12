@@ -41,23 +41,25 @@ export default async function PrivacyPage() {
 
  {/* Two account paths */}
  <h2 className="mt-12 font-sans text-title-sm md:text-title font-bold text-paper leading-[1.15]">
- Local profile vs public account
+ On this device vs signed in
  </h2>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- When you open{" "}
+ Purify works privately on this device with no account; signing in
+ exists to keep your reading synchronized across devices. When you
+ open{" "}
  <Link
  href="/account"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
  /account
  </Link>{" "}
- you pick one of two paths. Neither is the default; the choice
+ you pick one of the two paths. Neither is the default; the choice
  is presented plainly.
  </p>
  <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="rounded-md border border-paper/12 bg-paper/[0.02] p-5">
  <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
- Local profile
+ On this device (no account)
  </p>
  <p className="font-serif text-body text-paper/85 leading-[1.65]">
  Highlights, notes, bookmarks, your prayer streak, and reader
@@ -68,14 +70,14 @@ export default async function PrivacyPage() {
  goes away if you clear browser data.
  </p>
  <p className="mt-3 font-sans text-caption text-paper/55 leading-[1.55]">
- To release a local profile, open /account and click &ldquo;Release
- this local profile.&rdquo; To wipe all local data, clear site
- data for this origin in your browser settings.
+ To remove the name you claimed on this device, open /account
+ and click &ldquo;Remove this name.&rdquo; To wipe all local
+ data, clear site data for this origin in your browser settings.
  </p>
  </div>
  <div className="rounded-md border border-gold/30 bg-gold/[0.04] p-5">
  <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-2">
- Public account
+ Signed in (synchronized)
  </p>
  <p className="font-serif text-body text-paper/85 leading-[1.65]">
  The same items go to our Supabase Postgres database so they
@@ -100,11 +102,12 @@ export default async function PrivacyPage() {
  </div>
  </div>
  <p className="mt-5 font-serif text-body text-paper/80 leading-[1.7]">
- If you upgrade from a local profile to a public account, your
- existing highlights, notes, and bookmarks are pushed to your
- account on first sign-in. Prayer streaks, reader preferences, and
- calendar style stay on this device only, they have no server
- table yet.
+ If you start on this device and later sign in, your existing
+ highlights, notes, and bookmarks are pushed to your account on
+ first sign-in; nothing on the device is removed. Prayer streaks,
+ reader preferences, and calendar style stay on this device only,
+ they have no server table yet. Signing out never deletes what is
+ saved on the device.
  </p>
  <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
  Nothing in either path is sold, shared, or used to train models.
@@ -354,7 +357,7 @@ export default async function PrivacyPage() {
  </li>
  </ul>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- If you sign in to a public account, the same shapes mirror to
+ If you sign in, the same shapes mirror to
  four Supabase tables &mdash;{" "}
  <code className="font-mono text-ui text-paper/70">prayer_completions</code>,{" "}
  <code className="font-mono text-ui text-paper/70">intentions_living</code>,{" "}

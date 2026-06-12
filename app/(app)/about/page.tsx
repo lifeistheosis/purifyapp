@@ -132,12 +132,12 @@ export default async function AboutPage() {
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  If you want your notes and bookmarks to follow you between phone
- and laptop, you may open a{" "}
- <strong className="text-paper">public account</strong>, your
- email and a password, or one of the OAuth providers wired into
- the site. The same data is then stored in a row under your name,
- behind row-level security, so no one else may read it. You may
- sign out at any time, and delete the account and every row
+ and laptop, you may{" "}
+ <strong className="text-paper">sign in to sync</strong>, with
+ your email and a password, or one of the OAuth providers wired
+ into the site. The same data is then stored in a row under your
+ name, behind row-level security, so no one else may read it. You
+ may sign out at any time, and delete the account and every row
  attached to it from the Data tab on your dashboard. The choice
  between the two paths is named plainly the first time you open{" "}
  <Link

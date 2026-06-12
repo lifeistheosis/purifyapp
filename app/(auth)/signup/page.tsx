@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SignUpForm } from "@/components/auth/SignUpForm";
 
 export const metadata = {
@@ -16,6 +17,23 @@ export default function SignUpPage() {
         across devices. Free, ad-free, deletable any time.
       </p>
       <SignUpForm />
+      <p className="mt-6 font-sans text-caption text-paper/45 leading-[1.6]">
+        By creating an account you agree to the{" "}
+        <Link
+          href="/terms"
+          className="text-paper/70 underline underline-offset-2 decoration-paper/30 hover:text-paper"
+        >
+          terms of service
+        </Link>{" "}
+        and the{" "}
+        <Link
+          href="/privacy"
+          className="text-paper/70 underline underline-offset-2 decoration-paper/30 hover:text-paper"
+        >
+          privacy policy
+        </Link>
+        .
+      </p>
     </div>
   );
 }

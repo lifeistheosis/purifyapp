@@ -66,6 +66,7 @@ export function Footer() {
    links: [
     { label: t("nav.about"), href: "/about" },
     { label: t("footer.privacy"), href: "/privacy" },
+    { label: "Terms", href: "/terms" },
     { label: t("footer.faq"), href: "/faq" },
     { label: t("footer.support"), href: "/support" },
     { label: t("footer.whatsNew"), href: "/whats-new" },
