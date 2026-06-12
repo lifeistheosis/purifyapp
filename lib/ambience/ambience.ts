@@ -23,15 +23,18 @@ export const AMBIENCE_TRACKS: AmbienceTrack[] = [
     subtitle: "A steady fire to pray beside.",
     src: "/audio/ambience/campfire.mp3",
   },
+  // NOTE: both tracks below appear to originate from a game soundtrack.
+  // The labels are quieted for the shelf, but the audio provenance must
+  // be cleared (or the files replaced) before store submission.
   {
     id: "shadows-of-evil",
-    label: "Shadows of Evil",
+    label: "Evening Strings",
     subtitle: "Slow piano and strings for the evening.",
     src: "/audio/ambience/shadows-of-evil.mp3",
   },
   {
     id: "bo2",
-    label: "BO2",
+    label: "Still Orchestra",
     subtitle: "A long, slow orchestral piece.",
     src: "/audio/ambience/bo2.mp3",
   },
