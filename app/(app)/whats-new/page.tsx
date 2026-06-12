@@ -23,6 +23,25 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v9.9",
+ kind: "Apologetics opens, the catena grows, and the house is set in order",
+ date: "June 12, 2026",
+ blurb:
+  "A quiet release that puts the house in order. A new Apologetics room turns the library outward, to the questions an enquirer or an objector brings, beginning with the existence of God and the place of Scripture within the Church. The patristic catena reaches past St. John Chrysostom for the first time, with Blessed Augustine reading 1 John alongside you. The mobile shell grows calmer and truer: the bottom bar drops its gold pill for a paper-white quiet, learns the new rooms, and stops pretending Today is selected on pages that belong to no tab. And underneath it all, a season of housecleaning: the small print made readable, the copy made true, and the library's rooms easier to find.",
+ items: [
+  "A new Apologetics room at /apologetics. Three studies open it: On atheism, On deism, and On sola scriptura, each framed in the Orthodox register and honest about its scope, with the verbatim patristic florilegia being assembled as they are sourced. Asked for on the Discord, in the Apologetic Section and Refutations threads.",
+  "The catena grows past Chrysostom. Blessed Augustine joins the patristic commentary, reading 1 John verse by verse beside the text. The Discover index now says what has become true: the Fathers, verse by verse, beside the text of Scripture.",
+  "A sweep of new saint icons across the index, from St. Basil of Ostrog and St. Sava of Serbia to St. Justin Popovic and St. Nikodemos the Hagiorite, so fewer lives open to an empty frame.",
+  "The mobile shell grows quieter. The bottom bar's gold pill is retired for a paper-white active state, the bar learns the Theology and Apologetics rooms, and pages that belong to no tab no longer light up Today. The desktop bar is trimmed to six destinations and the season banner is retired.",
+  "Discover is set right. The councils entry names all seven Ecumenical Councils and the synods before Nicaea, Theology and Apologetics are reachable from the phone's Discover index, and the years of repose across the calendar and the saints now wear the cross (†400) instead of a bare plus sign.",
+  "An accessibility pass across the dark surfaces. The small print of the app, verse numbers, labels, captions, attributions, now meets the WCAG AA contrast floor, and the prayer-card bookmark star is restructured so assistive technology reads it cleanly. The full smoke suite, accessibility assertions included, passes on desktop and phone alike.",
+  "Terms of Service at /terms, and the support and pricing pages set out plainly: the core free forever, a freewill gift the only money involved today, and the promise to pre-launch supporters kept in writing.",
+  "The ambience shelf is resting. The previous tracks could not be kept, so the speaker steps aside until the catalogue returns with properly sourced audio; the Prayer Rope Anthem recordings are unaffected.",
+  "Cache version bumped to v9.9.0 so the new rooms and the quieter shell evict the old buckets on this release.",
+  "Footer, home hero chip, and /whats-new chip step to v9.9.",
+ ],
+ },
+ {
  version: "v9.8",
  kind: "Eighteen new saints, the dogma-exegesis library, and the councils before Nicaea",
  date: "June 11, 2026",
@@ -1149,17 +1168,17 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
- v9.7 &middot; Search anything, multi-verse Bible, the Creed, smaller fixes
+ v9.9 &middot; Apologetics, the catena, and a quieter shell
  </p>
  </div>
 
  {isDe ? (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Alles durchsuchen, die Mehrvers-Bibel und das Glaubensbekenntnis.
+ Apologetik öffnet, die Catena wächst, das Haus wird in Ordnung gebracht.
  </h1>
  ) : (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Search anything, the multi-verse Bible, and the Creed.
+ Apologetics opens, the catena grows, and the house is set in order.
  </h1>
  )}
 
@@ -1197,21 +1216,19 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v9.7 löst die kleinen Versprechen ein, alle auf dem Discord
- erbeten. Erstens nimmt die{" "}
- <Link href="/bible" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Bibelsuche</Link>{" "}
- nun mehrere Verse auf einmal: Füge eine Reihe von Stellen ein
- und lies sie gestapelt, ein Florilegium zum Studium. Zweitens
- reicht die Suche durch das{" "}
- <Link href="/prayers" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Gebetbuch</Link>{" "}
- und die Heiligen, so erreichst du eine Regel oder einen Vater
- beim Namen, und am Schreibtisch öffnet Strg+K (Cmd+K am Mac)
- eine Befehlspalette. Drittens kommt das{" "}
- <Link href="/prayers/creed" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Glaubensbekenntnis von Nizäa</Link>{" "}
- hinzu, eingefügt in die Morgen- und die Abendregel, in mehreren
- Sprachen angeboten, jede Fassung wortgetreu und mit Quelle. Und
- das Geben ist nun auf jedem mobilen Bildschirm einen Fingertipp
- entfernt.
+ v9.9 bringt das Haus in Ordnung, bevor die Türen weiter
+ aufgehen. Ein neuer Raum für{" "}
+ <Link href="/apologetics" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Apologetik</Link>{" "}
+ wendet die Bibliothek nach außen, beginnend mit der Existenz
+ Gottes und dem Ort der Schrift in der Kirche. Die patristische
+ Catena wächst zum ersten Mal über den hl. Johannes Chrysostomus
+ hinaus: Der selige Augustinus liest nun den{" "}
+ <Link href="/bible/1-john/1" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">1. Johannesbrief</Link>{" "}
+ neben dir. Die mobile Oberfläche ist ruhiger und ehrlicher
+ geworden, die kleine Schrift auf den dunklen Flächen erreicht
+ nun die Kontrastschwelle für Barrierefreiheit, und die Räume
+ der Bibliothek sind vom Telefon aus leichter zu finden als je
+ zuvor.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
@@ -1257,22 +1274,17 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v9.7 keeps the small promises, every line of it asked for on
- the Discord. First, the{" "}
- <Link href="/bible" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Bible search</Link>{" "}
- now takes more than one verse at once: paste a string of
- references and read them back stacked together, a florilegium
- for study rather than a single jump. Second, search reaches
- across the{" "}
- <Link href="/prayers" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">prayer book</Link>{" "}
- and the saints, so a rule or a Father is a few letters away
- instead of a scroll, and on the desktop a command palette opens
- on Ctrl+K (Cmd+K on a Mac) to jump anywhere. Third, the{" "}
- <Link href="/prayers/creed" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Nicene Creed</Link>{" "}
- joins the prayer book and is set into both the Morning and the
- Evening Rule, offered in more than one language with each
- wording kept verbatim and its source named. And giving is now a
- tap away on every mobile screen.
+ v9.9 puts the house in order before the doors widen. A new{" "}
+ <Link href="/apologetics" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Apologetics room</Link>{" "}
+ turns the library outward, beginning with the existence of God
+ and the place of Scripture within the Church. The patristic
+ catena grows past St. John Chrysostom for the first time:
+ Blessed Augustine now reads{" "}
+ <Link href="/bible/1-john/1" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">1 John</Link>{" "}
+ beside you. The mobile shell is quieter and truer, the small
+ print across the dark surfaces now meets the accessibility
+ contrast floor, and the library's rooms are easier to find from
+ the phone than they have ever been.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">

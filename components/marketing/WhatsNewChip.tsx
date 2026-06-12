@@ -53,7 +53,7 @@ export function WhatsNewChip({ isDe }: { isDe: boolean }) {
         </span>
       )}
       <span className="font-sans text-caption sm:text-detail text-paper/85 group-hover:text-paper transition-colors">
-        {CURRENT_VERSION} · New saints, the dogma library, and the councils before Nicaea
+        {CURRENT_VERSION} · Apologetics opens, the catena grows, the house set in order
       </span>
       <span className="text-paper/55 group-hover:text-paper transition-colors text-detail">
         →
