@@ -1,0 +1,272 @@
+[
+  {
+    "thread_id": "1514749004112728184",
+    "thread_name": "Saint Ahmet the Calligrapher",
+    "post": "Thank you for this. St. Ahmed the Calligrapher, the New Martyr, is on the saints roadmap; as with every name we add, he enters once his commemoration and a public-domain life are confirmed. Closing the thread to keep the board tidy; the request is recorded.",
+    "close": true
+  },
+  {
+    "thread_id": "1514737292525310182",
+    "thread_name": "clicks",
+    "post": "Thank you for the report. We tested the commentary buttons on current phone and desktop browsers and they respond, so we need your details to chase it: please drop your phone model and browser in #help and we will take it from there. Closing this thread so the report lives in one place.",
+    "close": true
+  },
+  {
+    "thread_id": "1514727213881360529",
+    "thread_name": "Small compline prayer psalms",
+    "post": "A fair point: a prayer rule should carry its psalms in full, not send you elsewhere. Inlining the psalms of Small Compline is on the list for a coming patch. Closing the thread; the work is recorded.",
+    "close": true
+  },
+  {
+    "thread_id": "1514595331172597801",
+    "thread_name": "New ambient sounds",
+    "post": "Thank you. An honest note first: the ambience shelf is resting for now, until we can rebuild the catalogue from properly sourced audio. Rain, and mixing two sounds together, are both on the list for when it returns. Closing the thread; the request is recorded.",
+    "close": true
+  },
+  {
+    "thread_id": "1514580915794481173",
+    "thread_name": "Analysis on the New Testament and it's reliability",
+    "post": "The new Apologetics room at /apologetics is the home for exactly this, and the witness of the manuscripts is already treated in the theology library. Reasoned summaries will grow there as the florilegia are assembled. Thank you for offering your work; if you would like to contribute, say so in #main. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1514127618432307230",
+    "thread_name": "The prayer section on the website",
+    "post": "Confirmed: a quieter reorganization of the prayers section is planned and has been on our board since you raised it. We will announce it in the patch notes when it lands. Closing the thread; the commitment stands.",
+    "close": true
+  },
+  {
+    "thread_id": "1514126679843409960",
+    "thread_name": "Add more akathist",
+    "post": "The akathists section is open and growing; more are added as verbatim public-domain texts are sourced. Thank you for the link. Closing the thread; the source is recorded.",
+    "close": true
+  },
+  {
+    "thread_id": "1514107119379415210",
+    "thread_name": "Theology",
+    "post": "Thank you. The theology library already carries the questions where East and West part ways, and St. Gregory Palamas is on the saints roadmap as public-domain translations allow. Vladimir Lossky's works are under copyright, so we cannot carry them verbatim. Closing the thread; the direction is recorded.",
+    "close": true
+  },
+  {
+    "thread_id": "1514078581918273556",
+    "thread_name": "Daily Scripture",
+    "post": "The daily readings follow the appointed lectionary, and we are reviewing alignment with the OCA tables as part of the jurisdiction work already on the roadmap. Thank you for the care; this is exactly the kind of correctness we want held to. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1513984870899122288",
+    "thread_name": "Daily goals and Personalization",
+    "post": "Confirmed for a coming patch: daily goals on the Today page, the fast, the prayer, the reading, with your progress kept on your device. It is among the most asked-for ideas on the board and we intend to give it proper care. Closing the thread; the commitment stands.",
+    "close": true
+  },
+  {
+    "thread_id": "1513503789049446491",
+    "thread_name": "Scripture",
+    "post": "The Orthodox Study Bible is under copyright, so it cannot simply be added; we have opened formal outreach to the publisher, and it now depends on them. The Septuagint itself is already in Purify, Brenton's translation with the Greek beside it. Closing the thread; if the license comes through you will hear it in the patch notes.",
+    "close": true
+  },
+  {
+    "thread_id": "1513253631691063337",
+    "thread_name": "Chant of the day",
+    "post": "A lovely idea. Chant belongs to the audio library on the roadmap, and learning the chants in Greek with a guide is noted with it. Closing the thread; the request is recorded.",
+    "close": true
+  },
+  {
+    "thread_id": "1513253211329265744",
+    "thread_name": "Saint story improvement",
+    "post": "Thank you. Audio for the saints' lives belongs to the audio library on the roadmap, so it can be done with the reverence the lives deserve. Closing the thread; the request is recorded.",
+    "close": true
+  },
+  {
+    "thread_id": "1513087593103757394",
+    "thread_name": "Turkish Language",
+    "post": "Thank you, and welcome to the Turkish Orthodox readers among us. Turkish is now on the language roadmap; languages open as hand-checked editorial review allows, never by machine alone, which is why the list grows slowly. Closing the thread; the request is recorded.",
+    "close": true
+  },
+  {
+    "thread_id": "1512719740672540722",
+    "thread_name": "Philosophia",
+    "post": "Thank you for the vision. Tracing who taught whom, and which philosophers the Fathers answered, is a genuinely good idea and too large to do half-way, so we are holding it for after the foundations are done. Where a life touches a philosopher, the saint's life already says so. Closing the thread; the idea is recorded.",
+    "close": true
+  },
+  {
+    "thread_id": "1512619204287795302",
+    "thread_name": "Bible new translation",
+    "post": "The TOB is under copyright, so we cannot carry it without a license. French itself is moving: the interface opened in French editorial preview in v9.8, and the Prayer Rope Anthem is sung in French. Closing the thread; if a French Scripture license becomes possible you will hear it in the patch notes.",
+    "close": true
+  },
+  {
+    "thread_id": "1512547831854928014",
+    "thread_name": "Septuagint",
+    "post": "Confirmed: the Greek interlinear is coming to the Old Testament, as the team said on the thread. The Septuagint text is already the foundation of our Old Testament, so this is assembly work, not a maybe. Closing the thread; the commitment stands.",
+    "close": true
+  },
+  {
+    "thread_id": "1512546619986415648",
+    "thread_name": "What if every verse in the bible has a Church father's commentary on it",
+    "post": "This is the catena, and it is being built: St. John Chrysostom across fourteen New Testament books, and as of this release Blessed Augustine reading 1 John. Tap the red verse number to open it. Coverage grows book by book as public-domain texts are prepared. Closing the thread; the work continues.",
+    "close": true
+  },
+  {
+    "thread_id": "1512433110615326811",
+    "thread_name": "New feature",
+    "post": "Shipped in v9.7: paste a string of references into the Bible search, 1 Timothy 2:5, Proverbs 8:7, John 2:21, and read them back stacked together. Single references still jump straight to the chapter. Thank you for the suggestion. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1512182271636013256",
+    "thread_name": "Homilies",
+    "post": "The homilies of the Fathers are already growing through the saints' works, the eighty-eight homilies on John among them, and more follow as public-domain texts are prepared. Modern bishops' homilies are mostly under copyright, so those we cannot carry verbatim. Closing the thread; the direction is recorded.",
+    "close": true
+  },
+  {
+    "thread_id": "1512181643245261002",
+    "thread_name": "Portable Document Format",
+    "post": "The PDF library lives on this Discord, in the #pdf-library forum, and your help there is genuinely welcome. Inside the app we keep to plain text on purpose: searchable, readable on every screen, and honest about its sources. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1512178599262687503",
+    "thread_name": "Apologetic Section",
+    "post": "Shipped in v9.9: the Apologetics room is open at /apologetics, beginning with the existence of God against atheism and deism, and the place of Scripture within the Church. The verbatim florilegia are being assembled as they are sourced. Thank you for the suggestion. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1511826086600769678",
+    "thread_name": "I'd like to suggest another saint",
+    "post": "Thank you. St. Anskar is on the saints roadmap with the Vita Anskarii noted as his source; he enters once the public-domain text is prepared. Closing the thread; the request is recorded.",
+    "close": true
+  },
+  {
+    "thread_id": "1511241546765434890",
+    "thread_name": "Another translation.",
+    "post": "The Septuagint is already in Purify, Brenton's translation with the Greek beside it. The Antioch Bible is under copyright, so it cannot be added without a license. The Byzantine text form is noted for the Greek work already underway. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1511240715961634909",
+    "thread_name": "Debater simulator",
+    "post": "Thank you for taking the time to share this. After thought we have decided not to take it forward: a debate simulator means generated speech in the mouths of the Fathers, and Purify carries their words verbatim or not at all. The Apologetics room and the theology library carry the same questions with the Fathers answering in their own words. We are grateful for your love for Purify and the Church. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1511175746905706576",
+    "thread_name": "Add St. Thomas Aquinas and Unity of the Church",
+    "post": "The grace and peace of our Lord be with you also. After thought we have decided not to take this forward: Purify keeps to the saints and Fathers of the Orthodox Church, so Thomas Aquinas falls outside what the library carries. The questions between East and West are treated in the theology library, with the Orthodox Fathers answering. We hope you understand, and we are grateful you took the time. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1510754165557690598",
+    "thread_name": "I'd like to suggest another Saint",
+    "post": "Thank you, and please keep them coming, one thread per saint helps us track each name. Every requested saint goes onto the roadmap and enters once commemoration and public-domain sources are confirmed. Closing this general thread in favour of the per-saint ones.",
+    "close": true
+  },
+  {
+    "thread_id": "1510688243149049887",
+    "thread_name": "Add Gennedius Scholarios",
+    "post": "Thank you. Gennadius Scholarios is on the roadmap for review under our usual rule: confirmed commemoration and public-domain texts first. His writings against the Latins are noted as the source request. Closing the thread; the request is recorded.",
+    "close": true
+  },
+  {
+    "thread_id": "1510205320004374649",
+    "thread_name": "Discretion",
+    "post": "A word we take seriously. Purify's texts are the public-domain writings of the Fathers and the Church's own prayers, carried verbatim; the framing copy is editorial and reviewed, and contributors do not teach in their own name. Thank you for holding us to it. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1509988130671951912",
+    "thread_name": "Survey about languages",
+    "post": "Thank you. We watch where readers come from through our own first-party counts, and the language roadmap follows that, paced by hand-checked editorial review. Discord region roles are a good idea for the server side and are noted with the moderators. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1509962519228186644",
+    "thread_name": "Language (Polish)",
+    "post": "Thank you. Polish is on the language roadmap; languages open as hand-checked editorial review allows, never by machine alone. Closing the thread; the request is recorded.",
+    "close": true
+  },
+  {
+    "thread_id": "1509849783198679111",
+    "thread_name": "Prayer Request",
+    "post": "Something for exactly this has been quietly in motion on the server side, as ven hinted here. It is a community matter rather than an app patch, so watch the server announcements. Closing the thread; the request is with the moderators.",
+    "close": true
+  },
+  {
+    "thread_id": "1509660491335864370",
+    "thread_name": "German Translations for Prayers",
+    "post": "Thank you, truly; offers like this are how the languages will actually get done. German is our most complete language after English, and prayer texts are exactly where careful human translation matters. Please say hello in #main or message the team so we can bring you into the editorial flow. Closing the thread; the offer is recorded with gratitude.",
+    "close": true
+  },
+  {
+    "thread_id": "1509612180792803358",
+    "thread_name": "Having Tutorials on how to pray for Catechumens",
+    "post": "The learning section is open: /prayers carries guided lessons, beginning with the Jesus Prayer, written for exactly the reader you describe. More lessons follow, and the catechumen's path is the priority among them. Thank you for the suggestion. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1509548216201248838",
+    "thread_name": "Saints tied to jurisdiction calendars",
+    "post": "Confirmed as part of the jurisdiction work on the roadmap: per-tradition calendars, and with them the saints each tradition keeps. Kontakia and troparia join the saints' pages as verbatim public-domain texts allow. Closing the thread; the commitment stands.",
+    "close": true
+  },
+  {
+    "thread_id": "1509542918581522583",
+    "thread_name": "Refutations",
+    "post": "The Apologetics room this asked for is open at /apologetics, beginning with atheism, deism, and sola scriptura; the filioque and the papacy are already treated in the theology library. Your offer to help, with your Spiritual Father's blessing, is welcome: say so in #main and the team will follow up. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1509466498341539860",
+    "thread_name": "Add more councils and Synods",
+    "post": "Shipped in v9.8: the councils section now reaches beyond the seven, with Antioch 268 and Carthage 256 opening the room for local and regional councils. More synods, the Synod of Jerusalem among the candidates, follow as the public-domain records are prepared. Thank you for the suggestion. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1509271144061206710",
+    "thread_name": "Ideas what to include",
+    "post": "The standard English Philokalia is under copyright, so we cannot carry it verbatim; older public-domain selections are being weighed so that what we offer is honest. The desire for it is fully shared. Closing the thread; the request is recorded.",
+    "close": true
+  },
+  {
+    "thread_id": "1509254679614324807",
+    "thread_name": "Suggestion",
+    "post": "Much of this now exists: the theology library traces the Church's answer to each question through the Fathers and the councils, and the Topics index does the same by theme, kept distinct from anyone's private opinion. Differences between traditions belong to the jurisdiction work on the roadmap. Thank you; this thread helped shape it. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1509093453374427269",
+    "thread_name": "Possible bible audio for old and new testament?",
+    "post": "Confirmed: an audio Bible is on the roadmap as part of the audio library, so that those who struggle to read can still hear the Scriptures. It is a large work and will be announced when it is ready, not before. Closing the thread; the commitment stands.",
+    "close": true
+  },
+  {
+    "thread_id": "1509021424940093572",
+    "thread_name": "Language (Romanian, Greek, Russian, etc.)",
+    "post": "Thank you. Romanian, Greek, Russian, and more are all registered on the language roadmap; German is complete and French is in editorial preview, and the rest open as hand-checked review allows, never by machine alone. Closing the thread; the requests are recorded.",
+    "close": true
+  },
+  {
+    "thread_id": "1509000378744705044",
+    "thread_name": "Prayer based on calendar/feasts",
+    "post": "Confirmed, and as the team said here, this is a true need: the prayer rules following the Church's seasons, Paschal hours in Bright Week, O Heavenly King giving way as the Pentecostarion directs. It is on the roadmap to be done carefully, season by season. Closing the thread; the commitment stands.",
+    "close": true
+  },
+  {
+    "thread_id": "1508962656277762239",
+    "thread_name": "Multiple Calanders",
+    "post": "Confirmed as the jurisdiction work on the roadmap: the calendar already keeps both the New and Old reckonings, and per-tradition calendars with their own saints are the next step of that same work. Closing the thread; the commitment stands.",
+    "close": true
+  },
+  {
+    "thread_id": "1508625075560124567",
+    "thread_name": "Audio Scripture Reader (+ Ambient Noise)",
+    "post": "The audio direction is confirmed: an audio Scripture reader belongs to the audio library on the roadmap. An honest note on the ambience half: the soundscape shelf is resting until we can rebuild its catalogue from properly sourced audio. Closing the thread; the vision is recorded.",
+    "close": true
+  },
+  {
+    "thread_id": "1508623448195334165",
+    "thread_name": "App Passes",
+    "post": "Thank you. The shape is settled and worth restating plainly: the Scriptures, the saints' lives and works, and the council texts stay free forever, with no per-book passes. An optional subscription will come later only to pay for what the work costs, and pre-launch supporters keep lifetime sync as promised. Closing the thread.",
+    "close": true
+  }
+]
