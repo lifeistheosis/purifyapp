@@ -346,6 +346,17 @@ function mmdd(date: Date): string {
 }
 
 /**
+ * The daily-saints corpus marks repose years with an ASCII plus ("+400",
+ * "+304, in Rome"). On screen that reads as arithmetic, not as the
+ * traditional cross before the year, so renderers receive the dagger
+ * form ("†400") instead. The data files keep the plus convention.
+ */
+function formatReposeNote(note: string | undefined): string | undefined {
+ if (!note) return note;
+ return note.replace(/(^|\s|\()\+(\d)/g, "$1†$2");
+}
+
+/**
  * Every commemoration we list for the given calendar date: major feasts,
  * named saints, plus any registry saints whose feast day matches. Items
  * with a `slug` that resolves to a registry saint carry the full Saint
@@ -354,7 +365,7 @@ function mmdd(date: Date): string {
 export function commemorationsOn(date: Date): Commemoration[] {
  const entries = (DAILY[mmdd(date)] ?? []).map((c) => {
  const saint = c.slug ? getSaint(c.slug) ?? undefined : undefined;
- return { ...c, saint };
+ return { ...c, note: formatReposeNote(c.note), saint };
  });
 
  // Fold in any registry saints whose feast day matches but are not already
