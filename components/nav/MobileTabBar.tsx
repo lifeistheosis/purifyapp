@@ -82,6 +82,8 @@ export function MobileTabBar() {
         p.startsWith("/topics/") ||
         p === "/theology" ||
         p.startsWith("/theology/") ||
+        p === "/apologetics" ||
+        p.startsWith("/apologetics/") ||
         p === "/heresies" ||
         p.startsWith("/heresies/") ||
         p === "/calendar" ||
@@ -108,10 +110,11 @@ export function MobileTabBar() {
     },
   ];
 
-  const activeIndex = Math.max(
-    0,
-    TABS.findIndex(({ matches }) => matches(pathname)),
-  );
+  // -1 on routes that belong to no tab (e.g. /pricing, /support). The
+  // sliding compartment hides there instead of falsely settling on Today.
+  const matchedIndex = TABS.findIndex(({ matches }) => matches(pathname));
+  const hasActive = matchedIndex >= 0;
+  const activeIndex = hasActive ? matchedIndex : lastActiveIndex;
 
   // `renderIndex` drives the indicator's position. It starts at the slot
   // the user was last on (which may differ from `activeIndex` right after a
@@ -176,7 +179,8 @@ export function MobileTabBar() {
             className={cn(
               "absolute top-0 bottom-0 z-0 rounded-[26px]",
               "border border-white/12 bg-white/[0.05]",
-              "transition-[left] duration-300 ease-out motion-reduce:transition-none",
+              "transition-[left,opacity] duration-300 ease-out motion-reduce:transition-none",
+              hasActive ? "opacity-100" : "opacity-0",
             )}
             style={{ width: `calc(${cell})`, left: slotLeft }}
           />
