@@ -59,11 +59,19 @@ test("Bible chapter shows MobileTopBar with back + reader actions", async ({
   page,
 }) => {
   await page.goto("/bible/john/1");
-  // The top bar's back button is the only "Back" aria-label on the page.
-  await expect(page.getByLabel("Back").first()).toBeVisible();
-  // Reader actions cluster: bookmark + settings.
-  await expect(page.getByLabel("Bookmark this chapter")).toBeVisible();
-  await expect(page.getByLabel("Reader settings")).toBeVisible();
+  // The desktop AppNav also carries a (hidden) "Back" button, so filter
+  // to the visible one: the mobile top bar's.
+  await expect(
+    page.getByLabel("Back").filter({ visible: true }).first(),
+  ).toBeVisible();
+  // Reader actions cluster: bookmark + settings. Both exist twice (mobile
+  // top bar + desktop toolbar), so assert on the visible instance.
+  await expect(
+    page.getByLabel("Bookmark this chapter").filter({ visible: true }).first(),
+  ).toBeVisible();
+  await expect(
+    page.getByLabel("Reader settings").filter({ visible: true }).first(),
+  ).toBeVisible();
 });
 
 test("chapter pill opens the book/chapter picker sheet", async ({ page }) => {
@@ -78,19 +86,26 @@ test("saint-work reader renders MobileTopBar + section pill", async ({
   page,
 }) => {
   await page.goto("/saints/john-chrysostom/paschal-homily");
-  // Top bar back button to the saint profile.
-  await expect(page.getByLabel("Back").first()).toBeVisible();
+  // Top bar back button to the saint profile (filter past the hidden
+  // desktop AppNav "Back").
+  await expect(
+    page.getByLabel("Back").filter({ visible: true }).first(),
+  ).toBeVisible();
   // Floating section switcher: the label reads "Section N of M".
   await expect(page.getByText(/Section \d+ of \d+/)).toBeVisible();
 });
 
-test("/account (signed out) renders both account options", async ({ page }) => {
+test("/account (signed out) renders the local-profile hero + sign-in path", async ({
+  page,
+}) => {
   await page.goto("/account");
-  // Both cards mount as headings inside the AccountChoice client wrapper.
+  // Signed out, the You surface leads with the local-profile hero and
+  // offers sign-in as the path to sync (the old Local profile / Public
+  // account two-card chooser was retired).
   await expect(
-    page.getByRole("heading", { name: "Local profile", level: 2 }),
+    page.getByText("Your reading life, on this device."),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "Public account", level: 2 }),
+    page.locator('a[href*="/signin"]').filter({ visible: true }).first(),
   ).toBeVisible();
 });
