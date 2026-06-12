@@ -25,6 +25,8 @@ import { Calendar } from "@/components/ui/icons/Calendar";
 import { Codex } from "@/components/ui/icons/Codex";
 import { Lyre } from "@/components/ui/icons/Lyre";
 import { Quill } from "@/components/ui/icons/Quill";
+import { Cross } from "@/components/ui/icons/Cross";
+import { Bolt } from "@/components/ui/icons/Bolt";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 
@@ -103,6 +105,18 @@ export async function DiscoverMobile() {
       href: "/heresies",
       blurb: t(m, "discover.tile.heresiesBlurb"),
       Icon: Scroll,
+    },
+    {
+      label: t(m, "discover.tile.theology"),
+      href: "/theology",
+      blurb: t(m, "discover.tile.theologyBlurb"),
+      Icon: Cross,
+    },
+    {
+      label: t(m, "discover.tile.apologetics"),
+      href: "/apologetics",
+      blurb: t(m, "discover.tile.apologeticsBlurb"),
+      Icon: Bolt,
     },
     {
       label: t(m, "discover.tile.calendar"),

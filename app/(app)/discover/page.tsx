@@ -42,21 +42,21 @@ export default async function DiscoverPage() {
   // commentary that ties it all together.
   const ENTRIES: Entry[] = [
     {
-      label: "Theology",
+      label: t(m, "discover.tile.theology"),
       href: "/theology",
-      blurb: "The long-form study of doctrine, the mind of the Fathers set out in essay form.",
+      blurb: t(m, "discover.tile.theologyBlurb"),
       Icon: Cross,
     },
     {
-      label: "Apologetics",
+      label: t(m, "discover.tile.apologetics"),
       href: "/apologetics",
-      blurb: "The defence of the Faith, the Orthodox answer to disputed questions of doctrine and history.",
+      blurb: t(m, "discover.tile.apologeticsBlurb"),
       Icon: Bolt,
     },
     {
-      label: "Reading",
+      label: t(m, "discover.tile.reading"),
       href: "/reading",
-      blurb: "The long Fathers, read at length, with the page where you left off remembered.",
+      blurb: t(m, "discover.tile.readingBlurb"),
       Icon: Lampada,
     },
     {
