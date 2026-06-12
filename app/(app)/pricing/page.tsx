@@ -30,12 +30,12 @@ const EN: Omit<PricingCopy, "eyebrow" | "h1"> = {
     "Every saint’s life, and the primary writings of the Fathers",
     "The Scriptures, with the Greek beside them",
     "The daily prayers, the hours, and the akathists",
-    "The whole Church calendar — its fasts and its feasts",
+    "The whole Church calendar, its fasts and its feasts",
   ],
   freeFoot: "No ads. No tracking. No surprise locks. For anyone who needs it.",
   futureTitle: "What a subscription will fund",
   future:
-    "A heavier infrastructure layer is on the way, and the licensing is being upgraded so it can be offered honestly. When that optional, subscription-funded layer arrives, it will exist only to pay for the work it requires — the servers, the production, the rights — and to keep the core forever open. What is free today will still be free then.",
+    "A heavier infrastructure layer is on the way, and the licensing is being upgraded so it can be offered honestly. When that optional, subscription-funded layer arrives, it will exist only to pay for the work it requires: the servers, the production, the rights. The core stays forever open. What is free today will still be free then.",
   supportKicker: "Purify is kept by those it helps.",
   supportLine:
     "If the app has carried you, you can carry it a little in return. A freewill gift is the only way money is involved today.",
@@ -52,18 +52,18 @@ const DE: PricingCopy = {
     "Jedes Leben eines Heiligen und die wichtigsten Schriften der Väter",
     "Die Schriften, mit dem Griechischen daneben",
     "Die täglichen Gebete, die Horen und die Akathiste",
-    "Der ganze Kirchenkalender — seine Fasten und seine Feste",
+    "Der ganze Kirchenkalender, seine Fasten und seine Feste",
   ],
   freeFoot:
     "Keine Werbung. Keine Verfolgung. Keine überraschenden Sperren. Für jeden, der sie braucht.",
   futureTitle: "Was ein Abonnement finanzieren wird",
   future:
-    "Eine schwerere Infrastrukturschicht ist im Werden, und die Lizenzierung wird verbessert, damit sie ehrlich angeboten werden kann. Wenn diese freiwillige, durch Abonnement getragene Schicht kommt, wird sie nur dazu da sein, die Arbeit zu bezahlen, die sie verlangt — die Server, die Produktion, die Rechte — und den Kern für immer offen zu halten. Was heute frei ist, wird dann noch frei sein.",
+    "Eine schwerere Infrastrukturschicht ist im Werden, und die Lizenzierung wird verbessert, damit sie ehrlich angeboten werden kann. Wenn diese freiwillige, durch Abonnement getragene Schicht kommt, wird sie nur dazu da sein, die Arbeit zu bezahlen, die sie verlangt: die Server, die Produktion, die Rechte. Der Kern bleibt für immer offen. Was heute frei ist, wird dann noch frei sein.",
   supportKicker: "Purify wird von denen getragen, denen es hilft.",
   supportLine:
     "Wenn die App dich getragen hat, kannst du sie ein wenig zurücktragen. Eine freiwillige Gabe ist heute der einzige Weg, auf dem Geld eine Rolle spielt.",
   supportCta: "Eine Kerze anzünden",
-  supportFoot: "Völlig freiwillig. Einmal geben — oder gar nicht.",
+  supportFoot: "Völlig freiwillig. Einmal geben, oder gar nicht.",
 };
 
 export default async function PricingPage() {
