@@ -14,6 +14,18 @@ for (const path of paths) {
  });
 }
 
+test("/support renders all three donate paths", async ({ page }) => {
+  // Regression for the 2026-06-11 community report of an unresponsive
+  // donation flow: every giving path must render as a real external
+  // link. Destination liveness is checked manually, not here.
+  await page.goto("/support");
+  for (const host of ["cash.app", "paypal.com", "buymeacoffee.com"]) {
+    const link = page.locator(`a[href*="${host}"]`).first();
+    await expect(link, `${host} donate link`).toBeVisible();
+    await expect(link).toHaveAttribute("target", "_blank");
+  }
+});
+
 test("/privacy mentions the recorded fields", async ({ page }) => {
  await page.goto("/privacy");
  const text = await page.locator("body").innerText();
