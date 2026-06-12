@@ -231,6 +231,11 @@ export function AmbienceController() {
 
   if (!mounted) return null;
 
+  // No catalogue, no control. The shelf is empty for the v9.9 submission
+  // build (see lib/ambience/ambience.ts); rendering the launcher with
+  // nothing behind it would be a dead button.
+  if (AMBIENCE_TRACKS.length === 0) return null;
+
   // Live counters derived once per render.
   const elapsedSecs = sessionStartedAt
     ? Math.max(0, Math.floor((now - sessionStartedAt) / 1000))
