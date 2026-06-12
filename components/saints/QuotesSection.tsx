@@ -27,7 +27,7 @@ export function QuotesSection({
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[900px]">
  {quotes.map((q, i) => {
  const cite = (
- <span className="font-sans text-caption uppercase tracking-[1.2px] text-paper/45">
+ <span className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
  {q.source}
  </span>
  );

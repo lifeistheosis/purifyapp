@@ -31,7 +31,7 @@ export function FilterPill({
         <span
           className={cn(
             "text-eyebrow tabular-nums",
-            active ? "text-night/55" : "text-paper/45",
+            active ? "text-night/70" : "text-paper/55",
           )}
         >
           {count}

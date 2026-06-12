@@ -434,10 +434,12 @@ export function VerseRow({
  {showDropCap ? null : hasCommentary ? (
  // Desktop: anchor link to the sticky right-rail section.
  // Mobile (`lg:hidden`): a button that opens the bottom sheet.
+ // The marker red is brighter than the accent token on purpose: the
+ // token at this size fails WCAG AA contrast on the night surface.
  <span className="inline-flex items-baseline mr-1.5 align-super">
  <a
  href={`#rail-v${verse.n}`}
- className="hidden lg:inline-flex group/cmt items-baseline text-accent/75 hover:text-accent transition-colors"
+ className="hidden lg:inline-flex group/cmt items-baseline text-[#f2594e] hover:text-[#ff7a6e] transition-colors"
  aria-label={`Open commentary on verse ${verse.n}`}
  title="Open commentary"
  >
@@ -456,7 +458,7 @@ export function VerseRow({
  e.stopPropagation();
  onOpenCommentary?.();
  }}
- className="lg:hidden group/cmt inline-flex items-baseline text-accent/75 active:text-accent transition-colors"
+ className="lg:hidden group/cmt inline-flex items-baseline text-[#f2594e] active:text-[#ff7a6e] transition-colors"
  aria-label={`Open commentary on verse ${verse.n}`}
  >
  <sup className="font-sans text-eyebrow font-semibold tracking-[0.05em]">
@@ -469,7 +471,7 @@ export function VerseRow({
  </button>
  </span>
  ) : (
- <sup className="font-sans text-eyebrow font-medium text-paper/40 tracking-[0.05em] mr-1.5 align-super">
+ <sup className="font-sans text-eyebrow font-medium text-paper/55 tracking-[0.05em] mr-1.5 align-super">
  {verse.n}
  </sup>
  )}
@@ -603,7 +605,7 @@ export function VerseRow({
  style={{ fontFamily: "var(--font-greek), serif" }}
  className="indent-0 min-w-0 text-paper/85"
  >
- <sup className="font-sans text-eyebrow font-medium text-paper/30 tracking-[0.05em] mr-1.5 align-super">
+ <sup className="font-sans text-eyebrow font-medium text-paper/55 tracking-[0.05em] mr-1.5 align-super">
  {verse.n}
  </sup>
  {hasTokens

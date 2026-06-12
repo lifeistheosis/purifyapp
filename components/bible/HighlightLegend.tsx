@@ -19,7 +19,7 @@ export function HighlightLegend() {
       className="mt-10 rounded-xl border border-paper/10 bg-paper/[0.03] px-4 py-3.5"
     >
       <div className="flex items-center justify-between gap-3 mb-3">
-        <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+        <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
           Highlight colors
         </h2>
         <div className="flex items-center gap-3">
@@ -27,7 +27,7 @@ export function HighlightLegend() {
             <button
               type="button"
               onClick={reset}
-              className="font-sans text-caption text-paper/45 hover:text-paper/80 transition-colors"
+              className="font-sans text-caption text-paper/55 hover:text-paper/80 transition-colors"
             >
               Reset
             </button>
@@ -35,7 +35,7 @@ export function HighlightLegend() {
           <button
             type="button"
             onClick={() => setEditing((v) => !v)}
-            className="font-sans text-caption text-accent/80 hover:text-accent transition-colors"
+            className="font-sans text-caption text-[#f2594e] hover:text-[#ff7a6e] transition-colors"
           >
             {editing ? "Done" : "Edit meanings"}
           </button>

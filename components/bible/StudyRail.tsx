@@ -35,7 +35,7 @@ function CommentaryCard({
  {title}
  </p>
  {subtitle && (
- <p className="font-sans text-eyebrow italic text-paper/45 truncate">
+ <p className="font-sans text-eyebrow italic text-paper/55 truncate">
  {subtitle}
  </p>
  )}
@@ -96,7 +96,7 @@ function FatherGroup({ author, items }: { author: string; items: Note[] }) {
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/70 truncate">
  {author}
  </p>
- <p className="font-sans text-eyebrow italic text-paper/45 truncate">
+ <p className="font-sans text-eyebrow italic text-paper/55 truncate">
  {items.length} commentaries
  </p>
  </div>

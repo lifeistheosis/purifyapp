@@ -76,7 +76,7 @@ export function ChapterPager({
  href={`/bible/${prev.slug}/${prev.chapter}${vq(prev.slug)}`}
  className="mt-3 block rounded-md border border-paper/10 bg-paper/[0.02] hover:border-paper/30 hover:bg-paper/[0.04] transition-colors px-5 py-3"
  >
- <span className="block font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/45">
+ <span className="block font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/55">
  Previous chapter
  </span>
  <span className="block mt-1 font-sans text-ui text-paper/75">
@@ -102,7 +102,7 @@ export function ChapterPager({
  ) : (
  <span />
  )}
- <span className="text-paper/30">
+ <span className="text-paper/55">
  {currentBook?.name}
  </span>
  {nBook ? (

@@ -22,7 +22,7 @@ export function BookChapterSidebar({
           ← All books
         </Link>
 
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/50 mb-2">
+        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
           Book
         </p>
         <div className="flex items-center justify-between gap-2 mb-5">
@@ -55,7 +55,7 @@ export function BookChapterSidebar({
           )}
         </div>
 
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/50 mb-3">
+        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
           Chapters
         </p>
         <div className="grid grid-cols-6 gap-1">

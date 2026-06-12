@@ -246,7 +246,7 @@ export default async function BibleChapterPage({
  </span>
  <span
  aria-hidden
- className="text-paper/40 group-open:rotate-180 transition-transform duration-200 text-caption"
+ className="text-paper/55 group-open:rotate-180 transition-transform duration-200 text-caption"
  >
  ▾
  </span>
@@ -281,13 +281,13 @@ export default async function BibleChapterPage({
  <ChapterPager slug={book} chapter={chapterNum} v={licensedId ?? undefined} />
 
  {!usingLicensed && (
- <p className="hidden md:block mt-10 mb-3 font-sans text-eyebrow text-paper/40 leading-[1.6]" data-reader-chrome>
+ <p className="hidden md:block mt-10 mb-3 font-sans text-eyebrow text-paper/55 leading-[1.6]" data-reader-chrome>
  ← → chapters · drag across words to highlight a phrase · click any Greek word for definition · Cmd+Enter to save a note
  </p>
  )}
 
  {!usingLicensed && (
- <p className="mt-6 md:mt-3 font-sans text-eyebrow text-paper/35 leading-[1.6]">
+ <p className="mt-6 md:mt-3 font-sans text-eyebrow text-paper/55 leading-[1.6]">
  Old Testament: Brenton&rsquo;s English Septuagint (1851, public domain).
  New Testament: King James Version (public domain). Patristic
  commentary from Schaff&rsquo;s Ante-Nicene and Nicene Fathers

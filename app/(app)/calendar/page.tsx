@@ -137,7 +137,7 @@ function ReadingPanel({
  {/* Eyebrow + citation stack on the same left rail, clean vertical
  rhythm, no baseline tug-of-war between an 11px caps label and a
  14px proper noun. */}
- <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold/75 font-semibold leading-none">
+ <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold font-semibold leading-none">
  {kindLabel}
  </p>
  <p className="mt-2 font-display-serif text-lede md:text-lede text-paper leading-tight">
@@ -148,7 +148,7 @@ function ReadingPanel({
  <p
  className={`font-serif text-paper/85 ${verseText} leading-[1.65] mt-4`}
  >
- <span className="font-sans text-eyebrow font-semibold text-gold/65 tracking-[0.05em] mr-2 align-baseline">
+ <span className="font-sans text-eyebrow font-semibold text-gold tracking-[0.05em] mr-2 align-baseline">
  {firstVerse.n}
  </span>
  {firstVerse.text}
@@ -162,7 +162,7 @@ function ReadingPanel({
 
  <Link
  href={`/bible/${ref.book}/${ref.chapter}#v${ref.from}`}
- className="mt-auto pt-4 inline-block font-sans text-caption font-medium text-gold/80 hover:text-gold transition-colors"
+ className="mt-auto pt-4 inline-block font-sans text-caption font-medium text-gold hover:text-gold-soft transition-colors"
  >
  {isDe ? "Vollständigen Abschnitt lesen →" : "Read full passage →"}
  </Link>
@@ -391,7 +391,7 @@ export default async function CalendarPage({
  </h2>
  <p
  lang="grc"
- className="mt-2 font-serif uppercase tracking-[3px] text-caption text-gold/65 leading-none"
+ className="mt-2 font-serif uppercase tracking-[3px] text-caption text-gold/80 leading-none"
  style={{ fontFamily: "var(--font-greek), serif" }}
  >
  {greekMonthName(month)}
@@ -463,7 +463,7 @@ export default async function CalendarPage({
  href={`/bible/${r.ref.book}/${r.ref.chapter}#v${r.ref.from}`}
  className="group flex items-baseline justify-between gap-3 py-2.5"
  >
- <span className="font-sans text-eyebrow uppercase tracking-[2px] text-gold/75 font-semibold">
+ <span className="font-sans text-eyebrow uppercase tracking-[2px] text-gold font-semibold">
  {kindLabel}
  </span>
  <span className="font-display-serif text-ui text-paper group-hover:text-gold transition-colors text-right">

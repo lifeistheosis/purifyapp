@@ -1148,7 +1148,7 @@ export default async function WhatsNewPage() {
  <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
- <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
+ <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
  v9.7 &middot; Search anything, multi-verse Bible, the Creed, smaller fixes
  </p>
  </div>
@@ -1332,7 +1332,7 @@ export default async function WhatsNewPage() {
  <span className="font-sans text-ui font-semibold text-paper truncate">
  {g.date}
  </span>
- <span className="font-sans text-caption uppercase tracking-[1.2px] text-paper/45">
+ <span className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
  {g.entries.length}{" "}
  {isDe
  ? g.entries.length === 1
@@ -1345,7 +1345,7 @@ export default async function WhatsNewPage() {
  </span>
  <span
  aria-hidden
- className="text-paper/45 group-open:rotate-180 transition-transform duration-200 text-caption"
+ className="text-paper/55 group-open:rotate-180 transition-transform duration-200 text-caption"
  >
  ▾
  </span>
@@ -1377,7 +1377,7 @@ function ReleaseDetails({ entry: e }: { entry: Entry }) {
  </span>
  <span
  aria-hidden
- className="ml-auto text-paper/40 group-open/rel:rotate-180 transition-transform duration-200 text-eyebrow"
+ className="ml-auto text-paper/55 group-open/rel:rotate-180 transition-transform duration-200 text-eyebrow"
  >
  ▾
  </span>

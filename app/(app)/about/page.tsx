@@ -203,7 +203,7 @@ export default async function AboutPage() {
  on the{" "}
  <Link
  href="/support"
- className="text-gold hover:underline underline-offset-2"
+ className="text-gold underline decoration-gold/50 hover:decoration-gold underline-offset-2"
  >
  Support page
  </Link>
@@ -502,7 +502,7 @@ function AboutDe() {
  Purify wird heute durch freiwillige Gaben getragen, die auf der{" "}
  <Link
  href="/support"
- className="text-gold hover:underline underline-offset-2"
+ className="text-gold underline decoration-gold/50 hover:decoration-gold underline-offset-2"
  >
  Unterstützungsseite
  </Link>{" "}

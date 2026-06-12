@@ -124,7 +124,7 @@ export function PrayerRuleReader({
   return (
     <article className="mx-auto w-full max-w-[640px]">
       <header className="mb-12 md:mb-14">
-        <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-5">
+        <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/55 mb-5">
           {eyebrowFor(rule)}
         </p>
         <div className="flex items-start justify-between gap-4">
@@ -146,7 +146,7 @@ export function PrayerRuleReader({
                   "shrink-0 text-title-sm transition-colors",
                   ruleBookmarked
                     ? "text-gold/90"
-                    : "text-paper/30 hover:text-paper",
+                    : "text-paper/55 hover:text-paper",
                 )}
               >
                 {ruleBookmarked ? "★" : "☆"}
@@ -165,7 +165,7 @@ export function PrayerRuleReader({
             {rule.intro}
           </p>
         )}
-        <p className="mt-4 font-sans text-caption text-paper/35">
+        <p className="mt-4 font-sans text-caption text-paper/55">
           About {rule.estimatedMinutes} min · {total}{" "}
           {total === 1 ? "prayer" : "prayers"}
           {rule.jurisdiction ? ` · ${rule.jurisdiction}` : ""}
@@ -226,7 +226,7 @@ export function PrayerRuleReader({
       </div>
 
       <footer className="mt-14">
-        <p className="font-sans text-caption text-paper/30">
+        <p className="font-sans text-caption text-paper/55">
           Source: {rule.source}
         </p>
       </footer>
@@ -262,7 +262,7 @@ function AudioRow({ src }: { src: string }) {
   }
   return (
     <div className="mt-5 border-t border-paper/10 pt-4">
-      <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/40 mb-2">
+      <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-2">
         Sung / Chanted
       </p>
       {/* eslint-disable-next-line jsx-a11y/media-has-caption -- chanted prayer audio, no speech track to caption */}
@@ -312,42 +312,43 @@ function PrayerCard({
   const shownRefrain = active?.refrain ?? prayer.refrain;
 
   return (
-    <details id={prayer.id} open className="group border-b border-paper/10">
+    <details
+      id={prayer.id}
+      open
+      className="group relative border-b border-paper/10"
+    >
+      {/* The bookmark star lives OUTSIDE the summary (absolutely positioned
+          over its row): a button nested inside <summary> is a nested
+          interactive control and fails accessibility checks. */}
       <summary className="cursor-pointer list-none py-4 flex items-center justify-between gap-3">
         <span
           className={cn(
-            "font-serif text-title-sm leading-snug transition-colors",
+            "font-serif text-title-sm leading-snug transition-colors pr-8",
             isDone ? "text-paper/40 line-through" : "text-paper/90",
           )}
         >
           {prayer.title}
         </span>
-        <span className="flex shrink-0 items-center gap-3">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              togglePrayerBookmark(ruleId, prayer.id, prayer.title);
-            }}
-            aria-pressed={bookmarked}
-            aria-label={bookmarked ? "Remove bookmark" : "Bookmark this prayer"}
-            title={bookmarked ? "Bookmarked" : "Bookmark"}
-            className={cn(
-              "text-ui transition-colors",
-              bookmarked ? "text-gold/90" : "text-paper/30 hover:text-paper",
-            )}
-          >
-            {bookmarked ? "★" : "☆"}
-          </button>
-          <span
-            aria-hidden
-            className="text-paper/30 text-eyebrow group-open:rotate-180 transition-transform duration-200"
-          >
-            ▾
-          </span>
+        <span
+          aria-hidden
+          className="shrink-0 text-paper/30 text-eyebrow group-open:rotate-180 transition-transform duration-200"
+        >
+          ▾
         </span>
       </summary>
+      <button
+        type="button"
+        onClick={() => togglePrayerBookmark(ruleId, prayer.id, prayer.title)}
+        aria-pressed={bookmarked}
+        aria-label={bookmarked ? "Remove bookmark" : "Bookmark this prayer"}
+        title={bookmarked ? "Bookmarked" : "Bookmark"}
+        className={cn(
+          "absolute right-[26px] top-[19px] text-ui transition-colors",
+          bookmarked ? "text-gold/90" : "text-paper/55 hover:text-paper",
+        )}
+      >
+        {bookmarked ? "★" : "☆"}
+      </button>
       <div className="pb-7">
         {hasVariants && (
           <div
@@ -393,7 +394,7 @@ function PrayerCard({
           </p>
         )}
         {active && (
-          <p className="mt-4 font-sans text-caption text-paper/30">
+          <p className="mt-4 font-sans text-caption text-paper/55">
             {active.jurisdiction} · {active.source}
           </p>
         )}

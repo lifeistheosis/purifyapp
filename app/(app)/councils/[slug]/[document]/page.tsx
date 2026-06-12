@@ -92,7 +92,7 @@ export default async function CouncilDocumentPage({
  </p>
  )}
  {s.citation && (
- <p className="mt-4 font-sans text-caption uppercase tracking-[1.2px] text-paper/45 font-semibold">
+ <p className="mt-4 font-sans text-caption uppercase tracking-[1.2px] text-paper/55 font-semibold">
  {s.citation}
  </p>
  )}

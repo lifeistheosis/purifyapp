@@ -77,7 +77,7 @@ function LicensedWorkCard({ work }: { work: LicensedWork }) {
           <p className="font-sans text-detail text-paper/70">
             {roleLabel} {work.author}
           </p>
-          <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/45">
+          <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
             {work.publisher}
             {work.year ? ` · ${work.year}` : ""}
           </p>

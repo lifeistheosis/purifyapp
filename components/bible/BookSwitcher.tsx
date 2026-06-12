@@ -98,7 +98,7 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
         aria-expanded={open}
         className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 pl-3 pr-2.5 py-2 font-sans text-detail font-medium text-paper transition-colors"
       >
-        <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/50">
+        <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55">
           Book
         </span>
         <span className="font-sans text-detail font-medium text-paper">

@@ -53,7 +53,7 @@ export function FeastPanel({
  {/* Text column */}
  <div className={hasIcon ? "min-w-0 text-center md:text-left" : "min-w-0"}>
  {/* Date, quiet small-caps line. */}
- <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold/75 font-semibold">
+ <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold font-semibold">
  {dateLabel}
  </p>
  {headline ? (

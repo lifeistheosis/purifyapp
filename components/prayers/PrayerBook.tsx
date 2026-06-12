@@ -160,7 +160,7 @@ export function PrayerIndexRow({
               {title}
             </h2>
             {description && (
-              <p className="mt-1.5 font-sans text-detail text-paper/35 leading-[1.6]">
+              <p className="mt-1.5 font-sans text-detail text-paper/55 leading-[1.6]">
                 {description}
               </p>
             )}
@@ -186,7 +186,7 @@ export function PrayerIndexRow({
           )}
         </div>
         {meta && (
-          <span className="shrink-0 font-sans text-caption text-paper/35 tabular-nums">
+          <span className="shrink-0 font-sans text-caption text-paper/55 tabular-nums">
             {meta}
           </span>
         )}
@@ -204,7 +204,7 @@ export function PrayerIndexRow({
 /** Faint closing note (sourcing, help-wanted, sign-in nudge). */
 export function PrayerNote({ children }: { children: ReactNode }) {
   return (
-    <p className="mt-14 font-sans text-caption text-paper/35 leading-[1.7]">
+    <p className="mt-14 font-sans text-caption text-paper/55 leading-[1.7]">
       {children}
     </p>
   );

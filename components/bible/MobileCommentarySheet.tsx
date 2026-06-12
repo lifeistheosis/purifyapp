@@ -48,7 +48,7 @@ function SingleNote({ author, work, text }: Note) {
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/75 truncate">
  {author}
  </p>
- <p className="font-sans text-eyebrow italic text-paper/50 truncate">
+ <p className="font-sans text-eyebrow italic text-paper/55 truncate">
  {work}
  </p>
  </div>
@@ -104,7 +104,7 @@ function FatherGroup({ author, items }: { author: string; items: Note[] }) {
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/75 truncate">
  {author}
  </p>
- <p className="font-sans text-eyebrow italic text-paper/50 truncate">
+ <p className="font-sans text-eyebrow italic text-paper/55 truncate">
  {items.length} commentaries
  </p>
  </div>
