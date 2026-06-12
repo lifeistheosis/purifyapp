@@ -196,7 +196,7 @@ export default async function SupportPage() {
  <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
  {isDe ? "Ziel dieses Monats" : "This month’s goal"}
  </p>
- <p className="font-sans text-eyebrow text-paper/40">
+ <p className="font-sans text-eyebrow text-paper/55">
  {live
  ? isDe
  ? `Live · aktualisiert vor ${ago(live.fetchedAt)}`
@@ -209,7 +209,7 @@ export default async function SupportPage() {
  <div className="flex items-baseline justify-between gap-3 mb-3">
  <p className="font-sans text-title md:text-heading font-bold text-paper tabular-nums">
  {formatUsd(raised)}
- <span className="text-paper/45 text-lede font-normal">
+ <span className="text-paper/55 text-lede font-normal">
  {" "}{isDe ? "von" : "of"} {formatUsd(monthlyGoalUsd)}
  </span>
  </p>
