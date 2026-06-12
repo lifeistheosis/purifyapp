@@ -325,8 +325,8 @@ export default async function PrayersPage() {
               <PrayerSearch
                 placeholder={
                   isDe
-                    ? "Gebete, Gebetsseil, die Hymne, die Horen durchsuchen…"
-                    : "Search prayers, the rope, the Anthem, the hours..."
+                    ? "Gebete, das Seil, die Horen durchsuchen"
+                    : "Search prayers, the rope, the hours"
                 }
               >
             {popularRules().length > 0 && (
