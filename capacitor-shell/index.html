@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Purify</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #161219;
+        color: #f3ede4;
+        font-family: Georgia, "Times New Roman", serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+      main {
+        padding: 2rem;
+        max-width: 26rem;
+      }
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        margin: 0 0 0.75rem;
+      }
+      p {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        opacity: 0.7;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Offline fallback for the native shell. At runtime the shell loads
+         the production site via server.url; this page only appears if the
+         remote load fails entirely. -->
+    <main>
+      <h1>Purify</h1>
+      <p>
+        You appear to be offline. Reconnect to continue reading; pages you
+        have visited recently may still open from the cache.
+      </p>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Purify</string>
+    <string name="title_activity_main">Purify</string>
+    <string name="package_name">net.purifyapp.purify</string>
+    <string name="custom_url_scheme">net.purifyapp.purify</string>
+</resources>

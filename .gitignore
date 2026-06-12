@@ -79,3 +79,11 @@ FABLE5_SUGGESTIONS.md
 # Working material for the /theology section; not redistributed.
 .dogma-audit/
 dogma-scan.json
+
+# Native signing material. The Android upload keystore and any Apple
+# certificates/profiles must NEVER enter git; back them up outside the repo.
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
+*.cer
