@@ -16,6 +16,7 @@ import {
   isStandalone,
 } from "@/lib/pwa/detectBrowser";
 import { setOverlayOpen } from "@/lib/ui/overlay";
+import { isNativeClient } from "@/lib/platform/native";
 import { cn } from "@/lib/cn";
 
 type Variant = "primary" | "secondary" | "tertiary" | "ghost" | "inverse";
@@ -79,10 +80,11 @@ export function DesktopInstallCTA({
   // Standalone check is window-only, so derive it after mount. The
   // 0-delay timer defers the state update outside the effect body —
   // see the same pattern in InstallPrompt for the iOS hint
-  // (react-hooks/set-state-in-effect).
+  // (react-hooks/set-state-in-effect). The native store shell counts as
+  // installed: the CTA then renders as a plain link into the app.
   const [standalone, setStandalone] = useState(false);
   useEffect(() => {
-    const result = isStandalone();
+    const result = isStandalone() || isNativeClient();
     if (!result) return;
     const tm = setTimeout(() => setStandalone(true), 0);
     return () => clearTimeout(tm);

@@ -4,6 +4,7 @@ import { fetchBmcTotal } from "@/lib/support/buymeacoffee";
 import { getExpenseLines, getMonthlyGoalUsd } from "@/lib/support/expenses";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
+import { isNativeRequest } from "@/lib/platform/nativeRequest";
 
 export const metadata = {
  title: "Support",
@@ -11,9 +12,15 @@ export const metadata = {
  "How the project is funded, what the money goes toward, and how to help. The core stays free; a future optional subscription layer covers heavier infrastructure under proper licensing.",
 };
 
-// Server component; revalidates every five minutes so the live BMC total
-// is fresh without redeploying.
-export const revalidate = 300;
+// Server component. Rendering is dynamic (it reads the request UA to
+// detect the native app shell); the live BMC total stays cheap because
+// fetchBmcTotal caches at the fetch layer for five minutes.
+//
+// In the native store builds (iOS/Android), this page must not show
+// external payment links or fundraising meters — Apple guideline 3.1.1
+// prohibits external purchase mechanisms inside the binary. Native users
+// see the free-forever note and a contact block instead; the web page is
+// unchanged.
 
 const SECTION = "px-5 md:px-8 py-16 md:py-24";
 
@@ -37,6 +44,105 @@ function ago(iso: string): string {
 }
 
 export default async function SupportPage() {
+ const native = await isNativeRequest();
+ const locale = await getServerLocale();
+ const isDe = locale === "de";
+ const m = getMessages(locale);
+
+ if (native) {
+ return (
+ <section className={`${SECTION} bg-night`}>
+ <article className="mx-auto max-w-[760px] w-full">
+ <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ {isDe ? "Unterstützung" : t(m, "support.eyebrow")}
+ </p>
+ <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ {isDe
+ ? "Das Werk hinter der App."
+ : "The work behind the app."}
+ </h1>
+ <p className="mt-6 font-serif text-body text-paper/85 leading-[1.7]">
+ {isDe ? (
+ <>
+ Der Kern von Purify, die Heiligen, die Schriften, die
+ Gebete, der Kalender, ist frei und bleibt frei. Hinter der
+ App steht eine kleine Gemeinschaft, die Quellen beschafft,
+ Texte prüft und das Werk trägt.
+ </>
+ ) : (
+ <>
+ The core of Purify, the saints, the Scriptures, the
+ prayers, the calendar, is free, and stays free. Behind the
+ app is a small community that sources the texts, reviews
+ them, and keeps the work going.
+ </>
+ )}
+ </p>
+
+ {/* Free-forever note */}
+ <section className="mt-12 rounded-lg border border-paper/12 bg-paper/[0.02] p-6">
+ <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+ {isDe ? "Der Kern bleibt frei" : "The core stays free"}
+ </p>
+ <p className="font-serif text-body text-paper/85 leading-[1.7]">
+ {isDe ? (
+ <>
+ Die Heiligen, die Schriften mit dem Griechischen daneben,
+ die täglichen Gebete und der Kalender bleiben unentgeltlich
+ für jeden, der sie braucht. Nichts in dieser App ist hinter
+ einer Zahlung verschlossen.
+ </>
+ ) : (
+ <>
+ The saints, the Scriptures with the Greek beside them, the
+ daily prayers, and the calendar remain free of charge to
+ anyone who needs them. Nothing in this app is locked behind
+ a payment.
+ </>
+ )}
+ </p>
+ </section>
+
+ {/* Contact */}
+ <section className="mt-10 rounded-lg border border-paper/12 bg-paper/[0.03] p-6">
+ <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+ {isDe ? "Schreib uns" : "Write to us"}
+ </p>
+ <p className="font-serif text-body text-paper/85 leading-[1.7]">
+ {isDe ? (
+ <>
+ Fragen, Korrekturen oder ein Text, den du vermisst? Die
+ Antworten auf häufige Fragen stehen im{" "}
+ <Link href="/faq" className="underline decoration-paper/30 underline-offset-4 hover:text-paper">
+ FAQ
+ </Link>
+ ; alles Weitere erreicht uns über die dort genannten Wege.
+ </>
+ ) : (
+ <>
+ Questions, corrections, or a text you wish we carried? Start
+ with the{" "}
+ <Link href="/faq" className="underline decoration-paper/30 underline-offset-4 hover:text-paper">
+ FAQ
+ </Link>
+ ; anything else reaches us through the contact paths listed
+ there.
+ </>
+ )}
+ </p>
+ </section>
+
+ {/* Closing */}
+ <p className="mt-14 font-serif italic text-center text-lede text-paper/70">
+ {isDe
+ ? "Wir sind froh, daß du da bist."
+ : "We are glad you are here."}
+ </p>
+ </article>
+ </section>
+ );
+ }
+
  const [live, expenses, monthlyGoalUsd] = await Promise.all([
    fetchBmcTotal(),
    getExpenseLines(),
@@ -51,9 +157,6 @@ export default async function SupportPage() {
  1,
  Math.max(0, raised / monthlyGoalUsd),
  );
- const locale = await getServerLocale();
- const isDe = locale === "de";
- const m = getMessages(locale);
 
  return (
  <section className={`${SECTION} bg-night`}>
