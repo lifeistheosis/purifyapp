@@ -27,6 +27,7 @@ import {
   writeRopeSettings,
   type RopeSettings,
 } from "@/lib/prayers/storage";
+import { isNativeClient } from "@/lib/platform/native";
 
 const LINES = [
   "Lord Jesus Christ, Son of God, have mercy on me, a sinner.",
@@ -77,11 +78,26 @@ export function PrayerRope() {
   const advance = useCallback(() => {
     setCount((c) => {
       const next = c + 1;
-      if (settings.haptics && typeof navigator !== "undefined" && "vibrate" in navigator) {
-        try {
-          navigator.vibrate(8);
-        } catch {
-          /* ignore */
+      if (settings.haptics) {
+        // Inside the native app, use the platform haptic engine — iOS
+        // WKWebView never implemented navigator.vibrate, and this knot
+        // tick is the place a real haptic matters most. Browsers keep
+        // the vibrate path.
+        if (isNativeClient()) {
+          import("@capacitor/haptics")
+            .then(({ Haptics, ImpactStyle }) =>
+              Haptics.impact({ style: ImpactStyle.Light }),
+            )
+            .catch(() => {});
+        } else if (
+          typeof navigator !== "undefined" &&
+          "vibrate" in navigator
+        ) {
+          try {
+            navigator.vibrate(8);
+          } catch {
+            /* ignore */
+          }
         }
       }
       // Bell tone every 25 knots, only when enabled.
@@ -147,17 +163,21 @@ export function PrayerRope() {
     return () => window.removeEventListener("keydown", onKey);
   }, [advance, showSettings]);
 
-  // Geometry for the SVG rope.
+  // Geometry for the SVG rope. Coordinates are rounded to 3 decimals
+  // (sub-pixel at this viewBox) because Math.cos/sin differ between the
+  // server's V8 and the browser's in the last bits, which made every
+  // bead a hydration-mismatch warning.
   const dots = useMemo(() => {
     const cx = 200;
     const cy = 200;
     const r = 160;
+    const round3 = (n: number) => Math.round(n * 1000) / 1000;
     const arr: { x: number; y: number; idx: number }[] = [];
     for (let i = 0; i < knotCount; i++) {
       const theta = -Math.PI / 2 + (i / knotCount) * Math.PI * 2;
       arr.push({
-        x: cx + r * Math.cos(theta),
-        y: cy + r * Math.sin(theta),
+        x: round3(cx + r * Math.cos(theta)),
+        y: round3(cy + r * Math.sin(theta)),
         idx: i,
       });
     }

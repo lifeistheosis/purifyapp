@@ -3,6 +3,7 @@ import { Cardo, DM_Sans, DM_Serif_Display, Lora } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
+import { NativeBridge } from "@/components/native/NativeBridge";
 import { SITE_URL } from "@/lib/site";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages } from "@/lib/i18n";
@@ -123,6 +124,7 @@ export default async function RootLayout({
  {children}
  </MessagesProvider>
  <AnalyticsTracker />
+ <NativeBridge />
  </body>
  </html>
  );
