@@ -131,7 +131,7 @@ function score(entry: SearchEntry, q: string): number {
 
 export function PrayerSearch({
   children,
-  placeholder = "Search prayers, the rope, the Anthem, the hours...",
+  placeholder = "Search prayers, the rope, the hours",
 }: {
   children: React.ReactNode;
   placeholder?: string;

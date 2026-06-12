@@ -24,7 +24,7 @@ import { isMultiReferenceQuery } from "@/lib/bible/parseReferences";
  */
 export function BibleSearch({
   className,
-  placeholder = "Search book, chapter, verse, or range (e.g. John 3:16, James 2:14-26, Ps 23)",
+  placeholder = "Search a verse (John 3:16, Ps 23)",
 }: {
   className?: string;
   placeholder?: string;
