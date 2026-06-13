@@ -33,13 +33,15 @@ export function getAmbienceTrack(id: string | null): AmbienceTrack | undefined {
 }
 
 // ── Access / paywall ─────────────────────────────────────────────────────────
-// Pre-release: ungated. At public launch set AMBIENCE_GATED = true and make
-// hasAmbienceAccess read the subscription entitlement (e.g. profiles.is_subscriber).
-export const AMBIENCE_GATED = false;
-
-export function hasAmbienceAccess(isSubscriber: boolean): boolean {
-  if (!AMBIENCE_GATED) return true;
-  return isSubscriber;
+// Ambience is part of the Purify Plus feature layer (NOT the supporter
+// lifetime-sync promise — that covers sync only). Access is governed by
+// the entitlement model in lib/entitlements: pass the derived
+// `plusFeatures` flag. While ENTITLEMENTS_ENFORCED is false, that flag is
+// always true, so ambience is open in the pre-launch builds exactly as
+// before. No separate AMBIENCE_GATED switch is needed — the single
+// launch switch lives in lib/entitlements/entitlements.ts.
+export function hasAmbienceAccess(plusFeatures: boolean): boolean {
+  return plusFeatures;
 }
 
 // localStorage keys for the persistent controller.

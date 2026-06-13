@@ -13,8 +13,11 @@
 //   - Elapsed time on the active track so you can see how long you have been at it
 //   - Pause and Resume preserve the chosen track; Stop releases the choice
 //
-// Pre-release: ungated. When AMBIENCE_GATED flips on, non-subscribers get an
-// upgrade prompt instead of playback.
+// Access is part of the Purify Plus feature layer; see lib/entitlements.
+// Pre-launch (ENTITLEMENTS_ENFORCED = false) it is open. The controller
+// already self-hides while AMBIENCE_TRACKS is empty, so no paywall UI is
+// wired yet; that lands with the v10 upgrade surfaces alongside the
+// non-empty, rights-cleared catalogue.
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
