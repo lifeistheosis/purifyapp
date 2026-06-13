@@ -2,13 +2,14 @@
 
 import { useEffect } from "react";
 import { setOverlayOpen } from "@/lib/ui/overlay";
-import { Highlighter, Eraser, Link2, Check, Bookmark, SquarePen } from "lucide-react";
+import { Highlighter, Eraser, Link2, Check, Bookmark, SquarePen, Flower2 } from "lucide-react";
 
 export type MobileVerseAction =
  | "highlight"
  | "bookmark"
  | "copyLink"
  | "note"
+ | "gather"
  | "clearWords";
 
 type ActionState = {
@@ -205,6 +206,14 @@ export function MobileVerseToolbar({
  }
  >
  <SquarePen className="h-[18px] w-[18px]" aria-hidden />
+ </button>
+ <button
+ type="button"
+ onClick={() => handle("gather")}
+ aria-label="Gather to florilegium"
+ className="h-11 w-11 rounded-full border border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10 flex items-center justify-center text-body transition-colors duration-150"
+ >
+ <Flower2 className="h-[18px] w-[18px]" aria-hidden />
  </button>
  </div>
  </div>

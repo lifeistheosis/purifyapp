@@ -96,6 +96,7 @@ export function AddToFlorilegium({
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="On the Cross..."
                 maxLength={80}
+                // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
                 className="w-full bg-paper/[0.05] border border-paper/20 rounded-md px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/50"
               />

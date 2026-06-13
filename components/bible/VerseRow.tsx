@@ -20,6 +20,7 @@ import {
  MobileVerseToolbar,
  type MobileVerseAction,
 } from "./MobileVerseToolbar";
+import { FlorilegiumPickerSheet } from "@/components/florilegium/FlorilegiumPickerSheet";
 import { cn } from "@/lib/cn";
 
 function tokenize(text: string): string[] {
@@ -104,6 +105,10 @@ export function VerseRow({
  label: `${bookName} ${chapter}:${verse.n}`,
  });
  }
+ // Florilegium: gather this verse into a collection. The picker sheet is
+ // opened from the context menu / mobile toolbar; it owns its own UI so
+ // none of the verse gesture handling is touched.
+ const [gatherOpen, setGatherOpen] = useState(false);
  const { on: showInterlinear } = useInterlinear();
  const hasInterlinear =
  showInterlinear && (!!originalText || (originalTokens?.length ?? 0) > 0);
@@ -731,6 +736,10 @@ export function VerseRow({
  onClick: toggleVerseBookmark,
  destructive: isVerseBookmarked,
  },
+ {
+ label: "Gather to florilegium",
+ onClick: () => setGatherOpen(true),
+ },
  ];
  const groups: ContextMenuGroup[] = [
  copyGroup,
@@ -752,6 +761,19 @@ export function VerseRow({
  })()}
  />
  )}
+
+ <FlorilegiumPickerSheet
+ open={gatherOpen}
+ onClose={() => setGatherOpen(false)}
+ item={{
+ kind: "scripture",
+ text: verse.text,
+ reference: `${bookName} ${chapter}:${verse.n}`,
+ book,
+ chapter,
+ verse: verse.n,
+ }}
+ />
  </div>
 
  {/* Desktop-only inline toolbar, hover-revealed at md+. On mobile
@@ -992,6 +1014,10 @@ export function VerseRow({
  case "note":
  setDraft(ann.note ?? "");
  setEditing(true);
+ break;
+ case "gather":
+ setShowTools(false);
+ setGatherOpen(true);
  break;
  case "clearWords":
  ann.clearWords();

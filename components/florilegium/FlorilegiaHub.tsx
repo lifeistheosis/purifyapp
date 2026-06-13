@@ -46,6 +46,7 @@ export function FlorilegiaHub() {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="On the Cross, On stillness, For Pascha..."
             maxLength={80}
+            // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/50 transition-colors"
           />
