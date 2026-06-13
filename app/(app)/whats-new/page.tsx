@@ -23,6 +23,20 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "v9.9.5",
+ kind: "Two of the Fathers' great works join the library, complete",
+ date: "June 13, 2026",
+ blurb:
+  "A reading release. St. Basil's On the Holy Spirit and St. John of Damascus's Exact Exposition of the Orthodox Faith, two of the foundational books of Orthodox theology, join the saints' works in full, verbatim from the public domain. Both were asked for in the pdf-library on the Discord; both are now in the app to read, not only to find.",
+ items: [
+  "St. Basil the Great, On the Holy Spirit, complete. The whole De Spiritu Sancto in thirty chapters, the foundational defence of the Spirit's divinity written for Amphilochius of Iconium, verbatim from the public-domain Nicene and Post-Nicene Fathers. It joins the Hexaemeron on St. Basil's profile.",
+  "St. John of Damascus, An Exact Exposition of the Orthodox Faith, complete. The earlier Book-I excerpt is replaced by all four books, ninety-nine chapters, the Eastern Church's classic systematic theology from the knowledge of God to the Resurrection, verbatim from the public-domain Nicene and Post-Nicene Fathers.",
+  "Both works were requested in the pdf-library forum. The public-domain texts gathered there are being brought into the app as they are sourced and prepared.",
+  "Cache version bumped to v9.9.5 so the new works evict the old buckets on this release.",
+  "Footer, home hero chip, and /whats-new chip step to v9.9.5.",
+ ],
+ },
+ {
  version: "v9.9",
  kind: "Apologetics opens, the catena grows, and the house is set in order",
  date: "June 12, 2026",
@@ -1170,17 +1184,17 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
- v9.9 &middot; Apologetics, the catena, and a quieter shell
+ v9.9.5 &middot; Basil and John of Damascus, complete
  </p>
  </div>
 
  {isDe ? (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Apologetik öffnet, die Catena wächst, das Haus wird in Ordnung gebracht.
+ Zwei der großen Werke der Väter treten vollständig in die Bibliothek ein.
  </h1>
  ) : (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Apologetics opens, the catena grows, and the house is set in order.
+ Two of the Fathers' great works join the library, complete.
  </h1>
  )}
 
@@ -1218,19 +1232,16 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v9.9 bringt das Haus in Ordnung, bevor die Türen weiter
- aufgehen. Ein neuer Raum für{" "}
- <Link href="/apologetics" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Apologetik</Link>{" "}
- wendet die Bibliothek nach außen, beginnend mit der Existenz
- Gottes und dem Ort der Schrift in der Kirche. Die patristische
- Catena wächst zum ersten Mal über den hl. Johannes Chrysostomus
- hinaus: Der selige Augustinus liest nun den{" "}
- <Link href="/bible/1-john/1" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">1. Johannesbrief</Link>{" "}
- neben dir. Die mobile Oberfläche ist ruhiger und ehrlicher
- geworden, die kleine Schrift auf den dunklen Flächen erreicht
- nun die Kontrastschwelle für Barrierefreiheit, und die Räume
- der Bibliothek sind vom Telefon aus leichter zu finden als je
- zuvor.
+ v9.9.5 ist eine Lese-Ausgabe. Zwei der grundlegenden Bücher der
+ orthodoxen Theologie treten vollständig zu den Heiligen hinzu:{" "}
+ <Link href="/saints/basil-the-great/on-the-holy-spirit" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Über den Heiligen Geist</Link>{" "}
+ des hl. Basilius und die{" "}
+ <Link href="/saints/john-of-damascus/exact-exposition-of-the-orthodox-faith" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Genaue Darlegung des orthodoxen Glaubens</Link>{" "}
+ des hl. Johannes von Damaskus, beide wortgetreu aus dem
+ Gemeinfreien, beide in der PDF-Bibliothek auf dem Discord
+ erbeten. Sie sind jetzt in der App, zum Lesen, nicht nur zum
+ Finden, und der übrige gemeinfreie Bestand folgt, sobald er
+ aufbereitet ist.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
@@ -1276,17 +1287,15 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v9.9 puts the house in order before the doors widen. A new{" "}
- <Link href="/apologetics" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Apologetics room</Link>{" "}
- turns the library outward, beginning with the existence of God
- and the place of Scripture within the Church. The patristic
- catena grows past St. John Chrysostom for the first time:
- Blessed Augustine now reads{" "}
- <Link href="/bible/1-john/1" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">1 John</Link>{" "}
- beside you. The mobile shell is quieter and truer, the small
- print across the dark surfaces now meets the accessibility
- contrast floor, and the library's rooms are easier to find from
- the phone than they have ever been.
+ v9.9.5 is a reading release. Two of the foundational books of
+ Orthodox theology join the saints in full: St. Basil's{" "}
+ <Link href="/saints/basil-the-great/on-the-holy-spirit" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">On the Holy Spirit</Link>{" "}
+ and St. John of Damascus's{" "}
+ <Link href="/saints/john-of-damascus/exact-exposition-of-the-orthodox-faith" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Exact Exposition of the Orthodox Faith</Link>,
+ both verbatim from the public domain, both asked for in the
+ pdf-library on the Discord. They are in the app now to read, not
+ only to find, and the rest of the public-domain shelf follows as
+ it is sourced.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
