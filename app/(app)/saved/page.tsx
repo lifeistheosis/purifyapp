@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SavedList } from "@/components/saved/SavedList";
 
 export const metadata = {
@@ -24,6 +25,21 @@ export default function SavedPage() {
           devices.
         </p>
         <SavedList />
+
+        <div className="mt-12 rounded-lg border border-paper/12 bg-paper/[0.03] p-5 hover:border-gold/40 transition-colors">
+          <Link href="/florilegium" className="block">
+            <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold/85 mb-1">
+              Florilegium
+            </p>
+            <p className="font-serif text-lede text-paper leading-tight">
+              Gather the lines that strike you →
+            </p>
+            <p className="mt-1 font-serif italic text-detail text-paper/55 leading-[1.5]">
+              Your own collections of verses and patristic lines, each with
+              a note beside it.
+            </p>
+          </Link>
+        </div>
       </article>
     </section>
   );
