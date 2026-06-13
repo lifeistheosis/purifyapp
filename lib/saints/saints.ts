@@ -4017,7 +4017,18 @@ export const SAINTS: Saint[] = [
       "He taught the prayer of the mind in the heart and the unseen warfare against the passions in a plain and practical way, suited to laypeople in the world as much as to monks, and warned against both coldness and delusion. He reposed quietly on the feast of Theophany, the sixth of January, 1894.",
       "The Russian Orthodox Church numbered him among the saints in 1988, and the Church keeps his memory on the tenth of January, honoring Theophan the Recluse, the bishop who hid himself away and so taught his whole people to pray.",
     ],
-    works: [],
+    works: [
+      {
+        slug: "way-of-a-pilgrim",
+        title: "The Way of a Pilgrim",
+        subtitle:
+          "The anonymous Russian tale of the Jesus Prayer, in St. Theophan's recension",
+        year: "1881",
+        blurb:
+          "The classic narrative of unceasing prayer: an anonymous wanderer crosses Russia learning to pray the Jesus Prayer from the Philokalia. Carried on St. Theophan's profile because he corrected the standard Russian recension and gave the Church its teaching on the prayer the pilgrim learns; the tale itself is anonymous.",
+        topics: ["Jesus Prayer", "Prayer of the Heart", "Pilgrimage", "Philokalia"],
+      },
+    ],
   },
   {
     slug: "philoumenos-of-jacobs-well",
