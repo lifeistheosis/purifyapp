@@ -6,6 +6,7 @@ export const COMMENTED_BOOKS: ReadonlySet<string> = new Set([
   // Old Testament (selected)
   "genesis",
   "exodus",
+  "1-samuel",
   "psalms",
   // Gospels + Acts
   "matthew",
