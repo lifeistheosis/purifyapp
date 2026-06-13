@@ -712,10 +712,10 @@ export const SAINTS: Saint[] = [
  {
  slug: "exact-exposition-of-the-orthodox-faith",
  title: "An Exact Exposition of the Orthodox Faith",
- subtitle: "Book I, opening chapters",
+ subtitle: "The Exact Exposition, complete in four books",
  year: "c. 740",
  blurb:
- "The Eastern Church's classic systematic theology, what is known of God, what is unknowable, and why.",
+ "The Eastern Church's classic systematic theology, complete: God known and unknowable, the Trinity, creation and the angels, man, the Incarnation and the two wills of Christ, the sacraments, the icons, and the last things.",
  topics: ["Theology", "Trinity", "Knowledge of God", "Essence and Energies"],
  },
  ],
