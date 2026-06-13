@@ -7,6 +7,7 @@ import type {
 } from "@/lib/theology/load";
 import { saintsCitedIn } from "@/lib/theology/load";
 import { getSaint } from "@/lib/saints/saints";
+import { AddToFlorilegium } from "@/components/florilegium/AddToFlorilegium";
 
 export function TopicReader({ body }: { body: TheologyBody }) {
   const saints = saintsCitedIn(body);
@@ -285,18 +286,30 @@ function QuotationCard({ q }: { q: Quotation }) {
           {q.gloss}
         </p>
       ) : null}
-      {q.source ? (
-        <p className="mt-2 font-sans text-caption text-paper/40">
-          <a
-            href={q.source}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline decoration-paper/20 underline-offset-4 hover:text-paper/60"
-          >
-            Source
-          </a>
-        </p>
-      ) : null}
+      <div className="mt-2 flex items-center gap-4">
+        {q.source ? (
+          <p className="font-sans text-caption text-paper/40">
+            <a
+              href={q.source}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-paper/20 underline-offset-4 hover:text-paper/60"
+            >
+              Source
+            </a>
+          </p>
+        ) : null}
+        <AddToFlorilegium
+          item={{
+            kind: "father",
+            text: q.text,
+            author: q.author,
+            saintSlug: q.saintSlug,
+            work: q.work,
+            href: q.saintSlug ? `/saints/${q.saintSlug}` : undefined,
+          }}
+        />
+      </div>
     </div>
   );
 }
