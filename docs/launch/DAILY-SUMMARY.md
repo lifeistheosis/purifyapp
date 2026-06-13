@@ -1,5 +1,38 @@
 # Daily Sprint Summary
 
+## v10 feature build — 2026-06-12 (parallel track, committed locally, not pushed)
+
+While the store sprint waits on enrollment + the Mac/icon externals,
+began the v10 feature foundation (public launch = subscriptions + the
+Plus layer). All dark-launched and held per the commits-only rule.
+
+### Completed
+- **Entitlement spine** (commit, dark): lib/entitlements derives the
+  locked model (free / Plus / supporter-lifetime-sync) from a new
+  RLS-scoped entitlements table; one flag, ENTITLEMENTS_ENFORCED, is
+  the whole launch switch; 8 unit tests pin both states incl. the
+  supporter = sync-but-not-feature-layer distinction. Ambience rewired
+  onto it. Writes are service-role only (admin now, billing webhooks at
+  v10).
+- **Florilegium** (Plus flagship): local-first store (offline-safe,
+  billing-state never touches gathered text), /florilegium hub + detail
+  routes behind the plusFeatures gate (open in dark launch), PlusGate
+  upgrade panel, /saved entry point, and a sync-target migration
+  (florilegia + florilegium_items, client-UUID identity for idempotent
+  merge).
+- **Gather affordance**: AddToFlorilegium inline popover wired into the
+  theology quote cards (browser-proven end to end), and a
+  FlorilegiumPickerSheet driven from the Bible verse context menu +
+  mobile long-press toolbar (typecheck/lint clean; verse tap-path
+  flagged for day-5 device QA).
+
+### Next best v10 increment (pure code, no externals)
+Florilegium cross-device sync: mirror the local store to the
+florilegia/florilegium_items tables on sign-in (schema + local store
+both ready). That makes the flagship a real synced Plus feature. Then:
+saint-works reader gather wiring, guided collections, and the billing
+integration (gated on store accounts).
+
 ## Day 1 (cont.) — 2026-06-12, second session
 
 Code for days 2 and 3 landed a day early; the remaining sprint work is
