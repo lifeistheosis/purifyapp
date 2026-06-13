@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { syncBookmarks, pushAllLocalBookmarks } from "@/lib/sync/bookmarks";
 import { syncAnnotations, pushAllLocalAnnotations } from "@/lib/sync/annotations";
+import { syncFlorilegia, pushAllLocalFlorilegia } from "@/lib/sync/florilegium";
 
 /**
  * Background sync glue. Mounts once in the (app) layout so every page under
@@ -16,6 +17,7 @@ export function SyncBridge() {
   const signedInRef = useRef<boolean | null>(null);
   const bookmarkTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const annotationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const florilegiumTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -32,6 +34,7 @@ export function SyncBridge() {
           // Initial two-way sync on first mount of any (app) page.
           syncBookmarks().catch(() => {});
           syncAnnotations().catch(() => {});
+          syncFlorilegia().catch(() => {});
         }
       } catch {
         signedInRef.current = false;
@@ -53,16 +56,26 @@ export function SyncBridge() {
         pushAllLocalAnnotations().catch(() => {});
       }, 500);
     }
+    function onFlorilegium() {
+      if (!signedInRef.current) return;
+      if (florilegiumTimer.current) clearTimeout(florilegiumTimer.current);
+      florilegiumTimer.current = setTimeout(() => {
+        pushAllLocalFlorilegia().catch(() => {});
+      }, 500);
+    }
 
     window.addEventListener("purify:bookmark", onBookmark);
     window.addEventListener("purify:annotation", onAnnotation);
+    window.addEventListener("purify:florilegium", onFlorilegium);
 
     return () => {
       cancelled = true;
       window.removeEventListener("purify:bookmark", onBookmark);
       window.removeEventListener("purify:annotation", onAnnotation);
+      window.removeEventListener("purify:florilegium", onFlorilegium);
       if (bookmarkTimer.current) clearTimeout(bookmarkTimer.current);
       if (annotationTimer.current) clearTimeout(annotationTimer.current);
+      if (florilegiumTimer.current) clearTimeout(florilegiumTimer.current);
     };
   }, []);
 
