@@ -634,6 +634,15 @@ export const SAINTS: Saint[] = [
  ],
  works: [
  {
+ slug: "on-the-holy-spirit",
+ title: "On the Holy Spirit",
+ subtitle: "The treatise De Spiritu Sancto, complete in thirty chapters",
+ year: "375",
+ blurb:
+ "The foundational defence of the Spirit's divinity, written for Amphilochius of Iconium: that the Spirit is worshipped and glorified together with the Father and the Son, and that the Church's unwritten tradition guards this faith.",
+ topics: ["Holy Spirit", "Trinity", "Tradition", "Worship"],
+ },
+ {
  slug: "hexaemeron",
  title: "The Hexaemeron",
  subtitle: "Nine homilies on the six days of creation",
