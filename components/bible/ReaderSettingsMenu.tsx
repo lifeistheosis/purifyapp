@@ -114,7 +114,15 @@ export function ReaderSettingsMenu({
           ref={panelRef}
           role="dialog"
           aria-label="Reader settings"
-          className="absolute right-0 mt-2 w-[260px] z-50 rounded-lg border border-paper/20 bg-night-soft shadow-pop p-4 space-y-4"
+          // Anchor to the side the button sits on so the panel opens into
+          // the page, never off it: the desktop (embedded) pill is on the
+          // right of the toolbar, the mobile pill is at the left of its
+          // row. Right-aligning the mobile panel shot it off the left edge.
+          // The viewport cap is a guard for very narrow phones.
+          className={cn(
+            "absolute mt-2 w-[260px] max-w-[calc(100vw-1.5rem)] z-50 rounded-lg border border-paper/20 bg-night-soft shadow-pop p-4 space-y-4",
+            embedded ? "right-0" : "left-0",
+          )}
         >
           {/* Text size */}
           <div>
