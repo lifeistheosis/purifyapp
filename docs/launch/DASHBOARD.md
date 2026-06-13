@@ -16,8 +16,8 @@ Model: v1 ships **free** — no IAP, nothing gated. Purify Plus + billing land p
 | Billing readiness | N/A by design (free v1; deferred to first post-launch update) |
 | Privacy readiness | ✅ — page reworked to launch language + explicit sign-out data-safety sentence; store label mapping in REVIEWER-PATH |
 | Screenshot readiness | NOT STARTED — the 9 WebP files in public/public/ are competitor references, unusable |
-| Metadata readiness | NOT STARTED (day 5) |
-| Testing readiness | web flows verified (support gate, terms, account copy, rope); device passes need Mac (iOS) + Android device/emulator |
+| Metadata readiness | ✅ DRAFTED — STORE-LISTINGS.md has paste-ready copy for both consoles (names, descriptions, keywords, privacy labels, data safety, review notes, screenshot plan) |
+| Testing readiness | production build ✅ compiles; 33-route prod smoke ✅ (32×200 + /saved auth-redirect by design); P0 donation gate verified on the prod build (native UA: 0 payment links). Device passes still need Mac (iOS) + Android Studio (no JDK on the Windows box — Android debug build moves to Leona's session) |
 
 ## Day map
 
