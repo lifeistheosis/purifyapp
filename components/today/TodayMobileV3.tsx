@@ -15,10 +15,12 @@ import { MobileTopTabs } from "./MobileTopTabs";
 import { UserAvatarSmall } from "./UserAvatarSmall";
 import { TimelineRail } from "./TimelineRail";
 import { VerseOfDayCard } from "./VerseOfDayCard";
+import { PrayNowCard } from "./PrayNowCard";
 import { TodaySaintCard } from "./TodaySaintCard";
 import { FastTodayCard } from "./FastTodayCard";
 import { TodayReadingsCard } from "./TodayReadingsCard";
 import { PaschaCountdownCard } from "./PaschaCountdownCard";
+import { FirstStepsNudge } from "@/components/onboarding/FirstStepsNudge";
 
 /**
  * Mobile-only Today shell (v6.10 rework).
@@ -55,8 +57,8 @@ export async function TodayMobileV3() {
 
   const labels = isDe
     ? {
-        eyebrow: "Tägliche Auffrischung",
         verseTop: "Vers des Tages",
+        churchToday: "Die Kirche heute",
         saint: "Heiliger des Tages",
         fast: "Das Fasten",
         readings: "Lesungen für heute",
@@ -65,8 +67,8 @@ export async function TodayMobileV3() {
         noSaint: "Für diesen Tag ist noch kein Heiliger verzeichnet.",
       }
     : {
-        eyebrow: "Daily Refresh",
         verseTop: "Verse of the Day",
+        churchToday: "The Church today",
         saint: "Today's Saint",
         fast: "The Fast",
         readings: "Today's Readings",
@@ -74,6 +76,16 @@ export async function TodayMobileV3() {
         pascha: "Pascha",
         noSaint: "No saint indexed for this day.",
       };
+
+  // Quiet, localized dateline that grounds the surface in the Church's
+  // day rather than a SaaS "refresh" label. UTC to match the fixed-cycle
+  // date lookups above.
+  const dateline = new Intl.DateTimeFormat(isDe ? "de-DE" : "en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(today);
 
   const paschaSecondary =
     pascha.daysAway > 0
@@ -86,14 +98,28 @@ export async function TodayMobileV3() {
     <div className="flex flex-col bg-night">
       <MobileTopTabs active="today" labels={tabs} avatar={<UserAvatarSmall />} />
 
-      <div className="px-5 pt-5 pb-8">
-        <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-3">
-          {labels.eyebrow}
+      <div className="px-5 pt-4 pb-8">
+        <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-4">
+          {dateline}
         </p>
 
+        <FirstStepsNudge />
+
+        {/* Hero: the day's word, the dominant element of the surface. */}
+        <VerseOfDayCard labelTop={labels.verseTop} />
+
+        {/* Pray now: the day's rule + the Prayer Rope Anthem. */}
+        <div className="mt-4">
+          <PrayNowCard isDe={isDe} />
+        </div>
+
+        {/* The Church today: the saint, the fast, the readings, the count
+            to Pascha, kept on the quiet sequenced rail. */}
+        <p className="mt-8 mb-3 font-sans text-eyebrow uppercase tracking-[2px] text-paper/55">
+          {labels.churchToday}
+        </p>
         <TimelineRail>
           {[
-            <VerseOfDayCard key="vod" labelTop={labels.verseTop} />,
             headlineSaint ? (
               <TodaySaintCard
                 key="saint"
