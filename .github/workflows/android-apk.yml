@@ -1,0 +1,58 @@
+name: Android APK (debug)
+
+# On-demand debug APK for on-device testing. The Android app is a thin
+# Capacitor shell that loads https://purifyapp.net, so this syncs the
+# Capacitor config into the native project and assembles a debug build.
+# The APK is uploaded as a downloadable artifact. It is debug-signed (the
+# auto-generated debug keystore), for sideloading and testing only, NOT
+# for the Play Store. Trigger it from the Actions tab (Run workflow).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Pre-install SDK platform (best effort)
+        run: yes | sdkmanager "platforms;android-36" >/dev/null 2>&1 || true
+
+      - name: Sync Capacitor into the Android project
+        run: npx cap sync android
+
+      - name: Build debug APK
+        working-directory: android
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assembleDebug --stacktrace --no-daemon
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: purify-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
