@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -51,10 +51,18 @@ jobs:
           chmod +x ./gradlew
           ./gradlew assembleDebug --stacktrace --no-daemon
 
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+      # Published as a release asset (private repo) rather than an Actions
+      # artifact, so it downloads as a raw .apk (no zip to unwrap on a
+      # phone) and does not consume the Actions artifact storage quota.
+      - name: Publish APK to the android-debug release
+        uses: softprops/action-gh-release@v2
         with:
-          name: purify-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
-          retention-days: 14
+          tag_name: android-debug
+          name: Purify Android (debug)
+          prerelease: true
+          body: >
+            Debug-signed Purify shell for on-device testing. Sideload only,
+            not for the Play Store. The shell loads purifyapp.net. Replaced
+            on every workflow run.
+          files: android/app/build/outputs/apk/debug/app-debug.apk
+          fail_on_unmatched_files: true
