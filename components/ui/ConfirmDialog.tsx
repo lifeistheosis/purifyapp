@@ -122,7 +122,7 @@ export function ConfirmDialog({
         }
         style={{
           backgroundImage:
-            "radial-gradient(ellipse 100% 80% at 50% 50%, rgba(26,29,46,0) 0%, rgba(0,0,0,0.45) 100%)",
+            "radial-gradient(ellipse 100% 80% at 50% 50%, rgba(16,16,19,0) 0%, rgba(0,0,0,0.45) 100%)",
         }}
       />
 
@@ -136,7 +136,7 @@ export function ConfirmDialog({
         }
         style={{
           backgroundImage:
-            "linear-gradient(180deg, rgba(43,47,72,0.65) 0%, rgba(26,29,46,0.95) 100%)",
+            "linear-gradient(180deg, rgba(29,29,32,0.65) 0%, rgba(16,16,19,0.95) 100%)",
         }}
       >
         {/* Gold rule top accent so the dialog reads as a piece of the

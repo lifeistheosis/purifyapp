@@ -101,7 +101,7 @@ export function FlorilegiumPickerSheet({
         }
         style={{
           backgroundImage:
-            "linear-gradient(180deg, rgba(43,47,72,0.65) 0%, rgba(26,29,46,0.95) 100%)",
+            "linear-gradient(180deg, rgba(29,29,32,0.65) 0%, rgba(16,16,19,0.95) 100%)",
         }}
       >
         <div className="p-6">

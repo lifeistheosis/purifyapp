@@ -19,22 +19,19 @@
  --color-accent: #dc372d;
  --color-accent-deep: #a3261f;
 
- /* Dark sacred surfaces — overhauled to a deep indigo "night sky" base
-    drawn from the Figma packs (Book nexus BG #2d3047 + the meditation
-    deep-indigo night). Warmer and calmer than the old near-black; reads
-    as a lit nave at dusk rather than pure black. */
- --color-night: #1a1d2e;       /* deepest base background */
- --color-night-soft: #2b2f48;  /* elevated cards / surfaces (Book nexus BG) */
+ /* Dark sacred surfaces — a neutral grayscale "black / gray / white"
+    scheme (the Book nexus grayscale ramp). Near-black base with a faint
+    cool cast, mid-gray elevated cards; calm and monochrome. */
+ --color-night: #101013;       /* deepest base background (near-black) */
+ --color-night-soft: #1d1d20;  /* elevated cards / surfaces */
 
- /* Signature accent on dark surfaces. Retuned to a soft sage-green —
-    the calm single accent both packs share (Book nexus accent #cde7be,
-    meditation mint #a2e0c1). Liturgically resonant (green: the Holy
-    Spirit, Pentecost, monastic life) and distinct from the `sage`
-    fast-rule green below. The `gold` token name is kept so every
-    `*-gold` utility across the app still resolves. */
- --color-gold: #b6d6a6;        /* signature accent (buttons, highlights) */
- --color-gold-soft: #cfe7bf;   /* softer accent (Book nexus accent green) */
- --color-gold-pale: #e5f1db;   /* pale accent text on dark (chips, highlights) */
+ /* Signature accent on dark surfaces — a light near-white gray. In a
+    monochrome scheme the "accent" is simply the brightest neutral:
+    white pills/fabs, light-gray highlights. The `gold` token name is
+    kept so every `*-gold` utility across the app still resolves. */
+ --color-gold: #eaeaec;        /* signature accent (buttons, highlights) */
+ --color-gold-soft: #cfcfd3;   /* softer accent */
+ --color-gold-pale: #f4f4f5;   /* pale accent text on dark (chips, highlights) */
 
  /* Repeated semantic accents — previously hand-typed as arbitrary hex in
   ~30 files. Named here so the hue is single-sourced and opacity modifiers
@@ -208,9 +205,9 @@ h6 {
  outline-offset: 2px;
 }
 
-/* Verse highlight tint (sage accent). Tailwind arbitrary rgba was inconsistent here. */
+/* Verse highlight tint (neutral). Tailwind arbitrary rgba was inconsistent here. */
 div[data-hl="true"] {
- background-color: rgba(182, 214, 166, 0.14) !important;
+ background-color: rgba(255, 255, 255, 0.10) !important;
 }
 
 /* Pulse the study-rail section when its hash is the URL target. */
@@ -571,11 +568,11 @@ div[data-hl="true"] {
  ---------------------------------------------------------------------- */
 
 :root {
- /* Was cinnabar red (196 47 36), then warm-grey gold; now the soft
- sage accent so the "rubricated" ink reads as a quiet illuminated
- highlight in tune with the new palette. The .rubric utility is the
- single point of control if a deeper red is ever wanted again. */
- --ink-rubric: 182 214 166;
+ /* Was cinnabar red (196 47 36), then gold/sage; now a light neutral
+ gray so the "rubricated" ink reads as a quiet illuminated highlight in
+ the monochrome scheme. The .rubric utility is the single point of
+ control if a deeper red is ever wanted again. */
+ --ink-rubric: 226 226 229;
 }
 
 /* Page surface: a faint radial vignette so the page feels like a lit room,
@@ -727,10 +724,10 @@ div[data-hl="true"] {
 @keyframes new-glow {
  0%,
  100% {
- box-shadow: 0 0 0 0 rgba(182, 214, 166, 0);
+ box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
  }
  50% {
- box-shadow: 0 0 10px 2px rgba(182, 214, 166, 0.65);
+ box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.55);
  }
 }
 .new-glow {

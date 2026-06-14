@@ -15,7 +15,7 @@ import { useEffect } from "react";
 
 import { isNativeClient } from "@/lib/platform/native";
 
-const NIGHT = "#1a1d2e";
+const NIGHT = "#101013";
 
 export function NativeBridge() {
   useEffect(() => {
