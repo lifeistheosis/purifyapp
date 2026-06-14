@@ -1,11 +1,15 @@
-name: Android APK (debug)
+name: Android build
 
-# On-demand debug APK for on-device testing. The Android app is a thin
-# Capacitor shell that loads https://purifyapp.net, so this syncs the
-# Capacitor config into the native project and assembles a debug build.
-# The APK is uploaded as a downloadable artifact. It is debug-signed (the
-# auto-generated debug keystore), for sideloading and testing only, NOT
-# for the Play Store. Trigger it from the Actions tab (Run workflow).
+# On-demand Android build. Produces, and publishes to the android-release
+# GitHub release (private repo):
+#   - app-release.aab  : the signed Play Store upload (cannot be sideloaded)
+#   - app-release.apk  : the signed release build, installable for testing
+#   - app-debug.apk    : the debug build, installable for quick testing
+#
+# The release builds are signed with the upload key supplied via repo
+# secrets (ANDROID_KEYSTORE_BASE64 + passwords); no keystore is committed.
+# The app is a thin Capacitor shell that loads purifyapp.net. Trigger from
+# the Actions tab (Run workflow).
 on:
   workflow_dispatch:
 
@@ -45,24 +49,42 @@ jobs:
       - name: Sync Capacitor into the Android project
         run: npx cap sync android
 
-      - name: Build debug APK
+      - name: Decode release keystore
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KS_B64" ]; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 secret is not set. Add the upload keystore secrets first."
+            exit 1
+          fi
+          echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/upload.keystore"
+
+      - name: Build signed release (AAB + APK) and debug APK
         working-directory: android
+        env:
+          ANDROID_KEYSTORE_FILE: ${{ runner.temp }}/upload.keystore
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           chmod +x ./gradlew
-          ./gradlew assembleDebug --stacktrace --no-daemon
+          ./gradlew assembleDebug assembleRelease bundleRelease --stacktrace --no-daemon
 
-      # Published as a release asset (private repo) rather than an Actions
-      # artifact, so it downloads as a raw .apk (no zip to unwrap on a
-      # phone) and does not consume the Actions artifact storage quota.
-      - name: Publish APK to the android-debug release
+      # Published as release assets (private repo): raw downloads, separate
+      # storage from the Actions artifact quota.
+      - name: Publish to the android-release release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: android-debug
-          name: Purify Android (debug)
+          tag_name: android-release
+          name: Purify Android (release)
           prerelease: true
           body: >
-            Debug-signed Purify shell for on-device testing. Sideload only,
-            not for the Play Store. The shell loads purifyapp.net. Replaced
-            on every workflow run.
-          files: android/app/build/outputs/apk/debug/app-debug.apk
+            Signed release build of the Purify Android shell. app-release.aab
+            is the Play Store upload (cannot be sideloaded). app-release.apk
+            and app-debug.apk are installable on a device for testing.
+            Replaced on every workflow run.
+          files: |
+            android/app/build/outputs/bundle/release/app-release.aab
+            android/app/build/outputs/apk/release/app-release.apk
+            android/app/build/outputs/apk/debug/app-debug.apk
           fail_on_unmatched_files: true
