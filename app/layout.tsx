@@ -90,7 +90,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
- themeColor: "#161219",
+ themeColor: "#1a1d2e",
  colorScheme: "dark",
  // viewport-fit=cover lets the page extend under iOS notch / home-indicator,
  // and the new safe-area utilities in globals.css (.safe-pb / .safe-bottom)

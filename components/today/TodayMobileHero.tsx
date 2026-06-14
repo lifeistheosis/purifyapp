@@ -117,7 +117,7 @@ export async function TodayMobileHero() {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(22,18,25,0.65) 0%, rgba(22,18,25,0.85) 55%, #161219 100%)",
+              "linear-gradient(180deg, rgba(26,29,46,0.65) 0%, rgba(26,29,46,0.85) 55%, #1a1d2e 100%)",
           }}
         />
         <div className="relative px-5 pt-10 pb-8">

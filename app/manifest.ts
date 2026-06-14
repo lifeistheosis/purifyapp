@@ -25,8 +25,8 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: "/",
     display: "standalone",
     orientation: "portrait",
-    background_color: "#161219",
-    theme_color: "#161219",
+    background_color: "#1a1d2e",
+    theme_color: "#1a1d2e",
     categories: ["lifestyle", "books", "education"],
     icons: [
       // "any" entries cover the install-screen / address-bar uses; the

@@ -23,7 +23,7 @@ export type SpineTint =
 const BAND: Record<SpineTint, string> = {
   pentateuch: "bg-[#c89e2c]",
   history: "bg-sage",
-  wisdom: "bg-[#b7b0a3]",
+  wisdom: "bg-[#b6d6a6]",
   majorProphets: "bg-[#6b85b5]",
   minorProphets: "bg-[#4f6b8c]",
   deuterocanon: "bg-[#a86c6c]",
