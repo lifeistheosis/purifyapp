@@ -80,7 +80,7 @@ export function SignUpForm() {
         <p className="font-serif text-body text-paper/90 leading-[1.65]">
           We sent a confirmation link to{" "}
           <span className="font-semibold text-paper">{sentTo}</span>. Open it
-          on this device to finish creating your account.
+          on any device to finish creating your account.
         </p>
       </div>
     );

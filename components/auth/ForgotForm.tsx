@@ -25,7 +25,11 @@ export function ForgotForm() {
       const origin = authOrigin();
       const { error: err } = await supabase.auth.resetPasswordForEmail(
         email.trim(),
-        { redirectTo: `${origin}/reset` },
+        // Land on the stateless OTP callback (cross-browser safe), which
+        // establishes the recovery session and forwards to /reset. Going
+        // straight to /reset relied on the PKCE verifier cookie, which is
+        // absent when the email opens in a mail app's in-app browser.
+        { redirectTo: `${origin}/api/auth/callback?next=/reset` },
       );
       if (err) throw err;
       setSent(true);
