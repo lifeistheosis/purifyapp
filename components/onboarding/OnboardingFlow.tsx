@@ -112,7 +112,10 @@ export function OnboardingFlow({ onDone }: { onDone: () => void }) {
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col justify-center px-6 py-10 max-w-md w-full mx-auto motion-safe:animate-[hero-copy-in_500ms_ease-out]">
+      <div
+        key={step}
+        className="flex-1 flex flex-col justify-center px-6 py-10 max-w-md w-full mx-auto"
+      >
         {step === 0 && (
           <Step
             eyebrow={t("onboard.welcome.eyebrow")}
@@ -226,7 +229,7 @@ function Step({
       {icon ? (
         <span
           aria-hidden
-          className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-[26px] text-gold-pale ring-1 ring-inset ring-paper/12 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.6)]"
+          className="onboard-mark-in mb-6 inline-flex h-20 w-20 items-center justify-center rounded-[26px] text-gold-pale ring-1 ring-inset ring-paper/12 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.6)]"
           style={{
             background:
               "radial-gradient(120% 90% at 50% 8%, rgba(255,255,255,0.10) 0%, transparent 60%), linear-gradient(155deg, #2a2a2f 0%, #18181b 100%)",
@@ -235,20 +238,30 @@ function Step({
           {icon}
         </span>
       ) : null}
-      <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold/80 mb-3">
+      <p
+        className="onboard-step-in font-sans text-eyebrow uppercase tracking-[2px] text-gold/80 mb-3"
+        style={{ animationDelay: "70ms" }}
+      >
         {eyebrow}
       </p>
-      <h2 className="font-serif text-title font-bold leading-tight text-paper">
+      <h2
+        className="onboard-step-in font-serif text-title font-bold leading-tight text-paper"
+        style={{ animationDelay: "130ms" }}
+      >
         {title}
       </h2>
       <p
-        className={`mt-3 font-serif text-body text-paper/80 leading-[1.6] ${
+        className={`onboard-step-in mt-3 font-serif text-body text-paper/80 leading-[1.6] ${
           center ? "max-w-[34ch]" : ""
         }`}
+        style={{ animationDelay: "190ms" }}
       >
         {body}
       </p>
-      <div className={`mt-7 flex flex-col ${center ? "w-full" : ""}`}>
+      <div
+        className={`onboard-step-in mt-7 flex flex-col ${center ? "w-full" : ""}`}
+        style={{ animationDelay: "260ms" }}
+      >
         {children}
       </div>
     </div>

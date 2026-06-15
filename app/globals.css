@@ -876,3 +876,33 @@ html.reader-focus [data-reader-exit] {
  animation: none !important;
  }
 }
+
+/* ── Onboarding entrances ─────────────────────────────────────────────
+   Each first-run step replays a calm staggered cascade: the heading
+   pieces fade and rise (`onboard-step-in`), and the welcome brand mark
+   settles in with a soft overshoot (`onboard-mark-in`). The step wrapper
+   is keyed by step index in OnboardingFlow, so advancing remounts it and
+   the cascade fires again. Stagger is set per element via inline
+   animation-delay. Reduced-motion users get the end state instantly. */
+@keyframes onboard-step-in {
+ from { opacity: 0; transform: translateY(16px); }
+ to { opacity: 1; transform: translateY(0); }
+}
+.onboard-step-in {
+ animation: onboard-step-in 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes onboard-mark-in {
+ from { opacity: 0; transform: scale(0.8); }
+ to { opacity: 1; transform: scale(1); }
+}
+.onboard-mark-in {
+ animation: onboard-mark-in 640ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+ .onboard-step-in,
+ .onboard-mark-in {
+ animation: none;
+ opacity: 1;
+ transform: none;
+ }
+}
