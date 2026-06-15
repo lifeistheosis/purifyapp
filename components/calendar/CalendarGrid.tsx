@@ -31,6 +31,15 @@ export function CalendarGrid({
 }) {
   const mm = String(month + 1).padStart(2, "0");
   const styleQS = style === "old" ? "&style=old" : "";
+
+  // monthGrid always returns 6 weeks (42 cells); a 30-day month that starts
+  // early needs only 5, leaving a blank trailing row. Drop any trailing
+  // week whose cells are all out-of-month so the grid fits with no empty row.
+  let cells = grid;
+  while (cells.length > 7 && cells.slice(-7).every((c) => !c.inMonth)) {
+    cells = cells.slice(0, -7);
+  }
+
   return (
     <div>
       <div className="grid grid-cols-7 border-t border-l border-gold/15 mb-0">
@@ -45,7 +54,7 @@ export function CalendarGrid({
       </div>
 
       <div className="grid grid-cols-7 border-l border-gold/15">
-        {grid.map((cell, i) => {
+        {cells.map((cell, i) => {
           const isSelected =
             cell.inMonth &&
             cell.date.getUTCFullYear() === selectedDay.getUTCFullYear() &&

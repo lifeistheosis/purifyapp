@@ -34,7 +34,7 @@ export function CalendarCell({
  return (
  <div
  aria-hidden
- className="aspect-square min-h-[58px] md:min-h-[84px] border-r border-b border-gold/15 bg-paper/[0.01]"
+ className="aspect-square md:min-h-[84px] border-r border-b border-gold/15 bg-paper/[0.01]"
  />
  );
  }
@@ -46,7 +46,7 @@ export function CalendarCell({
  const rgb = TONE_RGB[tone];
 
  const baseClasses =
- "group relative aspect-square min-h-[58px] md:min-h-[84px] flex flex-col justify-center md:justify-start p-1.5 overflow-hidden border-r border-b transition-colors duration-150";
+ "group relative aspect-square md:min-h-[84px] flex flex-col justify-center md:justify-start p-1.5 overflow-hidden border-r border-b transition-colors duration-150";
 
  return (
  <Link
