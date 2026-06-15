@@ -90,19 +90,7 @@ export async function VerseOfDayCard({
           {vod.ref.label}
         </p>
 
-        <div
-          className="mt-2 font-serif text-title-sm leading-[1.32] text-paper/95"
-          style={{
-            // Fade the body to transparent near the bottom so it reads
-            // as a teaser, the full chapter is one tap away via Expand.
-            WebkitMaskImage:
-              "linear-gradient(180deg, #000 0%, #000 62%, transparent 100%)",
-            maskImage:
-              "linear-gradient(180deg, #000 0%, #000 62%, transparent 100%)",
-            maxHeight: "188px",
-            overflow: "hidden",
-          }}
-        >
+        <div className="mt-2 font-serif text-title-sm leading-[1.32] text-paper/95">
           {text ?? <span className="text-paper/45 italic">Loading verse…</span>}
         </div>
 
