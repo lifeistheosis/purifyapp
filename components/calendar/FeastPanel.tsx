@@ -36,7 +36,13 @@ export function FeastPanel({
  // fallback, no glow, and let the text column run the full panel width.
  const hasIcon = !!headlineSaint;
  return (
- <div className="rounded-xl border border-gold/15 bg-paper/[0.02] overflow-hidden">
+ <div
+ className="relative rounded-[28px] overflow-hidden ring-1 ring-inset ring-paper/10 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.5)]"
+ style={{
+ background:
+ "radial-gradient(120% 85% at 85% 6%, rgba(255,255,255,0.08) 0%, transparent 52%), linear-gradient(165deg, #26262b 0%, #1a1a1d 55%, #101013 100%)",
+ }}
+ >
  <div
  className={
  hasIcon
