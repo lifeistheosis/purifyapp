@@ -77,12 +77,10 @@ export function PrayNowCard({ isDe = false }: { isDe?: boolean }) {
             )}
           </div>
         </div>
-        <div className="relative mt-4 flex justify-end">
-          <span className="inline-flex items-center gap-1.5 rounded-pill bg-gold px-5 py-2 font-sans text-ui font-semibold text-night shadow-[0_6px_16px_-4px_rgba(0,0,0,0.5)] transition-colors group-hover:bg-gold-soft">
-            {labels.begin}
-            <ChevronRight />
-          </span>
-        </div>
+        <span className="relative mt-5 flex w-full items-center justify-center gap-1.5 rounded-pill bg-gold px-5 py-3 font-sans text-ui font-semibold text-night shadow-[0_6px_16px_-4px_rgba(0,0,0,0.5)] transition-colors group-hover:bg-gold-soft">
+          {labels.begin}
+          <ChevronRight />
+        </span>
       </Link>
 
       {/* The Prayer Rope Anthem — first-party audio, as a quiet play row. */}
