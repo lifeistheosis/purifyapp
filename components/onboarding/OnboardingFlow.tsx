@@ -8,11 +8,7 @@ import {
   writeFocus,
   type Focus,
 } from "@/lib/onboarding/state";
-import {
-  persistSubscription,
-  requestAndSubscribe,
-  stashPending,
-} from "@/lib/push/client";
+import { enableReminders as enablePush } from "@/lib/push/reminders";
 import { PurifyMark } from "@/components/ui/PurifyMark";
 
 /**
@@ -68,7 +64,10 @@ export function OnboardingFlow({ onDone }: { onDone: () => void }) {
     setBusy(true);
     setReminderNote(null);
     try {
-      const result = await requestAndSubscribe();
+      // Native push (APNs/FCM) inside the Capacitor shell, Web Push in the
+      // browser. Signed-out subscriptions are stashed and flushed on first
+      // sign-in (PostSignInBridge) — handled inside the facade.
+      const result = await enablePush();
       if (!result.ok) {
         if (result.reason === "denied")
           setReminderNote(t("onboard.reminders.blocked"));
@@ -76,12 +75,6 @@ export function OnboardingFlow({ onDone }: { onDone: () => void }) {
           setReminderNote(t("onboard.reminders.unsupported"));
         // no-vapid: silently fall through; the build simply has no key.
         return;
-      }
-      const res = await persistSubscription(result.subscription);
-      if (res.status === 401) {
-        // Signed-out: keep the browser subscription and persist on first
-        // sign-in (PostSignInBridge flushes it).
-        stashPending(result.subscription);
       }
       setReminderNote(t("onboard.reminders.done"));
     } finally {

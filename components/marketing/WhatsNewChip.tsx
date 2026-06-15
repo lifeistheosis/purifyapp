@@ -53,7 +53,7 @@ export function WhatsNewChip({ isDe }: { isDe: boolean }) {
         </span>
       )}
       <span className="font-sans text-caption sm:text-detail text-paper/85 group-hover:text-paper transition-colors">
-        {CURRENT_VERSION} · St. Basil and St. John of Damascus, complete
+        {CURRENT_VERSION} · A gentler welcome for new faces
       </span>
       <span className="text-paper/55 group-hover:text-paper transition-colors text-detail">
         →

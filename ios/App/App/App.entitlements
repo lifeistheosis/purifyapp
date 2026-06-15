@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- APNs. "development" talks to sandbox APNs for dev/TestFlight-internal
+	     builds; Xcode's App Store distribution flow rewrites this to
+	     "production" automatically at archive/export time. -->
+	<key>aps-environment</key>
+	<string>development</string>
+</dict>
+</plist>

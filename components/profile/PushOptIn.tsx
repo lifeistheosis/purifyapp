@@ -1,10 +1,19 @@
 "use client";
 
 // Opt-in opt-out toggle + time pickers for prayer reminders. Lives in
-// the signed-in account page. Pure browser Push API; no third-party
-// notification provider.
+// the signed-in account page. Uses native push (APNs/FCM) inside the
+// Capacitor shell and Web Push in the browser, via the reminders facade.
+// No third-party notification provider.
 
 import { useEffect, useState } from "react";
+import {
+  EVENING_DEFAULT,
+  MORNING_DEFAULT,
+  disableReminders,
+  enableReminders,
+  remindersStatus,
+  updateReminderTimes,
+} from "@/lib/push/reminders";
 
 type State =
   | { kind: "loading" }
@@ -18,84 +27,34 @@ export function PushOptIn() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (
-      typeof window === "undefined" ||
-      !("serviceWorker" in navigator) ||
-      !("PushManager" in window) ||
-      !("Notification" in window)
-    ) {
-      setState({ kind: "unsupported" });
-      return;
-    }
-    if (Notification.permission === "denied") {
-      setState({ kind: "denied" });
-      return;
-    }
     (async () => {
-      try {
-        const reg = await navigator.serviceWorker.ready;
-        const sub = await reg.pushManager.getSubscription();
-        if (sub) {
-          setState({
-            kind: "subscribed",
-            morningTime: null,
-            eveningTime: null,
-          });
-        } else {
-          setState({ kind: "not-subscribed" });
-        }
-      } catch {
-        setState({ kind: "not-subscribed" });
-      }
+      const status = await remindersStatus();
+      setState(
+        status === "subscribed"
+          ? { kind: "subscribed", morningTime: null, eveningTime: null }
+          : { kind: status },
+      );
     })();
   }, []);
 
   async function subscribe() {
     setBusy(true);
     try {
-      const perm = await Notification.requestPermission();
-      if (perm !== "granted") {
-        setState({ kind: "denied" });
+      const result = await enableReminders();
+      if (!result.ok) {
+        if (result.reason === "denied") setState({ kind: "denied" });
+        else if (result.reason === "unsupported")
+          setState({ kind: "unsupported" });
+        else if (result.reason === "no-vapid")
+          alert(
+            "Push reminders are not yet enabled on this build (VAPID key missing).",
+          );
         return;
       }
-      const reg = await navigator.serviceWorker.ready;
-      const vapidPub = process.env.NEXT_PUBLIC_VAPID_KEY;
-      if (!vapidPub) {
-        alert(
-          "Push reminders are not yet enabled on this build (VAPID key missing).",
-        );
-        return;
-      }
-      const keyBytes = urlBase64ToUint8Array(vapidPub);
-      // Slice into a fresh ArrayBuffer so TS sees ArrayBufferView<ArrayBuffer>,
-      // not the wider Uint8Array<ArrayBufferLike> Node-style return.
-      const appServerKey = keyBytes.buffer.slice(
-        keyBytes.byteOffset,
-        keyBytes.byteOffset + keyBytes.byteLength,
-      ) as ArrayBuffer;
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: appServerKey,
-      });
-      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      await fetch("/api/push/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          endpoint: sub.endpoint,
-          keys: {
-            p256dh: bufToB64(sub.getKey("p256dh")),
-            auth: bufToB64(sub.getKey("auth")),
-          },
-          morningTime: "07:00",
-          eveningTime: "21:00",
-          timezone: tz,
-        }),
-      });
       setState({
         kind: "subscribed",
-        morningTime: "07:00",
-        eveningTime: "21:00",
+        morningTime: MORNING_DEFAULT,
+        eveningTime: EVENING_DEFAULT,
       });
     } finally {
       setBusy(false);
@@ -105,15 +64,7 @@ export function PushOptIn() {
   async function unsubscribe() {
     setBusy(true);
     try {
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.getSubscription();
-      if (sub) {
-        await fetch(
-          `/api/push/subscribe?endpoint=${encodeURIComponent(sub.endpoint)}`,
-          { method: "DELETE" },
-        );
-        await sub.unsubscribe();
-      }
+      await disableReminders();
       setState({ kind: "not-subscribed" });
     } finally {
       setBusy(false);
@@ -124,24 +75,7 @@ export function PushOptIn() {
     if (state.kind !== "subscribed") return;
     setBusy(true);
     try {
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.getSubscription();
-      if (!sub) return;
-      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      await fetch("/api/push/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          endpoint: sub.endpoint,
-          keys: {
-            p256dh: bufToB64(sub.getKey("p256dh")),
-            auth: bufToB64(sub.getKey("auth")),
-          },
-          morningTime: morning,
-          eveningTime: evening,
-          timezone: tz,
-        }),
-      });
+      await updateReminderTimes(morning, evening);
       setState({
         kind: "subscribed",
         morningTime: morning,
@@ -159,8 +93,8 @@ export function PushOptIn() {
       </p>
       <p className="font-serif text-body text-paper/85 leading-[1.6] mb-4">
         One nudge in the morning, one in the evening. Off by default. No
-        third-party notification provider; the Web Push API runs in your
-        browser only.
+        third-party notification provider, delivered through your device&rsquo;s
+        own push service.
       </p>
       {state.kind === "loading" && (
         <p className="font-sans text-detail text-paper/55 italic">Checking…</p>
@@ -229,23 +163,4 @@ export function PushOptIn() {
       )}
     </section>
   );
-}
-
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const b64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const raw = atob(b64);
-  const out = new Uint8Array(raw.length);
-  for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
-  return out;
-}
-
-function bufToB64(buf: ArrayBuffer | null): string {
-  if (!buf) return "";
-  const bytes = new Uint8Array(buf);
-  let str = "";
-  for (let i = 0; i < bytes.byteLength; i++) {
-    str += String.fromCharCode(bytes[i]);
-  }
-  return btoa(str);
 }

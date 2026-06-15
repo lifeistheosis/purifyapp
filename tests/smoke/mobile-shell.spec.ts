@@ -14,6 +14,20 @@ import { test, expect, devices } from "@playwright/test";
 
 test.use({ ...devices["iPhone 14 Pro"] });
 
+// These are layout/navigation tests, not onboarding tests. Run them as an
+// established user so the first-run welcome overlay (shown on "/" to new
+// visitors) doesn't intercept tab taps. A saved calendar preference is
+// enough to satisfy the prior-use heuristic in lib/onboarding/state.ts.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    try {
+      window.localStorage.setItem("purify:calendar.style", "new");
+    } catch {
+      /* ignore */
+    }
+  });
+});
+
 const TABS = [
   { label: "Today", expect: "/" },
   { label: "Bible", expect: "/bible" },

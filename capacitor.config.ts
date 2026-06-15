@@ -42,6 +42,13 @@ const config: CapacitorConfig = {
       style: "DARK",
       backgroundColor: "#161219",
     },
+    // Native prayer reminders (APNs on iOS, FCM on Android). The web layer
+    // registers via @capacitor/push-notifications when isNativeClient();
+    // delivery is server-side from /api/cron/push-deliver. Show the alert,
+    // play the sound, and bump the badge when one arrives in foreground.
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"],
+    },
   },
 };
 
