@@ -53,10 +53,6 @@ export async function TodayMobileV3() {
   const headlineSaint =
     headline?.saint ?? (headline?.slug ? getSaint(headline.slug) : null);
 
-  const tabs = isDe
-    ? { today: "Heute", calendar: "Kalender" }
-    : { today: "Today", calendar: "Calendar" };
-
   const labels = isDe
     ? {
         verseTop: "Vers des Tages",
@@ -98,7 +94,7 @@ export async function TodayMobileV3() {
 
   return (
     <div className="flex flex-col bg-night">
-      <MobileTopTabs active="today" labels={tabs} avatar={<UserAvatarSmall />} />
+      <MobileTopTabs avatar={<UserAvatarSmall />} />
 
       <div className="px-5 pt-3 pb-8">
         <GreetingHeader dateline={dateline} isDe={isDe} />
