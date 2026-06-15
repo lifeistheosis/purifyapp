@@ -104,13 +104,19 @@ export function AudioPlayer({
   const pct = duration > 0 ? (current / duration) * 100 : 0;
 
   return (
-    <div className="rounded-lg border border-paper/12 bg-paper/[0.03] p-5 md:p-6">
+    <div
+      className="rounded-[28px] p-5 md:p-6 ring-1 ring-inset ring-paper/10 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.5)]"
+      style={{
+        background:
+          "radial-gradient(115% 90% at 88% 8%, rgba(255,255,255,0.07) 0%, transparent 55%), linear-gradient(155deg, #26262b 0%, #1a1a1d 60%, #131316 100%)",
+      }}
+    >
       <div className="flex items-center gap-4">
         <button
           type="button"
           onClick={toggle}
           aria-label={playing ? "Pause" : "Play"}
-          className="shrink-0 grid h-12 w-12 place-items-center rounded-full border border-gold/40 bg-gold/[0.08] text-gold transition-colors hover:bg-gold/15 hover:text-paper"
+          className="shrink-0 grid h-14 w-14 place-items-center rounded-full bg-gold text-night shadow-[0_8px_20px_-6px_rgba(0,0,0,0.6)] transition-colors hover:bg-gold-soft"
         >
           {playing ? <PauseIcon /> : <PlayIcon />}
         </button>
@@ -158,7 +164,7 @@ export function AudioPlayer({
           aria-label="Seek"
           className="h-1 flex-1 cursor-pointer appearance-none rounded-full accent-[var(--color-gold)]"
           style={{
-            background: `linear-gradient(to right, var(--color-gold) ${pct}%, rgba(245,235,210,0.14) ${pct}%)`,
+            background: `linear-gradient(to right, var(--color-gold) ${pct}%, rgba(255,255,255,0.14) ${pct}%)`,
           }}
         />
         <span className="font-sans text-caption tabular-nums text-paper/45 w-9">
@@ -296,7 +302,7 @@ function LyricsPanel({
           : isActive
             ? {
                 transform: "translateZ(0) scale(1.05)",
-                textShadow: "0 0 18px rgba(183,176,163,0.35)",
+                textShadow: "0 0 18px rgba(255,255,255,0.30)",
               }
             : { opacity: Math.max(0.16, 0.62 - dist * 0.13) };
         if (clickable) {
