@@ -385,7 +385,7 @@ export default async function CalendarPage({
  <div className="mx-auto max-w-[1280px] w-full">
  <header className="flex items-end justify-between mb-8 gap-4 flex-wrap">
  <div className="min-w-0">
- <h2 className="font-display-serif text-display md:text-display-lg text-paper leading-[0.95] tracking-[-0.01em]">
+ <h2 className="font-display-serif text-heading md:text-display-lg text-paper leading-[0.95] tracking-[-0.01em]">
  {(isDe ? MONTH_NAMES_DE : MONTH_NAMES_EN)[month]}{" "}
  <span className="text-paper/55 font-normal">{year}</span>
  </h2>
