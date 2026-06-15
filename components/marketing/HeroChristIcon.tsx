@@ -1,14 +1,13 @@
-import Image from "next/image";
+import { PurifyMark } from "@/components/ui/PurifyMark";
 
 /**
  * Right-side hero piece. The Purify mark (an Orthodox three-bar cross)
  * rendered large and bled off the right edge of the viewport.
  *
- * The asset is `/purify-cross.png`, a transparent PNG generated from
- * the source logo (the black field was made fully transparent, the
- * cross tinted warm white with soft anti-aliased edges). Because the
- * transparency is baked into the file, it composites cleanly on any
- * background — no CSS mask, no `mix-blend-mode`, no seams or boxes.
+ * Now a crisp inline SVG (`PurifyMark`) in the near-white accent,
+ * replacing the old raster `/purify-cross.png` — it scales without the
+ * optimizer re-encoding artefacts the PNG suffered and composites
+ * cleanly on any surface.
  *
  * Entrance is a pure-CSS fade-and-rise (`.hero-cross-in` in
  * globals.css) so it needs no client JS and fires even when the page
@@ -18,26 +17,18 @@ import Image from "next/image";
  * Pantocrator icon).
  */
 
-const SIZE = 720; // px square; bled partly off-canvas at xl
+const SIZE = 720; // px tall; bled partly off-canvas at xl
 
 export function HeroChristIcon() {
   return (
     <div
       aria-hidden
-      className="hero-cross-in relative select-none pointer-events-none"
+      className="hero-cross-in relative flex items-center justify-center select-none pointer-events-none text-gold-pale/90"
       style={{ width: SIZE, height: SIZE }}
     >
-      <Image
-        src="/purify-cross.png"
-        alt=""
-        width={SIZE}
-        height={SIZE}
-        priority
-        // Serve the exact PNG. Next's lossy optimizer (q=75) re-encodes
-        // the transparent edges and lifts their alpha back up, which
-        // reintroduces a faint white frame around the mark.
-        unoptimized
-        className="w-full h-full object-contain"
+      <PurifyMark
+        size={SIZE}
+        className="drop-shadow-[0_8px_40px_rgba(0,0,0,0.5)]"
       />
     </div>
   );
