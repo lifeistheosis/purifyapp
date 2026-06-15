@@ -1,0 +1,96 @@
+name: iOS build (unsigned)
+
+# On-demand iOS build that needs NO Apple Developer account and NO secrets.
+# Produces an UNSIGNED .ipa of the Purify iOS shell and publishes it to the
+# 'ios-release' GitHub release (private repo).
+#
+# An unsigned .ipa cannot be installed directly. Install it on a real iPhone
+# for free with AltStore or Sideloadly, which re-sign it with your own free
+# Apple ID (valid 7 days, then re-sign). See docs/IOS_BUILD_SETUP.md.
+#
+# The app is a thin Capacitor shell that loads purifyapp.net. Trigger from the
+# Actions tab (Run workflow). Runs on a macOS runner (Xcode required), which
+# bills more CI minutes than the Linux Android job.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          # Capacitor 8 CLI requires Node >= 22.
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync Capacitor into the iOS project
+        run: npx cap sync ios
+
+      - name: Resolve Swift packages
+        working-directory: ios/App
+        run: |
+          xcodebuild -project App.xcodeproj -scheme App \
+            -resolvePackageDependencies \
+            -clonedSourcePackagesDirPath "$RUNNER_TEMP/spm"
+
+      - name: Build unsigned archive
+        working-directory: ios/App
+        run: |
+          set -euo pipefail
+          # CODE_SIGNING_* off → no certs/profiles needed. The aps-environment
+          # entitlement requires signing, so drop CODE_SIGN_ENTITLEMENTS for
+          # this unsigned test build (push isn't exercised here anyway).
+          xcodebuild \
+            -project App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -clonedSourcePackagesDirPath "$RUNNER_TEMP/spm" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_ENTITLEMENTS="" \
+            archive
+
+      - name: Package unsigned IPA
+        run: |
+          set -euo pipefail
+          APP_PATH="$RUNNER_TEMP/App.xcarchive/Products/Applications/App.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "::error::App.app not found in the archive — build failed."
+            exit 1
+          fi
+          WORK="$RUNNER_TEMP/ipa"
+          mkdir -p "$WORK/Payload"
+          cp -R "$APP_PATH" "$WORK/Payload/"
+          (cd "$WORK" && zip -qry "$RUNNER_TEMP/Purify-unsigned.ipa" Payload)
+          ls -la "$RUNNER_TEMP/Purify-unsigned.ipa"
+
+      # Published as a release asset (private repo): a raw download, separate
+      # from the Actions artifact quota.
+      - name: Publish to the ios-release release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ios-release
+          name: Purify iOS (unsigned)
+          prerelease: true
+          body: >
+            Unsigned iOS build of the Purify shell. It cannot be installed
+            directly. Install it on a real iPhone for free with AltStore or
+            Sideloadly, which re-sign it with your own Apple ID (valid 7 days,
+            then re-sign). Replaced on every workflow run. See
+            docs/IOS_BUILD_SETUP.md.
+          files: ${{ runner.temp }}/Purify-unsigned.ipa
+          fail_on_unmatched_files: true
