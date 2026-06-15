@@ -20,27 +20,27 @@ const config: CapacitorConfig = {
   },
   ios: {
     appendUserAgent: "PurifyNative",
-    backgroundColor: "#161219",
+    backgroundColor: "#101013",
     // Required for service workers in WKWebView; pairs with the
     // WKAppBoundDomains array in Info.plist (purifyapp.net).
     limitsNavigationsToAppBoundDomains: true,
   },
   android: {
     appendUserAgent: "PurifyNative",
-    backgroundColor: "#161219",
+    backgroundColor: "#101013",
   },
   plugins: {
     SplashScreen: {
       launchShowDuration: 1200,
       launchAutoHide: true,
-      backgroundColor: "#161219",
+      backgroundColor: "#101013",
       showSpinner: false,
       splashFullScreen: true,
       splashImmersive: false,
     },
     StatusBar: {
       style: "DARK",
-      backgroundColor: "#161219",
+      backgroundColor: "#101013",
     },
     // Native prayer reminders (APNs on iOS, FCM on Android). The web layer
     // registers via @capacitor/push-notifications when isNativeClient();
