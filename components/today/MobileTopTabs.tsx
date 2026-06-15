@@ -16,11 +16,11 @@ export function MobileTopTabs({ avatar }: { avatar: React.ReactNode }) {
         <Link
           href="/whats-new"
           aria-label="What's new"
-          className="text-paper/75 hover:text-paper transition-colors"
+          className="grid h-10 w-10 place-items-center rounded-full text-paper/80 hover:text-paper hover:bg-paper/[0.06] transition-colors"
         >
           <svg
-            width={20}
-            height={20}
+            width={26}
+            height={26}
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"

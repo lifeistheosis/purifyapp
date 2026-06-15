@@ -55,7 +55,7 @@ export function UserAvatarSmall() {
   if (initials === null) {
     // Pre-hydration: render a placeholder disc the same size to prevent
     // layout shift when the real state arrives.
-    return <span className="block h-8 w-8 rounded-full bg-paper/8" aria-hidden />;
+    return <span className="block h-10 w-10 rounded-full bg-paper/8" aria-hidden />;
   }
 
   if (initials) {
@@ -63,13 +63,13 @@ export function UserAvatarSmall() {
       <Link
         href="/account"
         aria-label="Account"
-        className="flex h-8 w-8 items-center justify-center rounded-full border border-gold/55 hover:border-gold transition-colors"
+        className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/55 hover:border-gold transition-colors"
         style={{
           background:
-            "linear-gradient(155deg, #2a1f10 0%, #3b2a14 50%, #5a3f1c 100%)",
+            "linear-gradient(155deg, #2a2a2f 0%, #1f1f22 50%, #18181b 100%)",
         }}
       >
-        <span className="font-display-serif text-eyebrow text-cream tracking-[0.04em]">
+        <span className="font-display-serif text-detail text-gold-pale tracking-[0.04em]">
           {initials}
         </span>
       </Link>
@@ -80,11 +80,11 @@ export function UserAvatarSmall() {
     <Link
       href="/signin"
       aria-label="Sign in"
-      className="flex h-8 w-8 items-center justify-center rounded-full border border-paper/20 text-paper/70 hover:text-paper hover:border-paper/40 transition-colors"
+      className="flex h-10 w-10 items-center justify-center rounded-full border border-paper/20 text-paper/70 hover:text-paper hover:border-paper/40 transition-colors"
     >
       <svg
-        width={16}
-        height={16}
+        width={20}
+        height={20}
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
