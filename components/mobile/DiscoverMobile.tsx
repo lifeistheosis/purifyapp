@@ -13,9 +13,10 @@ import { MobileCard } from "./MobileCard";
 import { MobileHeader } from "./MobileHeader";
 import { MobileHeroCard } from "./MobileHeroCard";
 import { MobileSectionLabel } from "./MobileSectionLabel";
+import { SoftTile, SoftTileGrid, type Tone } from "./SoftTiles";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { DayBadge } from "./DayBadge";
-import { DiscoverIndex, type DiscoverEntry } from "./DiscoverIndex";
+import { type DiscoverEntry } from "./DiscoverIndex";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Church } from "@/components/ui/icons/Church";
@@ -40,6 +41,9 @@ function firstSentence(s: string): string {
   const m = s.match(/^.+?[.!?](?:\s|$)/);
   return (m ? m[0] : s).trim();
 }
+
+// Tone cycle for the library tile grid — graded neutrals, no colour.
+const LIBRARY_TONES: Tone[] = ["a", "b", "c", "d"];
 
 /**
  * Discover mobile shell — "the menologion."
@@ -209,7 +213,17 @@ export async function DiscoverMobile() {
 
       <div className="mt-7">
         <MobileSectionLabel>The library</MobileSectionLabel>
-        <DiscoverIndex entries={entries} />
+        <SoftTileGrid className="mt-1">
+          {entries.map((e, i) => (
+            <SoftTile
+              key={e.href}
+              href={e.href}
+              label={e.label}
+              icon={<e.Icon size={21} />}
+              tone={LIBRARY_TONES[i % LIBRARY_TONES.length]}
+            />
+          ))}
+        </SoftTileGrid>
       </div>
 
       {(featuredTopic || featuredCouncil) && (

@@ -32,11 +32,13 @@ export function MobileCard({
 }) {
   const Outer = href ? Link : "article";
   const props = href ? { href } : {};
+  // Grayscale scheme: the warm-red and warm-grey bleeds are retired for
+  // neutral white bleeds, graded only by elevation.
   const bg =
     tint === "warm"
-      ? "radial-gradient(120% 80% at 80% 90%, rgba(193,39,45,0.18) 0%, transparent 60%), linear-gradient(180deg, #18120f 0%, #0a0606 100%)"
+      ? "radial-gradient(120% 80% at 80% 90%, rgba(255,255,255,0.07) 0%, transparent 60%), linear-gradient(180deg, #1f1f22 0%, #101013 100%)"
       : tint === "gold"
-        ? "radial-gradient(120% 80% at 20% 0%, rgba(183,176,163,0.10) 0%, transparent 60%), linear-gradient(180deg, #16131a 0%, #0a0810 100%)"
+        ? "radial-gradient(120% 80% at 20% 0%, rgba(255,255,255,0.08) 0%, transparent 60%), linear-gradient(180deg, #1d1d20 0%, #111114 100%)"
         : undefined;
   return (
     <Outer

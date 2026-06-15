@@ -4,22 +4,25 @@ import { cn } from "@/lib/cn";
 
 type Tint = "warm" | "deep" | "violet" | "gold";
 
+// Grayscale scheme: every tint is now a neutral gradient with a soft
+// white bleed, graded only by elevation so each tab's hero still has a
+// subtly distinct weight without colour.
 const BACKDROPS: Record<Tint, string> = {
   warm:
-    "radial-gradient(120% 80% at 80% 90%, rgba(193,39,45,0.20) 0%, transparent 60%), linear-gradient(180deg, #18120f 0%, #0a0606 100%)",
+    "radial-gradient(120% 80% at 80% 90%, rgba(255,255,255,0.07) 0%, transparent 60%), linear-gradient(180deg, #1f1f22 0%, #101013 100%)",
   deep:
-    "radial-gradient(120% 80% at 80% 90%, rgba(70,110,170,0.18) 0%, transparent 60%), linear-gradient(180deg, #0e1320 0%, #06080f 100%)",
+    "radial-gradient(120% 80% at 80% 90%, rgba(255,255,255,0.10) 0%, transparent 60%), linear-gradient(180deg, #1c1c1f 0%, #0d0d10 100%)",
   violet:
-    "radial-gradient(120% 80% at 80% 90%, rgba(150,100,200,0.18) 0%, transparent 60%), linear-gradient(180deg, #14101c 0%, #08060d 100%)",
+    "radial-gradient(120% 80% at 80% 90%, rgba(255,255,255,0.07) 0%, transparent 60%), linear-gradient(180deg, #202023 0%, #111114 100%)",
   gold:
-    "radial-gradient(120% 80% at 20% 0%, rgba(183,176,163,0.16) 0%, transparent 60%), linear-gradient(180deg, #18140b 0%, #0a0805 100%)",
+    "radial-gradient(120% 80% at 20% 0%, rgba(255,255,255,0.09) 0%, transparent 60%), linear-gradient(180deg, #1e1e21 0%, #111114 100%)",
 };
 
 const WAVE_FILLS: Record<Tint, string> = {
-  warm: "rgba(20,8,8,0.85)",
-  deep: "rgba(8,12,20,0.85)",
-  violet: "rgba(14,8,18,0.85)",
-  gold: "rgba(18,14,8,0.85)",
+  warm: "rgba(16,16,19,0.85)",
+  deep: "rgba(13,13,16,0.85)",
+  violet: "rgba(17,17,20,0.85)",
+  gold: "rgba(17,17,20,0.85)",
 };
 
 /**
