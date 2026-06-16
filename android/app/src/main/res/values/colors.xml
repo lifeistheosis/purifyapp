@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Brand colors for the Android shell theme (referenced by styles.xml's
+  AppTheme). These were missing, which breaks resource linking — styles.xml
+  references @color/colorPrimary / colorPrimaryDark / colorAccent. Values use
+  the grayscale palette (#101013 night); the Capacitor StatusBar plugin sets
+  the runtime status-bar color, so these are mainly the legacy/system tints.
+-->
+<resources>
+    <color name="colorPrimary">#101013</color>
+    <color name="colorPrimaryDark">#101013</color>
+    <color name="colorAccent">#6b6b70</color>
+</resources>
