@@ -290,7 +290,7 @@ function PrimaryButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="w-full rounded-pill bg-paper text-night font-sans text-ui font-semibold py-3.5 hover:bg-paper/90 active:scale-[0.98] disabled:opacity-60 transition-[transform,background-color]"
+      className="block w-full rounded-pill bg-paper text-night text-center font-sans text-ui font-semibold px-6 py-3.5 hover:bg-paper/90 active:scale-[0.98] disabled:opacity-60 transition-[transform,background-color]"
     >
       {children}
     </button>
