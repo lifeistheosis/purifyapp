@@ -1,14 +1,19 @@
 // Server-side entitlement lookup. Reads the signed-in user's
 // entitlements row (RLS-scoped to the owner) and derives the model.
 //
-// While ENTITLEMENTS_ENFORCED is false this never even queries — every
-// caller gets OPEN_ENTITLEMENTS — so it is free to sprinkle at call
-// sites now and have them light up correctly when the flag flips.
+// Enforcement is surface-scoped (see lib/entitlements/entitlements.ts):
+// the native shell enforces Plus once its launch switch flips, the web
+// stays open until web billing exists. We detect the surface from the
+// PurifyNative UA token on the request. While the relevant switch is
+// false this never even queries — every caller gets OPEN_ENTITLEMENTS —
+// so it is free to sprinkle at call sites now and have them light up
+// correctly when the flag flips.
 
 import { createClient } from "@/lib/supabase/server";
+import { isNativeRequest } from "@/lib/platform/nativeRequest";
 import {
   deriveEntitlements,
-  ENTITLEMENTS_ENFORCED,
+  plusEnforcedFor,
   OPEN_ENTITLEMENTS,
   FREE_ENTITLEMENTS,
   type Entitlements,
@@ -16,7 +21,8 @@ import {
 } from "./entitlements";
 
 export async function getEntitlements(): Promise<Entitlements> {
-  if (!ENTITLEMENTS_ENFORCED) return OPEN_ENTITLEMENTS;
+  const enforced = plusEnforcedFor(await isNativeRequest());
+  if (!enforced) return OPEN_ENTITLEMENTS;
 
   const supabase = await createClient();
   const {
@@ -38,5 +44,5 @@ export async function getEntitlements(): Promise<Entitlements> {
     return FREE_ENTITLEMENTS;
   }
 
-  return deriveEntitlements(data as EntitlementRow | null);
+  return deriveEntitlements(data as EntitlementRow | null, { enforced: true });
 }

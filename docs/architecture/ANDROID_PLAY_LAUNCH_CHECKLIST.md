@@ -71,6 +71,34 @@ no web-app changes, no native rewrite.
   exist and are live; **the Play listing requires the privacy-policy URL**
   (`https://purifyapp.net/privacy`).
 
+## Google sign-in — test-first plan (do NOT change auth before testing)
+
+Decision: keep the current Supabase Google OAuth (`components/auth/OAuthButtons.tsx`,
+a full-page `signInWithOAuth` redirect) and **test it on a real internal-testing
+build first**. Email / magic-link auth is the always-available fallback. Implement a
+fix **only if** the test fails.
+
+**Expected (pass):** tapping "Continue with Google" opens Google's consent screen,
+returns to `/api/auth/callback`, and lands signed in.
+
+**Failure to watch for:** Google blocks OAuth in embedded WebViews. The shell
+appends `PurifyNative` to the UA, so Google may return **`403
+disallowed_useragent`** (a Google error page, not the app's). That is the signal.
+
+**How to test:** internal-testing build on a real device → Account > Sign in >
+Continue with Google. If it shows `disallowed_useragent` or a dead/blank page
+instead of the consent screen, it failed.
+
+**Smallest safe fixes, in order of preference (only if it fails):**
+1. **Chrome Custom Tabs** — add `@capacitor/browser`, open the Supabase OAuth
+   `authorizationUrl` with `Browser.open()` (a system Chrome tab Google trusts),
+   and return via the existing `/api/auth/callback` deep link. Smallest real fix.
+2. **Email-only for Android v1** — hide the Google button under the `PurifyNative`
+   UA gate and ship email/magic-link only. Zero auth risk; loses Google sign-in.
+
+Do **not** broadly rewrite auth before upload. Note: Purify Plus is tied to the
+account, so whichever path ships must let a purchaser sign in.
+
 ## Signing & release
 
 - ✅ **Signing setup:** release signed in CI from secrets

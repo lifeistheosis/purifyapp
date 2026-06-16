@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { canSync } from "@/lib/entitlements/client";
 import type {
   Florilegium,
   FlorilegiumItem,
@@ -63,6 +64,9 @@ function itemPayload(item: FlorilegiumItem): Record<string, unknown> {
  * upsert on the shared UUIDs). Silent on auth/network errors. */
 export async function pushAllLocalFlorilegia() {
   try {
+    // Cross-device sync is part of the Purify Plus layer. Native-aware:
+    // open on web + native until enforcement flips, then Plus-only.
+    if (!(await canSync())) return;
     const supabase = createClient();
     const {
       data: { user },
@@ -104,6 +108,7 @@ export async function pushAllLocalFlorilegia() {
 /** Pull every server florilegium + item and union-merge into local. */
 export async function pullServerFlorilegia() {
   try {
+    if (!(await canSync())) return;
     const supabase = createClient();
     const {
       data: { user },
