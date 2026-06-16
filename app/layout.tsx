@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import "./globals.css";
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { NativeBridge } from "@/components/native/NativeBridge";
+import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
 import { SITE_URL } from "@/lib/site";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages } from "@/lib/i18n";
@@ -90,7 +91,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
- themeColor: "#161219",
+ themeColor: "#101013",
  colorScheme: "dark",
  // viewport-fit=cover lets the page extend under iOS notch / home-indicator,
  // and the new safe-area utilities in globals.css (.safe-pb / .safe-bottom)
@@ -122,6 +123,7 @@ export default async function RootLayout({
  <body className="min-h-full flex flex-col">
  <MessagesProvider locale={localeCode} messages={messages}>
  {children}
+ <FirstRunGate />
  </MessagesProvider>
  <AnalyticsTracker />
  <NativeBridge />

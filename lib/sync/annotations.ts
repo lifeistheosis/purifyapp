@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { canSync } from "@/lib/entitlements/client";
 
 /**
  * Best-effort sync of verse and saint-paragraph annotations between
@@ -90,6 +91,9 @@ function snapshotLocal(): AnnRow[] {
 
 export async function pushAllLocalAnnotations() {
   try {
+    // Cross-device sync is part of the Purify Plus layer (see
+    // lib/entitlements/client). Open on web + native until enforced.
+    if (!(await canSync())) return;
     const supabase = createClient();
     const {
       data: { user },
@@ -115,6 +119,7 @@ export async function pushAllLocalAnnotations() {
 
 export async function pullServerAnnotations() {
   try {
+    if (!(await canSync())) return;
     const supabase = createClient();
     const {
       data: { user },

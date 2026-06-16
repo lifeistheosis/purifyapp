@@ -23,7 +23,7 @@ export function WorldMap({ points }: { points: MapPoint[] }) {
                 key={geo.rsmKey}
                 geography={geo}
                 fill="#2a2333"
-                stroke="#161219"
+                stroke="#101013"
                 strokeWidth={0.4}
                 style={{
                   default: { outline: "none" },
@@ -36,8 +36,8 @@ export function WorldMap({ points }: { points: MapPoint[] }) {
         </Geographies>
         {points.map((p) => (
           <Marker key={p.id} coordinates={[p.lng, p.lat]}>
-            <circle r={6} fill="#b7b0a3" fillOpacity={0.18} />
-            <circle r={2.6} fill="#b7b0a3">
+            <circle r={6} fill="#eaeaec" fillOpacity={0.18} />
+            <circle r={2.6} fill="#eaeaec">
               <animate
                 attributeName="r"
                 values="2.6;4.2;2.6"

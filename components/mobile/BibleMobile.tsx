@@ -12,6 +12,19 @@ import { MobileHeader } from "./MobileHeader";
 import { BibleMobileContinue } from "./BibleMobileContinue";
 import { BibleSearchTrigger } from "./BibleSearchOverlay";
 import { BibleTabs } from "./BibleTabs";
+import { SoftTile, SoftTileGrid, FeatureBand } from "./SoftTiles";
+import { Book } from "@/components/ui/icons/Book";
+import { Scroll } from "@/components/ui/icons/Scroll";
+import { Codex } from "@/components/ui/icons/Codex";
+
+const KIND_META: Record<
+  string,
+  { label: string; icon: (s: number) => React.ReactNode }
+> = {
+  gospel: { label: "Gospel", icon: (s) => <Book size={s} /> },
+  epistle: { label: "Epistle", icon: (s) => <Scroll size={s} /> },
+  ot: { label: "Old Testament", icon: (s) => <Codex size={s} /> },
+};
 
 /**
  * Bible mobile shell — minimal book selector.
@@ -35,6 +48,13 @@ export function BibleMobile() {
   const otCats = getOldTestamentCategories();
   const ntCats = getNewTestamentCategories();
 
+  // Appointed readings, ordered Gospel → Epistle → OT. The first becomes a
+  // featured "read today" band; any others sit beside it as soft tiles.
+  const appointed = [gospel, epistle, ot].filter(Boolean) as ReadingRef[];
+  const [lead, ...rest] = appointed;
+  const href = (r: ReadingRef) =>
+    `/bible/${r.book}/${r.chapter}#v${r.from}`;
+
   return (
     <MobileShell
       header={<MobileHeader title="Bible" trailing={<BibleSearchTrigger />} />}
@@ -42,40 +62,37 @@ export function BibleMobile() {
     >
       <BibleMobileContinue />
 
-      {(gospel || epistle || ot) && (
-        <div className="mt-3 rounded-2xl border border-paper/10 bg-paper/[0.03] p-3">
-          <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/45 mb-2">
-            Appointed today
-          </p>
-          <div className="flex flex-wrap gap-x-3 gap-y-1.5 text-detail">
-            {gospel && <ReadingChip kind="Gospel" reading={gospel} />}
-            {epistle && <ReadingChip kind="Epistle" reading={epistle} />}
-            {ot && <ReadingChip kind="OT" reading={ot} />}
-          </div>
+      {lead && (
+        <div className="mt-3">
+          <FeatureBand
+            href={href(lead)}
+            eyebrow="Appointed today"
+            title={lead.label}
+            sub={`Today's ${KIND_META[lead.kind].label.toLowerCase()} reading`}
+            cta="Read"
+            icon={KIND_META[lead.kind].icon(18)}
+          />
         </div>
+      )}
+
+      {rest.length > 0 && (
+        <SoftTileGrid className="mt-3">
+          {rest.map((r, i) => (
+            <SoftTile
+              key={r.kind}
+              href={href(r)}
+              label={KIND_META[r.kind].label}
+              sub={r.label}
+              icon={KIND_META[r.kind].icon(21)}
+              tone={i === 0 ? "b" : "c"}
+            />
+          ))}
+        </SoftTileGrid>
       )}
 
       <div className="mt-6">
         <BibleTabs ot={otCats} nt={ntCats} />
       </div>
     </MobileShell>
-  );
-}
-
-function ReadingChip({
-  kind,
-  reading,
-}: {
-  kind: string;
-  reading: ReadingRef;
-}) {
-  return (
-    <a
-      href={`/bible/${reading.book}/${reading.chapter}#v${reading.from}`}
-      className="font-sans text-paper/85 hover:text-paper transition-colors"
-    >
-      <span className="font-semibold text-paper/55 mr-1.5">{kind}</span>
-      {reading.label}
-    </a>
   );
 }

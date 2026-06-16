@@ -11,6 +11,7 @@ import {
   DiscoverDropdown,
   DISCOVER_CHILD_HREFS,
 } from "@/components/nav/DiscoverDropdown";
+import { PurifyMark } from "@/components/ui/PurifyMark";
 
 export function Navbar() {
   const scrolled = useScrolled();
@@ -56,8 +57,12 @@ export function Navbar() {
       <div className="mx-auto max-w-[1240px] h-full flex items-center justify-between gap-4 px-5 md:px-8">
         <Link
           href="/"
-          className="font-sans text-title-sm font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors duration-150"
+          className="group inline-flex items-center gap-2.5 font-sans text-title-sm font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors duration-150"
         >
+          <PurifyMark
+            size={24}
+            className="text-gold-pale transition-colors group-hover:text-paper"
+          />
           Purify
         </Link>
 

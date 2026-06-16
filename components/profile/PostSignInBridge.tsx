@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { releaseLocal } from "@/lib/profile/localAccount";
+import { flushPending } from "@/lib/push/client";
+import { flushPendingNative } from "@/lib/push/native";
 
 /**
  * Mounted in the signed-in branch of `/account`. Two responsibilities:
@@ -34,6 +36,13 @@ export function PostSignInBridge() {
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    // (0) If onboarding captured a push subscription/token while signed-out,
+    // the server couldn't persist it (auth required). Now that we're signed
+    // in, flush both the Web Push and native variants. No-op when nothing is
+    // stashed.
+    void flushPending();
+    void flushPendingNative();
 
     // (1) Release local marker if it exists, and stash the session
     // flag so the banner shows on this page load.

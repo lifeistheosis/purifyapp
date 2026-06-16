@@ -34,7 +34,7 @@ export function CalendarCell({
  return (
  <div
  aria-hidden
- className="aspect-square min-h-[58px] md:min-h-[84px] border-r border-b border-gold/15 bg-paper/[0.01]"
+ className="aspect-square md:min-h-[84px] border-r border-b border-gold/15 bg-paper/[0.01]"
  />
  );
  }
@@ -46,7 +46,7 @@ export function CalendarCell({
  const rgb = TONE_RGB[tone];
 
  const baseClasses =
- "group relative aspect-square min-h-[58px] md:min-h-[84px] flex flex-col justify-center md:justify-start p-1.5 overflow-hidden border-r border-b transition-colors duration-150";
+ "group relative aspect-square md:min-h-[84px] flex flex-col justify-center md:justify-start p-1.5 overflow-hidden border-r border-b transition-colors duration-150";
 
  return (
  <Link
@@ -70,7 +70,7 @@ export function CalendarCell({
  : "border-gold/15 bg-paper/[0.015] hover:bg-paper/[0.05]"),
  )}
  >
- <div className="flex items-start justify-between gap-1">
+ <div className="flex flex-col items-center gap-0.5 md:flex-row md:items-start md:justify-between md:gap-1">
  <span
  className={cn(
  "font-display-serif text-ui md:text-body leading-none",
@@ -102,7 +102,7 @@ export function CalendarCell({
  // independent of the app-wide neutralized `--color-gold` (warm grey).
  <Cross
  size={12}
- className="text-[#d4af37] mt-[1px]"
+ className="text-[#d4af37] md:mt-[1px]"
  aria-label="Feast"
  />
  )}

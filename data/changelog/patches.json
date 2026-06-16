@@ -1,5 +1,25 @@
 [
   {
+    "id": "beta-1-2",
+    "version": "Beta 1.2",
+    "date": "2026-06-14",
+    "title": "A gentler welcome",
+    "intro": "A small patch about first steps. New here? Purify now opens with a short, skippable welcome that helps you set your calendar and find a good place to begin. Everyone who has been here before is left exactly where they were. Glory to God for new faces.",
+    "sections": [
+      {
+        "heading": "A first-run welcome",
+        "body": "Open Purify for the first time and you are met with three quiet screens: a word about what this is, a chance to choose the calendar you keep, New or Old, and a gentle pointer toward a first step, depending on what draws you. It is entirely skippable, and it never shows again once you are in. If you have used Purify before, you will not see it at all."
+      },
+      {
+        "heading": "Begin here",
+        "body": "After the welcome, the Today screen carries a single calm pointer toward that first step, the Gospel of John, the morning rule, the saints, or the day's reading, which you can follow or dismiss with a tap. No checklist, no streak, no score. Just one open door. Prayer is not a game to be won."
+      }
+    ],
+    "future": [],
+    "closing": "Small as it is, every patch is offered with thanks for the people praying alongside this work. If something feels off, or there is a feature you wish existed, write to me at lifeistheosis@gmail.com. I read every email.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
     "id": "beta-1-1",
     "version": "Beta 1.1",
     "date": "2026-06-03",

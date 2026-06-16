@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
+import { PlusPaywall } from "@/components/billing/PlusPaywall";
 
 export const metadata = {
   title: "Pricing",
@@ -124,6 +125,11 @@ function PricingView({ copy }: { copy: PricingCopy }) {
             {copy.future}
           </p>
         </div>
+
+        {/* Native-only purchase surface. Renders nothing on the web; inside
+            the Android app it shows the live Monthly / Yearly plans and
+            drives Play Billing via RevenueCat. */}
+        <PlusPaywall />
 
         {/* Support / lamp panel */}
         <div

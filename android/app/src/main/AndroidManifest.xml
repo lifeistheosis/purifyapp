@@ -39,4 +39,8 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Required on Android 13+ (API 33) for the push-notifications plugin to
+         request and post notifications; the plugin manifest does not declare
+         it, so it must be declared here or prayer reminders silently fail. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 </manifest>

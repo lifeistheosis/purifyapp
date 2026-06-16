@@ -38,6 +38,11 @@ export type VerseOfDay = {
  * This makes the mobile VoD card match the Today's Readings card below it,
  * so the verse and the appointed reading are never out of sync.
  *
+ * The Verse of the Day is deliberately a SINGLE verse: whatever the source
+ * (an appointed range like John 10:9-16, or a rotation entry), we anchor on
+ * its first verse (`from`) and never render the whole range. The label is
+ * rebuilt to that single verse so it reads "John 10:9", not "John 10:9-16".
+ *
  * Verse text is loaded from Purify's public-domain Bible (Brenton LXX +
  * KJV) via loadVerseRange; no licensed translation is reproduced here.
  */
@@ -49,33 +54,42 @@ export async function getVerseOfDay(today: Date = new Date()): Promise<VerseOfDa
   for (const kind of order) {
     const r = readings.find((x) => x.kind === kind);
     if (r) {
-      const ref: VerseRef = {
-        book: r.book,
-        chapter: r.chapter,
-        from: r.from,
-        to: r.to,
-        label: r.label,
-      };
-      const passage = await loadVerseRange(ref.book, ref.chapter, ref.from, ref.to);
-      // The lectionary range can be too long for a hero card; if there's
-      // a passage, we still pass it through (the card itself fades the
-      // overflow to a mask so a longer range reads as a teaser).
-      return {
-        ref,
-        passage,
-        href: `/bible/${ref.book}/${ref.chapter}#v${ref.from}`,
-        source: kind,
-      };
+      return buildSingleVerse(r.book, r.chapter, r.from, r.label, kind);
     }
   }
 
   const idx = dayOfYearUtc(day) % ROTATION.length;
-  const ref = ROTATION[idx];
-  const passage = await loadVerseRange(ref.book, ref.chapter, ref.from, ref.to);
+  const rot = ROTATION[idx];
+  return buildSingleVerse(rot.book, rot.chapter, rot.from, rot.label, "rotation");
+}
+
+/**
+ * Load a single verse and build a single-verse VerseOfDay. The display book
+ * name is taken from the source range label (so "1 Corinthians", "Song of
+ * Songs", etc. keep their exact formatting), falling back to the chapter's
+ * loaded name and finally the book slug.
+ */
+async function buildSingleVerse(
+  book: string,
+  chapter: number,
+  from: number,
+  sourceLabel: string,
+  source: VerseOfDay["source"],
+): Promise<VerseOfDay> {
+  const passage = await loadVerseRange(book, chapter, from, from);
+  const m = sourceLabel.match(/^(.*?)\s+\d+:\d+(?:-\d+)?$/);
+  const bookName = m?.[1] ?? passage?.name ?? book;
+  const ref: VerseRef = {
+    book,
+    chapter,
+    from,
+    to: from,
+    label: `${bookName} ${chapter}:${from}`,
+  };
   return {
     ref,
     passage,
-    href: `/bible/${ref.book}/${ref.chapter}#v${ref.from}`,
-    source: "rotation",
+    href: `/bible/${book}/${chapter}#v${from}`,
+    source,
   };
 }

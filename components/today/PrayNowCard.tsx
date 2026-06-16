@@ -40,49 +40,57 @@ export function PrayNowCard({ isDe = false }: { isDe?: boolean }) {
   const minutes = rule?.estimatedMinutes;
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-paper/10 bg-paper/[0.03]">
-      <p className="px-3.5 pt-3.5 font-sans text-caption text-paper/55">
-        {labels.eyebrow}
-      </p>
-
-      {/* Row 1: the day's rule, with its real read estimate. */}
+    <div className="space-y-3">
+      {/* Featured card: the day's rule, as a soft gradient call-to-pray with
+          a clear Begin pill — the Today screen's primary action. */}
       <Link
         href={rule?.href ?? "/prayers/morning"}
-        className="group flex items-center gap-3 px-3.5 py-3 transition-colors hover:bg-paper/[0.04]"
+        className="group relative block overflow-hidden rounded-[28px] p-5 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.5)] transition-transform active:scale-[0.99]"
+        style={{
+          background:
+            "radial-gradient(115% 90% at 88% 12%, rgba(255,255,255,0.16) 0%, transparent 55%), linear-gradient(150deg, #34343a 0%, #232327 60%, #1a1a1d 100%)",
+        }}
       >
         <span
           aria-hidden
-          className="shrink-0 inline-flex h-11 w-11 items-center justify-center rounded-full border border-paper/15 bg-paper/[0.04] text-gold/85"
-        >
-          <SunIcon />
-        </span>
-        <div className="min-w-0 flex-1">
-          <h3 className="font-serif text-ui leading-[1.2] text-paper group-hover:text-gold transition-colors">
-            {labels.ruleTitle}
-          </h3>
-          {minutes != null && (
-            <p className="mt-1 inline-flex items-center gap-1.5 font-sans text-caption text-paper/55">
-              <ClockIcon />
-              <span>{labels.minutes(minutes)}</span>
+          className="pointer-events-none absolute -right-6 -top-8 h-32 w-32 rounded-full bg-paper/15 blur-2xl"
+        />
+        <div className="relative flex items-start gap-4">
+          <span
+            aria-hidden
+            className="shrink-0 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-paper/10 text-gold-pale ring-1 ring-inset ring-paper/15"
+          >
+            <SunIcon />
+          </span>
+          <div className="min-w-0 flex-1 pt-0.5">
+            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold-pale/80">
+              {labels.eyebrow}
             </p>
-          )}
+            <h3 className="mt-1 font-serif text-title-sm leading-[1.15] text-paper">
+              {labels.ruleTitle}
+            </h3>
+            {minutes != null && (
+              <p className="mt-1.5 inline-flex items-center gap-1.5 font-sans text-caption text-paper/70">
+                <ClockIcon />
+                <span>{labels.minutes(minutes)}</span>
+              </p>
+            )}
+          </div>
         </div>
-        <span className="shrink-0 inline-flex items-center gap-1 font-sans text-caption font-medium text-paper/60 group-hover:text-gold transition-colors">
+        <span className="relative mt-5 flex w-full items-center justify-center gap-1.5 rounded-pill bg-gold px-5 py-3 font-sans text-ui font-semibold text-night shadow-[0_6px_16px_-4px_rgba(0,0,0,0.5)] transition-colors group-hover:bg-gold-soft">
           {labels.begin}
           <ChevronRight />
         </span>
       </Link>
 
-      <div className="mx-3.5 h-px bg-paper/8" />
-
-      {/* Row 2: the Prayer Rope Anthem, first-party audio. */}
+      {/* The Prayer Rope Anthem — first-party audio, as a quiet play row. */}
       <Link
         href="/prayers/anthem"
-        className="group flex items-center gap-3 px-3.5 py-3 transition-colors hover:bg-paper/[0.04]"
+        className="group flex items-center gap-3 rounded-[22px] border border-paper/10 bg-paper/[0.04] px-4 py-3.5 transition-colors hover:bg-paper/[0.07]"
       >
         <span
           aria-hidden
-          className="shrink-0 inline-flex h-11 w-11 items-center justify-center rounded-full border border-paper/25 bg-paper/[0.04] text-paper/85"
+          className="shrink-0 inline-flex h-11 w-11 items-center justify-center rounded-full bg-gold text-night shadow-[0_6px_16px_-6px_rgba(0,0,0,0.6)]"
         >
           <svg
             width="17"
@@ -107,7 +115,7 @@ export function PrayNowCard({ isDe = false }: { isDe?: boolean }) {
           </p>
         </div>
       </Link>
-    </section>
+    </div>
   );
 }
 

@@ -20,6 +20,8 @@ import { TodaySaintCard } from "./TodaySaintCard";
 import { FastTodayCard } from "./FastTodayCard";
 import { TodayReadingsCard } from "./TodayReadingsCard";
 import { PaschaCountdownCard } from "./PaschaCountdownCard";
+import { GreetingHeader } from "./GreetingHeader";
+import { QuickAccessGrid } from "./QuickAccessGrid";
 import { FirstStepsNudge } from "@/components/onboarding/FirstStepsNudge";
 
 /**
@@ -50,10 +52,6 @@ export async function TodayMobileV3() {
     commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
   const headlineSaint =
     headline?.saint ?? (headline?.slug ? getSaint(headline.slug) : null);
-
-  const tabs = isDe
-    ? { today: "Heute", calendar: "Kalender" }
-    : { today: "Today", calendar: "Calendar" };
 
   const labels = isDe
     ? {
@@ -96,12 +94,10 @@ export async function TodayMobileV3() {
 
   return (
     <div className="flex flex-col bg-night">
-      <MobileTopTabs active="today" labels={tabs} avatar={<UserAvatarSmall />} />
+      <MobileTopTabs avatar={<UserAvatarSmall />} />
 
-      <div className="px-5 pt-4 pb-8">
-        <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-4">
-          {dateline}
-        </p>
+      <div className="px-5 pt-3 pb-8">
+        <GreetingHeader dateline={dateline} isDe={isDe} />
 
         <FirstStepsNudge />
 
@@ -112,6 +108,12 @@ export async function TodayMobileV3() {
         <div className="mt-4">
           <PrayNowCard isDe={isDe} />
         </div>
+
+        {/* Quick access: the four core surfaces as soft, inviting doors. */}
+        <p className="mt-8 mb-3 font-sans text-eyebrow uppercase tracking-[2px] text-paper/55">
+          {isDe ? "Erkunden" : "Explore"}
+        </p>
+        <QuickAccessGrid isDe={isDe} />
 
         {/* The Church today: the saint, the fast, the readings, the count
             to Pascha, kept on the quiet sequenced rail. */}

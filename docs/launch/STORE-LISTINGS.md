@@ -1,8 +1,13 @@
 # Store Listings (draft, ready to paste)
 
 House rules applied: no em-dashes, prayer-book register, no SaaS-speak,
-every claim true of the build we ship (free, no ads, no tracking, no
-purchases).
+every claim true of the build we ship (free core, no ads, no tracking).
+
+> **2026-06-16:** Android v1 ships an optional subscription (Purify Plus), so
+> the old "no purchases" claim no longer holds. The **Google Play** listing is
+> superseded by `docs/google-play/PLAY_STORE_LISTING.md` (subscription-correct
+> copy + Data safety). The **Apple** section below stays parked until the Apple
+> account unparks; revisit its "no purchases" wording before iOS submission.
 
 ---
 

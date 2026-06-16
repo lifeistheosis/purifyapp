@@ -19,16 +19,19 @@
  --color-accent: #dc372d;
  --color-accent-deep: #a3261f;
 
- /* Dark sacred surfaces */
- --color-night: #161219;
- --color-night-soft: #38323c;
+ /* Dark sacred surfaces — a neutral grayscale "black / gray / white"
+    scheme (the Book nexus grayscale ramp). Near-black base with a faint
+    cool cast, mid-gray elevated cards; calm and monochrome. */
+ --color-night: #101013;       /* deepest base background (near-black) */
+ --color-night-soft: #1d1d20;  /* elevated cards / surfaces */
 
- /* Signature accent on dark surfaces. Retuned from gold to a neutral
-    warm-grey so the whole app reads as a calm monochrome scheme; the
-    `gold` token name is kept so every `*-gold` utility still resolves. */
- --color-gold: #b7b0a3;
- --color-gold-soft: #cdc7bb;
- --color-gold-pale: #e7e2d8; /* pale-gold text on dark (chips, highlights) */
+ /* Signature accent on dark surfaces — a light near-white gray. In a
+    monochrome scheme the "accent" is simply the brightest neutral:
+    white pills/fabs, light-gray highlights. The `gold` token name is
+    kept so every `*-gold` utility across the app still resolves. */
+ --color-gold: #eaeaec;        /* signature accent (buttons, highlights) */
+ --color-gold-soft: #cfcfd3;   /* softer accent */
+ --color-gold-pale: #f4f4f5;   /* pale accent text on dark (chips, highlights) */
 
  /* Repeated semantic accents — previously hand-typed as arbitrary hex in
   ~30 files. Named here so the hue is single-sourced and opacity modifiers
@@ -202,9 +205,9 @@ h6 {
  outline-offset: 2px;
 }
 
-/* Verse highlight tint (gold). Tailwind arbitrary rgba was inconsistent here. */
+/* Verse highlight tint (neutral). Tailwind arbitrary rgba was inconsistent here. */
 div[data-hl="true"] {
- background-color: rgba(183, 176, 163, 0.12) !important;
+ background-color: rgba(255, 255, 255, 0.10) !important;
 }
 
 /* Pulse the study-rail section when its hash is the URL target. */
@@ -565,11 +568,11 @@ div[data-hl="true"] {
  ---------------------------------------------------------------------- */
 
 :root {
- /* Was cinnabar red (196 47 36), softened to gold so the "rubricated"
- ink reads as a quiet illuminated highlight rather than a flag. The
- .rubric utility still exists as the single point of control if a
- deeper red is ever wanted again. */
- --ink-rubric: 183 176 163;
+ /* Was cinnabar red (196 47 36), then gold/sage; now a light neutral
+ gray so the "rubricated" ink reads as a quiet illuminated highlight in
+ the monochrome scheme. The .rubric utility is the single point of
+ control if a deeper red is ever wanted again. */
+ --ink-rubric: 226 226 229;
 }
 
 /* Page surface: a faint radial vignette so the page feels like a lit room,
@@ -721,10 +724,10 @@ div[data-hl="true"] {
 @keyframes new-glow {
  0%,
  100% {
- box-shadow: 0 0 0 0 rgba(214, 178, 90, 0);
+ box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
  }
  50% {
- box-shadow: 0 0 10px 2px rgba(214, 178, 90, 0.65);
+ box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.55);
  }
 }
 .new-glow {
@@ -871,5 +874,35 @@ html.reader-focus [data-reader-exit] {
  ::view-transition-old(root),
  ::view-transition-new(root) {
  animation: none !important;
+ }
+}
+
+/* ── Onboarding entrances ─────────────────────────────────────────────
+   Each first-run step replays a calm staggered cascade: the heading
+   pieces fade and rise (`onboard-step-in`), and the welcome brand mark
+   settles in with a soft overshoot (`onboard-mark-in`). The step wrapper
+   is keyed by step index in OnboardingFlow, so advancing remounts it and
+   the cascade fires again. Stagger is set per element via inline
+   animation-delay. Reduced-motion users get the end state instantly. */
+@keyframes onboard-step-in {
+ from { opacity: 0; transform: translateY(16px); }
+ to { opacity: 1; transform: translateY(0); }
+}
+.onboard-step-in {
+ animation: onboard-step-in 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes onboard-mark-in {
+ from { opacity: 0; transform: scale(0.8); }
+ to { opacity: 1; transform: scale(1); }
+}
+.onboard-mark-in {
+ animation: onboard-mark-in 640ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+ .onboard-step-in,
+ .onboard-mark-in {
+ animation: none;
+ opacity: 1;
+ transform: none;
  }
 }

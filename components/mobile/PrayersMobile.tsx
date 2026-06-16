@@ -6,7 +6,14 @@ import {
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
 import { DiptychPreview } from "./DiptychPreview";
+import { SoftTile, SoftTileGrid, FeatureBand } from "./SoftTiles";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
+import { Sun } from "@/components/ui/icons/Sun";
+import { Lampada } from "@/components/ui/icons/Lampada";
+import { PrayerRope } from "@/components/ui/icons/PrayerRope";
+import { Lyre } from "@/components/ui/icons/Lyre";
+import { Orans } from "@/components/ui/icons/Orans";
+import { Hands } from "@/components/ui/icons/Hands";
 import {
   PrayerSectionLabel,
   PrayerIndex,
@@ -93,37 +100,29 @@ export function PrayersMobile() {
         </p>
       </div>
 
-      {/* Featured: The Prayer Rope Anthem. Sits high on the mobile
-          scroll, right under the prayer of the heart, so the hymn is
-          visible without scrolling past the whole index. Neutral
-          paper-toned palette, no gold accents, matches the desktop
-          band's quiet emphasized treatment. */}
-      <Link
-        href="/prayers/anthem"
-        className="group mb-6 block rounded-xl border border-paper/20 bg-paper/[0.02] px-4 py-4 transition-colors hover:border-paper/40"
-      >
-        <div className="flex items-center gap-4">
-          <span
-            aria-hidden
-            className="shrink-0 inline-flex h-12 w-12 items-center justify-center rounded-full border border-paper/30 bg-paper/[0.04] text-paper/85"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className="translate-x-[1px]">
-              <path d="M7 5.5v13l11-6.5L7 5.5z" />
-            </svg>
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/50">
-              A hymn · for the rope
-            </p>
-            <h2 className="mt-1 font-serif text-lede text-paper leading-snug">
-              The Prayer Rope Anthem
-            </h2>
-            <p className="mt-1 font-sans text-caption text-paper/55 leading-[1.5]">
-              Sung knot by knot. Play it, follow the lyrics.
-            </p>
-          </div>
-        </div>
-      </Link>
+      {/* Featured: The Prayer Rope Anthem, as a gradient play band high on
+          the scroll so the hymn is visible without scrolling the index. */}
+      <div className="mb-6">
+        <FeatureBand
+          href="/prayers/anthem"
+          eyebrow="A hymn · for the rope"
+          title="The Prayer Rope Anthem"
+          sub="Sung knot by knot. Play it, follow the lyrics."
+        />
+      </div>
+
+      {/* Practices: the surfaces with their own UI, as soft tiles. */}
+      <p className="mb-3 font-sans text-eyebrow uppercase tracking-[2px] text-paper/55">
+        Practices
+      </p>
+      <SoftTileGrid className="mb-8">
+        <SoftTile href="/prayers/today" label="Today" sub="Fast & feast" icon={<Sun size={21} />} tone="a" />
+        <SoftTile href="/prayers/hours" label="The Hours" sub="Sanctify the day" icon={<Lampada size={21} />} tone="b" />
+        <SoftTile href="/prayers/rope" label="The Rope" sub="The Jesus Prayer" icon={<PrayerRope size={21} />} tone="c" />
+        <SoftTile href="/prayers/akathists" label="Akathists" sub="Hymns of praise" icon={<Lyre size={21} />} tone="d" />
+        <SoftTile href="/prayers/learning" label="Learn to pray" sub="A beginner's path" icon={<Orans size={21} />} tone="b" />
+        <SoftTile href="/prayers/personal" label="Personal" sub="Your own rule" icon={<Hands size={21} />} tone="a" />
+      </SoftTileGrid>
 
       <DiptychPreview />
 
@@ -178,37 +177,8 @@ export function PrayersMobile() {
           );
         })}
 
-        <PrayerSectionLabel>Also in this book</PrayerSectionLabel>
-        <PrayerIndex>
-          <PrayerIndexRow
-            href="/prayers/today"
-            title="Today"
-            description="Today's fast, commemorations, and namedays."
-          />
-          <PrayerIndexRow
-            href="/prayers/hours"
-            title="The Hours"
-            description="Short prayers that sanctify the daylight."
-          />
-          <PrayerIndexRow
-            href="/prayers/akathists"
-            title="The Akathists"
-            description="Long hymns of praise, prayed standing throughout."
-          />
-          <PrayerIndexRow
-            href="/prayers/rope"
-            title="The prayer rope"
-            description="Tell the Jesus Prayer on the knotted rope."
-          />
-          {/* Anthem deliberately omitted here — it has its own
-              featured band high on the page so it doesn't hide
-              at the foot of the long index. */}
-          <PrayerIndexRow
-            href="/prayers/learning"
-            title="Learn to pray"
-            description="A short, beginner's path through Orthodox prayer."
-          />
-        </PrayerIndex>
+        {/* "Also in this book" is now the Practices tile grid above the
+            index, so it isn't repeated here as a hairline list. */}
         </PrayerSearch>
         </div>
       </div>
