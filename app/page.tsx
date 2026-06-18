@@ -14,6 +14,7 @@ import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { numberToWordsCapitalized } from "@/lib/i18n/numberWords";
 import { SAINTS } from "@/lib/saints/saints";
+import { WebOnly, NativeOnly } from "@/components/platform/PlatformGate";
 
 // Single source of truth for the saints corpus size: derive it from the
 // data so the home copy can never drift from what /saints actually renders.
@@ -160,15 +161,17 @@ export default async function Home() {
  const homeChallenges = isDe ? challengesDe : challenges;
  return (
  <>
- {/* MOBILE: app-shell Today hero. Hidden on md+ where the marketing
- home below takes over. The hero is wrapped here so the marketing
- sections (rich, long) don't double-load on phones. */}
- <div className="md:hidden flex-1 safe-pb">
+ {/* NATIVE app shell: the Today hero + bottom tab bar. Absent from the
+ web (mobile or desktop), which gets the marketing site below. */}
+ <NativeOnly>
+ <div className="flex-1 safe-pt safe-pb">
  <TodayMobileV3 />
  </div>
+ <MobileTabBar />
+ </NativeOnly>
 
- {/* DESKTOP: existing marketing home, unchanged. Hidden on phones. */}
- <div className="hidden md:contents">
+ {/* WEB (mobile + desktop): the responsive marketing home. */}
+ <WebOnly>
  <Navbar />
  <main className="flex-1">
  {/* HERO. Black-and-white surface (the older blue twilight was
@@ -378,10 +381,8 @@ export default async function Home() {
  {/* One-tap "next section" control; advances the full-viewport home
  panels one at a time and flips to back-to-top at the end. */}
  <HomeSectionScroller />
- </div>
- {/* Bottom tab bar + PWA install prompt mount on the mobile shell.
- Both render md:hidden internally, so they're inert on desktop. */}
- <MobileTabBar />
+ </WebOnly>
+ {/* PWA install prompt: web-only behavior, self-hides inside the app. */}
  <InstallPrompt />
  </>
  );

@@ -21,6 +21,13 @@ export function NativeBridge() {
   useEffect(() => {
     if (!isNativeClient()) return;
 
+    // Mark the document as the native app shell. CSS scopes app-only
+    // spacing (bottom tab-bar clearance via .safe-pb, top status-bar inset
+    // via .safe-pt) to html.is-native, so the website never gets app
+    // padding and the app never ships web chrome. Pairs with the
+    // WebOnly/NativeOnly React gates (components/platform/PlatformGate).
+    document.documentElement.classList.add("is-native");
+
     let cancelled = false;
 
     (async () => {

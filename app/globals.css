@@ -102,35 +102,44 @@
 }
 
 /* ----------------------------------------------------------------------
- Mobile app-shell: bottom tab bar height + safe-area helpers.
- The bar is fixed at the bottom on `< md`; safe-pb keeps scrolling
- content from being trapped beneath it and the iOS home indicator.
+ App-shell safe-area helpers. The bottom tab bar and the status-bar inset
+ exist ONLY in the native app shell (Capacitor), so their padding is
+ scoped to `html.is-native` (set by NativeBridge). On the web — mobile or
+ desktop — there is no tab bar and a web header sits up top, so these are
+ all no-ops. Pairs with the WebOnly/NativeOnly React gates.
  ---------------------------------------------------------------------- */
 :root {
  --tab-bar-h: 86px;
 }
 
-/* Padding for any scroll container that sits behind the mobile tab bar. */
+/* Bottom clearance for scroll containers behind the native tab bar. */
 @utility safe-pb {
- padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tab-bar-h));
+ padding-bottom: 0;
 }
-/* Same as safe-pb but with extra room for a floating reader pill above
- the tab bar (MobileChapterPill / MobileWorkPill, ~44px + 12px gap +
- 12px breathing room). Apply on the reader's scroll surface so the
- last verse / paragraph isn't clipped by the pill. */
+/* safe-pb plus room for a floating reader pill (MobileChapterPill /
+ MobileWorkPill, ~44px + 12px gap + 12px breathing room). */
 @utility safe-pb-reader {
- padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tab-bar-h) + 68px);
+ padding-bottom: 0;
+}
+/* Top clearance so content clears the native status bar (no web header
+ up there in the app). */
+@utility safe-pt {
+ padding-top: 0;
 }
 /* Position helper for the tab bar itself (sits above the home indicator). */
 @utility safe-bottom-pad {
  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-/* Desktop: tab bar is hidden, so kill the extra bottom padding. */
-@media (min-width: 768px) {
- .safe-pb,
- .safe-pb-reader {
- padding-bottom: 0;
- }
+
+/* The actual app-shell padding only applies inside the native shell. */
+html.is-native .safe-pb {
+ padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tab-bar-h));
+}
+html.is-native .safe-pb-reader {
+ padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tab-bar-h) + 68px);
+}
+html.is-native .safe-pt {
+ padding-top: env(safe-area-inset-top, 0px);
 }
 
 @layer base {
