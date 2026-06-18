@@ -32,7 +32,11 @@ const config: CapacitorConfig = {
   plugins: {
     SplashScreen: {
       launchShowDuration: 1200,
-      launchAutoHide: true,
+      // Controlled hide: NativeBridge lifts the splash only after the
+      // native shell has painted (no flash of the SSR web shell), with a
+      // bounded fallback so it can never hang. Auto-hide would risk lifting
+      // mid-hydration on a slow cold load and flashing the website.
+      launchAutoHide: false,
       backgroundColor: "#101013",
       showSpinner: false,
       splashFullScreen: true,

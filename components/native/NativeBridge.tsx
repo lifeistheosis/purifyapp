@@ -30,19 +30,39 @@ export function NativeBridge() {
 
     let cancelled = false;
 
-    (async () => {
+    const hideSplash = async () => {
+      if (cancelled) return;
       try {
         const { SplashScreen } = await import("@capacitor/splash-screen");
         if (!cancelled) await SplashScreen.hide();
       } catch {
-        /* launchAutoHide covers it */
+        /* fallback timeout covers it */
       }
+    };
+
+    // No-flash guarantee: keep the launch splash up until the native shell
+    // has actually painted. The SSR HTML is the WEB shell (we default to
+    // web so the site stays static for SEO), and React swaps to the app
+    // shell right after hydration via useIsNative(). Two animation frames
+    // ensure that swap is committed and painted before we lift the splash,
+    // so the marketing site is never visible inside the app. A bounded
+    // fallback makes sure the splash can never hang (capacitor
+    // launchAutoHide is off, so this is the only hide path).
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        void hideSplash();
+      }),
+    );
+    const fallback = setTimeout(() => void hideSplash(), 4000);
+
+    // Pin the status bar to the night palette so the system chrome reads as
+    // part of the app (Android; throws on iOS, where the WKWebView
+    // background already matches).
+    (async () => {
       try {
         const { StatusBar, Style } = await import("@capacitor/status-bar");
         if (cancelled) return;
         await StatusBar.setStyle({ style: Style.Dark });
-        // Android only; throws on iOS, where the WKWebView background
-        // already matches.
         await StatusBar.setBackgroundColor({ color: NIGHT }).catch(() => {});
       } catch {
         /* status bar styling is cosmetic; never block the app on it */
@@ -51,6 +71,7 @@ export function NativeBridge() {
 
     return () => {
       cancelled = true;
+      clearTimeout(fallback);
     };
   }, []);
 
