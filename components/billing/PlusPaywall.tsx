@@ -28,6 +28,27 @@ import type { PurchasesPackage } from "@revenuecat/purchases-typescript-internal
 
 type Phase = "loading" | "signed-out" | "unavailable" | "ready" | "subscribed";
 
+// The actual, shipped Plus benefits (no unreleased items like ambience or
+// the future audio library — those belong to the roadmap copy, not the
+// purchase surface).
+const PLUS_BENEFITS = [
+  "Cross-device sync",
+  "Notes, highlights, and bookmarks",
+  "Custom collections and Florilegium",
+] as const;
+
+// Savings % of Yearly vs twelve months of Monthly, computed live from the
+// RevenueCat product prices (never hardcoded). Returns null unless both
+// plans are present and the math is a real, positive saving.
+function yearlySavingsPercent(pkgs: PlusPackages): number | null {
+  const monthly = pkgs.monthly?.product.price;
+  const yearly = pkgs.yearly?.product.price;
+  if (!monthly || !yearly) return null;
+  const full = monthly * 12;
+  if (yearly >= full) return null;
+  return Math.round((1 - yearly / full) * 100);
+}
+
 export function PlusPaywall() {
   const isNative = useIsNative();
 
@@ -169,20 +190,34 @@ export function PlusPaywall() {
   }
 
   // phase === "ready"
+  const savings = yearlySavingsPercent(packages);
+  const yearlySublabel = savings ? `Save ${savings}%` : "Best value";
+
   return (
     <Shell>
       <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold/80">
         Purify Plus
       </p>
       <p className="mt-3 font-sans text-ui leading-relaxed text-paper/70">
-        Cross-device sync, custom florilegia, and the enhanced reading layer.
-        The whole Orthodox core stays free, always.
+        The whole Orthodox core stays free, always. Purify Plus adds the
+        gathered, cross-device reading layer:
       </p>
+
+      <ul className="mt-4 space-y-2.5">
+        {PLUS_BENEFITS.map((benefit) => (
+          <li key={benefit} className="flex gap-2.5">
+            <Check />
+            <span className="font-sans text-ui leading-snug text-paper/85">
+              {benefit}
+            </span>
+          </li>
+        ))}
+      </ul>
 
       <div className="mt-6 space-y-3">
         <PlanButton
           label="Yearly"
-          sublabel="Best value"
+          sublabel={yearlySublabel}
           price={packages.yearly?.product.priceString}
           busy={busy === "yearly"}
           disabled={!packages.yearly || busy !== null}
@@ -211,10 +246,39 @@ export function PlusPaywall() {
       </button>
 
       <p className="mt-4 font-sans text-caption leading-[1.55] text-paper/40">
-        Subscriptions renew automatically until cancelled. Manage or cancel any
-        time in Google Play.
+        Billed through Google Play. Subscriptions renew automatically until
+        cancelled; manage or cancel any time in Google Play.
+      </p>
+
+      <p className="mt-3 font-sans text-caption text-paper/40">
+        <Link href="/terms" className="underline-offset-4 hover:underline">
+          Terms
+        </Link>
+        <span className="px-1.5 text-paper/25">·</span>
+        <Link href="/privacy" className="underline-offset-4 hover:underline">
+          Privacy
+        </Link>
       </p>
     </Shell>
+  );
+}
+
+function Check() {
+  return (
+    <svg
+      width={16}
+      height={16}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.25}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      className="mt-[3px] shrink-0 text-gold/80"
+    >
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
   );
 }
 
