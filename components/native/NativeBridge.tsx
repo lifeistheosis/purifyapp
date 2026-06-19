@@ -64,6 +64,13 @@ export function NativeBridge() {
         if (cancelled) return;
         await StatusBar.setStyle({ style: Style.Dark });
         await StatusBar.setBackgroundColor({ color: NIGHT }).catch(() => {});
+        // Lay the WebView BELOW the status bar (Android). Without this the
+        // system insets the content edge-to-edge and `env(safe-area-inset-top)`
+        // reads 0 on Android, so top-of-screen UI (home hero, the Bible search
+        // sheet's Cancel button) renders under the clock/battery and is
+        // unreachable. iOS throws here (the notch is handled by safe-area
+        // insets in CSS), so the failure is swallowed.
+        await StatusBar.setOverlaysWebView({ overlay: false }).catch(() => {});
       } catch {
         /* status bar styling is cosmetic; never block the app on it */
       }

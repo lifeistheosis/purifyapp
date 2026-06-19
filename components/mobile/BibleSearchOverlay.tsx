@@ -9,6 +9,7 @@
 
 import { useEffect, useState } from "react";
 import { BibleSearch } from "@/components/bible/BibleSearch";
+import { isNativeClient } from "@/lib/platform/native";
 
 export function BibleSearchTrigger() {
   const [open, setOpen] = useState(false);
@@ -21,6 +22,20 @@ export function BibleSearchTrigger() {
     return () => {
       document.body.style.overflow = prev;
     };
+  }, [open]);
+
+  // Android hardware back closes the sheet instead of leaving the page —
+  // the sheet is a full-screen overlay with no browser history of its own,
+  // so without this the back button feels like the screen is stuck.
+  useEffect(() => {
+    if (!open || !isNativeClient()) return;
+    let remove: (() => void) | undefined;
+    void (async () => {
+      const { App } = await import("@capacitor/app");
+      const handle = await App.addListener("backButton", () => setOpen(false));
+      remove = () => void handle.remove();
+    })();
+    return () => remove?.();
   }, [open]);
 
   return (
@@ -44,7 +59,13 @@ export function BibleSearchTrigger() {
           aria-label="Search the Bible"
           className="fixed inset-0 z-50 bg-night/95 backdrop-blur-sm flex flex-col"
         >
-          <header className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-paper/10">
+          <header
+            className="flex items-center justify-between px-5 pb-3 border-b border-paper/10"
+            // Clear the status bar: inset + the original 1rem of breathing
+            // room. Belt-and-suspenders with StatusBar.setOverlaysWebView in
+            // NativeBridge; on web the inset is 0 so this is just pt-4.
+            style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 1rem)" }}
+          >
             <p className="font-sans text-caption uppercase tracking-[1.5px] text-paper/55">
               Search
             </p>

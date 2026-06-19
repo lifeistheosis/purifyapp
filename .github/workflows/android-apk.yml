@@ -49,6 +49,22 @@ jobs:
       - name: Sync Capacitor into the Android project
         run: npx cap sync android
 
+      # FCM config for @capacitor/push-notifications. Without this file the
+      # google-services Gradle plugin stays off and PushNotifications.register()
+      # hits an uninitialized FirebaseApp and crashes the app. Injected from a
+      # secret (base64) so the file is never committed. Optional: a build with
+      # no secret still works, just without working push.
+      - name: Decode google-services.json (FCM)
+        env:
+          GS_B64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+        run: |
+          if [ -z "$GS_B64" ]; then
+            echo "::warning::GOOGLE_SERVICES_JSON_BASE64 not set — building without FCM (push notifications won't work)."
+          else
+            echo "$GS_B64" | base64 -d > android/app/google-services.json
+            echo "Wrote android/app/google-services.json"
+          fi
+
       - name: Decode release keystore
         env:
           KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}

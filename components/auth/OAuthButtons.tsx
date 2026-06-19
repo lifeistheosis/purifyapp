@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { authOrigin } from "@/lib/site";
+import { nativeGoogleAvailable, nativeGoogleIdToken } from "@/lib/auth/nativeGoogle";
 
 /**
  * Continue-with-Google and Continue-with-Apple buttons. Used by both
@@ -23,6 +24,21 @@ export function OAuthButtons() {
     setError(null);
     try {
       const supabase = createClient();
+
+      // Native app: skip the browser redirect entirely. The native account
+      // picker returns a Google ID token we exchange in-place, so there's no
+      // Custom Tab and no cross-jar PKCE failure (see lib/auth/nativeGoogle).
+      if (nativeGoogleAvailable()) {
+        const token = await nativeGoogleIdToken();
+        const { error: err } = await supabase.auth.signInWithIdToken({
+          provider: "google",
+          token,
+        });
+        if (err) throw err;
+        window.location.assign("/account/profile");
+        return;
+      }
+
       const origin = authOrigin();
       const { error: err } = await supabase.auth.signInWithOAuth({
         provider: "google",
