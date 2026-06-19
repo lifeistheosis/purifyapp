@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { PlusPaywall } from "@/components/billing/PlusPaywall";
+import { WebOnly, NativeOnly } from "@/components/platform/PlatformGate";
 
 export const metadata = {
   title: "Pricing",
@@ -69,14 +70,28 @@ const DE: PricingCopy = {
 
 export default async function PricingPage() {
   const locale = await getServerLocale();
-  if (locale === "de") return <PricingView copy={DE} />;
-  const m = getMessages(locale);
-  const copy: PricingCopy = {
-    eyebrow: t(m, "pricing.eyebrow"),
-    h1: t(m, "pricing.h1"),
-    ...EN,
-  };
-  return <PricingView copy={copy} />;
+  let view: React.ReactNode;
+  if (locale === "de") {
+    view = <PricingView copy={DE} />;
+  } else {
+    const m = getMessages(locale);
+    const copy: PricingCopy = {
+      eyebrow: t(m, "pricing.eyebrow"),
+      h1: t(m, "pricing.h1"),
+      ...EN,
+    };
+    view = <PricingView copy={copy} />;
+  }
+  return (
+    <>
+      {/* Web (mobile + desktop): the quiet, price-free pricing page. */}
+      <WebOnly>{view}</WebOnly>
+      {/* Native app: the full-screen Purify Plus paywall (Play Billing). */}
+      <NativeOnly>
+        <PlusPaywall />
+      </NativeOnly>
+    </>
+  );
 }
 
 function PricingView({ copy }: { copy: PricingCopy }) {
@@ -125,11 +140,6 @@ function PricingView({ copy }: { copy: PricingCopy }) {
             {copy.future}
           </p>
         </div>
-
-        {/* Native-only purchase surface. Renders nothing on the web; inside
-            the Android app it shows the live Monthly / Yearly plans and
-            drives Play Billing via RevenueCat. */}
-        <PlusPaywall />
 
         {/* Support / lamp panel */}
         <div
