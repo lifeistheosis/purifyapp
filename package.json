@@ -30,6 +30,7 @@
     "@capacitor/splash-screen": "^8.0.1",
     "@capacitor/status-bar": "^8.0.2",
     "@revenuecat/purchases-capacitor": "^11.3.2",
+    "@revenuecat/purchases-capacitor-ui": "^13.2.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.105.4",
     "apns2": "^12.2.0",
