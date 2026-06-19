@@ -23,6 +23,7 @@ import {
   MANAGE_SUBSCRIPTION_URL,
   type PlusPackages,
 } from "@/lib/billing/revenuecat";
+import { presentCustomerCenter } from "@/lib/billing/revenuecatUi";
 import type { PurchasesPackage } from "@revenuecat/purchases-typescript-internal-esm";
 
 type Phase = "loading" | "signed-out" | "unavailable" | "ready" | "subscribed";
@@ -102,6 +103,17 @@ export function PlusPaywall() {
     else setNote("No previous Purify Plus subscription was found on this account.");
   }, [busy]);
 
+  // Manage: open RevenueCat's native Customer Center (manage / cancel /
+  // restore / refund / support). Falls back to the Play subscriptions deep
+  // link if Customer Center isn't available (e.g. not yet enabled in the
+  // RevenueCat dashboard).
+  const onManage = useCallback(async () => {
+    const shown = await presentCustomerCenter();
+    if (!shown && typeof window !== "undefined") {
+      window.open(MANAGE_SUBSCRIPTION_URL, "_blank");
+    }
+  }, []);
+
   // Web: render nothing. The server pricing page already carries the
   // price-free "Purify Plus, when it arrives" copy for browsers.
   if (!isNative || phase === "loading") return null;
@@ -145,12 +157,13 @@ export function PlusPaywall() {
           Thank you for keeping the lamps lit. Your reading syncs across every
           device you sign in on.
         </p>
-        <a
-          href={MANAGE_SUBSCRIPTION_URL}
+        <button
+          type="button"
+          onClick={onManage}
           className="mt-5 inline-flex items-center font-sans text-ui font-semibold text-gold/90 hover:text-gold"
         >
           Manage subscription
-        </a>
+        </button>
       </Shell>
     );
   }
