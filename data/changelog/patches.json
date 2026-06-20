@@ -1,5 +1,29 @@
 [
   {
+    "id": "beta-1-6",
+    "version": "Beta 1.6",
+    "date": "2026-06-20",
+    "title": "Steadier on Android",
+    "intro": "A repair patch, written with the Android beta testers in hand. You opened the app, you found the rough edges, and you wrote them down kindly. This is the answer to that: sign-in that finishes where it starts, a top of the screen that no longer hides its own buttons, and a handful of quiet fixes. Thank you for testing. Glory to God for patient hands.",
+    "sections": [
+      {
+        "heading": "Signing in, and out, the way it should",
+        "body": "Continue with Google now completes inside the app, with the native account picker, instead of sending you out to a separate browser and leaving you signed in everywhere but here. And signing out no longer ends on an error screen; it simply lets you go, quietly, back to the start."
+      },
+      {
+        "heading": "Nothing hiding behind the clock",
+        "body": "On Android the very top of the screen used to slip up under the status bar, taking buttons with it. The welcome's Skip, the Cancel in Bible search, the app's own header: all of them now sit below the clock and the battery, where your thumb can actually reach them. The Android back button closes the search sheet instead of feeling stuck."
+      },
+      {
+        "heading": "A few quiet repairs",
+        "body": "Long prayer titles read in full now, rather than trailing off mid-word. Turning on prayer reminders no longer stumbles. And the app finally wears its own icon, the three-bar cross, in your app drawer and on your home screen, in place of the placeholder it shipped with."
+      }
+    ],
+    "future": [],
+    "closing": "Small as it is, every patch is offered with thanks for the people praying alongside this work. If something feels off, or there is a feature you wish existed, write to me at lifeistheosis@gmail.com. I read every email.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
     "id": "beta-1-2",
     "version": "Beta 1.2",
     "date": "2026-06-14",
