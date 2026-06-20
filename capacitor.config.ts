@@ -1,3 +1,4 @@
+/// <reference types="@capacitor-community/safe-area" />
 import type { CapacitorConfig } from "@capacitor/cli";
 
 // Native shell configuration. The iOS and Android apps are thin Capacitor
@@ -46,6 +47,11 @@ const config: CapacitorConfig = {
       style: "DARK",
       backgroundColor: "#101013",
     },
+    // Safe-area inset polyfill. On Android 16 edge-to-edge, Chromium < 140
+    // reports env(safe-area-inset-*) as 0; this plugin pads the webview for
+    // those builds and lets env() work natively on Chromium 140+. Defaults
+    // are correct for our setup; pairs with EdgeToEdge.enable() in MainActivity.
+    SafeArea: {},
     // Native prayer reminders (APNs on iOS, FCM on Android). The web layer
     // registers via @capacitor/push-notifications when isNativeClient();
     // delivery is server-side from /api/cron/push-deliver. Show the alert,

@@ -20,6 +20,7 @@
     "discord:act": "node scripts/discord-act.mjs scripts/discord-actions.json"
   },
   "dependencies": {
+    "@capacitor-community/safe-area": "^8.0.1",
     "@capacitor/android": "^8.4.0",
     "@capacitor/app": "^8.1.0",
     "@capacitor/core": "^8.4.0",
