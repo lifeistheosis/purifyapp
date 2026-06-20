@@ -39,6 +39,10 @@ jobs:
           # Capacitor 8's android library compiles to Java 21.
           distribution: temurin
           java-version: "21"
+          # Cache ~/.gradle (deps + wrapper) keyed on the gradle files, so
+          # repeat builds skip re-downloading the toolchain — roughly halves
+          # the build time.
+          cache: gradle
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
@@ -78,6 +82,10 @@ jobs:
       - name: Build signed release (AAB + APK) and debug APK
         working-directory: android
         env:
+          # Auto-incrementing versionCode (build.gradle reads this); the run
+          # number only ever goes up, so no manual bumps and no duplicate-code
+          # rejections from Play.
+          ANDROID_VERSION_CODE: ${{ github.run_number }}
           ANDROID_KEYSTORE_FILE: ${{ runner.temp }}/upload.keystore
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}

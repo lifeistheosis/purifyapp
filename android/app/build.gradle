@@ -7,7 +7,11 @@ android {
         applicationId "net.purifyapp.purify"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
+        // CI sets ANDROID_VERSION_CODE from the workflow run number so every
+        // build is automatically higher than the last (no manual bumps, no
+        // "duplicate versionCode" rejections). Local builds use the literal
+        // fallback. Keep the fallback ahead of the last manual upload (4).
+        versionCode (System.getenv("ANDROID_VERSION_CODE") ?: "4").toInteger()
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
