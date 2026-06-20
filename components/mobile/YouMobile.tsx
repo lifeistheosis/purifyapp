@@ -222,7 +222,7 @@ export function YouMobile() {
   if (signedIn) {
     settings.push({
       label: "Sign out",
-      href: "/auth/signout",
+      href: "/signout",
       destructive: true,
       icon: <Glyph kind="signout" />,
     });

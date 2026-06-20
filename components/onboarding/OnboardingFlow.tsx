@@ -93,8 +93,14 @@ export function OnboardingFlow({ onDone }: { onDone: () => void }) {
           "radial-gradient(120% 55% at 50% 0%, rgba(255,255,255,0.05) 0%, transparent 55%), #101013",
       }}
     >
-      {/* Top bar: step dots + skip */}
-      <div className="flex items-center justify-between px-5 pt-5">
+      {/* Top bar: step dots + skip. Pad past the status bar (inset + the
+          original 1.25rem) so the Skip button isn't hidden under the Android
+          clock/battery — the "invisible skip button" tester report. On web the
+          inset is 0, so this is just pt-5. */}
+      <div
+        className="flex items-center justify-between px-5"
+        style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 1.25rem)" }}
+      >
         <StepDots count={3} active={step} />
         <button
           type="button"

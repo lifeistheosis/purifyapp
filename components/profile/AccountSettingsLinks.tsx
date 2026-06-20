@@ -72,7 +72,7 @@ export function AccountSettingsLinks() {
     },
     {
       label: "Sign out",
-      href: "/auth/signout",
+      href: "/signout",
       destructive: true,
       icon: <Glyph kind="signout" />,
     },
