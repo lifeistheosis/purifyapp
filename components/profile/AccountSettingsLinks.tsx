@@ -32,6 +32,12 @@ export function AccountSettingsLinks() {
 
   const items: SettingsItem[] = [
     {
+      label: "Purify Plus",
+      href: "/pricing",
+      hint: "Cross-device sync, notes & highlights, collections",
+      icon: <Glyph kind="sparkle" />,
+    },
+    {
       label: "Diptychs",
       href: "/prayers/personal",
       hint:
@@ -93,7 +99,15 @@ export function AccountSettingsLinks() {
 function Glyph({
   kind,
 }: {
-  kind: "halo" | "bell" | "lock" | "heart" | "bolt" | "cross" | "signout";
+  kind:
+    | "halo"
+    | "bell"
+    | "lock"
+    | "heart"
+    | "bolt"
+    | "cross"
+    | "signout"
+    | "sparkle";
 }) {
   const props = {
     width: 14,
@@ -153,6 +167,12 @@ function Glyph({
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
           <path d="m16 17 5-5-5-5" />
           <path d="M21 12H9" />
+        </svg>
+      );
+    case "sparkle":
+      return (
+        <svg {...props}>
+          <path d="M12 3c.4 4.5 2.5 6.6 7 7-4.5.4-6.6 2.5-7 7-.4-4.5-2.5-6.6-7-7 4.5-.4 6.6-2.5 7-7z" />
         </svg>
       );
   }
