@@ -9,6 +9,9 @@ import { CitationCard } from "@/components/citations/CitationCard";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { RecordRead } from "@/components/reading/RecordRead";
+import { TheologyArticleNav } from "@/components/theology/TheologyArticleNav";
+import { RelatedRail } from "@/components/theology/RelatedRail";
+import { buildRelated } from "@/lib/theology/relations";
 
 type Params = Promise<{ slug: string }>;
 
@@ -40,14 +43,23 @@ export default async function TopicPage({ params }: { params: Params }) {
   const locale = await getServerLocale();
   const m = getMessages(locale);
 
+  const related = buildRelated("topics", topic.slug, {
+    saints: topic.citations
+      .map((c) => c.saintSlug)
+      .filter((s): s is string => Boolean(s)),
+  });
+
   return (
-    <section className="bg-night px-5 md:px-8 py-16 md:py-24">
+    <section className="bg-night px-5 md:px-8 py-10 md:py-16">
       <RecordRead
         kind="topic"
         href={`/topics/${topic.slug}`}
         label={topic.title}
         topics={[topic.title, topic.title.replace(/^The\s+/i, "")]}
       />
+      <div className="mx-auto max-w-[760px] w-full mb-10">
+        <TheologyArticleNav />
+      </div>
       <article className="mx-auto max-w-[760px] w-full">
         <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
           {t(m, "topics.eyebrow")}
@@ -97,6 +109,8 @@ export default async function TopicPage({ params }: { params: Params }) {
             </ul>
           </section>
         ) : null}
+
+        <RelatedRail groups={related} />
 
         {topic.curatedBy ? (
           <p className="mt-16 pt-8 border-t border-paper/10 font-sans text-caption text-paper/40">

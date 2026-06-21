@@ -1,46 +1,44 @@
 import Link from "next/link";
 
 import {
-  APOLOGETICS_GROUP_ORDER,
-  APOLOGETICS_GROUP_LABEL,
-  apologeticsByGroup,
-} from "@/lib/apologetics/topics";
+  THEOLOGY_GROUP_ORDER,
+  THEOLOGY_GROUP_LABEL,
+  topicsByGroup,
+} from "@/lib/theology/topics";
 import { TheologyShell } from "@/components/theology/TheologyShell";
 
 export const metadata = {
-  title: "Apologetics",
+  title: "Doctrine",
   description:
-    "A reasoned Orthodox defense of the faith: the existence of God against atheism and deism, and the place of Scripture, Tradition, and the Church against sola scriptura.",
+    "Long-form patristic studies on the Trinity, Christology, the Theotokos, theosis, ecclesiology, and disputed Scripture — the doctrine traced through the Fathers and the Councils, every citation verbatim and sourced.",
 };
 
 export const revalidate = 3600;
 
-// Apologetics — the argument-driven mode. Grouped by the objection it answers,
-// each entry framed as a question taken up and replied to, with a clear path
-// to the deeper Doctrine study.
-export default function ApologeticsIndexPage() {
+// Doctrine — the treatise library. Grouped by doctrinal category, text-first,
+// chapter-like. The richest, most formal of the four modes.
+export default function DoctrineIndexPage() {
   return (
     <TheologyShell>
       <header>
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/70">
-          Apologetics
+          Doctrine
         </p>
         <h1 className="mt-3 font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">
-          A reason for the hope that is in you.
+          The mind of the Fathers, set out in long form.
         </h1>
-        <p className="mt-5 font-serif text-body text-paper/80 leading-[1.75] max-w-[64ch]">
-          Where Doctrine and Topics argue within the faith from the Fathers,
-          Apologetics turns outward — to the questions an enquirer or an objector
-          brings. Each response takes the objection plainly and answers it, then
-          points to the deeper study rather than repeating it.
+        <p className="mt-5 font-serif text-body text-paper/80 leading-[1.75] max-w-[62ch]">
+          Each study lays out the doctrine, traces it through the patristic
+          florilegium, and weighs the conciliar and scriptural witness. Every
+          citation is verbatim, public-domain, and sourced.
         </p>
       </header>
 
-      <div className="mt-12 space-y-12">
-        {APOLOGETICS_GROUP_ORDER.map((group) => {
-          const list = apologeticsByGroup(group);
+      <div className="mt-12 md:mt-14 space-y-12">
+        {THEOLOGY_GROUP_ORDER.map((group) => {
+          const list = topicsByGroup(group);
           if (list.length === 0) return null;
-          const label = APOLOGETICS_GROUP_LABEL[group];
+          const label = THEOLOGY_GROUP_LABEL[group];
           return (
             <section key={group}>
               <div className="border-b border-paper/10 pb-3">
@@ -86,7 +84,7 @@ export default function ApologeticsIndexPage() {
                         <div className="block py-5 opacity-60">{inner}</div>
                       ) : (
                         <Link
-                          href={`/apologetics/${tp.slug}`}
+                          href={`/theology/${tp.slug}`}
                           className="block py-5 transition-colors hover:bg-paper/[0.02]"
                         >
                           {inner}

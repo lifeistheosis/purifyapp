@@ -1,68 +1,102 @@
 import Link from "next/link";
 import { HERESIES } from "@/lib/heresies/heresies";
+import { COUNCILS } from "@/lib/councils/councils";
+import { TheologyShell } from "@/components/theology/TheologyShell";
 
 export const metadata = {
-  title: "The Heresies",
+  title: "Heresies",
   description:
     "The chief errors condemned by the seven Ecumenical Councils, each defined in plain English, cross-linked to the council that condemned it, the orthodox teaching it denied, and the Fathers who refuted it.",
 };
 
-export default function HeresiesPage() {
+export const revalidate = 3600;
+
+const councilByname = (slug: string) =>
+  COUNCILS.find((c) => c.slug === slug)?.byname;
+
+// Heresies — the dossier mode. A chronological record, grouped by era, each
+// entry showing the proponent and the council that condemned it. Compact,
+// archival, fact-first — no card grid.
+export default function HeresiesIndexPage() {
+  // Group by era in first-appearance order (the registry is already roughly
+  // chronological, one heresy per Ecumenical Council).
+  const eras: { era: string; items: typeof HERESIES }[] = [];
+  for (const h of HERESIES) {
+    const bucket = eras.find((e) => e.era === h.era);
+    if (bucket) bucket.items.push(h);
+    else eras.push({ era: h.era, items: [h] });
+  }
+
   return (
-    <section className="bg-night px-5 md:px-8 py-16 md:py-24">
-      <div className="mx-auto max-w-[1200px] w-full">
-        <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
-          The errors the Church condemned
+    <TheologyShell>
+      <header>
+        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/70">
+          Heresies
         </p>
-        <h1 className="font-sans text-display-sm md:text-display-lg font-bold text-paper tracking-[-0.025em] leading-[1.05]">
-          The Heresies
+        <h1 className="mt-3 font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">
+          The errors the Church condemned.
         </h1>
-        <p className="mt-5 max-w-[720px] font-serif text-lede md:text-lede text-paper/80 leading-[1.65]">
-          Every Ecumenical Council is defined as much by the error it
-          condemned as by the doctrine it confessed. Here are the seven chief
-          heresies, one for each of the seven councils, each defined in
-          plain English, linked to the council that condemned it and the
-          orthodox teaching it denied, and answered, where the corpus holds
-          them, in the Fathers&rsquo; own words.
+        <p className="mt-5 font-serif text-body text-paper/80 leading-[1.75] max-w-[64ch]">
+          Every Ecumenical Council is defined as much by the error it condemned
+          as by the doctrine it confessed. Each profile sets out what the
+          teaching claimed, why the Church rejected it, and the council, saints,
+          and condemnation tied to it. No heretical text is hosted; every
+          quotation is a deep-link into a Father&rsquo;s verbatim refutation.
         </p>
+      </header>
 
-        <p className="mt-3 max-w-[720px] font-sans text-detail text-paper/55 leading-[1.6]">
-          Posture: these profiles describe the errors honestly so that the
-          Faith may be understood. No heretical text is hosted; every quotation
-          is a deep-link into a Father&rsquo;s verbatim refutation. See{" "}
-          <Link
-            href="/councils"
-            className="underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
-          >
-            the Councils
-          </Link>{" "}
-          for the doctrine each error called forth.
-        </p>
-
-        <ul className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {HERESIES.map((h) => (
-            <li key={h.slug}>
-              <Link
-                href={`/heresies/${h.slug}`}
-                className="group block h-full rounded-md border border-paper/12 bg-paper/[0.03] hover:border-gold/45 hover:bg-gold/[0.04] transition-colors px-6 py-6"
-              >
-                <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/75 font-semibold">
-                  {h.era}
-                </p>
-                <h2 className="mt-2 font-display-serif text-title-sm md:text-title-sm text-paper leading-tight">
-                  {h.name}
-                </h2>
-                <p className="mt-1 font-sans text-caption text-paper/55">
-                  {h.heresiarch}
-                </p>
-                <p className="mt-3 font-serif text-ui text-paper/80 leading-[1.6]">
-                  {h.shortBio}
-                </p>
-              </Link>
-            </li>
-          ))}
-        </ul>
+      <div className="mt-12 space-y-10">
+        {eras.map(({ era, items }) => (
+          <section key={era}>
+            <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/40 border-b border-paper/[0.08] pb-2">
+              {era}
+            </p>
+            <ul className="mt-3 divide-y divide-paper/[0.07]">
+              {items.map((h) => {
+                const council = h.condemnedBy.map(councilByname).filter(Boolean)[0];
+                return (
+                  <li key={h.slug}>
+                    <Link href={`/heresies/${h.slug}`} className="group block py-5">
+                      <div className="flex items-baseline justify-between gap-4">
+                        <h2 className="font-serif text-lede font-semibold text-paper leading-tight group-hover:text-gold transition-colors">
+                          {h.name}
+                        </h2>
+                        {council ? (
+                          <span className="shrink-0 font-sans text-caption text-paper/40 text-right leading-tight">
+                            Condemned at
+                            <br className="hidden sm:block" /> {council}
+                          </span>
+                        ) : null}
+                      </div>
+                      {/* Metadata line: the dossier header. */}
+                      <p className="mt-1.5 font-sans text-caption text-paper/55">
+                        {h.heresiarch}
+                        {h.alsoCalled?.length
+                          ? ` · also called ${h.alsoCalled.join(", ")}`
+                          : ""}
+                      </p>
+                      <p className="mt-2.5 font-serif text-ui text-paper/75 leading-[1.65]">
+                        {h.shortBio}
+                      </p>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))}
       </div>
-    </section>
+
+      <p className="mt-12 border-t border-paper/[0.08] pt-6 font-sans text-detail text-paper/50 leading-[1.6]">
+        See{" "}
+        <Link
+          href="/councils"
+          className="underline decoration-paper/30 underline-offset-4 hover:text-paper"
+        >
+          the Councils
+        </Link>{" "}
+        for the doctrine each error called forth.
+      </p>
+    </TheologyShell>
   );
 }
