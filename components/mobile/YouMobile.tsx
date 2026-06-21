@@ -28,6 +28,7 @@ import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { SavedPreview } from "./SavedPreview";
 import { SettingsList, type SettingsItem } from "./SettingsList";
 import { readIntentions } from "@/lib/prayers/storage";
+import { isDeveloperEmail } from "@/lib/dev/developer";
 
 type AuthState =
   | { kind: "loading" }
@@ -218,6 +219,15 @@ export function YouMobile() {
       icon: <Glyph kind="cross" />,
     },
   );
+
+  if (signedIn && isDeveloperEmail(auth.email)) {
+    settings.push({
+      label: "Developer",
+      href: "/account/developer",
+      hint: "Test premium, feature flags, themes",
+      icon: <Glyph kind="bolt" />,
+    });
+  }
 
   if (signedIn) {
     settings.push({

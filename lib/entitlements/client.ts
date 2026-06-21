@@ -11,6 +11,8 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { isNativeClient } from "@/lib/platform/native";
+import { isDeveloperEmail, DEV_PLUS_ENTITLEMENTS } from "@/lib/dev/developer";
+import { devPlusCookiePresent } from "@/lib/dev/options";
 import {
   deriveEntitlements,
   plusEnforcedFor,
@@ -21,6 +23,17 @@ import {
 } from "./entitlements";
 
 export async function getClientEntitlements(): Promise<Entitlements> {
+  // Developer test-premium override. The cookie is only a hint (cheap
+  // pre-check); we still verify the signed-in account is an allowlisted
+  // developer, so a forged cookie grants a normal user nothing.
+  if (devPlusCookiePresent()) {
+    const dev = createClient();
+    const {
+      data: { user },
+    } = await dev.auth.getUser();
+    if (isDeveloperEmail(user?.email)) return DEV_PLUS_ENTITLEMENTS;
+  }
+
   const enforced = plusEnforcedFor(isNativeClient());
   if (!enforced) return OPEN_ENTITLEMENTS;
 
