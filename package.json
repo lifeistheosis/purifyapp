@@ -20,7 +20,9 @@
     "discord:act": "node scripts/discord-act.mjs scripts/discord-actions.json"
   },
   "dependencies": {
+    "@capacitor-community/safe-area": "^8.0.1",
     "@capacitor/android": "^8.4.0",
+    "@capacitor/app": "^8.1.0",
     "@capacitor/core": "^8.4.0",
     "@capacitor/haptics": "^8.0.2",
     "@capacitor/ios": "^8.4.0",
@@ -29,7 +31,9 @@
     "@capacitor/share": "^8.0.1",
     "@capacitor/splash-screen": "^8.0.1",
     "@capacitor/status-bar": "^8.0.2",
+    "@capgo/capacitor-social-login": "^8.3.29",
     "@revenuecat/purchases-capacitor": "^11.3.2",
+    "@revenuecat/purchases-capacitor-ui": "^13.2.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.105.4",
     "apns2": "^12.2.0",

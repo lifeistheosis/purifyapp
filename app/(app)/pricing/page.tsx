@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { PlusPaywall } from "@/components/billing/PlusPaywall";
+import { WebOnly, NativeOnly } from "@/components/platform/PlatformGate";
 
 export const metadata = {
   title: "Pricing",
@@ -36,7 +37,7 @@ const EN: Omit<PricingCopy, "eyebrow" | "h1"> = {
   freeFoot: "No ads. No tracking. No surprise locks. For anyone who needs it.",
   futureTitle: "Purify Plus, when it arrives",
   future:
-    "An optional layer called Purify Plus is planned for after the mobile launch. It will exist only to pay for the work it requires (the servers, the production, the rights) and will add enhanced tools: curated reading collections, custom florilegia, ambient soundscapes, and the future audio library. The core stays forever open; what is free today will still be free then. And a promise already made stays made: pre-launch supporters keep lifetime cross-device sync, no subscription required. That promise covers sync itself; the wider Plus tools belong to the subscription when it arrives.",
+    "An optional layer called Purify Plus is planned for after the mobile launch. It will exist only to pay for the work it requires (the servers, the production, the rights) and will add the gathered reading layer: cross-device sync; notes, highlights, and bookmarks; and custom collections and florilegia. The core stays forever open; what is free today will still be free then. And a promise already made stays made: pre-launch supporters keep lifetime cross-device sync, no subscription required. That promise covers sync itself; the wider Plus tools belong to the subscription when it arrives.",
   supportKicker: "Purify is kept by those it helps.",
   supportLine:
     "If the app has carried you, you can carry it a little in return. A freewill gift is the only way money is involved today.",
@@ -59,7 +60,7 @@ const DE: PricingCopy = {
     "Keine Werbung. Keine Verfolgung. Keine überraschenden Sperren. Für jeden, der sie braucht.",
   futureTitle: "Purify Plus, wenn es kommt",
   future:
-    "Eine freiwillige Schicht namens Purify Plus ist für die Zeit nach dem Mobil-Start geplant. Sie wird nur dazu da sein, die Arbeit zu bezahlen, die sie verlangt (die Server, die Produktion, die Rechte), und ergänzt erweiterte Werkzeuge: kuratierte Lesesammlungen, eigene Florilegien, Klanglandschaften und die künftige Audio-Bibliothek. Der Kern bleibt für immer offen; was heute frei ist, wird dann noch frei sein. Und ein gegebenes Versprechen bleibt bestehen: Unterstützer aus der Zeit vor dem Start behalten die geräteübergreifende Synchronisierung auf Lebenszeit, ohne Abonnement. Dieses Versprechen gilt der Synchronisierung selbst; die weiteren Plus-Werkzeuge gehören zum Abonnement, wenn es kommt.",
+    "Eine freiwillige Schicht namens Purify Plus ist für die Zeit nach dem Mobil-Start geplant. Sie wird nur dazu da sein, die Arbeit zu bezahlen, die sie verlangt (die Server, die Produktion, die Rechte), und ergänzt die gesammelte Leseschicht: geräteübergreifende Synchronisierung; Notizen, Markierungen und Lesezeichen; sowie eigene Sammlungen und Florilegien. Der Kern bleibt für immer offen; was heute frei ist, wird dann noch frei sein. Und ein gegebenes Versprechen bleibt bestehen: Unterstützer aus der Zeit vor dem Start behalten die geräteübergreifende Synchronisierung auf Lebenszeit, ohne Abonnement. Dieses Versprechen gilt der Synchronisierung selbst; die weiteren Plus-Werkzeuge gehören zum Abonnement, wenn es kommt.",
   supportKicker: "Purify wird von denen getragen, denen es hilft.",
   supportLine:
     "Wenn die App dich getragen hat, kannst du sie ein wenig zurücktragen. Eine freiwillige Gabe ist heute der einzige Weg, auf dem Geld eine Rolle spielt.",
@@ -69,14 +70,28 @@ const DE: PricingCopy = {
 
 export default async function PricingPage() {
   const locale = await getServerLocale();
-  if (locale === "de") return <PricingView copy={DE} />;
-  const m = getMessages(locale);
-  const copy: PricingCopy = {
-    eyebrow: t(m, "pricing.eyebrow"),
-    h1: t(m, "pricing.h1"),
-    ...EN,
-  };
-  return <PricingView copy={copy} />;
+  let view: React.ReactNode;
+  if (locale === "de") {
+    view = <PricingView copy={DE} />;
+  } else {
+    const m = getMessages(locale);
+    const copy: PricingCopy = {
+      eyebrow: t(m, "pricing.eyebrow"),
+      h1: t(m, "pricing.h1"),
+      ...EN,
+    };
+    view = <PricingView copy={copy} />;
+  }
+  return (
+    <>
+      {/* Web (mobile + desktop): the quiet, price-free pricing page. */}
+      <WebOnly>{view}</WebOnly>
+      {/* Native app: the full-screen Purify Plus paywall (Play Billing). */}
+      <NativeOnly>
+        <PlusPaywall />
+      </NativeOnly>
+    </>
+  );
 }
 
 function PricingView({ copy }: { copy: PricingCopy }) {
@@ -125,11 +140,6 @@ function PricingView({ copy }: { copy: PricingCopy }) {
             {copy.future}
           </p>
         </div>
-
-        {/* Native-only purchase surface. Renders nothing on the web; inside
-            the Android app it shows the live Monthly / Yearly plans and
-            drives Play Billing via RevenueCat. */}
-        <PlusPaywall />
 
         {/* Support / lamp panel */}
         <div

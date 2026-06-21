@@ -1,3 +1,4 @@
+/// <reference types="@capacitor-community/safe-area" />
 import type { CapacitorConfig } from "@capacitor/cli";
 
 // Native shell configuration. The iOS and Android apps are thin Capacitor
@@ -32,7 +33,11 @@ const config: CapacitorConfig = {
   plugins: {
     SplashScreen: {
       launchShowDuration: 1200,
-      launchAutoHide: true,
+      // Controlled hide: NativeBridge lifts the splash only after the
+      // native shell has painted (no flash of the SSR web shell), with a
+      // bounded fallback so it can never hang. Auto-hide would risk lifting
+      // mid-hydration on a slow cold load and flashing the website.
+      launchAutoHide: false,
       backgroundColor: "#101013",
       showSpinner: false,
       splashFullScreen: true,
@@ -42,6 +47,11 @@ const config: CapacitorConfig = {
       style: "DARK",
       backgroundColor: "#101013",
     },
+    // Safe-area inset polyfill. On Android 16 edge-to-edge, Chromium < 140
+    // reports env(safe-area-inset-*) as 0; this plugin pads the webview for
+    // those builds and lets env() work natively on Chromium 140+. Defaults
+    // are correct for our setup; pairs with EdgeToEdge.enable() in MainActivity.
+    SafeArea: {},
     // Native prayer reminders (APNs on iOS, FCM on Android). The web layer
     // registers via @capacitor/push-notifications when isNativeClient();
     // delivery is server-side from /api/cron/push-deliver. Show the alert,

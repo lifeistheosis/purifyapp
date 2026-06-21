@@ -121,7 +121,7 @@ export function AudioPlayer({
           {playing ? <PauseIcon /> : <PlayIcon />}
         </button>
         <div className="min-w-0 flex-1">
-          <p className="font-serif text-ui text-paper truncate">{title}</p>
+          <p className="font-serif text-ui text-paper line-clamp-2">{title}</p>
           {subtitle && (
             <p className="mt-0.5 font-sans text-caption text-paper/50 truncate">
               {subtitle}
