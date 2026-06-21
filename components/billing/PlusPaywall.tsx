@@ -196,17 +196,17 @@ export function PlusPaywall() {
             <Included
               icon={<SyncIcon />}
               title="Cross-device sync"
-              sub="Bookmarks, notes, highlights, and collections"
+              sub="Your library on every device you sign in on"
+            />
+            <Included
+              icon={<BookmarkIcon />}
+              title="Notes, highlights & bookmarks"
+              sub="Kept private, carried everywhere"
             />
             <Included
               icon={<BookIcon />}
-              title="Custom Florilegium"
+              title="Custom collections & Florilegium"
               sub="Build your own quote collections"
-            />
-            <Included
-              icon={<HeadphonesIcon />}
-              title="Ambience"
-              sub="Prayer and reading soundscapes"
             />
           </ul>
         </div>
@@ -493,12 +493,10 @@ function BookIcon() {
     </svg>
   );
 }
-function HeadphonesIcon() {
+function BookmarkIcon() {
   return (
     <svg {...S}>
-      <path d="M4 13a8 8 0 0 1 16 0" />
-      <rect x="3" y="13" width="4" height="6" rx="1.5" />
-      <rect x="17" y="13" width="4" height="6" rx="1.5" />
+      <path d="M7 4h10a1 1 0 0 1 1 1v15l-6-4-6 4V5a1 1 0 0 1 1-1z" />
     </svg>
   );
 }
