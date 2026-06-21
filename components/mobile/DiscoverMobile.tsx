@@ -20,14 +20,11 @@ import { type DiscoverEntry } from "./DiscoverIndex";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Church } from "@/components/ui/icons/Church";
-import { Book } from "@/components/ui/icons/Book";
-import { Scroll } from "@/components/ui/icons/Scroll";
 import { Calendar } from "@/components/ui/icons/Calendar";
 import { Codex } from "@/components/ui/icons/Codex";
 import { Lyre } from "@/components/ui/icons/Lyre";
 import { Quill } from "@/components/ui/icons/Quill";
 import { Cross } from "@/components/ui/icons/Cross";
-import { Bolt } from "@/components/ui/icons/Bolt";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 
@@ -99,28 +96,12 @@ export async function DiscoverMobile() {
       Icon: Church,
     },
     {
-      label: t(m, "discover.tile.topics"),
-      href: "/topics",
-      blurb: t(m, "discover.tile.topicsBlurb"),
-      Icon: Book,
-    },
-    {
-      label: t(m, "discover.tile.heresies"),
-      href: "/heresies",
-      blurb: t(m, "discover.tile.heresiesBlurb"),
-      Icon: Scroll,
-    },
-    {
+      // The one Theology umbrella — Doctrine, Topics, Heresies, and
+      // Apologetics now live under its hub and shared mode switcher.
       label: t(m, "discover.tile.theology"),
       href: "/theology",
       blurb: t(m, "discover.tile.theologyBlurb"),
       Icon: Cross,
-    },
-    {
-      label: t(m, "discover.tile.apologetics"),
-      href: "/apologetics",
-      blurb: t(m, "discover.tile.apologeticsBlurb"),
-      Icon: Bolt,
     },
     {
       label: t(m, "discover.tile.calendar"),

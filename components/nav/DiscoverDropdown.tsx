@@ -17,16 +17,22 @@ import { cn } from "@/lib/cn";
 type Child = { key: string; label: string; href: string };
 
 export const DISCOVER_CHILDREN: Child[] = [
+  // Doctrine, Topics, Heresies, and Apologetics now live under the one
+  // Theology hub (which carries the shared mode switcher), so the top nav
+  // points there once instead of listing four near-identical surfaces.
   { key: "theology", label: "Theology", href: "/theology" },
-  { key: "apologetics", label: "Apologetics", href: "/apologetics" },
   { key: "reading", label: "Reading", href: "/reading" },
   { key: "councils", label: "Councils", href: "/councils" },
-  { key: "topics", label: "Topics", href: "/topics" },
-  { key: "heresies", label: "Heresies", href: "/heresies" },
 ];
 
-/** Hrefs that should also light up the Discover slot as "active". */
-export const DISCOVER_CHILD_HREFS = DISCOVER_CHILDREN.map((c) => c.href);
+/** Hrefs that light up the Discover slot as "active" — including the four
+ * theology modes folded under the hub, so their routes still highlight it. */
+export const DISCOVER_CHILD_HREFS = [
+  ...DISCOVER_CHILDREN.map((c) => c.href),
+  "/topics",
+  "/heresies",
+  "/apologetics",
+];
 
 const OPEN_DELAY = 120;
 const CLOSE_DELAY = 200;
