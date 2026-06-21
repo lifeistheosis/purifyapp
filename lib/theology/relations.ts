@@ -1,6 +1,6 @@
 // Cross-section relations for the Theology study system.
 //
-// The four modes — Doctrine (this folder), Topics, Heresies, Apologetics —
+// The four modes, Doctrine (this folder), Topics, Heresies, Apologetics ,
 // are one connected research surface, not four archives. This module is the
 // curated graph that ties them together: which doctrine answers which heresy,
 // which apologetic response goes deeper into which doctrine, which council and
@@ -12,8 +12,8 @@
 //   2. Auto-derived councils/saints from a study's own body (merged at the
 //      call site via `mergeRelated`, e.g. body.councils + saintsCitedIn).
 //
-// Pure data + sync resolvers over the existing registries — no fs, no
-// "use client" — so it can be imported from any server component. Every slug
+// Pure data + sync resolvers over the existing registries, no fs, no
+// "use client", so it can be imported from any server component. Every slug
 // is validated against the registries by lib/theology/__tests__/relations.test.ts.
 
 import { getTopicMeta } from "./topics";

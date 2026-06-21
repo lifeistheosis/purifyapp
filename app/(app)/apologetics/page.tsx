@@ -15,7 +15,7 @@ export const metadata = {
 
 export const revalidate = 3600;
 
-// Apologetics — the argument-driven mode. Grouped by the objection it answers,
+// Apologetics, the argument-driven mode. Grouped by the objection it answers,
 // each entry framed as a question taken up and replied to, with a clear path
 // to the deeper Doctrine study.
 export default function ApologeticsIndexPage() {
@@ -30,7 +30,7 @@ export default function ApologeticsIndexPage() {
         </h1>
         <p className="mt-5 font-serif text-body text-paper/80 leading-[1.75] max-w-[64ch]">
           Where Doctrine and Topics argue within the faith from the Fathers,
-          Apologetics turns outward — to the questions an enquirer or an objector
+          Apologetics turns outward, to the questions an enquirer or an objector
           brings. Each response takes the objection plainly and answers it, then
           points to the deeper study rather than repeating it.
         </p>

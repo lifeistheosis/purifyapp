@@ -1,8 +1,8 @@
 "use client";
 
 // The shared mode switcher for the Theology study system. One compact,
-// horizontally-scrollable row of segmented links — Doctrine · Topics ·
-// Heresies · Apologetics — present on every index and article so the four
+// horizontally-scrollable row of segmented links, Doctrine · Topics ·
+// Heresies · Apologetics, present on every index and article so the four
 // modes read as one connected surface, not four archives. Active mode is
 // derived from the path (doctrine covers both /theology/doctrine and the
 // /theology/[topic] articles).

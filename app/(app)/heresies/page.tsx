@@ -14,9 +14,9 @@ export const revalidate = 3600;
 const councilByname = (slug: string) =>
   COUNCILS.find((c) => c.slug === slug)?.byname;
 
-// Heresies — the dossier mode. A chronological record, grouped by era, each
+// Heresies, the dossier mode. A chronological record, grouped by era, each
 // entry showing the proponent and the council that condemned it. Compact,
-// archival, fact-first — no card grid.
+// archival, fact-first, no card grid.
 export default function HeresiesIndexPage() {
   // Group by era in first-appearance order (the registry is already roughly
   // chronological, one heresy per Ecumenical Council).

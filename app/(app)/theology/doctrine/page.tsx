@@ -10,12 +10,12 @@ import { TheologyShell } from "@/components/theology/TheologyShell";
 export const metadata = {
   title: "Doctrine",
   description:
-    "Long-form patristic studies on the Trinity, Christology, the Theotokos, theosis, ecclesiology, and disputed Scripture — the doctrine traced through the Fathers and the Councils, every citation verbatim and sourced.",
+    "Long-form patristic studies on the Trinity, Christology, the Theotokos, theosis, ecclesiology, and disputed Scripture, the doctrine traced through the Fathers and the Councils, every citation verbatim and sourced.",
 };
 
 export const revalidate = 3600;
 
-// Doctrine — the treatise library. Grouped by doctrinal category, text-first,
+// Doctrine, the treatise library. Grouped by doctrinal category, text-first,
 // chapter-like. The richest, most formal of the four modes.
 export default function DoctrineIndexPage() {
   return (

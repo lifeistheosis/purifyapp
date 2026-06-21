@@ -96,7 +96,7 @@ export async function DiscoverMobile() {
       Icon: Church,
     },
     {
-      // The one Theology umbrella — Doctrine, Topics, Heresies, and
+      // The one Theology umbrella: Doctrine, Topics, Heresies, and
       // Apologetics now live under its hub and shared mode switcher.
       label: t(m, "discover.tile.theology"),
       href: "/theology",

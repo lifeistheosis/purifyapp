@@ -25,7 +25,7 @@ export const DISCOVER_CHILDREN: Child[] = [
   { key: "councils", label: "Councils", href: "/councils" },
 ];
 
-/** Hrefs that light up the Discover slot as "active" — including the four
+/** Hrefs that light up the Discover slot as "active", including the four
  * theology modes folded under the hub, so their routes still highlight it. */
 export const DISCOVER_CHILD_HREFS = [
   ...DISCOVER_CHILDREN.map((c) => c.href),

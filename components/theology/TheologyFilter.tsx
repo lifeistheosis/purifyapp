@@ -1,7 +1,7 @@
 "use client";
 
-// The hub's shared search across all four modes. Quiet by default — it shows
-// nothing until the reader types — then surfaces a flat, sectioned result list
+// The hub's shared search across all four modes. Quiet by default, it shows
+// nothing until the reader types, then surfaces a flat, sectioned result list
 // drawn from every mode, so one query reaches doctrine, topics, heresies, and
 // apologetics at once. The hub's curated browse sits below it untouched.
 
@@ -33,7 +33,7 @@ export function TheologyFilter({ items }: { items: StudyItem[] }) {
         type="search"
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="Search all studies — a doctrine, a heresy, a question…"
+        placeholder="Search all studies, a doctrine, a heresy, a question…"
         aria-label="Search theology studies"
         className="w-full rounded-pill border border-paper/15 bg-paper/[0.04] px-5 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:border-paper/40 focus:outline-none transition-colors"
       />

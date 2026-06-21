@@ -61,7 +61,7 @@ export default async function HeresyProfilePage({
           {h.name}
         </h1>
 
-        {/* Dossier metadata header — compact record at the top. */}
+        {/* Dossier metadata header, compact record at the top. */}
         <dl className="mt-6 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-x-5 gap-y-2 border-y border-paper/[0.08] py-4">
           <dt className="font-sans text-caption uppercase tracking-[1.4px] text-paper/40">
             Period
@@ -93,7 +93,7 @@ export default async function HeresyProfilePage({
           ) : null}
         </dl>
 
-        {/* Claim / Orthodox Response — the dossier's comparison block, the
+        {/* Claim / Orthodox Response, the dossier's comparison block, the
             historical claim set clearly against the Church's answer. */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-px overflow-hidden rounded-lg border border-paper/[0.08] bg-paper/[0.06]">
           <div className="bg-night p-5">

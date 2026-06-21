@@ -20,7 +20,7 @@ import { COUNCILS } from "@/lib/councils/councils";
 export const metadata = {
   title: "Theology",
   description:
-    "The Orthodox theological study system: long-form Doctrine, focused Topics, the Heresies the Church condemned, and Apologetics — one connected research surface drawn verbatim from the Fathers and the Councils.",
+    "The Orthodox theological study system: long-form Doctrine, focused Topics, the Heresies the Church condemned, and Apologetics, one connected research surface drawn verbatim from the Fathers and the Councils.",
 };
 
 export const revalidate = 3600;
@@ -30,7 +30,7 @@ const MODES = [
     label: "Doctrine",
     href: "/theology/doctrine",
     blurb:
-      "Long-form dogmatic studies — the doctrine traced through Scripture, the Fathers, and the Councils.",
+      "Long-form dogmatic studies, the doctrine traced through Scripture, the Fathers, and the Councils.",
   },
   {
     label: "Topics",
@@ -42,13 +42,13 @@ const MODES = [
     label: "Heresies",
     href: "/heresies",
     blurb:
-      "The chief errors the Church condemned — what was claimed, and why it was rejected.",
+      "The chief errors the Church condemned, what was claimed, and why it was rejected.",
   },
   {
     label: "Apologetics",
     href: "/apologetics",
     blurb:
-      "Objections and replies — a reasoned defense against the questions an objector brings.",
+      "Objections and replies, a reasoned defense against the questions an objector brings.",
   },
 ];
 
@@ -134,7 +134,7 @@ export default async function TheologyHubPage() {
     studies.find((s) => s.section === "Doctrine" && s.slug === slug),
   ).filter(Boolean) as Study[];
 
-  // Fathers actually cited across the doctrine studies — no hand-picked list.
+  // Fathers actually cited across the doctrine studies, no hand-picked list.
   const fathers = new Map<string, string>();
   for (const { body } of doctrine) {
     if (!body) continue;
@@ -154,13 +154,13 @@ export default async function TheologyHubPage() {
         <p className="mt-5 font-serif text-body md:text-lede text-paper/80 leading-[1.75] max-w-[64ch]">
           One connected study of the Faith, in four modes. Read the doctrine in
           long form, settle a focused question, learn the errors the Church
-          condemned, or weigh an objection — and move freely between them. Every
+          condemned, or weigh an objection, and move freely between them. Every
           citation is verbatim, public-domain, and sourced to the Fathers and
           the Councils.
         </p>
       </header>
 
-      {/* Four modes — an editorial list, not cards. */}
+      {/* Four modes, an editorial list, not cards. */}
       <nav className="mt-12 divide-y divide-paper/[0.08] border-y border-paper/[0.08]">
         {MODES.map((m) => (
           <Link

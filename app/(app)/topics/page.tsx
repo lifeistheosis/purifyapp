@@ -12,7 +12,7 @@ export const metadata = {
 
 export const revalidate = 3600;
 
-// Topics — the approachable mode. A focused question, a plain definition, and
+// Topics, the approachable mode. A focused question, a plain definition, and
 // the Fathers who confess it. Lighter than Doctrine, generous spacing,
 // definition-forward.
 export default async function TopicsIndexPage() {
