@@ -134,8 +134,21 @@ function resolveApologetics(slug: string): RelatedLink | null {
   return m ? { kind: "apologetics", slug, label: m.title, href: `/apologetics/${slug}` } : null;
 }
 function resolveCouncil(slug: string): RelatedLink | null {
-  const c = COUNCILS.find((x) => x.slug === slug);
-  return c ? { kind: "councils", slug, label: c.byname, href: `/councils/${slug}` } : null;
+  let c = COUNCILS.find((x) => x.slug === slug);
+  if (!c) {
+    // The doctrine bodies cite councils with a place-year slug convention
+    // (e.g. "constantinople-381") that predates the registry's ordinal slugs
+    // ("first-constantinople"). Council years are unique, so fall back to a
+    // single year match; councils not yet in the registry simply drop.
+    const ym = slug.match(/(\d{3,4})/);
+    if (ym) {
+      const matches = COUNCILS.filter((x) => x.year === Number(ym[1]));
+      if (matches.length === 1) c = matches[0];
+    }
+  }
+  return c
+    ? { kind: "councils", slug: c.slug, label: c.byname, href: `/councils/${c.slug}` }
+    : null;
 }
 function resolveSaint(slug: string): RelatedLink | null {
   const s = SAINTS.find((x) => x.slug === slug);
