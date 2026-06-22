@@ -2,12 +2,13 @@ import Link from "next/link";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { PlusPaywall } from "@/components/billing/PlusPaywall";
+import { WebPlusCheckout } from "@/components/billing/WebPlusCheckout";
 import { WebOnly, NativeOnly } from "@/components/platform/PlatformGate";
 
 export const metadata = {
   title: "Pricing",
   description:
-    "The core spiritual treasury of Purify is free, always. An optional subscription layer is on the way for heavier infrastructure; what is free today will still be free then.",
+    "The foundation of Purify is free, always. Purify Plus enhances it — cross-device sync, custom collections, and new features for a deeper, better experience.",
 };
 
 type PricingCopy = {
@@ -26,7 +27,7 @@ type PricingCopy = {
 };
 
 const EN: Omit<PricingCopy, "eyebrow" | "h1"> = {
-  lede: "The whole spiritual treasury of Purify is free, and it stays free. There is no tier to unlock, no plan to sell you, no lock to find later.",
+  lede: "The foundation of Purify is free, and it stays free. Purify Plus enhances it — unlocking new features, deeper tools, and a better experience for those who want more.",
   freeTitle: "Always free",
   freeItems: [
     "Every saint’s life, and the primary writings of the Fathers",
@@ -35,9 +36,9 @@ const EN: Omit<PricingCopy, "eyebrow" | "h1"> = {
     "The whole Church calendar, its fasts and its feasts",
   ],
   freeFoot: "No ads. No tracking. No surprise locks. For anyone who needs it.",
-  futureTitle: "Purify Plus, when it arrives",
+  futureTitle: "Purify Plus",
   future:
-    "An optional layer called Purify Plus is planned for after the mobile launch. It will exist only to pay for the work it requires (the servers, the production, the rights) and will add enhanced tools: curated reading collections, custom florilegia, ambient soundscapes, and the future audio library. The core stays forever open; what is free today will still be free then. And a promise already made stays made: pre-launch supporters keep lifetime cross-device sync, no subscription required. That promise covers sync itself; the wider Plus tools belong to the subscription when it arrives.",
+    "Purify Plus enhances the free foundation and unlocks more: cross-device sync, custom collections and florilegia, and new features as they arrive — a deeper, better experience. It also keeps the work going: the servers, the production, the rights. The whole foundation above stays free; Plus only adds. And a promise already made stays made: pre-launch supporters keep lifetime cross-device sync, no subscription required.",
   supportKicker: "Purify is kept by those it helps.",
   supportLine:
     "If the app has carried you, you can carry it a little in return. A freewill gift is the only way money is involved today.",
@@ -140,6 +141,10 @@ function PricingView({ copy }: { copy: PricingCopy }) {
             {copy.future}
           </p>
         </div>
+
+        {/* Desktop / web checkout (RevenueCat Web Billing). Self-hides until
+            Web Billing is configured, so the copy above is the fallback. */}
+        <WebPlusCheckout />
 
         {/* Support / lamp panel */}
         <div

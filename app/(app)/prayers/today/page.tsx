@@ -13,6 +13,7 @@ import { getSaint } from "@/lib/saints/saints";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { TodayDiptychs } from "@/components/prayers/TodayDiptychs";
+import { DailyGoals } from "@/components/today/DailyGoals";
 import {
   PrayerPage,
   PrayerMasthead,
