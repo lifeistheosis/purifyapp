@@ -52,6 +52,14 @@ const config: CapacitorConfig = {
     // those builds and lets env() work natively on Chromium 140+. Defaults
     // are correct for our setup; pairs with EdgeToEdge.enable() in MainActivity.
     SafeArea: {},
+    // Capacitor 8 ships a built-in SystemBars that ALSO consumes the window
+    // insets, fighting @capacitor-community/safe-area and leaving
+    // env(safe-area-inset-*) at 0 (the top bar slips under the status bar).
+    // Disabling its inset handling lets the safe-area plugin own the insets so
+    // env() reports real values. Required on Capacitor v8 per the plugin docs.
+    SystemBars: {
+      insetsHandling: "disable",
+    },
     // Native prayer reminders (APNs on iOS, FCM on Android). The web layer
     // registers via @capacitor/push-notifications when isNativeClient();
     // delivery is server-side from /api/cron/push-deliver. Show the alert,
