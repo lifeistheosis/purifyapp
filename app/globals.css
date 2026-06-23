@@ -915,3 +915,68 @@ html.reader-focus [data-reader-exit] {
  transform: none;
  }
 }
+
+/* ── Touch feedback ───────────────────────────────────────────────────
+   The native app shell has no hover state, so taps can feel inert — a
+   button responds only by navigating, with nothing in between. These
+   give a tactile "press" the way a native control does: the element
+   dips slightly under the finger and springs back on release. Pure CSS
+   :active, so it costs nothing and needs no JS.
+
+   `.tap-press`  — small controls (tab-bar items, pills, icon buttons):
+                   a crisp ~4% dip.
+   `.press-card` — larger tappable cards (Today cards, list rows): a
+                   gentler ~2% dip plus a faint darken, so big surfaces
+                   feel pressed without the whole card lurching.
+
+   Both transition the spring-BACK over 220ms (house easing) but snap
+   DOWN fast (90ms), which is what makes a press read as a press rather
+   than a slide. Reduced-motion users keep the visual states but lose
+   the movement. */
+.tap-press,
+.press-card {
+ transition:
+   transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+   color 200ms ease-out,
+   background-color 220ms ease-out;
+ -webkit-tap-highlight-color: transparent;
+ touch-action: manipulation;
+}
+.tap-press:active {
+ transform: scale(0.96);
+ transition-duration: 90ms;
+}
+.press-card:active {
+ transform: scale(0.98);
+ background-color: rgba(255, 255, 255, 0.03);
+ transition-duration: 90ms;
+}
+@media (prefers-reduced-motion: reduce) {
+ .tap-press,
+ .press-card {
+ transition: none;
+ }
+ .tap-press:active,
+ .press-card:active {
+ transform: none;
+ }
+}
+
+/* A generic content entrance: a gentle fade + rise, matching the hero/
+   onboarding cascades. Opt a list into a stagger by setting
+   `style={{ animationDelay: "<n>ms" }}` on each `.rise-in` child. Pure
+   CSS so server-rendered content animates on first paint. */
+@keyframes rise-in {
+ from { opacity: 0; transform: translateY(12px); }
+ to { opacity: 1; transform: translateY(0); }
+}
+.rise-in {
+ animation: rise-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+ .rise-in {
+ animation: none;
+ opacity: 1;
+ transform: none;
+ }
+}
