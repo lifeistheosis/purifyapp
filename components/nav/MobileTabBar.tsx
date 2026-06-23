@@ -192,6 +192,7 @@ export function MobileTabBar() {
                   href={href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
+                    "tap-press",
                     "h-[58px] flex flex-col items-center justify-center gap-1.5 rounded-[26px]",
                     "font-sans text-eyebrow tracking-[0.01em] transition-colors duration-200",
                     active
