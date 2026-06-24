@@ -980,3 +980,23 @@ html.reader-focus [data-reader-exit] {
  transform: none;
  }
 }
+
+/* Route entrance. The in-app routes wrap their page content in
+   app/(app)/template.tsx, which re-mounts on navigation; this fades that
+   content in so a tab switch or a drill-in arrives gently instead of
+   hard-cutting ("teleporting"). Opacity ONLY — no transform — so the
+   fade never establishes a containing block that would displace fixed
+   descendants (tab bar, reader pills, overlays). Reduced-motion users get
+   the instant swap. */
+@keyframes route-fade {
+ from { opacity: 0; }
+ to { opacity: 1; }
+}
+.route-fade {
+ animation: route-fade 200ms ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+ .route-fade {
+ animation: none;
+ }
+}
