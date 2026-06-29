@@ -94,14 +94,21 @@ export function AppNav() {
 
   return (
     <header
+      // Clear the iOS notch / status bar on mobile web. viewport-fit=cover
+      // (app/layout.tsx) lets the page run under the notch, so without this the
+      // back button and menu toggle sit under the status bar and can't be
+      // tapped (reported on iPhone Safari). env(safe-area-inset-top) is 0 on
+      // desktop and non-notched devices, so this is a no-op there; the native
+      // shell uses safe-pt instead and never renders this web nav.
+      style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
       className={cn(
-        "sticky top-0 z-40 h-[72px] transition-[background-color,border-color,backdrop-filter] duration-200",
+        "sticky top-0 z-40 transition-[background-color,border-color,backdrop-filter] duration-200",
         showBg
           ? "bg-night/85 backdrop-blur border-b border-white/8"
           : "bg-transparent border-b border-transparent",
       )}
     >
-      <div className="mx-auto max-w-[1240px] h-full flex items-center justify-between gap-6 px-5 md:px-8">
+      <div className="mx-auto max-w-[1240px] h-[72px] flex items-center justify-between gap-6 px-5 md:px-8">
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -243,7 +250,7 @@ export function AppNav() {
       </div>
 
       {open && (
-        <div className="md:hidden absolute left-0 right-0 top-[72px] bg-night border-b border-white/8">
+        <div className="md:hidden absolute left-0 right-0 top-full bg-night border-b border-white/8">
           <nav className="flex flex-col px-5 py-4 gap-1">
             {[...NAV, ...SECONDARY, { key: "account", label: t("nav.account"), href: "/account" }].map(
               (it) => (

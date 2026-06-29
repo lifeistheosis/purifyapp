@@ -3,9 +3,9 @@
   "kind": "compline",
   "title": "Small Compline",
   "subtitle": "The night prayers, Apodeipnon. After the evening meal and before bed.",
-  "intro": "Compline (Apodeipnon, &lsquo;after-supper&rsquo;) prepares the soul for sleep. Pair with the Evening Rule, or pray it alone when the rule has already been read. About eight minutes.",
-  "estimatedMinutes": 8,
-  "source": "Common Orthodox Horologion. Structural shell today; full Psalm and Canon text drops in the next content patch.",
+  "intro": "Compline (Apodeipnon, &lsquo;after-supper&rsquo;) prepares the soul for sleep. Pair with the Evening Rule, or pray it alone when the rule has already been read. About ten minutes.",
+  "estimatedMinutes": 12,
+  "source": "Common Orthodox Horologion. Psalms 50, 69, and 142 from Brenton's public-domain Septuagint; the Creed in the public-domain liturgical English shared by the OCA and GOARCH service books.",
   "prayers": [
     {
       "id": "opening",
@@ -13,16 +13,28 @@
       "text": "Through the prayers of our holy fathers, O Lord Jesus Christ our God, have mercy on us. Amen."
     },
     {
-      "id": "psalms",
-      "title": "The three Psalms of Compline",
-      "instruction": "Psalms 50, 69, and 142. Read in full when time allows.",
-      "text": "Psalm 50 (Have mercy on me, O God) · Psalm 69 (O God, be attentive unto helping me) · Psalm 142 (O Lord, hear my prayer)."
+      "id": "psalm-50",
+      "title": "Psalm 50",
+      "instruction": "The psalm of repentance. Septuagint numbering.",
+      "text": "Have mercy upon me, O God, according to thy great mercy; and according to the multitude of thy compassions blot out my transgression. Wash me thoroughly from mine iniquity, and cleanse me from my sin. For I am conscious of mine iniquity; and my sin is continually before me. Against thee only have I sinned, and done evil before thee: that thou mightest be justified in thy sayings, and mightest overcome when thou art judged. For, behold, I was conceived in iniquities, and in sins did my mother conceive me. For, behold, thou lovest truth: thou hast manifested to me the secret and hidden things of thy wisdom. Thou shalt sprinkle me with hyssop, and I shall be purified: thou shalt wash me, and I shall be made whiter than snow. Thou shalt cause me to hear gladness and joy: the afflicted bones shall rejoice. Turn away thy face from my sins, and blot out all mine iniquities. Create in me a clean heart, O God; and renew a right spirit in my inward parts. Cast me not away from thy presence; and remove not thy holy Spirit from me. Restore to me the joy of thy salvation: establish me with thy directing Spirit. Then will I teach transgressors thy ways; and ungodly men shall turn to thee. Deliver me from blood-guiltiness, O God, the God of my salvation: and my tongue shall joyfully declare thy righteousness. O Lord, thou shalt open my lips; and my mouth shall declare thy praise. For if thou desiredst sacrifice, I would have given it: thou wilt not take pleasure in whole-burnt-offerings. Sacrifice to God is a broken spirit: a broken and humbled heart God will not despise. Do good, O Lord, to Sion in thy good pleasure; and let the walls of Jerusalem be built. Then shalt thou be pleased with a sacrifice of righteousness, offering, and whole-burnt-sacrifices: then shall they offer calves upon thine altar."
+    },
+    {
+      "id": "psalm-69",
+      "title": "Psalm 69",
+      "instruction": "Septuagint numbering.",
+      "text": "Draw nigh, O God, to my help. Let them be ashamed and confounded that seek my soul: let them be turned backward and put to shame, that wish me evil. Let them that say to me, Aha, aha, be turned back and put to shame immediately. Let all that seek thee exult and be glad in thee: and let those that love thy salvation say continually, Let God be magnified. But I am poor and needy; O God, help me: thou art my helper and deliverer, O Lord, delay not."
+    },
+    {
+      "id": "psalm-142",
+      "title": "Psalm 142",
+      "instruction": "Septuagint numbering.",
+      "text": "O Lord, attend to my prayer: hearken to my supplication in thy truth; hear me in thy righteousness. And enter not into judgment with thy servant, for in thy sight shall no man living be justified. For the enemy has persecuted my soul; he has brought my life down to the ground; he has made me to dwell in a dark place, as those that have been long dead. Therefore my spirit was grieved in me; my heart was troubled within me. I remembered the days of old; and I meditated on all thy doings: yea, I meditated on the works of thine hands. I spread forth my hands to thee; my soul thirsts for thee, as a dry land. Pause. Hear me speedily, O Lord; my spirit has failed; turn not away thy face from me, else I shall be like to them that go down to the pit. Cause me to hear thy mercy in the morning; for I have hoped in thee; make known to me, O Lord, the way wherein I should walk; for I have lifted up my soul to thee. Deliver me from mine enemies, O Lord; for I have fled to thee for refuge. Teach me to do thy will; for thou art my God; thy good Spirit shall guide me in the straight way. Thou shalt quicken me, O Lord, for thy name's sake; in thy righteousness thou shalt bring my soul out of affliction. And in thy mercy thou wilt destroy mine enemies, and wilt destroy all those that afflict my soul; for I am thy servant."
     },
     {
       "id": "creed",
       "title": "The Nicene-Constantinopolitan Creed",
-      "instruction": "Recited at every Compline. Use the version you say at Liturgy.",
-      "text": "I believe in one God, the Father Almighty, Maker of heaven and earth, and of all things visible and invisible. And in one Lord Jesus Christ, the Son of God, the Only-begotten, begotten of the Father before all ages; Light of Light, true God of true God, begotten, not made, of one essence with the Father, through whom all things were made… (continue through the full Creed)."
+      "instruction": "Recited at every Compline. Said standing; the stanza breaks are for reading only.",
+      "text": "I believe in one God, the Father Almighty, Maker of heaven and earth, and of all things visible and invisible.\n\nAnd in one Lord Jesus Christ, the Son of God, the Only-begotten, begotten of the Father before all ages; Light of Light, true God of true God, begotten, not made; of one essence with the Father, by whom all things were made;\n\nWho for us men and for our salvation came down from heaven, and was incarnate of the Holy Spirit and the Virgin Mary, and became man;\n\nAnd was crucified for us under Pontius Pilate, and suffered, and was buried;\n\nAnd the third day He rose again, according to the Scriptures;\n\nAnd ascended into heaven, and sitteth at the right hand of the Father;\n\nAnd He shall come again with glory to judge the living and the dead, whose kingdom shall have no end.\n\nAnd in the Holy Spirit, the Lord, the Giver of Life, who proceedeth from the Father; who with the Father and the Son together is worshipped and glorified; who spake by the prophets.\n\nIn one, holy, catholic, and apostolic Church.\n\nI acknowledge one baptism for the remission of sins.\n\nI look for the resurrection of the dead, and the life of the age to come. Amen."
     },
     {
       "id": "petitions",
