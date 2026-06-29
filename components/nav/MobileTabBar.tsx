@@ -158,17 +158,13 @@ export function MobileTabBar() {
     >
       <div
         className={cn(
-          "pointer-events-auto relative mx-auto mb-2 max-w-md overflow-visible",
-          // Floating stadium bar: glass dark surface, hairline border, a
-          // soft drop shadow lifting it off the content, and a faint top
-          // sheen so the panel reads as raised.
-          "rounded-[34px] border border-white/10 bg-night/92 backdrop-blur-xl",
-          "shadow-[0_10px_40px_rgba(0,0,0,0.55)] px-2 py-2",
+          "pointer-events-auto relative mx-auto mb-1.5 max-w-md overflow-visible",
+          // Grounded bar: a solid elevated surface (no glassy blur or sheen),
+          // a single hairline border, and a restrained shadow so it reads as a
+          // quiet raised bar rather than a floating glass pill.
+          "rounded-3xl border border-white/10 bg-night-soft",
+          "shadow-[0_4px_18px_rgba(0,0,0,0.4)] px-2 py-2",
         )}
-        style={{
-          backgroundImage:
-            "linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.012))",
-        }}
       >
         <ul className="relative flex items-stretch gap-1">
           {/* Sliding compartment: one shared highlight that glides between
@@ -178,7 +174,7 @@ export function MobileTabBar() {
             aria-hidden
             className={cn(
               "absolute top-0 bottom-0 z-0 rounded-[26px]",
-              "border border-white/12 bg-white/[0.05]",
+              "border border-white/15 bg-white/[0.08]",
               "transition-[left,opacity] duration-300 ease-out motion-reduce:transition-none",
               hasActive ? "opacity-100" : "opacity-0",
             )}
@@ -194,10 +190,10 @@ export function MobileTabBar() {
                   className={cn(
                     "tap-press",
                     "h-[58px] flex flex-col items-center justify-center gap-1.5 rounded-[26px]",
-                    "font-sans text-eyebrow tracking-[0.01em] transition-colors duration-200",
+                    "font-sans text-caption tracking-[0.01em] transition-colors duration-200",
                     active
                       ? "text-paper font-semibold"
-                      : "text-paper/45 hover:text-paper/70 font-medium",
+                      : "text-paper/55 hover:text-paper/80 font-medium",
                   )}
                 >
                   <Icon
