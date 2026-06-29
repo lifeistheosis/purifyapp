@@ -1,5 +1,9 @@
 # Risk Register
 
+> **Superseded for Android launch tracking (2026-06-29)** by
+> `docs/launch/ANDROID-LAUNCH-CHECKLIST.md`, which is the current single tick-list.
+> This register is kept for severity/regression context.
+
 Severity: P0 = submission blocker · P1 = launch-critical · P2 = polish · P3 = post-launch.
 
 | # | Issue | Sev | Surface | Repro / evidence | Fix | Status | Regression risk |
@@ -21,6 +25,10 @@ Severity: P0 = submission blocker · P1 = launch-critical · P2 = polish · P3 =
 
 ## Accepted / by design
 
-- No IAP in v1 (free app). No push. No deep links (AASA/assetlinks are not review requirements).
+- **Purify Plus subscriptions ship in Android v1** (RevenueCat → Google Play Billing;
+  $4.99/mo · $29.99/yr). Enforcement is native-only and the core stays free. (This
+  reverses the earlier "no IAP in v1" plan — see
+  `docs/google-play/ANDROID_SUBSCRIPTION_CHECKLIST.md`.) Push code is ready (delivery
+  optional). No deep links (AASA/assetlinks are not review requirements).
 - iPad unsupported (TARGETED_DEVICE_FAMILY=1). Portrait-only both platforms.
 - iOS offline depends on WKAppBoundDomains test; fallback online-only is acceptable for v1.

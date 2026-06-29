@@ -1,5 +1,8 @@
 # Daily Sprint Summary
 
+> **Historical sprint log (2026-06-12).** Superseded by
+> `docs/launch/ANDROID-LAUNCH-CHECKLIST.md` (2026-06-29) for current launch status.
+
 ## v10 feature build — 2026-06-12 (parallel track, committed locally, not pushed)
 
 While the store sprint waits on enrollment + the Mac/icon externals,

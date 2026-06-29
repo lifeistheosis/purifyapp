@@ -1,5 +1,9 @@
 # Submission Readiness Dashboard
 
+> **Historical sprint snapshot (2026-06-12).** Superseded by
+> `docs/launch/ANDROID-LAUNCH-CHECKLIST.md` (2026-06-29). Note: the "free, no IAP"
+> model below has since changed — **Purify Plus subscriptions ship in Android v1**.
+
 Sprint: 2026-06-12 → 2026-06-19 (submit day 8).
 Model: v1 ships **free** — no IAP, nothing gated. Purify Plus + billing land post-launch.
 

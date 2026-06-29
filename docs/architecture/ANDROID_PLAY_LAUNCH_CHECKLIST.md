@@ -1,5 +1,9 @@
 # Purify — Android / Google Play Launch Checklist
 
+> **Superseded as the source of truth (2026-06-29).** The single current launch
+> tick-list is **`docs/launch/ANDROID-LAUNCH-CHECKLIST.md`**. This file is kept as the
+> detailed build/config audit; where the two disagree, the consolidated checklist wins.
+
 Audited 2026-06-15. Android is the **primary launch lane** (Google Play account
 is paid + verified; Apple is on hold, so iOS is documented-but-parked).
 Legend: ✅ ready · ⚠️ verify/needs action · ❗ blocker · ⬜ to do.
@@ -21,9 +25,10 @@ no web-app changes, no native rewrite.
 - ✅ **Application ID / package:** `net.purifyapp.purify` (consistent across
   `build.gradle` `namespace`+`applicationId`, `strings.xml` `package_name`, and
   `custom_url_scheme`).
-- ⚠️ **versionCode / versionName:** `versionCode 1`, `versionName "1.0"`.
-  Fine for the first upload; **every subsequent Play upload needs a higher
-  `versionCode`**. Decide the launch version string (e.g. `1.0.0`).
+- ✅ **versionCode / versionName:** now `versionName "1.6"` (Beta 1.6), with
+  `versionCode` **auto-incremented from the CI run number** (`build.gradle`, local
+  fallback `4`). The "every Play upload needs a higher `versionCode`" rule is handled
+  automatically by CI.
 - ✅ **SDK targets:** `minSdk 24`, `compileSdk 36`, **`targetSdk 36`** — above
   Play's current target-API floor (35), so no SDK-level rejection.
 
@@ -59,12 +64,11 @@ no web-app changes, no native rewrite.
   `purifyapp.net`, `*.purifyapp.net`, `*.supabase.co`; `@capacitor/browser` is
   not installed. Verify off-domain links (social, donate, email) open in the
   **system browser**, not a dead WebView.
-- ⚠️❗ **Google sign-in inside the WebView:** Google **blocks OAuth in embedded
-  WebViews** (`disallowed_useragent` / `403 disallowed_useragent`), and the shell
-  appends `PurifyNative` to the UA. **High risk** — verify on a real Android
-  build. If blocked, route Google auth through **Chrome Custom Tabs** (Browser
-  plugin) or a native Google Sign-In, or rely on email auth for v1. Decide before
-  upload.
+- ✅⚠️ **Google sign-in inside the WebView:** addressed in **Beta 1.6** — Google
+  sign-in now **completes in-app via the native account picker**
+  (`@capgo/capacitor-social-login`), no longer punting to an external browser. The
+  old `disallowed_useragent` OAuth-in-WebView risk is mitigated; **re-test once on a
+  clean device** to close it. Email/magic-link remains the always-available fallback.
 - ⚠️ **Back-button behavior:** hardware back maps to WebView history (Capacitor
   default); verify it exits cleanly at the app root (no blank/stuck screen).
 - ✅ **Privacy / Terms / Support links:** `/privacy`, `/terms`, `/support` routes
