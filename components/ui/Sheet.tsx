@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { setOverlayOpen } from "@/lib/ui/overlay";
+import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 
 /**
  * Shared mobile bottom-sheet primitive, extracted from the bespoke
@@ -75,6 +76,10 @@ export function Sheet({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [mounted, onClose]);
+
+  // Android hardware back closes the sheet rather than navigating away — the
+  // sheet has no browser history of its own, so without this back feels stuck.
+  useAndroidBack(mounted, onClose);
 
   if (!mounted) return null;
 

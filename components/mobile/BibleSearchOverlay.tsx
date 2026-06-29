@@ -9,7 +9,7 @@
 
 import { useEffect, useState } from "react";
 import { BibleSearch } from "@/components/bible/BibleSearch";
-import { isNativeClient } from "@/lib/platform/native";
+import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 
 export function BibleSearchTrigger() {
   const [open, setOpen] = useState(false);
@@ -27,16 +27,7 @@ export function BibleSearchTrigger() {
   // Android hardware back closes the sheet instead of leaving the page —
   // the sheet is a full-screen overlay with no browser history of its own,
   // so without this the back button feels like the screen is stuck.
-  useEffect(() => {
-    if (!open || !isNativeClient()) return;
-    let remove: (() => void) | undefined;
-    void (async () => {
-      const { App } = await import("@capacitor/app");
-      const handle = await App.addListener("backButton", () => setOpen(false));
-      remove = () => void handle.remove();
-    })();
-    return () => remove?.();
-  }, [open]);
+  useAndroidBack(open, () => setOpen(false));
 
   return (
     <>
