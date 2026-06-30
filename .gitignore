@@ -91,3 +91,6 @@ dogma-scan.json
 *.p12
 *.mobileprovision
 *.cer
+
+# Generated local-first content package (built at Android build time)
+.content-build/
