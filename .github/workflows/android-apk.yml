@@ -12,6 +12,11 @@ name: Android build
 # the Actions tab (Run workflow).
 on:
   workflow_dispatch:
+    inputs:
+      local_first:
+        description: "Bundle the local-first offline build (out/). Uncheck to build the legacy remote-wrapper that loads purifyapp.net."
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -50,8 +55,18 @@ jobs:
       - name: Pre-install SDK platform (best effort)
         run: yes | sdkmanager "platforms;android-36" >/dev/null 2>&1 || true
 
+      # Local-first: build the static export (out/) + bundle the content package.
+      # Skipped for the legacy remote-wrapper build.
+      - name: Build local-first web bundle
+        if: ${{ inputs.local_first }}
+        run: npm run build:android
+
+      # CAP_LOCAL=1 makes capacitor.config.ts use webDir=out (bundled UI) instead
+      # of the remote server.url. Empty (remote-wrapper) keeps loading purifyapp.net.
       - name: Sync Capacitor into the Android project
         run: npx cap sync android
+        env:
+          CAP_LOCAL: ${{ inputs.local_first && '1' || '' }}
 
       # FCM config for @capacitor/push-notifications. Without this file the
       # google-services Gradle plugin stays off and PushNotifications.register()
