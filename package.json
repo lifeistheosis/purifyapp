@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:content": "node scripts/build-content-package.mjs",
+    "build:android": "BUILD_TARGET=android next build && node scripts/build-content-package.mjs --out out/content",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",

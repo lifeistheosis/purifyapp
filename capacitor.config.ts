@@ -11,14 +11,25 @@ import type { CapacitorConfig } from "@capacitor/cli";
 // webDir is a required field but unused at runtime because server.url
 // points at production; capacitor-shell/ holds only a minimal offline
 // fallback page.
+// Local-first build target. With CAP_LOCAL=1 the shell loads the bundled static
+// export (out/) from inside the APK instead of fetching purifyapp.net, so the
+// app opens and navigates with no network. Default (unset) keeps the current
+// production remote-wrapper behavior untouched — the remote server.url is only
+// retired in M5, once the bundled build is proven offline on-device.
+const LOCAL = process.env.CAP_LOCAL === "1";
+
 const config: CapacitorConfig = {
   appId: "net.purifyapp.purify",
   appName: "Purify",
-  webDir: "capacitor-shell",
-  server: {
-    url: "https://purifyapp.net",
-    allowNavigation: ["purifyapp.net", "*.purifyapp.net", "*.supabase.co"],
-  },
+  webDir: LOCAL ? "out" : "capacitor-shell",
+  ...(LOCAL
+    ? { server: { androidScheme: "https" } }
+    : {
+        server: {
+          url: "https://purifyapp.net",
+          allowNavigation: ["purifyapp.net", "*.purifyapp.net", "*.supabase.co"],
+        },
+      }),
   ios: {
     appendUserAgent: "PurifyNative",
     backgroundColor: "#101013",

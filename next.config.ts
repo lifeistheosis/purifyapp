@@ -19,24 +19,40 @@ const securityHeaders = [
   { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
 ];
 
-const nextConfig: NextConfig = {
-  async redirects() {
-    return [
-      { source: "/prayer", destination: "/prayers", permanent: true },
-      { source: "/scripture", destination: "/bible", permanent: true },
-      // v3.4: the Jesus Prayer counter page was retired in favor of the
-      // learning lesson. Old bookmarks land on the lesson that teaches
-      // the prayer itself.
-      {
-        source: "/prayers/jesus-prayer",
-        destination: "/prayers/learning/jesus-prayer",
-        permanent: true,
+// Android local-first build target. `BUILD_TARGET=android next build` produces
+// a fully static export (out/) that Capacitor bundles in the APK, so the app
+// renders locally with no network. The default (web) build is unchanged: SSR,
+// redirects, security headers, and image optimization stay on for purifyapp.net.
+// redirects()/headers() need a server and are unsupported by output:export, so
+// they are omitted in the Android target.
+const isAndroid = process.env.BUILD_TARGET === "android";
+
+const nextConfig: NextConfig = isAndroid
+  ? {
+      output: "export",
+      // Capacitor serves files from disk: trailing slashes give every route its
+      // own index.html, and the image optimizer needs a server so pass through.
+      trailingSlash: true,
+      images: { unoptimized: true },
+    }
+  : {
+      async redirects() {
+        return [
+          { source: "/prayer", destination: "/prayers", permanent: true },
+          { source: "/scripture", destination: "/bible", permanent: true },
+          // v3.4: the Jesus Prayer counter page was retired in favor of the
+          // learning lesson. Old bookmarks land on the lesson that teaches
+          // the prayer itself.
+          {
+            source: "/prayers/jesus-prayer",
+            destination: "/prayers/learning/jesus-prayer",
+            permanent: true,
+          },
+        ];
       },
-    ];
-  },
-  async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
-  },
-};
+      async headers() {
+        return [{ source: "/:path*", headers: securityHeaders }];
+      },
+    };
 
 export default nextConfig;

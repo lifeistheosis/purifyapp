@@ -8,6 +8,7 @@ import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { AmbienceController } from "@/components/ambience/AmbienceController";
 import { CommandPaletteMount } from "@/components/search/CommandPaletteMount";
 import { WebOnly, NativeOnly } from "@/components/platform/PlatformGate";
+import { ContentProvider } from "@/components/content/ContentProvider";
 
 export default function AppGroupLayout({
   children,
@@ -15,7 +16,7 @@ export default function AppGroupLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <ContentProvider>
       {/* Web header (mobile + desktop). AppNav handles its own responsive
           layout — full nav on desktop, a hamburger on mobile. Hidden in the
           native app, where the bottom tab bar is the navigation. */}
@@ -38,6 +39,6 @@ export default function AppGroupLayout({
       <CommandPaletteMount />
       <AmbienceController />
       <InstallPrompt />
-    </>
+    </ContentProvider>
   );
 }
