@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:content": "node scripts/build-content-package.mjs",
-    "build:android": "BUILD_TARGET=android next build && node scripts/build-content-package.mjs --out out/content",
+    "build:content": "node --experimental-strip-types scripts/emit-registries.mjs && node scripts/build-content-package.mjs",
+    "build:android": "node scripts/android-build.mjs",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",

@@ -110,10 +110,14 @@ export default async function RootLayout({
  // Per-request CSP nonce, set by middleware. Read it so any future inline
  // <script nonce={nonce}> tags here will satisfy the strict-dynamic policy.
  // Currently unused by app code; Next's own runtime carries the nonce via
- // its build pipeline once the request header is set.
- const h = await headers();
+ // its build pipeline once the request header is set. Skipped in the Android
+ // static export (no request headers, and no CSP/middleware there) so the root
+ // layout — and thus every page — can be statically rendered.
  // eslint-disable-next-line @typescript-eslint/no-unused-vars
- const nonce = h.get(NONCE_HEADER) ?? undefined;
+ const nonce =
+   process.env.BUILD_TARGET === "android"
+     ? undefined
+     : (await headers()).get(NONCE_HEADER) ?? undefined;
  return (
  <html
  lang={localeCode}

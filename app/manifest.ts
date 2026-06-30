@@ -1,5 +1,8 @@
 import type { MetadataRoute } from "next";
 
+// Static for the Android export (output:export); unchanged on the website.
+export const dynamic = "force-static";
+
 /**
  * App-shell Web App Manifest. Promoted from the older static
  * `manifest.webmanifest` so we get TypeScript validation and can wire

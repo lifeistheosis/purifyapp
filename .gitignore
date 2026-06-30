@@ -94,3 +94,7 @@ dogma-scan.json
 
 # Generated local-first content package (built at Android build time)
 .content-build/
+
+# Generated content registries (emitted from TS at build time)
+data/_generated/
+.android-export-stash/

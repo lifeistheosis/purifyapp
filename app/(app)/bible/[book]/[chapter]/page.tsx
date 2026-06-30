@@ -42,8 +42,12 @@ import {
 type Params = Promise<{ book: string; chapter: string }>;
 type Search = Promise<{ v?: string }>;
 
-// Licensed translations are fetched live (never statically generated / stored).
-export const dynamicParams = true;
+// generateStaticParams enumerates every canonical book/chapter, so all valid
+// pages are pre-rendered; dynamicParams=false makes invalid combos 404 (instead
+// of on-demand → notFound, the same result) and is required by the Android
+// static export. Licensed translations are still fetched live client-side
+// (a query-param swap), unaffected by route dynamicParams.
+export const dynamicParams = false;
 
 const LICENSED_LABEL: Record<string, string> = {
  niv: "New International Version",
@@ -70,7 +74,12 @@ export default async function BibleChapterPage({
  searchParams: Search;
 }) {
  const { book, chapter } = await params;
- const { v } = await searchParams;
+ // Android static export can't read searchParams (would force dynamic). The
+ // ?v= licensed-translation/verse param is online/client-only anyway, so the
+ // export always renders the bundled public-domain text. Website unchanged.
+ const { v } = (process.env.BUILD_TARGET === "android"
+   ? {}
+   : await searchParams) as { v?: string };
  const chapterNum = Number(chapter);
  const b = getBook(book);
  if (!b || !Number.isInteger(chapterNum) || chapterNum < 1 || chapterNum > b.chapters) {

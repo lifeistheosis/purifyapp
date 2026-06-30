@@ -34,6 +34,11 @@ const nextConfig: NextConfig = isAndroid
       // own index.html, and the image optimizer needs a server so pass through.
       trailingSlash: true,
       images: { unoptimized: true },
+      // The export runs with app/api stashed (route handlers can't be exported),
+      // so Next's generated route types reference now-absent modules. Type
+      // safety is enforced separately (npm run typecheck) as the real gate;
+      // skipping it here only avoids that stash artifact.
+      typescript: { ignoreBuildErrors: true },
     }
   : {
       async redirects() {

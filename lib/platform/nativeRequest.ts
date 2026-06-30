@@ -11,6 +11,11 @@ import { headers } from "next/headers";
 import { NATIVE_UA_TOKEN } from "./token";
 
 export async function isNativeRequest(): Promise<boolean> {
+  // Android static export has no request headers; reading them would force the
+  // page dynamic and break output:export. The exported HTML is the (web) shell
+  // and the client flips to the native shell after hydration via useIsNative()
+  // — exactly as on the production server today. The website is unaffected.
+  if (process.env.BUILD_TARGET === "android") return false;
   const h = await headers();
   return (h.get("user-agent") ?? "").includes(NATIVE_UA_TOKEN);
 }

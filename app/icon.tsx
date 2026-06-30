@@ -1,5 +1,8 @@
 import { ImageResponse } from "next/og";
 
+// Pre-render once at build time so the route is compatible with the Android
+// static export (output:export); the website still serves the same icon.
+export const dynamic = "force-static";
 export const size = { width: 64, height: 64 };
 export const contentType = "image/png";
 

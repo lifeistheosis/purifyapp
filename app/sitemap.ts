@@ -4,6 +4,9 @@ import { SAINTS } from "@/lib/saints/saints";
 import { COUNCILS } from "@/lib/councils/councils";
 import { SITE_URL as SITE } from "@/lib/site";
 
+// Static for the Android export (output:export); unchanged on the website.
+export const dynamic = "force-static";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 

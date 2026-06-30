@@ -1,6 +1,9 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL as SITE } from "@/lib/site";
 
+// Static for the Android export (output:export); unchanged on the website.
+export const dynamic = "force-static";
+
 // The ABS / Biblica licenses prohibit using the Scripture content to train
 // generative AI / LLMs. Block known AI crawlers so the licensed text is not
 // scraped into training corpora.

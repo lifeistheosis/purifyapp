@@ -140,6 +140,26 @@ function collectSaintWritings() {
   }
 }
 
+// --- Saint profiles + feast index (from emit-registries.mjs) -------------
+function collectSaints() {
+  const f = path.join(DATA, "_generated", "saints.json");
+  if (!fs.existsSync(f)) return;
+  for (const s of readJson(f)) {
+    const body = flattenStrings({
+      name: s.name, byname: s.byname, epithet: s.epithet,
+      shortBio: s.shortBio, life: s.life,
+    }).join(" ");
+    add("saint", s.slug, s.name, null, s, body);
+  }
+}
+function collectFeasts() {
+  const f = path.join(DATA, "_generated", "feasts.json");
+  if (!fs.existsSync(f)) return;
+  for (const fe of readJson(f)) {
+    add("feast", fe.ref_id, fe.name, fe.date, fe, `${fe.name} ${fe.raw}`);
+  }
+}
+
 // Canonical records string — MUST match lib/content/manifest.ts canonicalRecords.
 function canonicalRecords(recs) {
   const sorted = [...recs].sort((a, b) =>
@@ -157,6 +177,8 @@ function main() {
   collectFlat("apologetics", "apologetics");
   collectCouncils();
   collectSaintWritings();
+  collectSaints();
+  collectFeasts();
 
   const counts = {};
   for (const r of records) counts[r.type] = (counts[r.type] ?? 0) + 1;
