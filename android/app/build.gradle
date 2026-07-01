@@ -11,7 +11,7 @@ android {
         // build is automatically higher than the last (no manual bumps, no
         // "duplicate versionCode" rejections). Local builds use the literal
         // fallback. Keep the fallback ahead of the last manual upload (4).
-        versionCode (System.getenv("ANDROID_VERSION_CODE") ?: "4").toInteger()
+        versionCode = (System.getenv("ANDROID_VERSION_CODE") ?: "4").toInteger()
         versionName "1.6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
