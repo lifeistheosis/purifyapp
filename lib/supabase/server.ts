@@ -13,9 +13,14 @@ export async function createClient() {
   // pages render the signed-out shell at build time; the app authenticates
   // client-side at runtime. The website (BUILD_TARGET unset) is unaffected.
   if (process.env.BUILD_TARGET === "android") {
+    // Fall back to placeholders so the static export never crashes when the
+    // public keys aren't set on the build runner ("URL and Key are required").
+    // When the real NEXT_PUBLIC_* values ARE provided at build time they're
+    // used and baked into the app; with placeholders the app still builds and
+    // renders content offline, only auth/sync stay inert until real keys ship.
     return createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co",
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-anon-key",
       { cookies: { getAll: () => [], setAll: () => {} } },
     );
   }
