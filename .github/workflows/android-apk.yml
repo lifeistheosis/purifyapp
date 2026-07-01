@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       local_first:
-        description: "Bundle the local-first offline build (out/). Uncheck to build the legacy remote-wrapper that loads purifyapp.net."
+        description: "Bundle the local-first offline build (out/). Uncheck to build the remote-wrapper AAB that loads purifyapp.net."
         type: boolean
         default: true
 

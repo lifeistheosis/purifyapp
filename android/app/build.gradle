@@ -11,8 +11,11 @@ android {
         // build is automatically higher than the last (no manual bumps, no
         // "duplicate versionCode" rejections). Local builds use the literal
         // fallback. Keep the fallback ahead of the last manual upload (4).
-        versionCode (System.getenv("ANDROID_VERSION_CODE") ?: "4").toInteger()
-        versionName "1.6"
+        // Property assignment (not `versionCode (...)`) so `.toInteger()` binds
+        // to the string, not to versionCode()'s return — the latter parsed as
+        // `versionCode("N").toInteger()` and failed with "Value is null".
+        versionCode = (System.getenv("ANDROID_VERSION_CODE") ?: "4").toInteger()
+        versionName = "1.6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
