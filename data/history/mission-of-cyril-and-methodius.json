@@ -1,0 +1,18 @@
+{
+  "slug": "mission-of-cyril-and-methodius",
+  "context": [
+    { "kind": "para", "text": "In 862 Prince Rastislav of Great Moravia asked Constantinople for teachers who could explain the faith to his people 'in our own tongue.' The emperor and Patriarch Photius chose two brothers from Thessalonica, sons of a city ringed by Slavic speech: Constantine, the most brilliant scholar of the capital, and the monk Methodius." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "Before setting out in 863, Constantine devised an alphabet fitted to Slavic sounds — the Glagolitic script, ancestor of the tradition that produced Cyrillic, named for him — and began translating the Gospel lectionary: 'In the beginning was the Word.' In Moravia the brothers translated the Scriptures and the services and trained native clergy to worship in Slavonic." },
+    { "kind": "para", "text": "Frankish missionaries objected that God might be praised only in Hebrew, Greek, and Latin. Constantine scorned the 'three-tongues heresy' — does not the rain fall on all alike? — and in Rome the brothers won papal approval for the Slavonic liturgy; Constantine, taking the monastic name Cyril, died there in 869. Methodius, made archbishop, endured Frankish imprisonment and continued translating until his death in 885. Their expelled disciples carried the books south to Bulgaria — from where the Slavonic inheritance spread to Serbia and, in time, to Rus." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "The brothers fixed the Orthodox principle of mission: the Gospel enters a people in its own language, making local churches rather than colonies. Slavonic remains the liturgical tongue of the Slavic Orthodox world, and the alphabet of half of it descends from this mission — the reason the Church calls Cyril and Methodius 'equals of the apostles.'" }
+  ],
+  "sources": [
+    { "label": "The Life of Constantine and The Life of Methodius (the Pannonian Lives), in Kantor (trans.), Medieval Slavic Lives of Saints and Princes (Michigan)", "kind": "primary", "note": "The ninth-century Slavonic lives, the principal sources for the mission." },
+    { "label": "Francis Dvornik, Byzantine Missions Among the Slavs (Rutgers)", "author": "Francis Dvornik", "kind": "secondary", "note": "The standard scholarly history of the Moravian mission." },
+    { "label": "Dimitri Obolensky, The Byzantine Commonwealth (Praeger/Crestwood)", "author": "Dimitri Obolensky", "kind": "secondary", "note": "The mission's place in the Byzantine-Slavic world." }
+  ]
+}

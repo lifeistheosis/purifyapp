@@ -1,0 +1,19 @@
+{
+  "slug": "missions-of-apostle-paul",
+  "context": [
+    { "kind": "para", "text": "Antioch, where the disciples were first called Christians, became the sending church of the Gentile mission. From there the Spirit set apart Barnabas and Saul for the work to which He had called them." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "In three great journeys spanning roughly the years 46 to 57, Paul carried the Gospel through Cyprus and southern Asia Minor, then across to Macedonia and Greece — Philippi, Thessalonica, Corinth — and to Ephesus, planting churches in the great cities of the eastern empire and confirming them by letter. 'From Jerusalem, and round about unto Illyricum,' he could write, 'I have fully preached the gospel of Christ.'" },
+    { "kind": "para", "text": "Arrested at Jerusalem and held at Caesarea, Paul appealed as a Roman citizen to Caesar and was taken by sea — through storm and shipwreck at Malta — to Rome, where Acts leaves him around 62, preaching 'with all confidence, no man forbidding him.'" }
+  ],
+  "significance": [
+    { "kind": "para", "text": "Paul's journeys turned a Judean movement into a Church of the nations within a single generation, and his letters to those churches became Scripture — the epistles read at every Orthodox Liturgy. The sees he founded or wrote to (Corinth, Thessalonica, Ephesus, Philippi) remained pillars of the Orthodox world for centuries." }
+  ],
+  "uncertainty": "The journey chronology is reconstructed from Acts and the epistles anchored by the Gallio inscription at Delphi (c. 51–52); individual dates are approximate by a year or two.",
+  "sources": [
+    { "label": "Acts of the Apostles 13–28", "kind": "primary", "note": "The canonical narrative of the three journeys and the voyage to Rome." },
+    { "label": "Romans 15:19–29", "kind": "primary", "note": "Paul's own summary of his missionary arc and intentions." },
+    { "label": "F. F. Bruce, Paul: Apostle of the Heart Set Free (Eerdmans)", "author": "F. F. Bruce", "kind": "secondary", "note": "Standard scholarly biography with the journey chronology." }
+  ]
+}

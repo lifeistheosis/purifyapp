@@ -1,0 +1,20 @@
+{
+  "slug": "first-council-of-constantinople",
+  "context": [
+    { "kind": "para", "text": "For fifty years after Nicaea the Arian quarrel raged on, with imperial favor swinging between parties and Athanasius exiled five times. Meanwhile a new denial arose: that the Holy Spirit, too, is a creature. The Cappadocian fathers — Basil the Great, Gregory the Theologian, Gregory of Nyssa — prepared the answer; the emperor Theodosius, a convinced Nicene, called the council." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "One hundred fifty bishops of the East met at Constantinople in 381 under Meletius of Antioch and then Gregory the Theologian, whose orations on the Trinity had rallied the Nicene cause in the capital — though he resigned the presidency and the see mid-council rather than be a cause of strife. Nectarius completed the sessions." },
+    { "kind": "para", "text": "The council reaffirmed the faith of Nicaea and set forth the creed the Orthodox Church recites to this day, confessing the Holy Spirit as 'the Lord, the Giver of life, who proceeds from the Father, who with the Father and the Son together is worshipped and glorified, who spoke by the prophets.' Its canons condemned Arianism and Macedonianism and gave the see of New Rome the honor 'after the bishop of Rome.'" },
+    { "kind": "para", "text": "The creed's clause on the Spirit's procession from the Father — without addition — is the very text at issue in the later filioque dispute: the Church received this creed as complete, and the council of 431 forbade composing any other faith." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "Constantinople I completed the trinitarian settlement: one God in three consubstantial Persons. Its creed is the baptismal and eucharistic confession of all Orthodoxy — sung at every Liturgy, unchanged, for over sixteen centuries." }
+  ],
+  "sources": [
+    { "label": "The Creed and Canons of Constantinople I, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1", "kind": "primary", "note": "Critical text of the creed and the seven canons." },
+    { "label": "Gregory the Theologian, Five Theological Orations (Orations 27–31)", "kind": "primary", "url": "https://www.newadvent.org/fathers/3103.htm", "note": "The doctrine of the Spirit the council received." },
+    { "label": "Socrates Scholasticus, Church History V.8", "kind": "primary", "note": "Narrative of the council's sessions." },
+    { "label": "J. N. D. Kelly, Early Christian Creeds (Longman), chs. on the Constantinopolitan creed", "author": "J. N. D. Kelly", "kind": "secondary", "note": "On the creed's text and reception." }
+  ]
+}

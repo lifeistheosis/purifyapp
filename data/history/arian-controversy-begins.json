@@ -1,0 +1,19 @@
+{
+  "slug": "arian-controversy-begins",
+  "context": [
+    { "kind": "para", "text": "Alexandria was the intellectual capital of the Christian East, and the relation of the Son to the Father its keenest question. Around 318, Arius — an ascetic, popular presbyter of the Baucalis church — pressed the Alexandrian tradition of the Word's distinctness to a fatal conclusion." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "God alone is unbegotten, Arius reasoned; the Son, being begotten, must have come into being: 'there was when he was not.' The Son is the first and most exalted of creatures, made that through him God might make all else — a Christ worthy of honor but not, strictly, God. Arius set his doctrine in verses ordinary people could sing, and it spread through the harbors and bakeries of Alexandria." },
+    { "kind": "para", "text": "His bishop, Alexander, examined and condemned the teaching at a synod of Egyptian bishops around 320–321. But Arius had studied under Lucian of Antioch beside men who now held great sees — Eusebius of Nicomedia chief among them — and they took up his cause. Letters flew across the East; Constantine, newly master of the whole empire, first urged both sides to stop quarreling over 'small and very insignificant questions,' then, understanding the stakes, summoned a council of the whole Church." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "The controversy forced the Church to say with precision what it had always worshipped: that the Son is not the highest of creatures but true God from true God. Everything at stake in the Nicene Creed — and in the gospel of salvation as deification, 'God became man that man might become god' — was first put in question by Arius's syllogism." }
+  ],
+  "uncertainty": "The exact year the dispute broke out (317–319) and the sequence of the earliest synods are reconstructed from partisan sources; the outline given here follows the standard scholarly account.",
+  "sources": [
+    { "label": "Socrates Scholasticus, Church History I.5–6", "kind": "primary", "url": "https://www.newadvent.org/fathers/2601.htm", "note": "Preserves Alexander's encyclical and Arius's letter to Eusebius." },
+    { "label": "Athanasius, Orations Against the Arians I", "kind": "primary", "note": "Quotes the Thalia and answers the Arian syllogisms." },
+    { "label": "R. P. C. Hanson, The Search for the Christian Doctrine of God (T&T Clark)", "author": "R. P. C. Hanson", "kind": "secondary", "note": "The standard modern history of the Arian controversy." }
+  ]
+}

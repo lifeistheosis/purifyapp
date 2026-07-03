@@ -1,0 +1,19 @@
+{
+  "slug": "anthony-and-the-desert",
+  "context": [
+    { "kind": "para", "text": "Around the year 270 a young Coptic farmer heard the Gospel read in church: 'If thou wilt be perfect, go, sell all that thou hast, and give to the poor.' Anthony took the words as spoken to himself, provided for his sister, and withdrew — first to the edge of his village, then across the Nile to an abandoned desert fort." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "For some eighty-five years Anthony gave himself to prayer, fasting, manual work, and the long warfare with the demons that his biographer describes without embarrassment. He emerged, Athanasius says, 'as from a shrine, initiated into the mysteries and filled with God' — healing, reconciling, counseling emperors by letter, and twice going to Alexandria: once during the persecution hoping for martyrdom, once to preach against the Arians." },
+    { "kind": "para", "text": "He was not the first ascetic, but he became the movement's icon. By his death in 356, reportedly at the age of 105, the deserts of Egypt held thousands — hermits after his pattern at Nitria and Scetis, and the first common-life (cenobitic) communities under Pachomius in the south. Athanasius's Life of Antony, translated quickly into Latin, carried the desert's fire across the empire; Augustine records its role in his own conversion." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "Monasticism became Orthodoxy's spiritual engine: the Desert Fathers' sayings and the discipline of unceasing prayer shaped the Philokalia, hesychasm, and every Orthodox monastery from Athos to Alaska. When the age of martyrs ended at Milan, the desert offered the Church its new martyrdom — the daily death of asceticism." }
+  ],
+  "uncertainty": "Anthony's dates (c. 251–356) rest on the Life of Antony; the traditional lifespan of 105 years is reported by Athanasius and cannot be independently confirmed.",
+  "sources": [
+    { "label": "Athanasius, Life of Antony", "kind": "primary", "url": "https://www.newadvent.org/fathers/2811.htm", "note": "The foundational biography by his contemporary and friend." },
+    { "label": "The Sayings of the Desert Fathers (Apophthegmata Patrum), Anthony 1–38", "kind": "primary", "note": "The desert's own memory of his teaching." },
+    { "label": "Derwas Chitty, The Desert a City (SVS Press)", "author": "Derwas Chitty", "kind": "secondary", "note": "The classic history of Egyptian and Palestinian monasticism." }
+  ]
+}

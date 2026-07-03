@@ -1,0 +1,18 @@
+{
+  "slug": "irenaeus-against-heresies",
+  "context": [
+    { "kind": "para", "text": "The Gnostic teachers — Valentinus, Basilides, Marcion — offered salvation by secret knowledge, a lesser creator-god, and a Christ who only seemed to be flesh. Their systems flattered the educated and multiplied sects. Irenaeus, a native of Smyrna who had heard Polycarp there and now shepherded the church of Lyons in Gaul, answered them." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "His five books 'On the Detection and Overthrow of Knowledge Falsely So-Called' — Against Heresies, written around 180 — first laid the Gnostic systems out in the open, then demolished them from Scripture and the Church's public tradition. Against secret teachings, Irenaeus appealed to what everyone could check: the churches founded by apostles, the succession of their bishops openly listed, and the one rule of faith taught identically 'though the languages of the world differ' from Gaul to Egypt." },
+    { "kind": "para", "text": "Along the way Irenaeus gave the Church its first great theological synthesis: the four Gospels and no others; the unity of the two Testaments under one God; Christ as the new Adam 'recapitulating' the whole human story; Mary as the new Eve; and the famous sentence that 'the glory of God is a living man, and the life of man is the vision of God.'" }
+  ],
+  "significance": [
+    { "kind": "para", "text": "Against Heresies established the Orthodox method itself — Scripture read within the Church's public, apostolic tradition — and its theology of recapitulation stands behind the later doctrine of theosis. When Orthodoxy names tradition and succession as marks of the true Church, it speaks with Irenaeus's voice." }
+  ],
+  "sources": [
+    { "label": "Irenaeus of Lyons, Against Heresies (esp. III.1–4)", "kind": "primary", "url": "https://www.newadvent.org/fathers/0103.htm", "note": "The appeal to Scripture, succession, and the rule of faith." },
+    { "label": "Eusebius, Church History V.20", "kind": "primary", "note": "Irenaeus's own memory of hearing Polycarp." },
+    { "label": "John Behr, Irenaeus of Lyons: Identifying Christianity (Oxford)", "author": "John Behr", "kind": "secondary", "note": "Modern Orthodox study of Irenaeus's theology and context." }
+  ]
+}

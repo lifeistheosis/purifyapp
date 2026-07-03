@@ -1,0 +1,18 @@
+{
+  "slug": "first-iconoclasm",
+  "context": [
+    { "kind": "para", "text": "By the eighth century the holy icons filled Orthodox churches and homes. Emperor Leo III — a soldier from the eastern frontier, ruling an empire battered by Arab conquest — came to see their veneration as idolatry provoking God's wrath, and moved against them from 726, when the image of Christ over the palace's Chalke Gate was taken down." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "Leo's edicts and his son Constantine V's zeal turned iconoclasm into imperial policy. A large but uncanonical synod at Hieria (754) — no patriarch present — declared images of Christ impossible: to depict his humanity, it argued, either divides him or circumscribes his divinity. Icons were whitewashed and burned; the monks, iconodulia's fiercest defenders, bore the persecution — the monk Stephen the Younger, killed in 765, chief among its martyrs." },
+    { "kind": "para", "text": "From Damascus, safely outside the emperor's reach under the caliphate, John of Damascus wrote the three Treatises on the Divine Images that armed the Church's answer: 'I do not venerate matter; I venerate the Creator of matter, who for my sake became matter.' The unseen God cannot be depicted — but the Word made flesh was seen, and what was seen may be shown. To refuse the icon is, at bottom, to doubt the Incarnation." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "Iconoclasm forced the Church to articulate why images belong to the Gospel itself: the icon is the confession of the Incarnation in line and color. The theology hammered out under this persecution stands behind every icon in every Orthodox church." }
+  ],
+  "sources": [
+    { "label": "John of Damascus, Three Treatises on the Divine Images (trans. Louth, SVS Press)", "kind": "primary", "note": "The classic defense of the icons, written during the persecution." },
+    { "label": "Theophanes the Confessor, Chronicle, s.a. 726–775", "kind": "primary", "note": "The principal Byzantine narrative source for the first iconoclasm." },
+    { "label": "Jaroslav Pelikan, The Spirit of Eastern Christendom (The Christian Tradition, vol. 2, Chicago), ch. 3", "author": "Jaroslav Pelikan", "kind": "secondary", "note": "The doctrinal history of the iconoclast controversy." }
+  ]
+}

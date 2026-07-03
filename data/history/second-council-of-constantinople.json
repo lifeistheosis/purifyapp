@@ -1,0 +1,18 @@
+{
+  "slug": "second-council-of-constantinople",
+  "context": [
+    { "kind": "para", "text": "A century after Chalcedon the empire was still split over it. Justinian, theologian as much as emperor, judged that the council's Antiochene-sounding critics could be answered by condemning the 'Three Chapters' — the person and works of Theodore of Mopsuestia, and certain writings of Theodoret and Ibas — showing that Chalcedon in no way rehabilitated Nestorianism." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "The fifth ecumenical council met at Constantinople in May–June 553 under Patriarch Eutychius. Pope Vigilius, present in the city, refused to attend and vacillated painfully before ultimately accepting its decrees. The council condemned the Three Chapters and, in its association with Justinian's earlier edicts, the speculative teachings attributed to Origen — the preexistence of souls and the universal restoration." },
+    { "kind": "para", "text": "Its fourteen anathemas read Chalcedon through Cyril: the 'one hypostasis' of the Definition is the divine Word himself, so that 'one of the Holy Trinity was crucified in the flesh.' Christ's person is not a product of the union but the eternal Son — the teaching sometimes called the enhypostasia. The hoped-for reconciliation with the non-Chalcedonians, however, did not come." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "Constantinople II welded Chalcedon and Cyril into one confession: the Orthodox reading of 'two natures' has an unambiguously divine subject. The hymn 'Only-begotten Son,' attributed to Justinian and sung at every Liturgy, carries this council's faith." }
+  ],
+  "sources": [
+    { "label": "The sentence and anathemas of Constantinople II, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1", "kind": "primary", "note": "The fourteen capitula against the Three Chapters." },
+    { "label": "Evagrius Scholasticus, Ecclesiastical History IV.38", "kind": "primary", "note": "Contemporary narrative of the council and Vigilius's role." },
+    { "label": "John Meyendorff, Christ in Eastern Christian Thought (SVS Press), ch. 5", "author": "John Meyendorff", "kind": "secondary", "note": "On the council's Cyrillian reading of Chalcedon." }
+  ]
+}

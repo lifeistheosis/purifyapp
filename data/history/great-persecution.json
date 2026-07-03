@@ -1,0 +1,18 @@
+{
+  "slug": "great-persecution",
+  "context": [
+    { "kind": "para", "text": "After forty years of relative peace, the Church had grown into every level of Roman society — and Diocletian's program to restore the old Roman order could not accommodate it. Pressed by his caesar Galerius, the emperor moved from purging the army to destroying the Church itself." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "On February 23, 303, the church of Nicomedia opposite the palace was demolished; the next day the first edict ordered churches razed, Scriptures surrendered and burned, and Christians stripped of legal rank. Later edicts imprisoned the clergy and finally, in 304, commanded universal sacrifice to the gods on pain of death. Enforcement was fiercest in the East and in Africa, where the question of clergy who had handed over the Scriptures — the traditores — would later tear the church in the Donatist schism." },
+    { "kind": "para", "text": "Eusebius, an eyewitness in Palestine and Egypt, records the tortures and the astonishing eagerness of many for martyrdom. The persecution outlived Diocletian's abdication in 305 and raged under Galerius and Maximinus until the dying Galerius, in 311, conceded an edict of toleration asking the Christians to pray for him; the Milan agreement of 313 completed the peace." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "The Great Persecution was Rome's final answer to the Church, and its failure was total: within twenty years of the first edict, an emperor sat listening to bishops at Nicaea — many bearing the scars of these years. The 'confessors,' maimed survivors, were the council's moral authority; the martyrs of these years fill the Orthodox calendar." }
+  ],
+  "sources": [
+    { "label": "Eusebius, Church History VIII–IX, and The Martyrs of Palestine", "kind": "primary", "url": "https://www.newadvent.org/fathers/2501.htm", "note": "Eyewitness record of the persecution in the East." },
+    { "label": "Lactantius, On the Deaths of the Persecutors 10–35", "kind": "primary", "url": "https://www.newadvent.org/fathers/0705.htm", "note": "Contemporary account of the edicts and the persecutors' ends." },
+    { "label": "W. H. C. Frend, Martyrdom and Persecution in the Early Church (Blackwell), ch. on the Great Persecution", "author": "W. H. C. Frend", "kind": "secondary", "note": "Standard academic treatment." }
+  ]
+}

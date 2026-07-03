@@ -1,0 +1,18 @@
+{
+  "slug": "sack-of-constantinople-1204",
+  "context": [
+    { "kind": "para", "text": "The Fourth Crusade set out for Egypt and never arrived. Debt to Venice diverted it first to the Christian city of Zara, then — entangled in a Byzantine succession dispute and unpaid promises — to Constantinople itself." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "On April 12–13, 1204, the crusaders breached the sea walls and took the greatest city in Christendom. The three-day sack that followed appalled even its chroniclers: palaces and churches plundered, the altar and sanctuary of Hagia Sophia stripped and desecrated, relics carried off wholesale to the West — where many remain. 'Even the Saracens are merciful compared with these men who bear the Cross of Christ on their shoulders,' wrote the Byzantine senator and eyewitness Nicetas Choniates." },
+    { "kind": "para", "text": "A Latin emperor was crowned in Hagia Sophia and a Venetian set up as patriarch; Orthodox bishops were displaced across the conquered lands. The Byzantine government-in-exile at Nicaea kept the Orthodox patriarchate alive until Michael VIII Palaiologos retook the City in 1261 — but the empire never recovered its strength, and the East never forgot." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "More than 1054's anathemas, 1204 made the schism a fact in the Orthodox heart: the difference between estranged brothers and enemies. Every later reunion attempt negotiated in its shadow. In 2001 Pope John Paul II formally expressed sorrow for the sack; the wound remains part of Orthodox memory." }
+  ],
+  "sources": [
+    { "label": "Nicetas Choniates, Historia (trans. Magoulias, O City of Byzantium, Wayne State)", "kind": "primary", "note": "Byzantine eyewitness account of the sack." },
+    { "label": "Geoffrey of Villehardouin, The Conquest of Constantinople", "kind": "primary", "note": "A crusade leader's own narrative." },
+    { "label": "Donald E. Queller & Thomas F. Madden, The Fourth Crusade: The Conquest of Constantinople (Penn)", "author": "Queller & Madden", "kind": "secondary", "note": "The standard modern history of the diversion and sack." }
+  ]
+}

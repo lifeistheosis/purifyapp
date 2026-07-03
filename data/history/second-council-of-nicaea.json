@@ -1,0 +1,18 @@
+{
+  "slug": "second-council-of-nicaea",
+  "context": [
+    { "kind": "para", "text": "Constantine V died on campaign in 775; his son's early death left the empress Irene regent, and she was determined to restore the icons. With the learned layman Tarasius raised to the patriarchate and Pope Adrian's legates secured, a council was summoned — driven from Constantinople by iconoclast soldiers in 786, it reconvened safely at Nicaea the following year." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "Some 350 bishops met in September–October 787 in the same city as the first council. They heard the patristic testimonies, received repentant iconoclast bishops, and overturned Hieria point by point." },
+    { "kind": "para", "text": "The definition draws the decisive distinction: the icons are to receive 'veneration of honor' (timetike proskynesis) — like the Cross and the Gospel book — 'but not the true worship (latreia) of our faith, which belongs to the divine nature alone.' For 'the honor paid to the image passes to the prototype, and whoever venerates the icon venerates in it the hypostasis of the one depicted.' Icons of Christ, the Theotokos, angels, and saints are therefore to be set up in churches, on vessels and vestments, in houses and by roads." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "Nicaea II is the seventh and last council the Orthodox Church receives as ecumenical. Its theology — honor passing to the prototype, worship reserved to God — governs the whole Orthodox practice of veneration: of icons, relics, the Cross, and the saints." }
+  ],
+  "sources": [
+    { "label": "The definition of Nicaea II, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1", "kind": "primary", "note": "The decree on the veneration of the holy images." },
+    { "label": "Basil the Great, On the Holy Spirit 18.45", "kind": "primary", "url": "https://www.newadvent.org/fathers/3203.htm", "note": "'The honor of the image passes to the prototype' — the axiom the council applied." },
+    { "label": "Leo Donald Davis, The First Seven Ecumenical Councils (Liturgical Press), ch. 9", "author": "Leo Donald Davis", "kind": "secondary", "note": "History of the council and its reception East and West." }
+  ]
+}

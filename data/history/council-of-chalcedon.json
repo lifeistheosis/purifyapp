@@ -1,0 +1,19 @@
+{
+  "slug": "council-of-chalcedon",
+  "context": [
+    { "kind": "para", "text": "The reunion of 433 did not hold. The aged archimandrite Eutyches taught that after the union Christ's humanity was absorbed — 'two natures before the union, one after' — and a packed council at Ephesus in 449, which Leo of Rome called the 'Robber Council,' acquitted him by intimidation. When the emperor Theodosius II died, the new rulers Marcian and Pulcheria summoned a true council." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "Some 520 bishops — the largest assembly of antiquity — met at Chalcedon across the strait from the capital in October 451. They annulled the Robber Council, deposed Dioscorus of Alexandria for what he had done there, and received the Tome of Leo alongside Cyril's letters with the cry 'Peter has spoken through Leo — Cyril taught thus.'" },
+    { "kind": "para", "text": "Their Definition confesses 'one and the same Christ, Son, Lord, only-begotten, made known in two natures without confusion, without change, without division, without separation' — the natures' difference in no way annulled by the union, their properties preserved, concurring in one person and one hypostasis. Against Eutyches, the humanity is real and abiding; against Nestorius, the subject is one, the same Word 'born of the Virgin Mary the Theotokos.'" },
+    { "kind": "para", "text": "The council's canon 28, granting New Rome privileges equal to old Rome's, was protested by Leo's legates — a quarrel over primacy with a long future ahead of it." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "The Chalcedonian Definition is the load-bearing wall of Orthodox christology: whatever is said of Christ is said of one person in two complete natures. Every later council refines this confession; the Orthodox Church is, in the old shorthand, the Church of Chalcedon." }
+  ],
+  "sources": [
+    { "label": "The Definition and canons of Chalcedon, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1", "kind": "primary", "note": "The Definition of Faith and canon 28." },
+    { "label": "Leo the Great, Tome (Letter 28 to Flavian)", "kind": "primary", "url": "https://www.newadvent.org/fathers/3604028.htm", "note": "The christological letter the council received." },
+    { "label": "Leo Donald Davis, The First Seven Ecumenical Councils (Liturgical Press), ch. 6", "author": "Leo Donald Davis", "kind": "secondary", "note": "Standard modern history of the council." }
+  ]
+}
