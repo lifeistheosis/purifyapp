@@ -55,8 +55,13 @@ export function HomeSectionScroller() {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
+    // A press must travel a real distance. With a small epsilon the first
+    // section's own top (72px down, behind the sticky header) counted as
+    // "next", so the first press was a wasted nudge and the walk to the
+    // bottom took one press more than the page has sections. 120px is
+    // safely below any section's height and safely above the header offset.
     const y = window.scrollY;
-    const next = sectionTops().find((top) => top > y + 8);
+    const next = sectionTops().find((top) => top > y + 120);
     window.scrollTo({
       top: next ?? document.documentElement.scrollHeight,
       behavior: "smooth",
