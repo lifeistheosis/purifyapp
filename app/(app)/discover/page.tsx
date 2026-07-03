@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { DiscoverMobile } from "@/components/mobile/DiscoverMobile";
+import { SaintIcon } from "@/components/saints/SaintIcon";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Church } from "@/components/ui/icons/Church";
 import { Book } from "@/components/ui/icons/Book";
@@ -14,6 +15,16 @@ import { Compass } from "@/components/ui/icons/Compass";
 import { Bolt } from "@/components/ui/icons/Bolt";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
+import {
+  commemorationsOn,
+  fastingStatus,
+  formatLongDate,
+  paschaInfo,
+  startOfDayUtc,
+} from "@/lib/calendar/orthodox";
+import { getSaint } from "@/lib/saints/saints";
+import { COUNCILS } from "@/lib/councils/councils";
+import { loadAllTopics } from "@/lib/topics/topics";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 
@@ -32,16 +43,49 @@ type Entry = {
   Icon: typeof Codex;
 };
 
+function dayOfYearUtc(d: Date): number {
+  const start = Date.UTC(d.getUTCFullYear(), 0, 0);
+  return Math.floor((d.getTime() - start) / 86_400_000);
+}
+
+function firstSentence(s: string): string {
+  if (!s) return "";
+  const match = s.match(/^.+?[.!?](?:\s|$)/);
+  return (match ? match[0] : s).trim();
+}
+
+function SectionHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">
+      {children}
+    </h2>
+  );
+}
+
 export default async function DiscoverPage() {
   const locale = await getServerLocale();
   const m = getMessages(locale);
 
-  // Order chosen so the index reads like a menologion table of contents:
-  // the people first (saints), then the doctrinal record together (the
-  // councils, the topics they confessed, the heresies they condemned),
-  // then the year, the daily readings, the Psalter, and the patristic
-  // commentary that ties it all together.
-  const ENTRIES: Entry[] = [
+  const today = startOfDayUtc(new Date());
+  const commemorations = commemorationsOn(today);
+  const fast = fastingStatus(today);
+  const pascha = paschaInfo(today);
+  const headline =
+    commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
+  const headlineSaint =
+    headline?.saint ?? (headline?.slug ? getSaint(headline.slug) : null);
+
+  const topics = await loadAllTopics();
+  const featuredTopic = topics.length
+    ? topics[dayOfYearUtc(today) % topics.length]
+    : null;
+  const featuredCouncil = COUNCILS.length
+    ? COUNCILS[dayOfYearUtc(today) % COUNCILS.length]
+    : null;
+
+  // The library grid: everything not already surfaced by the featured row
+  // or the Today strip. Order reads like a menologion table of contents.
+  const LIBRARY: Entry[] = [
     {
       label: t(m, "discover.tile.theology"),
       href: "/theology",
@@ -49,22 +93,10 @@ export default async function DiscoverPage() {
       Icon: Cross,
     },
     {
-      label: t(m, "discover.tile.history"),
-      href: "/history",
-      blurb: t(m, "discover.tile.historyBlurb"),
-      Icon: Compass,
-    },
-    {
       label: t(m, "discover.tile.apologetics"),
       href: "/apologetics",
       blurb: t(m, "discover.tile.apologeticsBlurb"),
       Icon: Bolt,
-    },
-    {
-      label: t(m, "discover.tile.reading"),
-      href: "/reading",
-      blurb: t(m, "discover.tile.readingBlurb"),
-      Icon: Lampada,
     },
     {
       label: t(m, "discover.tile.saints"),
@@ -91,18 +123,6 @@ export default async function DiscoverPage() {
       Icon: Scroll,
     },
     {
-      label: t(m, "discover.tile.calendar"),
-      href: "/calendar",
-      blurb: t(m, "discover.tile.calendarBlurb"),
-      Icon: Calendar,
-    },
-    {
-      label: t(m, "discover.tile.dailyReadings"),
-      href: "/prayers/today",
-      blurb: t(m, "discover.tile.dailyReadingsBlurb"),
-      Icon: Codex,
-    },
-    {
       label: t(m, "discover.tile.psalter"),
       href: "/bible/psalms/1",
       blurb: t(m, "discover.tile.psalterBlurb"),
@@ -120,63 +140,207 @@ export default async function DiscoverPage() {
     <>
       <DiscoverMobile />
       <div className="hidden md:contents">
-      <MobileTopBar title={t(m, "discover.h1").replace(/\.$/, "")} />
-      <section className="bg-night min-h-[calc(100dvh-72px)] md:px-8 md:py-16">
-        <article className="mx-auto max-w-[820px] w-full px-5 pt-6 pb-10 md:pt-0 md:pb-0">
-          <header className="text-center mb-8 md:mb-12">
-            <OrnamentHeadpiece className="mx-auto mb-5 max-w-[400px]" />
-            <p className="font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/85 mb-3">
-              {t(m, "discover.eyebrow")}
-            </p>
-            <h1 className="font-display-serif text-heading md:text-display text-paper leading-[1.05]">
-              {t(m, "discover.h1")}
-            </h1>
-            <p className="mt-4 font-serif italic text-ui md:text-body text-paper/70 max-w-[520px] mx-auto leading-[1.65]">
-              {t(m, "discover.subtitle")}
-            </p>
-          </header>
+        <MobileTopBar title={t(m, "discover.h1").replace(/\.$/, "")} />
+        <section className="bg-night min-h-[calc(100dvh-72px)] md:px-8 md:py-16">
+          <article className="mx-auto w-full max-w-[1200px] px-5 pt-6 pb-10 md:pt-0 md:pb-0">
+            {/* Masthead */}
+            <header className="mb-10 text-center md:mb-14">
+              <OrnamentHeadpiece className="mx-auto mb-5 max-w-[400px]" />
+              <p className="mb-3 font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/85">
+                {t(m, "discover.eyebrow")}
+              </p>
+              <h1 className="font-display-serif text-heading md:text-display text-paper leading-[1.05]">
+                {t(m, "discover.h1")}
+              </h1>
+              <p className="mx-auto mt-4 max-w-[520px] font-serif italic text-ui md:text-body text-paper/70 leading-[1.65]">
+                {t(m, "discover.subtitle")}
+              </p>
+            </header>
 
-          {/* Index list, each entry reads as one printed line of a
-              menologion table of contents: glyph on the left, name in
-              display-serif, italic blurb. Thin gold hairline between
-              entries. No tile chrome. */}
-          <ul className="divide-y divide-gold/20 border-y border-gold/20">
-            {ENTRIES.map(({ label, href, blurb, Icon }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className="group flex items-start gap-5 py-5 md:py-6 px-1 hover:bg-gold/[0.04] transition-colors"
-                >
-                  <span className="shrink-0 inline-flex items-center justify-center h-9 w-9 text-gold/85 group-hover:text-gold transition-colors">
-                    <Icon size={28} />
+            {/* Featured: the two destinations that reward a visit, not a
+                lookup. History wears the quiet gold of a new wing of the
+                library; Reading keeps the lamp. */}
+            <div className="grid gap-5 lg:grid-cols-2">
+              <Link
+                href="/history"
+                className="group relative overflow-hidden rounded-lg border border-gold/25 bg-gold/[0.05] px-7 py-7 transition-colors hover:border-gold/50"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <span className="inline-flex h-10 w-10 items-center justify-center text-gold/90">
+                    <Compass size={32} />
                   </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-display-serif text-lede md:text-title-sm text-paper leading-tight group-hover:text-gold transition-colors">
+                  <span className="rounded-pill border border-gold/40 px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1.4px] text-gold/90">
+                    New
+                  </span>
+                </div>
+                <p className="mt-4 font-display-serif text-title md:text-heading text-paper leading-tight transition-colors group-hover:text-gold">
+                  {t(m, "discover.tile.history")}
+                </p>
+                <p className="mt-2 max-w-[440px] font-serif italic text-ui text-paper/70 leading-[1.6]">
+                  {t(m, "discover.tile.historyBlurb")}
+                </p>
+                <p className="mt-4 font-sans text-detail font-semibold text-gold/85">
+                  Explore the interactive timeline →
+                </p>
+              </Link>
+
+              <Link
+                href="/reading"
+                className="group rounded-lg border border-paper/12 bg-night-soft/60 px-7 py-7 transition-colors hover:border-paper/30"
+              >
+                <span className="inline-flex h-10 w-10 items-center justify-center text-gold/90">
+                  <Lampada size={32} />
+                </span>
+                <p className="mt-4 font-display-serif text-title md:text-heading text-paper leading-tight transition-colors group-hover:text-gold">
+                  {t(m, "discover.tile.reading")}
+                </p>
+                <p className="mt-2 max-w-[440px] font-serif italic text-ui text-paper/70 leading-[1.6]">
+                  {t(m, "discover.tile.readingBlurb")}
+                </p>
+                <p className="mt-4 font-sans text-detail font-semibold text-paper/70">
+                  {t(m, "reading.enterReadingRoom")} →
+                </p>
+              </Link>
+            </div>
+
+            {/* Today: the living data that makes the page worth returning
+                to. Commemoration, the fast, the appointed readings. */}
+            <div className="mt-14">
+              <SectionHeading>Today in the Church</SectionHeading>
+              <p className="mt-1.5 font-serif italic text-detail text-paper/55">
+                {formatLongDate(today)}
+              </p>
+              <div className="mt-5 grid gap-5 md:grid-cols-3">
+                <Link
+                  href={headlineSaint ? `/saints/${headlineSaint.slug}` : "/saints"}
+                  className="group rounded-lg border border-paper/12 bg-night-soft/60 px-6 py-5 transition-colors hover:border-paper/30"
+                >
+                  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
+                    Commemorated today
+                  </p>
+                  <div className="mt-3 flex items-start gap-4">
+                    {headlineSaint ? <SaintIcon saint={headlineSaint} size="sm" /> : null}
+                    <div className="min-w-0">
+                      <p className="font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-gold">
+                        {headline?.name ?? "Browse the saints"}
+                      </p>
+                      {headlineSaint?.shortBio ? (
+                        <p className="mt-1.5 font-serif italic text-detail text-paper/65 leading-[1.55]">
+                          {firstSentence(headlineSaint.shortBio)}
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/calendar"
+                  className="group rounded-lg border border-paper/12 bg-night-soft/60 px-6 py-5 transition-colors hover:border-paper/30"
+                >
+                  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
+                    {t(m, "discover.tile.calendar")}
+                  </p>
+                  <p className="mt-3 font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-gold">
+                    {fast.label}
+                  </p>
+                  <p className="mt-1.5 font-serif italic text-detail text-paper/65 leading-[1.55]">
+                    {fast.rule}
+                    {pascha.daysAway > 0 ? ` Pascha in ${pascha.daysAway} days.` : ""}
+                  </p>
+                </Link>
+
+                <Link
+                  href="/prayers/today"
+                  className="group rounded-lg border border-paper/12 bg-night-soft/60 px-6 py-5 transition-colors hover:border-paper/30"
+                >
+                  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
+                    {t(m, "discover.tile.dailyReadings")}
+                  </p>
+                  <p className="mt-3 font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-gold">
+                    The appointed readings
+                  </p>
+                  <p className="mt-1.5 font-serif italic text-detail text-paper/65 leading-[1.55]">
+                    {t(m, "discover.tile.dailyReadingsBlurb")}
+                  </p>
+                </Link>
+              </div>
+            </div>
+
+            {/* The library */}
+            <div className="mt-14">
+              <SectionHeading>The library</SectionHeading>
+              <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                {LIBRARY.map(({ label, href, blurb, Icon }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className="group rounded-lg border border-paper/10 bg-night-soft/40 px-5 py-5 transition-colors hover:border-gold/40"
+                  >
+                    <span className="inline-flex h-8 w-8 items-center justify-center text-gold/80 transition-colors group-hover:text-gold">
+                      <Icon size={24} />
+                    </span>
+                    <p className="mt-3 font-display-serif text-lede text-paper leading-tight transition-colors group-hover:text-gold">
                       {label}
                     </p>
-                    <p className="mt-1.5 font-serif italic text-detail md:text-ui text-paper/65 leading-[1.55]">
+                    <p className="mt-1.5 font-serif italic text-detail text-paper/60 leading-[1.55]">
                       {blurb}
                     </p>
-                  </div>
-                  <span
-                    aria-hidden
-                    className="shrink-0 self-center font-serif text-lede text-paper/30 group-hover:text-gold transition-colors"
-                  >
-                    →
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+                  </Link>
+                ))}
+              </div>
+            </div>
 
-          {/* Quiet colophon to close the page. */}
-          <p className="mt-10 text-center font-display-serif italic text-ui text-paper/45 leading-[1.55]">
-            Through the prayers of our holy Fathers,
-            <br />
-            Lord Jesus Christ our God, have mercy on us.
-          </p>
-        </article>
-      </section>
+            {/* Featured today: one topic and one council, rotating daily. */}
+            {featuredTopic || featuredCouncil ? (
+              <div className="mt-14">
+                <SectionHeading>Featured today</SectionHeading>
+                <div className="mt-5 grid gap-5 lg:grid-cols-2">
+                  {featuredTopic ? (
+                    <Link
+                      href={`/topics/${featuredTopic.slug}`}
+                      className="group rounded-lg border border-paper/12 bg-paper/[0.03] px-6 py-5 transition-colors hover:border-paper/30"
+                    >
+                      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
+                        {t(m, "discover.tile.topics")}
+                      </p>
+                      <p className="mt-2 font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-gold">
+                        {featuredTopic.title}
+                      </p>
+                      {featuredTopic.definition ? (
+                        <p className="mt-1.5 font-serif italic text-detail text-paper/65 leading-[1.55] line-clamp-2">
+                          {firstSentence(featuredTopic.definition)}
+                        </p>
+                      ) : null}
+                    </Link>
+                  ) : null}
+                  {featuredCouncil ? (
+                    <Link
+                      href={`/councils/${featuredCouncil.slug}`}
+                      className="group rounded-lg border border-paper/12 bg-paper/[0.03] px-6 py-5 transition-colors hover:border-paper/30"
+                    >
+                      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
+                        {t(m, "discover.tile.councils")}
+                      </p>
+                      <p className="mt-2 font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-gold">
+                        {featuredCouncil.byname}
+                      </p>
+                      <p className="mt-1.5 font-serif italic text-detail text-paper/65 leading-[1.55]">
+                        {featuredCouncil.year} · {featuredCouncil.location}
+                      </p>
+                    </Link>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
+
+            {/* Quiet colophon to close the page. */}
+            <p className="mt-16 text-center font-display-serif italic text-ui text-paper/55 leading-[1.55]">
+              Through the prayers of our holy Fathers,
+              <br />
+              Lord Jesus Christ our God, have mercy on us.
+            </p>
+          </article>
+        </section>
       </div>
     </>
   );
