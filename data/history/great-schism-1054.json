@@ -1,0 +1,61 @@
+{
+  "slug": "great-schism-1054",
+  "context": [
+    {
+      "kind": "para",
+      "text": "By the eleventh century, East and West had been drifting apart for generations: different languages, diverging liturgical practice, the Frankish insertion of the filioque into the creed, competing missions in Bulgaria, and above all incompatible understandings of the Roman see's authority. The Photian controversy of the ninth century had already rehearsed every theme. In 1054 the immediate quarrel was narrow — Latin practices in Constantinople, Greek practices in Byzantine Italy, and the closing of Latin churches in the capital — but the letters exchanged quickly reached the deep questions."
+    }
+  ],
+  "narrative": [
+    {
+      "kind": "para",
+      "text": "Pope Leo IX sent legates to Constantinople led by Cardinal Humbert of Silva Candida, a fierce polemicist. Negotiations with Patriarch Michael Cerularius collapsed almost immediately. On Saturday, July 16, 1054 — as the clergy prepared for the Liturgy — Humbert and his companions strode into Hagia Sophia and laid on the holy table a bull excommunicating Cerularius and his associates, then shook the dust from their feet and departed. By then Leo IX was dead, which cast doubt on the legates' authority even in Latin terms."
+    },
+    {
+      "kind": "para",
+      "text": "A synod under Cerularius answered on July 24 by anathematizing the authors of the bull — pointedly not the Roman Church as such. Contemporaries did not experience 1054 as 'the schism': communion between the Churches frayed unevenly, see by see, over the following century and a half."
+    },
+    {
+      "kind": "para",
+      "text": "What made the estrangement irreversible in the East's experience was not 1054 but the Fourth Crusade's sack of Constantinople in 1204. The anathemas of 1054 themselves were mutually lifted by Patriarch Athenagoras and Pope Paul VI in 1965 — a gesture of charity that did not, in Orthodox understanding, restore communion or resolve the doctrinal issues."
+    }
+  ],
+  "significance": [
+    {
+      "kind": "para",
+      "text": "Orthodoxy reads 1054 not as one church leaving another on a single afternoon, but as the conventional marker within a long estrangement whose substantive causes were doctrinal: the unilateral addition of the filioque to the common creed, and the transformation of Rome's honorary primacy into a claimed universal jurisdiction. The date matters because the questions it names are still the questions."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "The Crusades, the Latin Empire of 1204–1261, and the failed reunion councils of Lyons (1274) and Ferrara–Florence (1438–39) each deepened the division that 1054 conventionally names."
+    }
+  ],
+  "uncertainty": "The date and text of the bull are documented. What is interpretive — and flagged as such here — is the weight of 1054 itself: historians agree it was neither the beginning nor the completion of the schism, but the conventional emblem of a process spanning roughly the ninth to thirteenth centuries.",
+  "sources": [
+    {
+      "label": "The bull of excommunication and the synodal edict of 1054, in Cornelius Will (ed.), Acta et scripta quae de controversiis ecclesiae graecae et latinae saeculo undecimo composita extant",
+      "kind": "primary",
+      "note": "The documents of July 1054 from both sides."
+    },
+    {
+      "label": "Steven Runciman, The Eastern Schism: A Study of the Papacy and the Eastern Churches during the XIth and XIIth Centuries (Oxford)",
+      "author": "Steven Runciman",
+      "kind": "secondary",
+      "note": "The classic narrative of 1054 and its aftermath; source for the 'schism as process' reading."
+    },
+    {
+      "label": "Henry Chadwick, East and West: The Making of a Rift in the Church (Oxford)",
+      "author": "Henry Chadwick",
+      "kind": "secondary",
+      "note": "On the long doctrinal and cultural build-up from late antiquity to 1054."
+    },
+    {
+      "label": "Kallistos (Ware), The Orthodox Church, new ed. (Penguin), Part I: 'The Great Schism'",
+      "author": "Kallistos Ware",
+      "kind": "secondary",
+      "note": "Standard Orthodox account of the causes: filioque and papal claims."
+    }
+  ]
+}

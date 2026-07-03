@@ -1,0 +1,73 @@
+{
+  "slug": "first-council-of-nicaea",
+  "context": [
+    {
+      "kind": "para",
+      "text": "Around 318, Arius, a presbyter of Alexandria, began teaching that the Son of God is a creature — the first and highest of creatures, but with a beginning: 'there was when he was not.' His bishop, Alexander of Alexandria, condemned the teaching, but Arius had gifted allies and memorable slogans, and the dispute spread through the East just as Constantine, newly sole emperor, was hoping the Church would be a bond of unity for the empire."
+    }
+  ],
+  "narrative": [
+    {
+      "kind": "para",
+      "text": "Constantine summoned the bishops of the whole Church to Nicaea in Bithynia in the summer of 325 — the first council in Christian history to represent, in intention, the entire oikoumene. Tradition counts 318 fathers, echoing the number of Abraham's servants; among them were confessors still bearing the scars of the Great Persecution, along with Alexander of Alexandria attended by his young deacon Athanasius, Hosius of Cordova, Eustathius of Antioch, and — in the Church's liturgical memory — Nicholas of Myra and Spyridon of Trimythous."
+    },
+    {
+      "kind": "para",
+      "text": "The council examined Arius's teaching and rejected it. Its instrument was a creed: the Son is 'God from God, Light from Light, true God from true God, begotten not made, of one essence (homoousios) with the Father.' The deliberately untraditional word homoousios was chosen precisely because every scriptural formula proposed had proved patient of an Arian reading. The council attached anathemas against those who say 'there was when he was not,' issued twenty canons on Church order, and fixed a common reckoning of Pascha."
+    },
+    {
+      "kind": "para",
+      "text": "The council did not end the controversy — within a generation imperial favor swung toward Arianizing parties, and Athanasius would be exiled five times for the Nicene faith. But the confession itself never yielded, and the council of 381 at Constantinople would receive and complete its creed."
+    }
+  ],
+  "significance": [
+    {
+      "kind": "para",
+      "text": "Nicaea is the pattern of all later Orthodox conciliarity: the assembled episcopate, teaching with one mouth, defining the apostolic faith against a teaching that would have made the Son a creature and the Gospel a message about someone other than God. The Nicene confession that the Son is homoousios with the Father is the foundation on which every later christological definition builds; the Divine Liturgy still confesses it at every celebration."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "Five decades of Arian and semi-Arian reaction followed, ending only with the Council of Constantinople in 381, which reaffirmed Nicaea and confessed the divinity of the Holy Spirit in the creed Orthodox Christians recite to this day."
+    }
+  ],
+  "uncertainty": "The traditional number of 318 fathers is symbolic and conventional; contemporary lists suggest something between 250 and 300 attendees. The presence of St Nicholas of Myra rests on later hagiographical tradition rather than the surviving subscription lists.",
+  "sources": [
+    {
+      "label": "The Creed and Canons of Nicaea, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1 (Sheed & Ward / Georgetown)",
+      "kind": "primary",
+      "note": "Critical text of the council's symbol, anathemas, and twenty canons."
+    },
+    {
+      "label": "Eusebius, Life of Constantine III.4–24",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/2502.htm",
+      "note": "Eyewitness description of the council's convocation and sessions."
+    },
+    {
+      "label": "Socrates Scholasticus, Church History I.8–9",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/2601.htm",
+      "note": "Fifth-century historian's account, preserving documents of the council."
+    },
+    {
+      "label": "Athanasius, De Decretis (Defence of the Nicene Definition)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/2809.htm",
+      "note": "Explains why the fathers adopted the word homoousios."
+    },
+    {
+      "label": "Leo Donald Davis, The First Seven Ecumenical Councils (Liturgical Press), ch. 2",
+      "author": "Leo Donald Davis",
+      "kind": "secondary",
+      "note": "Standard modern history of the council and its aftermath."
+    },
+    {
+      "label": "J. N. D. Kelly, Early Christian Creeds (Longman), chs. on the Nicene creed",
+      "author": "J. N. D. Kelly",
+      "kind": "secondary",
+      "note": "On the creed's text, sources, and the choice of homoousios."
+    }
+  ]
+}

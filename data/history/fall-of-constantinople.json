@@ -1,0 +1,64 @@
+{
+  "slug": "fall-of-constantinople",
+  "context": [
+    {
+      "kind": "para",
+      "text": "By 1453 the Roman Empire of the East was a city-state: Constantinople, a few Aegean islands, and the Morea, surrounded on every side by the Ottoman state. The union with Rome proclaimed at Ferrara–Florence in 1439 — accepted by the emperor in hope of Western military aid, rejected by most of his people — had embittered the capital without saving it. In Hagia Sophia the union had been formally proclaimed only in December 1452, to widespread grief."
+    }
+  ],
+  "narrative": [
+    {
+      "kind": "para",
+      "text": "Sultan Mehmed II, twenty-one years old, invested the city in early April 1453 with an army modern estimates put at some 80,000 men and a train of great bombards; the defenders — Greeks and their Italian allies under the emperor Constantine XI Palaiologos and the Genoese commander Giustiniani — numbered perhaps 7,000. For seven weeks the Theodosian walls, which had turned back every besieger for a thousand years, held against the heaviest artillery yet assembled."
+    },
+    {
+      "kind": "para",
+      "text": "In the small hours of Tuesday, May 29, 1453, Mehmed launched his general assault. Giustiniani was wounded and carried off; the Janissaries forced the stockade at the breached Mesoteichion; and the last emperor, refusing flight, died fighting at the walls — his body was never certainly identified. By morning the City had fallen. The great church of Hagia Sophia, where the people had gathered for a final Liturgy through the night, was converted to a mosque within days."
+    },
+    {
+      "kind": "para",
+      "text": "Mehmed shortly reconstituted the Ecumenical Patriarchate, installing the anti-unionist monk Gennadius Scholarius as patriarch in 1454 and making him civil head (ethnarch) of the empire's Orthodox Christians — the beginning of the millet system under which the Church would live for four centuries."
+    }
+  ],
+  "significance": [
+    {
+      "kind": "para",
+      "text": "May 29, 1453 ends the eleven-century history of the Christian Roman Empire and begins the Ottoman captivity of the Greek Church — an age of survival, compromise, and new martyrs. In Orthodox memory the fall is mourned without despair: the empire passed, the Church did not. Leadership within the Orthodox world began shifting north, and within a century and a half Moscow had been raised to a patriarchate, articulating its self-understanding as the 'Third Rome.'"
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "The patriarchate under Ottoman rule preserved the faith at heavy cost; Greek scholars carried manuscripts west, feeding the Renaissance; and the center of gravity of Orthodox political life moved to the rising Muscovite state."
+    }
+  ],
+  "sources": [
+    {
+      "label": "George Sphrantzes, Chronicle (Chronicon Minus)",
+      "kind": "primary",
+      "note": "Account by a courtier and eyewitness of the last emperor's circle."
+    },
+    {
+      "label": "Doukas, Decline and Fall of Byzantium to the Ottoman Turks (trans. Magoulias, Wayne State)",
+      "kind": "primary",
+      "note": "Near-contemporary Greek narrative of the siege and fall."
+    },
+    {
+      "label": "Kritovoulos, History of Mehmed the Conqueror (trans. Riggs, Princeton)",
+      "kind": "primary",
+      "note": "Contemporary account written from the Ottoman side by a Greek official."
+    },
+    {
+      "label": "Steven Runciman, The Fall of Constantinople 1453 (Cambridge)",
+      "author": "Steven Runciman",
+      "kind": "secondary",
+      "note": "The standard modern narrative; source for the siege chronology and numbers."
+    },
+    {
+      "label": "Steven Runciman, The Great Church in Captivity (Cambridge), Part I",
+      "author": "Steven Runciman",
+      "kind": "secondary",
+      "note": "On Gennadius Scholarius, the millet system, and the Church under Ottoman rule."
+    }
+  ]
+}

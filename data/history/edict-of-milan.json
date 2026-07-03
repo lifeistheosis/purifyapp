@@ -1,0 +1,61 @@
+{
+  "slug": "edict-of-milan",
+  "context": [
+    {
+      "kind": "para",
+      "text": "The Great Persecution begun under Diocletian in 303 was the most systematic attempt Rome ever made to destroy the Church: scriptures burned, churches demolished, clergy imprisoned, and sacrifice to the gods demanded on pain of death. It had already begun to unravel — the dying emperor Galerius issued an edict of toleration in 311 — when Constantine defeated Maxentius at the Milvian Bridge in October 312 and entered Rome under the sign of the cross he reported having seen."
+    }
+  ],
+  "narrative": [
+    {
+      "kind": "para",
+      "text": "Early in 313 Constantine, master of the West, met his eastern colleague Licinius at Milan. The two agreed on a common religious policy, published shortly afterwards in Licinius's territories: Christians — and, pointedly, all others — were to have free and unrestricted liberty to follow the religion each thought best, so that 'whatever divinity is enthroned in heaven' might be gracious to the emperors and their subjects."
+    },
+    {
+      "kind": "para",
+      "text": "The agreement went beyond toleration. Meeting places and other properties confiscated from the Christians during the persecution were to be restored without payment, and compensation was offered to those who had bought them in good faith. The text survives in two near-contemporary versions: Latin in Lactantius's On the Deaths of the Persecutors, and Greek in the tenth book of Eusebius's Church History."
+    },
+    {
+      "kind": "para",
+      "text": "Strictly speaking it was not an 'edict' and not issued at Milan — it was a set of instructions issued by Licinius from Nicomedia implementing the Milan agreement — but the conventional name has held since antiquity, and the substance is not in doubt."
+    }
+  ],
+  "significance": [
+    {
+      "kind": "para",
+      "text": "For the Church, 313 marks the hinge between the age of the martyrs and the age of the councils. Within a dozen years an emperor would convene and attend an ecumenical council of bishops at Nicaea. The Church's new freedom made possible the public flowering of Orthodox liturgy, architecture, theology, and monasticism — and brought new temptations of imperial entanglement that Orthodox history would wrestle with ever after."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "Licinius later renewed pressure on Christians in the East until his defeat by Constantine in 324, after which Constantine ruled alone, founded his new capital at Byzantium, and summoned the Council of Nicaea in 325."
+    }
+  ],
+  "sources": [
+    {
+      "label": "Lactantius, On the Deaths of the Persecutors (De mortibus persecutorum) 48",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/0705.htm",
+      "note": "Preserves the Latin text of the Milan agreement as promulgated by Licinius."
+    },
+    {
+      "label": "Eusebius, Church History X.5",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/2501.htm",
+      "note": "Preserves the Greek version of the same document."
+    },
+    {
+      "label": "Kallistos (Ware), The Orthodox Church, new ed. (Penguin), Part I",
+      "author": "Kallistos Ware",
+      "kind": "secondary",
+      "note": "On the transition from persecuted community to imperial Church."
+    },
+    {
+      "label": "W. H. C. Frend, The Rise of Christianity (Fortress Press), chs. on the Great Persecution and Constantine",
+      "author": "W. H. C. Frend",
+      "kind": "secondary",
+      "note": "Standard academic account of the persecution's end and the Milan agreement's scope."
+    }
+  ]
+}
