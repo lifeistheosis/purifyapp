@@ -8,6 +8,7 @@ export type SearchGroup =
   | "Saints"
   | "Prayers"
   | "Councils & Heresies"
+  | "History"
   | "Topics"
   | "Other";
 
@@ -27,6 +28,7 @@ export const GROUP_ORDER: SearchGroup[] = [
   "Saints",
   "Prayers",
   "Councils & Heresies",
+  "History",
   "Topics",
   "Other",
 ];

@@ -306,6 +306,25 @@ export default async function TheologyHubPage() {
           <TheologyFilter items={filterItems} />
         </section>
 
+        {/* ── Orthodox History cross-link ───────────────────────────────── */}
+        <section className="mt-14">
+          <Link
+            href="/history"
+            className="group block rounded-xl border border-paper/[0.1] bg-paper/[0.02] px-6 py-6 transition-colors hover:border-paper/25"
+          >
+            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/80">
+              New · Interactive Timeline
+            </p>
+            <p className="mt-2 font-display-serif text-title-sm md:text-title text-paper leading-tight transition-colors group-hover:text-gold">
+              Explore Church History
+            </p>
+            <p className="mt-2 max-w-[560px] font-serif italic text-ui text-paper/65 leading-[1.6]">
+              Every doctrine here was confessed somewhere, by someone, against
+              something — walk the timeline from Pentecost to the present.
+            </p>
+          </Link>
+        </section>
+
         {/* ── Featured studies ──────────────────────────────────────────── */}
         {featured.length > 0 ? (
           <section className="mt-14">

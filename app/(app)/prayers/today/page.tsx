@@ -13,6 +13,7 @@ import { getSaint } from "@/lib/saints/saints";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { TodayDiptychs } from "@/components/prayers/TodayDiptychs";
+import { OnThisDayHistory } from "@/components/history/OnThisDayHistory";
 import {
   PrayerPage,
   PrayerMasthead,
@@ -149,6 +150,10 @@ export default async function PrayersTodayPage() {
           </Link>
         </p>
       </div>
+
+      {/* On this day in Church history — quiet when no firmly dated event
+          matches today. */}
+      <OnThisDayHistory date={today} />
 
       {/* Diptychs: client-rendered so it reads localStorage. Quiet when
           nothing matches today. */}

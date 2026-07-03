@@ -19,6 +19,7 @@ type AnyBookmark = {
   ruleId?: string;
   prayerId?: string;
   href?: string;
+  eventSlug?: string;
   addedAt?: number;
 };
 
@@ -28,6 +29,7 @@ const KIND_LABEL: Record<string, string> = {
   "writing-section": "Writing",
   "prayer": "Prayer",
   "prayer-rule": "Prayer rule",
+  "history-event": "History",
 };
 
 function hrefFor(b: AnyBookmark): string {
@@ -40,6 +42,8 @@ function hrefFor(b: AnyBookmark): string {
   if (b.kind === "prayer" && b.ruleId)
     return `/prayers/${b.ruleId}#${b.prayerId ?? ""}`;
   if (b.kind === "prayer-rule" && typeof b.href === "string") return b.href;
+  if (b.kind === "history-event" && typeof b.eventSlug === "string")
+    return `/history/${b.eventSlug}`;
   return "/saved";
 }
 

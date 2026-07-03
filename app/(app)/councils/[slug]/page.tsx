@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { COUNCILS, getCouncil } from "@/lib/councils/councils";
 import { HERESIES } from "@/lib/heresies/heresies";
+import { ViewInHistory } from "@/components/history/ViewInHistory";
+import { eventsForCouncil } from "@/lib/history/events";
 
 const ORDINAL_NAMES = [
  "",
@@ -273,6 +275,11 @@ export default async function CouncilProfilePage({
  )}
  </div>
  )}
+
+ <ViewInHistory
+  events={eventsForCouncil(c.slug)}
+  title="This council in Orthodox History"
+ />
  </article>
  </section>
  );

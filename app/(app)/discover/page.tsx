@@ -10,6 +10,7 @@ import { Codex } from "@/components/ui/icons/Codex";
 import { Lyre } from "@/components/ui/icons/Lyre";
 import { Quill } from "@/components/ui/icons/Quill";
 import { Cross } from "@/components/ui/icons/Cross";
+import { Compass } from "@/components/ui/icons/Compass";
 import { Bolt } from "@/components/ui/icons/Bolt";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
@@ -46,6 +47,12 @@ export default async function DiscoverPage() {
       href: "/theology",
       blurb: t(m, "discover.tile.theologyBlurb"),
       Icon: Cross,
+    },
+    {
+      label: t(m, "discover.tile.history"),
+      href: "/history",
+      blurb: t(m, "discover.tile.historyBlurb"),
+      Icon: Compass,
     },
     {
       label: t(m, "discover.tile.apologetics"),

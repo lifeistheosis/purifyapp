@@ -15,6 +15,8 @@ import { SaintWorksBrowser } from "@/components/saints/SaintWorksBrowser";
 import { LicensedWorksSection } from "@/components/saints/LicensedWorksSection";
 import { getLicensedWorks } from "@/lib/saints/licensedWorks";
 import { getServerLocale } from "@/lib/i18n/server";
+import { ViewInHistory } from "@/components/history/ViewInHistory";
+import { eventsForSaint } from "@/lib/history/events";
 import { getSaintBioOverrides } from "@/lib/i18n/localizedContent";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 import { RecordRead } from "@/components/reading/RecordRead";
@@ -139,6 +141,10 @@ export default async function SaintPage({ params }: { params: Params }) {
           ) : null}
           {saint.works.length > 0 && <SaintWorksBrowser saint={saint} />}
           <LicensedWorksSection works={licensedWorks} />
+          <ViewInHistory
+            events={eventsForSaint(saint.slug)}
+            title="Events during this saint's life"
+          />
         </ContentShell>
         <SaintIntercession saint={saint} />
       </div>

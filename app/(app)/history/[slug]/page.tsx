@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { BookmarkEventButton } from "@/components/history/BookmarkEventButton";
 import { EventArticle } from "@/components/history/EventArticle";
+import { ShareButton } from "@/components/ui/ShareButton";
 import { EventRelations } from "@/components/history/EventRelations";
 import { EventSources } from "@/components/history/EventSources";
 import { ImmersivePreviewCard } from "@/components/history/ImmersivePreviewCard";
@@ -75,6 +77,10 @@ export default async function HistoryEventPage({
       />
       <div className="mx-auto w-full max-w-[760px]">
         <EventArticle meta={meta} body={body} />
+        <div className="mt-8 flex flex-wrap items-center gap-2">
+          <BookmarkEventButton event={meta} />
+          <ShareButton title={meta.title} text={meta.preview} className="min-h-[44px] px-4" />
+        </div>
         <EventSources sources={body.sources} />
         <EventRelations meta={meta} />
         <ImmersivePreviewCard />
