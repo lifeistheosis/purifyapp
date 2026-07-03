@@ -22,7 +22,7 @@ import { getSaint } from "@/lib/saints/saints";
 import { Cross } from "@/components/ui/icons/Cross";
 import { Book } from "@/components/ui/icons/Book";
 import { Scroll } from "@/components/ui/icons/Scroll";
-import { Bolt } from "@/components/ui/icons/Bolt";
+import { Shield } from "@/components/ui/icons/Shield";
 
 export const metadata = {
   title: "Theology",
@@ -63,7 +63,7 @@ const MODES = [
     kicker: "Defense",
     href: "/apologetics",
     blurb: "Objections and replies, a reasoned answer to the questions an objector brings.",
-    Icon: Bolt,
+    Icon: Shield,
   },
 ] as const;
 

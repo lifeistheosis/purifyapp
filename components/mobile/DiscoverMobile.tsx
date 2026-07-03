@@ -25,7 +25,7 @@ import { Codex } from "@/components/ui/icons/Codex";
 import { Lyre } from "@/components/ui/icons/Lyre";
 import { Quill } from "@/components/ui/icons/Quill";
 import { Cross } from "@/components/ui/icons/Cross";
-import { Compass } from "@/components/ui/icons/Compass";
+import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 
@@ -108,7 +108,7 @@ export async function DiscoverMobile() {
       label: t(m, "discover.tile.history"),
       href: "/history",
       blurb: t(m, "discover.tile.historyBlurb"),
-      Icon: Compass,
+      Icon: Hourglass,
     },
     {
       label: t(m, "discover.tile.calendar"),

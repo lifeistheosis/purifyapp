@@ -6,13 +6,12 @@ import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Church } from "@/components/ui/icons/Church";
 import { Book } from "@/components/ui/icons/Book";
 import { Scroll } from "@/components/ui/icons/Scroll";
-import { Calendar } from "@/components/ui/icons/Calendar";
 import { Codex } from "@/components/ui/icons/Codex";
 import { Lyre } from "@/components/ui/icons/Lyre";
 import { Quill } from "@/components/ui/icons/Quill";
 import { Cross } from "@/components/ui/icons/Cross";
-import { Compass } from "@/components/ui/icons/Compass";
-import { Bolt } from "@/components/ui/icons/Bolt";
+import { Hourglass } from "@/components/ui/icons/Hourglass";
+import { Shield } from "@/components/ui/icons/Shield";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
 import {
@@ -96,7 +95,7 @@ export default async function DiscoverPage() {
       label: t(m, "discover.tile.apologetics"),
       href: "/apologetics",
       blurb: t(m, "discover.tile.apologeticsBlurb"),
-      Icon: Bolt,
+      Icon: Shield,
     },
     {
       label: t(m, "discover.tile.saints"),
@@ -167,7 +166,7 @@ export default async function DiscoverPage() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <span className="inline-flex h-10 w-10 items-center justify-center text-gold/90">
-                    <Compass size={32} />
+                    <Hourglass size={32} />
                   </span>
                   <span className="rounded-pill border border-gold/40 px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1.4px] text-gold/90">
                     New
