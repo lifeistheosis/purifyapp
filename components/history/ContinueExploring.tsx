@@ -1,6 +1,6 @@
 "use client";
 
-// "Continue exploring" — shown on the History landing only when a saved
+// "Continue exploring", shown on the History landing only when a saved
 // timeline position exists. Client-only by necessity (reads localStorage);
 // renders nothing until it knows, so there's no hydration mismatch.
 

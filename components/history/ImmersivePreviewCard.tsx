@@ -1,7 +1,7 @@
 // Restrained preview of the future Premium "Immersive History" mode.
 // Free explains the history; Premium will immerse the reader in it. This
 // card promises nothing that doesn't exist: no buttons, no toggles, no
-// "unlock" — a single quiet notice that the facts on this page stay free.
+// "unlock", a single quiet notice that the facts on this page stay free.
 
 export function ImmersivePreviewCard() {
   return (
@@ -10,8 +10,8 @@ export function ImmersivePreviewCard() {
         Coming to Purify Plus
       </p>
       <p className="mt-2 font-serif text-ui text-paper/70 leading-[1.65]">
-        Immersive History — cinematic journeys through these events, with
-        animated maps and narration — is in the works for Purify&nbsp;Plus.
+        Immersive History, cinematic journeys through these events, with
+        animated maps and narration, is in the works for Purify&nbsp;Plus.
       </p>
       <p className="mt-2 font-sans text-detail text-paper/55 leading-[1.6]">
         The history itself never moves behind a paywall: every event, source,

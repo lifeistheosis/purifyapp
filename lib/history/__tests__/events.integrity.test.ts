@@ -3,7 +3,7 @@
 // This suite is the release gate the History feature ships behind: it fails
 // CI if any published event is missing sources, mislabeled, misdated,
 // pointing at content that doesn't exist, or otherwise below the editorial
-// bar. Content edits that break history fail the build — by design.
+// bar. Content edits that break history fail the build, by design.
 
 import fs from "node:fs";
 import path from "node:path";

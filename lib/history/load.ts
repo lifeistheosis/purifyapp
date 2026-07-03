@@ -8,7 +8,7 @@ import path from "node:path";
 import type { EssayBlock } from "@/lib/theology/load";
 import { eventBySlug } from "./events";
 
-/** One visible citation. Every published event must have at least one —
+/** One visible citation. Every published event must have at least one,
  *  enforced by lib/history/__tests__/events.integrity.test.ts. */
 export type SourceCitation = {
   /** Printed citation line, e.g. "Eusebius, Church History, Book X". */
@@ -29,7 +29,7 @@ export type HistoryEventBody = {
   narrative: EssayBlock[];
   /** The world before: what the reader needs to understand the moment. */
   context?: EssayBlock[];
-  /** Why this matters to Orthodoxy — the theological reading. */
+  /** Why this matters to Orthodoxy, the theological reading. */
   significance?: EssayBlock[];
   /** What flowed from it. */
   consequences?: EssayBlock[];

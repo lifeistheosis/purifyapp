@@ -4,7 +4,7 @@
 // height changes and virtualized rendering, where a raw scrollY would not.
 //
 // Two storage tiers:
-//  - sessionStorage: browser-session semantics (Back/Forward, reload) — the
+//  - sessionStorage: browser-session semantics (Back/Forward, reload), the
 //    web expectation.
 //  - localStorage mirror: cold-start resume for the native shell (process
 //    death, app relaunch) and the "Continue exploring" entry point.
@@ -12,7 +12,7 @@
 // Both writes are fire-and-forget; every read is validated and TTL-bound.
 
 const SCROLL_KEY = "purify.history.scroll";
-const TTL_MS = 24 * 60 * 60 * 1000; // 1 day — a stale position surprises
+const TTL_MS = 24 * 60 * 60 * 1000; // 1 day, a stale position surprises
 
 export type TimelinePosition = {
   /** Slug of the topmost visible event card. */

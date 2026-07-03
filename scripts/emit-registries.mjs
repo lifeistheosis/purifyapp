@@ -52,7 +52,7 @@ for (const s of SAINTS) {
 writeFileSync(path.join(OUT, "saints.json"), JSON.stringify(SAINTS));
 writeFileSync(path.join(OUT, "feasts.json"), JSON.stringify(feasts));
 
-// History events: published metadata only — drafts never leave the registry.
+// History events: published metadata only; drafts never leave the registry.
 // Bodies stay in data/history/<slug>.json; the packager merges them.
 const { publishedEvents } = await import("../lib/history/events.ts");
 const historyEvents = publishedEvents();

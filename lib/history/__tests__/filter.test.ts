@@ -1,4 +1,4 @@
-// Shared filter/search/state semantics for the History timeline — the same
+// Shared filter/search/state semantics for the History timeline, the same
 // pure functions drive every platform shell, so this is where cross-platform
 // consistency is proven. Includes the 500-record structural scale check.
 

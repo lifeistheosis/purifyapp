@@ -5,7 +5,7 @@
 //
 // Implemented as a styled native <input type="range"> on purpose:
 //  - draggable with a thumb, tappable on the track, steppable with arrow
-//    keys — the required non-drag alternative is built into the control;
+//    keys, the required non-drag alternative is built into the control;
 //  - screen readers announce it as a slider with a century valuetext;
 //  - it lives in the page flow (never anchored to the screen edge), so it
 //    cannot collide with Android's back-gesture zones.

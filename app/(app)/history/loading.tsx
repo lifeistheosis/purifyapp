@@ -1,5 +1,5 @@
 // Skeleton for the History timeline: masthead lines and a rail of card
-// placeholders, pure CSS like the Bible loading states — no layout shift
+// placeholders, pure CSS like the Bible loading states, no layout shift
 // when the timeline arrives.
 
 export default function HistoryLoading() {

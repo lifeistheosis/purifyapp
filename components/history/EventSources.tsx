@@ -1,4 +1,4 @@
-// Visible citations — the release gate made visible. Every published event
+// Visible citations, the release gate made visible. Every published event
 // renders its sources in full; facts and citations are always free.
 
 import type { SourceCitation } from "@/lib/history/load";

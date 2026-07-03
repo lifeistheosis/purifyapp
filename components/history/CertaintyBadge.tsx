@@ -1,5 +1,5 @@
 // The historical-certainty label. Shown wherever a claim's firmness
-// materially affects how it should be read — cards, context rail, event
+// materially affects how it should be read, cards, context rail, event
 // pages. Text-first (never color-only) per the accessibility rules.
 
 import { certaintyById, type Certainty } from "@/lib/history/events";

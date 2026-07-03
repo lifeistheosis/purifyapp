@@ -6,7 +6,7 @@ test("history timeline renders eras, events, and controls", async ({ page }) => 
  await expect(page.locator("h1")).toContainText(/story of the Church/i);
  await expect(page.locator("#era-apostolic")).toBeVisible();
  await expect(page.locator("#event-pentecost")).toBeVisible();
- // The scrubber is a real range input — accessible without dragging.
+ // The scrubber is a real range input, accessible without dragging.
  await expect(page.locator(".history-scrubber").first()).toBeVisible();
  await expect(page.locator("text=/Application error/i")).toHaveCount(0);
  await expectNoA11yViolations(page);

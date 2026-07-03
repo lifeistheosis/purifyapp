@@ -1,6 +1,6 @@
 "use client";
 
-// Anonymous, local-first bookmark for a history event — same localStorage
+// Anonymous, local-first bookmark for a history event, same localStorage
 // store the Bible and writings use, so saved events appear on /saved and
 // survive offline with no account. Hydration-gated: renders the neutral
 // label until mounted so SSR and client agree.

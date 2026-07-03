@@ -1,7 +1,7 @@
 // Structural test records for the History timeline's performance and filter
 // tests. These are OBVIOUSLY FAKE by construction (slug prefix "zz-test-",
 // title prefix "Structural Test Record") and are generated only inside the
-// test suite — nothing in app code or the content packager imports this
+// test suite, nothing in app code or the content packager imports this
 // file, and the integrity suite asserts no real event ever uses the prefix.
 
 import type { HistoryEventMeta } from "../events";

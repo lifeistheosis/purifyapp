@@ -1,6 +1,6 @@
 "use client";
 
-// The Orthodox History timeline — one orchestrator, four presentations.
+// The Orthodox History timeline, one orchestrator, four presentations.
 //
 // The timeline itself renders exactly ONCE (unique #event-<slug> anchors are
 // what scroll restoration, deep links, and the scroll spy key off). The
@@ -15,13 +15,13 @@
 //                     ↑/↓ + Enter drive selection; URL carries the state.
 //
 // State: one TimelineState. On the web it round-trips through the URL
-// (?era=…&cat=…&q=…&e=…, debounced router.replace — shareable, Back-safe)
+// (?era=…&cat=…&q=…&e=…, debounced router.replace, shareable, Back-safe)
 // and localStorage; in the native shell the URL is never touched so system
 // Back always means "leave the page", never "undo a filter".
 //
 // Scroll: a scroll-spy records the topmost visible card (anchor slug +
-// offset) so returning from an event page — browser Back, Android hardware
-// Back, or a fresh visit within the session — restores the exact position.
+// offset) so returning from an event page, browser Back, Android hardware
+// Back, or a fresh visit within the session, restores the exact position.
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -204,7 +204,7 @@ export function HistoryTimelinePage() {
   }, [activeEra, filtered]);
 
   // Selection only means something where a context rail exists (lg+). On
-  // phones a card tap just expands the preview — recording it would only
+  // phones a card tap just expands the preview, recording it would only
   // dirty the URL and the persisted state.
   const select = useCallback(
     (slug: string) => {
@@ -246,7 +246,7 @@ export function HistoryTimelinePage() {
       onClickCapture={cancelPendingUrlWrite}
     >
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-10 xl:grid-cols-[250px_minmax(0,1fr)_330px]">
-        {/* Left research column — desktop (xl) only. */}
+        {/* Left research column, desktop (xl) only. */}
         <aside className="hidden xl:block">
           <div className="sticky top-[88px] max-h-[calc(100vh-110px)] space-y-8 overflow-y-auto pr-2 scrollbar-thin">
             <HistorySearchInline />
@@ -265,7 +265,7 @@ export function HistoryTimelinePage() {
           </div>
         </aside>
 
-        {/* Center column — the ONE timeline instance. */}
+        {/* Center column, the ONE timeline instance. */}
         <div className="min-w-0">
           {/* Control row for every width below xl (sticky on phones). */}
           <div className="history-controls sticky z-20 -mx-5 bg-night/95 px-5 py-2.5 backdrop-blur-sm md:-mx-8 md:px-8 lg:static lg:mx-0 lg:bg-transparent lg:px-0 lg:pt-2 lg:backdrop-blur-none xl:hidden">
@@ -298,7 +298,7 @@ export function HistoryTimelinePage() {
           </div>
         </div>
 
-        {/* Right context column — tablet landscape and desktop. */}
+        {/* Right context column, tablet landscape and desktop. */}
         <aside className="hidden lg:block">
           <div className="sticky top-[88px]">
             <EventContextRail selected={state.selected} />

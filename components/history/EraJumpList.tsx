@@ -1,6 +1,6 @@
 "use client";
 
-// Plain-button era navigation — the primary (and non-drag, accessible)
+// Plain-button era navigation, the primary (and non-drag, accessible)
 // way to move between the ages of the Church. Rendered inside a Sheet on
 // phones and as the persistent left-column index on desktop.
 

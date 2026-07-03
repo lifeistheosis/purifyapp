@@ -320,7 +320,7 @@ export default async function TheologyHubPage() {
             </p>
             <p className="mt-2 max-w-[560px] font-serif italic text-ui text-paper/65 leading-[1.6]">
               Every doctrine here was confessed somewhere, by someone, against
-              something — walk the timeline from Pentecost to the present.
+              something. Walk the timeline from Pentecost to the present.
             </p>
           </Link>
         </section>

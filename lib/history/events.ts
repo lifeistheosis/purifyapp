@@ -1,4 +1,4 @@
-// Orthodox History — the interactive timeline's index.
+// Orthodox History, the interactive timeline's index.
 //
 // This registry is the single source of truth for the event *metadata* the
 // timeline, search, sitemap, On This Day, and validation all consume. The
@@ -15,7 +15,7 @@
 // - dates are never invented: `precision` + `certainty` say exactly how firm
 //   a date or account is, and the UI shows it;
 // - `calendar` (the On This Day key) is allowed only when precision is
-//   "exact" — an approximate year never becomes a fake calendar date;
+//   "exact", an approximate year never becomes a fake calendar date;
 // - relationship slugs must resolve against the saints/councils/theology/
 //   heresies registries and other events.
 
@@ -181,7 +181,7 @@ export const HISTORY_ERAS: {
     from: 431,
     to: 726,
     blurb:
-      "Four councils on the one Christ in two natures — and the long, sorrowful estrangements that followed each definition.",
+      "Four councils on the one Christ in two natures, and the long, sorrowful estrangements that followed each definition.",
   },
   {
     id: "iconoclasm",
@@ -235,7 +235,7 @@ export const HISTORY_ERAS: {
     from: 1794,
     to: 1917,
     blurb:
-      "From Kodiak Island onward, Orthodoxy becomes a global communion — Alaska, Japan, and the parishes of the new world.",
+      "From Kodiak Island onward, Orthodoxy becomes a global communion, Alaska, Japan, and the parishes of the new world.",
   },
   {
     id: "modern",
@@ -307,10 +307,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 1,
     preview: "The Holy Spirit descends on the apostles; three thousand are baptized in one day.",
     summary:
-      "Fifty days after the Resurrection, the Holy Spirit descends upon the apostles gathered in Jerusalem. Peter preaches, about three thousand are baptized, and the Church's public life begins — the event Orthodox tradition calls the birthday of the Church.",
+      "Fifty days after the Resurrection, the Holy Spirit descends upon the apostles gathered in Jerusalem. Peter preaches, about three thousand are baptized, and the Church's public life begins, the event Orthodox tradition calls the birthday of the Church.",
     certainty: "traditional-account",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["apostle-peter", "apostle-john", "theotokos"],
       scripture: ["Acts 2:1-41", "Joel 2:28-32", "John 15:26"],
@@ -330,12 +330,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["apostolic", "councils", "doctrine"],
     region: "Jerusalem",
     importance: 1,
-    preview: "The apostles rule that Gentile converts need not keep the Mosaic law — the pattern of every later council.",
+    preview: "The apostles rule that Gentile converts need not keep the Mosaic law, the pattern of every later council.",
     summary:
-      "Facing the question of whether Gentile converts must be circumcised and keep the law of Moses, the apostles and elders gather at Jerusalem with Peter, Paul, Barnabas, and James. Their letter — 'it seemed good to the Holy Spirit and to us' — frees the Gentiles from the Mosaic yoke and sets the conciliar pattern the Church has followed ever since.",
+      "Facing the question of whether Gentile converts must be circumcised and keep the law of Moses, the apostles and elders gather at Jerusalem with Peter, Paul, Barnabas, and James. Their letter, 'it seemed good to the Holy Spirit and to us', frees the Gentiles from the Mosaic yoke and sets the conciliar pattern the Church has followed ever since.",
     certainty: "strongly-supported",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["apostle-peter", "apostle-paul"],
       scripture: ["Acts 15:1-29", "Galatians 2:1-10"],
@@ -361,7 +361,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "In three great journeys and a final voyage to Rome under guard, Paul carries the Gospel through Cyprus, Asia Minor, Macedonia, and Greece, founding the churches to which he would write the epistles the Church still reads at every Liturgy.",
     certainty: "strongly-supported",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["apostle-paul"],
       scripture: ["Acts 13:1-28:31", "Romans 15:19"],
@@ -385,10 +385,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 1,
     preview: "After the great fire of Rome, Nero turns on the Christians; the chief apostles are martyred.",
     summary:
-      "Blamed by Nero for the great fire of 64, the Christians of Rome are tortured and executed in the first imperial persecution. Tradition, already firm by the end of the first century, places the martyrdoms of Peter — crucified — and Paul — beheaded — at Rome in these years.",
+      "Blamed by Nero for the great fire of 64, the Christians of Rome are tortured and executed in the first imperial persecution. Tradition, already firm by the end of the first century, places the martyrdoms of Peter, crucified, and Paul, beheaded, at Rome in these years.",
     certainty: "strongly-supported",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["apostle-peter", "apostle-paul"],
       precededBy: ["missions-of-apostle-paul"],
@@ -409,10 +409,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 2,
     preview: "Condemned to the beasts, the bishop of Antioch writes seven letters that reveal the early Church's mind.",
     summary:
-      "Ignatius, second bishop of Antioch after the apostles, is condemned under Trajan and taken in chains to Rome to die in the arena. On the road he writes seven letters — on the Eucharist, the bishop, the unity of the Church, and his longing 'to be ground by the teeth of beasts into the pure bread of Christ' — among the most precious windows into the Church of the first generation after the apostles.",
+      "Ignatius, second bishop of Antioch after the apostles, is condemned under Trajan and taken in chains to Rome to die in the arena. On the road he writes seven letters, on the Eucharist, the bishop, the unity of the Church, and his longing 'to be ground by the teeth of beasts into the pure bread of Christ', among the most precious windows into the Church of the first generation after the apostles.",
     certainty: "traditional-account",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["ignatius-of-antioch"],
     },
@@ -429,12 +429,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["martyrs", "writings"],
     region: "Smyrna, Asia Minor",
     importance: 2,
-    preview: "'Eighty-six years I have served Him' — the disciple of the apostle John is burned in the Smyrna stadium.",
+    preview: "'Eighty-six years I have served Him.' The disciple of the apostle John is burned in the Smyrna stadium.",
     summary:
-      "Polycarp, bishop of Smyrna and a disciple of the apostle John, is arrested in old age and ordered to curse Christ. His answer — 'eighty-six years have I served Him, and He never did me wrong' — and his death at the stake are recorded in the Martyrdom of Polycarp, the earliest detailed account of a martyr's death outside the New Testament.",
+      "Polycarp, bishop of Smyrna and a disciple of the apostle John, is arrested in old age and ordered to curse Christ. His answer, 'eighty-six years have I served Him, and He never did me wrong', and his death at the stake are recorded in the Martyrdom of Polycarp, the earliest detailed account of a martyr's death outside the New Testament.",
     certainty: "strongly-supported",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["polycarp-of-smyrna", "apostle-john"],
     },
@@ -451,12 +451,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["writings", "martyrs", "doctrine"],
     region: "Rome",
     importance: 3,
-    preview: "A philosopher in the cloak of the schools defends the faith to the emperor — and describes the Sunday Eucharist.",
+    preview: "A philosopher in the cloak of the schools defends the faith to the emperor, and describes the Sunday Eucharist.",
     summary:
-      "Justin, a converted philosopher teaching at Rome, addresses two Apologies to the emperor defending Christians against the charge of atheism and describing — for the first time in surviving literature — how the Church actually celebrated Baptism and the Sunday Eucharist. He is beheaded with his companions around 165.",
+      "Justin, a converted philosopher teaching at Rome, addresses two Apologies to the emperor defending Christians against the charge of atheism and describing, for the first time in surviving literature, how the Church actually celebrated Baptism and the Sunday Eucharist. He is beheaded with his companions around 165.",
     certainty: "strongly-supported",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["justin-martyr"],
     },
@@ -475,10 +475,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 2,
     preview: "Against the Gnostics, the bishop of Lyons appeals to apostolic succession and the rule of faith.",
     summary:
-      "Irenaeus of Lyons — who as a boy had heard Polycarp, who had heard John — answers the Gnostic systems with five books Against Heresies: the faith is one, received from the apostles, preserved publicly in the churches they founded, and read in the fourfold Gospel. It is the first great work of Orthodox theology after the apostles.",
+      "Irenaeus of Lyons, who as a boy had heard Polycarp, who had heard John, answers the Gnostic systems with five books Against Heresies: the faith is one, received from the apostles, preserved publicly in the churches they founded, and read in the fourfold Gospel. It is the first great work of Orthodox theology after the apostles.",
     certainty: "strongly-supported",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["irenaeus-of-lyons", "polycarp-of-smyrna"],
     },
@@ -497,12 +497,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["monasticism", "saints"],
     region: "Egypt",
     importance: 1,
-    preview: "'Go, sell what you have' — one Egyptian's obedience empties into the desert and fills it with prayer.",
+    preview: "'Go, sell what you have.' One Egyptian's obedience empties into the desert and fills it with prayer.",
     summary:
-      "Hearing the Gospel's call to sell everything, Anthony of Egypt withdraws to the desert around 270 and remains there some eighty-five years. By his death in 356 the deserts of Egypt are a city of monks — Athanasius's Life of Antony carries the movement across the empire, and monasticism becomes Orthodoxy's beating heart.",
+      "Hearing the Gospel's call to sell everything, Anthony of Egypt withdraws to the desert around 270 and remains there some eighty-five years. By his death in 356 the deserts of Egypt are a city of monks, Athanasius's Life of Antony carries the movement across the empire, and monasticism becomes Orthodoxy's beating heart.",
     certainty: "strongly-supported",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["anthony-the-great", "athanasius-the-great"],
     },
@@ -523,10 +523,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 1,
     preview: "The empire's last, most systematic attempt to destroy the Church.",
     summary:
-      "Beginning with an edict at Nicomedia in February 303, Diocletian and his colleagues order churches razed, Scriptures burned, clergy imprisoned, and sacrifice to the gods enforced on pain of death. Fierce in the East for a decade, it is the last and greatest of the persecutions — ended only by Galerius's edict of toleration in 311 and the Milan agreement of 313.",
+      "Beginning with an edict at Nicomedia in February 303, Diocletian and his colleagues order churches razed, Scriptures burned, clergy imprisoned, and sacrifice to the gods enforced on pain of death. Fierce in the East for a decade, it is the last and greatest of the persecutions, ended only by Galerius's edict of toleration in 311 and the Milan agreement of 313.",
     certainty: "historically-attested",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["florian-of-lorch", "marina-the-great-martyr"],
       resultedIn: ["edict-of-milan"],
@@ -547,10 +547,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 1,
     preview: "Constantine and Licinius grant Christians freedom of worship across the empire.",
     summary:
-      "Meeting at Milan, the emperors Constantine and Licinius agree to grant Christians — and all others — freedom of religion, and to restore confiscated church property. The age of the martyrs gives way to the age of the councils.",
+      "Meeting at Milan, the emperors Constantine and Licinius agree to grant Christians, and all others, freedom of religion, and to restore confiscated church property. The age of the martyrs gives way to the age of the councils.",
     certainty: "historically-attested",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["constantine-the-great"],
       precededBy: ["great-persecution"],
@@ -570,12 +570,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["heresies", "doctrine"],
     region: "Alexandria",
     importance: 2,
-    preview: "'There was when he was not' — a presbyter's slogan sets the East ablaze.",
+    preview: "'There was when he was not.' A presbyter's slogan sets the East ablaze.",
     summary:
-      "Arius, a presbyter of Alexandria, teaches that the Son of God is the first and highest of creatures — with a beginning. Condemned by his bishop Alexander, he wins allies across the East, and the dispute grows until it demands the first council of the whole Church.",
+      "Arius, a presbyter of Alexandria, teaches that the Son of God is the first and highest of creatures, with a beginning. Condemned by his bishop Alexander, he wins allies across the East, and the dispute grows until it demands the first council of the whole Church.",
     certainty: "strongly-supported",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["alexander-of-alexandria", "athanasius-the-great"],
       heresies: ["arianism"],
@@ -596,12 +596,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["councils", "doctrine", "heresies"],
     region: "Nicaea, Asia Minor",
     importance: 1,
-    preview: "318 fathers confess the Son as homoousios — of one essence with the Father.",
+    preview: "318 fathers confess the Son as homoousios, of one essence with the Father.",
     summary:
       "Summoned by Constantine to answer Arius, the first Ecumenical Council confesses the Son of God as 'of one essence with the Father' (homoousios), issues the first form of the Creed, and sets the reckoning of Pascha.",
     certainty: "conciliar-definition",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["athanasius-the-great", "alexander-of-alexandria", "nicholas-the-wonderworker", "spyridon-of-trimythous", "constantine-the-great", "hosius-of-cordova", "eustathius-of-antioch"],
       councils: ["first-nicaea"],
@@ -625,12 +625,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["patriarchates"],
     region: "Constantinople",
     importance: 1,
-    preview: "Constantine dedicates New Rome on the Bosphorus — the city that will carry Orthodox history for eleven centuries.",
+    preview: "Constantine dedicates New Rome on the Bosphorus, the city that will carry Orthodox history for eleven centuries.",
     summary:
-      "On May 11, 330, Constantine solemnly dedicates his new capital on the site of old Byzantium. 'New Rome' becomes the political and, in time, the ecclesiastical center of the Christian East — its bishop ranked 'after the bishop of Rome' by the council of 381, its liturgy and learning shaping all later Orthodoxy.",
+      "On May 11, 330, Constantine solemnly dedicates his new capital on the site of old Byzantium. 'New Rome' becomes the political and, in time, the ecclesiastical center of the Christian East, its bishop ranked 'after the bishop of Rome' by the council of 381, its liturgy and learning shaping all later Orthodoxy.",
     certainty: "historically-attested",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["constantine-the-great"],
       precededBy: ["edict-of-milan"],
@@ -654,7 +654,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "Summoned by Theodosius after fifty years of Arian reaction, one hundred fifty fathers reaffirm Nicaea and confess the divinity of the Holy Spirit, 'who proceeds from the Father, who with the Father and the Son together is worshipped and glorified.' The Niceno-Constantinopolitan Creed they complete is the creed of every Orthodox Liturgy to this day.",
     certainty: "conciliar-definition",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["gregory-theologian", "gregory-of-nyssa", "meletius-of-antioch", "nectarius-of-constantinople", "theodosius-the-great", "cyril-of-jerusalem"],
       councils: ["first-constantinople"],
@@ -679,10 +679,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 2,
     preview: "The greatest preacher of the Church is made archbishop, reforms the capital, and dies in exile.",
     summary:
-      "Taken from Antioch to the capital in 398, John 'the golden-mouthed' preaches against luxury, feeds the poor, and reforms the clergy — and makes enemies of the court. Twice exiled, he dies on the road in 407 with the words 'Glory to God for all things.' The Liturgy most often served in Orthodox churches bears his name.",
+      "Taken from Antioch to the capital in 398, John 'the golden-mouthed' preaches against luxury, feeds the poor, and reforms the clergy, and makes enemies of the court. Twice exiled, he dies on the road in 407 with the words 'Glory to God for all things.' The Liturgy most often served in Orthodox churches bears his name.",
     certainty: "historically-attested",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["john-chrysostom", "olympias-the-deaconess"],
     },
@@ -702,10 +702,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 1,
     preview: "Mary is confessed Theotokos: the one born of her is God the Word himself.",
     summary:
-      "Against Nestorius, who would divide Christ and call Mary only 'Christotokos,' the council led by Cyril of Alexandria confesses one Christ — and therefore Mary as Theotokos, God-bearer. The title guards not Mary's honor first but the unity of her Son.",
+      "Against Nestorius, who would divide Christ and call Mary only 'Christotokos,' the council led by Cyril of Alexandria confesses one Christ, and therefore Mary as Theotokos, God-bearer. The title guards not Mary's honor first but the unity of her Son.",
     certainty: "conciliar-definition",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["cyril-of-alexandria", "celestine-of-rome", "memnon-of-ephesus", "juvenal-of-jerusalem"],
       councils: ["ephesus"],
@@ -730,10 +730,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 1,
     preview: "One Christ in two natures, 'without confusion, without change, without division, without separation.'",
     summary:
-      "The largest council of antiquity answers Eutyches — for whom Christ's humanity was swallowed in his divinity — with the Definition every Orthodox christology rests on: one and the same Christ, perfect in Godhead and perfect in manhood, made known in two natures without confusion or separation.",
+      "The largest council of antiquity answers Eutyches, for whom Christ's humanity was swallowed in his divinity, with the Definition every Orthodox christology rests on: one and the same Christ, perfect in Godhead and perfect in manhood, made known in two natures without confusion or separation.",
     certainty: "conciliar-definition",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["leo-the-great", "anatolius-of-constantinople", "marcian-the-emperor", "pulcheria-the-empress", "juvenal-of-jerusalem"],
       councils: ["chalcedon"],
@@ -756,12 +756,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["schisms", "doctrine"],
     region: "Egypt, Syria, Armenia",
     importance: 2,
-    preview: "Egypt, Syria, and Armenia cannot receive Chalcedon — the Church's first lasting division begins.",
+    preview: "Egypt, Syria, and Armenia cannot receive Chalcedon, the Church's first lasting division begins.",
     summary:
-      "Large parts of Egypt, Syria, and Armenia reject the Council of Chalcedon, holding with Cyril's language to 'one incarnate nature of God the Word' — a miaphysite, not a Eutychian, confession. Imperial attempts at compromise fail, and the separation of the Oriental Orthodox churches from the imperial Church hardens across the following century — a division of terminology, politics, and grief as much as doctrine, and one that endures to this day.",
+      "Large parts of Egypt, Syria, and Armenia reject the Council of Chalcedon, holding with Cyril's language to 'one incarnate nature of God the Word', a miaphysite, not a Eutychian, confession. Imperial attempts at compromise fail, and the separation of the Oriental Orthodox churches from the imperial Church hardens across the following century, a division of terminology, politics, and grief as much as doctrine, and one that endures to this day.",
     certainty: "editorial-synthesis",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       councils: ["chalcedon", "second-constantinople"],
       precededBy: ["council-of-chalcedon"],
@@ -782,10 +782,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 2,
     preview: "Justinian's council reads Chalcedon through Cyril and condemns the Three Chapters.",
     summary:
-      "Under Justinian, the fifth council condemns the 'Three Chapters' — writings tainted with Nestorianism — and certain Origenist teachings, confessing that the one hypostasis of Christ is the divine Word himself. It binds Chalcedon firmly to Cyril's theology, partly in hope (unfulfilled) of winning back the non-Chalcedonians.",
+      "Under Justinian, the fifth council condemns the 'Three Chapters', writings tainted with Nestorianism, and certain Origenist teachings, confessing that the one hypostasis of Christ is the divine Word himself. It binds Chalcedon firmly to Cyril's theology, partly in hope (unfulfilled) of winning back the non-Chalcedonians.",
     certainty: "conciliar-definition",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["justinian-the-great", "eutychius-of-constantinople"],
       councils: ["second-constantinople"],
@@ -807,12 +807,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["councils", "doctrine", "heresies"],
     region: "Constantinople",
     importance: 2,
-    preview: "Two wills in Christ: what he assumed, he heals — vindicating St Maximus after his death.",
+    preview: "Two wills in Christ: what he assumed, he heals, vindicating St Maximus after his death.",
     summary:
-      "Against monothelitism — the imperial compromise that gave Christ two natures but a single will — the sixth council confesses two natural wills and operations, the human will freely following the divine. It vindicates Maximus the Confessor and Martin of Rome, who had died mutilated and exiled for this confession.",
+      "Against monothelitism, the imperial compromise that gave Christ two natures but a single will, the sixth council confesses two natural wills and operations, the human will freely following the divine. It vindicates Maximus the Confessor and Martin of Rome, who had died mutilated and exiled for this confession.",
     certainty: "conciliar-definition",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["maximus-the-confessor", "martin-the-confessor", "agatho-of-rome", "sophronius-of-jerusalem"],
       councils: ["third-constantinople"],
@@ -835,10 +835,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 1,
     preview: "Leo III orders the images destroyed; monks and faithful die defending them.",
     summary:
-      "Emperor Leo III moves against the holy images from 726, and his son Constantine V enforces iconoclasm with synods and persecution — monks are its fiercest opponents and chief victims. From the caliphate, John of Damascus writes the classic defense: the Word became visible flesh, and what may be seen may be depicted.",
+      "Emperor Leo III moves against the holy images from 726, and his son Constantine V enforces iconoclasm with synods and persecution, monks are its fiercest opponents and chief victims. From the caliphate, John of Damascus writes the classic defense: the Word became visible flesh, and what may be seen may be depicted.",
     certainty: "historically-attested",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["john-of-damascus"],
       heresies: ["iconoclasm"],
@@ -860,10 +860,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 1,
     preview: "The icons are restored: honor passes to the prototype, and worship belongs to God alone.",
     summary:
-      "Under the empress Irene and Patriarch Tarasius, the seventh council distinguishes veneration (proskynesis) from worship (latreia): the honor given an icon passes to the one depicted, while worship belongs to the divine nature alone. The making of icons is not permitted but required — because the Incarnation is real.",
+      "Under the empress Irene and Patriarch Tarasius, the seventh council distinguishes veneration (proskynesis) from worship (latreia): the honor given an icon passes to the one depicted, while worship belongs to the divine nature alone. The making of icons is not permitted but required, because the Incarnation is real.",
     certainty: "conciliar-definition",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["tarasius-of-constantinople", "irene-the-empress", "adrian-of-rome", "john-of-damascus"],
       councils: ["second-nicaea"],
@@ -885,12 +885,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["iconography", "persecutions"],
     region: "Byzantine Empire",
     importance: 2,
-    preview: "The images fall again under Leo V — a generation of confessors holds the line.",
+    preview: "The images fall again under Leo V, a generation of confessors holds the line.",
     summary:
-      "Military disasters revive the iconoclast party, and Leo V reimposes the ban in 815. For a generation the defenders of the icons — Theodore the Studite and his monks chief among them — endure prison, flogging, and exile, until the death of the emperor Theophilus opens the way for restoration.",
+      "Military disasters revive the iconoclast party, and Leo V reimposes the ban in 815. For a generation the defenders of the icons, Theodore the Studite and his monks chief among them, endure prison, flogging, and exile, until the death of the emperor Theophilus opens the way for restoration.",
     certainty: "historically-attested",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       heresies: ["iconoclasm"],
       precededBy: ["second-council-of-nicaea"],
@@ -915,7 +915,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "Under the empress Theodora and Patriarch Methodius, a council restores the veneration of the icons, and on the first Sunday of Lent 843 the images are carried in procession into Hagia Sophia. The Church has kept that Sunday ever since as the Sunday of Orthodoxy, reading the Synodikon's memory eternal for the defenders of the faith.",
     certainty: "historically-attested",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       heresies: ["iconoclasm"],
       precededBy: ["second-iconoclasm"],
@@ -936,10 +936,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 1,
     preview: "Two brothers from Thessalonica give the Slavs an alphabet, the Scriptures, and the Liturgy in their own tongue.",
     summary:
-      "Sent from Constantinople to Great Moravia in 863, the brothers Constantine (Cyril) and Methodius create an alphabet for the Slavonic tongue and translate the Gospels and the services. Their conviction — that every people may praise God in its own language — becomes the charter of all Orthodox mission.",
+      "Sent from Constantinople to Great Moravia in 863, the brothers Constantine (Cyril) and Methodius create an alphabet for the Slavonic tongue and translate the Gospels and the services. Their conviction, that every people may praise God in its own language, becomes the charter of all Orthodox mission.",
     certainty: "strongly-supported",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["cyril-and-methodius", "photius-the-great"],
       resultedIn: ["conversion-of-kievan-rus"],
@@ -959,12 +959,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["councils", "schisms", "doctrine", "patriarchates"],
     region: "Constantinople",
     importance: 2,
-    preview: "Rome and Constantinople clash over Photius and the filioque — then make peace at a great council.",
+    preview: "Rome and Constantinople clash over Photius and the filioque, then make peace at a great council.",
     summary:
-      "The disputed elevation of Photius, rival missions in Bulgaria, and the Frankish addition to the Creed bring Rome and Constantinople into open conflict. The council of 879–880, with Roman legates present, restores communion and confirms the Creed without the filioque — for the East, a standing witness of how the two sees once resolved their quarrel.",
+      "The disputed elevation of Photius, rival missions in Bulgaria, and the Frankish addition to the Creed bring Rome and Constantinople into open conflict. The council of 879–880, with Roman legates present, restores communion and confirms the Creed without the filioque, for the East, a standing witness of how the two sees once resolved their quarrel.",
     certainty: "historically-attested",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["photius-the-great"],
       theology: ["filioque", "papacy"],
@@ -984,12 +984,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["missions", "autocephaly"],
     region: "Kiev",
     importance: 1,
-    preview: "'We knew not whether we were in heaven or on earth' — Vladimir's envoys in Hagia Sophia, and a nation is baptized.",
+    preview: "'We knew not whether we were in heaven or on earth.' Vladimir's envoys in Hagia Sophia, and a nation is baptized.",
     summary:
-      "Prince Vladimir of Kiev, whose envoys reported of the Liturgy in Hagia Sophia that they knew not whether they were in heaven or on earth, is baptized and leads his people into the Dnieper in 988. From that baptism grows the Orthodoxy of the Rus lands — in time the largest of the Orthodox churches.",
+      "Prince Vladimir of Kiev, whose envoys reported of the Liturgy in Hagia Sophia that they knew not whether they were in heaven or on earth, is baptized and leads his people into the Dnieper in 988. From that baptism grows the Orthodoxy of the Rus lands, in time the largest of the Orthodox churches.",
     certainty: "traditional-account",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["cyril-and-methodius"],
       precededBy: ["mission-of-cyril-and-methodius"],
@@ -1011,10 +1011,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 1,
     preview: "Cardinal Humbert lays a bull of excommunication on the altar of Hagia Sophia.",
     summary:
-      "Cardinal Humbert deposits a bull excommunicating Patriarch Michael Cerularius on the altar of Hagia Sophia; a Constantinopolitan synod answers in kind. 1054 did not end communion everywhere at once — it is the conventional marker within a centuries-long estrangement over the filioque, papal claims, and diverging practice.",
+      "Cardinal Humbert deposits a bull excommunicating Patriarch Michael Cerularius on the altar of Hagia Sophia; a Constantinopolitan synod answers in kind. 1054 did not end communion everywhere at once, it is the conventional marker within a centuries-long estrangement over the filioque, papal claims, and diverging practice.",
     certainty: "historically-attested",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       theology: ["filioque", "papacy"],
       saints: ["photius-the-great"],
@@ -1038,10 +1038,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 1,
     preview: "A crusade bound for Egypt takes and plunders the greatest Christian city instead.",
     summary:
-      "Diverted from its crusading goal, the Fourth Crusade storms Constantinople on April 12–13, 1204, and sacks it for three days — altars stripped, relics carried west, a Latin empire and patriarchate imposed for half a century. More than any document or anathema, 1204 fixed the schism in the heart of the East.",
+      "Diverted from its crusading goal, the Fourth Crusade storms Constantinople on April 12–13, 1204, and sacks it for three days, altars stripped, relics carried west, a Latin empire and patriarchate imposed for half a century. More than any document or anathema, 1204 fixed the schism in the heart of the East.",
     certainty: "historically-attested",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       theology: ["papacy"],
       precededBy: ["great-schism-1054"],
@@ -1063,10 +1063,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 1,
     preview: "The councils confirm it: the light of Tabor is uncreated, and man may truly share the life of God.",
     summary:
-      "When Barlaam of Calabria mocks the Athonite monks' prayer and their claim to see the divine light, Gregory Palamas answers with the distinction between God's essence — forever beyond participation — and his uncreated energies, in which man really shares. Councils at Constantinople in 1341, 1347, and 1351 receive this as the Church's faith: theosis is real.",
+      "When Barlaam of Calabria mocks the Athonite monks' prayer and their claim to see the divine light, Gregory Palamas answers with the distinction between God's essence, forever beyond participation, and his uncreated energies, in which man really shares. Councils at Constantinople in 1341, 1347, and 1351 receive this as the Church's faith: theosis is real.",
     certainty: "conciliar-definition",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["gregory-palamas", "nicholas-cabasilas", "symeon-the-new-theologian"],
       theology: ["theosis"],
@@ -1087,12 +1087,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["councils", "schisms", "doctrine"],
     region: "Ferrara & Florence, Italy",
     importance: 2,
-    preview: "A union signed under the shadow of the Turks — and refused by the Orthodox people.",
+    preview: "A union signed under the shadow of the Turks, and refused by the Orthodox people.",
     summary:
-      "With Constantinople desperate for Western aid, emperor and patriarch lead a delegation to Italy and accept a union on Rome's terms — the filioque, purgatory, papal primacy. Mark, metropolitan of Ephesus, alone refuses to sign; when the delegates come home, the people side with Mark, and the union dies before the City does.",
+      "With Constantinople desperate for Western aid, emperor and patriarch lead a delegation to Italy and accept a union on Rome's terms, the filioque, purgatory, papal primacy. Mark, metropolitan of Ephesus, alone refuses to sign; when the delegates come home, the people side with Mark, and the union dies before the City does.",
     certainty: "historically-attested",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["mark-of-ephesus"],
       theology: ["filioque", "papacy"],
@@ -1119,7 +1119,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "On Tuesday, May 29, 1453, after a siege of fifty-three days, the armies of Sultan Mehmed II break through the Theodosian walls. Emperor Constantine XI dies fighting; Hagia Sophia becomes a mosque; eleven centuries of the Christian Roman Empire end, and the long Ottoman period of Orthodox history begins.",
     certainty: "historically-attested",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       precededBy: ["council-of-florence"],
       resultedIn: ["moscow-patriarchate-established"],
@@ -1138,12 +1138,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["patriarchates", "autocephaly"],
     region: "Moscow",
     importance: 2,
-    preview: "Patriarch Jeremiah II of Constantinople raises the see of Moscow to a patriarchate — the first new one in a millennium.",
+    preview: "Patriarch Jeremiah II of Constantinople raises the see of Moscow to a patriarchate, the first new one in a millennium.",
     summary:
-      "Visiting Moscow in search of support for his impoverished Church, Ecumenical Patriarch Jeremiah II consecrates Job as the first Patriarch of Moscow in January 1589, a rank confirmed by councils at Constantinople in 1590 and 1593. The Russian Church — autocephalous in practice since 1448 — becomes the fifth patriarchate of the Orthodox world.",
+      "Visiting Moscow in search of support for his impoverished Church, Ecumenical Patriarch Jeremiah II consecrates Job as the first Patriarch of Moscow in January 1589, a rank confirmed by councils at Constantinople in 1590 and 1593. The Russian Church, autocephalous in practice since 1448, becomes the fifth patriarchate of the Orthodox world.",
     certainty: "historically-attested",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       precededBy: ["fall-of-constantinople", "conversion-of-kievan-rus"],
     },
@@ -1163,10 +1163,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 2,
     preview: "A thousand years of teaching on prayer of the heart, gathered in one book that quietly renews the Orthodox world.",
     summary:
-      "Nikodemos the Hagiorite and Makarios of Corinth gather the great texts on watchfulness and the Jesus Prayer — from the fourth century to Palamas — and publish them at Venice in 1782. Through Paisius Velichkovsky's Slavonic translation the collection kindles the startsy of Optina and a spiritual revival that reaches to the present.",
+      "Nikodemos the Hagiorite and Makarios of Corinth gather the great texts on watchfulness and the Jesus Prayer, from the fourth century to Palamas, and publish them at Venice in 1782. Through Paisius Velichkovsky's Slavonic translation the collection kindles the startsy of Optina and a spiritual revival that reaches to the present.",
     certainty: "historically-attested",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["nikodemos-the-hagiorite", "paisius-velichkovsky"],
       theology: ["theosis"],
@@ -1188,12 +1188,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["missions", "modern"],
     region: "Kodiak, Alaska",
     importance: 1,
-    preview: "Eight monks from Valaam land on Kodiak Island — Orthodoxy comes to the American continent.",
+    preview: "Eight monks from Valaam land on Kodiak Island, Orthodoxy comes to the American continent.",
     summary:
-      "On September 24, 1794, a band of monks from the Valaam and Konevits monasteries — the humble Herman among them — lands on Kodiak Island. They catechize in native tongues and defend the Aleut people against the fur company's abuses; from this mission descends all of Orthodoxy in North America.",
+      "On September 24, 1794, a band of monks from the Valaam and Konevits monasteries, the humble Herman among them, lands on Kodiak Island. They catechize in native tongues and defend the Aleut people against the fur company's abuses; from this mission descends all of Orthodoxy in North America.",
     certainty: "historically-attested",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["paisius-velichkovsky"],
       precededBy: ["philokalia-published"],
@@ -1216,10 +1216,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     importance: 1,
     preview: "The largest persecution in Christian history: bishops, priests, monastics, and faithful beyond counting.",
     summary:
-      "From the Bolshevik revolution of 1917, the Church in Russia — and after 1945 across Eastern Europe — endures confiscation, show trials, the destruction of tens of thousands of churches, and the killing or imprisonment of clergy and faithful on a scale exceeding all the ancient persecutions together. The Church survives, and in 1988 the millennium of the Baptism of Rus is kept openly; the new martyrs are now glorified across the Orthodox world.",
+      "From the Bolshevik revolution of 1917, the Church in Russia, and after 1945 across Eastern Europe, endures confiscation, show trials, the destruction of tens of thousands of churches, and the killing or imprisonment of clergy and faithful on a scale exceeding all the ancient persecutions together. The Church survives, and in 1988 the millennium of the Baptism of Rus is kept openly; the new martyrs are now glorified across the Orthodox world.",
     certainty: "historically-attested",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["john-of-shanghai", "silouan-the-athonite"],
       precededBy: ["conversion-of-kievan-rus"],
@@ -1239,12 +1239,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["autocephaly", "modern", "patriarchates"],
     region: "North America",
     importance: 2,
-    preview: "Moscow grants a tomos of autocephaly to its American daughter church — recognized by some churches, not by others.",
+    preview: "Moscow grants a tomos of autocephaly to its American daughter church, recognized by some churches, not by others.",
     summary:
-      "On April 10, 1970, the Patriarchate of Moscow grants autocephaly to its former American metropolia, which becomes the Orthodox Church in America — heir of the Alaskan mission. The grant is received by some Orthodox churches and not recognized by others, the Ecumenical Patriarchate among them; American Orthodoxy's canonical organization remains an open question.",
+      "On April 10, 1970, the Patriarchate of Moscow grants autocephaly to its former American metropolia, which becomes the Orthodox Church in America, heir of the Alaskan mission. The grant is received by some Orthodox churches and not recognized by others, the Ecumenical Patriarchate among them; American Orthodoxy's canonical organization remains an open question.",
     certainty: "jurisdiction-specific",
     status: "published",
-    reviewedBy: "Purify editorial — pending review",
+    reviewedBy: "Purify editorial, pending review",
     rel: {
       precededBy: ["alaska-mission", "bolshevik-persecution"],
     },
@@ -1305,7 +1305,7 @@ export function centuryOf(year: number): number {
   return Math.ceil(year / 100);
 }
 
-/** "4th c." — same formatting as lib/saints centuryLabel. */
+/** "4th c.", same formatting as lib/saints centuryLabel. */
 export function centuryLabelOf(c: number): string {
   const mod100 = c % 100;
   const mod10 = c % 10;
@@ -1332,7 +1332,7 @@ export function certaintyById(id: Certainty) {
   return CERTAINTY_LEVELS.find((c) => c.id === id)!;
 }
 
-/** Static params for /history/[slug] — published events only. */
+/** Static params for /history/[slug], published events only. */
 export function eventParams(): { slug: string }[] {
   return publishedEvents().map((e) => ({ slug: e.slug }));
 }

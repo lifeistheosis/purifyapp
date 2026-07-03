@@ -1,5 +1,5 @@
 // Shared search/filter semantics for the Orthodox History timeline.
-// Pure functions over the registry — the same logic drives the native
+// Pure functions over the registry, the same logic drives the native
 // Android shell, mobile web, tablet, and desktop, so results never diverge
 // across platforms. UI shells differ; this file does not.
 

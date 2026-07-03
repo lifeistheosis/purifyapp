@@ -1,13 +1,13 @@
 "use client";
 
 // The chronological spine: era groups and event cards along a vertical rail.
-// Deliberately dumb — filtering, search, selection, and scroll restoration
+// Deliberately dumb, filtering, search, selection, and scroll restoration
 // live in HistoryTimelinePage; this renders whatever it's given, identically
 // on every platform. The rail + dot visual language echoes the Today page's
 // MobileTimeline.
 //
 // Keyboard support (desktop): when `onSelect` is provided the list acts as a
-// roving listbox — ↑/↓ move the selection between events, Enter opens the
+// roving listbox, ↑/↓ move the selection between events, Enter opens the
 // selected event's page. Hover only ever highlights; nothing essential
 // hides behind it.
 
@@ -72,7 +72,7 @@ export function TimelineCore({
   return (
     <div
       role={onSelect ? "group" : undefined}
-      aria-label={onSelect ? "Timeline events — use arrow keys to move, Enter to open" : undefined}
+      aria-label={onSelect ? "Timeline events, use arrow keys to move, Enter to open" : undefined}
       tabIndex={onSelect ? 0 : undefined}
       onKeyDown={onKeyDown}
       className="focus:outline-none focus-visible:ring-1 focus-visible:ring-link/60 rounded-lg"

@@ -1,16 +1,16 @@
 {
   "slug": "neronian-persecution",
   "context": [
-    { "kind": "para", "text": "In July 64 a fire destroyed much of Rome. The rumor that Nero himself had ordered it would not die, and the emperor needed someone to blame. He chose a group already whispered against for 'hatred of the human race' — the Christians." }
+    { "kind": "para", "text": "In July 64 a fire destroyed much of Rome. The rumor that Nero himself had ordered it would not die, and the emperor needed someone to blame. He chose a group already whispered against for 'hatred of the human race', the Christians." }
   ],
   "narrative": [
-    { "kind": "para", "text": "Tacitus, no friend of the Church, records what followed: an 'immense multitude' of Christians convicted, some torn by dogs, some crucified, some burned as torches to light Nero's gardens — cruelties so extreme that pity arose even among the Roman crowd. It was the first time imperial power turned deliberately on the Church." },
-    { "kind": "para", "text": "Tradition already firm by the end of the first century — Clement of Rome writes of it within living memory — places the deaths of the chief apostles at Rome in this persecution: Peter crucified (head downward, in the later account), Paul, as a citizen, beheaded on the Ostian Way. The Church keeps their common feast on June 29." }
+    { "kind": "para", "text": "Tacitus, no friend of the Church, records what followed: an 'immense multitude' of Christians convicted, some torn by dogs, some crucified, some burned as torches to light Nero's gardens, cruelties so extreme that pity arose even among the Roman crowd. It was the first time imperial power turned deliberately on the Church." },
+    { "kind": "para", "text": "Tradition already firm by the end of the first century, Clement of Rome writes of it within living memory, places the deaths of the chief apostles at Rome in this persecution: Peter crucified (head downward, in the later account), Paul, as a citizen, beheaded on the Ostian Way. The Church keeps their common feast on June 29." }
   ],
   "significance": [
-    { "kind": "para", "text": "Rome's church was consecrated by the blood of both chief apostles — the ground of its ancient primacy of honor in the Orthodox reckoning. And the persecution set the pattern the Church would live for 250 years: illegal, intermittently hunted, and growing — 'the blood of the martyrs is seed.'" }
+    { "kind": "para", "text": "Rome's church was consecrated by the blood of both chief apostles, the ground of its ancient primacy of honor in the Orthodox reckoning. And the persecution set the pattern the Church would live for 250 years: illegal, intermittently hunted, and growing, 'the blood of the martyrs is seed.'" }
   ],
-  "uncertainty": "The fire and persecution of 64 are documented by Tacitus. The martyrdoms of Peter and Paul at Rome are the unanimous early tradition (Clement of Rome, Ignatius, Irenaeus, Gaius of Rome), but their exact dates — between 64 and 68 — are not recorded.",
+  "uncertainty": "The fire and persecution of 64 are documented by Tacitus. The martyrdoms of Peter and Paul at Rome are the unanimous early tradition (Clement of Rome, Ignatius, Irenaeus, Gaius of Rome), but their exact dates, between 64 and 68, are not recorded.",
   "sources": [
     { "label": "Tacitus, Annals XV.44", "kind": "primary", "note": "The pagan historian's account of the fire and Nero's persecution." },
     { "label": "1 Clement 5–6", "kind": "primary", "url": "https://www.newadvent.org/fathers/1010.htm", "note": "Rome's own memory, c. 96, of Peter and Paul's contests 'in our generation.'" },

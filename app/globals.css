@@ -1052,7 +1052,7 @@ html.reader-focus [data-reader-exit] {
 }
 
 /* The century scrubber is a styled native range input: draggable by
-   pointer, steppable by arrow keys, tappable on the track — the non-drag
+   pointer, steppable by arrow keys, tappable on the track. The non-drag
    path is built in, and it can never fight the Android back-gesture edge
    zones the way an edge-anchored custom drag surface could. */
 .history-scrubber {

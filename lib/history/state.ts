@@ -5,7 +5,7 @@
 // a filtered view is shareable and browser Back/Forward behave; it also
 // persists to localStorage so returning to /history resumes where you were.
 // Native shell: URL is never touched (hardware Back must mean "leave the
-// page", not "undo one filter") — state lives in memory + localStorage only.
+// page", not "undo one filter"), state lives in memory + localStorage only.
 //
 // Persistence follows lib/reader/position.ts: silent, TTL-bound, and every
 // failure swallowed so the timeline never breaks on storage errors.
@@ -21,7 +21,7 @@ import {
 import { EMPTY_FILTERS, type TimelineFilterState } from "./filter";
 
 export type TimelineState = TimelineFilterState & {
-  /** Slug selected in the context rail (tablet/desktop) — `e=` on web. */
+  /** Slug selected in the context rail (tablet/desktop), `e=` on web. */
   selected?: string;
 };
 
@@ -50,7 +50,7 @@ export function toSearchParams(s: TimelineState): URLSearchParams {
   return p;
 }
 
-/** Parse URL params defensively — unknown values are dropped, never thrown. */
+/** Parse URL params defensively, unknown values are dropped, never thrown. */
 export function fromSearchParams(p: URLSearchParams): TimelineState {
   const state: TimelineState = { ...EMPTY_FILTERS, categories: [] };
   const era = p.get("era");

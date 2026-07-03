@@ -1,7 +1,7 @@
 // "Related" foot of an event page: the saints, councils, doctrine, heresies,
 // and scripture the event connects to, plus its place in the chain of events
 // (what led here, what flowed from it). Every link resolves into existing
-// Purify content — validated by the integrity suite.
+// Purify content, validated by the integrity suite.
 
 import Link from "next/link";
 

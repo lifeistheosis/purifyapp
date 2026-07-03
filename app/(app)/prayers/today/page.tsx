@@ -151,7 +151,7 @@ export default async function PrayersTodayPage() {
         </p>
       </div>
 
-      {/* On this day in Church history — quiet when no firmly dated event
+      {/* On this day in Church history, quiet when no firmly dated event
           matches today. */}
       <OnThisDayHistory date={today} />
 

@@ -10,7 +10,7 @@ import { ImmersivePreviewCard } from "@/components/history/ImmersivePreviewCard"
 import { eraById, eventBySlug, eventParams } from "@/lib/history/events";
 import { loadEventBody } from "@/lib/history/load";
 
-// Every published event page is statically generated — on the website for
+// Every published event page is statically generated, on the website for
 // SEO, and inside the Android bundle for offline reading. Drafts never route.
 export const dynamicParams = false;
 
@@ -26,7 +26,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const meta = eventBySlug(slug);
   if (!meta) return { title: "Orthodox History" };
-  const description = `${meta.displayDate} — ${meta.preview}`;
+  const description = `${meta.displayDate}, ${meta.preview}`;
   return {
     title: `${meta.title} (${meta.displayDate})`,
     description,

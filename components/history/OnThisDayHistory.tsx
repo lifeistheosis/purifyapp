@@ -1,8 +1,8 @@
-// "On this day in Orthodox History" — shown on the Today page only when a
+// "On this day in Orthodox History", shown on the Today page only when a
 // curated event carries a firm calendar date matching today (integrity
 // checks guarantee `calendar` exists only on exact-precision events, so an
 // approximate year can never masquerade as a calendar anniversary). Most
-// days render nothing; that is correct, not a bug. Pure registry lookup —
+// days render nothing; that is correct, not a bug. Pure registry lookup:
 // no network, works identically in the offline Android bundle.
 
 import Link from "next/link";
@@ -31,7 +31,7 @@ export function OnThisDayHistory({ date }: { date: Date }) {
             <p className="font-sans text-caption font-semibold uppercase tracking-[1.4px] text-paper/60">
               {e.displayDate}
               {/* Julian/conventional dates are commemorations, not civil
-                  anniversaries — say so instead of implying a Gregorian date. */}
+                  anniversaries, say so instead of implying a Gregorian date. */}
               {e.calendar && e.calendar.basis !== "gregorian" ? (
                 <span className="normal-case tracking-normal text-paper/55">
                   {" "}

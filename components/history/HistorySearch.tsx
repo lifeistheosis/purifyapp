@@ -4,7 +4,7 @@
 // searchEvents) with two presentations:
 //  - inline: a search field with a results panel beneath it (mobile web
 //    inline, desktop sidebar).
-//  - overlay: a full-screen surface for the native shell — opened from the
+//  - overlay: a full-screen surface for the native shell, opened from the
 //    compact header, closed by hardware Back, Escape, or the Close button.
 
 import Link from "next/link";
@@ -147,7 +147,7 @@ export function HistorySearchOverlay({
           )
         ) : (
           <p className="px-3 py-6 font-sans text-detail text-paper/55">
-            Search by name, place, year, or era — “Nicaea”, “1054”, “Constantinople”.
+            Search by name, place, year, or era, “Nicaea”, “1054”, “Constantinople”.
           </p>
         )}
       </div>

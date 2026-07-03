@@ -1,7 +1,7 @@
 "use client";
 
 // The selected-event context pane (tablet-landscape two-pane and desktop
-// three-column layouts). Registry metadata only — the full narrative stays
+// three-column layouts). Registry metadata only, the full narrative stays
 // on the event page; this pane is for scanning and deciding to go deeper.
 
 import Link from "next/link";

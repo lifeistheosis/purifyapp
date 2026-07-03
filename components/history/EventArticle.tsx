@@ -1,5 +1,5 @@
 // The long-form body of a history event page: masthead (era, date, place,
-// certainty), then the editorial sections — context, narrative, significance,
+// certainty), then the editorial sections, context, narrative, significance,
 // consequences, and the uncertainty note when the account needs one. Server
 // component; the narrative must be crawlable HTML for SEO.
 

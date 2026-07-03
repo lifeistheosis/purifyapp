@@ -4,7 +4,7 @@
 //  - <lg: rendered inside the shared bottom Sheet (hardware Back closes it,
 //    thumb-reach Apply/Clear at the bottom).
 //  - xl sidebar: rendered inline as a persistent panel.
-// Chips are buttons with pressed state — never color-only (labels carry the
+// Chips are buttons with pressed state, never color-only (labels carry the
 // meaning), never smaller than a comfortable tap target.
 
 import {
