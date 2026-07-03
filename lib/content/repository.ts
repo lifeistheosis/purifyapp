@@ -83,6 +83,33 @@ export class ContentRepository {
   getTheologyArticle<T = Record<string, unknown>>(slug: string): Promise<T | null> {
     return this.getRecord<T>("theology", slug);
   }
+  getHistoryEvent<T = Record<string, unknown>>(slug: string): Promise<T | null> {
+    return this.getRecord<T>("history_event", slug);
+  }
+
+  /** History events whose start year falls in [fromYear, toYear], in
+   *  chronological order. `key` is the zero-padded start year, so plain
+   *  string comparison is correct for the AD range. */
+  async getHistoryEventsInRange<T = Record<string, unknown>>(
+    fromYear: number,
+    toYear: number,
+    limit = 200,
+  ): Promise<T[]> {
+    const pad = (y: number) => String(Math.max(0, y)).padStart(4, "0");
+    const rows = await this.store.all<{ json: string }>(
+      "SELECT json FROM content WHERE type = 'history_event' AND key BETWEEN ? AND ? ORDER BY key ASC LIMIT ?",
+      [pad(fromYear), pad(toYear), limit],
+    );
+    return rows
+      .map((r) => {
+        try {
+          return JSON.parse(r.json) as T;
+        } catch {
+          return null;
+        }
+      })
+      .filter((e): e is T => e !== null);
+  }
 
   /** Feast/commemoration entries for a calendar day ("MM-DD"). */
   async getFeastsForDate(mmdd: string): Promise<RepoFeast[]> {

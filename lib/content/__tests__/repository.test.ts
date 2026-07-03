@@ -72,3 +72,35 @@ describe("ContentRepository (local-first reads)", () => {
     expect(chapter).not.toBeNull();
   });
 });
+
+describe("ContentRepository (history events)", () => {
+  let store: ContentStore;
+  let repo: ContentRepository;
+
+  beforeEach(async () => {
+    store = await openNodeStore();
+    await importPackage(store, await buildSamplePackage("v1"));
+    repo = new ContentRepository(store);
+  });
+
+  it("reads a history event by slug", async () => {
+    const e = await repo.getHistoryEvent<{ title: string; yearStart: number }>(
+      "first-council-of-nicaea",
+    );
+    expect(e?.title).toBe("The First Ecumenical Council at Nicaea");
+    expect(e?.yearStart).toBe(325);
+    expect(await repo.getHistoryEvent("not-an-event")).toBeNull();
+  });
+
+  it("queries history events by year range via the padded key", async () => {
+    const inRange = await repo.getHistoryEventsInRange<{ slug: string }>(300, 400);
+    expect(inRange.map((e) => e.slug)).toEqual(["first-council-of-nicaea"]);
+    expect(await repo.getHistoryEventsInRange(326, 1000)).toEqual([]);
+    expect(await repo.getHistoryEventsInRange(33, 324)).toEqual([]);
+  });
+
+  it("finds history events through local search", async () => {
+    const hits = await repo.searchLibrary("nicaea", { types: ["history_event"] });
+    expect(hits.some((r) => r.ref_id === "first-council-of-nicaea")).toBe(true);
+  });
+});

@@ -160,6 +160,21 @@ function collectFeasts() {
   }
 }
 
+// --- History events (registry meta from emit-registries + body files) ----
+function collectHistoryEvents() {
+  const f = path.join(DATA, "_generated", "history-events.json");
+  if (!fs.existsSync(f)) return;
+  for (const e of readJson(f)) {
+    // Merge the long-form body so an event page's content is one record.
+    const bodyFile = path.join(DATA, "history", `${e.slug}.json`);
+    const body = fs.existsSync(bodyFile) ? readJson(bodyFile) : null;
+    const merged = body ? { ...e, body } : e;
+    // key = zero-padded start year so string BETWEEN gives year-range queries.
+    const key = String(e.yearStart).padStart(4, "0");
+    add("history_event", e.slug, e.title, key, merged, flattenStrings(merged).join(" "));
+  }
+}
+
 // Canonical records string — MUST match lib/content/manifest.ts canonicalRecords.
 function canonicalRecords(recs) {
   const sorted = [...recs].sort((a, b) =>
@@ -179,6 +194,7 @@ function main() {
   collectSaintWritings();
   collectSaints();
   collectFeasts();
+  collectHistoryEvents();
 
   const counts = {};
   for (const r of records) counts[r.type] = (counts[r.type] ?? 0) + 1;

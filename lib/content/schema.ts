@@ -26,7 +26,8 @@ export type ContentType =
   | "topic"
   | "heresy"
   | "apologetics"
-  | "feast";
+  | "feast"
+  | "history_event";
 
 export const CONTENT_TYPES: readonly ContentType[] = [
   "bible_chapter",
@@ -39,6 +40,7 @@ export const CONTENT_TYPES: readonly ContentType[] = [
   "heresy",
   "apologetics",
   "feast",
+  "history_event",
 ];
 
 /** A row in any content table: identity + display fields + the full record

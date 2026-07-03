@@ -68,6 +68,19 @@ export const SAMPLE_RECORDS: PackageRecord[] = [
     }),
     search: "chrysostom feast",
   },
+  {
+    type: "history_event",
+    ref_id: "first-council-of-nicaea",
+    title: "The First Ecumenical Council at Nicaea",
+    key: "0325", // zero-padded yearStart drives range queries
+    json: JSON.stringify({
+      slug: "first-council-of-nicaea",
+      title: "The First Ecumenical Council at Nicaea",
+      yearStart: 325,
+      era: "imperial-conciliar",
+    }),
+    search: "nicaea first ecumenical council homoousios arius",
+  },
 ];
 
 export async function buildSamplePackage(
