@@ -111,7 +111,9 @@ export function Footer() {
      <p className="font-sans text-caption uppercase tracking-[1.5px] text-paper/45">
       {t("footer.findUs")}
      </p>
-     <div className="flex items-center gap-3">
+     {/* Wraps on narrow phones: unwrapped, the four pills run 560px wide
+         and force horizontal page scroll at 360px viewports. */}
+     <div className="flex flex-wrap items-center justify-center gap-3 px-4">
       <a
        href="https://discord.gg/VzBYYUsNJ6"
        target="_blank"

@@ -62,9 +62,11 @@ export default function HeresiesIndexPage() {
                           {h.name}
                         </h2>
                         {council ? (
-                          <span className="shrink-0 font-sans text-caption text-paper/40 text-right leading-tight">
-                            Condemned at
-                            <br className="hidden sm:block" /> {council}
+                          // Shrinkable so long council names wrap on phones
+                          // instead of pushing the page into horizontal
+                          // scroll (shrink-0 clipped at 412px and below).
+                          <span className="max-w-[45%] font-sans text-caption text-paper/40 text-right leading-tight">
+                            Condemned at {council}
                           </span>
                         ) : null}
                       </div>
