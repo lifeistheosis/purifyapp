@@ -24,7 +24,7 @@ export function CertaintyBadge({
         {level.label}
       </span>
       {withGloss ? (
-        <span className="mt-1.5 font-sans text-caption text-paper/45 leading-[1.5]">
+        <span className="mt-1.5 font-sans text-caption text-paper/55 leading-[1.5]">
           {level.gloss}
         </span>
       ) : null}

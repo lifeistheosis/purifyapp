@@ -43,7 +43,7 @@ export function CenturyScrubber({
       <div className="flex items-baseline justify-between">
         <label
           htmlFor="history-century-scrubber"
-          className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/45"
+          className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55"
         >
           Jump by century
         </label>
@@ -72,7 +72,7 @@ export function CenturyScrubber({
         onPointerUp={() => setDragIdx(null)}
         onBlur={() => setDragIdx(null)}
       />
-      <div aria-hidden className="flex justify-between font-sans text-caption text-paper/35">
+      <div aria-hidden className="flex justify-between font-sans text-caption text-paper/55">
         <span>{centuryLabelOf(centuries[0])}</span>
         <span>{centuryLabelOf(centuries[centuries.length - 1])}</span>
       </div>

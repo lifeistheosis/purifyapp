@@ -63,10 +63,10 @@ export function EventCard({
         aria-controls={regionId}
         className="press-card block w-full min-h-[48px] rounded-lg px-4 py-4 text-left"
       >
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.4px] text-paper/50">
+        <p className="font-sans text-caption font-semibold uppercase tracking-[1.4px] text-paper/60">
           {event.displayDate}
           {event.region ? (
-            <span className="normal-case tracking-normal text-paper/35"> · {event.region}</span>
+            <span className="normal-case tracking-normal text-paper/55"> · {event.region}</span>
           ) : null}
         </p>
         <h3 className="mt-1.5 font-heading text-title-sm text-paper leading-snug">
@@ -79,12 +79,12 @@ export function EventCard({
           {event.categories.slice(0, 3).map((c) => (
             <span
               key={c}
-              className="rounded-pill bg-paper/[0.06] px-2 py-0.5 font-sans text-eyebrow uppercase tracking-[1px] text-paper/50"
+              className="rounded-pill bg-paper/[0.06] px-2 py-0.5 font-sans text-eyebrow uppercase tracking-[1px] text-paper/60"
             >
               {categoryById(c).label}
             </span>
           ))}
-          <span className="font-sans text-eyebrow uppercase tracking-[1px] text-paper/35">
+          <span className="font-sans text-eyebrow uppercase tracking-[1px] text-paper/55">
             {certainty.label}
           </span>
         </p>

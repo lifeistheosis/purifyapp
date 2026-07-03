@@ -18,7 +18,7 @@ export function OnThisDayHistory({ date }: { date: Date }) {
 
   return (
     <div className="my-12">
-      <p className="mb-4 font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40">
+      <p className="mb-4 font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/55">
         On this day in Orthodox History
       </p>
       <div className="space-y-3">
@@ -28,12 +28,12 @@ export function OnThisDayHistory({ date }: { date: Date }) {
             href={`/history/${e.slug}`}
             className="tap-press block rounded-lg border border-paper/12 bg-night-soft/50 px-5 py-4 hover:border-paper/25"
           >
-            <p className="font-sans text-caption font-semibold uppercase tracking-[1.4px] text-paper/50">
+            <p className="font-sans text-caption font-semibold uppercase tracking-[1.4px] text-paper/60">
               {e.displayDate}
               {/* Julian/conventional dates are commemorations, not civil
                   anniversaries — say so instead of implying a Gregorian date. */}
               {e.calendar && e.calendar.basis !== "gregorian" ? (
-                <span className="normal-case tracking-normal text-paper/35">
+                <span className="normal-case tracking-normal text-paper/55">
                   {" "}
                   · commemorated today
                 </span>

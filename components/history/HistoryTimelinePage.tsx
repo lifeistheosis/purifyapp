@@ -100,6 +100,19 @@ export function HistoryTimelinePage() {
     if (urlTimer.current) clearTimeout(urlTimer.current);
   }, []);
 
+  // If the reader clicks into an event while a debounced URL replace is
+  // pending, cancel it: a replace landing mid-navigation can collapse the
+  // timeline's history entry into the event page's, breaking browser Back.
+  const cancelPendingUrlWrite = useCallback((e: React.MouseEvent) => {
+    if (
+      urlTimer.current &&
+      (e.target as HTMLElement).closest("a")
+    ) {
+      clearTimeout(urlTimer.current);
+      urlTimer.current = null;
+    }
+  }, []);
+
   // ----- derived ----------------------------------------------------------
   const filtered = useMemo(() => applyFilters(ALL_EVENTS, state), [state]);
   const groups = useMemo(() => groupByEra(filtered), [filtered]);
@@ -228,14 +241,17 @@ export function HistoryTimelinePage() {
 
   // ----- render -------------------------------------------------------------
   return (
-    <div className="mx-auto w-full max-w-[1440px] px-5 md:px-8">
+    <div
+      className="mx-auto w-full max-w-[1440px] px-5 md:px-8"
+      onClickCapture={cancelPendingUrlWrite}
+    >
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-10 xl:grid-cols-[250px_minmax(0,1fr)_330px]">
         {/* Left research column — desktop (xl) only. */}
         <aside className="hidden xl:block">
           <div className="sticky top-[88px] max-h-[calc(100vh-110px)] space-y-8 overflow-y-auto pr-2 scrollbar-thin">
             <HistorySearchInline />
             <div>
-              <p className="mb-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/45">
+              <p className="mb-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
                 Eras
               </p>
               <EraJumpList activeEra={activeEra} counts={eraCounts} onJump={jumpToEra} />
@@ -258,7 +274,7 @@ export function HistoryTimelinePage() {
                 <button
                   type="button"
                   onClick={() => setSearchOpen(true)}
-                  className="tap-press min-h-[44px] flex-1 rounded-md border border-paper/15 bg-night-soft px-4 text-left font-sans text-ui text-paper/45"
+                  className="tap-press min-h-[44px] flex-1 rounded-md border border-paper/15 bg-night-soft px-4 text-left font-sans text-ui text-paper/55"
                 >
                   Search Church history…
                 </button>
@@ -287,7 +303,7 @@ export function HistoryTimelinePage() {
           <div className="sticky top-[88px]">
             <EventContextRail selected={state.selected} />
             {hasActiveFilters(state) ? (
-              <p className="mt-4 text-center font-sans text-caption text-paper/35">
+              <p className="mt-4 text-center font-sans text-caption text-paper/55">
                 {filtered.length} of {ALL_EVENTS.length} events shown
               </p>
             ) : null}

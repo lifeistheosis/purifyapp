@@ -23,7 +23,7 @@ function ResultRow({ event, onNavigate }: { event: HistoryEventMeta; onNavigate?
       onClick={onNavigate}
       className="tap-press block rounded-md px-3 py-3 hover:bg-paper/[0.05]"
     >
-      <span className="font-sans text-caption text-paper/45">{event.displayDate}</span>
+      <span className="font-sans text-caption text-paper/55">{event.displayDate}</span>
       <span className="mt-0.5 block font-sans text-ui font-semibold text-paper/90">
         {event.title}
       </span>
@@ -55,14 +55,14 @@ export function HistorySearchInline({
         onChange={(e) => setQ(e.target.value)}
         placeholder={placeholder}
         autoComplete="off"
-        className="w-full min-h-[44px] rounded-md border border-paper/15 bg-night-soft px-4 font-sans text-ui text-paper placeholder:text-paper/35 focus:border-paper/40 focus:outline-none"
+        className="w-full min-h-[44px] rounded-md border border-paper/15 bg-night-soft px-4 font-sans text-ui text-paper placeholder:text-paper/55 focus:border-paper/40 focus:outline-none"
       />
       {q.trim() ? (
         <div className="mt-2 rounded-md border border-paper/12 bg-night-soft/80 p-1">
           {results.length ? (
             results.map((e) => <ResultRow key={e.slug} event={e} />)
           ) : (
-            <p className="px-3 py-4 font-serif italic text-detail text-paper/50">
+            <p className="px-3 py-4 font-serif italic text-detail text-paper/60">
               Nothing in the timeline matches “{q.trim()}”.
             </p>
           )}
@@ -126,7 +126,7 @@ export function HistorySearchOverlay({
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search Church history…"
           autoComplete="off"
-          className="min-h-[44px] w-full rounded-md border border-paper/15 bg-night-soft px-4 font-sans text-ui text-paper placeholder:text-paper/35 focus:border-paper/40 focus:outline-none"
+          className="min-h-[44px] w-full rounded-md border border-paper/15 bg-night-soft px-4 font-sans text-ui text-paper placeholder:text-paper/55 focus:border-paper/40 focus:outline-none"
         />
         <button
           type="button"
@@ -141,12 +141,12 @@ export function HistorySearchOverlay({
           results.length ? (
             results.map((e) => <ResultRow key={e.slug} event={e} onNavigate={onClose} />)
           ) : (
-            <p className="px-3 py-6 font-serif italic text-body text-paper/50">
+            <p className="px-3 py-6 font-serif italic text-body text-paper/60">
               Nothing in the timeline matches “{q.trim()}”.
             </p>
           )
         ) : (
-          <p className="px-3 py-6 font-sans text-detail text-paper/40">
+          <p className="px-3 py-6 font-sans text-detail text-paper/55">
             Search by name, place, year, or era — “Nicaea”, “1054”, “Constantinople”.
           </p>
         )}

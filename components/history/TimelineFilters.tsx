@@ -49,7 +49,7 @@ function Chip({
 
 function GroupLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/45">
+    <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
       {children}
     </p>
   );
@@ -175,7 +175,7 @@ export function ActiveFilterChips({
           className="tap-press inline-flex min-h-[36px] items-center gap-1.5 rounded-pill bg-paper/10 px-3 font-sans text-detail font-semibold text-paper"
         >
           {c.label}
-          <span aria-hidden className="text-paper/50">×</span>
+          <span aria-hidden className="text-paper/60">×</span>
           <span className="sr-only">Remove filter</span>
         </button>
       ))}
@@ -184,7 +184,7 @@ export function ActiveFilterChips({
         onClick={() =>
           onChange({ ...value, era: undefined, categories: [], certainty: undefined, century: undefined })
         }
-        className="tap-press min-h-[36px] rounded-pill px-3 font-sans text-detail text-paper/50 underline underline-offset-4 hover:text-paper"
+        className="tap-press min-h-[36px] rounded-pill px-3 font-sans text-detail text-paper/60 underline underline-offset-4 hover:text-paper"
       >
         Clear all
       </button>

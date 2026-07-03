@@ -13,7 +13,10 @@ export function EraHeader({
 }) {
   return (
     <header id={`era-${era.id}`} className="pb-3 pt-4 scroll-mt-32">
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-crimson/90">
+      {/* Crimson stays as the (decorative) rail accent dot; the year range
+          itself is paper/60 — 11px crimson text can't reach WCAG contrast. */}
+      <p className="flex items-center gap-2 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
+        <span aria-hidden className="h-2 w-2 rounded-full bg-crimson" />
         {era.from}–{era.to}
       </p>
       <h2 className="mt-1 font-display-serif text-title-sm md:text-title text-paper leading-tight">

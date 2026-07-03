@@ -58,17 +58,21 @@ export function TimelineCore({
         <p className="font-serif italic text-body text-paper/60">
           No events match these filters.
         </p>
-        <p className="mt-2 font-sans text-detail text-paper/40">
+        <p className="mt-2 font-sans text-detail text-paper/55">
           Try clearing a filter or broadening the search.
         </p>
       </div>
     );
   }
 
+  // Not a listbox: the cards contain their own buttons and links, which the
+  // ARIA listbox/option pattern forbids (axe: aria-required-children). A
+  // labeled, focusable group with a roving keyboard handler gives the same
+  // ↑/↓+Enter behavior; the selected card announces via aria-current.
   return (
     <div
-      role={onSelect ? "listbox" : undefined}
-      aria-label={onSelect ? "Timeline events" : undefined}
+      role={onSelect ? "group" : undefined}
+      aria-label={onSelect ? "Timeline events — use arrow keys to move, Enter to open" : undefined}
       tabIndex={onSelect ? 0 : undefined}
       onKeyDown={onKeyDown}
       className="focus:outline-none focus-visible:ring-1 focus-visible:ring-link/60 rounded-lg"
@@ -80,7 +84,7 @@ export function TimelineCore({
           <div className="relative mt-4 border-l border-paper/12 pl-6 ml-[5px]">
             <ol className="space-y-4">
               {g.events.map((ev) => (
-                <li key={ev.slug} role={onSelect ? "option" : undefined} aria-selected={onSelect ? selected === ev.slug : undefined}>
+                <li key={ev.slug} aria-current={onSelect && selected === ev.slug ? "true" : undefined}>
                   <EventCard
                     event={ev}
                     selected={selected === ev.slug}

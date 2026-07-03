@@ -16,7 +16,7 @@ export function ViewInHistory({
   if (!events.length) return null;
   return (
     <section className="mt-12 border-t border-paper/10 pt-8" aria-label={title}>
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/45">
+      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
         {title}
       </p>
       <ul className="mt-4 space-y-2">
@@ -27,14 +27,14 @@ export function ViewInHistory({
               className="tap-press flex min-h-[48px] items-center justify-between gap-3 rounded-md border border-paper/12 px-4 py-2.5 hover:border-paper/25"
             >
               <span className="min-w-0">
-                <span className="block font-sans text-caption text-paper/45">
+                <span className="block font-sans text-caption text-paper/55">
                   {e.displayDate}
                 </span>
                 <span className="block truncate font-sans text-ui font-semibold text-paper/85">
                   {e.title}
                 </span>
               </span>
-              <span aria-hidden className="shrink-0 text-paper/40">
+              <span aria-hidden className="shrink-0 text-paper/55">
                 →
               </span>
             </Link>

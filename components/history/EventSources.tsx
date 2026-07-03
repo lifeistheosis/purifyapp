@@ -9,7 +9,7 @@ export function EventSources({ sources }: { sources: SourceCitation[] }) {
   const secondary = sources.filter((s) => s.kind === "secondary");
   return (
     <section className="mt-14 border-t border-paper/10 pt-8" aria-label="Sources">
-      <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/45">
+      <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
         Sources
       </h2>
       {primary.length > 0 ? (
@@ -31,7 +31,7 @@ function SourceGroup({
 }) {
   return (
     <div className="mt-6">
-      <p className="font-sans text-caption uppercase tracking-[1.4px] text-paper/40">{label}</p>
+      <p className="font-sans text-caption uppercase tracking-[1.4px] text-paper/55">{label}</p>
       <ul className="mt-3 space-y-4">
         {sources.map((s, i) => (
           <li key={i}>
@@ -50,7 +50,7 @@ function SourceGroup({
               )}
             </p>
             {s.note ? (
-              <p className="mt-1 font-sans text-detail text-paper/50 leading-[1.55]">{s.note}</p>
+              <p className="mt-1 font-sans text-detail text-paper/60 leading-[1.55]">{s.note}</p>
             ) : null}
           </li>
         ))}

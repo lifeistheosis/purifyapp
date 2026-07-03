@@ -31,7 +31,7 @@ function Block({ block }: { block: EssayBlock }) {
             {block.text}
           </p>
           {block.source ? (
-            <cite className="mt-2 block font-sans text-caption not-italic text-paper/45">
+            <cite className="mt-2 block font-sans text-caption not-italic text-paper/55">
               {block.source}
             </cite>
           ) : null}
@@ -62,7 +62,7 @@ function Section({
   if (!blocks?.length) return null;
   return (
     <section className="mt-12">
-      <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/45">
+      <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
         {title}
       </h2>
       <div className="mt-5 space-y-6">
@@ -91,7 +91,7 @@ export function EventArticle({
         <span aria-hidden className="mx-2 text-paper/30">
           ·
         </span>
-        <span className="text-paper/45">{era.label}</span>
+        <span className="text-paper/55">{era.label}</span>
       </p>
 
       <h1 className="mt-4 font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
@@ -102,7 +102,7 @@ export function EventArticle({
         <p className="font-serif text-lede text-paper/75">
           {meta.displayDate}
           {meta.region ? (
-            <span className="text-paper/50"> · {meta.region}</span>
+            <span className="text-paper/60"> · {meta.region}</span>
           ) : null}
         </p>
         <CertaintyBadge certainty={meta.certainty} />
@@ -132,7 +132,7 @@ export function EventArticle({
 
       {body.uncertainty ? (
         <aside className="mt-12 rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-4">
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/50">
+          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/60">
             A note on certainty
           </p>
           <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.6]">

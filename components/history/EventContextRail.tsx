@@ -21,10 +21,10 @@ export function EventContextRail({ selected }: { selected?: string }) {
   if (!event) {
     return (
       <div className="rounded-lg border border-paper/10 bg-night-soft/40 px-5 py-8">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/40">
+        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
           Context
         </p>
-        <p className="mt-3 font-serif italic text-detail text-paper/50 leading-[1.6]">
+        <p className="mt-3 font-serif italic text-detail text-paper/60 leading-[1.6]">
           Select an event on the timeline to see its context, certainty, and
           connections here.
         </p>
@@ -44,7 +44,7 @@ export function EventContextRail({ selected }: { selected?: string }) {
 
   return (
     <div className="rounded-lg border border-paper/12 bg-night-soft/50 px-5 py-5">
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/40">
+      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
         {era.label}
       </p>
       <h3 className="mt-2 font-heading text-title-sm text-paper leading-snug">
@@ -62,7 +62,7 @@ export function EventContextRail({ selected }: { selected?: string }) {
         {event.categories.map((c) => (
           <span
             key={c}
-            className="rounded-pill bg-paper/[0.06] px-2 py-0.5 font-sans text-eyebrow uppercase tracking-[1px] text-paper/50"
+            className="rounded-pill bg-paper/[0.06] px-2 py-0.5 font-sans text-eyebrow uppercase tracking-[1px] text-paper/60"
           >
             {categoryById(c).label}
           </span>
@@ -71,7 +71,7 @@ export function EventContextRail({ selected }: { selected?: string }) {
 
       {saints.length || councils.length ? (
         <div className="mt-5 border-t border-paper/10 pt-4">
-          <p className="font-sans text-caption uppercase tracking-[1.4px] text-paper/40">
+          <p className="font-sans text-caption uppercase tracking-[1.4px] text-paper/55">
             Connected
           </p>
           <ul className="mt-2 space-y-1">

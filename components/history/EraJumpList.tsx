@@ -47,11 +47,11 @@ export function EraJumpList({
                   >
                     {era.label}
                   </span>
-                  <span className="block font-sans text-caption text-paper/40 tabular-nums">
+                  <span className="block font-sans text-caption text-paper/55 tabular-nums">
                     {era.from}–{era.to}
                   </span>
                 </span>
-                <span className="shrink-0 font-sans text-caption text-paper/40 tabular-nums">
+                <span className="shrink-0 font-sans text-caption text-paper/55 tabular-nums">
                   {count}
                 </span>
               </button>
