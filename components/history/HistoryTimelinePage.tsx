@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Sheet } from "@/components/ui/Sheet";
+import { getClientEntitlements } from "@/lib/entitlements/client";
 import { useIsNative } from "@/lib/platform/native";
 import {
   centuriesInDataset,
@@ -66,6 +67,12 @@ export function HistoryTimelinePage() {
   const [erasOpen, setErasOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [activeEra, setActiveEra] = useState<Era | undefined>(undefined);
+  // Immersive (cinematic) mode: a Purify Plus layer. plusFeatures is open
+  // for everyone until the launch enforcement switches flip (the ambience
+  // pattern); after that, free readers keep the standard timeline and never
+  // receive the artwork or motion layers.
+  const [canCinema, setCanCinema] = useState(false);
+  const [cinematic, setCinematic] = useState(false);
 
   // Init: URL params (web) win over the persisted session; reading
   // window.location on mount (instead of useSearchParams) keeps this
@@ -79,7 +86,44 @@ export function HistoryTimelinePage() {
     setState(hasUrlState ? fromUrl : (loadPersistedState() ?? EMPTY_STATE));
     setHydrated(true);
   }, []);
+
+  // Entitlement lookup for Immersive mode; defaults on for entitled readers
+  // unless they turned it off, and stays off (invisible) for everyone else.
+  useEffect(() => {
+    let alive = true;
+    getClientEntitlements()
+      .then((e) => {
+        if (!alive) return;
+        setCanCinema(e.plusFeatures);
+        if (e.plusFeatures) {
+          let saved: string | null = null;
+          try {
+            saved = localStorage.getItem("purify.history.cinematic");
+          } catch {
+            /* ignore */
+          }
+          setCinematic(saved !== "off");
+        }
+      })
+      .catch(() => {
+        /* entitlement lookup must never break the timeline */
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
+
+  const toggleCinematic = useCallback(() => {
+    setCinematic((v) => {
+      try {
+        localStorage.setItem("purify.history.cinematic", v ? "off" : "on");
+      } catch {
+        /* ignore */
+      }
+      return !v;
+    });
+  }, []);
 
   // Persist every change; mirror to the URL on web only (debounced).
   const urlTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -220,6 +264,24 @@ export function HistoryTimelinePage() {
     (state.certainty ? 1 : 0) +
     (state.century ? 1 : 0);
 
+  // The Immersive switch renders only for entitled readers; free readers
+  // never see the control, the artwork, or the motion layers.
+  const cinematicToggle = canCinema ? (
+    <button
+      type="button"
+      onClick={toggleCinematic}
+      aria-pressed={cinematic}
+      title="Immersive History: artwork and cinematic motion (Purify Plus)"
+      className={
+        cinematic
+          ? "tap-press min-h-[44px] shrink-0 rounded-md border border-gold/50 bg-gold/10 px-3.5 font-sans text-ui font-semibold text-gold"
+          : "tap-press min-h-[44px] shrink-0 rounded-md border border-paper/15 px-3.5 font-sans text-ui font-semibold text-paper/75"
+      }
+    >
+      Immersive
+    </button>
+  ) : null;
+
   const controlButtons = (
     <>
       <button
@@ -236,6 +298,7 @@ export function HistoryTimelinePage() {
       >
         Filter{filterCount ? ` · ${filterCount}` : ""}
       </button>
+      {cinematicToggle}
     </>
   );
 
@@ -250,6 +313,14 @@ export function HistoryTimelinePage() {
         <aside className="hidden xl:block">
           <div className="sticky top-[88px] max-h-[calc(100vh-110px)] space-y-8 overflow-y-auto pr-2 scrollbar-thin">
             <HistorySearchInline />
+            {cinematicToggle ? (
+              <div className="flex items-center gap-3">
+                {cinematicToggle}
+                <span className="font-sans text-caption text-paper/55">
+                  Artwork and cinematic motion
+                </span>
+              </div>
+            ) : null}
             <div>
               <p className="mb-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
                 Eras
@@ -294,7 +365,12 @@ export function HistoryTimelinePage() {
           <ActiveFilterChips value={state} onChange={update} className="mt-4" />
 
           <div className="mt-6">
-            <TimelineCore groups={groups} selected={state.selected} onSelect={select} />
+            <TimelineCore
+              groups={groups}
+              selected={state.selected}
+              cinematic={cinematic}
+              onSelect={select}
+            />
           </div>
         </div>
 

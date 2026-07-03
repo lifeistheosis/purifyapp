@@ -124,6 +124,24 @@ export type HistoryEventMeta = {
     /** Event slugs that flowed out of this one. Must be same year or later. */
     resultedIn?: string[];
   };
+  /** Rights-verified historical artwork for the Plus cinematic mode. Every
+   *  field is required by the integrity suite when media is present; the
+   *  license must be public domain, CC0, or a commercial-compatible CC, and
+   *  evidenceUrl records where that was verified. The facts stay free with
+   *  or without these layers. */
+  media?: {
+    /** Bundled path under /history/media/. */
+    hero: string;
+    alt: string;
+    /** The work depicted. */
+    work: string;
+    artist: string;
+    /** When the artwork was made, e.g. "1840" or "15th century". */
+    workDate: string;
+    source: string;
+    license: string;
+    evidenceUrl: string;
+  };
 };
 
 /** Era index. Boundaries are conventional and documented here rather than
@@ -315,6 +333,16 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       saints: ["apostle-peter", "apostle-john", "theotokos"],
       scripture: ["Acts 2:1-41", "Joel 2:28-32", "John 15:26"],
       resultedIn: ["council-of-jerusalem", "missions-of-apostle-paul"],
+    },
+    media: {
+      hero: "/history/media/pentecost.jpg",
+      alt: "Icon of the Descent of the Holy Spirit: the apostles enthroned in a semicircle with tongues of fire descending",
+      work: "The Descent of the Holy Spirit",
+      artist: "Unknown iconographer, Novgorod school",
+      workDate: "circa 1500",
+      source: "Wikimedia Commons",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:The_Descent_of_the_Holy_Spirit_Novgorod.jpeg",
     },
   },
   {
@@ -610,6 +638,16 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       precededBy: ["edict-of-milan", "arian-controversy-begins"],
       resultedIn: ["first-council-of-constantinople"],
     },
+    media: {
+      hero: "/history/media/first-council-of-nicaea.png",
+      alt: "Fresco of the First Ecumenical Council: the emperor and the assembled fathers with the condemned Arius below",
+      work: "Fresco of the First Ecumenical Council, Megalo Meteoron monastery",
+      artist: "Photograph by Jjensen",
+      workDate: "16th century fresco, photographed 2008",
+      source: "Wikimedia Commons",
+      license: "CC BY-SA 3.0",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Nikea-arius.png",
+    },
   },
   {
     id: "he-foundation-constantinople",
@@ -685,6 +723,16 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["john-chrysostom", "olympias-the-deaconess"],
+    },
+    media: {
+      hero: "/history/media/chrysostom-at-constantinople.jpg",
+      alt: "Byzantine mosaic of St John Chrysostom vested as archbishop, from Hagia Sophia",
+      work: "Mosaic of St John Chrysostom, Hagia Sophia",
+      artist: "Unknown Byzantine mosaicist",
+      workDate: "late 9th century",
+      source: "Wikimedia Commons",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Byzantinischer_Mosaizist_des_9._Jahrhunderts_003.jpg",
     },
   },
   {
@@ -920,6 +968,16 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       heresies: ["iconoclasm"],
       precededBy: ["second-iconoclasm"],
     },
+    media: {
+      hero: "/history/media/triumph-of-orthodoxy.jpg",
+      alt: "Icon of the Triumph of Orthodoxy: the Hodegetria icon enthroned with the empress Theodora and the defenders of the icons",
+      work: "Icon of the Triumph of Orthodoxy",
+      artist: "Unknown iconographer, Constantinople",
+      workDate: "circa 1400",
+      source: "Wikimedia Commons",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Triumph_orthodoxy.jpg",
+    },
   },
   {
     id: "he-cyril-methodius",
@@ -1046,6 +1104,16 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       theology: ["papacy"],
       precededBy: ["great-schism-1054"],
     },
+    media: {
+      hero: "/history/media/sack-of-constantinople-1204.jpg",
+      alt: "Romantic painting of mounted crusaders entering Constantinople amid smoke and pleading citizens",
+      work: "The Entry of the Crusaders into Constantinople",
+      artist: "Eugene Delacroix",
+      workDate: "1840",
+      source: "Wikimedia Commons",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Eug%C3%A8ne_Delacroix_-_Prise_de_Constantinople_par_les_crois%C3%A9s_(12_avril_1204).jpg",
+    },
   },
   {
     id: "he-hesychast-councils",
@@ -1123,6 +1191,16 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     rel: {
       precededBy: ["council-of-florence"],
       resultedIn: ["moscow-patriarchate-established"],
+    },
+    media: {
+      hero: "/history/media/fall-of-constantinople.jpg",
+      alt: "Painting of Mehmed II riding into fallen Constantinople over the bodies of its defenders",
+      work: "The Entry of Mehmet II into Constantinople",
+      artist: "Jean-Joseph Benjamin-Constant",
+      workDate: "1876",
+      source: "Wikimedia Commons",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Benjamin-Constant-The_Entry_of_Mahomet_II_into_Constantinople-1876.jpg",
     },
   },
   {

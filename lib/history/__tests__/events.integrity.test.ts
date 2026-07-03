@@ -219,6 +219,27 @@ describe("editorial gate: sources & publication", () => {
     }
   });
 
+  it("media, when present, is rights-complete with an allowed license and a bundled file", () => {
+    const ALLOWED = /^(public domain|pd-art|cc0|cc by(-sa)?( \d\.\d)?)$/i;
+    for (const e of HISTORY_EVENTS) {
+      if (!e.media) continue;
+      const m = e.media;
+      expect(m.hero.startsWith("/history/media/"), `${e.slug} hero path`).toBe(true);
+      const onDisk = path.join(process.cwd(), "public", m.hero.replace(/^\//, ""));
+      expect(fs.existsSync(onDisk), `${e.slug} media file missing: ${m.hero}`).toBe(true);
+      // Guard against HTML error pages saved as images.
+      const head = fs.readFileSync(onDisk).subarray(0, 8);
+      const isJpeg = head[0] === 0xff && head[1] === 0xd8;
+      const isPng = head[0] === 0x89 && head[1] === 0x50;
+      expect(isJpeg || isPng, `${e.slug} media is not a real image`).toBe(true);
+      for (const field of ["alt", "work", "artist", "workDate", "source", "license", "evidenceUrl"] as const) {
+        expect(String(m[field]).trim(), `${e.slug} media.${field}`).not.toBe("");
+      }
+      expect(ALLOWED.test(m.license), `${e.slug} license '${m.license}' not in the allowed set`).toBe(true);
+      expect(m.evidenceUrl.startsWith("https://"), `${e.slug} evidenceUrl`).toBe(true);
+    }
+  });
+
   it("drafts are never routed or listed", () => {
     const routed = new Set(eventParams().map((p) => p.slug));
     for (const e of HISTORY_EVENTS) {
