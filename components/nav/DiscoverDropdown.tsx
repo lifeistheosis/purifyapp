@@ -36,6 +36,9 @@ export const DISCOVER_CHILD_HREFS = [
 
 const OPEN_DELAY = 120;
 const CLOSE_DELAY = 200;
+// Duration of the panel's open/close animation. Kept in one place so the
+// CSS transition and the unmount timer stay in step.
+const MENU_ANIM_MS = 200;
 
 export function DiscoverDropdown({
   pathname,
@@ -50,9 +53,30 @@ export function DiscoverDropdown({
   triggerClassName: string;
   triggerStyle?: CSSProperties;
 }) {
+  // `open` is the hover/focus intent. `mounted` keeps the panel in the DOM
+  // through the close animation, and `visible` drives the transition (off on
+  // mount so opening animates from the closed state, and off again before
+  // unmount so closing animates too). Same two-phase pattern as components/ui/Sheet.
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [visible, setVisible] = useState(false);
   const openTimer = useRef<number | null>(null);
   const closeTimer = useRef<number | null>(null);
+
+  /* eslint-disable react-hooks/set-state-in-effect -- mount/visible are the
+     animation gate; they must flip in an effect a frame apart so the CSS
+     transition has a start and an end state (Sheet.tsx precedent). */
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      const r = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(r);
+    }
+    setVisible(false);
+    const t = window.setTimeout(() => setMounted(false), MENU_ANIM_MS);
+    return () => window.clearTimeout(t);
+  }, [open]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   function clearTimers() {
     if (openTimer.current) {
@@ -140,13 +164,20 @@ export function DiscoverDropdown({
       >
         {triggerLabel}
       </Link>
-      {open && (
+      {mounted && (
         <div
           role="menu"
           className={cn(
-            "absolute left-1/2 top-full -translate-x-1/2 mt-3 min-w-[200px]",
+            "absolute left-1/2 top-full mt-3 min-w-[200px] origin-top",
             "rounded-md border border-white/12 bg-night/95 backdrop-blur-xl",
             "shadow-[0_10px_40px_rgba(0,0,0,0.55)] py-2 z-50",
+            // Smooth linear open/close: fade + a small slide-and-scale from
+            // the trigger. Linear easing as requested; reduced motion snaps.
+            "transition-[opacity,transform] duration-200 ease-linear",
+            "motion-reduce:transition-none",
+            visible
+              ? "opacity-100 -translate-x-1/2 translate-y-0 scale-100"
+              : "opacity-0 -translate-x-1/2 -translate-y-1 scale-[0.97] pointer-events-none",
           )}
           onMouseEnter={openNow}
           onMouseLeave={scheduleClose}
