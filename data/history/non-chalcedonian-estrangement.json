@@ -13,7 +13,7 @@
   ],
   "uncertainty": "This entry is an editorial synthesis of a two-century development, not a single event; the characterization of the division as substantially terminological follows the modern scholarly and dialogical consensus, which not all assess identically.",
   "sources": [
-    { "label": "Evagrius Scholasticus, Ecclesiastical History II–IV", "kind": "primary", "note": "Near-contemporary narrative of the post-Chalcedon divisions and the Henotikon." },
+    { "label": "Evagrius Scholasticus, Ecclesiastical History II–IV", "kind": "primary", "url": "https://www.tertullian.org/fathers/evagrius_0_toc.htm", "note": "Near-contemporary narrative of the post-Chalcedon divisions and the Henotikon." },
     { "label": "W. H. C. Frend, The Rise of the Monophysite Movement (Cambridge)", "author": "W. H. C. Frend", "kind": "secondary", "note": "The standard academic history of the separation." },
     { "label": "John Meyendorff, Imperial Unity and Christian Divisions (SVS Press)", "author": "John Meyendorff", "kind": "secondary", "note": "Orthodox historical assessment of the estrangement and the imperial attempts at reunion." }
   ]

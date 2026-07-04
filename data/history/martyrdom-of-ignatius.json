@@ -13,7 +13,7 @@
   "uncertainty": "The seven authentic letters are secure; the traditional date of his death under Trajan (c. 107–110) rests on Eusebius's chronology and cannot be independently verified.",
   "sources": [
     { "label": "The Letters of St Ignatius of Antioch", "kind": "primary", "url": "https://www.newadvent.org/fathers/0104.htm", "note": "The seven authentic letters (middle recension)." },
-    { "label": "Eusebius, Church History III.36", "kind": "primary", "note": "The early account and dating of his martyrdom." },
+    { "label": "Eusebius, Church History III.36", "kind": "primary", "url": "https://www.newadvent.org/fathers/2501.htm", "note": "The early account and dating of his martyrdom." },
     { "label": "Michael W. Holmes (ed.), The Apostolic Fathers (Baker Academic)", "author": "Michael W. Holmes", "kind": "secondary", "note": "Critical texts and introductions, including authenticity and dating." }
   ]
 }

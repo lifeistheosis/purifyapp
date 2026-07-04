@@ -14,7 +14,7 @@
   "sources": [
     { "label": "The Creed and Canons of Constantinople I, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1", "kind": "primary", "note": "Critical text of the creed and the seven canons." },
     { "label": "Gregory the Theologian, Five Theological Orations (Orations 27–31)", "kind": "primary", "url": "https://www.newadvent.org/fathers/3103.htm", "note": "The doctrine of the Spirit the council received." },
-    { "label": "Socrates Scholasticus, Church History V.8", "kind": "primary", "note": "Narrative of the council's sessions." },
+    { "label": "Socrates Scholasticus, Church History V.8", "kind": "primary", "url": "https://www.newadvent.org/fathers/2601.htm", "note": "Narrative of the council's sessions." },
     { "label": "J. N. D. Kelly, Early Christian Creeds (Longman), chs. on the Constantinopolitan creed", "author": "J. N. D. Kelly", "kind": "secondary", "note": "On the creed's text and reception." }
   ]
 }

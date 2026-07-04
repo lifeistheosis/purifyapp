@@ -13,7 +13,7 @@
   "uncertainty": "The exact year the dispute broke out (317–319) and the sequence of the earliest synods are reconstructed from partisan sources; the outline given here follows the standard scholarly account.",
   "sources": [
     { "label": "Socrates Scholasticus, Church History I.5–6", "kind": "primary", "url": "https://www.newadvent.org/fathers/2601.htm", "note": "Preserves Alexander's encyclical and Arius's letter to Eusebius." },
-    { "label": "Athanasius, Orations Against the Arians I", "kind": "primary", "note": "Quotes the Thalia and answers the Arian syllogisms." },
+    { "label": "Athanasius, Orations Against the Arians I", "kind": "primary", "url": "https://www.newadvent.org/fathers/2816.htm", "note": "Quotes the Thalia and answers the Arian syllogisms." },
     { "label": "R. P. C. Hanson, The Search for the Christian Doctrine of God (T&T Clark)", "author": "R. P. C. Hanson", "kind": "secondary", "note": "The standard modern history of the Arian controversy." }
   ]
 }

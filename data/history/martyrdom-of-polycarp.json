@@ -13,7 +13,7 @@
   "uncertainty": "The Martyrdom's date-notice points to February 23, most likely in 155 or 156 (some scholars argue 166–167); the year shown is the scholarly majority view.",
   "sources": [
     { "label": "The Martyrdom of Polycarp", "kind": "primary", "url": "https://www.newadvent.org/fathers/0102.htm", "note": "The Smyrnaean church's eyewitness letter." },
-    { "label": "Irenaeus, Against Heresies III.3.4", "kind": "primary", "note": "Polycarp's link to the apostle John." },
+    { "label": "Irenaeus, Against Heresies III.3.4", "kind": "primary", "url": "https://www.newadvent.org/fathers/0103.htm", "note": "Polycarp's link to the apostle John." },
     { "label": "Michael W. Holmes (ed.), The Apostolic Fathers (Baker Academic)", "author": "Michael W. Holmes", "kind": "secondary", "note": "Critical text and the dating discussion." }
   ]
 }

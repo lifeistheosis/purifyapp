@@ -12,7 +12,7 @@
   ],
   "sources": [
     { "label": "Nicetas Choniates, Historia (trans. Magoulias, O City of Byzantium, Wayne State)", "kind": "primary", "note": "Byzantine eyewitness account of the sack." },
-    { "label": "Geoffrey of Villehardouin, The Conquest of Constantinople", "kind": "primary", "note": "A crusade leader's own narrative." },
+    { "label": "Geoffrey of Villehardouin, The Conquest of Constantinople", "kind": "primary", "url": "https://www.gutenberg.org/ebooks/6032", "note": "A crusade leader's own narrative." },
     { "label": "Donald E. Queller & Thomas F. Madden, The Fourth Crusade: The Conquest of Constantinople (Penn)", "author": "Queller & Madden", "kind": "secondary", "note": "The standard modern history of the diversion and sack." }
   ]
 }
