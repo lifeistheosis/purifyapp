@@ -388,9 +388,15 @@ export function HistoryTimelinePage() {
           </div>
         </div>
 
-        {/* Right context column, tablet landscape and desktop. */}
+        {/* Right context column, tablet landscape and desktop. Height-capped
+            with its own scrollbar so a long account can't push "Open the
+            full account" below the fold; keyed on the selection so picking
+            a new event starts the rail back at the top. */}
         <aside className="hidden lg:block">
-          <div className="sticky top-[88px]">
+          <div
+            key={state.selected ?? "empty"}
+            className="sticky top-[88px] max-h-[calc(100vh-110px)] overflow-y-auto pr-1 scrollbar-thin"
+          >
             <EventContextRail selected={state.selected} />
             {hasActiveFilters(state) ? (
               <p className="mt-4 text-center font-sans text-caption text-paper/55">
