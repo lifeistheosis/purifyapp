@@ -61,6 +61,11 @@ export type Bookmark =
  kind: "prayer-rule";
  ruleId: string;
  href: string;
+ })
+ | (BookmarkBase & {
+ kind: "history-event";
+ eventSlug: string;
+ displayDate: string;
  });
 
 // Distributive Omit: TypeScript's built-in Omit treats unions as a single
@@ -90,6 +95,10 @@ export type BookmarkLocator =
  saintSlug: string;
  workSlug: string;
  sectionN: number;
+ }
+ | {
+ kind: "history-event";
+ eventSlug: string;
  };
 
 const STORAGE_KEY = "purify:bookmarks";
@@ -111,6 +120,9 @@ function matches(b: Bookmark, loc: BookmarkLocator): boolean {
  b.workSlug === loc.workSlug &&
  b.sectionN === loc.sectionN
  );
+ }
+ if (b.kind === "history-event" && loc.kind === "history-event") {
+ return b.eventSlug === loc.eventSlug;
  }
  return false;
 }
@@ -138,6 +150,9 @@ export function bookmarkKey(b: Bookmark): string {
  break;
  case "prayer-rule":
  loc = { ruleId: b.ruleId };
+ break;
+ case "history-event":
+ loc = { eventSlug: b.eventSlug };
  break;
  default:
  loc = {};

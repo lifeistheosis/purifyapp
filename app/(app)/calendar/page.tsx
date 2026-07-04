@@ -190,15 +190,22 @@ export default async function CalendarPage({
 }: {
  searchParams: SearchParams;
 }) {
- const params = await searchParams;
+ // Android static export can't read searchParams/cookies (would force dynamic);
+ // it renders the default (New calendar) and the client adjusts from the
+ // ?style= param + local calendar-style preference. Website unchanged.
+ const isAndroid = process.env.BUILD_TARGET === "android";
+ const params = isAndroid
+   ? ({} as Awaited<SearchParams>)
+   : await searchParams;
  const locale = await getServerLocale();
  const isDe = locale === "de";
  // Resolve the calendar style:
  //   1. ?style= query (per-visit toggle wins)
  //   2. user preference cookie (ProfileSettings writes it)
  //   3. fall back to New (Revised Julian)
- const cookieStore = await cookies();
- const cookieStyle = cookieStore.get(CALENDAR_STYLE_COOKIE)?.value;
+ const cookieStyle = isAndroid
+   ? undefined
+   : (await cookies()).get(CALENDAR_STYLE_COOKIE)?.value;
  const style: CalStyle =
    params.style === "old"
      ? "old"

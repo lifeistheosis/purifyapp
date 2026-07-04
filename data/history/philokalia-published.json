@@ -1,0 +1,18 @@
+{
+  "slug": "philokalia-published",
+  "context": [
+    { "kind": "para", "text": "Under the long Turkish centuries, learned Orthodoxy leaned on Western schooling while the hesychast inheritance survived quietly on Athos. In the later 1700s the movement called the Kollyvades pressed for a return to the sources, frequent communion, the Fathers, the prayer of the heart." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "Two of that movement, Makarios of Corinth and the young Athonite scholar Nikodemos the Hagiorite, gathered from monastic libraries the master-texts on watchfulness (nepsis) and the Jesus Prayer, some thirty-six authors spanning the fourth to fifteenth centuries, from Anthony's circle and Evagrius to Symeon the New Theologian and Gregory Palamas. The great folio was printed at Venice in 1782 as the Philokalia, 'love of the beautiful.'" },
+    { "kind": "para", "text": "Almost at once Paisius Velichkovsky, a Ukrainian elder reviving hesychast monasticism in Moldavia, issued his Slavonic Dobrotolubiye (1793); Russian versions followed, and the book walked into the world's hands, literally so in The Way of a Pilgrim, whose wandering narrator carries it with his prayer rope. From Optina's elders to the twentieth-century renaissance of Orthodox theology, and in full English translation since 1979, the Philokalia became, after the Bible, the most influential book in the modern Orthodox world." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "The Philokalia re-centered modern Orthodoxy on its own deepest tradition: the purification of the heart and unceasing prayer as the way to theosis. Purify's own prayer-rope and Jesus Prayer teaching stand in the lineage this book renewed." }
+  ],
+  "sources": [
+    { "label": "The Philokalia of the Neptic Fathers (Venice, 1782); English trans. Palmer, Sherrard, Ware (Faber), vols. 1–4", "kind": "primary", "note": "The collection itself, with the translators' historical introductions." },
+    { "label": "Kallistos (Ware), 'St Nikodimos and the Philokalia', in The Philokalia: A Classic Text of Orthodox Spirituality (Oxford)", "author": "Kallistos Ware", "kind": "secondary", "note": "The standard account of the compilation and its influence." },
+    { "label": "The Way of a Pilgrim (trans. French, SPCK)", "kind": "primary", "note": "Nineteenth-century witness to the book's reception in Russian piety." }
+  ]
+}

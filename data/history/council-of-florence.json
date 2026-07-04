@@ -1,0 +1,18 @@
+{
+  "slug": "council-of-florence",
+  "context": [
+    { "kind": "para", "text": "By the 1430s the empire was a city and a coastline, and only Western arms could save it. Emperor John VIII and the aged Patriarch Joseph led some seven hundred Greeks, bishops, monks, scholars, to Italy for a council of union, hoping doctrine could be settled and a crusade secured." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "At Ferrara and then Florence the Greeks debated purgatory, the filioque, the azymes, and papal primacy through months of attrition. Worn by poverty, homesickness, and imperial pressure, most gradually yielded; the decree of union, Laetentur Caeli, was signed on July 6, 1439, conceding the filioque's legitimacy and the pope's primacy 'as it is contained in the acts of the ecumenical councils and the sacred canons', a formula each side read its own way." },
+    { "kind": "para", "text": "Mark Eugenikos, metropolitan of Ephesus, alone among the bishops refused to sign; when the pope heard it he is reported to have said, 'Then we have accomplished nothing.' Mark's case was the old one: the creed is complete, the Fathers of East and West agree when rightly read, and a union without truth is no union. Home in Constantinople, the signatories were met with grief and revulsion; most repudiated their signatures, the promised crusade died at Varna in 1444, and the union was formally renounced by the Orthodox patriarchs. The Church glorified Mark as a pillar of Orthodoxy." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "Florence is Orthodoxy's classic lesson that the faith is not the hierarchy's to trade: reception by the whole body of the Church judges even an imposing council. Mark of Ephesus stands in the Orthodox memory beside Athanasius, one man, and the truth, against the world." }
+  ],
+  "sources": [
+    { "label": "The decree Laetentur Caeli and the Greek acts of Florence, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1", "kind": "primary", "note": "The union decree of July 6, 1439." },
+    { "label": "Sylvester Syropoulos, Memoirs", "kind": "primary", "note": "A Greek participant's candid account of the pressures at the council." },
+    { "label": "Joseph Gill, The Council of Florence (Cambridge)", "author": "Joseph Gill", "kind": "secondary", "note": "The standard scholarly history of the council." }
+  ]
+}

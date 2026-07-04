@@ -22,7 +22,7 @@ import { getSaint } from "@/lib/saints/saints";
 import { Cross } from "@/components/ui/icons/Cross";
 import { Book } from "@/components/ui/icons/Book";
 import { Scroll } from "@/components/ui/icons/Scroll";
-import { Bolt } from "@/components/ui/icons/Bolt";
+import { Shield } from "@/components/ui/icons/Shield";
 
 export const metadata = {
   title: "Theology",
@@ -63,7 +63,7 @@ const MODES = [
     kicker: "Defense",
     href: "/apologetics",
     blurb: "Objections and replies, a reasoned answer to the questions an objector brings.",
-    Icon: Bolt,
+    Icon: Shield,
   },
 ] as const;
 
@@ -304,6 +304,25 @@ export default async function TheologyHubPage() {
         <section className="mt-12">
           <SectionHead title="Search the library" />
           <TheologyFilter items={filterItems} />
+        </section>
+
+        {/* ── Orthodox History cross-link ───────────────────────────────── */}
+        <section className="mt-14">
+          <Link
+            href="/history"
+            className="group block rounded-xl border border-paper/[0.1] bg-paper/[0.02] px-6 py-6 transition-colors hover:border-paper/25"
+          >
+            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/80">
+              New · Interactive Timeline
+            </p>
+            <p className="mt-2 font-display-serif text-title-sm md:text-title text-paper leading-tight transition-colors group-hover:text-gold">
+              Explore Church History
+            </p>
+            <p className="mt-2 max-w-[560px] font-serif italic text-ui text-paper/65 leading-[1.6]">
+              Every doctrine here was confessed somewhere, by someone, against
+              something. Walk the timeline from Pentecost to the present.
+            </p>
+          </Link>
         </section>
 
         {/* ── Featured studies ──────────────────────────────────────────── */}

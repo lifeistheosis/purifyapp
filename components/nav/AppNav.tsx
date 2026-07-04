@@ -140,7 +140,10 @@ export function AppNav() {
           </Link>
         </div>
 
-        <nav className="hidden md:flex items-center gap-7">
+        {/* Full link row needs ~900px; below lg (tablet portrait included)
+            the hamburger menu takes over so the header can never overflow
+            the viewport. */}
+        <nav className="hidden lg:flex items-center gap-7">
           {NAV.map((it, i) => {
             const delay = { animationDelay: `${80 + i * 35}ms` };
             if (it.key === "discover") {
@@ -179,7 +182,7 @@ export function AppNav() {
         </nav>
 
         <div
-          className="appnav-in hidden md:flex items-center gap-5"
+          className="appnav-in hidden lg:flex items-center gap-5"
           style={{ animationDelay: `${80 + NAV.length * 35}ms` }}
         >
           {SECONDARY.map((it) => (
@@ -242,7 +245,7 @@ export function AppNav() {
           type="button"
           aria-label={t("nav.menuToggle")}
           aria-expanded={open}
-          className="md:hidden inline-flex items-center justify-center h-11 w-11 rounded-pill border border-paper/20 text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
+          className="lg:hidden inline-flex items-center justify-center h-11 w-11 rounded-pill border border-paper/20 text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
           onClick={() => setOpen((v) => !v)}
         >
           <span className="text-lede">{open ? "✕" : "≡"}</span>
@@ -250,7 +253,7 @@ export function AppNav() {
       </div>
 
       {open && (
-        <div className="md:hidden absolute left-0 right-0 top-full bg-night border-b border-white/8">
+        <div className="lg:hidden absolute left-0 right-0 top-full bg-night border-b border-white/8">
           <nav className="flex flex-col px-5 py-4 gap-1">
             {[...NAV, ...SECONDARY, { key: "account", label: t("nav.account"), href: "/account" }].map(
               (it) => (

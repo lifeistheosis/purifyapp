@@ -1,0 +1,18 @@
+{
+  "slug": "apologies-of-justin-martyr",
+  "context": [
+    { "kind": "para", "text": "By the mid-second century Christians were condemned for the name alone, amid rumors of atheism and secret crimes. Justin, a Samaritan-born philosopher who had tried the Stoics and Platonists before finding in Christ 'the only sure and worthy philosophy', kept his philosopher's cloak and opened a school at Rome." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "Around 155 Justin addressed his First Apology to the emperor Antoninus Pius: Christians are not atheists but worshippers of the true God; punish crimes, not a name. Whatever is true anywhere, he argued, belongs to Christ, the Logos in whom every scattered seed of truth coheres, the first great engagement of the Gospel with Greek philosophy on its own terms." },
+    { "kind": "para", "text": "Almost in passing, Justin left the earliest surviving description of Christian worship: baptism as illumination; the Sunday assembly with the reading of 'the memoirs of the apostles,' the homily, the common prayers, the kiss of peace; and the Eucharist, 'not as common bread and common drink do we receive these,' but as the flesh and blood of the incarnate Jesus. Around 165, denounced with six companions, he was scourged and beheaded under the prefect Rusticus; the court record survives." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "Justin is the father of Orthodox engagement with philosophy and culture, truth wherever found belongs to the Logos, and his liturgical description shows the shape of the Divine Liturgy already recognizable in the second century." }
+  ],
+  "sources": [
+    { "label": "Justin Martyr, First Apology (esp. chs. 61–67)", "kind": "primary", "url": "https://www.newadvent.org/fathers/0126.htm", "note": "The defense, and the earliest description of Baptism and the Sunday Eucharist." },
+    { "label": "The Martyrdom of Justin and Companions", "kind": "primary", "note": "The near-contemporary court record of his trial and execution." },
+    { "label": "Henry Chadwick, The Early Church (Penguin), ch. 5", "author": "Henry Chadwick", "kind": "secondary", "note": "On the apologists and Justin's Logos theology." }
+  ]
+}

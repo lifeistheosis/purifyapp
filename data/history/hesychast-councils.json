@@ -1,0 +1,18 @@
+{
+  "slug": "hesychast-councils",
+  "context": [
+    { "kind": "para", "text": "On Mount Athos the hesychasts, 'those who keep stillness', practiced the unceasing Jesus Prayer, and some were granted a vision of divine light, which they identified with the light of Christ's Transfiguration on Tabor. Barlaam, a Calabrian Greek philosopher, ridiculed both practice and claim: God being unknowable, the light could only be created, and the monks deluded." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "Gregory Palamas, an Athonite monk, answered in his Triads in Defense of the Holy Hesychasts. God is indeed beyond participation in his essence, yet truly gives himself in his uncreated energies, as the sun is not diminished by its rays. The light of Tabor is neither the essence nor a creature but the uncreated glory of God, which the pure in heart may really behold; grace is not a created gift but God himself indwelling. Otherwise 'God' would name something we can never actually meet." },
+    { "kind": "para", "text": "Councils at Constantinople in 1341 condemned Barlaam; in 1347 and finally in 1351, against the successor critic Akindynos and the historian Gregoras, the essence–energies distinction and the uncreated character of the light were solemnly confirmed as the Church's faith, and entered into the Synodikon of Orthodoxy. Palamas, made archbishop of Thessalonica, was glorified as a saint within a decade of his death; the second Sunday of Great Lent is his feast, a 'second Triumph of Orthodoxy.'" }
+  ],
+  "significance": [
+    { "kind": "para", "text": "The hesychast councils dogmatized the experiential heart of Orthodoxy: theosis is real participation in God's own life, not metaphor. The theology of the uncreated energies undergirds Orthodox teaching on grace, prayer, and the vision of God, and separates it most sharply from the scholastic West." }
+  ],
+  "sources": [
+    { "label": "Gregory Palamas, The Triads (ed. Meyendorff, trans. Gendle, Paulist Classics of Western Spirituality)", "kind": "primary", "note": "The defense of the hesychasts and the essence–energies distinction." },
+    { "label": "The Synodal Tomos of 1351 and the hesychast chapters of the Synodikon of Orthodoxy", "kind": "primary", "note": "The conciliar definitions received into the Church's liturgical confession." },
+    { "label": "John Meyendorff, A Study of Gregory Palamas (SVS Press)", "author": "John Meyendorff", "kind": "secondary", "note": "The standard modern study of Palamas and the councils." }
+  ]
+}

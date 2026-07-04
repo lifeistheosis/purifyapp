@@ -1000,3 +1000,173 @@ html.reader-focus [data-reader-exit] {
  animation: none;
  }
 }
+
+/* ============================== History ==============================
+   Motion + rendering primitives for the Orthodox History timeline.
+   One motion language across platforms: transform/opacity only, house
+   easing, and a reduced-motion path for every rule. */
+
+/* Windowed rendering without a virtualization dependency: off-screen
+   event cards skip layout/paint but keep their DOM (anchors, find-in-page,
+   and scroll restoration all keep working). The intrinsic size keeps the
+   scrollbar stable while cards are skipped. */
+.history-cv {
+ content-visibility: auto;
+ contain-intrinsic-size: auto 132px;
+}
+
+/* Event-card expansion: grid-rows trick animates height without measuring
+   layout in JS. 260ms sits inside the 220–360ms card-expansion band. */
+.history-expand {
+ display: grid;
+ grid-template-rows: 0fr;
+ transition: grid-template-rows 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.history-expand > * {
+ overflow: hidden;
+}
+.history-expand[data-open="true"] {
+ grid-template-rows: 1fr;
+}
+@media (prefers-reduced-motion: reduce) {
+ .history-expand {
+ transition: none;
+ }
+}
+
+/* Marker entrance as cards scroll into the viewport. Paired with the
+   card's .rise-in; both settle instantly under reduced motion. */
+@keyframes history-marker-in {
+ from { opacity: 0; transform: scale(0.6); }
+ to { opacity: 1; transform: scale(1); }
+}
+.history-marker-in {
+ animation: history-marker-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+ .history-marker-in {
+ animation: none;
+ opacity: 1;
+ transform: none;
+ }
+}
+
+/* The century scrubber is a styled native range input: draggable by
+   pointer, steppable by arrow keys, tappable on the track. The non-drag
+   path is built in, and it can never fight the Android back-gesture edge
+   zones the way an edge-anchored custom drag surface could. */
+.history-scrubber {
+ -webkit-appearance: none;
+ appearance: none;
+ width: 100%;
+ height: 28px;
+ background: transparent;
+ cursor: pointer;
+}
+.history-scrubber::-webkit-slider-runnable-track {
+ height: 3px;
+ border-radius: 999px;
+ background: color-mix(in srgb, var(--color-paper) 15%, transparent);
+}
+.history-scrubber::-webkit-slider-thumb {
+ -webkit-appearance: none;
+ appearance: none;
+ margin-top: -8.5px;
+ height: 20px;
+ width: 20px;
+ border-radius: 999px;
+ border: 1px solid color-mix(in srgb, var(--color-paper) 35%, transparent);
+ background: var(--color-night-soft);
+ box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-night) 80%, transparent);
+ transition: transform 120ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.history-scrubber:active::-webkit-slider-thumb {
+ transform: scale(1.15);
+ border-color: var(--color-crimson);
+}
+.history-scrubber:focus-visible {
+ outline: 2px solid var(--color-link);
+ outline-offset: 4px;
+ border-radius: 999px;
+}
+.history-scrubber::-moz-range-track {
+ height: 3px;
+ border-radius: 999px;
+ background: color-mix(in srgb, var(--color-paper) 15%, transparent);
+}
+.history-scrubber::-moz-range-thumb {
+ height: 20px;
+ width: 20px;
+ border-radius: 999px;
+ border: 1px solid color-mix(in srgb, var(--color-paper) 35%, transparent);
+ background: var(--color-night-soft);
+}
+@media (prefers-reduced-motion: reduce) {
+ .history-scrubber::-webkit-slider-thumb {
+ transition: none;
+ }
+}
+
+/* History timeline control row: sticks below the website header on the web,
+   and at the very top inside the native shell (no web header there). */
+.history-controls {
+ top: 72px;
+}
+html.is-native .history-controls {
+ top: 0;
+}
+
+/* ======================= History: cinematic mode =======================
+   The Plus "Immersive History" layer. One motion language, sacred-image
+   rules respected: slow pan and zoom only, no figure animation, and every
+   rule has a reduced-motion path. Free users never receive these classes. */
+
+/* Era atmosphere: a slow-drifting tinted light behind each era's panel.
+   Hue arrives per era via --era-hue; alpha stays whisper-quiet so text
+   contrast is untouched. */
+.cinema-era {
+ position: relative;
+}
+.cinema-era::before {
+ content: "";
+ position: absolute;
+ inset: -24px -12px;
+ pointer-events: none;
+ border-radius: 24px;
+ background:
+  radial-gradient(90% 55% at 18% 0%, hsl(var(--era-hue, 45) 45% 55% / 0.075), transparent 70%),
+  radial-gradient(70% 50% at 92% 100%, hsl(var(--era-hue, 45) 50% 40% / 0.05), transparent 72%);
+ animation: cinema-drift 26s ease-in-out infinite alternate;
+}
+@keyframes cinema-drift {
+ from { transform: translate3d(0, 0, 0) scale(1); opacity: 0.85; }
+ to { transform: translate3d(0, -16px, 0) scale(1.05); opacity: 1; }
+}
+
+/* Ken Burns on the event artwork: a slow push with a slight travel.
+   32s round trip keeps it contemplative rather than restless. */
+.cinema-kenburns {
+ animation: cinema-kenburns 32s ease-in-out infinite alternate;
+ will-change: transform;
+}
+@keyframes cinema-kenburns {
+ from { transform: scale(1.06) translate3d(0, 0, 0); }
+ to { transform: scale(1.16) translate3d(-2.5%, -2%, 0); }
+}
+
+/* Card entrance in cinematic mode: a longer, deeper rise. */
+.cinema-card {
+ box-shadow: 0 18px 48px rgb(0 0 0 / 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+ .cinema-era::before {
+ animation: none;
+ opacity: 1;
+ transform: none;
+ }
+ .cinema-kenburns {
+ animation: none;
+ transform: scale(1.06);
+ }
+}

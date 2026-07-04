@@ -1,0 +1,18 @@
+{
+  "slug": "second-iconoclasm",
+  "context": [
+    { "kind": "para", "text": "Military humiliations at Bulgar hands revived the old soldiers' conviction that the iconoclast emperors had won victories and the icon-venerating ones lost them. In 815 Leo V, the Armenian, reimposed the ban, and a synod in Hagia Sophia repudiated Nicaea II." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "The second iconoclasm was less bloody than the first but bore hard on its confessors. Theodore, abbot of the great Studios monastery, organized resistance with letters smuggled from prison and exile, and paid in floggings; the patriarch Nicephorus was deposed and wrote his refutations in exile; bishops, monks, and iconographers were imprisoned and beaten, some to death." },
+    { "kind": "para", "text": "Theodore sharpened the icon's theology to its final precision: an icon does not depict a nature, natures cannot be painted, but a person, the incarnate hypostasis of the Word; its veneration is relational (schetike), passing wholly to the one shown. The persecution slackened after Theophilus, the last iconoclast emperor, died in 842, leaving the empress Theodora regent for his infant son." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "The confessors of the second iconoclasm, Theodore the Studite and Nicephorus above all, completed the doctrine of the icon and proved, at cost, that the Church's faith is not the emperor's to define. Their endurance made the restoration of 843 possible and permanent." }
+  ],
+  "sources": [
+    { "label": "Theodore the Studite, On the Holy Icons (trans. Roth, SVS Press)", "kind": "primary", "note": "The three refutations of the iconoclasts, written amid the persecution." },
+    { "label": "Theophanes Continuatus, Chronicle, on Leo V through Theophilus", "kind": "primary", "note": "Byzantine narrative of the second iconoclasm." },
+    { "label": "Jaroslav Pelikan, The Spirit of Eastern Christendom (The Christian Tradition, vol. 2, Chicago), ch. 3", "author": "Jaroslav Pelikan", "kind": "secondary", "note": "Doctrinal analysis of the second phase and Theodore's contribution." }
+  ]
+}

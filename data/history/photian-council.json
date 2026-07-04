@@ -1,0 +1,19 @@
+{
+  "slug": "photian-council",
+  "context": [
+    { "kind": "para", "text": "When the patriarch Ignatius was deposed amid palace politics in 858 and the great scholar Photius raised in his place, Pope Nicholas I seized the occasion to assert Roman judgment over Constantinople, while Frankish missionaries in newly converted Bulgaria taught a creed with the added filioque. In 867 Photius answered with an encyclical condemning the addition, and communion between the sees broke." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "The quarrel outlived its first actors: a change of emperor restored Ignatius and a Roman-approved council of 869–870 condemned Photius, a council the East never received. But Photius and Ignatius were reconciled before the latter's death, and Photius returned to the throne with Rome's recognition." },
+    { "kind": "para", "text": "The great council of 879–880 in Hagia Sophia, with legates of Pope John VIII presiding beside Photius, annulled the condemnations of 869–870, restored communion, and solemnly reaffirmed the creed of 381 forbidding 'addition or subtraction', with the legates assenting. For the Orthodox East this council, sometimes reckoned 'eighth ecumenical,' shows Rome and Constantinople healing a schism conciliarly, and the filioque already identified as the fault line." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "Every theme of 1054 was rehearsed here, papal jurisdiction, the filioque, rival missions, and, this time, resolved in peace. Photius's Mystagogy of the Holy Spirit remains the classic Orthodox statement that the Spirit proceeds from the Father alone." }
+  ],
+  "uncertainty": "The tangled sequence of depositions and restorations is reported by bitterly partisan sources; the account here follows the modern critical reconstruction (Dvornik), which overturned the older Western picture of a 'Photian schism' driven by Photius's ambition.",
+  "sources": [
+    { "label": "The acts of the Council of Constantinople 879–880 (Mansi XVII)", "kind": "primary", "note": "The restoration of communion and the reaffirmation of the untouched creed." },
+    { "label": "Photius, Mystagogy of the Holy Spirit", "kind": "primary", "note": "The theological case against the filioque." },
+    { "label": "Francis Dvornik, The Photian Schism: History and Legend (Cambridge)", "author": "Francis Dvornik", "kind": "secondary", "note": "The standard critical history that rehabilitated Photius." }
+  ]
+}

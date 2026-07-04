@@ -15,6 +15,8 @@ import { SaintWorksBrowser } from "@/components/saints/SaintWorksBrowser";
 import { LicensedWorksSection } from "@/components/saints/LicensedWorksSection";
 import { getLicensedWorks } from "@/lib/saints/licensedWorks";
 import { getServerLocale } from "@/lib/i18n/server";
+import { ViewInHistory } from "@/components/history/ViewInHistory";
+import { eventsForSaint } from "@/lib/history/events";
 import { getSaintBioOverrides } from "@/lib/i18n/localizedContent";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 import { RecordRead } from "@/components/reading/RecordRead";
@@ -26,9 +28,13 @@ export function generateStaticParams() {
   return SAINTS.map((s) => ({ slug: s.slug }));
 }
 
-// Force dynamic so the bump count + per-user bumped state are always fresh.
-// generateStaticParams still keeps the slug list discoverable for sitemaps.
-export const dynamic = "force-dynamic";
+// Web: ISR (hourly) so the veneration count stays fresh without per-request
+// rendering; the per-user "bumped" state is loaded client-side regardless.
+// This replaces force-dynamic so the page is compatible with the Android static
+// export (output:export rejects force-dynamic; revalidate is ignored there and
+// the page ships as a build-time snapshot). generateStaticParams pre-renders
+// every saint for offline use.
+export const revalidate = 3600;
 
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params;
@@ -135,6 +141,10 @@ export default async function SaintPage({ params }: { params: Params }) {
           ) : null}
           {saint.works.length > 0 && <SaintWorksBrowser saint={saint} />}
           <LicensedWorksSection works={licensedWorks} />
+          <ViewInHistory
+            events={eventsForSaint(saint.slug)}
+            title="Events during this saint's life"
+          />
         </ContentShell>
         <SaintIntercession saint={saint} />
       </div>

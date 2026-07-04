@@ -111,7 +111,9 @@ export function Footer() {
      <p className="font-sans text-caption uppercase tracking-[1.5px] text-paper/45">
       {t("footer.findUs")}
      </p>
-     <div className="flex items-center gap-3">
+     {/* Wraps on narrow phones: unwrapped, the four pills run 560px wide
+         and force horizontal page scroll at 360px viewports. */}
+     <div className="flex flex-wrap items-center justify-center gap-3 px-4">
       <a
        href="https://discord.gg/VzBYYUsNJ6"
        target="_blank"
@@ -170,7 +172,7 @@ export function Footer() {
       {t("footer.glory")}
      </p>
      <p className="font-sans text-caption text-paper/45 text-center sm:flex-1 sm:text-right">
-      © {new Date().getFullYear()} · v9.0 · {t("footer.copyright")}
+      © {new Date().getFullYear()} · Beta 1.7 · {t("footer.copyright")}
      </p>
     </div>
    </div>

@@ -1,0 +1,19 @@
+{
+  "slug": "oca-autocephaly",
+  "context": [
+    { "kind": "para", "text": "The Alaskan mission's diocese, its center long since moved to New York, had been cut off from a persecuted Moscow after 1917 and governed itself as the 'Metropolia', while waves of immigration planted parallel Greek, Antiochian, Serbian, and other jurisdictions on the same continent, an arrangement all sides admitted was uncanonical." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "Negotiations between the Metropolia and the Moscow Patriarchate, with theologians like Alexander Schmemann and John Meyendorff as advocates, produced the Tomos of Autocephaly, signed by Patriarch Alexis I and granted on April 10, 1970. The Metropolia became the Orthodox Church in America, self-governing, electing its own primate, with Moscow renouncing jurisdiction over its former daughter; the new martyrs' Church thereby also regularized its own American parishes." },
+    { "kind": "para", "text": "Reception split along a fault line that remains: the churches of Russia, Bulgaria, Georgia, Poland, and the Czech lands recognize the OCA's autocephaly; the Ecumenical Patriarchate and others do not, holding that granting autocephaly belongs to Constantinople or a pan-Orthodox council, though all remain in communion with it. Within weeks of the tomos, the OCA glorified Herman of Alaska as its first saint." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "The 1970 tomos posed, in the sharpest form, the still-open questions of the Orthodox diaspora: who grants autocephaly, and how the Church in a new land becomes local rather than a colony of homelands. The OCA stands as the direct continuation of the Kodiak mission, and as a living argument about Orthodoxy's future shape in the West." }
+  ],
+  "uncertainty": "The facts and dates are documented; what is jurisdiction-specific is the tomos's canonical evaluation, on which the Orthodox churches sincerely differ. This entry states both positions without adjudicating them.",
+  "sources": [
+    { "label": "The Tomos of Autocephaly of the Orthodox Church in America (April 10, 1970)", "kind": "primary", "url": "https://www.oca.org/history-archives/tomos-of-autocephaly", "note": "The founding document." },
+    { "label": "Mark Stokoe & Leonid Kishkovsky, Orthodox Christians in North America 1794–1994 (OCPC)", "author": "Stokoe & Kishkovsky", "kind": "secondary", "note": "Bicentennial history covering the Metropolia and the autocephaly." },
+    { "label": "Alexander Schmemann, 'A Meaningful Storm' (St Vladimir's Theological Quarterly 15, 1971)", "author": "Alexander Schmemann", "kind": "secondary", "note": "The theological case for autocephaly and analysis of the controversy." }
+  ]
+}

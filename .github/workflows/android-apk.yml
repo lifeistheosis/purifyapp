@@ -12,6 +12,11 @@ name: Android build
 # the Actions tab (Run workflow).
 on:
   workflow_dispatch:
+    inputs:
+      local_first:
+        description: "Bundle the local-first offline build (out/). Uncheck to build the remote-wrapper AAB that loads purifyapp.net."
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -50,8 +55,32 @@ jobs:
       - name: Pre-install SDK platform (best effort)
         run: yes | sdkmanager "platforms;android-36" >/dev/null 2>&1 || true
 
+      # Local-first: build the static export (out/) + bundle the content package.
+      # Skipped for the legacy remote-wrapper build. The NEXT_PUBLIC_* values are
+      # public (they're already baked into the deployed web bundle) and must be
+      # present at build time so the exported app can do sign-in / sync / billing.
+      # Add them as repo secrets (Settings > Secrets and variables > Actions).
+      # If any are missing the build still succeeds (lib/supabase/server falls
+      # back to a placeholder); those features just stay inert until real keys ship.
+      - name: Build local-first web bundle
+        if: ${{ inputs.local_first }}
+        run: npm run build:android
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_REVENUECAT_ANDROID_KEY: ${{ secrets.NEXT_PUBLIC_REVENUECAT_ANDROID_KEY }}
+          NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_PLUS_ENFORCED_NATIVE: ${{ secrets.NEXT_PUBLIC_PLUS_ENFORCED_NATIVE }}
+          NEXT_PUBLIC_VAPID_KEY: ${{ secrets.NEXT_PUBLIC_VAPID_KEY }}
+          NEXT_PUBLIC_API_BIBLE_KEY: ${{ secrets.NEXT_PUBLIC_API_BIBLE_KEY }}
+
+      # CAP_LOCAL=1 makes capacitor.config.ts use webDir=out (bundled UI) instead
+      # of the remote server.url. Empty (remote-wrapper) keeps loading purifyapp.net.
       - name: Sync Capacitor into the Android project
         run: npx cap sync android
+        env:
+          CAP_LOCAL: ${{ inputs.local_first && '1' || '' }}
 
       # FCM config for @capacitor/push-notifications. Without this file the
       # google-services Gradle plugin stays off and PushNotifications.register()

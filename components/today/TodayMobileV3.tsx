@@ -35,8 +35,12 @@ import { FirstStepsNudge } from "@/components/onboarding/FirstStepsNudge";
  * styles compute Pascha from the same Julian algorithm.
  */
 export async function TodayMobileV3() {
-  const cookieStore = await cookies();
-  const cookieStyle = cookieStore.get(CALENDAR_STYLE_COOKIE)?.value;
+  // Android static export can't read cookies (would force dynamic); default to
+  // the New calendar and let the client adjust from the local preference.
+  const cookieStyle =
+    process.env.BUILD_TARGET === "android"
+      ? undefined
+      : (await cookies()).get(CALENDAR_STYLE_COOKIE)?.value;
   const style: CalStyle = cookieStyle === "old" ? "old" : "new";
 
   const today = startOfDayUtc(new Date());

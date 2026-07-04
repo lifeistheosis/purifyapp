@@ -5,7 +5,7 @@ import Link from "next/link";
 
 type Bookmark = {
   id: string;
-  kind: "bible-verse" | "bible-chapter" | "writing-section";
+  kind: "bible-verse" | "bible-chapter" | "writing-section" | "history-event";
   locator: {
     book?: string;
     chapter?: number;
@@ -13,6 +13,7 @@ type Bookmark = {
     saintSlug?: string;
     workSlug?: string;
     sectionN?: number;
+    eventSlug?: string;
   };
   addedAt: string;
   label?: string;
@@ -76,6 +77,8 @@ function hrefFor(b: Bookmark): string {
       return `/bible/${l.book}/${l.chapter}`;
     case "writing-section":
       return `/saints/${l.saintSlug}/${l.workSlug}#s${l.sectionN}`;
+    case "history-event":
+      return `/history/${l.eventSlug}`;
     default:
       return "/saved";
   }

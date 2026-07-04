@@ -1,0 +1,19 @@
+{
+  "slug": "third-council-of-constantinople",
+  "context": [
+    { "kind": "para", "text": "Facing Persian and then Arab invasion, seventh-century emperors sought a formula to reconcile the non-Chalcedonians: Christ has two natures, but one 'theandric' energy or one will (monothelitism). Sophronius of Jerusalem protested first; the monk Maximus carried the fight across the Mediterranean, arguing that a nature without its own will is a fiction, and that a Christ without a human will could not have freely obeyed in Gethsemane, and so could not have healed human freedom." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "The cost was paid before the vindication. The Lateran synod of 649 under Pope Martin condemned monothelitism; for this Martin was seized, tried at Constantinople, and died in Crimean exile, and Maximus, refusing to commune with the monothelite see, had his tongue and right hand cut off and died in exile in 662." },
+    { "kind": "para", "text": "Under a new emperor the sixth ecumenical council met in the domed hall of the palace from November 680 to September 681. Received letters from Pope Agatho confessed two wills; the council examined the tradition and defined two natural wills and two natural operations in Christ, 'not contrary to one another,' the human will following and subject to his divine will. It condemned the monothelite leaders by name, among them, painfully, Pope Honorius of Rome." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "The council completed Chalcedon's logic down to the will: what the Word did not assume, he did not heal, and he assumed everything human, freedom included. Maximus's confession, made ecumenical here, underwrites the Orthodox teaching on synergy: God saves us not without our willing." }
+  ],
+  "sources": [
+    { "label": "The exposition of faith of Constantinople III, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1", "kind": "primary", "note": "The definition of the two wills and operations." },
+    { "label": "Maximus the Confessor, Disputation with Pyrrhus", "kind": "primary", "note": "The classic argument for two wills, before the council." },
+    { "label": "Andrew Louth, Maximus the Confessor (Routledge)", "author": "Andrew Louth", "kind": "secondary", "note": "Study and translations situating Maximus and the council." },
+    { "label": "Leo Donald Davis, The First Seven Ecumenical Councils (Liturgical Press), ch. 8", "author": "Leo Donald Davis", "kind": "secondary", "note": "Narrative history of the monothelite crisis and the council." }
+  ]
+}

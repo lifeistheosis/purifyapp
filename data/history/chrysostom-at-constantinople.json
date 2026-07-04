@@ -1,0 +1,18 @@
+{
+  "slug": "chrysostom-at-constantinople",
+  "context": [
+    { "kind": "para", "text": "John of Antioch had spent two decades preaching through whole books of Scripture verse by verse, earning the name history gave him, Chrysostomos, the golden-mouthed. In 398 he was taken, almost by stealth, to be consecrated archbishop of the imperial capital." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "In the capital John lived like a monk and preached like a prophet: he cut the episcopal household's luxuries, built hospitals, fed the poor by the thousands, sent missionaries to the Goths, and told the rich of Constantinople to their faces that the poor man at their gate was Christ. 'Do you wish to honor the body of Christ? Do not ignore him when he is naked.'" },
+    { "kind": "para", "text": "Such preaching made powerful enemies, the empress Eudoxia took his sermons personally, and Theophilus of Alexandria organized the Synod of the Oak (403), which deposed him on trumped charges. Exiled, recalled after an earthquake terrified the palace, and exiled again in 404, John was marched toward the empire's edge until, at Comana in Pontus on September 14, 407, he died with the words 'Glory to God for all things.' In 438 the City brought his relics home in triumph." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "Chrysostom is Orthodoxy's preacher: his homilies remain the largest and most-read patristic commentary on Scripture, his social teaching the Church's conscience, and the Divine Liturgy most often served in Orthodox churches bears his name. With Basil the Great and Gregory the Theologian he is honored as one of the Three Great Hierarchs." }
+  ],
+  "sources": [
+    { "label": "Palladius, Dialogue on the Life of St John Chrysostom", "kind": "primary", "note": "The near-contemporary account of his episcopate, trials, and exile." },
+    { "label": "Socrates Scholasticus, Church History VI.2–21", "kind": "primary", "url": "https://www.newadvent.org/fathers/2601.htm", "note": "Fifth-century narrative of his rise and fall." },
+    { "label": "J. N. D. Kelly, Golden Mouth: The Story of John Chrysostom (Cornell)", "author": "J. N. D. Kelly", "kind": "secondary", "note": "The standard modern biography." }
+  ]
+}

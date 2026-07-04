@@ -15,6 +15,7 @@ import { HERESIES } from "@/lib/heresies/heresies";
 import { BOOKS } from "@/lib/bible/books";
 import { RULES } from "@/lib/prayers/rules";
 import { loadAllTopics } from "@/lib/topics/topics";
+import { publishedEvents } from "@/lib/history/events";
 import type { SearchItem } from "./types";
 
 export type { SearchItem, SearchGroup } from "./types";
@@ -86,6 +87,19 @@ export async function buildSearchCorpus(): Promise<SearchItem[]> {
       href: `/heresies/${h.slug}`,
       group: "Councils & Heresies",
       keywords: [h.alsoCalled?.join(" "), h.heresiarch].filter(Boolean).join(" "),
+    });
+  }
+
+  for (const e of publishedEvents()) {
+    items.push({
+      id: `history-${e.slug}`,
+      label: e.title,
+      sublabel: `History · ${e.displayDate}`,
+      href: `/history/${e.slug}`,
+      group: "History",
+      keywords: [e.aliases?.join(" "), e.region, String(e.yearStart)]
+        .filter(Boolean)
+        .join(" "),
     });
   }
 

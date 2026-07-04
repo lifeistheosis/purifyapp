@@ -318,6 +318,8 @@ function hrefFor(b: Bookmark): string {
       return `/prayers/${b.ruleId}#${b.prayerId}`;
     case "prayer-rule":
       return b.href;
+    case "history-event":
+      return `/history/${b.eventSlug}`;
     default:
       return "/saved";
   }
@@ -340,6 +342,8 @@ function subFor(b: Bookmark): string {
       return "Prayer";
     case "prayer-rule":
       return "Prayer rule";
+    case "history-event":
+      return `History · ${b.displayDate}`;
     default:
       return "";
   }

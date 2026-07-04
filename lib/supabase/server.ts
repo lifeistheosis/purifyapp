@@ -8,6 +8,22 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 export async function createClient() {
+  // Android static export has no request cookies; calling cookies() would force
+  // pages dynamic and break output:export. Return a cookie-less anon client so
+  // pages render the signed-out shell at build time; the app authenticates
+  // client-side at runtime. The website (BUILD_TARGET unset) is unaffected.
+  if (process.env.BUILD_TARGET === "android") {
+    // Fall back to placeholders so the static export never crashes when the
+    // public keys aren't set on the build runner ("URL and Key are required").
+    // When the real NEXT_PUBLIC_* values ARE provided at build time they're
+    // used and baked into the app; with placeholders the app still builds and
+    // renders content offline, only auth/sync stay inert until real keys ship.
+    return createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co",
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-anon-key",
+      { cookies: { getAll: () => [], setAll: () => {} } },
+    );
+  }
   const cookieStore = await cookies();
 
   return createServerClient(

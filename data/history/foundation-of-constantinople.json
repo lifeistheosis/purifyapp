@@ -1,0 +1,18 @@
+{
+  "slug": "foundation-of-constantinople",
+  "context": [
+    { "kind": "para", "text": "Sole master of the empire after defeating Licinius in 324, Constantine wanted a capital that was his own, Christian from its birth, and set where Europe meets Asia. He chose the old Greek town of Byzantium on the Bosphorus and rebuilt it on an imperial scale." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "On May 11, 330, after years of construction, the city was solemnly dedicated as New Rome, Constantinople, the city of Constantine. It received a senate, grain fleets, and the walls, forums, and churches of a capital; Constantine began the first Hagia Sophia's predecessor and the Church of the Holy Apostles, where he would be buried as 'equal of the apostles.'" },
+    { "kind": "para", "text": "The city's rise remade the Church's geography. The council of 381 gave its bishop 'the prerogatives of honor after the bishop of Rome, because it is New Rome,' and Chalcedon's canon 28 confirmed the rank; in time the see of Constantinople stood first in the East as the Ecumenical Patriarchate, a primacy of honor the Orthodox Church still reckons by." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "For eleven centuries Constantinople was Orthodoxy's beating heart: the city of the great councils' reception, of Hagia Sophia and the developed Byzantine Liturgy, of the missions to the Slavs. Orthodox worship, chant, iconography, and church order all bear the stamp of the city dedicated in 330." }
+  ],
+  "sources": [
+    { "label": "Chronicon Paschale, s.a. 330", "kind": "primary", "note": "Records the dedication of the city on May 11, 330." },
+    { "label": "Eusebius, Life of Constantine III.48–49", "kind": "primary", "url": "https://www.newadvent.org/fathers/2502.htm", "note": "Contemporary notice of the Christian founding of the city." },
+    { "label": "Cyril Mango, Byzantium: The Empire of New Rome (Scribner)", "author": "Cyril Mango", "kind": "secondary", "note": "Standard account of the city's foundation and meaning." }
+  ]
+}

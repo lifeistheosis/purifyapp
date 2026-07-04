@@ -1,0 +1,18 @@
+{
+  "slug": "moscow-patriarchate-established",
+  "context": [
+    { "kind": "para", "text": "The Russian Church had elected its own metropolitan since 1448, when Moscow rejected the union of Florence signed by its Greek-appointed metropolitan Isidore. After 1453, with the ancient patriarchates under Ottoman rule, Muscovite churchmen spoke of Moscow as a 'Third Rome', the last free Orthodox realm." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "In 1588 Ecumenical Patriarch Jeremiah II came north seeking alms for his impoverished, Turkish-taxed see. The regent Boris Godunov pressed on his visitor a larger idea: a patriarchate for Moscow. After long negotiation, including a proposal that Jeremiah himself take the throne, residing far from court, which he declined, Jeremiah consecrated Metropolitan Job as Patriarch of Moscow and All Russia in January 1589." },
+    { "kind": "para", "text": "Councils at Constantinople in 1590 and 1593, with the other Eastern patriarchs, confirmed the new patriarchate and assigned it fifth place in the diptychs, after Jerusalem. The Russian Church thus entered the ancient order of precedence, the first addition to the pentarchy's rank in a thousand years." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "The establishment sealed Russia's standing as protector of Orthodoxy under the Ottoman centuries and set the canonical shape of the modern Orthodox world: a family of patriarchal and autocephalous churches in a fixed order of honor. The see Job received endures, through abolition under Peter the Great and restoration in 1917, as the largest Orthodox patriarchate." }
+  ],
+  "sources": [
+    { "label": "The charter (Ulozhennaia gramota) of the Moscow council of 1589 and the Constantinople confirmations of 1590/1593", "kind": "primary", "note": "The founding acts and their conciliar confirmation." },
+    { "label": "Steven Runciman, The Great Church in Captivity (Cambridge), ch. on Jeremiah II", "author": "Steven Runciman", "kind": "secondary", "note": "Jeremiah's journey and the negotiation, from the Greek side." },
+    { "label": "Georges Florovsky, Ways of Russian Theology, vol. 1 (Nordland), ch. 1–2", "author": "Georges Florovsky", "kind": "secondary", "note": "The Muscovite church context and the Third Rome idea, critically assessed." }
+  ]
+}

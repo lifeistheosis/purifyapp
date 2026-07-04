@@ -12,7 +12,11 @@ export default async function SignInPage({
 }: {
   searchParams: Search;
 }) {
-  const { next, error } = await searchParams;
+  // Android static export can't read searchParams (would force dynamic); the
+  // ?next/?error params are read client-side there. Website unchanged.
+  const { next, error } = (process.env.BUILD_TARGET === "android"
+    ? {}
+    : await searchParams) as { next?: string; error?: string };
   const friendly = error ? friendlyError(error) : null;
   return (
     <div>

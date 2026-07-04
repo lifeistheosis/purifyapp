@@ -2,7 +2,11 @@ import type { MetadataRoute } from "next";
 import { allChapterParams, BOOKS } from "@/lib/bible/books";
 import { SAINTS } from "@/lib/saints/saints";
 import { COUNCILS } from "@/lib/councils/councils";
+import { publishedEvents } from "@/lib/history/events";
 import { SITE_URL as SITE } from "@/lib/site";
+
+// Static for the Android export (output:export); unchanged on the website.
+export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -17,6 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/bible",
     "/saints",
     "/councils",
+    "/history",
     "/calendar",
     "/prayers",
     "/prayers/today",
@@ -88,6 +93,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 0.55,
       });
     }
+  }
+
+  // History events (published only; drafts never route).
+  for (const e of publishedEvents()) {
+    entries.push({
+      url: `${SITE}/history/${e.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    });
   }
 
   return entries;

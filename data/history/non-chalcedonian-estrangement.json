@@ -1,0 +1,20 @@
+{
+  "slug": "non-chalcedonian-estrangement",
+  "context": [
+    { "kind": "para", "text": "To much of Egypt and Syria, Chalcedon's 'in two natures' sounded like Nestorius under another name, and the deposition of Dioscorus like an attack on Cyril's legacy. Their own confession was Cyril's formula: 'one incarnate nature (mia physis) of God the Word', one, because the Word and his flesh are one living subject." }
+  ],
+  "narrative": [
+    { "kind": "para", "text": "It is essential to say what this rejection was not: the churches that refused Chalcedon also anathematized Eutyches. Theirs was a miaphysite confession, Christ's full godhead and full manhood united in one composite nature, not the monophysitism the council condemned. The quarrel was substantially over words bearing different senses in different schools, entangled with grief for deposed bishops, Alexandrian pride, and resentment of Constantinople." },
+    { "kind": "para", "text": "Emperors spent two centuries trying to mend the breach, Zeno's Henotikon (482) pleased neither side and briefly split Rome from Constantinople; Justinian's council of 553 read Chalcedon in the most Cyrillian possible key; the monothelite compromise of the seventh century created a new heresy without winning back the separated. Meanwhile separate hierarchies took permanent shape, Coptic, Syriac, Armenian, and the Arab conquests sealed the division politically." },
+    { "kind": "para", "text": "These Oriental Orthodox churches endure to this day. Modern dialogue has produced agreed statements that each family confesses the same faith in Christ under different formulas, though communion has not been restored." }
+  ],
+  "significance": [
+    { "kind": "para", "text": "The first lasting division of the Church teaches how doctrine, language, grief, and politics interweave: a warning against reading centuries of estrangement as one villain's work. Orthodoxy holds Chalcedon as the standard of faith while mourning a separation from churches of apostolic foundation and heroic endurance." }
+  ],
+  "uncertainty": "This entry is an editorial synthesis of a two-century development, not a single event; the characterization of the division as substantially terminological follows the modern scholarly and dialogical consensus, which not all assess identically.",
+  "sources": [
+    { "label": "Evagrius Scholasticus, Ecclesiastical History II–IV", "kind": "primary", "note": "Near-contemporary narrative of the post-Chalcedon divisions and the Henotikon." },
+    { "label": "W. H. C. Frend, The Rise of the Monophysite Movement (Cambridge)", "author": "W. H. C. Frend", "kind": "secondary", "note": "The standard academic history of the separation." },
+    { "label": "John Meyendorff, Imperial Unity and Christian Divisions (SVS Press)", "author": "John Meyendorff", "kind": "secondary", "note": "Orthodox historical assessment of the estrangement and the imperial attempts at reunion." }
+  ]
+}
