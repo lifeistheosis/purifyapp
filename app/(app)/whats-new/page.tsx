@@ -25,9 +25,9 @@ const ENTRIES: Entry[] = [
  {
  version: "Beta 1.7",
  kind: "A walk through the history of the Church",
- date: "July 3, 2026",
+ date: "July 4, 2026",
  blurb:
-  "The largest patch since the app began. Purify now carries the whole story of the Orthodox Church as an interactive timeline you can walk, from Pentecost to the present, every event sourced and cited and honest about what is certain and what is tradition. Around it, the pages you open most, Today, the Bible, and Discover, have been redrawn to feel like one quiet, considered whole. And Continue with Google works again. Glory to God, who keeps the memory of His Church.",
+  "Welcome, and glory to Jesus Christ. This is the largest patch since Purify began, and the one I most wanted to build. The whole story of the Orthodox Church now lives in the app as an interactive timeline you can walk with your own hand: thirty-eight events across eleven ages, from the fire of Pentecost to the Church of our own day, each one sourced, cited, and honest about what is certain and what is held in loving tradition. Around it, the three pages you open most, Today, the Bible, and Discover, have been redrawn to feel like one quiet, considered whole. And Continue with Google, which had gone quiet, sings again. However you came to be here, new face or old friend, thank you for walking this history with us.",
  items: [
   "Orthodox History, a new home under Discover at /history. Two thousand years of the Church laid out as a timeline you move through by hand, divided into eleven ages from the Apostolic Age to the present. Thirty-eight events to begin, the councils and the schisms, the saints and the missions and the martyrs, each with its own page, its full account, and its sources shown in the open.",
   "Move by era, jump by century with a scrubber, search by name or year or place, and filter by category. Every event links into the saints, councils, and doctrine already in the app, and each saint and council page now points back to its place in history. It works without an account, and on Android it works fully offline.",
@@ -36,7 +36,7 @@ const ENTRIES: Entry[] = [
   "The library, redrawn. Discover, the Bible, and Today now share one calm editorial hand instead of three. The Bible's canon reads as a single library rather than a wall of coloured tiles, and remembers the exact verse you left off at. Discover leads with what is worth returning to and shows the life of the day. The section marks throughout were redrawn to suit what they open, an hourglass for history, a shield for the defense of the faith.",
   "Signing in, mended. Continue with Google stopped working for a spell, turned away with an error that was ours to fix, not yours. It is mended. If you have only ever signed in with Google, that is the door to use; if you set a password in the early days, it still works, and Forgot password will always let you set a fresh one. The Google and Apple marks on the sign-in buttons are drawn properly now, too.",
   "The front-page down arrow no longer wastes its first press; it steps cleanly through each panel to the foot of the page.",
-  "Footer, home hero chip, and the What's new chip step to Beta 1.7.",
+  "Cache version bumped to purify-beta-1.7.0 so the timeline, the redrawn pages, and the mended sign-in evict the old buckets on this release. Footer, home hero chip, and the What's new chip step to Beta 1.7.",
  ],
  },
  {
