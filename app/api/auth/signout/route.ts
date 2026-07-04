@@ -14,6 +14,16 @@ import { SITE_URL } from "@/lib/site";
  */
 export async function POST() {
   const supabase = await createClient();
-  await supabase.auth.signOut();
+  try {
+    // scope: "local" expires THIS session's cookies (with the same attributes
+    // the server set them with, which the browser client can't reliably match)
+    // without the global-revocation round-trip that can hang when Supabase is
+    // slow or down. Signing out of every device stays a separate action
+    // (/api/auth/signout-others). Either way the auth cookies are cleared here,
+    // so the redirect home rebuilds as signed-out.
+    await supabase.auth.signOut({ scope: "local" });
+  } catch {
+    // The cookie-clearing Set-Cookie headers are already staged; send them home.
+  }
   return NextResponse.redirect(new URL("/", SITE_URL));
 }

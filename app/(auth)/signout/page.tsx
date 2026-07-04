@@ -4,19 +4,20 @@
 // here with a plain GET navigation, so this needs to be a real route — a
 // missing one is what produced the "error screen on Sign out" tester report.
 //
-// We sign out on the client (clears the Supabase auth cookies in this same
-// WebView/browser — no Custom Tab, no cross-origin hop) and then do a full
-// navigation home so every cached, signed-in surface is rebuilt fresh.
-//
-// Two things keep this from stalling on "Signing you out…":
-//   1. scope: "local" clears THIS device's session by wiping local cookies,
-//      with no server round-trip to revoke the token everywhere. The default
-//      global scope makes that network call, and when it hangs (a Supabase
-//      outage, a flaky connection) the await never settles and the redirect
-//      never fires — the reported "stuck on signing you out" bug. Signing out
-//      of every device is a separate, explicit action (SignOutEverywhereCard).
-//   2. A hard timeout leaves for home no matter what, so a wedged network
-//      call can never trap the reader on this screen.
+// The session lives in cookies that the SSR middleware reads and refreshes on
+// every request. A browser-only signOut clears the client's in-memory session
+// but does NOT reliably delete those cookies (the server set them with
+// attributes the browser client can't match), so the redirect home just
+// rehydrated the reader as still-signed-in — the "it goes to the front page
+// but I'm still logged in" bug. So we clear the session where it actually
+// lives:
+//   1. POST to /api/auth/signout — the server expires the auth cookies with
+//      the same attributes it set them with. This is the authoritative clear.
+//   2. Also run a client signOut for the native app, whose static bundle has
+//      no API routes and keeps its session client-side; there the fetch is a
+//      harmless no-op and this is what signs it out.
+//   3. Always navigate home, with a hard-timeout fallback, so a wedged call
+//      can never trap the reader on "Signing you out…".
 
 import { useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -24,19 +25,31 @@ import { createClient } from "@/lib/supabase/client";
 export default function SignOutPage() {
   useEffect(() => {
     const goHome = () => window.location.assign("/");
+    const fallback = window.setTimeout(goHome, 4000);
 
-    // Belt-and-suspenders: even if signOut never settles, leave within 2.5s.
-    const fallback = window.setTimeout(goHome, 2500);
-
-    createClient()
-      .auth.signOut({ scope: "local" })
-      .catch(() => {
-        // The local session is cleared regardless; home rebuilds signed-out.
-      })
-      .finally(() => {
-        window.clearTimeout(fallback);
-        goHome();
-      });
+    void (async () => {
+      // Clear the browser session first so any live components read as
+      // signed-out immediately (and this is the whole sign-out on native).
+      try {
+        await createClient().auth.signOut({ scope: "local" });
+      } catch {
+        /* ignore — the server clear below is authoritative on the web */
+      }
+      // Authoritatively expire the SSR auth cookies. `redirect: "manual"`
+      // keeps fetch from following the route's 302 to home (an extra request);
+      // the browser still applies the cookie-clearing Set-Cookie headers.
+      try {
+        await fetch("/api/auth/signout", {
+          method: "POST",
+          credentials: "same-origin",
+          redirect: "manual",
+        });
+      } catch {
+        /* native/static export has no API route, or offline — fall through */
+      }
+      window.clearTimeout(fallback);
+      goHome();
+    })();
 
     return () => window.clearTimeout(fallback);
   }, []);
