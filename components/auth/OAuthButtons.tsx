@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { authOrigin } from "@/lib/site";
 import { nativeGoogleAvailable, nativeGoogleIdToken } from "@/lib/auth/nativeGoogle";
 
 /**
@@ -39,7 +38,15 @@ export function OAuthButtons() {
         return;
       }
 
-      const origin = authOrigin();
+      // PKCE stores a one-time code verifier in a cookie on the origin that
+      // STARTS the flow, and the callback must run on that same origin to read
+      // it back. So the redirect target is the current origin, not the
+      // canonical authOrigin()/SITE_URL: a reader on purifyapp.net whose flow
+      // came back to purifyapp.onrender.com would land in a different cookie
+      // jar with no verifier ("PKCE code verifier not found in storage"). Both
+      // origins are allow-listed in the Supabase redirect URLs. (Localhost dev
+      // is already the current origin too, so this stays self-contained there.)
+      const origin = window.location.origin;
       const { error: err } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
