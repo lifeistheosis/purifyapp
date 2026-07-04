@@ -1201,17 +1201,17 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
- v9.9.5 &middot; Basil and John of Damascus, complete
+ Beta 1.7 &middot; A walk through the history of the Church
  </p>
  </div>
 
  {isDe ? (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Zwei der großen Werke der Väter treten vollständig in die Bibliothek ein.
+ Die ganze Geschichte der Kirche, jetzt eine Zeitleiste zum Durchwandern.
  </h1>
  ) : (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Two of the Fathers' great works join the library, complete.
+ The whole history of the Church, now a timeline you can walk.
  </h1>
  )}
 
@@ -1249,16 +1249,17 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v9.9.5 ist eine Lese-Ausgabe. Zwei der grundlegenden Bücher der
- orthodoxen Theologie treten vollständig zu den Heiligen hinzu:{" "}
- <Link href="/saints/basil-the-great/on-the-holy-spirit" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Über den Heiligen Geist</Link>{" "}
- des hl. Basilius und die{" "}
- <Link href="/saints/john-of-damascus/exact-exposition-of-the-orthodox-faith" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Genaue Darlegung des orthodoxen Glaubens</Link>{" "}
- des hl. Johannes von Damaskus, beide wortgetreu aus dem
- Gemeinfreien, beide in der PDF-Bibliothek auf dem Discord
- erbeten. Sie sind jetzt in der App, zum Lesen, nicht nur zum
- Finden, und der übrige gemeinfreie Bestand folgt, sobald er
- aufbereitet ist.
+ Beta 1.7 ist die größte Ausgabe seit dem Beginn von Purify. Die
+ ganze Geschichte der orthodoxen Kirche lebt jetzt in der App als{" "}
+ <Link href="/history" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">interaktive Zeitleiste</Link>,
+ die du mit eigener Hand durchwandern kannst: achtunddreißig
+ Ereignisse über elf Zeitalter, vom Feuer von Pfingsten bis zur
+ Kirche unserer eigenen Tage, jedes belegt, mit Quellen versehen und
+ ehrlich darüber, was gesichert ist und was in liebevoller
+ Überlieferung gehalten wird. Daneben wurden die drei Seiten, die du
+ am häufigsten öffnest, Heute, die Bibel und Entdecken, zu einem
+ stillen, durchdachten Ganzen neu gezeichnet, und die Anmeldung mit
+ Google, die verstummt war, singt wieder.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
@@ -1304,15 +1305,16 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- v9.9.5 is a reading release. Two of the foundational books of
- Orthodox theology join the saints in full: St. Basil's{" "}
- <Link href="/saints/basil-the-great/on-the-holy-spirit" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">On the Holy Spirit</Link>{" "}
- and St. John of Damascus's{" "}
- <Link href="/saints/john-of-damascus/exact-exposition-of-the-orthodox-faith" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">Exact Exposition of the Orthodox Faith</Link>,
- both verbatim from the public domain, both asked for in the
- pdf-library on the Discord. They are in the app now to read, not
- only to find, and the rest of the public-domain shelf follows as
- it is sourced.
+ Beta 1.7 is the largest patch since Purify began. The whole story
+ of the Orthodox Church now lives in the app as an{" "}
+ <Link href="/history" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">interactive timeline</Link>{" "}
+ you can walk with your own hand: thirty-eight events across eleven
+ ages, from the fire of Pentecost to the Church of our own day, each
+ one sourced, cited, and honest about what is certain and what is
+ held in loving tradition. Around it, the three pages you open most,
+ Today, the Bible, and Discover, have been redrawn to feel like one
+ quiet, considered whole, and Continue with Google, which had gone
+ quiet, sings again.
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
