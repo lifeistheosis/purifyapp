@@ -141,6 +141,19 @@ export type HistoryEventMeta = {
     source: string;
     license: string;
     evidenceUrl: string;
+    /** Additional rights-verified images for the account-page slideshow.
+     *  Same rights bar as the hero; validated by the integrity suite. */
+    gallery?: {
+      /** Bundled path under /history/media/. */
+      src: string;
+      alt: string;
+      work: string;
+      artist: string;
+      workDate: string;
+      source: string;
+      license: string;
+      evidenceUrl: string;
+    }[];
   };
 };
 
@@ -1325,6 +1338,132 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     reviewedBy: "Purify editorial, pending review",
     rel: {
       precededBy: ["alaska-mission", "bolshevik-persecution"],
+    },
+  },
+  {
+    id: "he-ukrainian-autocephaly",
+    slug: "ukrainian-autocephaly",
+    title: "Ukrainian Autocephaly: the OCU and the UOC",
+    shortTitle: "Ukraine, 2019",
+    aliases: [
+      "Orthodox Church of Ukraine",
+      "OCU",
+      "UOC",
+      "Tomos for Ukraine",
+      "Unification council of 2018",
+      "Ukrainian church question",
+    ],
+    yearStart: 2018,
+    yearEnd: 2019,
+    displayDate: "2018–2019",
+    precision: "year",
+    era: "modern",
+    categories: ["autocephaly", "schisms", "patriarchates", "modern"],
+    region: "Kyiv & Constantinople",
+    importance: 2,
+    preview:
+      "Constantinople grants Ukraine a tomos of autocephaly; the Ukrainian church remains divided between the OCU and the UOC.",
+    summary:
+      "In December 2018 a unification council at St Sophia in Kyiv forms the Orthodox Church of Ukraine from the previously unrecognized Ukrainian bodies, and on January 5–6, 2019 Patriarch Bartholomew signs and hands over its tomos of autocephaly. The Ukrainian Orthodox Church under Metropolitan Onufriy declines to take part, and Ukraine is left with two large rival churches, each holding the other's foundation illegitimate. Recognition of the OCU divides the Orthodox world along the same line as the Moscow–Constantinople schism.",
+    certainty: "jurisdiction-specific",
+    status: "published",
+    reviewedBy: "Purify editorial, pending review",
+    rel: {
+      precededBy: ["conversion-of-kievan-rus", "moscow-patriarchate-established"],
+      resultedIn: ["moscow-constantinople-schism-2018"],
+    },
+    media: {
+      hero: "/history/media/ukrainian-autocephaly.jpg",
+      alt: "Patriarch Bartholomew hands the tomos of autocephaly to Metropolitan Epifaniy at the Phanar",
+      work: "The handing over of the tomos of autocephaly",
+      artist: "Presidential Administration of Ukraine",
+      workDate: "January 6, 2019",
+      source: "Wikimedia Commons",
+      license: "CC BY 4.0",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Batholomew_handing_tomos_to_Epiphanius.jpg",
+      gallery: [
+        {
+          src: "/history/media/ukrainian-autocephaly-signing.jpg",
+          alt: "Patriarch Bartholomew signs the tomos of autocephaly of the Orthodox Church of Ukraine",
+          work: "The signing of the tomos at the Phanar",
+          artist: "Presidential Administration of Ukraine",
+          workDate: "January 5, 2019",
+          source: "Wikimedia Commons",
+          license: "CC BY 4.0",
+          evidenceUrl: "https://commons.wikimedia.org/wiki/File:Signing_of_the_tomos_of_autocephaly_of_the_Orthodox_Church_of_Ukraine_15.jpeg",
+        },
+        {
+          src: "/history/media/ukrainian-autocephaly-sophia.jpg",
+          alt: "The bell tower of the cathedral of Holy Wisdom, St Sophia, in Kyiv",
+          work: "St Sophia bell tower, Kyiv, site of the unification council",
+          artist: "Photograph by George Chernilevsky",
+          workDate: "2018",
+          source: "Wikimedia Commons",
+          license: "Public domain",
+          evidenceUrl: "https://commons.wikimedia.org/wiki/File:St_Sophia_bell_tower_Kiev_2018_G01.jpg",
+        },
+      ],
+    },
+  },
+  {
+    id: "he-moscow-constantinople-2018",
+    slug: "moscow-constantinople-schism-2018",
+    title: "The Moscow–Constantinople Schism",
+    shortTitle: "2018 schism",
+    aliases: [
+      "Break of communion of 2018",
+      "Moscow breaks with Constantinople",
+      "2018 schism",
+    ],
+    yearStart: 2018,
+    displayDate: "October 15, 2018",
+    precision: "exact",
+    calendar: { month: 10, day: 15, basis: "gregorian" },
+    era: "modern",
+    categories: ["schisms", "patriarchates", "autocephaly", "modern"],
+    region: "Constantinople & Moscow",
+    importance: 2,
+    preview:
+      "Over Ukraine, Moscow breaks eucharistic communion with Constantinople, the widest rupture inside Orthodoxy since 1054.",
+    summary:
+      "On October 15, 2018, meeting at Minsk, the Holy Synod of the Russian Orthodox Church declares eucharistic communion with the Patriarchate of Constantinople broken, in answer to Constantinople's decisions of October 11 on Ukraine: to proceed to autocephaly, to receive the appeals of the leaders of the Ukrainian bodies Moscow had deposed, and to revoke the letter of 1686. Neither side declares the other's sacraments void; the rupture is jurisdictional, not doctrinal, and it still stands.",
+    certainty: "historically-attested",
+    status: "published",
+    reviewedBy: "Purify editorial, pending review",
+    rel: {
+      precededBy: ["ukrainian-autocephaly", "moscow-patriarchate-established"],
+    },
+    media: {
+      hero: "/history/media/moscow-constantinople-schism-2018.jpg",
+      alt: "Divine Liturgy served in the church of St George at the Ecumenical Patriarchate in Istanbul",
+      work: "Divine Liturgy at the church of St George, Ecumenical Patriarchate",
+      artist: "Photograph by Andrew Gould",
+      workDate: "May 2010",
+      source: "Wikimedia Commons",
+      license: "CC BY-SA 2.0",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Church_of_St_George_during_liturgy.jpg",
+      gallery: [
+        {
+          src: "/history/media/moscow-constantinople-schism-2018-phanar.jpg",
+          alt: "The church of St George at the Phanar, seat of the Ecumenical Patriarchate",
+          work: "The church of St George at the Patriarchate of Constantinople",
+          artist: "Photograph by Klearchos Kapoutsis",
+          workDate: "August 2010",
+          source: "Wikimedia Commons",
+          license: "CC BY 2.0",
+          evidenceUrl: "https://commons.wikimedia.org/wiki/File:Church_of_St._George,_Istanbul_(August_2010).jpg",
+        },
+        {
+          src: "/history/media/moscow-constantinople-schism-2018-moscow.jpg",
+          alt: "The Cathedral of Christ the Saviour in Moscow seen from the southeast",
+          work: "Cathedral of Christ the Saviour, Moscow",
+          artist: "Photograph by Alvesgaspar",
+          workDate: "July 2011",
+          source: "Wikimedia Commons",
+          license: "CC BY-SA 3.0",
+          evidenceUrl: "https://commons.wikimedia.org/wiki/File:Moscow_July_2011-7a.jpg",
+        },
+      ],
     },
   },
 ];

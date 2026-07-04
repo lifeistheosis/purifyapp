@@ -15,30 +15,9 @@ import { useRouter } from "next/navigation";
 import type { CSSProperties, KeyboardEvent } from "react";
 
 import type { EraGroup } from "@/lib/history/filter";
-import type { Era } from "@/lib/history/events";
 import { EraHeader } from "./EraHeader";
+import { ERA_HUE } from "./eraHue";
 import { EventCard } from "./EventCard";
-
-// Cinematic era atmospheres: one quiet hue per age of the Church, applied
-// at whisper alpha by .cinema-era. Chosen for mood, not category coding:
-// dawn amber for the apostles, ember for the martyrs, gold for the imperial
-// Church, violet for the christological centuries, steel for iconoclasm,
-// emerald for the missionary expansion, rust for the estrangement, royal
-// purple for the late empire, bronze for the Ottoman centuries, sea for the
-// global missions, crimson for the century of the new martyrs.
-const ERA_HUE: Record<Era, number> = {
-  apostolic: 42,
-  persecution: 8,
-  "imperial-conciliar": 46,
-  christological: 262,
-  iconoclasm: 214,
-  "byzantine-expansion": 158,
-  estrangement: 22,
-  "late-byzantine": 282,
-  ottoman: 34,
-  "global-missions": 192,
-  modern: 0,
-};
 
 export function TimelineCore({
   groups,

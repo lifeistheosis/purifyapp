@@ -12,7 +12,7 @@
   ],
   "uncertainty": "The fire and persecution of 64 are documented by Tacitus. The martyrdoms of Peter and Paul at Rome are the unanimous early tradition (Clement of Rome, Ignatius, Irenaeus, Gaius of Rome), but their exact dates, between 64 and 68, are not recorded.",
   "sources": [
-    { "label": "Tacitus, Annals XV.44", "kind": "primary", "note": "The pagan historian's account of the fire and Nero's persecution." },
+    { "label": "Tacitus, Annals XV.44", "kind": "primary", "url": "https://en.wikisource.org/wiki/The_Annals_(Tacitus)/Book_15", "note": "The pagan historian's account of the fire and Nero's persecution." },
     { "label": "1 Clement 5–6", "kind": "primary", "url": "https://www.newadvent.org/fathers/1010.htm", "note": "Rome's own memory, c. 96, of Peter and Paul's contests 'in our generation.'" },
     { "label": "Eusebius, Church History II.25", "kind": "primary", "url": "https://www.newadvent.org/fathers/2501.htm", "note": "Collects the early testimonies to the apostles' Roman martyrdoms." },
     { "label": "W. H. C. Frend, Martyrdom and Persecution in the Early Church (Blackwell)", "author": "W. H. C. Frend", "kind": "secondary", "note": "Standard academic study of the persecutions from Nero onward." }

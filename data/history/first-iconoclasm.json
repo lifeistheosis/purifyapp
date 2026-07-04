@@ -11,7 +11,7 @@
     { "kind": "para", "text": "Iconoclasm forced the Church to articulate why images belong to the Gospel itself: the icon is the confession of the Incarnation in line and color. The theology hammered out under this persecution stands behind every icon in every Orthodox church." }
   ],
   "sources": [
-    { "label": "John of Damascus, Three Treatises on the Divine Images (trans. Louth, SVS Press)", "kind": "primary", "note": "The classic defense of the icons, written during the persecution." },
+    { "label": "John of Damascus, Three Treatises on the Divine Images (trans. Louth, SVS Press)", "kind": "primary", "url": "https://www.ccel.org/ccel/damascus/icons.html", "note": "The classic defense of the icons, written during the persecution." },
     { "label": "Theophanes the Confessor, Chronicle, s.a. 726–775", "kind": "primary", "note": "The principal Byzantine narrative source for the first iconoclasm." },
     { "label": "Jaroslav Pelikan, The Spirit of Eastern Christendom (The Christian Tradition, vol. 2, Chicago), ch. 3", "author": "Jaroslav Pelikan", "kind": "secondary", "note": "The doctrinal history of the iconoclast controversy." }
   ]

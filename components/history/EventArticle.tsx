@@ -10,11 +10,29 @@ import type { HistoryEventBody } from "@/lib/history/load";
 import {
   categoryById,
   eraById,
+  type Era,
   type HistoryEventMeta,
 } from "@/lib/history/events";
+import { cn } from "@/lib/cn";
 import { CertaintyBadge } from "./CertaintyBadge";
 
-function Block({ block }: { block: EssayBlock }) {
+// One ornament glyph per era, so each account carries its age's mark
+// between sections (paired with the era hue set on the page wrapper).
+const ERA_ORNAMENT: Record<Era, string> = {
+  apostolic: "☩",
+  persecution: "✠",
+  "imperial-conciliar": "❖",
+  christological: "✦",
+  iconoclasm: "◈",
+  "byzantine-expansion": "✶",
+  estrangement: "◆",
+  "late-byzantine": "✧",
+  ottoman: "✤",
+  "global-missions": "✺",
+  modern: "✚",
+};
+
+function Block({ block, dropCap = false }: { block: EssayBlock; dropCap?: boolean }) {
   switch (block.kind) {
     case "heading": {
       const H = block.level === 3 ? "h3" : "h2";
@@ -47,7 +65,14 @@ function Block({ block }: { block: EssayBlock }) {
       );
     default:
       return (
-        <p className="font-serif text-body text-paper/85 leading-[1.75]">{block.text}</p>
+        <p
+          className={cn(
+            "font-serif text-body text-paper/85 leading-[1.75]",
+            dropCap && "account-dropcap",
+          )}
+        >
+          {block.text}
+        </p>
       );
   }
 }
@@ -55,19 +80,30 @@ function Block({ block }: { block: EssayBlock }) {
 function Section({
   title,
   blocks,
+  ornament,
+  dropCap = false,
 }: {
   title: string;
   blocks?: EssayBlock[];
+  /** Era glyph drawn above the section heading. */
+  ornament?: string;
+  /** Give the section's first paragraph the era drop cap. */
+  dropCap?: boolean;
 }) {
   if (!blocks?.length) return null;
   return (
-    <section className="mt-12">
+    <section className="account-reveal mt-12">
+      {ornament ? (
+        <div aria-hidden className="account-ornament mb-6">
+          {ornament}
+        </div>
+      ) : null}
       <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
         {title}
       </h2>
       <div className="mt-5 space-y-6">
         {blocks.map((b, i) => (
-          <Block key={i} block={b} />
+          <Block key={i} block={b} dropCap={dropCap && i === 0 && b.kind === "para"} />
         ))}
       </div>
     </section>
@@ -125,13 +161,31 @@ export function EventArticle({
 
       <p className="mt-8 font-serif text-body text-paper/85 leading-[1.75]">{meta.summary}</p>
 
-      <Section title="The world before" blocks={body.context} />
-      <Section title="What happened" blocks={body.narrative} />
-      <Section title="Why it matters to Orthodoxy" blocks={body.significance} />
-      <Section title="What flowed from it" blocks={body.consequences} />
+      <Section
+        title="The world before"
+        blocks={body.context}
+        ornament={ERA_ORNAMENT[meta.era]}
+        dropCap
+      />
+      <Section
+        title="What happened"
+        blocks={body.narrative}
+        ornament={ERA_ORNAMENT[meta.era]}
+        dropCap={!body.context?.length}
+      />
+      <Section
+        title="Why it matters to Orthodoxy"
+        blocks={body.significance}
+        ornament={ERA_ORNAMENT[meta.era]}
+      />
+      <Section
+        title="What flowed from it"
+        blocks={body.consequences}
+        ornament={ERA_ORNAMENT[meta.era]}
+      />
 
       {body.uncertainty ? (
-        <aside className="mt-12 rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-4">
+        <aside className="account-reveal mt-12 rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-4">
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/60">
             A note on certainty
           </p>

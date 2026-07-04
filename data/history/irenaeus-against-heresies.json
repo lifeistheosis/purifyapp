@@ -12,7 +12,7 @@
   ],
   "sources": [
     { "label": "Irenaeus of Lyons, Against Heresies (esp. III.1–4)", "kind": "primary", "url": "https://www.newadvent.org/fathers/0103.htm", "note": "The appeal to Scripture, succession, and the rule of faith." },
-    { "label": "Eusebius, Church History V.20", "kind": "primary", "note": "Irenaeus's own memory of hearing Polycarp." },
+    { "label": "Eusebius, Church History V.20", "kind": "primary", "url": "https://www.newadvent.org/fathers/2501.htm", "note": "Irenaeus's own memory of hearing Polycarp." },
     { "label": "John Behr, Irenaeus of Lyons: Identifying Christianity (Oxford)", "author": "John Behr", "kind": "secondary", "note": "Modern Orthodox study of Irenaeus's theology and context." }
   ]
 }

@@ -11,7 +11,7 @@
     { "kind": "para", "text": "Chrysostom is Orthodoxy's preacher: his homilies remain the largest and most-read patristic commentary on Scripture, his social teaching the Church's conscience, and the Divine Liturgy most often served in Orthodox churches bears his name. With Basil the Great and Gregory the Theologian he is honored as one of the Three Great Hierarchs." }
   ],
   "sources": [
-    { "label": "Palladius, Dialogue on the Life of St John Chrysostom", "kind": "primary", "note": "The near-contemporary account of his episcopate, trials, and exile." },
+    { "label": "Palladius, Dialogue on the Life of St John Chrysostom", "kind": "primary", "url": "https://www.tertullian.org/fathers/palladius_dialogus_02_text.htm", "note": "The near-contemporary account of his episcopate, trials, and exile." },
     { "label": "Socrates Scholasticus, Church History VI.2–21", "kind": "primary", "url": "https://www.newadvent.org/fathers/2601.htm", "note": "Fifth-century narrative of his rise and fall." },
     { "label": "J. N. D. Kelly, Golden Mouth: The Story of John Chrysostom (Cornell)", "author": "J. N. D. Kelly", "kind": "secondary", "note": "The standard modern biography." }
   ]

@@ -12,7 +12,7 @@
   ],
   "sources": [
     { "label": "The sentence and anathemas of Constantinople II, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1", "kind": "primary", "note": "The fourteen capitula against the Three Chapters." },
-    { "label": "Evagrius Scholasticus, Ecclesiastical History IV.38", "kind": "primary", "note": "Contemporary narrative of the council and Vigilius's role." },
+    { "label": "Evagrius Scholasticus, Ecclesiastical History IV.38", "kind": "primary", "url": "https://www.tertullian.org/fathers/evagrius_4_book4.htm", "note": "Contemporary narrative of the council and Vigilius's role." },
     { "label": "John Meyendorff, Christ in Eastern Christian Thought (SVS Press), ch. 5", "author": "John Meyendorff", "kind": "secondary", "note": "On the council's Cyrillian reading of Chalcedon." }
   ]
 }

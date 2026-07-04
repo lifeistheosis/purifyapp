@@ -37,19 +37,23 @@ function ResultRow({ event, onNavigate }: { event: HistoryEventMeta; onNavigate?
 export function HistorySearchInline({
   className,
   placeholder = "Search Church history…",
+  id = "history-search-inline",
 }: {
   className?: string;
   placeholder?: string;
+  /** Distinct per instance: the control row and the xl sidebar both render
+   *  this component into the same DOM, so a shared id would be invalid. */
+  id?: string;
 }) {
   const [q, setQ] = useState("");
   const results = searchEvents(publishedEvents(), q, 8);
   return (
     <div className={className}>
-      <label className="sr-only" htmlFor="history-search-inline">
+      <label className="sr-only" htmlFor={id}>
         Search Church history
       </label>
       <input
-        id="history-search-inline"
+        id={id}
         type="search"
         value={q}
         onChange={(e) => setQ(e.target.value)}
@@ -58,7 +62,10 @@ export function HistorySearchInline({
         className="w-full min-h-[44px] rounded-md border border-paper/15 bg-night-soft px-4 font-sans text-ui text-paper placeholder:text-paper/55 focus:border-paper/40 focus:outline-none"
       />
       {q.trim() ? (
-        <div className="mt-2 rounded-md border border-paper/12 bg-night-soft/80 p-1">
+        // Height-capped and scrollable: inside the sticky control row a long
+        // result list would otherwise run past the bottom of the viewport
+        // with no way to reach it.
+        <div className="mt-2 max-h-[min(60vh,480px)] overflow-y-auto overscroll-contain rounded-md border border-paper/12 bg-night-soft/80 p-1">
           {results.length ? (
             results.map((e) => <ResultRow key={e.slug} event={e} />)
           ) : (

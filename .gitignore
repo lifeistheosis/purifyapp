@@ -98,3 +98,4 @@ dogma-scan.json
 # Generated content registries (emitted from TS at build time)
 data/_generated/
 .android-export-stash/
+test-results/
