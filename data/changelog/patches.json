@@ -1,5 +1,37 @@
 [
   {
+    "id": "beta-1-7",
+    "version": "Beta 1.7",
+    "date": "2026-07-03",
+    "title": "A walk through the history of the Church",
+    "intro": "The largest patch since the app began, and the one I have most wanted to build. Purify now carries the whole story of the Orthodox Church as an interactive timeline you can walk, from Pentecost to the present, every event sourced and cited. Around it, the pages you open most, Today, the Bible, Discover, have been redrawn to feel like one quiet, considered whole. And Continue with Google works again. Glory to God, who keeps the memory of His Church.",
+    "sections": [
+      {
+        "heading": "Orthodox History, an interactive timeline",
+        "body": "A new home under Discover: the two thousand years of the Church laid out as a timeline you move through by hand, divided into eleven ages from the Apostolic Age to the present. Thirty-eight events to begin, the councils and the schisms, the saints and the missions and the martyrs, each with its own page, its full account, and its sources shown in the open. Move by era, jump by century, search by name or year or place, and filter by category. Every event links into the saints, councils, and doctrine already in the app, and each saint and council page now points back to its place in history. It all works without an account, and on Android it works fully offline."
+      },
+      {
+        "heading": "Honest about what is certain",
+        "body": "Church history holds firm dates and treasured traditions side by side, and Purify never pretends the second are the first. Every event wears a plain label, from Historically Attested to Traditional Account to Disputed, and says so wherever it matters. The facts, the sources, and the citations are free for everyone, always. A richer, cinematic way to experience the history, with artwork and gentle motion, is being prepared for Purify Plus; the history itself will never move behind it."
+      },
+      {
+        "heading": "On this day, and where you left off",
+        "body": "Today has become a personal daily page. It greets you by the hour, names the rule that hour calls for, and remembers your rhythm of prayer. Beside it, a quiet thread of your own: the chapter you were reading, your place on the History timeline, the prayers you opened, your saved passages. When a firmly dated event falls on today, it appears here as On This Day in Orthodox History."
+      },
+      {
+        "heading": "The library, redrawn",
+        "body": "Discover, the Bible, and the Today page now share one calm editorial hand instead of three. The Bible's canon reads as a single library rather than a wall of coloured tiles, and remembers the exact verse you left off at. Discover leads with what is worth returning to and shows the life of the day. The section marks throughout have been redrawn to suit what they open, an hourglass for history, a shield for the defense of the faith."
+      },
+      {
+        "heading": "Signing in, mended",
+        "body": "Continue with Google stopped working for a spell, turned away at the door with an error that was ours to fix, not yours. It is mended. If you have only ever signed in with Google, that is the door to use; if you set a password in the early days, it still works, and Forgot password will always let you set a fresh one. The Google and Apple marks on the sign-in buttons are drawn properly now, too."
+      }
+    ],
+    "future": [],
+    "closing": "This one took a while, and it was worth every hour. If a date looks wrong, a source looks thin, or an event you love is missing, tell me, this is a beginning and not an end. Write to me at lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
     "id": "beta-1-6",
     "version": "Beta 1.6",
     "date": "2026-06-20",

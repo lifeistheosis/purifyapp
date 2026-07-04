@@ -23,6 +23,23 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 1.7",
+ kind: "A walk through the history of the Church",
+ date: "July 3, 2026",
+ blurb:
+  "The largest patch since the app began. Purify now carries the whole story of the Orthodox Church as an interactive timeline you can walk, from Pentecost to the present, every event sourced and cited and honest about what is certain and what is tradition. Around it, the pages you open most, Today, the Bible, and Discover, have been redrawn to feel like one quiet, considered whole. And Continue with Google works again. Glory to God, who keeps the memory of His Church.",
+ items: [
+  "Orthodox History, a new home under Discover at /history. Two thousand years of the Church laid out as a timeline you move through by hand, divided into eleven ages from the Apostolic Age to the present. Thirty-eight events to begin, the councils and the schisms, the saints and the missions and the martyrs, each with its own page, its full account, and its sources shown in the open.",
+  "Move by era, jump by century with a scrubber, search by name or year or place, and filter by category. Every event links into the saints, councils, and doctrine already in the app, and each saint and council page now points back to its place in history. It works without an account, and on Android it works fully offline.",
+  "Honest about what is certain. Every event wears a plain label, from Historically Attested to Traditional Account to Disputed, so a treasured tradition is never dressed up as a documented date. The facts, the sources, and the citations are free for everyone, always. A cinematic way to experience the history, with verified artwork and gentle motion, is being prepared for Purify Plus; the history itself will never move behind it.",
+  "Today has become a personal daily page. It greets you by the hour, names the rule that hour calls for, and remembers your rhythm of prayer over the last fortnight. Beside it, a quiet thread of your own: the chapter you were reading, your place on the History timeline, the prayers you opened, and your saved passages. When a firmly dated event falls on today, it appears as On This Day in Orthodox History. None of it needs an account; all of it stays on your device.",
+  "The library, redrawn. Discover, the Bible, and Today now share one calm editorial hand instead of three. The Bible's canon reads as a single library rather than a wall of coloured tiles, and remembers the exact verse you left off at. Discover leads with what is worth returning to and shows the life of the day. The section marks throughout were redrawn to suit what they open, an hourglass for history, a shield for the defense of the faith.",
+  "Signing in, mended. Continue with Google stopped working for a spell, turned away with an error that was ours to fix, not yours. It is mended. If you have only ever signed in with Google, that is the door to use; if you set a password in the early days, it still works, and Forgot password will always let you set a fresh one. The Google and Apple marks on the sign-in buttons are drawn properly now, too.",
+  "The front-page down arrow no longer wastes its first press; it steps cleanly through each panel to the foot of the page.",
+  "Footer, home hero chip, and the What's new chip step to Beta 1.7.",
+ ],
+ },
+ {
  version: "v9.9.5",
  kind: "Two of the Fathers' great works join the library, complete",
  date: "June 13, 2026",

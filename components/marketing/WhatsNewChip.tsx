@@ -10,12 +10,17 @@
 import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { CURRENT_VERSION } from "@/lib/whatsNew/version";
+import { latestPatch } from "@/lib/changelog";
 import {
   subscribeSeen,
   getSeenSnapshot,
   getServerSeenSnapshot,
   markWhatsNewSeen,
 } from "@/lib/whatsNew/seenStore";
+
+// The chip's tagline tracks the newest patch so it never drifts from the
+// version string beside it.
+const CHIP_TAGLINE = latestPatch()?.title ?? "What's new";
 
 export function WhatsNewChip({ isDe }: { isDe: boolean }) {
   const seenVersion = useSyncExternalStore(
@@ -53,7 +58,7 @@ export function WhatsNewChip({ isDe }: { isDe: boolean }) {
         </span>
       )}
       <span className="font-sans text-caption sm:text-detail text-paper/85 group-hover:text-paper transition-colors">
-        {CURRENT_VERSION} · A gentler welcome for new faces
+        {CURRENT_VERSION} · {CHIP_TAGLINE}
       </span>
       <span className="text-paper/55 group-hover:text-paper transition-colors text-detail">
         →
