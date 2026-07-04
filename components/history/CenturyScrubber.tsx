@@ -19,6 +19,7 @@ export function CenturyScrubber({
   active,
   onJump,
   className,
+  id = "history-century-scrubber",
 }: {
   /** Centuries that actually contain events, ascending. */
   centuries: number[];
@@ -26,6 +27,10 @@ export function CenturyScrubber({
   active?: number;
   onJump: (century: number) => void;
   className?: string;
+  /** Distinct per instance: the xl sidebar and the center column both
+   *  render this component into the same DOM, so a shared id would be
+   *  invalid. */
+  id?: string;
 }) {
   const activeIdx = Math.max(
     0,
@@ -42,13 +47,13 @@ export function CenturyScrubber({
     <div className={className}>
       <div className="flex items-baseline justify-between">
         <label
-          htmlFor="history-century-scrubber"
+          htmlFor={id}
           className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55"
         >
           Jump by century
         </label>
         <output
-          htmlFor="history-century-scrubber"
+          htmlFor={id}
           className="font-display-serif text-title-sm text-paper tabular-nums"
           aria-hidden
         >
@@ -56,7 +61,7 @@ export function CenturyScrubber({
         </output>
       </div>
       <input
-        id="history-century-scrubber"
+        id={id}
         type="range"
         className="history-scrubber mt-1"
         min={0}

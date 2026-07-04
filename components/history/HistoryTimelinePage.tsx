@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Sheet } from "@/components/ui/Sheet";
+import { cn } from "@/lib/cn";
 import { getClientEntitlements } from "@/lib/entitlements/client";
 import { useIsNative } from "@/lib/platform/native";
 import {
@@ -51,6 +52,7 @@ import { EraJumpList } from "./EraJumpList";
 import { EventContextRail } from "./EventContextRail";
 import { HistorySearchInline, HistorySearchOverlay } from "./HistorySearch";
 import { TimelineCore } from "./TimelineCore";
+import { TimelineFastScroll } from "./TimelineFastScroll";
 import { ActiveFilterChips, TimelineFilters } from "./TimelineFilters";
 
 const ALL_EVENTS = publishedEvents();
@@ -274,8 +276,8 @@ export function HistoryTimelinePage() {
       title="Immersive History: artwork and cinematic motion (Purify Plus)"
       className={
         cinematic
-          ? "tap-press min-h-[44px] shrink-0 rounded-md border border-gold/50 bg-gold/10 px-3.5 font-sans text-ui font-semibold text-gold"
-          : "tap-press min-h-[44px] shrink-0 rounded-md border border-paper/15 px-3.5 font-sans text-ui font-semibold text-paper/75"
+          ? "tap-press min-h-[44px] shrink-0 rounded-md border border-gold/50 bg-gold/10 px-2.5 font-sans text-ui font-semibold text-gold min-[420px]:px-3.5"
+          : "tap-press min-h-[44px] shrink-0 rounded-md border border-paper/15 px-2.5 font-sans text-ui font-semibold text-paper/75 min-[420px]:px-3.5"
       }
     >
       Immersive
@@ -287,14 +289,14 @@ export function HistoryTimelinePage() {
       <button
         type="button"
         onClick={() => setErasOpen(true)}
-        className="tap-press min-h-[44px] shrink-0 rounded-md border border-paper/15 px-3.5 font-sans text-ui font-semibold text-paper/75"
+        className="tap-press min-h-[44px] shrink-0 rounded-md border border-paper/15 px-2.5 font-sans text-ui font-semibold text-paper/75 min-[420px]:px-3.5"
       >
         Eras
       </button>
       <button
         type="button"
         onClick={() => setFiltersOpen(true)}
-        className="tap-press min-h-[44px] shrink-0 rounded-md border border-paper/15 px-3.5 font-sans text-ui font-semibold text-paper/75"
+        className="tap-press min-h-[44px] shrink-0 rounded-md border border-paper/15 px-2.5 font-sans text-ui font-semibold text-paper/75 min-[420px]:px-3.5"
       >
         Filter{filterCount ? ` · ${filterCount}` : ""}
       </button>
@@ -312,7 +314,7 @@ export function HistoryTimelinePage() {
         {/* Left research column, desktop (xl) only. */}
         <aside className="hidden xl:block">
           <div className="sticky top-[88px] max-h-[calc(100vh-110px)] space-y-8 overflow-y-auto pr-2 scrollbar-thin">
-            <HistorySearchInline />
+            <HistorySearchInline id="history-search-sidebar" />
             {cinematicToggle ? (
               <div className="flex items-center gap-3">
                 {cinematicToggle}
@@ -328,6 +330,7 @@ export function HistoryTimelinePage() {
               <EraJumpList activeEra={activeEra} counts={eraCounts} onJump={jumpToEra} />
             </div>
             <CenturyScrubber
+              id="history-century-scrubber-sidebar"
               centuries={CENTURIES}
               active={activeCentury}
               onJump={jumpToCentury}
@@ -341,17 +344,28 @@ export function HistoryTimelinePage() {
           {/* Control row for every width below xl (sticky on phones). */}
           <div className="history-controls sticky z-20 -mx-5 bg-night/95 px-5 py-2.5 backdrop-blur-sm md:-mx-8 md:px-8 lg:static lg:mx-0 lg:bg-transparent lg:px-0 lg:pt-2 lg:backdrop-blur-none xl:hidden">
             <div className="flex items-center gap-2">
-              {isNative ? (
-                <button
-                  type="button"
-                  onClick={() => setSearchOpen(true)}
-                  className="tap-press min-h-[44px] flex-1 rounded-md border border-paper/15 bg-night-soft px-4 text-left font-sans text-ui text-paper/55"
-                >
-                  Search Church history…
-                </button>
-              ) : (
-                <HistorySearchInline className="min-w-0 flex-1" />
-              )}
+              {/* Phones (web and native) get a trigger that opens the
+                  full-screen search overlay: an inline field squeezed by the
+                  three control buttons collapses to nothing at this width,
+                  and its result list can't scroll inside a sticky bar. The
+                  inline field returns at md, where there's room for both. */}
+              <button
+                type="button"
+                onClick={() => setSearchOpen(true)}
+                className={cn(
+                  "tap-press min-h-[44px] min-w-0 flex-1 truncate rounded-md border border-paper/15 bg-night-soft px-4 text-left font-sans text-ui text-paper/55",
+                  !isNative && "md:hidden",
+                )}
+              >
+                <span className="min-[480px]:hidden">Search…</span>
+                <span className="hidden min-[480px]:inline">Search Church history…</span>
+              </button>
+              {!isNative ? (
+                <HistorySearchInline
+                  id="history-search-controls"
+                  className="hidden min-w-0 flex-1 md:block"
+                />
+              ) : null}
               {controlButtons}
             </div>
           </div>
@@ -386,6 +400,15 @@ export function HistoryTimelinePage() {
           </div>
         </aside>
       </div>
+
+      {/* Fast-scroll rail (below lg): hold and drag to scrub by century. */}
+      {hydrated ? (
+        <TimelineFastScroll
+          centuries={CENTURIES}
+          active={activeCentury}
+          onJump={jumpToCentury}
+        />
+      ) : null}
 
       {/* Overlays (phones + lg tablets; xl uses the sidebar instead). */}
       <Sheet open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filter the timeline">
