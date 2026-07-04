@@ -1170,3 +1170,110 @@ html.is-native .history-controls {
  transform: scale(1.06);
  }
 }
+
+/* ===================== History: account pages =====================
+   Motion for the event account pages, two tiers:
+   - free: scroll-linked section reveals, the era drop cap, and the era
+     ornaments (typography and light, no artwork);
+   - Plus (Immersive): the artwork hero with its slideshow, scroll
+     parallax, and the fixed era atmosphere, rendered only by EventHero
+     for entitled readers.
+   Scroll-driven rules are progressive enhancement: browsers without
+   animation-timeline simply show the content; and every rule here has
+   a reduced-motion path. */
+
+/* Scroll-scrubbed reveal: article sections rise and settle as they
+   enter the viewport. Scrubbed by scroll position, not played once, so
+   it never fires while off-screen and reverses gracefully. */
+@supports (animation-timeline: view()) {
+ .account-reveal {
+ animation: account-rise ease-out both;
+ animation-timeline: view();
+ animation-range: entry 0% entry 45%;
+ }
+}
+@keyframes account-rise {
+ from { opacity: 0; transform: translateY(18px); }
+ to { opacity: 1; transform: none; }
+}
+
+/* The era-tinted drop cap that opens every account. */
+.account-dropcap::first-letter {
+ float: left;
+ padding: 0.05em 0.14em 0 0;
+ font-family: var(--font-display-serif);
+ font-size: 3.3em;
+ line-height: 0.82;
+ color: color-mix(in srgb, hsl(var(--era-hue, 45) 42% 70%) 55%, var(--color-paper));
+}
+
+/* Era ornament between sections: a hue-warmed hairline and glyph. */
+.account-ornament {
+ display: flex;
+ align-items: center;
+ gap: 14px;
+ color: color-mix(in srgb, hsl(var(--era-hue, 45) 40% 62%) 45%, transparent);
+ font-size: 15px;
+ line-height: 1;
+}
+.account-ornament::before,
+.account-ornament::after {
+ content: "";
+ height: 1px;
+ flex: 1;
+ background: linear-gradient(
+  to right,
+  transparent,
+  color-mix(in srgb, hsl(var(--era-hue, 45) 40% 62%) 22%, transparent),
+  transparent
+ );
+}
+
+/* Hero parallax: the artwork layer slides slower than the page as the
+   hero scrolls away. The Ken Burns push lives on the img inside this
+   layer, so the two transforms never fight. */
+@supports (animation-timeline: view()) {
+ .account-parallax {
+ animation: account-parallax linear both;
+ animation-timeline: view();
+ animation-range: exit 0% exit 100%;
+ }
+}
+@keyframes account-parallax {
+ to { transform: translateY(16%); }
+}
+
+/* Slideshow crossfade between the account's rights-verified images. */
+.account-slide {
+ opacity: 0;
+ transition: opacity 1400ms ease;
+}
+.account-slide[data-active="true"] {
+ opacity: 1;
+}
+
+/* Fixed era atmosphere behind the whole account (Plus): the same
+   whisper-alpha drifting light as .cinema-era, page-sized. */
+.account-atmosphere {
+ position: fixed;
+ inset: 0;
+ pointer-events: none;
+ z-index: 0;
+ background:
+  radial-gradient(70% 45% at 15% 0%, hsl(var(--era-hue, 45) 45% 55% / 0.07), transparent 70%),
+  radial-gradient(60% 40% at 90% 95%, hsl(var(--era-hue, 45) 50% 40% / 0.05), transparent 72%);
+ animation: cinema-drift 30s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+ .account-reveal,
+ .account-parallax,
+ .account-atmosphere {
+ animation: none;
+ opacity: 1;
+ transform: none;
+ }
+ .account-slide {
+ transition: none;
+ }
+}

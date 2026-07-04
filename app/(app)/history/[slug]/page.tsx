@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import type { CSSProperties } from "react";
 
 import { BookmarkEventButton } from "@/components/history/BookmarkEventButton";
 import { EventArticle } from "@/components/history/EventArticle";
+import { EventHero } from "@/components/history/EventHero";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { EventRelations } from "@/components/history/EventRelations";
 import { EventSources } from "@/components/history/EventSources";
 import { ImmersivePreviewCard } from "@/components/history/ImmersivePreviewCard";
+import { ERA_HUE } from "@/components/history/eraHue";
 import { eraById, eventBySlug, eventParams } from "@/lib/history/events";
 import { loadEventBody } from "@/lib/history/load";
 
@@ -69,20 +72,31 @@ export default async function HistoryEventPage({
     publisher: { "@type": "Organization", name: "Purify" },
   };
 
+  // The era hue drives everything that makes this account visually its
+  // own: the drop cap, the section ornaments, and (for Immersive readers)
+  // the hero artwork's atmosphere.
   return (
-    <section className="bg-night px-5 md:px-8 py-10 md:py-16">
+    <section
+      className="relative bg-night px-5 md:px-8 py-10 md:py-16"
+      style={{ "--era-hue": ERA_HUE[meta.era] } as CSSProperties}
+    >
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="mx-auto w-full max-w-[760px]">
+      <div className="relative z-10 mx-auto w-full max-w-[760px]">
+        <EventHero meta={meta} />
         <EventArticle meta={meta} body={body} />
         <div className="mt-8 flex flex-wrap items-center gap-2">
           <BookmarkEventButton event={meta} />
           <ShareButton title={meta.title} text={meta.preview} className="min-h-[44px] px-4" />
         </div>
-        <EventSources sources={body.sources} />
-        <EventRelations meta={meta} />
+        <div className="account-reveal">
+          <EventSources sources={body.sources} />
+        </div>
+        <div className="account-reveal">
+          <EventRelations meta={meta} />
+        </div>
         <ImmersivePreviewCard />
       </div>
     </section>
