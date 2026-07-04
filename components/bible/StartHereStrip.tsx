@@ -16,34 +16,33 @@ const PICKS: Pick[] = [
 ];
 
 /**
- * Horizontal "Start here" strip above the OT/NT grid on /bible. Curated
- * entry points for readers who don't know where to begin. Scrolls
- * horizontally on mobile, lays out in a row on tablet+.
+ * "Begin where you stand": curated first doors into Scripture, shown above
+ * the canon on the desktop Bible index (the page is md+ only; the mobile
+ * shell has its own entries). House card language: serif names, quiet
+ * night-soft surfaces, one gold hover.
  */
 export function StartHereStrip() {
   return (
-    <section className="px-5 md:px-8 pt-2 pb-10 md:pb-14 bg-night border-t border-white/5">
-      <div className="mx-auto max-w-[1080px] w-full">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-          Start here
-        </p>
-        <div className="-mx-5 md:mx-0">
-          <div className="flex gap-2.5 overflow-x-auto snap-x px-5 md:px-0 pb-2 md:pb-0 md:grid md:grid-cols-3 lg:grid-cols-6 md:gap-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {PICKS.map((p) => (
-              <Link
-                key={p.name}
-                href={p.href}
-                className="shrink-0 snap-start min-w-[180px] md:min-w-0 rounded-lg border border-gold/25 bg-gold/[0.04] hover:bg-gold/[0.10] hover:border-gold/55 transition-colors px-4 py-3.5"
-              >
-                <span className="block font-sans text-ui font-semibold text-paper leading-tight">
-                  {p.name}
-                </span>
-                <span className="block font-serif italic text-caption text-paper/60 mt-1 leading-tight">
-                  {p.subtitle}
-                </span>
-              </Link>
-            ))}
-          </div>
+    <section className="bg-night px-5 pb-12 pt-2 md:px-8 md:pb-16">
+      <div className="mx-auto w-full max-w-[1080px]">
+        <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">
+          Begin where you stand
+        </h2>
+        <div className="mt-4 grid grid-cols-3 gap-3 lg:grid-cols-6">
+          {PICKS.map((p) => (
+            <Link
+              key={p.name}
+              href={p.href}
+              className="group rounded-lg border border-paper/10 bg-night-soft/40 px-4 py-3.5 transition-colors hover:border-gold/45 hover:bg-gold/[0.05]"
+            >
+              <span className="block font-display-serif text-lede text-paper leading-tight transition-colors group-hover:text-gold">
+                {p.name}
+              </span>
+              <span className="mt-1 block font-serif italic text-caption text-paper/60 leading-tight">
+                {p.subtitle}
+              </span>
+            </Link>
+          ))}
         </div>
       </div>
     </section>
