@@ -204,6 +204,7 @@ function SavedTab({
   const prayers = bookmarks.filter(
     (b) => b.kind === "prayer" || b.kind === "prayer-rule",
   );
+  const products = bookmarks.filter((b) => b.kind === "product");
 
   if (bookmarks.length === 0) {
     return (
@@ -271,6 +272,13 @@ function SavedTab({
           ))}
         </Group>
       )}
+      {products.length > 0 && (
+        <Group title="Saved icons" count={products.length}>
+          {products.map((b) => (
+            <Row key={b.id} bookmark={b} onRemove={() => onRemove(b.id)} />
+          ))}
+        </Group>
+      )}
     </div>
   );
 }
@@ -320,6 +328,8 @@ function hrefFor(b: Bookmark): string {
       return b.href;
     case "history-event":
       return `/history/${b.eventSlug}`;
+    case "product":
+      return `/shop/icons/${b.productSlug}`;
     default:
       return "/saved";
   }
@@ -344,6 +354,8 @@ function subFor(b: Bookmark): string {
       return "Prayer rule";
     case "history-event":
       return `History · ${b.displayDate}`;
+    case "product":
+      return `${b.storeName} · ${b.priceLabel} when saved`;
     default:
       return "";
   }

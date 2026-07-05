@@ -66,6 +66,16 @@ export type Bookmark =
  kind: "history-event";
  eventSlug: string;
  displayDate: string;
+ })
+ | (BookmarkBase & {
+ kind: "product";
+ productSlug: string;
+ storeName: string;
+ /** Pre-formatted price at save time ("$49"); display-only, the product
+  * page always shows the live price. */
+ priceLabel: string;
+ imageUrl?: string;
+ imageAlt?: string;
  });
 
 // Distributive Omit: TypeScript's built-in Omit treats unions as a single
@@ -99,6 +109,10 @@ export type BookmarkLocator =
  | {
  kind: "history-event";
  eventSlug: string;
+ }
+ | {
+ kind: "product";
+ productSlug: string;
  };
 
 const STORAGE_KEY = "purify:bookmarks";
@@ -123,6 +137,9 @@ function matches(b: Bookmark, loc: BookmarkLocator): boolean {
  }
  if (b.kind === "history-event" && loc.kind === "history-event") {
  return b.eventSlug === loc.eventSlug;
+ }
+ if (b.kind === "product" && loc.kind === "product") {
+ return b.productSlug === loc.productSlug;
  }
  return false;
 }
@@ -153,6 +170,9 @@ export function bookmarkKey(b: Bookmark): string {
  break;
  case "history-event":
  loc = { eventSlug: b.eventSlug };
+ break;
+ case "product":
+ loc = { productSlug: b.productSlug };
  break;
  default:
  loc = {};

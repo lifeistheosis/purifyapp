@@ -21,6 +21,7 @@ import { getSaintBioOverrides } from "@/lib/i18n/localizedContent";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 import { RecordRead } from "@/components/reading/RecordRead";
 import { SaintIntercession } from "@/components/saints/SaintIntercession";
+import { SaintIconsRail } from "@/components/shop/SaintIconsRail";
 
 type Params = Promise<{ slug: string }>;
 
@@ -145,6 +146,7 @@ export default async function SaintPage({ params }: { params: Params }) {
             events={eventsForSaint(saint.slug)}
             title="Events during this saint's life"
           />
+          <SaintIconsRail saintSlug={saint.slug} saintName={saint.name} />
         </ContentShell>
         <SaintIntercession saint={saint} />
       </div>
