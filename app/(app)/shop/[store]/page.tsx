@@ -65,7 +65,7 @@ export default async function StorePage({ params }: Params) {
             {store.tagline}
           </p>
         ) : null}
-        <p className="mt-2 font-sans text-detail text-paper/50">A Purify store</p>
+        <p className="mt-2 font-sans text-detail text-paper/60">A Purify store</p>
         {store.description ? (
           <p className="mx-auto mt-5 max-w-[560px] font-serif text-body text-paper/70 leading-[1.65]">
             {store.description}
@@ -108,7 +108,7 @@ export default async function StorePage({ params }: Params) {
         <div className="mt-5 grid gap-6 md:grid-cols-2">
           {store.shipping_policy_md ? (
             <div>
-              <h3 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+              <h3 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
                 Shipping
               </h3>
               <div className="mt-3">
@@ -118,7 +118,7 @@ export default async function StorePage({ params }: Params) {
           ) : null}
           {store.return_policy_md ? (
             <div>
-              <h3 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+              <h3 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
                 Returns
               </h3>
               <div className="mt-3">
@@ -145,7 +145,7 @@ export default async function StorePage({ params }: Params) {
 
       {/* Ownership disclosure */}
       <footer className="mt-10 border-t border-white/8 pt-6 pb-4">
-        <p className="font-sans text-caption text-paper/45">
+        <p className="font-sans text-caption text-paper/60">
           {store.ownership_disclosure}
         </p>
       </footer>

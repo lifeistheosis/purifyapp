@@ -68,7 +68,7 @@ export function BuyBar({
       <div className="mx-auto flex max-w-[560px] items-center justify-between gap-4 md:mx-0 md:flex-col md:items-stretch">
         <div>
           <p className="font-sans text-title-sm font-semibold text-paper">{priceLabel}</p>
-          <p className="mt-0.5 font-sans text-caption text-paper/55">
+          <p className="mt-0.5 font-sans text-caption text-paper/60">
             {inventoryLabel} · {dispatchLabel}
           </p>
         </div>
@@ -90,7 +90,7 @@ export function BuyBar({
             >
               Notify me
             </Link>
-            <p className="font-sans text-caption text-paper/50 md:text-center">
+            <p className="font-sans text-caption text-paper/60 md:text-center">
               Checkout opens soon.
             </p>
           </div>

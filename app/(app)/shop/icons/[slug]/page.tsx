@@ -59,7 +59,7 @@ function Fact({ term, value }: { term: string; value: string | null }) {
   if (!value) return null;
   return (
     <div className="flex justify-between gap-6 border-b border-white/6 py-2.5 last:border-b-0">
-      <dt className="shrink-0 font-sans text-detail text-paper/50">{term}</dt>
+      <dt className="shrink-0 font-sans text-detail text-paper/60">{term}</dt>
       <dd className="text-right font-sans text-detail text-paper/85">{value}</dd>
     </div>
   );
@@ -87,7 +87,7 @@ export default async function ProductPage({ params }: Params) {
 
   return (
     <div className="mx-auto w-full max-w-[1100px] px-5 pb-28 md:px-8 md:pb-8">
-      <nav aria-label="Breadcrumb" className="pt-6 font-sans text-caption text-paper/45">
+      <nav aria-label="Breadcrumb" className="pt-6 font-sans text-caption text-paper/60">
         <Link href="/shop" className="hover:text-paper/75">
           Shop
         </Link>
@@ -131,7 +131,7 @@ export default async function ProductPage({ params }: Params) {
             {product.subtitle ? (
               <p className="mt-2 font-serif text-lede text-paper/70">{product.subtitle}</p>
             ) : null}
-            <p className="mt-2 font-sans text-detail text-paper/55">
+            <p className="mt-2 font-sans text-detail text-paper/60">
               Sold by{" "}
               <Link
                 href={`/shop/${product.store.slug}`}
@@ -175,7 +175,7 @@ export default async function ProductPage({ params }: Params) {
 
           {/* Details */}
           <section aria-label="Details" className="mt-8 rounded-lg border border-paper/10 bg-night-soft/60 p-5">
-            <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+            <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
               Details
             </h2>
             <dl className="mt-3">
@@ -193,7 +193,7 @@ export default async function ProductPage({ params }: Params) {
           {/* Shipping and returns */}
           {store ? (
             <section aria-label="Shipping and returns" className="mt-6 rounded-lg border border-paper/10 bg-night-soft/60 p-5">
-              <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+              <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
                 Shipping &amp; returns
               </h2>
               {store.shipping_policy_md ? (
@@ -216,7 +216,7 @@ export default async function ProductPage({ params }: Params) {
                 href={`/saints/${saint.slug}`}
                 className="press-card block rounded-lg border border-paper/10 bg-night-soft/60 p-5"
               >
-                <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/50">
+                <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
                   From the Purify library
                 </p>
                 <p className="mt-2 font-display-serif text-title-sm text-paper">
@@ -233,7 +233,7 @@ export default async function ProductPage({ params }: Params) {
           ) : null}
 
           {/* Ownership disclosure */}
-          <p className="mt-8 font-sans text-caption text-paper/45">
+          <p className="mt-8 font-sans text-caption text-paper/60">
             {product.store.ownership_disclosure}
           </p>
         </div>

@@ -52,7 +52,7 @@ export function SaintIconsRail({
         </h2>
         <Link
           href="/shop/eikon"
-          className="shrink-0 font-sans text-detail text-paper/55 hover:text-paper"
+          className="shrink-0 font-sans text-detail text-paper/60 hover:text-paper"
         >
           Explore EIKON
         </Link>
@@ -80,7 +80,7 @@ export function SaintIconsRail({
                 <p className="truncate px-3 pt-2 font-sans text-detail text-paper group-hover:text-gold">
                   {p.title}
                 </p>
-                <p className="px-3 pb-3 pt-0.5 font-sans text-caption text-paper/55">
+                <p className="px-3 pb-3 pt-0.5 font-sans text-caption text-paper/60">
                   {p.store.public_name}
                 </p>
               </Link>
@@ -88,7 +88,7 @@ export function SaintIconsRail({
           );
         })}
       </ul>
-      <p className="mt-3 font-sans text-caption text-paper/45">
+      <p className="mt-3 font-sans text-caption text-paper/60">
         Sold through the Purify Shop.{" "}
         <Link
           href={`/shop/request?subject=${encodeURIComponent(saintName)}`}

@@ -64,7 +64,7 @@ export default async function MyRequestsPage() {
     <div className="mx-auto w-full max-w-[680px] px-5 pb-8 md:px-8">
       <header className="flex items-end justify-between gap-4 pt-10 md:pt-14">
         <div>
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
             Purify Shop
           </p>
           <h1 className="mt-2 font-display-serif text-heading text-paper">
@@ -96,7 +96,7 @@ export default async function MyRequestsPage() {
                   {REQUEST_STATUS_LABELS[r.status]}
                 </span>
               </div>
-              <p className="mt-1 font-sans text-caption text-paper/50">
+              <p className="mt-1 font-sans text-caption text-paper/60">
                 {new Date(r.created_at).toLocaleDateString(undefined, {
                   month: "short",
                   day: "numeric",

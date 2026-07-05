@@ -19,7 +19,7 @@ export default async function CheckoutSuccessPage({
 
   return (
     <div className="mx-auto w-full max-w-[560px] px-5 pt-14 text-center md:px-8 md:pt-20">
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
         Purify Shop
       </p>
       <h1 className="mt-3 font-display-serif text-heading md:text-display-sm text-paper">
@@ -30,7 +30,7 @@ export default async function CheckoutSuccessPage({
         we&rsquo;ll write again when your icon ships.
       </p>
       {order ? (
-        <p className="mt-3 font-sans text-caption text-paper/45">
+        <p className="mt-3 font-sans text-caption text-paper/60">
           Order reference: {order}
         </p>
       ) : null}
@@ -48,7 +48,7 @@ export default async function CheckoutSuccessPage({
           Back to the shop
         </Link>
       </div>
-      <p className="mt-10 font-sans text-caption text-paper/40">
+      <p className="mt-10 font-sans text-caption text-paper/60">
         EIKON is owned and operated by Purify.
       </p>
     </div>

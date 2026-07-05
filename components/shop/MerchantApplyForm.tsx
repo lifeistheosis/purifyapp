@@ -247,7 +247,7 @@ export function MerchantApplyForm() {
       >
         {state === "busy" ? "Submitting…" : "Submit application"}
       </button>
-      <p className="font-sans text-caption text-paper/45">
+      <p className="font-sans text-caption text-paper/60">
         Applications are reviewed by hand and approval is not guaranteed.
         Submitting does not create a store.
       </p>

@@ -1,0 +1,310 @@
+{
+  "_comment": "Phase 1 EIKON seed catalog. PRICES ARE PLACEHOLDERS the operator must set before any public launch (docs/shop/PHASE1.md). Imagery is representative, rights-verified public-domain artwork fetched by scripts/fetch-shop-media.mjs; image_is_representative stays true until real supplier product photos exist. Classifications use only the honest vocabulary; nothing here claims hand-painted or original work.",
+  "products": [
+    {
+      "slug": "christ-pantocrator-mounted",
+      "title": "Christ Pantocrator",
+      "subtitle": "The Sinai Pantocrator, printed and mounted on wood",
+      "description": "The oldest surviving icon of Christ Pantocrator, kept at St Catherine's Monastery on Sinai since the sixth century. The two sides of the face, often read as His mercy and His judgment, have met every generation of the Church since. Printed on archival stock and mounted on a wooden board, ready for the prayer corner or the desk.",
+      "priceCents": 4900,
+      "category": "christ",
+      "classification": "printed_mounted",
+      "inventoryStatus": "ready_to_ship",
+      "quantityAvailable": 8,
+      "dispatchMinDays": 1,
+      "dispatchMaxDays": 2,
+      "materials": "Archival print, poplar board",
+      "dimensions": "8 × 10 in",
+      "productionMethod": "Giclée print, hand-mounted",
+      "countryOfOrigin": "Greece",
+      "subjects": [
+        {
+          "type": "christ",
+          "slug": "pantocrator"
+        }
+      ],
+      "media": {
+        "file": "christ-pantocrator-mounted.jpg",
+        "alt": "The Sinai icon of Christ Pantocrator: Christ blessing with His right hand and holding the Gospels, sixth century encaustic",
+        "query": "Christ Pantocrator Sinai icon sixth century encaustic",
+        "preferred": [
+          "File:Christ Icon Sinai 6th century.jpg",
+          "File:Spas vsederzhitel sinay.jpg"
+        ]
+      }
+    },
+    {
+      "slug": "theotokos-of-vladimir-mounted",
+      "title": "Theotokos of Vladimir",
+      "subtitle": "The Vladimirskaya, printed and mounted on wood",
+      "description": "The Vladimir Mother of God, painted in Constantinople around 1131 and beloved across the Orthodox world: the Child pressing His cheek to His Mother's, her eyes toward the one who prays. Printed on archival stock and mounted on a wooden board.",
+      "priceCents": 4900,
+      "category": "theotokos",
+      "classification": "printed_mounted",
+      "inventoryStatus": "ready_to_ship",
+      "quantityAvailable": 8,
+      "dispatchMinDays": 1,
+      "dispatchMaxDays": 2,
+      "materials": "Archival print, poplar board",
+      "dimensions": "8 × 10 in",
+      "productionMethod": "Giclée print, hand-mounted",
+      "countryOfOrigin": "Greece",
+      "subjects": [
+        {
+          "type": "theotokos",
+          "slug": "vladimirskaya"
+        }
+      ],
+      "media": {
+        "file": "theotokos-of-vladimir-mounted.jpg",
+        "alt": "The Vladimir icon of the Theotokos: the Christ Child pressing His cheek against His Mother's, twelfth-century Byzantine icon",
+        "query": "Theotokos Vladimir icon Vladimirskaya Tretyakov"
+      }
+    },
+    {
+      "slug": "st-nicholas-wooden-icon",
+      "title": "St Nicholas the Wonderworker",
+      "subtitle": "Wooden icon of the bishop of Myra",
+      "description": "Nicholas of Myra, the friend of sailors, prisoners, and children, shown vested as a bishop with the Gospels. After the medieval Novgorod tradition. Printed and sealed on a solid wooden plank with a raised border, in the manner of a traditional panel icon.",
+      "priceCents": 8900,
+      "category": "saints",
+      "classification": "wooden",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Lime wood, sealed print, matte varnish",
+      "dimensions": "6 × 8 in",
+      "productionMethod": "Print on wood, varnished",
+      "countryOfOrigin": "Romania",
+      "subjects": [
+        {
+          "type": "saint",
+          "slug": "nicholas-the-wonderworker"
+        }
+      ],
+      "media": {
+        "file": "st-nicholas-wooden-icon.jpg",
+        "alt": "Icon of St Nicholas the Wonderworker vested as a bishop, blessing with his right hand and holding the Gospels",
+        "query": "Saint Nicholas icon Novgorod medieval",
+        "preferred": [
+          "File:Nikola from 1294.jpg"
+        ]
+      }
+    },
+    {
+      "slug": "archangel-michael-print",
+      "title": "The Archangel Michael",
+      "subtitle": "Standard reproduction of the Byzantine archangel",
+      "description": "The Captain of the Bodiless Hosts, after the fourteenth-century Byzantine tradition. A faithful reproduction print on heavy archival paper, unmounted, ready for framing.",
+      "priceCents": 2900,
+      "category": "saints",
+      "classification": "standard_reproduction",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Archival paper",
+      "dimensions": "11 × 14 in",
+      "productionMethod": "Archival print, unmounted",
+      "countryOfOrigin": "Greece",
+      "subjects": [
+        {
+          "type": "saint",
+          "slug": "archangel-michael"
+        }
+      ],
+      "media": {
+        "file": "archangel-michael-print.jpg",
+        "alt": "Byzantine icon of the Archangel Michael holding a staff, gold ground",
+        "query": "Archangel Michael Byzantine icon 14th century"
+      }
+    },
+    {
+      "slug": "st-seraphim-of-sarov-mounted",
+      "title": "St Seraphim of Sarov",
+      "subtitle": "Printed and mounted icon of the Sarov elder",
+      "description": "Seraphim of Sarov, who greeted every visitor with 'My joy, Christ is risen.' After a nineteenth-century depiction of the saint. Printed on archival stock and mounted on a wooden board.",
+      "priceCents": 4500,
+      "category": "saints",
+      "classification": "printed_mounted",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Archival print, poplar board",
+      "dimensions": "6 × 8 in",
+      "productionMethod": "Giclée print, hand-mounted",
+      "countryOfOrigin": "Russia",
+      "subjects": [
+        {
+          "type": "saint",
+          "slug": "seraphim-of-sarov"
+        }
+      ],
+      "media": {
+        "file": "st-seraphim-of-sarov-mounted.jpg",
+        "alt": "Icon of St Seraphim of Sarov in a white cassock, his hand raised in blessing",
+        "query": "Seraphim of Sarov icon 19th century",
+        "preferred": [
+          "File:Seraphim of Sarov (portrait).jpg",
+          "File:Saint Serafim Of Sarov Portrait Painted During His Life.jpg"
+        ]
+      }
+    },
+    {
+      "slug": "st-sergius-of-radonezh-mounted",
+      "title": "St Sergius of Radonezh",
+      "subtitle": "Printed and mounted icon of the abbot of Russia",
+      "description": "Sergius of Radonezh, whose forest hermitage became the Trinity Lavra and whose blessing sent a nation to Kulikovo. After the medieval Moscow tradition. Printed on archival stock and mounted on a wooden board.",
+      "priceCents": 4500,
+      "category": "saints",
+      "classification": "printed_mounted",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Archival print, poplar board",
+      "dimensions": "6 × 8 in",
+      "productionMethod": "Giclée print, hand-mounted",
+      "countryOfOrigin": "Russia",
+      "subjects": [
+        {
+          "type": "saint",
+          "slug": "sergius-of-radonezh"
+        }
+      ],
+      "media": {
+        "file": "st-sergius-of-radonezh-mounted.jpg",
+        "alt": "Icon of St Sergius of Radonezh in monastic habit, blessing",
+        "query": "Sergius of Radonezh icon medieval embroidery shroud",
+        "preferred": [
+          "File:Sergius von Radonezh (full).jpg"
+        ]
+      }
+    },
+    {
+      "slug": "apostle-peter-laminated",
+      "title": "The Apostle Peter",
+      "subtitle": "Laminated pocket icon",
+      "description": "The first-called of the Twelve to confess Christ as the Son of the living God, shown from the fourteenth-century Vysotsky Deesis range. A small laminated icon for the wallet, the car, or the bedside, sealed against wear.",
+      "priceCents": 1200,
+      "category": "saints",
+      "classification": "laminated",
+      "inventoryStatus": "ready_to_ship",
+      "quantityAvailable": 25,
+      "dispatchMinDays": 1,
+      "dispatchMaxDays": 2,
+      "materials": "Laminated card stock",
+      "dimensions": "2.5 × 3.5 in",
+      "productionMethod": "Print, laminated",
+      "countryOfOrigin": "Greece",
+      "subjects": [
+        {
+          "type": "saint",
+          "slug": "apostle-peter"
+        }
+      ],
+      "media": {
+        "file": "apostle-peter-laminated.jpg",
+        "alt": "The Apostle Peter turned in prayer, from the fourteenth-century Vysotsky Deesis range",
+        "preferred": [
+          "File:Peter from Vysotsky chin (14c, Tretyakov gallery).jpg"
+        ],
+        "query": "Peter Vysotsky chin Tretyakov"
+      }
+    },
+    {
+      "slug": "anastasis-pascha-icon",
+      "title": "The Anastasis",
+      "subtitle": "The icon of Pascha, printed and mounted",
+      "description": "Christ trampling the gates of Hades and raising Adam and Eve by the wrist: the Church's icon of the Resurrection. After the classic Byzantine composition. Printed on archival stock and mounted on a wooden board.",
+      "priceCents": 5500,
+      "category": "feasts",
+      "classification": "printed_mounted",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Archival print, poplar board",
+      "dimensions": "8 × 10 in",
+      "productionMethod": "Giclée print, hand-mounted",
+      "countryOfOrigin": "Greece",
+      "subjects": [
+        {
+          "type": "feast",
+          "slug": "pascha"
+        }
+      ],
+      "media": {
+        "file": "anastasis-pascha-icon.jpg",
+        "alt": "The Anastasis: Christ standing on the broken gates of Hades, raising Adam and Eve",
+        "query": "Anastasis icon resurrection Byzantine Christ Hades Adam",
+        "preferred": [
+          "File:Harrowing of hell (Pskov, 14th c.).jpg",
+          "File:Harrowing of hell (Constantinople, 14th c.).jpg"
+        ]
+      }
+    },
+    {
+      "slug": "prayer-corner-starter-set",
+      "title": "Prayer Corner Starter Set",
+      "subtitle": "Three mounted icons for the home icon corner",
+      "description": "Three printed and mounted icons to begin a family prayer corner: Christ Pantocrator, the Theotokos of Vladimir, and the Holy Trinity after Rublev. Each printed on archival stock and mounted on a wooden board.",
+      "priceCents": 12900,
+      "category": "prayer_corner",
+      "classification": "printed_mounted",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Archival prints, poplar boards",
+      "dimensions": "Three boards, 6 × 8 in each",
+      "productionMethod": "Giclée prints, hand-mounted",
+      "countryOfOrigin": "Greece",
+      "subjects": [
+        {
+          "type": "christ",
+          "slug": "pantocrator"
+        },
+        {
+          "type": "theotokos",
+          "slug": "vladimirskaya"
+        }
+      ],
+      "media": {
+        "file": "prayer-corner-starter-set.jpg",
+        "alt": "The Holy Trinity after Andrei Rublev: three angels seated around the table of Abraham's hospitality",
+        "query": "Rublev Trinity icon Angels at Mamre"
+      }
+    },
+    {
+      "slug": "deesis-wooden-diptych",
+      "title": "Deesis Diptych",
+      "subtitle": "Hinged wooden diptych of Christ and the Theotokos",
+      "description": "A hinged two-panel wooden icon that stands open on a desk or folds shut for travel: Christ enthroned on the right panel, His Mother in intercession on the left, after the Deesis tradition. Printed, sealed, and varnished on jointed wooden panels.",
+      "priceCents": 9900,
+      "category": "sets",
+      "classification": "wooden",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Lime wood, brass hinges, sealed print",
+      "dimensions": "Two panels, 5 × 7 in each",
+      "productionMethod": "Print on wood, varnished",
+      "countryOfOrigin": "Romania",
+      "subjects": [
+        {
+          "type": "christ",
+          "slug": "pantocrator"
+        },
+        {
+          "type": "theotokos",
+          "slug": "deesis"
+        }
+      ],
+      "media": {
+        "file": "deesis-wooden-diptych.jpg",
+        "alt": "Deesis icon: the Theotokos turned in intercession toward Christ",
+        "query": "Deesis icon Theotokos intercession Byzantine",
+        "preferred": [
+          "File:Christ Pantocrator from Vysotsky chin (14c, Tretyakov gallery).jpg"
+        ]
+      }
+    }
+  ]
+}

@@ -88,7 +88,7 @@ export default async function ApplicationStatusPage() {
   return (
     <div className="mx-auto w-full max-w-[680px] px-5 pb-8 md:px-8">
       <header className="pt-10 md:pt-14">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
           Sell on Purify
         </p>
         <h1 className="mt-2 font-display-serif text-heading text-paper">
@@ -122,7 +122,7 @@ export default async function ApplicationStatusPage() {
             <p className="mt-3 font-serif text-body text-paper/70 leading-[1.65]">
               {STATUS_COPY[app.status].body}
             </p>
-            <p className="mt-3 font-sans text-caption text-paper/45">
+            <p className="mt-3 font-sans text-caption text-paper/60">
               Submitted{" "}
               {new Date(app.created_at).toLocaleDateString(undefined, {
                 month: "long",
@@ -136,15 +136,15 @@ export default async function ApplicationStatusPage() {
 
           <dl className="rounded-lg border border-paper/10 bg-night-soft/60 p-6 font-sans text-detail">
             <div className="flex justify-between gap-6 border-b border-white/6 py-2">
-              <dt className="text-paper/50">Seller type</dt>
+              <dt className="text-paper/60">Seller type</dt>
               <dd className="text-paper/85">{app.seller_type.replace(/_/g, " ")}</dd>
             </div>
             <div className="flex justify-between gap-6 border-b border-white/6 py-2">
-              <dt className="text-paper/50">Country</dt>
+              <dt className="text-paper/60">Country</dt>
               <dd className="text-paper/85">{app.country}</dd>
             </div>
             <div className="flex justify-between gap-6 py-2">
-              <dt className="text-paper/50">Contact email</dt>
+              <dt className="text-paper/60">Contact email</dt>
               <dd className="text-paper/85">{app.email}</dd>
             </div>
           </dl>

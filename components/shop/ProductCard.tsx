@@ -55,7 +55,7 @@ export function ProductCard({
       </div>
 
       <div className="p-4">
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/50">
+        <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/60">
           {CLASSIFICATION_LABELS[product.classification]}
         </p>
         <h3 className="mt-1.5 font-display-serif text-title-sm leading-snug text-paper transition-colors group-hover:text-gold">
@@ -64,14 +64,14 @@ export function ProductCard({
         <p className="mt-2 font-sans text-ui font-semibold text-paper">
           {formatPrice(product.price_cents, product.currency)}
         </p>
-        <p className="mt-2 font-sans text-caption text-paper/55">
+        <p className="mt-2 font-sans text-caption text-paper/60">
           <span className={cn("font-semibold", ready ? "text-paper/80" : "text-paper/60")}>
             {INVENTORY_LABELS[product.inventory_status]}
           </span>
           {" · "}
           {dispatchWindowLabel(product.dispatch_min_days, product.dispatch_max_days)}
         </p>
-        <p className="mt-1 font-sans text-caption text-paper/45">
+        <p className="mt-1 font-sans text-caption text-paper/60">
           {product.store.public_name}
         </p>
       </div>

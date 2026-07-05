@@ -89,7 +89,7 @@ export function ProductGallery({
       ) : null}
 
       {representative ? (
-        <figcaption className="mt-3 text-center font-sans text-caption text-paper/50">
+        <figcaption className="mt-3 text-center font-sans text-caption text-paper/60">
           Representative image: your icon is the same design and format;
           natural wood and print variation may differ slightly.
         </figcaption>

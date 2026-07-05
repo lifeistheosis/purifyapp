@@ -48,7 +48,7 @@ export default async function OrdersPage() {
   return (
     <div className="mx-auto w-full max-w-[680px] px-5 pb-8 md:px-8">
       <header className="pt-10 md:pt-14">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
           Purify Shop
         </p>
         <h1 className="mt-2 font-display-serif text-heading text-paper">Your orders</h1>
@@ -74,7 +74,7 @@ export default async function OrdersPage() {
                     {formatPrice(o.total_cents, o.currency)}
                   </p>
                 </div>
-                <p className="mt-1 font-sans text-caption text-paper/50">
+                <p className="mt-1 font-sans text-caption text-paper/60">
                   Placed{" "}
                   {new Date(o.created_at).toLocaleDateString(undefined, {
                     month: "long",
@@ -97,7 +97,7 @@ export default async function OrdersPage() {
                         <span
                           className={cn(
                             "text-center font-sans text-[10px] leading-tight",
-                            i === step ? "font-semibold text-paper" : "text-paper/40",
+                            i === step ? "font-semibold text-paper" : "text-paper/60",
                           )}
                           aria-current={i === step ? "step" : undefined}
                         >

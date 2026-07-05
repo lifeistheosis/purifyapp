@@ -1,7 +1,7 @@
 # Shop Phase 1: EIKON, store-first marketplace foundation
 
 Status: built on `feat/shop-eikon-phase1`, NOT deployed. The whole feature
-sits behind `SHOP_ENABLED` and ships dark until suppliers and payments are
+sits behind `NEXT_PUBLIC_SHOP_ENABLED` and ships dark until suppliers and payments are
 connected.
 
 ## What exists
@@ -44,7 +44,7 @@ node scripts/seed-shop.mjs        # requires SUPABASE_SERVICE_ROLE_KEY in env
 
 | Var | Meaning |
 | --- | --- |
-| `SHOP_ENABLED` | `1` renders /shop; otherwise all shop routes 404 and entry points hide. |
+| `NEXT_PUBLIC_SHOP_ENABLED` | `1` renders /shop; otherwise all shop routes 404 and entry points hide. |
 | `SHOP_CHECKOUT_ENABLED` | `1` + Stripe keys = live checkout; otherwise "Checkout opens soon" + Notify Me. |
 | `STRIPE_SECRET_KEY` | Server-only, `sk_test_…` until launch. Absent = checkout hard-disabled. |
 | `STRIPE_WEBHOOK_SECRET` | Signing secret for `/api/shop/stripe-webhook`. |

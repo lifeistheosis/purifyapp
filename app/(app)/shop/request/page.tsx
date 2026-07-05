@@ -25,7 +25,7 @@ export default async function RequestIconPage({
   return (
     <div className="mx-auto w-full max-w-[680px] px-5 md:px-8">
       <header className="pt-10 md:pt-14">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
           Purify Shop
         </p>
         <h1 className="mt-2 font-display-serif text-heading md:text-display-sm text-paper">

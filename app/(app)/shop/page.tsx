@@ -27,7 +27,7 @@ export default async function ShopHomePage() {
     <div className="mx-auto w-full max-w-[1200px] md:px-8">
       {/* Masthead */}
       <header className="px-5 pt-10 text-center md:px-0 md:pt-16">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
           Purify Shop
         </p>
         <h1 className="mx-auto mt-3 max-w-[640px] font-display-serif text-display-sm md:text-display text-paper leading-[1.05]">
@@ -69,13 +69,13 @@ export default async function ShopHomePage() {
             href="/shop/eikon"
             className="press-card block rounded-lg border border-paper/10 bg-night-soft/60 p-6 md:p-10"
           >
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/50">
+            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
               The founding store
             </p>
             <p className="mt-3 font-display-serif text-heading md:text-display-sm tracking-[0.08em] text-paper">
               EIKON
             </p>
-            <p className="mt-1 font-sans text-detail text-paper/55">A Purify store</p>
+            <p className="mt-1 font-sans text-detail text-paper/60">A Purify store</p>
             <p className="mt-4 max-w-[560px] font-serif text-body text-paper/70 leading-[1.6]">
               {eikon.description}
             </p>
@@ -139,7 +139,7 @@ export default async function ShopHomePage() {
 
       {/* Merchant disclosure */}
       <footer className="mt-14 border-t border-white/8 px-5 pt-6 md:px-0">
-        <p className="font-sans text-caption text-paper/45">
+        <p className="font-sans text-caption text-paper/60">
           EIKON is owned and operated by Purify. Additional independent
           merchants join by application and review.
         </p>

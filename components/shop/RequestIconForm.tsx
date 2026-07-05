@@ -204,7 +204,7 @@ export function RequestIconForm({
       >
         {state === "busy" ? "Sending…" : "Send request"}
       </button>
-      <p className="font-sans text-caption text-paper/45">
+      <p className="font-sans text-caption text-paper/60">
         Requests go to the Purify Shop team for manual follow-up. Nothing is
         purchased or promised by sending one.
       </p>

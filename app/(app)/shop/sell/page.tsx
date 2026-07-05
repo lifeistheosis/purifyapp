@@ -40,7 +40,7 @@ export default async function SellPage() {
   return (
     <div className="mx-auto w-full max-w-[760px] px-5 pb-8 md:px-8">
       <header className="pt-10 md:pt-14">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
           Purify Shop
         </p>
         <h1 className="mt-2 font-display-serif text-heading md:text-display-sm text-paper">
@@ -65,7 +65,7 @@ export default async function SellPage() {
       </section>
 
       <section aria-label="How review works" className="mt-8 rounded-lg border border-paper/10 bg-night-soft/60 p-6">
-        <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+        <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
           How review works
         </h2>
         <ol className="mt-3 space-y-2 font-serif text-body text-paper/70 leading-[1.65]">
@@ -74,7 +74,7 @@ export default async function SellPage() {
           <li>3. Approved sellers set up their storefront with us before anything goes live.</li>
           <li>4. Purify administrators approve every store before it opens.</li>
         </ol>
-        <p className="mt-4 font-sans text-detail text-paper/55">
+        <p className="mt-4 font-sans text-detail text-paper/60">
           The marketplace currently hosts EIKON, Purify&rsquo;s own store.
           Independent merchants join through this process.
         </p>
