@@ -1,12 +1,22 @@
 import { test, expect, devices } from "@playwright/test";
+import { NATIVE_UA_TOKEN } from "@/lib/platform/token";
 
 /**
  * Mobile app-shell smoke. Run as a dedicated project at the iPhone 14 Pro
  * viewport so we catch regressions specific to the bottom-tab UI:
- *   - the MobileTabBar renders and the 5 tabs route correctly
- *   - the desktop AppNav is hidden on mobile
+ *   - the MobileTabBar renders and the 5 tabs route correctly (native shell)
+ *   - mobile WEB gets the marketing home with no tab bar
  *   - no horizontal scrollbar on any of the 5 surfaces
  *   - the manifest is reachable and parseable
+ *
+ * Since the platform split (56a5875, "split mobile web from the Android app
+ * shell"), the tab-bar shell is NATIVE-ONLY: WebOnly/NativeOnly gates over
+ * useIsNative() give every browser — including mobile web — the marketing
+ * site, and the app shell mounts only inside the Capacitor shell. The shell
+ * tests below emulate that shell the same way capacitor.config.ts announces
+ * it: by appending NATIVE_UA_TOKEN to the WebView user-agent, which is one
+ * of the two signals isNativeClient() accepts (the other, window.Capacitor,
+ * doesn't exist in a plain browser).
  *
  * Skipped accessibility (axe) here — the desktop home spec already runs
  * a11y; this one is layout-focused and would only add noise.
@@ -15,9 +25,10 @@ import { test, expect, devices } from "@playwright/test";
 test.use({ ...devices["iPhone 14 Pro"] });
 
 // These are layout/navigation tests, not onboarding tests. Run them as an
-// established user so the first-run welcome overlay (shown on "/" to new
-// visitors) doesn't intercept tab taps. A saved calendar preference is
-// enough to satisfy the prior-use heuristic in lib/onboarding/state.ts.
+// established user so the first-run welcome overlay (FirstRunGate, shown on
+// "/" to new visitors on web AND native) doesn't intercept tab taps. A saved
+// calendar preference satisfies the prior-use heuristic in
+// lib/onboarding/state.ts.
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     try {
@@ -36,29 +47,48 @@ const TABS = [
   { label: "You", expect: "/account" },
 ];
 
-test("mobile shell: tab bar visible, AppNav hidden", async ({ page }) => {
-  await page.goto("/");
-  // Bottom tab nav is the "Primary" landmark on phones.
-  await expect(page.getByRole("navigation", { name: "Primary" })).toBeVisible();
-  // No horizontal scroll on the Today hero.
-  const scrollW = await page.evaluate(
-    () => document.documentElement.scrollWidth,
-  );
-  const innerW = await page.evaluate(() => window.innerWidth);
-  expect(scrollW).toBeLessThanOrEqual(innerW + 1);
+test.describe("native app shell (Capacitor UA)", () => {
+  test.use({
+    userAgent: `${devices["iPhone 14 Pro"].userAgent} ${NATIVE_UA_TOKEN}`,
+  });
+
+  test("mobile shell: tab bar visible, AppNav hidden", async ({ page }) => {
+    await page.goto("/");
+    // Bottom tab nav is the "Primary" landmark inside the app shell.
+    await expect(
+      page.getByRole("navigation", { name: "Primary" }),
+    ).toBeVisible();
+    // No horizontal scroll on the Today hero.
+    const scrollW = await page.evaluate(
+      () => document.documentElement.scrollWidth,
+    );
+    const innerW = await page.evaluate(() => window.innerWidth);
+    expect(scrollW).toBeLessThanOrEqual(innerW + 1);
+  });
+
+  for (const t of TABS) {
+    test(`tab ${t.label} routes to ${t.expect}`, async ({ page }) => {
+      await page.goto("/");
+      await page
+        .getByRole("navigation", { name: "Primary" })
+        .getByRole("link", { name: new RegExp(`^${t.label}$`, "i") })
+        .click();
+      await page.waitForURL(new RegExp(t.expect.replace("/", "\\/")));
+      expect(page.url()).toContain(t.expect);
+    });
+  }
 });
 
-for (const t of TABS) {
-  test(`tab ${t.label} routes to ${t.expect}`, async ({ page }) => {
-    await page.goto("/");
-    await page
-      .getByRole("navigation", { name: "Primary" })
-      .getByRole("link", { name: new RegExp(`^${t.label}$`, "i") })
-      .click();
-    await page.waitForURL(new RegExp(t.expect.replace("/", "\\/")));
-    expect(page.url()).toContain(t.expect);
-  });
-}
+test("mobile WEB: marketing home renders, no tab bar", async ({ page }) => {
+  // No native UA token here — this is an ordinary phone browser. The split
+  // must hold in both directions: web visitors get the marketing site and
+  // the app shell never leaks out of the native build.
+  await page.goto("/");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Primary" })).toHaveCount(
+    0,
+  );
+});
 
 test("manifest is served and parses as JSON", async ({ request }) => {
   const res = await request.get("/manifest.webmanifest");
