@@ -1136,6 +1136,12 @@ html.is-native .history-controls {
  background:
   radial-gradient(90% 55% at 18% 0%, hsl(var(--era-hue, 45) 45% 55% / 0.075), transparent 70%),
   radial-gradient(70% 50% at 92% 100%, hsl(var(--era-hue, 45) 50% 40% / 0.05), transparent 72%);
+ /* The gradients are centered on the panel's edges, so without a mask the
+    panel boundary cuts straight through them and prints as a hard seam
+    between adjacent eras. Fading the panel itself out toward every edge
+    removes the seam regardless of where the light sits. */
+ -webkit-mask-image: radial-gradient(120% 120% at 50% 50%, #000 55%, transparent 92%);
+ mask-image: radial-gradient(120% 120% at 50% 50%, #000 55%, transparent 92%);
  animation: cinema-drift 26s ease-in-out infinite alternate;
 }
 @keyframes cinema-drift {
