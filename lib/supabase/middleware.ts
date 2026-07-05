@@ -99,7 +99,17 @@ export async function updateSession(request: NextRequest) {
   // auth surface, or on /reset). The profiles read is best-effort ,
   // if it fails (e.g. migration not yet applied), we fail open and
   // let the request pass.
-  if (user && requiresAuth(pathname) && pathname !== "/set-password") {
+  //
+  // OAuth accounts are exempt: someone who signs in with Google or
+  // Apple already has a working credential, so the interstitial would
+  // just be a wall. For them the password is optional and lives in
+  // Account → Security as "Set a password". The gate remains for
+  // email-only accounts (magic-link era, or accounts Purify set up),
+  // which have no other way back in.
+  const oauthUser = (user?.identities ?? []).some(
+    (i) => i.provider !== "email",
+  );
+  if (user && !oauthUser && requiresAuth(pathname) && pathname !== "/set-password") {
     try {
       const { data: profile } = await supabase
         .from("profiles")
