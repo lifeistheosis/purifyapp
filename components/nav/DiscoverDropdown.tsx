@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 import { cn } from "@/lib/cn";
+import { shopEnabled } from "@/lib/shop/flags";
 
 type Child = { key: string; label: string; href: string };
 
@@ -23,6 +24,9 @@ export const DISCOVER_CHILDREN: Child[] = [
   { key: "theology", label: "Theology", href: "/theology" },
   { key: "reading", label: "Reading", href: "/reading" },
   { key: "councils", label: "Councils", href: "/councils" },
+  // The shop appears only when the marketplace flag is on (dark until
+  // suppliers and payments are connected).
+  ...(shopEnabled() ? [{ key: "shop", label: "Shop", href: "/shop" }] : []),
 ];
 
 /** Hrefs that light up the Discover slot as "active", including the four

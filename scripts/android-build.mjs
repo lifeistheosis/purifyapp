@@ -33,6 +33,10 @@ const STASH_PATHS = [
   ["app", "(app)", "bible", "multi"],
   ["app", "(app)", "language-editor"],
   ["app", "admin"],
+  // The shop (EIKON marketplace) is web/PWA-only in Phase 1: force-dynamic
+  // Supabase reads on every page and a checkout that needs the network, so
+  // there is no useful offline form to bundle.
+  ["app", "(app)", "shop"],
 ];
 
 function slot(i) {
