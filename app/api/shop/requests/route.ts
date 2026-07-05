@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 
-import { getAdminUser } from "@/lib/admin/access";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { shopIconRequestSchema } from "@/lib/security/schemas";
 import { getSaint } from "@/lib/saints/saints";
@@ -80,22 +79,4 @@ export async function POST(req: Request) {
     );
   }
   return NextResponse.json({ ok: true });
-}
-
-/** Admin listing (the admin tab reads through here). */
-export async function GET() {
-  const adminUser = await getAdminUser();
-  if (!adminUser) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
-  const admin = createAdminClient();
-  const { data, error } = await admin
-    .from("shop_icon_requests")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(200);
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-  return NextResponse.json({ requests: data ?? [] });
 }
