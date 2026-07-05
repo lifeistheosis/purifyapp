@@ -16,6 +16,7 @@ import { SustainabilityTab } from "./tabs/SustainabilityTab";
 import { ContentHealthTab } from "./tabs/ContentHealthTab";
 import { HealthTab } from "./tabs/HealthTab";
 import { ShopTab } from "./tabs/ShopTab";
+import { MarketplaceTab } from "./tabs/MarketplaceTab";
 import { Toolbar, ToolbarButton } from "./primitives";
 
 type TabId =
@@ -29,7 +30,8 @@ type TabId =
   | "sustainability"
   | "content-health"
   | "health"
-  | "shop";
+  | "shop"
+  | "marketplace";
 
 const TABS: { id: TabId; label: string; eyebrow: string; component: ComponentType }[] = [
   { id: "overview", label: "Overview", eyebrow: "At a glance", component: OverviewTab },
@@ -43,6 +45,7 @@ const TABS: { id: TabId; label: string; eyebrow: string; component: ComponentTyp
   { id: "content-health", label: "Content Health", eyebrow: "Gaps in the data tree", component: ContentHealthTab },
   { id: "health", label: "Service Health", eyebrow: "Outbound deps", component: HealthTab },
   { id: "shop", label: "Shop", eyebrow: "EIKON, requests, merchants", component: ShopTab },
+  { id: "marketplace", label: "Marketplace", eyebrow: "Owner console", component: MarketplaceTab },
 ];
 
 function isTabId(s: string | null): s is TabId {

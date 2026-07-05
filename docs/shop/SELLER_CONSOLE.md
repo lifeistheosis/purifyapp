@@ -94,6 +94,35 @@ are explicitly out of scope until Stripe Connect (Phase 3).
 Full signed-in flows need a provisioned seller + applied migration; do a
 manual pass on staging before flipping anything live.
 
+## Owner dashboard (/admin → Marketplace tab)
+
+The governance counterpart to the seller console, for the operator
+only (`ADMIN_EMAILS` gate, same as the rest of /admin). Five panels,
+all backed by `/api/admin/shop/*` service-role routes:
+
+- **Stores & sellers** — every store with its console account and
+  status; create a store directly (with or without an application);
+  one-click provisioning of approved applications; assign/detach the
+  account email that gets console access (uses the `profiles` mirror,
+  exact email match, one seller per account); suspend/reactivate
+  sellers; flip stores draft/live/paused/closed.
+- **Listings** — every product across every store with status filters
+  and moderation switches (publish/pause/archive; publishing keeps the
+  ≥1-photo gate).
+- **Orders** — every order, full fulfillment pipeline control
+  (including EIKON's supplier stages), inbound/outbound tracking.
+  Payment status is not writable; paid orders exit through refunds.
+- **Messages** — read-only oversight of every buyer ⇄ store thread,
+  with close/reopen. The owner never speaks as a store.
+- **Refunds** — decide pending requests (same shared execution path as
+  the seller console: `lib/shop/refundExecution.ts`) and settle parked
+  "approved" requests with Mark processed once money moved manually.
+
+Product reviews do not exist anywhere in the marketplace yet (a
+deliberate Phase 1 decision — the storefront renders reviews only when
+real ones exist), so there is nothing to moderate; when reviews arrive
+they belong on this tab.
+
 ## Deliberately out of scope (Phase 3+)
 
 Stripe Connect payouts and fee accounting, partial refunds, image

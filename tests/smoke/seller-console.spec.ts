@@ -50,6 +50,23 @@ test("buyer order detail asks for sign in instead of leaking", async ({ page }) 
   await expect(page.locator('a[href*="/signin"]').first()).toBeVisible();
 });
 
+test("owner dashboard endpoints refuse anonymous callers", async ({ request }) => {
+  // Admin routes 403 regardless of the shop flag; the /admin page 404s
+  // so the route isn't even revealed.
+  for (const url of [
+    "/api/admin/shop/stores",
+    "/api/admin/shop/listings",
+    "/api/admin/shop/conversations",
+    "/api/admin/shop/refunds",
+    "/api/admin/shop/orders",
+  ]) {
+    const res = await request.get(url);
+    expect(res.status(), url).toBe(403);
+  }
+  const page = await request.get("/admin");
+  expect(page.status()).toBe(404);
+});
+
 test("seller APIs refuse anonymous and malformed calls", async ({ request }) => {
   // Signed out: everything seller-side is 403/401, buyer-side 401.
   const orderPatch = await request.patch("/api/shop/seller/orders", {

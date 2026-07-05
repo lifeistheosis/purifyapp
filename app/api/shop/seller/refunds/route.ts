@@ -2,10 +2,13 @@ import { NextResponse } from "next/server";
 
 import { rateLimited } from "@/lib/security/ratelimit";
 import { shopRefundDecisionSchema } from "@/lib/security/schemas";
-import { checkoutEnabled, shopEnabled } from "@/lib/shop/flags";
+import { shopEnabled } from "@/lib/shop/flags";
+import {
+  approveRefundRequest,
+  declineRefundRequest,
+} from "@/lib/shop/refundExecution";
 import { refundCanTransition } from "@/lib/shop/refunds";
 import { getSellerContext } from "@/lib/shop/seller";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -84,78 +87,25 @@ export async function POST(req: Request) {
     );
   }
 
-  const admin = createAdminClient();
-  const now = new Date().toISOString();
-
   if (decision === "declined") {
-    const { error } = await admin
-      .from("shop_refund_requests")
-      .update({
-        status: "declined",
-        resolution_note: note ?? null,
-        decided_at: now,
-        updated_at: now,
-      })
-      .eq("id", request.id)
-      .eq("status", "requested");
-    if (error) {
-      console.warn("[shop] refund decline failed", error.message);
+    const ok = await declineRefundRequest(request.id, note ?? null);
+    if (!ok) {
       return NextResponse.json({ error: "Couldn't save the decision." }, { status: 500 });
     }
     return NextResponse.json({ ok: true, status: "declined" });
   }
 
-  // Approve: try to move the money now.
-  const amount = order.total_cents;
-  let processed = false;
-  let stripeRefundId: string | null = null;
-
-  if (checkoutEnabled() && order.stripe_payment_intent) {
-    try {
-      const { default: Stripe } = await import("stripe");
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-      const refund = await stripe.refunds.create({
-        payment_intent: order.stripe_payment_intent,
-        amount,
-      });
-      stripeRefundId = refund.id;
-      processed = true;
-    } catch (e) {
-      // Approval stands; the money moves manually. Never fail the
-      // decision because Stripe hiccuped.
-      console.warn("[shop] stripe refund failed", (e as Error).message);
-    }
-  }
-
-  const { error } = await admin
-    .from("shop_refund_requests")
-    .update({
-      status: processed ? "processed" : "approved",
-      amount_cents: amount,
-      resolution_note: note ?? null,
-      stripe_refund_id: stripeRefundId,
-      decided_at: now,
-      processed_at: processed ? now : null,
-      updated_at: now,
-    })
-    .eq("id", request.id)
-    .eq("status", "requested");
-  if (error) {
-    console.warn("[shop] refund approve failed", error.message);
+  const status = await approveRefundRequest(
+    request.id,
+    {
+      id: order.id,
+      total_cents: order.total_cents,
+      stripe_payment_intent: order.stripe_payment_intent,
+    },
+    note ?? null,
+  );
+  if (!status) {
     return NextResponse.json({ error: "Couldn't save the decision." }, { status: 500 });
   }
-
-  if (processed) {
-    await admin
-      .from("shop_orders")
-      .update({
-        payment_status: "refunded",
-        fulfillment_status: "refunded",
-        refund_status: "refunded",
-        updated_at: now,
-      })
-      .eq("id", order.id);
-  }
-
-  return NextResponse.json({ ok: true, status: processed ? "processed" : "approved" });
+  return NextResponse.json({ ok: true, status });
 }
