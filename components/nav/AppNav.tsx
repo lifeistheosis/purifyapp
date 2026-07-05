@@ -12,6 +12,7 @@ import {
   DiscoverDropdown,
   DISCOVER_CHILD_HREFS,
 } from "@/components/nav/DiscoverDropdown";
+import { shopEnabled } from "@/lib/shop/flags";
 
 function initialsFromName(name: string | null | undefined): string {
   if (!name) return "?";
@@ -179,6 +180,23 @@ export function AppNav() {
               </Link>
             );
           })}
+          {/* The shop is a destination, not a reading surface, so it gets
+              its own pill button instead of another text link. Hidden while
+              the marketplace flag is dark. */}
+          {shopEnabled() && (
+            <Link
+              href="/shop"
+              style={{ animationDelay: `${80 + NAV.length * 35}ms` }}
+              className={cn(
+                "appnav-in inline-flex items-center rounded-pill border px-4 py-1.5 font-sans text-ui font-medium transition-colors duration-150",
+                isActive("/shop")
+                  ? "border-gold text-gold-pale bg-gold/10"
+                  : "border-gold/45 text-gold-pale hover:border-gold hover:bg-gold/10",
+              )}
+            >
+              {t("nav.shop")}
+            </Link>
+          )}
         </nav>
 
         <div
@@ -255,7 +273,14 @@ export function AppNav() {
       {open && (
         <div className="lg:hidden absolute left-0 right-0 top-full bg-night border-b border-white/8">
           <nav className="flex flex-col px-5 py-4 gap-1">
-            {[...NAV, ...SECONDARY, { key: "account", label: t("nav.account"), href: "/account" }].map(
+            {[
+              ...NAV,
+              ...(shopEnabled()
+                ? [{ key: "shop", label: t("nav.shop"), href: "/shop" }]
+                : []),
+              ...SECONDARY,
+              { key: "account", label: t("nav.account"), href: "/account" },
+            ].map(
               (it) => (
                 <Link
                   key={it.key}

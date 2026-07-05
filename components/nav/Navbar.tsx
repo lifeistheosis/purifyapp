@@ -12,6 +12,7 @@ import {
   DISCOVER_CHILD_HREFS,
 } from "@/components/nav/DiscoverDropdown";
 import { PurifyMark } from "@/components/ui/PurifyMark";
+import { shopEnabled } from "@/lib/shop/flags";
 
 export function Navbar() {
   const scrolled = useScrolled();
@@ -94,6 +95,22 @@ export function Navbar() {
               </Link>
             );
           })}
+          {/* The shop is a destination, not a reading surface, so it gets
+              its own pill button instead of another text link. Hidden while
+              the marketplace flag is dark. */}
+          {shopEnabled() && (
+            <Link
+              href="/shop"
+              className={cn(
+                "inline-flex items-center rounded-pill border px-4 py-1.5 font-sans text-ui font-medium transition-colors duration-150",
+                isActive("/shop")
+                  ? "border-gold text-gold-pale bg-gold/10"
+                  : "border-gold/45 text-gold-pale hover:border-gold hover:bg-gold/10",
+              )}
+            >
+              {t("nav.shop")}
+            </Link>
+          )}
         </nav>
 
         <div className="hidden sm:flex items-center gap-5">
@@ -126,7 +143,13 @@ export function Navbar() {
       {open && (
         <div className="sm:hidden absolute left-0 right-0 top-[72px] bg-night border-b border-white/8 shadow-lg">
           <nav className="flex flex-col px-5 py-3">
-            {[...navItems, ...secondary].map((it) => (
+            {[
+              ...navItems,
+              ...(shopEnabled()
+                ? [{ key: "shop", label: t("nav.shop"), href: "/shop" }]
+                : []),
+              ...secondary,
+            ].map((it) => (
               <Link
                 key={it.key}
                 href={it.href}
