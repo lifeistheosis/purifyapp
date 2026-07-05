@@ -138,8 +138,7 @@ export default async function ProductPage({ params }: Params) {
                 className="text-paper/80 underline underline-offset-4 hover:text-paper"
               >
                 {product.store.public_name}
-              </Link>{" "}
-              · A Purify store
+              </Link>
             </p>
             {chips.length > 0 ? (
               <ul className="mt-4 flex flex-wrap gap-2">

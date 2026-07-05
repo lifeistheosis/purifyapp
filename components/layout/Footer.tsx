@@ -165,14 +165,6 @@ export function Footer() {
       <LocaleSwitcher />
      </div>
     </div>
-    {/* Marketplace merchant disclosure, shown once the shop is live.
-        text-paper/60 not /40: a legal disclosure has to clear WCAG AA
-        contrast on the night background (axe flags anything dimmer). */}
-    {shopEnabled() && (
-     <p className="mt-8 text-center font-sans text-caption text-paper/60">
-      EIKON is owned and operated by Purify.
-     </p>
-    )}
     <div className="mt-8 pt-6 border-t border-white/8 flex flex-col sm:flex-row items-center justify-between gap-4">
      <Link
       href="/"

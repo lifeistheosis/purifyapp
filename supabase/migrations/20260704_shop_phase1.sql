@@ -422,7 +422,7 @@ values
    'EIKON',
    'Icons for the life of prayer.',
    'EIKON curates Orthodox icons for the life of prayer. Each piece is selected for faithfulness to the tradition, inspected by hand, and packaged with care.',
-   'EIKON is owned and operated by Purify.',
+   'EIKON selects, inspects, and ships every icon it sells.',
    'Products are sourced from selected suppliers, inspected, packaged, and fulfilled by EIKON.',
    'support@purifyapp.net',
    'United States',

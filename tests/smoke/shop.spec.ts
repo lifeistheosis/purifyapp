@@ -22,15 +22,15 @@ test("shop home renders the marketplace shell", async ({ page }) => {
   // Request + Sell entry points.
   await expect(page.locator('a[href="/shop/request"]').first()).toBeVisible();
   await expect(page.locator('a[href="/shop/sell"]').first()).toBeVisible();
-  // Merchant disclosure is on the page.
-  await expect(page.locator("body")).toContainText(
-    "EIKON is owned and operated by Purify.",
+  // Operator decision (2026-07-05): EIKON's parent is not named anywhere.
+  await expect(page.locator("body")).not.toContainText(
+    "owned and operated by Purify",
   );
   await expect(page.locator("text=/Application error/i")).toHaveCount(0);
   await expectNoA11yViolations(page);
 });
 
-test("EIKON storefront discloses ownership and shows no fake reviews", async ({
+test("EIKON storefront tells its operational story without naming its parent", async ({
   page,
 }) => {
   const response = await page.goto("/shop/eikon");
@@ -40,9 +40,10 @@ test("EIKON storefront discloses ownership and shows no fake reviews", async ({
   );
 
   await expect(page.locator("h1")).toContainText(/EIKON/);
-  await expect(page.locator("body")).toContainText("A Purify store");
-  await expect(page.locator("body")).toContainText(
-    "EIKON is owned and operated by Purify.",
+  // Operator decision (2026-07-05): no Purify-ownership mentions.
+  await expect(page.locator("body")).not.toContainText("A Purify store");
+  await expect(page.locator("body")).not.toContainText(
+    "owned and operated by Purify",
   );
   // The operational story, honestly told.
   await expect(page.locator("body")).toContainText(/inspected/i);
@@ -73,8 +74,8 @@ test("product page discloses classification, dispatch, and representative image"
   // Availability + dispatch window.
   await expect(page.locator("text=/Ready to Ship|Special Order/").first()).toBeVisible();
   await expect(page.locator("text=/Dispatches in/").first()).toBeVisible();
-  // Ownership disclosure and store identity.
-  await expect(page.locator("body")).toContainText("EIKON is owned and operated by Purify.");
+  // Store identity without naming EIKON's parent.
+  await expect(page.locator("body")).not.toContainText("owned and operated by Purify");
   await expect(page.locator("body")).toContainText("Sold by");
   // Checkout is dark in this phase: the buy bar shows the honest state.
   await expect(page.locator("text=/Checkout opens soon|Buy now/").first()).toBeVisible();

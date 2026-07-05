@@ -48,9 +48,6 @@ export default async function CheckoutSuccessPage({
           Back to the shop
         </Link>
       </div>
-      <p className="mt-10 font-sans text-caption text-paper/60">
-        EIKON is owned and operated by Purify.
-      </p>
     </div>
   );
 }

@@ -75,7 +75,6 @@ export default async function ShopHomePage() {
             <p className="mt-3 font-display-serif text-heading md:text-display-sm tracking-[0.08em] text-paper">
               EIKON
             </p>
-            <p className="mt-1 font-sans text-detail text-paper/60">A Purify store</p>
             <p className="mt-4 max-w-[560px] font-serif text-body text-paper/70 leading-[1.6]">
               {eikon.description}
             </p>
@@ -140,8 +139,7 @@ export default async function ShopHomePage() {
       {/* Merchant disclosure */}
       <footer className="mt-14 border-t border-white/8 px-5 pt-6 md:px-0">
         <p className="font-sans text-caption text-paper/60">
-          EIKON is owned and operated by Purify. Additional independent
-          merchants join by application and review.
+          Merchants join Purify Shop by application and review.
         </p>
       </footer>
     </div>

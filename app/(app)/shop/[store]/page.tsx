@@ -65,7 +65,6 @@ export default async function StorePage({ params }: Params) {
             {store.tagline}
           </p>
         ) : null}
-        <p className="mt-2 font-sans text-detail text-paper/60">A Purify store</p>
         {store.description ? (
           <p className="mx-auto mt-5 max-w-[560px] font-serif text-body text-paper/70 leading-[1.65]">
             {store.description}

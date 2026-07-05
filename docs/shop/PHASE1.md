@@ -10,9 +10,13 @@ One live store, EIKON, a Purify-owned curated icon retailer, on top of a
 multi-seller-capable schema (`supabase/migrations/20260704_shop_phase1.sql`):
 
 - `shop_sellers` / `shop_stores` — EIKON seeded (seller_type `purify_owned`,
-  verification `purify_operated`, disclosure "EIKON is owned and operated by
-  Purify." baked into the store row and rendered on the storefront, product
-  pages, checkout, and the site footer).
+  verification `purify_operated` — both internal values, never rendered).
+  Operator decision 2026-07-05: the public copy does NOT name Purify as
+  EIKON's owner; the store's disclosure line reads "EIKON selects,
+  inspects, and ships every icon it sells." (see
+  `20260705_shop_eikon_identity.sql`, which also retro-updates an
+  already-seeded row and links the operator account to EIKON's seller row
+  for console access).
 - `shop_products` + `shop_product_media` + `shop_product_subjects` — catalog,
   imagery (alt text required), and slug links into the saints/feasts/history
   registries.
