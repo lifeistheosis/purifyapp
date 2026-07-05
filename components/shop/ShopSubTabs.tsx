@@ -14,12 +14,17 @@ const TABS: { label: string; href: string; exact?: boolean }[] = [
   { label: "Explore", href: "/shop", exact: true },
   { label: "Requests", href: "/shop/requests" },
   { label: "Orders", href: "/shop/orders" },
+  { label: "Messages", href: "/shop/messages" },
   { label: "Saved", href: "/saved" },
   { label: "Profile", href: "/account" },
 ];
 
 export function ShopSubTabs() {
   const pathname = usePathname() ?? "";
+
+  // The seller console carries its own navigation; stacking the buyer
+  // tabs above it would read as two competing menus.
+  if (pathname.startsWith("/shop/seller")) return null;
 
   return (
     <nav

@@ -119,6 +119,120 @@ export const shopCheckoutSchema = z.object({
   quantity: z.number().int().min(1).max(10).default(1),
 });
 
+/** /api/shop/conversations POST body: a buyer opens a thread with a
+ * store, anchored to an order or product they can name but the server
+ * verifies ownership of. */
+export const shopConversationStartSchema = z.object({
+  orderId: z.string().uuid().optional().nullable(),
+  productSlug: z
+    .string()
+    .max(120)
+    .regex(/^[a-z0-9-]+$/, "slug format")
+    .optional()
+    .nullable(),
+  storeSlug: z
+    .string()
+    .max(120)
+    .regex(/^[a-z0-9-]+$/, "slug format")
+    .optional()
+    .nullable(),
+  subject: z.string().min(2).max(200),
+  body: z.string().min(1).max(4000),
+});
+
+/** /api/shop/messages POST body: a reply into an existing thread. */
+export const shopMessageSchema = z.object({
+  conversationId: z.string().uuid(),
+  body: z.string().min(1).max(4000),
+});
+
+/** /api/shop/orders/refund-request POST body (buyer). Amounts are never
+ * accepted from the client: a request is for the order, and the money
+ * figure is resolved server-side at decision time. */
+export const shopRefundRequestSchema = z.object({
+  orderId: z.string().uuid(),
+  reason: z.enum([
+    "damaged",
+    "not_as_described",
+    "never_arrived",
+    "wrong_item",
+    "change_of_mind",
+    "other",
+  ]),
+  details: z.string().max(2000).optional().nullable(),
+});
+
+/** /api/shop/seller/refunds POST body (seller decision). */
+export const shopRefundDecisionSchema = z.object({
+  refundId: z.string().uuid(),
+  decision: z.enum(["approved", "declined"]),
+  note: z.string().max(2000).optional().nullable(),
+});
+
+/** /api/shop/seller/orders PATCH body. */
+export const shopSellerOrderUpdateSchema = z.object({
+  orderId: z.string().uuid(),
+  fulfillmentStatus: z.enum([
+    "packaged",
+    "shipped",
+    "delivered",
+    "cancelled",
+  ]),
+  tracking: z.string().max(200).optional().nullable(),
+});
+
+/** Seller listing create/update. Prices arrive in cents and are bounded;
+ * category/classification reuse the catalog vocabulary. The seller can
+ * never set store_id or seller_id — the route derives both from the
+ * session. */
+export const shopListingSchema = z.object({
+  title: z.string().min(2).max(200),
+  subtitle: z.string().max(300).optional().nullable(),
+  descriptionMd: z.string().max(8000).optional().nullable(),
+  priceCents: z.number().int().min(100).max(10_000_000),
+  category: z.enum([
+    "christ",
+    "theotokos",
+    "saints",
+    "feasts",
+    "prayer_corner",
+    "crosses",
+    "sets",
+  ]),
+  classification: z.enum([
+    "printed_mounted",
+    "standard_reproduction",
+    "laminated",
+    "wooden",
+    "hand_finished_reproduction",
+  ]),
+  inventoryStatus: z.enum([
+    "ready_to_ship",
+    "special_order",
+    "coming_soon",
+    "out_of_stock",
+  ]),
+  quantityAvailable: z.number().int().min(0).max(100000).optional().nullable(),
+  dispatchMinDays: z.number().int().min(0).max(120),
+  dispatchMaxDays: z.number().int().min(0).max(120),
+  materials: z.string().max(500).optional().nullable(),
+  dimensions: z.string().max(300).optional().nullable(),
+  productionMethod: z.string().max(500).optional().nullable(),
+  makerName: z.string().max(200).optional().nullable(),
+  countryOfOrigin: z.string().max(100).optional().nullable(),
+  imageIsRepresentative: z.boolean().default(true),
+  status: z.enum(["draft", "published", "paused", "archived"]).default("draft"),
+  media: z
+    .array(
+      z.object({
+        url: z.string().url().max(1000),
+        alt: z.string().min(3).max(500),
+      }),
+    )
+    .max(8)
+    .default([]),
+});
+
 /** Reusable: validate a `next=` redirect target is a safe site-relative path. */
 export function isSafeNext(value: string | null | undefined): value is string {
   if (!value) return false;

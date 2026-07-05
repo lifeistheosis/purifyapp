@@ -65,10 +65,12 @@ export default async function OrdersPage() {
             const status = buyerOrderStatus(o);
             const step = buyerStepIndex(status);
             return (
-              <li key={o.id} className="rounded-lg border border-paper/10 bg-night-soft/60 p-5">
+              <li key={o.id} className="press-card relative rounded-lg border border-paper/10 bg-night-soft/60 p-5">
                 <div className="flex items-center justify-between gap-4">
                   <p className="font-sans text-ui font-semibold text-paper">
-                    {o.items.map((i) => i.title).join(", ")}
+                    <Link href={`/shop/orders/${o.id}`} className="after:absolute after:inset-0">
+                      {o.items.map((i) => i.title).join(", ")}
+                    </Link>
                   </p>
                   <p className="shrink-0 font-sans text-ui font-semibold text-paper">
                     {formatPrice(o.total_cents, o.currency)}

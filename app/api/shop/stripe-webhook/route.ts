@@ -46,6 +46,12 @@ export async function POST(req: Request) {
           payment_status: "paid",
           email: session.customer_details?.email ?? undefined,
           shipping_address: shipping ?? null,
+          // Recorded so a refund can be issued later without a second
+          // round-trip to Stripe to rediscover what was charged.
+          stripe_payment_intent:
+            typeof session.payment_intent === "string"
+              ? session.payment_intent
+              : session.payment_intent?.id ?? null,
           updated_at: new Date().toISOString(),
         })
         .eq("id", orderId)

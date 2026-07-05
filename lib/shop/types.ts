@@ -197,3 +197,80 @@ export type ShopOrder = {
   created_at: string;
   items: { title: string; unit_price_cents: number; quantity: number }[];
 };
+
+/** The seller's view of an order adds what fulfillment needs. */
+export type ShopSellerOrder = ShopOrder & {
+  email: string | null;
+  shipping_address: unknown;
+  updated_at: string;
+  items: {
+    product_id: string | null;
+    title: string;
+    unit_price_cents: number;
+    quantity: number;
+  }[];
+};
+
+export type ShopSeller = {
+  id: string;
+  seller_type:
+    | "purify_owned"
+    | "independent_iconographer"
+    | "monastery"
+    | "workshop"
+    | "retailer";
+  public_name: string;
+  status: "active" | "suspended" | "closed";
+  verification_status: "unverified" | "verified" | "purify_operated";
+};
+
+export type ShopConversation = {
+  id: string;
+  store_id: string;
+  seller_id: string;
+  buyer_user_id: string;
+  order_id: string | null;
+  product_id: string | null;
+  subject: string;
+  status: "open" | "closed";
+  buyer_last_read_at: string | null;
+  seller_last_read_at: string | null;
+  last_message_at: string;
+  created_at: string;
+};
+
+export type ShopMessage = {
+  id: string;
+  conversation_id: string;
+  sender: "buyer" | "seller";
+  body: string;
+  created_at: string;
+};
+
+export type ShopRefundReason =
+  | "damaged"
+  | "not_as_described"
+  | "never_arrived"
+  | "wrong_item"
+  | "change_of_mind"
+  | "other";
+
+export type ShopRefundStatus =
+  | "requested"
+  | "approved"
+  | "declined"
+  | "processed"
+  | "cancelled";
+
+export type ShopRefundRequest = {
+  id: string;
+  order_id: string;
+  reason: ShopRefundReason;
+  details: string | null;
+  amount_cents: number | null;
+  status: ShopRefundStatus;
+  resolution_note: string | null;
+  decided_at: string | null;
+  processed_at: string | null;
+  created_at: string;
+};
