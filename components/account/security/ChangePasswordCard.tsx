@@ -11,11 +11,12 @@ import { PasswordInput } from "@/components/auth/PasswordInput";
  *    re-authenticate with the old password before calling
  *    `updateUser({ password })` so a stolen session can't silently
  *    rotate.
- *  - Set mode (`hasPassword: false`), new + confirm only. For
- *    legacy magic-link users who signed up before passwords existed
- *    and never went through the /set-password interstitial (e.g.
- *    they got into Security some other way). Same path as the
- *    interstitial: `updateUser({ password })` + `mark_password_set`.
+ *  - Set mode (`hasPassword: false`), new + confirm only. For any
+ *    account without a password: Google/Apple sign-ins, accounts
+ *    Purify set up, and legacy magic-link users. Same path as the
+ *    /set-password interstitial: `updateUser({ password })` +
+ *    `mark_password_set`. (OAuth accounts never see the forced
+ *    interstitial — this card is where they opt in.)
  */
 export function ChangePasswordCard({
   email,
@@ -98,9 +99,9 @@ export function ChangePasswordCard({
           Set a password
         </h2>
         <p className="font-sans text-detail text-paper/70 mb-5 leading-[1.55]">
-          Your account was created before passwords existed on Purify
-          (magic-link era). Pick one now and you&rsquo;ll be able to sign
-          in with email + password from anywhere.
+          Your account doesn&rsquo;t have a password yet &mdash; it signs in
+          with Google or Apple, or was set up for you. Choose one to add
+          email + password sign-in from anywhere.
         </p>
         <form onSubmit={submit} className="flex flex-col gap-3.5 max-w-[420px]">
           <PasswordInput

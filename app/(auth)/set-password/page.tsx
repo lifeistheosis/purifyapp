@@ -24,9 +24,9 @@ export default async function SetPasswordPage() {
         One quick thing
       </h1>
       <p className="font-serif text-ui text-paper/80 leading-[1.65] mb-7">
-        Purify recently moved from email magic-links to real passwords
-        plus optional Google / Apple sign-in. Choose a password for
-        your account and you won&rsquo;t see this again.
+        Your account doesn&rsquo;t have a password yet. Choose one and
+        you&rsquo;ll sign in with your email and password from anywhere
+        &mdash; you won&rsquo;t see this page again.
       </p>
       <SetPasswordForm />
     </div>
