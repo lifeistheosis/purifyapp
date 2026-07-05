@@ -34,6 +34,9 @@ export function HealthTab() {
   }
 
   useEffect(() => {
+    /* eslint-disable-next-line react-hooks/set-state-in-effect -- reload()
+       flips its loading flag synchronously by design; the initial probe on
+       mount shares the same path as the Reload button. */
     reload();
   }, []);
 

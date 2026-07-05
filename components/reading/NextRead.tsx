@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useReadingHistory } from "@/lib/reading/history";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { useMounted } from "@/lib/useMounted";
 import type { NextSuggestion, ReadingPath } from "@/lib/reading/curated";
 
 type Card = { lead?: string } & NextSuggestion;
@@ -26,8 +26,7 @@ export function NextRead({
 }) {
  const { t } = useTranslate();
  const history = useReadingHistory();
- const [mounted, setMounted] = useState(false);
- useEffect(() => setMounted(true), []);
+ const mounted = useMounted();
 
  let cards: Card[] = fallback.map((s) => ({ ...s }));
 

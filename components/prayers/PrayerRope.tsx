@@ -209,6 +209,15 @@ export function PrayerRope() {
       <div
         className="px-5 md:px-8 py-8 grid place-items-center cursor-pointer"
         onClick={advance}
+        onKeyDown={(e) => {
+          if (e.key === " " || e.key === "Enter") {
+            // The window-level listener above also advances on these keys;
+            // stop the event here so a focused rope doesn't count twice.
+            e.preventDefault();
+            e.stopPropagation();
+            advance();
+          }
+        }}
         role="button"
         tabIndex={0}
         aria-label={`Advance one knot. Current: ${currentKnot} of ${knotCount}.`}
@@ -376,11 +385,18 @@ function SettingsDrawer({
   return (
     <div
       className="fixed inset-0 z-50 bg-night/80 backdrop-blur-sm flex items-end md:items-center justify-center"
-      onClick={onClose}
+      role="presentation"
+      onClick={(e) => {
+        // Only a click on the dimmed backdrop itself closes; clicks inside
+        // the panel stay within it (no stopPropagation needed).
+        if (e.target === e.currentTarget) onClose();
+      }}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Rope settings"
         className="bg-night border-t md:border border-paper/15 rounded-t-lg md:rounded-lg w-full md:w-[420px] max-h-[85vh] overflow-y-auto p-6"
-        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-5">
           <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMounted } from "@/lib/useMounted";
 
 /**
  * Warm, time-aware greeting at the top of the mobile Today shell — the
@@ -19,14 +19,12 @@ export function GreetingHeader({
   dateline: string;
   isDe?: boolean;
 }) {
-  const [hour, setHour] = useState<number | null>(null);
-
-  useEffect(() => {
-    setHour(new Date().getHours());
-  }, []);
+  // Local hour exists only on the client; until mounted, fall back to the
+  // neutral morning option so server and hydration renders agree.
+  const mounted = useMounted();
 
   const greet = (() => {
-    const h = hour ?? 8;
+    const h = mounted ? new Date().getHours() : 8;
     if (isDe) {
       if (h < 12) return "Guten Morgen";
       if (h < 18) return "Guten Tag";

@@ -90,7 +90,7 @@ export async function GET() {
 
   // Bible book coverage.
   const bibleRoot = path.join(root, "data", "bible");
-  let bibleBooks: { book: string; chapters: number }[] = [];
+  const bibleBooks: { book: string; chapters: number }[] = [];
   try {
     const entries = await fs.readdir(bibleRoot, { withFileTypes: true });
     for (const e of entries) {

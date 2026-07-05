@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useBookmarks, type Bookmark } from "@/lib/bookmarks";
+import { useMounted } from "@/lib/useMounted";
 
 /* ── Verse text (lazy, on demand) ──────────────────────────────────────── */
 
@@ -31,6 +32,9 @@ function VerseText({
 
   useEffect(() => {
     if (verseTextCache.has(key)) {
+      /* eslint-disable-next-line react-hooks/set-state-in-effect -- adopt the
+         session-cached text synchronously when the verse key changes, instead
+         of flashing "Loading…" and refetching. */
       setText(verseTextCache.get(key)!);
       return;
     }
@@ -93,8 +97,7 @@ export function SavedList() {
 
   // Mounted gate: the stores return empty server snapshots, so counts and
   // lists would otherwise flash from 0 on hydration.
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
 
   const historyCount = readingHistory.length + recentPrayers.length;
 

@@ -5,9 +5,9 @@
 // localStorage with a mounted gate to avoid an SSR/hydration flash, and
 // renders nothing at all when there is no history yet.
 
-import { useEffect, useState } from "react";
 import { PrayerSectionLabel, PrayerIndex, PrayerIndexRow } from "./PrayerBook";
 import { useRecentPrayers } from "@/lib/prayers/storage";
+import { useMounted } from "@/lib/useMounted";
 
 export function ContinuePraying({
   label = "Continue praying",
@@ -16,8 +16,7 @@ export function ContinuePraying({
   label?: string;
   max?: number;
 }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
   const recents = useRecentPrayers();
 
   if (!mounted || recents.length === 0) return null;

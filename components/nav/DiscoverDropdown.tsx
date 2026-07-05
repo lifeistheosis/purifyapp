@@ -10,7 +10,13 @@
 // own nav row.
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 
 import { cn } from "@/lib/cn";
 
@@ -80,7 +86,9 @@ export function DiscoverDropdown({
   }, [open]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  function clearTimers() {
+  // Stable (useCallback with no deps — only refs and setState inside) so
+  // the effects below can list it as a dependency without re-running.
+  const clearTimers = useCallback(() => {
     if (openTimer.current) {
       window.clearTimeout(openTimer.current);
       openTimer.current = null;
@@ -89,7 +97,12 @@ export function DiscoverDropdown({
       window.clearTimeout(closeTimer.current);
       closeTimer.current = null;
     }
-  }
+  }, []);
+
+  const closeNow = useCallback(() => {
+    clearTimers();
+    setOpen(false);
+  }, [clearTimers]);
 
   function scheduleOpen() {
     if (closeTimer.current) {
@@ -120,16 +133,19 @@ export function DiscoverDropdown({
     setOpen(true);
   }
 
-  function closeNow() {
-    clearTimers();
+  // Close on route change. The state is adjusted during render (React's
+  // "adjust state when a prop changes" pattern) instead of in an effect;
+  // the effect below only clears pending hover timers so a queued open
+  // can't fire on the page we just navigated to.
+  const [lastPathname, setLastPathname] = useState(pathname);
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
     setOpen(false);
   }
 
-  // Close on route change.
   useEffect(() => {
-    closeNow();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+    clearTimers();
+  }, [pathname, clearTimers]);
 
   // Escape closes.
   useEffect(() => {
@@ -139,10 +155,10 @@ export function DiscoverDropdown({
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [open, closeNow]);
 
   // Cleanup pending timers on unmount.
-  useEffect(() => clearTimers, []);
+  useEffect(() => clearTimers, [clearTimers]);
 
   return (
     <div
@@ -169,6 +185,9 @@ export function DiscoverDropdown({
       {mounted && (
         <div
           role="menu"
+          // Programmatically focusable (not in the tab order): the a11y
+          // contract for the menu role. Tabbing still goes to the items.
+          tabIndex={-1}
           className={cn(
             "absolute left-1/2 top-full mt-3 min-w-[200px] origin-top",
             "rounded-md border border-white/12 bg-night/95 backdrop-blur-xl",

@@ -60,13 +60,13 @@ function ymd(iso: string | null): string {
 function RollingInfo() {
   return (
     <span className="group relative inline-flex items-center align-middle ml-1">
-      <span
+      <button
+        type="button"
         aria-label="What does 'rolling' mean?"
-        tabIndex={0}
         className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-paper/30 text-paper/55 text-eyebrow font-bold leading-none cursor-help focus:outline-none focus:ring-1 focus:ring-gold"
       >
         i
-      </span>
+      </button>
       <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-1 w-[220px] rounded-md border border-paper/15 bg-night p-2 font-sans text-eyebrow text-paper/85 leading-snug opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity z-10 shadow">
         Sum of the last 14 calendar days. At every UTC midnight, the oldest
         day rolls off and a fresh day (starts at 0) enters — so this number

@@ -69,6 +69,9 @@ export function VerseCardActions({
     if (!book || !chapter || !verse) return;
     try {
       const present = readAll().some(matchesThisVerse);
+      /* eslint-disable-next-line react-hooks/set-state-in-effect -- seed the
+         flag from localStorage after mount; later updates arrive through the
+         events subscribed below. */
       setFav(present);
     } catch {
       /* ignore */

@@ -616,17 +616,15 @@ function VerticalBars({
 
 // ── Donut ───────────────────────────────────────────────────────────────────
 // Single-ring donut for ratios. Hover lifts a segment and the center
-// updates to show the segment name + value. Optional onSegmentClick.
+// updates to show the segment name + value.
 export function Donut({
   segments,
   size = 160,
   label,
-  onSegmentClick,
 }: {
   segments: { name: string; value: number; color: string }[];
   size?: number;
   label?: string;
-  onSegmentClick?: (name: string) => void;
 }) {
   const [hover, setHover] = useState<number | null>(null);
   const total = segments.reduce((a, s) => a + s.value, 0) || 1;
@@ -679,11 +677,7 @@ export function Donut({
             transform={`rotate(-90 ${size / 2} ${size / 2})`}
             onMouseEnter={() => setHover(i)}
             onMouseLeave={() => setHover((h) => (h === i ? null : h))}
-            onClick={() => onSegmentClick?.(s.name)}
-            style={{
-              cursor: onSegmentClick ? "pointer" : "default",
-              transition: "stroke-width 120ms ease",
-            }}
+            style={{ transition: "stroke-width 120ms ease" }}
           />
         ))}
         <text
@@ -720,8 +714,6 @@ export function Donut({
             }
             onMouseEnter={() => setHover(i)}
             onMouseLeave={() => setHover(null)}
-            onClick={() => onSegmentClick?.(s.name)}
-            style={{ cursor: onSegmentClick ? "pointer" : "default" }}
           >
             <span
               className="inline-block h-2 w-2 rounded-full"
