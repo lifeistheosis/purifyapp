@@ -188,7 +188,10 @@ export function AppNav() {
               href="/shop"
               style={{ animationDelay: `${80 + NAV.length * 35}ms` }}
               className={cn(
-                "appnav-in inline-flex items-center rounded-pill border px-4 py-1.5 font-sans text-ui font-medium transition-colors duration-150",
+                // -ml-4 cancels the pill's own left padding so the Shop
+                // LABEL sits on the nav row's text rhythm; the ring then
+                // hugs the label instead of pushing it right.
+                "appnav-in -ml-4 inline-flex items-center rounded-pill border px-4 py-1.5 font-sans text-ui font-medium transition-colors duration-150",
                 isActive("/shop")
                   ? "border-gold text-gold-pale bg-gold/10"
                   : "border-gold/45 text-gold-pale hover:border-gold hover:bg-gold/10",
