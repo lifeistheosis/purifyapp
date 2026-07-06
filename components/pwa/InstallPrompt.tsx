@@ -49,10 +49,39 @@ export function InstallPrompt() {
   const [iosHint, setIosHint] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
-  // 1. Register the service worker.
+  // 1. Service-worker lifecycle.
+  //    Web (purifyapp.net): register /sw.js in production for offline + push.
+  //    Native (Capacitor shell): NEVER register, and actively tear down any SW
+  //    a prior build (or an earlier web visit to the same origin) left behind.
+  //    Capacitor already serves the bundled app locally and offline, but the
+  //    WebView's Cache Storage survives app updates — a lingering SW keeps
+  //    serving the previous bundle's HTML/JS after the store update lands, so
+  //    the app "won't update" until its cache is evicted. Unregistering + wiping
+  //    the SW caches here heals testers already stuck on an old bundle on their
+  //    next launch. Native push runs through @capacitor/push-notifications, not
+  //    this SW, so nothing is lost.
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!("serviceWorker" in navigator)) return;
+
+    if (isNativeClient()) {
+      navigator.serviceWorker
+        .getRegistrations()
+        .then((regs) => Promise.all(regs.map((r) => r.unregister())))
+        .catch(() => {
+          /* swallow */
+        });
+      if ("caches" in window) {
+        caches
+          .keys()
+          .then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
+          .catch(() => {
+            /* swallow */
+          });
+      }
+      return;
+    }
+
     if (process.env.NODE_ENV !== "production") return;
     // Fire-and-forget. Errors here are non-fatal: PWA is an enhancement.
     navigator.serviceWorker.register("/sw.js").catch(() => {
