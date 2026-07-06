@@ -121,7 +121,15 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           chmod +x ./gradlew
-          ./gradlew assembleDebug assembleRelease bundleRelease --stacktrace --no-daemon
+          # Build in SEPARATE Gradle invocations. With --no-daemon each runs in
+          # its own JVM that exits and frees memory before the next, so the
+          # debug and release variants' merged assets are never held in RAM at
+          # once. Doing all three in a single invocation intermittently
+          # OOM-killed the 7 GB runner ("The operation was canceled", runs
+          # #25-27, #29). Release APK + AAB share the release variant, so they
+          # stay together; the debug variant builds on its own afterward.
+          ./gradlew assembleRelease bundleRelease --stacktrace --no-daemon
+          ./gradlew assembleDebug --stacktrace --no-daemon
 
       # Published as release assets (private repo): raw downloads, separate
       # storage from the Actions artifact quota.
