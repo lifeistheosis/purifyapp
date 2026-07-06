@@ -45,7 +45,7 @@ jobs:
           distribution: temurin
           java-version: "21"
           # Cache ~/.gradle (deps + wrapper) keyed on the gradle files, so
-          # repeat builds skip re-downloading the toolchain — roughly halves
+          # repeat builds skip re-downloading the toolchain â€” roughly halves
           # the build time.
           cache: gradle
 
@@ -92,7 +92,7 @@ jobs:
           GS_B64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
         run: |
           if [ -z "$GS_B64" ]; then
-            echo "::warning::GOOGLE_SERVICES_JSON_BASE64 not set — building without FCM (push notifications won't work)."
+            echo "::warning::GOOGLE_SERVICES_JSON_BASE64 not set â€” building without FCM (push notifications won't work)."
           else
             echo "$GS_B64" | base64 -d > android/app/google-services.json
             echo "Wrote android/app/google-services.json"
@@ -108,7 +108,7 @@ jobs:
           fi
           echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/upload.keystore"
 
-      - name: Build signed release (AAB + APK) and debug APK
+      - name: Build signed release (AAB + APK)
         working-directory: android
         env:
           # Auto-incrementing versionCode (build.gradle reads this); the run
@@ -121,15 +121,18 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           chmod +x ./gradlew
-          # Build in SEPARATE Gradle invocations. With --no-daemon each runs in
-          # its own JVM that exits and frees memory before the next, so the
-          # debug and release variants' merged assets are never held in RAM at
-          # once. Doing all three in a single invocation intermittently
-          # OOM-killed the 7 GB runner ("The operation was canceled", runs
-          # #25-27, #29). Release APK + AAB share the release variant, so they
-          # stay together; the debug variant builds on its own afterward.
-          ./gradlew assembleRelease bundleRelease --stacktrace --no-daemon
-          ./gradlew assembleDebug --stacktrace --no-daemon
+          # ONE Gradle invocation, release outputs only (AAB for Play + APK for
+          # sideload). History: building all three variants
+          # (assembleDebug + assembleRelease + bundleRelease) together held every
+          # variant's merged ~37 MB assets in RAM at once and OOM-killed the
+          # 7 GB runner ("The operation was canceled", #25-27, #29). Splitting
+          # into two --no-daemon invocations fixed the OOM (#30) but the second
+          # invocation intermittently deadlocked on Gradle's file locks and hung
+          # ~50 min before failing (#31). The release variant alone (APK + AAB
+          # share the same variant work) is well within memory, and a single
+          # invocation removes the lock race entirely. The debug APK is dropped;
+          # the signed release APK is what we sideload-test.
+          ./gradlew bundleRelease assembleRelease --stacktrace --no-daemon
 
       # Published as release assets (private repo): raw downloads, separate
       # storage from the Actions artifact quota.
@@ -141,11 +144,9 @@ jobs:
           prerelease: true
           body: >
             Signed release build of the Purify Android shell. app-release.aab
-            is the Play Store upload (cannot be sideloaded). app-release.apk
-            and app-debug.apk are installable on a device for testing.
-            Replaced on every workflow run.
+            is the Play Store upload (cannot be sideloaded); app-release.apk is
+            installable on a device for testing. Replaced on every workflow run.
           files: |
             android/app/build/outputs/bundle/release/app-release.aab
             android/app/build/outputs/apk/release/app-release.apk
-            android/app/build/outputs/apk/debug/app-debug.apk
           fail_on_unmatched_files: true
