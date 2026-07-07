@@ -25,10 +25,17 @@ export function SignUpForm() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sentTo, setSentTo] = useState<string | null>(null);
+  // Clickwrap: affirmative agreement is required before an account is
+  // created, which is what makes the Terms (and the arbitration clause) bind.
+  const [agreed, setAgreed] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    if (!agreed) {
+      setError("Please agree to the Terms and Privacy Policy to continue.");
+      return;
+    }
     if (password.length < 8) {
       setError("Password must be at least 8 characters.");
       return;
@@ -138,13 +145,38 @@ export function SignUpForm() {
         onChange={setConfirm}
         autoComplete="new-password"
       />
+      <label className="flex cursor-pointer items-start gap-2.5">
+        <input
+          type="checkbox"
+          checked={agreed}
+          onChange={(e) => setAgreed(e.target.checked)}
+          className="mt-0.5 h-4 w-4 shrink-0 accent-gold"
+        />
+        <span className="font-sans text-caption leading-[1.5] text-paper/70">
+          I agree to the{" "}
+          <Link
+            href="/terms"
+            className="text-paper underline underline-offset-2"
+          >
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link
+            href="/privacy"
+            className="text-paper underline underline-offset-2"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </span>
+      </label>
       {error ? (
         <p className="font-sans text-detail text-crimson-soft">{error}</p>
       ) : null}
       <button
         type="submit"
-        disabled={pending}
-        className="rounded-pill bg-paper text-night font-sans text-ui font-semibold py-3 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
+        disabled={pending || !agreed}
+        className="rounded-pill bg-paper text-night font-sans text-ui font-semibold py-3 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
       >
         {pending ? "Creating account…" : "Create account"}
       </button>
@@ -166,7 +198,10 @@ export function SignUpForm() {
         </span>
       </div>
 
-      <OAuthButtons />
+      <OAuthButtons
+        disabled={!agreed}
+        disabledHint="Agree to the Terms and Privacy Policy first."
+      />
     </form>
   );
 }

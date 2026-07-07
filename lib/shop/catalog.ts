@@ -33,6 +33,22 @@ function orderMedia(p: ShopProductFull): ShopProductFull {
   return p;
 }
 
+// Rights gate. A listing whose primary photo still lives on a supplier's CDN
+// is showing the supplier's copyrighted image, not ours; it must not appear in
+// the public storefront until a real (own or licensed) photo replaces it. This
+// only filters public reads — the admin console uses the service-role path and
+// still sees these listings so they can be fixed. Extend the host list if a new
+// supplier CDN is used.
+const SUPPLIER_IMAGE_HOSTS = ["kwcdn.com"];
+
+function hasSupplierImage(p: ShopProductFull): boolean {
+  const primary = p.media[0];
+  return Boolean(
+    primary?.media_url &&
+      SUPPLIER_IMAGE_HOSTS.some((h) => primary.media_url.includes(h)),
+  );
+}
+
 export async function getStore(slug: string): Promise<ShopStore | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -100,7 +116,9 @@ export async function listProducts(
     console.warn("[shop] listProducts failed", error.message);
     return [];
   }
-  return ((data ?? []) as unknown as ShopProductFull[]).map(orderMedia);
+  return ((data ?? []) as unknown as ShopProductFull[])
+    .map(orderMedia)
+    .filter((p) => !hasSupplierImage(p));
 }
 
 export async function getProduct(slug: string): Promise<ShopProductFull | null> {
@@ -114,7 +132,11 @@ export async function getProduct(slug: string): Promise<ShopProductFull | null> 
     console.warn("[shop] getProduct failed", error.message);
     return null;
   }
-  return data ? orderMedia(data as unknown as ShopProductFull) : null;
+  if (!data) return null;
+  const product = orderMedia(data as unknown as ShopProductFull);
+  // Don't serve a product page for a listing still on a supplier's image.
+  if (hasSupplierImage(product)) return null;
+  return product;
 }
 
 /**

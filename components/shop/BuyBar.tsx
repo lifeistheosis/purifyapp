@@ -106,6 +106,25 @@ export function BuyBar({
           </Link>
         )}
       </div>
+      {purchasable && checkoutOn ? (
+        <p className="mx-auto mt-2 max-w-[560px] font-sans text-caption leading-[1.5] text-paper/45 md:mx-0">
+          By placing your order you agree to the{" "}
+          <Link
+            href="/terms"
+            className="underline underline-offset-2 hover:text-paper/70"
+          >
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link
+            href="/shop/policies"
+            className="underline underline-offset-2 hover:text-paper/70"
+          >
+            shipping &amp; refund policy
+          </Link>
+          .
+        </p>
+      ) : null}
       {error ? (
         <p role="alert" className="mx-auto mt-2 max-w-[560px] font-sans text-caption text-crimson-soft md:mx-0">
           {error}
