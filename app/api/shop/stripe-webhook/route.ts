@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { sendOrderConfirmationEmail } from "@/lib/shop/orderEmails";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
       const admin = createAdminClient();
       const shipping =
         session.collected_information?.shipping_details ?? null;
-      const { error } = await admin
+      const { data: updated, error } = await admin
         .from("shop_orders")
         .update({
           payment_status: "paid",
@@ -55,11 +56,31 @@ export async function POST(req: Request) {
           updated_at: new Date().toISOString(),
         })
         .eq("id", orderId)
-        .eq("payment_status", "pending");
+        .eq("payment_status", "pending")
+        .select("id, email, total_cents, currency")
+        .maybeSingle();
       if (error) {
         console.warn("[shop] webhook order update failed", error.message);
         // 500 so Stripe retries; the update is idempotent.
         return NextResponse.json({ error: "Update failed." }, { status: 500 });
+      }
+      // `updated` is null on a webhook retry (the row was already paid), so the
+      // confirmation email fires exactly once. Email failure must never fail
+      // the webhook — Stripe would retry a delivered order.
+      if (updated) {
+        const { data: items } = await admin
+          .from("shop_order_items")
+          .select("title, quantity, unit_price_cents")
+          .eq("order_id", updated.id);
+        await sendOrderConfirmationEmail({
+          id: updated.id,
+          email: updated.email,
+          total_cents: updated.total_cents,
+          currency: updated.currency,
+          items: items ?? [],
+        }).catch((e) =>
+          console.warn("[shop] confirmation email failed", (e as Error).message),
+        );
       }
     }
   }

@@ -156,14 +156,12 @@ export default async function StorePage({ params }: Params) {
             </div>
           ) : null}
         </div>
-        {store.support_email ? (
-          <a
-            href={`mailto:${store.support_email}`}
-            className="tap-press mt-6 inline-flex min-h-[44px] items-center rounded-pill border border-paper/20 px-5 font-sans text-ui font-semibold text-paper hover:border-paper/40"
-          >
-            Contact {store.public_name}
-          </a>
-        ) : null}
+        <Link
+          href="/support/contact"
+          className="tap-press mt-6 inline-flex min-h-[44px] items-center rounded-pill border border-paper/20 px-5 font-sans text-ui font-semibold text-paper hover:border-paper/40"
+        >
+          Contact {store.public_name}
+        </Link>
       </section>
 
       {/*

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
+
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = { title: "Order confirmed" };
@@ -31,7 +33,10 @@ export default async function CheckoutSuccessPage({
       </p>
       {order ? (
         <p className="mt-3 font-sans text-caption text-paper/60">
-          Order reference: {order}
+          Confirmation number:{" "}
+          <span className="font-semibold tracking-wide text-paper/80">
+            {orderConfirmationNumber(order)}
+          </span>
         </p>
       ) : null}
       <div className="mt-8 flex justify-center gap-3">
