@@ -417,14 +417,29 @@ export function ReaderFocusController() {
       document.documentElement.classList.remove("reader-focus");
     };
   }, []);
+
+  // A guaranteed way out that no overlay can intercept: Escape exits focus
+  // mode. Reported on the web reader (community, #purify-suggestions), where
+  // the floating pill could sit under other fixed chrome on some desktop
+  // layouts, leaving the reader with no working exit.
+  useEffect(() => {
+    if (!focus) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setFocus(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [focus, setFocus]);
+
   if (!focus) return null;
   return (
     <button
       type="button"
       onClick={() => setFocus(false)}
-      aria-label="Exit focus reading"
+      aria-label="Exit focus reading (or press Escape)"
+      title="Exit focus reading (Esc)"
       data-reader-exit
-      className="fixed right-3 top-3 z-[70] inline-flex h-[38px] items-center gap-2 rounded-pill border border-paper/25 bg-night/85 px-3.5 font-sans text-detail font-medium text-paper/85 shadow-pop backdrop-blur transition-colors hover:border-paper/45 hover:text-paper"
+      className="pointer-events-auto fixed right-3 top-3 z-[120] inline-flex h-[38px] items-center gap-2 rounded-pill border border-paper/25 bg-night/85 px-3.5 font-sans text-detail font-medium text-paper/85 shadow-pop backdrop-blur transition-colors hover:border-paper/45 hover:text-paper"
     >
       <svg
         width={14}

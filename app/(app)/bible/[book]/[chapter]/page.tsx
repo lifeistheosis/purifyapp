@@ -266,6 +266,19 @@ export default async function BibleChapterPage({
  </details>
  )}
 
+ {/* Commentary discoverability. The desktop study rail (lg+) is always
+ visible; below lg the Fathers open by tapping a marked verse number,
+ which first-time readers don't discover (community, #purify-suggestions:
+ "How am I able to read his commentary?"). This names the affordance. */}
+ {hasCommentary && !usingLicensed && (
+ <p className="mb-8 lg:hidden rounded-md border border-accent/25 bg-accent/[0.06] px-4 py-3 font-sans text-detail leading-[1.55] text-paper/80">
+ <span className="font-semibold text-paper">Read with the Fathers.</span>{" "}
+ Verse numbers shown in{" "}
+ <span className="font-semibold text-[#f2594e]">red with a dot</span> have
+ patristic commentary, St. John Chrysostom and others. Tap one to read it.
+ </p>
+ )}
+
  {usingLicensed ? (
  <LicensedChapterReader
  chapter={licensed!}

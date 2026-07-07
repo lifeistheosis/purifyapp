@@ -142,6 +142,18 @@ html.is-native .safe-pt {
  padding-top: env(safe-area-inset-top, 0px);
 }
 
+/* Web-only notch clearance for the sticky mobile top bar. viewport-fit=cover
+ (app/layout viewport) runs the page under the iOS notch; the native shell
+ handles its own inset via .safe-pt above, but on the WEB a top-0 sticky bar
+ must pad itself below the notch or its buttons fall in the occluded zone and
+ can't be tapped (community, #purify-suggestions: top buttons untappable,
+ zooming in "fixes" it). Non-notch devices report a 0 inset, so this is a
+ no-op there. Height grows by the inset so the 48px button row stays intact. */
+html:not(.is-native) .topbar-safe {
+ padding-top: env(safe-area-inset-top, 0px);
+ height: calc(3rem + env(safe-area-inset-top, 0px));
+}
+
 @layer base {
  html {
  /* Keep route-change scroll resets instant. A global `smooth` made

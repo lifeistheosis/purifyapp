@@ -51,7 +51,10 @@ export function MobileTopBar({
     <div
       className={cn(
         "md:hidden sticky top-0 z-30",
-        "h-12 px-2 flex items-center justify-between gap-2",
+        // `topbar-safe` (globals.css) pads the bar below the iOS notch on the
+        // WEB (viewport-fit=cover puts content under it); the native shell has
+        // its own inset handling, so the rule is scoped to non-native.
+        "topbar-safe h-12 px-2 flex items-center justify-between gap-2",
         "bg-night/92 backdrop-blur border-b border-white/8",
       )}
     >
