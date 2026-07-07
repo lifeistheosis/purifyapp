@@ -25,13 +25,18 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 function ProductGrid({ title, products }: { title: string; products: ShopProductFull[] }) {
   if (products.length === 0) return null;
   return (
-    <section aria-label={title} className="mt-10">
-      <h2 className="mb-4 font-display-serif text-title md:text-heading text-paper">
-        {title}
-      </h2>
-      <ul className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {products.map((p) => (
-          <li key={p.id}>
+    <section aria-label={title} className="mt-12">
+      <div className="mb-5 flex items-baseline justify-between gap-3">
+        <h2 className="font-display-serif text-title md:text-heading text-paper">
+          {title}
+        </h2>
+        <span className="font-sans text-caption text-paper/45">
+          {products.length} {products.length === 1 ? "icon" : "icons"}
+        </span>
+      </div>
+      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
+        {products.map((p, i) => (
+          <li key={p.id} className="rise-in" style={{ animationDelay: `${Math.min(i * 45, 360)}ms` }}>
             <ProductCard product={p} />
           </li>
         ))}
@@ -68,6 +73,31 @@ export default async function StorePage({ params }: Params) {
         {store.description ? (
           <p className="mx-auto mt-5 max-w-[560px] font-serif text-body text-paper/70 leading-[1.65]">
             {store.description}
+          </p>
+        ) : null}
+
+        {/* Trust row + catalogue size: the store's promises at a glance. */}
+        <ul className="mx-auto mt-6 flex max-w-[640px] flex-wrap items-center justify-center gap-2">
+          {[
+            "Selected & inspected by hand",
+            store.shipping_origin ? `Ships from ${store.shipping_origin}` : null,
+            "30-day returns",
+          ]
+            .filter((c): c is string => Boolean(c))
+            .map((chip) => (
+              <li
+                key={chip}
+                className="inline-flex items-center gap-1.5 rounded-pill border border-paper/12 bg-paper/[0.03] px-3 py-1.5 font-sans text-caption text-paper/70"
+              >
+                <span aria-hidden className="text-gold">✓</span>
+                {chip}
+              </li>
+            ))}
+        </ul>
+        {products.length > 0 ? (
+          <p className="mt-4 font-sans text-caption text-paper/45">
+            {products.length} {products.length === 1 ? "icon" : "icons"}
+            {ready.length > 0 ? ` · ${ready.length} ready to ship` : ""}
           </p>
         ) : null}
       </header>
