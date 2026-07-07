@@ -71,6 +71,9 @@ export function BuyBar({
           <p className="mt-0.5 font-sans text-caption text-paper/60">
             {inventoryLabel} · {dispatchLabel}
           </p>
+          <p className="mt-0.5 font-sans text-caption font-medium text-emerald-300/90">
+            Free shipping
+          </p>
         </div>
 
         {purchasable && checkoutOn ? (
