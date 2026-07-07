@@ -58,6 +58,16 @@ const nextConfig: NextConfig = isAndroid
       async headers() {
         return [{ source: "/:path*", headers: securityHeaders }];
       },
+      // Supplier product photos for dropshipped shop listings live on Temu's
+      // CDN. next/image proxies them through /_next/image (same-origin), so the
+      // CSP img-src 'self' still covers them. These are placeholders until real
+      // repackaged-product photos replace them.
+      images: {
+        remotePatterns: [
+          { protocol: "https", hostname: "img.kwcdn.com" },
+          { protocol: "https", hostname: "aimg.kwcdn.com" },
+        ],
+      },
     };
 
 export default nextConfig;

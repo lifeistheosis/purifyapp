@@ -57,6 +57,9 @@ export const CLASSIFICATION_LABELS: Record<ShopClassification, string> = {
   laminated: "Laminated Icon",
   wooden: "Wooden Icon",
   hand_finished_reproduction: "Hand-Finished Reproduction",
+  prayer_rope: "Prayer Rope",
+  incense: "Incense & Resin",
+  beaded: "Prayer Beads",
 };
 
 export const INVENTORY_LABELS: Record<ShopInventoryStatus, string> = {

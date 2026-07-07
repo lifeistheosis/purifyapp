@@ -250,6 +250,38 @@ function ProductsPanel() {
               csv: (p) => p.price_cents / 100,
             },
             {
+              key: "roi",
+              label: "Cost · ROI",
+              align: "right",
+              render: (p) => {
+                const cost = sourcing.find((x) => x.product_id === p.id)?.supplier_cost_cents;
+                if (cost == null) return <span className="text-paper/30">—</span>;
+                const profit = p.price_cents - cost;
+                const roi = cost > 0 ? (profit / cost) * 100 : null;
+                const tone =
+                  roi == null
+                    ? "text-paper/60"
+                    : roi < 0
+                      ? "text-rose-300"
+                      : roi < 100
+                        ? "text-amber-300"
+                        : "text-emerald-300";
+                return (
+                  <span className="whitespace-nowrap font-sans text-detail">
+                    <span className="text-paper/50">{money(cost)}</span>
+                    {roi != null ? (
+                      <span className={"ml-2 font-semibold " + tone}>{roi.toFixed(0)}%</span>
+                    ) : null}
+                  </span>
+                );
+              },
+              csv: (p) => {
+                const cost = sourcing.find((x) => x.product_id === p.id)?.supplier_cost_cents;
+                if (cost == null || cost <= 0) return "";
+                return (((p.price_cents - cost) / cost) * 100).toFixed(0);
+              },
+            },
+            {
               key: "inventory",
               label: "Availability",
               render: (p) => (

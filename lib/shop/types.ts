@@ -19,7 +19,11 @@ export type ShopClassification =
   | "standard_reproduction"
   | "laminated"
   | "wooden"
-  | "hand_finished_reproduction";
+  | "hand_finished_reproduction"
+  // Non-icon devotional goods (dropshipped): prayer ropes, incense, beads.
+  | "prayer_rope"
+  | "incense"
+  | "beaded";
 
 export type ShopInventoryStatus =
   | "ready_to_ship"

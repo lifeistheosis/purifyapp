@@ -37,6 +37,9 @@ const productSchema = z.object({
     "laminated",
     "wooden",
     "hand_finished_reproduction",
+    "prayer_rope",
+    "incense",
+    "beaded",
   ]),
   inventoryStatus: z.enum([
     "ready_to_ship",
