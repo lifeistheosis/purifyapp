@@ -57,7 +57,7 @@ export function ProductCard({
             alt={image.alt_text}
             fill
             sizes={sizes}
-            className="object-cover transition-transform duration-[600ms] ease-out group-hover:scale-105"
+            className="object-contain p-4"
           />
         ) : (
           <div
@@ -67,12 +67,6 @@ export function ProductCard({
             ☩
           </div>
         )}
-
-        {/* Legibility scrim behind the badge, only where it sits. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/45 to-transparent"
-        />
 
         {/* Availability badge. */}
         <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-pill bg-night/70 px-2.5 py-1 font-sans text-caption font-medium text-paper backdrop-blur-sm">
