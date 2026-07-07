@@ -736,6 +736,53 @@ function ProductEditor({
             />
           </label>
         </div>
+        {/* Live dropshipping unit economics: what the buyer pays vs. what we
+            pay the supplier, with per-unit profit, ROI (profit / cost), and
+            gross margin (profit / price). Updates as either field changes. */}
+        {(() => {
+          const cost = src.supplier_cost_cents;
+          const retail = p.price_cents;
+          const hasCost = typeof cost === "number" && cost > 0;
+          const profit = hasCost ? retail - (cost as number) : null;
+          const roi = hasCost && profit != null ? (profit / (cost as number)) * 100 : null;
+          const margin = retail > 0 && profit != null ? (profit / retail) * 100 : null;
+          const tone =
+            roi == null
+              ? "text-paper"
+              : roi < 0
+                ? "text-rose-300"
+                : roi < 100
+                  ? "text-amber-300"
+                  : "text-emerald-300";
+          return (
+            <div className="mt-4 rounded-md border border-paper/12 bg-night/50 p-3">
+              <p className={labelCls}>Unit economics (live)</p>
+              {hasCost ? (
+                <div className="mt-2 flex flex-wrap items-baseline gap-x-6 gap-y-1 font-sans text-detail text-paper/70">
+                  <span>
+                    Buyer pays <b className="text-paper">{money(retail)}</b>
+                  </span>
+                  <span>
+                    You pay <b className="text-paper">{money(cost)}</b>
+                  </span>
+                  <span>
+                    Profit{" "}
+                    <b className={tone}>{money(profit)}</b>/unit
+                  </span>
+                  <span>
+                    ROI <b className={tone}>{roi!.toFixed(0)}%</b>
+                  </span>
+                  <span className="text-paper/50">Margin {margin!.toFixed(0)}%</span>
+                </div>
+              ) : (
+                <p className="mt-1 font-sans text-caption text-paper/50">
+                  Enter a supplier cost to see profit, ROI, and margin.
+                </p>
+              )}
+            </div>
+          );
+        })()}
+
         <div className="mt-3 flex flex-wrap gap-5">
           <label className="flex items-center gap-2">
             <input
