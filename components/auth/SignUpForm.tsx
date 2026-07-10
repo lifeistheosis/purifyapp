@@ -45,6 +45,13 @@ export function SignUpForm() {
       return;
     }
     setPending(true);
+    // Record the clickwrap acceptance (fire-and-forget: recording must
+    // never block account creation; the checkbox gate above still holds).
+    void fetch("/api/legal/accept", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ context: "signup", email: email.trim() }),
+    }).catch(() => {});
     try {
       const supabase = createClient();
       const origin = authOrigin();

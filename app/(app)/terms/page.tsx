@@ -26,7 +26,7 @@ export default function TermsPage() {
           The terms, plainly.
         </h1>
         <p className="mt-6 font-serif text-body leading-[1.7] text-paper/65">
-          Effective July 7, 2026. These terms are a binding agreement
+          Effective July 10, 2026. These terms are a binding agreement
           between you and Purify (&ldquo;Purify,&rdquo; &ldquo;we,&rdquo;
           &ldquo;us&rdquo;), covering the website at purifyapp.net, the
           Purify mobile applications, and the EIKON shop. By using Purify or
@@ -171,10 +171,29 @@ export default function TermsPage() {
         <p className={P}>
           Some features may be offered for a fee or by subscription. Any
           charge is shown clearly before you confirm it, and paid features
-          never paywall what is free today. Purchases made through Apple or
-          Google are also governed by that platform&rsquo;s billing terms,
-          and renewals, cancellations, and refunds for those purchases follow
-          the platform&rsquo;s rules. We do not sell your personal data.
+          never paywall what is free today. We do not sell your personal
+          data.
+        </p>
+        <h3 className={H3}>Purify Plus</h3>
+        <p className={P}>
+          Purify Plus is an optional auto-renewing subscription. The current
+          prices are US $9.99 per month or US $99 per year (local prices are
+          shown in the store before you confirm). Your subscription renews
+          automatically at the end of each billing period, at the
+          then-current price, until you cancel. Plus also carries free
+          standard shipping on EIKON shop orders while your subscription is
+          active; without Plus, shipping is charged at the rate shown at
+          checkout.
+        </p>
+        <h3 className={H3}>Billing, cancellation, and refunds</h3>
+        <p className={P}>
+          On Android, Purify Plus is billed by Google Play. You can cancel
+          at any time in the Play Store under Subscriptions; cancellation
+          takes effect at the end of the current billing period, and you
+          keep Plus until then. Renewals, cancellations, and refunds for
+          purchases made through Apple or Google are governed by that
+          platform&rsquo;s billing terms and follow the platform&rsquo;s
+          rules. Deleting the app does not cancel a subscription.
         </p>
 
         <h2 className={H2}>8. Content, copyright, and your submissions</h2>
