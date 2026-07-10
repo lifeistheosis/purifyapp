@@ -42,7 +42,9 @@ export default function ShopPoliciesPage() {
 
         <h2 className={H2}>Shipping and dispatch</h2>
         <p className={P}>
-          We ship within the United States only. Shipping is free. Each
+          We ship within the United States only. Standard shipping is
+          charged at the flat rate shown at checkout, and is free on every
+          order while you hold an active Purify Plus subscription. Each
           listing shows an estimated dispatch window; because most items are
           sourced and inspected before shipping, dispatch commonly takes one
           to three weeks, and delivery time after dispatch depends on the

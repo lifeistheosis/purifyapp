@@ -40,9 +40,34 @@ export async function declineRefundRequest(
 }
 
 /**
+ * The amount a request is actually asking for: its own amount_cents when
+ * present, clamped to the order total; the full total otherwise. Reading
+ * it here (not trusting the caller) keeps partial refunds honest in both
+ * decider surfaces.
+ */
+async function requestedAmountCents(
+  requestId: string,
+  orderTotal: number,
+): Promise<number> {
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("shop_refund_requests")
+    .select("amount_cents")
+    .eq("id", requestId)
+    .maybeSingle();
+  const requested = data?.amount_cents;
+  if (typeof requested === "number" && requested > 0) {
+    return Math.min(requested, orderTotal);
+  }
+  return orderTotal;
+}
+
+/**
  * Approve and, when possible, execute. Returns the resulting status:
  * 'processed' when the money moved, 'approved' when it parked for
- * manual settlement, null on failure.
+ * manual settlement, null on failure. Honors the request's own
+ * amount_cents (a partial refund refunds the partial amount); the order
+ * flips to refunded only when the full total moved.
  */
 export async function approveRefundRequest(
   requestId: string,
@@ -51,7 +76,7 @@ export async function approveRefundRequest(
 ): Promise<"processed" | "approved" | null> {
   const admin = createAdminClient();
   const now = new Date().toISOString();
-  const amount = order.total_cents;
+  const amount = await requestedAmountCents(requestId, order.total_cents);
 
   let processed = false;
   let stripeRefundId: string | null = null;
@@ -90,7 +115,9 @@ export async function approveRefundRequest(
     return null;
   }
 
-  if (processed) await flipOrderRefunded(order.id, now);
+  if (processed && amount >= order.total_cents) {
+    await flipOrderRefunded(order.id, now);
+  }
   return processed ? "processed" : "approved";
 }
 
@@ -104,11 +131,12 @@ export async function markRefundProcessed(
 ): Promise<boolean> {
   const admin = createAdminClient();
   const now = new Date().toISOString();
+  const amount = await requestedAmountCents(requestId, order.total_cents);
   const { error } = await admin
     .from("shop_refund_requests")
     .update({
       status: "processed",
-      amount_cents: order.total_cents,
+      amount_cents: amount,
       processed_at: now,
       updated_at: now,
     })
@@ -118,7 +146,7 @@ export async function markRefundProcessed(
     console.warn("[shop] refund mark-processed failed", error.message);
     return false;
   }
-  await flipOrderRefunded(order.id, now);
+  if (amount >= order.total_cents) await flipOrderRefunded(order.id, now);
   return true;
 }
 

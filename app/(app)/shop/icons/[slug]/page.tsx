@@ -8,7 +8,9 @@ import { PolicyText } from "@/components/shop/PolicyText";
 import { ProductGallery } from "@/components/shop/ProductGallery";
 import { ProductRail } from "@/components/shop/ProductRail";
 import { getProduct, getStore, relatedProducts } from "@/lib/shop/catalog";
+import { flatShippingCents, hasActivePlus } from "@/lib/shop/checkout";
 import { checkoutEnabled } from "@/lib/shop/flags";
+import { createClient } from "@/lib/supabase/server";
 import {
   CLASSIFICATION_LABELS,
   dispatchWindowLabel,
@@ -70,12 +72,21 @@ export default async function ProductPage({ params }: Params) {
   const product = await getProduct(slug);
   if (!product) notFound();
 
-  const [store, related] = await Promise.all([
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const [store, related, plusShipping] = await Promise.all([
     getStore(product.store.slug),
     relatedProducts(product),
+    hasActivePlus(user?.id ?? null),
   ]);
 
   const priceLabel = formatPrice(product.price_cents, product.currency);
+  const shippingLabel = plusShipping
+    ? "Free shipping with Purify Plus"
+    : `+ ${formatPrice(flatShippingCents(), product.currency)} standard shipping · free with Purify Plus`;
   const dispatchLabel = dispatchWindowLabel(
     product.dispatch_min_days,
     product.dispatch_max_days,
@@ -242,6 +253,7 @@ export default async function ProductPage({ params }: Params) {
           <BuyBar
             productSlug={product.slug}
             priceLabel={priceLabel}
+            shippingLabel={shippingLabel}
             dispatchLabel={dispatchLabel}
             inventoryLabel={INVENTORY_LABELS[product.inventory_status]}
             purchasable={purchasable(product.inventory_status)}

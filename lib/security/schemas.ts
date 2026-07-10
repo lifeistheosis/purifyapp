@@ -109,7 +109,8 @@ export const shopMerchantApplicationSchema = z.object({
 
 /** /api/shop/checkout POST body. Deliberately tiny: the server looks up
  * price, availability, and shipping itself — a client can only say WHAT
- * it wants, never what it costs. */
+ * it wants, never what it costs. `termsAccepted` must be literally true:
+ * the checkout checkbox is clickwrap and the server refuses without it. */
 export const shopCheckoutSchema = z.object({
   productSlug: z
     .string()
@@ -117,6 +118,14 @@ export const shopCheckoutSchema = z.object({
     .max(120)
     .regex(/^[a-z0-9-]+$/, "slug format"),
   quantity: z.number().int().min(1).max(10).default(1),
+  termsAccepted: z.literal(true),
+});
+
+/** /api/legal/accept POST body: records a signup clickwrap acceptance.
+ * Email-keyed because with confirm-email on there is no session yet. */
+export const legalAcceptSchema = z.object({
+  context: z.literal("signup"),
+  email: z.string().email().max(320).optional(),
 });
 
 /** /api/shop/conversations POST body: a buyer opens a thread with a

@@ -86,21 +86,40 @@ describe("shopMerchantApplicationSchema", () => {
 
 describe("shopCheckoutSchema", () => {
   it("accepts only a slug and small quantity — never a price", () => {
-    const r = shopCheckoutSchema.safeParse({ productSlug: "pantocrator-wooden" });
+    const r = shopCheckoutSchema.safeParse({
+      productSlug: "pantocrator-wooden",
+      termsAccepted: true,
+    });
     expect(r.success).toBe(true);
     if (r.success) expect(r.data.quantity).toBe(1);
     expect(
-      shopCheckoutSchema.safeParse({ productSlug: "pantocrator-wooden", quantity: 99 })
-        .success,
+      shopCheckoutSchema.safeParse({
+        productSlug: "pantocrator-wooden",
+        quantity: 99,
+        termsAccepted: true,
+      }).success,
     ).toBe(false);
     // A price in the body is simply not part of the schema; strict shape
     // means unknown keys are ignored by default in zod objects, so assert
     // the parsed output carries no price even if a client sends one.
     const sneaky = shopCheckoutSchema.safeParse({
       productSlug: "pantocrator-wooden",
+      termsAccepted: true,
       priceCents: 1,
     });
     expect(sneaky.success).toBe(true);
     if (sneaky.success) expect("priceCents" in sneaky.data).toBe(false);
+  });
+
+  it("refuses checkout without the clickwrap checkbox", () => {
+    expect(
+      shopCheckoutSchema.safeParse({ productSlug: "pantocrator-wooden" }).success,
+    ).toBe(false);
+    expect(
+      shopCheckoutSchema.safeParse({
+        productSlug: "pantocrator-wooden",
+        termsAccepted: false,
+      }).success,
+    ).toBe(false);
   });
 });
