@@ -23,6 +23,26 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 1.8",
+ kind: "The doors open: the EIKON shop, Purify Plus, and the Hours",
+ date: "July 10, 2026",
+ blurb:
+  "Welcome, and glory to Jesus Christ. This patch opens two doors we have been building behind for a long season. The EIKON shop is open: hand-picked icons and prayer goods, each one inspected before it ships to you. And Purify Plus arrives on Android, the optional subscription that keeps the lamps lit, with cross-device sync, notes and highlights everywhere, and free shipping on everything in the shop. Alongside the doors, the prayer corner grows: the Little Hours now carry their Psalms in full, a rule of protection joins the devotional shelf, and the greatest born of women, St. John the Baptist, takes his place among the saints. The core of Purify stays free, today and always.",
+ items: [
+  "The EIKON shop is open at /shop. Icons, prayer ropes, censers, and the goods of a working prayer life, every item sourced, inspected by our own hands, and repackaged before it ships. Checkout by card through Stripe, shipping within the United States, policies in plain words at /shop/policies, and a Request an Icon door for whatever is missing.",
+  "Purify Plus, live in the Android app: $9.99 a month or $99 a year, billed securely through Google Play, cancel anytime. Cross-device sync, notes, highlights and bookmarks everywhere, custom collections and the Florilegium, and free shipping on every EIKON order while your subscription is active. The entitlement is written server-side to your account the moment Google confirms the purchase, and Restore brings it back on any device. What is free today stays free.",
+  "The Hours, in full. The First, Third, Sixth, and Ninth Hours now carry their three appointed Psalms each in full, in Brenton's public-domain Septuagint translation, with the fixed troparion and dismissal of each hour. Asked for on the Discord, psalm structure and all; the Hours now stand in the daily rule beside Compline.",
+  "Prayers of protection join the devotional shelf: Psalm 90 and Psalm 26 in full, the Let God arise verses prayed with the sign of the Cross, and the petition for the guard of the angel, every word verbatim from public-domain sources. Asked for on the Discord.",
+  "St. John the Baptist, the Forerunner, takes his place among the saints, with his whole scriptural witness from the annunciation to Zacharias to the Beheading, verbatim in the King James Version, and the life told plainly beside it. Asked for on the Discord.",
+  "The calendar's New and Old toggle no longer sticks on Old for installed-app readers; the toggle now persists the choice properly. Reported on the Discord by cloudw_w.",
+  "Focus mode releases you again on desktop, by the exit button or the Escape key; the exit pill no longer hides beneath other layers. Reported by Nikoli345.",
+  "The buttons at the very top of the screen answer taps again on iPhone in the browser; the bar now clears the notch properly. Reported by vust.",
+  "Read the Gospel with Chrysostom now says how to open the commentary: on a phone, tap a red-dotted verse number; on desktop the study rail stands beside the text. Reported by vust.",
+  "The Terms of Service now spell out the subscription plainly, price, renewal, and cancellation, with the shop's shipping and returns policy at /shop/policies as part of them. Agreement is a real recorded checkbox at signup and at checkout. The privacy policy names every processor: Stripe for the shop, Google Play and RevenueCat for Plus.",
+  "Cache version bumped to purify-beta-1.8.0 so the shop, the Hours, and the fixes evict the old buckets on this release. Footer, home hero chip, and the What's new chip step to Beta 1.8.",
+ ],
+ },
+ {
  version: "Beta 1.7",
  kind: "A walk through the history of the Church",
  date: "July 4, 2026",

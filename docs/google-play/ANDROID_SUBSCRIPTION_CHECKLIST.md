@@ -16,7 +16,7 @@ custom collections, personal library organization, guided collections (later),
 ambient prayer (later), future audio. Pre-launch supporters keep **lifetime sync**
 (sync only, not the wider Plus layer).
 
-Pricing: **Monthly $4.99**, **Yearly $29.99**.
+Pricing: **Monthly $9.99**, **Yearly $99**.
 
 ## How it is wired (code that already exists on `feat/plus-billing`)
 
@@ -67,8 +67,8 @@ Pricing: **Monthly $4.99**, **Yearly $29.99**.
 ## Play Console (founder) ⚙️
 
 1. Subscription product **`purify_plus`** with two base plans:
-   - **`monthly`** — auto-renewing, $4.99, P1M.
-   - **`yearly`** — auto-renewing, $29.99, P1Y.
+   - **`monthly`** — auto-renewing, $9.99, P1M.
+   - **`yearly`** — auto-renewing, $99, P1Y.
 2. Activate both base plans; set prices across markets.
 3. Add **license testers** (Setup → License testing) so testers buy without being
    charged.

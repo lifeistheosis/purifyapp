@@ -1,5 +1,41 @@
 [
   {
+    "id": "beta-1-8",
+    "version": "Beta 1.8",
+    "date": "2026-07-10",
+    "title": "The doors open: the EIKON shop, Purify Plus, and the Hours",
+    "intro": "Welcome, and glory to Jesus Christ. This patch opens two doors we have been building behind for a long season. The EIKON shop is open: hand-picked icons and prayer goods, each one inspected before it ships to you. And Purify Plus arrives on Android, the optional subscription that keeps the lamps lit, with cross-device sync, notes and highlights everywhere, and free shipping on everything in the shop. Alongside the doors, the prayer corner grows: the Little Hours now carry their Psalms in full, a rule of protection joins the devotional shelf, and the greatest born of women, St. John the Baptist, takes his place among the saints. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "The EIKON shop is open",
+        "body": "A marketplace for the prayer corner at /shop, beginning with the EIKON store: icons, prayer ropes, censers, and the goods of a working prayer life. Every item is sourced, inspected by our own hands, and repackaged before it ships; every listing says plainly how it is made and where it comes from. Checkout is by card through Stripe, shipping within the United States, and the shipping and returns policy is written in plain words at /shop/policies. If an icon you love is missing, the Request an Icon door is open."
+      },
+      {
+        "heading": "Purify Plus, on Android",
+        "body": "The optional subscription is live in the Android app: $9.99 a month or $99 a year, billed securely through Google Play, cancel anytime. Plus carries your library across devices, syncs your notes, highlights, and bookmarks, unlocks custom collections and the Florilegium, and ships everything in the EIKON shop free while your subscription is active. Buying it genuinely unlocks it: the entitlement is written server-side to your account the moment Google confirms the purchase, and Restore brings it back on any device you sign in on. What is free today stays free; Plus pays for the servers and the work, it never buys back what was given."
+      },
+      {
+        "heading": "The Hours, in full",
+        "body": "The First, Third, Sixth, and Ninth Hours now carry their three appointed Psalms each in full, in Brenton's public-domain Septuagint translation, with the fixed troparion and dismissal of each hour. The Book of Hours was asked for on the Discord, with the psalm structure laid out carefully by the one who asked; here it is, and the Hours now stand in the daily rule beside Compline."
+      },
+      {
+        "heading": "Prayers of protection, and the Forerunner",
+        "body": "A new rule of protection joins the devotional shelf: Psalm 90 and Psalm 26 in full, the Let God arise verses prayed with the sign of the Cross, and the petition for the guard of the angel, every word verbatim from public-domain sources. And St. John the Baptist, the Forerunner, of whom the Lord said that among them born of women there hath not risen a greater, takes his place among the saints with his whole scriptural witness, from the annunciation to Zacharias to the Beheading. Both were asked for on the Discord."
+      },
+      {
+        "heading": "Repairs you asked for",
+        "body": "The calendar's New and Old toggle no longer sticks on Old for installed-app readers; the choice now holds everywhere. Focus mode releases you again on desktop, by the exit button or the Escape key. The buttons at the very top of the screen answer taps again on iPhone. And the Read the Gospel with Chrysostom door now tells you plainly how to open the commentary beside the text. Each of these came from a community report, named in the suggestions forum, and each is mended."
+      },
+      {
+        "heading": "The small print, kept honest",
+        "body": "The Terms of Service now spell out the subscription plainly, the price, the renewal, and how to cancel, and the shop's shipping and returns policy stands at /shop/policies as part of them. Agreement is now a real checkbox at signup and at checkout, and your acceptance is recorded, because a promise should be provable on both sides. The privacy policy already names every processor involved: Stripe for the shop, Google Play and RevenueCat for Plus."
+      }
+    ],
+    "future": [],
+    "closing": "Two doors and a fuller prayer corner. If an item arrives short of what you hoped, if a psalm reads wrong, or if Plus does not unlock what it promised, write to me at lifeistheosis@gmail.com and it will be made right. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
     "id": "beta-1-7",
     "version": "Beta 1.7",
     "date": "2026-07-04",

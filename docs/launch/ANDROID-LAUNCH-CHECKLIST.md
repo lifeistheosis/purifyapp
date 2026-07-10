@@ -99,7 +99,7 @@ back listener), but three gaps were found that plausibly explain "still has issu
 ## 3. Purify Plus / billing (from `ANDROID_SUBSCRIPTION_CHECKLIST.md`)
 
 Model: core is **always free**; Plus adds cross-device sync + Florilegium/custom
-collections. Pricing **$4.99/mo · $29.99/yr**. Path: **RevenueCat → Google Play Billing**.
+collections. Pricing **$9.99/mo · $99/yr** (Plus includes free EIKON shop shipping). Path: **RevenueCat → Google Play Billing**.
 Enforcement is **native-only**.
 
 | Item | Status | Owner |
@@ -108,7 +108,7 @@ Enforcement is **native-only**.
 | RevenueCat project + Google Play app (`net.purifyapp.purify`) + service-account creds | ⬜ | L |
 | `plus` entitlement; `monthly`/`annual` products in default Offering | ⬜ | L |
 | RevenueCat webhook → `https://purifyapp.net/api/billing/revenuecat` + `REVENUECAT_WEBHOOK_SECRET` (test 200) | ⬜ | L |
-| Play subscription `purify_plus` with `monthly` ($4.99/P1M) + `yearly` ($29.99/P1Y) base plans, activated | ⬜ | L |
+| Play subscription `purify_plus` with `monthly` ($9.99/P1M) + `yearly` ($99/P1Y) base plans, activated | ⬜ | L |
 | License testers added (buy without charge) | ⬜ | L |
 | `NEXT_PUBLIC_REVENUECAT_ANDROID_KEY` on Render | ⬜ | L |
 | `npx cap sync android` + green AAB **with the plugin linked** | ⚠️ | C/T |
