@@ -187,7 +187,7 @@ export function PlusPaywall() {
       <Hero />
 
       {/* What's included */}
-      <div className="mt-7 px-5">
+      <div className="paywall-in mt-7 px-5" style={{ animationDelay: "460ms" }}>
         <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
           <p className="text-center font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-paper/55">
             What’s included
@@ -218,7 +218,7 @@ export function PlusPaywall() {
       </div>
 
       {/* Plans */}
-      <div className="mt-6 space-y-3 px-5">
+      <div className="paywall-in mt-6 space-y-3 px-5" style={{ animationDelay: "560ms" }}>
         <PlanRow
           label="Monthly"
           sub="Billed monthly"
@@ -242,7 +242,10 @@ export function PlusPaywall() {
       </div>
 
       {/* CTA + trust + footer */}
-      <div className="mt-6 px-5 pb-[calc(env(safe-area-inset-bottom,0px)+1.25rem)]">
+      <div
+        className="paywall-in mt-6 px-5 pb-[calc(env(safe-area-inset-bottom,0px)+1.25rem)]"
+        style={{ animationDelay: "660ms" }}
+      >
         {note ? (
           <p className="mb-3 text-center font-sans text-caption text-crimson-soft">
             {note}
@@ -301,31 +304,54 @@ function Screen({ children }: { children: React.ReactNode }) {
 }
 
 /** Hero: light from above, the Orthodox cross, the wordmark, and the title.
+ * Plays the subscription-onboarding cascade: the light blooms, the cross
+ * settles with a soft overshoot, and the copy rises line by line.
  * The radiant background is CSS; drop a designed image at /plus-hero.png and
  * set it as the backgroundImage here to match a bespoke comp exactly. */
 function Hero() {
   return (
-    <div
-      className="relative flex flex-col items-center px-6 pt-12 pb-2 text-center"
-      style={{
-        background:
-          "radial-gradient(120% 70% at 50% -10%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 28%, transparent 60%)",
-      }}
-    >
-      <CrossMark />
-      <p className="mt-4 font-display-serif text-title text-paper/90">Purify</p>
-      <h1 className="mt-2 font-display-serif text-display-sm font-bold tracking-[-0.02em] text-paper">
+    <div className="relative flex flex-col items-center px-6 pt-12 pb-2 text-center">
+      <div
+        aria-hidden
+        className="paywall-glow-in pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(120% 70% at 50% -10%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 28%, transparent 60%)",
+        }}
+      />
+      <span className="paywall-mark-in">
+        <CrossMark />
+      </span>
+      <p
+        className="paywall-in mt-4 font-display-serif text-title text-paper/90"
+        style={{ animationDelay: "120ms" }}
+      >
+        Purify
+      </p>
+      <h1
+        className="paywall-in mt-2 font-display-serif text-display-sm font-bold tracking-[-0.02em] text-paper"
+        style={{ animationDelay: "200ms" }}
+      >
         Purify <span className="text-gold-pale">Plus</span>
       </h1>
-      <span className="my-3 inline-flex items-center gap-2 text-gold-pale/70">
+      <span
+        className="paywall-in my-3 inline-flex items-center gap-2 text-gold-pale/70"
+        style={{ animationDelay: "280ms" }}
+      >
         <span className="h-px w-10 bg-paper/15" />
         <Sparkle small />
         <span className="h-px w-10 bg-paper/15" />
       </span>
-      <p className="font-display-serif text-lede text-paper/90">
+      <p
+        className="paywall-in font-display-serif text-lede text-paper/90"
+        style={{ animationDelay: "340ms" }}
+      >
         Deeper focus. Stronger faith.
       </p>
-      <p className="mx-auto mt-3 max-w-[320px] font-sans text-ui leading-relaxed text-paper/60">
+      <p
+        className="paywall-in mx-auto mt-3 max-w-[320px] font-sans text-ui leading-relaxed text-paper/60"
+        style={{ animationDelay: "400ms" }}
+      >
         Sync your spiritual journey across all your devices and go deeper with
         tools that inspire.
       </p>
