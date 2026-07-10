@@ -14,11 +14,20 @@ import { nativeGoogleAvailable, nativeGoogleIdToken } from "@/lib/auth/nativeGoo
  * been set up yet. The button is left visible so the layout
  * stays right and so anyone curious knows it's planned.
  */
-export function OAuthButtons() {
+export function OAuthButtons({
+  disabled = false,
+  disabledHint,
+}: {
+  /** Gate the providers behind a prior action, e.g. clickwrap consent on
+   *  sign-up. Sign-in leaves this off. */
+  disabled?: boolean;
+  disabledHint?: string;
+} = {}) {
   const [pendingGoogle, setPendingGoogle] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function go() {
+    if (disabled) return;
     setPendingGoogle(true);
     setError(null);
     try {
@@ -68,9 +77,10 @@ export function OAuthButtons() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <button
           type="button"
-          disabled={pendingGoogle}
+          disabled={pendingGoogle || disabled}
           onClick={go}
-          className="inline-flex items-center justify-center gap-2 h-11 rounded-pill border border-paper/20 bg-paper/[0.04] hover:bg-paper/10 hover:border-paper/35 disabled:opacity-50 disabled:cursor-wait transition-colors font-sans text-ui font-medium text-paper"
+          title={disabled ? disabledHint : undefined}
+          className="inline-flex items-center justify-center gap-2 h-11 rounded-pill border border-paper/20 bg-paper/[0.04] hover:bg-paper/10 hover:border-paper/35 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-sans text-ui font-medium text-paper"
         >
           <GoogleGlyph />
           {pendingGoogle ? "Connecting…" : "Continue with Google"}
@@ -86,6 +96,11 @@ export function OAuthButtons() {
           Apple · Coming soon
         </button>
       </div>
+      {disabled && disabledHint ? (
+        <p className="mt-2 font-sans text-caption leading-[1.5] text-paper/50">
+          {disabledHint}
+        </p>
+      ) : null}
       {error ? (
         <p className="mt-3 font-sans text-caption text-crimson-soft leading-[1.5]">
           {error}

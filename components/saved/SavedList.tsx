@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useBookmarks, type Bookmark } from "@/lib/bookmarks";
+import { useMounted } from "@/lib/useMounted";
 
 /* ── Verse text (lazy, on demand) ──────────────────────────────────────── */
 
@@ -31,6 +32,9 @@ function VerseText({
 
   useEffect(() => {
     if (verseTextCache.has(key)) {
+      /* eslint-disable-next-line react-hooks/set-state-in-effect -- adopt the
+         session-cached text synchronously when the verse key changes, instead
+         of flashing "Loading…" and refetching. */
       setText(verseTextCache.get(key)!);
       return;
     }
@@ -93,8 +97,7 @@ export function SavedList() {
 
   // Mounted gate: the stores return empty server snapshots, so counts and
   // lists would otherwise flash from 0 on hydration.
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
 
   const historyCount = readingHistory.length + recentPrayers.length;
 
@@ -204,6 +207,7 @@ function SavedTab({
   const prayers = bookmarks.filter(
     (b) => b.kind === "prayer" || b.kind === "prayer-rule",
   );
+  const products = bookmarks.filter((b) => b.kind === "product");
 
   if (bookmarks.length === 0) {
     return (
@@ -271,6 +275,13 @@ function SavedTab({
           ))}
         </Group>
       )}
+      {products.length > 0 && (
+        <Group title="Saved icons" count={products.length}>
+          {products.map((b) => (
+            <Row key={b.id} bookmark={b} onRemove={() => onRemove(b.id)} />
+          ))}
+        </Group>
+      )}
     </div>
   );
 }
@@ -320,6 +331,8 @@ function hrefFor(b: Bookmark): string {
       return b.href;
     case "history-event":
       return `/history/${b.eventSlug}`;
+    case "product":
+      return `/shop/icons/${b.productSlug}`;
     default:
       return "/saved";
   }
@@ -344,6 +357,8 @@ function subFor(b: Bookmark): string {
       return "Prayer rule";
     case "history-event":
       return `History · ${b.displayDate}`;
+    case "product":
+      return `${b.storeName} · ${b.priceLabel} when saved`;
     default:
       return "";
   }

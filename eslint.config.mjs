@@ -27,6 +27,10 @@ const eslintConfig = defineConfig([
     "playwright-report/**",
     "test-results/**",
     ".lighthouseci/**",
+    // Generated Capacitor web assets (copies of the exported site that
+    // `npx cap sync` drops into the native shells) — not source.
+    "android/app/src/main/assets/**",
+    "ios/App/App/public/**",
   ]),
 ]);
 

@@ -14,6 +14,9 @@ export function BibleMobileContinue() {
   const [last, setLast] = useState<LastRead | null>(null);
 
   useEffect(() => {
+    /* eslint-disable-next-line react-hooks/set-state-in-effect -- the
+       last-read pointer lives in localStorage, so it can only be adopted
+       after mount (the server renders the empty-state card). */
     setLast(readLastRead());
   }, []);
 

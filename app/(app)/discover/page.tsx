@@ -23,6 +23,7 @@ import {
 } from "@/lib/calendar/orthodox";
 import { getSaint } from "@/lib/saints/saints";
 import { COUNCILS } from "@/lib/councils/councils";
+import { shopEnabled } from "@/lib/shop/flags";
 import { loadAllTopics } from "@/lib/topics/topics";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
@@ -133,6 +134,18 @@ export default async function DiscoverPage() {
       blurb: t(m, "discover.tile.patristicBlurb"),
       Icon: Quill,
     },
+    // Marketplace entry, present only while the shop flag is on. Kept
+    // last: commerce never outranks the study library on this page.
+    ...(shopEnabled()
+      ? [
+          {
+            label: "Shop",
+            href: "/shop",
+            blurb: "Curated Orthodox icons from EIKON, a Purify store.",
+            Icon: Cross,
+          },
+        ]
+      : []),
   ];
 
   return (

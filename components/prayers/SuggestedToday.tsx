@@ -8,8 +8,8 @@
 // clock), so it is computed after mount behind a gate to avoid a hydration
 // mismatch. Only real, seeded rules are ever suggested — never a planned one.
 
-import { useEffect, useState } from "react";
 import { PrayerSectionLabel, PrayerIndex, PrayerIndexRow } from "./PrayerBook";
+import { useMounted } from "@/lib/useMounted";
 import {
   RULES,
   type RuleMeta,
@@ -42,8 +42,7 @@ export function SuggestedToday({
   label?: string;
   max?: number;
 }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
 
   // Stable server render: a quiet placeholder slot is avoided entirely by
   // gating on mount. The masthead above already carries the day's context.

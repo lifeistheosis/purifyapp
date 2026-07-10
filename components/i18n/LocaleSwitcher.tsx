@@ -30,6 +30,12 @@ import { useTranslate } from "./MessagesProvider";
  * The cookie itself is non-sensitive (readable by the client) so the
  * middleware can also negotiate it on the next request when needed.
  */
+
+// 1 year, root path, non-httpOnly so the client can read.
+function writeLocaleCookie(next: string) {
+  document.cookie = `purify_locale=${next}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+}
+
 export function LocaleSwitcher() {
   const { locale, t } = useTranslate();
   const [pending, setPending] = useState(false);
@@ -72,8 +78,7 @@ export function LocaleSwitcher() {
     setOpen(false);
     if (next === locale) return;
     setPending(true);
-    // 1 year, root path, non-httpOnly so the client can read.
-    document.cookie = `purify_locale=${next}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+    writeLocaleCookie(next);
     // Hard reload so the root layout re-renders with the new cookie
     // and every page subsequently navigated to reads through the new
     // MessagesProvider on first paint.

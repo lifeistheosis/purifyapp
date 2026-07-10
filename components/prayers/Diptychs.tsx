@@ -248,6 +248,9 @@ function IntentionForm({
     <div className="rounded-md border border-gold/30 bg-gold/[0.04] p-4 my-3 space-y-3">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <input
+          /* eslint-disable-next-line jsx-a11y/no-autofocus -- the form is
+             revealed by an explicit user action (add/edit intention), so
+             moving focus into its first field is expected, not a steal. */
           autoFocus
           placeholder="Name"
           value={name}

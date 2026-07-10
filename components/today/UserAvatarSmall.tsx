@@ -23,15 +23,20 @@ function initialsFromName(name: string | null | undefined): string {
  * without a flash of "signed in" before we know.
  */
 export function UserAvatarSmall() {
-  const [initials, setInitials] = useState<string | null>(null);
+  // With no Supabase env there is no session to look up, so settle on
+  // signed-out from the first render. The env is inlined at build time,
+  // so server and client renders agree.
+  const [initials, setInitials] = useState<string | null>(() =>
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      ? null
+      : "",
+  );
 
   useEffect(() => {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!url || !anon) {
-      setInitials("");
-      return;
-    }
+    if (!url || !anon) return;
     const supa = createBrowserClient(url, anon);
     let alive = true;
     supa.auth.getUser().then(({ data: { user } }) => {

@@ -186,10 +186,16 @@ export default async function PrivacyPage() {
  <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>No third-party advertising. No ad SDKs, no ad cookies.</li>
  <li>No behavioral profile, no cross-site tracking, no fingerprinting.</li>
- <li>No sale or sharing of any user data with any third party.</li>
  <li>
- No email newsletter, no push notifications, no &ldquo;come
- back&rdquo; campaigns. The site doesn&rsquo;t reach out to you.
+ No sale of your data, ever. We share it only with the service
+ providers listed below that we need to run the site (hosting,
+ payment, email, push), and only to do that, never for their own
+ marketing.
+ </li>
+ <li>
+ No marketing email, no newsletter, no &ldquo;come back&rdquo;
+ campaigns. We email you only about something you asked for, an order
+ you placed or a support message, and prayer-reminder push is opt-in.
  </li>
  <li>
  No analytics joined to your account identity. The signed-in
@@ -299,6 +305,53 @@ export default async function PrivacyPage() {
  earn a commission on qualifying purchases. Amazon receives
  nothing from us about your identity; what they collect from
  your click is governed by their own policy.
+ </li>
+ </ul>
+
+ {/* The shop & payments */}
+ <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ The EIKON shop and payments
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ When you buy from EIKON we collect only what an order needs, and we
+ share it only with the providers that fulfill it. We never sell it.
+ </p>
+ <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <li>
+ <strong>Order &amp; shipping details</strong>, the items you buy,
+ totals, status, and the name, email, and shipping address you enter
+ at checkout, stored in our Supabase database, visible only to you and
+ us, so we can fulfill and support your order.
+ </li>
+ <li>
+ <strong>Stripe</strong>, our payment processor. Card payment happens
+ on Stripe; we never receive or store your full card number. Stripe
+ handles it under its own privacy policy and PCI standards and returns
+ us only what we need to record the order, a payment reference and the
+ shipping address you gave it.
+ </li>
+ <li>
+ <strong>Resend</strong>, our email provider, delivers your order
+ confirmation and any support replies. It sees the recipient address
+ and the message in order to send it.
+ </li>
+ <li>
+ <strong>Support tickets</strong>, when you contact support, the
+ email, name, and messages you send are stored so we can help and
+ follow up.
+ </li>
+ <li>
+ <strong>RevenueCat and the app stores</strong>, if you buy an
+ optional subscription, the purchase is processed by RevenueCat and by
+ Apple or Google under their own policies; we receive whether your
+ subscription is active, not your payment details.
+ </li>
+ <li>
+ <strong>Apple / Google push (native apps only)</strong>, the iOS and
+ Android apps deliver notifications through Apple&rsquo;s and
+ Google&rsquo;s (Firebase Cloud Messaging) push services, which need a
+ device token to reach your phone. The web app uses direct Web Push,
+ as described below.
  </li>
  </ul>
 

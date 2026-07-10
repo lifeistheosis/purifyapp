@@ -10,29 +10,40 @@
 // own nav row.
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 
 import { cn } from "@/lib/cn";
 
 type Child = { key: string; label: string; href: string };
 
 export const DISCOVER_CHILDREN: Child[] = [
-  // Doctrine, Topics, Heresies, and Apologetics now live under the one
-  // Theology hub (which carries the shared mode switcher), so the top nav
-  // points there once instead of listing four near-identical surfaces.
-  { key: "theology", label: "Theology", href: "/theology" },
+  // The full Discover library, in the same menologion order as the
+  // /discover page, minus surfaces that already hold their own
+  // top-level nav slot (Saints, Calendar, Bible, Prayers) and the shop
+  // (its own top-level button, gated by the marketplace flag).
+  { key: "history", label: "Orthodox History", href: "/history" },
   { key: "reading", label: "Reading", href: "/reading" },
+  { key: "theology", label: "Theology", href: "/theology" },
+  { key: "apologetics", label: "Apologetics", href: "/apologetics" },
+  { key: "topics", label: "Topics", href: "/topics" },
+  { key: "heresies", label: "Heresies", href: "/heresies" },
   { key: "councils", label: "Councils", href: "/councils" },
+  { key: "psalter", label: "The Psalter", href: "/bible/psalms/1" },
+  { key: "patristic", label: "Patristic commentary", href: "/bible/john/1" },
 ];
 
-/** Hrefs that light up the Discover slot as "active", including the four
- * theology modes folded under the hub, so their routes still highlight it. */
-export const DISCOVER_CHILD_HREFS = [
-  ...DISCOVER_CHILDREN.map((c) => c.href),
-  "/topics",
-  "/heresies",
-  "/apologetics",
-];
+/** Hrefs that light up the Discover slot as "active". The two Bible
+ * deep links are excluded: standing in the Psalter should light the
+ * Bible slot, not two nav items at once. */
+export const DISCOVER_CHILD_HREFS = DISCOVER_CHILDREN.map((c) => c.href).filter(
+  (h) => !h.startsWith("/bible"),
+);
 
 const OPEN_DELAY = 120;
 const CLOSE_DELAY = 200;
@@ -78,7 +89,9 @@ export function DiscoverDropdown({
   }, [open]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  function clearTimers() {
+  // Stable (useCallback with no deps — only refs and setState inside) so
+  // the effects below can list it as a dependency without re-running.
+  const clearTimers = useCallback(() => {
     if (openTimer.current) {
       window.clearTimeout(openTimer.current);
       openTimer.current = null;
@@ -87,7 +100,12 @@ export function DiscoverDropdown({
       window.clearTimeout(closeTimer.current);
       closeTimer.current = null;
     }
-  }
+  }, []);
+
+  const closeNow = useCallback(() => {
+    clearTimers();
+    setOpen(false);
+  }, [clearTimers]);
 
   function scheduleOpen() {
     if (closeTimer.current) {
@@ -118,16 +136,19 @@ export function DiscoverDropdown({
     setOpen(true);
   }
 
-  function closeNow() {
-    clearTimers();
+  // Close on route change. The state is adjusted during render (React's
+  // "adjust state when a prop changes" pattern) instead of in an effect;
+  // the effect below only clears pending hover timers so a queued open
+  // can't fire on the page we just navigated to.
+  const [lastPathname, setLastPathname] = useState(pathname);
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
     setOpen(false);
   }
 
-  // Close on route change.
   useEffect(() => {
-    closeNow();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+    clearTimers();
+  }, [pathname, clearTimers]);
 
   // Escape closes.
   useEffect(() => {
@@ -137,10 +158,10 @@ export function DiscoverDropdown({
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [open, closeNow]);
 
   // Cleanup pending timers on unmount.
-  useEffect(() => clearTimers, []);
+  useEffect(() => clearTimers, [clearTimers]);
 
   return (
     <div
@@ -167,8 +188,11 @@ export function DiscoverDropdown({
       {mounted && (
         <div
           role="menu"
+          // Programmatically focusable (not in the tab order): the a11y
+          // contract for the menu role. Tabbing still goes to the items.
+          tabIndex={-1}
           className={cn(
-            "absolute left-1/2 top-full mt-3 min-w-[200px] origin-top",
+            "absolute left-1/2 top-full mt-3 min-w-[230px] origin-top",
             "rounded-md border border-white/12 bg-night/95 backdrop-blur-xl",
             "shadow-[0_10px_40px_rgba(0,0,0,0.55)] py-2 z-50",
             // Smooth linear open/close: fade + a small slide-and-scale from

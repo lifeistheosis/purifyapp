@@ -36,8 +36,9 @@ import { isSafeNext } from "@/lib/security/schemas";
  *     `startsWith("/")` alone wouldn't catch.
  *   - `type` is checked against a fixed allow-list before it reaches
  *     verifyOtp.
- *   - Every redirect uses SITE_URL as the base (existing convention) so
- *     the proxied internal request URL on Render never leaks.
+ *   - Deployed redirects use SITE_URL as the base (existing convention) so
+ *     the proxied internal request URL on Render never leaks; local dev keeps
+ *     the request's own localhost origin so sign-in doesn't bounce to prod.
  */
 
 const OTP_TYPES = new Set<EmailOtpType>([
@@ -56,6 +57,16 @@ export async function GET(request: NextRequest) {
   }
 
   const url = new URL(request.url);
+  // Redirect base: on a deployed host use the canonical SITE_URL (request.url
+  // is Render's internal proxied URL and must not leak). In local dev keep the
+  // flow on the origin that started it — the session cookie was just set here —
+  // so localhost sign-in doesn't bounce to the public site. Same localhost test
+  // as authOrigin() in lib/site.ts.
+  const origin = url.origin;
+  const isLocal =
+    origin.startsWith("http://localhost") || origin.startsWith("http://127.");
+  const base = isLocal ? origin : SITE_URL;
+
   const code = url.searchParams.get("code");
   const tokenHash = url.searchParams.get("token_hash");
   const rawType = url.searchParams.get("type");
@@ -76,12 +87,12 @@ export async function GET(request: NextRequest) {
     const errorTarget = safeNext.startsWith("/account")
       ? `${safeNext}${safeNext.includes("?") ? "&" : "?"}error=${encodeURIComponent(msg)}`
       : `/signin?error=${encodeURIComponent(msg)}`;
-    return NextResponse.redirect(new URL(errorTarget, SITE_URL));
+    return NextResponse.redirect(new URL(errorTarget, base));
   }
 
   const fail = (message: string) =>
     NextResponse.redirect(
-      new URL(`/signin?error=${encodeURIComponent(message)}`, SITE_URL),
+      new URL(`/signin?error=${encodeURIComponent(message)}`, base),
     );
 
   const supabase = await createClient();
@@ -93,14 +104,14 @@ export async function GET(request: NextRequest) {
       token_hash: tokenHash,
     });
     if (error) return fail(error.message);
-    return NextResponse.redirect(new URL(safeNext, SITE_URL));
+    return NextResponse.redirect(new URL(safeNext, base));
   }
 
   // Legacy / OAuth path: PKCE code exchange (requires same-session verifier).
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) return fail(error.message);
-    return NextResponse.redirect(new URL(safeNext, SITE_URL));
+    return NextResponse.redirect(new URL(safeNext, base));
   }
 
   return fail("Sign-in link is missing its code. Try again.");

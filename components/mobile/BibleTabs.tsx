@@ -26,6 +26,8 @@ export function BibleTabs({
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
+      /* eslint-disable-next-line react-hooks/set-state-in-effect -- adopt the
+         persisted tab after mount; the server must render the default. */
       if (raw === "ot" || raw === "nt") setTab(raw);
     } catch {
       /* ignore */

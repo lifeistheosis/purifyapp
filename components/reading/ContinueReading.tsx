@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useReadingHistory } from "@/lib/reading/history";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { useMounted } from "@/lib/useMounted";
 
 /**
  * "Continue reading", the reader's most recent visits. Renders nothing until
@@ -12,8 +12,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 export function ContinueReading() {
  const { t } = useTranslate();
  const history = useReadingHistory();
- const [mounted, setMounted] = useState(false);
- useEffect(() => setMounted(true), []);
+ const mounted = useMounted();
 
  if (!mounted || history.length === 0) return null;
 

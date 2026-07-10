@@ -7,6 +7,7 @@ import { TikTok } from "@/components/ui/icons/TikTok";
 import { Reddit } from "@/components/ui/icons/Reddit";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
+import { shopEnabled } from "@/lib/shop/flags";
 
 type LinkItem = { label: string; href: string; external?: boolean };
 
@@ -40,6 +41,9 @@ export function Footer() {
     { label: t("discover.tile.councils"), href: "/councils" },
     { label: t("discover.tile.topics"), href: "/topics" },
     { label: t("discover.tile.heresies"), href: "/heresies" },
+    // Marketplace entry, dark until the shop flag flips. The ownership
+    // disclosure rides in the footer bottom line beside it.
+    ...(shopEnabled() ? [{ label: "Shop", href: "/shop" }] : []),
    ],
   },
   {
