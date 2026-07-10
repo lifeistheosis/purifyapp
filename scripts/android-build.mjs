@@ -37,6 +37,10 @@ const STASH_PATHS = [
   // Supabase reads on every page and a checkout that needs the network, so
   // there is no useful offline form to bundle.
   ["app", "(app)", "shop"],
+  // Support ticket form: force-dynamic (signed-in prefill + ticket writes),
+  // network-only like the shop it shipped with. The static /support page
+  // stays in the bundle; only the contact form is web-only.
+  ["app", "(app)", "support", "contact"],
 ];
 
 function slot(i) {
