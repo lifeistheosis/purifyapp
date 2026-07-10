@@ -5,7 +5,7 @@
   "subtitle": "Prime, prayed at sunrise, roughly 6 a.m.",
   "intro": "The First Hour sanctifies the dawn. Read it after the Morning Rule when the schedule allows, or alone, standing toward the icons. The Hours are short, about five minutes each.",
   "estimatedMinutes": 6,
-  "source": "Common Orthodox Horologion (Jordanville and Hapgood traditions). Full Psalm and Troparion text will land in the next content drop; the structural shell here is correct.",
+  "source": "Common Orthodox Horologion. Psalms from Brenton's public-domain Septuagint; troparia in the public-domain liturgical English of the older service books.",
   "prayers": [
     {
       "id": "opening",
@@ -20,10 +20,22 @@
       "text": "(see Morning Rule: Heavenly King · Trisagion · Most Holy Trinity · Lord have mercy · Glory · Now and ever · Our Father.)"
     },
     {
-      "id": "psalms",
-      "title": "The three Psalms of the First Hour",
-      "instruction": "Psalms 5, 89, and 100. Read in full when time allows; the citation links open the Septuagint numbering on this site.",
-      "text": "Psalm 5 (Hear my words, O Lord) · Psalm 89 (Lord, Thou hast been our refuge) · Psalm 100 (Mercy and judgment will I sing unto Thee, O Lord)."
+      "id": "psalm-5",
+      "title": "Psalm 5",
+      "instruction": "Hear my words, O Lord. Septuagint numbering; Brenton's translation.",
+      "text": "Hearken to my words, O Lord, attend to my cry.\nAttend to the voice of my supplication, my King, and my God: for to thee, O Lord, will I pray.\nIn the morning thou shalt hear my voice: in the morning will I wait upon thee, and will look up.\nFor thou art not a god that desires iniquity; neither shall the worker of wickedness dwell with thee.\nNeither shall the transgressors continue in thy sight: thou hatest, O Lord, all them that work iniquity.\nThou wilt destroy all that speak falsehood: the Lord abhors the bloody and deceitful man.\nBut I will enter into thine house in the multitude of thy mercy: I will worship in thy fear toward thy holy temple.\nLead me, O Lord, in thy righteousness because of mine enemies; make my way plain before thy face.\nFor there is no truth in their mouth; their heart is vain; their throat is an open sepulchre; with their tongues they have used deceit.\nJudge them, O God; let them fail of their counsels: cast them out according to the abundance of their ungodliness; for they have provoked thee, O Lord.\nBut let all that trust on thee be glad in thee: they shall exult for ever, and thou shalt dwell among them; and all that love thy name shall rejoice in thee.\nFor thou, Lord, shalt bless the righteous: thou hast compassed us as with a shield of favour."
+    },
+    {
+      "id": "psalm-89",
+      "title": "Psalm 89",
+      "instruction": "Lord, Thou hast been our refuge. Septuagint numbering; Brenton's translation.",
+      "text": "Lord, thou hast been our refuge in all generations.\nBefore the mountains existed, and before the earth and the world were formed, even from age to age, Thou art.\nTurn not man back to his low place, whereas thou saidst, Return, ye sons of men?\nFor a thousand years in thy sight are as the yesterday which is past, and as a watch in the night.\nYears shall be vanity to them: let the morning pass away as grass.\nIn the morning let it flower, and pass away: in the evening let it droop, let it be withered and dried up.\nFor we have perished in thine anger, and in thy wrath we have been troubled.\nThou hast set our transgressions before thee: our age is in the light of thy countenance.\nFor all our days are gone, and we have passed away in thy wrath: our years have spun out their tale as a spider.\nAs for the days of our years, in them are seventy years; and if men should be in strength, eighty years: and the greater part of them would be labour and trouble; for weakness overtakes us, and we shall be chastened.\nWho knows the power of thy wrath?\nand who knows how to number his days because of the fear of thy wrath? So manifest thy right hand, and those that are instructed in wisdom in the heart.\nReturn, O Lord, how long? and be intreated concerning thy servants.\nWe have been satisfied in the morning with thy mercy; and we did exult and rejoice:\nlet us rejoice in all our days, in return for the days wherein thou didst afflict us, the years wherein we saw evil.\nAnd look upon thy servants, and upon thy works; and guide their children.\nAnd let the brightness of the Lord our God be upon us: and do thou direct for us the works of our hands."
+    },
+    {
+      "id": "psalm-100",
+      "title": "Psalm 100",
+      "instruction": "Mercy and judgment will I sing unto Thee, O Lord. Septuagint numbering; Brenton's translation.",
+      "text": "A Psalm of David. I will sing to thee, O Lord, of mercy and judgment; I will sing a psalm,\nand I will be wise in a blameless way. When wilt thou come to me? I walked in the innocence of my heart, in the midst of my house.\nI have not set before mine eyes any unlawful ting; I have hated transgressors.\nA perverse heart has not cleaved to me; I have not known an evil man, forasmuch as he turns away from me.\nHim that privily speaks against his neighbour, him have I driven from me: he that is proud in look and insatiable in heart, -with him I have not eaten.\nMine eyes shall be upon the faithful of the land, that they may dwell with me: he that walked in a perfect way, the same ministered to me.\nThe proud doer dwelt not in the midst of my house; the unjust speaker prospered not in my sight.\nEarly did I slay all the sinners of the land, that I might destroy out of the city of the Lord all that work iniquity."
     },
     {
       "id": "troparion",

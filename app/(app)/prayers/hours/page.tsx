@@ -40,8 +40,9 @@ export default function HoursPage() {
         ))}
       </PrayerIndex>
       <PrayerNote>
-        Full Psalm and Troparion text is being typeset into each hour; the
-        structural shell is correct today. Help wanted: team@purify.app.
+        Each hour carries its three appointed Psalms in full, in Brenton&apos;s
+        public-domain Septuagint translation, with the fixed Troparion and
+        dismissal of the hour.
       </PrayerNote>
     </PrayerPage>
   );

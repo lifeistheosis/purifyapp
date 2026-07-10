@@ -1415,6 +1415,69 @@ export const SAINTS: Saint[] = [
  ],
  },
  {
+ slug: "john-the-baptist",
+ byname: "The Forerunner",
+ name: "Holy Prophet, Forerunner, and Baptist John",
+ epithet: "The Forerunner · Greatest born of women",
+ born: "1st century BC (hill country of Judea)",
+ reposed: "c. AD 29 (beheaded at Machaerus)",
+ feastDays: [
+ "January 7",
+ "February 24",
+ "May 25",
+ "June 24",
+ "August 29",
+ "September 23",
+ ],
+ shortBio:
+ "The son of the priest Zacharias and of Elisabeth, conceived by promise in their old age, who went into the deserts until the day of his showing unto Israel, preached the baptism of repentance at the Jordan, baptized the Lord and saw the Spirit descending as a dove, and was beheaded by Herod for the truth's sake. The Lord Himself said of him that among them that are born of women there hath not risen a greater.",
+ life: [
+ "John was born of the priest Zacharias and of Elisabeth, a kinswoman of the Virgin Mary, when both his parents were well stricken in years. The archangel Gabriel announced his conception to Zacharias as he served in the temple, and the child was filled with the Holy Spirit even from his mother's womb; at his circumcision his father's tongue was loosed, and Zacharias prophesied that the child would be called the prophet of the Highest, going before the face of the Lord to prepare His ways. The Church keeps the feast of his conception on the twenty-third of September and of his nativity on the twenty-fourth of June.",
+ "The Gospel says of his youth only this: the child grew, and waxed strong in spirit, and was in the deserts till the day of his showing unto Israel. He came in the spirit and power of Elias, having his raiment of camel's hair and a leathern girdle about his loins, and his meat was locusts and wild honey.",
+ "In the fifteenth year of Tiberius Caesar the word of God came unto him in the wilderness, and he came into all the country about Jordan preaching the baptism of repentance for the remission of sins, as it is written in Esaias: the voice of one crying in the wilderness, Prepare ye the way of the Lord. Jerusalem and all Judea went out to him and were baptized, confessing their sins, and he spared neither Pharisee nor soldier nor king in his preaching.",
+ "When the Lord Himself came from Galilee to the Jordan to be baptized of him, John forbad Him, saying, I have need to be baptized of Thee, and comest Thou to me? But at the Lord's word he suffered Him. And going up out of the water, the heavens were opened, and the Spirit of God descended like a dove and lighted upon Him, and a voice from heaven said, This is My beloved Son, in whom I am well pleased. This the Church keeps at Theophany, and honours the Baptist's part in it with his Synaxis on the seventh of January, the day after the feast.",
+ "When the Lord began to preach, John pointed his own disciples away from himself: Behold the Lamb of God, which taketh away the sin of the world. Asked whether he were the Christ, he confessed and denied not: I am not the Christ, but am sent before Him. He must increase, said the Forerunner, but I must decrease.",
+ "Because he reproved Herod the tetrarch for taking Herodias his brother Philip's wife, he was shut up in prison. At Herod's birthday feast the daughter of Herodias danced, and at her mother's bidding asked for the head of John the Baptist in a charger; and the king, though sorry, for his oath's sake commanded it to be given. He was beheaded in the prison, and his disciples took up the body and buried it, and went and told Jesus. The historian Josephus records that the place of his imprisonment and death was the fortress of Machaerus, beyond the Jordan. The Church keeps the Beheading on the twenty-ninth of August, a day of strict fasting.",
+ "Of no other man did the Lord say what He said of John: Among them that are born of women there hath not risen a greater than John the Baptist. The Church names him the Forerunner in her services more often than any saint but the Theotokos, sets him at the Lord's left hand in the Deisis as she sets the Theotokos at His right, and keeps besides the findings of his precious head on the twenty-fourth of February and the twenty-fifth of May.",
+ ],
+ quotes: [
+ {
+ text: "Repent ye: for the kingdom of heaven is at hand.",
+ source: "Matthew 3:2 (KJV)",
+ href: "/saints/john-the-baptist/selected-passages",
+ },
+ {
+ text: "Behold the Lamb of God, which taketh away the sin of the world.",
+ source: "John 1:29 (KJV)",
+ href: "/saints/john-the-baptist/selected-passages",
+ },
+ {
+ text: "He must increase, but I must decrease.",
+ source: "John 3:30 (KJV)",
+ href: "/saints/john-the-baptist/selected-passages",
+ },
+ ],
+ works: [
+ {
+ slug: "selected-passages",
+ title: "The Forerunner in the Gospels",
+ subtitle: "The scriptural witness, from his conception to his beheading",
+ year: "1st century",
+ blurb:
+ "The Gospel record of the Forerunner carried verbatim in the King James Version: the annunciation to Zacharias and the Benedictus, the preaching at the Jordan, the Baptism of the Lord, his witness that Christ is the Lamb of God, the Lord's own words concerning him, and the account of his beheading.",
+ topics: [
+ "Forerunner",
+ "Repentance",
+ "Theophany",
+ "Baptism",
+ "Prophecy",
+ "Martyrdom",
+ "Scripture",
+ ],
+ },
+ ],
+ },
+ {
  slug: "apostle-peter",
  byname: "Chief of the Apostles",
  iconUrl: "/saints/icons/apostle-peter.jpg",

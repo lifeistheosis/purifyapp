@@ -1,0 +1,52 @@
+{
+  "id": "protection",
+  "title": "Prayers of protection",
+  "subtitle": "Psalms and petitions the Church prays for God's shelter and defense.",
+  "intro": "When fear presses in, the Church does not improvise; she prays the Psalms. Psalm 90 is the Church's great psalm of protection, prayed at the Sixth Hour and at Compline; Psalm 26 answers fear with trust; the verses of Psalm 67 are prayed with the sign of the Cross. The petitions that close the rule ask the guard of the holy angels. Every text is carried verbatim from public-domain sources.",
+  "estimatedMinutes": 7,
+  "jurisdiction": "Pan-Orthodox",
+  "source": "Psalms from Brenton's public-domain Septuagint. Petitions from the common Orthodox prayer book (PD English; the Jordanville, St. Tikhon's, and Hapgood Service Book traditions carry these prayers in nearly identical form).",
+  "prayers": [
+    {
+      "id": "sign-of-cross",
+      "title": "The Sign of the Cross",
+      "instruction": "Bring the right hand to the forehead, then to the abdomen, then to the right shoulder, then to the left shoulder, saying:",
+      "text": "In the name of the Father, and of the Son, and of the Holy Spirit. Amen."
+    },
+    {
+      "id": "psalm-90",
+      "title": "Psalm 90",
+      "instruction": "He that dwelleth in the help of the Most High. The Church's psalm of shelter, prayed at the Sixth Hour and at Compline. Septuagint numbering; Brenton's translation.",
+      "text": "He that dwells in the help of the Highest, shall sojourn under the shelter of the God of heaven.\nHe shall say to the Lord, Thou art my helper and my refuge: my God; I will hope in him.\nFor he shall deliver thee from the snare of the hunters, from every troublesome matter.\nHe shall overshadow thee with his shoulders, and thou shalt trust under his wings: his truth shall cover thee with a shield.\nThou shalt not be afraid of terror by night; nor of the arrow flying by day;\nnor of the evil thing that walks in darkness; nor of calamity, and the evil spirit at noon-day.\nA thousand shall fall at thy side, and ten thousand at thy right hand; but it shall not come nigh thee.\nOnly with thine eyes shalt thou observe and see the reward of sinners.\nFor thou, O Lord, art my hope: thou, my soul, hast made the Most High thy refuge.\nNo evils shall come upon thee, and no scourge shall draw nigh to thy dwelling.\nFor he shall give his angels charge concerning thee, to keep thee in all thy ways.\nThey shall bear thee up on their hands, lest at any time thou dash thy foot against a stone.\nThou shalt tread on the asp and basilisk: and thou shalt trample on the lion and dragon.\nFor he has hoped in me, and I will deliver him: I will protect him, because he has known my name.\nHe shall call upon me, and I will hearken to him: I am with him in affliction; and I will deliver him, and glorify him.\nI will satisfy him with length of days, and shew him my salvation."
+    },
+    {
+      "id": "psalm-26",
+      "title": "Psalm 26",
+      "instruction": "The Lord is my light and my Saviour; whom shall I fear? Septuagint numbering; Brenton's translation.",
+      "text": "The Lord is my light and my Saviour; whom shall I fear? the Lord is the defender of my life; of whom shall I be afraid?\nWhen evil-doers drew nigh against me to eat up my flesh, my persecutors and mine enemies, they fainted and fell.\nThough an army should set itself in array against me, my heart shall not be afraid: though war should rise up against me, in this am I confident.\nOne thing have I asked of the Lord, this will I earnestly seek: that I should dwell in the house of the Lord, all the days of my life, that I should behold the fair beauty of the Lord, and survey his temple.\nFor in the day of mine afflictions he hid me in his tabernacle: he sheltered me in the secret of his tabernacle; he set me up on a rock.\nAnd now, behold, he has lifted up mine head over mine enemies: I went round and offered in his tabernacle the sacrifice of joy; I will sing even sing psalms to the Lord.\nHear, O Lord, my voice which I have uttered aloud: pity me, and hearken to me.\nMy heart said to thee, I have diligently sought thy face: thy face, O Lord, I will seek.\nTurn not thy face away from me, turn not thou away from thy servant in anger: be thou my helper, forsake me not; and, O God my Saviour, overlook me not.\nFor my father and my mother have forsaken me, but the Lord has taken me to himself.\nTeach me, O Lord, in thy way, and guide me in a right path, because of mine enemies.\nDeliver me not over to the desire of them that afflict me; for unjust witnesses have risen up against me, and injustice has lied within herself.\nI believe that I shall see the goodness of the Lord in the land of the living.\nWait on the Lord: be of good courage, and let thy heart be strengthened: yea wait on the Lord."
+    },
+    {
+      "id": "let-god-arise",
+      "title": "Let God arise",
+      "instruction": "The opening verses of Psalm 67, prayed with the sign of the Cross. Septuagint numbering; Brenton's translation.",
+      "text": "Let God arise, and let his enemies be scattered; and let them that hate him flee from before him.\nAs smoke vanishes, let them vanish: as wax melts before the fire, so let the sinners perish from before God.\nBut let the righteous rejoice; let them exult before God: let them be delighted with joy."
+    },
+    {
+      "id": "guardian-angel",
+      "title": "For the guard of the angel",
+      "instruction": "An evening petition asking the protection of the guardian angel; pray it at any hour, changing nothing.",
+      "text": "O Lord our God, if I have sinned this day in word, deed, or thought, forgive me, for Thou art good and lovest mankind. Grant me peaceful and untroubled sleep. Send Thy guardian angel to protect and preserve me from every evil. For Thou art the Guardian of our souls and bodies, and unto Thee we ascribe glory: to the Father, and to the Son, and to the Holy Spirit, now and ever, and unto ages of ages. Amen."
+    },
+    {
+      "id": "jesus-prayer-block",
+      "title": "The Jesus Prayer",
+      "instruction": "As you close your eyes:",
+      "text": "Lord Jesus Christ, Son of God, have mercy on me, a sinner. (3x)"
+    },
+    {
+      "id": "dismissal",
+      "title": "Dismissal",
+      "text": "Glory to the Father, and to the Son, and to the Holy Spirit, both now and ever, and unto ages of ages. Amen.\n\nLord, have mercy. (3x) Bless.\n\nThrough the prayers of our holy fathers, Lord Jesus Christ our God, have mercy on us. Amen."
+    }
+  ]
+}

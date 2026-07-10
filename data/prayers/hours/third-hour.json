@@ -5,7 +5,7 @@
   "subtitle": "Terce, prayed around 9 a.m., the hour of the descent of the Holy Spirit at Pentecost.",
   "intro": "The Third Hour commemorates the coming of the Holy Spirit upon the disciples on the day of Pentecost. Short, about five minutes.",
   "estimatedMinutes": 5,
-  "source": "Common Orthodox Horologion. The Psalm and Troparion text is shipped in shell form; the full text drops in the next content patch.",
+  "source": "Common Orthodox Horologion. Psalms from Brenton's public-domain Septuagint; troparia in the public-domain liturgical English of the older service books.",
   "prayers": [
     {
       "id": "opening",
@@ -13,10 +13,22 @@
       "text": "Through the prayers of our holy fathers, O Lord Jesus Christ our God, have mercy on us. Amen."
     },
     {
-      "id": "psalms",
-      "title": "The three Psalms of the Third Hour",
-      "instruction": "Psalms 16, 24, and 50. Read in full when time allows.",
-      "text": "Psalm 16 (Hear, O Lord, my righteousness) · Psalm 24 (Unto Thee, O Lord, have I lifted up my soul) · Psalm 50 (Have mercy on me, O God)."
+      "id": "psalm-16",
+      "title": "Psalm 16",
+      "instruction": "Hear, O Lord, my righteousness. Septuagint numbering; Brenton's translation.",
+      "text": "Hearken, O Lord of my righteousness, attend to my petition; give ear to my prayer not uttered with deceitful lips.\nLet my judgment come forth from thy presence; let mine eyes behold righteousness.\nThou has proved mine heart; thou hast visited me by night; thou hast tried me as with fire, and unrighteousness has not been found in me: I am purposed that my mouth shall not speak amiss.\nAs for the works of men, by the words of thy lips I have guarded myself from hard ways.\nDirect my steps in thy paths, that my steps slip not.\nI have cried, for thou heardest me, O God: incline thine ear to me, and hearken to my words.\nShew the marvels of thy mercies, thou that savest them that hope in thee.\nKeep me as the apple of the eye from those that resist thy right hand: thou shalt screen me by the covering of thy wings,\nfrom the face of the ungodly that have afflicted me: mine enemies have compassed about my soul.\nThey have enclosed themselves with their own fat: their mouth has spoken pride.\nThey have now cast me out and compassed me round about: they have set their eyes so as to bow them down to the ground.\nThey laid wait for me as a lion ready for prey, and like a lion's whelp dwelling in secret places.\nArise, O Lord, prevent them, and cast them down: deliver my soul from the ungodly: draw thy sword,\nbecause of the enemies of thine hand: O Lord, destroy them from the earth; scatter them in their life, though their belly has been filled with thy hidden treasures: they have been satisfied with uncleanness, and have left the remnant of their possessions to their babes.\nBut I shall appear in righteousness before thy face: I shall be satisfied when thy glory appears."
+    },
+    {
+      "id": "psalm-24",
+      "title": "Psalm 24",
+      "instruction": "Unto Thee, O Lord, have I lifted up my soul. Septuagint numbering; Brenton's translation.",
+      "text": "To thee, O Lord, have I lifted up my soul.\nO my God, I have trusted in thee: let me not be confounded, neither let mine enemies laugh me to scorn.\nFor none of them that wait on thee shall in any wise be ashamed: let them be ashamed that transgress without cause.\nShew me thy ways, O Lord; and teach me thy paths.\nLead me in thy truth, and teach me: for thou art God my Saviour: and I have waited on thee all the day.\nRemember thy compassions, O Lord, and thy mercies, for they are from everlasting.\nRemember not the sins of my youth, nor my sins of ignorance: remember me according to thy mercy, for thy goodness' sake, O Lord.\nGood and upright is the Lord: therefore will he instruct sinners in the way.\nThe meek will he guide in judgment: the meek will he teach his ways.\nAll the ways of the Lord are mercy and truth to them that seek his covenant and his testimonies.\nFor thy name's sake, O Lord, do thou also be merciful to my sin; for it is great.\nWho is the man that fears the Lord? he shall instruct him in the way which he has chosen.\nHis soul shall dwell in prosperity; and his seed shall inherit the earth.\nThe Lord is the strength of them that fear him; and his covenant is to manifest truth to them.\nMine eyes are continually to the Lord; for he shall draw my feet out of the snare.\nLook upon me, and have mercy upon me; for I am an only child and poor.\nThe afflictions of my heart have been multiplied; deliver me from my distresses.\nLook upon mine affliction and my trouble; and forgive all my sins.\nLook upon mine enemies; for they have been multiplied; and they have hated me with unjust hatred.\nKeep my soul, and deliver me: let me not be ashamed; for I have hoped in thee.\nThe harmless and upright joined themselves to me: for I waited for thee, O Lord.\nDeliver Israel, O God, out of all his afflictions."
+    },
+    {
+      "id": "psalm-50",
+      "title": "Psalm 50",
+      "instruction": "Have mercy on me, O God. Septuagint numbering; Brenton's translation.",
+      "text": "Have mercy upon me, O God, according to thy great mercy; and according to the multitude of thy compassions blot out my transgression.\nWash me thoroughly from mine iniquity, and cleanse me from my sin.\nFor I am conscious of mine iniquity; and my sin is continually before me.\nAgainst thee only have I sinned, and done evil before thee: that thou mightest be justified in thy sayings, and mightest overcome when thou art judged.\nFor, behold, I was conceived in iniquities, and in sins did my mother conceive me.\nFor, behold, thou lovest truth: thou hast manifested to me the secret and hidden things of thy wisdom.\nThou shalt sprinkle me with hyssop, and I shall be purified: thou shalt wash me, and I shall be made whiter than snow.\nThou shalt cause me to hear gladness and joy: the afflicted bones shall rejoice.\nTurn away thy face from my sins, and blot out all mine iniquities.\nCreate in me a clean heart, O God; and renew a right spirit in my inward parts.\nCast me not away from thy presence; and remove not thy holy Spirit from me.\nRestore to me the joy of thy salvation: establish me with thy directing Spirit.\nThen will I teach transgressors thy ways; and ungodly men shall turn to thee.\nDeliver me from blood-guiltiness, O God, the God of my salvation: and my tongue shall joyfully declare thy righteousness.\nO Lord, thou shalt open my lips; and my mouth shall declare thy praise.\nFor if thou desiredst sacrifice, I would have given it: thou wilt not take pleasure in whole-burnt-offerings.\nSacrifice to God is a broken spirit: a broken and humbled heart God will not despise.\nDo good, O Lord, to Sion in thy good pleasure; and let the walls of Jerusalem be built.\nThen shalt thou be pleased with a sacrifice of righteousness, offering, and whole-burnt-sacrifices: then shall they offer calves upon thine altar."
     },
     {
       "id": "troparion",

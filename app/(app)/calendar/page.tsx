@@ -24,6 +24,7 @@ import { OrnamentRule } from "@/components/calendar/OrnamentRule";
 import { Colophon } from "@/components/calendar/Colophon";
 import { SectionLabel } from "@/components/calendar/SectionLabel";
 import { LocalTodaySync } from "@/components/calendar/LocalTodaySync";
+import StyleToggleLink from "@/components/calendar/StyleToggleLink";
 import { getServerLocale } from "@/lib/i18n/server";
 
 export const metadata = {
@@ -279,11 +280,15 @@ export default async function CalendarPage({
  : `Until ${formatMonthDay(pascha.date)}, ${pascha.date.getUTCFullYear()}`
  : pascha.label;
 
- // Toggle hrefs (preserve month/day, flip style).
+ // Toggle hrefs (preserve month/day, flip style). Both hrefs carry an explicit
+ // style: without it, a persisted "old" cookie silently wins over the New
+ // toggle and the switch appears stuck (community report).
  const baseQS = new URLSearchParams();
  if (params.m) baseQS.set("m", params.m);
  if (params.d) baseQS.set("d", params.d);
- const newStyleHref = `/calendar?${baseQS.toString()}`;
+ const newQS = new URLSearchParams(baseQS);
+ newQS.set("style", "new");
+ const newStyleHref = `/calendar?${newQS.toString()}`;
  const oldQS = new URLSearchParams(baseQS);
  oldQS.set("style", "old");
  const oldStyleHref = `/calendar?${oldQS.toString()}`;
@@ -308,9 +313,10 @@ export default async function CalendarPage({
  </SectionLabel>
  {/* Typographic style toggle, no eyebrow label. */}
  <div className="inline-flex items-baseline gap-3">
- <Link
+ <StyleToggleLink
  href={newStyleHref}
- aria-current={style === "new" ? "true" : undefined}
+ style="new"
+ current={style === "new"}
  className={`font-sans text-caption tracking-[0.5px] transition-colors ${
  style === "new"
  ? "kalendrium-active"
@@ -318,11 +324,12 @@ export default async function CalendarPage({
  }`}
  >
  {isDe ? "Neu" : "New"}
- </Link>
+ </StyleToggleLink>
  <span aria-hidden className="text-gold/35 text-caption">·</span>
- <Link
+ <StyleToggleLink
  href={oldStyleHref}
- aria-current={style === "old" ? "true" : undefined}
+ style="old"
+ current={style === "old"}
  className={`font-sans text-caption tracking-[0.5px] transition-colors ${
  style === "old"
  ? "kalendrium-active"
@@ -330,7 +337,7 @@ export default async function CalendarPage({
  }`}
  >
  {isDe ? "Alt" : "Old"}
- </Link>
+ </StyleToggleLink>
  </div>
  </div>
 

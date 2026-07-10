@@ -5,7 +5,7 @@
   "subtitle": "Sext, prayed at midday, the hour of the Crucifixion.",
   "intro": "The Sixth Hour stands at the noon of the day and remembers the nailing of Christ to the Cross. About five minutes.",
   "estimatedMinutes": 5,
-  "source": "Common Orthodox Horologion. Shell shipping today; full Psalm and Troparion text drops in the next content patch.",
+  "source": "Common Orthodox Horologion. Psalms from Brenton's public-domain Septuagint; troparia in the public-domain liturgical English of the older service books.",
   "prayers": [
     {
       "id": "opening",
@@ -13,10 +13,22 @@
       "text": "Through the prayers of our holy fathers, O Lord Jesus Christ our God, have mercy on us. Amen."
     },
     {
-      "id": "psalms",
-      "title": "The three Psalms of the Sixth Hour",
-      "instruction": "Psalms 53, 54, and 90. Read in full when time allows.",
-      "text": "Psalm 53 (O God, in Thy name save me) · Psalm 54 (Give ear, O God, unto my prayer) · Psalm 90 (He that dwelleth in the help of the Most High)."
+      "id": "psalm-53",
+      "title": "Psalm 53",
+      "instruction": "O God, in Thy name save me. Septuagint numbering; Brenton's translation.",
+      "text": "Save me, O God, by thy name, and judge me by thy might.\nO God, hear my prayer; hearken to the words of my mouth.\nFor strangers have risen up against me, and mighty men have sought my life: they have not set God before them. Pause.\nFor lo! God assists me; and the Lord is the helper of my soul.\nHe shall return evil to mine enemies; utterly destroy them in thy truth.\nI will willingly sacrifice to thee: I will give thanks to thy name, O Lord; for it is good.\nFor thou hast delivered me out of all affliction, and mine eye has seen my desire upon mine enemies."
+    },
+    {
+      "id": "psalm-54",
+      "title": "Psalm 54",
+      "instruction": "Give ear, O God, unto my prayer. Septuagint numbering; Brenton's translation.",
+      "text": "Hearken, O God, to my prayer; and disregard not my supplication.\nAttend to me, and hearken to me: I was grieved in my meditation, and troubled;\nbecause of the voice of the enemy, and because of the oppression of the sinner: for they brought iniquity against me, and were wrathfully angry with me.\nMy heart was troubled within me; and the fear of death fell upon me.\nFear and trembling came upon me, and darkness covered me.\nAnd I said, O that I had wings as those of a dove! then would I flee away, and be at rest.\nLo! I have fled afar off, and lodged in the wilderness. Pause.\nI waited for him that should deliver me from distress of spirit and tempest.\nDestroy, O Lord, and divide their tongues: for I have seen iniquity and gain saying in the city.\nDay and night he shall go round about it upon its walls: iniquity and sorrow and unrighteousness are in the midst of it;\nand usury and craft have not failed from its streets.\nFor if an enemy had reproached me, I would have endured it; and if one who hated me had spoken vauntingly against me, I would have hid myself from him.\nBut thou, O man like minded, my guide, and my acquaintance,\nwho in companionship with me sweetened our food: we walked in the house of God in concord.\nLet death come upon them, and let them go down alive into Hades, for iniquity is in their dwellings, in the midst of them.\nI cried to God, and the Lord hearkened to me.\nEvening, and morning, and at noon I will declare and make known my wants: and he shall hear my voice.\nHe shall deliver my soul in peace from them that draw nigh to me: for they were with me in many cases.\nGod shall hear, and bring them low, even he that has existed from eternity. Pause. For they suffer no reverse, and therefore they have not feared God.\nHe has reached forth his hand for retribution; they have profaned his covenant.\nThey were scattered at the anger of his countenance, and his heart drew nigh them. His words were smoother than oil, yet are they darts.\nCast thy care upon the Lord, and he shall sustain thee; he shall never suffer the righteous to be moved.\nBut thou, O God, shalt bring them down to the pit of destruction; bloody and crafty men shall not live out half their days; but I will hope in thee, O Lord."
+    },
+    {
+      "id": "psalm-90",
+      "title": "Psalm 90",
+      "instruction": "He that dwelleth in the help of the Most High. Septuagint numbering; Brenton's translation.",
+      "text": "He that dwells in the help of the Highest, shall sojourn under the shelter of the God of heaven.\nHe shall say to the Lord, Thou art my helper and my refuge: my God; I will hope in him.\nFor he shall deliver thee from the snare of the hunters, from every troublesome matter.\nHe shall overshadow thee with his shoulders, and thou shalt trust under his wings: his truth shall cover thee with a shield.\nThou shalt not be afraid of terror by night; nor of the arrow flying by day;\nnor of the evil thing that walks in darkness; nor of calamity, and the evil spirit at noon-day.\nA thousand shall fall at thy side, and ten thousand at thy right hand; but it shall not come nigh thee.\nOnly with thine eyes shalt thou observe and see the reward of sinners.\nFor thou, O Lord, art my hope: thou, my soul, hast made the Most High thy refuge.\nNo evils shall come upon thee, and no scourge shall draw nigh to thy dwelling.\nFor he shall give his angels charge concerning thee, to keep thee in all thy ways.\nThey shall bear thee up on their hands, lest at any time thou dash thy foot against a stone.\nThou shalt tread on the asp and basilisk: and thou shalt trample on the lion and dragon.\nFor he has hoped in me, and I will deliver him: I will protect him, because he has known my name.\nHe shall call upon me, and I will hearken to him: I am with him in affliction; and I will deliver him, and glorify him.\nI will satisfy him with length of days, and shew him my salvation."
     },
     {
       "id": "troparion",

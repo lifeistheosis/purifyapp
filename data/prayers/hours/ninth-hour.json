@@ -5,7 +5,7 @@
   "subtitle": "None, prayed around 3 p.m., the hour of the death of Christ.",
   "intro": "The Ninth Hour remembers the hour at which the Lord gave up His spirit on the Cross. The day's prayers turn toward Vespers from here. About five minutes.",
   "estimatedMinutes": 5,
-  "source": "Common Orthodox Horologion. Shell shipping today; full Psalm and Troparion text drops in the next content patch.",
+  "source": "Common Orthodox Horologion. Psalms from Brenton's public-domain Septuagint; troparia in the public-domain liturgical English of the older service books.",
   "prayers": [
     {
       "id": "opening",
@@ -13,10 +13,22 @@
       "text": "Through the prayers of our holy fathers, O Lord Jesus Christ our God, have mercy on us. Amen."
     },
     {
-      "id": "psalms",
-      "title": "The three Psalms of the Ninth Hour",
-      "instruction": "Psalms 83, 84, and 85. Read in full when time allows.",
-      "text": "Psalm 83 (How beloved are Thy dwellings) · Psalm 84 (Thou hast been gracious, O Lord, unto Thy land) · Psalm 85 (Bow down Thine ear, O Lord)."
+      "id": "psalm-83",
+      "title": "Psalm 83",
+      "instruction": "How beloved are Thy dwellings. Septuagint numbering; Brenton's translation.",
+      "text": "How amiable are thy tabernacles, O Lord of hosts!\nMy soul longs, and faints for the courts of the Lord: my heart and my flesh have exulted in the living god.\nYea, the sparrow has found himself a home, and the turtle-dove a nest for herself, where she may lay her young, even thine altars, O Lord of hosts, my King, and my God.\nBlessed are they that dwell in thy house: they will praise thee evermore. Pause.\nBlessed is the man whose help is of thee, O Lord; in his heart he has purposed to go up\nthe valley of weeping, to the place which he has appointed, for there the law-giver will grant blessings.\nThey shall go from strength to strength: the God of gods shall be seen in Sion.\nO Lord God of hosts, hear my prayer: hearken, O God of Jacob. Pause.\nBehold, O God our defender, and look upon the face of thine anointed.\nFor one day in thy courts is better than thousands. I would rather be an abject in the house of God, than dwell in the tents of sinners.\nFor the Lord loves mercy and truth: God will give grace and glory: the Lord will not withhold good things from them that walk in innocence.\nO Lord of hosts, blessed is the man that trusts in thee."
+    },
+    {
+      "id": "psalm-84",
+      "title": "Psalm 84",
+      "instruction": "Thou hast been gracious, O Lord, unto Thy land. Septuagint numbering; Brenton's translation.",
+      "text": "O Lord, thou has taken pleasure in thy land: thou hast turned back the captivity of Jacob.\nThou hast forgiven thy people their transgressions; thou has covered all their sins. Pause.\nThou has caused all thy wrath to cease: thou hast turned from thy fierce anger.\nTurn us, O God of our salvation, and turn thy anger away from us.\nWouldest thou be angry with us for ever? or wilt thou continue thy wrath from generation to generation?\nO God, thou wilt turn and quicken us; and thy people shall rejoice in thee.\nShew us thy mercy, O Lord, and grant us thy salvation.\nI will hear what the Lord God will say concerning me: for he shall speak peace to his people, and to his saints, and to those that turn their heart toward him.\nMoreover his salvation is near them that fear him; that glory may dwell in our land.\nMercy and truth are met together: righteousness and peace have kissed each other.\nTruth has sprung out of the earth; and righteousness has looked down from heaven.\nFor the Lord will give goodness; and our land shall yield her fruit.\nRighteousness shall go before him; and shall set his steps in the way."
+    },
+    {
+      "id": "psalm-85",
+      "title": "Psalm 85",
+      "instruction": "Bow down Thine ear, O Lord. Septuagint numbering; Brenton's translation.",
+      "text": "O Lord, incline thine ear, and hearken to me; for I am poor and needy.\nPreserve my soul, for I am holy; save thy servant, O God, who hopes in thee.\nPity me, O Lord: for to thee will I cry all the day.\nRejoice the sold of thy servant: for to thee, O Lord, have I lifted up my soul.\nFor thou, O Lord, art kind, and gentle; and plenteous in mercy to all that call upon thee.\nGive ear to my prayer, o Lord; and attend to the voice of my supplication.\nIn the day of my trouble I cried to thee: for thou didst hear me.\nThere is none like to thee, O Lord, among the god; and there are no works like to thy works.\nAll nations whom thou hast made shall come, and shall worship before thee, O Lord; and shall glorify thy name.\nFor thou art great, and doest wonders: thou art the only and the great God.\nGuide me, O Lord, in thy way, and I will walk in thy truth: let my heart rejoice, that I may fear thy name.\nI will give thee thanks, O Lord my God, with all my heart; and I will glorify thy name for ever.\nFor thy mercy is great toward me; and thou hast delivered my soul from the lowest hell.\nO God, transgressors have risen up against me, and an assembly of violent men have sought my life; and have not set thee before them.\nBut thou, O Lord God, art compassionate and merciful, long-suffering, and abundant in mercy and true.\nLook thou upon me, and have mercy upon me: give thy strength to thy servant, and save the son of thine handmaid.\nEstablish with me a token for good; and let them that hate me see it and be ashamed; because thou, O Lord, hast helped me, and comforted me."
     },
     {
       "id": "troparion",
