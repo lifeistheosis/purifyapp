@@ -140,6 +140,17 @@ findings:
     safe_to_automate: n/a
     review: owner (photos on batch arrival)
 
+  - id: F-13
+    title: supabase-js auth lock (navigator.locks) can hang client loads that await getUser()
+    area: reliability/web
+    severity: P1
+    confidence: high
+    status: partially-corrected   # 2026-07-11 product-page path guarded (hasActivePlusClient 2.5s fail-open race); other getUser()-gated client loads (orders, messages, requests, account gates) still hang-prone
+    evidence: live walk 2026-07-11 signed-in browser: /shop/icons/* catalog+config APIs returned 200 (extension network log) while the page never left its skeleton; sole unsettled Promise.all member was hasActivePlusClient -> supabase.auth.getUser(); no console errors (silent lock wait). Matches the earlier '/account never loads' owner report signature.
+    action: guarded the display-only Plus check (done); design per-surface handling for auth-required pages (a timeout there must NOT fake signed-out; show a retry state instead) — do not blanket-apply
+    safe_to_automate: partially
+    review: none
+
 corrections:
   - id: C-01
     fixes: F-02

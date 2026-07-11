@@ -58,9 +58,16 @@ export async function canSync(): Promise<boolean> {
  * the free-shipping line in the shop. Unlike getClientEntitlements this is NOT
  * gated on the enforcement flags: free EIKON shipping is a perk of actually
  * holding Plus, so it reads the entitlements row directly (RLS self-select).
+ *
+ * HARD TIME LIMIT, fail open to `false`: supabase-js's getUser() waits on a
+ * cross-tab navigator.locks auth lock, and a held lock in another tab can
+ * block it indefinitely. This check is display-only (the server recomputes
+ * shipping at checkout), and it sits in the product page's critical path —
+ * observed live 2026-07-11: catalog APIs returned 200 while the page hung on
+ * this call forever. A public page must never wait on an entitlement nicety.
  */
 export async function hasActivePlusClient(): Promise<boolean> {
-  try {
+  const check = (async () => {
     const supabase = createClient();
     const {
       data: { user },
@@ -72,7 +79,9 @@ export async function hasActivePlusClient(): Promise<boolean> {
       .eq("user_id", user.id)
       .maybeSingle();
     return !!data?.plus_until && new Date(data.plus_until) > new Date();
-  } catch {
-    return false;
-  }
+  })();
+  const timeout = new Promise<boolean>((resolve) =>
+    setTimeout(() => resolve(false), 2500),
+  );
+  return Promise.race([check, timeout]).catch(() => false);
 }
