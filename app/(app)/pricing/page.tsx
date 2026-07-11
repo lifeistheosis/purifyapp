@@ -3,7 +3,11 @@ import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { PlusPaywall } from "@/components/billing/PlusPaywall";
 import { WebOnly, NativeOnly } from "@/components/platform/PlatformGate";
-import { PLAY_STORE_URL, PLAY_MANAGE_SUBSCRIPTION_URL } from "@/lib/site";
+import { PLAY_STORE_URL } from "@/lib/site";
+import {
+  WebPlusCheckout,
+  type WebCheckoutCopy,
+} from "@/components/billing/WebPlusCheckout";
 
 export const metadata = {
   title: "Pricing & Purify Plus",
@@ -23,11 +27,8 @@ type PricingCopy = {
   plusItems: { title: string; sub: string }[];
   plusPriceMonthly: string;
   plusPriceYearly: string;
-  plusPriceNote: string;
-  plusCta: string;
-  plusCtaNote: string;
-  plusManage: string;
   plusPromise: string;
+  web: WebCheckoutCopy;
   supportKicker: string;
   supportLine: string;
   supportCta: string;
@@ -55,13 +56,27 @@ const EN: Omit<PricingCopy, "eyebrow" | "h1"> = {
   ],
   plusPriceMonthly: "$9.99 / month",
   plusPriceYearly: "$99 / year",
-  plusPriceNote: "Billed through Google Play. Cancel anytime.",
-  plusCta: "Get Purify Plus in the app",
-  plusCtaNote:
-    "Purify Plus is billed through Google Play, so it is purchased inside the Android app.",
-  plusManage: "Already subscribed? Manage it in Google Play",
   plusPromise:
     "A promise already made stays made: pre-launch supporters keep lifetime cross-device sync, no subscription required. That promise covers sync itself; the wider Plus tools belong to the subscription.",
+  web: {
+    monthlyLabel: "$9.99 / month",
+    yearlyLabel: "$99 / year",
+    signedOut:
+      "Purify Plus is tied to your account, so it follows you across every device. Sign in to subscribe.",
+    signIn: "Sign in to subscribe",
+    subscribeMonthly: "Subscribe monthly",
+    subscribeYearly: "Subscribe yearly",
+    processing: "Opening checkout…",
+    billedNote:
+      "Billed securely on the web, and it unlocks Plus in the Android app too. Cancel anytime.",
+    errorNote: "That didn’t go through. Nothing was charged.",
+    subscribedTitle: "You have Purify Plus.",
+    subscribedSub:
+      "Thank you for keeping the lamps lit. It is active on every device you sign in on.",
+    manage: "Manage subscription",
+    orGetInApp: "Prefer the app? Get Purify Plus on Google Play",
+    getInApp: "Get Purify Plus in the app",
+  },
   supportKicker: "Purify is kept by those it helps.",
   supportLine:
     "If the app has carried you, you can carry it a little in return. Beyond Plus, a freewill gift is always welcome and never required.",
@@ -93,13 +108,27 @@ const DE: PricingCopy = {
   ],
   plusPriceMonthly: "9,99 $ / Monat",
   plusPriceYearly: "99 $ / Jahr",
-  plusPriceNote: "Abrechnung über Google Play. Jederzeit kündbar.",
-  plusCta: "Purify Plus in der App holen",
-  plusCtaNote:
-    "Purify Plus wird über Google Play abgerechnet und daher in der Android-App gekauft.",
-  plusManage: "Bereits Abonnent? In Google Play verwalten",
   plusPromise:
     "Ein gegebenes Versprechen bleibt bestehen: Unterstützer aus der Zeit vor dem Start behalten die geräteübergreifende Synchronisierung auf Lebenszeit, ohne Abonnement. Dieses Versprechen gilt der Synchronisierung selbst; die weiteren Plus-Werkzeuge gehören zum Abonnement.",
+  web: {
+    monthlyLabel: "9,99 $ / Monat",
+    yearlyLabel: "99 $ / Jahr",
+    signedOut:
+      "Purify Plus ist an dein Konto gebunden und folgt dir auf jedes Gerät. Melde dich an, um zu abonnieren.",
+    signIn: "Zum Abonnieren anmelden",
+    subscribeMonthly: "Monatlich abonnieren",
+    subscribeYearly: "Jährlich abonnieren",
+    processing: "Kasse wird geöffnet…",
+    billedNote:
+      "Sicher im Web abgerechnet, schaltet Plus auch in der Android-App frei. Jederzeit kündbar.",
+    errorNote: "Das hat nicht geklappt. Es wurde nichts berechnet.",
+    subscribedTitle: "Du hast Purify Plus.",
+    subscribedSub:
+      "Danke, dass du die Lampen am Brennen hältst. Es ist auf jedem Gerät aktiv, auf dem du dich anmeldest.",
+    manage: "Abonnement verwalten",
+    orGetInApp: "Lieber die App? Purify Plus bei Google Play holen",
+    getInApp: "Purify Plus in der App holen",
+  },
   supportKicker: "Purify wird von denen getragen, denen es hilft.",
   supportLine:
     "Wenn die App dich getragen hat, kannst du sie ein wenig zurücktragen. Über Plus hinaus ist eine freiwillige Gabe stets willkommen und nie erforderlich.",
@@ -213,31 +242,13 @@ function PricingView({ copy }: { copy: PricingCopy }) {
             <span className="font-display-serif text-title text-paper">
               {copy.plusPriceYearly}
             </span>
-            <span className="w-full font-sans text-caption text-paper/50 sm:w-auto">
-              {copy.plusPriceNote}
-            </span>
           </div>
 
-          <a
-            href={PLAY_STORE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-6 inline-flex items-center gap-2 rounded-pill bg-paper px-6 py-3.5 font-sans text-ui font-semibold text-night transition-colors hover:bg-paper/90"
-          >
-            {copy.plusCta}
-            <ArrowRight />
-          </a>
-          <p className="mt-3 max-w-[520px] font-sans text-caption leading-[1.5] text-paper/50">
-            {copy.plusCtaNote}
-          </p>
-          <a
-            href={PLAY_MANAGE_SUBSCRIPTION_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 inline-block font-sans text-caption text-gold/80 underline underline-offset-2 hover:text-gold"
-          >
-            {copy.plusManage}
-          </a>
+          {/* The web purchase surface. Subscribes through RevenueCat Web
+              Billing bound to the signed-in account, so it unlocks Plus on
+              the phone too. Degrades to a Play Store link when web billing
+              is not configured. */}
+          <WebPlusCheckout copy={copy.web} playStoreUrl={PLAY_STORE_URL} />
 
           <p className="mt-6 border-t border-paper/8 pt-5 font-sans text-caption leading-[1.6] text-paper/45">
             {copy.plusPromise}

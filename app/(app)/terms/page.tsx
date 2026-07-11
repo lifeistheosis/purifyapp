@@ -187,13 +187,19 @@ export default function TermsPage() {
         </p>
         <h3 className={H3}>Billing, cancellation, and refunds</h3>
         <p className={P}>
-          On Android, Purify Plus is billed by Google Play. You can cancel
-          at any time in the Play Store under Subscriptions; cancellation
-          takes effect at the end of the current billing period, and you
-          keep Plus until then. Renewals, cancellations, and refunds for
-          purchases made through Apple or Google are governed by that
-          platform&rsquo;s billing terms and follow the platform&rsquo;s
-          rules. Deleting the app does not cancel a subscription.
+          Purify Plus can be purchased on Android through Google Play, or on
+          the web. On Android, Google Play is the biller: cancel at any time
+          in the Play Store under Subscriptions. On the web, the subscription
+          is billed through our web billing provider and processed by Stripe;
+          you can cancel from the manage-subscription link on the pricing
+          page. Either way, cancellation takes effect at the end of the
+          current billing period and you keep Plus until then. Renewals,
+          cancellations, and refunds for purchases made through Apple or
+          Google are governed by that platform&rsquo;s billing terms; web
+          purchases are governed by these terms and the provider&rsquo;s
+          rules. A single account holds one Plus entitlement across every
+          device, however it was purchased. Deleting the app does not cancel
+          a subscription.
         </p>
 
         <h2 className={H2}>8. Content, copyright, and your submissions</h2>

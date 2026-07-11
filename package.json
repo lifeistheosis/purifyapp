@@ -39,6 +39,7 @@
     "@capgo/capacitor-social-login": "^8.3.29",
     "@revenuecat/purchases-capacitor": "^11.3.2",
     "@revenuecat/purchases-capacitor-ui": "^13.2.0",
+    "@revenuecat/purchases-js": "^1.47.2",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.105.4",
     "apns2": "^12.2.0",
