@@ -1,5 +1,25 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { expectNoA11yViolations } from "./_axe";
+
+/**
+ * Expand an event card and PROVE it stayed expanded. A click that lands
+ * before React hydrates is swallowed (or rolled back to the server-rendered
+ * collapsed state), after which the link click spends the whole test timeout
+ * under a collapsed card's toggle — the exact 60s flake on CI #318 and in
+ * local runs. Re-clicking until aria-expanded sticks makes the intent
+ * ("expanded") the assertion instead of the single click.
+ */
+async function expandCard(page: Page, cardId: string) {
+  const toggle = page.locator(`#${cardId} button[aria-expanded]`);
+  await expect(async () => {
+    if ((await toggle.getAttribute("aria-expanded")) !== "true") {
+      await toggle.click();
+    }
+    await expect(toggle).toHaveAttribute("aria-expanded", "true", {
+      timeout: 1_000,
+    });
+  }).toPass({ timeout: 20_000 });
+}
 
 test("history timeline renders eras, events, and controls", async ({ page }) => {
  await page.goto("/history");
@@ -15,7 +35,7 @@ test("history timeline renders eras, events, and controls", async ({ page }) => 
 test("event card expands and links to the event page", async ({ page }) => {
  await page.goto("/history");
  const card = page.locator("#event-first-council-of-nicaea");
- await card.locator("button[aria-expanded]").click();
+ await expandCard(page, "event-first-council-of-nicaea");
  await expect(card.locator("a[href='/history/first-council-of-nicaea']")).toBeVisible();
  await card.locator("a[href='/history/first-council-of-nicaea']").click();
  await expect(page).toHaveURL(/\/history\/first-council-of-nicaea/);
@@ -41,10 +61,12 @@ test("filters narrow the timeline and are URL-backed", async ({ page }) => {
 
 test("browser back returns to the timeline", async ({ page }) => {
  await page.goto("/history");
- await page.locator("#event-fall-of-constantinople button[aria-expanded]").click();
+ await expandCard(page, "event-fall-of-constantinople");
  await page.locator("#event-fall-of-constantinople a[href='/history/fall-of-constantinople']").click();
  await expect(page).toHaveURL(/fall-of-constantinople/);
  await page.goBack();
- await expect(page).toHaveURL(/\/history$/);
+ // Expanding a card writes ?e=<event> into the URL (URL-backed card state),
+ // so back lands on the timeline WITH that param — the card comes back open.
+ await expect(page).toHaveURL(/\/history(\?|$)/);
  await expect(page.locator("#event-fall-of-constantinople")).toBeVisible();
 });

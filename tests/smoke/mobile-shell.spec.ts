@@ -22,7 +22,11 @@ import { NATIVE_UA_TOKEN } from "@/lib/platform/token";
  * a11y; this one is layout-focused and would only add noise.
  */
 
-test.use({ ...devices["iPhone 14 Pro"] });
+// Device emulation comes from the mobile-shell project in
+// playwright.config.ts (iPhone 14 Pro viewport, pinned to chromium). Do NOT
+// re-add a file-level `test.use({ ...devices[...] })`: the device descriptor
+// carries defaultBrowserType webkit, which made every test in this file fail
+// at browser launch on CI (only chromium is installed there) — runs #314–#318.
 
 // These are layout/navigation tests, not onboarding tests. Run them as an
 // established user so the first-run welcome overlay (FirstRunGate, shown on
@@ -120,10 +124,17 @@ test("Bible chapter shows MobileTopBar with back + reader actions", async ({
 
 test("chapter pill opens the book/chapter picker sheet", async ({ page }) => {
   await page.goto("/bible/john/1");
-  // The pill's center label includes the book name + current chapter.
-  await page.getByLabel(/Pick a chapter/).click();
-  // Sheet renders as a dialog with the book name as its title.
-  await expect(page.getByRole("dialog", { name: /John/ })).toBeVisible();
+  // The pill's center label includes the book name + current chapter. A tap
+  // that lands before hydration is swallowed, so assert the OUTCOME (the
+  // sheet is open) and re-tap until it holds — same flake class as the
+  // history expand cards.
+  await expect(async () => {
+    await page.getByLabel(/Pick a chapter/).click();
+    // Sheet renders as a dialog with the book name as its title.
+    await expect(page.getByRole("dialog", { name: /John/ })).toBeVisible({
+      timeout: 1_500,
+    });
+  }).toPass({ timeout: 20_000 });
 });
 
 test("saint-work reader renders MobileTopBar + section pill", async ({

@@ -25,15 +25,23 @@ export default defineConfig({
  screenshot: "only-on-failure",
  },
  projects: [
- { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+ {
+ name: "chromium",
+ use: { ...devices["Desktop Chrome"] },
+ // The mobile suite runs only in its own project below; without this
+ // ignore it ran twice (CI #318 showed both [chromium] and
+ // [mobile-shell] rows for every mobile-shell test).
+ testIgnore: /mobile-shell\.spec\.ts/,
+ },
  // Mobile shell project: the iPhone 14 Pro viewport is wide enough to
  // exercise the < md breakpoint where the tab bar takes over from the
- // desktop AppNav. Specs are filtered to the mobile-shell suite so we
- // don't double-run the desktop smoke on a phone viewport.
+ // desktop AppNav. browserName pins it to chromium: the device descriptor
+ // defaults to webkit, and CI installs only chromium — every mobile-shell
+ // test failed at browser launch on CI #314–#318.
  {
  name: "mobile-shell",
  testMatch: /mobile-shell\.spec\.ts/,
- use: { ...devices["iPhone 14 Pro"] },
+ use: { ...devices["iPhone 14 Pro"], browserName: "chromium" },
  },
  ],
  webServer: {

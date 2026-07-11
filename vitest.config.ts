@@ -14,6 +14,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "."),
+      // Next.js supplies the `server-only` marker module at build time; it
+      // isn't installed as a package, so modules that import it (e.g.
+      // lib/shop/catalog.ts) need this empty stand-in under Vitest.
+      "server-only": path.resolve(__dirname, "tests/stubs/server-only.ts"),
     },
   },
 });

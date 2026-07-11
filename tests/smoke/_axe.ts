@@ -20,6 +20,19 @@ export async function expectNoA11yViolations(
  for (const sel of opts.exclude ?? []) {
  builder = builder.exclude(sel);
  }
+ // Let running CSS animations/transitions finish before scanning: axe reads
+ // computed colors, and a scan mid fade-in blends foreground into backdrop.
+ // CI #318 flagged the welcome overlay's Begin button at 1.81 contrast for
+ // exactly this reason (settled state: text-night on bg-paper, well past AA).
+ // The 3s cap keeps infinite animations (spinners) from stalling the scan.
+ await page.evaluate(() =>
+ Promise.race([
+ Promise.all(
+ document.getAnimations().map((a) => a.finished.catch(() => {})),
+ ),
+ new Promise((resolve) => setTimeout(resolve, 3000)),
+ ]),
+ );
  const results = await builder.analyze();
  if (results.violations.length > 0) {
  // Surface a readable diff in the test output.

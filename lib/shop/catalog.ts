@@ -62,18 +62,29 @@ function hasSupplierImage(p: ShopProductFull): boolean {
   );
 }
 
+// The runtime reads below fail soft the same way the build-time enumerators
+// do: supabase-js THROWS on network failure (TypeError: fetch failed) instead
+// of returning an error object, and an uncaught throw here 500s the server
+// shell (generateMetadata) of an otherwise client-rendered page. Observed on
+// CI run #318: /shop/eikon rendered the production error page because the
+// placeholder Supabase host is unreachable.
 export async function getStore(slug: string): Promise<ShopStore | null> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("shop_stores")
-    .select("*")
-    .eq("slug", slug)
-    .maybeSingle();
-  if (error) {
-    console.warn("[shop] getStore failed", error.message);
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("shop_stores")
+      .select("*")
+      .eq("slug", slug)
+      .maybeSingle();
+    if (error) {
+      console.warn("[shop] getStore failed", error.message);
+      return null;
+    }
+    return data as ShopStore | null;
+  } catch (e) {
+    console.warn("[shop] getStore threw", e instanceof Error ? e.message : e);
     return null;
   }
-  return data as ShopStore | null;
 }
 
 export type ListProductsOptions = {
@@ -88,6 +99,20 @@ export type ListProductsOptions = {
 
 export async function listProducts(
   opts: ListProductsOptions = {},
+): Promise<ShopProductFull[]> {
+  try {
+    return await listProductsInner(opts);
+  } catch (e) {
+    console.warn(
+      "[shop] listProducts threw",
+      e instanceof Error ? e.message : e,
+    );
+    return [];
+  }
+}
+
+async function listProductsInner(
+  opts: ListProductsOptions,
 ): Promise<ShopProductFull[]> {
   const supabase = await createClient();
   const limit = Math.min(opts.limit ?? 24, 60);
@@ -135,21 +160,26 @@ export async function listProducts(
 }
 
 export async function getProduct(slug: string): Promise<ShopProductFull | null> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("shop_products")
-    .select(PRODUCT_SELECT)
-    .eq("slug", slug)
-    .maybeSingle();
-  if (error) {
-    console.warn("[shop] getProduct failed", error.message);
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("shop_products")
+      .select(PRODUCT_SELECT)
+      .eq("slug", slug)
+      .maybeSingle();
+    if (error) {
+      console.warn("[shop] getProduct failed", error.message);
+      return null;
+    }
+    if (!data) return null;
+    const product = orderMedia(data as unknown as ShopProductFull);
+    // Don't serve a product page for a listing still on a supplier's image.
+    if (hasSupplierImage(product)) return null;
+    return product;
+  } catch (e) {
+    console.warn("[shop] getProduct threw", e instanceof Error ? e.message : e);
     return null;
   }
-  if (!data) return null;
-  const product = orderMedia(data as unknown as ShopProductFull);
-  // Don't serve a product page for a listing still on a supplier's image.
-  if (hasSupplierImage(product)) return null;
-  return product;
 }
 
 /**
