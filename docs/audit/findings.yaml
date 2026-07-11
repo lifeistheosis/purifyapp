@@ -13,9 +13,9 @@ findings:
     area: commerce
     severity: P1
     confidence: high
-    status: confirmed
-    evidence: app/api/shop/checkout/cancel/route.ts (fall-through after Stripe expire failure); app/api/shop/stripe-webhook/route.ts (pending-only update)
-    action: webhook flips cancelled->paid on completed session matching 0 pending rows; add mocked-Stripe regression test
+    status: corrected-verified   # 2026-07-11: lib/shop/webhookSettlement.ts recovery path (payment wins over cancellation); 11 unit tests incl. cancelled+completed->paid
+    evidence: lib/shop/webhookSettlement.ts + lib/shop/__tests__/webhookSettlement.test.ts (11 passing)
+    action: done; residual = live Stripe delivery unexercised (unit-level verification only)
     safe_to_automate: true
     review: none
 
@@ -35,9 +35,9 @@ findings:
     area: commerce
     severity: P2
     confidence: confirmed
-    status: confirmed
-    evidence: no amount_total reference in app/api/shop/stripe-webhook/route.ts (grep)
-    action: compare session.amount_total + currency to order before marking paid; log mismatch
+    status: corrected-verified   # 2026-07-11: amountsMatch guard, fail-closed; mismatch never marks paid; tested
+    evidence: lib/shop/webhookSettlement.ts amountsMatch + tests (case-insensitive currency, null fails closed)
+    action: done
     safe_to_automate: true
     review: none
 
