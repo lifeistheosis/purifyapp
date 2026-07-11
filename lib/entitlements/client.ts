@@ -51,3 +51,28 @@ export async function getClientEntitlements(): Promise<Entitlements> {
 export async function canSync(): Promise<boolean> {
   return (await getClientEntitlements()).sync;
 }
+
+/**
+ * Does the signed-in user hold an active Purify Plus subscription right now?
+ * The browser counterpart to lib/shop/checkout → hasActivePlus, used to show
+ * the free-shipping line in the shop. Unlike getClientEntitlements this is NOT
+ * gated on the enforcement flags: free EIKON shipping is a perk of actually
+ * holding Plus, so it reads the entitlements row directly (RLS self-select).
+ */
+export async function hasActivePlusClient(): Promise<boolean> {
+  try {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return false;
+    const { data } = await supabase
+      .from("entitlements")
+      .select("plus_until")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    return !!data?.plus_until && new Date(data.plus_until) > new Date();
+  } catch {
+    return false;
+  }
+}

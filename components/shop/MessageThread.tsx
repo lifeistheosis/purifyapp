@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/cn";
 import type { ShopMessage } from "@/lib/shop/types";
 
@@ -21,12 +22,16 @@ export function MessageThread({
   viewer,
   closed,
   counterpartyName,
+  onSent,
 }: {
   conversationId: string;
   messages: ShopMessage[];
   viewer: "buyer" | "seller";
   closed: boolean;
   counterpartyName: string;
+  /** Client pages pass a reload; without it we fall back to router.refresh()
+   *  for the server-rendered seller context. */
+  onSent?: () => void;
 }) {
   const router = useRouter();
   const [body, setBody] = useState("");
@@ -36,7 +41,7 @@ export function MessageThread({
 
   useEffect(() => {
     // Mark read once on open; the server no-ops harmlessly on repeats.
-    void fetch("/api/shop/messages", {
+    void apiFetch("/api/shop/messages", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ conversationId }),
@@ -54,7 +59,7 @@ export function MessageThread({
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch("/api/shop/messages", {
+      const res = await apiFetch("/api/shop/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ conversationId, body: text }),
@@ -62,7 +67,8 @@ export function MessageThread({
       const data = (await res.json()) as { ok?: boolean; error?: string };
       if (res.ok && data.ok) {
         setBody("");
-        router.refresh();
+        if (onSent) onSent();
+        else router.refresh();
         return;
       }
       setError(data.error ?? "Couldn't send the message.");

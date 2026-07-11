@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { shopRefundRequestSchema } from "@/lib/security/schemas";
 import { shopEnabled } from "@/lib/shop/flags";
 import { canRequestRefund, refundIsActive } from "@/lib/shop/refunds";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createClientFromRequest } from "@/lib/supabase/server";
 
 import type { ShopRefundStatus } from "@/lib/shop/types";
 
@@ -17,12 +18,12 @@ import type { ShopRefundStatus } from "@/lib/shop/types";
  * (RLS), then the insert runs with the service role so status can
  * never be forged.
  */
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   if (!shopEnabled()) {
     return NextResponse.json({ error: "Shop is not available." }, { status: 404 });
   }
 
-  const supabase = await createClient();
+  const supabase = await createClientFromRequest(req);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -104,12 +105,12 @@ export async function POST(req: Request) {
 const withdrawSchema = z.object({ refundId: z.string().uuid() });
 
 /** Buyer withdraws a still-pending request. */
-export async function PATCH(req: Request) {
+async function handlePATCH(req: Request) {
   if (!shopEnabled()) {
     return NextResponse.json({ error: "Shop is not available." }, { status: 404 });
   }
 
-  const supabase = await createClient();
+  const supabase = await createClientFromRequest(req);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -162,3 +163,7 @@ export async function PATCH(req: Request) {
   }
   return NextResponse.json({ ok: true });
 }
+
+export const POST = corsRoute(handlePOST);
+export const PATCH = corsRoute(handlePATCH);
+export const OPTIONS = corsPreflight;

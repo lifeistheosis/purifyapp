@@ -1,18 +1,24 @@
 import { NextResponse } from "next/server";
 
+import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { shopCheckoutSchema } from "@/lib/security/schemas";
 import { createCheckout } from "@/lib/shop/checkout";
 import { shopEnabled } from "@/lib/shop/flags";
-import { createClient } from "@/lib/supabase/server";
+import { createClientFromRequest } from "@/lib/supabase/server";
 
 /**
  * Start a checkout. The body carries a product slug and quantity only;
  * price, availability, and totals are decided server-side in
  * lib/shop/checkout. Disabled state returns 503 with a calm message —
  * the buy bar renders it inline.
+ *
+ * Reachable from the native shell (cross-origin + Bearer): the order is
+ * created against the token's user and the Stripe success/cancel URLs point
+ * back at purifyapp.net, where the in-app browser closes and hands off to the
+ * app's local success screen.
  */
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   if (!shopEnabled()) {
     return NextResponse.json({ error: "Shop is not available." }, { status: 404 });
   }
@@ -34,7 +40,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  const supabase = await createClient();
+  const supabase = await createClientFromRequest(req);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -58,3 +64,6 @@ export async function POST(req: Request) {
   }
   return NextResponse.json({ error: result.reason }, { status: 409 });
 }
+
+export const POST = corsRoute(handlePOST);
+export const OPTIONS = corsPreflight;

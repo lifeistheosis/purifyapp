@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { apiFetch } from "@/lib/api/client";
+
 const field =
   "w-full rounded-md border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
 
@@ -34,7 +36,7 @@ export function BuyerMessageButton({
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch("/api/shop/conversations", {
+      const res = await apiFetch("/api/shop/conversations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId, subject, body: text }),
@@ -45,7 +47,7 @@ export function BuyerMessageButton({
         error?: string;
       };
       if (res.ok && data.ok && data.conversationId) {
-        router.push(`/shop/messages/${data.conversationId}`);
+        router.push(`/shop/messages/detail?id=${data.conversationId}`);
         return;
       }
       setError(data.error ?? "Couldn't send the message.");

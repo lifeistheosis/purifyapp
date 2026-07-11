@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/cn";
+import { isNativeClient } from "@/lib/platform/native";
 
 /**
  * Sticky mobile purchase bar (static sidebar block on md+). Three
@@ -34,11 +37,29 @@ export function BuyBar({
   checkoutOn: boolean;
   subjectForRequest: string;
 }) {
+  const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Clickwrap: the checkout API refuses the order unless this was ticked,
   // and the acceptance is recorded server-side against the order.
   const [agreed, setAgreed] = useState(false);
+
+  // Full in-app checkout on native: the order is already created (against the
+  // bearer user) and Stripe's hosted page opens in the in-app browser. When the
+  // buyer closes it we return to their orders, where the order appears and
+  // flips to paid once the webhook settles. On the web we just redirect.
+  async function openStripe(url: string) {
+    if (!isNativeClient()) {
+      window.location.href = url;
+      return;
+    }
+    const { Browser } = await import("@capacitor/browser");
+    const sub = await Browser.addListener("browserFinished", () => {
+      void sub.remove();
+      router.push("/shop/orders");
+    });
+    await Browser.open({ url });
+  }
 
   async function startCheckout() {
     if (!agreed) {
@@ -48,14 +69,14 @@ export function BuyBar({
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch("/api/shop/checkout", {
+      const res = await apiFetch("/api/shop/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productSlug, quantity: 1, termsAccepted: true }),
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (res.ok && data.url) {
-        window.location.href = data.url;
+        await openStripe(data.url);
         return;
       }
       setError(data.error ?? "Checkout isn't available right now.");

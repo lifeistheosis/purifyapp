@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { shopMessageSchema } from "@/lib/security/schemas";
 import { shopEnabled } from "@/lib/shop/flags";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createClientFromRequest } from "@/lib/supabase/server";
 
 /**
  * Replies into an existing thread, from either side. Participation is
@@ -15,8 +16,8 @@ import { createClient } from "@/lib/supabase/server";
  * the seller row speaks as the store.
  */
 
-async function loadParticipant(conversationId: string) {
-  const supabase = await createClient();
+async function loadParticipant(req: Request, conversationId: string) {
+  const supabase = await createClientFromRequest(req);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -40,7 +41,7 @@ async function loadParticipant(conversationId: string) {
   return { user, conversation, side } as const;
 }
 
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   if (!shopEnabled()) {
     return NextResponse.json({ error: "Shop is not available." }, { status: 404 });
   }
@@ -60,6 +61,7 @@ export async function POST(req: Request) {
   }
 
   const { user, conversation, side } = await loadParticipant(
+    req,
     parsed.data.conversationId,
   );
   if (!user) {
@@ -112,7 +114,7 @@ export async function POST(req: Request) {
 const readSchema = z.object({ conversationId: z.string().uuid() });
 
 /** Mark the caller's side of a thread as read (thread page on open). */
-export async function PATCH(req: Request) {
+async function handlePATCH(req: Request) {
   if (!shopEnabled()) {
     return NextResponse.json({ error: "Shop is not available." }, { status: 404 });
   }
@@ -129,6 +131,7 @@ export async function PATCH(req: Request) {
   }
 
   const { user, conversation, side } = await loadParticipant(
+    req,
     parsed.data.conversationId,
   );
   if (!user) {
@@ -149,3 +152,7 @@ export async function PATCH(req: Request) {
     .eq("id", conversation.id);
   return NextResponse.json({ ok: true });
 }
+
+export const POST = corsRoute(handlePOST);
+export const PATCH = corsRoute(handlePATCH);
+export const OPTIONS = corsPreflight;

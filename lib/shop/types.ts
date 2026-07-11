@@ -109,6 +109,70 @@ export type ShopProductFull = ShopProduct & {
   media: ShopProductMedia[];
   subjects: ShopProductSubject[];
   store: Pick<ShopStore, "slug" | "public_name" | "ownership_disclosure">;
+  // Denormalized rating + sales counters (Phase C), carried by the catalog
+  // `select *`. rating_total is the sum of stars; the average is
+  // rating_total / review_count (computed in the UI, exact for store rollups).
+  units_sold?: number;
+  review_count?: number;
+  rating_total?: number;
+};
+
+// Response shapes for the public catalog read APIs (app/api/shop/catalog/*).
+// The native shell fetches these live from purifyapp.net; keeping the shapes
+// here lets the client components type the JSON without re-declaring it.
+export type ShopHomeData = {
+  featured: ShopProductFull[];
+  readyToShip: ShopProductFull[];
+  recent: ShopProductFull[];
+  eikon: ShopStore | null;
+};
+
+/** A subject chip, resolved server-side so the saints/history registries stay
+ *  out of the shop client bundle. `href` links into Purify's own content. */
+export type ShopSubjectChip = { label: string; href: string | null };
+
+/** "From the Purify library" saint card, resolved server-side. */
+export type ShopSaintCard = {
+  name: string;
+  slug: string;
+  shortBio: string;
+} | null;
+
+export type ShopProductDetail = {
+  product: ShopProductFull;
+  related: ShopProductFull[];
+  chips: ShopSubjectChip[];
+  saint: ShopSaintCard;
+  // The selling store's policies, for the product page's shipping/returns block.
+  storeShippingMd: string | null;
+  storeReturnMd: string | null;
+};
+
+export type ShopStoreData = {
+  store: ShopStore;
+  products: ShopProductFull[];
+};
+
+/** Public shop configuration the client can't derive from server-only env:
+ *  whether checkout is live and the flat shipping rate for non-Plus buyers. */
+export type ShopConfig = {
+  checkoutEnabled: boolean;
+  flatShippingCents: number;
+};
+
+/** A public review row (reviewer identity is not exposed; every review is a
+ *  verified purchase, shown as such). */
+export type ShopReview = {
+  id: string;
+  stars: number;
+  body: string | null;
+  created_at: string;
+};
+
+export type ShopReviewsData = {
+  reviews: ShopReview[];
+  reviewCount: number;
+  avgStars: number | null;
 };
 
 export type ShopIconRequestStatus =

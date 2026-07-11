@@ -140,6 +140,41 @@ export async function getProduct(slug: string): Promise<ShopProductFull | null> 
 }
 
 /**
+ * Build-time slug enumeration for the static export's generateStaticParams.
+ * Returns every published product slug (respectively every live store slug) so
+ * output:export can emit a shell per catalog page; the shells fetch live at
+ * runtime. Fails soft to [] when the build runner has placeholder keys, so a
+ * secret-less CI build still succeeds (those routes just aren't pre-rendered).
+ */
+export async function listPublishedProductSlugs(): Promise<string[]> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("shop_products")
+      .select("slug")
+      .eq("status", "published");
+    if (error) return [];
+    return (data ?? []).map((r) => r.slug as string);
+  } catch {
+    return [];
+  }
+}
+
+export async function listLiveStoreSlugs(): Promise<string[]> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("shop_stores")
+      .select("slug")
+      .eq("status", "live");
+    if (error) return [];
+    return (data ?? []).map((r) => r.slug as string);
+  } catch {
+    return [];
+  }
+}
+
+/**
  * Related icons: same primary subject first, then same category, never
  * the product itself. Small and deterministic; no recommendation
  * theatre.

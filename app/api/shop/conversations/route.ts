@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 
+import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { shopConversationStartSchema } from "@/lib/security/schemas";
 import { shopEnabled } from "@/lib/shop/flags";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createClientFromRequest } from "@/lib/supabase/server";
 
 /**
  * A buyer opens a conversation with a store. Signed-in only: threads
@@ -14,12 +15,12 @@ import { createClient } from "@/lib/supabase/server";
  * anchor doesn't belong to. Inserts run with the service role (writes
  * never happen under RLS), after this route has proven ownership.
  */
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   if (!shopEnabled()) {
     return NextResponse.json({ error: "Shop is not available." }, { status: 404 });
   }
 
-  const supabase = await createClient();
+  const supabase = await createClientFromRequest(req);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -164,3 +165,6 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ ok: true, conversationId });
 }
+
+export const POST = corsRoute(handlePOST);
+export const OPTIONS = corsPreflight;

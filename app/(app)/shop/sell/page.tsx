@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
-import { MerchantApplyForm } from "@/components/shop/MerchantApplyForm";
-import { createClient } from "@/lib/supabase/server";
-
-export const dynamic = "force-dynamic";
+import { MerchantApplyGate } from "@/components/shop/MerchantApplyGate";
 
 export const metadata: Metadata = {
   title: "Sell on Purify",
@@ -31,12 +27,7 @@ const WHO = [
   },
 ];
 
-export default async function SellPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+export default function SellPage() {
   return (
     <div className="mx-auto w-full max-w-[760px] px-5 pb-8 md:px-8">
       <header className="pt-10 md:pt-14">
@@ -82,24 +73,7 @@ export default async function SellPage() {
 
       <div className="mt-10">
         <h2 className="font-display-serif text-title text-paper">Apply</h2>
-        {user ? (
-          <div className="mt-5">
-            <MerchantApplyForm />
-          </div>
-        ) : (
-          <div className="mt-5 rounded-lg border border-paper/10 bg-night-soft/60 p-6">
-            <p className="font-serif text-body text-paper/70 leading-[1.65]">
-              Applications are tied to a Purify account so you can follow your
-              review status. Sign in or create a free account to apply.
-            </p>
-            <Link
-              href="/signin?next=/shop/sell"
-              className="tap-press mt-4 inline-flex min-h-[48px] items-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90"
-            >
-              Sign in to apply
-            </Link>
-          </div>
-        )}
+        <MerchantApplyGate />
       </div>
     </div>
   );

@@ -82,3 +82,20 @@ export const BUDGET_BAND_LABELS: Record<ShopBudgetBand, string> = {
 export function purchasable(inventory: ShopInventoryStatus): boolean {
   return inventory === "ready_to_ship" || inventory === "special_order";
 }
+
+/** Average rating + count from the denormalized counters (rating_total is the
+ *  sum of stars). Returns avg = null when there are no reviews. */
+export function productRating(p: {
+  rating_total?: number;
+  review_count?: number;
+}): { avg: number | null; count: number } {
+  const count = p.review_count ?? 0;
+  const total = p.rating_total ?? 0;
+  return { count, avg: count > 0 ? total / count : null };
+}
+
+/** "1 sold" / "24 sold" — omit entirely at zero (no theatre). */
+export function unitsSoldLabel(units: number | undefined): string | null {
+  if (!units || units < 1) return null;
+  return `${units} sold`;
+}

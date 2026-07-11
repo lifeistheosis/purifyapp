@@ -23,6 +23,21 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 1.9",
+ kind: "The shop comes inside",
+ date: "July 11, 2026",
+ blurb:
+  "The EIKON shop now lives inside the app: a Shop tab on the bottom bar, browsing and checkout without leaving Purify or signing in again, and reviews left only by people who actually bought the item.",
+ items: [
+  "A new Shop tab on the bottom bar opens the EIKON marketplace inside the app, beside Today, the Bible, Discover, and Prayers; no more handing you off to the browser.",
+  "Browse every icon, open a listing, and buy without leaving the app or signing in a second time; your orders and your messages to the seller are waiting when you return.",
+  "Checkout happens in the app: the secure Stripe page opens over Purify, and closing it drops you back on your orders. Purify Plus members still ship free on every order.",
+  "Verified-buyer reviews arrive: a star rating can be left only by someone who bought the item. Each listing shows its average stars, its review count, and how many have sold; where there is nothing yet, nothing is shown.",
+  "Messaging the seller and tracking an Icon Request now work from your pocket the same as on the web.",
+  "Cache version steps to purify-beta-1.9.0.",
+ ],
+ },
+ {
  version: "Beta 1.8.2",
  kind: "The account pages, mended",
  date: "July 11, 2026",

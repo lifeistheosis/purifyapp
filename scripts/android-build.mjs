@@ -33,10 +33,13 @@ const STASH_PATHS = [
   ["app", "(app)", "bible", "multi"],
   ["app", "(app)", "language-editor"],
   ["app", "admin"],
-  // The shop (EIKON marketplace) is web/PWA-only in Phase 1: force-dynamic
-  // Supabase reads on every page and a checkout that needs the network, so
-  // there is no useful offline form to bundle.
-  ["app", "(app)", "shop"],
+  // The shop (EIKON marketplace) now ships in the app: its pages are client
+  // components that fetch live from the /api/shop/catalog routes and read the
+  // buyer's own orders/messages via the Supabase client (Shop v2, Beta 1.9).
+  // Only the SELLER CONSOLE stays web-only — it's a merchant surface, still
+  // force-dynamic with server reads, and merchants manage listings from a
+  // browser, so there is no useful offline form to bundle.
+  ["app", "(app)", "shop", "seller"],
   // Support ticket form: force-dynamic (signed-in prefill + ticket writes),
   // network-only like the shop it shipped with. The static /support page
   // stays in the bundle; only the contact form is web-only.

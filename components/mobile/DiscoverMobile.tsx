@@ -28,8 +28,6 @@ import { Cross } from "@/components/ui/icons/Cross";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
-import { shopEnabled } from "@/lib/shop/flags";
-import { ShopTile } from "@/components/shop/ShopTile";
 
 function dayOfYearUtc(d: Date): number {
   const start = Date.UTC(d.getUTCFullYear(), 0, 0);
@@ -213,12 +211,8 @@ export async function DiscoverMobile() {
               tone={LIBRARY_TONES[i % LIBRARY_TONES.length]}
             />
           ))}
-          {/* Marketplace entry, present only while the shop flag is on.
-              Kept last: commerce never outranks the study library. On the
-              native shell it opens the website in the system browser. */}
-          {shopEnabled() ? (
-            <ShopTile tone={LIBRARY_TONES[entries.length % LIBRARY_TONES.length]} />
-          ) : null}
+          {/* The marketplace now has its own bottom-bar tab (Beta 1.9), so the
+              Discover tile was retired. */}
         </SoftTileGrid>
       </div>
 

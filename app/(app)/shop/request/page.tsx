@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
-import { RequestIconForm } from "@/components/shop/RequestIconForm";
-import { createClient } from "@/lib/supabase/server";
-
-export const dynamic = "force-dynamic";
+import { RequestFormIsland } from "@/components/shop/RequestFormIsland";
 
 export const metadata: Metadata = {
   title: "Request an Icon",
@@ -11,17 +9,9 @@ export const metadata: Metadata = {
     "Tell us the saint or subject you're looking for and the Purify Shop team will look for the icon and write back.",
 };
 
-export default async function RequestIconPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ subject?: string; notify?: string }>;
-}) {
-  const { subject, notify } = await searchParams;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+// Static shell; the form island resolves auth + query prefill client-side so
+// it works in the native local-first export.
+export default function RequestIconPage() {
   return (
     <div className="mx-auto w-full max-w-[680px] px-5 md:px-8">
       <header className="pt-10 md:pt-14">
@@ -39,11 +29,9 @@ export default async function RequestIconPage({
         </p>
       </header>
       <div className="mt-8 pb-8">
-        <RequestIconForm
-          signedIn={Boolean(user)}
-          defaultSubject={subject ?? ""}
-          defaultNotify={notify === "1"}
-        />
+        <Suspense fallback={null}>
+          <RequestFormIsland />
+        </Suspense>
       </div>
     </div>
   );

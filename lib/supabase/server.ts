@@ -48,3 +48,30 @@ export async function createClient() {
     },
   );
 }
+
+/**
+ * Auth client for API routes that must work for BOTH the web (cookie session)
+ * and the native shell (cross-origin, no cookies). The local-first app on
+ * https://localhost can't send purifyapp.net cookies, so it carries the user's
+ * Supabase access token in an `Authorization: Bearer` header (see
+ * lib/api/client.ts → apiFetch). When that header is present we build a
+ * cookie-less client authenticated by it: `auth.getUser()` validates the token
+ * and every RLS-scoped `.from()` query runs as that user (supabase-js sets
+ * hasCustomAuthorizationHeader from the global header). Otherwise we fall back
+ * to the ordinary cookie-based client, so web callers are unchanged.
+ */
+export async function createClientFromRequest(req: Request) {
+  const authHeader =
+    req.headers.get("authorization") ?? req.headers.get("Authorization");
+  if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
+    return createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: { getAll: () => [], setAll: () => {} },
+        global: { headers: { Authorization: authHeader } },
+      },
+    );
+  }
+  return createClient();
+}

@@ -65,9 +65,17 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Update failed." }, { status: 500 });
       }
       // `updated` is null on a webhook retry (the row was already paid), so the
-      // confirmation email fires exactly once. Email failure must never fail
-      // the webhook — Stripe would retry a delivered order.
+      // confirmation email + units-sold bump fire exactly once. Neither must
+      // fail the webhook — Stripe would retry a delivered order.
       if (updated) {
+        // Units sold: incremented once, here, on pending -> paid.
+        await admin
+          .rpc("shop_increment_units_sold", { p_order_id: updated.id })
+          .then(({ error: incErr }) => {
+            if (incErr)
+              console.warn("[shop] units_sold increment failed", incErr.message);
+          });
+
         const { data: items } = await admin
           .from("shop_order_items")
           .select("title, quantity, unit_price_cents")

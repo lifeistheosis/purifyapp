@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { apiFetch } from "@/lib/api/client";
 import {
   REFUND_REASON_LABELS,
   REFUND_STATUS_LABELS,
@@ -22,6 +23,7 @@ export function BuyerRefundSection({
   orderId,
   eligible,
   latest,
+  onChanged,
 }: {
   orderId: string;
   eligible: boolean;
@@ -29,11 +31,16 @@ export function BuyerRefundSection({
     ShopRefundRequest,
     "id" | "status" | "reason" | "resolution_note" | "created_at"
   > | null;
+  /** Client pages pass a reload; without it we fall back to router.refresh()
+   *  for the server-rendered seller context. */
+  onChanged?: () => void;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const refresh = () => (onChanged ? onChanged() : router.refresh());
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -41,7 +48,7 @@ export function BuyerRefundSection({
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch("/api/shop/orders/refund-request", {
+      const res = await apiFetch("/api/shop/orders/refund-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -53,7 +60,7 @@ export function BuyerRefundSection({
       const data = (await res.json()) as { ok?: boolean; error?: string };
       if (res.ok && data.ok) {
         setOpen(false);
-        router.refresh();
+        refresh();
         return;
       }
       setError(data.error ?? "Couldn't file the request.");
@@ -69,14 +76,14 @@ export function BuyerRefundSection({
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch("/api/shop/orders/refund-request", {
+      const res = await apiFetch("/api/shop/orders/refund-request", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refundId: latest.id }),
       });
       const data = (await res.json()) as { ok?: boolean; error?: string };
       if (res.ok && data.ok) {
-        router.refresh();
+        refresh();
         return;
       }
       setError(data.error ?? "Couldn't withdraw the request.");

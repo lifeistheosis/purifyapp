@@ -9,14 +9,18 @@ import { Codex } from "@/components/ui/icons/Codex";
 import { Octogram } from "@/components/ui/icons/Octogram";
 import { PrayerRope } from "@/components/ui/icons/PrayerRope";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
+import { Lampada } from "@/components/ui/icons/Lampada";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { shopEnabled } from "@/lib/shop/flags";
 
 /**
  * Persistent bottom tab bar on `< md` viewports. Hidden on desktop, which
  * keeps the existing AppNav.
  *
- * Five tabs, in the order chosen by the user:
- *   Today  ·  Bible  ·  Discover  ·  Prayers  ·  You
+ * Tabs, in the order chosen by the user:
+ *   Today  ·  Bible  ·  Discover  ·  Prayers  ·  Shop  ·  You
+ * Shop appears only while the marketplace flag is on (it is inside the app now,
+ * Beta 1.9); commerce sits after the study surfaces, before the account.
  *
  * Active state is derived from `usePathname()`, with a small precedence
  * table so adjacent routes (e.g. /saints under Discover, /account under
@@ -97,6 +101,17 @@ export function MobileTabBar() {
       matches: (p) =>
         (p === "/prayers" || p.startsWith("/prayers/")) && p !== "/prayers/today",
     },
+    ...(shopEnabled()
+      ? [
+          {
+            key: "shop",
+            label: "Shop",
+            href: "/shop",
+            Icon: Lampada,
+            matches: (p: string) => p === "/shop" || p.startsWith("/shop/"),
+          } as Tab,
+        ]
+      : []),
     {
       key: "you",
       label: t("nav.you"),

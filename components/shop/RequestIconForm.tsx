@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { apiFetch } from "@/lib/api/client";
 import { SAINTS } from "@/lib/saints/saints";
 import { BUDGET_BAND_LABELS } from "@/lib/shop/format";
 
@@ -52,7 +53,7 @@ export function RequestIconForm({
     };
     setState("busy");
     try {
-      const res = await fetch("/api/shop/requests", {
+      const res = await apiFetch("/api/shop/requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

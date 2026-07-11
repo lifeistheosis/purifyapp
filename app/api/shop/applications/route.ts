@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 
+import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { shopMerchantApplicationSchema } from "@/lib/security/schemas";
 import { shopEnabled } from "@/lib/shop/flags";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createClientFromRequest } from "@/lib/supabase/server";
 
 /**
  * Sell on Purify: merchant application intake. Signed-in users only —
@@ -12,7 +13,7 @@ import { createClient } from "@/lib/supabase/server";
  * anonymous form. Status is always 'submitted' on creation and only
  * admins ever change it; approval never auto-creates a store.
  */
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   if (!shopEnabled()) {
     return NextResponse.json({ error: "Shop is not available." }, { status: 404 });
   }
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const supabase = await createClient();
+  const supabase = await createClientFromRequest(req);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -95,3 +96,6 @@ export async function POST(req: Request) {
   }
   return NextResponse.json({ ok: true });
 }
+
+export const POST = corsRoute(handlePOST);
+export const OPTIONS = corsPreflight;

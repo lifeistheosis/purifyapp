@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 
+import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { shopIconRequestSchema } from "@/lib/security/schemas";
 import { getSaint } from "@/lib/saints/saints";
 import { shopEnabled } from "@/lib/shop/flags";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createClientFromRequest } from "@/lib/supabase/server";
 
 /**
  * Request an Icon intake. Anonymous submissions are welcome (demand
@@ -14,7 +15,7 @@ import { createClient } from "@/lib/supabase/server";
  * client-side RLS insert. Status is always 'new' — a client can never
  * set workflow columns.
  */
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   if (!shopEnabled()) {
     return NextResponse.json({ error: "Shop is not available." }, { status: 404 });
   }
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
   }
   const data = parsed.data;
 
-  const supabase = await createClient();
+  const supabase = await createClientFromRequest(req);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -80,3 +81,6 @@ export async function POST(req: Request) {
   }
   return NextResponse.json({ ok: true });
 }
+
+export const POST = corsRoute(handlePOST);
+export const OPTIONS = corsPreflight;

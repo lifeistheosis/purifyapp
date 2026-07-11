@@ -3,11 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
+import { RatingStars } from "@/components/shop/RatingStars";
 import {
   CLASSIFICATION_LABELS,
   dispatchWindowLabel,
   formatPrice,
   INVENTORY_LABELS,
+  productRating,
+  unitsSoldLabel,
 } from "@/lib/shop/format";
 import type { ShopProductFull } from "@/lib/shop/types";
 import { cn } from "@/lib/cn";
@@ -34,6 +37,8 @@ export function ProductCard({
   style?: CSSProperties;
 }) {
   const image = product.media[0];
+  const rating = productRating(product);
+  const sold = unitsSoldLabel(product.units_sold);
   const ready = product.inventory_status === "ready_to_ship";
   const dotColor = ready
     ? "bg-emerald-400"
@@ -104,6 +109,18 @@ export function ProductCard({
           <p className="font-sans text-lede font-semibold text-paper">
             {priceLabel}
           </p>
+          {rating.count > 0 || sold ? (
+            <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+              {rating.count > 0 ? (
+                <RatingStars avg={rating.avg} count={rating.count} />
+              ) : null}
+              {sold ? (
+                <span className="font-sans text-caption text-paper/55">
+                  {rating.count > 0 ? `· ${sold}` : sold}
+                </span>
+              ) : null}
+            </p>
+          ) : null}
           <p className="mt-1.5 font-sans text-caption text-paper/55">
             {dispatchWindowLabel(product.dispatch_min_days, product.dispatch_max_days)}
             {" · "}

@@ -1,5 +1,33 @@
 [
   {
+    "id": "beta-1-9",
+    "version": "Beta 1.9",
+    "date": "2026-07-11",
+    "title": "The shop comes inside",
+    "intro": "Welcome, and glory to Jesus Christ. Until now the EIKON shop opened in your phone's browser, a door that led out of the app. This patch brings the whole shop inside: a Shop tab on the bottom bar, every icon browsable and buyable without leaving Purify or signing in again, checkout completed in the app, and your orders and your messages to the seller waiting when you return. And a first for EIKON: reviews you can trust, left only by people who actually bought the item, with a plain count of how many have sold. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "The shop, inside the app",
+        "body": "The marketplace now lives in Purify itself, not a browser window. A new Shop tab sits on the bottom bar beside Today, the Bible, Discover, and Prayers. Browse the icons, open a listing, read the details, and buy, all without leaving the app and without signing in a second time. Your orders and your conversations with the seller are there when you come back."
+      },
+      {
+        "heading": "Checkout, without leaving",
+        "body": "Buying an icon now happens in the app. You tap Buy, the secure Stripe page opens over the app to take the card, and when it closes you land back on your orders, where the new order appears and moves from confirmed to shipped. Purify Plus members still ship free on every order."
+      },
+      {
+        "heading": "Reviews you can trust",
+        "body": "Every icon and every store can now carry a star rating, and a review can be left only by someone who actually bought the item, so no rating is idle talk. Each listing shows its average stars, how many reviews it has, and a plain count of how many have sold. Where nothing has sold or been reviewed yet, nothing is shown; we would rather say little than pad it out."
+      },
+      {
+        "heading": "Message the seller, reach your requests",
+        "body": "Now that the shop is inside the app, messaging the seller and tracking an Icon Request work from your pocket the same as on the web. Ask about an order, request a saint the catalog does not hold yet, and read the replies, all in one place."
+      }
+    ],
+    "future": [],
+    "closing": "The shop was the last room of Purify that still opened outward; now every room is under one roof. If anything is loose, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
     "id": "beta-1-8-2",
     "version": "Beta 1.8.2",
     "date": "2026-07-11",

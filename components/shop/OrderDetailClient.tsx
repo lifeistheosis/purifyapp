@@ -1,9 +1,16 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import { BuyerMessageButton } from "@/components/shop/BuyerMessageButton";
 import { BuyerRefundSection } from "@/components/shop/BuyerRefundSection";
+import {
+  ShopError,
+  ShopLoading,
+  ShopSignInPrompt,
+} from "@/components/shop/ShopStates";
+import { cn } from "@/lib/cn";
 import { formatPrice } from "@/lib/shop/format";
 import { canRequestRefund } from "@/lib/shop/refunds";
 import {
@@ -16,49 +23,29 @@ import type {
   ShopRefundRequest,
   ShopRefundStatus,
 } from "@/lib/shop/types";
-import { createClient } from "@/lib/supabase/server";
-import { cn } from "@/lib/cn";
-
-export const dynamic = "force-dynamic";
-
-export const metadata: Metadata = { title: "Order" };
+import { useAsyncData } from "@/lib/shop/useAsyncData";
+import { createClient } from "@/lib/supabase/client";
 
 type OrderRow = ShopOrder & {
   user_id: string | null;
   store: { public_name: string } | null;
 };
 
-/**
- * One order from the buyer's side: the calm timeline, the items, and
- * the two doors every marketplace owes its buyers — talk to the seller,
- * and ask for the money back when something went wrong.
- */
-export default async function BuyerOrderPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const supabase = await createClient();
+type LatestRefund = Pick<
+  ShopRefundRequest,
+  "id" | "status" | "reason" | "resolution_note" | "created_at"
+> | null;
+
+type Result =
+  | { signedIn: false }
+  | { signedIn: true; order: OrderRow | null; latestRefund: LatestRefund };
+
+async function load(id: string): Promise<Result> {
+  const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) {
-    return (
-      <div className="mx-auto w-full max-w-[680px] px-5 pt-10 md:px-8 md:pt-14">
-        <h1 className="font-display-serif text-heading text-paper">Your order</h1>
-        <p className="mt-4 font-serif text-body text-paper/70 leading-[1.65]">
-          Sign in to see this order.
-        </p>
-        <Link
-          href={`/signin?next=/shop/orders/${id}`}
-          className="tap-press mt-6 inline-flex min-h-[44px] items-center rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night"
-        >
-          Sign in
-        </Link>
-      </div>
-    );
-  }
+  if (!user) return { signedIn: false };
 
   const { data } = await supabase
     .from("shop_orders")
@@ -67,8 +54,8 @@ export default async function BuyerOrderPage({
     )
     .eq("id", id)
     .maybeSingle();
-  const order = data as unknown as OrderRow | null;
-  if (!order) notFound();
+  const order = (data as unknown as OrderRow | null) ?? null;
+  if (!order) return { signedIn: true, order: null, latestRefund: null };
 
   const { data: refundRows } = await supabase
     .from("shop_refund_requests")
@@ -76,12 +63,43 @@ export default async function BuyerOrderPage({
     .eq("order_id", order.id)
     .order("created_at", { ascending: false })
     .limit(1);
-  const latestRefund =
-    (refundRows?.[0] as Pick<
-      ShopRefundRequest,
-      "id" | "status" | "reason" | "resolution_note" | "created_at"
-    > | null) ?? null;
+  const latestRefund = (refundRows?.[0] as LatestRefund) ?? null;
 
+  return { signedIn: true, order, latestRefund };
+}
+
+export function OrderDetailClient() {
+  const id = useSearchParams().get("id") ?? "";
+  const { data, error, loading, reload } = useAsyncData(() => load(id), [id]);
+
+  if (loading) return <ShopLoading label="Loading your order…" />;
+  if (error) return <ShopError message={error} onRetry={reload} />;
+  if (data && !data.signedIn) {
+    return (
+      <ShopSignInPrompt
+        title="Your order"
+        body="Sign in to see this order."
+        next={`/shop/orders/detail?id=${id}`}
+      />
+    );
+  }
+  if (!data || !data.order) {
+    return (
+      <div className="mx-auto max-w-[520px] px-5 py-20 text-center">
+        <h1 className="font-display-serif text-heading text-paper">
+          Order not found
+        </h1>
+        <Link
+          href="/shop/orders"
+          className="tap-press mt-6 inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45"
+        >
+          Your orders
+        </Link>
+      </div>
+    );
+  }
+
+  const { order, latestRefund } = data;
   const status = buyerOrderStatus(order);
   const step = buyerStepIndex(status);
   const storeName = order.store?.public_name ?? "the seller";
@@ -188,11 +206,14 @@ export default async function BuyerOrderPage({
           orderId={order.id}
           eligible={canRequestRefund(
             order.payment_status,
-            latestRefund && (latestRefund.status === "requested" || latestRefund.status === "approved")
+            latestRefund &&
+              (latestRefund.status === "requested" ||
+                latestRefund.status === "approved")
               ? (latestRefund.status as ShopRefundStatus)
               : null,
           )}
           latest={latestRefund}
+          onChanged={reload}
         />
       </section>
     </div>
