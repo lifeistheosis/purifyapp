@@ -151,6 +151,17 @@ findings:
     safe_to_automate: partially
     review: none
 
+  - id: F-14
+    title: Stripe return URLs derived from request origin resolve to localhost:10000 on prod
+    area: commerce
+    severity: P1
+    confidence: confirmed-live
+    status: corrected-verified-pending-deploy   # fix pushed; live re-walk pending Render deploy
+    evidence: live cancel-path walk 2026-07-11 landed on https://localhost:10000/shop/checkout/cancelled?order=7085ab92... after Stripe's back link; Render proxy presents req.url as localhost:10000 (same hop documented in app/api/auth/signout). Affects SUCCESS path after real payments too (buyer strands on dead page; webhook still settles server-side).
+    action: checkoutReturnOrigin() in lib/site.ts (SITE_URL except genuine local dev) + 4 unit tests; stranded walk order 7085ab92 cancelled via API and row verified cancelled/cancelled
+    safe_to_automate: true
+    review: none
+
 corrections:
   - id: C-01
     fixes: F-02

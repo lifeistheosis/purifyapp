@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
+import { checkoutReturnOrigin } from "@/lib/site";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { shopCheckoutSchema } from "@/lib/security/schemas";
 import { createCheckout } from "@/lib/shop/checkout";
@@ -51,7 +52,9 @@ async function handlePOST(req: Request) {
       ? parsed.data.items
       : [{ productSlug: parsed.data.productSlug, quantity: parsed.data.quantity }];
 
-  const origin = new URL(req.url).origin;
+  // NOT the raw request origin: behind Render's proxy that is
+  // http://localhost:10000, which strands buyers after Stripe returns.
+  const origin = checkoutReturnOrigin(new URL(req.url).origin);
   const result = await createCheckout(
     items,
     { id: user?.id ?? null, email: user?.email ?? null },

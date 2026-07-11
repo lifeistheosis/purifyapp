@@ -49,6 +49,23 @@ export const PLAY_MANAGE_SUBSCRIPTION_URL =
   "https://play.google.com/store/account/subscriptions?package=net.purifyapp.purify";
 
 /**
+ * Origin for checkout return URLs (Stripe success_url / cancel_url).
+ * Behind Render's proxy the request presents itself as
+ * `http://localhost:10000` (same hop documented in the signout route), so
+ * deriving these URLs from the request origin strands buyers on a dead
+ * localhost page after paying or cancelling — observed live 2026-07-11.
+ * Use the canonical SITE_URL everywhere except genuine local development,
+ * where the request origin keeps the dev loop self-contained.
+ */
+export function checkoutReturnOrigin(requestOrigin: string): string {
+  const isLocal = /^https?:\/\/(localhost|127\.|0\.0\.0\.0|\[::1\])(:|\/|$)/i.test(
+    requestOrigin,
+  );
+  if (isLocal && process.env.NODE_ENV === "development") return requestOrigin;
+  return SITE_URL;
+}
+
+/**
  * The canonical origin used for client-side Supabase auth flows. Returns
  * the build-time SITE_URL when running on a deployed host (anything that
  * isn't localhost), and falls back to `window.location.origin` only during
