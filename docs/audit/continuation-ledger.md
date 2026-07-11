@@ -1,12 +1,12 @@
 # Continuation ledger + successor handoff
 
-Updated: 2026-07-11 (principal-audit session). Baseline: `main @ dcd77c3`; post-audit work-tree adds C-01/C-02 + audit artifacts (uncommitted at time of writing — see "Repository state" below, then trust `git log`).
+Updated: 2026-07-11 (principal-audit session; post-audit owner-decision round applied same day, see Addendum at bottom). Baseline: `main @ dcd77c3`; post-audit work-tree adds C-01/C-02 + audit artifacts (uncommitted at time of writing — see "Repository state" below, then trust `git log`).
 
 ## Repository state at handoff
 
 - Branch `main`, audit frozen at `dcd77c3` (= live production, verified by probe).
 - Post-freeze changes staged in the working tree / audit commit: `.github/workflows/ci.yml` (Node 24), `lib/shop/orders.ts` + test + `OrdersClient` import swap, `docs/audit/*`, `docs/editorial-standards.md`, `AGENTS.md`, `CLAUDE.md`.
-- **Not pushed.** Pushing deploys the website (Render watches `main`); that is an owner action.
+- ~~**Not pushed.**~~ *Amended same day:* `c4a835e` was pushed with explicit owner authorization ("owner - you push and deploy"); see Addendum.
 
 ## Verification record (this session, exact)
 
@@ -21,7 +21,7 @@ Updated: 2026-07-11 (principal-audit session). Baseline: `main @ dcd77c3`; post-
 | curl prod `POST /api/shop/reviews` unauth | live prod | 401 |
 | `git ls-files | grep .env` | repo | only `*.example` tracked |
 | Android run #41 (Beta 1.9.1) | GitHub Actions UI | success, 17m58s (observed) |
-| Android run #42 (Beta 1.9.2, dcd77c3) | GitHub Actions | dispatched this session; **final status UNKNOWN** (tab renderer hung on re-check) |
+| Android run #42 (Beta 1.9.2, dcd77c3) | GitHub Actions | dispatched this session; **final status UNKNOWN** (tab renderer hung on re-check) — *amended same day: SUCCESS, 18m50s (Addendum)* |
 
 Not verified this session (do not claim): AAB behavior on a device (cart, in-app Stripe return, bearer-auth writes from the real WebView), any Stripe live-mode flow, RevenueCat entitlement flow end-to-end, Playwright e2e (dead with CI until C-01 lands), iOS anything, Render env values.
 
@@ -52,3 +52,22 @@ Not verified this session (do not claim): AAB behavior on a device (cart, in-app
 - Native gate: `npm run build:android` must exit clean and `out/<route>` must exist.
 - Money paths: read `docs/audit/findings.yaml` first; F-01/F-03 status must be current.
 - Versions: the four identifiers in AGENTS.md §Release ritual must agree.
+
+---
+
+## Addendum — 2026-07-11 owner-decision round (same session)
+
+Owner directives received and executed:
+- **Pushed `c4a835e`** to origin/main (owner-authorized). Render deploy triggered; CI run #312 = the first Node-24 run (C-01 completing evidence; status at last check: see below).
+- **F-07 RESOLVED-VERIFIED**: the reviews migration is already applied on prod. Service-role REST probes: `shop_reviews` 200 `[]`, `shop_products.units_sold` 200, RPC `shop_submit_review` exists and enforces its auth gate (403 / 28000 "Sign in to review.").
+- **Live checkout CONFIRMED ON**: prod `/api/shop/catalog/config` returns `{"checkoutEnabled":true,"flatShippingCents":499}`. The shop takes real money now — F-01/F-03 (webhook race + amount verification) are correspondingly more urgent.
+- **Android run #42 SUCCESS** (18m50s, Actions UI): Beta 1.9.2 AAB published to the android-release release. Owner uploads to Play.
+- **F-05 (Victorinus chiliasm note): deferred by owner** ('clergy - skip'). Queue entry retained in docs/editorial-standards.md.
+- **F-12 photos: deferred by owner** (unique photos when the physical batch arrives).
+- **F-11 store policy: VERIFIED at policy level** — Google Play Payments policy explicitly excludes physical goods from Play Billing (support.google.com/googleplay/android-developer/answer/10281818, fetched 2026-07-11); Stripe for EIKON physical goods is the expected pattern; Plus stays on Play Billing. Residual: actual review acceptance.
+
+### Revised next actions
+1. Confirm CI run #312 result (Node 24). If e2e/Lighthouse steps fail, they are NEW signal (first time running in weeks) — triage, do not revert C-01.
+2. **F-01 + F-03 webhook hardening with mocked-Stripe tests — now the top code priority (live money is on).** Acceptance criteria unchanged (see Next actions above).
+3. Owner: upload run #42 AAB; on-device pass (Shop tab, add-to-cart -> Stripe -> return, Awaiting Payment rows, psalm commentary sheet).
+4. F-06 psalm-keying review file; F-04 device measurement; Render-gated-on-CI owner decision — unchanged below top spots.

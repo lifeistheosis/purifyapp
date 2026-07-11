@@ -57,9 +57,9 @@ findings:
     area: editorial
     severity: P2
     confidence: high
-    status: requires-editorial-review
+    status: deferred-by-owner   # 2026-07-11 owner decision: skip clergy review for now; queue retained
     evidence: data/bible/commentary/revelation/20.json (ANF07 recension)
-    action: editorial note on Rev 20 distinguishing early patristic opinion from Orthodox teaching; wording via clergy/editorial queue (docs/editorial-standards.md)
+    action: (deferred) editorial note on Rev 20 distinguishing early patristic opinion from Orthodox teaching
     safe_to_automate: false
     review: clergy/editorial
 
@@ -78,10 +78,10 @@ findings:
     title: Reviews feature dark on prod until 20260711_shop_reviews.sql is applied
     area: database/release
     severity: P1-conditional
-    confidence: confirmed-graceful; prod-state-unknown
-    status: requires-owner
-    evidence: prod GET /api/shop/catalog/reviews returns empty aggregate 200; POST unauth 401; migration exists in repo
-    action: owner applies migration in Supabase SQL editor (project avbqyvjgcrucjwevwixt)
+    confidence: confirmed
+    status: resolved-verified   # 2026-07-11: service-role REST probes: shop_reviews 200 [], shop_products.units_sold 200, rpc shop_submit_review exists (403 'Sign in to review.' 28000)
+    evidence: prod REST probes (table, column, RPC) + graceful API probes
+    action: none; feature live pending buyer reviews
     safe_to_automate: false
     review: owner
 
@@ -122,10 +122,10 @@ findings:
     title: In-app Stripe checkout for physical goods needs Play-review confirmation
     area: store
     severity: P2
-    confidence: policy-reading
-    status: requires-store-review
-    evidence: Play policy requires non-Play billing for physical goods (architecture correct in kind); review outcome unknown
-    action: verify on next Play submission
+    confidence: policy-verified
+    status: accepted-risk   # 2026-07-11: Play Payments policy (support.google.com/googleplay/android-developer/answer/10281818) explicitly EXCLUDES physical goods from Play Billing; alternative processors (Stripe) are the expected path. Residual: actual review acceptance of the build
+    evidence: policy page fetched 2026-07-11; quoted exclusion of physical goods
+    action: none beyond normal submission
     safe_to_automate: false
     review: store-policy
 
@@ -136,9 +136,9 @@ findings:
     confidence: confirmed
     status: accepted-risk
     evidence: PD sources cited per note (NPNF/ANF/Brenton/KJV); supplier-image gate in lib/shop/catalog.ts; open owner items pre-existing (photos, LLC, sales tax, lawyer review)
-    action: none new
+    action: none new; 2026-07-11 owner decision: unique product photos when the physical batch arrives (skip for now)
     safe_to_automate: n/a
-    review: legal (pre-existing queue)
+    review: owner (photos on batch arrival)
 
 corrections:
   - id: C-01
