@@ -154,6 +154,26 @@ html:not(.is-native) .topbar-safe {
  height: calc(3rem + env(safe-area-inset-top, 0px));
 }
 
+/* Native: the same bar is `sticky top-0` INSIDE a <main> whose .safe-pt
+   already pads past the status bar — so at rest it sits clear, but once the
+   page scrolls it re-pins to the true viewport top and its buttons slide
+   under the Android clock/battery (community report: bookmark button
+   colliding with the status bar). Give the bar its own inset so the pinned
+   state clears the status bar, and cancel the <main> padding at the bar's
+   position with a negative margin so nothing double-pads at rest. */
+html.is-native .topbar-safe {
+ padding-top: env(safe-area-inset-top, 0px);
+ height: calc(3rem + env(safe-area-inset-top, 0px));
+ margin-top: calc(-1 * env(safe-area-inset-top, 0px));
+}
+
+/* Companions of the bar (e.g. the Bible chapter sticky header) hard-coded
+   `top-12` to sit just below it; on native the pinned bar is taller by the
+   inset, so they offset by the same amount. */
+html.is-native .below-topbar {
+ top: calc(3rem + env(safe-area-inset-top, 0px));
+}
+
 @layer base {
  html {
  /* Keep route-change scroll resets instant. A global `smooth` made
@@ -1094,6 +1114,14 @@ html.reader-focus [data-reader-exit] {
 .history-cv {
  content-visibility: auto;
  contain-intrinsic-size: auto 132px;
+}
+
+/* The same windowed-rendering idea for long card lists elsewhere (the
+   saints index is ~140 image cards): off-screen cards skip layout/paint,
+   which is most of what "smooth scrolling" costs on mid-range phones. */
+.cv-card {
+ content-visibility: auto;
+ contain-intrinsic-size: auto 200px;
 }
 
 /* Event-card expansion: grid-rows trick animates height without measuring

@@ -17,11 +17,15 @@ import { nativeGoogleAvailable, nativeGoogleIdToken } from "@/lib/auth/nativeGoo
 export function OAuthButtons({
   disabled = false,
   disabledHint,
+  redirectTo = "/account/profile",
 }: {
   /** Gate the providers behind a prior action, e.g. clickwrap consent on
    *  sign-up. Sign-in leaves this off. */
   disabled?: boolean;
   disabledHint?: string;
+  /** Where to land after auth completes. Onboarding passes "/" so the user
+   *  stays on Today instead of being bounced to the profile page. */
+  redirectTo?: string;
 } = {}) {
   const [pendingGoogle, setPendingGoogle] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +47,7 @@ export function OAuthButtons({
           token,
         });
         if (err) throw err;
-        window.location.assign("/account/profile");
+        window.location.assign(redirectTo);
         return;
       }
 
@@ -59,7 +63,7 @@ export function OAuthButtons({
       const { error: err } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${origin}/api/auth/callback?next=/account/profile`,
+          redirectTo: `${origin}/api/auth/callback?next=${encodeURIComponent(redirectTo)}`,
         },
       });
       if (err) throw err;

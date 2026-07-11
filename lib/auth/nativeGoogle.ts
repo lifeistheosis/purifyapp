@@ -40,12 +40,38 @@ async function ensureInit(): Promise<void> {
  * Run the native Google account picker and return the Google ID token (a JWT)
  * for `supabase.auth.signInWithIdToken({ provider: "google", token })`.
  * Throws if no ID token comes back (e.g. the user cancelled).
+ *
+ * Errors are mapped so a configuration failure never masquerades as a user
+ * cancel: Credential Manager surfaces a missing/mismatched Android OAuth
+ * client (DEVELOPER_ERROR, error code 10 — the signing cert's SHA has no
+ * OAuth client in the Google Cloud project) with cancel-like wording, which
+ * is exactly the failure we shipped once. The raw plugin error is always
+ * logged for adb/chrome-inspect diagnosis.
  */
 export async function nativeGoogleIdToken(): Promise<string> {
   await ensureInit();
   const { SocialLogin } = await import("@capgo/capacitor-social-login");
-  const res = await SocialLogin.login({ provider: "google", options: {} });
+  let res: Awaited<ReturnType<typeof SocialLogin.login>>;
+  try {
+    res = await SocialLogin.login({ provider: "google", options: {} });
+  } catch (e) {
+    const raw =
+      e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
+    console.error("[nativeGoogle] plugin login failed:", raw, e);
+    if (/(developer.?error|error.?code[^0-9]*10\b|api.?exception.*10)/i.test(raw)) {
+      throw new Error(
+        "Google sign-in is misconfigured for this build (the app's signing certificate is not registered). Please report this; it is our fault, not yours.",
+      );
+    }
+    if (/cancel/i.test(raw)) {
+      throw new Error("Google sign-in was closed before finishing.");
+    }
+    throw new Error(`Google sign-in failed: ${raw}`);
+  }
   const idToken = (res.result as { idToken?: string | null }).idToken;
-  if (!idToken) throw new Error("Google did not return an ID token.");
+  if (!idToken) {
+    console.error("[nativeGoogle] login returned no idToken:", JSON.stringify(res));
+    throw new Error("Google did not return an ID token. Please try again.");
+  }
   return idToken;
 }

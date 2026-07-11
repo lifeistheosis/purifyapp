@@ -25,6 +25,7 @@ import {
 import { presentCustomerCenter } from "@/lib/billing/revenuecatUi";
 import { createClient } from "@/lib/supabase/client";
 import { useIsNative } from "@/lib/platform/native";
+import { PurifyBadge } from "@/components/ui/PurifyBadge";
 
 type Phase = "loading" | "signed-out" | "unavailable" | "ready" | "subscribed";
 type Plan = "monthly" | "yearly";
@@ -121,17 +122,57 @@ export function PlusPaywall() {
     return (
       <Screen>
         <Hero />
-        <div className="mt-auto w-full px-6 pb-10 text-center">
-          <p className="font-sans text-ui leading-relaxed text-paper/70">
+
+        {/* Same included-benefits card the ready phase shows, so the screen
+            sells the thing before asking for a sign-in — and so tall screens
+            have real content instead of one giant gap. */}
+        <div className="paywall-in mt-7 px-5" style={{ animationDelay: "460ms" }}>
+          <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
+            <p className="text-center font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-paper/55">
+              What’s included
+            </p>
+            <ul className="mt-4 space-y-4">
+              <Included
+                icon={<SyncIcon />}
+                title="Cross-device sync"
+                sub="Your library on every device you sign in on"
+              />
+              <Included
+                icon={<BookmarkIcon />}
+                title="Notes, highlights & bookmarks"
+                sub="Kept private, carried everywhere"
+              />
+              <Included
+                icon={<BookIcon />}
+                title="Custom collections & Florilegium"
+                sub="Build your own quote collections"
+              />
+            </ul>
+          </div>
+          <p className="mt-4 flex items-center justify-center gap-2 font-sans text-caption text-paper/55">
+            <ShieldIcon />
+            Core Orthodox resources remain free.
+          </p>
+        </div>
+
+        <div
+          className="paywall-in mt-6 w-full px-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] text-center"
+          style={{ animationDelay: "560ms" }}
+        >
+          <p className="mx-auto max-w-[320px] font-sans text-ui leading-relaxed text-paper/70">
             Purify Plus is tied to your account, so it follows you across your
             devices.
           </p>
           <Link
             href="/signin?next=/pricing"
-            className="mt-6 inline-flex w-full items-center justify-center rounded-pill bg-paper px-6 py-4 font-display-serif text-lede text-night transition-colors hover:bg-paper/90"
+            className="mt-5 inline-flex w-full items-center justify-center rounded-pill bg-paper px-6 py-4 font-display-serif text-lede text-night transition-colors hover:bg-paper/90"
           >
             Sign in to continue
           </Link>
+          <p className="mt-3 flex items-center justify-center gap-2 font-sans text-caption text-paper/45">
+            <LockIcon />
+            Secure billing through Google Play. Cancel anytime.
+          </p>
         </div>
       </Screen>
     );
@@ -141,8 +182,11 @@ export function PlusPaywall() {
     return (
       <Screen>
         <Hero />
-        <div className="mt-auto w-full px-6 pb-12 text-center">
-          <p className="font-sans text-ui leading-relaxed text-paper/65">
+        <div
+          className="paywall-in mt-8 w-full px-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] text-center"
+          style={{ animationDelay: "460ms" }}
+        >
+          <p className="mx-auto max-w-[320px] font-sans text-ui leading-relaxed text-paper/65">
             Purify Plus isn’t available to purchase right now. The whole core of
             Purify stays free, and everything you’ve gathered is safe on this
             device.
@@ -156,7 +200,10 @@ export function PlusPaywall() {
     return (
       <Screen>
         <Hero />
-        <div className="mt-auto w-full px-6 pb-12 text-center">
+        <div
+          className="paywall-in mt-8 w-full px-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] text-center"
+          style={{ animationDelay: "460ms" }}
+        >
           <p className="font-display-serif text-title text-paper">
             You have Purify Plus.
           </p>
@@ -320,7 +367,7 @@ function Hero() {
         }}
       />
       <span className="paywall-mark-in">
-        <CrossMark />
+        <PurifyBadge size={76} className="drop-shadow-[0_6px_28px_rgba(255,255,255,0.18)]" />
       </span>
       <p
         className="paywall-in mt-4 font-display-serif text-title text-paper/90"
@@ -476,31 +523,6 @@ const S = {
   strokeLinejoin: "round" as const,
   "aria-hidden": true,
 };
-
-function CrossMark() {
-  return (
-    <svg
-      width="40"
-      height="54"
-      viewBox="0 0 48 64"
-      fill="currentColor"
-      aria-hidden
-      className="text-paper drop-shadow-[0_4px_24px_rgba(255,255,255,0.25)]"
-    >
-      <rect x="21" y="3" width="6" height="58" rx="2.5" />
-      <rect x="16.5" y="11" width="15" height="4.5" rx="2.25" />
-      <rect x="10" y="21" width="28" height="5.5" rx="2.75" />
-      <rect
-        x="14"
-        y="41.5"
-        width="20"
-        height="4.5"
-        rx="2.25"
-        transform="rotate(-16 24 43.75)"
-      />
-    </svg>
-  );
-}
 
 function SyncIcon() {
   return (

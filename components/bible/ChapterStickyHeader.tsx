@@ -95,7 +95,9 @@ export function ChapterStickyHeader({
       // Mobile-only: anchors under the 48px MobileTopBar on phones. Hidden on
       // desktop (md+), where the BookChapterSidebar already shows the book and
       // chapter, so this strip would only be redundant chrome over the reader.
-      className="md:hidden fixed left-0 right-0 top-12 z-40 backdrop-blur-md bg-night/85 border-b border-paper/8"
+      // below-topbar bumps the offset by the status-bar inset on native,
+      // where the pinned top bar is taller than its web 48px.
+      className="md:hidden fixed left-0 right-0 top-12 below-topbar z-40 backdrop-blur-md bg-night/85 border-b border-paper/8"
     >
       <div className="mx-auto max-w-[1200px] px-5 md:px-10 py-2 flex items-center justify-between gap-3 font-sans text-caption">
         <span className="text-paper/85 font-semibold truncate">

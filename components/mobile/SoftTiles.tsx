@@ -33,16 +33,22 @@ export function SoftTile({
   sub,
   icon,
   tone = "a",
+  external = false,
 }: {
   href: string;
   label: string;
   sub?: string;
   icon: React.ReactNode;
   tone?: Tone;
+  /** Render a plain anchor opening in a new context (native shell uses this
+   *  to hand web-only destinations, like the shop, to the system browser). */
+  external?: boolean;
 }) {
+  const Tag = external ? "a" : Link;
   return (
-    <Link
+    <Tag
       href={href}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       className="group relative overflow-hidden rounded-[22px] p-4 shadow-[0_12px_28px_-14px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/10 transition-transform active:scale-[0.98]"
       style={{ background: TONES[tone] }}
     >
@@ -64,7 +70,7 @@ export function SoftTile({
           {sub}
         </p>
       ) : null}
-    </Link>
+    </Tag>
   );
 }
 

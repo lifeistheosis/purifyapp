@@ -5,6 +5,7 @@ import { LicensedChapterReader } from "@/components/bible/LicensedChapterReader"
 import { ChapterPager } from "@/components/bible/ChapterPager";
 import { BibleSearch } from "@/components/bible/BibleSearch";
 import { BookSwitcher } from "@/components/bible/BookSwitcher";
+import { MobileBookPill } from "@/components/bible/MobileBookPill";
 import { ChapterKeyNav } from "@/components/bible/ChapterKeyNav";
 import { StudyRail } from "@/components/bible/StudyRail";
 import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
@@ -208,13 +209,14 @@ export default async function BibleChapterPage({
  </div>
  </div>
  {/* Mobile keeps its own compact row (the menu carries Focus and
-   Interlinear inside on mobile). Identical to before. */}
+   Interlinear inside on mobile). The book pill opens the bottom-sheet
+   picker instead of the desktop popover. */}
  <div className="md:hidden mb-4 flex items-center gap-2.5 flex-wrap" data-reader-chrome>
  <TranslationSwitcher
  currentSlug={book}
  configuredLicensed={configuredLicensed}
  />
- <BookSwitcher currentSlug={book} />
+ <MobileBookPill currentSlug={book} currentChapter={chapterNum} />
  </div>
  {/* Row 2, mobile only: Interlinear pill (NT) + Reader chip sit as a
  pair at the start of the row, matching the Translation + Book

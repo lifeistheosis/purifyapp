@@ -198,7 +198,9 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
 
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {visible.map((s) => (
-          <SaintCard key={s.slug} saint={s} />
+          <div key={s.slug} className="cv-card">
+            <SaintCard saint={s} />
+          </div>
         ))}
       </div>
 

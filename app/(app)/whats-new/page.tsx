@@ -23,6 +23,21 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 1.8.1",
+ kind: "Launch-day repairs, with thanks",
+ date: "July 10, 2026",
+ blurb:
+  "The doors opened today, and the first walkers-through found the loose boards. This patch mends them the same day. Thank you to everyone who wrote in within hours.",
+ items: [
+  "Google sign-in on the Play-installed app truly mended: the Play signing certificate is now fully registered, and the app reports configuration faults honestly instead of calling them cancellations.",
+  "Creating an account signs you in immediately and keeps you signed in on that device; the welcome flow gained an optional account step, Google or email.",
+  "The Purify Plus screen wears the app's own mark, the white three-bar cross in the black circle, and the signed-out view lays out what Plus includes instead of stranding one button at the foot of an empty screen.",
+  "Discover carries the EIKON shop on phones; in the app it opens the storefront in your browser.",
+  "The bookmark button no longer hides behind the Android status bar when you scroll; the Bible's book picker is a proper bottom sheet on phones; the saints index scrolls lighter; the About page says plainly that Purify is an Eastern Orthodox led project.",
+  "Cache version steps to purify-beta-1.8.1.",
+ ],
+ },
+ {
  version: "Beta 1.8",
  kind: "The doors open: the EIKON shop, Purify Plus, and the Hours",
  date: "July 10, 2026",

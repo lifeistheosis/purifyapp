@@ -74,6 +74,10 @@ jobs:
           NEXT_PUBLIC_PLUS_ENFORCED_NATIVE: ${{ secrets.NEXT_PUBLIC_PLUS_ENFORCED_NATIVE }}
           NEXT_PUBLIC_VAPID_KEY: ${{ secrets.NEXT_PUBLIC_VAPID_KEY }}
           NEXT_PUBLIC_API_BIBLE_KEY: ${{ secrets.NEXT_PUBLIC_API_BIBLE_KEY }}
+          # Public flag, not a secret: lets shopEnabled() gates pass in the
+          # bundle so Discover shows the Shop tile (which opens the website
+          # in the system browser; the /shop route tree itself stays web-only).
+          NEXT_PUBLIC_SHOP_ENABLED: "1"
 
       # CAP_LOCAL=1 makes capacitor.config.ts use webDir=out (bundled UI) instead
       # of the remote server.url. Empty (remote-wrapper) keeps loading purifyapp.net.

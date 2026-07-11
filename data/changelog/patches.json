@@ -1,5 +1,33 @@
 [
   {
+    "id": "beta-1-8-1",
+    "version": "Beta 1.8.1",
+    "date": "2026-07-10",
+    "title": "Launch-day repairs, with thanks",
+    "intro": "Welcome, and glory to Jesus Christ. The doors opened today, and the first walkers-through found the loose boards. This patch mends them the same day: Google sign-in on the Play build, an account step in the welcome flow, the Plus screen set right with the true mark of the app, the shop reachable from your phone, and a set of small collisions and rough edges smoothed. Thank you to everyone who wrote in within hours; this is what a launch day should look like.",
+    "sections": [
+      {
+        "heading": "Signing in, truly mended",
+        "body": "Google sign-in on the Play-installed app was failing at the last step and calling it a cancellation; the app's Play signing certificate was not fully registered on our side. It is registered now, and the app also tells the truth about what went wrong if anything like it ever recurs. Creating an account now signs you in immediately, no confirmation detour, and you stay signed in on that device. The welcome flow gained a fourth step: keep your journey with a Google or email account, entirely optional."
+      },
+      {
+        "heading": "The Plus screen, set right",
+        "body": "The Purify Plus screen now wears the app's own mark, the white three-bar cross in the black circle, and the signed-out view no longer strands a lone button at the bottom of an empty screen: what Plus includes is laid out before the door asks for a key."
+      },
+      {
+        "heading": "The shop, in your pocket",
+        "body": "Discover now carries the EIKON shop on phones. In the app it opens the storefront in your browser, where checkout lives; on the mobile site it is simply another door in the library."
+      },
+      {
+        "heading": "Small collisions, smoothed",
+        "body": "The bookmark button no longer hides behind the Android status bar when you scroll. The book picker in the Bible is a proper bottom sheet on phones instead of a desktop popover. The saints index scrolls lighter on mid-range phones. And the About page now says plainly what has always been true: Purify is an Eastern Orthodox led project."
+      }
+    ],
+    "future": [],
+    "closing": "A launch is a beginning, not a finish line. If anything else is loose, write to lifeistheosis@gmail.com and it will be mended with the same speed. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
     "id": "beta-1-8",
     "version": "Beta 1.8",
     "date": "2026-07-10",

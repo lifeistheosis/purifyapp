@@ -31,13 +31,16 @@ export default async function AboutPage() {
  The north star
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
- Purify is not an app, not a Bible reader, not a calendar, not a
- prayer book. It is one quiet home for all of those, set together
- so that no part stands alone. The Scriptures with the Fathers in
- the margin. The lives of the saints with their writings to read
- in full. Every day of the Church&rsquo;s year, fast and feast,
- in either reckoning. The morning and evening rules in the wording
- the diaspora has carried.
+ Purify is an Eastern Orthodox led project: built, kept, and
+ decided by Orthodox Christians, under the Faith confessed by the
+ Fathers and the Councils. It is not an app, not a Bible reader,
+ not a calendar, not a prayer book. It is one quiet home for all
+ of those, set together so that no part stands alone. The
+ Scriptures with the Fathers in the margin. The lives of the
+ saints with their writings to read in full. Every day of the
+ Church&rsquo;s year, fast and feast, in either reckoning. The
+ morning and evening rules in the wording the diaspora has
+ carried.
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  The Liturgy is where the Church gathers. This is the room you
@@ -169,11 +172,14 @@ export default async function AboutPage() {
  Mission-first, independently built.
  </h2>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- This work is kept by an independent steward, not a company. There
- is no investor to satisfy, no growth team to feed, and no incentive
- to keep you on the page longer than you came to be. What ships,
- and what does not, is decided for the sake of the Faith confessed
- by the Fathers and for the sake of the readers who pray with us.
+ This work is kept by an independent steward, not a company, and it
+ is an Eastern Orthodox led project from top to bottom: the hands
+ that build it and the judgment that governs it belong to the
+ Orthodox Church&rsquo;s faithful. There is no investor to satisfy,
+ no growth team to feed, and no incentive to keep you on the page
+ longer than you came to be. What ships, and what does not, is
+ decided for the sake of the Faith confessed by the Fathers and for
+ the sake of the readers who pray with us.
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  The{" "}
@@ -323,13 +329,16 @@ function AboutDe() {
  Der Nordstern
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
- Purify ist nicht eine App, nicht ein Bibelleser, nicht ein
- Kalender, nicht ein Gebetbuch. Es ist eine stille Wohnung für
- dies alles, so beieinander, daß kein Teil allein steht. Die
- Schriften mit den Vätern am Rand. Die Leben der Heiligen mit
- ihren Schriften, ganz zu lesen. Jeder Tag des Kirchenjahres,
- Fasten und Fest, nach beiden Reckonungen. Die Morgen- und
- Abendregel im Wortlaut, den die Diaspora getragen hat.
+ Purify ist ein ostkirchlich-orthodox geführtes Werk: gebaut,
+ bewahrt und entschieden von orthodoxen Christen, unter dem
+ Glauben, den die Väter und die Konzilien bekannt haben. Es ist
+ nicht eine App, nicht ein Bibelleser, nicht ein Kalender, nicht
+ ein Gebetbuch. Es ist eine stille Wohnung für dies alles, so
+ beieinander, daß kein Teil allein steht. Die Schriften mit den
+ Vätern am Rand. Die Leben der Heiligen mit ihren Schriften, ganz
+ zu lesen. Jeder Tag des Kirchenjahres, Fasten und Fest, nach
+ beiden Reckonungen. Die Morgen- und Abendregel im Wortlaut, den
+ die Diaspora getragen hat.
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Die göttliche Liturgie ist der Ort, wo die Kirche sich versammelt.
