@@ -39,12 +39,18 @@ test("EIKON storefront tells its operational story without naming its parent", a
     "shop flag off or migration not applied in this environment",
   );
 
-  // The storefront fetches live at runtime. When the catalog is unreachable
-  // (key-less CI), the shell renders the graceful "Store not found" state —
-  // that path is covered by the catalog fail-soft guarantees, not this spec.
-  await expect(page.locator("h1").first()).toBeVisible();
+  // The storefront fetches live at runtime. When the shop backend is
+  // unreachable (key-less CI) the shell renders one of two graceful states
+  // instead of the storefront: "Store not found" (API answered 404) or
+  // ShopError with a retry button (API errored — CI #319 landed here, the
+  // placeholder-env API route dies before it can 404). Both are covered by
+  // the catalog fail-soft guarantees, not this spec.
+  const h1 = page.locator("h1").first();
+  const retry = page.getByRole("button", { name: /Try again/i });
+  await expect(h1.or(retry).first()).toBeVisible();
   test.skip(
-    /Store not found/i.test(await page.locator("h1").first().innerText()),
+    (await retry.count()) > 0 ||
+      /Store not found/i.test(await h1.innerText().catch(() => "")),
     "catalog unreachable in this environment",
   );
 
