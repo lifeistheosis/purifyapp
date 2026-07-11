@@ -145,9 +145,9 @@ findings:
     area: reliability/web
     severity: P1
     confidence: high
-    status: partially-corrected   # 2026-07-11 product-page path guarded (hasActivePlusClient 2.5s fail-open race); other getUser()-gated client loads (orders, messages, requests, account gates) still hang-prone
-    evidence: live walk 2026-07-11 signed-in browser: /shop/icons/* catalog+config APIs returned 200 (extension network log) while the page never left its skeleton; sole unsettled Promise.all member was hasActivePlusClient -> supabase.auth.getUser(); no console errors (silent lock wait). Matches the earlier '/account never loads' owner report signature.
-    action: guarded the display-only Plus check (done); design per-surface handling for auth-required pages (a timeout there must NOT fake signed-out; show a retry state instead) — do not blanket-apply
+    status: corrected-verified   # 2026-07-11 general case: lib/supabase/resolveUser.ts (5s race, three-state signed-in/signed-out/unresolved; retryable fetch errors and timeouts are UNRESOLVED, never signed-out); applied to OrdersClient, OrderDetailClient, MessagesClient, ConversationClient, RequestsClient, ApplicationClient (throw -> ShopError retry) and AccountAuthGate + MerchantApplyGate (retry state; redirect reserved for a RESOLVED signed-out). 6 unit tests over the classification. lib/shop/seller.ts is server-only (no navigator.locks) — out of scope. Display-only checks (hasActivePlusClient, hasPurchasedProduct, avatars/greetings) stay fail-open by design.
+    evidence: live walk 2026-07-11 signed-in browser: /shop/icons/* catalog+config APIs returned 200 (extension network log) while the page never left its skeleton; sole unsettled Promise.all member was hasActivePlusClient -> supabase.auth.getUser(); no console errors (silent lock wait). Matches the earlier '/account never loads' owner report signature. Fix evidence: lib/supabase/__tests__/resolveUser.test.ts (6 passing); typecheck/lint/unit/build:android/e2e green on the combined tree.
+    action: done; residual = the lock-hang itself is timing-dependent and was not re-reproduced live against the deployed fix (the fake-sign-out and hang paths are covered by unit tests)
     safe_to_automate: partially
     review: none
 
@@ -167,9 +167,30 @@ findings:
     area: testing/accessibility
     severity: P2
     confidence: confirmed
-    status: confirmed
-    evidence: CI run #317 (23da374): lint/typecheck/unit/build green on Node 24; 'Run smoke suite + axe' step fails (runs ~5m30s total). Suite last executed weeks ago; failures are pre-existing e2e/a11y debt or stale specs, not a regression from 2026-07-11 work (all four runs #314-#317 fail at the same stage across unrelated commits).
-    action: run test:e2e locally against a prod build, triage spec-by-spec (stale selectors vs real a11y violations), fix or quarantine with reasons; CI green end-to-end is the acceptance
+    status: corrected-unverified   # 2026-07-11 triage complete (CI #318 raw logs + local repro). Four failure classes, all fixed; local suite green; CI-green acceptance pending owner push.
+    evidence: >
+      CI #318 breakdown: 25 failed / 3 flaky / 9 skipped / 21 passed.
+      (a) 24 failures: every mobile-shell test x2 projects died at browser
+      launch — devices['iPhone 14 Pro'] carries defaultBrowserType webkit,
+      CI installs only chromium; the file-level test.use also double-ran the
+      suite in both projects. Fix: project pinned to chromium emulation +
+      testIgnore on the chromium project (playwright.config.ts,
+      mobile-shell.spec.ts).
+      (b) 1 failure: /shop/eikon 500 — supabase-js THROWS (TypeError fetch
+      failed) on unreachable host; getStore's error-object handling never
+      ran, and the throw inside generateMetadata beat the shop layout's
+      notFound() gate. Fix: fail-soft try/catch on getStore/getProduct/
+      listProducts (lib/shop/catalog.ts) + 3 unit tests
+      (catalogFailSoft.test.ts) + spec guard for the graceful state.
+      (c) flaky home axe color-contrast 1.81: axe scanned the welcome
+      overlay's Begin button mid fade-in (settled state passes AA). Fix:
+      _axe.ts waits for document.getAnimations() to finish (3s cap) before
+      scanning. NOT a real design violation.
+      (d) flaky history 60s timeouts (also reproduced locally): expand click
+      swallowed by the hydration race, link click then spends the timeout
+      under a collapsed card's toggle. Fix: expandCard helper asserts
+      aria-expanded=true and re-clicks until it sticks (history.spec.ts).
+    action: fixes in place; acceptance = next CI run green end-to-end (owner pushes); no specs quarantined — all four classes had real fixes
     safe_to_automate: partially
     review: none
 
@@ -183,4 +204,14 @@ corrections:
     fixes: [F-09-partial]
     files: [lib/shop/orders.ts, lib/shop/__tests__/orders.test.ts, components/shop/OrdersClient.tsx]
     verification: vitest 254/254 incl. 5 new; tsc 0; eslint clean
+    status: corrected-verified
+  - id: C-03
+    fixes: [F-15]
+    files: [playwright.config.ts, tests/smoke/mobile-shell.spec.ts, tests/smoke/_axe.ts, tests/smoke/history.spec.ts, tests/smoke/shop.spec.ts, lib/shop/catalog.ts, lib/shop/__tests__/catalogFailSoft.test.ts, vitest.config.ts, tests/stubs/server-only.ts]
+    verification: vitest 278/278 incl. 3 new; tsc 0; eslint 0 errors; build:android clean; local e2e green (see F-15 note); CI run pending owner push
+    status: corrected-unverified
+  - id: C-04
+    fixes: [F-13]
+    files: [lib/supabase/resolveUser.ts, lib/supabase/__tests__/resolveUser.test.ts, components/shop/OrdersClient.tsx, components/shop/OrderDetailClient.tsx, components/shop/MessagesClient.tsx, components/shop/ConversationClient.tsx, components/shop/RequestsClient.tsx, components/shop/ApplicationClient.tsx, components/account/AccountAuthGate.tsx, components/shop/MerchantApplyGate.tsx]
+    verification: vitest 278/278 incl. 6 new; tsc 0; eslint 0 errors; build:android clean; signed-out gates re-proven by the smoke suite's seller-console/account specs
     status: corrected-verified

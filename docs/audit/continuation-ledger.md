@@ -71,3 +71,21 @@ Owner directives received and executed:
 2. **F-01 + F-03 webhook hardening with mocked-Stripe tests — now the top code priority (live money is on).** Acceptance criteria unchanged (see Next actions above).
 3. Owner: upload run #42 AAB; on-device pass (Shop tab, add-to-cart -> Stripe -> return, Awaiting Payment rows, psalm commentary sheet).
 4. F-06 psalm-keying review file; F-04 device measurement; Render-gated-on-CI owner decision — unchanged below top spots.
+
+---
+
+## Addendum — 2026-07-11 F-15 triage + F-13 general case (same session)
+
+**F-15 triaged from CI #318 raw logs, reproduced locally, all four failure classes fixed (no quarantines):**
+1. **24 webkit launch failures** — `devices["iPhone 14 Pro"]` drags in `defaultBrowserType: webkit`; CI installs chromium only, and the file-level `test.use` also double-ran the mobile suite in both projects. Fixed in `playwright.config.ts` (chromium-pinned mobile-shell project, `testIgnore` on chromium) and `mobile-shell.spec.ts`. Suite is now 46 tests, not 58.
+2. **/shop/eikon 500 in key-less CI** — supabase-js *throws* on an unreachable host (it does not return an error object); the throw in `generateMetadata` beat the shop layout's `notFound()` gate. `getStore`/`getProduct`/`listProducts` now fail soft (`lib/shop/catalog.ts`), proven by `catalogFailSoft.test.ts`; the EIKON spec also skips on the graceful "Store not found" state.
+3. **Flaky home axe color-contrast (1.81)** — axe scanned the welcome overlay's Begin button mid fade-in; the settled state passes AA comfortably. `_axe.ts` now waits for `document.getAnimations()` (3s cap) before scanning. Not a real design violation.
+4. **Flaky history 60s timeouts** — the expand click can be swallowed by the hydration race, then the link click sits under a collapsed card's toggle for the whole timeout. Reproduced locally (2/46 failed with retries=0). `expandCard` helper in `history.spec.ts` asserts `aria-expanded=true` and re-clicks until it sticks.
+
+**F-13 general case shipped:** `lib/supabase/resolveUser.ts` races `getUser()` against a 5s deadline and reports three states; timeouts and retryable fetch errors are **unresolved** (retry UI), never signed-out. Applied to the six auth-required shop loaders (throw → `ShopError` retry) and to `AccountAuthGate` + `MerchantApplyGate` (retry state; the sign-in redirect now requires a *resolved* signed-out). `lib/shop/seller.ts` is server-only — no navigator.locks there, deliberately untouched. Display-only checks stay fail-open by design.
+
+**Verification on the combined tree:** tsc 0; eslint 0 errors; vitest 278/278 (9 new); `build:android` clean; local e2e green after the history fix. `vitest.config.ts` gained a `server-only` stub alias (`tests/stubs/server-only.ts`) so server-only lib modules are unit-testable.
+
+**Acceptance residual:** CI green end-to-end needs the owner push (commits are local, per session policy). If the *Lighthouse* step then fails, that is the next new signal — the e2e stage no longer blocks it.
+
+**1.9.3 ship readiness (AAB #43):** run #43 SUCCESS on `23da374` (the Beta 1.9.3 commit); `app-release.aab` (337 MB, sha256 124c288f…) replaced on the `android-release` release at 21:15Z, versionName 1.9.3 confirmed in `build.gradle`. Upload to Play Console is the shipping step.
