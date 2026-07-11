@@ -42,6 +42,14 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // Bundle native debug symbols (from Capacitor / RevenueCat .so
+            // libraries) into the AAB so Play can symbolicate native crashes
+            // and ANRs. Clears Play's "no debug symbols uploaded" warning.
+            // Symbols are stored by Play, not shipped to devices, so the
+            // delivered app size is unaffected.
+            ndk {
+                debugSymbolLevel 'FULL'
+            }
             // Sign with the release key only when it has been supplied; an
             // unsigned release is left for environments without the keystore.
             if (System.getenv("ANDROID_KEYSTORE_FILE")) {
