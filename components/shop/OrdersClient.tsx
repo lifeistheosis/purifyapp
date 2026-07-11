@@ -11,6 +11,7 @@ import {
 import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/cn";
 import { formatPrice } from "@/lib/shop/format";
+import { isHiddenOrder, isUnfinishedCheckout } from "@/lib/shop/orders";
 import {
   BUYER_ORDER_STEPS,
   buyerOrderStatus,
@@ -36,25 +37,6 @@ async function load(): Promise<Result> {
     )
     .order("created_at", { ascending: false });
   return { signedIn: true, orders: (data ?? []) as unknown as ShopOrder[] };
-}
-
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-/** An unfinished checkout the buyer walked away from mid-payment. */
-function isUnfinished(o: ShopOrder): boolean {
-  return o.payment_status === "pending";
-}
-
-/**
- * A row that has no business in the list at all: a cancelled checkout
- * (never paid) or a pending one that has gone stale past a day.
- */
-function isHidden(o: ShopOrder): boolean {
-  if (o.payment_status === "cancelled") return true;
-  return (
-    o.payment_status === "pending" &&
-    Date.now() - new Date(o.created_at).getTime() > DAY_MS
-  );
 }
 
 /** Quiet row for a checkout that was started but never paid. */
@@ -117,9 +99,9 @@ export function OrdersClient() {
   }
 
   const all = data && data.signedIn ? data.orders : [];
-  const visible = all.filter((o) => !isHidden(o));
-  const unfinished = visible.filter(isUnfinished);
-  const orders = visible.filter((o) => !isUnfinished(o));
+  const visible = all.filter((o) => !isHiddenOrder(o));
+  const unfinished = visible.filter(isUnfinishedCheckout);
+  const orders = visible.filter((o) => !isUnfinishedCheckout(o));
 
   return (
     <div className="mx-auto w-full max-w-[680px] px-5 pb-8 md:px-8">

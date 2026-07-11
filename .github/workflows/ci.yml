@@ -27,7 +27,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          # lib/content uses node:sqlite (Node >= 22.5); Node 20 aborted the
+          # unit step for every run since it landed, silently disabling the
+          # build/e2e/axe/Lighthouse gates downstream. 24 matches the only
+          # environment the suite is verified on.
+          node-version: "24"
           cache: "npm"
 
       - name: Install dependencies
