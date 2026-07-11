@@ -39,6 +39,15 @@ function pick(): string {
 
 export const SITE_URL = pick();
 
+/** Google Play listing for the Android app (where Purify Plus is bought,
+ *  since the subscription is billed through Google Play). */
+export const PLAY_STORE_URL =
+  "https://play.google.com/store/apps/details?id=net.purifyapp.purify";
+
+/** Google Play subscription-management page for an existing subscriber. */
+export const PLAY_MANAGE_SUBSCRIPTION_URL =
+  "https://play.google.com/store/account/subscriptions?package=net.purifyapp.purify";
+
 /**
  * The canonical origin used for client-side Supabase auth flows. Returns
  * the build-time SITE_URL when running on a deployed host (anything that

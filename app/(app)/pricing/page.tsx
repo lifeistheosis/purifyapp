@@ -3,11 +3,12 @@ import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { PlusPaywall } from "@/components/billing/PlusPaywall";
 import { WebOnly, NativeOnly } from "@/components/platform/PlatformGate";
+import { PLAY_STORE_URL, PLAY_MANAGE_SUBSCRIPTION_URL } from "@/lib/site";
 
 export const metadata = {
-  title: "Pricing",
+  title: "Pricing & Purify Plus",
   description:
-    "The core spiritual treasury of Purify is free, always. An optional subscription layer is on the way for heavier infrastructure; what is free today will still be free then.",
+    "The core spiritual treasury of Purify is free, always. Purify Plus is an optional subscription, available now in the Android app, that carries your reading across every device. What is free today stays free.",
 };
 
 type PricingCopy = {
@@ -17,8 +18,16 @@ type PricingCopy = {
   freeTitle: string;
   freeItems: string[];
   freeFoot: string;
-  futureTitle: string;
-  future: string;
+  plusTitle: string;
+  plusLede: string;
+  plusItems: { title: string; sub: string }[];
+  plusPriceMonthly: string;
+  plusPriceYearly: string;
+  plusPriceNote: string;
+  plusCta: string;
+  plusCtaNote: string;
+  plusManage: string;
+  plusPromise: string;
   supportKicker: string;
   supportLine: string;
   supportCta: string;
@@ -26,7 +35,7 @@ type PricingCopy = {
 };
 
 const EN: Omit<PricingCopy, "eyebrow" | "h1"> = {
-  lede: "The whole spiritual treasury of Purify is free, and it stays free. There is no tier to unlock, no plan to sell you, no lock to find later.",
+  lede: "The whole spiritual treasury of Purify is free, and it stays free. There is no tier to unlock the Scriptures, the saints, the prayers, or the calendar, and there never will be.",
   freeTitle: "Always free",
   freeItems: [
     "Every saint’s life, and the primary writings of the Fathers",
@@ -35,12 +44,27 @@ const EN: Omit<PricingCopy, "eyebrow" | "h1"> = {
     "The whole Church calendar, its fasts and its feasts",
   ],
   freeFoot: "No ads. No tracking. No surprise locks. For anyone who needs it.",
-  futureTitle: "Purify Plus, when it arrives",
-  future:
-    "An optional layer called Purify Plus is planned for after the mobile launch. It will exist only to pay for the work it requires (the servers, the production, the rights) and will add the gathered reading layer: cross-device sync; notes, highlights, and bookmarks; and custom collections and florilegia. The core stays forever open; what is free today will still be free then. And a promise already made stays made: pre-launch supporters keep lifetime cross-device sync, no subscription required. That promise covers sync itself; the wider Plus tools belong to the subscription when it arrives.",
+  plusTitle: "Purify Plus",
+  plusLede:
+    "An optional subscription, live now in the Android app. It exists only to pay for the work it requires (the servers, the production, the rights) and adds the gathered reading layer on top of the free core.",
+  plusItems: [
+    { title: "Cross-device sync", sub: "Your library on every device you sign in on" },
+    { title: "Notes, highlights & bookmarks", sub: "Kept private, carried everywhere" },
+    { title: "Custom collections & Florilegium", sub: "Build your own quote collections" },
+    { title: "Free EIKON shop shipping", sub: "On every order while your subscription is active" },
+  ],
+  plusPriceMonthly: "$9.99 / month",
+  plusPriceYearly: "$99 / year",
+  plusPriceNote: "Billed through Google Play. Cancel anytime.",
+  plusCta: "Get Purify Plus in the app",
+  plusCtaNote:
+    "Purify Plus is billed through Google Play, so it is purchased inside the Android app.",
+  plusManage: "Already subscribed? Manage it in Google Play",
+  plusPromise:
+    "A promise already made stays made: pre-launch supporters keep lifetime cross-device sync, no subscription required. That promise covers sync itself; the wider Plus tools belong to the subscription.",
   supportKicker: "Purify is kept by those it helps.",
   supportLine:
-    "If the app has carried you, you can carry it a little in return. A freewill gift is the only way money is involved today.",
+    "If the app has carried you, you can carry it a little in return. Beyond Plus, a freewill gift is always welcome and never required.",
   supportCta: "Light a lamp",
   supportFoot: "Entirely optional. Give once, or not at all.",
 };
@@ -48,7 +72,7 @@ const EN: Omit<PricingCopy, "eyebrow" | "h1"> = {
 const DE: PricingCopy = {
   eyebrow: "Preise",
   h1: "Der Kern bleibt immer frei.",
-  lede: "Der ganze geistliche Schatz von Purify ist frei und bleibt frei. Es gibt keine Stufe zum Freischalten, keinen Tarif, den wir dir verkaufen, keine Sperre, die du später findest.",
+  lede: "Der ganze geistliche Schatz von Purify ist frei und bleibt frei. Es gibt keine Stufe, um die Schriften, die Heiligen, die Gebete oder den Kalender freizuschalten, und wird es nie geben.",
   freeTitle: "Immer frei",
   freeItems: [
     "Jedes Leben eines Heiligen und die wichtigsten Schriften der Väter",
@@ -58,12 +82,27 @@ const DE: PricingCopy = {
   ],
   freeFoot:
     "Keine Werbung. Keine Verfolgung. Keine überraschenden Sperren. Für jeden, der sie braucht.",
-  futureTitle: "Purify Plus, wenn es kommt",
-  future:
-    "Eine freiwillige Schicht namens Purify Plus ist für die Zeit nach dem Mobil-Start geplant. Sie wird nur dazu da sein, die Arbeit zu bezahlen, die sie verlangt (die Server, die Produktion, die Rechte), und ergänzt die gesammelte Leseschicht: geräteübergreifende Synchronisierung; Notizen, Markierungen und Lesezeichen; sowie eigene Sammlungen und Florilegien. Der Kern bleibt für immer offen; was heute frei ist, wird dann noch frei sein. Und ein gegebenes Versprechen bleibt bestehen: Unterstützer aus der Zeit vor dem Start behalten die geräteübergreifende Synchronisierung auf Lebenszeit, ohne Abonnement. Dieses Versprechen gilt der Synchronisierung selbst; die weiteren Plus-Werkzeuge gehören zum Abonnement, wenn es kommt.",
+  plusTitle: "Purify Plus",
+  plusLede:
+    "Ein freiwilliges Abonnement, jetzt in der Android-App verfügbar. Es ist nur dazu da, die Arbeit zu bezahlen, die es verlangt (die Server, die Produktion, die Rechte), und ergänzt die gesammelte Leseschicht über dem freien Kern.",
+  plusItems: [
+    { title: "Geräteübergreifende Synchronisierung", sub: "Deine Bibliothek auf jedem Gerät, auf dem du dich anmeldest" },
+    { title: "Notizen, Markierungen & Lesezeichen", sub: "Privat gehalten, überallhin getragen" },
+    { title: "Eigene Sammlungen & Florilegium", sub: "Erstelle deine eigenen Zitatsammlungen" },
+    { title: "Kostenloser EIKON-Versand", sub: "Bei jeder Bestellung, solange dein Abonnement aktiv ist" },
+  ],
+  plusPriceMonthly: "9,99 $ / Monat",
+  plusPriceYearly: "99 $ / Jahr",
+  plusPriceNote: "Abrechnung über Google Play. Jederzeit kündbar.",
+  plusCta: "Purify Plus in der App holen",
+  plusCtaNote:
+    "Purify Plus wird über Google Play abgerechnet und daher in der Android-App gekauft.",
+  plusManage: "Bereits Abonnent? In Google Play verwalten",
+  plusPromise:
+    "Ein gegebenes Versprechen bleibt bestehen: Unterstützer aus der Zeit vor dem Start behalten die geräteübergreifende Synchronisierung auf Lebenszeit, ohne Abonnement. Dieses Versprechen gilt der Synchronisierung selbst; die weiteren Plus-Werkzeuge gehören zum Abonnement.",
   supportKicker: "Purify wird von denen getragen, denen es hilft.",
   supportLine:
-    "Wenn die App dich getragen hat, kannst du sie ein wenig zurücktragen. Eine freiwillige Gabe ist heute der einzige Weg, auf dem Geld eine Rolle spielt.",
+    "Wenn die App dich getragen hat, kannst du sie ein wenig zurücktragen. Über Plus hinaus ist eine freiwillige Gabe stets willkommen und nie erforderlich.",
   supportCta: "Eine Kerze anzünden",
   supportFoot: "Völlig freiwillig. Einmal geben, oder gar nicht.",
 };
@@ -131,13 +170,77 @@ function PricingView({ copy }: { copy: PricingCopy }) {
           </p>
         </div>
 
-        {/* Future layer — quiet */}
-        <div className="mx-auto mt-8 max-w-[600px] text-center md:mt-10">
-          <p className="mb-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/40">
-            {copy.futureTitle}
+        {/* Purify Plus — live, priced, bought in the Android app */}
+        <div className="relative mt-8 overflow-hidden rounded-2xl border border-gold/25 p-6 md:mt-10 md:p-8"
+          style={{
+            background:
+              "radial-gradient(130% 90% at 50% 0%, rgba(212,175,55,0.10) 0%, transparent 58%), #0c0b09",
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <p className="font-display-serif text-title text-paper">
+              {copy.plusTitle}
+            </p>
+            <span className="rounded-pill border border-gold/40 bg-gold/[0.10] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-gold-pale">
+              Available now
+            </span>
+          </div>
+          <p className="mt-3 max-w-[560px] font-sans text-ui leading-relaxed text-paper/70">
+            {copy.plusLede}
           </p>
-          <p className="font-sans text-ui leading-relaxed text-paper/55">
-            {copy.future}
+
+          <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+            {copy.plusItems.map((item) => (
+              <li key={item.title} className="flex gap-3">
+                <StarMark />
+                <span>
+                  <span className="block font-sans text-ui font-semibold text-paper">
+                    {item.title}
+                  </span>
+                  <span className="block font-sans text-caption text-paper/55">
+                    {item.sub}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-7 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-paper/8 pt-6">
+            <span className="font-display-serif text-title text-paper">
+              {copy.plusPriceMonthly}
+            </span>
+            <span className="text-paper/30">·</span>
+            <span className="font-display-serif text-title text-paper">
+              {copy.plusPriceYearly}
+            </span>
+            <span className="w-full font-sans text-caption text-paper/50 sm:w-auto">
+              {copy.plusPriceNote}
+            </span>
+          </div>
+
+          <a
+            href={PLAY_STORE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex items-center gap-2 rounded-pill bg-paper px-6 py-3.5 font-sans text-ui font-semibold text-night transition-colors hover:bg-paper/90"
+          >
+            {copy.plusCta}
+            <ArrowRight />
+          </a>
+          <p className="mt-3 max-w-[520px] font-sans text-caption leading-[1.5] text-paper/50">
+            {copy.plusCtaNote}
+          </p>
+          <a
+            href={PLAY_MANAGE_SUBSCRIPTION_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-block font-sans text-caption text-gold/80 underline underline-offset-2 hover:text-gold"
+          >
+            {copy.plusManage}
+          </a>
+
+          <p className="mt-6 border-t border-paper/8 pt-5 font-sans text-caption leading-[1.6] text-paper/45">
+            {copy.plusPromise}
           </p>
         </div>
 

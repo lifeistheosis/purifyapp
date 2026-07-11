@@ -69,6 +69,7 @@ export function Footer() {
    heading: t("footer.about"),
    links: [
     { label: t("nav.about"), href: "/about" },
+    { label: "Purify Plus", href: "/pricing" },
     { label: t("footer.privacy"), href: "/privacy" },
     { label: "Terms", href: "/terms" },
     { label: t("footer.faq"), href: "/faq" },
