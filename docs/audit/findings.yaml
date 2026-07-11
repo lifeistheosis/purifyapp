@@ -24,7 +24,7 @@ findings:
     area: release
     severity: P1
     confidence: confirmed
-    status: corrected-unverified   # C-01; completing evidence = first Actions run after push
+    status: corrected-verified   # CI run #317 on Node 24: lint/typecheck/unit/build all pass; pipeline alive again (fails later at pre-existing e2e stage, see F-15)
     evidence: .github/workflows/ci.yml:30 (was "20"); lib/content/* imports node:sqlite; owner-pasted failing run log
     action: bumped to Node 24 (C-01); owner pushes; consider gating Render on CI (owner decision)
     safe_to_automate: true
@@ -156,10 +156,21 @@ findings:
     area: commerce
     severity: P1
     confidence: confirmed-live
-    status: corrected-verified-pending-deploy   # fix pushed; live re-walk pending Render deploy
+    status: corrected-verified-live   # re-walk on deployed code: Stripe back link lands on /shop/checkout/cancelled (real page), order row cancelled; residual: owner sets NEXT_PUBLIC_SITE_URL=https://purifyapp.net on Render (returns currently use the onrender fallback host)
     evidence: live cancel-path walk 2026-07-11 landed on https://localhost:10000/shop/checkout/cancelled?order=7085ab92... after Stripe's back link; Render proxy presents req.url as localhost:10000 (same hop documented in app/api/auth/signout). Affects SUCCESS path after real payments too (buyer strands on dead page; webhook still settles server-side).
     action: checkoutReturnOrigin() in lib/site.ts (SITE_URL except genuine local dev) + 4 unit tests; stranded walk order 7085ab92 cancelled via API and row verified cancelled/cancelled
     safe_to_automate: true
+    review: none
+
+  - id: F-15
+    title: Playwright smoke + axe suite fails in CI (first signal since the gate revived)
+    area: testing/accessibility
+    severity: P2
+    confidence: confirmed
+    status: confirmed
+    evidence: CI run #317 (23da374): lint/typecheck/unit/build green on Node 24; 'Run smoke suite + axe' step fails (runs ~5m30s total). Suite last executed weeks ago; failures are pre-existing e2e/a11y debt or stale specs, not a regression from 2026-07-11 work (all four runs #314-#317 fail at the same stage across unrelated commits).
+    action: run test:e2e locally against a prod build, triage spec-by-spec (stale selectors vs real a11y violations), fix or quarantine with reasons; CI green end-to-end is the acceptance
+    safe_to_automate: partially
     review: none
 
 corrections:
