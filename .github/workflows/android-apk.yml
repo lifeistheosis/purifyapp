@@ -125,7 +125,16 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           chmod +x ./gradlew
-          ./gradlew assembleDebug assembleRelease bundleRelease --stacktrace --no-daemon
+          # Split the variants across separate --no-daemon invocations. Building
+          # release (bundle + APK) and debug in ONE invocation holds two full
+          # variants' dex/resource/packaging graphs in the same 4g JVM at once,
+          # plus the ~37MB bundled web assets, and the ubuntu runner (~7GB) OOMs:
+          # "the daemon has disappeared / operation was canceled" after minutes of
+          # swap thrashing. The release bundle and release APK share the release
+          # variant's compiled output so they stay together; debug builds alone
+          # afterwards. Each invocation peaks at roughly half the memory.
+          ./gradlew bundleRelease assembleRelease --stacktrace --no-daemon
+          ./gradlew assembleDebug --stacktrace --no-daemon
 
       # Published as release assets (private repo): raw downloads, separate
       # storage from the Actions artifact quota.
