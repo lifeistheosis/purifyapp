@@ -23,6 +23,24 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 1.9.2",
+ kind: "The shop, refined: a cart, honest orders, and a smoother checkout",
+ date: "July 11, 2026",
+ blurb:
+  "A same-day refinement patch for the shop: an add-to-cart system, phantom orders from abandoned checkouts fixed, desktop icon pages mended, and a payment confirmation with a little ceremony.",
+ items: [
+  "Add to cart arrives beside Buy now: a device-local cart with a live count on its tab, quantity steppers, and one checkout with one shipping charge for everything in it.",
+  "Walking away from Stripe no longer leaves a phantom confirmed order: the attempt is cancelled on the spot, unfinished checkouts show only as a quiet removable note, and unpaid orders read Awaiting Payment.",
+  "Icon pages and the EIKON storefront no longer answer with an internal server error on the desktop website.",
+  "Payment confirmation now draws a gold check and rises into the receipt, honored under reduced motion.",
+  "Shop pages load with quiet placeholder cards instead of a loading line, and back-navigation is instant.",
+  "Messages show who is speaking with the composer always within reach.",
+  "Browser tab titles across the shop read cleanly with a plain divider.",
+  "The desktop account page carries a plain link to your profile even if scripts never wake.",
+  "Cache version steps to purify-beta-1.9.2.",
+ ],
+ },
+ {
  version: "Beta 1.9.1",
  kind: "The Fathers, doubled: the whole Psalter with Augustine",
  date: "July 11, 2026",

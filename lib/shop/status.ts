@@ -8,6 +8,7 @@ import type { ShopFulfillmentStatus, ShopOrder } from "./types";
  * the two terminal exceptions.
  */
 export type BuyerOrderStatus =
+  | "Awaiting Payment"
   | "Order Confirmed"
   | "Preparing Your Order"
   | "Ready to Ship"
@@ -32,6 +33,10 @@ const BUYER_STATUS: Record<ShopFulfillmentStatus, BuyerOrderStatus> = {
 export function buyerOrderStatus(order: Pick<ShopOrder, "payment_status" | "fulfillment_status">): BuyerOrderStatus {
   if (order.payment_status === "refunded") return "Refunded";
   if (order.payment_status === "cancelled") return "Cancelled";
+  // An order exists from the moment checkout STARTS (so an arriving webhook
+  // always has a row to settle), so an unpaid order must never read as
+  // confirmed: it is an unfinished checkout, not a purchase.
+  if (order.payment_status === "pending") return "Awaiting Payment";
   return BUYER_STATUS[order.fulfillment_status];
 }
 

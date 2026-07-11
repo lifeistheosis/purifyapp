@@ -7,7 +7,7 @@ import { getSellerContext } from "@/lib/shop/seller";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: { default: "Seller console", template: "%s — Seller console" },
+  title: { default: "Seller console", template: "%s | Seller console" },
   robots: { index: false, follow: false },
 };
 

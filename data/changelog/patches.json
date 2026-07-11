@@ -1,5 +1,41 @@
 [
   {
+    "id": "beta-1-9-2",
+    "version": "Beta 1.9.2",
+    "date": "2026-07-11",
+    "title": "The shop, refined: a cart, honest orders, and a smoother checkout",
+    "intro": "Welcome, and glory to Jesus Christ. The shop opened its doors inside the app this morning, and the first walkers-through found the loose boards by evening. This patch mends every one of them and adds the piece most shops are born with: a cart. Icons pages no longer error on desktop, walking away from checkout no longer leaves a ghost in your orders, and paying for an icon now ends with a moment worthy of the purchase. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "A cart, at last",
+        "body": "Every icon page now carries Add to cart beside Buy now. The cart lives on your device, shows a running count on its tab, lets you adjust quantities, and checks out everything in one payment with one shipping charge. Purify Plus members still ship free on every order."
+      },
+      {
+        "heading": "Orders that tell the truth",
+        "body": "Starting a checkout and then walking away used to leave a phantom order marked as confirmed. No more. Backing out of the payment page cancels the attempt on the spot, unfinished checkouts appear only as a quiet removable note, never among your real orders, and anything unpaid says plainly: Awaiting Payment."
+      },
+      {
+        "heading": "Icon pages on desktop, mended",
+        "body": "Opening an icon or the EIKON storefront on the desktop website could answer with an internal server error. The root cause is fixed and every shop page opens cleanly on every screen."
+      },
+      {
+        "heading": "A proper amen to your payment",
+        "body": "When your payment goes through, a gold ring now draws its check, and the confirmation rises beneath it. Small, quick, and honored if your device asks for reduced motion."
+      },
+      {
+        "heading": "Faster, calmer surfaces",
+        "body": "Shop pages now load with quiet placeholder cards instead of a bare loading line, browsing back and forth is instant, messages show who is speaking with the composer always in reach, and the browser tab reads cleanly on every shop page."
+      },
+      {
+        "heading": "Account, always reachable",
+        "body": "On desktop, the account page could sit on a loading skeleton if the redirect script never woke. The skeleton now carries a plain link to your profile that works even with no script at all."
+      }
+    ],
+    "future": [],
+    "closing": "Found within hours, mended within hours. If anything else is loose, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
     "id": "beta-1-9-1",
     "version": "Beta 1.9.1",
     "date": "2026-07-11",

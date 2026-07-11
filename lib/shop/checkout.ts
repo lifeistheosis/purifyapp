@@ -8,23 +8,26 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * Checkout abstraction. One provider today (Stripe Checkout, single
- * store, single item, physical goods); the exported surface is provider
- * agnostic so a second provider or Stripe Connect can slot in at
- * Phase 3 without touching callers.
+ * store, one or many items, physical goods); the exported surface is
+ * provider agnostic so a second provider or Stripe Connect can slot in
+ * at Phase 3 without touching callers.
  *
  * The server is authoritative about everything that matters: price,
  * currency, availability, shipping, and order identity all come from the
- * database. The client contributes a product slug and a quantity,
- * nothing else.
+ * database. The client contributes product slugs and quantities, nothing
+ * else — a cart's display subtotal is never trusted.
  *
  * Shipping: Purify Plus subscribers ship free; everyone else pays the
- * flat standard rate (SHOP_FLAT_SHIPPING_CENTS, default $4.99). The Plus
- * check reads the entitlements row directly — free shipping is a perk of
- * actually holding Plus, independent of the feature-enforcement flags.
+ * flat standard rate (SHOP_FLAT_SHIPPING_CENTS, default $4.99) once per
+ * order regardless of item count. The Plus check reads the entitlements
+ * row directly — free shipping is a perk of actually holding Plus,
+ * independent of the feature-enforcement flags.
  *
  * With no Stripe key configured every path returns the disabled result;
  * nothing throws, nothing 500s.
  */
+
+export type CheckoutItemInput = { productSlug: string; quantity: number };
 
 export type CheckoutResult =
   | { ok: true; url: string; orderId: string }
@@ -54,30 +57,51 @@ export async function hasActivePlus(userId: string | null): Promise<boolean> {
 }
 
 export async function createCheckout(
-  productSlug: string,
-  quantity: number,
+  itemInputs: CheckoutItemInput[],
   user: { id: string | null; email: string | null },
   /** Request origin for the success/cancel URLs (localhost in dev). */
   origin: string,
 ): Promise<CheckoutResult> {
   if (!checkoutEnabled()) return { ok: false, disabled: true };
-
-  const product = await getProduct(productSlug);
-  if (!product || product.status !== "published") {
-    return { ok: false, reason: "This item isn't available." };
-  }
-  if (!purchasable(product.inventory_status)) {
-    return { ok: false, reason: "This item can't be purchased yet." };
-  }
-  if (
-    product.inventory_status === "ready_to_ship" &&
-    product.quantity_available != null &&
-    product.quantity_available < quantity
-  ) {
-    return { ok: false, reason: "Not enough stock for that quantity." };
+  if (itemInputs.length === 0) {
+    return { ok: false, reason: "Your cart is empty." };
   }
 
-  const itemsTotal = product.price_cents * quantity;
+  // Re-resolve every line from the database; reject the whole checkout on
+  // the first problem so the buyer fixes the cart instead of part-paying.
+  const lines: { product: NonNullable<Awaited<ReturnType<typeof getProduct>>>; quantity: number }[] = [];
+  for (const input of itemInputs) {
+    const product = await getProduct(input.productSlug);
+    if (!product || product.status !== "published") {
+      return { ok: false, reason: "An item in your cart isn't available any more." };
+    }
+    if (!purchasable(product.inventory_status)) {
+      return { ok: false, reason: `"${product.title}" can't be purchased yet.` };
+    }
+    if (
+      product.inventory_status === "ready_to_ship" &&
+      product.quantity_available != null &&
+      product.quantity_available < input.quantity
+    ) {
+      return { ok: false, reason: `Not enough stock of "${product.title}".` };
+    }
+    lines.push({ product, quantity: input.quantity });
+  }
+
+  // One store, one currency per order (EIKON is the only store today; the
+  // guard keeps a multi-merchant future from silently mixing sellers).
+  const first = lines[0].product;
+  if (lines.some((l) => l.product.store_id !== first.store_id)) {
+    return { ok: false, reason: "Please check out one store at a time." };
+  }
+  if (lines.some((l) => l.product.currency !== first.currency)) {
+    return { ok: false, reason: "Please check out one currency at a time." };
+  }
+
+  const itemsTotal = lines.reduce(
+    (sum, l) => sum + l.product.price_cents * l.quantity,
+    0,
+  );
   const plusShipping = await hasActivePlus(user.id);
   const shipping = plusShipping ? 0 : flatShippingCents();
 
@@ -89,19 +113,21 @@ export async function createCheckout(
     .from("shop_orders")
     .insert({
       user_id: user.id,
-      store_id: product.store_id,
-      seller_id: product.seller_id,
+      store_id: first.store_id,
+      seller_id: first.seller_id,
       email: user.email,
       items_total_cents: itemsTotal,
       shipping_cents: shipping,
       tax_cents: 0,
       total_cents: itemsTotal + shipping,
-      currency: product.currency,
+      currency: first.currency,
       payment_status: "pending",
-      fulfillment_status:
-        product.inventory_status === "special_order"
-          ? "supplier_order_needed"
-          : "pending",
+      // Any special-order line puts the whole order on the sourcing path.
+      fulfillment_status: lines.some(
+        (l) => l.product.inventory_status === "special_order",
+      )
+        ? "supplier_order_needed"
+        : "pending",
     })
     .select("id")
     .single();
@@ -111,13 +137,15 @@ export async function createCheckout(
   }
   const orderId = order.id as string;
 
-  await admin.from("shop_order_items").insert({
-    order_id: orderId,
-    product_id: product.id,
-    title: product.title,
-    unit_price_cents: product.price_cents,
-    quantity,
-  });
+  await admin.from("shop_order_items").insert(
+    lines.map((l) => ({
+      order_id: orderId,
+      product_id: l.product.id,
+      title: l.product.title,
+      unit_price_cents: l.product.price_cents,
+      quantity: l.quantity,
+    })),
+  );
 
   // Record the checkout clickwrap (the API refused the request unless the
   // buyer ticked the box). Best-effort: a failed audit row never blocks a
@@ -139,32 +167,32 @@ export async function createCheckout(
   const { default: Stripe } = await import("stripe");
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-  const image = product.media[0]?.media_url;
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       client_reference_id: orderId,
       customer_email: user.email ?? undefined,
-      line_items: [
-        {
-          quantity,
+      line_items: lines.map((l) => {
+        const image = l.product.media[0]?.media_url;
+        return {
+          quantity: l.quantity,
           price_data: {
-            currency: product.currency,
-            unit_amount: product.price_cents,
+            currency: l.product.currency,
+            unit_amount: l.product.price_cents,
             product_data: {
-              name: product.title,
-              description: product.subtitle ?? undefined,
+              name: l.product.title,
+              description: l.product.subtitle ?? undefined,
               images: image && image.startsWith("http") ? [image] : undefined,
             },
           },
-        },
-      ],
+        };
+      }),
       shipping_address_collection: { allowed_countries: ["US"] },
       shipping_options: [
         {
           shipping_rate_data: {
             type: "fixed_amount",
-            fixed_amount: { amount: shipping, currency: product.currency },
+            fixed_amount: { amount: shipping, currency: first.currency },
             display_name: plusShipping
               ? "Free shipping (Purify Plus)"
               : "Standard shipping",
@@ -172,8 +200,15 @@ export async function createCheckout(
         },
       ],
       success_url: `${origin}/shop/checkout/success?order=${orderId}`,
-      cancel_url: `${origin}/shop/icons/${product.slug}`,
-      metadata: { order_id: orderId, product_slug: product.slug },
+      // The cancelled page cancels the pending order server-side (and
+      // expires the session), so walking away from Stripe never leaves a
+      // phantom "awaiting payment" order in the buyer's list. A single
+      // buy-now links back to its product; a cart checkout back to the cart.
+      cancel_url:
+        lines.length === 1
+          ? `${origin}/shop/checkout/cancelled?order=${orderId}&product=${first.slug}`
+          : `${origin}/shop/checkout/cancelled?order=${orderId}&from=cart`,
+      metadata: { order_id: orderId, product_slug: first.slug },
     });
     if (!session.url) {
       return { ok: false, reason: "Couldn't start checkout. Please try again." };

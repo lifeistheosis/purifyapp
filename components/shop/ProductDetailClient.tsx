@@ -9,7 +9,7 @@ import { ProductGallery } from "@/components/shop/ProductGallery";
 import { ProductRail } from "@/components/shop/ProductRail";
 import { RatingStars } from "@/components/shop/RatingStars";
 import { ReviewsSection } from "@/components/shop/ReviewsSection";
-import { ShopError, ShopLoading } from "@/components/shop/ShopStates";
+import { ShopDetailSkeleton, ShopError } from "@/components/shop/ShopStates";
 import { hasActivePlusClient } from "@/lib/entitlements/client";
 import { fetchShopConfig, fetchShopProduct } from "@/lib/shop/catalogClient";
 import {
@@ -67,7 +67,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
   }, [slug]);
 
   if (loading) {
-    return <ShopLoading label="Opening the icon…" />;
+    return <ShopDetailSkeleton />;
   }
   if (error) {
     return <ShopError message={error} onRetry={reload} />;
@@ -266,6 +266,11 @@ export function ProductDetailClient({ slug }: { slug: string }) {
         <aside className="md:pt-1">
           <BuyBar
             productSlug={product.slug}
+            title={product.title}
+            priceCents={product.price_cents}
+            currency={product.currency}
+            imageUrl={primaryImage?.media_url}
+            imageAlt={primaryImage?.alt_text}
             priceLabel={priceLabel}
             shippingLabel={shippingLabel}
             dispatchLabel={dispatchLabel}

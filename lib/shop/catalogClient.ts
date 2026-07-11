@@ -29,7 +29,16 @@ export type FetchProductsParams = {
   offset?: number;
 };
 
+// Tiny in-memory read cache. Catalog data changes at admin speed, so a
+// short TTL makes back-navigation and tab-hopping instant without ever
+// showing meaningfully stale prices. Errors and non-GET calls never cache.
+const TTL_MS = 2 * 60 * 1000;
+const readCache = new Map<string, { at: number; data: unknown }>();
+
 async function getJson<T>(path: string): Promise<T> {
+  const hit = readCache.get(path);
+  if (hit && Date.now() - hit.at < TTL_MS) return hit.data as T;
+
   const res = await apiFetch(path);
   if (!res.ok) {
     const err = new Error(`Request failed (${res.status})`) as Error & {
@@ -38,7 +47,9 @@ async function getJson<T>(path: string): Promise<T> {
     err.status = res.status;
     throw err;
   }
-  return (await res.json()) as T;
+  const data = (await res.json()) as T;
+  readCache.set(path, { at: Date.now(), data });
+  return data;
 }
 
 export function fetchShopHome(): Promise<ShopHomeData> {
@@ -95,6 +106,10 @@ export async function submitReview(input: {
   if (!res.ok) {
     const data = (await res.json().catch(() => ({}))) as { error?: string };
     throw new Error(data.error ?? "Couldn't save your review.");
+  }
+  // The buyer's own review must appear on the very next read.
+  for (const key of readCache.keys()) {
+    if (key.startsWith("/api/shop/catalog/reviews")) readCache.delete(key);
   }
 }
 

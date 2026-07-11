@@ -79,13 +79,30 @@ export function MessageThread({
     }
   }
 
+  const initial = counterpartyName.trim().charAt(0).toUpperCase() || "S";
+
   return (
     <div>
       <ol className="space-y-3" aria-label="Messages">
-        {messages.map((m) => {
+        {messages.map((m, idx) => {
           const mine = m.sender === viewer;
+          // Show the avatar only on the first bubble of a run, the way
+          // every messaging surface people already know does it.
+          const firstOfRun = idx === 0 || messages[idx - 1].sender !== m.sender;
           return (
-            <li key={m.id} className={cn("flex", mine ? "justify-end" : "justify-start")}>
+            <li key={m.id} className={cn("flex items-end gap-2", mine ? "justify-end" : "justify-start")}>
+              {!mine ? (
+                firstOfRun ? (
+                  <span
+                    aria-hidden
+                    className="mb-5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gold/30 bg-gold/10 font-display-serif text-detail text-gold"
+                  >
+                    {initial}
+                  </span>
+                ) : (
+                  <span aria-hidden className="w-8 shrink-0" />
+                )
+              ) : null}
               <div
                 className={cn(
                   "max-w-[85%] rounded-2xl px-4 py-3 md:max-w-[70%]",
@@ -118,30 +135,38 @@ export function MessageThread({
           This conversation is closed.
         </p>
       ) : (
-        <form onSubmit={send} className="mt-6">
-          <label className="block">
-            <span className="sr-only">Reply</span>
-            <textarea
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              rows={3}
-              maxLength={4000}
-              placeholder={`Write to ${counterpartyName}…`}
-              className={field}
-            />
-          </label>
+        // The composer stays within thumb's reach while the thread scrolls
+        // behind it, one field and one send pill, nothing else.
+        <form
+          onSubmit={send}
+          className="sticky bottom-0 z-10 -mx-1 mt-6 rounded-t-xl bg-night/95 px-1 pb-2 pt-3 backdrop-blur safe-pb"
+        >
+          <div className="flex items-end gap-2">
+            <label className="min-w-0 flex-1">
+              <span className="sr-only">Reply</span>
+              <textarea
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+                rows={2}
+                maxLength={4000}
+                placeholder={`Write to ${counterpartyName}…`}
+                className={cn(field, "resize-none rounded-2xl")}
+              />
+            </label>
+            <button
+              type="submit"
+              disabled={busy || !body.trim()}
+              aria-label={busy ? "Sending" : "Send"}
+              className="tap-press inline-flex h-11 shrink-0 items-center justify-center rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night hover:bg-paper/90 disabled:opacity-60"
+            >
+              {busy ? "…" : "Send"}
+            </button>
+          </div>
           {error ? (
             <p role="alert" className="mt-2 font-sans text-detail text-crimson-soft">
               {error}
             </p>
           ) : null}
-          <button
-            type="submit"
-            disabled={busy || !body.trim()}
-            className="tap-press mt-3 inline-flex min-h-[44px] items-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90 disabled:opacity-60"
-          >
-            {busy ? "Sending…" : "Send"}
-          </button>
         </form>
       )}
     </div>

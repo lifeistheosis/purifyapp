@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import {
   ShopError,
-  ShopLoading,
+  ShopListSkeleton,
   ShopSignInPrompt,
 } from "@/components/shop/ShopStates";
 import { cn } from "@/lib/cn";
@@ -38,7 +38,7 @@ async function load(): Promise<Result> {
 export function MessagesClient() {
   const { data, error, loading, reload } = useAsyncData(load, []);
 
-  if (loading) return <ShopLoading label="Loading your messages…" />;
+  if (loading) return <ShopListSkeleton />;
   if (error) return <ShopError message={error} onRetry={reload} />;
   if (data && !data.signedIn) {
     return (

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Shipping & Returns — EIKON",
+  title: "Shipping & Returns | EIKON",
   description:
     "How EIKON ships, our dispatch windows, returns and refunds, cancellations, and product-safety guidance.",
 };

@@ -1,5 +1,5 @@
 import "server-only";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@supabase/ssr";
 
 import type {
   ShopCategory,
@@ -10,12 +10,25 @@ import type {
 } from "./types";
 
 /**
- * Public catalog reads. Everything here runs with the anon-key server
- * client, so RLS does the filtering: only published products and live
- * stores can ever come back, and supplier/sourcing tables are simply
- * unreadable. Nothing in this module accepts a price or inventory value
- * from a caller.
+ * Public catalog reads. Everything here runs with the anon-key client,
+ * so RLS does the filtering: only published products and live stores can
+ * ever come back, and supplier/sourcing tables are simply unreadable.
+ * Nothing in this module accepts a price or inventory value from a caller.
+ *
+ * Deliberately COOKIE-LESS: these are public reads that never need the
+ * caller's session, and the catalog is consumed from static contexts
+ * (generateStaticParams, generateMetadata on SSG product/store shells)
+ * where `cookies()` is unavailable — the cookie-bound server client 500s
+ * an on-demand static render on the website. Placeholder fallbacks keep
+ * key-less CI builds green (reads just return nothing).
  */
+function createClient() {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co",
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-anon-key",
+    { cookies: { getAll: () => [], setAll: () => {} } },
+  );
+}
 
 const PRODUCT_SELECT = `
   *,

@@ -6,8 +6,8 @@ import { shopEnabled } from "@/lib/shop/flags";
 
 export const metadata: Metadata = {
   title: {
-    default: "Shop — Curated Orthodox icons",
-    template: "%s — Purify Shop",
+    default: "Shop | Curated Orthodox icons",
+    template: "%s | Purify Shop",
   },
   description:
     "Curated Orthodox icons from EIKON, a Purify store: printed, mounted, laminated, and wooden icons, selected, inspected, and packaged for the life of prayer.",

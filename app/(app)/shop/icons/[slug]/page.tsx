@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const product = await getProduct(slug);
   if (!product) return { title: "Icon not found" };
   return {
-    title: `${product.title} — ${formatPrice(product.price_cents, product.currency)}`,
+    title: `${product.title} | ${formatPrice(product.price_cents, product.currency)}`,
     description: product.subtitle ?? undefined,
   };
 }

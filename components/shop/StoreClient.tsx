@@ -5,7 +5,7 @@ import Link from "next/link";
 import { PolicyText } from "@/components/shop/PolicyText";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { RatingStars } from "@/components/shop/RatingStars";
-import { ShopError, ShopLoading } from "@/components/shop/ShopStates";
+import { ShopError, ShopGridSkeleton } from "@/components/shop/ShopStates";
 import { fetchShopStore } from "@/lib/shop/catalogClient";
 import { CATEGORY_LABELS } from "@/lib/shop/format";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
@@ -58,7 +58,7 @@ export function StoreClient({ slug }: { slug: string }) {
     [slug],
   );
 
-  if (loading) return <ShopLoading label="Opening the store…" />;
+  if (loading) return <div className="mx-auto w-full max-w-[1200px] px-5 pt-12 md:px-8"><ShopGridSkeleton /></div>;
   if (error) return <ShopError message={error} onRetry={reload} />;
   if (!data) {
     return (

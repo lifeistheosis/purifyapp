@@ -91,7 +91,7 @@ describe("shopCheckoutSchema", () => {
       termsAccepted: true,
     });
     expect(r.success).toBe(true);
-    if (r.success) expect(r.data.quantity).toBe(1);
+    if (r.success && "quantity" in r.data) expect(r.data.quantity).toBe(1);
     expect(
       shopCheckoutSchema.safeParse({
         productSlug: "pantocrator-wooden",
@@ -119,6 +119,35 @@ describe("shopCheckoutSchema", () => {
       shopCheckoutSchema.safeParse({
         productSlug: "pantocrator-wooden",
         termsAccepted: false,
+      }).success,
+    ).toBe(false);
+  });
+
+  it("accepts a cart of items, never an empty or oversized one", () => {
+    expect(
+      shopCheckoutSchema.safeParse({
+        items: [
+          { productSlug: "pantocrator-wooden", quantity: 2 },
+          { productSlug: "frankincense-resin" },
+        ],
+        termsAccepted: true,
+      }).success,
+    ).toBe(true);
+    expect(
+      shopCheckoutSchema.safeParse({ items: [], termsAccepted: true }).success,
+    ).toBe(false);
+    expect(
+      shopCheckoutSchema.safeParse({
+        items: Array.from({ length: 21 }, (_, i) => ({
+          productSlug: `icon-${i}`,
+        })),
+        termsAccepted: true,
+      }).success,
+    ).toBe(false);
+    // The clickwrap gate applies to the cart shape too.
+    expect(
+      shopCheckoutSchema.safeParse({
+        items: [{ productSlug: "pantocrator-wooden" }],
       }).success,
     ).toBe(false);
   });

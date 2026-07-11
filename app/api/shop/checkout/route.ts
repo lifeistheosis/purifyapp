@@ -45,10 +45,15 @@ async function handlePOST(req: Request) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Normalize both accepted shapes (buy-now single item, cart items[]).
+  const items =
+    "items" in parsed.data
+      ? parsed.data.items
+      : [{ productSlug: parsed.data.productSlug, quantity: parsed.data.quantity }];
+
   const origin = new URL(req.url).origin;
   const result = await createCheckout(
-    parsed.data.productSlug,
-    parsed.data.quantity,
+    items,
     { id: user?.id ?? null, email: user?.email ?? null },
     origin,
   );

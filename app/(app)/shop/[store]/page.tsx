@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const store = await getStore(slug);
   if (!store) return { title: "Store not found" };
   return {
-    title: `${store.public_name} — ${store.tagline ?? "Curated Orthodox icons"}`,
+    title: `${store.public_name} | ${store.tagline ?? "Curated Orthodox icons"}`,
     description: store.description ?? undefined,
   };
 }

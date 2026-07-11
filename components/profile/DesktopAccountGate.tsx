@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -24,20 +25,31 @@ export function DesktopAccountGate() {
   }, [router]);
 
   return (
-    <section
-      aria-hidden
-      className="hidden md:block px-8 py-24 bg-night min-h-[calc(100dvh-72px)]"
-    >
-      <div className="mx-auto max-w-[820px] w-full animate-pulse">
-        <div className="h-32 rounded-lg border border-paper/10 bg-paper/[0.03]" />
-        <div className="mt-8 grid grid-cols-4 gap-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-24 rounded-md border border-paper/10 bg-paper/[0.03]"
-            />
-          ))}
+    <section className="hidden md:block px-8 py-24 bg-night min-h-[calc(100dvh-72px)]">
+      <div className="mx-auto max-w-[820px] w-full">
+        <div aria-hidden className="animate-pulse">
+          <div className="h-32 rounded-lg border border-paper/10 bg-paper/[0.03]" />
+          <div className="mt-8 grid grid-cols-4 gap-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-24 rounded-md border border-paper/10 bg-paper/[0.03]"
+              />
+            ))}
+          </div>
         </div>
+        {/* Progressive-enhancement door: the redirect above needs hydration,
+            and a stale service-worker shell right after a deploy can stall
+            it, leaving a signed-in user on this skeleton forever. A plain
+            link works with no JavaScript at all. */}
+        <p className="mt-8 text-center">
+          <Link
+            href="/account/profile"
+            className="font-sans text-detail font-medium text-paper/60 underline underline-offset-4 hover:text-paper"
+          >
+            Taking too long? Open your profile →
+          </Link>
+        </p>
       </div>
     </section>
   );

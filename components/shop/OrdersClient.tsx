@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 
 import {
   ShopError,
-  ShopLoading,
+  ShopListSkeleton,
   ShopSignInPrompt,
 } from "@/components/shop/ShopStates";
+import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/cn";
 import { formatPrice } from "@/lib/shop/format";
 import {
@@ -36,10 +38,73 @@ async function load(): Promise<Result> {
   return { signedIn: true, orders: (data ?? []) as unknown as ShopOrder[] };
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** An unfinished checkout the buyer walked away from mid-payment. */
+function isUnfinished(o: ShopOrder): boolean {
+  return o.payment_status === "pending";
+}
+
+/**
+ * A row that has no business in the list at all: a cancelled checkout
+ * (never paid) or a pending one that has gone stale past a day.
+ */
+function isHidden(o: ShopOrder): boolean {
+  if (o.payment_status === "cancelled") return true;
+  return (
+    o.payment_status === "pending" &&
+    Date.now() - new Date(o.created_at).getTime() > DAY_MS
+  );
+}
+
+/** Quiet row for a checkout that was started but never paid. */
+function UnfinishedRow({
+  order,
+  onRemoved,
+}: {
+  order: ShopOrder;
+  onRemoved: () => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  async function remove() {
+    setBusy(true);
+    try {
+      await apiFetch("/api/shop/checkout/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: order.id }),
+      });
+    } catch {
+      /* the reload shows the truth either way */
+    }
+    onRemoved();
+  }
+  return (
+    <li className="flex items-center justify-between gap-4 rounded-lg border border-paper/8 bg-paper/[0.02] px-4 py-3">
+      <div className="min-w-0">
+        <p className="truncate font-sans text-detail font-medium text-paper/75">
+          {order.items.map((i) => i.title).join(", ")}
+        </p>
+        <p className="mt-0.5 font-sans text-caption text-paper/50">
+          You left checkout before paying · nothing was charged
+        </p>
+      </div>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => void remove()}
+        className="tap-press shrink-0 rounded-pill border border-paper/20 px-4 py-1.5 font-sans text-caption font-semibold text-paper/70 hover:border-paper/40 hover:text-paper disabled:opacity-60"
+      >
+        {busy ? "Removing…" : "Remove"}
+      </button>
+    </li>
+  );
+}
+
 export function OrdersClient() {
   const { data, error, loading, reload } = useAsyncData(load, []);
 
-  if (loading) return <ShopLoading label="Loading your orders…" />;
+  if (loading) return <ShopListSkeleton />;
   if (error) return <ShopError message={error} onRetry={reload} />;
   if (data && !data.signedIn) {
     return (
@@ -51,7 +116,10 @@ export function OrdersClient() {
     );
   }
 
-  const orders = data && data.signedIn ? data.orders : [];
+  const all = data && data.signedIn ? data.orders : [];
+  const visible = all.filter((o) => !isHidden(o));
+  const unfinished = visible.filter(isUnfinished);
+  const orders = visible.filter((o) => !isUnfinished(o));
 
   return (
     <div className="mx-auto w-full max-w-[680px] px-5 pb-8 md:px-8">
@@ -61,6 +129,16 @@ export function OrdersClient() {
         </p>
         <h1 className="mt-2 font-display-serif text-heading text-paper">Your orders</h1>
       </header>
+
+      {unfinished.length > 0 ? (
+        <section aria-label="Unfinished checkout" className="mt-6">
+          <ul className="space-y-2">
+            {unfinished.map((o) => (
+              <UnfinishedRow key={o.id} order={o} onRemoved={reload} />
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {orders.length === 0 ? (
         <p className="mt-8 font-serif text-body text-paper/65 leading-[1.65]">

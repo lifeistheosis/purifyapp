@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 import { ProductCard } from "@/components/shop/ProductCard";
-import { ShopError, ShopLoading } from "@/components/shop/ShopStates";
+import { ShopError, ShopGridSkeleton } from "@/components/shop/ShopStates";
 import { fetchShopProducts } from "@/lib/shop/catalogClient";
 import { CATEGORY_LABELS } from "@/lib/shop/format";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
@@ -56,7 +56,7 @@ export function CategoryClient({ category }: { category: string }) {
         </h1>
       </header>
 
-      {loading ? <ShopLoading /> : null}
+      {loading ? <ShopGridSkeleton /> : null}
       {error ? <ShopError message={error} onRetry={reload} /> : null}
 
       {data && data.length > 0 ? (

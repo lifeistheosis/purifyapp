@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { ProductRail } from "@/components/shop/ProductRail";
 import { ProductCard } from "@/components/shop/ProductCard";
-import { ShopError, ShopLoading } from "@/components/shop/ShopStates";
+import { ShopError, ShopHomeSkeleton } from "@/components/shop/ShopStates";
 import { fetchShopHome } from "@/lib/shop/catalogClient";
 import { CATEGORY_LABELS } from "@/lib/shop/format";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
@@ -51,7 +51,7 @@ export function ShopHomeClient() {
         </ul>
       </nav>
 
-      {loading ? <ShopLoading label="Gathering the icons…" /> : null}
+      {loading ? <ShopHomeSkeleton /> : null}
       {error ? <ShopError message={error} onRetry={reload} /> : null}
 
       {data ? (
