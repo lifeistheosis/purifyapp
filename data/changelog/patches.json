@@ -1,5 +1,41 @@
 [
   {
+    "id": "beta-1-9-1",
+    "version": "Beta 1.9.1",
+    "date": "2026-07-11",
+    "title": "The Fathers, doubled: the whole Psalter with Augustine",
+    "intro": "Welcome, and glory to Jesus Christ. This patch is one thing only, and it is a large thing: commentary. A reader on the Discord asked for more of the Fathers, enough to stand beside any catena Bible, and this is the answer. The library of patristic commentary in Purify roughly doubles today, to four thousand four hundred and eighty-one verse-notes across twenty-three books of Scripture, from fifteen Fathers of the Church. Every word of it is the Fathers' own, from named public-domain translations, and we tell you exactly which. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "The whole Psalter, with St. Augustine",
+        "body": "The crown of this patch. St. Augustine's Expositions on the Book of Psalms now stands beside every one of the hundred and fifty psalms, one thousand eight hundred and ninety-eight notes keyed verse by verse. Open any psalm, tap a red-dotted verse, and Augustine prays it with you. Because Purify's Psalter is the Septuagint and Augustine preached from it too, his psalm often meets yours word for word. From the Nicene and Post-Nicene Fathers, volume eight."
+      },
+      {
+        "heading": "The six days, with St. Basil",
+        "body": "St. Basil the Great's nine homilies of the Hexaemeron, the Church's great preaching on the days of creation, now stand in Genesis 1 in full, each homily set on the verse whose command it opens with. In the beginning God made the heaven and the earth; Basil takes it from there."
+      },
+      {
+        "heading": "A second voice on the Gospel of John",
+        "body": "St. Augustine's one hundred and twenty-four Tractates on the Gospel of John now read alongside St. John Chrysostom's eighty-eight homilies, two Fathers on one Gospel, across all twenty-one chapters. Where they stand on the same verse, you read them together."
+      },
+      {
+        "heading": "Revelation, opened",
+        "body": "The Apocalypse receives its first commentary in Purify: St. Victorinus of Pettau, bishop and martyr of the Diocletianic persecution, whose commentary on Revelation is the earliest that survives from the whole Church. Eighty-eight notes across nineteen chapters, from the Ante-Nicene Fathers, volume seven."
+      },
+      {
+        "heading": "The first verse, reachable",
+        "body": "Commentary on a chapter's opening verse was hidden on phones: the illuminated drop cap left no room for the red marker, and the long-press menu pointed at a desktop-only panel. The opening verse now carries its marker after the text, and the menu opens the commentary sheet properly. Genesis 1:1, John 1:1, and every psalm's opening are reachable with a tap."
+      },
+      {
+        "heading": "On languages, honestly",
+        "body": "The same reader asked for commentary in the app's other languages. The Fathers here are public-domain English translations, named on every note, and we will not run them through a machine and call it a translation. Faithful editions in other languages are future work, done properly or not at all."
+      }
+    ],
+    "future": [],
+    "closing": "Asked for on the Discord, and answered with the biggest single addition of the Fathers Purify has ever shipped. If a note sits on the wrong verse or a word looks wrong, write to lifeistheosis@gmail.com; every citation names its source so you can check us. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
     "id": "beta-1-9",
     "version": "Beta 1.9",
     "date": "2026-07-11",

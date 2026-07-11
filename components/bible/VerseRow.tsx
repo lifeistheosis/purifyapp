@@ -602,6 +602,41 @@ export function VerseRow({
  </Fragment>
  );
  })}
+ {showDropCap && hasCommentary ? (
+ // The chapter-opening verse suppresses the leading marker (a
+ // superscript before the first letter would break the illuminated
+ // drop cap), so its commentary marker hangs AFTER the text instead.
+ // Matters now that whole works anchor at verse 1: the Hexaemeron on
+ // Genesis 1:1, the psalm openings, the first tractates on John 1:1.
+ <span className="inline-flex items-baseline ml-1.5 align-super">
+ <a
+ href={`#rail-v${verse.n}`}
+ className="hidden lg:inline-flex text-[#f2594e] hover:text-[#ff7a6e] transition-colors"
+ aria-label={`Open commentary on verse ${verse.n}`}
+ title="Open commentary"
+ >
+ <span
+ aria-hidden
+ className="inline-block h-[5px] w-[5px] rounded-full bg-accent/75 hover:bg-accent transition-colors"
+ />
+ </a>
+ <button
+ type="button"
+ onClick={(e) => {
+ e.preventDefault();
+ e.stopPropagation();
+ onOpenCommentary?.();
+ }}
+ className="lg:hidden inline-flex items-baseline text-[#f2594e] active:text-[#ff7a6e] transition-colors"
+ aria-label={`Open commentary on verse ${verse.n}`}
+ >
+ <span
+ aria-hidden
+ className="inline-block h-[5px] w-[5px] rounded-full bg-accent/75"
+ />
+ </button>
+ </span>
+ ) : null}
  </p>
 
  {hasInterlinear && (
@@ -752,7 +787,10 @@ export function VerseRow({
  {
  label: "Open commentary",
  onClick: () => {
- window.location.hash = `rail-v${verse.n}`;
+ // Mobile wires the bottom sheet; the #rail anchor only
+ // exists in the desktop study rail.
+ if (onOpenCommentary) onOpenCommentary();
+ else window.location.hash = `rail-v${verse.n}`;
  },
  },
  ]);

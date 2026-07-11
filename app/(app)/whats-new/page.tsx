@@ -23,6 +23,22 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 1.9.1",
+ kind: "The Fathers, doubled: the whole Psalter with Augustine",
+ date: "July 11, 2026",
+ blurb:
+  "The patristic commentary library roughly doubles, to 4,481 verse-notes across 23 books from 15 Fathers. Asked for on the Discord: enough of the Fathers to stand beside any catena Bible.",
+ items: [
+  "St. Augustine's Expositions on the Book of Psalms arrives for all 150 psalms, 1,898 notes keyed verse by verse; the Psalter and its greatest Western commentary now pray together (NPNF vol. 8, public domain).",
+  "St. Basil the Great's nine Hexaemeron homilies on the six days of creation stand in Genesis 1 in full, each on the verse whose command it opens with.",
+  "St. Augustine's 124 Tractates on the Gospel of John read alongside St. John Chrysostom's 88 homilies across all 21 chapters, two Fathers on one Gospel.",
+  "Revelation opens with its first commentary: St. Victorinus of Pettau, the earliest surviving commentary on the Apocalypse in the whole Church (ANF vol. 7).",
+  "A chapter's opening verse now carries its commentary marker after the text (the drop cap hid it on phones) and the long-press menu opens the commentary sheet properly.",
+  "On languages, honestly: the Fathers here are named public-domain English translations. We will not machine-translate them; faithful editions in other languages are future work.",
+  "Cache version steps to purify-beta-1.9.1.",
+ ],
+ },
+ {
  version: "Beta 1.9",
  kind: "The shop comes inside",
  date: "July 11, 2026",

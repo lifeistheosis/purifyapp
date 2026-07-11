@@ -28,7 +28,7 @@ export const revalidate = 3600;
 const features = [
  {
  title: "Read with the Fathers",
- body: "The Septuagint and the King James, the Greek beside the English, with St. John Chrysostom verse by verse across fourteen books of the New Testament.",
+ body: "The Septuagint and the King James, the Greek beside the English, with the Fathers verse by verse across twenty-three books: Chrysostom on the Gospels and Epistles, Augustine on every psalm, Basil on the six days.",
  },
  {
  title: "Lives of the saints",

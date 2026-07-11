@@ -29,6 +29,8 @@ export const COMMENTED_BOOKS: ReadonlySet<string> = new Set([
   "hebrews",
   // Catholic epistles (Augustine, Ten Homilies on the First Epistle of John)
   "1-john",
+  // Revelation (Victorinus of Pettau, the earliest surviving commentary)
+  "revelation",
 ]);
 
 export function hasCommentary(slug: string): boolean {
