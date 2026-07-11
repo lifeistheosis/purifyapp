@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { Heart } from "@/components/ui/icons/Heart";
 import { useBookmarks } from "@/lib/bookmarks";
 import { cn } from "@/lib/cn";
 
@@ -61,20 +62,7 @@ export function FavoriteButton({
         className,
       )}
     >
-      <svg
-        aria-hidden
-        viewBox="0 0 24 24"
-        className="h-5 w-5"
-        fill={saved ? "currentColor" : "none"}
-        stroke="currentColor"
-        strokeWidth="1.8"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M12 21c-4.8-3.6-8-6.6-8-10a4.6 4.6 0 0 1 8-3.1A4.6 4.6 0 0 1 20 11c0 3.4-3.2 6.4-8 10z"
-        />
-      </svg>
+      <Heart size={20} filled={saved} />
     </button>
   );
 }

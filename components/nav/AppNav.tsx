@@ -13,6 +13,8 @@ import {
   DISCOVER_CHILD_HREFS,
 } from "@/components/nav/DiscoverDropdown";
 import { shopEnabled } from "@/lib/shop/flags";
+import { Close } from "@/components/ui/icons/Close";
+import { Menu } from "@/components/ui/icons/Menu";
 
 function initialsFromName(name: string | null | undefined): string {
   if (!name) return "?";
@@ -269,7 +271,7 @@ export function AppNav() {
           className="lg:hidden inline-flex items-center justify-center h-11 w-11 rounded-pill border border-paper/20 text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
           onClick={() => setOpen((v) => !v)}
         >
-          <span className="text-lede">{open ? "✕" : "≡"}</span>
+          {open ? <Close size={18} /> : <Menu size={20} />}
         </button>
       </div>
 

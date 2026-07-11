@@ -211,8 +211,12 @@ export function MobileTabBar() {
                       : "text-paper/55 hover:text-paper/80 font-medium",
                   )}
                 >
+                  {/* Active tabs also thicken the stroke: with the color
+                      shift and the sliding compartment this gives three
+                      selected-state signals, none of them color-only. */}
                   <Icon
                     size={22}
+                    strokeWidth={active ? 2 : undefined}
                     className="transition-[filter] duration-200"
                   />
                   <span className="leading-none">{label}</span>

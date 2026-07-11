@@ -2,7 +2,13 @@
 
 import { useEffect } from "react";
 import { setOverlayOpen } from "@/lib/ui/overlay";
-import { Highlighter, Eraser, Link2, Check, Bookmark, SquarePen, Flower2 } from "lucide-react";
+import { Check } from "@/components/ui/icons/Check";
+import { Erase } from "@/components/ui/icons/Erase";
+import { Flower } from "@/components/ui/icons/Flower";
+import { LinkChain } from "@/components/ui/icons/LinkChain";
+import { Pen } from "@/components/ui/icons/Pen";
+import { Sparkle } from "@/components/ui/icons/Sparkle";
+import { Star } from "@/components/ui/icons/Star";
 
 export type MobileVerseAction =
  | "highlight"
@@ -145,7 +151,7 @@ export function MobileVerseToolbar({
  ringIfActive(state.highlighted)
  }
  >
- <Highlighter className="h-[18px] w-[18px]" aria-hidden />
+ <Sparkle size={18} filled={state.highlighted} />
  </button>
  {state.hasWordHighlights && (
  <button
@@ -157,7 +163,7 @@ export function MobileVerseToolbar({
  ringIfActive(false)
  }
  >
- <Eraser className="h-[18px] w-[18px]" aria-hidden />
+ <Erase size={18} />
  </button>
  )}
  <button
@@ -172,9 +178,9 @@ export function MobileVerseToolbar({
  }
  >
  {state.copied ? (
- <Check className="h-[18px] w-[18px]" aria-hidden />
+ <Check size={18} />
  ) : (
- <Link2 className="h-[18px] w-[18px]" aria-hidden />
+ <LinkChain size={18} />
  )}
  </button>
  <button
@@ -187,11 +193,7 @@ export function MobileVerseToolbar({
  ringIfActive(state.bookmarked)
  }
  >
- <Bookmark
- className="h-[18px] w-[18px]"
- fill={state.bookmarked ? "currentColor" : "none"}
- aria-hidden
- />
+ <Star size={18} filled={state.bookmarked} />
  </button>
  <button
  type="button"
@@ -205,7 +207,7 @@ export function MobileVerseToolbar({
  : "border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10")
  }
  >
- <SquarePen className="h-[18px] w-[18px]" aria-hidden />
+ <Pen size={18} />
  </button>
  <button
  type="button"
@@ -213,7 +215,7 @@ export function MobileVerseToolbar({
  aria-label="Gather to florilegium"
  className="h-11 w-11 rounded-full border border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10 flex items-center justify-center text-body transition-colors duration-150"
  >
- <Flower2 className="h-[18px] w-[18px]" aria-hidden />
+ <Flower size={18} />
  </button>
  </div>
  </div>

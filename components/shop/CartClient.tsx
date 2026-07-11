@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { Minus } from "@/components/ui/icons/Minus";
+import { Plus } from "@/components/ui/icons/Plus";
 import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/cn";
 import {
@@ -135,9 +137,9 @@ export function CartClient() {
                     type="button"
                     aria-label={`Reduce quantity of ${item.title}`}
                     onClick={() => setCartQuantity(item.slug, item.quantity - 1)}
-                    className="tap-press h-9 w-9 rounded-l-pill font-sans text-ui text-paper/70 hover:text-paper"
+                    className="tap-press flex h-9 w-9 items-center justify-center rounded-l-pill text-paper/70 hover:text-paper"
                   >
-                    −
+                    <Minus size={16} />
                   </button>
                   <span className="min-w-[2ch] text-center font-sans text-detail font-semibold text-paper">
                     {item.quantity}
@@ -146,9 +148,9 @@ export function CartClient() {
                     type="button"
                     aria-label={`Increase quantity of ${item.title}`}
                     onClick={() => setCartQuantity(item.slug, item.quantity + 1)}
-                    className="tap-press h-9 w-9 rounded-r-pill font-sans text-ui text-paper/70 hover:text-paper"
+                    className="tap-press flex h-9 w-9 items-center justify-center rounded-r-pill text-paper/70 hover:text-paper"
                   >
-                    +
+                    <Plus size={16} />
                   </button>
                 </div>
                 <button

@@ -1,5 +1,7 @@
 "use client";
 
+import { Close } from "@/components/ui/icons/Close";
+
 import { useEffect, useRef } from "react";
 import type { Token } from "@/lib/bible/load";
 import type { StrongsEntry } from "@/lib/bible/strongs";
@@ -199,7 +201,7 @@ export function WordPopover({
  aria-label="Close"
  className="absolute top-2 right-2 h-7 w-7 rounded-full text-paper/60 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui"
  >
- ×
+ <Close size={13} />
  </button>
 
  {/* The word itself */}

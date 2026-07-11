@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Close } from "@/components/ui/icons/Close";
 import {
   ONBOARDING_EVENT,
   dismissNudge,
@@ -59,7 +60,7 @@ export function FirstStepsNudge() {
         aria-label={t("onboard.nudge.dismiss")}
         className="shrink-0 h-8 w-8 inline-flex items-center justify-center rounded-pill text-paper/55 hover:text-paper transition-colors"
       >
-        ✕
+        <Close size={14} />
       </button>
     </div>
   );

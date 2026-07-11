@@ -1,5 +1,7 @@
 "use client";
 
+import { Close } from "@/components/ui/icons/Close";
+
 // Filter controls, one logic everywhere, two presentations:
 //  - <lg: rendered inside the shared bottom Sheet (hardware Back closes it,
 //    thumb-reach Apply/Clear at the bottom).
@@ -175,7 +177,7 @@ export function ActiveFilterChips({
           className="tap-press inline-flex min-h-[36px] items-center gap-1.5 rounded-pill bg-paper/10 px-3 font-sans text-detail font-semibold text-paper"
         >
           {c.label}
-          <span aria-hidden className="text-paper/60">×</span>
+          <Close size={11} className="text-paper/60" aria-hidden />
           <span className="sr-only">Remove filter</span>
         </button>
       ))}

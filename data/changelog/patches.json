@@ -1,5 +1,37 @@
 [
   {
+    "id": "beta-1-9-3",
+    "version": "Beta 1.9.3",
+    "date": "2026-07-11",
+    "title": "One hand for every symbol, and two checkout bugs caught live",
+    "intro": "Welcome, and glory to Jesus Christ. Two kinds of work in this patch. First, we walked the live shop the way a customer would and caught two real bugs at the door: a product page that could sit loading forever, and a checkout that returned buyers to a dead page after paying or backing out. Both are fixed and the whole cancel path is now verified against live Stripe. Second, every symbol in the app's buttons and controls now comes from one hand: our own icon family, drawn on one grid with one stroke, replacing the mismatched keyboard characters and third-party glyphs that had crept in. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "Checkout, walked and mended",
+        "body": "Backing out of a live payment used to strand you on a broken page, and the same flaw would have caught paying customers after checkout. Return addresses now always point home. We also proved the abandon path end to end against live Stripe: leave the payment page and the attempt cancels itself, with nothing charged and nothing lingering in your orders."
+      },
+      {
+        "heading": "Pages that never say almost",
+        "body": "A product page could hang on its loading bones if the app was waiting on a stale sign-in check held by another tab. Pages now refuse to wait on niceties: the shipping perk check gives itself a short deadline and steps aside, and the page simply loads."
+      },
+      {
+        "heading": "The webhook grew armor",
+        "body": "The machinery that marks orders paid now verifies the charged amount against the order before believing anything, and if a payment lands on an order that was cancelled a heartbeat earlier, the payment wins and the order is restored. Eleven new tests hold these rules in place."
+      },
+      {
+        "heading": "One family of symbols",
+        "body": "The bookmark star, the note pen, the copy link, the highlight spark, the cart plus and minus, the close cross, the menu lines, the rating stars, the save heart: all now drawn in Purify's own hand, on one grid, with one stroke, crisp in every button on every screen. The link symbol no longer turns into a colored emoji on Android, and the same action now wears the same symbol everywhere it appears."
+      },
+      {
+        "heading": "A clearer footing on the bottom bar",
+        "body": "The selected tab now speaks three ways: its color, its sliding backdrop, and a slightly firmer line in the icon itself, so the active tab reads clearly without leaning on color alone."
+      }
+    ],
+    "future": [],
+    "closing": "Found by walking the aisles ourselves, mended the same afternoon. If anything else is loose, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
     "id": "beta-1-9-2",
     "version": "Beta 1.9.2",
     "date": "2026-07-11",

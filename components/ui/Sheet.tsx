@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { setOverlayOpen } from "@/lib/ui/overlay";
+import { Close } from "@/components/ui/icons/Close";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 
 /**
@@ -126,7 +127,7 @@ export function Sheet({
             onClick={onClose}
             className="h-10 w-10 inline-flex items-center justify-center rounded-pill text-paper/65 hover:text-paper"
           >
-            ✕
+            <Close size={16} />
           </button>
         </div>
         {/* Body */}

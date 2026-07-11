@@ -1,5 +1,7 @@
 "use client";
 
+import { Close } from "@/components/ui/icons/Close";
+
 import { useEffect, useState } from "react";
 import type { ChapterCommentary } from "@/lib/bible/load";
 import { SaintIcon } from "./SaintIcon";
@@ -240,7 +242,7 @@ export function MobileCommentarySheet({
  aria-label="Close"
  className="shrink-0 h-11 w-11 rounded-full flex items-center justify-center text-paper/65 hover:text-paper hover:bg-paper/[0.06] transition-colors"
  >
- <span aria-hidden className="text-lede leading-none">×</span>
+ <Close size={16} />
  </button>
  </div>
 

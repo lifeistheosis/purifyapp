@@ -1,3 +1,4 @@
+import { Star } from "@/components/ui/icons/Star";
 import { cn } from "@/lib/cn";
 
 /**
@@ -26,11 +27,14 @@ export function RatingStars({
       className={cn("inline-flex items-center gap-1.5", className)}
       aria-label={label}
     >
-      <span aria-hidden className="inline-flex leading-none tracking-[1px]">
+      <span aria-hidden className="inline-flex items-center gap-[1px] leading-none">
         {[1, 2, 3, 4, 5].map((i) => (
-          <span key={i} className={i <= filled ? "text-gold" : "text-paper/25"}>
-            ★
-          </span>
+          <Star
+            key={i}
+            size={13}
+            filled={i <= filled}
+            className={i <= filled ? "text-gold" : "text-paper/30"}
+          />
         ))}
       </span>
       {showCount ? (

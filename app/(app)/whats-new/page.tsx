@@ -23,6 +23,22 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 1.9.3",
+ kind: "One hand for every symbol, and two checkout bugs caught live",
+ date: "July 11, 2026",
+ blurb:
+  "We walked the live shop like a customer and fixed what we found: dead return pages after checkout and a product page that could load forever. Every button symbol in the app is now drawn in one hand.",
+ items: [
+  "Checkout return addresses always point home now: backing out of a live payment lands on the proper cancelled page and the attempt cleans itself up, verified end to end against live Stripe.",
+  "Product pages no longer hang on a stale sign-in check held by another tab; the shipping perk lookup gives itself a deadline and steps aside.",
+  "The payment webhook verifies the charged amount against the order before marking it paid, and a payment that lands on a just-cancelled order wins and restores it. Eleven new tests.",
+  "A single icon family now draws every control symbol: bookmark star, note pen, copy link, highlight spark, cart stepper, close, menu, rating stars, save heart. No more emoji or third-party glyphs; the link icon no longer renders as a colored emoji on Android.",
+  "The reader's long-press toolbar and the verse tools now share the same symbols for the same actions.",
+  "The selected bottom-bar tab reads three ways: color, backdrop, and a firmer icon line.",
+  "Cache version steps to purify-beta-1.9.3.",
+ ],
+ },
+ {
  version: "Beta 1.9.2",
  kind: "The shop, refined: a cart, honest orders, and a smoother checkout",
  date: "July 11, 2026",

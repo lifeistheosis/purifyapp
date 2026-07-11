@@ -21,6 +21,12 @@ import {
  type MobileVerseAction,
 } from "./MobileVerseToolbar";
 import { FlorilegiumPickerSheet } from "@/components/florilegium/FlorilegiumPickerSheet";
+import { Check } from "@/components/ui/icons/Check";
+import { Erase } from "@/components/ui/icons/Erase";
+import { LinkChain } from "@/components/ui/icons/LinkChain";
+import { Pen } from "@/components/ui/icons/Pen";
+import { Sparkle } from "@/components/ui/icons/Sparkle";
+import { Star } from "@/components/ui/icons/Star";
 import { cn } from "@/lib/cn";
 
 function tokenize(text: string): string[] {
@@ -851,7 +857,7 @@ export function VerseRow({
  : undefined
  }
  >
- ✦
+ <Sparkle size={16} filled={!!ann.highlighted} />
  </button>
  {/* Highlight color picker. The dot shows the verse's current (or
  default) color; the popover recolors an existing highlight or
@@ -897,7 +903,7 @@ export function VerseRow({
  title="Clear word highlights"
  className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui md:text-caption transition-colors duration-150"
  >
- ⌫
+ <Erase size={16} />
  </button>
  )}
  <button
@@ -912,7 +918,7 @@ export function VerseRow({
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
  )}
  >
- {copied ? "✓" : "🔗"}
+ {copied ? <Check size={16} /> : <LinkChain size={16} />}
  </button>
  <button
  type="button"
@@ -929,7 +935,7 @@ export function VerseRow({
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
  )}
  >
- {isVerseBookmarked ? "★" : "☆"}
+ <Star size={16} filled={isVerseBookmarked} />
  </button>
  <button
  type="button"
@@ -947,7 +953,7 @@ export function VerseRow({
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper")
  }
  >
- ✎
+ <Pen size={16} />
  </button>
  </div>
  </div>

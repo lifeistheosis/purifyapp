@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { Star } from "@/components/ui/icons/Star";
 import { cn } from "@/lib/cn";
 import { submitReview } from "@/lib/shop/catalogClient";
 
@@ -69,11 +70,11 @@ export function WriteReviewForm({
             onClick={() => setStars(i)}
             onMouseEnter={() => setHover(i)}
             className={cn(
-              "tap-press text-[26px] leading-none transition-colors",
-              i <= shown ? "text-gold" : "text-paper/25 hover:text-paper/40",
+              "tap-press leading-none transition-colors",
+              i <= shown ? "text-gold" : "text-paper/30 hover:text-paper/50",
             )}
           >
-            ★
+            <Star size={26} filled={i <= shown} />
           </button>
         ))}
       </div>
