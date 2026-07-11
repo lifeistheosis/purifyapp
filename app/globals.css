@@ -131,15 +131,25 @@
  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* Native safe-area helper vars. @capacitor-community/safe-area makes
+   env(safe-area-inset-*) report real values on Chromium 140+ and pads the
+   webview itself on older Chromium (where env stays 0 but the content is
+   already inset). Everything native reads these so the offsets stay in one
+   place; the real per-screen bug was fixed offsets (below-topbar / -line)
+   that ignored the taller pinned bar, not the inset source. */
+html.is-native {
+ --inset-top: env(safe-area-inset-top, 0px);
+ --inset-bottom: env(safe-area-inset-bottom, 0px);
+}
 /* The actual app-shell padding only applies inside the native shell. */
 html.is-native .safe-pb {
- padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tab-bar-h));
+ padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h));
 }
 html.is-native .safe-pb-reader {
- padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tab-bar-h) + 68px);
+ padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + 68px);
 }
 html.is-native .safe-pt {
- padding-top: env(safe-area-inset-top, 0px);
+ padding-top: var(--inset-top);
 }
 
 /* Web-only notch clearance for the sticky mobile top bar. viewport-fit=cover
@@ -162,16 +172,22 @@ html:not(.is-native) .topbar-safe {
    state clears the status bar, and cancel the <main> padding at the bar's
    position with a negative margin so nothing double-pads at rest. */
 html.is-native .topbar-safe {
- padding-top: env(safe-area-inset-top, 0px);
- height: calc(3rem + env(safe-area-inset-top, 0px));
- margin-top: calc(-1 * env(safe-area-inset-top, 0px));
+ padding-top: var(--inset-top);
+ height: calc(3rem + var(--inset-top));
+ margin-top: calc(-1 * var(--inset-top));
 }
 
-/* Companions of the bar (e.g. the Bible chapter sticky header) hard-coded
-   `top-12` to sit just below it; on native the pinned bar is taller by the
-   inset, so they offset by the same amount. */
+/* Companions of the bar (e.g. the Bible chapter sticky header, the reader
+   context strip, the saints work progress line) hard-coded `top-12` (48px,
+   right under the 3rem bar) to sit just below it; on native the pinned bar is
+   taller by the inset, so they offset by the same amount. */
 html.is-native .below-topbar {
- top: calc(3rem + env(safe-area-inset-top, 0px));
+ top: calc(3rem + var(--inset-top));
+}
+/* The reader's slim progress LINE sits below both the bar and the ~32px
+   context strip (web `top-[80px]`); on native add the inset too. */
+html.is-native .below-topbar-line {
+ top: calc(80px + var(--inset-top));
 }
 
 @layer base {

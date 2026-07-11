@@ -3,6 +3,7 @@ import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { PlusPaywall } from "@/components/billing/PlusPaywall";
 import { WebOnly, NativeOnly } from "@/components/platform/PlatformGate";
+import { ClientErrorBoundary } from "@/components/ui/ClientErrorBoundary";
 import { PLAY_STORE_URL } from "@/lib/site";
 import {
   WebPlusCheckout,
@@ -154,9 +155,26 @@ export default async function PricingPage() {
     <>
       {/* Web (mobile + desktop): the quiet, price-free pricing page. */}
       <WebOnly>{view}</WebOnly>
-      {/* Native app: the full-screen Purify Plus paywall (Play Billing). */}
+      {/* Native app: the full-screen Purify Plus paywall (Play Billing).
+          Wrapped so a billing/plugin failure shows a calm fallback instead
+          of white-screening the WebView (the "Purify Plus crashes" report). */}
       <NativeOnly>
-        <PlusPaywall />
+        <ClientErrorBoundary
+          fallback={
+            <div className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center">
+              <p className="font-display-serif text-title text-paper">
+                Purify Plus
+              </p>
+              <p className="mx-auto mt-3 max-w-[320px] font-sans text-ui leading-relaxed text-paper/60">
+                Plus isn&rsquo;t available to open right now. The whole core of
+                Purify stays free, and everything you&rsquo;ve gathered is safe
+                on this device.
+              </p>
+            </div>
+          }
+        >
+          <PlusPaywall />
+        </ClientErrorBoundary>
       </NativeOnly>
     </>
   );

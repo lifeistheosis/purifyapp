@@ -53,30 +53,38 @@ export function PlusPaywall() {
   const [note, setNote] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    if (!billingAvailable()) {
+    // Any failure in the RevenueCat/plugin chain must degrade to the calm
+    // "unavailable" state, never throw uncaught (an unhandled error here
+    // white-screened the WebView — the "Purify Plus crashes" report).
+    try {
+      if (!billingAvailable()) {
+        setPhase("unavailable");
+        return;
+      }
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        setPhase("signed-out");
+        return;
+      }
+      if (!(await initBilling(user.id))) {
+        setPhase("unavailable");
+        return;
+      }
+      if (await isPlusActive()) {
+        setPhase("subscribed");
+        return;
+      }
+      const pkgs = await getPlusPackages();
+      setPackages(pkgs);
+      setSelected(pkgs.yearly ? "yearly" : "monthly");
+      setPhase(pkgs.monthly || pkgs.yearly ? "ready" : "unavailable");
+    } catch (e) {
+      console.error("[PlusPaywall] load failed:", e);
       setPhase("unavailable");
-      return;
     }
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      setPhase("signed-out");
-      return;
-    }
-    if (!(await initBilling(user.id))) {
-      setPhase("unavailable");
-      return;
-    }
-    if (await isPlusActive()) {
-      setPhase("subscribed");
-      return;
-    }
-    const pkgs = await getPlusPackages();
-    setPackages(pkgs);
-    setSelected(pkgs.yearly ? "yearly" : "monthly");
-    setPhase(pkgs.monthly || pkgs.yearly ? "ready" : "unavailable");
   }, []);
 
   useEffect(() => {
@@ -91,27 +99,46 @@ export function PlusPaywall() {
     if (!pkg || busy) return;
     setBusy("buy");
     setNote(null);
-    const outcome = await purchase(pkg);
-    setBusy(null);
-    if (outcome === "active") setPhase("subscribed");
-    else if (outcome === "error")
+    try {
+      const outcome = await purchase(pkg);
+      if (outcome === "active") setPhase("subscribed");
+      else if (outcome === "error")
+        setNote("That didn't go through. Nothing was charged.");
+    } catch (e) {
+      console.error("[PlusPaywall] purchase failed:", e);
       setNote("That didn't go through. Nothing was charged.");
+    } finally {
+      setBusy(null);
+    }
   }, [selected, packages, busy]);
 
   const onRestore = useCallback(async () => {
     if (busy) return;
     setBusy("restore");
     setNote(null);
-    const ok = await restore();
-    setBusy(null);
-    if (ok) setPhase("subscribed");
-    else setNote("No previous Purify Plus subscription was found.");
+    try {
+      const ok = await restore();
+      if (ok) setPhase("subscribed");
+      else setNote("No previous Purify Plus subscription was found.");
+    } catch (e) {
+      console.error("[PlusPaywall] restore failed:", e);
+      setNote("Couldn't check for a previous subscription. Please try again.");
+    } finally {
+      setBusy(null);
+    }
   }, [busy]);
 
   const onManage = useCallback(async () => {
-    const shown = await presentCustomerCenter();
-    if (!shown && typeof window !== "undefined") {
-      window.open(MANAGE_SUBSCRIPTION_URL, "_blank");
+    try {
+      const shown = await presentCustomerCenter();
+      if (!shown && typeof window !== "undefined") {
+        window.open(MANAGE_SUBSCRIPTION_URL, "_blank");
+      }
+    } catch (e) {
+      console.error("[PlusPaywall] manage failed:", e);
+      if (typeof window !== "undefined") {
+        window.open(MANAGE_SUBSCRIPTION_URL, "_blank");
+      }
     }
   }, []);
 

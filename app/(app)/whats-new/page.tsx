@@ -23,6 +23,19 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 1.8.2",
+ kind: "The account pages, mended",
+ date: "July 11, 2026",
+ blurb:
+  "A quick repair patch for three crashes the first users found on the app: the account pages, the Purify Plus screen, and a top bar that slipped under the clock in the reader. All three mended.",
+ items: [
+  "Account & security, Notifications, and the other account pages open on the app again instead of bouncing to sign-in: the offline app was checking your session the wrong way on those pages and now checks it client-side.",
+  "The Purify Plus screen opens cleanly every time and never closes the app if the store is slow to answer (guarded billing calls + an error boundary).",
+  "The Bible reader's book-and-verse strip and progress line clear the phone's status bar, in the reader and every screen with the mobile top bar.",
+  "Cache version steps to purify-beta-1.8.2.",
+ ],
+ },
+ {
  version: "Beta 1.8.1",
  kind: "Launch-day repairs, with thanks",
  date: "July 10, 2026",

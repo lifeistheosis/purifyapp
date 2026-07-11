@@ -40,8 +40,9 @@ export function MobileWorkProgressBar() {
   return (
     <div
       aria-hidden
-      // Sits flush under the 48px MobileTopBar.
-      className="md:hidden fixed left-0 right-0 top-12 z-30 h-[2px] bg-white/5"
+      // Sits flush under the 48px MobileTopBar; below-topbar adds the
+      // status-bar inset on native so it clears the taller pinned bar.
+      className="md:hidden fixed left-0 right-0 top-12 below-topbar z-30 h-[2px] bg-white/5"
     >
       <div
         className="h-full bg-gold origin-left transition-transform duration-150 ease-out"

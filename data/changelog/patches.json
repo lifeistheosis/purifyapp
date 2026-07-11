@@ -1,5 +1,29 @@
 [
   {
+    "id": "beta-1-8-2",
+    "version": "Beta 1.8.2",
+    "date": "2026-07-11",
+    "title": "The account pages, mended",
+    "intro": "Welcome, and glory to Jesus Christ. A quick repair patch for three crashes the first users found on the app: the account pages, the Purify Plus screen, and a top bar that slipped under the clock in the reader. All three are mended. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "Your account, reachable again",
+        "body": "On the app, opening Account and security, or Notifications, was bouncing you back to sign-in or closing the screen. The offline app checks who you are the wrong way on those pages; it now checks the right way, so your profile, security, notification, and session settings all open as they should, without signing you out."
+      },
+      {
+        "heading": "Purify Plus opens cleanly",
+        "body": "The Purify Plus screen could close the app if the store took a moment to answer. It now opens to a calm screen every time, and never closes the app if billing is slow to load."
+      },
+      {
+        "heading": "The top bar clears the clock",
+        "body": "In the Bible reader, the little book-and-verse strip at the top could slip up under the phone's clock and battery. It now sits clear of the status bar, in the reader and everywhere else the top bar appears."
+      }
+    ],
+    "future": [],
+    "closing": "Small and quick, offered with thanks to everyone testing on day one. If anything else is loose, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
     "id": "beta-1-8-1",
     "version": "Beta 1.8.1",
     "date": "2026-07-10",
