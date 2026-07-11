@@ -10,6 +10,10 @@ import {
 import type { ShopIconRequest } from "@/lib/shop/types";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { createClient } from "@/lib/supabase/client";
+import {
+  AUTH_UNRESOLVED_MESSAGE,
+  resolveUser,
+} from "@/lib/supabase/resolveUser";
 
 const REQUEST_STATUS_LABELS: Record<ShopIconRequest["status"], string> = {
   new: "Received",
@@ -22,11 +26,12 @@ const REQUEST_STATUS_LABELS: Record<ShopIconRequest["status"], string> = {
 type Result = { signedIn: false } | { signedIn: true; requests: ShopIconRequest[] };
 
 async function load(): Promise<Result> {
+  // Auth-required page: an unresolved check (auth lock, network) must land
+  // on the retry state, never on the sign-in prompt (F-13).
+  const auth = await resolveUser();
+  if (auth.state === "unresolved") throw new Error(AUTH_UNRESOLVED_MESSAGE);
+  if (auth.state === "signed-out") return { signedIn: false };
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { signedIn: false };
   const { data } = await supabase
     .from("shop_icon_requests")
     .select(

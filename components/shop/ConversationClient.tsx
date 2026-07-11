@@ -12,6 +12,10 @@ import {
 import type { ShopConversation, ShopMessage } from "@/lib/shop/types";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { createClient } from "@/lib/supabase/client";
+import {
+  AUTH_UNRESOLVED_MESSAGE,
+  resolveUser,
+} from "@/lib/supabase/resolveUser";
 
 type Row = ShopConversation & { store: { public_name: string } | null };
 type Result =
@@ -19,17 +23,18 @@ type Result =
   | { signedIn: true; conversation: Row | null; messages: ShopMessage[] };
 
 async function load(id: string): Promise<Result> {
+  // Auth-required page: an unresolved check (auth lock, network) must land
+  // on the retry state, never on the sign-in prompt (F-13).
+  const auth = await resolveUser();
+  if (auth.state === "unresolved") throw new Error(AUTH_UNRESOLVED_MESSAGE);
+  if (auth.state === "signed-out") return { signedIn: false };
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { signedIn: false };
 
   const { data } = await supabase
     .from("shop_conversations")
     .select("*, store:shop_stores(public_name)")
     .eq("id", id)
-    .eq("buyer_user_id", user.id)
+    .eq("buyer_user_id", auth.user.id)
     .maybeSingle();
   const conversation = (data as Row | null) ?? null;
   if (!conversation) return { signedIn: true, conversation: null, messages: [] };
