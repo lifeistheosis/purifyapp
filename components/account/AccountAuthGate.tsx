@@ -2,24 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { isNativeClient } from "@/lib/platform/native";
 import { resolveUser } from "@/lib/supabase/resolveUser";
 
 /**
  * Client-side auth gate for the signed-in account dashboard.
  *
- * On the WEB the server middleware (lib/supabase/middleware, via proxy.ts)
- * already bounces unsigned users off /account/* before this renders. But the
- * native app ships as a local-first static export with NO server middleware
- * AND no server session at build time, so the old server-side
- * `getUser() + redirect("/signin")` in the layout baked a redirect to /signin
- * into every account page ("Account & security signs you out"). This gate
- * resolves the session at runtime from the WebView's own storage and renders
- * the account UI when signed in, or redirects client-side when not.
+ * On the WEB the server proxy (lib/supabase/middleware.updateSession, run by
+ * proxy.ts on every request) ALREADY validates the session server-side and
+ * redirects signed-out users off /account/* before this ever renders — so if
+ * we are rendering here on the web, the user is authenticated. We must NOT do
+ * a second, redundant client check: that check called the network (getUser),
+ * and when it raced a token refresh on open it failed with "We couldn't
+ * confirm your sign-in" for an already-signed-in user (F-13, reported live
+ * 2026-07-12). On the web we simply render.
  *
- * The redirect is reserved for a RESOLVED signed-out answer. When the check
- * can't complete — supabase-js's cross-tab auth lock held by another tab, or
- * a network failure (F-13) — redirecting would be a fake sign-out for a
- * signed-in user, so the gate shows a retry state instead.
+ * The NATIVE app ships as a local-first static export with NO server proxy and
+ * no server session, so there the client resolve IS the gate: it reads the
+ * WebView's local session and renders when signed in, redirects on a RESOLVED
+ * signed-out, and shows a retry (never a fake sign-out) when it genuinely
+ * can't tell.
  */
 export function AccountAuthGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -33,6 +35,16 @@ export function AccountAuthGate({ children }: { children: React.ReactNode }) {
   // updates belong in handlers, not effect bodies — same shape as
   // useAsyncData.reload).
   useEffect(() => {
+    // Web: the server proxy already gated this route. Reaching here means
+    // signed in — render without the redundant (and failure-prone) client
+    // check. isNativeClient() is read in the effect (post-hydration) so it
+    // returns the true value, not the SSR default. One-time platform sync,
+    // same disable as the other hydration-time state seeds in this codebase.
+    if (!isNativeClient()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setState("in");
+      return;
+    }
     let cancelled = false;
     resolveUser().then((auth) => {
       if (cancelled) return;
