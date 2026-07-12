@@ -167,7 +167,7 @@ findings:
     area: testing/accessibility
     severity: P2
     confidence: confirmed
-    status: corrected-unverified   # 2026-07-11 triage complete (CI #318 raw logs + local repro). Four failure classes, all fixed; local suite green; CI-green acceptance pending owner push.
+    status: corrected-verified   # ACCEPTANCE MET: CI run #321 (28eacba) completed successfully end-to-end — lint/typecheck/unit/build/e2e+axe/Lighthouse all green, first fully green pipeline since the gate revived.
     evidence: >
       CI #318 breakdown: 25 failed / 3 flaky / 9 skipped / 21 passed.
       (a) 24 failures: every mobile-shell test x2 projects died at browser
