@@ -29,9 +29,15 @@ export function ProfileTabClient() {
     let cancelled = false;
     (async () => {
       const supabase = createClient();
+      // Read the LOCAL session (getSession), not getUser(): getUser() makes a
+      // network round-trip that can hang on open, leaving this stuck on
+      // "Loading your profile…" forever (F-13). The account is already gated
+      // (server proxy on web, AccountAuthGate on native), so the local session
+      // is the right, non-blocking source of the signed-in identity.
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
+        data: { session },
+      } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user || cancelled) return;
       const { data: profile } = await supabase
         .from("profiles")

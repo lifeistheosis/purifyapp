@@ -25,9 +25,12 @@ export function SecurityTabClient() {
     let cancelled = false;
     (async () => {
       const supabase = createClient();
+      // Local session, not a network getUser() — see ProfileTabClient (F-13):
+      // getUser() can hang on open and strand this on its loading state.
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
+        data: { session },
+      } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user || cancelled) return;
       const { data: profile } = await supabase
         .from("profiles")
