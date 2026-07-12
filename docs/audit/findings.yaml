@@ -191,6 +191,17 @@ findings:
       under a collapsed card's toggle. Fix: expandCard helper asserts
       aria-expanded=true and re-clicks until it sticks (history.spec.ts).
     action: fixes in place; acceptance = next CI run green end-to-end (owner pushes); no specs quarantined — all four classes had real fixes
+    residual: >
+      (found during CI acceptance, runs #319/#320) Flag-off builds 500
+      (digest DYNAMIC_SERVER_USAGE) on the dynamic shop segments
+      /shop/[store] and /shop/icons/[slug]: with no slugs enumerable at
+      build, the request becomes on-demand static generation and the shop
+      layout's notFound() is treated as dynamic-API usage by Next 16.2.
+      Reproduced against a CI-identical local build (placeholder keys, no
+      .env.local); UNREACHABLE in prod (flag on; unknown slugs render the
+      client shell, 200 verified live 2026-07-11). Spec skips on >=500 with
+      the mechanism named. Proper fix if it ever matters: move the shop
+      flag gate out of the layout (per-page or middleware).
     safe_to_automate: partially
     review: none
 

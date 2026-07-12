@@ -89,3 +89,7 @@ Owner directives received and executed:
 **Acceptance residual:** CI green end-to-end needs the owner push (commits are local, per session policy). If the *Lighthouse* step then fails, that is the next new signal — the e2e stage no longer blocks it.
 
 **1.9.3 ship readiness (AAB #43):** run #43 SUCCESS on `23da374` (the Beta 1.9.3 commit); `app-release.aab` (337 MB, sha256 124c288f…) replaced on the `android-release` release at 21:15Z, versionName 1.9.3 confirmed in `build.gradle`. Upload to Play Console is the shipping step.
+
+### CI acceptance follow-up (same session, runs #319-#321)
+- Run #319 (post-push): 36 passed / 9 skipped / 1 failed — only the EIKON spec; webkit, axe, and history classes all confirmed fixed in CI.
+- Run #320: same lone failure. Root-caused with a CI-identical local build (placeholder keys, no .env.local): flag-off builds 500 (DYNAMIC_SERVER_USAGE) on BOTH dynamic shop segments — on-demand static generation + the shop layout's notFound(). Unreachable in prod (flag on; unknown slugs 200, verified live). Recorded as F-15 residual; spec now skips on >=500 with the mechanism named, and the skip was proven against the replica build (5 shop specs skip exactly as CI will).
