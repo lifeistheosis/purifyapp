@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 
 import { CategoryClient } from "@/components/shop/CategoryClient";
 import { CATEGORY_LABELS } from "@/lib/shop/format";
@@ -23,13 +22,13 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return { title: label ?? "Category" };
 }
 
-// Server shell; the grid renders client-side (it reads the ?inventory filter
-// from the URL) so it works in the native local-first export.
+// Server shell; the grid renders client-side. CategoryClient reads any ?q= /
+// ?inventory= deep-link params from window.location in a mount effect (NOT
+// useSearchParams), so it needs no Suspense boundary — and must not have one:
+// a Suspense-wrapped client child on this statically-exported route failed to
+// hydrate, leaving the products fetch unfired and the page stuck on its
+// skeleton (live-broken on prod /shop/category/*, fixed here).
 export default async function CategoryPage({ params }: Params) {
   const { category } = await params;
-  return (
-    <Suspense fallback={null}>
-      <CategoryClient category={category} />
-    </Suspense>
-  );
+  return <CategoryClient category={category} />;
 }

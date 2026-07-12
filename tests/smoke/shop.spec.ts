@@ -30,6 +30,37 @@ test("shop home renders the marketplace shell", async ({ page }) => {
   await expectNoA11yViolations(page);
 });
 
+test("category page hydrates, loads its grid, and search narrows it", async ({
+  page,
+}) => {
+  // Regression guard for the live-broken /shop/category/* pages: a
+  // Suspense-wrapped client child failed to hydrate on the static export,
+  // so the products fetch never fired and the page sat on its skeleton
+  // forever. This asserts the grid actually renders and the search box —
+  // proof the client component is alive — filters it.
+  const response = await page.goto("/shop/category/all");
+  test.skip(response?.status() === 404, "shop flag is off in this build");
+
+  await expect(page.locator("h1")).toContainText(/All icons/);
+  // A live search input proves hydration; a stuck page would have none.
+  const search = page.locator('input[type="search"]');
+  await expect(search).toBeVisible();
+
+  // The grid must leave its skeleton and show real product links.
+  const cards = page.locator('a[href^="/shop/icons/"]');
+  await expect(cards.first()).toBeVisible({ timeout: 15_000 });
+  const total = await cards.count();
+  expect(total).toBeGreaterThan(0);
+
+  // Typing a term no product can match empties the grid (client filtering
+  // is wired). Uses a nonsense token so it holds for any seed data.
+  await search.fill("zzzznomatch");
+  await expect(page.locator("body")).toContainText(/Nothing matches/i);
+
+  await expect(page.locator("text=/Application error/i")).toHaveCount(0);
+  await expectNoA11yViolations(page);
+});
+
 test("EIKON storefront tells its operational story without naming its parent", async ({
   page,
 }) => {

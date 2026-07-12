@@ -34,10 +34,10 @@ export function ProductRail({
           </Link>
         ) : null}
       </div>
-      <ul className="flex gap-4 overflow-x-auto scrollbar-thin px-5 pb-2 md:px-0">
+      <ul className="flex snap-x snap-mandatory gap-4 overflow-x-auto scrollbar-thin px-5 pb-2 md:px-0">
         {products.map((p) => (
-          <li key={p.id} className="w-[62vw] shrink-0 sm:w-[38vw] lg:w-[240px]">
-            <ProductCard product={p} sizes="(min-width: 1024px) 240px, 62vw" />
+          <li key={p.id} className="w-[54vw] shrink-0 snap-start sm:w-[36vw] lg:w-[240px]">
+            <ProductCard product={p} sizes="(min-width: 1024px) 240px, 54vw" />
           </li>
         ))}
       </ul>

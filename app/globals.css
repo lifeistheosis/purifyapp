@@ -1068,6 +1068,34 @@ html.reader-focus [data-reader-exit] {
  }
 }
 
+/* ── Shop micro-motion ────────────────────────────────────────────────
+   Small confirmations for the marketplace: the cart badge bumps when its
+   count changes (the badge is keyed by count, so React remounts it and
+   the animation replays), and the save heart pops when toggled on. All
+   decorative; reduced motion turns them off wholesale. */
+@keyframes badge-bump {
+ 0% { transform: scale(0.6); }
+ 55% { transform: scale(1.25); }
+ 100% { transform: scale(1); }
+}
+.badge-bump {
+ animation: badge-bump 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes heart-pop {
+ 0% { transform: scale(1); }
+ 40% { transform: scale(1.35); }
+ 100% { transform: scale(1); }
+}
+.heart-pop {
+ animation: heart-pop 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+ .badge-bump,
+ .heart-pop {
+ animation: none;
+ }
+}
+
 /* Route entrance. The in-app routes wrap their page content in
    app/(app)/template.tsx, which re-mounts on navigation; this fades that
    content in so a tab switch or a drill-in arrives gently instead of

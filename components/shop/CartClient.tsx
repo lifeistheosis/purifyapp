@@ -9,6 +9,7 @@ import { Minus } from "@/components/ui/icons/Minus";
 import { Plus } from "@/components/ui/icons/Plus";
 import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/cn";
+import { hasActivePlusClient } from "@/lib/entitlements/client";
 import {
   cartSubtotalCents,
   clearCart,
@@ -31,6 +32,10 @@ export function CartClient() {
   const router = useRouter();
   const items = useCart();
   const { data: config } = useAsyncData(fetchShopConfig, []);
+  // Display-only: reflects the buyer's real Plus shipping perk. Fails open to
+  // false (the server re-decides shipping at checkout either way), so a
+  // jammed auth lock never blocks the cart. See hasActivePlusClient.
+  const { data: plus } = useAsyncData(hasActivePlusClient, []);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [agreed, setAgreed] = useState(false);
@@ -115,7 +120,7 @@ export function CartClient() {
                   alt={item.imageAlt ?? item.title}
                   fill
                   sizes="80px"
-                  className="object-cover"
+                  className="object-contain p-1.5"
                 />
               ) : null}
             </Link>
@@ -190,11 +195,34 @@ export function CartClient() {
               {formatPrice(subtotal, currency)}
             </p>
           </div>
-          <p className="mt-1 font-sans text-caption text-paper/55">
-            {config
-              ? `+ ${formatPrice(config.flatShippingCents, currency)} standard shipping, once per order · free with Purify Plus`
-              : "Shipping calculated at checkout · free with Purify Plus"}
-          </p>
+          {/* Shipping line, honest to the buyer's real Plus status. */}
+          <div className="mt-1.5 flex items-center justify-between gap-3">
+            <p className="font-sans text-caption text-paper/55">Shipping</p>
+            {plus ? (
+              <p className="font-sans text-caption font-semibold text-emerald-300">
+                {config ? (
+                  <span className="mr-1.5 text-paper/40 line-through">
+                    {formatPrice(config.flatShippingCents, currency)}
+                  </span>
+                ) : null}
+                Free with Purify Plus
+              </p>
+            ) : (
+              <p className="font-sans text-caption text-paper/70">
+                {config
+                  ? `${formatPrice(config.flatShippingCents, currency)} · once per order`
+                  : "Calculated at checkout"}
+              </p>
+            )}
+          </div>
+          {!plus ? (
+            <Link
+              href="/pricing"
+              className="mt-1.5 inline-flex items-center gap-1 font-sans text-caption font-medium text-gold hover:text-gold-pale"
+            >
+              Free shipping on every order with Purify Plus →
+            </Link>
+          ) : null}
 
           <label className="mt-3 flex cursor-pointer items-start gap-2.5">
             <input

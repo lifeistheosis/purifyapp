@@ -273,3 +273,53 @@ corrections:
       have caught this at the June commit.
     safe_to_automate: partially
     review: owner (sandbox purchase on device)
+
+  - id: F-17
+    title: /shop/category/* pages dead on prod — Suspense-wrapped client child never hydrates on the static export
+    area: commerce/web
+    severity: P1
+    confidence: confirmed-live
+    status: corrected-verified-live   # reproduced on live purifyapp.net (0 cards, stuck skeleton) AND fixed + verified on local prod build (10 cards, search filters live)
+    evidence: >
+      Found during the EIKON redesign browser walk. Every /shop/category/*
+      page sat forever on its loading skeleton: the products fetch never
+      fired. Root cause: the route shell wrapped CategoryClient in
+      <Suspense fallback={null}> (required because it used useSearchParams);
+      on the local-first static export that Suspense boundary's client child
+      never hydrated, so useAsyncData's effect never ran. Layout components
+      (ShopSubTabs, AppNav) hydrated fine; the EIKON store page (StoreClient,
+      no Suspense) hydrated fine — the boundary was the differentiator.
+      Confirmed live: https://purifyapp.net/shop/category/all showed 0 product
+      cards + skeleton. Browsing by category has been broken in production.
+    action: >
+      CategoryClient no longer uses useSearchParams — it reads ?q= /
+      ?inventory= deep links from window.location in a mount effect — and the
+      route no longer wraps it in Suspense. Now hydrates and loads like the
+      store page. Verified on the local prod build: 10 cards render, live
+      search narrows the grid, filter sheet applies, quick-add works. New
+      regression smoke test (tests/smoke/shop.spec.ts "category page hydrates,
+      loads its grid, and search narrows it") asserts the grid renders + search
+      filters, so this cannot silently return. Ships with the EIKON redesign.
+    safe_to_automate: true
+    review: none
+
+  - id: F-18
+    title: Shop pages poll supabase auth (getSession/getUser) frequently; verbose under locks.debug
+    area: performance/web
+    severity: P3
+    confidence: observed
+    status: confirmed
+    evidence: >
+      While debugging F-17 (locks.debug temporarily on) the console showed a
+      high volume of navigatorLock acquire/release on the shop pages — several
+      layout components (avatars, greeting, sync bridges) each resolve auth on
+      mount, and the cart/detail add display-only Plus checks. The debug flag
+      inflated the visible volume; the underlying repeated getSession calls are
+      real but not a confirmed infinite loop. Not the F-17 blocker (present on
+      working pages too).
+    action: >
+      Later: dedupe client auth resolution behind a single shared
+      getUser()/getSession() cache so N components on a page don't each hit the
+      lock. Low urgency; no correctness impact.
+    safe_to_automate: partially
+    review: none

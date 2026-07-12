@@ -36,11 +36,15 @@ export function FavoriteButton({
   useEffect(() => setMounted(true), []);
 
   const saved = mounted && isBookmarked({ kind: "product", productSlug });
+  // Replay the pop only when the heart goes on (not on remove). Keyed off a
+  // nonce bumped by the click so the CSS animation re-fires each save.
+  const [pop, setPop] = useState(0);
 
   return (
     <button
       type="button"
-      onClick={() =>
+      onClick={() => {
+        if (!saved) setPop((n) => n + 1);
         toggle({
           kind: "product",
           productSlug,
@@ -49,8 +53,8 @@ export function FavoriteButton({
           priceLabel,
           imageUrl,
           imageAlt,
-        })
-      }
+        });
+      }}
       aria-pressed={saved}
       aria-label={saved ? "Remove from saved" : "Save this icon"}
       title={saved ? "Remove from saved" : "Save this icon"}
@@ -62,7 +66,9 @@ export function FavoriteButton({
         className,
       )}
     >
-      <Heart size={20} filled={saved} />
+      <span key={pop} className={saved ? "heart-pop inline-flex" : "inline-flex"}>
+        <Heart size={20} filled={saved} />
+      </span>
     </button>
   );
 }

@@ -1,11 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo, useState } from "react";
 
 import { PolicyText } from "@/components/shop/PolicyText";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { RatingStars } from "@/components/shop/RatingStars";
+import { ShopBrowseControls } from "@/components/shop/ShopBrowseControls";
 import { ShopError, ShopGridSkeleton } from "@/components/shop/ShopStates";
+import {
+  activeFilterCount,
+  filterProducts,
+  type BrowseFilters,
+} from "@/lib/shop/browse";
 import { fetchShopStore } from "@/lib/shop/catalogClient";
 import { CATEGORY_LABELS } from "@/lib/shop/format";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
@@ -20,7 +27,7 @@ function ProductGrid({
 }) {
   if (products.length === 0) return null;
   return (
-    <section aria-label={title} className="mt-12">
+    <section aria-label={title} className="mt-10">
       <div className="mb-5 flex items-baseline justify-between gap-3">
         <h2 className="font-display-serif text-title md:text-heading text-paper">
           {title}
@@ -57,6 +64,14 @@ export function StoreClient({ slug }: { slug: string }) {
       }),
     [slug],
   );
+  // Declared before the early returns so hook order stays stable.
+  const [filters, setFilters] = useState<BrowseFilters>({});
+  const filtered = useMemo(
+    () => filterProducts(data?.products ?? [], filters),
+    [data, filters],
+  );
+  const isFiltering =
+    Boolean(filters.q && filters.q.trim()) || activeFilterCount(filters) > 0;
 
   if (loading) return <div className="mx-auto w-full max-w-[1200px] px-5 pt-12 md:px-8"><ShopGridSkeleton /></div>;
   if (error) return <ShopError message={error} onRetry={reload} />;
@@ -117,7 +132,7 @@ export function StoreClient({ slug }: { slug: string }) {
 
         <ul className="mx-auto mt-6 flex max-w-[640px] flex-wrap items-center justify-center gap-2">
           {[
-            "Selected & inspected by hand",
+            "Inspected by hand",
             store.shipping_origin ? `Ships from ${store.shipping_origin}` : null,
             "30-day returns",
           ]
@@ -132,12 +147,6 @@ export function StoreClient({ slug }: { slug: string }) {
               </li>
             ))}
         </ul>
-        {products.length > 0 ? (
-          <p className="mt-4 font-sans text-caption text-paper/45">
-            {products.length} {products.length === 1 ? "icon" : "icons"}
-            {ready.length > 0 ? ` · ${ready.length} ready to ship` : ""}
-          </p>
-        ) : null}
         {storeReviewCount > 0 ? (
           <div className="mt-3 flex justify-center">
             <RatingStars avg={storeAvg} count={storeReviewCount} />
@@ -145,11 +154,24 @@ export function StoreClient({ slug }: { slug: string }) {
         ) : null}
       </header>
 
+      {/* Search + facets over the store's own catalog. */}
+      {products.length > 0 ? (
+        <div className="mt-8">
+          <ShopBrowseControls
+            filters={filters}
+            onChange={setFilters}
+            resultCount={filtered.length}
+            searchPlaceholder={`Search ${store.public_name}…`}
+          />
+        </div>
+      ) : null}
+
+      {/* Category quick-jumps (only when the store spans several). */}
       {categoriesPresent.length > 1 ? (
-        <nav aria-label="Store categories" className="mt-8">
-          <ul className="flex justify-center gap-2 overflow-x-auto scrollbar-thin pb-1">
+        <nav aria-label="Store categories" className="mt-6 -mx-5 md:mx-0">
+          <ul className="flex snap-x gap-2 overflow-x-auto scrollbar-thin px-5 pb-1 md:justify-center md:px-0">
             {categoriesPresent.map((c) => (
-              <li key={c} className="shrink-0">
+              <li key={c} className="shrink-0 snap-start">
                 <Link
                   href={`/shop/category/${c}`}
                   className="tap-press inline-flex min-h-[40px] items-center rounded-pill border border-paper/15 bg-paper/[0.03] px-4 font-sans text-detail font-medium text-paper/75 hover:border-paper/35 hover:text-paper"
@@ -162,9 +184,41 @@ export function StoreClient({ slug }: { slug: string }) {
         </nav>
       ) : null}
 
-      <ProductGrid title="Ready to Ship" products={ready} />
-      <ProductGrid title="Special Order" products={special} />
-      <ProductGrid title="Coming Soon" products={upcoming} />
+      {/* When a search or facet is active, a single flat result grid reads
+          clearer than three sparse sections. Otherwise, keep the curated
+          availability sections. */}
+      {isFiltering ? (
+        filtered.length > 0 ? (
+          <section aria-label="Results" className="mt-8">
+            <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
+              {filtered.map((p, i) => (
+                <li key={p.id} className="rise-in" style={{ animationDelay: `${Math.min(i * 45, 360)}ms` }}>
+                  <ProductCard product={p} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : (
+          <div className="mt-12 text-center">
+            <p className="font-serif text-body text-paper/60">
+              Nothing here matches those filters.
+            </p>
+            <button
+              type="button"
+              onClick={() => setFilters({})}
+              className="tap-press mt-4 inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45"
+            >
+              Clear filters
+            </button>
+          </div>
+        )
+      ) : (
+        <>
+          <ProductGrid title="Ready to Ship" products={ready} />
+          <ProductGrid title="Special Order" products={special} />
+          <ProductGrid title="Coming Soon" products={upcoming} />
+        </>
+      )}
 
       <section aria-label="How it works" className="mt-14 rounded-lg border border-paper/10 bg-night-soft/60 p-6 md:p-8">
         <h2 className="font-display-serif text-title text-paper">

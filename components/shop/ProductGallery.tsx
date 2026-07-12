@@ -50,13 +50,13 @@ export function ProductGallery({
       <div
         ref={trackRef}
         onScroll={onScroll}
-        className="flex snap-x snap-mandatory overflow-x-auto rounded-lg scrollbar-thin"
+        className="flex snap-x snap-mandatory overflow-x-auto rounded-xl border border-paper/8 bg-gradient-to-b from-paper/[0.05] to-paper/[0.02] scrollbar-thin"
         aria-label="Product images"
       >
         {media.map((m, i) => (
           <div
             key={m.id}
-            className="relative aspect-square w-full shrink-0 snap-center overflow-hidden bg-paper/[0.04]"
+            className="relative aspect-square w-full shrink-0 snap-center overflow-hidden"
           >
             <Image
               src={m.media_url}
@@ -71,21 +71,50 @@ export function ProductGallery({
       </div>
 
       {media.length > 1 ? (
-        <div className="mt-3 flex items-center justify-center gap-2">
-          {media.map((m, i) => (
-            <button
-              key={m.id}
-              type="button"
-              onClick={() => goTo(i)}
-              aria-label={`Image ${i + 1} of ${media.length}`}
-              aria-current={i === idx}
-              className={cn(
-                "h-2.5 w-2.5 rounded-full border border-paper/40 transition-colors",
-                i === idx ? "bg-paper" : "bg-transparent hover:bg-paper/40",
-              )}
-            />
-          ))}
-        </div>
+        <>
+          {/* Thumbnail strip: the primary gallery control on md+; dots stay
+              for phones where thumbnails would crowd the frame. */}
+          <div className="mt-3 hidden gap-2.5 md:flex">
+            {media.map((m, i) => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => goTo(i)}
+                aria-label={`Show image ${i + 1} of ${media.length}`}
+                aria-current={i === idx}
+                className={cn(
+                  "relative aspect-square w-16 shrink-0 overflow-hidden rounded-lg border transition-colors",
+                  i === idx
+                    ? "border-gold"
+                    : "border-paper/12 hover:border-paper/35",
+                )}
+              >
+                <Image
+                  src={m.media_url}
+                  alt=""
+                  fill
+                  sizes="64px"
+                  className="object-contain p-1.5"
+                />
+              </button>
+            ))}
+          </div>
+          <div className="mt-3 flex items-center justify-center gap-2 md:hidden">
+            {media.map((m, i) => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => goTo(i)}
+                aria-label={`Image ${i + 1} of ${media.length}`}
+                aria-current={i === idx}
+                className={cn(
+                  "h-2.5 w-2.5 rounded-full border border-paper/40 transition-colors",
+                  i === idx ? "bg-paper" : "bg-transparent hover:bg-paper/40",
+                )}
+              />
+            ))}
+          </div>
+        </>
       ) : null}
 
       {representative ? (

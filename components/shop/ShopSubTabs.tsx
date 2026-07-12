@@ -36,31 +36,33 @@ export function ShopSubTabs() {
       aria-label="Shop sections"
       className="md:hidden sticky top-12 z-20 bg-night/92 backdrop-blur border-b border-white/8"
     >
-      <ul className="flex gap-1 overflow-x-auto scrollbar-thin px-3 py-2">
+      {/* Quiet text tabs; only the active one wears a pill. The cart is
+          always reachable (hiding it while empty made the row jump around),
+          its count badge bumps when something is added (badge-bump keyframe,
+          keyed by count). Snap keeps mid-scroll states tidy. */}
+      <ul className="flex snap-x gap-1 overflow-x-auto scrollbar-thin px-2 py-1.5">
         {TABS.map((t) => {
-          if (t.href === "/shop/cart" && count === 0 && pathname !== "/shop/cart") {
-            return null;
-          }
           const active = t.exact
             ? pathname === t.href
             : pathname === t.href || pathname.startsWith(t.href + "/");
           return (
-            <li key={t.href} className="shrink-0">
+            <li key={t.href} className="shrink-0 snap-start">
               <Link
                 href={t.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-pill px-3.5 py-1.5 font-sans text-detail font-medium transition-colors",
+                  "tap-press inline-flex min-h-[44px] items-center gap-1.5 rounded-pill px-3.5 font-sans text-detail transition-colors",
                   active
-                    ? "bg-gold text-night"
-                    : "text-paper/70 hover:text-paper border border-paper/15 bg-paper/[0.03]",
+                    ? "bg-gold font-semibold text-night"
+                    : "font-medium text-paper/65 hover:bg-paper/[0.05] hover:text-paper",
                 )}
               >
                 {t.label}
                 {t.href === "/shop/cart" && count > 0 ? (
                   <span
+                    key={count}
                     className={cn(
-                      "inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 font-sans text-[10px] font-bold",
+                      "badge-bump inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-full px-1 font-sans text-[10px] font-bold",
                       active ? "bg-night text-gold" : "bg-gold text-night",
                     )}
                   >
