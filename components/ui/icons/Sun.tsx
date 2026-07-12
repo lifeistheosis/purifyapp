@@ -24,15 +24,18 @@ export function Sun({
       aria-hidden="true"
       {...props}
     >
-      {/* half-sun resting on the horizon */}
-      <path d="M7.4 16.5 a4.6 4.6 0 0 1 9.2 0" />
-      {/* horizon, with a fainter ground line beneath */}
-      <line x1="3" y1="16.5" x2="21" y2="16.5" />
-      <line x1="6.5" y1="20" x2="17.5" y2="20" strokeOpacity="0.5" />
-      {/* three rays above the dome */}
-      <line x1="12" y1="3.4" x2="12" y2="5.6" />
-      <line x1="5.5" y1="6.4" x2="7" y2="7.9" />
-      <line x1="18.5" y1="6.4" x2="17" y2="7.9" />
+      {/* Half-sun resting on the horizon: daybreak, not a full weather disc
+          (which collided with the haloed "You" glyph). Rays are symmetric —
+          a centre ray plus a mirrored pair each side — so it reads as one
+          calm, balanced mark at tab size. */}
+      <path d="M7 15.5 a5 5 0 0 1 10 0" />
+      <line x1="3.5" y1="15.5" x2="20.5" y2="15.5" />
+      {/* five even rays fanning over the dome */}
+      <line x1="12" y1="3" x2="12" y2="5.4" />
+      <line x1="6" y1="5" x2="7.5" y2="6.9" />
+      <line x1="18" y1="5" x2="16.5" y2="6.9" />
+      <line x1="3.4" y1="9.4" x2="5.3" y2="10.4" />
+      <line x1="20.6" y1="9.4" x2="18.7" y2="10.4" />
     </svg>
   );
 }

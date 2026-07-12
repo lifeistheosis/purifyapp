@@ -15,16 +15,20 @@ export function Book({
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={2.2}
+      strokeWidth={1.6}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
       {...props}
     >
-      {/* Spine and the two pages opening outward */}
-      <path d="M12 5.4v14" />
-      <path d="M12 5.4C10 4.4 7.6 4 4.5 4v13.4c3.1 0 5.5.4 7.5 1.4" />
-      <path d="M12 5.4c2-1 4.4-1.4 7.5-1.4v13.4c-3.1 0-5.5.4-7.5 1.4" />
+      {/* Open book on the family's 1.6 stroke (was a heavier 2.2 outlier).
+          A centre spine and two leaves curling up, with a hint of text on
+          each page so it reads as a book of study, not a bird. */}
+      <path d="M12 6v13.2" />
+      <path d="M12 6C10.2 4.9 7.7 4.5 4.4 4.7v12.9c3.3-.2 5.8.2 7.6 1.3" />
+      <path d="M12 6c1.8-1.1 4.3-1.5 7.6-1.3v12.9c-3.3-.2-5.8.2-7.6 1.3" />
+      <line x1="6.4" y1="8.3" x2="9.6" y2="8.6" strokeOpacity="0.55" />
+      <line x1="14.4" y1="8.6" x2="17.6" y2="8.3" strokeOpacity="0.55" />
     </svg>
   );
 }

@@ -141,11 +141,11 @@ findings:
     review: owner (photos on batch arrival)
 
   - id: F-13
-    title: supabase-js auth lock (navigator.locks) can hang client loads that await getUser()
+    title: "'We couldn't confirm your sign-in' after a successful login — gate did a network getUser() that races/fails"
     area: reliability/web
     severity: P1
     confidence: high
-    status: corrected-verified   # 2026-07-11 general case: lib/supabase/resolveUser.ts (5s race, three-state signed-in/signed-out/unresolved; retryable fetch errors and timeouts are UNRESOLVED, never signed-out); applied to OrdersClient, OrderDetailClient, MessagesClient, ConversationClient, RequestsClient, ApplicationClient (throw -> ShopError retry) and AccountAuthGate + MerchantApplyGate (retry state; redirect reserved for a RESOLVED signed-out). 6 unit tests over the classification. lib/shop/seller.ts is server-only (no navigator.locks) — out of scope. Display-only checks (hasActivePlusClient, hasPurchasedProduct, avatars/greetings) stay fail-open by design.
+    status: corrected-unverified   # 2026-07-12 THIRD pass. The lock-only fix (below) was DEPLOYED (prod SW = purify-beta-1.9.5, after commit 0070e2a3) and the Supabase auth endpoint is healthy (401 in ~120-250ms), yet the owner STILL hit "We couldn't confirm your sign-in" on login. So the lock was not the real cause. Real cause: resolveUser used auth.getUser(), which ALWAYS makes a network round-trip to /auth/v1/user to re-validate the token; right after sign-in that races the fresh token / an auto-refresh and returns a retryable fetch error (or hangs) -> "unresolved" -> the error card, immediately after a SUCCESSFUL login. Fix: resolveUser now reads the LOCAL session (auth.getSession) — no network for a valid token — so a just-created session confirms instantly; data access stays RLS-enforced server-side (loaders self-select, never trust the returned user). UNVERIFIED end-to-end: the signed-in gate path cannot be reproduced without a real logged-in session (owner account); needs owner deploy + login test. 6 resolveUser unit tests updated to getSession; 291 unit green; tsc 0.
     evidence: live walk 2026-07-11 signed-in browser: /shop/icons/* catalog+config APIs returned 200 (extension network log) while the page never left its skeleton; sole unsettled Promise.all member was hasActivePlusClient -> supabase.auth.getUser(); no console errors (silent lock wait). Matches the earlier '/account never loads' owner report signature. Fix evidence: lib/supabase/__tests__/resolveUser.test.ts (6 passing); typecheck/lint/unit/build:android/e2e green on the combined tree.
     action: >
       done, in two layers. (1) 2026-07-11 general case: three-state resolveUser
