@@ -4,6 +4,7 @@ import type { User } from "@supabase/supabase-js";
 import { isAuthRetryableFetchError } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/client";
+import { readLocalSessionUser } from "@/lib/supabase/localSession";
 
 /**
  * Auth resolution for AUTH-REQUIRED client surfaces (orders, messages,
@@ -51,6 +52,12 @@ const DEFAULT_TIMEOUT_MS = 8000;
 export async function resolveUser(
   timeoutMs = DEFAULT_TIMEOUT_MS,
 ): Promise<ResolvedAuth> {
+  // Fast, hang-proof path: the persisted cookie/localStorage session, read
+  // synchronously with no network, refresh, or auth lock. For a signed-in
+  // user this settles instantly and never stalls (F-13).
+  const local = readLocalSessionUser();
+  if (local) return { state: "signed-in", user: local };
+
   const check: Promise<ResolvedAuth> = createClient()
     .auth.getSession()
     .then(({ data, error }) => {

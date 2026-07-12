@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { ChangePasswordCard } from "@/components/account/security/ChangePasswordCard";
 import { ChangeEmailCard } from "@/components/account/security/ChangeEmailCard";
 import { OAuthConnectionsCard } from "@/components/account/security/OAuthConnectionsCard";
@@ -23,14 +24,29 @@ export function SecurityTabClient() {
 
   useEffect(() => {
     let cancelled = false;
+    // Render from the persisted cookie session IMMEDIATELY (sync, no
+    // network/refresh/lock) so the tab is never stranded on its loading state
+    // (F-13). The has_password flag comes from a DB row and enhances the view
+    // when it arrives; until then we assume a password exists (the middleware
+    // already forces password-less accounts to /set-password, so a signed-in
+    // user on this tab has one or is OAuth).
+    const sessionUser = readLocalSessionUser();
+    if (sessionUser) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setData({
+        email: sessionUser.email ?? "",
+        hasPassword: true,
+        identities: JSON.parse(
+          JSON.stringify(sessionUser.identities ?? []),
+        ) as Record<string, unknown>[],
+      });
+    }
     (async () => {
       const supabase = createClient();
-      // Local session, not a network getUser() — see ProfileTabClient (F-13):
-      // getUser() can hang on open and strand this on its loading state.
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      const user = session?.user;
+      const user =
+        sessionUser ??
+        (await supabase.auth.getSession()).data.session?.user ??
+        null;
       if (!user || cancelled) return;
       const { data: profile } = await supabase
         .from("profiles")

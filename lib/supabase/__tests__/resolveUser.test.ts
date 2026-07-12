@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AuthRetryableFetchError, AuthSessionMissingError } from "@supabase/supabase-js";
 
@@ -12,7 +12,25 @@ vi.mock("@/lib/supabase/client", () => ({
   createClient: () => ({ auth: { getSession: () => getSession() } }),
 }));
 
+const readLocalSessionUser = vi.fn();
+vi.mock("@/lib/supabase/localSession", () => ({
+  readLocalSessionUser: () => readLocalSessionUser(),
+}));
+
 describe("resolveUser", () => {
+  // Default: no persisted local session, so the getSession-based tests below
+  // fall through to their mocks. The fast-path test overrides this.
+  beforeEach(() => {
+    readLocalSessionUser.mockReturnValue(null);
+  });
+
+  it("returns signed-in from the persisted local session WITHOUT calling getSession (hang-proof fast path)", async () => {
+    readLocalSessionUser.mockReturnValue({ id: "u0", email: "z@z.co" });
+    const auth = await resolveUser(50);
+    expect(auth).toEqual({ state: "signed-in", user: { id: "u0", email: "z@z.co" } });
+    expect(getSession).not.toHaveBeenCalled();
+  });
+
   it("reports signed-in from a local session, with no network call", async () => {
     getSession.mockResolvedValue({
       data: { session: { user: { id: "u1" } } },
