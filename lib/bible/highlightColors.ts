@@ -14,10 +14,16 @@ import { useCallback, useSyncExternalStore } from "react";
 
 export type HighlightColor = {
   id: string;
-  /** Solid color for the whole-verse left bar. */
+  /** Solid accent: the annotation toolbar chip border/text. (Historically
+   * this drew a left margin bar on highlighted verses; the verse now gets
+   * a per-line text wash — `verseBg` — like a real highlighter stroke.) */
   bar: string;
   /** Translucent fill for word-level highlights. */
   wordBg: string;
+  /** Quieter translucent wash for a whole-verse highlight. Deliberately
+   * fainter than wordBg so a word-level emphasis still reads inside a
+   * washed verse. */
+  verseBg: string;
   /** Solid swatch color for pickers and the legend dots. */
   swatch: string;
   /** Default meaning label; the reader can override it in the legend. */
@@ -29,6 +35,7 @@ export const HIGHLIGHT_COLORS: HighlightColor[] = [
     id: "yellow",
     bar: "rgb(233,196,106)",
     wordBg: "rgba(233,196,106,0.32)",
+    verseBg: "rgba(233,196,106,0.15)",
     swatch: "rgb(233,196,106)",
     defaultLabel: "Key verse",
   },
@@ -36,6 +43,7 @@ export const HIGHLIGHT_COLORS: HighlightColor[] = [
     id: "green",
     bar: "rgb(127,176,105)",
     wordBg: "rgba(127,176,105,0.32)",
+    verseBg: "rgba(127,176,105,0.15)",
     swatch: "rgb(127,176,105)",
     defaultLabel: "Promise",
   },
@@ -43,6 +51,7 @@ export const HIGHLIGHT_COLORS: HighlightColor[] = [
     id: "blue",
     bar: "rgb(107,164,201)",
     wordBg: "rgba(107,164,201,0.32)",
+    verseBg: "rgba(107,164,201,0.15)",
     swatch: "rgb(107,164,201)",
     defaultLabel: "Teaching",
   },
@@ -50,6 +59,7 @@ export const HIGHLIGHT_COLORS: HighlightColor[] = [
     id: "rose",
     bar: "rgb(217,138,168)",
     wordBg: "rgba(217,138,168,0.32)",
+    verseBg: "rgba(217,138,168,0.15)",
     swatch: "rgb(217,138,168)",
     defaultLabel: "Prayer",
   },
@@ -57,6 +67,7 @@ export const HIGHLIGHT_COLORS: HighlightColor[] = [
     id: "purple",
     bar: "rgb(169,138,217)",
     wordBg: "rgba(169,138,217,0.32)",
+    verseBg: "rgba(169,138,217,0.15)",
     swatch: "rgb(169,138,217)",
     defaultLabel: "Prophecy",
   },

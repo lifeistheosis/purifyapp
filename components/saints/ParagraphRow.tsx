@@ -181,7 +181,7 @@ export function ParagraphRow({
  id={`p-${sectionN}-${paragraphIdx}`}
  data-paragraph-idx={paragraphIdx}
  data-hl={ann.highlighted ? "true" : undefined}
- className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out data-[hl=true]:shadow-[inset_3px_0_0_var(--color-gold)]"
+ className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out"
  >
  <div className="flex items-start gap-2">
  <p
@@ -201,7 +201,17 @@ export function ParagraphRow({
  onTouchEnd={cancelPress}
  onTouchCancel={cancelPress}
  >
+ {/* Highlighted paragraphs get a per-line gold wash over the text
+   (box-decoration-break: clone rounds each wrapped line), matching
+   the Bible reader — not a left margin bar. */}
+ <span
+ className={cn(
+ ann.highlighted &&
+ "box-decoration-clone rounded-[3px] px-[3px] -mx-[3px] py-[1px] bg-gold/[0.15]",
+ )}
+ >
  {text}
+ </span>
  </p>
 
  {/* Desktop-only inline toolbar, hover-revealed at md+. On mobile the

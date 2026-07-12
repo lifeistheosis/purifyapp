@@ -6,11 +6,11 @@ import { DEFAULT_HIGHLIGHT_COLOR } from "./highlightColors";
 /**
  * Per-verse annotations stored in localStorage.
  * Schema:
- *   highlighted?:      boolean       (whole-verse left bar)
+ *   highlighted?:      boolean       (whole-verse text wash)
  *   highlightedWords?: number[]      (sorted word-index list for word-level tints)
- *   color?:            string        (highlight color id; applies to the bar
- *                                     AND this verse's word tints. Defaults to
- *                                     yellow when a highlight is created.)
+ *   color?:            string        (highlight color id; applies to the verse
+ *                                     wash AND this verse's word tints. Defaults
+ *                                     to yellow when a highlight is created.)
  *   note?:             string
  * Key: purify:bible:{book}:{chapter}:{verse}
  *

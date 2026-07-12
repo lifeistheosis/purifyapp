@@ -397,12 +397,12 @@ export function VerseRow({
  return (
  <div
  id={`v${verse.n}`}
- className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out data-[hl=true]:shadow-[inset_3px_0_0_var(--hl-bar)] data-[focus=true]:bg-gold/12 data-[focus=true]:shadow-[0_0_0_2px_rgba(183,176,163,0.55),0_0_24px_rgba(183,176,163,0.35)]"
+ className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out data-[focus=true]:bg-gold/12 data-[focus=true]:shadow-[0_0_0_2px_rgba(183,176,163,0.55),0_0_24px_rgba(183,176,163,0.35)]"
  data-hl={ann.highlighted ? "true" : undefined}
  style={
  {
- "--hl-bar": hl.bar,
  "--hl-word": hl.wordBg,
+ "--hl-verse": hl.verseBg,
  } as React.CSSProperties
  }
  >
@@ -486,6 +486,18 @@ export function VerseRow({
  {verse.n}
  </sup>
  )}
+ {/* Whole-verse highlight: a quiet pigment wash over the words
+   themselves, breaking line by line (box-decoration-break: clone
+   gives every wrapped line its own rounded marker stroke). This
+   replaced the full-height left margin bar — a highlight should
+   look like ink on the text, not a callout border. Word-level
+   highlights (wordBg, brighter) still read inside the wash. */}
+ <span
+ className={cn(
+ ann.highlighted &&
+ "box-decoration-clone rounded-[3px] px-[3px] -mx-[3px] py-[1px] bg-[var(--hl-verse)]",
+ )}
+ >
  {hasEnglishTokens
  ? englishTokens!.map((tk, i) => {
  const matched =
@@ -608,6 +620,7 @@ export function VerseRow({
  </Fragment>
  );
  })}
+ </span>
  {showDropCap && hasCommentary ? (
  // The chapter-opening verse suppresses the leading marker (a
  // superscript before the first letter would break the illuminated
