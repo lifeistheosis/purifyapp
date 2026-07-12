@@ -35,7 +35,11 @@ export type ResolvedAuth =
 export const AUTH_UNRESOLVED_MESSAGE =
   "We couldn't confirm your sign-in. Check your connection and try again.";
 
-const DEFAULT_TIMEOUT_MS = 5000;
+// Must exceed supabase-js's own 5s lock-acquire timeout: when a jammed
+// cross-tab lock forces the resilient lock (lib/supabase/resilientLock.ts)
+// into its lockless fallback, the getUser() call needs headroom to still
+// settle inside this deadline instead of racing it.
+const DEFAULT_TIMEOUT_MS = 8000;
 
 export async function resolveUser(
   timeoutMs = DEFAULT_TIMEOUT_MS,

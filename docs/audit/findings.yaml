@@ -147,7 +147,24 @@ findings:
     confidence: high
     status: corrected-verified   # 2026-07-11 general case: lib/supabase/resolveUser.ts (5s race, three-state signed-in/signed-out/unresolved; retryable fetch errors and timeouts are UNRESOLVED, never signed-out); applied to OrdersClient, OrderDetailClient, MessagesClient, ConversationClient, RequestsClient, ApplicationClient (throw -> ShopError retry) and AccountAuthGate + MerchantApplyGate (retry state; redirect reserved for a RESOLVED signed-out). 6 unit tests over the classification. lib/shop/seller.ts is server-only (no navigator.locks) — out of scope. Display-only checks (hasActivePlusClient, hasPurchasedProduct, avatars/greetings) stay fail-open by design.
     evidence: live walk 2026-07-11 signed-in browser: /shop/icons/* catalog+config APIs returned 200 (extension network log) while the page never left its skeleton; sole unsettled Promise.all member was hasActivePlusClient -> supabase.auth.getUser(); no console errors (silent lock wait). Matches the earlier '/account never loads' owner report signature. Fix evidence: lib/supabase/__tests__/resolveUser.test.ts (6 passing); typecheck/lint/unit/build:android/e2e green on the combined tree.
-    action: done; residual = the lock-hang itself is timing-dependent and was not re-reproduced live against the deployed fix (the fake-sign-out and hang paths are covered by unit tests)
+    action: >
+      done, in two layers. (1) 2026-07-11 general case: three-state resolveUser
+      + retry states (above). (2) 2026-07-12 ROOT FIX after the deployed retry
+      state surfaced live ("couldn't confirm your sign-in" on /account —
+      a jammed lock makes Try again unwinnable): lib/supabase/resilientLock.ts
+      wraps the cross-tab auth lock; on acquire timeout it runs the operation
+      LOCKLESS instead of failing (worst case a redundant token refresh, vs a
+      guaranteed outage). Also caps the acquire timeout supabase-js actually
+      hands custom locks — observed live with locks debug on, it passes
+      `undefined`, which navigatorLock treats as wait-forever. resolveUser
+      deadline raised to 8s so the 5s lock timeout + lockless fallback settle
+      inside it. Wired via createBrowserClient auth.lock (verified forwarded
+      ssr -> supabase-js -> GoTrueClient in dist source). Reproduced and
+      proven end to end; the smoke test jams the lock from another context and
+      asserts the ordinary sign-in prompt renders and the retry copy does NOT
+      (tests/smoke/seller-console.spec.ts, passes in 6.8s = 5s timeout +
+      fallback); 5 unit tests on the wrapper incl. the undefined/-1/Infinity
+      caps. Full suite 46 e2e / 283 unit green.
     safe_to_automate: partially
     review: none
 

@@ -40,6 +40,41 @@ test("buyer messages inbox asks for sign in", async ({ page }) => {
   await expectNoA11yViolations(page);
 });
 
+test("a jammed cross-tab auth lock degrades to sign-in, not a dead retry loop", async ({
+  page,
+}) => {
+  // F-13 root-cause guard (the 2026-07-12 "couldn't confirm your sign-in"
+  // report): supabase-js serializes auth calls behind a navigator.locks lock
+  // shared across tabs. Here another "tab" holds it forever; the resilient
+  // lock (lib/supabase/resilientLock.ts) must time out and run lockless, so
+  // a signed-out visitor still reaches the ordinary sign-in prompt.
+  await page.addInitScript(() => {
+    // Hold every plausible sb auth lock name for this origin, indefinitely
+    // (real project ref locally, the placeholder ref in key-less CI).
+    for (const ref of ["avbqyvjgcrucjwevwixt", "example"]) {
+      try {
+        void navigator.locks.request(
+          `lock:sb-${ref}-auth-token`,
+          () => new Promise(() => {}),
+        );
+      } catch {
+        /* Locks API absent: the wrapper runs lockless anyway */
+      }
+    }
+  });
+  const response = await page.goto("/shop/messages");
+  test.skip(response?.status() === 404, "shop flag is off in this build");
+
+  // Supabase waits its 5s acquire timeout before the fallback runs, so allow
+  // for it; what must NEVER appear is the unresolved-auth retry state.
+  await expect(page.locator('a[href*="/signin"]').first()).toBeVisible({
+    timeout: 15_000,
+  });
+  await expect(
+    page.getByText(/couldn't confirm your sign-in/i),
+  ).toHaveCount(0);
+});
+
 test("buyer order detail asks for sign in instead of leaking", async ({ page }) => {
   const response = await page.goto(
     "/shop/orders/00000000-0000-4000-8000-000000000000",
