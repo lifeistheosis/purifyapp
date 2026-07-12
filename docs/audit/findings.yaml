@@ -226,3 +226,33 @@ corrections:
     files: [lib/supabase/resolveUser.ts, lib/supabase/__tests__/resolveUser.test.ts, components/shop/OrdersClient.tsx, components/shop/OrderDetailClient.tsx, components/shop/MessagesClient.tsx, components/shop/ConversationClient.tsx, components/shop/RequestsClient.tsx, components/shop/ApplicationClient.tsx, components/account/AccountAuthGate.tsx, components/shop/MerchantApplyGate.tsx]
     verification: vitest 278/278 incl. 6 new; tsc 0; eslint 0 errors; build:android clean; signed-out gates re-proven by the smoke suite's seller-console/account specs
     status: corrected-verified
+
+  - id: F-16
+    title: Tapping Purify Plus crashes the Android app (RevenueCat plugin pair on incompatible majors)
+    area: billing/native
+    severity: P1
+    confidence: confirmed
+    status: corrected-unverified   # code fix complete + all local gates green; native path cannot execute in a browser — verification = sandbox purchase on a device with AAB #44+ (owner)
+    evidence: >
+      Owner report 2026-07-12: tapping Purify Plus closes the app. Root cause:
+      8d07ed8b (2026-06-19, Customer Center) added
+      @revenuecat/purchases-capacitor-ui@13.2.0 while
+      @revenuecat/purchases-capacitor stayed ^11.3.2; the UI plugin peer-requires
+      exactly 13.2.0 and npm ls reports the tree invalid, but npm ci
+      --legacy-peer-deps in the Android workflow ships it anyway. Natively the
+      pair bundles purchases-hybrid-common 17.25.0 vs 18.15.1; Gradle resolves
+      to 18.15.1 and the v11 bridge hits binary-incompatible APIs the moment
+      the paywall mounts and calls Purchases.configure() — hard process crash.
+      In every AAB since ~06-19 (Beta 1.8 through 1.9.3). Browser repro of the
+      static export (native UA harness) confirms the JS path is sound: tap-through
+      You -> Purify Plus renders the paywall shell with zero page errors; the
+      crash is purely the native plugin collision.
+    action: pinned both plugins to the matched 13.2.0 pair (package.json exact,
+      not caret); npm tree valid; both native builds resolve hybrid-common
+      18.15.1; tsc 0 against the v13 API; vitest 278/278; build:android green.
+      Shipped as Beta 1.9.4 with all four version identifiers bumped. Residual
+      = on-device sandbox purchase (was already the open launch-checklist item).
+      Guard idea for later: a CI step failing on `npm ls` invalid peers would
+      have caught this at the June commit.
+    safe_to_automate: partially
+    review: owner (sandbox purchase on device)

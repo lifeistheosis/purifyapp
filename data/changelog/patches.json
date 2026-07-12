@@ -1,5 +1,29 @@
 [
   {
+    "id": "beta-1-9-4",
+    "version": "Beta 1.9.4",
+    "date": "2026-07-12",
+    "title": "Purify Plus opens again, and highlights learn to look like ink",
+    "intro": "Welcome, and glory to Jesus Christ. This patch mends the most serious kind of bug we can ship: tapping Purify Plus closed the app outright. The fault was two billing components speaking different versions of the same language deep in the Android layer, and it is fixed at the root. While we were in the reader we also freed anyone the app had trapped in focus mode, and gave highlights the look they always deserved: ink on the words, not a bar in the margin. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "Purify Plus opens again",
+        "body": "Tapping Purify Plus crashed the app the moment the subscription screen tried to wake the billing machinery. Two of its components had drifted onto incompatible versions, and the collision brought the whole app down. They now move in lockstep, and the paywall opens, prices load from Google Play, and Restore works as intended. If Plus ever cannot load, you will see a calm explanation instead of a crash."
+      },
+      {
+        "heading": "A guaranteed way out of focus mode",
+        "body": "Focus reading hides the app around the text. A recent restructuring accidentally left the top bar standing invisible over the Exit button, swallowing every tap, and on a phone there is no Escape key to fall back on. The exit now floats above everything by construction, the app chrome truly steps aside, and a new automated test presses the real button on every build so this cannot quietly return."
+      },
+      {
+        "heading": "Highlights look like ink now",
+        "body": "A highlighted verse used to wear a plain colored bar down its left margin. It now carries a quiet wash of its color across the words themselves, line by line, the way a real highlighter moves. Word-level highlights stay brighter inside it, and the writings of the saints receive the same treatment in gold."
+      }
+    ],
+    "future": [],
+    "closing": "The Plus crash was reported by a reader and reproduced within the hour. If anything else misbehaves, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
     "id": "beta-1-9-3",
     "version": "Beta 1.9.3",
     "date": "2026-07-11",

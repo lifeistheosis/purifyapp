@@ -23,6 +23,20 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 1.9.4",
+ kind: "Purify Plus opens again, and highlights learn to look like ink",
+ date: "July 12, 2026",
+ blurb:
+  "Tapping Purify Plus no longer closes the app: two billing components had drifted onto incompatible versions and the collision is fixed at the root. Focus mode has a guaranteed exit again, and highlights now read as ink on the words instead of a bar in the margin.",
+ items: [
+  "Purify Plus opens again. The subscription screen crashed the app because two billing components spoke different versions of the same language in the Android layer; they now move in lockstep, and prices, purchase, and Restore all work.",
+  "If Plus ever cannot load, the screen says so calmly instead of crashing.",
+  "Focus reading has a guaranteed exit: a restructuring had left the top bar invisibly covering the Exit button, and phones have no Escape key. The exit now floats above everything, and an automated test presses the real button on every build.",
+  "A highlighted verse now wears a quiet wash of its color across the words themselves, line by line, instead of a colored bar in the margin. Word highlights stay brighter inside it, and the saints' writings get the same treatment in gold.",
+  "Cache version steps to purify-beta-1.9.4.",
+ ],
+ },
+ {
  version: "Beta 1.9.3",
  kind: "One hand for every symbol, and two checkout bugs caught live",
  date: "July 11, 2026",
