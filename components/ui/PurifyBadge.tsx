@@ -1,11 +1,12 @@
 /**
- * The Purify app-icon badge: the white three-bar Orthodox cross inside the
- * black circle, exactly as the launcher icon draws it (app/icon.tsx geometry,
- * translated from its composed divs into one SVG). A hairline ring keeps the
- * black disc legible on the app's dark surfaces.
+ * The Purify brand badge: the EXACT PurifyMark cross (the logo — rounded
+ * three-bar Orthodox cross, see ui/PurifyMark.tsx) inside the black circle
+ * with a hairline ring. The geometry below is the mark's own rects, scaled
+ * and centered into the disc, so the paywall hero and every other badge use
+ * the same minimalist cross as the wordmark — not a separate redraw.
  *
- * Use this where the APP ICON should be recognized (the Plus paywall hero);
- * `PurifyMark` remains the bare cross for headers and inline marks.
+ * Use this where the brand should be recognized at display size (the Plus
+ * paywall hero); `PurifyMark` remains the bare cross for headers and inline.
  */
 export function PurifyBadge({
   size = 72,
@@ -31,22 +32,26 @@ export function PurifyBadge({
         stroke="rgba(255,255,255,0.28)"
         strokeWidth="1.5"
       />
-      {/* Cross container: 60% x 76% of the disc, centered (12.8..51.2 / 7.7..56.3) */}
-      {/* Vertical post: 16% wide, 84% tall, top 8% */}
-      <rect x="28.93" y="11.57" width="6.14" height="40.86" fill="#fff" />
-      {/* Titulus, short top bar: 44% wide, 9% tall, top 16% */}
-      <rect x="23.55" y="15.46" width="16.90" height="4.38" fill="#fff" />
-      {/* Main bar: 72% wide, 11% tall, top 33% */}
-      <rect x="18.18" y="23.73" width="27.65" height="5.35" fill="#fff" />
-      {/* Slanted footrest: 54% wide, 9% tall, top 66%, rotated -18deg */}
-      <rect
-        x="21.63"
-        y="39.78"
-        width="20.74"
-        height="4.38"
-        fill="#fff"
-        transform="rotate(-18 32 41.97)"
-      />
+      {/* PurifyMark geometry (viewBox 48x64), scaled to 62% disc height and
+          centered: translate((64-48*s)/2, (64-64*s)/2) with s = 0.62. Keep
+          these rects in lockstep with ui/PurifyMark.tsx. */}
+      <g transform="translate(17.12, 12.16) scale(0.62)" fill="#fff">
+        {/* upright post */}
+        <rect x="21" y="3" width="6" height="58" rx="2.5" />
+        {/* titulus (top bar) */}
+        <rect x="16.5" y="11" width="15" height="4.5" rx="2.25" />
+        {/* main crossbar */}
+        <rect x="10" y="21" width="28" height="5.5" rx="2.75" />
+        {/* slanted footrest (suppedaneum) */}
+        <rect
+          x="14"
+          y="41.5"
+          width="20"
+          height="4.5"
+          rx="2.25"
+          transform="rotate(-16 24 43.75)"
+        />
+      </g>
     </svg>
   );
 }

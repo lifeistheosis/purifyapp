@@ -23,6 +23,21 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 1.9.5",
+ kind: "Sign-in that cannot jam, and a Plus screen worthy of the name",
+ date: "July 12, 2026",
+ blurb:
+  "A stuck browser tab could jam the shared sign-in machinery for every other tab, leaving a retry that never succeeded; it now frees itself in seconds. The Purify Plus screen wears the true Purify cross, honest spacing, and the full list of what Plus includes.",
+ items: [
+  "Sign-in checks free themselves: if the cross-tab lock is jammed by a stuck tab, the app waits five seconds and proceeds without it. The jam is reproduced deliberately in an automated test on every build.",
+  "The Plus screen wears the true minimalist Purify cross, the same mark as the wordmark.",
+  "The dead band above the Plus hero is gone (the status-bar inset was applied twice).",
+  "What's included now tells the whole truth: sync, notes and highlights, collections and Florilegium, free EIKON shipping while Plus is active, and Immersive History.",
+  "The website's pricing page carries the same complete list.",
+  "Cache version steps to purify-beta-1.9.5.",
+ ],
+ },
+ {
  version: "Beta 1.9.4",
  kind: "Purify Plus opens again, and highlights learn to look like ink",
  date: "July 12, 2026",

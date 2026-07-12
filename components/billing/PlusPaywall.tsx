@@ -153,34 +153,7 @@ export function PlusPaywall() {
         {/* Same included-benefits card the ready phase shows, so the screen
             sells the thing before asking for a sign-in — and so tall screens
             have real content instead of one giant gap. */}
-        <div className="paywall-in mt-7 px-5" style={{ animationDelay: "460ms" }}>
-          <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
-            <p className="text-center font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-paper/55">
-              What’s included
-            </p>
-            <ul className="mt-4 space-y-4">
-              <Included
-                icon={<SyncIcon />}
-                title="Cross-device sync"
-                sub="Your library on every device you sign in on"
-              />
-              <Included
-                icon={<BookmarkIcon />}
-                title="Notes, highlights & bookmarks"
-                sub="Kept private, carried everywhere"
-              />
-              <Included
-                icon={<BookIcon />}
-                title="Custom collections & Florilegium"
-                sub="Build your own quote collections"
-              />
-            </ul>
-          </div>
-          <p className="mt-4 flex items-center justify-center gap-2 font-sans text-caption text-paper/55">
-            <ShieldIcon />
-            Core Orthodox resources remain free.
-          </p>
-        </div>
+        <IncludedCard delay="460ms" />
 
         <div
           className="paywall-in mt-6 w-full px-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] text-center"
@@ -261,35 +234,7 @@ export function PlusPaywall() {
       <Hero />
 
       {/* What's included */}
-      <div className="paywall-in mt-7 px-5" style={{ animationDelay: "460ms" }}>
-        <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
-          <p className="text-center font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-paper/55">
-            What’s included
-          </p>
-          <ul className="mt-4 space-y-4">
-            <Included
-              icon={<SyncIcon />}
-              title="Cross-device sync"
-              sub="Your library on every device you sign in on"
-            />
-            <Included
-              icon={<BookmarkIcon />}
-              title="Notes, highlights & bookmarks"
-              sub="Kept private, carried everywhere"
-            />
-            <Included
-              icon={<BookIcon />}
-              title="Custom collections & Florilegium"
-              sub="Build your own quote collections"
-            />
-          </ul>
-        </div>
-
-        <p className="mt-4 flex items-center justify-center gap-2 font-sans text-caption text-paper/55">
-          <ShieldIcon />
-          Core Orthodox resources remain free.
-        </p>
-      </div>
+      <IncludedCard delay="460ms" />
 
       {/* Plans */}
       <div className="paywall-in mt-6 space-y-3 px-5" style={{ animationDelay: "560ms" }}>
@@ -370,8 +315,11 @@ export function PlusPaywall() {
 /* ── layout pieces ───────────────────────────────────────────────────────── */
 
 function Screen({ children }: { children: React.ReactNode }) {
+  // No safe-pt here: the app layout's <main> already pads past the status
+  // bar, and stacking a second inset opened a dead band above the hero
+  // (owner report, 2026-07-12 screenshot).
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-night text-paper safe-pt">
+    <div className="flex min-h-[100dvh] flex-col bg-night text-paper">
       {children}
     </div>
   );
@@ -428,6 +376,60 @@ function Hero() {
       >
         Sync your spiritual journey across all your devices and go deeper with
         tools that inspire.
+      </p>
+    </div>
+  );
+}
+
+/**
+ * The one "What's included" card, shared by the signed-out and ready phases
+ * so the promise never drifts between them. Every row here must be a REAL,
+ * live entitlement: sync + the enhanced layer (lib/entitlements), the Plus
+ * shipping perk (lib/shop/checkout re-verifies it server-side), and the
+ * Immersive History layer (plusFeatures). Ambience returns to this list only
+ * when the rights-cleared catalogue lands (AMBIENCE_TRACKS non-empty).
+ */
+function IncludedCard({ delay }: { delay: string }) {
+  return (
+    <div className="paywall-in mt-7 px-5" style={{ animationDelay: delay }}>
+      <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
+        <p className="text-center font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-paper/55">
+          What’s included
+        </p>
+        <ul className="mt-4 space-y-4">
+          <Included
+            icon={<SyncIcon />}
+            title="Cross-device sync"
+            sub="Your library on every device you sign in on"
+          />
+          <Included
+            icon={<BookmarkIcon />}
+            title="Notes, highlights & bookmarks"
+            sub="Kept private, carried everywhere"
+          />
+          <Included
+            icon={<BookIcon />}
+            title="Custom collections & Florilegium"
+            sub="Build your own quote collections"
+          />
+          <Included
+            icon={<ParcelIcon />}
+            title="Free shipping in the shop"
+            sub="Every EIKON order ships free while Plus is active"
+          />
+          <Included
+            icon={<HourglassIcon />}
+            title="Immersive History"
+            sub="The story of the Church in full cinematic dress"
+          />
+        </ul>
+      </div>
+      <p className="mt-4 flex items-center justify-center gap-2 font-sans text-caption text-paper/55">
+        <ShieldIcon />
+        Core Orthodox resources remain free.
+      </p>
+      <p className="mt-1.5 text-center font-sans text-caption text-paper/40">
+        Plus is what pays the servers. It keeps the core free for everyone.
       </p>
     </div>
   );
@@ -572,6 +574,26 @@ function BookmarkIcon() {
   return (
     <svg {...S}>
       <path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z" />
+    </svg>
+  );
+}
+function ParcelIcon() {
+  return (
+    <svg {...S}>
+      <path d="M21 8.5 12 4 3 8.5v8L12 21l9-4.5v-8z" />
+      <path d="M3 8.5 12 13l9-4.5" />
+      <path d="M12 13v8" />
+      <path d="m7.5 6.25 9 4.5" />
+    </svg>
+  );
+}
+function HourglassIcon() {
+  return (
+    <svg {...S}>
+      <path d="M6 3h12" />
+      <path d="M6 21h12" />
+      <path d="M7 3v3.5c0 2.5 2.2 3.9 5 5.5 2.8-1.6 5-3 5-5.5V3" />
+      <path d="M7 21v-3.5c0-2.5 2.2-3.9 5-5.5 2.8 1.6 5 3 5 5.5V21" />
     </svg>
   );
 }

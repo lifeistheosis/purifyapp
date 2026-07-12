@@ -1,5 +1,25 @@
 [
   {
+    "id": "beta-1-9-5",
+    "version": "Beta 1.9.5",
+    "date": "2026-07-12",
+    "title": "Sign-in that cannot jam, and a Plus screen worthy of the name",
+    "intro": "Welcome, and glory to Jesus Christ. Two pieces of work in this patch. First, the deepest sign-in fault we have found yet: a single stuck tab could quietly jam the machinery every other tab uses to confirm your sign-in, and the app could only offer a retry that never succeeded. That machinery now frees itself. Second, the Purify Plus screen has been made worthy of what it sells: the true Purify cross, honest spacing, and the full list of what Plus actually includes. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "Sign-in frees itself now",
+        "body": "Your browser coordinates sign-in checks across tabs through a shared lock. If one tab froze while holding it, every other tab waited forever, and the account page could only say it could not confirm your sign-in. The app now waits five seconds, then proceeds without the lock. The worst case of proceeding is a harmless duplicate token refresh; the worst case of waiting was an account page that never opened. We reproduced the jam deliberately and the page now resolves in seconds, and that exact scenario runs as an automated test on every build."
+      },
+      {
+        "heading": "The Plus screen, made worthy",
+        "body": "The subscription screen now wears the true Purify cross, the same minimalist three-bar mark as the wordmark, instead of a heavier redraw. The dead band above the hero is gone; the screen breathes the way it was designed to. And the included list now tells the whole truth: cross-device sync, notes and highlights and bookmarks, custom collections and the Florilegium, free EIKON shipping on every order while Plus is active, and Immersive History, the cinematic dress on the story of the Church. Every line names something that works today."
+      }
+    ],
+    "future": [],
+    "closing": "Both fixes came from your reports, one from a screenshot sent the same hour. If anything else misbehaves, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
     "id": "beta-1-9-4",
     "version": "Beta 1.9.4",
     "date": "2026-07-12",
