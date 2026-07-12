@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
 
 export type ReaderSize = "sm" | "md" | "lg" | "xl";
@@ -432,7 +433,13 @@ export function ReaderFocusController() {
   }, [focus, setFocus]);
 
   if (!focus) return null;
-  return (
+  // Portaled to <body>: rendered inline, the pill's fixed position still
+  // stacks inside whatever transformed/filtered ancestor contains the reader,
+  // and a z-40 sticky header can paint (and hit-test) OVER a z-[120] pill.
+  // That is exactly how "Exit focus" went dead when the app-chrome tags were
+  // dropped. At body level its z-index competes at the root, so the only
+  // reachable exit stays reachable no matter what the page does.
+  return createPortal(
     <button
       type="button"
       onClick={() => setFocus(false)}
@@ -456,6 +463,7 @@ export function ReaderFocusController() {
         <path d="m6 6 12 12" />
       </svg>
       Exit focus
-    </button>
+    </button>,
+    document.body,
   );
 }
