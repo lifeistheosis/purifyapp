@@ -26,7 +26,7 @@ export default function TermsPage() {
           The terms, plainly.
         </h1>
         <p className="mt-6 font-serif text-body leading-[1.7] text-paper/65">
-          Effective July 10, 2026. These terms are a binding agreement
+          Effective July 13, 2026. These terms are a binding agreement
           between you and Purify (&ldquo;Purify,&rdquo; &ldquo;we,&rdquo;
           &ldquo;us&rdquo;), covering the website at purifyapp.net, the
           Purify mobile applications, and the EIKON shop. By using Purify or
@@ -169,37 +169,57 @@ export default function TermsPage() {
 
         <h2 className={H2}>7. Optional paid features and subscriptions</h2>
         <p className={P}>
-          Some features may be offered for a fee or by subscription. Any
-          charge is shown clearly before you confirm it, and paid features
-          never paywall what is free today. We do not sell your personal
-          data.
+          The whole spiritual core of Purify, the Scriptures, the prayers, the
+          saints and the Fathers, the calendar and its fasts, and the fasting
+          tracker, is free and stays free. Some optional features are offered
+          by subscription on top of that core. Any charge is shown clearly
+          before you confirm it, paid features never paywall what is free
+          today, and we do not sell your personal data. Purify is offered in
+          three tiers: Standard (free), Purify Plus, and Purify Pro.
         </p>
         <h3 className={H3}>Purify Plus</h3>
         <p className={P}>
-          Purify Plus is an optional auto-renewing subscription. The current
+          Purify Plus is an optional auto-renewing subscription. The standard
           prices are US $9.99 per month or US $99 per year (local prices are
-          shown in the store before you confirm). Your subscription renews
-          automatically at the end of each billing period, at the
-          then-current price, until you cancel. Plus also carries free
-          standard shipping on EIKON shop orders while your subscription is
-          active; without Plus, shipping is charged at the rate shown at
-          checkout.
+          shown in the store before you confirm). New subscribers receive an
+          introductory opening discount of 50% off the first year; after the
+          first year the subscription renews automatically at the then-current
+          standard price, until you cancel. Plus carries your library across
+          every device you sign in on and includes free standard shipping on
+          EIKON shop orders while your subscription is active; without a
+          subscription, shipping is charged at the rate shown at checkout.
+        </p>
+        <h3 className={H3}>Purify Pro</h3>
+        <p className={P}>
+          Purify Pro is an optional auto-renewing subscription that includes
+          everything in Purify Plus and adds a members&rsquo; layer: a physical
+          devotional item, such as an icon, mailed to active members each
+          month, and periodic discount codes for the EIKON shop. The standard
+          prices are US $19.99 per month or US $199 per year. New subscribers
+          receive the same introductory 50% discount for the first year, after
+          which Pro renews at the then-current standard price until you cancel.
+          The monthly item may vary, is sent only while your subscription is
+          active and a valid shipping address is on file, and cannot be
+          exchanged for cash. Discount codes apply to eligible EIKON items,
+          may not be combined with other offers, and have no cash value.
         </p>
         <h3 className={H3}>Billing, cancellation, and refunds</h3>
         <p className={P}>
-          Purify Plus can be purchased on Android through Google Play, or on
-          the web. On Android, Google Play is the biller: cancel at any time
-          in the Play Store under Subscriptions. On the web, the subscription
-          is billed through our web billing provider and processed by Stripe;
-          you can cancel from the manage-subscription link on the pricing
-          page. Either way, cancellation takes effect at the end of the
-          current billing period and you keep Plus until then. Renewals,
-          cancellations, and refunds for purchases made through Apple or
-          Google are governed by that platform&rsquo;s billing terms; web
-          purchases are governed by these terms and the provider&rsquo;s
-          rules. A single account holds one Plus entitlement across every
-          device, however it was purchased. Deleting the app does not cancel
-          a subscription.
+          A Purify subscription can be purchased on Android through Google
+          Play, or on the web. On Android, Google Play is the biller: cancel at
+          any time in the Play Store under Subscriptions. On the web, the
+          subscription is billed through our web billing provider and processed
+          by Stripe; you can cancel from the manage-subscription link on the
+          pricing page. Either way, cancellation takes effect at the end of the
+          current billing period and you keep your subscription until then;
+          canceling Pro also stops any future monthly item after the current
+          period, and a monthly item already shipped is not refundable.
+          Renewals, cancellations, and refunds for purchases made through Apple
+          or Google are governed by that platform&rsquo;s billing terms; web
+          purchases are governed by these terms and the provider&rsquo;s rules.
+          A single account holds one subscription entitlement across every
+          device, however it was purchased. Deleting the app does not cancel a
+          subscription.
         </p>
 
         <h2 className={H2}>8. Content, copyright, and your submissions</h2>
