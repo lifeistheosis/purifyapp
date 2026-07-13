@@ -3,9 +3,33 @@
     "id": "beta-2-0",
     "version": "Beta 2.0",
     "date": "2026-07-13",
-    "title": "A steadier app in the hand, and the shop set in order",
-    "intro": "Welcome, and glory to Jesus Christ. This release gathers a season of work into one. The top of every screen sits where it should, sign-in and your account hold steady, the reader obeys the back button, and the EIKON shop has been rebuilt around search and clean cards. Smaller comforts too: the app no longer bounces past its own edges, and the reminder times read clearly in the dark. The core of Purify stays free, today and always.",
+    "title": "The fast kept, the table shared, and prayers held in common",
+    "intro": "Welcome, and glory to Jesus Christ. This is the fullest release yet. You can keep the fast day by day now, share a prayer in common, and set the table with recipes for the season. Your gathered library can be carried anywhere and kept as your own copy. The one true cross stands over the whole app, the top of every screen sits right, sign-in and your account hold steady, and the EIKON shop has been rebuilt around search and clean cards. The core of Purify, the Scriptures, the prayers, the saints, the calendar, and the new fasting tracker, is free, today and always.",
     "sections": [
+      {
+        "heading": "Keep the fast, day by day",
+        "body": "A new fasting tracker meets you where the calendar already is. It tells you plainly what today's fast asks, and lets you mark the day: kept, in part, or broke. A gentle streak counts the days you have kept, forgiving today until it is out and never scolding. Kept, not tracked, with room for the sick, the travelling, expecting mothers, and catechumens, and always under your priest's blessing. It works free and offline, kept on your device."
+      },
+      {
+        "heading": "Pray together",
+        "body": "Prayer Campaigns are a place to ask the Church to pray with you: for healing, for comfort and strength, for the persecuted, in thanksgiving, or for the departed, memory eternal. Start one in a few words, join the ones that move you, and mark that you have prayed. First names only, and only what you have a blessing to share. It is, and stays, free."
+      },
+      {
+        "heading": "The Trapeza, the shared table",
+        "body": "The Trapeza is a board of fasting-friendly recipes, sorted by the fast, the season, and the tradition. A few plain dishes from the Purify kitchen to begin, and you can send your own for the board."
+      },
+      {
+        "heading": "Carry your library, and keep a copy",
+        "body": "You can now export your notes, highlights, bookmarks, and collections and keep them as your own copy, yours to hold whatever comes."
+      },
+      {
+        "heading": "One cross, everywhere",
+        "body": "The three-bar Orthodox cross now stands over the whole app: the mark beside the name, the browser tab, and the icon on your home screen. One cross, the true one, in every place Purify appears."
+      },
+      {
+        "heading": "Purify's plan, made plain",
+        "body": "The plan now reads in three clear parts. Standard is free and always will be: the Scriptures, the prayers, the saints, the calendar, the fasting tracker, and the community. Purify Plus carries your library across every device. And a new Purify Pro adds a members' layer, a devotional icon mailed each month and codes for the EIKON shop. Both paid tiers open at half off the first year. Everything you use today stays free."
+      },
       {
         "heading": "The top bar sits right",
         "body": "The status-bar inset was being applied twice, which left a dead band under the top bar across the app. It is applied once now, and the gap is gone."

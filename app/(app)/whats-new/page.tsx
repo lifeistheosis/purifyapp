@@ -24,17 +24,19 @@ type Entry = {
 const ENTRIES: Entry[] = [
  {
  version: "Beta 2.0",
- kind: "A steadier app in the hand, and the shop set in order",
+ kind: "The fast kept, the table shared, and prayers held in common",
  date: "July 13, 2026",
  blurb:
-  "A season of work gathered into one: the top bar sits right, sign-in and your account hold steady, the reader obeys the back button, and the EIKON shop is rebuilt around search and clean cards. The app no longer bounces past its own edges.",
+  "The fullest release yet: keep the fast day by day, pray in common, and set the table with recipes for the season. Carry your library anywhere, the one true cross stands over the whole app, and the plan reads clearly in three parts. The steadier app and the rebuilt shop come along too.",
  items: [
-  "The dead band under the top bar is gone; the status-bar inset was being applied twice.",
-  "Sign-in and the account pages hold steady: the account gate trusts your device's session instead of a network check that could hang, and Profile and Security read the same way.",
-  "On Android, the back button closes the reader's settings sheet instead of leaving the page.",
-  "The EIKON shop is rebuilt with search, filters, and premium cards, and the category page that used to break now holds. More icons are on the way to the shelves.",
-  "The app no longer rubber-bands past the top and bottom of a page.",
-  "The reminder time pickers render clearly in the dark, with a focus ring.",
+  "A new fasting tracker: it tells you what today's fast asks and lets you mark the day kept, in part, or broke, with a gentle streak. Kept, not tracked, free and offline.",
+  "Prayer Campaigns: ask the Church to pray with you, join the ones that move you, first names only. Free, and it stays free.",
+  "The Trapeza: a board of fasting-friendly recipes by fast, season, and tradition, with a few dishes from the Purify kitchen to begin.",
+  "Export and back up your library: your notes, highlights, bookmarks, and collections, kept as your own copy.",
+  "The three-bar Orthodox cross now stands over the whole app: the mark by the name, the browser tab, and the home-screen icon.",
+  "The plan made plain: Standard (free, always), Purify Plus, and a new Purify Pro members' tier with a monthly mailed icon and shop codes. Both paid tiers open at half off the first year.",
+  "The dead band under the top bar is gone, sign-in and the account pages hold steady, and the reader's back button behaves on Android.",
+  "The EIKON shop is rebuilt with search, filters, and premium cards; the app no longer rubber-bands past its edges, and dark-mode time pickers read clearly.",
   "Cache version steps to purify-beta-2.0.",
  ],
  },
