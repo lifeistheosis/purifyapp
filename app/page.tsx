@@ -164,7 +164,10 @@ export default async function Home() {
  {/* NATIVE app shell: the Today hero + bottom tab bar. Absent from the
  web (mobile or desktop), which gets the marketing site below. */}
  <NativeOnly>
- <div className="flex-1 safe-pt safe-pb">
+ {/* No safe-pt: TodayMobileV3's header (MobileTopTabs) is `sticky top-0`
+    and owns the status-bar inset itself, clearing the bar at rest AND when
+    pinned on scroll. Adding safe-pt here too double-padded the top. */}
+ <div className="flex-1 safe-pb">
  <TodayMobileV3 />
  </div>
  <MobileTabBar />

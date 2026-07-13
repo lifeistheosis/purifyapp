@@ -23,7 +23,10 @@ export function MobileHeader({
 }) {
   const hasActions = donate || Boolean(trailing);
   return (
-    <header className="flex items-center justify-between px-5 pt-[calc(env(safe-area-inset-top,0px)+1rem)] pb-2">
+    // pt-4 only, NOT the status-bar inset: this (non-sticky) header renders
+    // inside the (app) layout's <main class="safe-pt">, which already clears
+    // the bar. Adding env(safe-area-inset-top) here too double-padded the top.
+    <header className="flex items-center justify-between px-5 pt-4 pb-2">
       <h1 className="font-sans text-lede font-bold tracking-[-0.01em] text-paper">
         {title}
       </h1>
