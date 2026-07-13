@@ -1,5 +1,37 @@
 [
   {
+    "id": "beta-2-0",
+    "version": "Beta 2.0",
+    "date": "2026-07-13",
+    "title": "A steadier app in the hand, and the shop set in order",
+    "intro": "Welcome, and glory to Jesus Christ. This release gathers a season of work into one. The top of every screen sits where it should, sign-in and your account hold steady, the reader obeys the back button, and the EIKON shop has been rebuilt around search and clean cards. Smaller comforts too: the app no longer bounces past its own edges, and the reminder times read clearly in the dark. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "The top bar sits right",
+        "body": "The status-bar inset was being applied twice, which left a dead band under the top bar across the app. It is applied once now, and the gap is gone."
+      },
+      {
+        "heading": "Sign-in and your account hold steady",
+        "body": "Several deep faults in how the app confirmed your sign-in have been closed. The account gate now trusts your device's own session instead of a network check that could hang, and the Profile and Security screens read the same way, so the account pages open when they should."
+      },
+      {
+        "heading": "The reader obeys the back button",
+        "body": "On Android, the back button now closes the reader's settings sheet instead of leaving the page, and the handler no longer churns or leaks."
+      },
+      {
+        "heading": "The EIKON shop, rebuilt",
+        "body": "The marketplace now has search, filters, and premium cards, and a category page that used to break now holds. More icons are on the way to the shelves."
+      },
+      {
+        "heading": "Small comforts",
+        "body": "The app no longer bounces past the top and bottom of a page, the rubber-band pull that never belonged in a prayer book. The reminder time pickers now render in the dark with a clear focus ring. The cache version steps to purify-beta-2.0."
+      }
+    ],
+    "future": [],
+    "closing": "Many of these came from your reports. If anything still misbehaves, write to lifeistheosis@gmail.com. I read every one, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
     "id": "beta-1-9-5",
     "version": "Beta 1.9.5",
     "date": "2026-07-12",

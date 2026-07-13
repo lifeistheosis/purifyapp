@@ -23,6 +23,22 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 2.0",
+ kind: "A steadier app in the hand, and the shop set in order",
+ date: "July 13, 2026",
+ blurb:
+  "A season of work gathered into one: the top bar sits right, sign-in and your account hold steady, the reader obeys the back button, and the EIKON shop is rebuilt around search and clean cards. The app no longer bounces past its own edges.",
+ items: [
+  "The dead band under the top bar is gone; the status-bar inset was being applied twice.",
+  "Sign-in and the account pages hold steady: the account gate trusts your device's session instead of a network check that could hang, and Profile and Security read the same way.",
+  "On Android, the back button closes the reader's settings sheet instead of leaving the page.",
+  "The EIKON shop is rebuilt with search, filters, and premium cards, and the category page that used to break now holds. More icons are on the way to the shelves.",
+  "The app no longer rubber-bands past the top and bottom of a page.",
+  "The reminder time pickers render clearly in the dark, with a focus ring.",
+  "Cache version steps to purify-beta-2.0.",
+ ],
+ },
+ {
  version: "Beta 1.9.5",
  kind: "Sign-in that cannot jam, and a Plus screen worthy of the name",
  date: "July 12, 2026",
