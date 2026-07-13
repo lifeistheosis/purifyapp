@@ -327,3 +327,12 @@ corrections:
       lock. Low urgency; no correctness impact.
     safe_to_automate: partially
     review: none
+
+  - id: F-19
+    title: Reader-settings sheet un-dismissable on the native Android app ("dark screen stuck")
+    area: reader/native
+    severity: P2
+    confidence: high
+    status: corrected-unverified   # owner report 2026-07-12: on the native app, tapping the Bible reader top-bar settings button (right of the bookmark) opens the sheet but leaves a dark, stuck overlay that only a force-close clears; the chapter-picker sheet (same Sheet primitive) is fine. Key insight: the chapter picker is always dismissed by SELECTING a chapter (a navigation), so its dismiss path is never exercised; the settings sheet has no such action, so the only way out is the backdrop / X / Android BACK — and Android users instinctively press Back. Root cause in the Back path: lib/platform/useAndroidBack registered the @capacitor/app backButton listener in an effect keyed on [active, onBack]; callers pass a fresh onBack arrow every render, so the effect tore down + re-registered the native listener on every render (bridge churn) AND leaked handles (the async App.addListener races the synchronous cleanup, so `remove` was still undefined when cleanup ran). Fix: keep onBack in a ref and key the effect on [active] alone (register once per open), and guard the async registration so a cleanup that fires first removes the just-added handle. Reproduced the sheet open/close cleanly in Chromium (so it is native-Back-specific, not the Sheet or the content); the native Back path itself is not reproducible without a device. tsc 0; eslint clean; 299 unit; web build green. Residual: owner opens the reader settings on-device and presses Back to confirm it dismisses.
+    safe_to_automate: partially
+    review: none
