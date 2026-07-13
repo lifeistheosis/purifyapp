@@ -4,7 +4,8 @@ import type { FastKind } from "@/lib/calendar/orthodox";
 /**
  * Third card in the mobile Today timeline: today's fast in plain words.
  * Mirrors the reference's card shape (eyebrow + bold title + short body).
- * Links to /calendar where the toggle and the full menologion live.
+ * Links to /fasting, the tracker, where the reader keeps the day and sees
+ * their streak (the full menologion is one tap further, from there).
  */
 export function FastTodayCard({
   fast,
@@ -23,7 +24,7 @@ export function FastTodayCard({
   };
   return (
     <Link
-      href="/calendar"
+      href="/fasting"
       className="block rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5 transition-colors hover:bg-paper/[0.06]"
     >
       <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
