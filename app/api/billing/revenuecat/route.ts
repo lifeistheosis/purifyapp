@@ -53,14 +53,24 @@ type RcEvent = {
 };
 
 export async function POST(req: NextRequest) {
-  const secret = process.env.REVENUECAT_WEBHOOK_SECRET;
+  // Trim both sides: a shared secret never meaningfully carries leading or
+  // trailing whitespace, and a stray space pasted into the Render env or the
+  // RevenueCat dashboard is the classic cause of a silent 403.
+  const secret = process.env.REVENUECAT_WEBHOOK_SECRET?.trim();
   if (!secret) {
     // Fail closed: never accept entitlement writes without a configured
     // shared secret.
     console.error("[revenuecat] REVENUECAT_WEBHOOK_SECRET not set");
     return NextResponse.json({ error: "Not configured" }, { status: 503 });
   }
-  if (req.headers.get("authorization") !== secret) {
+  const provided = req.headers.get("authorization")?.trim() ?? "";
+  if (provided !== secret) {
+    // Log LENGTHS only, never the values. Unequal lengths point to hidden
+    // whitespace or a "Bearer " prefix on one side; equal lengths that still
+    // mismatch mean the two secrets are genuinely different strings.
+    console.warn(
+      `[revenuecat] webhook auth mismatch (provided len ${provided.length}, expected len ${secret.length})`,
+    );
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
