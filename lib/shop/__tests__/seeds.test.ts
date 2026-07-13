@@ -48,7 +48,7 @@ const BANNED_CLAIMS = [
 describe("shop seed catalog integrity", () => {
   it("has a sensible catalog size for Phase 1", () => {
     expect(products.length).toBeGreaterThanOrEqual(5);
-    expect(products.length).toBeLessThanOrEqual(15);
+    expect(products.length).toBeLessThanOrEqual(20);
   });
 
   it("every saint-type subject resolves in the saints registry", () => {

@@ -65,7 +65,7 @@
       "slug": "st-nicholas-wooden-icon",
       "title": "St Nicholas the Wonderworker",
       "subtitle": "Wooden icon of the bishop of Myra",
-      "description": "Nicholas of Myra, the friend of sailors, prisoners, and children, shown vested as a bishop with the Gospels. After the medieval Novgorod tradition. Printed and sealed on a solid wooden plank with a raised border, in the manner of a traditional panel icon.",
+      "description": "Nicholas of Myra, the friend of sailors, prisoners, and children, shown vested as a bishop with the Gospels. After the ancient icon at Sinai. Printed and sealed on a solid wooden plank with a raised border, in the manner of a traditional panel icon.",
       "priceCents": 8900,
       "category": "saints",
       "classification": "wooden",
@@ -85,10 +85,11 @@
       "media": {
         "file": "st-nicholas-wooden-icon.jpg",
         "alt": "Icon of St Nicholas the Wonderworker vested as a bishop, blessing with his right hand and holding the Gospels",
-        "query": "Saint Nicholas icon Novgorod medieval",
+        "query": "Saint Nicholas Sinai 13th century icon bust",
         "preferred": [
-          "File:Nikola from 1294.jpg"
-        ]
+          "File:St Nicholas Icon Sinai 13th century.jpg"
+        ],
+        "crop": { "t": 0.02, "r": 0.02, "b": 0.02, "l": 0.02 }
       }
     },
     {
@@ -234,11 +235,11 @@
       "media": {
         "file": "anastasis-pascha-icon.jpg",
         "alt": "The Anastasis: Christ standing on the broken gates of Hades, raising Adam and Eve",
-        "query": "Anastasis icon resurrection Byzantine Christ Hades Adam",
+        "query": "Anastasis Resurrection Greek icon Walters",
         "preferred": [
-          "File:Harrowing of hell (Pskov, 14th c.).jpg",
-          "File:Harrowing of hell (Constantinople, 14th c.).jpg"
-        ]
+          "File:Greek - Resurrection of Christ - Walters 37751.jpg"
+        ],
+        "crop": { "t": 0.09, "r": 0.03, "b": 0.03, "l": 0.03 }
       }
     },
     {
@@ -304,6 +305,242 @@
         "preferred": [
           "File:Christ Pantocrator from Vysotsky chin (14c, Tretyakov gallery).jpg"
         ]
+      }
+    },
+    {
+      "slug": "holy-trinity-rublev-mounted",
+      "title": "The Holy Trinity",
+      "subtitle": "Rublev's Trinity, printed and mounted on wood",
+      "description": "Andrei Rublev's icon of the Hospitality of Abraham, painted for the Trinity Lavra of St Sergius in the early fifteenth century: three angels at one table, the whole Godhead read in the inclination of three heads toward a single cup. After the Moscow tradition. Printed on archival stock and mounted on a wooden board.",
+      "priceCents": 5500,
+      "category": "feasts",
+      "classification": "printed_mounted",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Archival print, poplar board",
+      "dimensions": "8 × 10 in",
+      "productionMethod": "Giclée print, hand-mounted",
+      "countryOfOrigin": "Russia",
+      "subjects": [
+        {
+          "type": "feast",
+          "slug": "holy-trinity"
+        }
+      ],
+      "media": {
+        "file": "holy-trinity-rublev-mounted.jpg",
+        "alt": "Andrei Rublev's icon of the Holy Trinity: three angels seated around the table of Abraham's hospitality, one chalice between them",
+        "query": "Rublev Trinity icon Angels at Mamre",
+        "preferred": [
+          "File:Angelsatmamre-trinity-rublev-1410.jpg"
+        ],
+        "crop": { "t": 0.02, "r": 0.02, "b": 0.02, "l": 0.02 }
+      }
+    },
+    {
+      "slug": "theotokos-of-kazan-mounted",
+      "title": "Theotokos of Kazan",
+      "subtitle": "The Kazanskaya, printed and mounted on wood",
+      "description": "The Mother of God of Kazan, whose image was found in the ashes of a burned city in 1579 and carried afterward through Russia's darkest hours: the Child standing at her side, her head inclined toward Him. After the Kazan type. Printed on archival stock and mounted on a wooden board.",
+      "priceCents": 4900,
+      "category": "theotokos",
+      "classification": "printed_mounted",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Archival print, poplar board",
+      "dimensions": "8 × 10 in",
+      "productionMethod": "Giclée print, hand-mounted",
+      "countryOfOrigin": "Russia",
+      "subjects": [
+        {
+          "type": "theotokos",
+          "slug": "kazan"
+        }
+      ],
+      "media": {
+        "file": "theotokos-of-kazan-mounted.jpg",
+        "alt": "The Kazan icon of the Mother of God: the Christ Child standing at her side, her head inclined toward Him",
+        "query": "Our Lady of Kazan icon Theotokos",
+        "preferred": [
+          "File:Kazanskaya.jpg"
+        ],
+        "crop": { "t": 0.02, "r": 0.03, "b": 0.11, "l": 0.03 }
+      }
+    },
+    {
+      "slug": "st-george-mounted",
+      "title": "St George the Trophy-bearer",
+      "subtitle": "The dragon-slayer of Cappadocia, printed and mounted on wood",
+      "description": "George of Cappadocia, soldier and martyr under Diocletian, shown in the miracle the Church never tired of telling: the rider on the white horse, the spear, the dragon underfoot. After the medieval Novgorod tradition. Printed on archival stock and mounted on a wooden board.",
+      "priceCents": 4900,
+      "category": "saints",
+      "classification": "printed_mounted",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Archival print, poplar board",
+      "dimensions": "8 × 10 in",
+      "productionMethod": "Giclée print, hand-mounted",
+      "countryOfOrigin": "Greece",
+      "media": {
+        "file": "st-george-mounted.jpg",
+        "alt": "St George on a white horse, his red cloak flying, driving his spear into the dragon beneath the hooves",
+        "query": "Saint George dragon icon Novgorod Tretyakov",
+        "preferred": [
+          "File:Saint George icon. Novgorod icon-painting school, 15th cent.., Veliky Novgorod, Russia. Tretyakov Gallery.jpg"
+        ],
+        "crop": { "t": 0.12, "r": 0.04, "b": 0.02, "l": 0.02 }
+      }
+    },
+    {
+      "slug": "st-john-the-forerunner-mounted",
+      "title": "St John the Forerunner",
+      "subtitle": "The Baptist of the Lord, printed and mounted on wood",
+      "description": "John the Forerunner, greatest born of women, who pointed away from himself to the Lamb of God. After the Deesis mosaic of Hagia Sophia. Printed on archival stock and mounted on a wooden board.",
+      "priceCents": 4500,
+      "category": "saints",
+      "classification": "printed_mounted",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Archival print, poplar board",
+      "dimensions": "6 × 8 in",
+      "productionMethod": "Giclée print, hand-mounted",
+      "countryOfOrigin": "Greece",
+      "subjects": [
+        {
+          "type": "saint",
+          "slug": "john-the-baptist"
+        }
+      ],
+      "media": {
+        "file": "st-john-the-forerunner-mounted.jpg",
+        "alt": "St John the Forerunner from the Deesis mosaic of Hagia Sophia, his head bowed in intercession",
+        "query": "John the Forerunner Deesis mosaic Hagia Sophia",
+        "preferred": [
+          "File:Byzantinischer Mosaizist des 12. Jahrhunderts 001.jpg"
+        ],
+        "crop": { "t": 0.10, "r": 0.22, "b": 0.31, "l": 0.29 }
+      }
+    },
+    {
+      "slug": "nativity-of-christ-mounted",
+      "title": "The Nativity of Christ",
+      "subtitle": "The feast of the Incarnation, printed and mounted on wood",
+      "description": "The Nativity in the cave: the Mother of God reclining beside the manger, the Child warmed by the breath of the ox and the ass, the shepherds and the magi drawn to one star. After the Byzantine tradition. Printed on archival stock and mounted on a wooden board.",
+      "priceCents": 5500,
+      "category": "feasts",
+      "classification": "printed_mounted",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Archival print, poplar board",
+      "dimensions": "8 × 10 in",
+      "productionMethod": "Giclée print, hand-mounted",
+      "countryOfOrigin": "Greece",
+      "subjects": [
+        {
+          "type": "feast",
+          "slug": "nativity"
+        }
+      ],
+      "media": {
+        "file": "nativity-of-christ-mounted.jpg",
+        "alt": "The Nativity of Christ: the Mother of God reclining beside the manger, the Child in the cave",
+        "query": "Nativity of Christ Byzantine icon",
+        "preferred": [
+          "File:Byzantine School - The Nativity - RCIN 403381 - Royal Collection.jpg"
+        ],
+        "crop": { "t": 0.10, "r": 0.04, "b": 0.04, "l": 0.04 }
+      }
+    },
+    {
+      "slug": "theophany-mounted",
+      "title": "The Theophany",
+      "subtitle": "The Baptism of the Lord in Jordan, printed and mounted on wood",
+      "description": "Christ standing in the Jordan under the hand of the Forerunner, the Spirit descending as a dove, the voice of the Father over the water: the feast on which the Holy Trinity was made manifest. After the mosaic of the baptistery at Ravenna. Printed on archival stock and mounted on a wooden board.",
+      "priceCents": 5500,
+      "category": "feasts",
+      "classification": "printed_mounted",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Archival print, poplar board",
+      "dimensions": "8 × 10 in",
+      "productionMethod": "Giclée print, hand-mounted",
+      "countryOfOrigin": "Italy",
+      "subjects": [
+        {
+          "type": "feast",
+          "slug": "theophany"
+        }
+      ],
+      "media": {
+        "file": "theophany-mounted.jpg",
+        "alt": "The Baptism of Christ in the Jordan: the Forerunner's hand on His head and the dove of the Spirit descending",
+        "query": "Baptism of Christ Theophany mosaic Ravenna",
+        "preferred": [
+          "File:Baptistery.Arians06.jpg"
+        ],
+        "crop": { "t": 0.17, "r": 0.29, "b": 0.25, "l": 0.28 }
+      }
+    },
+    {
+      "slug": "dormition-of-the-theotokos-mounted",
+      "title": "The Dormition of the Theotokos",
+      "subtitle": "The falling-asleep of the Mother of God, printed and mounted on wood",
+      "description": "The Mother of God asleep on the bier, the apostles gathered from the ends of the earth, and Christ standing behind her to receive her soul as a little child in swaddling clothes. After Theophanes the Greek. Printed on archival stock and mounted on a wooden board.",
+      "priceCents": 5500,
+      "category": "feasts",
+      "classification": "printed_mounted",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Archival print, poplar board",
+      "dimensions": "8 × 10 in",
+      "productionMethod": "Giclée print, hand-mounted",
+      "countryOfOrigin": "Greece",
+      "subjects": [
+        {
+          "type": "feast",
+          "slug": "dormition"
+        }
+      ],
+      "media": {
+        "file": "dormition-of-the-theotokos-mounted.jpg",
+        "alt": "The Dormition of the Theotokos: the apostles about her bier and Christ holding her soul as a swaddled child",
+        "query": "Dormition Theotokos Theophanes Greek icon",
+        "preferred": [
+          "File:Theofanus uspenie.jpg"
+        ],
+        "crop": { "t": 0.07, "r": 0.02, "b": 0.02, "l": 0.02 }
+      }
+    },
+    {
+      "slug": "guardian-angel-mounted",
+      "title": "The Guardian Angel",
+      "subtitle": "The Angel of the Golden Hair, printed and mounted on wood",
+      "description": "The face known as the Angel of the Golden Hair, an archangel from twelfth-century Novgorod kept now in the Russian Museum: the great eyes turned inward, the stillness of one who stands before God. Printed on archival stock and mounted on a wooden board.",
+      "priceCents": 4500,
+      "category": "saints",
+      "classification": "printed_mounted",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Archival print, poplar board",
+      "dimensions": "6 × 8 in",
+      "productionMethod": "Giclée print, hand-mounted",
+      "countryOfOrigin": "Russia",
+      "media": {
+        "file": "guardian-angel-mounted.jpg",
+        "alt": "The Angel of the Golden Hair, a twelfth-century archangel with great inward-turned eyes",
+        "query": "Angel Golden Hair archangel icon Novgorod",
+        "preferred": [
+          "File:Archanioł Gabriel.jpg"
+        ],
+        "crop": { "t": 0.03, "r": 0.05, "b": 0.03, "l": 0.04 }
       }
     }
   ]

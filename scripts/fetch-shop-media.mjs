@@ -115,7 +115,25 @@ for (const product of SEEDS.products) {
     }
     const r = await get(info.url);
     if (r.status !== 200 || !r.type?.startsWith("image/")) continue;
-    const resized = await sharp(r.body)
+    // Auto-orient from EXIF (some Commons scans carry a rotation flag sharp
+    // otherwise ignores), then apply an optional fractional-inset crop so a
+    // caption band, titulus, or museum frame can be trimmed off the cover.
+    // crop = { t, r, b, l } as fractions removed from each edge; all optional.
+    const rotated = await sharp(r.body).rotate().toBuffer();
+    let pipeline = sharp(rotated);
+    const crop = product.media.crop;
+    if (crop) {
+      const meta = await sharp(rotated).metadata();
+      const W = meta.width, H = meta.height;
+      const l = crop.l ?? 0, t = crop.t ?? 0, cr = crop.r ?? 0, b = crop.b ?? 0;
+      pipeline = pipeline.extract({
+        left: Math.round(l * W),
+        top: Math.round(t * H),
+        width: Math.round((1 - l - cr) * W),
+        height: Math.round((1 - t - b) * H),
+      });
+    }
+    const resized = await pipeline
       .resize({ width: 1200, height: 1200, fit: "inside", withoutEnlargement: true })
       .jpeg({ quality: 85, mozjpeg: true })
       .toBuffer();
