@@ -36,6 +36,10 @@ export type CreateCampaignInput = {
   forWhom: ForWhom;
   subjectName?: string | null;
   note?: string | null;
+  /** Chosen preset prayer key; omitted falls back to the intention default. */
+  prayerKey?: string | null;
+  /** Campaign length: 7, 9, or 40 days; omitted/null = ongoing. */
+  durationDays?: 7 | 9 | 40 | null;
   blessing: true;
 };
 
@@ -126,7 +130,7 @@ export type MyPrayers = {
 };
 
 const CAMPAIGN_COLS =
-  "id, creator_id, title, intention, for_whom, subject_name, note, praying_count, prayer_count, status, created_at";
+  "id, creator_id, title, intention, for_whom, subject_name, note, prayer_key, ends_at, praying_count, prayer_count, status, created_at";
 
 export async function fetchMyPrayers(): Promise<MyPrayers> {
   const empty: MyPrayers = { userId: null, joined: [], created: [], totalPrayerDays: 0 };

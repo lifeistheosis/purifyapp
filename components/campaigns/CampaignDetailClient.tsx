@@ -6,9 +6,11 @@ import { useCallback, useEffect, useState } from "react";
 
 import {
   canPrayAgain,
+  daysLeft,
   intentionLabel,
+  isFinished,
+  prayerText,
   statusLabel,
-  suggestedPrayer,
   type PrayerCampaign,
 } from "@/lib/campaigns/campaigns";
 import {
@@ -160,7 +162,8 @@ export function CampaignDetailClient() {
   const closed = statusLabel(campaign.status);
   const isCreator = userId != null && userId === campaign.creator_id;
   const prayedToday = joined && !canPrayAgain(lastPrayedAt);
-  const isActive = campaign.status === "active";
+  const isActive = !isFinished(campaign);
+  const left = daysLeft(campaign.ends_at);
 
   return (
     <section className="min-h-[calc(100dvh-72px)] bg-night px-5 py-10 md:px-8 md:py-14">
@@ -206,6 +209,9 @@ export function CampaignDetailClient() {
           {campaign.prayer_count > 0
             ? ` · ${campaign.prayer_count} prayers offered`
             : ""}
+          {isActive && left !== null
+            ? ` · ${left === 0 ? "ends today" : left === 1 ? "1 day left" : `${left} days left`}`
+            : ""}
         </p>
 
         {/* Suggested prayer */}
@@ -214,7 +220,7 @@ export function CampaignDetailClient() {
             Pray
           </p>
           <p className="mt-2.5 font-serif text-lede italic leading-[1.7] text-paper/90">
-            {suggestedPrayer(campaign.intention, campaign.for_whom)}
+            {prayerText(campaign)}
           </p>
         </div>
 

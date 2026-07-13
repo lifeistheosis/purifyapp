@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { corsPreflight, corsRoute, withCors } from "@/lib/api/cors";
-import { isIntention } from "@/lib/campaigns/campaigns";
+import { isIntention, isPrayerKey } from "@/lib/campaigns/campaigns";
 import { listCampaigns } from "@/lib/campaigns/catalog";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
@@ -74,6 +74,12 @@ async function handlePOST(req: Request) {
 
   // The departed intention always concerns the departed, whatever the toggle said.
   const forWhom = data.intention === "departed" ? "departed" : data.forWhom;
+  // An unknown or absent prayer key falls back to the intention default at read.
+  const prayerKey = isPrayerKey(data.prayerKey) ? data.prayerKey : null;
+  // Ongoing when no duration is chosen; otherwise now + the chosen day-count.
+  const endsAt = data.durationDays
+    ? new Date(Date.now() + data.durationDays * 24 * 60 * 60 * 1000).toISOString()
+    : null;
 
   const admin = createAdminClient();
   const { data: created, error } = await admin
@@ -85,6 +91,8 @@ async function handlePOST(req: Request) {
       for_whom: forWhom,
       subject_name: data.subjectName?.trim() || null,
       note: data.note?.trim() || null,
+      prayer_key: prayerKey,
+      ends_at: endsAt,
     })
     .select("id")
     .single();

@@ -19,7 +19,7 @@ function createClient() {
 }
 
 const SELECT =
-  "id, creator_id, title, intention, for_whom, subject_name, note, praying_count, prayer_count, status, created_at";
+  "id, creator_id, title, intention, for_whom, subject_name, note, prayer_key, ends_at, praying_count, prayer_count, status, created_at";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

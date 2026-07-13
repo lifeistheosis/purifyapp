@@ -281,6 +281,14 @@ export const campaignCreateSchema = z.object({
   // a surname or identifying detail of a third party.
   subjectName: z.string().max(80).optional().nullable(),
   note: z.string().max(280).optional().nullable(),
+  // The chosen preset prayer's key. Validated against the catalog in the route
+  // (isPrayerKey); an unknown or absent key falls back to the intention default.
+  prayerKey: z.string().max(40).optional().nullable(),
+  // Campaign length in days: a week, a novena, or forty days. Omitted/null = ongoing.
+  durationDays: z
+    .union([z.literal(7), z.literal(9), z.literal(40)])
+    .optional()
+    .nullable(),
   // "This is my own request, or I have the person's blessing to share it."
   blessing: z.literal(true),
 });

@@ -6,6 +6,9 @@ import { useEffect, useState } from "react";
 
 import {
   INTENTIONS,
+  DURATIONS,
+  defaultPrayerKey,
+  presetsFor,
   type CampaignIntention,
   type ForWhom,
 } from "@/lib/campaigns/campaigns";
@@ -20,6 +23,8 @@ export function CreateCampaignClient() {
   const [forWhom, setForWhom] = useState<ForWhom>("living");
   const [subjectName, setSubjectName] = useState("");
   const [note, setNote] = useState("");
+  const [prayerKey, setPrayerKey] = useState<string>(defaultPrayerKey("healing"));
+  const [durationDays, setDurationDays] = useState<number | null>(null);
   const [blessing, setBlessing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,9 +38,19 @@ export function CreateCampaignClient() {
     setIntention(slug);
     const def = INTENTIONS.find((i) => i.slug === slug)?.defaultFor ?? "living";
     setForWhom(def);
+    setPrayerKey(defaultPrayerKey(slug));
+  }
+
+  function changeForWhom(f: ForWhom) {
+    setForWhom(f);
+    // Keep the chosen prayer valid for the new context, else sensible default.
+    if (!presetsFor(f).some((p) => p.key === prayerKey)) {
+      setPrayerKey(f === "departed" ? "memory-eternal" : defaultPrayerKey(intention));
+    }
   }
 
   const departedFixed = intention === "departed";
+  const prayers = presetsFor(departedFixed ? "departed" : forWhom);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -56,6 +71,8 @@ export function CreateCampaignClient() {
       forWhom: departedFixed ? "departed" : forWhom,
       subjectName: subjectName.trim() || null,
       note: note.trim() || null,
+      prayerKey,
+      durationDays: durationDays as 7 | 9 | 40 | null,
       blessing: true,
     });
     setBusy(false);
@@ -147,7 +164,7 @@ export function CreateCampaignClient() {
                 <button
                   key={f}
                   type="button"
-                  onClick={() => setForWhom(f)}
+                  onClick={() => changeForWhom(f)}
                   aria-pressed={forWhom === f}
                   className={`rounded-pill border px-4 py-1.5 font-sans text-caption font-semibold capitalize transition-colors ${
                     forWhom === f
@@ -161,6 +178,32 @@ export function CreateCampaignClient() {
             </div>
           </div>
         ) : null}
+
+        <div>
+          <span className={labelCls}>Choose a prayer</span>
+          <div className="space-y-2">
+            {prayers.map((p) => (
+              <button
+                key={p.key}
+                type="button"
+                onClick={() => setPrayerKey(p.key)}
+                aria-pressed={prayerKey === p.key}
+                className={`block w-full rounded-lg border px-4 py-3 text-left transition-colors ${
+                  prayerKey === p.key
+                    ? "border-gold/50 bg-gold/[0.08]"
+                    : "border-paper/12 hover:border-paper/25"
+                }`}
+              >
+                <span className="block font-sans text-ui font-semibold text-paper">
+                  {p.label}
+                </span>
+                <span className="mt-1 block font-serif text-caption italic leading-snug text-paper/60">
+                  {p.text}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div>
           <label htmlFor="subject" className={labelCls}>
@@ -188,6 +231,28 @@ export function CreateCampaignClient() {
             maxLength={280}
             placeholder="One or two lines. No private medical or personal details of others."
           />
+        </div>
+
+        <div>
+          <span className={labelCls}>How long should it run?</span>
+          <div className="flex flex-wrap gap-2">
+            {DURATIONS.map((d) => (
+              <button
+                key={d.label}
+                type="button"
+                onClick={() => setDurationDays(d.days)}
+                aria-pressed={durationDays === d.days}
+                title={d.sub}
+                className={`rounded-pill border px-3.5 py-1.5 font-sans text-caption font-semibold transition-colors ${
+                  durationDays === d.days
+                    ? "border-gold/50 bg-gold/10 text-gold-pale"
+                    : "border-paper/15 text-paper/60 hover:border-paper/30"
+                }`}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <label className="flex items-start gap-3">
