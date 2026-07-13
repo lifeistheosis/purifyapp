@@ -562,6 +562,10 @@
       "media": {
         "file": "christ-the-bridegroom-mounted.jpg",
         "alt": "Christ the Bridegroom crowned with thorns and robed in a reed, his hands bound, on the icon of Holy Week",
+        "preferred": [
+          "File:Νυμφίος 1845.jpg",
+          "File:092 Christ Bridegroom Icon from Saint Paraskevi Church in Langadas.jpg"
+        ],
         "query": "Christ the Bridegroom Nymphios icon Holy Week"
       }
     },
@@ -584,6 +588,10 @@
       "media": {
         "file": "theotokos-portaitissa-mounted.jpg",
         "alt": "The Iveron icon of the Mother of God, the Portaitissa, with a mark on her cheek and the Christ Child at her side",
+        "preferred": [
+          "File:Panagia Portaitissa.jpg",
+          "File:Η εικόνα της Παναγίας της Πορταΐτισσας στη Μονή Ιβήρων του Αγίου Όρους.jpg"
+        ],
         "query": "Panagia Portaitissa Iveron icon Theotokos"
       }
     },
