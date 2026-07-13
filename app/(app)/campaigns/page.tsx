@@ -1,18 +1,23 @@
+import { CampaignsClient } from "@/components/campaigns/CampaignsClient";
 import { FeatureShell } from "@/components/feature/FeatureShell";
+import { campaignsEnabled } from "@/lib/campaigns/flags";
 
 export const metadata = {
   title: "Prayer Campaigns",
   description:
-    "Joining a community prayer campaign, a coordinated period of intercession for a person, a parish, or a need. Coming soon.",
+    "Pray with the faithful for a person, a need, or a soul at rest. Join a community prayer campaign and it joins your daily prayers.",
 };
 
 export default function CampaignsPage() {
-  return (
-    <FeatureShell
-      eyebrow="Together"
-      title="Prayer Campaigns"
-      body="Join the faithful praying for a cause, a person, or a need. Open campaigns, parish-led campaigns, and seasonal initiatives."
-      ctaLabel="See active campaigns"
-    />
-  );
+  if (!campaignsEnabled()) {
+    return (
+      <FeatureShell
+        eyebrow="Together"
+        title="Prayer Campaigns"
+        body="Join the faithful praying for a cause, a person, or a need. Open campaigns, parish-led campaigns, and seasonal initiatives."
+        ctaLabel="See active campaigns"
+      />
+    );
+  }
+  return <CampaignsClient />;
 }

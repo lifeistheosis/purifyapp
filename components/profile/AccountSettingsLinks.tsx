@@ -10,6 +10,7 @@
 
 import { useEffect, useState } from "react";
 import { SettingsList, type SettingsItem } from "@/components/mobile/SettingsList";
+import { campaignsEnabled } from "@/lib/campaigns/flags";
 import { readIntentions } from "@/lib/prayers/storage";
 
 export function AccountSettingsLinks() {
@@ -46,6 +47,16 @@ export function AccountSettingsLinks() {
           : `${intentions} names you carry`,
       icon: <Glyph kind="halo" />,
     },
+    ...(campaignsEnabled()
+      ? [
+          {
+            label: "My prayers",
+            href: "/campaigns/mine",
+            hint: "Campaigns you pray with the community",
+            icon: <Glyph kind="halo" />,
+          } satisfies SettingsItem,
+        ]
+      : []),
     {
       label: "Notifications",
       href: "/account/data",

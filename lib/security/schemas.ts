@@ -261,3 +261,36 @@ export function isSafeNext(value: string | null | undefined): value is string {
   if (/[\r\n\0]/.test(value)) return false;
   return true;
 }
+
+/** /api/campaigns POST body (create a prayer campaign). The server owns every
+ *  counter and workflow column; a client only proposes the human fields. The
+ *  blessing literal is the privacy affirmation, mirroring the checkout
+ *  clickwrap: it must be true. */
+export const campaignCreateSchema = z.object({
+  title: z.string().min(3).max(120),
+  intention: z.enum([
+    "healing",
+    "comfort",
+    "guidance",
+    "persecuted",
+    "thanksgiving",
+    "departed",
+  ]),
+  forWhom: z.enum(["living", "departed"]),
+  // First name or a cause. Privacy is enforced by copy + this length cap, never
+  // a surname or identifying detail of a third party.
+  subjectName: z.string().max(80).optional().nullable(),
+  note: z.string().max(280).optional().nullable(),
+  // "This is my own request, or I have the person's blessing to share it."
+  blessing: z.literal(true),
+});
+
+/** /api/campaigns/[id]/report POST body. */
+export const campaignReportSchema = z.object({
+  reason: z.string().max(500).optional().nullable(),
+});
+
+/** /api/campaigns/[id] PATCH body (creator closes their own campaign). */
+export const campaignStatusSchema = z.object({
+  status: z.enum(["answered", "memory_eternal"]),
+});

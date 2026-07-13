@@ -18,6 +18,7 @@ import {
   type CSSProperties,
 } from "react";
 
+import { campaignsEnabled } from "@/lib/campaigns/flags";
 import { cn } from "@/lib/cn";
 
 type Child = { key: string; label: string; href: string };
@@ -29,6 +30,10 @@ export const DISCOVER_CHILDREN: Child[] = [
   // (its own top-level button, gated by the marketplace flag).
   { key: "history", label: "Orthodox History", href: "/history" },
   { key: "reading", label: "Reading", href: "/reading" },
+  // Community prayer, gated by the campaigns flag until its tables are live.
+  ...(campaignsEnabled()
+    ? [{ key: "campaigns", label: "Prayer Campaigns", href: "/campaigns" }]
+    : []),
   { key: "theology", label: "Theology", href: "/theology" },
   { key: "apologetics", label: "Apologetics", href: "/apologetics" },
   { key: "topics", label: "Topics", href: "/topics" },
