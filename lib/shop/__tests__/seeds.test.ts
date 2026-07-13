@@ -33,6 +33,10 @@ const ALLOWED_CLASSIFICATIONS = [
   "laminated",
   "wooden",
   "hand_finished_reproduction",
+  // Non-icon devotional goods (dropshipped): prayer ropes, incense, beads.
+  "prayer_rope",
+  "incense",
+  "beaded",
 ];
 
 /** Language a supplier-sourced reproduction may never use. */
@@ -48,7 +52,7 @@ const BANNED_CLAIMS = [
 describe("shop seed catalog integrity", () => {
   it("has a sensible catalog size for Phase 1", () => {
     expect(products.length).toBeGreaterThanOrEqual(5);
-    expect(products.length).toBeLessThanOrEqual(20);
+    expect(products.length).toBeLessThanOrEqual(30);
   });
 
   it("every saint-type subject resolves in the saints registry", () => {

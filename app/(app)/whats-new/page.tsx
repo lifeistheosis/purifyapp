@@ -36,7 +36,7 @@ const ENTRIES: Entry[] = [
   "The three-bar Orthodox cross now stands over the whole app: the mark by the name, the browser tab, and the home-screen icon.",
   "The plan made plain: Standard (free, always), Purify Plus, and a new Purify Pro members' tier with a monthly mailed icon and shop codes. Both paid tiers open at half off the first year.",
   "The dead band under the top bar is gone, sign-in and the account pages hold steady, and the reader's back button behaves on Android.",
-  "The EIKON shop is rebuilt with search, filters, and premium cards; the app no longer rubber-bands past its edges, and dark-mode time pickers read clearly.",
+  "The EIKON shop is rebuilt with search, filters, and premium cards, and new icons plus the first prayer ropes (knotted wool komboskini) join the shelves; the app no longer rubber-bands past its edges, and dark-mode time pickers read clearly.",
   "Cache version steps to purify-beta-2.0.",
  ],
  },

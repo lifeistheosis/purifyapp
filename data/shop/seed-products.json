@@ -542,6 +542,138 @@
         ],
         "crop": { "t": 0.03, "r": 0.05, "b": 0.03, "l": 0.04 }
       }
+    },
+    {
+      "slug": "christ-the-bridegroom-mounted",
+      "title": "Christ the Bridegroom",
+      "subtitle": "The Nymphios of Holy Week, printed and mounted on wood",
+      "description": "Christ crowned with thorns and robed in mockery, yet the true Bridegroom of the Church who comes in the middle of the night: the icon carried in procession on the first days of Holy Week. After the Byzantine tradition. Printed on archival stock and mounted on a wooden board.",
+      "priceCents": 4900,
+      "category": "christ",
+      "classification": "printed_mounted",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Archival print, poplar board",
+      "dimensions": "8 × 10 in",
+      "productionMethod": "Giclée print, hand-mounted",
+      "countryOfOrigin": "Greece",
+      "subjects": [{ "type": "christ", "slug": "bridegroom" }],
+      "media": {
+        "file": "christ-the-bridegroom-mounted.jpg",
+        "alt": "Christ the Bridegroom crowned with thorns and robed in a reed, his hands bound, on the icon of Holy Week",
+        "query": "Christ the Bridegroom Nymphios icon Holy Week"
+      }
+    },
+    {
+      "slug": "theotokos-portaitissa-mounted",
+      "title": "Theotokos Portaitissa",
+      "subtitle": "The Iveron Mother of God, printed and mounted on wood",
+      "description": "The Portaitissa, the Keeper of the Gate, whose icon came to the Holy Mountain across the sea and has guarded the Iveron monastery ever since: a wound on her cheek, her gaze steady on the one who prays. After the Iveron type. Printed on archival stock and mounted on a wooden board.",
+      "priceCents": 4900,
+      "category": "theotokos",
+      "classification": "printed_mounted",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Archival print, poplar board",
+      "dimensions": "8 × 10 in",
+      "productionMethod": "Giclée print, hand-mounted",
+      "countryOfOrigin": "Greece",
+      "subjects": [{ "type": "theotokos", "slug": "portaitissa" }],
+      "media": {
+        "file": "theotokos-portaitissa-mounted.jpg",
+        "alt": "The Iveron icon of the Mother of God, the Portaitissa, with a mark on her cheek and the Christ Child at her side",
+        "query": "Panagia Portaitissa Iveron icon Theotokos"
+      }
+    },
+    {
+      "slug": "transfiguration-mounted",
+      "title": "The Transfiguration",
+      "subtitle": "Christ shining on Mount Tabor, printed and mounted on wood",
+      "description": "Christ transfigured on the mountain in uncreated light, Moses and Elijah beside him and the three disciples fallen to the ground below: the feast of the light that shone before the Passion. After Theophanes the Greek. Printed on archival stock and mounted on a wooden board.",
+      "priceCents": 5500,
+      "category": "feasts",
+      "classification": "printed_mounted",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 14,
+      "dispatchMaxDays": 28,
+      "materials": "Archival print, poplar board",
+      "dimensions": "8 × 10 in",
+      "productionMethod": "Giclée print, hand-mounted",
+      "countryOfOrigin": "Greece",
+      "subjects": [{ "type": "feast", "slug": "transfiguration" }],
+      "media": {
+        "file": "transfiguration-mounted.jpg",
+        "alt": "The Transfiguration of Christ on Mount Tabor in a mandorla of light, with Moses and Elijah and the three disciples below",
+        "query": "Transfiguration icon Theophanes the Greek",
+        "preferred": ["File:Preobrazhenie.jpg"]
+      }
+    },
+    {
+      "slug": "prayer-rope-33-knot-wool",
+      "title": "Prayer Rope, 33 knots",
+      "subtitle": "A knotted wool komboskini for the Jesus Prayer",
+      "description": "A traditional Orthodox prayer rope of thirty-three knots, one for each year of the Lord's earthly life, knotted in soft wool with a small cross and a bead. Held in the hand through the Jesus Prayer: Lord Jesus Christ, Son of God, have mercy on me. A companion given at tonsure and carried by monastics and laity alike.",
+      "priceCents": 1500,
+      "category": "prayer_corner",
+      "classification": "prayer_rope",
+      "inventoryStatus": "ready_to_ship",
+      "quantityAvailable": 40,
+      "dispatchMinDays": 1,
+      "dispatchMaxDays": 2,
+      "materials": "Knotted wool, wooden bead",
+      "dimensions": "33 knots",
+      "productionMethod": "Hand-knotted wool",
+      "countryOfOrigin": "Greece",
+      "media": {
+        "file": "prayer-rope-33-knot-wool.jpg",
+        "alt": "A black wool Orthodox prayer rope of thirty-three knots with a small knotted cross and a bead",
+        "query": "Orthodox prayer rope komboskini wool 33 knots"
+      }
+    },
+    {
+      "slug": "prayer-rope-50-knot-wool",
+      "title": "Prayer Rope, 50 knots",
+      "subtitle": "A knotted wool komboskini for the Jesus Prayer",
+      "description": "A fifty-knot Orthodox prayer rope in soft wool, with dividing beads and a knotted cross, a fuller cord for a longer rule of the Jesus Prayer. Kept in the hand or the pocket, a quiet companion to unceasing prayer.",
+      "priceCents": 2000,
+      "category": "prayer_corner",
+      "classification": "prayer_rope",
+      "inventoryStatus": "ready_to_ship",
+      "quantityAvailable": 40,
+      "dispatchMinDays": 1,
+      "dispatchMaxDays": 2,
+      "materials": "Knotted wool, wooden beads",
+      "dimensions": "50 knots",
+      "productionMethod": "Hand-knotted wool",
+      "countryOfOrigin": "Greece",
+      "media": {
+        "file": "prayer-rope-50-knot-wool.jpg",
+        "alt": "A black wool Orthodox prayer rope of fifty knots with dividing beads and a small knotted cross",
+        "query": "Orthodox prayer rope komboskini wool 50 knots"
+      }
+    },
+    {
+      "slug": "prayer-rope-100-knot-wool",
+      "title": "Prayer Rope, 100 knots",
+      "subtitle": "A knotted wool komboskini for a full rule of prayer",
+      "description": "A hundred-knot Orthodox prayer rope in wool, with dividing beads and a knotted cross, sized for a full daily rule of the Jesus Prayer or worn at the wrist. Knotted in the traditional way, each knot itself a cross of many crosses.",
+      "priceCents": 2800,
+      "category": "prayer_corner",
+      "classification": "prayer_rope",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 10,
+      "dispatchMaxDays": 21,
+      "materials": "Knotted wool, wooden beads",
+      "dimensions": "100 knots",
+      "productionMethod": "Hand-knotted wool",
+      "countryOfOrigin": "Mount Athos",
+      "media": {
+        "file": "prayer-rope-100-knot-wool.jpg",
+        "alt": "A long black wool Orthodox prayer rope of a hundred knots with dividing beads and a knotted cross",
+        "query": "Orthodox prayer rope komboskini wool 100 knots Mount Athos"
+      }
     }
   ]
 }
