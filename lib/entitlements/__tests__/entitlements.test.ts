@@ -118,4 +118,38 @@ describe("deriveEntitlements — enforced", () => {
     });
     expect(e.plus).toBe(true);
   });
+
+  it("active Pro: pro AND plus (superset), sync AND feature layer", () => {
+    const e = enforced({
+      is_supporter: false,
+      plus_until: null,
+      plus_source: "google",
+      pro_until: FUTURE,
+    });
+    expect(e.pro).toBe(true);
+    expect(e.plus).toBe(true); // Pro includes Plus
+    expect(e.sync).toBe(true);
+    expect(e.plusFeatures).toBe(true);
+  });
+
+  it("expired Pro: not pro, not plus", () => {
+    const e = enforced({
+      is_supporter: false,
+      plus_until: null,
+      plus_source: "google",
+      pro_until: PAST,
+    });
+    expect(e.pro).toBe(false);
+    expect(e.plus).toBe(false);
+  });
+
+  it("a plain Plus sub is not Pro", () => {
+    const e = enforced({
+      is_supporter: false,
+      plus_until: FUTURE,
+      plus_source: "google",
+    });
+    expect(e.plus).toBe(true);
+    expect(e.pro).toBe(false);
+  });
 });

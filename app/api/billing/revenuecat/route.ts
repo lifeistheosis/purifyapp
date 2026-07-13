@@ -114,6 +114,14 @@ export async function POST(req: NextRequest) {
   const plusUntil = new Date(event.expiration_at_ms).toISOString();
   const source = sourceForStore(event.store);
 
+  // The `pro` RevenueCat entitlement is the members' tier (purify_pro on Play,
+  // Pro on Web Billing). When the event carries it, record pro_until as well,
+  // so admins can identify Pro members for the monthly mailed icon and shop
+  // codes. Pro is a superset of Plus, so plusUntil above already grants Plus
+  // for a Pro purchase; pro_until is the extra bit that marks the tier.
+  const isPro = (event.entitlement_ids ?? []).includes("pro");
+  const proUntil = isPro ? plusUntil : null;
+
   const admin = createAdminClient();
 
   // upsert_entitlement overwrites is_supporter, so preserve the pre-launch
@@ -130,6 +138,7 @@ export async function POST(req: NextRequest) {
     p_is_supporter: isSupporter,
     p_plus_until: plusUntil,
     p_plus_source: source,
+    p_pro_until: proUntil,
   });
 
   if (error) {

@@ -32,7 +32,7 @@ export async function getEntitlements(): Promise<Entitlements> {
 
   const { data, error } = await supabase
     .from("entitlements")
-    .select("is_supporter, plus_until, plus_source")
+    .select("is_supporter, plus_until, plus_source, pro_until")
     .eq("user_id", user.id)
     .maybeSingle();
 

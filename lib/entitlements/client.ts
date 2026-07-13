@@ -32,7 +32,7 @@ export async function getClientEntitlements(): Promise<Entitlements> {
 
   const { data, error } = await supabase
     .from("entitlements")
-    .select("is_supporter, plus_until, plus_source")
+    .select("is_supporter, plus_until, plus_source, pro_until")
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -75,10 +75,15 @@ export async function hasActivePlusClient(): Promise<boolean> {
     if (!user) return false;
     const { data } = await supabase
       .from("entitlements")
-      .select("plus_until")
+      .select("plus_until, pro_until")
       .eq("user_id", user.id)
       .maybeSingle();
-    return !!data?.plus_until && new Date(data.plus_until) > new Date();
+    // Pro includes Plus, so free EIKON shipping applies to either.
+    const now = new Date();
+    return (
+      (!!data?.plus_until && new Date(data.plus_until) > now) ||
+      (!!data?.pro_until && new Date(data.pro_until) > now)
+    );
   })();
   const timeout = new Promise<boolean>((resolve) =>
     setTimeout(() => resolve(false), 2500),

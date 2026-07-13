@@ -54,13 +54,19 @@ export type EntitlementRow = {
   is_supporter: boolean;
   plus_until: string | null;
   plus_source: string | null;
+  /** Active Purify Pro subscription end, if any. Optional so older callers
+   * and rows without the column still type. NULL or past = not Pro. */
+  pro_until?: string | null;
 };
 
 export type Entitlements = {
   /** Pre-launch supporter flag (lifetime sync promise). */
   supporter: boolean;
-  /** Active Purify Plus subscription. */
+  /** Active Purify Plus subscription (or Pro, which includes Plus). */
   plus: boolean;
+  /** Active Purify Pro subscription (the members' tier: monthly mailed
+   * icon + shop codes). Pro implies Plus, not the reverse. */
+  pro: boolean;
   /** May this account use cross-device sync? plus OR supporter. */
   sync: boolean;
   /** May this account use the Plus feature layer (Florilegium,
@@ -74,6 +80,9 @@ export type Entitlements = {
 export const OPEN_ENTITLEMENTS: Entitlements = {
   supporter: false,
   plus: false,
+  // Pro is a real, paid membership; never granted to everyone by the open
+  // gate. The Pro fulfillment loop reads pro_until from the table directly.
+  pro: false,
   sync: true,
   plusFeatures: true,
 };
@@ -84,6 +93,7 @@ export const OPEN_ENTITLEMENTS: Entitlements = {
 export const FREE_ENTITLEMENTS: Entitlements = {
   supporter: false,
   plus: false,
+  pro: false,
   sync: false,
   plusFeatures: false,
 };
@@ -105,12 +115,16 @@ export function deriveEntitlements(
   if (!opts.enforced) return OPEN_ENTITLEMENTS;
   if (!row) return FREE_ENTITLEMENTS;
   const now = opts.now ?? new Date();
+  const active = (ts: string | null | undefined) =>
+    !!ts && new Date(ts).getTime() > now.getTime();
   const supporter = row.is_supporter === true;
-  const plus =
-    !!row.plus_until && new Date(row.plus_until).getTime() > now.getTime();
+  const pro = active(row.pro_until);
+  // Pro is a superset of Plus: an active Pro subscription grants Plus too.
+  const plus = pro || active(row.plus_until);
   return {
     supporter,
     plus,
+    pro,
     sync: supporter || plus,
     plusFeatures: plus,
   };
