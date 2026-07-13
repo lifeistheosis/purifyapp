@@ -58,6 +58,12 @@ export function AccountSettingsLinks() {
         ]
       : []),
     {
+      label: "Export your library",
+      href: "/account/export",
+      hint: "Download everything you have gathered",
+      icon: <Glyph kind="bolt" />,
+    },
+    {
       label: "Notifications",
       href: "/account/data",
       hint: "Prayer reminders, off by default",
