@@ -13,8 +13,10 @@ import {
 export const metadata = {
   title: "Pricing & Purify Plus",
   description:
-    "The core spiritual treasury of Purify is free, always. Purify Plus is an optional subscription, available now in the Android app, that carries your reading across every device. What is free today stays free.",
+    "The core spiritual treasury of Purify is free, always. Purify Plus carries your reading across every device; Purify Pro adds a monthly mailed icon and shop codes. What is free today stays free.",
 };
+
+type Tier = { title: string; sub: string };
 
 type PricingCopy = {
   eyebrow: string;
@@ -23,12 +25,21 @@ type PricingCopy = {
   freeTitle: string;
   freeItems: string[];
   freeFoot: string;
+  // The opening-drop line shown under the paid prices.
+  openingOffer: string;
   plusTitle: string;
   plusLede: string;
-  plusItems: { title: string; sub: string }[];
+  plusItems: Tier[];
   plusPriceMonthly: string;
   plusPriceYearly: string;
   plusPromise: string;
+  proTitle: string;
+  proLede: string;
+  proItems: Tier[];
+  proPriceMonthly: string;
+  proPriceYearly: string;
+  proNote: string;
+  proInApp: string;
   web: WebCheckoutCopy;
   supportKicker: string;
   supportLine: string;
@@ -37,29 +48,45 @@ type PricingCopy = {
 };
 
 const EN: Omit<PricingCopy, "eyebrow" | "h1"> = {
-  lede: "The whole spiritual treasury of Purify is free, and it stays free. There is no tier to unlock the Scriptures, the saints, the prayers, or the calendar, and there never will be.",
-  freeTitle: "Always free",
+  lede: "The whole spiritual treasury of Purify is free, and it stays free. There is no tier to unlock the Scriptures, the saints, the prayers, the fasting tracker, or the calendar, and there never will be.",
+  freeTitle: "Standard, always free",
   freeItems: [
     "Every saint’s life, and the primary writings of the Fathers",
     "The Scriptures, with the Greek beside them",
     "The daily prayers, the hours, and the akathists",
-    "The whole Church calendar, its fasts and its feasts",
+    "The whole Church calendar, its fasts, and the fasting tracker",
+    "Prayer Campaigns and the Trapeza recipe board",
   ],
   freeFoot: "No ads. No tracking. No surprise locks. For anyone who needs it.",
+  openingOffer: "Opening offer: 50% off your first year. It renews after at the standard price. Cancel anytime.",
   plusTitle: "Purify Plus",
   plusLede:
-    "An optional subscription, live now in the Android app. It exists only to pay for the work it requires (the servers, the production, the rights) and adds the gathered reading layer on top of the free core.",
+    "An optional subscription that carries the gathered reading layer across every device you sign in on.",
   plusItems: [
     { title: "Cross-device sync", sub: "Your library on every device you sign in on" },
     { title: "Notes, highlights & bookmarks", sub: "Kept private, carried everywhere" },
     { title: "Custom collections & Florilegium", sub: "Build your own quote collections" },
-    { title: "Free EIKON shop shipping", sub: "On every order while your subscription is active" },
     { title: "Immersive History", sub: "The story of the Church in full cinematic dress" },
+    { title: "Free EIKON shop shipping", sub: "On every order while your subscription is active" },
   ],
   plusPriceMonthly: "$9.99 / month",
   plusPriceYearly: "$99 / year",
   plusPromise:
     "A promise already made stays made: pre-launch supporters keep lifetime cross-device sync, no subscription required. That promise covers sync itself; the wider Plus tools belong to the subscription.",
+  proTitle: "Purify Pro",
+  proLede:
+    "Everything in Plus, and a members’ layer for those who want to keep the lamps lit and carry a little of the Church home each month.",
+  proItems: [
+    { title: "Everything in Purify Plus", sub: "All of it, uncapped" },
+    { title: "A devotional icon, mailed monthly", sub: "A small blessing to your door, every month" },
+    { title: "EIKON shop discount codes", sub: "Members’ codes for the shop, now and then" },
+    { title: "Free EIKON shipping", sub: "Carried over from Plus" },
+  ],
+  proPriceMonthly: "$19.99 / month",
+  proPriceYearly: "$199 / year",
+  proNote:
+    "The monthly item may vary and is sent while your subscription is active and a shipping address is on file.",
+  proInApp: "Get Purify Pro in the Android app",
   web: {
     monthlyLabel: "$9.99 / month",
     yearlyLabel: "$99 / year",
@@ -81,7 +108,7 @@ const EN: Omit<PricingCopy, "eyebrow" | "h1"> = {
   },
   supportKicker: "Purify is kept by those it helps.",
   supportLine:
-    "If the app has carried you, you can carry it a little in return. Beyond Plus, a freewill gift is always welcome and never required.",
+    "If the app has carried you, you can carry it a little in return. Beyond Plus and Pro, a freewill gift is always welcome and never required.",
   supportCta: "Light a lamp",
   supportFoot: "Entirely optional. Give once, or not at all.",
 };
@@ -89,30 +116,47 @@ const EN: Omit<PricingCopy, "eyebrow" | "h1"> = {
 const DE: PricingCopy = {
   eyebrow: "Preise",
   h1: "Der Kern bleibt immer frei.",
-  lede: "Der ganze geistliche Schatz von Purify ist frei und bleibt frei. Es gibt keine Stufe, um die Schriften, die Heiligen, die Gebete oder den Kalender freizuschalten, und wird es nie geben.",
-  freeTitle: "Immer frei",
+  lede: "Der ganze geistliche Schatz von Purify ist frei und bleibt frei. Es gibt keine Stufe, um die Schriften, die Heiligen, die Gebete, den Fastentracker oder den Kalender freizuschalten, und wird es nie geben.",
+  freeTitle: "Standard, immer frei",
   freeItems: [
     "Jedes Leben eines Heiligen und die wichtigsten Schriften der Väter",
     "Die Schriften, mit dem Griechischen daneben",
     "Die täglichen Gebete, die Horen und die Akathiste",
-    "Der ganze Kirchenkalender, seine Fasten und seine Feste",
+    "Der ganze Kirchenkalender, seine Fasten und der Fastentracker",
+    "Gebetskampagnen und das Trapeza-Rezeptboard",
   ],
   freeFoot:
     "Keine Werbung. Keine Verfolgung. Keine überraschenden Sperren. Für jeden, der sie braucht.",
+  openingOffer:
+    "Eröffnungsangebot: 50% Rabatt im ersten Jahr. Danach Verlängerung zum Standardpreis. Jederzeit kündbar.",
   plusTitle: "Purify Plus",
   plusLede:
-    "Ein freiwilliges Abonnement, jetzt in der Android-App verfügbar. Es ist nur dazu da, die Arbeit zu bezahlen, die es verlangt (die Server, die Produktion, die Rechte), und ergänzt die gesammelte Leseschicht über dem freien Kern.",
+    "Ein freiwilliges Abonnement, das die gesammelte Leseschicht auf jedes Gerät trägt, auf dem du dich anmeldest.",
   plusItems: [
     { title: "Geräteübergreifende Synchronisierung", sub: "Deine Bibliothek auf jedem Gerät, auf dem du dich anmeldest" },
     { title: "Notizen, Markierungen & Lesezeichen", sub: "Privat gehalten, überallhin getragen" },
     { title: "Eigene Sammlungen & Florilegium", sub: "Erstelle deine eigenen Zitatsammlungen" },
-    { title: "Kostenloser EIKON-Versand", sub: "Bei jeder Bestellung, solange dein Abonnement aktiv ist" },
     { title: "Immersive Kirchengeschichte", sub: "Die Geschichte der Kirche in vollem filmischem Gewand" },
+    { title: "Kostenloser EIKON-Versand", sub: "Bei jeder Bestellung, solange dein Abonnement aktiv ist" },
   ],
   plusPriceMonthly: "9,99 $ / Monat",
   plusPriceYearly: "99 $ / Jahr",
   plusPromise:
     "Ein gegebenes Versprechen bleibt bestehen: Unterstützer aus der Zeit vor dem Start behalten die geräteübergreifende Synchronisierung auf Lebenszeit, ohne Abonnement. Dieses Versprechen gilt der Synchronisierung selbst; die weiteren Plus-Werkzeuge gehören zum Abonnement.",
+  proTitle: "Purify Pro",
+  proLede:
+    "Alles aus Plus und eine Mitglieder-Ebene für alle, die die Lampen am Brennen halten und jeden Monat ein wenig der Kirche nach Hause tragen möchten.",
+  proItems: [
+    { title: "Alles aus Purify Plus", sub: "Alles, ohne Begrenzung" },
+    { title: "Eine Ikone, monatlich per Post", sub: "Jeden Monat ein kleiner Segen an deine Tür" },
+    { title: "EIKON-Rabattcodes", sub: "Mitglieder-Codes für den Shop, ab und zu" },
+    { title: "Kostenloser EIKON-Versand", sub: "Aus Plus übernommen" },
+  ],
+  proPriceMonthly: "19,99 $ / Monat",
+  proPriceYearly: "199 $ / Jahr",
+  proNote:
+    "Der monatliche Artikel kann variieren und wird versandt, solange dein Abonnement aktiv ist und eine Lieferadresse hinterlegt ist.",
+  proInApp: "Purify Pro in der Android-App holen",
   web: {
     monthlyLabel: "9,99 $ / Monat",
     yearlyLabel: "99 $ / Jahr",
@@ -134,7 +178,7 @@ const DE: PricingCopy = {
   },
   supportKicker: "Purify wird von denen getragen, denen es hilft.",
   supportLine:
-    "Wenn die App dich getragen hat, kannst du sie ein wenig zurücktragen. Über Plus hinaus ist eine freiwillige Gabe stets willkommen und nie erforderlich.",
+    "Wenn die App dich getragen hat, kannst du sie ein wenig zurücktragen. Über Plus und Pro hinaus ist eine freiwillige Gabe stets willkommen und nie erforderlich.",
   supportCta: "Eine Kerze anzünden",
   supportFoot: "Völlig freiwillig. Einmal geben, oder gar nicht.",
 };
@@ -155,7 +199,7 @@ export default async function PricingPage() {
   }
   return (
     <>
-      {/* Web (mobile + desktop): the quiet, price-free pricing page. */}
+      {/* Web (mobile + desktop): the quiet, three-tier pricing page. */}
       <WebOnly>{view}</WebOnly>
       {/* Native app: the full-screen Purify Plus paywall (Play Billing).
           Wrapped so a billing/plugin failure shows a calm fallback instead
@@ -199,7 +243,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
           </p>
         </div>
 
-        {/* Always-free panel */}
+        {/* Standard (always-free) panel */}
         <div className="mt-12 rounded-2xl border border-paper/10 bg-black/30 p-6 md:mt-16 md:p-8">
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
             {copy.freeTitle}
@@ -219,7 +263,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
           </p>
         </div>
 
-        {/* Purify Plus — live, priced, bought in the Android app */}
+        {/* Purify Plus — live, priced, bought in the Android app or on the web */}
         <div className="relative mt-8 overflow-hidden rounded-2xl border border-gold/25 p-6 md:mt-10 md:p-8"
           style={{
             background:
@@ -263,6 +307,9 @@ function PricingView({ copy }: { copy: PricingCopy }) {
               {copy.plusPriceYearly}
             </span>
           </div>
+          <p className="mt-2 font-sans text-caption text-gold-pale/80">
+            {copy.openingOffer}
+          </p>
 
           {/* The web purchase surface. Subscribes through RevenueCat Web
               Billing bound to the signed-in account, so it unlocks Plus on
@@ -272,6 +319,68 @@ function PricingView({ copy }: { copy: PricingCopy }) {
 
           <p className="mt-6 border-t border-paper/8 pt-5 font-sans text-caption leading-[1.6] text-paper/45">
             {copy.plusPromise}
+          </p>
+        </div>
+
+        {/* Purify Pro — everything in Plus + the members' layer. Bought in the
+            Android app today; web checkout follows when web billing is live. */}
+        <div className="relative mt-8 overflow-hidden rounded-2xl border border-gold/40 p-6 md:mt-10 md:p-8"
+          style={{
+            background:
+              "radial-gradient(130% 90% at 50% 0%, rgba(212,175,55,0.16) 0%, transparent 60%), #0d0b07",
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <p className="font-display-serif text-title text-paper">
+              {copy.proTitle}
+            </p>
+            <span className="rounded-pill border border-gold/50 bg-gold/[0.16] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-gold-pale">
+              Members
+            </span>
+          </div>
+          <p className="mt-3 max-w-[560px] font-sans text-ui leading-relaxed text-paper/70">
+            {copy.proLede}
+          </p>
+
+          <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+            {copy.proItems.map((item) => (
+              <li key={item.title} className="flex gap-3">
+                <StarMark />
+                <span>
+                  <span className="block font-sans text-ui font-semibold text-paper">
+                    {item.title}
+                  </span>
+                  <span className="block font-sans text-caption text-paper/55">
+                    {item.sub}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-7 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-paper/8 pt-6">
+            <span className="font-display-serif text-title text-paper">
+              {copy.proPriceMonthly}
+            </span>
+            <span className="text-paper/30">·</span>
+            <span className="font-display-serif text-title text-paper">
+              {copy.proPriceYearly}
+            </span>
+          </div>
+          <p className="mt-2 font-sans text-caption text-gold-pale/80">
+            {copy.openingOffer}
+          </p>
+
+          <a
+            href={PLAY_STORE_URL}
+            className="mt-6 inline-flex items-center gap-2 rounded-pill border border-gold/40 bg-gold/[0.10] px-6 py-3 font-sans text-ui font-semibold text-gold-pale transition-colors hover:bg-gold/[0.18]"
+          >
+            {copy.proInApp}
+            <ArrowRight />
+          </a>
+
+          <p className="mt-6 border-t border-paper/8 pt-5 font-sans text-caption leading-[1.6] text-paper/45">
+            {copy.proNote}
           </p>
         </div>
 
