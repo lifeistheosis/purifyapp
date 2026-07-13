@@ -18,9 +18,12 @@ import type {
   PurchasesPackage,
 } from "@revenuecat/purchases-typescript-internal-esm";
 
-/** The single RevenueCat entitlement that maps to Purify Plus. Must match
- * the entitlement identifier configured in the RevenueCat dashboard. */
+/** RevenueCat entitlement identifiers, matching the dashboard. `pro` is a
+ * superset of `plus`: a Pro subscriber gets every Plus feature plus the Pro
+ * members' layer (the monthly mailed icon and shop codes), so the Plus checks
+ * below treat an active `pro` as Plus too. */
 export const PLUS_ENTITLEMENT_ID = "plus";
+export const PRO_ENTITLEMENT_ID = "pro";
 
 // The public Android SDK key (goog_…) from the RevenueCat dashboard,
 // inlined into the client bundle. Android-only at launch; an iOS key gets
@@ -66,8 +69,14 @@ export async function logoutBilling(): Promise<void> {
   await Purchases.logOut();
 }
 
+/** Pro is active: the members' tier (monthly mailed icon + shop codes). */
+function proActive(info: CustomerInfo): boolean {
+  return Boolean(info.entitlements.active[PRO_ENTITLEMENT_ID]);
+}
+
+/** Plus is active. Pro includes Plus, so an active `pro` counts as Plus. */
 function plusActive(info: CustomerInfo): boolean {
-  return Boolean(info.entitlements.active[PLUS_ENTITLEMENT_ID]);
+  return Boolean(info.entitlements.active[PLUS_ENTITLEMENT_ID]) || proActive(info);
 }
 
 /** Current Plus status straight from RevenueCat (the store's truth). */
@@ -76,6 +85,14 @@ export async function isPlusActive(): Promise<boolean> {
   const { Purchases } = await import("@revenuecat/purchases-capacitor");
   const { customerInfo } = await Purchases.getCustomerInfo();
   return plusActive(customerInfo);
+}
+
+/** Current Pro status straight from RevenueCat. Plus does not imply Pro. */
+export async function isProActive(): Promise<boolean> {
+  if (!billingAvailable()) return false;
+  const { Purchases } = await import("@revenuecat/purchases-capacitor");
+  const { customerInfo } = await Purchases.getCustomerInfo();
+  return proActive(customerInfo);
 }
 
 export type PlusPackages = {

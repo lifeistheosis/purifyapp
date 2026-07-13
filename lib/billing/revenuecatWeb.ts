@@ -21,9 +21,10 @@ import type {
   Package,
 } from "@revenuecat/purchases-js";
 
-/** Must match the native side and the entitlement id in the RevenueCat
- *  dashboard (lib/billing/revenuecat.ts PLUS_ENTITLEMENT_ID). */
+/** Must match the native side and the entitlement ids in the RevenueCat
+ *  dashboard (lib/billing/revenuecat.ts). `pro` is a superset of `plus`. */
 export const PLUS_ENTITLEMENT_ID = "plus";
+export const PRO_ENTITLEMENT_ID = "pro";
 
 /** RevenueCat Web Billing public API key (rcb_…), inlined into the bundle. */
 const WEB_API_KEY = process.env.NEXT_PUBLIC_REVENUECAT_WEB_KEY ?? "";
@@ -82,8 +83,13 @@ export function packagePrice(pkg: Package | null): string | null {
   return pkg?.webBillingProduct?.currentPrice?.formattedPrice ?? null;
 }
 
+function proActive(info: CustomerInfo): boolean {
+  return Boolean(info.entitlements.active[PRO_ENTITLEMENT_ID]);
+}
+
+/** Plus is active. Pro includes Plus, so an active `pro` counts as Plus. */
 function plusActive(info: CustomerInfo): boolean {
-  return Boolean(info.entitlements.active[PLUS_ENTITLEMENT_ID]);
+  return Boolean(info.entitlements.active[PLUS_ENTITLEMENT_ID]) || proActive(info);
 }
 
 export type PurchaseOutcome = "active" | "cancelled" | "error";
@@ -118,7 +124,25 @@ export async function isWebPlusActive(
   if (!webBillingAvailable()) return false;
   try {
     const purchases = await ensureConfigured(supabaseUserId);
-    return await purchases.isEntitledTo(PLUS_ENTITLEMENT_ID);
+    // Pro includes Plus, so either entitlement means Plus is on.
+    const [plus, pro] = await Promise.all([
+      purchases.isEntitledTo(PLUS_ENTITLEMENT_ID),
+      purchases.isEntitledTo(PRO_ENTITLEMENT_ID),
+    ]);
+    return plus || pro;
+  } catch {
+    return false;
+  }
+}
+
+/** Current Pro status straight from RevenueCat. Plus does not imply Pro. */
+export async function isWebProActive(
+  supabaseUserId: string,
+): Promise<boolean> {
+  if (!webBillingAvailable()) return false;
+  try {
+    const purchases = await ensureConfigured(supabaseUserId);
+    return await purchases.isEntitledTo(PRO_ENTITLEMENT_ID);
   } catch {
     return false;
   }
