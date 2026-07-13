@@ -1,0 +1,292 @@
+"use client";
+
+// CommunityTab — owner moderation for the community features: prayer campaigns
+// and the Trapeza recipe board. Publish or remove submitted recipes, remove
+// reported campaigns, and clear reports. Reads/writes go through
+// /api/admin/community (admin-gated, service role). Web only, like the console.
+
+import { useCallback, useEffect, useState } from "react";
+
+import { Card, Pill, ToolbarButton } from "../primitives";
+
+type PendingRecipe = {
+  id: string;
+  title: string;
+  fast_level: string;
+  season: string;
+  tradition: string;
+  summary: string | null;
+  ingredients: string;
+  steps: string;
+  created_at: string;
+};
+type CampaignReport = {
+  id: string;
+  reason: string | null;
+  created_at: string;
+  campaign: {
+    id: string;
+    title: string;
+    status: string;
+    intention: string;
+    subject_name: string | null;
+  } | null;
+};
+type RecipeReport = {
+  id: string;
+  reason: string | null;
+  created_at: string;
+  recipe: { id: string; title: string; status: string } | null;
+};
+type CommunityData = {
+  pendingRecipes: PendingRecipe[];
+  campaignReports: CampaignReport[];
+  recipeReports: RecipeReport[];
+};
+
+type Action =
+  | "publish_recipe"
+  | "remove_recipe"
+  | "remove_campaign"
+  | "dismiss_campaign_report"
+  | "dismiss_recipe_report";
+
+export function CommunityTab() {
+  const [data, setData] = useState<CommunityData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [version, setVersion] = useState(0);
+  const reload = useCallback(() => setVersion((v) => v + 1), []);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const r = await fetch("/api/admin/community", { cache: "no-store" });
+        if (!alive) return;
+        if (!r.ok) {
+          setError("Couldn't load (are the campaigns + trapeza migrations applied?).");
+          return;
+        }
+        setData((await r.json()) as CommunityData);
+        setError(null);
+      } catch {
+        if (alive) setError("Couldn't load.");
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [version]);
+
+  const act = useCallback(
+    async (action: Action, id: string) => {
+      setBusy(id + action);
+      try {
+        await fetch("/api/admin/community", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ action, id }),
+        });
+        reload();
+      } finally {
+        setBusy(null);
+      }
+    },
+    [reload],
+  );
+
+  if (error) {
+    return <p className="font-sans text-detail text-rose-300">{error}</p>;
+  }
+  if (!data) {
+    return <p className="font-sans text-detail text-paper/40">Loading…</p>;
+  }
+
+  return (
+    <div className="space-y-5">
+      <Card
+        title="Pending recipes"
+        subtitle="Submissions waiting to join the Trapeza. Publish or remove."
+        accent={data.pendingRecipes.length > 0}
+      >
+        {data.pendingRecipes.length === 0 ? (
+          <Empty>Nothing waiting.</Empty>
+        ) : (
+          <div className="space-y-3">
+            {data.pendingRecipes.map((r) => (
+              <div
+                key={r.id}
+                className="rounded-md border border-paper/10 bg-paper/[0.02] p-4"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <p className="font-sans text-detail font-semibold text-paper">
+                    {r.title}
+                  </p>
+                  <div className="flex gap-2">
+                    <ToolbarButton
+                      variant="primary"
+                      loading={busy === r.id + "publish_recipe"}
+                      onClick={() => act("publish_recipe", r.id)}
+                    >
+                      Publish
+                    </ToolbarButton>
+                    <ToolbarButton
+                      variant="danger"
+                      loading={busy === r.id + "remove_recipe"}
+                      onClick={() => act("remove_recipe", r.id)}
+                    >
+                      Remove
+                    </ToolbarButton>
+                  </div>
+                </div>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  <Pill tone="gold">{r.fast_level}</Pill>
+                  {r.season !== "any" ? <Pill>{r.season}</Pill> : null}
+                  {r.tradition !== "any" ? <Pill>{r.tradition}</Pill> : null}
+                </div>
+                {r.summary ? (
+                  <p className="mt-2 font-sans text-eyebrow text-paper/55">
+                    {r.summary}
+                  </p>
+                ) : null}
+                <details className="mt-2">
+                  <summary className="cursor-pointer font-sans text-eyebrow text-paper/45">
+                    Ingredients and method
+                  </summary>
+                  <p className="mt-1.5 whitespace-pre-line font-sans text-eyebrow text-paper/60">
+                    {r.ingredients}
+                    {"\n\n"}
+                    {r.steps}
+                  </p>
+                </details>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+
+      <Card
+        title="Reported campaigns"
+        subtitle="Prayer campaigns flagged by the community."
+        accent={data.campaignReports.length > 0}
+      >
+        {data.campaignReports.length === 0 ? (
+          <Empty>No reports.</Empty>
+        ) : (
+          <div className="space-y-3">
+            {data.campaignReports.map((rep) => (
+              <ReportRow
+                key={rep.id}
+                title={rep.campaign?.title ?? "(deleted campaign)"}
+                status={rep.campaign?.status}
+                reason={rep.reason}
+                busy={busy}
+                actions={
+                  <>
+                    {rep.campaign && rep.campaign.status !== "removed" ? (
+                      <ToolbarButton
+                        variant="danger"
+                        loading={busy === rep.campaign.id + "remove_campaign"}
+                        onClick={() => {
+                          if (rep.campaign) void act("remove_campaign", rep.campaign.id);
+                        }}
+                      >
+                        Remove campaign
+                      </ToolbarButton>
+                    ) : null}
+                    <ToolbarButton
+                      loading={busy === rep.id + "dismiss_campaign_report"}
+                      onClick={() => act("dismiss_campaign_report", rep.id)}
+                    >
+                      Dismiss
+                    </ToolbarButton>
+                  </>
+                }
+              />
+            ))}
+          </div>
+        )}
+      </Card>
+
+      <Card
+        title="Reported recipes"
+        subtitle="Recipes flagged by the community."
+        accent={data.recipeReports.length > 0}
+      >
+        {data.recipeReports.length === 0 ? (
+          <Empty>No reports.</Empty>
+        ) : (
+          <div className="space-y-3">
+            {data.recipeReports.map((rep) => (
+              <ReportRow
+                key={rep.id}
+                title={rep.recipe?.title ?? "(deleted recipe)"}
+                status={rep.recipe?.status}
+                reason={rep.reason}
+                busy={busy}
+                actions={
+                  <>
+                    {rep.recipe && rep.recipe.status !== "removed" ? (
+                      <ToolbarButton
+                        variant="danger"
+                        loading={busy === rep.recipe.id + "remove_recipe"}
+                        onClick={() => {
+                          if (rep.recipe) void act("remove_recipe", rep.recipe.id);
+                        }}
+                      >
+                        Remove recipe
+                      </ToolbarButton>
+                    ) : null}
+                    <ToolbarButton
+                      loading={busy === rep.id + "dismiss_recipe_report"}
+                      onClick={() => act("dismiss_recipe_report", rep.id)}
+                    >
+                      Dismiss
+                    </ToolbarButton>
+                  </>
+                }
+              />
+            ))}
+          </div>
+        )}
+      </Card>
+    </div>
+  );
+}
+
+function ReportRow({
+  title,
+  status,
+  reason,
+  actions,
+}: {
+  title: string;
+  status?: string;
+  reason: string | null;
+  busy: string | null;
+  actions: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-md border border-paper/10 bg-paper/[0.02] p-4">
+      <div className="flex items-center justify-between gap-3">
+        <p className="font-sans text-detail font-semibold text-paper">
+          {title}
+          {status ? (
+            <span className="ml-2 font-normal text-paper/40">· {status}</span>
+          ) : null}
+        </p>
+        <div className="flex flex-wrap gap-2">{actions}</div>
+      </div>
+      {reason ? (
+        <p className="mt-1.5 font-sans text-eyebrow text-paper/55">
+          Reason: {reason}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function Empty({ children }: { children: React.ReactNode }) {
+  return <p className="font-sans text-detail text-paper/40">{children}</p>;
+}
