@@ -9,6 +9,7 @@ import {
   TRADITIONS,
   authorLabel,
   fastLevelLabel,
+  recipeLevelsForFastKind,
   seasonLabel,
   type FastLevel,
   type RecipeSeason,
@@ -16,12 +17,24 @@ import {
   type TrapezaRecipe,
 } from "@/lib/trapeza/recipes";
 import { fetchRecipes } from "@/lib/trapeza/client";
+import { fastingStatus } from "@/lib/calendar/orthodox";
 
 export function TrapezaClient() {
   const [recipes, setRecipes] = useState<TrapezaRecipe[] | null>(null);
   const [level, setLevel] = useState<FastLevel | null>(null);
   const [season, setSeason] = useState<RecipeSeason>("any");
   const [tradition, setTradition] = useState<RecipeTradition>("any");
+  const [today, setToday] = useState<{ level: FastLevel; label: string } | null>(
+    null,
+  );
+
+  useEffect(() => {
+    // Read today's fast from the calendar so we can offer "recipes for today".
+    const f = fastingStatus(new Date());
+    const levels = recipeLevelsForFastKind(f.kind);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setToday({ level: levels[levels.length - 1], label: f.label });
+  }, []);
 
   const load = useCallback(
     async (l: FastLevel | null, s: RecipeSeason, t: RecipeTradition) => {
@@ -64,6 +77,18 @@ export function TrapezaClient() {
               Share a recipe
             </Link>
           </div>
+          {today ? (
+            <p className="mt-4 font-sans text-caption text-paper/55">
+              Today is a {today.label.toLowerCase()} day.{" "}
+              <button
+                type="button"
+                onClick={() => setLevel(today.level)}
+                className="font-semibold text-gold-pale underline underline-offset-2"
+              >
+                See recipes for today
+              </button>
+            </p>
+          ) : null}
         </header>
 
         {/* Filters */}

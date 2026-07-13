@@ -98,10 +98,11 @@ export function authorLabel(recipe: TrapezaRecipe): string {
 /**
  * The calendar's FastKind, mapped to the recipe levels that suit that day.
  * A stricter dish always suits a laxer day (xerophagy food is fine on an oil
- * day), so the sets nest. Used to offer "recipes for today's fast".
+ * day), so the sets nest. Used to offer "recipes for today's fast". The last
+ * element is the day's own level (the least strict thing it permits).
  */
 export function recipeLevelsForFastKind(
-  kind: "strict" | "wine-oil" | "fish" | "fast" | "fast-free",
+  kind: "strict" | "wine-oil" | "fish" | "fast" | "fast-free" | "normal",
 ): FastLevel[] {
   switch (kind) {
     case "strict":
