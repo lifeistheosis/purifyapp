@@ -26,8 +26,8 @@ export function Cross({
       <line x1="8.5" y1="6" x2="15.5" y2="6" />
       {/* main crossbar */}
       <line x1="5.5" y1="9.5" x2="18.5" y2="9.5" />
-      {/* slanted footrest */}
-      <line x1="8" y1="16.5" x2="16" y2="14" />
+      {/* slanted footrest: left arm raised, right lowered (as on the real cross) */}
+      <line x1="8" y1="14" x2="16" y2="16.5" />
     </svg>
   );
 }

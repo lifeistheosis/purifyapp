@@ -1,13 +1,14 @@
 import type { SVGProps } from "react";
 
 /**
- * The Purify brand mark — a filled three-bar Orthodox cross, drawn as a
- * single scalable SVG so it stays crisp at every size (nav glyph through
- * the large hero bleed) and inherits `currentColor`, replacing the old
- * raster `/purify-cross.png`. The stroked `ui/icons/Cross` remains for
- * inline bullet use; this filled form reads better at display size.
+ * The Purify brand mark: the Orthodox three-bar cross, drawn as an inline SVG
+ * whose four bars match /public/purify-cross.png exactly (measured from it:
+ * post 17% of the width, titulus 53%, main crossbar full width, and the
+ * suppedaneum slanted with the LEFT arm raised). Self-contained (no external
+ * asset to 404 into a solid rectangle), inherits `currentColor`, and stays
+ * crisp at every size. viewBox aspect 100:176 = 0.568, the cross's own ratio.
  *
- * `size` sets the height; width follows the 3:4 mark aspect.
+ * `size` sets the height; width follows. Keep in step with app/icon.tsx.
  */
 export function PurifyMark({
   size = 24,
@@ -15,27 +16,27 @@ export function PurifyMark({
 }: Omit<SVGProps<SVGSVGElement>, "width" | "height"> & { size?: number }) {
   return (
     <svg
-      width={Math.round(size * 0.75)}
+      width={Math.round(size * 0.568)}
       height={size}
-      viewBox="0 0 48 64"
+      viewBox="0 0 100 176"
       fill="currentColor"
       aria-hidden="true"
       {...props}
     >
       {/* upright post */}
-      <rect x="21" y="3" width="6" height="58" rx="2.5" />
+      <rect x="41" y="2" width="18" height="172" rx="1" />
       {/* titulus (top bar) */}
-      <rect x="16.5" y="11" width="15" height="4.5" rx="2.25" />
-      {/* main crossbar */}
-      <rect x="10" y="21" width="28" height="5.5" rx="2.75" />
-      {/* slanted footrest (suppedaneum) */}
+      <rect x="22" y="20" width="56" height="15" rx="1" />
+      {/* main crossbar (full width) */}
+      <rect x="0" y="55" width="100" height="16" rx="1" />
+      {/* slanted footrest (suppedaneum): left arm raised, right lowered */}
       <rect
-        x="14"
-        y="41.5"
-        width="20"
-        height="4.5"
-        rx="2.25"
-        transform="rotate(-16 24 43.75)"
+        x="22"
+        y="131"
+        width="56"
+        height="15"
+        rx="1"
+        transform="rotate(18 50 138)"
       />
     </svg>
   );
