@@ -294,3 +294,22 @@ export const campaignReportSchema = z.object({
 export const campaignStatusSchema = z.object({
   status: z.enum(["answered", "memory_eternal"]),
 });
+
+/** /api/trapeza POST body (submit a fasting recipe). Submissions land pending
+ *  and are reviewed before publishing, so the server owns status. */
+export const trapezaRecipeSubmitSchema = z.object({
+  title: z.string().min(3).max(120),
+  fastLevel: z.enum(["xerophagy", "oil_wine", "fish", "any"]),
+  season: z.enum(["any", "nativity", "lent", "apostles", "dormition"]),
+  tradition: z.enum(["any", "greek", "russian", "levantine", "balkan"]),
+  summary: z.string().max(280).optional().nullable(),
+  ingredients: z.string().min(3).max(2000),
+  steps: z.string().min(3).max(4000),
+  servings: z.string().max(40).optional().nullable(),
+  timeMinutes: z.number().int().min(0).max(1440).optional().nullable(),
+});
+
+/** /api/trapeza/[id]/report POST body. */
+export const trapezaReportSchema = z.object({
+  reason: z.string().max(500).optional().nullable(),
+});

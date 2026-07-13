@@ -20,6 +20,7 @@ import {
 
 import { campaignsEnabled } from "@/lib/campaigns/flags";
 import { cn } from "@/lib/cn";
+import { trapezaEnabled } from "@/lib/trapeza/flags";
 
 type Child = { key: string; label: string; href: string };
 
@@ -33,6 +34,10 @@ export const DISCOVER_CHILDREN: Child[] = [
   // Community prayer, gated by the campaigns flag until its tables are live.
   ...(campaignsEnabled()
     ? [{ key: "campaigns", label: "Prayer Campaigns", href: "/campaigns" }]
+    : []),
+  // The fasting-recipe board, gated by its flag until the tables are live.
+  ...(trapezaEnabled()
+    ? [{ key: "trapeza", label: "The Trapeza", href: "/trapeza" }]
     : []),
   { key: "theology", label: "Theology", href: "/theology" },
   { key: "apologetics", label: "Apologetics", href: "/apologetics" },
