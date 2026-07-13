@@ -240,6 +240,12 @@ html.is-native .below-topbar-line {
  line-height: 1.55;
  -webkit-font-smoothing: antialiased;
  -moz-osx-font-smoothing: grayscale;
+ /* Kill the Chromium overscroll "stretch"/glow at the top and bottom of the
+    viewport. In the native webview that rubber-band read as a browser tell
+    (content pulls away from the edge past the scroll limit); native apps
+    don't do it. `none` also disables the swipe-down pull-to-refresh, which
+    we don't want in an installed app anyway. */
+ overscroll-behavior: none;
  }
 }
 

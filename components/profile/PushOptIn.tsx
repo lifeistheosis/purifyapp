@@ -134,7 +134,7 @@ export function PushOptIn() {
                 onBlur={(e) =>
                   updateTimes(e.target.value, state.eveningTime ?? "21:00")
                 }
-                className="rounded-md border border-paper/15 bg-night px-3 py-1.5 font-sans text-detail text-paper"
+                className="rounded-md border border-paper/15 bg-night px-3 py-1.5 font-sans text-detail text-paper [color-scheme:dark] focus:outline-none focus:border-gold/45 transition-colors"
               />
             </label>
             <label className="flex flex-col gap-1">
@@ -147,7 +147,7 @@ export function PushOptIn() {
                 onBlur={(e) =>
                   updateTimes(state.morningTime ?? "07:00", e.target.value)
                 }
-                className="rounded-md border border-paper/15 bg-night px-3 py-1.5 font-sans text-detail text-paper"
+                className="rounded-md border border-paper/15 bg-night px-3 py-1.5 font-sans text-detail text-paper [color-scheme:dark] focus:outline-none focus:border-gold/45 transition-colors"
               />
             </label>
           </div>
