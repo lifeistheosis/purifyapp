@@ -127,14 +127,14 @@ export function ProductCard({
       <Link
         href={`/shop/icons/${product.slug}`}
         aria-label={product.title}
-        className="absolute inset-0 z-10 rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+        className="absolute inset-0 z-10 rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
       />
 
       <div className="flex flex-1 flex-col p-3.5 md:p-4">
         <p className="font-sans text-caption font-semibold uppercase tracking-[1.1px] text-paper/50">
           {CLASSIFICATION_LABELS[product.classification]}
         </p>
-        <h3 className="mt-1.5 line-clamp-2 font-display-serif text-title-sm leading-snug text-paper transition-colors group-hover:text-gold">
+        <h3 className="mt-1.5 line-clamp-2 font-display-serif text-title-sm leading-snug text-paper transition-colors group-hover:text-paper/80">
           {product.title}
         </h3>
 
@@ -161,7 +161,7 @@ export function ProductCard({
                 "tap-press relative z-20 inline-flex h-10 w-10 items-center justify-center rounded-full border transition-colors",
                 added
                   ? "border-emerald-400/60 bg-emerald-400/15 text-emerald-300"
-                  : "border-paper/20 text-paper/75 hover:border-gold/60 hover:bg-gold/12 hover:text-gold",
+                  : "border-paper/20 text-paper/75 hover:border-paper/50 hover:bg-paper/10 hover:text-paper",
               )}
             >
               {added ? <Check size={17} /> : <Cart size={17} />}

@@ -47,7 +47,7 @@ export function ShopHomeClient() {
               key={t}
               className="inline-flex items-center gap-1.5 rounded-pill border border-paper/12 bg-paper/[0.03] px-3 py-1.5 font-sans text-caption text-paper/70"
             >
-              <span aria-hidden className="text-gold">✓</span>
+              <span aria-hidden className="text-paper/55">✓</span>
               {t}
             </li>
           ))}
@@ -114,7 +114,7 @@ export function ShopHomeClient() {
                 <p className="mt-4 max-w-[560px] font-serif text-body text-paper/70 leading-[1.6]">
                   {data.eikon.description}
                 </p>
-                <p className="mt-4 font-sans text-detail font-medium text-gold">
+                <p className="mt-4 font-sans text-detail font-medium text-paper/70">
                   Visit the store →
                 </p>
               </Link>
@@ -152,7 +152,7 @@ export function ShopHomeClient() {
             Tell us who you&rsquo;re praying with. We&rsquo;ll look for the icon
             and write back.
           </p>
-          <p className="mt-3 font-sans text-detail font-medium text-gold">
+          <p className="mt-3 font-sans text-detail font-medium text-paper/70">
             Request an icon →
           </p>
         </Link>
@@ -168,7 +168,7 @@ export function ShopHomeClient() {
             monasteries, workshops, and retailers. Applications are reviewed by
             hand.
           </p>
-          <p className="mt-3 font-sans text-detail font-medium text-gold">
+          <p className="mt-3 font-sans text-detail font-medium text-paper/70">
             Sell on Purify →
           </p>
         </Link>
