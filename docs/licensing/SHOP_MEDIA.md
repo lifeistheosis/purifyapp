@@ -37,3 +37,4 @@ carried dense inscription bands and rows of border saints).
 | public/shop/media/transfiguration-mounted.jpg | [File:Preobrazhenie.jpg](https://commons.wikimedia.org/wiki/File%3APreobrazhenie.jpg) | Public domain |
 | public/shop/media/christ-the-bridegroom-mounted.jpg | [File:Νυμφίος 1845.jpg](https://commons.wikimedia.org/wiki/File%3A%CE%9D%CF%85%CE%BC%CF%86%CE%AF%CE%BF%CF%82_1845.jpg) | Public domain |
 | public/shop/media/theotokos-portaitissa-mounted.jpg | [File:Panagia Portaitissa.jpg](https://commons.wikimedia.org/wiki/File%3APanagia_Portaitissa.jpg) | Public domain |
+| public/shop/media/cross-necklace.jpg | [File:Ethiopian - Pendant Cross - Walters 57225454.jpg](https://commons.wikimedia.org/wiki/File%3AEthiopian_-_Pendant_Cross_-_Walters_57225454.jpg) | Public domain |

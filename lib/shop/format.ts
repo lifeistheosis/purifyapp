@@ -60,6 +60,8 @@ export const CLASSIFICATION_LABELS: Record<ShopClassification, string> = {
   prayer_rope: "Prayer Rope",
   incense: "Incense & Resin",
   beaded: "Prayer Beads",
+  cross: "Cross & Chain",
+  textile: "Woven Textile",
 };
 
 export const INVENTORY_LABELS: Record<ShopInventoryStatus, string> = {

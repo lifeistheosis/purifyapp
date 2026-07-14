@@ -682,6 +682,86 @@
         "alt": "A long black wool Orthodox prayer rope of a hundred knots with dividing beads and a knotted cross",
         "query": "Orthodox prayer rope komboskini wool 100 knots Mount Athos"
       }
+    },
+    {
+      "slug": "prayer-rope-bracelet-wool",
+      "title": "Prayer Rope Bracelet",
+      "subtitle": "A wrist komboskini for the Jesus Prayer",
+      "description": "A small knotted wool prayer rope for the wrist, a short komboskini to carry the Jesus Prayer through the ordinary hours of the day: Lord Jesus Christ, Son of God, have mercy on me. Each knot is tied as a cross of many crosses, worn where the hand can find it without looking.",
+      "priceCents": 1299,
+      "category": "prayer_corner",
+      "classification": "prayer_rope",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 10,
+      "dispatchMaxDays": 21,
+      "materials": "Knotted wool",
+      "dimensions": "Wrist size, knotted",
+      "productionMethod": "Hand-knotted wool",
+      "media": {
+        "file": "prayer-rope-bracelet-wool.jpg",
+        "alt": "A small black wool Orthodox prayer rope worn as a bracelet, with a small knotted cross",
+        "query": "Orthodox prayer rope bracelet komboskini wrist wool"
+      }
+    },
+    {
+      "slug": "orthodox-cross-necklace",
+      "title": "Orthodox Cross Necklace",
+      "subtitle": "The three-bar cross on a chain",
+      "description": "The three-bar cross of the Orthodox Church worn on a chain: the short upper bar the title Pilate set over the Lord, the long central bar for His outstretched arms, and the slanted footrest below. The slant is read as a balance, lifted toward the thief who repented and lowered toward the one who did not, so that even the wood preaches the two ways set before every soul.",
+      "priceCents": 2499,
+      "category": "crosses",
+      "classification": "cross",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 10,
+      "dispatchMaxDays": 21,
+      "materials": "Stainless steel",
+      "dimensions": "Pendant about 1.5 in, on a 20 in chain",
+      "productionMethod": "Cast metal",
+      "media": {
+        "file": "orthodox-cross-necklace.jpg",
+        "alt": "An Orthodox three-bar cross pendant with a slanted footrest, on a chain",
+        "query": "Russian Orthodox cross three bar"
+      }
+    },
+    {
+      "slug": "cross-necklace",
+      "title": "Cross Necklace",
+      "subtitle": "A simple cross on a chain",
+      "description": "A plain Christian cross to wear on a chain, the oldest sign of the faith carried close: the mark of the One who was crucified and rose. Simple enough for daily wear, under the collar or over it, a quiet confession of Christ through the day.",
+      "priceCents": 1999,
+      "category": "crosses",
+      "classification": "cross",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 10,
+      "dispatchMaxDays": 21,
+      "materials": "Stainless steel",
+      "dimensions": "Pendant about 1.25 in, on a 20 in chain",
+      "productionMethod": "Cast metal",
+      "media": {
+        "file": "cross-necklace.jpg",
+        "alt": "A simple Christian cross pendant on a chain",
+        "query": "simple silver cross pendant"
+      }
+    },
+    {
+      "slug": "prostration-mat",
+      "title": "Prostration Mat",
+      "subtitle": "A woven mat for prostrations and metanias",
+      "description": "A small woven mat for the making of prostrations, the metanias of Orthodox prayer: kneeling and touching the forehead to the ground, especially through Great Lent and the prayer of St Ephrem. Laid before the icon corner, it cushions the knees and the hands for the repeated bowing of the body in prayer.",
+      "priceCents": 3499,
+      "category": "prayer_corner",
+      "classification": "textile",
+      "inventoryStatus": "special_order",
+      "dispatchMinDays": 10,
+      "dispatchMaxDays": 21,
+      "materials": "Woven cotton",
+      "dimensions": "About 24 × 16 in",
+      "productionMethod": "Machine-woven",
+      "media": {
+        "file": "prostration-mat.jpg",
+        "alt": "A small woven mat laid before an icon corner for making prostrations",
+        "query": "prayer rug mat woven"
+      }
     }
   ]
 }
