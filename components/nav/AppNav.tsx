@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
-import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
+import { PremiumNavCta } from "@/components/nav/PremiumNavCta";
 import { useScrolled } from "@/lib/useScrolled";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -259,9 +259,7 @@ export function AppNav() {
               {t("nav.account")}
             </Link>
           )}
-          <ComingSoonCTA variant="inverse" className="!py-2.5 !px-5 text-ui">
-            {t("nav.openPurify")}
-          </ComingSoonCTA>
+          <PremiumNavCta active={isActive("/premium")} />
         </div>
 
         <button
@@ -297,6 +295,13 @@ export function AppNav() {
                 </Link>
               ),
             )}
+            <div className="mt-4">
+              <PremiumNavCta
+                fullWidth
+                active={isActive("/premium")}
+                onClick={() => setOpen(false)}
+              />
+            </div>
           </nav>
         </div>
       )}

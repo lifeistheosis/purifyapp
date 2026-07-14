@@ -802,6 +802,30 @@ div[data-hl="true"] {
  }
 }
 
+/* Premium CTA glow: a soft, breathing GOLD halo on the "Premium" pill in
+   the marketing header. In the otherwise monochrome (white-on-night) nav
+   this is the one warm accent, marking the paid tier and tying the button
+   to the gold premium/pricing surfaces. The pill also carries a resting
+   gold box-shadow inline, so reduced-motion users keep the halo (the
+   keyframe never drops to zero) without the pulse. */
+@keyframes premium-glow {
+ 0%,
+ 100% {
+ box-shadow: 0 0 8px 0 rgba(212, 175, 55, 0.32);
+ }
+ 50% {
+ box-shadow: 0 0 18px 4px rgba(212, 175, 55, 0.6);
+ }
+}
+.premium-glow {
+ animation: premium-glow 2.8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+ .premium-glow {
+ animation: none;
+ }
+}
+
 /* Gentle vertical nudge for the home "next section" scroll control, a
    small hint that the button advances the page one panel at a time. */
 @keyframes scroller-nudge {
