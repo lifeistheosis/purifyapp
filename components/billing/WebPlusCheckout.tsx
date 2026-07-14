@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import {
   webBillingAvailable,
   getWebPlusPackages,
@@ -75,10 +75,15 @@ export function WebSubscribeCheckout({
       return;
     }
     try {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // F-13: read the signed-in user from the local session (cookie), never
+      // supabase.auth.getUser(). That call network-validates through the
+      // cross-tab auth lock; a jammed lock makes it hang forever, which strands
+      // the checkout on the loading skeleton until the 8s safety timeout drops
+      // it to the app-store fallback. Observed live 2026-07-14: the auth lock
+      // sat held-exclusive, getUser() never returned, so signed-in desktop
+      // users saw "Get it in the app" instead of the subscribe buttons. The
+      // local read is synchronous, lock-free, and cannot hang.
+      const user = readLocalSessionUser();
       if (!user) {
         setPhase("signed-out");
         return;
