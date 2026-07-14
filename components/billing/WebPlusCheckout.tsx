@@ -70,23 +70,28 @@ export function WebPlusCheckout({
       setPhase("unavailable");
       return;
     }
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      setPhase("signed-out");
-      return;
+    try {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        setPhase("signed-out");
+        return;
+      }
+      setUserId(user.id);
+      if (await isWebPlusActive(user.id)) {
+        setManageUrl(await webManagementURL(user.id));
+        setPhase("subscribed");
+        return;
+      }
+      const pkgs = await getWebPlusPackages(user.id);
+      setPackages(pkgs);
+      setPhase(pkgs.monthly || pkgs.yearly ? "ready" : "unavailable");
+    } catch {
+      // Any bootstrap failure falls back to the Play link, never a stuck box.
+      setPhase("unavailable");
     }
-    setUserId(user.id);
-    if (await isWebPlusActive(user.id)) {
-      setManageUrl(await webManagementURL(user.id));
-      setPhase("subscribed");
-      return;
-    }
-    const pkgs = await getWebPlusPackages(user.id);
-    setPackages(pkgs);
-    setPhase(pkgs.monthly || pkgs.yearly ? "ready" : "unavailable");
   }, []);
 
   useEffect(() => {
@@ -94,6 +99,17 @@ export function WebPlusCheckout({
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
   }, [load]);
+
+  // Safety net: if the SDK bootstrap hangs (a slow or unreachable RevenueCat
+  // web offering), don't leave the reader on the loading skeleton forever.
+  // After the grace period, drop to the Play-link fallback.
+  useEffect(() => {
+    if (phase !== "loading") return;
+    const t = window.setTimeout(() => {
+      setPhase((p) => (p === "loading" ? "unavailable" : p));
+    }, 8000);
+    return () => window.clearTimeout(t);
+  }, [phase]);
 
   const buy = useCallback(
     async (plan: "monthly" | "yearly", pkg: Package | null) => {

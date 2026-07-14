@@ -67,15 +67,23 @@ export type WebPlusPackages = {
 export async function getWebPlusPackages(
   supabaseUserId: string,
 ): Promise<WebPlusPackages> {
-  if (!webBillingAvailable()) return { monthly: null, yearly: null, offering: null };
-  const purchases = await ensureConfigured(supabaseUserId);
-  const offerings = await purchases.getOfferings();
-  const current = offerings.current;
-  return {
-    monthly: current?.monthly ?? null,
-    yearly: current?.annual ?? null,
-    offering: current ?? null,
-  };
+  const empty: WebPlusPackages = { monthly: null, yearly: null, offering: null };
+  if (!webBillingAvailable()) return empty;
+  try {
+    const purchases = await ensureConfigured(supabaseUserId);
+    const offerings = await purchases.getOfferings();
+    const current = offerings.current;
+    return {
+      monthly: current?.monthly ?? null,
+      yearly: current?.annual ?? null,
+      offering: current ?? null,
+    };
+  } catch {
+    // Key present but the offering/products aren't set up yet (or a network
+    // fault): fail soft to no packages so the checkout shows the Play link
+    // instead of hanging on the loading skeleton.
+    return empty;
+  }
 }
 
 /** Formatted price string for a package, straight from RevenueCat (live). */

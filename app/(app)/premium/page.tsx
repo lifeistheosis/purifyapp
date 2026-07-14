@@ -187,9 +187,10 @@ function PremiumView({
               <CardCta href="/pricing" label={chrome.plusCta} tone="plus" />
             </PlanCard>
 
-            {/* Pro */}
+            {/* Pro (the ribbon marks the tier; no inline badge, so it never
+                collides with "Most complete" in the corner). */}
             <PlanCard tone="pro" id="pro" ribbon={chrome.proRibbon}>
-              <PlanHead name={plan.proTitle} badge={chrome.proBadge} />
+              <PlanHead name={plan.proTitle} />
               <PriceBlock main={plan.proPriceMonthly} sub={`${chrome.perYear} ${plan.proPriceYearly}`} />
               <p className="mt-3 font-sans text-ui leading-relaxed text-paper/70">
                 {plan.proLede}
@@ -198,18 +199,20 @@ function PremiumView({
               <p className="mt-5 font-sans text-caption text-[#e9c86a]/85">
                 {plan.openingOffer}
               </p>
+              {/* Link above the CTA so the CTA stays the last element and
+                  bottom-aligns with the other cards' buttons. */}
+              <Link
+                href="/pricing"
+                className="mt-4 inline-flex items-center gap-1.5 font-sans text-caption font-medium text-paper/55 underline decoration-paper/25 underline-offset-4 transition-colors hover:text-paper/80"
+              >
+                {chrome.compareAll}
+              </Link>
               <CardCta
                 href={PLAY_STORE_URL}
                 label={chrome.proCta}
                 tone="pro"
                 external
               />
-              <Link
-                href="/pricing"
-                className="mt-3 inline-flex items-center gap-1.5 font-sans text-caption font-medium text-paper/55 underline decoration-paper/25 underline-offset-4 transition-colors hover:text-paper/80"
-              >
-                {chrome.compareAll}
-              </Link>
             </PlanCard>
           </div>
 
