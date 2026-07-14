@@ -167,6 +167,11 @@ export type ShopReview = {
   stars: number;
   body: string | null;
   created_at: string;
+  // Reviewer identity. Null display_name / location render as "Anonymous" / "?"
+  // (either because the reviewer chose anonymous, or left the field blank).
+  display_name: string | null;
+  location: string | null;
+  anonymous: boolean;
 };
 
 export type ShopReviewsData = {

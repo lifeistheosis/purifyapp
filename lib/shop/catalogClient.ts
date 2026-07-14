@@ -97,6 +97,9 @@ export async function submitReview(input: {
   productId: string;
   stars: number;
   body: string | null;
+  displayName?: string | null;
+  location?: string | null;
+  anonymous?: boolean;
 }): Promise<void> {
   const res = await apiFetch("/api/shop/reviews", {
     method: "POST",
