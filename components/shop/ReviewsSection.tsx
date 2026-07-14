@@ -46,7 +46,7 @@ export function ReviewsSection({
   };
 
   return (
-    <section aria-label="Reviews" className="mt-10">
+    <section id="reviews" aria-label="Reviews" className="mt-10 scroll-mt-24">
       <div className="flex items-center justify-between gap-4">
         <h2 className="font-display-serif text-title text-paper">Reviews</h2>
         {data && data.reviewCount > 0 ? (
