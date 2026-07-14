@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { DesktopInstallCTA } from "@/components/pwa/DesktopInstallCTA";
 import { useScrolled } from "@/lib/useScrolled";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -12,6 +11,7 @@ import {
   DISCOVER_CHILD_HREFS,
 } from "@/components/nav/DiscoverDropdown";
 import { PurifyMark } from "@/components/ui/PurifyMark";
+import { PremiumNavCta } from "@/components/nav/PremiumNavCta";
 import { shopEnabled } from "@/lib/shop/flags";
 import { Close } from "@/components/ui/icons/Close";
 import { Menu } from "@/components/ui/icons/Menu";
@@ -128,9 +128,7 @@ export function Navbar() {
               {item.label}
             </Link>
           ))}
-          <DesktopInstallCTA variant="inverse" className="!py-2.5 !px-5 text-ui">
-            {t("nav.openPurify")}
-          </DesktopInstallCTA>
+          <PremiumNavCta active={isActive("/premium")} />
         </div>
 
         {/* Mobile hamburger */}
@@ -165,9 +163,11 @@ export function Navbar() {
               </Link>
             ))}
             <div className="mt-4 mb-2">
-              <DesktopInstallCTA variant="inverse" className="w-full !py-3 text-ui">
-                {t("nav.openPurify")}
-              </DesktopInstallCTA>
+              <PremiumNavCta
+                fullWidth
+                active={isActive("/premium")}
+                onClick={() => setOpen(false)}
+              />
             </div>
           </nav>
         </div>
