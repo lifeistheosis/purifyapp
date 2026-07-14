@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Lampada } from "@/components/ui/icons/Lampada";
+import { MobilePremiumButton } from "@/components/nav/MobilePremiumButton";
 
 /**
  * Simple mobile-header strip for Bible / Discover / Prayers / You.
@@ -21,30 +22,31 @@ export function MobileHeader({
   trailing?: ReactNode;
   donate?: boolean;
 }) {
-  const hasActions = donate || Boolean(trailing);
   return (
     // pt-4 only, NOT the status-bar inset: this (non-sticky) header renders
     // inside the (app) layout's <main class="safe-pt">, which already clears
     // the bar. Adding env(safe-area-inset-top) here too double-padded the top.
-    <header className="flex items-center justify-between px-5 pt-4 pb-2">
-      <h1 className="font-sans text-lede font-bold tracking-[-0.01em] text-paper">
+    <header className="flex items-center justify-between gap-3 px-5 pt-4 pb-2">
+      <h1 className="min-w-0 truncate font-sans text-lede font-bold tracking-[-0.01em] text-paper">
         {title}
       </h1>
-      {hasActions && (
-        <div className="flex items-center gap-3">
-          {donate && (
-            <Link
-              href="/support"
-              aria-label="Support Purify"
-              title="Support Purify"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-pill text-gold/80 hover:text-gold transition-colors"
-            >
-              <Lampada size={20} />
-            </Link>
-          )}
-          {trailing}
-        </div>
-      )}
+      {/* The gold Premium pill is always present (the mobile parallel of the
+          desktop nav's Premium button); the support lamp and trailing avatar
+          follow it. */}
+      <div className="flex shrink-0 items-center gap-3">
+        <MobilePremiumButton />
+        {donate && (
+          <Link
+            href="/support"
+            aria-label="Support Purify"
+            title="Support Purify"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-pill text-gold/80 hover:text-gold transition-colors"
+          >
+            <Lampada size={20} />
+          </Link>
+        )}
+        {trailing}
+      </div>
     </header>
   );
 }

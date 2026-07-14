@@ -1,18 +1,21 @@
 import Link from "next/link";
+import { MobilePremiumButton } from "@/components/nav/MobilePremiumButton";
 
 /**
  * Mobile top bar for the Today shell.
  *
  * The Today / Calendar text tabs were removed — the bottom tab bar already
  * carries navigation, and the greeting block below the bar opens the
- * surface. What remains is a quiet right cluster: a bell linking to
- * /whats-new and a circular avatar slot. No streak counter — prayer life is
- * not scored back to the user.
+ * surface. What remains is a quiet right cluster: the gold Premium pill (the
+ * mobile parallel of the desktop nav's Premium button, since the native app
+ * renders no AppNav), a bell linking to /whats-new, and a circular avatar
+ * slot. No streak counter — prayer life is not scored back to the user.
  */
 export function MobileTopTabs({ avatar }: { avatar: React.ReactNode }) {
   return (
     <header className="sticky top-0 z-30 bg-night/95 backdrop-blur-sm border-b border-paper/8">
       <div className="flex items-center justify-end gap-3 px-5 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-2">
+        <MobilePremiumButton />
         <Link
           href="/whats-new"
           aria-label="What's new"
