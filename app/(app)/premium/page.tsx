@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getPremiumPlan, type PremiumPlanCopy } from "@/lib/premium/plans";
-import { PLAY_STORE_URL } from "@/lib/site";
 
 export const metadata = {
   title: "Purify Premium",
@@ -199,20 +198,9 @@ function PremiumView({
               <p className="mt-5 font-sans text-caption text-[#e9c86a]/85">
                 {plan.openingOffer}
               </p>
-              {/* Link above the CTA so the CTA stays the last element and
-                  bottom-aligns with the other cards' buttons. */}
-              <Link
-                href="/pricing"
-                className="mt-4 inline-flex items-center gap-1.5 font-sans text-caption font-medium text-paper/55 underline decoration-paper/25 underline-offset-4 transition-colors hover:text-paper/80"
-              >
-                {chrome.compareAll}
-              </Link>
-              <CardCta
-                href={PLAY_STORE_URL}
-                label={chrome.proCta}
-                tone="pro"
-                external
-              />
+              {/* Pro routes to the pricing page, where the Pro web checkout
+                  (or the Play fallback) lives — not straight to Play. */}
+              <CardCta href="/pricing" label={chrome.proCta} tone="pro" />
             </PlanCard>
           </div>
 

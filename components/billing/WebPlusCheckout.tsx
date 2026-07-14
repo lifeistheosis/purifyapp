@@ -6,9 +6,11 @@ import { createClient } from "@/lib/supabase/client";
 import {
   webBillingAvailable,
   getWebPlusPackages,
+  getWebProPackages,
   packagePrice,
   purchaseWebPlus,
   isWebPlusActive,
+  isWebProActive,
   webManagementURL,
   type WebPlusPackages,
 } from "@/lib/billing/revenuecatWeb";
@@ -45,10 +47,12 @@ export type WebCheckoutCopy = {
 
 type Phase = "loading" | "signed-out" | "ready" | "subscribed" | "unavailable";
 
-export function WebPlusCheckout({
+export function WebSubscribeCheckout({
+  tier = "plus",
   copy,
   playStoreUrl,
 }: {
+  tier?: "plus" | "pro";
   copy: WebCheckoutCopy;
   playStoreUrl: string;
 }) {
@@ -80,19 +84,26 @@ export function WebPlusCheckout({
         return;
       }
       setUserId(user.id);
-      if (await isWebPlusActive(user.id)) {
+      const active =
+        tier === "pro"
+          ? await isWebProActive(user.id)
+          : await isWebPlusActive(user.id);
+      if (active) {
         setManageUrl(await webManagementURL(user.id));
         setPhase("subscribed");
         return;
       }
-      const pkgs = await getWebPlusPackages(user.id);
+      const pkgs =
+        tier === "pro"
+          ? await getWebProPackages(user.id)
+          : await getWebPlusPackages(user.id);
       setPackages(pkgs);
       setPhase(pkgs.monthly || pkgs.yearly ? "ready" : "unavailable");
     } catch {
       // Any bootstrap failure falls back to the Play link, never a stuck box.
       setPhase("unavailable");
     }
-  }, []);
+  }, [tier]);
 
   useEffect(() => {
     // Client-only billing bootstrap; state is set after awaits.

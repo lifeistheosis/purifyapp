@@ -6,7 +6,7 @@ import { WebOnly, NativeOnly } from "@/components/platform/PlatformGate";
 import { ClientErrorBoundary } from "@/components/ui/ClientErrorBoundary";
 import { PLAY_STORE_URL } from "@/lib/site";
 import {
-  WebPlusCheckout,
+  WebSubscribeCheckout,
   type WebCheckoutCopy,
 } from "@/components/billing/WebPlusCheckout";
 import { PREMIUM_PLAN_EN, PREMIUM_PLAN_DE } from "@/lib/premium/plans";
@@ -142,6 +142,15 @@ export default async function PricingPage() {
 }
 
 function PricingView({ copy }: { copy: PricingCopy }) {
+  // Pro reuses the Plus web-checkout copy with Pro prices and the Pro Play
+  // fallback. (subscribedTitle stays the shared "You have Purify Plus" — Pro
+  // includes Plus, so it holds either way.)
+  const proWeb: WebCheckoutCopy = {
+    ...copy.web,
+    monthlyLabel: copy.proPriceMonthly,
+    yearlyLabel: copy.proPriceYearly,
+    getInApp: copy.proInApp,
+  };
   return (
     <section className="min-h-[calc(100dvh-72px)] bg-night px-5 md:px-8 py-16 md:py-24">
       <div className="mx-auto w-full max-w-[760px]">
@@ -230,7 +239,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
               Billing bound to the signed-in account, so it unlocks Plus on
               the phone too. Degrades to a Play Store link when web billing
               is not configured. */}
-          <WebPlusCheckout copy={copy.web} playStoreUrl={PLAY_STORE_URL} />
+          <WebSubscribeCheckout tier="plus" copy={copy.web} playStoreUrl={PLAY_STORE_URL} />
 
           <p className="mt-6 border-t border-paper/8 pt-5 font-sans text-caption leading-[1.6] text-paper/45">
             {copy.plusPromise}
@@ -286,13 +295,10 @@ function PricingView({ copy }: { copy: PricingCopy }) {
             {copy.openingOffer}
           </p>
 
-          <a
-            href={PLAY_STORE_URL}
-            className="mt-6 inline-flex items-center gap-2 rounded-pill border border-gold/40 bg-gold/[0.10] px-6 py-3 font-sans text-ui font-semibold text-gold-pale transition-colors hover:bg-gold/[0.18]"
-          >
-            {copy.proInApp}
-            <ArrowRight />
-          </a>
+          {/* Pro web checkout: subscribe on desktop through RevenueCat Web
+              Billing, degrades to the Play link until the Pro web offering is
+              configured. */}
+          <WebSubscribeCheckout tier="pro" copy={proWeb} playStoreUrl={PLAY_STORE_URL} />
 
           <p className="mt-6 border-t border-paper/8 pt-5 font-sans text-caption leading-[1.6] text-paper/45">
             {copy.proNote}

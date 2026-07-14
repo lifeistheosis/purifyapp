@@ -86,6 +86,35 @@ export async function getWebPlusPackages(
   }
 }
 
+/**
+ * The Monthly + Yearly packages for Purify Pro. Pro lives in its OWN RevenueCat
+ * offering (Plus is the default/current one), so we look it up by a conventional
+ * identifier. Configure the Pro offering in the RevenueCat dashboard as "pro"
+ * (or purify_pro / default_pro) with Monthly + Annual packages backed by
+ * Stripe web products and the `pro` entitlement. Until then this returns nulls
+ * and the Pro checkout degrades to the Play link, same as Plus.
+ */
+export async function getWebProPackages(
+  supabaseUserId: string,
+): Promise<WebPlusPackages> {
+  const empty: WebPlusPackages = { monthly: null, yearly: null, offering: null };
+  if (!webBillingAvailable()) return empty;
+  try {
+    const purchases = await ensureConfigured(supabaseUserId);
+    const offerings = await purchases.getOfferings();
+    const all = offerings.all ?? {};
+    const pro =
+      all["pro"] ?? all["purify_pro"] ?? all["default_pro"] ?? null;
+    return {
+      monthly: pro?.monthly ?? null,
+      yearly: pro?.annual ?? null,
+      offering: pro ?? null,
+    };
+  } catch {
+    return empty;
+  }
+}
+
 /** Formatted price string for a package, straight from RevenueCat (live). */
 export function packagePrice(pkg: Package | null): string | null {
   return pkg?.webBillingProduct?.currentPrice?.formattedPrice ?? null;
