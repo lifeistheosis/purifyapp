@@ -73,7 +73,11 @@ export function ProductCard({
     <div
       style={style}
       className={cn(
-        "group relative isolate flex flex-col overflow-hidden rounded-2xl border border-paper/10 bg-night-soft/60 card-lift",
+        // h-full: fill the (equal-height) grid / rail cell so the mt-auto price
+        // row lands on the same baseline across cards regardless of how many
+        // lines the title wraps to. Without it the card is content-height and
+        // the bottoms misalign.
+        "group relative isolate flex h-full flex-col overflow-hidden rounded-2xl border border-paper/10 bg-night-soft/60 card-lift",
         className,
       )}
     >
