@@ -46,7 +46,7 @@ export function ReviewsSection({
   };
 
   return (
-    <section aria-label="Reviews" className="mt-10">
+    <section id="reviews" aria-label="Reviews" className="mt-10 scroll-mt-24">
       <div className="flex items-center justify-between gap-4">
         <h2 className="font-display-serif text-title text-paper">Reviews</h2>
         {data && data.reviewCount > 0 ? (
@@ -71,9 +71,19 @@ export function ReviewsSection({
               key={r.id}
               className="rounded-lg border border-paper/10 bg-night-soft/60 p-4"
             >
-              <div className="flex items-center justify-between gap-3">
-                <RatingStars avg={r.stars} count={1} showCount={false} />
-                <span className="font-sans text-caption text-paper/50">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <RatingStars avg={r.stars} count={1} showCount={false} />
+                  <p className="mt-1.5 font-sans text-detail text-paper/80">
+                    <span className="font-semibold text-paper">
+                      {r.display_name || "Anonymous"}
+                    </span>
+                    {r.location || r.anonymous ? (
+                      <span className="text-paper/50"> · {r.location || "?"}</span>
+                    ) : null}
+                  </p>
+                </div>
+                <span className="shrink-0 whitespace-nowrap font-sans text-caption text-paper/50">
                   Verified buyer ·{" "}
                   {new Date(r.created_at).toLocaleDateString(undefined, {
                     month: "short",

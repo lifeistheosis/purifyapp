@@ -16,6 +16,10 @@ const schema = z.object({
   productId: z.string().uuid(),
   stars: z.number().int().min(1).max(5),
   body: z.string().trim().max(4000).nullish(),
+  // Marketplace-style attribution. Ignored (stored null) when anonymous.
+  displayName: z.string().trim().max(80).nullish(),
+  location: z.string().trim().max(80).nullish(),
+  anonymous: z.boolean().optional(),
 });
 
 async function handlePOST(req: Request) {
@@ -55,6 +59,9 @@ async function handlePOST(req: Request) {
     p_product_id: parsed.data.productId,
     p_stars: parsed.data.stars,
     p_body: parsed.data.body ?? null,
+    p_display_name: parsed.data.displayName ?? null,
+    p_location: parsed.data.location ?? null,
+    p_anonymous: parsed.data.anonymous ?? false,
   });
   if (error) {
     // The RPC raises a human-readable message for the not-a-buyer case.

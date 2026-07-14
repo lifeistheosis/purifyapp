@@ -30,8 +30,17 @@ import {
   resolveUser,
 } from "@/lib/supabase/resolveUser";
 
-type OrderRow = ShopOrder & {
+type OrderItem = {
+  title: string;
+  unit_price_cents: number;
+  quantity: number;
+  // Joined so a paid order can offer a "write a review" link per item.
+  product: { slug: string } | null;
+};
+
+type OrderRow = Omit<ShopOrder, "items"> & {
   user_id: string | null;
+  items: OrderItem[];
   store: { public_name: string } | null;
 };
 
@@ -55,7 +64,7 @@ async function load(id: string): Promise<Result> {
   const { data } = await supabase
     .from("shop_orders")
     .select(
-      "id, user_id, items_total_cents, shipping_cents, tax_cents, total_cents, currency, payment_status, fulfillment_status, outbound_tracking, created_at, items:shop_order_items(title, unit_price_cents, quantity), store:shop_stores(public_name)",
+      "id, user_id, items_total_cents, shipping_cents, tax_cents, total_cents, currency, payment_status, fulfillment_status, outbound_tracking, created_at, items:shop_order_items(title, unit_price_cents, quantity, product:shop_products(slug)), store:shop_stores(public_name)",
     )
     .eq("id", id)
     .maybeSingle();
@@ -197,6 +206,42 @@ export function OrderDetailClient() {
           </p>
         </div>
       </section>
+
+      {/* Post-purchase review request: once the order is paid the buyer is a
+          verified purchaser, so invite an honest review per item. Links to the
+          product's reviews, where the verified-buyer form already lives. */}
+      {order.payment_status === "paid" &&
+      order.items.some((item) => item.product?.slug) ? (
+        <section
+          aria-label="Review your purchase"
+          className="mt-5 rounded-lg border border-paper/10 bg-night-soft/60 p-5"
+        >
+          <h2 className="font-sans text-ui font-semibold text-paper">
+            Enjoying your {order.items.length > 1 ? "icons" : "icon"}?
+          </h2>
+          <p className="mt-1 font-sans text-caption text-paper/55">
+            Share an honest review to help other buyers. It&rsquo;s marked as a
+            verified purchase.
+          </p>
+          <ul className="mt-3.5 space-y-2.5">
+            {order.items.map((item, i) =>
+              item.product?.slug ? (
+                <li key={i} className="flex items-center justify-between gap-3">
+                  <p className="min-w-0 truncate font-sans text-detail text-paper/80">
+                    {item.title}
+                  </p>
+                  <Link
+                    href={`/shop/icons/${item.product.slug}#reviews`}
+                    className="tap-press shrink-0 inline-flex items-center rounded-pill border border-paper/25 px-4 py-1.5 font-sans text-detail font-semibold text-paper hover:border-paper/45"
+                  >
+                    Write a review
+                  </Link>
+                </li>
+              ) : null,
+            )}
+          </ul>
+        </section>
+      ) : null}
 
       <section aria-label="Message the seller" className="mt-5">
         <BuyerMessageButton

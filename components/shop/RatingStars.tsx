@@ -33,7 +33,7 @@ export function RatingStars({
             key={i}
             size={13}
             filled={i <= filled}
-            className={i <= filled ? "text-gold" : "text-paper/30"}
+            className={i <= filled ? "text-paper" : "text-paper/30"}
           />
         ))}
       </span>

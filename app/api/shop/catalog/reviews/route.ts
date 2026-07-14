@@ -5,8 +5,10 @@ import { shopEnabled } from "@/lib/shop/flags";
 import { createClient } from "@/lib/supabase/server";
 
 /**
- * Public reviews for a product (by slug) + the aggregate. Reviewer identity is
- * never returned — every review is a verified purchase and is shown as such.
+ * Public reviews for a product (by slug) + the aggregate. Every review is a
+ * verified purchase. The reviewer's chosen display name + location come back
+ * for marketplace-style attribution; anonymous reviews stored them as null (the
+ * submit RPC nulls both when anonymous), so nothing private is exposed here.
  */
 export async function GET(req: Request) {
   if (!shopEnabled()) {
@@ -36,7 +38,7 @@ export async function GET(req: Request) {
 
   const { data } = await supabase
     .from("shop_reviews")
-    .select("id, stars, body, created_at")
+    .select("id, stars, body, created_at, display_name, location, anonymous")
     .eq("product_id", product.id)
     .order("created_at", { ascending: false })
     .limit(100);

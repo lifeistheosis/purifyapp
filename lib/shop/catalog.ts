@@ -115,7 +115,8 @@ async function listProductsInner(
   opts: ListProductsOptions,
 ): Promise<ShopProductFull[]> {
   const supabase = await createClient();
-  const limit = Math.min(opts.limit ?? 24, 60);
+  const want = Math.min(opts.limit ?? 24, 60);
+  const offset = opts.offset ?? 0;
 
   // Subject filtering goes through the join table first: cheap, and it
   // keeps the main query a straight indexed scan.
@@ -134,11 +135,17 @@ async function listProductsInner(
     if (idFilter.length === 0) return [];
   }
 
+  // The supplier-image rights gate (hasSupplierImage) runs in app code, AFTER
+  // the query, because it inspects the joined primary-media host. So the DB
+  // limit must not double as the visible count: when the newest rows are still
+  // on a supplier CDN, limiting in SQL first leaves the storefront short — this
+  // is why "Featured Icons" rendered a single icon. Fetch a generous window by
+  // recency, drop the supplier-image listings, then apply offset + limit below.
   let query = supabase
     .from("shop_products")
     .select(PRODUCT_SELECT)
     .order("created_at", { ascending: false })
-    .range(opts.offset ?? 0, (opts.offset ?? 0) + limit - 1);
+    .limit(60);
 
   if (idFilter) query = query.in("id", idFilter);
   if (opts.category) query = query.eq("category", opts.category);
@@ -154,9 +161,10 @@ async function listProductsInner(
     console.warn("[shop] listProducts failed", error.message);
     return [];
   }
-  return ((data ?? []) as unknown as ShopProductFull[])
+  const visible = ((data ?? []) as unknown as ShopProductFull[])
     .map(orderMedia)
     .filter((p) => !hasSupplierImage(p));
+  return visible.slice(offset, offset + want);
 }
 
 export async function getProduct(slug: string): Promise<ShopProductFull | null> {
