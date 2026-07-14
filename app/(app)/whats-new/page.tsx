@@ -23,6 +23,21 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 2.0.1",
+ kind: "A cleaner walk through the whole app",
+ date: "July 14, 2026",
+ blurb:
+  "A polish release: Purify Premium gets a home of its own, Discover reads more calmly, the Fasting, Campaigns, and Trapeza screens move with a lighter hand on the phone, and a fault that could leave a prayer campaign stuck on 'opening' is fixed. The EIKON shop shows its icons in full again.",
+ items: [
+  "A new Purify Premium page lays out Standard, Plus, and Pro side by side, with a marker in the header that leads there. The free core is untouched.",
+  "A calmer Discover: fewer duplicate doorways, and the doctrinal library (Theology, Apologetics, Topics, and Heresies) gathered under one hub instead of four tiles.",
+  "Prayer Campaigns open every time now; a slow session no longer leaves the page stuck on 'opening the campaign', and starting one is a gentler carded flow.",
+  "A cleaner, minimal mobile design across Fasting, Prayer Campaigns, and the Trapeza, with a soft entrance as each section settles in.",
+  "EIKON shop: the featured icons show in full again, cards line up to one baseline, and after an order you are invited to leave a verified review.",
+  "Cache version steps to purify-beta-2.0.1.",
+ ],
+ },
+ {
  version: "Beta 2.0",
  kind: "The fast kept, the table shared, and prayers held in common",
  date: "July 13, 2026",

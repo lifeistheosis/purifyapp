@@ -1,5 +1,34 @@
 [
   {
+    "id": "beta-2-0-1",
+    "version": "Beta 2.0.1",
+    "date": "2026-07-14",
+    "title": "A cleaner walk through the whole app",
+    "intro": "A polish release. Purify Premium now has a home of its own, Discover reads more calmly, and the Fasting, Prayer Campaigns, and Trapeza screens move with a lighter hand on the phone. A fault that could leave a signed-in reader stuck on 'opening the campaign' is fixed, and the EIKON shop shows its icons in full again and asks you, after an order, to share an honest word. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "Purify Premium, in one place",
+        "body": "A new Premium page lays out the three plans side by side, Standard, Plus, and Pro, with everything each one carries and the opening half-off-first-year offer. A quiet marker in the header leads you there whenever you want to look. Nothing about the free core changes."
+      },
+      {
+        "heading": "A calmer Discover",
+        "body": "Discover was carrying duplicate doorways and a wall of small buttons. It now reads in a few clear rooms, and the doctrinal library, Theology, Apologetics, Topics, and the heresies the Church answered, gathers under one hub instead of four scattered tiles."
+      },
+      {
+        "heading": "Prayer Campaigns open every time",
+        "body": "A signed-in reader could land on a campaign that stayed stuck on 'opening the campaign' when their session was slow to confirm. The campaign now appears as soon as it loads, and a failure offers a way back instead of a spinner that never ends. Starting a campaign is a gentler, carded flow too."
+      },
+      {
+        "heading": "Lighter on the phone",
+        "body": "The Fasting, Prayer Campaigns, and Trapeza screens share one quiet, minimal design now, with a soft entrance as each section settles in and a small give under your thumb. Cleaner, calmer, and quicker to read."
+      },
+      {
+        "heading": "The EIKON shop, set right",
+        "body": "Featured icons were hiding all but one behind a stricter image check; the shelf is full again, and every card lines up to the same baseline. After an order is placed, the shop now invites you to leave an honest, verified review to help the next person praying."
+      }
+    ]
+  },
+  {
     "id": "beta-2-0",
     "version": "Beta 2.0",
     "date": "2026-07-13",
