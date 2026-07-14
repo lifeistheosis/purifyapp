@@ -39,10 +39,9 @@ export const DISCOVER_CHILDREN: Child[] = [
   ...(trapezaEnabled()
     ? [{ key: "trapeza", label: "The Trapeza", href: "/trapeza" }]
     : []),
+  // Theology is the umbrella over Doctrine, Topics, Heresies, and Apologetics;
+  // it gets one slot here, not four (they live inside /theology).
   { key: "theology", label: "Theology", href: "/theology" },
-  { key: "apologetics", label: "Apologetics", href: "/apologetics" },
-  { key: "topics", label: "Topics", href: "/topics" },
-  { key: "heresies", label: "Heresies", href: "/heresies" },
   { key: "councils", label: "Councils", href: "/councils" },
 ];
 
