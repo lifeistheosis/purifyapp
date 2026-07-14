@@ -44,8 +44,6 @@ export const DISCOVER_CHILDREN: Child[] = [
   { key: "topics", label: "Topics", href: "/topics" },
   { key: "heresies", label: "Heresies", href: "/heresies" },
   { key: "councils", label: "Councils", href: "/councils" },
-  { key: "psalter", label: "The Psalter", href: "/bible/psalms/1" },
-  { key: "patristic", label: "Patristic commentary", href: "/bible/john/1" },
 ];
 
 /** Hrefs that light up the Discover slot as "active". The two Bible

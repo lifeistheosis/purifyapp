@@ -802,6 +802,29 @@ div[data-hl="true"] {
  }
 }
 
+/* Section / card reveal for guided form flows (create a campaign, the fasting
+   planner). A gentle rise-and-fade on mount, staggered via inline
+   animation-delay. `both` holds the start frame so a delayed item stays hidden
+   until its turn. Reduced motion shows the final state instantly. */
+@keyframes reveal-rise {
+ from {
+ opacity: 0;
+ transform: translateY(10px);
+ }
+ to {
+ opacity: 1;
+ transform: translateY(0);
+ }
+}
+.reveal-rise {
+ animation: reveal-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+ .reveal-rise {
+ animation: none;
+ }
+}
+
 /* Gentle vertical nudge for the home "next section" scroll control, a
    small hint that the button advances the page one panel at a time. */
 @keyframes scroller-nudge {

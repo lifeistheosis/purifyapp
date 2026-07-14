@@ -121,7 +121,7 @@ export function CreateCampaignClient() {
       </p>
 
       <form onSubmit={onSubmit} className="mt-7 space-y-6">
-        <div>
+        <div className="reveal-rise" style={{ animationDelay: "60ms" }}>
           <label htmlFor="title" className={labelCls}>
             Title
           </label>
@@ -135,72 +135,50 @@ export function CreateCampaignClient() {
           />
         </div>
 
-        <div>
+        <div className="reveal-rise" style={{ animationDelay: "120ms" }}>
           <span className={labelCls}>What is it for?</span>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid gap-2.5 sm:grid-cols-2">
             {INTENTIONS.map((i) => (
-              <button
+              <SelectCard
                 key={i.slug}
-                type="button"
+                selected={intention === i.slug}
                 onClick={() => pickIntention(i.slug)}
-                aria-pressed={intention === i.slug}
-                className={`rounded-pill border px-3.5 py-1.5 font-sans text-caption font-semibold transition-colors ${
-                  intention === i.slug
-                    ? "border-gold/50 bg-gold/10 text-gold-pale"
-                    : "border-paper/15 text-paper/60 hover:border-paper/30"
-                }`}
-              >
-                {i.label}
-              </button>
+                title={i.label}
+                sub={i.sub}
+              />
             ))}
           </div>
         </div>
 
         {!departedFixed ? (
-          <div>
+          <div className="reveal-rise" style={{ animationDelay: "180ms" }}>
             <span className={labelCls}>For the living or the departed?</span>
-            <div className="flex gap-2">
+            <div className="grid gap-2.5 sm:grid-cols-2">
               {(["living", "departed"] as ForWhom[]).map((f) => (
-                <button
+                <SelectCard
                   key={f}
-                  type="button"
+                  selected={forWhom === f}
                   onClick={() => changeForWhom(f)}
-                  aria-pressed={forWhom === f}
-                  className={`rounded-pill border px-4 py-1.5 font-sans text-caption font-semibold capitalize transition-colors ${
-                    forWhom === f
-                      ? "border-gold/50 bg-gold/10 text-gold-pale"
-                      : "border-paper/15 text-paper/60 hover:border-paper/30"
-                  }`}
-                >
-                  {f === "departed" ? "The departed" : "The living"}
-                </button>
+                  title={f === "departed" ? "The departed" : "The living"}
+                  sub={f === "departed" ? "Memory eternal" : "A prayer for the living"}
+                />
               ))}
             </div>
           </div>
         ) : null}
 
-        <div>
+        <div className="reveal-rise" style={{ animationDelay: "240ms" }}>
           <span className={labelCls}>Choose a prayer</span>
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {prayers.map((p) => (
-              <button
+              <SelectCard
                 key={p.key}
-                type="button"
+                selected={prayerKey === p.key}
                 onClick={() => setPrayerKey(p.key)}
-                aria-pressed={prayerKey === p.key}
-                className={`block w-full rounded-lg border px-4 py-3 text-left transition-colors ${
-                  prayerKey === p.key
-                    ? "border-gold/50 bg-gold/[0.08]"
-                    : "border-paper/12 hover:border-paper/25"
-                }`}
-              >
-                <span className="block font-sans text-ui font-semibold text-paper">
-                  {p.label}
-                </span>
-                <span className="mt-1 block font-serif text-caption italic leading-snug text-paper/60">
-                  {p.text}
-                </span>
-              </button>
+                title={p.label}
+                sub={p.text}
+                serif
+              />
             ))}
           </div>
         </div>
@@ -233,24 +211,17 @@ export function CreateCampaignClient() {
           />
         </div>
 
-        <div>
+        <div className="reveal-rise" style={{ animationDelay: "300ms" }}>
           <span className={labelCls}>How long should it run?</span>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid gap-2.5 sm:grid-cols-2">
             {DURATIONS.map((d) => (
-              <button
+              <SelectCard
                 key={d.label}
-                type="button"
+                selected={durationDays === d.days}
                 onClick={() => setDurationDays(d.days)}
-                aria-pressed={durationDays === d.days}
-                title={d.sub}
-                className={`rounded-pill border px-3.5 py-1.5 font-sans text-caption font-semibold transition-colors ${
-                  durationDays === d.days
-                    ? "border-gold/50 bg-gold/10 text-gold-pale"
-                    : "border-paper/15 text-paper/60 hover:border-paper/30"
-                }`}
-              >
-                {d.label}
-              </button>
+                title={d.label}
+                sub={d.sub}
+              />
             ))}
           </div>
         </div>
@@ -275,7 +246,7 @@ export function CreateCampaignClient() {
         <button
           type="submit"
           disabled={busy}
-          className="inline-flex w-full items-center justify-center rounded-pill bg-paper px-6 py-4 font-display-serif text-lede text-night transition-colors hover:bg-paper/90 disabled:opacity-50"
+          className="inline-flex w-full items-center justify-center rounded-pill bg-paper px-6 py-4 font-display-serif text-lede text-night transition-[transform,background-color] hover:bg-paper/90 active:scale-[0.98] disabled:opacity-50"
         >
           {busy ? "Starting…" : "Start the campaign"}
         </button>
@@ -289,5 +260,86 @@ function Shell({ children }: { children: React.ReactNode }) {
     <section className="min-h-[calc(100dvh-72px)] bg-night px-5 py-10 md:px-8 md:py-14">
       <div className="mx-auto w-full max-w-[560px]">{children}</div>
     </section>
+  );
+}
+
+function CheckMark() {
+  return (
+    <svg
+      width={11}
+      height={11}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={3.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M5 13l4 4L19 7" />
+    </svg>
+  );
+}
+
+/**
+ * A selectable option card used across the create-campaign flow (intention,
+ * for-whom, prayer, duration). Clear selected state, a tick that fills in, and
+ * a small press animation on tap. Replaces the old flat pills.
+ */
+function SelectCard({
+  selected,
+  onClick,
+  title,
+  sub,
+  serif = false,
+}: {
+  selected: boolean;
+  onClick: () => void;
+  title: string;
+  sub?: string;
+  serif?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={selected}
+      className={`group relative w-full rounded-xl border px-4 py-3 text-left transition-[transform,border-color,background-color,box-shadow] duration-150 active:scale-[0.98] ${
+        selected
+          ? "border-gold/60 bg-gold/[0.10] shadow-[0_0_0_1px_rgba(212,175,55,0.22)]"
+          : "border-paper/12 bg-paper/[0.02] hover:border-paper/30 hover:bg-paper/[0.04]"
+      }`}
+    >
+      <span className="flex items-start justify-between gap-3">
+        <span className="min-w-0">
+          <span
+            className={`block font-sans text-ui font-semibold ${
+              selected ? "text-gold-pale" : "text-paper"
+            }`}
+          >
+            {title}
+          </span>
+          {sub ? (
+            <span
+              className={`mt-0.5 block leading-snug text-paper/55 ${
+                serif ? "font-serif text-caption italic" : "font-sans text-caption"
+              }`}
+            >
+              {sub}
+            </span>
+          ) : null}
+        </span>
+        <span
+          aria-hidden
+          className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full border transition-colors ${
+            selected
+              ? "border-gold bg-gold/20 text-gold-pale"
+              : "border-paper/25 text-transparent"
+          }`}
+        >
+          <CheckMark />
+        </span>
+      </span>
+    </button>
   );
 }

@@ -1,29 +1,17 @@
 import Link from "next/link";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { DiscoverMobile } from "@/components/mobile/DiscoverMobile";
-import { SaintIcon } from "@/components/saints/SaintIcon";
-import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Church } from "@/components/ui/icons/Church";
 import { Book } from "@/components/ui/icons/Book";
 import { Scroll } from "@/components/ui/icons/Scroll";
 import { Codex } from "@/components/ui/icons/Codex";
-import { Lyre } from "@/components/ui/icons/Lyre";
-import { Quill } from "@/components/ui/icons/Quill";
 import { Cross } from "@/components/ui/icons/Cross";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { Shield } from "@/components/ui/icons/Shield";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
-import {
-  commemorationsOn,
-  fastingStatus,
-  formatLongDate,
-  paschaInfo,
-  startOfDayUtc,
-} from "@/lib/calendar/orthodox";
-import { getSaint } from "@/lib/saints/saints";
+import { startOfDayUtc } from "@/lib/calendar/orthodox";
 import { COUNCILS } from "@/lib/councils/councils";
-import { shopEnabled } from "@/lib/shop/flags";
 import { loadAllTopics } from "@/lib/topics/topics";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
@@ -67,13 +55,6 @@ export default async function DiscoverPage() {
   const m = getMessages(locale);
 
   const today = startOfDayUtc(new Date());
-  const commemorations = commemorationsOn(today);
-  const fast = fastingStatus(today);
-  const pascha = paschaInfo(today);
-  const headline =
-    commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
-  const headlineSaint =
-    headline?.saint ?? (headline?.slug ? getSaint(headline.slug) : null);
 
   const topics = await loadAllTopics();
   const featuredTopic = topics.length
@@ -99,12 +80,6 @@ export default async function DiscoverPage() {
       Icon: Shield,
     },
     {
-      label: t(m, "discover.tile.saints"),
-      href: "/saints",
-      blurb: t(m, "discover.tile.saintsBlurb"),
-      Icon: HaloedHead,
-    },
-    {
       label: t(m, "discover.tile.councils"),
       href: "/councils",
       blurb: t(m, "discover.tile.councilsBlurb"),
@@ -122,30 +97,6 @@ export default async function DiscoverPage() {
       blurb: t(m, "discover.tile.heresiesBlurb"),
       Icon: Scroll,
     },
-    {
-      label: t(m, "discover.tile.psalter"),
-      href: "/bible/psalms/1",
-      blurb: t(m, "discover.tile.psalterBlurb"),
-      Icon: Lyre,
-    },
-    {
-      label: t(m, "discover.tile.patristic"),
-      href: "/bible/john/1",
-      blurb: t(m, "discover.tile.patristicBlurb"),
-      Icon: Quill,
-    },
-    // Marketplace entry, present only while the shop flag is on. Kept
-    // last: commerce never outranks the study library on this page.
-    ...(shopEnabled()
-      ? [
-          {
-            label: "Shop",
-            href: "/shop",
-            blurb: "Curated Orthodox icons from EIKON, a Purify store.",
-            Icon: Cross,
-          },
-        ]
-      : []),
   ];
 
   return (
@@ -213,69 +164,6 @@ export default async function DiscoverPage() {
                   {t(m, "reading.enterReadingRoom")} →
                 </p>
               </Link>
-            </div>
-
-            {/* Today: the living data that makes the page worth returning
-                to. Commemoration, the fast, the appointed readings. */}
-            <div className="mt-14">
-              <SectionHeading>Today in the Church</SectionHeading>
-              <p className="mt-1.5 font-serif italic text-detail text-paper/55">
-                {formatLongDate(today)}
-              </p>
-              <div className="mt-5 grid gap-5 md:grid-cols-3">
-                <Link
-                  href={headlineSaint ? `/saints/${headlineSaint.slug}` : "/saints"}
-                  className="group rounded-lg border border-paper/12 bg-night-soft/60 px-6 py-5 transition-colors hover:border-paper/30"
-                >
-                  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
-                    Commemorated today
-                  </p>
-                  <div className="mt-3 flex items-start gap-4">
-                    {headlineSaint ? <SaintIcon saint={headlineSaint} size="sm" /> : null}
-                    <div className="min-w-0">
-                      <p className="font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-gold">
-                        {headline?.name ?? "Browse the saints"}
-                      </p>
-                      {headlineSaint?.shortBio ? (
-                        <p className="mt-1.5 font-serif italic text-detail text-paper/65 leading-[1.55]">
-                          {firstSentence(headlineSaint.shortBio)}
-                        </p>
-                      ) : null}
-                    </div>
-                  </div>
-                </Link>
-
-                <Link
-                  href="/calendar"
-                  className="group rounded-lg border border-paper/12 bg-night-soft/60 px-6 py-5 transition-colors hover:border-paper/30"
-                >
-                  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
-                    {t(m, "discover.tile.calendar")}
-                  </p>
-                  <p className="mt-3 font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-gold">
-                    {fast.label}
-                  </p>
-                  <p className="mt-1.5 font-serif italic text-detail text-paper/65 leading-[1.55]">
-                    {fast.rule}
-                    {pascha.daysAway > 0 ? ` Pascha in ${pascha.daysAway} days.` : ""}
-                  </p>
-                </Link>
-
-                <Link
-                  href="/prayers/today"
-                  className="group rounded-lg border border-paper/12 bg-night-soft/60 px-6 py-5 transition-colors hover:border-paper/30"
-                >
-                  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
-                    {t(m, "discover.tile.dailyReadings")}
-                  </p>
-                  <p className="mt-3 font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-gold">
-                    The appointed readings
-                  </p>
-                  <p className="mt-1.5 font-serif italic text-detail text-paper/65 leading-[1.55]">
-                    {t(m, "discover.tile.dailyReadingsBlurb")}
-                  </p>
-                </Link>
-              </div>
             </div>
 
             {/* The library */}

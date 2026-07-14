@@ -1,29 +1,21 @@
 import {
-  commemorationsOn,
   fastingStatus,
   paschaInfo,
   startOfDayUtc,
 } from "@/lib/calendar/orthodox";
-import { getSaint, SAINTS } from "@/lib/saints/saints";
 import { loadAllTopics } from "@/lib/topics/topics";
 import { COUNCILS } from "@/lib/councils/councils";
-import { SaintIcon } from "@/components/saints/SaintIcon";
 import { MobileShell } from "./MobileShell";
 import { MobileCard } from "./MobileCard";
 import { MobileHeader } from "./MobileHeader";
-import { MobileHeroCard } from "./MobileHeroCard";
 import { MobileSectionLabel } from "./MobileSectionLabel";
 import { SoftTile, SoftTileGrid, type Tone } from "./SoftTiles";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
-import { DayBadge } from "./DayBadge";
 import { type DiscoverEntry } from "./DiscoverIndex";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
-import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Church } from "@/components/ui/icons/Church";
 import { Calendar } from "@/components/ui/icons/Calendar";
 import { Codex } from "@/components/ui/icons/Codex";
-import { Lyre } from "@/components/ui/icons/Lyre";
-import { Quill } from "@/components/ui/icons/Quill";
 import { Cross } from "@/components/ui/icons/Cross";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { getServerLocale } from "@/lib/i18n/server";
@@ -57,17 +49,11 @@ const LIBRARY_TONES: Tone[] = ["a", "b", "c", "d"];
  */
 export async function DiscoverMobile() {
   const today = startOfDayUtc(new Date());
-  const commemorations = commemorationsOn(today);
   const fast = fastingStatus(today);
   const pascha = paschaInfo(today);
 
   const locale = await getServerLocale();
   const m = getMessages(locale);
-
-  const headline =
-    commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
-  const headlineSaint =
-    headline?.saint ?? (headline?.slug ? getSaint(headline.slug) : null);
 
   const topics = await loadAllTopics();
   const featuredTopic = topics.length
@@ -84,12 +70,6 @@ export async function DiscoverMobile() {
   // it together. Saints + Calendar carry a live blurb; the rest reuse the
   // shared `discover.tile.*` strings.
   const entries: DiscoverEntry[] = [
-    {
-      label: t(m, "discover.tile.saints"),
-      href: "/saints",
-      blurb: `${SAINTS.length} indexed lives, with their works to read in full.`,
-      Icon: HaloedHead,
-    },
     {
       label: t(m, "discover.tile.councils"),
       href: "/councils",
@@ -125,18 +105,6 @@ export async function DiscoverMobile() {
       href: "/prayers/today",
       blurb: t(m, "discover.tile.dailyReadingsBlurb"),
       Icon: Codex,
-    },
-    {
-      label: t(m, "discover.tile.psalter"),
-      href: "/bible/psalms/1",
-      blurb: t(m, "discover.tile.psalterBlurb"),
-      Icon: Lyre,
-    },
-    {
-      label: t(m, "discover.tile.patristic"),
-      href: "/bible/john/1",
-      blurb: t(m, "discover.tile.patristicBlurb"),
-      Icon: Quill,
     },
   ];
 
@@ -174,30 +142,6 @@ export async function DiscoverMobile() {
           {t(m, "reading.enterReadingRoom")} →
         </p>
       </MobileCard>
-
-      <MobileHeroCard
-        tint="deep"
-        eyebrow="Today's Commemoration"
-        kicker={headline?.name ?? "No saint indexed for today"}
-        headline={
-          headlineSaint?.shortBio ? (
-            <span>{firstSentence(headlineSaint.shortBio)}</span>
-          ) : headline?.note ? (
-            <span className="italic">{headline.note}</span>
-          ) : (
-            <span className="italic text-paper/55">
-              Open the saints index to find tomorrow&rsquo;s feast.
-            </span>
-          )
-        }
-        aside={
-          <div className="flex flex-col items-end gap-2">
-            <DayBadge date={today} />
-            {headlineSaint && <SaintIcon saint={headlineSaint} size="sm" />}
-          </div>
-        }
-        href={headlineSaint ? `/saints/${headlineSaint.slug}` : "/saints"}
-      />
 
       <div className="mt-7">
         <MobileSectionLabel>The library</MobileSectionLabel>

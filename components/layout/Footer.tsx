@@ -20,7 +20,6 @@ export function Footer() {
    links: [
     { label: t("footer.oldTestament"), href: "/bible#ot" },
     { label: t("footer.newTestament"), href: "/bible#nt" },
-    { label: t("discover.tile.psalter"), href: "/bible/psalms/1" },
     { label: t("common.search"), href: "/bible" },
    ],
   },
@@ -30,7 +29,6 @@ export function Footer() {
     { label: t("footer.saints"), href: "/saints" },
     { label: t("footer.theFathers"), href: "/saints" },
     { label: t("saints.writings"), href: "/saints" },
-    { label: t("discover.tile.patristic"), href: "/bible/john/1" },
    ],
   },
   {
