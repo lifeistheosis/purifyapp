@@ -22,7 +22,7 @@ import {
 } from "@/lib/campaigns/client";
 import { createClient } from "@/lib/supabase/client";
 
-type Phase = "loading" | "missing" | "ready";
+type Phase = "loading" | "missing" | "ready" | "error";
 
 export function CampaignDetailClient() {
   const id = useSearchParams().get("id") ?? "";
@@ -35,47 +35,74 @@ export function CampaignDetailClient() {
   const [note, setNote] = useState<string | null>(null);
   const [reported, setReported] = useState(false);
 
+  // Load the campaign itself and show it the moment it arrives. This must NOT
+  // depend on the auth call below: previously phase only flipped to "ready"
+  // after `supabase.auth.getUser()`, so a signed-in viewer whose token was
+  // refreshing (a slow or hanging auth call) was left on "Opening the
+  // campaign…" forever. Now the campaign renders first; the viewer's own
+  // prayer state fills in afterwards, and any fetch failure lands on "error"
+  // instead of an endless spinner.
   const load = useCallback(async () => {
     if (!id) {
       setPhase("missing");
       return;
     }
-    const c = await fetchCampaign(id);
-    if (!c) {
-      setPhase("missing");
-      return;
-    }
-    setCampaign(c);
-    // Your own prayer state for this campaign (self-select RLS).
     try {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUserId(user?.id ?? null);
-      if (user) {
-        const { data: row } = await supabase
-          .from("prayer_campaign_prayers")
-          .select("last_prayed_at")
-          .eq("campaign_id", id)
-          .eq("user_id", user.id)
-          .maybeSingle();
-        if (row) {
-          setJoined(true);
-          setLastPrayedAt((row as { last_prayed_at: string | null }).last_prayed_at);
-        }
+      const c = await fetchCampaign(id);
+      if (!c) {
+        setPhase("missing");
+        return;
       }
+      setCampaign(c);
+      setPhase("ready");
     } catch {
-      /* signed out or offline: treat as not joined */
+      setPhase("error");
     }
-    setPhase("ready");
   }, [id]);
 
   useEffect(() => {
-    // External-system effect (the campaigns API + Supabase); state set after awaits.
+    // External-system effect (the campaigns API); state set after the await.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
   }, [load]);
+
+  // The signed-in viewer's own prayer state (self-select RLS), loaded
+  // separately so a slow auth/token call never blocks the campaign from
+  // rendering. Runs once the campaign is on screen; cancels on id change /
+  // unmount so a stale response can't overwrite fresh state.
+  useEffect(() => {
+    if (phase !== "ready" || !id) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (cancelled) return;
+        setUserId(user?.id ?? null);
+        if (user) {
+          const { data: row } = await supabase
+            .from("prayer_campaign_prayers")
+            .select("last_prayed_at")
+            .eq("campaign_id", id)
+            .eq("user_id", user.id)
+            .maybeSingle();
+          if (!cancelled && row) {
+            setJoined(true);
+            setLastPrayedAt(
+              (row as { last_prayed_at: string | null }).last_prayed_at,
+            );
+          }
+        }
+      } catch {
+        /* signed out or offline: treat as not joined */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [phase, id]);
 
   const onPray = useCallback(async () => {
     if (busy || !campaign) return;
@@ -143,6 +170,33 @@ export function CampaignDetailClient() {
   if (phase === "loading") {
     return <Centered>Opening the campaign…</Centered>;
   }
+  if (phase === "error") {
+    return (
+      <Centered>
+        <p className="font-serif text-lede text-paper/80">
+          This campaign could not be opened just now.
+        </p>
+        <div className="mt-4 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              setPhase("loading");
+              void load();
+            }}
+            className="inline-flex rounded-pill bg-paper px-4 py-2 font-sans text-ui font-semibold text-night hover:bg-paper/90"
+          >
+            Try again
+          </button>
+          <Link
+            href="/campaigns"
+            className="inline-flex rounded-pill border border-paper/20 px-4 py-2 font-sans text-ui text-paper/80 hover:border-paper/40"
+          >
+            Back to campaigns
+          </Link>
+        </div>
+      </Centered>
+    );
+  }
   if (phase === "missing" || !campaign) {
     return (
       <Centered>
@@ -167,7 +221,10 @@ export function CampaignDetailClient() {
 
   return (
     <section className="min-h-[calc(100dvh-72px)] bg-night px-5 py-10 md:px-8 md:py-14">
-      <div className="mx-auto w-full max-w-[620px]">
+      <div
+        className="reveal-rise mx-auto w-full max-w-[620px]"
+        style={{ animationDelay: "40ms" }}
+      >
         <Link
           href="/campaigns"
           className="font-sans text-caption text-paper/50 hover:text-paper/80"

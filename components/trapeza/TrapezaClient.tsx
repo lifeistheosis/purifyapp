@@ -58,7 +58,7 @@ export function TrapezaClient() {
   return (
     <section className="min-h-[calc(100dvh-72px)] bg-night px-5 py-10 md:px-8 md:py-14">
       <div className="mx-auto w-full max-w-[760px]">
-        <header className="text-center">
+        <header className="reveal-rise text-center" style={{ animationDelay: "40ms" }}>
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold-pale/70">
             The Trapeza
           </p>
@@ -72,7 +72,7 @@ export function TrapezaClient() {
           <div className="mt-6">
             <Link
               href="/trapeza/new"
-              className="inline-flex items-center gap-2 rounded-pill bg-paper px-5 py-3 font-sans text-ui font-semibold text-night transition-colors hover:bg-paper/90"
+              className="inline-flex items-center gap-2 rounded-pill bg-paper px-5 py-3 font-sans text-ui font-semibold text-night transition-[transform,background-color] duration-150 hover:bg-paper/90 active:scale-[0.98]"
             >
               Share a recipe
             </Link>
@@ -92,7 +92,7 @@ export function TrapezaClient() {
         </header>
 
         {/* Filters */}
-        <div className="mt-8 space-y-3">
+        <div className="reveal-rise mt-8 space-y-3" style={{ animationDelay: "120ms" }}>
           <ChipRow>
             <Chip label="All days" active={level === null} onClick={() => setLevel(null)} />
             {FAST_LEVELS.map((l) => (
@@ -134,7 +134,7 @@ export function TrapezaClient() {
               </p>
             </div>
           ) : (
-            recipes.map((r) => <RecipeCard key={r.id} recipe={r} />)
+            recipes.map((r, i) => <RecipeCard key={r.id} recipe={r} index={i} />)
           )}
         </div>
       </div>
@@ -160,7 +160,7 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`rounded-pill border px-3.5 py-1.5 font-sans text-caption font-semibold transition-colors ${
+      className={`rounded-pill border px-3.5 py-1.5 font-sans text-caption font-semibold transition-[transform,border-color,background-color,color] duration-150 active:scale-95 ${
         active
           ? "border-gold/50 bg-gold/10 text-gold-pale"
           : "border-paper/15 text-paper/60 hover:border-paper/30"
@@ -195,11 +195,12 @@ function Select({
   );
 }
 
-function RecipeCard({ recipe }: { recipe: TrapezaRecipe }) {
+function RecipeCard({ recipe, index }: { recipe: TrapezaRecipe; index: number }) {
   return (
     <Link
       href={`/trapeza/detail?id=${recipe.id}`}
-      className="block rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 transition-colors hover:border-paper/25"
+      style={{ animationDelay: `${Math.min(index * 50, 300)}ms` }}
+      className="reveal-rise block rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 transition-[transform,border-color] duration-150 hover:border-paper/25 active:scale-[0.99]"
     >
       <div className="flex flex-wrap items-center gap-2">
         <span className="rounded-pill border border-gold/30 bg-gold/[0.08] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[0.5px] text-gold-pale">

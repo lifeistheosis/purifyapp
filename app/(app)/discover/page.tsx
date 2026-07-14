@@ -1,29 +1,13 @@
 import Link from "next/link";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { DiscoverMobile } from "@/components/mobile/DiscoverMobile";
-import { SaintIcon } from "@/components/saints/SaintIcon";
-import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Church } from "@/components/ui/icons/Church";
-import { Book } from "@/components/ui/icons/Book";
-import { Scroll } from "@/components/ui/icons/Scroll";
-import { Codex } from "@/components/ui/icons/Codex";
-import { Lyre } from "@/components/ui/icons/Lyre";
-import { Quill } from "@/components/ui/icons/Quill";
 import { Cross } from "@/components/ui/icons/Cross";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
-import { Shield } from "@/components/ui/icons/Shield";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
-import {
-  commemorationsOn,
-  fastingStatus,
-  formatLongDate,
-  paschaInfo,
-  startOfDayUtc,
-} from "@/lib/calendar/orthodox";
-import { getSaint } from "@/lib/saints/saints";
+import { startOfDayUtc } from "@/lib/calendar/orthodox";
 import { COUNCILS } from "@/lib/councils/councils";
-import { shopEnabled } from "@/lib/shop/flags";
 import { loadAllTopics } from "@/lib/topics/topics";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
@@ -31,17 +15,10 @@ import { getMessages, t } from "@/lib/i18n";
 export const metadata = {
   title: "Discover",
   description:
-    "An index of the library: saints, councils, the calendar, daily readings, the Psalter, patristic commentary.",
+    "A way into the wider library: Orthodox history, the reading room, the whole theological study of the Faith, and the Councils.",
 };
 
 export const revalidate = 3600;
-
-type Entry = {
-  label: string;
-  href: string;
-  blurb: string;
-  Icon: typeof Codex;
-};
 
 function dayOfYearUtc(d: Date): number {
   const start = Date.UTC(d.getUTCFullYear(), 0, 0);
@@ -67,13 +44,6 @@ export default async function DiscoverPage() {
   const m = getMessages(locale);
 
   const today = startOfDayUtc(new Date());
-  const commemorations = commemorationsOn(today);
-  const fast = fastingStatus(today);
-  const pascha = paschaInfo(today);
-  const headline =
-    commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
-  const headlineSaint =
-    headline?.saint ?? (headline?.slug ? getSaint(headline.slug) : null);
 
   const topics = await loadAllTopics();
   const featuredTopic = topics.length
@@ -83,69 +53,14 @@ export default async function DiscoverPage() {
     ? COUNCILS[dayOfYearUtc(today) % COUNCILS.length]
     : null;
 
-  // The library grid: everything not already surfaced by the featured row
-  // or the Today strip. Order reads like a menologion table of contents.
-  const LIBRARY: Entry[] = [
-    {
-      label: t(m, "discover.tile.theology"),
-      href: "/theology",
-      blurb: t(m, "discover.tile.theologyBlurb"),
-      Icon: Cross,
-    },
-    {
-      label: t(m, "discover.tile.apologetics"),
-      href: "/apologetics",
-      blurb: t(m, "discover.tile.apologeticsBlurb"),
-      Icon: Shield,
-    },
-    {
-      label: t(m, "discover.tile.saints"),
-      href: "/saints",
-      blurb: t(m, "discover.tile.saintsBlurb"),
-      Icon: HaloedHead,
-    },
-    {
-      label: t(m, "discover.tile.councils"),
-      href: "/councils",
-      blurb: t(m, "discover.tile.councilsBlurb"),
-      Icon: Church,
-    },
-    {
-      label: t(m, "discover.tile.topics"),
-      href: "/topics",
-      blurb: t(m, "discover.tile.topicsBlurb"),
-      Icon: Book,
-    },
-    {
-      label: t(m, "discover.tile.heresies"),
-      href: "/heresies",
-      blurb: t(m, "discover.tile.heresiesBlurb"),
-      Icon: Scroll,
-    },
-    {
-      label: t(m, "discover.tile.psalter"),
-      href: "/bible/psalms/1",
-      blurb: t(m, "discover.tile.psalterBlurb"),
-      Icon: Lyre,
-    },
-    {
-      label: t(m, "discover.tile.patristic"),
-      href: "/bible/john/1",
-      blurb: t(m, "discover.tile.patristicBlurb"),
-      Icon: Quill,
-    },
-    // Marketplace entry, present only while the shop flag is on. Kept
-    // last: commerce never outranks the study library on this page.
-    ...(shopEnabled()
-      ? [
-          {
-            label: "Shop",
-            href: "/shop",
-            blurb: "Curated Orthodox icons from EIKON, a Purify store.",
-            Icon: Cross,
-          },
-        ]
-      : []),
+  // The doctrinal study library — Doctrine, Topics, Heresies, Apologetics —
+  // is one connected surface (/theology). It is shown here as a single hub
+  // card whose modes are chips, not four competing tiles.
+  const STUDY_MODES = [
+    { label: "Doctrine", href: "/theology/doctrine" },
+    { label: t(m, "discover.tile.topics"), href: "/topics" },
+    { label: t(m, "discover.tile.heresies"), href: "/heresies" },
+    { label: t(m, "discover.tile.apologetics"), href: "/apologetics" },
   ];
 
   return (
@@ -153,10 +68,20 @@ export default async function DiscoverPage() {
       <DiscoverMobile />
       <div className="hidden md:contents">
         <MobileTopBar title={t(m, "discover.h1").replace(/\.$/, "")} />
-        <section className="bg-night min-h-[calc(100dvh-72px)] md:px-8 md:py-16">
-          <article className="mx-auto w-full max-w-[1200px] px-5 pt-6 pb-10 md:pt-0 md:pb-0">
+        <section className="relative bg-night min-h-[calc(100dvh-72px)] md:px-8 md:py-16">
+          {/* A quiet gold wash behind the masthead, the one bit of warmth on
+              an otherwise monochrome page. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 h-[420px]"
+            style={{
+              background:
+                "radial-gradient(60% 100% at 50% 0%, rgba(212,175,55,0.08) 0%, transparent 70%)",
+            }}
+          />
+          <article className="relative mx-auto w-full max-w-[1120px] px-5 pt-6 pb-10 md:pt-0 md:pb-0">
             {/* Masthead */}
-            <header className="mb-10 text-center md:mb-14">
+            <header className="mb-12 text-center md:mb-16">
               <OrnamentHeadpiece className="mx-auto mb-5 max-w-[400px]" />
               <p className="mb-3 font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/85">
                 {t(m, "discover.eyebrow")}
@@ -169,136 +94,113 @@ export default async function DiscoverPage() {
               </p>
             </header>
 
-            {/* Featured: the two destinations that reward a visit, not a
-                lookup. History wears the quiet gold of a new wing of the
-                library; Reading keeps the lamp. */}
-            <div className="grid gap-5 lg:grid-cols-2">
+            {/* Where to begin: the two destinations that reward a visit, not a
+                lookup. History wears the gold of a new wing of the library;
+                the reading room keeps the lamp. */}
+            <SectionHeading>Where to begin</SectionHeading>
+            <div className="mt-5 grid gap-5 lg:grid-cols-2">
               <Link
                 href="/history"
-                className="group relative overflow-hidden rounded-lg border border-gold/25 bg-gold/[0.05] px-7 py-7 transition-colors hover:border-gold/50"
+                className="group relative overflow-hidden rounded-xl border border-gold/25 p-7 transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-gold/55"
+                style={{
+                  background:
+                    "radial-gradient(120% 100% at 0% 0%, rgba(212,175,55,0.12) 0%, transparent 55%), #100f0c",
+                }}
               >
                 <div className="flex items-start justify-between gap-4">
-                  <span className="inline-flex h-10 w-10 items-center justify-center text-gold/90">
-                    <Hourglass size={32} />
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-gold/[0.10] text-gold/90">
+                    <Hourglass size={30} />
                   </span>
                   <span className="rounded-pill border border-gold/40 px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1.4px] text-gold/90">
                     New
                   </span>
                 </div>
-                <p className="mt-4 font-display-serif text-title md:text-heading text-paper leading-tight transition-colors group-hover:text-gold">
+                <p className="mt-5 font-display-serif text-title md:text-heading text-paper leading-tight transition-colors group-hover:text-gold">
                   {t(m, "discover.tile.history")}
                 </p>
                 <p className="mt-2 max-w-[440px] font-serif italic text-ui text-paper/70 leading-[1.6]">
                   {t(m, "discover.tile.historyBlurb")}
                 </p>
-                <p className="mt-4 font-sans text-detail font-semibold text-gold/85">
+                <p className="mt-5 font-sans text-detail font-semibold text-gold/85">
                   Explore the interactive timeline →
                 </p>
               </Link>
 
               <Link
                 href="/reading"
-                className="group rounded-lg border border-paper/12 bg-night-soft/60 px-7 py-7 transition-colors hover:border-paper/30"
+                className="group relative overflow-hidden rounded-xl border border-paper/12 bg-night-soft/60 p-7 transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-paper/30"
               >
-                <span className="inline-flex h-10 w-10 items-center justify-center text-gold/90">
-                  <Lampada size={32} />
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-paper/[0.05] text-gold/90">
+                  <Lampada size={30} />
                 </span>
-                <p className="mt-4 font-display-serif text-title md:text-heading text-paper leading-tight transition-colors group-hover:text-gold">
+                <p className="mt-5 font-display-serif text-title md:text-heading text-paper leading-tight transition-colors group-hover:text-gold">
                   {t(m, "discover.tile.reading")}
                 </p>
                 <p className="mt-2 max-w-[440px] font-serif italic text-ui text-paper/70 leading-[1.6]">
                   {t(m, "discover.tile.readingBlurb")}
                 </p>
-                <p className="mt-4 font-sans text-detail font-semibold text-paper/70">
+                <p className="mt-5 font-sans text-detail font-semibold text-paper/70">
                   {t(m, "reading.enterReadingRoom")} →
                 </p>
               </Link>
             </div>
 
-            {/* Today: the living data that makes the page worth returning
-                to. Commemoration, the fast, the appointed readings. */}
+            {/* Study the faith: the doctrinal library as one hub card (its four
+                modes as chips), with the Councils beside it. */}
             <div className="mt-14">
-              <SectionHeading>Today in the Church</SectionHeading>
-              <p className="mt-1.5 font-serif italic text-detail text-paper/55">
-                {formatLongDate(today)}
-              </p>
-              <div className="mt-5 grid gap-5 md:grid-cols-3">
-                <Link
-                  href={headlineSaint ? `/saints/${headlineSaint.slug}` : "/saints"}
-                  className="group rounded-lg border border-paper/12 bg-night-soft/60 px-6 py-5 transition-colors hover:border-paper/30"
+              <SectionHeading>Study the faith</SectionHeading>
+              <div className="mt-5 grid gap-5 lg:grid-cols-3">
+                <div
+                  className="relative overflow-hidden rounded-xl border border-gold/25 p-7 lg:col-span-2"
+                  style={{
+                    background:
+                      "radial-gradient(110% 120% at 100% 0%, rgba(212,175,55,0.10) 0%, transparent 55%), #0e0d0b",
+                  }}
                 >
-                  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
-                    Commemorated today
-                  </p>
-                  <div className="mt-3 flex items-start gap-4">
-                    {headlineSaint ? <SaintIcon saint={headlineSaint} size="sm" /> : null}
+                  <div className="flex items-start gap-4">
+                    <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gold/[0.10] text-gold/90">
+                      <Cross size={28} />
+                    </span>
                     <div className="min-w-0">
-                      <p className="font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-gold">
-                        {headline?.name ?? "Browse the saints"}
-                      </p>
-                      {headlineSaint?.shortBio ? (
-                        <p className="mt-1.5 font-serif italic text-detail text-paper/65 leading-[1.55]">
-                          {firstSentence(headlineSaint.shortBio)}
+                      <Link href="/theology" className="group inline-block">
+                        <p className="font-display-serif text-title text-paper leading-tight transition-colors group-hover:text-gold">
+                          {t(m, "discover.tile.theology")}
                         </p>
-                      ) : null}
+                      </Link>
+                      <p className="mt-2 max-w-[520px] font-serif italic text-ui text-paper/70 leading-[1.6]">
+                        Doctrine, topics, the heresies the Church condemned, and
+                        apologetics: one connected study of the Faith, drawn from
+                        the Fathers and the Councils.
+                      </p>
                     </div>
                   </div>
-                </Link>
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {STUDY_MODES.map((mode) => (
+                      <Link
+                        key={mode.href}
+                        href={mode.href}
+                        className="rounded-pill border border-paper/15 bg-paper/[0.03] px-4 py-1.5 font-sans text-detail font-medium text-paper/75 transition-colors hover:border-gold/45 hover:bg-gold/[0.08] hover:text-gold-pale"
+                      >
+                        {mode.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
 
                 <Link
-                  href="/calendar"
-                  className="group rounded-lg border border-paper/12 bg-night-soft/60 px-6 py-5 transition-colors hover:border-paper/30"
+                  href="/councils"
+                  className="group flex flex-col rounded-xl border border-paper/10 bg-night-soft/40 p-7 transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-gold/40"
                 >
-                  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
-                    {t(m, "discover.tile.calendar")}
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-paper/[0.05] text-gold/80 transition-colors group-hover:text-gold">
+                    <Church size={28} />
+                  </span>
+                  <p className="mt-5 font-display-serif text-title-sm text-paper leading-tight transition-colors group-hover:text-gold">
+                    {t(m, "discover.tile.councils")}
                   </p>
-                  <p className="mt-3 font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-gold">
-                    {fast.label}
-                  </p>
-                  <p className="mt-1.5 font-serif italic text-detail text-paper/65 leading-[1.55]">
-                    {fast.rule}
-                    {pascha.daysAway > 0 ? ` Pascha in ${pascha.daysAway} days.` : ""}
+                  <p className="mt-2 font-serif italic text-detail text-paper/65 leading-[1.55]">
+                    {t(m, "discover.tile.councilsBlurb")}
                   </p>
                 </Link>
-
-                <Link
-                  href="/prayers/today"
-                  className="group rounded-lg border border-paper/12 bg-night-soft/60 px-6 py-5 transition-colors hover:border-paper/30"
-                >
-                  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
-                    {t(m, "discover.tile.dailyReadings")}
-                  </p>
-                  <p className="mt-3 font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-gold">
-                    The appointed readings
-                  </p>
-                  <p className="mt-1.5 font-serif italic text-detail text-paper/65 leading-[1.55]">
-                    {t(m, "discover.tile.dailyReadingsBlurb")}
-                  </p>
-                </Link>
-              </div>
-            </div>
-
-            {/* The library */}
-            <div className="mt-14">
-              <SectionHeading>The library</SectionHeading>
-              <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                {LIBRARY.map(({ label, href, blurb, Icon }) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    className="group rounded-lg border border-paper/10 bg-night-soft/40 px-5 py-5 transition-colors hover:border-gold/40"
-                  >
-                    <span className="inline-flex h-8 w-8 items-center justify-center text-gold/80 transition-colors group-hover:text-gold">
-                      <Icon size={24} />
-                    </span>
-                    <p className="mt-3 font-display-serif text-lede text-paper leading-tight transition-colors group-hover:text-gold">
-                      {label}
-                    </p>
-                    <p className="mt-1.5 font-serif italic text-detail text-paper/60 leading-[1.55]">
-                      {blurb}
-                    </p>
-                  </Link>
-                ))}
               </div>
             </div>
 
@@ -310,7 +212,7 @@ export default async function DiscoverPage() {
                   {featuredTopic ? (
                     <Link
                       href={`/topics/${featuredTopic.slug}`}
-                      className="group rounded-lg border border-paper/12 bg-paper/[0.03] px-6 py-5 transition-colors hover:border-paper/30"
+                      className="group rounded-xl border border-paper/12 bg-paper/[0.03] p-6 transition-colors hover:border-gold/35"
                     >
                       <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
                         {t(m, "discover.tile.topics")}
@@ -328,7 +230,7 @@ export default async function DiscoverPage() {
                   {featuredCouncil ? (
                     <Link
                       href={`/councils/${featuredCouncil.slug}`}
-                      className="group rounded-lg border border-paper/12 bg-paper/[0.03] px-6 py-5 transition-colors hover:border-paper/30"
+                      className="group rounded-xl border border-paper/12 bg-paper/[0.03] p-6 transition-colors hover:border-gold/35"
                     >
                       <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
                         {t(m, "discover.tile.councils")}
