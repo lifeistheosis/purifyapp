@@ -31,7 +31,7 @@ export function CampaignsClient() {
   return (
     <section className="min-h-[calc(100dvh-72px)] bg-night px-5 py-10 md:px-8 md:py-14">
       <div className="mx-auto w-full max-w-[760px]">
-        <header className="text-center">
+        <header className="reveal-rise text-center" style={{ animationDelay: "40ms" }}>
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold-pale/70">
             Together
           </p>
@@ -45,13 +45,13 @@ export function CampaignsClient() {
           <div className="mt-6 flex items-center justify-center gap-3">
             <Link
               href="/campaigns/new"
-              className="inline-flex items-center gap-2 rounded-pill bg-paper px-5 py-3 font-sans text-ui font-semibold text-night transition-colors hover:bg-paper/90"
+              className="inline-flex items-center gap-2 rounded-pill bg-paper px-5 py-3 font-sans text-ui font-semibold text-night transition-[transform,background-color] duration-150 hover:bg-paper/90 active:scale-[0.98]"
             >
               Start a campaign
             </Link>
             <Link
               href="/campaigns/mine"
-              className="inline-flex items-center gap-2 rounded-pill border border-paper/20 px-5 py-3 font-sans text-ui font-semibold text-paper/80 transition-colors hover:border-paper/40"
+              className="inline-flex items-center gap-2 rounded-pill border border-paper/20 px-5 py-3 font-sans text-ui font-semibold text-paper/80 transition-[transform,border-color] duration-150 hover:border-paper/40 active:scale-[0.98]"
             >
               My prayers
             </Link>
@@ -59,7 +59,10 @@ export function CampaignsClient() {
         </header>
 
         {/* Intention filter */}
-        <div className="mt-8 flex flex-wrap justify-center gap-2">
+        <div
+          className="reveal-rise mt-8 flex flex-wrap justify-center gap-2"
+          style={{ animationDelay: "120ms" }}
+        >
           <FilterChip
             label="All"
             active={intention === null}
@@ -91,7 +94,9 @@ export function CampaignsClient() {
               </p>
             </div>
           ) : (
-            campaigns.map((c) => <CampaignCard key={c.id} campaign={c} />)
+            campaigns.map((c, i) => (
+              <CampaignCard key={c.id} campaign={c} index={i} />
+            ))
           )}
         </div>
       </div>
@@ -113,7 +118,7 @@ function FilterChip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`rounded-pill border px-3.5 py-1.5 font-sans text-caption font-semibold transition-colors ${
+      className={`rounded-pill border px-3.5 py-1.5 font-sans text-caption font-semibold transition-[transform,border-color,background-color,color] duration-150 active:scale-95 ${
         active
           ? "border-gold/50 bg-gold/10 text-gold-pale"
           : "border-paper/15 text-paper/60 hover:border-paper/30"
@@ -124,12 +129,19 @@ function FilterChip({
   );
 }
 
-function CampaignCard({ campaign }: { campaign: PrayerCampaign }) {
+function CampaignCard({
+  campaign,
+  index,
+}: {
+  campaign: PrayerCampaign;
+  index: number;
+}) {
   const closed = statusLabel(campaign.status);
   return (
     <Link
       href={`/campaigns/detail?id=${campaign.id}`}
-      className="block rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 transition-colors hover:border-paper/25"
+      style={{ animationDelay: `${Math.min(index * 50, 300)}ms` }}
+      className="reveal-rise block rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 transition-[transform,border-color] duration-150 hover:border-paper/25 active:scale-[0.99]"
     >
       <div className="flex items-center gap-2">
         <span className="rounded-pill border border-gold/30 bg-gold/[0.08] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[0.5px] text-gold-pale">

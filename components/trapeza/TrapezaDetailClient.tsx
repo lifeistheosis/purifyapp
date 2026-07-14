@@ -76,7 +76,10 @@ export function TrapezaDetailClient() {
 
   return (
     <section className="min-h-[calc(100dvh-72px)] bg-night px-5 py-10 md:px-8 md:py-14">
-      <div className="mx-auto w-full max-w-[620px]">
+      <div
+        className="reveal-rise mx-auto w-full max-w-[620px]"
+        style={{ animationDelay: "40ms" }}
+      >
         <Link
           href="/trapeza"
           className="font-sans text-caption text-paper/50 hover:text-paper/80"

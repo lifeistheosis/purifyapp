@@ -110,15 +110,20 @@ export function FastingTrackerClient() {
     <section className="min-h-[calc(100dvh-72px)] bg-night px-5 py-10 md:px-8 md:py-14">
       <div className="mx-auto w-full max-w-[620px]">
         {/* Masthead */}
-        <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
-          The Fast
-        </p>
-        <h1 className="mt-2 font-sans text-display-sm font-bold leading-[1.05] tracking-[-0.02em] text-paper">
-          Keep the fast, day by day
-        </h1>
+        <div className="reveal-rise" style={{ animationDelay: "40ms" }}>
+          <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
+            The Fast
+          </p>
+          <h1 className="mt-2 font-sans text-display-sm font-bold leading-[1.05] tracking-[-0.02em] text-paper">
+            Keep the fast, day by day
+          </h1>
+        </div>
 
         {/* Streak / summary */}
-        <div className="mt-7 flex items-stretch gap-3">
+        <div
+          className="reveal-rise mt-7 flex items-stretch gap-3"
+          style={{ animationDelay: "120ms" }}
+        >
           <div className="flex-1 rounded-2xl border border-gold/25 bg-gold/[0.05] p-5">
             <p className="font-display-serif text-display-sm leading-none text-gold-pale">
               {streak}
@@ -142,7 +147,10 @@ export function FastingTrackerClient() {
         </div>
 
         {/* Today */}
-        <div className="mt-4 rounded-2xl border border-paper/12 bg-paper/[0.04] p-5">
+        <div
+          className="reveal-rise mt-4 rounded-2xl border border-paper/12 bg-paper/[0.04] p-5"
+          style={{ animationDelay: "180ms" }}
+        >
           <p className="font-sans text-caption text-paper/55">Today</p>
           <h2 className="mt-1 flex items-center gap-2 font-serif text-lede leading-tight text-paper">
             <span aria-hidden className={`inline-block h-2.5 w-2.5 rounded-full ${DOT[todayFast.kind]}`} />
@@ -171,10 +179,13 @@ export function FastingTrackerClient() {
         </div>
 
         {/* Recent history */}
-        <p className="mt-8 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+        <p
+          className="reveal-rise mt-8 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45"
+          style={{ animationDelay: "240ms" }}
+        >
           Recent fasting days
         </p>
-        <ul className="mt-3 space-y-2">
+        <ul className="reveal-rise mt-3 space-y-2" style={{ animationDelay: "280ms" }}>
           {recent.map((r) => {
             const m = byDay.get(r.key)?.status;
             const isToday = r.key === todayKey;
@@ -198,7 +209,10 @@ export function FastingTrackerClient() {
           })}
         </ul>
 
-        <p className="mt-8 font-sans text-caption leading-[1.6] text-paper/40">
+        <p
+          className="reveal-rise mt-8 font-sans text-caption leading-[1.6] text-paper/40"
+          style={{ animationDelay: "340ms" }}
+        >
           Your marks stay on this device. With Purify Plus they follow you to every
           device you sign in on. The whole fasting calendar is, and stays, free.{" "}
           <Link href="/calendar" className="text-gold-pale/70 underline-offset-2 hover:underline">
