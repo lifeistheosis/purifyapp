@@ -73,6 +73,11 @@ export type Entitlements = {
    * collections, ambience, audio)? Subscription only — the supporter
    * promise covers sync, not the feature layer. */
   plusFeatures: boolean;
+  /** May this account use the Pro software layer (premium reading modes,
+   * future studio audio)? Feature access only — unlike `pro` it says
+   * nothing about physical fulfillment (the EIKON Box loop reads
+   * pro_until from the table directly, same as shipping). */
+  proFeatures: boolean;
 };
 
 /** Fully entitled. Returned for any surface where Plus is not enforced
@@ -85,6 +90,7 @@ export const OPEN_ENTITLEMENTS: Entitlements = {
   pro: false,
   sync: true,
   plusFeatures: true,
+  proFeatures: true,
 };
 
 /** Signed-out / no-row baseline once enforcement is on. Local reading
@@ -96,6 +102,7 @@ export const FREE_ENTITLEMENTS: Entitlements = {
   pro: false,
   sync: false,
   plusFeatures: false,
+  proFeatures: false,
 };
 
 /**
@@ -127,5 +134,25 @@ export function deriveEntitlements(
     pro,
     sync: supporter || plus,
     plusFeatures: plus,
+    proFeatures: pro,
   };
+}
+
+/**
+ * Does this account's row earn free EIKON shipping? Pro only — the perk
+ * moved from Plus to Pro with the ladder restructure (Beta 2.1). Pure so
+ * the server checkout (lib/shop/checkout.ts) and the client cart display
+ * apply the identical rule. Unlike deriveEntitlements this is NOT gated
+ * by the enforcement flags: shipping is a perk of paying for Pro, never
+ * something the open pre-launch gate hands out.
+ */
+export function proShipsFree(
+  row: Pick<EntitlementRow, "pro_until"> | null | undefined,
+  now?: Date,
+): boolean {
+  const until = row?.pro_until;
+  if (!until) return false;
+  const at = (now ?? new Date()).getTime();
+  const ts = new Date(until).getTime();
+  return Number.isFinite(ts) && ts > at;
 }

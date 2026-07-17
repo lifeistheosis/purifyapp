@@ -9,6 +9,7 @@ import type {
   ReaderFont,
   ReaderLeading,
 } from "@/components/reader/ReaderPrefs";
+import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
 import { cn } from "@/lib/cn";
 
 const SIZES: { v: ReaderSize; label: string }[] = [
@@ -194,6 +195,13 @@ export function ReaderSettingsMenu({
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Reading mode — the palette half of Premium Reading Modes.
+              Focus (the chrome half) keeps its own toggle below/on the
+              toolbar; the two compose. */}
+          <div className="pt-3 border-t border-paper/10">
+            <ReadingModeChips />
           </div>
 
           {/* Focus reading. Hidden on desktop (embedded), where Focus is

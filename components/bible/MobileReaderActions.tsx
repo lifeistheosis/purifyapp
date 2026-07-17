@@ -8,6 +8,7 @@ import {
   ReaderFontFamilyButton,
   ReaderFontSizeButton,
 } from "@/components/reader/ReaderPrefs";
+import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
 import { useBookmarks } from "@/lib/bookmarks";
 import { cn } from "@/lib/cn";
 
@@ -93,6 +94,7 @@ export function MobileReaderActions({
             </p>
             <ReaderFontSizeButton />
           </div>
+          <ReadingModeChips />
           <p className="font-sans text-caption text-paper/45 leading-[1.55] pt-2">
             Your choices are saved on this device and apply to the
             saint-works reader as well.
