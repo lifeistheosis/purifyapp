@@ -6,6 +6,17 @@
 // includes. Prices and subscription terms are a release stop-condition:
 // change them deliberately, in one place, EN and DE together.
 
+// Numeric plan prices in cents, the single source for any MATH (the copy
+// strings above are localized and cannot be parsed). Used by the admin
+// revenue/subscriptions estimate (lib/premium/mrr.ts). These MIRROR the
+// display strings; changing a real price is still a release stop-condition.
+export const PLAN_PRICE_CENTS = {
+  plusMonthly: 999,
+  plusYearly: 9900,
+  proMonthly: 1999,
+  proYearly: 19900,
+} as const;
+
 export type PlanFeature = { title: string; sub: string };
 
 export type PremiumPlanCopy = {
