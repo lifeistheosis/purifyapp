@@ -33,10 +33,13 @@ const ALLOWED_CLASSIFICATIONS = [
   "laminated",
   "wooden",
   "hand_finished_reproduction",
-  // Non-icon devotional goods (dropshipped): prayer ropes, incense, beads.
+  // Non-icon devotional goods (dropshipped): prayer ropes, incense, beads,
+  // metal crosses on a chain, woven textiles (prostration mats).
   "prayer_rope",
   "incense",
   "beaded",
+  "cross",
+  "textile",
 ];
 
 /** Language a supplier-sourced reproduction may never use. */

@@ -179,9 +179,9 @@ export function YouMobile() {
 
   settings.push(
     {
-      label: "Purify Plus",
+      label: "Purify Premium",
       href: "/pricing",
-      hint: "Cross-device sync, notes & highlights, collections",
+      hint: "Plus and Pro: sync, collections, the members' layer",
       icon: <Glyph kind="sparkle" />,
     },
     {

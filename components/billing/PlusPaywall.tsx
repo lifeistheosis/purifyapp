@@ -1,21 +1,28 @@
 "use client";
 
-// Native-only Purify Plus paywall — a fully custom UI driving RevenueCat
+// Native-only Purify premium paywall — a fully custom UI driving RevenueCat
 // (Play Billing). Returns null on the web (the website keeps the quiet,
 // price-free pricing copy and has no checkout). Inside the Android app the
 // pricing route renders this full-screen.
 //
+// Two tiers, one screen: a Plus / Pro switcher under the hero swaps the
+// features card, the live Play prices, and the CTA. Plus sells from the
+// default RevenueCat offering, Pro from the `pro` offering; both bind to the
+// Supabase account (the webhook writes entitlements by uid), so a signed-out
+// user signs in first.
+//
 // RevenueCat is the billing engine only: prices come live from the store
 // (package.product.priceString), so changing a price in Play Console flows
-// through with no code change. Plus is keyed to the Supabase account (the
-// webhook writes entitlements by uid), so a signed-out user signs in first.
+// through with no code change.
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   initBilling,
   getPlusPackages,
+  getProPackages,
   isPlusActive,
+  isProActive,
   purchase,
   restore,
   billingAvailable,
@@ -28,6 +35,7 @@ import { useIsNative } from "@/lib/platform/native";
 import { PurifyBadge } from "@/components/ui/PurifyBadge";
 
 type Phase = "loading" | "signed-out" | "unavailable" | "ready" | "subscribed";
+type Tier = "plus" | "pro";
 type Plan = "monthly" | "yearly";
 
 /** Yearly savings vs paying monthly for a year, rounded. Null when it can't
@@ -44,7 +52,15 @@ export function PlusPaywall() {
   const isNative = useIsNative();
 
   const [phase, setPhase] = useState<Phase>("loading");
-  const [packages, setPackages] = useState<PlusPackages>({
+  const [tier, setTier] = useState<Tier>("plus");
+  // What the account already has. `pro` short-circuits to the subscribed
+  // screen; `plus` keeps the paywall up so Pro stays one tap away.
+  const [active, setActive] = useState<"none" | "plus">("none");
+  const [plusPkgs, setPlusPkgs] = useState<PlusPackages>({
+    monthly: null,
+    yearly: null,
+  });
+  const [proPkgs, setProPkgs] = useState<PlusPackages>({
     monthly: null,
     yearly: null,
   });
@@ -73,14 +89,24 @@ export function PlusPaywall() {
         setPhase("unavailable");
         return;
       }
-      if (await isPlusActive()) {
+      if (await isProActive()) {
+        // Pro is the top tier: nothing left to sell.
         setPhase("subscribed");
         return;
       }
-      const pkgs = await getPlusPackages();
-      setPackages(pkgs);
-      setSelected(pkgs.yearly ? "yearly" : "monthly");
-      setPhase(pkgs.monthly || pkgs.yearly ? "ready" : "unavailable");
+      const hasPlus = await isPlusActive();
+      setActive(hasPlus ? "plus" : "none");
+      const [plus, pro] = await Promise.all([
+        getPlusPackages(),
+        getProPackages(),
+      ]);
+      setPlusPkgs(plus);
+      setProPkgs(pro);
+      setSelected(plus.yearly || pro.yearly ? "yearly" : "monthly");
+      // A Plus subscriber lands on the Pro tab: Plus is already theirs.
+      if (hasPlus) setTier("pro");
+      const anyPkg = plus.monthly || plus.yearly || pro.monthly || pro.yearly;
+      setPhase(anyPkg || hasPlus ? "ready" : "unavailable");
     } catch (e) {
       console.error("[PlusPaywall] load failed:", e);
       setPhase("unavailable");
@@ -94,23 +120,28 @@ export function PlusPaywall() {
     void load();
   }, [isNative, load]);
 
+  const pkgs = tier === "pro" ? proPkgs : plusPkgs;
+
   const onSubscribe = useCallback(async () => {
-    const pkg = selected === "yearly" ? packages.yearly : packages.monthly;
+    const pkg = selected === "yearly" ? pkgs.yearly : pkgs.monthly;
     if (!pkg || busy) return;
     setBusy("buy");
     setNote(null);
     try {
-      const outcome = await purchase(pkg);
-      if (outcome === "active") setPhase("subscribed");
-      else if (outcome === "error")
+      const outcome = await purchase(pkg, tier);
+      if (outcome === "active") {
+        if (tier === "pro") setPhase("subscribed");
+        else setActive("plus");
+      } else if (outcome === "error") {
         setNote("That didn't go through. Nothing was charged.");
+      }
     } catch (e) {
       console.error("[PlusPaywall] purchase failed:", e);
       setNote("That didn't go through. Nothing was charged.");
     } finally {
       setBusy(null);
     }
-  }, [selected, packages, busy]);
+  }, [selected, pkgs, tier, busy]);
 
   const onRestore = useCallback(async () => {
     if (busy) return;
@@ -118,15 +149,15 @@ export function PlusPaywall() {
     setNote(null);
     try {
       const ok = await restore();
-      if (ok) setPhase("subscribed");
-      else setNote("No previous Purify Plus subscription was found.");
+      if (ok) await load(); // re-derive the tier the restore lit up
+      else setNote("No previous Purify subscription was found.");
     } catch (e) {
       console.error("[PlusPaywall] restore failed:", e);
       setNote("Couldn't check for a previous subscription. Please try again.");
     } finally {
       setBusy(null);
     }
-  }, [busy]);
+  }, [busy, load]);
 
   const onManage = useCallback(async () => {
     try {
@@ -148,20 +179,20 @@ export function PlusPaywall() {
   if (phase === "signed-out") {
     return (
       <Screen>
-        <Hero />
+        <Hero tier="plus" />
 
         {/* Same included-benefits card the ready phase shows, so the screen
             sells the thing before asking for a sign-in — and so tall screens
             have real content instead of one giant gap. */}
-        <IncludedCard delay="460ms" />
+        <IncludedCard tier="plus" delay="460ms" />
 
         <div
           className="paywall-in mt-6 w-full px-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] text-center"
           style={{ animationDelay: "560ms" }}
         >
           <p className="mx-auto max-w-[320px] font-sans text-ui leading-relaxed text-paper/70">
-            Purify Plus is tied to your account, so it follows you across your
-            devices.
+            Purify Plus and Pro are tied to your account, so they follow you
+            across your devices.
           </p>
           <Link
             href="/signin?next=/pricing"
@@ -181,7 +212,7 @@ export function PlusPaywall() {
   if (phase === "unavailable") {
     return (
       <Screen>
-        <Hero />
+        <Hero tier="plus" />
         <div
           className="paywall-in mt-8 w-full px-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] text-center"
           style={{ animationDelay: "460ms" }}
@@ -199,17 +230,17 @@ export function PlusPaywall() {
   if (phase === "subscribed") {
     return (
       <Screen>
-        <Hero />
+        <Hero tier="pro" />
         <div
           className="paywall-in mt-8 w-full px-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] text-center"
           style={{ animationDelay: "460ms" }}
         >
           <p className="font-display-serif text-title text-paper">
-            You have Purify Plus.
+            You have Purify Pro.
           </p>
           <p className="mx-auto mt-3 max-w-[300px] font-sans text-ui leading-relaxed text-paper/65">
-            Thank you for keeping the lamps lit. Your reading syncs across every
-            device you sign in on.
+            Thank you for keeping the lamps lit. Every Plus feature is yours,
+            and the members’ layer comes with our gratitude.
           </p>
           <button
             type="button"
@@ -224,90 +255,126 @@ export function PlusPaywall() {
   }
 
   // ── ready ───────────────────────────────────────────────────────────────
-  const saved = savingsPct(packages);
+  const saved = savingsPct(pkgs);
+  const tierName = tier === "pro" ? "Purify Pro" : "Purify Plus";
+  const tierAvailable = Boolean(pkgs.monthly || pkgs.yearly);
+  const plusOwned = active === "plus";
+  const sellingThisTier = tierAvailable && !(tier === "plus" && plusOwned);
   const canBuy =
-    (selected === "yearly" && packages.yearly) ||
-    (selected === "monthly" && packages.monthly);
+    (selected === "yearly" && pkgs.yearly) ||
+    (selected === "monthly" && pkgs.monthly);
 
   return (
     <Screen>
-      <Hero />
+      <Hero tier={tier} />
+
+      {/* Plus / Pro switcher */}
+      <div className="paywall-in mt-5 px-5" style={{ animationDelay: "420ms" }}>
+        <TierSwitch tier={tier} onSwitch={setTier} />
+      </div>
 
       {/* What's included */}
-      <IncludedCard delay="460ms" />
+      <IncludedCard tier={tier} delay="460ms" />
 
-      {/* Plans */}
-      <div className="paywall-in mt-6 space-y-3 px-5" style={{ animationDelay: "560ms" }}>
-        <PlanRow
-          label="Monthly"
-          sub="Billed monthly"
-          price={packages.monthly?.product.priceString}
-          unit="per month"
-          selected={selected === "monthly"}
-          disabled={!packages.monthly}
-          onSelect={() => setSelected("monthly")}
-        />
-        <PlanRow
-          label="Yearly"
-          sub="Billed yearly"
-          price={packages.yearly?.product.priceString}
-          unit="per year"
-          badge="Most popular"
-          footer={saved != null ? `Save ${saved}%` : undefined}
-          selected={selected === "yearly"}
-          disabled={!packages.yearly}
-          onSelect={() => setSelected("yearly")}
-        />
-      </div>
-
-      {/* CTA + trust + footer */}
-      <div
-        className="paywall-in mt-6 px-5 pb-[calc(env(safe-area-inset-bottom,0px)+1.25rem)]"
-        style={{ animationDelay: "660ms" }}
-      >
-        {note ? (
-          <p className="mb-3 text-center font-sans text-caption text-crimson-soft">
-            {note}
-          </p>
-        ) : null}
-        <button
-          type="button"
-          onClick={onSubscribe}
-          disabled={!canBuy || busy !== null}
-          className="flex w-full items-center justify-center gap-3 rounded-pill bg-paper px-6 py-4 font-display-serif text-lede text-night transition-[transform,background-color] hover:bg-paper/90 active:scale-[0.99] disabled:opacity-50"
+      {tier === "plus" && plusOwned ? (
+        /* Already on Plus: nothing to sell on this tab, manage instead. */
+        <div
+          className="paywall-in mt-6 px-5 pb-[calc(env(safe-area-inset-bottom,0px)+1.25rem)] text-center"
+          style={{ animationDelay: "560ms" }}
         >
-          <Sparkle />
-          {busy === "buy" ? "Starting…" : "Start Purify Plus"}
-          <ArrowRight />
-        </button>
-
-        <p className="mt-3 flex items-center justify-center gap-2 font-sans text-caption text-paper/45">
-          <LockIcon />
-          Secure billing through Google Play. Cancel anytime.
-        </p>
-
-        <div className="mt-4 flex items-center justify-center gap-5 border-t border-paper/8 pt-4 font-sans text-caption text-paper/55">
+          <p className="font-display-serif text-title-sm text-paper">
+            You have Purify Plus.
+          </p>
+          <p className="mx-auto mt-2 max-w-[300px] font-sans text-ui leading-relaxed text-paper/65">
+            Everything here is already yours. Purify Pro adds the members’
+            layer on top.
+          </p>
           <button
             type="button"
-            onClick={onRestore}
-            disabled={busy !== null}
-            className="inline-flex items-center gap-1.5 hover:text-paper disabled:opacity-50"
+            onClick={onManage}
+            className="mt-4 inline-flex items-center justify-center font-sans text-ui font-semibold text-gold/90 hover:text-gold"
           >
-            <RestoreIcon />
-            {busy === "restore" ? "Restoring…" : "Restore"}
+            Manage subscription
           </button>
-          <span className="text-paper/15">|</span>
-          <Link href="/terms" className="inline-flex items-center gap-1.5 hover:text-paper">
-            <DocIcon />
-            Terms
-          </Link>
-          <span className="text-paper/15">|</span>
-          <Link href="/privacy" className="inline-flex items-center gap-1.5 hover:text-paper">
-            <ShieldIcon />
-            Privacy
-          </Link>
+          <FooterRow onRestore={onRestore} busy={busy} />
         </div>
-      </div>
+      ) : !sellingThisTier ? (
+        /* This tier's packages aren't live (offering dark / store hiccup). */
+        <div
+          className="paywall-in mt-6 px-5 pb-[calc(env(safe-area-inset-bottom,0px)+1.25rem)] text-center"
+          style={{ animationDelay: "560ms" }}
+        >
+          <p className="mx-auto max-w-[320px] font-sans text-ui leading-relaxed text-paper/65">
+            {tierName} isn’t available to purchase right now. Please check back
+            soon.
+          </p>
+          <FooterRow onRestore={onRestore} busy={busy} />
+        </div>
+      ) : (
+        <>
+          {/* Plans */}
+          <div
+            className="paywall-in mt-6 space-y-3 px-5"
+            style={{ animationDelay: "560ms" }}
+          >
+            <PlanRow
+              label="Monthly"
+              sub="Billed monthly"
+              price={pkgs.monthly?.product.priceString}
+              unit="per month"
+              selected={selected === "monthly"}
+              disabled={!pkgs.monthly}
+              onSelect={() => setSelected("monthly")}
+            />
+            <PlanRow
+              label="Yearly"
+              sub="Billed yearly"
+              price={pkgs.yearly?.product.priceString}
+              unit="per year"
+              badge="Most popular"
+              footer={saved != null ? `Save ${saved}%` : undefined}
+              selected={selected === "yearly"}
+              disabled={!pkgs.yearly}
+              onSelect={() => setSelected("yearly")}
+            />
+          </div>
+
+          {/* CTA + trust + footer */}
+          <div
+            className="paywall-in mt-6 px-5 pb-[calc(env(safe-area-inset-bottom,0px)+1.25rem)]"
+            style={{ animationDelay: "660ms" }}
+          >
+            {tier === "pro" && plusOwned ? (
+              <p className="mb-3 text-center font-sans text-caption leading-relaxed text-paper/55">
+                You have Plus today. After Pro starts, cancel Plus in Google
+                Play so you aren’t billed for both.
+              </p>
+            ) : null}
+            {note ? (
+              <p className="mb-3 text-center font-sans text-caption text-crimson-soft">
+                {note}
+              </p>
+            ) : null}
+            <button
+              type="button"
+              onClick={onSubscribe}
+              disabled={!canBuy || busy !== null}
+              className="flex w-full items-center justify-center gap-3 rounded-pill bg-paper px-6 py-4 font-display-serif text-lede text-night transition-[transform,background-color] hover:bg-paper/90 active:scale-[0.99] disabled:opacity-50"
+            >
+              <Sparkle />
+              {busy === "buy" ? "Starting…" : `Start ${tierName}`}
+              <ArrowRight />
+            </button>
+
+            <p className="mt-3 flex items-center justify-center gap-2 font-sans text-caption text-paper/45">
+              <LockIcon />
+              Secure billing through Google Play. Cancel anytime.
+            </p>
+
+            <FooterRow onRestore={onRestore} busy={busy} />
+          </div>
+        </>
+      )}
     </Screen>
   );
 }
@@ -327,10 +394,14 @@ function Screen({ children }: { children: React.ReactNode }) {
 
 /** Hero: light from above, the Orthodox cross, the wordmark, and the title.
  * Plays the subscription-onboarding cascade: the light blooms, the cross
- * settles with a soft overshoot, and the copy rises line by line.
- * The radiant background is CSS; drop a designed image at /plus-hero.png and
- * set it as the backgroundImage here to match a bespoke comp exactly. */
-function Hero() {
+ * settles with a soft overshoot, and the copy rises line by line. */
+function Hero({ tier }: { tier: Tier }) {
+  const lede =
+    tier === "pro" ? "Keep the lamps lit." : "Deeper focus. Stronger faith.";
+  const sub =
+    tier === "pro"
+      ? "Everything in Plus, and a members’ layer that carries a little of the Church home each month."
+      : "Sync your spiritual journey across all your devices and go deeper with tools that inspire.";
   return (
     <div className="relative flex flex-col items-center px-6 pt-12 pb-2 text-center">
       <div
@@ -354,7 +425,8 @@ function Hero() {
         className="paywall-in mt-2 font-display-serif text-display-sm font-bold tracking-[-0.02em] text-paper"
         style={{ animationDelay: "200ms" }}
       >
-        Purify <span className="text-gold-pale">Plus</span>
+        Purify{" "}
+        <span className="text-gold-pale">{tier === "pro" ? "Pro" : "Plus"}</span>
       </h1>
       <span
         className="paywall-in my-3 inline-flex items-center gap-2 text-gold-pale/70"
@@ -368,28 +440,60 @@ function Hero() {
         className="paywall-in font-display-serif text-lede text-paper/90"
         style={{ animationDelay: "340ms" }}
       >
-        Deeper focus. Stronger faith.
+        {lede}
       </p>
       <p
         className="paywall-in mx-auto mt-3 max-w-[320px] font-sans text-ui leading-relaxed text-paper/60"
         style={{ animationDelay: "400ms" }}
       >
-        Sync your spiritual journey across all your devices and go deeper with
-        tools that inspire.
+        {sub}
       </p>
     </div>
   );
 }
 
+/** The Plus / Pro segmented switch, styled after the plan rows so the whole
+ * screen reads as one system: gold ring on the selected half. */
+function TierSwitch({
+  tier,
+  onSwitch,
+}: {
+  tier: Tier;
+  onSwitch: (t: Tier) => void;
+}) {
+  return (
+    <div className="flex gap-2 rounded-2xl border border-paper/12 bg-paper/[0.03] p-1.5">
+      {(["plus", "pro"] as const).map((t) => {
+        const on = tier === t;
+        return (
+          <button
+            key={t}
+            type="button"
+            onClick={() => onSwitch(t)}
+            aria-pressed={on}
+            className={`flex-1 rounded-xl px-4 py-2.5 text-center font-sans text-ui font-semibold transition-colors ${
+              on
+                ? "border border-gold/55 bg-gold/[0.09] text-gold-pale ring-1 ring-inset ring-gold/25"
+                : "border border-transparent text-paper/60 hover:text-paper"
+            }`}
+          >
+            {t === "pro" ? "Pro" : "Plus"}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 /**
- * The one "What's included" card, shared by the signed-out and ready phases
- * so the promise never drifts between them. Every row here must be a REAL,
- * live entitlement: sync + the enhanced layer (lib/entitlements), the Plus
- * shipping perk (lib/shop/checkout re-verifies it server-side), and the
- * Immersive History layer (plusFeatures). Ambience returns to this list only
- * when the rights-cleared catalogue lands (AMBIENCE_TRACKS non-empty).
+ * The tier's "What's included" card, shared by the signed-out and ready
+ * phases so the promise never drifts between them. Every row here must be a
+ * REAL, live entitlement: sync + the enhanced layer (lib/entitlements), the
+ * Plus shipping perk (lib/shop/checkout re-verifies it server-side), the
+ * Immersive History layer (plusFeatures), and for Pro the members' layer
+ * (mailed icon + shop codes), copy matched to lib/premium/plans.ts.
  */
-function IncludedCard({ delay }: { delay: string }) {
+function IncludedCard({ tier, delay }: { tier: Tier; delay: string }) {
   return (
     <div className="paywall-in mt-7 px-5" style={{ animationDelay: delay }}>
       <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
@@ -397,40 +501,76 @@ function IncludedCard({ delay }: { delay: string }) {
           What’s included
         </p>
         <ul className="mt-4 space-y-4">
-          <Included
-            icon={<SyncIcon />}
-            title="Cross-device sync"
-            sub="Your library on every device you sign in on"
-          />
-          <Included
-            icon={<BookmarkIcon />}
-            title="Notes, highlights & bookmarks"
-            sub="Kept private, carried everywhere"
-          />
-          <Included
-            icon={<BookIcon />}
-            title="Custom collections & Florilegium"
-            sub="Build your own quote collections"
-          />
-          <Included
-            icon={<ParcelIcon />}
-            title="Free shipping in the shop"
-            sub="Every EIKON order ships free while Plus is active"
-          />
-          <Included
-            icon={<HourglassIcon />}
-            title="Immersive History"
-            sub="The story of the Church in full cinematic dress"
-          />
+          {tier === "pro" ? (
+            <>
+              <Included
+                icon={<LayersIcon />}
+                title="Everything in Purify Plus"
+                sub="All of it, uncapped"
+              />
+              <Included
+                icon={<GiftIcon />}
+                title="A devotional icon, mailed monthly"
+                sub="A small blessing to your door, every month"
+              />
+              <Included
+                icon={<TagIcon />}
+                title="EIKON shop discount codes"
+                sub="Members’ codes for the shop, now and then"
+              />
+              <Included
+                icon={<ParcelIcon />}
+                title="Free EIKON shipping"
+                sub="Carried over from Plus"
+              />
+            </>
+          ) : (
+            <>
+              <Included
+                icon={<SyncIcon />}
+                title="Cross-device sync"
+                sub="Your library on every device you sign in on"
+              />
+              <Included
+                icon={<BookmarkIcon />}
+                title="Notes, highlights & bookmarks"
+                sub="Kept private, carried everywhere"
+              />
+              <Included
+                icon={<BookIcon />}
+                title="Custom collections & Florilegium"
+                sub="Build your own quote collections"
+              />
+              <Included
+                icon={<ParcelIcon />}
+                title="Free shipping in the shop"
+                sub="Every EIKON order ships free while Plus is active"
+              />
+              <Included
+                icon={<HourglassIcon />}
+                title="Immersive History"
+                sub="The story of the Church in full cinematic dress"
+              />
+            </>
+          )}
         </ul>
       </div>
-      <p className="mt-4 flex items-center justify-center gap-2 font-sans text-caption text-paper/55">
-        <ShieldIcon />
-        Core Orthodox resources remain free.
-      </p>
-      <p className="mt-1.5 text-center font-sans text-caption text-paper/40">
-        Plus is what pays the servers. It keeps the core free for everyone.
-      </p>
+      {tier === "pro" ? (
+        <p className="mt-4 text-center font-sans text-caption leading-relaxed text-paper/40">
+          The monthly item may vary and is sent while your subscription is
+          active and a shipping address is on file.
+        </p>
+      ) : (
+        <>
+          <p className="mt-4 flex items-center justify-center gap-2 font-sans text-caption text-paper/55">
+            <ShieldIcon />
+            Core Orthodox resources remain free.
+          </p>
+          <p className="mt-1.5 text-center font-sans text-caption text-paper/40">
+            Plus is what pays the servers. It keeps the core free for everyone.
+          </p>
+        </>
+      )}
     </div>
   );
 }
@@ -456,6 +596,39 @@ function Included({
         <span className="block font-sans text-caption text-paper/55">{sub}</span>
       </span>
     </li>
+  );
+}
+
+/** Restore | Terms | Privacy, shared by every selling state. */
+function FooterRow({
+  onRestore,
+  busy,
+}: {
+  onRestore: () => void;
+  busy: string | null;
+}) {
+  return (
+    <div className="mt-4 flex items-center justify-center gap-5 border-t border-paper/8 pt-4 font-sans text-caption text-paper/55">
+      <button
+        type="button"
+        onClick={onRestore}
+        disabled={busy !== null}
+        className="inline-flex items-center gap-1.5 hover:text-paper disabled:opacity-50"
+      >
+        <RestoreIcon />
+        {busy === "restore" ? "Restoring…" : "Restore"}
+      </button>
+      <span className="text-paper/15">|</span>
+      <Link href="/terms" className="inline-flex items-center gap-1.5 hover:text-paper">
+        <DocIcon />
+        Terms
+      </Link>
+      <span className="text-paper/15">|</span>
+      <Link href="/privacy" className="inline-flex items-center gap-1.5 hover:text-paper">
+        <ShieldIcon />
+        Privacy
+      </Link>
+    </div>
   );
 }
 
@@ -594,6 +767,33 @@ function HourglassIcon() {
       <path d="M6 21h12" />
       <path d="M7 3v3.5c0 2.5 2.2 3.9 5 5.5 2.8-1.6 5-3 5-5.5V3" />
       <path d="M7 21v-3.5c0-2.5 2.2-3.9 5-5.5 2.8 1.6 5 3 5 5.5V21" />
+    </svg>
+  );
+}
+function LayersIcon() {
+  return (
+    <svg {...S}>
+      <path d="m12 3 9 5-9 5-9-5 9-5z" />
+      <path d="m3 13 9 5 9-5" />
+    </svg>
+  );
+}
+function GiftIcon() {
+  return (
+    <svg {...S}>
+      <rect x="4" y="8" width="16" height="4" />
+      <path d="M5 12v8h14v-8" />
+      <path d="M12 8v12" />
+      <path d="M12 8c-1.5 0-4-.5-4-2.5S10.5 3 12 8z" />
+      <path d="M12 8c1.5 0 4-.5 4-2.5S13.5 3 12 8z" />
+    </svg>
+  );
+}
+function TagIcon() {
+  return (
+    <svg {...S}>
+      <path d="M12 3H5a2 2 0 0 0-2 2v7l9 9a2 2 0 0 0 2.8 0l6.2-6.2a2 2 0 0 0 0-2.8L12 3z" />
+      <circle cx="8" cy="8" r="1.4" />
     </svg>
   );
 }

@@ -112,16 +112,42 @@ export async function getPlusPackages(): Promise<PlusPackages> {
   };
 }
 
+/**
+ * The Monthly + Yearly packages for Purify Pro. Pro lives in its OWN
+ * RevenueCat offering (Plus is the default/current one), looked up by the
+ * same conventional identifiers the web side uses (lib/billing/revenuecatWeb).
+ * Returns nulls until the dashboard offering exists, and the paywall's Pro
+ * tab degrades to "not available right now".
+ */
+export async function getProPackages(): Promise<PlusPackages> {
+  if (!billingAvailable()) return { monthly: null, yearly: null };
+  const { Purchases } = await import("@revenuecat/purchases-capacitor");
+  const offerings = await Purchases.getOfferings();
+  const all = offerings.all ?? {};
+  const pro = all["pro"] ?? all["purify_pro"] ?? all["default_pro"] ?? null;
+  return {
+    monthly: pro?.monthly ?? null,
+    yearly: pro?.annual ?? null,
+  };
+}
+
 export type PurchaseOutcome = "active" | "cancelled" | "error";
 
-/** Buy a package. Resolves to 'active' when Plus is now on, 'cancelled'
- * when the user backed out, 'error' otherwise. Never throws. */
-export async function purchase(pkg: PurchasesPackage): Promise<PurchaseOutcome> {
+/** Buy a package. Resolves to 'active' when the tier's entitlement is now
+ * on, 'cancelled' when the user backed out, 'error' otherwise. Never throws.
+ * `tier` decides which entitlement proves success: a Pro purchase must light
+ * `pro`, not merely `plus`. */
+export async function purchase(
+  pkg: PurchasesPackage,
+  tier: "plus" | "pro" = "plus",
+): Promise<PurchaseOutcome> {
   if (!billingAvailable()) return "error";
   try {
     const { Purchases } = await import("@revenuecat/purchases-capacitor");
     const { customerInfo } = await Purchases.purchasePackage({ aPackage: pkg });
-    return plusActive(customerInfo) ? "active" : "error";
+    const ok =
+      tier === "pro" ? proActive(customerInfo) : plusActive(customerInfo);
+    return ok ? "active" : "error";
   } catch (e) {
     if (
       e &&
