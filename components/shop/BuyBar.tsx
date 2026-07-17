@@ -41,7 +41,7 @@ export function BuyBar({
   imageUrl?: string;
   imageAlt?: string;
   priceLabel: string;
-  /** Server-decided shipping line ("Free shipping with Purify Plus" or the flat rate). */
+  /** Server-decided shipping line ("Free shipping with Purify Pro" or the flat rate). */
   shippingLabel: string;
   dispatchLabel: string;
   inventoryLabel: string;

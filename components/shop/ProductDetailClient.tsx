@@ -10,7 +10,7 @@ import { ProductRail } from "@/components/shop/ProductRail";
 import { RatingStars } from "@/components/shop/RatingStars";
 import { ReviewsSection } from "@/components/shop/ReviewsSection";
 import { ShopDetailSkeleton, ShopError } from "@/components/shop/ShopStates";
-import { hasActivePlusClient } from "@/lib/entitlements/client";
+import { hasActiveProClient } from "@/lib/entitlements/client";
 import { fetchShopConfig, fetchShopProduct } from "@/lib/shop/catalogClient";
 import {
   CLASSIFICATION_LABELS,
@@ -38,7 +38,7 @@ type Loaded = {
   detail: ShopProductDetail | null;
   checkoutEnabled: boolean;
   flatShippingCents: number;
-  plus: boolean;
+  pro: boolean;
 };
 
 /**
@@ -46,23 +46,23 @@ type Loaded = {
  * shell alike. The page shell (server) supplies the slug + generateStaticParams;
  * this fetches the product, related icons, the resolved subject chips + saint
  * card, the public shop config (checkout on? flat shipping?), and the viewer's
- * Plus status for the shipping line.
+ * Pro status for the shipping line.
  */
 export function ProductDetailClient({ slug }: { slug: string }) {
   const { data, error, loading, reload } = useAsyncData<Loaded>(async () => {
-    const [detail, config, plus] = await Promise.all([
+    const [detail, config, pro] = await Promise.all([
       fetchShopProduct(slug).catch((e: unknown) => {
         if ((e as { status?: number }).status === 404) return null;
         throw e;
       }),
       fetchShopConfig(),
-      hasActivePlusClient(),
+      hasActiveProClient(),
     ]);
     return {
       detail,
       checkoutEnabled: config.checkoutEnabled,
       flatShippingCents: config.flatShippingCents,
-      plus,
+      pro,
     };
   }, [slug]);
 
@@ -91,14 +91,14 @@ export function ProductDetailClient({ slug }: { slug: string }) {
     );
   }
 
-  const { detail, checkoutEnabled, flatShippingCents, plus } = data;
+  const { detail, checkoutEnabled, flatShippingCents, pro } = data;
   const { product, related, chips, saint, storeShippingMd, storeReturnMd } =
     detail;
 
   const priceLabel = formatPrice(product.price_cents, product.currency);
-  const shippingLabel = plus
-    ? "Free shipping with Purify Plus"
-    : `+ ${formatPrice(flatShippingCents, product.currency)} standard shipping · free with Purify Plus`;
+  const shippingLabel = pro
+    ? "Free shipping with Purify Pro"
+    : `+ ${formatPrice(flatShippingCents, product.currency)} standard shipping · free with Purify Pro`;
   const dispatchLabel = dispatchWindowLabel(
     product.dispatch_min_days,
     product.dispatch_max_days,

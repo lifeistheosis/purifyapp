@@ -4,6 +4,7 @@ import { getProduct } from "./catalog";
 import { checkoutEnabled } from "./flags";
 import { purchasable } from "./format";
 import { TERMS_VERSION } from "@/lib/legal/version";
+import { proShipsFree } from "@/lib/entitlements/entitlements";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
@@ -17,10 +18,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * database. The client contributes product slugs and quantities, nothing
  * else — a cart's display subtotal is never trusted.
  *
- * Shipping: Purify Plus subscribers ship free; everyone else pays the
+ * Shipping: Purify PRO subscribers ship free (the perk moved from Plus
+ * to Pro with the Beta 2.1 ladder restructure); everyone else pays the
  * flat standard rate (SHOP_FLAT_SHIPPING_CENTS, default $4.99) once per
- * order regardless of item count. The Plus check reads the entitlements
- * row directly — free shipping is a perk of actually holding Plus,
+ * order regardless of item count. The Pro check reads the entitlements
+ * row directly — free shipping is a perk of actually holding Pro,
  * independent of the feature-enforcement flags.
  *
  * With no Stripe key configured every path returns the disabled result;
@@ -34,23 +36,26 @@ export type CheckoutResult =
   | { ok: false; disabled: true }
   | { ok: false; disabled?: false; reason: string };
 
-/** Flat standard shipping in cents for non-Plus buyers. */
+/** Flat standard shipping in cents for non-Pro buyers. */
 export function flatShippingCents(): number {
   const raw = Number(process.env.SHOP_FLAT_SHIPPING_CENTS ?? "499");
   return Number.isFinite(raw) && raw >= 0 ? Math.round(raw) : 499;
 }
 
-/** True when the user holds an active Purify Plus subscription. */
-export async function hasActivePlus(userId: string | null): Promise<boolean> {
+/** True when the user's orders ship free: an active Purify Pro
+ * subscription (pro_until in the future). The date rule itself lives in
+ * lib/entitlements/entitlements.ts proShipsFree so the client cart
+ * display applies the identical predicate. */
+export async function hasProShipping(userId: string | null): Promise<boolean> {
   if (!userId) return false;
   try {
     const admin = createAdminClient();
     const { data } = await admin
       .from("entitlements")
-      .select("plus_until")
+      .select("pro_until")
       .eq("user_id", userId)
       .maybeSingle();
-    return !!data?.plus_until && new Date(data.plus_until) > new Date();
+    return proShipsFree(data);
   } catch {
     return false;
   }
@@ -102,8 +107,8 @@ export async function createCheckout(
     (sum, l) => sum + l.product.price_cents * l.quantity,
     0,
   );
-  const plusShipping = await hasActivePlus(user.id);
-  const shipping = plusShipping ? 0 : flatShippingCents();
+  const proShipping = await hasProShipping(user.id);
+  const shipping = proShipping ? 0 : flatShippingCents();
 
   // Create the order first so the Stripe session carries our id, not
   // the other way round: if the webhook never arrives the order stays
@@ -193,8 +198,8 @@ export async function createCheckout(
           shipping_rate_data: {
             type: "fixed_amount",
             fixed_amount: { amount: shipping, currency: first.currency },
-            display_name: plusShipping
-              ? "Free shipping (Purify Plus)"
+            display_name: proShipping
+              ? "Free shipping (Purify Pro)"
               : "Standard shipping",
           },
         },
