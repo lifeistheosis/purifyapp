@@ -33,6 +33,7 @@ import { presentCustomerCenter } from "@/lib/billing/revenuecatUi";
 import { createClient } from "@/lib/supabase/client";
 import { useIsNative } from "@/lib/platform/native";
 import { PurifyBadge } from "@/components/ui/PurifyBadge";
+import { PREMIUM_PLAN_EN } from "@/lib/premium/plans";
 
 type Phase = "loading" | "signed-out" | "unavailable" | "ready" | "subscribed";
 type Tier = "plus" | "pro";
@@ -400,7 +401,7 @@ function Hero({ tier }: { tier: Tier }) {
     tier === "pro" ? "Keep the lamps lit." : "Deeper focus. Stronger faith.";
   const sub =
     tier === "pro"
-      ? "Everything in Plus, and a members’ layer that carries a little of the Church home each month."
+      ? "Everything in Plus, and the complete premium experience: reading modes, the EIKON Box, and member benefits."
       : "Sync your spiritual journey across all your devices and go deeper with tools that inspire.";
   return (
     <div className="relative flex flex-col items-center px-6 pt-12 pb-2 text-center">
@@ -487,13 +488,28 @@ function TierSwitch({
 
 /**
  * The tier's "What's included" card, shared by the signed-out and ready
- * phases so the promise never drifts between them. Every row here must be a
- * REAL, live entitlement: sync + the enhanced layer (lib/entitlements), the
- * Plus shipping perk (lib/shop/checkout re-verifies it server-side), the
- * Immersive History layer (plusFeatures), and for Pro the members' layer
- * (mailed icon + shop codes), copy matched to lib/premium/plans.ts.
+ * phases so the promise never drifts between them. The rows come straight
+ * from lib/premium/plans.ts (the single copy source shared with /pricing
+ * and /premium) — this card renders PREMIUM_PLAN_EN and maps feature ids
+ * to icons, so the paywall can no longer drift from the ladder by hand.
+ * Perks marked `soon` (Studio Audio) carry the coming-soon pill; every
+ * unmarked row is a REAL, live entitlement.
  */
+const INCLUDED_ICONS: Record<string, React.ReactNode> = {
+  sync: <SyncIcon />,
+  notes: <BookmarkIcon />,
+  florilegium: <BookIcon />,
+  "immersive-history": <HourglassIcon />,
+  "everything-plus": <LayersIcon />,
+  "reading-modes": <CandleIcon />,
+  "studio-audio": <AudioIcon />,
+  "eikon-box": <GiftIcon />,
+  "eikon-benefits": <TagIcon />,
+};
+
 function IncludedCard({ tier, delay }: { tier: Tier; delay: string }) {
+  const items =
+    tier === "pro" ? PREMIUM_PLAN_EN.proItems : PREMIUM_PLAN_EN.plusItems;
   return (
     <div className="paywall-in mt-7 px-5" style={{ animationDelay: delay }}>
       <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
@@ -501,64 +517,20 @@ function IncludedCard({ tier, delay }: { tier: Tier; delay: string }) {
           What’s included
         </p>
         <ul className="mt-4 space-y-4">
-          {tier === "pro" ? (
-            <>
-              <Included
-                icon={<LayersIcon />}
-                title="Everything in Purify Plus"
-                sub="All of it, uncapped"
-              />
-              <Included
-                icon={<GiftIcon />}
-                title="A devotional icon, mailed monthly"
-                sub="A small blessing to your door, every month"
-              />
-              <Included
-                icon={<TagIcon />}
-                title="EIKON shop discount codes"
-                sub="Members’ codes for the shop, now and then"
-              />
-              <Included
-                icon={<ParcelIcon />}
-                title="Free EIKON shipping"
-                sub="Carried over from Plus"
-              />
-            </>
-          ) : (
-            <>
-              <Included
-                icon={<SyncIcon />}
-                title="Cross-device sync"
-                sub="Your library on every device you sign in on"
-              />
-              <Included
-                icon={<BookmarkIcon />}
-                title="Notes, highlights & bookmarks"
-                sub="Kept private, carried everywhere"
-              />
-              <Included
-                icon={<BookIcon />}
-                title="Custom collections & Florilegium"
-                sub="Build your own quote collections"
-              />
-              <Included
-                icon={<ParcelIcon />}
-                title="Free shipping in the shop"
-                sub="Every EIKON order ships free while Plus is active"
-              />
-              <Included
-                icon={<HourglassIcon />}
-                title="Immersive History"
-                sub="The story of the Church in full cinematic dress"
-              />
-            </>
-          )}
+          {items.map((item) => (
+            <Included
+              key={item.id}
+              icon={INCLUDED_ICONS[item.id] ?? <LayersIcon />}
+              title={item.title}
+              sub={item.sub}
+              soon={item.soon ? PREMIUM_PLAN_EN.soonLabel : undefined}
+            />
+          ))}
         </ul>
       </div>
       {tier === "pro" ? (
         <p className="mt-4 text-center font-sans text-caption leading-relaxed text-paper/40">
-          The monthly item may vary and is sent while your subscription is
-          active and a shipping address is on file.
+          {PREMIUM_PLAN_EN.proNote}
         </p>
       ) : (
         <>
@@ -579,10 +551,12 @@ function Included({
   icon,
   title,
   sub,
+  soon,
 }: {
   icon: React.ReactNode;
   title: string;
   sub: string;
+  soon?: string;
 }) {
   return (
     <li className="flex items-center gap-3.5">
@@ -592,6 +566,11 @@ function Included({
       <span className="min-w-0">
         <span className="block font-sans text-ui font-semibold text-paper">
           {title}
+          {soon && (
+            <span className="ml-2 inline-flex translate-y-[-1px] items-center rounded-pill border border-gold/40 bg-gold/10 px-1.5 py-px align-middle font-sans text-[10px] font-semibold tracking-[0.6px] text-gold-pale/90">
+              {soon}
+            </span>
+          )}
         </span>
         <span className="block font-sans text-caption text-paper/55">{sub}</span>
       </span>
@@ -750,16 +729,6 @@ function BookmarkIcon() {
     </svg>
   );
 }
-function ParcelIcon() {
-  return (
-    <svg {...S}>
-      <path d="M21 8.5 12 4 3 8.5v8L12 21l9-4.5v-8z" />
-      <path d="M3 8.5 12 13l9-4.5" />
-      <path d="M12 13v8" />
-      <path d="m7.5 6.25 9 4.5" />
-    </svg>
-  );
-}
 function HourglassIcon() {
   return (
     <svg {...S}>
@@ -794,6 +763,24 @@ function TagIcon() {
     <svg {...S}>
       <path d="M12 3H5a2 2 0 0 0-2 2v7l9 9a2 2 0 0 0 2.8 0l6.2-6.2a2 2 0 0 0 0-2.8L12 3z" />
       <circle cx="8" cy="8" r="1.4" />
+    </svg>
+  );
+}
+function CandleIcon() {
+  return (
+    <svg {...S}>
+      <path d="M12 3c1.6 1.9 2.4 3.4 2.4 4.6A2.4 2.4 0 0 1 12 10a2.4 2.4 0 0 1-2.4-2.4C9.6 6.4 10.4 4.9 12 3Z" />
+      <path d="M8.5 13h7" />
+      <path d="M9.5 13v7h5v-7" />
+    </svg>
+  );
+}
+function AudioIcon() {
+  return (
+    <svg {...S}>
+      <path d="M4 13a8 8 0 0 1 16 0" />
+      <rect x="3" y="13" width="4" height="6" rx="1.5" />
+      <rect x="17" y="13" width="4" height="6" rx="1.5" />
     </svg>
   );
 }
