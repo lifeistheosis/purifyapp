@@ -1,5 +1,30 @@
 [
   {
+    "id": "beta-2-1",
+    "version": "Beta 2.1",
+    "date": "2026-07-17",
+    "title": "The plan finds its shape, and reading finds its light",
+    "intro": "This release gives the three plans their true shape and brings the first of Pro's premium layer to life. Standard remains the complete Orthodox foundation, free forever. Purify Plus is now purely the premium reading and study experience. And Purify Pro becomes the complete premium experience: new reading modes that change the very light of the page, the EIKON Box on its way, and the shop's member benefits gathered in one place. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "Three plans, cleanly cut",
+        "body": "Standard carries the whole foundation: the Scriptures, the saints and the Fathers, theology and the Councils, Orthodox History, the prayers, the calendar with its fasts, and Prayer Campaigns. No ads, no tracking, no surprise locks. Purify Plus is the premium reading and study experience: your library, notes, highlights, and collections on every device you sign in on. Purify Pro is everything in Plus and the complete premium experience. Free EIKON shipping now belongs to Pro's member benefits, alongside member discount codes and early access."
+      },
+      {
+        "heading": "Premium Reading Modes",
+        "body": "Reading has found its light. Four modes now live in the reader settings: Focus, which clears everything but the text; Candlelight, warm amber for the late hours; Monastery, cool stone and quiet indigo; and Parchment, aged paper with dark ink. They re-light the Scriptures and the writings of the Fathers alike, and your choice is remembered on your device. Reading modes are part of Purify Pro; while the beta is open they are free for everyone to try."
+      },
+      {
+        "heading": "Purify Pro, in the app",
+        "body": "The subscription screen in the Android app now carries both tiers: a quiet switch under the hero moves between Plus and Pro, each with its own live prices from Google Play and its own list of what is included. Anyone who holds Plus and steps up to Pro is told honestly how to end the old plan so no one pays twice."
+      },
+      {
+        "heading": "The EIKON Box, on its way",
+        "body": "Pro's box is coming: a curated monthly box of Orthodox devotional goods, an icon, a prayer rope, incense, a booklet, or seasonal gifts, with contents that vary month to month. Studio Audio, professionally narrated Scripture, saints, and history, is also on the road ahead. Both are named on the plan today and will light up as they arrive; nothing is charged for what has not yet shipped."
+      }
+    ]
+  },
+  {
     "id": "beta-2-0-1",
     "version": "Beta 2.0.1",
     "date": "2026-07-14",

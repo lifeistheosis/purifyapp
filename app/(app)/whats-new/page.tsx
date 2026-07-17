@@ -23,6 +23,21 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 2.1",
+ kind: "The plan finds its shape, and reading finds its light",
+ date: "July 17, 2026",
+ blurb:
+  "The three plans take their true shape: Standard stays the complete free foundation, Purify Plus becomes purely the premium reading and study experience, and Purify Pro grows into the complete premium experience. The first of Pro's premium layer arrives with it: four reading modes that change the very light of the page.",
+ items: [
+  "Premium Reading Modes: Focus, Candlelight, Monastery, and Parchment, in the reader settings for the Scriptures and the writings of the Fathers. Part of Purify Pro; free for everyone to try while the beta is open.",
+  "The plan, cleanly cut: Standard carries the whole foundation (Scriptures, saints, theology and Councils, Orthodox History, prayers, calendar, Prayer Campaigns), Plus carries your reading across devices, Pro carries the premium experience.",
+  "Free EIKON shipping now belongs to Purify Pro's member benefits, alongside member discount codes and early access.",
+  "The app's subscription screen sells both tiers now, with live Play prices and an honest note for anyone stepping up from Plus.",
+  "Named on the plan and on the way: the EIKON Box, a curated monthly box of devotional goods with contents that vary, and Studio Audio. Nothing is charged for what has not yet shipped.",
+  "Cache version steps to purify-beta-2.1.",
+ ],
+ },
+ {
  version: "Beta 2.0.1",
  kind: "A cleaner walk through the whole app",
  date: "July 14, 2026",

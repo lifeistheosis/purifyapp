@@ -23,7 +23,7 @@ export default function ShopPoliciesPage() {
           How we ship, and how returns work.
         </h1>
         <p className="mt-6 font-serif text-body leading-[1.7] text-paper/65">
-          Effective July 7, 2026. This page is part of the{" "}
+          Effective July 17, 2026. This page is part of the{" "}
           <Link href="/terms" className={A}>
             Terms of Service
           </Link>{" "}
@@ -42,7 +42,7 @@ export default function ShopPoliciesPage() {
         <p className={P}>
           We ship within the United States only. Standard shipping is
           charged at the flat rate shown at checkout, and is free on every
-          order while you hold an active Purify Plus subscription. Each
+          order while you hold an active Purify Pro subscription. Each
           listing shows an estimated dispatch window; because most items are
           sourced and inspected before shipping, dispatch commonly takes one
           to three weeks, and delivery time after dispatch depends on the
