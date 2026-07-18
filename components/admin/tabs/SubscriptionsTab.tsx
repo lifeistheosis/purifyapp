@@ -4,7 +4,7 @@
 // Active counts, a tier donut, a source donut, and an estimated run-rate.
 // Honest about what is NOT knowable: no churn/cohort history exists.
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Card, StatCard, ChartFrame, DataTable, Pill, SubTabs } from "../primitives";
 import { Donut, SERIES_COLORS } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
@@ -157,12 +157,34 @@ function shortDate(iso: string | null): string {
   });
 }
 
+const COMP_DURATIONS: [number, string][] = [
+  [30, "1 month"],
+  [90, "3 months"],
+  [180, "6 months"],
+  [365, "1 year"],
+  [730, "2 years"],
+  [3650, "No expiry (~10y)"],
+];
+
+const compField =
+  "rounded-md border border-paper/20 bg-night px-3 py-2 font-sans text-detail text-paper focus:border-gold focus:outline-none";
+const compLabel =
+  "block font-sans text-eyebrow uppercase tracking-[1px] text-paper/50";
+
 function MembersPanel() {
   const [members, setMembers] = useState<Member[]>([]);
   const [meta, setMeta] = useState<{ enriched: boolean; revenuecat: boolean } | null>(
     null,
   );
   const [loaded, setLoaded] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  // Comp-grant form.
+  const [email, setEmail] = useState("");
+  const [tier, setTier] = useState<"plus" | "pro">("plus");
+  const [days, setDays] = useState(365);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -183,7 +205,37 @@ function MembersPanel() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [reloadKey]);
+
+  async function grantComp(e: FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setMsg(null);
+    try {
+      const res = await fetch("/api/admin/subscriptions/comp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), tier, days }),
+      });
+      const j = await res.json();
+      if (!res.ok) {
+        setMsg({ ok: false, text: j.error ?? "Could not grant access." });
+      } else {
+        setMsg({
+          ok: true,
+          text: `Granted ${j.tier} to ${j.name ?? j.email} until ${new Date(
+            j.until,
+          ).toLocaleDateString()}.`,
+        });
+        setEmail("");
+        setReloadKey((k) => k + 1);
+      }
+    } catch {
+      setMsg({ ok: false, text: "Could not grant access." });
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <div className="space-y-5">
@@ -194,6 +246,73 @@ function MembersPanel() {
           value={loaded ? members.filter((m) => m.tier === "Pro").length : "—"}
         />
       </div>
+
+      <Card
+        title="Grant complimentary access"
+        subtitle="For testers and reviewers. Marked as comp — never counted as a sale."
+      >
+        <form
+          onSubmit={grantComp}
+          className="grid gap-3 sm:grid-cols-[1fr_auto_auto_auto] sm:items-end"
+        >
+          <label className="space-y-1">
+            <span className={compLabel}>Account email</span>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="tester@example.com"
+              className={`w-full ${compField}`}
+            />
+          </label>
+          <label className="space-y-1">
+            <span className={compLabel}>Plan</span>
+            <select
+              value={tier}
+              onChange={(e) => setTier(e.target.value as "plus" | "pro")}
+              className={compField}
+            >
+              <option value="plus">Plus</option>
+              <option value="pro">Pro</option>
+            </select>
+          </label>
+          <label className="space-y-1">
+            <span className={compLabel}>Duration</span>
+            <select
+              value={days}
+              onChange={(e) => setDays(Number(e.target.value))}
+              className={compField}
+            >
+              {COMP_DURATIONS.map(([d, l]) => (
+                <option key={d} value={d}>
+                  {l}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="submit"
+            disabled={busy || !email.trim()}
+            className="rounded-pill border border-emerald-400/50 bg-emerald-500/[0.14] px-5 py-2 font-sans text-detail font-semibold text-emerald-200 transition-colors hover:bg-emerald-500/20 disabled:opacity-40"
+          >
+            {busy ? "Granting…" : "Grant"}
+          </button>
+        </form>
+        {msg && (
+          <p
+            className={`mt-3 font-sans text-eyebrow ${
+              msg.ok ? "text-emerald-300" : "text-rose-300"
+            }`}
+          >
+            {msg.text}
+          </p>
+        )}
+        <p className="mt-3 font-sans text-eyebrow text-paper/40 leading-relaxed">
+          The account must have signed in at least once. Granting the same email
+          again updates the plan and extends the end date.
+        </p>
+      </Card>
 
       {loaded && meta && !meta.revenuecat ? (
         <p className="rounded-md border border-amber-400/25 bg-amber-400/[0.05] px-3 py-2 font-sans text-eyebrow text-amber-200/90">

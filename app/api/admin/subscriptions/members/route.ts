@@ -40,21 +40,40 @@ export async function GET() {
     is_supporter: boolean | null;
   }[];
 
-  // Names + emails from the profiles mirror.
+  // Names from the profiles mirror (display_name); emails from auth — the
+  // profiles table has no email column, so the old join returned nothing and
+  // every row showed a blank name/email. Auth also backfills a name from the
+  // OAuth metadata when the profile has none.
   const ids = rows.map((r) => r.user_id);
-  const profileById = new Map<string, { display_name: string | null; email: string }>();
+  const nameById = new Map<string, string | null>();
+  const emailById = new Map<string, string | null>();
+  const authNameById = new Map<string, string | null>();
   if (ids.length > 0) {
     const { data: profiles } = await admin
       .from("profiles")
-      .select("id, display_name, email")
+      .select("id, display_name")
       .in("id", ids);
     for (const p of (profiles ?? []) as {
       id: string;
       display_name: string | null;
-      email: string;
     }[]) {
-      profileById.set(p.id, { display_name: p.display_name, email: p.email });
+      nameById.set(p.id, p.display_name);
     }
+    // Active-subscriber lists are small; fetch each account's email + a
+    // fallback name from auth (capped so a huge list can't fan out forever).
+    await Promise.all(
+      ids.slice(0, 300).map(async (id) => {
+        const { data } = await admin.auth.admin.getUserById(id);
+        const u = data?.user;
+        if (!u) return;
+        emailById.set(id, u.email ?? null);
+        const md = (u.user_metadata ?? {}) as {
+          full_name?: string;
+          name?: string;
+        };
+        authNameById.set(id, md.full_name ?? md.name ?? null);
+      }),
+    );
   }
 
   const now = Date.now();
@@ -62,11 +81,10 @@ export async function GET() {
 
   const members = rows.map((r) => {
     const isPro = isFuture(r.pro_until);
-    const p = profileById.get(r.user_id);
     return {
       userId: r.user_id,
-      name: p?.display_name ?? null,
-      email: p?.email ?? null,
+      name: nameById.get(r.user_id) ?? authNameById.get(r.user_id) ?? null,
+      email: emailById.get(r.user_id) ?? null,
       tier: isPro ? ("Pro" as const) : ("Plus" as const),
       source: r.plus_source ?? "unknown",
       comped: r.plus_source === "comp",
