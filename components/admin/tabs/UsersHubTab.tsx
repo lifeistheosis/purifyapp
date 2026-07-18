@@ -10,8 +10,16 @@ import { UsersTab } from "./UsersTab";
 import { formatPrice } from "@/lib/shop/format";
 
 type LiveCart = {
-  cartToken: string;
+  // Identity of the SHOPPER, not of one cart token: the API merges every
+  // cart a signed-in user has open (one per device/session) into a single
+  // row, so a person's basket reads as one basket. Guests stay per token.
+  key: string;
+  userId: string | null;
+  email: string | null;
+  name: string | null;
   who: string;
+  signedIn: boolean;
+  cartCount: number;
   itemCount: number;
   subtotalCents: number;
   currency: string;
@@ -89,11 +97,11 @@ function LiveCartsPanel() {
       </div>
       <Card
         title="Carts with items"
-        subtitle="Server-synced from active shoppers (guests included). Cleared when emptied."
+        subtitle="One row per shopper. A signed-in user's carts are merged across devices; guests are listed per session."
       >
         <DataTable<LiveCart>
           rows={liveCarts}
-          rowKey={(c) => c.cartToken}
+          rowKey={(c) => c.key}
           csvFilename="live-carts.csv"
           empty={
             loaded
@@ -101,11 +109,72 @@ function LiveCartsPanel() {
               : "Loading…"
           }
           columns={[
-            { key: "who", label: "Shopper", render: (c) => c.who, csv: (c) => c.who },
+            {
+              key: "who",
+              label: "Shopper",
+              render: (c) => (
+                <div className="min-w-0">
+                  <span
+                    className={
+                      "block truncate font-sans text-detail " +
+                      (c.signedIn ? "font-semibold text-paper" : "text-paper/55")
+                    }
+                  >
+                    {c.name ?? c.email ?? c.who}
+                  </span>
+                  {/* Name AND email when we have both, so a cart is always
+                      traceable to a person without opening the profile. */}
+                  {c.name && c.email ? (
+                    <span className="block truncate font-sans text-eyebrow text-paper/45">
+                      {c.email}
+                    </span>
+                  ) : null}
+                  {!c.signedIn ? (
+                    <span className="block font-sans text-eyebrow text-paper/30">
+                      not signed in
+                    </span>
+                  ) : null}
+                  {c.cartCount > 1 ? (
+                    <span className="mt-0.5 inline-block font-sans text-eyebrow text-paper/40">
+                      merged from {c.cartCount} devices
+                    </span>
+                  ) : null}
+                </div>
+              ),
+              csv: (c) => c.name ?? c.email ?? c.who,
+            },
+            {
+              key: "email",
+              label: "Email",
+              render: (c) =>
+                c.email ? (
+                  <span className="font-sans text-detail text-paper/70">{c.email}</span>
+                ) : (
+                  <span className="text-paper/25">—</span>
+                ),
+              csv: (c) => c.email ?? "",
+            },
             {
               key: "items",
               label: "Items",
-              render: (c) => itemsLabel(c.items),
+              // One line per product rather than a comma run, so a multi-item
+              // cart stays readable.
+              render: (c) =>
+                c.items.length === 0 ? (
+                  <span className="text-paper/25">—</span>
+                ) : (
+                  <ul className="space-y-0.5">
+                    {c.items.map((i) => (
+                      <li
+                        key={i.slug}
+                        className="font-sans text-detail text-paper/80"
+                      >
+                        {i.title}
+                        <span className="text-paper/40"> ×{i.quantity}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ),
               csv: (c) => itemsLabel(c.items),
             },
             {

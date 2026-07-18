@@ -51,28 +51,93 @@ export async function GET() {
     updated_at: string;
   }[];
 
-  // Attach buyer emails for signed-in carts via the profiles mirror.
+  // Attach buyer identity for signed-in carts via the profiles mirror.
   const userIds = [...new Set(carts.map((c) => c.user_id).filter(Boolean))] as string[];
-  const emailById = new Map<string, string>();
+  const profileById = new Map<string, { email: string | null; name: string | null }>();
   if (userIds.length > 0) {
     const { data: profiles } = await admin
       .from("profiles")
-      .select("id, email")
+      .select("id, email, display_name")
       .in("id", userIds);
-    for (const p of (profiles ?? []) as { id: string; email: string }[]) {
-      emailById.set(p.id, p.email);
+    for (const p of (profiles ?? []) as {
+      id: string;
+      email: string | null;
+      display_name: string | null;
+    }[]) {
+      profileById.set(p.id, { email: p.email, name: p.display_name });
     }
   }
 
-  const liveCarts = carts.map((c) => ({
-    cartToken: c.cart_token,
-    who: c.user_id ? emailById.get(c.user_id) ?? "Signed in" : "Guest",
-    itemCount: c.item_count,
-    subtotalCents: c.subtotal_cents,
-    currency: c.currency ?? "usd",
-    items: c.items ?? [],
-    updatedAt: c.updated_at,
-  }));
+  // One row PER SHOPPER, not per cart token. A signed-in user gets a fresh
+  // cart_token on every device and every signed-out-then-in session, so their
+  // basket was previously split across several rows with no way to tell they
+  // were the same person. Signed-in carts are merged by user_id (quantities
+  // summed per product); guests have no identity to merge on, so each guest
+  // token stays its own row.
+  type Item = { slug: string; title: string; quantity: number; unitPriceCents: number };
+  type Group = {
+    key: string;
+    userId: string | null;
+    email: string | null;
+    name: string | null;
+    itemsBySlug: Map<string, Item>;
+    subtotalCents: number;
+    currency: string;
+    updatedAt: string;
+    cartCount: number;
+  };
+
+  const groups = new Map<string, Group>();
+  for (const c of carts) {
+    const key = c.user_id ? `u:${c.user_id}` : `t:${c.cart_token}`;
+    const profile = c.user_id ? profileById.get(c.user_id) : undefined;
+    let g = groups.get(key);
+    if (!g) {
+      g = {
+        key,
+        userId: c.user_id,
+        email: profile?.email ?? null,
+        name: profile?.name ?? null,
+        itemsBySlug: new Map(),
+        subtotalCents: 0,
+        currency: c.currency ?? "usd",
+        updatedAt: c.updated_at,
+        cartCount: 0,
+      };
+      groups.set(key, g);
+    }
+    g.subtotalCents += c.subtotal_cents;
+    g.cartCount += 1;
+    // Carts are ordered newest first, so the first one seen is the latest.
+    if (c.updated_at > g.updatedAt) g.updatedAt = c.updated_at;
+    for (const item of c.items ?? []) {
+      const existing = g.itemsBySlug.get(item.slug);
+      if (existing) existing.quantity += item.quantity;
+      else g.itemsBySlug.set(item.slug, { ...item });
+    }
+  }
+
+  const liveCarts = [...groups.values()]
+    .map((g) => {
+      const items = [...g.itemsBySlug.values()];
+      return {
+        key: g.key,
+        userId: g.userId,
+        email: g.email,
+        name: g.name,
+        // Best available label, in descending order of usefulness.
+        who: g.name ?? g.email ?? (g.userId ? "Signed in" : "Guest"),
+        signedIn: g.userId != null,
+        // How many device/session carts were merged into this row.
+        cartCount: g.cartCount,
+        itemCount: items.reduce((a, i) => a + i.quantity, 0),
+        subtotalCents: g.subtotalCents,
+        currency: g.currency,
+        items,
+        updatedAt: g.updatedAt,
+      };
+    })
+    .sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
 
   const orders = (ordersRes.data ?? []) as {
     id: string;
