@@ -30,7 +30,7 @@ export function MobilePremiumButton() {
 
   return (
     <Link
-      href={activated ? "/premium" : isNative ? "/pricing" : "/premium"}
+      href={activated ? "/plan" : isNative ? "/pricing" : "/premium"}
       aria-label={activated ? label : t("nav.premium")}
       className={cn(
         "inline-flex items-center gap-1 rounded-pill border px-2.5 py-1.5 font-sans text-caption font-semibold transition-colors duration-150",

@@ -64,7 +64,7 @@ export type PremiumTier = "free" | "plus" | "pro";
  * timeout so it can never hang the header (same guard as
  * hasActiveProClient — a held cross-tab auth lock must not stall the nav).
  */
-export async function getClientPremiumTier(): Promise<PremiumTier> {
+export async function getClientPremiumTier(): Promise<PremiumTier | "unknown"> {
   const check = (async (): Promise<PremiumTier> => {
     const supabase = createClient();
     const {
@@ -82,10 +82,66 @@ export async function getClientPremiumTier(): Promise<PremiumTier> {
     if (active(data?.plus_until)) return "plus";
     return "free";
   })();
-  const timeout = new Promise<PremiumTier>((resolve) =>
-    setTimeout(() => resolve("free"), 2500),
+  // On a hung read (a held cross-tab auth lock), resolve to "unknown" rather
+  // than "free": the caller keeps its last known / cached tier instead of
+  // flashing the account down to Free. A genuine free/no-row read still
+  // returns "free" from the check above.
+  const timeout = new Promise<"unknown">((resolve) =>
+    setTimeout(() => resolve("unknown"), 3000),
   );
-  return Promise.race([check, timeout]).catch(() => "free");
+  return Promise.race([check, timeout]).catch(() => "unknown");
+}
+
+export type ClientPlan = {
+  tier: PremiumTier;
+  plusUntil: string | null;
+  proUntil: string | null;
+  source: string | null;
+  supporter: boolean;
+};
+
+/**
+ * Full plan detail for the /plan screen: tier + the period-end dates +
+ * source. Same direct entitlement read + timeout guard as
+ * getClientPremiumTier; returns "unknown" on a hung read so the screen can
+ * keep waiting rather than showing Free.
+ */
+export async function getClientPlan(): Promise<ClientPlan | "unknown"> {
+  const FREE: ClientPlan = {
+    tier: "free",
+    plusUntil: null,
+    proUntil: null,
+    source: null,
+    supporter: false,
+  };
+  const check = (async (): Promise<ClientPlan> => {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return FREE;
+    const { data } = await supabase
+      .from("entitlements")
+      .select("is_supporter, plus_until, plus_source, pro_until")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (!data) return FREE;
+    const now = Date.now();
+    const active = (ts?: string | null) => !!ts && new Date(ts).getTime() > now;
+    const pro = active(data.pro_until as string | null);
+    const plus = pro || active(data.plus_until as string | null);
+    return {
+      tier: pro ? "pro" : plus ? "plus" : "free",
+      plusUntil: (data.plus_until as string | null) ?? null,
+      proUntil: (data.pro_until as string | null) ?? null,
+      source: (data.plus_source as string | null) ?? null,
+      supporter: data.is_supporter === true,
+    };
+  })();
+  const timeout = new Promise<"unknown">((resolve) =>
+    setTimeout(() => resolve("unknown"), 3500),
+  );
+  return Promise.race([check, timeout]).catch(() => "unknown");
 }
 
 /**

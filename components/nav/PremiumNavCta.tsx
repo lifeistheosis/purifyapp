@@ -38,7 +38,7 @@ export function PremiumNavCta({
 
   return (
     <Link
-      href="/premium"
+      href={activated ? "/plan" : "/premium"}
       onClick={onClick}
       className={cn(
         "inline-flex items-center justify-center gap-1.5 rounded-pill border font-sans text-ui font-semibold transition-colors duration-150",
