@@ -1,5 +1,30 @@
 [
   {
+    "id": "beta-2-2",
+    "version": "Beta 2.2",
+    "date": "2026-07-18",
+    "title": "The shop finds its voice, and its word of honor",
+    "intro": "This release lets the EIKON shop speak and be spoken to. You can now reach the Purify team from inside the shop, hear back in a living conversation, and mark a message with a small heart. And the word of others carries real weight: reviews now come only from those who received what they bought, so a rating is a testimony, not a guess. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "A word of honor on every review",
+        "body": "A review now stands on what actually arrived. You may leave one for a product only after your order is marked delivered, so a rating is the testimony of someone who held the thing in their hands. Every review carries a verified-buyer mark naming what was bought. And you can now review a whole shop, not only its products, so a maker's care over many orders is seen as one."
+      },
+      {
+        "heading": "The shop can speak, and be spoken to",
+        "body": "A new door, Contact EIKON support, sits in the shop and in your messages: it opens a real conversation with the Purify team about an order or a question, and picks the thread back up where you left it. Inside a conversation you now see the honest state of your last message, delivered when it has arrived and read when it has been seen, so you are never left wondering."
+      },
+      {
+        "heading": "A small heart, where it belongs",
+        "body": "Messages in the shop can now be marked with a heart: a double-tap on a phone, or a quiet heart button, to say a thing landed without needing more words. It is a small warmth in a place that was only ever plain text before."
+      },
+      {
+        "heading": "A cleaner desk on our side",
+        "body": "The team's support desk and the admin were given a calmer, clearer hand so your questions are answered with less friction and less delay. Cache version steps to purify-beta-2.2."
+      }
+    ]
+  },
+  {
     "id": "beta-2-1",
     "version": "Beta 2.1",
     "date": "2026-07-17",

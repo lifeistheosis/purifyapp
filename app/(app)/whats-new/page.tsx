@@ -23,6 +23,22 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 2.2",
+ kind: "The shop finds its voice, and its word of honor",
+ date: "July 18, 2026",
+ blurb:
+  "The EIKON shop can speak and be spoken to now: reach the Purify team from inside the shop, hear back in a living conversation, and mark a message with a small heart. And the word of others carries real weight, since reviews come only from those who received what they bought.",
+ items: [
+  "A word of honor on reviews: you may review a product only after your order is marked delivered, so a rating is the testimony of someone who held it. Every review carries a verified-buyer mark naming what was bought.",
+  "Review a whole shop, not only its products, so a maker's care over many orders is seen as one.",
+  "Contact EIKON support: a new door in the shop and in your messages opens a real conversation with the Purify team about an order or a question, and picks the thread back up where you left it.",
+  "Honest message states: your last message now reads delivered when it has arrived and read when it has been seen.",
+  "A small heart, where it belongs: mark a message with a heart, a double-tap on a phone or a quiet heart button.",
+  "A calmer support desk and admin on our side, so your questions are answered with less friction.",
+  "Cache version steps to purify-beta-2.2.",
+ ],
+ },
+ {
  version: "Beta 2.1",
  kind: "The plan finds its shape, and reading finds its light",
  date: "July 17, 2026",
