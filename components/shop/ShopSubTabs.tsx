@@ -38,7 +38,14 @@ export function ShopSubTabs() {
       // Android WebView the shop's product imagery bled through a
       // bg-night/92 + backdrop-blur bar as it scrolled, which read as a
       // see-through top bar. A flat bg-night keeps the row legible.
-      className="md:hidden sticky top-12 z-20 bg-night border-b border-white/8"
+      //
+      // The offset lives in .sticky-safe-top (globals.css), NOT a `top-*`
+      // utility: the shop renders no MobileTopBar, so what sits above this row
+      // differs by surface (72px AppNav on the web, nothing but the status bar
+      // on native). The old hard-coded top-12 reserved 48px for a bar that
+      // exists on neither, which left a transparent band where the hero
+      // scrolled under the status bar in the app.
+      className="md:hidden sticky sticky-safe-top z-20 bg-night border-b border-white/8"
     >
       {/* Quiet text tabs; only the active one wears a pill. The cart is
           always reachable (hiding it while empty made the row jump around),
