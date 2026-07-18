@@ -1,10 +1,52 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  cartSyncSchema,
   shopCheckoutSchema,
   shopIconRequestSchema,
   shopMerchantApplicationSchema,
 } from "@/lib/security/schemas";
+
+describe("cartSyncSchema", () => {
+  const token = "b6f2ebfc-709e-4c75-a501-69a0a125bc08";
+  it("accepts a valid guest cart snapshot", () => {
+    const r = cartSyncSchema.safeParse({
+      cartToken: token,
+      items: [{ slug: "icon-x", title: "X", quantity: 2, unitPriceCents: 500 }],
+      subtotalCents: 1000,
+      currency: "usd",
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("accepts an empty cart (clears the row) and defaults a missing title", () => {
+    const r = cartSyncSchema.safeParse({
+      cartToken: token,
+      items: [{ slug: "x", quantity: 1, unitPriceCents: 0 }],
+      subtotalCents: 0,
+    });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.items[0].title).toBe("");
+  });
+
+  it("rejects a non-uuid token, over-quantity, and too many items", () => {
+    expect(cartSyncSchema.safeParse({ cartToken: "nope", items: [], subtotalCents: 0 }).success).toBe(false);
+    expect(
+      cartSyncSchema.safeParse({
+        cartToken: token,
+        items: [{ slug: "x", quantity: 99, unitPriceCents: 1 }],
+        subtotalCents: 1,
+      }).success,
+    ).toBe(false);
+    expect(
+      cartSyncSchema.safeParse({
+        cartToken: token,
+        items: Array.from({ length: 51 }, () => ({ slug: "x", quantity: 1, unitPriceCents: 1 })),
+        subtotalCents: 51,
+      }).success,
+    ).toBe(false);
+  });
+});
 
 describe("shopIconRequestSchema", () => {
   it("accepts a minimal anonymous request", () => {

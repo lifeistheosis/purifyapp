@@ -378,6 +378,40 @@ export function DataTable<T>({
   );
 }
 
+// ── SubTabs ───────────────────────────────────────────────────────────────
+// Pill row for switching sub-panels inside a hub tab. Same look as the
+// existing Marketplace panel switcher, extracted so the hub shells share it.
+export function SubTabs<T extends string>({
+  tabs,
+  active,
+  onChange,
+}: {
+  tabs: readonly (readonly [T, string])[];
+  active: T;
+  onChange: (t: T) => void;
+}) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {tabs.map(([id, label]) => (
+        <button
+          key={id}
+          type="button"
+          onClick={() => onChange(id)}
+          aria-pressed={active === id}
+          className={
+            "rounded-pill px-4 py-1.5 font-sans text-detail font-medium transition-colors " +
+            (active === id
+              ? "bg-gold text-night"
+              : "border border-paper/15 text-paper/65 hover:text-paper")
+          }
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 // ── Pill ────────────────────────────────────────────────────────────────────
 export function Pill({
   children,

@@ -5,50 +5,46 @@
 // (Rebuild caches across content surfaces).
 
 import { useEffect, useState, useTransition, type ComponentType } from "react";
-import { OverviewTab } from "./tabs/OverviewTab";
-import { LiveTab } from "./tabs/LiveTab";
-import { TrafficTab } from "./tabs/TrafficTab";
-import { AudienceTab } from "./tabs/AudienceTab";
-import { ContentTab } from "./tabs/ContentTab";
-import { EngagementTab } from "./tabs/EngagementTab";
-import { UsersTab } from "./tabs/UsersTab";
-import { SustainabilityTab } from "./tabs/SustainabilityTab";
-import { ContentHealthTab } from "./tabs/ContentHealthTab";
-import { HealthTab } from "./tabs/HealthTab";
-import { ShopTab } from "./tabs/ShopTab";
-import { MarketplaceTab } from "./tabs/MarketplaceTab";
+import { CommerceOverviewTab } from "./tabs/CommerceOverviewTab";
+import { OrdersTab } from "./tabs/OrdersTab";
+import { RevenueTab } from "./tabs/RevenueTab";
+import { SubscriptionsTab } from "./tabs/SubscriptionsTab";
+import { MessagesTab } from "./tabs/MessagesTab";
+import { UsersHubTab } from "./tabs/UsersHubTab";
+import { PushTab } from "./tabs/PushTab";
+import { ShopHubTab } from "./tabs/ShopHubTab";
 import { CommunityTab } from "./tabs/CommunityTab";
+import { TrafficHubTab } from "./tabs/TrafficHubTab";
 import { Toolbar, ToolbarButton } from "./primitives";
 
+// Commerce-first hub. The four site-analytics tabs are folded into
+// TrafficHubTab; the EIKON catalog + marketplace governance into
+// ShopHubTab. Content / Content-Health / Service-Health are intentionally
+// unlinked from the nav (their components remain in ./tabs for direct use).
+// Messages, Push, and the Users carts panels arrive in later phases.
 type TabId =
   | "overview"
-  | "live"
-  | "traffic"
-  | "audience"
-  | "content"
-  | "engagement"
+  | "orders"
+  | "revenue"
+  | "subscriptions"
+  | "messages"
   | "users"
-  | "sustainability"
-  | "content-health"
-  | "health"
+  | "push"
   | "shop"
-  | "marketplace"
-  | "community";
+  | "community"
+  | "traffic";
 
 const TABS: { id: TabId; label: string; eyebrow: string; component: ComponentType }[] = [
-  { id: "overview", label: "Overview", eyebrow: "At a glance", component: OverviewTab },
-  { id: "live", label: "Live", eyebrow: "Right now", component: LiveTab },
-  { id: "traffic", label: "Traffic", eyebrow: "Time-series", component: TrafficTab },
-  { id: "audience", label: "Audience", eyebrow: "Who's reading", component: AudienceTab },
-  { id: "content", label: "Content", eyebrow: "What's working", component: ContentTab },
-  { id: "engagement", label: "Engagement", eyebrow: "Repeat visits", component: EngagementTab },
-  { id: "users", label: "Users", eyebrow: "Profiles", component: UsersTab },
-  { id: "sustainability", label: "Sustainability", eyebrow: "Paying for itself", component: SustainabilityTab },
-  { id: "content-health", label: "Content Health", eyebrow: "Gaps in the data tree", component: ContentHealthTab },
-  { id: "health", label: "Service Health", eyebrow: "Outbound deps", component: HealthTab },
-  { id: "shop", label: "Shop", eyebrow: "EIKON, requests, merchants", component: ShopTab },
-  { id: "marketplace", label: "Marketplace", eyebrow: "Owner console", component: MarketplaceTab },
+  { id: "overview", label: "Overview", eyebrow: "Money at a glance", component: CommerceOverviewTab },
+  { id: "orders", label: "Orders", eyebrow: "Every order", component: OrdersTab },
+  { id: "revenue", label: "Revenue", eyebrow: "Shop, donations, subs", component: RevenueTab },
+  { id: "subscriptions", label: "Subscriptions", eyebrow: "Plus & Pro", component: SubscriptionsTab },
+  { id: "messages", label: "Messages", eyebrow: "Support + shop", component: MessagesTab },
+  { id: "users", label: "Users", eyebrow: "Profiles + carts", component: UsersHubTab },
+  { id: "push", label: "Push", eyebrow: "Broadcast notifications", component: PushTab },
+  { id: "shop", label: "Shop", eyebrow: "EIKON + marketplace", component: ShopHubTab },
   { id: "community", label: "Community", eyebrow: "Campaigns + Trapeza moderation", component: CommunityTab },
+  { id: "traffic", label: "Traffic", eyebrow: "Site analytics", component: TrafficHubTab },
 ];
 
 function isTabId(s: string | null): s is TabId {
@@ -102,7 +98,7 @@ export function AdminShell({ adminEmail }: { adminEmail: string }) {
     startTransition(() => {});
   }
 
-  const Current = TABS.find((t) => t.id === active)?.component ?? OverviewTab;
+  const Current = TABS.find((t) => t.id === active)?.component ?? CommerceOverviewTab;
   const currentMeta = TABS.find((t) => t.id === active);
 
   return (

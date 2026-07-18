@@ -1,8 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { dueKind, reminderPayload, type ReminderKind } from "@/lib/push/schedule";
-import { apnsConfigured, sendApns } from "@/lib/push/providers/apns";
-import { fcmConfigured, sendFcm } from "@/lib/push/providers/fcm";
+import {
+  apnsConfigured,
+  fcmConfigured,
+  sendNativeOne,
+  sendWebPushOne,
+  webPushConfigured,
+} from "@/lib/push/send";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -70,42 +75,20 @@ async function deliverWeb(
       });
   }
 
-  const vapidPub = process.env.VAPID_PUBLIC_KEY;
-  const vapidPriv = process.env.VAPID_PRIVATE_KEY;
-  const vapidSubject = process.env.VAPID_SUBJECT;
-  if (!vapidPub || !vapidPriv || !vapidSubject) {
+  if (!webPushConfigured()) {
     return { mode: "dry-run", reason: "VAPID env vars not set", candidates: candidates.length };
   }
-
-  let webpush: typeof import("web-push") | null = null;
-  try {
-    webpush = (await import("web-push")).default ?? (await import("web-push"));
-  } catch {
-    return { mode: "dry-run", reason: "web-push not installed", candidates: candidates.length };
-  }
-  webpush.setVapidDetails(vapidSubject, vapidPub, vapidPriv);
 
   let sent = 0;
   let failed = 0;
   for (const c of candidates) {
-    const payload = JSON.stringify({ kind: c.kind, ...reminderPayload(c.kind) });
-    try {
-      await webpush.sendNotification(
-        { endpoint: c.endpoint, keys: { p256dh: c.p256dh, auth: c.auth } },
-        payload,
-      );
-      sent++;
-      await supa
-        .from("push_subscriptions")
-        .update({ last_sent_at: new Date().toISOString() })
-        .eq("endpoint", c.endpoint);
-    } catch (e) {
-      failed++;
-      const msg = String(e);
-      if (msg.includes("410") || msg.includes("404")) {
-        await supa.from("push_subscriptions").delete().eq("endpoint", c.endpoint);
-      }
-    }
+    const r = await sendWebPushOne(
+      supa,
+      { endpoint: c.endpoint, p256dh: c.p256dh, auth: c.auth },
+      { kind: c.kind, ...reminderPayload(c.kind) },
+    );
+    if (r.ok) sent++;
+    else failed++;
   }
   return { sent, failed, candidates: candidates.length };
 }
@@ -135,9 +118,7 @@ async function deliverNative(
       });
   }
 
-  const haveApns = apnsConfigured();
-  const haveFcm = fcmConfigured();
-  if (!haveApns && !haveFcm) {
+  if (!apnsConfigured() && !fcmConfigured()) {
     return { mode: "dry-run", reason: "APNs/FCM env not set", candidates: candidates.length };
   }
 
@@ -145,28 +126,14 @@ async function deliverNative(
   let failed = 0;
   let skipped = 0;
   for (const c of candidates) {
-    const configured = c.platform === "ios" ? haveApns : haveFcm;
-    if (!configured) {
-      skipped++;
-      continue;
-    }
-    const msg = reminderPayload(c.kind);
-    const res =
-      c.platform === "ios"
-        ? await sendApns(c.token, msg)
-        : await sendFcm(c.token, msg);
-    if (res.ok) {
-      sent++;
-      await supa
-        .from("device_push_tokens")
-        .update({ last_sent_at: new Date().toISOString() })
-        .eq("token", c.token);
-    } else {
-      failed++;
-      if (res.gone) {
-        await supa.from("device_push_tokens").delete().eq("token", c.token);
-      }
-    }
+    const res = await sendNativeOne(
+      supa,
+      { token: c.token, platform: c.platform },
+      reminderPayload(c.kind),
+    );
+    if (res.ok) sent++;
+    else if (res.skipped) skipped++;
+    else failed++;
   }
   return { sent, failed, skipped, candidates: candidates.length };
 }

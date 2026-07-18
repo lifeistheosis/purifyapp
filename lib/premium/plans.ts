@@ -13,6 +13,17 @@
 // experience (reading modes, the EIKON Box, EIKON member benefits).
 // Free EIKON shipping belongs to PRO, not Plus.
 
+// Numeric plan prices in cents, the single source for any MATH (the
+// localized copy strings below cannot be parsed). Used by the admin
+// revenue/subscriptions estimate (lib/premium/mrr.ts). These MIRROR the
+// display strings; changing a real price is still a release stop-condition.
+export const PLAN_PRICE_CENTS = {
+  plusMonthly: 999,
+  plusYearly: 9900,
+  proMonthly: 1999,
+  proYearly: 19900,
+} as const;
+
 export type PlanFeature = {
   /** Stable slug, shared across locales. Renderers key icons off it and
    * the parity test pins EN/DE against drift. */

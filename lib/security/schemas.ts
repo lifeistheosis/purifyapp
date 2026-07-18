@@ -24,6 +24,24 @@ export const trackSchema = z.object({
   referrer: z.string().max(512).optional().nullable(),
 });
 
+/** /api/shop/cart/sync POST body — a client-generated cart token plus the
+ * cart snapshot. Analytics/recovery only; never trusted for money. */
+export const cartSyncSchema = z.object({
+  cartToken: z.string().uuid(),
+  items: z
+    .array(
+      z.object({
+        slug: z.string().min(1).max(200),
+        title: z.string().max(200).optional().default(""),
+        quantity: z.number().int().min(1).max(10),
+        unitPriceCents: z.number().int().min(0).max(10_000_000),
+      }),
+    )
+    .max(50),
+  subtotalCents: z.number().int().min(0).max(100_000_000),
+  currency: z.string().max(8).optional().nullable(),
+});
+
 /** CSP report body (browsers send "application/csp-report" with this shape). */
 export const cspReportSchema = z.object({
   "csp-report": z
