@@ -5,7 +5,15 @@
 // Every @capacitor import here is DYNAMIC and reached only inside the native
 // shell, so this module is safe to import from web client code — the plugin
 // never enters the browser bundle (same guard pattern as NativeBridge.tsx).
+//
+// Every call to /api/push/device goes through apiFetch, never bare fetch: this
+// module runs ONLY inside the native shell, which is served from
+// https://localhost with app/api stashed out of the export. A relative fetch
+// there resolves to the local bundle, where no route handler exists, so the
+// token silently never reached the server and device_push_tokens stayed empty.
+// apiFetch rewrites to SITE_URL and attaches the Bearer token.
 
+import { apiFetch } from "@/lib/api/client";
 import { MORNING_DEFAULT, EVENING_DEFAULT } from "./client";
 
 const TOKEN_KEY = "purify:push.native-token"; // last token we registered
@@ -76,7 +84,7 @@ async function attachListeners(): Promise<void> {
       timezone: tz(),
     };
     try {
-      const res = await fetch("/api/push/device", {
+      const res = await apiFetch("/api/push/device", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -154,7 +162,7 @@ export async function disableNative(): Promise<void> {
   removeItem(PENDING_KEY);
   if (token) {
     try {
-      await fetch(`/api/push/device?token=${encodeURIComponent(token)}`, {
+      await apiFetch(`/api/push/device?token=${encodeURIComponent(token)}`, {
         method: "DELETE",
       });
     } catch {
@@ -173,7 +181,7 @@ export async function updateNativeTimes(
   const plat = platform();
   if (!plat) return;
   try {
-    await fetch("/api/push/device", {
+    await apiFetch("/api/push/device", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -194,7 +202,7 @@ export async function flushPendingNative(): Promise<void> {
   const raw = getItem(PENDING_KEY);
   if (!raw) return;
   try {
-    const res = await fetch("/api/push/device", {
+    const res = await apiFetch("/api/push/device", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: raw,

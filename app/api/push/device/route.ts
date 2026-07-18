@@ -1,6 +1,7 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/server";
+import { corsPreflight, corsRoute } from "@/lib/api/cors";
+import { createClientFromRequest } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,6 +11,14 @@ export const dynamic = "force-dynamic";
  * The web counterpart is /api/push/subscribe (Web Push endpoints); this one
  * stores APNs / FCM device tokens in `device_push_tokens`. Same auth + RLS
  * shape: a row is owned by the signed-in user.
+ *
+ * This route is ONLY ever called by the native shell, which reaches it
+ * cross-origin from https://localhost with a Bearer token (see
+ * lib/push/native.ts → apiFetch). So it must authenticate from the header
+ * rather than a cookie, and it must answer the CORS preflight — exactly like
+ * the shop/checkout routes. Using the cookie-bound client here made every
+ * registration 401, which left device_push_tokens empty and silently broke
+ * every native broadcast.
  */
 const Body = z.object({
   token: z.string().min(1).max(4096),
@@ -19,8 +28,8 @@ const Body = z.object({
   timezone: z.string().max(80).optional(),
 });
 
-export async function POST(req: NextRequest) {
-  const supa = await createClient();
+async function handlePOST(req: Request) {
+  const supa = await createClientFromRequest(req);
   const {
     data: { user },
   } = await supa.auth.getUser();
@@ -51,14 +60,14 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ ok: true });
 }
 
-export async function DELETE(req: NextRequest) {
-  const supa = await createClient();
+async function handleDELETE(req: Request) {
+  const supa = await createClientFromRequest(req);
   const {
     data: { user },
   } = await supa.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const token = req.nextUrl.searchParams.get("token");
+  const token = new URL(req.url).searchParams.get("token");
   if (!token) return NextResponse.json({ error: "missing token" }, { status: 400 });
 
   await supa
@@ -69,3 +78,7 @@ export async function DELETE(req: NextRequest) {
 
   return NextResponse.json({ ok: true });
 }
+
+export const POST = corsRoute(handlePOST);
+export const DELETE = corsRoute(handleDELETE);
+export const OPTIONS = corsPreflight;
