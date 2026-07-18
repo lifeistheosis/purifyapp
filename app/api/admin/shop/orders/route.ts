@@ -21,14 +21,49 @@ export async function GET() {
   const { data, error } = await admin
     .from("shop_orders")
     .select(
-      "*, store:shop_stores(public_name, slug), items:shop_order_items(title, unit_price_cents, quantity)",
+      "*, store:shop_stores(public_name, slug), items:shop_order_items(title, unit_price_cents, quantity, product_id)",
     )
     .order("created_at", { ascending: false })
     .limit(300);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  // Supplier reorder links, keyed by product. This is an admin-only surface
+  // (same gate as the product console), so sourcing data is allowed to travel
+  // here: when a paid order arrives the owner clicks straight through to the
+  // supplier to reorder the item. Kept as a side map so the sourcing rows are
+  // fetched once, not per line item.
+  const orders = data ?? [];
+  const productIds = Array.from(
+    new Set(
+      orders.flatMap((o) =>
+        ((o.items as { product_id: string | null }[] | null) ?? [])
+          .map((i) => i.product_id)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    ),
+  );
+  let supplierByProduct: Record<
+    string,
+    { url: string | null; sku: string | null }
+  > = {};
+  if (productIds.length > 0) {
+    const { data: srcRows } = await admin
+      .from("shop_product_sourcing")
+      .select("product_id, supplier_url, supplier_sku")
+      .in("product_id", productIds);
+    supplierByProduct = Object.fromEntries(
+      (srcRows ?? []).map((s) => [
+        s.product_id as string,
+        {
+          url: (s.supplier_url as string | null) ?? null,
+          sku: (s.supplier_sku as string | null) ?? null,
+        },
+      ]),
+    );
+  }
+
   return NextResponse.json(
-    { orders: data ?? [] },
+    { orders, supplierByProduct },
     { headers: { "Cache-Control": "no-store" } },
   );
 }

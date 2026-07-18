@@ -24,8 +24,15 @@ type AdminOrder = {
   shipping_address: unknown;
   created_at: string;
   store: { public_name: string | null; slug: string } | null;
-  items: { title: string; unit_price_cents: number; quantity: number }[];
+  items: {
+    title: string;
+    unit_price_cents: number;
+    quantity: number;
+    product_id: string | null;
+  }[];
 };
+
+type SupplierLink = { url: string | null; sku: string | null };
 
 type PayFilter = "all" | "pending" | "paid" | "refunded" | "cancelled";
 
@@ -70,6 +77,9 @@ function fmtDate(iso: string) {
 
 export function OrdersTab() {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
+  const [supplierByProduct, setSupplierByProduct] = useState<
+    Record<string, SupplierLink>
+  >({});
   const [filter, setFilter] = useState<PayFilter>("all");
   const [selected, setSelected] = useState<AdminOrder | null>(null);
   const [saving, setSaving] = useState(false);
@@ -83,7 +93,10 @@ export function OrdersTab() {
         const d = await fetch("/api/admin/shop/orders", {
           cache: "no-store",
         }).then((r) => r.json());
-        if (alive) setOrders(d.orders ?? []);
+        if (alive) {
+          setOrders(d.orders ?? []);
+          setSupplierByProduct(d.supplierByProduct ?? {});
+        }
       } catch {
         /* ignore */
       }
@@ -244,16 +257,38 @@ export function OrdersTab() {
                 Line items
               </p>
               <ul className="space-y-1.5">
-                {selected.items.map((it, i) => (
-                  <li key={i} className="flex justify-between gap-3 text-paper/85">
-                    <span className="truncate">
-                      {it.title} × {it.quantity}
-                    </span>
-                    <span className="tabular-nums shrink-0">
-                      {money(it.unit_price_cents * it.quantity, selected.currency)}
-                    </span>
-                  </li>
-                ))}
+                {selected.items.map((it, i) => {
+                  const src = it.product_id
+                    ? supplierByProduct[it.product_id]
+                    : null;
+                  return (
+                    <li key={i} className="flex justify-between gap-3 text-paper/85">
+                      <span className="flex min-w-0 items-baseline gap-2">
+                        <span className="truncate">
+                          {it.title} × {it.quantity}
+                        </span>
+                        {src?.url ? (
+                          <a
+                            href={src.url}
+                            target="_blank"
+                            rel="noopener noreferrer nofollow"
+                            title={
+                              src.sku
+                                ? `Reorder from supplier · SKU ${src.sku}`
+                                : "Open the supplier listing to reorder"
+                            }
+                            className="shrink-0 whitespace-nowrap font-semibold text-gold hover:text-gold-pale"
+                          >
+                            reorder ↗
+                          </a>
+                        ) : null}
+                      </span>
+                      <span className="tabular-nums shrink-0">
+                        {money(it.unit_price_cents * it.quantity, selected.currency)}
+                      </span>
+                    </li>
+                  );
+                })}
               </ul>
 
               <p className="text-eyebrow uppercase tracking-[1.2px] text-paper/45 mt-4 mb-2">
