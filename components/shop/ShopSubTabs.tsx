@@ -34,7 +34,11 @@ export function ShopSubTabs() {
   return (
     <nav
       aria-label="Shop sections"
-      className="md:hidden sticky top-12 z-20 bg-night/92 backdrop-blur border-b border-white/8"
+      // Solid background, not a translucent frosted one: in the native
+      // Android WebView the shop's product imagery bled through a
+      // bg-night/92 + backdrop-blur bar as it scrolled, which read as a
+      // see-through top bar. A flat bg-night keeps the row legible.
+      className="md:hidden sticky top-12 z-20 bg-night border-b border-white/8"
     >
       {/* Quiet text tabs; only the active one wears a pill. The cart is
           always reachable (hiding it while empty made the row jump around),
