@@ -7,6 +7,7 @@ import { describe, it, expect } from "vitest";
 import {
   deriveEntitlements,
   plusEnforcedFor,
+  proShipsFree,
   PLUS_ENFORCED_NATIVE,
   PLUS_ENFORCED_WEB,
   OPEN_ENTITLEMENTS,
@@ -43,6 +44,13 @@ describe("deriveEntitlements — not enforced", () => {
     ).toEqual(OPEN_ENTITLEMENTS);
     expect(OPEN_ENTITLEMENTS.sync).toBe(true);
     expect(OPEN_ENTITLEMENTS.plusFeatures).toBe(true);
+    expect(OPEN_ENTITLEMENTS.proFeatures).toBe(true);
+  });
+
+  it("never opens the paid Pro membership itself", () => {
+    // proFeatures is the software layer; `pro` drives real fulfillment
+    // (EIKON Box, shipping) and must stay false in the open gate.
+    expect(OPEN_ENTITLEMENTS.pro).toBe(false);
   });
 });
 
@@ -130,6 +138,7 @@ describe("deriveEntitlements — enforced", () => {
     expect(e.plus).toBe(true); // Pro includes Plus
     expect(e.sync).toBe(true);
     expect(e.plusFeatures).toBe(true);
+    expect(e.proFeatures).toBe(true);
   });
 
   it("expired Pro: not pro, not plus", () => {
@@ -143,7 +152,7 @@ describe("deriveEntitlements — enforced", () => {
     expect(e.plus).toBe(false);
   });
 
-  it("a plain Plus sub is not Pro", () => {
+  it("a plain Plus sub is not Pro and lacks the Pro feature layer", () => {
     const e = enforced({
       is_supporter: false,
       plus_until: FUTURE,
@@ -151,5 +160,30 @@ describe("deriveEntitlements — enforced", () => {
     });
     expect(e.plus).toBe(true);
     expect(e.pro).toBe(false);
+    expect(e.proFeatures).toBe(false);
+  });
+});
+
+describe("proShipsFree — the Pro-only shipping rule", () => {
+  it("active Pro ships free", () => {
+    expect(proShipsFree({ pro_until: FUTURE }, NOW)).toBe(true);
+  });
+
+  it("a Plus-only row pays shipping (the perk moved to Pro)", () => {
+    expect(proShipsFree({ pro_until: null }, NOW)).toBe(false);
+  });
+
+  it("expired Pro pays shipping", () => {
+    expect(proShipsFree({ pro_until: PAST }, NOW)).toBe(false);
+  });
+
+  it("no row / absent column pays shipping", () => {
+    expect(proShipsFree(null, NOW)).toBe(false);
+    expect(proShipsFree(undefined, NOW)).toBe(false);
+    expect(proShipsFree({}, NOW)).toBe(false);
+  });
+
+  it("garbage timestamps fail closed", () => {
+    expect(proShipsFree({ pro_until: "not-a-date" }, NOW)).toBe(false);
   });
 });

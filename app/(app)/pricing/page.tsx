@@ -14,10 +14,10 @@ import { PREMIUM_PLAN_EN, PREMIUM_PLAN_DE } from "@/lib/premium/plans";
 export const metadata = {
   title: "Pricing & Purify Plus",
   description:
-    "The core spiritual treasury of Purify is free, always. Purify Plus carries your reading across every device; Purify Pro adds a monthly mailed icon and shop codes. What is free today stays free.",
+    "The core spiritual treasury of Purify is free, always. Purify Plus is the premium reading and study experience; Purify Pro adds premium reading modes, the monthly EIKON Box, and EIKON member benefits. What is free today stays free.",
 };
 
-type Tier = { title: string; sub: string };
+type Tier = { title: string; sub: string; soon?: boolean };
 
 type PricingCopy = {
   eyebrow: string;
@@ -28,6 +28,8 @@ type PricingCopy = {
   freeFoot: string;
   // The opening-drop line shown under the paid prices.
   openingOffer: string;
+  // Pill label for perks marked `soon` (e.g. Studio Audio).
+  soonLabel: string;
   plusTitle: string;
   plusLede: string;
   plusItems: Tier[];
@@ -213,6 +215,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
                 <span>
                   <span className="block font-sans text-ui font-semibold text-paper">
                     {item.title}
+                    {item.soon && <SoonPill label={copy.soonLabel} />}
                   </span>
                   <span className="block font-sans text-caption text-paper/55">
                     {item.sub}
@@ -273,6 +276,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
                 <span>
                   <span className="block font-sans text-ui font-semibold text-paper">
                     {item.title}
+                    {item.soon && <SoonPill label={copy.soonLabel} />}
                   </span>
                   <span className="block font-sans text-caption text-paper/55">
                     {item.sub}
@@ -335,6 +339,14 @@ function PricingView({ copy }: { copy: PricingCopy }) {
         </div>
       </div>
     </section>
+  );
+}
+
+function SoonPill({ label }: { label: string }) {
+  return (
+    <span className="ml-2 inline-flex translate-y-[-1px] items-center rounded-pill border border-[#e9c86a]/40 bg-[#e9c86a]/10 px-1.5 py-px align-middle font-sans text-[10px] font-semibold tracking-[0.6px] text-[#e9c86a]/90">
+      {label}
+    </span>
   );
 }
 

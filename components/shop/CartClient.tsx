@@ -9,7 +9,7 @@ import { Minus } from "@/components/ui/icons/Minus";
 import { Plus } from "@/components/ui/icons/Plus";
 import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/cn";
-import { hasActivePlusClient } from "@/lib/entitlements/client";
+import { hasActiveProClient } from "@/lib/entitlements/client";
 import {
   cartSubtotalCents,
   clearCart,
@@ -32,10 +32,10 @@ export function CartClient() {
   const router = useRouter();
   const items = useCart();
   const { data: config } = useAsyncData(fetchShopConfig, []);
-  // Display-only: reflects the buyer's real Plus shipping perk. Fails open to
+  // Display-only: reflects the buyer's real Pro shipping perk. Fails open to
   // false (the server re-decides shipping at checkout either way), so a
-  // jammed auth lock never blocks the cart. See hasActivePlusClient.
-  const { data: plus } = useAsyncData(hasActivePlusClient, []);
+  // jammed auth lock never blocks the cart. See hasActiveProClient.
+  const { data: pro } = useAsyncData(hasActiveProClient, []);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [agreed, setAgreed] = useState(false);
@@ -195,17 +195,17 @@ export function CartClient() {
               {formatPrice(subtotal, currency)}
             </p>
           </div>
-          {/* Shipping line, honest to the buyer's real Plus status. */}
+          {/* Shipping line, honest to the buyer's real Pro status. */}
           <div className="mt-1.5 flex items-center justify-between gap-3">
             <p className="font-sans text-caption text-paper/55">Shipping</p>
-            {plus ? (
+            {pro ? (
               <p className="font-sans text-caption font-semibold text-emerald-300">
                 {config ? (
                   <span className="mr-1.5 text-paper/40 line-through">
                     {formatPrice(config.flatShippingCents, currency)}
                   </span>
                 ) : null}
-                Free with Purify Plus
+                Free with Purify Pro
               </p>
             ) : (
               <p className="font-sans text-caption text-paper/70">
@@ -215,12 +215,12 @@ export function CartClient() {
               </p>
             )}
           </div>
-          {!plus ? (
+          {!pro ? (
             <Link
               href="/pricing"
               className="mt-1.5 inline-flex items-center gap-1 font-sans text-caption font-medium text-gold hover:text-gold-pale"
             >
-              Free shipping on every order with Purify Plus →
+              Free shipping on every order with Purify Pro →
             </Link>
           ) : null}
 

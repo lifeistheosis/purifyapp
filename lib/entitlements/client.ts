@@ -14,6 +14,7 @@ import { isNativeClient } from "@/lib/platform/native";
 import {
   deriveEntitlements,
   plusEnforcedFor,
+  proShipsFree,
   OPEN_ENTITLEMENTS,
   FREE_ENTITLEMENTS,
   type Entitlements,
@@ -53,11 +54,14 @@ export async function canSync(): Promise<boolean> {
 }
 
 /**
- * Does the signed-in user hold an active Purify Plus subscription right now?
- * The browser counterpart to lib/shop/checkout → hasActivePlus, used to show
- * the free-shipping line in the shop. Unlike getClientEntitlements this is NOT
- * gated on the enforcement flags: free EIKON shipping is a perk of actually
- * holding Plus, so it reads the entitlements row directly (RLS self-select).
+ * Do the signed-in user's EIKON orders ship free right now? The browser
+ * counterpart to lib/shop/checkout → hasProShipping, used to show the
+ * free-shipping line in the shop. Free shipping is a Purify PRO perk (it
+ * moved from Plus with the Beta 2.1 ladder restructure); the date rule is
+ * the shared proShipsFree predicate so display and checkout can never
+ * disagree. Unlike getClientEntitlements this is NOT gated on the
+ * enforcement flags: it is a perk of actually holding Pro, so it reads
+ * the entitlements row directly (RLS self-select).
  *
  * HARD TIME LIMIT, fail open to `false`: supabase-js's getUser() waits on a
  * cross-tab navigator.locks auth lock, and a held lock in another tab can
@@ -66,7 +70,7 @@ export async function canSync(): Promise<boolean> {
  * observed live 2026-07-11: catalog APIs returned 200 while the page hung on
  * this call forever. A public page must never wait on an entitlement nicety.
  */
-export async function hasActivePlusClient(): Promise<boolean> {
+export async function hasActiveProClient(): Promise<boolean> {
   const check = (async () => {
     const supabase = createClient();
     const {
@@ -75,15 +79,10 @@ export async function hasActivePlusClient(): Promise<boolean> {
     if (!user) return false;
     const { data } = await supabase
       .from("entitlements")
-      .select("plus_until, pro_until")
+      .select("pro_until")
       .eq("user_id", user.id)
       .maybeSingle();
-    // Pro includes Plus, so free EIKON shipping applies to either.
-    const now = new Date();
-    return (
-      (!!data?.plus_until && new Date(data.plus_until) > now) ||
-      (!!data?.pro_until && new Date(data.pro_until) > now)
-    );
+    return proShipsFree(data);
   })();
   const timeout = new Promise<boolean>((resolve) =>
     setTimeout(() => resolve(false), 2500),

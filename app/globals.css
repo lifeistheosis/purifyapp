@@ -987,6 +987,86 @@ html.reader-focus [data-reader-exit] {
  }
 }
 
+/* ── Premium Reading Modes (Purify Pro) ──────────────────────────────
+   ReadingModeController (components/reader/ReaderPrefs.tsx) reflects the
+   persisted theme as `data-reading-mode` on <html>, only while a reader
+   surface is mounted (unmount strips it, same discipline as
+   .reader-focus). Each mode re-maps the @theme palette variables, so
+   every `bg-night` / `text-paper/NN` / `*-gold` utility — and the body
+   itself — re-colors in one paint with zero per-component styling.
+
+   Contrast notes: body text is paper-on-night in every mode; all four
+   pairs hold ≥ 7:1 (AAA) for body copy. Parchment inverts the pair
+   (light page, dark ink) and switches `color-scheme` so form controls
+   and scrollbars follow. */
+
+html[data-reading-mode] body {
+ transition: background-color 0.35s ease-out, color 0.35s ease-out;
+}
+
+/* Candlelight — warm amber, late-hour reading. */
+html[data-reading-mode="candlelight"] {
+ --color-night: #171006;
+ --color-night-soft: #251a0a;
+ --color-paper: #f2e2c4;
+ --color-gold: #d9b45a;
+ --color-gold-soft: #bb9840;
+ --color-gold-pale: #eedcae;
+}
+
+/* Monastery — cool stone and quiet indigo. */
+html[data-reading-mode="monastery"] {
+ --color-night: #0d1119;
+ --color-night-soft: #171e2b;
+ --color-paper: #e6ebf4;
+ --color-gold: #aebedd;
+ --color-gold-soft: #8fa2c4;
+ --color-gold-pale: #dbe4f4;
+}
+
+/* Parchment — aged paper, dark ink. The semantic pair flips: `night`
+   becomes the light page, `paper` becomes the ink. */
+html[data-reading-mode="parchment"] {
+ --color-night: #f1e8d4;
+ --color-night-soft: #e7dcc1;
+ --color-paper: #2b2317;
+ --color-gold: #7c621d;
+ --color-gold-soft: #6b5316;
+ --color-gold-pale: #5d4a1a;
+ color-scheme: light;
+}
+
+/* The Bible reader's footnote block (.lic-notes) predates the token
+   ramp and hard-codes white rgba() text; on the light parchment page
+   those lines would vanish. Re-ink them, same alphas, dark ink. */
+html[data-reading-mode="parchment"] .lic-notes > summary::after {
+ color: rgba(43, 35, 23, 0.35);
+}
+html[data-reading-mode="parchment"] .lic-notes > summary:hover {
+ color: rgba(43, 35, 23, 0.75);
+}
+html[data-reading-mode="parchment"] .lic-notes .lic-note {
+ color: rgba(43, 35, 23, 0.6);
+}
+html[data-reading-mode="parchment"] .lic-notes .lic-note-x .lic-back {
+ color: rgba(43, 35, 23, 0.4);
+}
+html[data-reading-mode="parchment"] .lic-notes .fr,
+html[data-reading-mode="parchment"] .lic-notes .xo {
+ color: rgba(43, 35, 23, 0.45);
+}
+html[data-reading-mode="parchment"] .lic-notes .fq,
+html[data-reading-mode="parchment"] .lic-notes .fqa {
+ color: rgba(43, 35, 23, 0.72);
+}
+html[data-reading-mode="parchment"] .lic-notes .xt a,
+html[data-reading-mode="parchment"] .lic-notes .xt {
+ color: rgba(109, 88, 45, 0.85);
+}
+html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
+ background-color: rgba(124, 98, 29, 0.14);
+}
+
 /* ── Onboarding entrances ─────────────────────────────────────────────
    Each first-run step replays a calm staggered cascade: the heading
    pieces fade and rise (`onboard-step-in`), and the welcome brand mark

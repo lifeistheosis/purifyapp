@@ -7,7 +7,9 @@ import { MobileWorkProgressBar } from "@/components/saints/MobileWorkProgressBar
 import {
   ReaderFontFamilyButton,
   ReaderFontSizeButton,
+  ReaderThemeButton,
   ReaderPrefsProvider,
+  ReadingModeController,
 } from "@/components/reader/ReaderPrefs";
 import { getServerLocale } from "@/lib/i18n/server";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
@@ -51,18 +53,24 @@ export default async function WritingPage({ params }: { params: Params }) {
       {/* Mobile-only chrome: a 48px top bar with back + work title, and
           a 2px gold progress bar pinned beneath it. The trailing slot
           exposes the same font-family + font-size cyclers the Bible
-          reader uses, so a reader's choice carries between surfaces. */}
+          reader uses, so a reader's choice carries between surfaces,
+          plus the Premium Reading Mode cycler. */}
       <MobileTopBar
         title={content.title}
         back={`/saints/${found.saint.slug}`}
         trailing={
           <div className="flex items-center gap-1">
+            <ReaderThemeButton />
             <ReaderFontFamilyButton />
             <ReaderFontSizeButton />
           </div>
         }
       />
       <MobileWorkProgressBar />
+      {/* Reflects the persisted reading palette onto <html> while this
+          reader is mounted (and strips it on the way out) — the same
+          controller the Bible chapter route mounts. */}
+      <ReadingModeController />
 
       <section className="bg-night px-5 md:px-8">
         <div className="mx-auto max-w-[1100px] w-full">

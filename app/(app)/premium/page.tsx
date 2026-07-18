@@ -5,7 +5,7 @@ import { getPremiumPlan, type PremiumPlanCopy } from "@/lib/premium/plans";
 export const metadata = {
   title: "Purify Premium",
   description:
-    "The whole spiritual treasury of Purify is free, and it stays free. Purify Plus carries your reading across every device; Purify Pro adds a monthly mailed icon and shop codes. See everything each plan includes.",
+    "The whole spiritual treasury of Purify is free, and it stays free. Purify Plus is the premium reading and study experience; Purify Pro adds premium reading modes, the monthly EIKON Box, and EIKON member benefits. See everything each plan includes.",
 };
 
 // Page chrome (hero + section + card labels). The tier substance — items,
@@ -179,7 +179,7 @@ function PremiumView({
               <p className="mt-3 font-sans text-ui leading-relaxed text-paper/70">
                 {plan.plusLede}
               </p>
-              <FeatureList items={plan.plusItems} />
+              <FeatureList items={plan.plusItems} soonLabel={plan.soonLabel} />
               <p className="mt-5 font-sans text-caption text-[#e9c86a]/85">
                 {plan.openingOffer}
               </p>
@@ -194,7 +194,7 @@ function PremiumView({
               <p className="mt-3 font-sans text-ui leading-relaxed text-paper/70">
                 {plan.proLede}
               </p>
-              <FeatureList items={plan.proItems} />
+              <FeatureList items={plan.proItems} soonLabel={plan.soonLabel} />
               <p className="mt-5 font-sans text-caption text-[#e9c86a]/85">
                 {plan.openingOffer}
               </p>
@@ -345,7 +345,13 @@ function PriceBlock({ main, sub }: { main: string; sub?: string }) {
   );
 }
 
-function FeatureList({ items }: { items: { title: string; sub?: string }[] }) {
+function FeatureList({
+  items,
+  soonLabel,
+}: {
+  items: { title: string; sub?: string; soon?: boolean }[];
+  soonLabel?: string;
+}) {
   return (
     <ul className="mt-6 flex-1 space-y-3.5">
       {items.map((item) => (
@@ -354,6 +360,11 @@ function FeatureList({ items }: { items: { title: string; sub?: string }[] }) {
           <span>
             <span className="block font-sans text-ui font-semibold text-paper">
               {item.title}
+              {item.soon && soonLabel && (
+                <span className="ml-2 inline-flex translate-y-[-1px] items-center rounded-pill border border-[#e9c86a]/40 bg-[#e9c86a]/10 px-1.5 py-px align-middle font-sans text-[10px] font-semibold tracking-[0.6px] text-[#e9c86a]/90">
+                  {soonLabel}
+                </span>
+              )}
             </span>
             {item.sub && (
               <span className="block font-sans text-caption text-paper/55">
