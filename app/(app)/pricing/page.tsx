@@ -10,7 +10,10 @@ import {
   type WebCheckoutCopy,
 } from "@/components/billing/WebPlusCheckout";
 import { PREMIUM_PLAN_EN, PREMIUM_PLAN_DE } from "@/lib/premium/plans";
-import { CurrentPlanBanner } from "@/components/premium/PlanStatus";
+import {
+  CurrentPlanBanner,
+  TierPurchaseOrStatus,
+} from "@/components/premium/PlanStatus";
 
 export const metadata = {
   title: "Pricing & Purify Plus",
@@ -247,7 +250,9 @@ function PricingView({ copy }: { copy: PricingCopy }) {
               Billing bound to the signed-in account, so it unlocks Plus on
               the phone too. Degrades to a Play Store link when web billing
               is not configured. */}
-          <WebSubscribeCheckout tier="plus" copy={copy.web} playStoreUrl={PLAY_STORE_URL} />
+          <TierPurchaseOrStatus tier="plus">
+            <WebSubscribeCheckout tier="plus" copy={copy.web} playStoreUrl={PLAY_STORE_URL} />
+          </TierPurchaseOrStatus>
 
           <p className="mt-6 border-t border-paper/8 pt-5 font-sans text-caption leading-[1.6] text-paper/45">
             {copy.plusPromise}
@@ -307,7 +312,9 @@ function PricingView({ copy }: { copy: PricingCopy }) {
           {/* Pro web checkout: subscribe on desktop through RevenueCat Web
               Billing, degrades to the Play link until the Pro web offering is
               configured. */}
-          <WebSubscribeCheckout tier="pro" copy={proWeb} playStoreUrl={PLAY_STORE_URL} />
+          <TierPurchaseOrStatus tier="pro">
+            <WebSubscribeCheckout tier="pro" copy={proWeb} playStoreUrl={PLAY_STORE_URL} />
+          </TierPurchaseOrStatus>
 
           <p className="mt-6 border-t border-paper/8 pt-5 font-sans text-caption leading-[1.6] text-paper/45">
             {copy.proNote}
