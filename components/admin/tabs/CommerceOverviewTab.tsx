@@ -14,10 +14,13 @@ type Overview = {
   revenue30Cents: number;
   revenueSeries: number[];
   ordersTotal: number;
+  ordersPaid: number;
   ordersPending: number;
+  ordersCancelled: number;
   newUsers30: number;
-  activePlus: number;
-  activePro: number;
+  paidPlus: number;
+  paidPro: number;
+  comped: number;
   recent: {
     id: string;
     email: string | null;
@@ -83,11 +86,11 @@ export function CommerceOverviewTab() {
             subtitle="UTC day"
           />
           <KpiCard
-            label="Orders"
-            value={data?.ordersTotal ?? "—"}
+            label="Orders · paid"
+            value={data?.ordersPaid ?? "—"}
             hint={
               data
-                ? `${data.ordersPending} pending`
+                ? `${data.ordersPending} pending · ${data.ordersCancelled} cancelled`
                 : undefined
             }
           />
@@ -105,15 +108,20 @@ export function CommerceOverviewTab() {
         </p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <KpiCard
-            label="Active Plus"
-            value={data?.activePlus ?? "—"}
+            label="Paid Plus"
+            value={data?.paidPlus ?? "—"}
             accent
-            subtitle="includes Pro"
+            subtitle="paying, incl. Pro"
           />
           <KpiCard
-            label="Active Pro"
-            value={data?.activePro ?? "—"}
+            label="Paid Pro"
+            value={data?.paidPro ?? "—"}
             subtitle="members tier"
+          />
+          <KpiCard
+            label="Comped"
+            value={data?.comped ?? "—"}
+            subtitle="complimentary"
           />
         </div>
       </div>

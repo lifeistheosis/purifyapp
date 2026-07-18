@@ -24,26 +24,38 @@ export async function GET() {
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
   ).toISOString();
 
-  const [recentOrdersRes, counts, pendingCount, newUsers, subs] =
-    await Promise.all([
-      // Orders in the last 30d for the revenue series + recent strip.
-      admin
-        .from("shop_orders")
-        .select("id, total_cents, payment_status, email, created_at")
-        .gte("created_at", since30)
-        .order("created_at", { ascending: false })
-        .limit(1000),
-      admin.from("shop_orders").select("id", { count: "exact", head: true }),
-      admin
-        .from("shop_orders")
-        .select("id", { count: "exact", head: true })
-        .eq("payment_status", "pending"),
-      admin
-        .from("profiles")
-        .select("id", { count: "exact", head: true })
-        .gte("joined_at", since30),
-      subscriptionStats(admin),
-    ]);
+  const orderCount = (status?: string) => {
+    let q = admin.from("shop_orders").select("id", { count: "exact", head: true });
+    if (status) q = q.eq("payment_status", status);
+    return q;
+  };
+
+  const [
+    recentOrdersRes,
+    counts,
+    paidCount,
+    pendingCount,
+    cancelledCount,
+    newUsers,
+    subs,
+  ] = await Promise.all([
+    // Orders in the last 30d for the revenue series + recent strip.
+    admin
+      .from("shop_orders")
+      .select("id, total_cents, payment_status, email, created_at")
+      .gte("created_at", since30)
+      .order("created_at", { ascending: false })
+      .limit(1000),
+    orderCount(),
+    orderCount("paid"),
+    orderCount("pending"),
+    orderCount("cancelled"),
+    admin
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .gte("joined_at", since30),
+    subscriptionStats(admin),
+  ]);
 
   const orders30 = (recentOrdersRes.data ?? []) as {
     id: string;
@@ -85,16 +97,25 @@ export async function GET() {
       createdAt: o.created_at,
     }));
 
+  // Paid subscribers exclude comped accounts (testers/reviewers). Comps are
+  // surfaced separately so a comped grant is never mistaken for a sale.
+  const paidPlus = subs.paidCounts.plusOnly + subs.paidCounts.pro;
+  const paidPro = subs.paidCounts.pro;
+  const comped = subs.bySource.comp ?? 0;
+
   return NextResponse.json(
     {
       revenueTodayCents,
       revenue30Cents,
       revenueSeries: series,
       ordersTotal: counts.count ?? 0,
+      ordersPaid: paidCount.count ?? 0,
       ordersPending: pendingCount.count ?? 0,
+      ordersCancelled: cancelledCount.count ?? 0,
       newUsers30: newUsers.count ?? 0,
-      activePlus: subs.activePlus,
-      activePro: subs.activePro,
+      paidPlus,
+      paidPro,
+      comped,
       recent,
     },
     { headers: { "Cache-Control": "no-store" } },

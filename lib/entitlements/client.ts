@@ -53,6 +53,41 @@ export async function canSync(): Promise<boolean> {
   return (await getClientEntitlements()).sync;
 }
 
+export type PremiumTier = "free" | "plus" | "pro";
+
+/**
+ * The signed-in user's actual premium tier, read straight from the
+ * entitlements row. Deliberately NOT gated on the enforcement flags: a
+ * comped or paid account holds Plus/Pro regardless of whether the Plus
+ * layer is enforced on this surface, and the nav "Activated" badge should
+ * reflect what they actually have. Fails open to "free" and races a short
+ * timeout so it can never hang the header (same guard as
+ * hasActiveProClient — a held cross-tab auth lock must not stall the nav).
+ */
+export async function getClientPremiumTier(): Promise<PremiumTier> {
+  const check = (async (): Promise<PremiumTier> => {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return "free";
+    const { data } = await supabase
+      .from("entitlements")
+      .select("plus_until, pro_until")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    const now = Date.now();
+    const active = (ts?: string | null) => !!ts && new Date(ts).getTime() > now;
+    if (active(data?.pro_until)) return "pro";
+    if (active(data?.plus_until)) return "plus";
+    return "free";
+  })();
+  const timeout = new Promise<PremiumTier>((resolve) =>
+    setTimeout(() => resolve("free"), 2500),
+  );
+  return Promise.race([check, timeout]).catch(() => "free");
+}
+
 /**
  * Do the signed-in user's EIKON orders ship free right now? The browser
  * counterpart to lib/shop/checkout → hasProShipping, used to show the
