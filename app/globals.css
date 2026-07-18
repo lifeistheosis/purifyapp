@@ -177,6 +177,29 @@ html.is-native .topbar-safe {
  margin-top: calc(-1 * var(--inset-top));
 }
 
+/* Sticky sub-tab row for a section that renders NO MobileTopBar (the shop is
+   the only one today). What sits above it differs entirely by surface, so the
+   offset cannot be a single hard-coded `top-*`:
+
+   Web  — AppNav is above it, sticky and 72px tall plus its own notch padding,
+          so the row pins directly under the pinned nav.
+   Native — AppNav never renders, so the row pins to the very top and has to
+          paint over the status bar ITSELF. Without that the strip above it
+          stayed transparent and the page scrolled visibly under the clock and
+          battery. Pad by the inset, then cancel <main>'s .safe-pt at the row's
+          own position with a negative margin so nothing double-pads at rest.
+
+   Unlike .topbar-safe this sets no height: the row sizes itself from its tap
+   targets. */
+html:not(.is-native) .sticky-safe-top {
+ top: calc(72px + env(safe-area-inset-top, 0px));
+}
+html.is-native .sticky-safe-top {
+ top: 0;
+ padding-top: var(--inset-top);
+ margin-top: calc(-1 * var(--inset-top));
+}
+
 /* Companions of the bar (e.g. the Bible chapter sticky header, the reader
    context strip, the saints work progress line) hard-coded `top-12` (48px,
    right under the 3rem bar) to sit just below it; on native the pinned bar is
@@ -188,6 +211,17 @@ html.is-native .below-topbar {
    context strip (web `top-[80px]`); on native add the inset too. */
 html.is-native .below-topbar-line {
  top: calc(80px + var(--inset-top));
+}
+
+/* The shop's floating cart button (56px, right-6 bottom-6) shares the
+   bottom-right corner with the app-level back-to-top button (44px, right-7
+   bottom-7), so on shop pages they rendered on top of each other. CartFab sets
+   .has-cart-fab on <html> while it's mounted; back-to-top then stacks above it
+   with a 12px gap, nudged right so both circles share a center axis
+   (cart center = 24 + 28 = 52px; 30 + 22 = 52px). */
+html.has-cart-fab .back-to-top {
+ bottom: 5.75rem; /* 24px cart offset + 56px cart + 12px gap */
+ right: 30px;
 }
 
 @layer base {

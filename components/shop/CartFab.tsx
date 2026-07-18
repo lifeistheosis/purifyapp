@@ -5,11 +5,23 @@
 // "Cart" tab already provides an always-visible cart trigger, so this is
 // hidden there. Both open the same CartDrawer.
 
+import { useEffect } from "react";
 import { Cart } from "@/components/ui/icons/Cart";
 import { cartCount, openCartDrawer, useCart } from "@/lib/shop/cart";
 
 export function CartFab() {
   const count = cartCount(useCart());
+
+  // The app-level back-to-top button owns the same bottom-right corner, so the
+  // two stacked on top of each other on every shop page. Flag the FAB's
+  // presence on <html> while it's mounted; globals.css lifts back-to-top above
+  // it (see .back-to-top).
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.add("has-cart-fab");
+    return () => root.classList.remove("has-cart-fab");
+  }, []);
+
   return (
     <button
       type="button"
