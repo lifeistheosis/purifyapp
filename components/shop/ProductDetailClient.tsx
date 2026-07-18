@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 
+import { apiFetch } from "@/lib/api/client";
 import { BuyBar } from "@/components/shop/BuyBar";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import { PolicyText } from "@/components/shop/PolicyText";
@@ -64,6 +66,25 @@ export function ProductDetailClient({ slug }: { slug: string }) {
       flatShippingCents: config.flatShippingCents,
       pro,
     };
+  }, [slug]);
+
+  // Count one view per browser session per product (dedup here so refreshes
+  // and re-renders never inflate the counter). Fire-and-forget; a failed
+  // ping never affects the page.
+  useEffect(() => {
+    if (!slug) return;
+    const key = `purify:viewed:${slug}`;
+    try {
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, "1");
+    } catch {
+      /* storage blocked: still ping once per mount */
+    }
+    void apiFetch("/api/shop/product-view", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug }),
+    }).catch(() => {});
   }, [slug]);
 
   if (loading) {

@@ -34,6 +34,10 @@ type AdminProduct = {
   country_of_origin: string | null;
   image_is_representative: boolean;
   status: string;
+  // Denormalized counters (carried by the catalog select *). Optional so
+  // rows still type before the view_count migration is applied.
+  view_count?: number | null;
+  units_sold?: number | null;
   media: MediaRow[];
   subjects: SubjectRow[];
 };
@@ -305,6 +309,29 @@ function ProductsPanel() {
               label: "Dispatch",
               render: (p) => `${p.dispatch_min_days}–${p.dispatch_max_days}d`,
               csv: (p) => `${p.dispatch_min_days}-${p.dispatch_max_days}`,
+            },
+            {
+              key: "engagement",
+              label: "Views · Buys",
+              align: "right",
+              render: (p) => {
+                const v = p.view_count ?? 0;
+                const b = p.units_sold ?? 0;
+                const conv = v > 0 ? Math.round((b / v) * 100) : null;
+                return (
+                  <span className="whitespace-nowrap font-sans text-detail tabular-nums">
+                    <span className="text-paper/55">{v}</span>
+                    <span className="mx-1 text-paper/25">·</span>
+                    <span className="font-semibold text-emerald-300">{b}</span>
+                    {conv != null ? (
+                      <span className="ml-1.5 text-eyebrow text-paper/40">
+                        {conv}%
+                      </span>
+                    ) : null}
+                  </span>
+                );
+              },
+              csv: (p) => `${p.view_count ?? 0}/${p.units_sold ?? 0}`,
             },
             {
               key: "status",
@@ -746,10 +773,23 @@ function ProductEditor({
             />
           </label>
           <label className="space-y-1 md:col-span-2">
-            <span className={labelCls}>Supplier product URL</span>
+            <span className={labelCls}>
+              Supplier product URL (Temu / AliExpress / etc.)
+              {src.supplier_url ? (
+                <a
+                  href={src.supplier_url}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  className="ml-2 font-semibold text-gold hover:text-gold-pale"
+                >
+                  open ↗
+                </a>
+              ) : null}
+            </span>
             <input
               value={src.supplier_url ?? ""}
               onChange={(e) => setSrc((s) => ({ ...s, supplier_url: e.target.value || null }))}
+              placeholder="https://www.temu.com/..."
               className={field}
             />
           </label>
