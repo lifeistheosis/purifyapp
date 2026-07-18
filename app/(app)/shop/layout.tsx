@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 
 import { ShopSubTabs } from "@/components/shop/ShopSubTabs";
 import { CartSync } from "@/components/shop/CartSync";
+import { CartDrawer } from "@/components/shop/CartDrawer";
+import { CartFab } from "@/components/shop/CartFab";
 import { shopEnabled } from "@/lib/shop/flags";
 
 export const metadata: Metadata = {
@@ -28,6 +30,10 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
       <CartSync />
       <ShopSubTabs />
       {children}
+      {/* Persistent cart: a slide-in drawer (opens on add-to-cart or a cart
+          trigger) plus a floating cart button on desktop. */}
+      <CartDrawer />
+      <CartFab />
     </div>
   );
 }

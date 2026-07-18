@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
-import { cartCount, useCart } from "@/lib/shop/cart";
+import { cartCount, openCartDrawer, useCart } from "@/lib/shop/cart";
 
 /**
  * Sticky buyer navigation inside the shop section on `< md`, the same
@@ -46,34 +46,48 @@ export function ShopSubTabs() {
           keyed by count). Snap keeps mid-scroll states tidy. */}
       <ul className="flex snap-x gap-1 overflow-x-auto scrollbar-thin px-2 py-1.5">
         {TABS.map((t) => {
-          const active = t.exact
-            ? pathname === t.href
-            : pathname === t.href || pathname.startsWith(t.href + "/");
+          const isCart = t.href === "/shop/cart";
+          // The cart opens the slide-in drawer instead of navigating, so it is
+          // never the "active route".
+          const active = isCart
+            ? false
+            : t.exact
+              ? pathname === t.href
+              : pathname === t.href || pathname.startsWith(t.href + "/");
+          const cls = cn(
+            "tap-press inline-flex min-h-[44px] items-center gap-1.5 rounded-pill px-3.5 font-sans text-detail transition-colors",
+            active
+              ? "bg-gold font-semibold text-night"
+              : "font-medium text-paper/65 hover:bg-paper/[0.05] hover:text-paper",
+          );
+          const inner = (
+            <>
+              {t.label}
+              {isCart && count > 0 ? (
+                <span
+                  key={count}
+                  className="badge-bump inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-gold px-1 font-sans text-[10px] font-bold text-night"
+                >
+                  {count}
+                </span>
+              ) : null}
+            </>
+          );
           return (
             <li key={t.href} className="shrink-0 snap-start">
-              <Link
-                href={t.href}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "tap-press inline-flex min-h-[44px] items-center gap-1.5 rounded-pill px-3.5 font-sans text-detail transition-colors",
-                  active
-                    ? "bg-gold font-semibold text-night"
-                    : "font-medium text-paper/65 hover:bg-paper/[0.05] hover:text-paper",
-                )}
-              >
-                {t.label}
-                {t.href === "/shop/cart" && count > 0 ? (
-                  <span
-                    key={count}
-                    className={cn(
-                      "badge-bump inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-full px-1 font-sans text-[10px] font-bold",
-                      active ? "bg-night text-gold" : "bg-gold text-night",
-                    )}
-                  >
-                    {count}
-                  </span>
-                ) : null}
-              </Link>
+              {isCart ? (
+                <button type="button" onClick={openCartDrawer} className={cls}>
+                  {inner}
+                </button>
+              ) : (
+                <Link
+                  href={t.href}
+                  aria-current={active ? "page" : undefined}
+                  className={cls}
+                >
+                  {inner}
+                </Link>
+              )}
             </li>
           );
         })}

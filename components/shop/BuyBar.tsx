@@ -6,7 +6,7 @@ import { useState } from "react";
 
 import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/cn";
-import { addToCart } from "@/lib/shop/cart";
+import { addToCart, openCartDrawer } from "@/lib/shop/cart";
 import { openStripe } from "@/lib/shop/openStripe";
 
 /**
@@ -60,6 +60,7 @@ export function BuyBar({
   function handleAddToCart() {
     addToCart({ slug: productSlug, title, priceCents, currency, imageUrl, imageAlt });
     setAdded(true);
+    openCartDrawer();
     setTimeout(() => setAdded(false), 1800);
   }
 

@@ -76,6 +76,24 @@ export function clearCart() {
   write([]);
 }
 
+// ---- Drawer open signal ----------------------------------------------------
+
+const OPEN_EVENT = "purify:cart-open";
+
+/** Ask the cart drawer to slide open (from the "Add to cart" button or a cart
+ *  trigger). Decoupled via an event so any surface can pop the cart. */
+export function openCartDrawer() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(OPEN_EVENT));
+  }
+}
+
+/** Subscribe the drawer to open requests. Returns an unsubscribe. */
+export function subscribeCartOpen(cb: () => void): () => void {
+  window.addEventListener(OPEN_EVENT, cb);
+  return () => window.removeEventListener(OPEN_EVENT, cb);
+}
+
 // ---- React binding ---------------------------------------------------------
 
 let cache: { raw: string; items: CartItem[] } | null = null;
