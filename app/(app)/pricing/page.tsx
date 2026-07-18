@@ -10,6 +10,7 @@ import {
   type WebCheckoutCopy,
 } from "@/components/billing/WebPlusCheckout";
 import { PREMIUM_PLAN_EN, PREMIUM_PLAN_DE } from "@/lib/premium/plans";
+import { CurrentPlanBanner } from "@/components/premium/PlanStatus";
 
 export const metadata = {
   title: "Pricing & Purify Plus",
@@ -154,8 +155,12 @@ function PricingView({ copy }: { copy: PricingCopy }) {
     getInApp: copy.proInApp,
   };
   return (
-    <section className="min-h-[calc(100dvh-72px)] bg-night px-5 md:px-8 py-16 md:py-24">
-      <div className="mx-auto w-full max-w-[760px]">
+    <section className="min-h-[calc(100dvh-72px)] bg-night px-5 md:px-8 pb-16 md:pb-24 pt-8 md:pt-10">
+      {/* Recognizes a signed-in subscriber; renders nothing for free users. */}
+      <div className="-mx-5 md:-mx-8">
+        <CurrentPlanBanner />
+      </div>
+      <div className="mx-auto mt-8 w-full max-w-[760px] md:mt-10">
         {/* Masthead */}
         <div className="text-center">
           <p className="mb-4 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60">

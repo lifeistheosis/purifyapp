@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getPremiumPlan, type PremiumPlanCopy } from "@/lib/premium/plans";
+import { CurrentPlanBanner, PlanUpgradeCta } from "@/components/premium/PlanStatus";
 
 export const metadata = {
   title: "Purify Premium",
@@ -99,6 +100,8 @@ function PremiumView({
 }) {
   return (
     <div className="bg-night">
+      {/* Recognizes a signed-in subscriber; renders nothing for free users. */}
+      <CurrentPlanBanner />
       {/* Hero */}
       <section className="relative overflow-hidden px-5 md:px-8 pt-16 md:pt-24 pb-10 md:pb-14">
         <div
@@ -183,7 +186,12 @@ function PremiumView({
               <p className="mt-5 font-sans text-caption text-[#e9c86a]/85">
                 {plan.openingOffer}
               </p>
-              <CardCta href="/pricing" label={chrome.plusCta} tone="plus" />
+              <PlanUpgradeCta
+                tier="plus"
+                href="/pricing"
+                label={chrome.plusCta}
+                tone="plus"
+              />
             </PlanCard>
 
             {/* Pro (the ribbon marks the tier; no inline badge, so it never
@@ -200,7 +208,12 @@ function PremiumView({
               </p>
               {/* Pro routes to the pricing page, where the Pro web checkout
                   (or the Play fallback) lives — not straight to Play. */}
-              <CardCta href="/pricing" label={chrome.proCta} tone="pro" />
+              <PlanUpgradeCta
+                tier="pro"
+                href="/pricing"
+                label={chrome.proCta}
+                tone="pro"
+              />
             </PlanCard>
           </div>
 
