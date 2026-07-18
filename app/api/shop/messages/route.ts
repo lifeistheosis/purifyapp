@@ -113,7 +113,21 @@ async function handlePOST(req: Request) {
 
 const readSchema = z.object({ conversationId: z.string().uuid() });
 
-/** Mark the caller's side of a thread as read (thread page on open). */
+// A reaction toggle on one message: the only reaction is a heart, or null to
+// clear it. messageId distinguishes this from the read-mark body shape.
+const reactSchema = z.object({
+  conversationId: z.string().uuid(),
+  messageId: z.string().uuid(),
+  reaction: z.union([z.literal("❤️"), z.null()]),
+});
+
+/**
+ * PATCH handles two thread updates, told apart by body shape:
+ *   { conversationId }                        → mark the caller's side read
+ *   { conversationId, messageId, reaction }   → toggle a message reaction
+ * Both prove participation via loadParticipant (the conversation is fetched
+ * with the caller's own RLS-scoped client).
+ */
 async function handlePATCH(req: Request) {
   if (!shopEnabled()) {
     return NextResponse.json({ error: "Shop is not available." }, { status: 404 });
@@ -125,6 +139,41 @@ async function handlePATCH(req: Request) {
   } catch {
     return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
   }
+
+  // React path first: a body carrying messageId is a reaction toggle.
+  if (body && typeof body === "object" && "messageId" in body) {
+    const parsed = reactSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    }
+    const { user, conversation, side } = await loadParticipant(
+      req,
+      parsed.data.conversationId,
+    );
+    if (!user) {
+      return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+    }
+    if (!conversation || !side) {
+      return NextResponse.json({ error: "Conversation not found." }, { status: 404 });
+    }
+
+    const admin = createAdminClient();
+    // Scope the update to this conversation so a participant can only react to
+    // messages in a thread they're part of.
+    const { error } = await admin
+      .from("shop_messages")
+      .update({ reaction: parsed.data.reaction })
+      .eq("id", parsed.data.messageId)
+      .eq("conversation_id", conversation.id);
+    if (error) {
+      // Pre-migration the reaction column may not exist yet. Fail soft so the
+      // optimistic UI simply reconciles to no-reaction on the next read.
+      console.warn("[shop] reaction update failed", error.message);
+      return NextResponse.json({ ok: false }, { status: 200 });
+    }
+    return NextResponse.json({ ok: true });
+  }
+
   const parsed = readSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });

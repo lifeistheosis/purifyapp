@@ -135,8 +135,8 @@ export function AdminShell({ adminEmail }: { adminEmail: string }) {
       </header>
 
       {/* Tab bar */}
-      <nav className="border-b border-paper/10 overflow-x-auto -mx-1">
-        <ul className="flex items-stretch gap-0 min-w-max px-1">
+      <nav className="border-b border-white/8 overflow-x-auto -mx-1">
+        <ul className="flex items-stretch gap-1 min-w-max px-1">
           {TABS.map((t) => {
             const isActive = t.id === active;
             return (
@@ -146,17 +146,17 @@ export function AdminShell({ adminEmail }: { adminEmail: string }) {
                   onClick={() => setActive(t.id)}
                   aria-current={isActive ? "page" : undefined}
                   className={
-                    "px-4 py-2.5 font-sans text-detail font-semibold transition-colors relative " +
+                    "relative rounded-t-lg px-4 py-2.5 font-sans text-detail font-semibold transition-colors " +
                     (isActive
-                      ? "text-gold"
-                      : "text-paper/55 hover:text-paper")
+                      ? "admin-tab-active text-gold"
+                      : "text-paper/55 hover:bg-paper/[0.03] hover:text-paper")
                   }
                 >
                   {t.label}
                   {isActive && (
                     <span
                       aria-hidden
-                      className="absolute left-3 right-3 -bottom-px h-[2px] bg-gold rounded-full"
+                      className="admin-tab-underline absolute left-3 right-3 -bottom-px h-[2px] rounded-full bg-gold"
                     />
                   )}
                 </button>

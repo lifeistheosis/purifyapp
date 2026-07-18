@@ -59,20 +59,36 @@ export function MessagesClient() {
 
   return (
     <div className="mx-auto w-full max-w-[680px] px-5 pb-16 md:px-8">
-      <header className="pt-10 md:pt-14">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-          Purify Shop
-        </p>
-        <h1 className="mt-2 font-display-serif text-heading text-paper">
-          Messages
-        </h1>
+      <header className="flex flex-wrap items-end justify-between gap-4 pt-10 md:pt-14">
+        <div>
+          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
+            Purify Shop
+          </p>
+          <h1 className="mt-2 font-display-serif text-heading text-paper">
+            Messages
+          </h1>
+        </div>
+        <Link
+          href="/shop/support"
+          className="tap-press inline-flex min-h-[40px] items-center rounded-pill border border-gold/40 bg-gold/[0.08] px-4 font-sans text-detail font-semibold text-gold hover:bg-gold/[0.14]"
+        >
+          Contact EIKON support
+        </Link>
       </header>
 
       {conversations.length === 0 ? (
-        <p className="mt-8 font-serif text-body text-paper/65 leading-[1.65]">
-          No conversations yet. You can message a seller from any of your
-          orders; replies land here.
-        </p>
+        <div className="mt-8">
+          <p className="font-serif text-body text-paper/65 leading-[1.65]">
+            No conversations yet. Message EIKON support with any question, or
+            reach a seller from any of your orders; replies land here.
+          </p>
+          <Link
+            href="/shop/support"
+            className="tap-press mt-5 inline-flex min-h-[44px] items-center rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night hover:bg-paper/90"
+          >
+            Contact EIKON support
+          </Link>
+        </div>
       ) : (
         <ul className="mt-8 space-y-3">
           {conversations.map((c) => {

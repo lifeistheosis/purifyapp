@@ -3,9 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { MessageThread } from "@/components/shop/MessageThread";
+import { fetchThreadMessages } from "@/lib/shop/messages";
 import { getSellerContext } from "@/lib/shop/seller";
 import { createClient } from "@/lib/supabase/server";
-import type { ShopConversation, ShopMessage } from "@/lib/shop/types";
+import type { ShopConversation } from "@/lib/shop/types";
 
 export const metadata: Metadata = { title: "Conversation" };
 
@@ -29,12 +30,7 @@ export default async function SellerConversationPage({
   if (!conversation) notFound();
   const conv = conversation as ShopConversation;
 
-  const { data: messages } = await supabase
-    .from("shop_messages")
-    .select("id, conversation_id, sender, body, created_at")
-    .eq("conversation_id", conv.id)
-    .order("created_at", { ascending: true })
-    .limit(500);
+  const messages = await fetchThreadMessages(supabase, conv.id);
 
   return (
     <div className="max-w-[760px] pb-16">
@@ -59,10 +55,11 @@ export default async function SellerConversationPage({
       <div className="mt-6">
         <MessageThread
           conversationId={conv.id}
-          messages={(messages ?? []) as ShopMessage[]}
+          messages={messages}
           viewer="seller"
           closed={conv.status === "closed"}
           counterpartyName="Customer"
+          counterpartyLastReadAt={conv.buyer_last_read_at}
         />
       </div>
     </div>
