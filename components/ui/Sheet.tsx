@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { setOverlayOpen } from "@/lib/ui/overlay";
+import { createPortal } from "react-dom";
+import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { Close } from "@/components/ui/icons/Close";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 
@@ -60,11 +61,10 @@ export function Sheet({
 
   useEffect(() => {
     if (!mounted) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    lockBodyScroll();
     setOverlayOpen(true);
     return () => {
-      document.body.style.overflow = prev;
+      unlockBodyScroll();
       setOverlayOpen(false);
     };
   }, [mounted]);
@@ -82,9 +82,17 @@ export function Sheet({
   // sheet has no browser history of its own, so without this back feels stuck.
   useAndroidBack(mounted, onClose);
 
-  if (!mounted) return null;
+  if (!mounted || typeof document === "undefined") return null;
 
-  return (
+  // Portaled to <body>, same reasoning as the reader's "Exit focus" pill
+  // (components/reader/ReaderPrefs.tsx): rendered inline, this z-[60] is
+  // scoped to whatever stacking context the host page happens to create, so
+  // the z-50 native tab bar painted OVER the sheet's lower region and buried
+  // the chapter grid — the backdrop's dim and blur did not reach the tab bar
+  // either, which is how you can tell it was above rather than below. At body
+  // level the z-index competes at the root, so a modal sheet covers the app
+  // chrome the way a modal should.
+  return createPortal(
     <div
       className="md:hidden fixed inset-0 z-[60]"
       role="dialog"
@@ -140,6 +148,7 @@ export function Sheet({
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

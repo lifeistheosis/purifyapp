@@ -15,7 +15,7 @@ import {
   isSafariMacAtLeast,
   isStandalone,
 } from "@/lib/pwa/detectBrowser";
-import { setOverlayOpen } from "@/lib/ui/overlay";
+import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { isNativeClient } from "@/lib/platform/native";
 import { cn } from "@/lib/cn";
 
@@ -217,11 +217,8 @@ function InstallFallbackModal({
   // Lock body scroll while shown.
   useEffect(() => {
     if (!shown) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
+    lockBodyScroll();
+    return unlockBodyScroll;
   }, [shown]);
 
   // Pick the right copy at open time (don't re-evaluate per render,

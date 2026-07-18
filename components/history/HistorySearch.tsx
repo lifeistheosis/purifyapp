@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import { publishedEvents, type HistoryEventMeta } from "@/lib/history/events";
 import { searchEvents } from "@/lib/history/filter";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
-import { setOverlayOpen } from "@/lib/ui/overlay";
+import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { cn } from "@/lib/cn";
 
 function ResultRow({ event, onNavigate }: { event: HistoryEventMeta; onNavigate?: () => void }) {
@@ -99,11 +99,11 @@ export function HistorySearchOverlay({
         if (e.key === "Escape") onClose();
       };
       document.addEventListener("keydown", onKey);
-      document.body.style.overflow = "hidden";
+      lockBodyScroll();
       return () => {
         clearTimeout(t);
         document.removeEventListener("keydown", onKey);
-        document.body.style.overflow = "";
+        unlockBodyScroll();
         setOverlayOpen(false);
       };
     }

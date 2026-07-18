@@ -10,6 +10,7 @@
 import { useEffect, useState } from "react";
 import { BibleSearch } from "@/components/bible/BibleSearch";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
+import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 
 export function BibleSearchTrigger() {
   const [open, setOpen] = useState(false);
@@ -17,11 +18,8 @@ export function BibleSearchTrigger() {
   // Lock body scroll while the sheet is open.
   useEffect(() => {
     if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
+    lockBodyScroll();
+    return unlockBodyScroll;
   }, [open]);
 
   // Android hardware back closes the sheet instead of leaving the page —

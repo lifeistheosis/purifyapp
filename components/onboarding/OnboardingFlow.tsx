@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { writeCalendarStyleDefault } from "@/lib/calendar/styleDefault";
 import {
@@ -45,11 +46,8 @@ export function OnboardingFlow({ onDone }: { onDone: () => void }) {
 
   // Lock background scroll while the overlay is up.
   useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
+    lockBodyScroll();
+    return unlockBodyScroll;
   }, []);
 
   function persistPicks() {

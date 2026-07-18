@@ -5,7 +5,7 @@ import { Close } from "@/components/ui/icons/Close";
 import { useEffect, useState } from "react";
 import type { ChapterCommentary } from "@/lib/bible/load";
 import { SaintIcon } from "./SaintIcon";
-import { setOverlayOpen } from "@/lib/ui/overlay";
+import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 
 type Note = { author: string; work: string; text: string };
 
@@ -171,11 +171,10 @@ export function MobileCommentarySheet({
  // floating UI (the PWA install banner) can step aside.
  useEffect(() => {
  if (!mounted) return;
- const prev = document.body.style.overflow;
- document.body.style.overflow = "hidden";
+ lockBodyScroll();
  setOverlayOpen(true);
  return () => {
- document.body.style.overflow = prev;
+ unlockBodyScroll();
  setOverlayOpen(false);
  };
  }, [mounted]);

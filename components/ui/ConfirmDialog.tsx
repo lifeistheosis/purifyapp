@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { setOverlayOpen } from "@/lib/ui/overlay";
+import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 
 /**
  * Purify-styled confirmation dialog. Replaces `window.confirm()` for
@@ -88,11 +88,8 @@ export function ConfirmDialog({
   // Lock body scroll while shown.
   useEffect(() => {
     if (!shown) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
+    lockBodyScroll();
+    return unlockBodyScroll;
   }, [shown]);
 
   if (!mounted) return null;
