@@ -8,6 +8,7 @@ import { ProductCard } from "@/components/shop/ProductCard";
 import { RatingStars } from "@/components/shop/RatingStars";
 import { ShopBrowseControls } from "@/components/shop/ShopBrowseControls";
 import { ShopError, ShopGridSkeleton } from "@/components/shop/ShopStates";
+import { StoreReviewsSection } from "@/components/shop/StoreReviewsSection";
 import {
   activeFilterCount,
   filterProducts,
@@ -258,6 +259,12 @@ export function StoreClient({ slug }: { slug: string }) {
           Contact {store.public_name}
         </Link>
       </section>
+
+      <StoreReviewsSection
+        storeId={store.id}
+        storeSlug={store.slug}
+        storeName={store.public_name}
+      />
 
       <footer className="mt-10 border-t border-white/8 pt-6 pb-4">
         <p className="font-sans text-caption text-paper/60">
