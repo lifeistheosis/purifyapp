@@ -80,23 +80,60 @@ export async function setTicketStatus(
   return !error;
 }
 
-/** All tickets for the admin console, newest activity first. Service role. */
+/** All tickets for the admin console, newest activity first. Service role.
+ *  Selects the reaction column when present, and transparently falls back
+ *  to the pre-reaction shape if the 20260718 migration isn't applied yet,
+ *  so the console never breaks on a missing column. */
 export async function listTickets(
   status?: TicketStatus,
 ): Promise<(Ticket & { messages: TicketMessage[] })[]> {
   const admin = createAdminClient();
-  let query = admin
+
+  // Primary select includes the reaction column.
+  const withReaction = admin
     .from("support_tickets")
-    .select("*, messages:support_ticket_messages(id, author, body, created_at)")
+    .select(
+      "*, messages:support_ticket_messages(id, author, body, created_at, reaction)",
+    )
     .order("updated_at", { ascending: false })
     .limit(200);
-  if (status) query = query.eq("status", status);
-  const { data, error } = await query;
+  let res = await (status ? withReaction.eq("status", status) : withReaction);
+
+  // Fallback for before the 20260718 migration is applied: retry without
+  // the reaction column so the console never breaks on a missing column.
+  if (res.error) {
+    const plain = admin
+      .from("support_tickets")
+      .select("*, messages:support_ticket_messages(id, author, body, created_at)")
+      .order("updated_at", { ascending: false })
+      .limit(200);
+    res = (await (status
+      ? plain.eq("status", status)
+      : plain)) as typeof res;
+  }
+
+  const { data, error } = res;
   if (error || !data) return [];
-  return data.map((t) => ({
-    ...(t as Ticket),
-    messages: (
-      (t as { messages?: TicketMessage[] }).messages ?? []
-    ).sort((a, b) => a.created_at.localeCompare(b.created_at)),
-  }));
+  return (data as unknown as (Ticket & { messages?: TicketMessage[] })[]).map(
+    (t) => ({
+      ...(t as Ticket),
+      messages: (t.messages ?? []).sort((a, b) =>
+        a.created_at.localeCompare(b.created_at),
+      ),
+    }),
+  );
+}
+
+/** Toggle a reaction on a support message (admin double-tap to heart).
+ *  Passing an empty/undefined reaction clears it. Service role. */
+export async function setMessageReaction(
+  messageId: string,
+  reaction: string | null,
+): Promise<boolean> {
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("support_ticket_messages")
+    .update({ reaction: reaction || null })
+    .eq("id", messageId);
+  return !error;
 }

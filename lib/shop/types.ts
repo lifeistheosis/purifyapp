@@ -321,6 +321,9 @@ export type ShopMessage = {
   sender: "buyer" | "seller";
   body: string;
   created_at: string;
+  /** Optional single reaction emoji (double-tap to heart). Absent until
+   * the 20260718 migration is applied. */
+  reaction?: string | null;
 };
 
 export type ShopRefundReason =

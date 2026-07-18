@@ -6,6 +6,7 @@ import { sendTicketReplyEmail } from "@/lib/support/ticketEmails";
 import {
   addStaffReply,
   listTickets,
+  setMessageReaction,
   setTicketStatus,
 } from "@/lib/support/tickets";
 
@@ -28,6 +29,12 @@ const actionSchema = z.discriminatedUnion("action", [
     action: z.literal("status"),
     ticketId: z.string().uuid(),
     status: z.enum(["open", "pending", "resolved", "closed"]),
+  }),
+  z.object({
+    action: z.literal("react"),
+    messageId: z.string().uuid(),
+    // A short emoji, or empty string to clear.
+    reaction: z.string().max(8),
   }),
 ]);
 
@@ -55,6 +62,14 @@ export async function POST(req: Request) {
       console.warn("[support] reply email failed", (e as Error).message),
     );
     return NextResponse.json({ ok: true });
+  }
+
+  if (parsed.data.action === "react") {
+    const ok = await setMessageReaction(
+      parsed.data.messageId,
+      parsed.data.reaction || null,
+    );
+    return NextResponse.json({ ok });
   }
 
   const ok = await setTicketStatus(parsed.data.ticketId, parsed.data.status);
