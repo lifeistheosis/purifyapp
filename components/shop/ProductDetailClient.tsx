@@ -287,6 +287,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
         <ReviewsSection
           productId={product.id}
           productSlug={product.slug}
+          productTitle={product.title}
           onReviewed={reload}
         />
       </div>

@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from "react";
 
-import { Card, DataTable, Pill } from "../primitives";
+import { Card, DataTable, Pill, ToolbarButton } from "../primitives";
 
 /* ── Types (admin payload shapes, deliberately local to this tab) ─────── */
 
@@ -121,18 +121,19 @@ function money(cents: number | null | undefined): string {
 
 /* ── Tab shell ─────────────────────────────────────────────────────────── */
 
-type Panel = "products" | "requests" | "applications";
+type Panel = "products" | "requests" | "applications" | "reviews";
 
 export function ShopTab() {
   const [panel, setPanel] = useState<Panel>("products");
   return (
     <div className="space-y-5">
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         {(
           [
             ["products", "Products"],
             ["requests", "Icon requests"],
             ["applications", "Merchant applications"],
+            ["reviews", "Reviews"],
           ] as [Panel, string][]
         ).map(([id, label]) => (
           <button
@@ -154,6 +155,7 @@ export function ShopTab() {
       {panel === "products" && <ProductsPanel />}
       {panel === "requests" && <RequestsPanel />}
       {panel === "applications" && <ApplicationsPanel />}
+      {panel === "reviews" && <ReviewsPanel />}
     </div>
   );
 }
@@ -1100,5 +1102,381 @@ function ApplicationsPanel() {
         </ul>
       )}
     </Card>
+  );
+}
+
+/* ── Reviews ───────────────────────────────────────────────────────────── */
+// Seed and remove REAL reviews on any product or store, skipping the buyer +
+// delivered gates the public RPCs enforce. For testing how ratings render live.
+
+type AdminReviewProduct = { slug: string; title: string } | null;
+type AdminReviewStore = { slug: string; public_name: string } | null;
+
+type AdminProductReview = {
+  id: string;
+  stars: number;
+  body: string | null;
+  created_at: string;
+  display_name: string | null;
+  location: string | null;
+  anonymous: boolean;
+  order_id: string | null;
+  product: AdminReviewProduct;
+  store: AdminReviewStore;
+};
+
+type AdminStoreReview = {
+  id: string;
+  stars: number;
+  body: string | null;
+  created_at: string;
+  display_name: string | null;
+  location: string | null;
+  anonymous: boolean;
+  order_id: string | null;
+  store: AdminReviewStore;
+};
+
+type ReviewsData = {
+  productReviews: AdminProductReview[];
+  storeReviews: AdminStoreReview[];
+  products: { id: string; slug: string; title: string }[];
+  stores: { id: string; slug: string; public_name: string }[];
+};
+
+function starLabel(n: number): string {
+  return "★★★★★".slice(0, n) + "☆☆☆☆☆".slice(0, 5 - n);
+}
+
+function ReviewsPanel() {
+  const [data, setData] = useState<ReviewsData | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
+  const [version, setVersion] = useState(0);
+  const load = () => setVersion((v) => v + 1);
+
+  // Seed form state.
+  const [target, setTarget] = useState<"product" | "store">("product");
+  const [productId, setProductId] = useState("");
+  const [storeId, setStoreId] = useState("");
+  const [stars, setStars] = useState(5);
+  const [body, setBody] = useState("");
+  const [name, setName] = useState("");
+  const [location, setLocation] = useState("");
+  const [anonymous, setAnonymous] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    async function run() {
+      const r = await fetch("/api/admin/shop/reviews", { cache: "no-store" });
+      if (!alive) return;
+      if (!r.ok) {
+        setStatus("Couldn't load reviews (is the reviews v2 migration applied?).");
+        return;
+      }
+      const d = (await r.json()) as ReviewsData;
+      if (!alive) return;
+      setData(d);
+      setStatus(null);
+      // Default the selects to the first option once data arrives.
+      setProductId((cur) => cur || d.products[0]?.id || "");
+      setStoreId((cur) => cur || d.stores[0]?.id || "");
+    }
+    run();
+    return () => {
+      alive = false;
+    };
+  }, [version]);
+
+  async function seed() {
+    setBusy(true);
+    setStatus(null);
+    const payload =
+      target === "product"
+        ? {
+            target,
+            productId,
+            stars,
+            body: body.trim() || null,
+            displayName: name.trim() || null,
+            location: location.trim() || null,
+            anonymous,
+          }
+        : {
+            target,
+            storeId,
+            stars,
+            body: body.trim() || null,
+            displayName: name.trim() || null,
+            location: location.trim() || null,
+            anonymous,
+          };
+    const res = await fetch("/api/admin/shop/reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    setBusy(false);
+    if (res.ok) {
+      setBody("");
+      load();
+    } else {
+      const e = (await res.json().catch(() => ({}))) as { error?: string };
+      setStatus(e.error ?? "Couldn't save the review.");
+    }
+  }
+
+  async function remove(t: "product" | "store", id: string) {
+    const res = await fetch("/api/admin/shop/reviews", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ target: t, id }),
+    });
+    if (res.ok) load();
+    else setStatus("Delete failed.");
+  }
+
+  return (
+    <div className="space-y-5">
+      <Card
+        title="Seed a test review"
+        subtitle="Real reviews on any product or store, skipping the buyer + delivered gate. They show live."
+        accent
+      >
+        {status ? (
+          <p className="mb-3 font-sans text-detail text-rose-300">{status}</p>
+        ) : null}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="block">
+            <span className={labelCls}>Target</span>
+            <select
+              value={target}
+              onChange={(e) => setTarget(e.target.value as "product" | "store")}
+              className={field}
+            >
+              <option value="product">A product</option>
+              <option value="store">A store</option>
+            </select>
+          </label>
+          {target === "product" ? (
+            <label className="block">
+              <span className={labelCls}>Product</span>
+              <select
+                value={productId}
+                onChange={(e) => setProductId(e.target.value)}
+                className={field}
+              >
+                {(data?.products ?? []).map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : (
+            <label className="block">
+              <span className={labelCls}>Store</span>
+              <select
+                value={storeId}
+                onChange={(e) => setStoreId(e.target.value)}
+                className={field}
+              >
+                {(data?.stores ?? []).map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.public_name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          <label className="block">
+            <span className={labelCls}>Stars</span>
+            <select
+              value={stars}
+              onChange={(e) => setStars(Number(e.target.value))}
+              className={field}
+            >
+              {[5, 4, 3, 2, 1].map((n) => (
+                <option key={n} value={n}>
+                  {n} {n === 1 ? "star" : "stars"}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <span className={labelCls}>Display name</span>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={anonymous}
+              maxLength={80}
+              placeholder="e.g. Markos V."
+              className={field + (anonymous ? " opacity-50" : "")}
+            />
+          </label>
+          <label className="block">
+            <span className={labelCls}>Location</span>
+            <input
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              disabled={anonymous}
+              maxLength={80}
+              placeholder="e.g. Chicago, IL"
+              className={field + (anonymous ? " opacity-50" : "")}
+            />
+          </label>
+          <label className="block sm:col-span-2">
+            <span className={labelCls}>Review body (optional)</span>
+            <textarea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              rows={2}
+              maxLength={4000}
+              placeholder="What the reviewer wrote"
+              className={field}
+            />
+          </label>
+        </div>
+        <div className="mt-3 flex items-center justify-between gap-3">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={anonymous}
+              onChange={(e) => setAnonymous(e.target.checked)}
+              className="h-4 w-4 accent-gold"
+            />
+            <span className="font-sans text-detail text-paper/75">
+              Post anonymously
+            </span>
+          </label>
+          <button
+            type="button"
+            onClick={() => void seed()}
+            disabled={busy}
+            className="rounded-pill border border-gold/40 bg-gold/[0.08] px-4 py-1.5 font-sans text-caption font-semibold text-gold disabled:opacity-50"
+          >
+            {busy ? "Saving…" : "Add review"}
+          </button>
+        </div>
+      </Card>
+
+      <Card title="Product reviews" subtitle="Every review currently live on a product">
+        <DataTable<AdminProductReview>
+          rows={data?.productReviews ?? []}
+          rowKey={(r) => r.id}
+          csvFilename="product-reviews.csv"
+          empty="No product reviews yet."
+          columns={[
+            {
+              key: "product",
+              label: "Product",
+              render: (r) => (
+                <span className="text-paper/85">
+                  {r.product?.title ?? "—"}
+                  {r.order_id ? null : (
+                    <span className="ml-2">
+                      <Pill tone="gold">seeded</Pill>
+                    </span>
+                  )}
+                </span>
+              ),
+              csv: (r) => r.product?.title ?? "",
+            },
+            {
+              key: "stars",
+              label: "Rating",
+              render: (r) => <span className="text-gold">{starLabel(r.stars)}</span>,
+              csv: (r) => r.stars,
+            },
+            {
+              key: "who",
+              label: "Reviewer",
+              render: (r) => (r.anonymous ? "Anonymous" : r.display_name || "—"),
+              csv: (r) => (r.anonymous ? "Anonymous" : r.display_name || ""),
+            },
+            {
+              key: "body",
+              label: "Review",
+              render: (r) => (
+                <span className="line-clamp-2 text-paper/70">{r.body || "—"}</span>
+              ),
+              csv: (r) => r.body ?? "",
+            },
+            {
+              key: "actions",
+              label: "",
+              align: "right",
+              render: (r) => (
+                <ToolbarButton
+                  variant="danger"
+                  onClick={() => void remove("product", r.id)}
+                >
+                  Delete
+                </ToolbarButton>
+              ),
+            },
+          ]}
+        />
+      </Card>
+
+      <Card title="Store reviews" subtitle="Reviews of the store itself">
+        <DataTable<AdminStoreReview>
+          rows={data?.storeReviews ?? []}
+          rowKey={(r) => r.id}
+          csvFilename="store-reviews.csv"
+          empty="No store reviews yet."
+          columns={[
+            {
+              key: "store",
+              label: "Store",
+              render: (r) => (
+                <span className="text-paper/85">
+                  {r.store?.public_name ?? "—"}
+                  {r.order_id ? null : (
+                    <span className="ml-2">
+                      <Pill tone="gold">seeded</Pill>
+                    </span>
+                  )}
+                </span>
+              ),
+              csv: (r) => r.store?.public_name ?? "",
+            },
+            {
+              key: "stars",
+              label: "Rating",
+              render: (r) => <span className="text-gold">{starLabel(r.stars)}</span>,
+              csv: (r) => r.stars,
+            },
+            {
+              key: "who",
+              label: "Reviewer",
+              render: (r) => (r.anonymous ? "Anonymous" : r.display_name || "—"),
+              csv: (r) => (r.anonymous ? "Anonymous" : r.display_name || ""),
+            },
+            {
+              key: "body",
+              label: "Review",
+              render: (r) => (
+                <span className="line-clamp-2 text-paper/70">{r.body || "—"}</span>
+              ),
+              csv: (r) => r.body ?? "",
+            },
+            {
+              key: "actions",
+              label: "",
+              align: "right",
+              render: (r) => (
+                <ToolbarButton
+                  variant="danger"
+                  onClick={() => void remove("store", r.id)}
+                >
+                  Delete
+                </ToolbarButton>
+              ),
+            },
+          ]}
+        />
+      </Card>
+    </div>
   );
 }

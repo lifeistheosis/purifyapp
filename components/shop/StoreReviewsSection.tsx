@@ -4,63 +4,66 @@ import { useEffect, useState } from "react";
 
 import { RatingStars } from "@/components/shop/RatingStars";
 import { VerifiedBuyerBadge } from "@/components/shop/VerifiedBuyerBadge";
-import { WriteReviewForm } from "@/components/shop/WriteReviewForm";
+import { WriteStoreReviewForm } from "@/components/shop/WriteStoreReviewForm";
 import {
-  fetchShopReviews,
-  hasPurchasedProduct,
+  fetchShopStoreReviews,
+  hasDeliveredOrderFromStore,
 } from "@/lib/shop/catalogClient";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 
 /**
- * Reviews block on the product page: the aggregate, the verified-buyer write
- * form (only for a buyer whose order has arrived), and the list. Ratings alone
- * count as reviews, so a list entry may be stars + date with no body. Every
- * review carries a "Verified buyer" badge — the submit RPC requires a delivered
- * order, so the badge is always truthful.
+ * Store-level reviews block on the store page: reviews of the store itself
+ * (EIKON), distinct from the ratings on its individual products. Same shape as
+ * the product ReviewsSection — the aggregate, the verified-buyer write form
+ * (only for a buyer whose order from this store has arrived), and the list.
+ * Each review's badge reads "Bought {storeName}" since a store review proves a
+ * delivered order from the store, not a specific product.
  */
-export function ReviewsSection({
-  productId,
-  productSlug,
-  productTitle,
-  onReviewed,
+export function StoreReviewsSection({
+  storeId,
+  storeSlug,
+  storeName,
 }: {
-  productId: string;
-  productSlug: string;
-  productTitle?: string;
-  onReviewed?: () => void;
+  storeId: string;
+  storeSlug: string;
+  storeName: string;
 }) {
   const { data, loading, reload } = useAsyncData(
-    () => fetchShopReviews(productSlug),
-    [productSlug],
+    () => fetchShopStoreReviews(storeSlug),
+    [storeSlug],
   );
   const [eligible, setEligible] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    hasPurchasedProduct(productId).then((v) => {
+    hasDeliveredOrderFromStore(storeId).then((v) => {
       if (!cancelled) setEligible(v);
     });
     return () => {
       cancelled = true;
     };
-  }, [productId]);
-
-  const handleSubmitted = () => {
-    reload();
-    onReviewed?.();
-  };
+  }, [storeId]);
 
   return (
-    <section id="reviews" aria-label="Reviews" className="mt-10 scroll-mt-24">
+    <section
+      aria-label={`Reviews of ${storeName}`}
+      className="mt-14 scroll-mt-24"
+    >
       <div className="flex items-center justify-between gap-4">
-        <h2 className="font-display-serif text-title text-paper">Reviews</h2>
+        <h2 className="font-display-serif text-title md:text-heading text-paper">
+          What buyers say about {storeName}
+        </h2>
         {data && data.reviewCount > 0 ? (
           <RatingStars avg={data.avgStars} count={data.reviewCount} />
         ) : null}
       </div>
 
       {eligible ? (
-        <WriteReviewForm productId={productId} onSubmitted={handleSubmitted} />
+        <WriteStoreReviewForm
+          storeId={storeId}
+          storeName={storeName}
+          onSubmitted={reload}
+        />
       ) : null}
 
       {loading ? (
@@ -70,7 +73,7 @@ export function ReviewsSection({
       ) : null}
 
       {data && data.reviews.length > 0 ? (
-        <ul className="mt-5 space-y-4">
+        <ul className="mt-5 grid gap-4 md:grid-cols-2">
           {data.reviews.map((r) => (
             <li
               key={r.id}
@@ -97,7 +100,7 @@ export function ReviewsSection({
                 </span>
               </div>
               <div className="mt-2">
-                <VerifiedBuyerBadge bought={productTitle} />
+                <VerifiedBuyerBadge bought={storeName} />
               </div>
               {r.body ? (
                 <p className="mt-2.5 whitespace-pre-wrap font-serif text-body text-paper/80 leading-[1.6]">
@@ -109,10 +112,10 @@ export function ReviewsSection({
         </ul>
       ) : !loading && data && data.reviewCount === 0 ? (
         <p className="mt-4 font-serif text-body text-paper/60 leading-[1.6]">
-          No reviews yet.
+          No reviews of {storeName} yet.
           {eligible
-            ? " Be the first to review it."
-            : " Only verified buyers can leave a review."}
+            ? " Be the first to share your experience."
+            : " Reviews come from buyers whose orders have arrived."}
         </p>
       ) : null}
     </section>

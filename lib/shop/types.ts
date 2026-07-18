@@ -65,6 +65,11 @@ export type ShopStore = {
   shipping_policy_md: string | null;
   return_policy_md: string | null;
   status: "draft" | "live" | "paused" | "closed";
+  // Denormalized store-level review counters (reviews of the store itself, not
+  // of its products). store_rating_total is the sum of stars; the average is
+  // store_rating_total / store_review_count. Carried by the catalog `select *`.
+  store_review_count?: number;
+  store_rating_total?: number;
 };
 
 export type ShopProductMedia = {
@@ -179,6 +184,25 @@ export type ShopReview = {
 
 export type ShopReviewsData = {
   reviews: ShopReview[];
+  reviewCount: number;
+  avgStars: number | null;
+};
+
+/** A public store-level review row (a review of the store itself, e.g. EIKON).
+ *  Same shape as ShopReview; every one is from a buyer with a delivered order
+ *  from the store. */
+export type ShopStoreReview = {
+  id: string;
+  stars: number;
+  body: string | null;
+  created_at: string;
+  display_name: string | null;
+  location: string | null;
+  anonymous: boolean;
+};
+
+export type ShopStoreReviewsData = {
+  reviews: ShopStoreReview[];
   reviewCount: number;
   avgStars: number | null;
 };
