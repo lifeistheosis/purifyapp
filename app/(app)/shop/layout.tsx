@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { ShopSubTabs } from "@/components/shop/ShopSubTabs";
+import { CartSync } from "@/components/shop/CartSync";
 import { shopEnabled } from "@/lib/shop/flags";
 
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
   if (!shopEnabled()) notFound();
   return (
     <div className="bg-night min-h-dvh pb-16 safe-pb">
+      <CartSync />
       <ShopSubTabs />
       {children}
     </div>

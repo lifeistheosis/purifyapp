@@ -10,7 +10,7 @@ import { OrdersTab } from "./tabs/OrdersTab";
 import { RevenueTab } from "./tabs/RevenueTab";
 import { SubscriptionsTab } from "./tabs/SubscriptionsTab";
 import { MessagesTab } from "./tabs/MessagesTab";
-import { UsersTab } from "./tabs/UsersTab";
+import { UsersHubTab } from "./tabs/UsersHubTab";
 import { ShopHubTab } from "./tabs/ShopHubTab";
 import { CommunityTab } from "./tabs/CommunityTab";
 import { TrafficHubTab } from "./tabs/TrafficHubTab";
@@ -38,7 +38,7 @@ const TABS: { id: TabId; label: string; eyebrow: string; component: ComponentTyp
   { id: "revenue", label: "Revenue", eyebrow: "Shop, donations, subs", component: RevenueTab },
   { id: "subscriptions", label: "Subscriptions", eyebrow: "Plus & Pro", component: SubscriptionsTab },
   { id: "messages", label: "Messages", eyebrow: "Support + shop", component: MessagesTab },
-  { id: "users", label: "Users", eyebrow: "Profiles", component: UsersTab },
+  { id: "users", label: "Users", eyebrow: "Profiles + carts", component: UsersHubTab },
   { id: "shop", label: "Shop", eyebrow: "EIKON + marketplace", component: ShopHubTab },
   { id: "community", label: "Community", eyebrow: "Campaigns + Trapeza moderation", component: CommunityTab },
   { id: "traffic", label: "Traffic", eyebrow: "Site analytics", component: TrafficHubTab },
