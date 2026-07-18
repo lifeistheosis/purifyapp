@@ -25,10 +25,10 @@ export function Card({
   return (
     <section
       className={
-        "rounded-lg border p-5 " +
+        "rounded-xl border p-5 " +
         (accent
-          ? "border-gold/25 bg-gold/[0.04]"
-          : "border-paper/10 bg-night")
+          ? "admin-surface-gold border-gold/25 bg-gold/[0.04]"
+          : "admin-surface border-white/8 bg-night")
       }
     >
       {(title || action) && (
@@ -71,10 +71,10 @@ export function StatCard({
   return (
     <div
       className={
-        "rounded-lg border p-5 " +
+        "rounded-xl border p-5 " +
         (accent
-          ? "border-gold/30 bg-gold/[0.06]"
-          : "border-paper/10 bg-night")
+          ? "admin-surface-gold border-gold/30 bg-gold/[0.06]"
+          : "admin-surface border-white/8 bg-night")
       }
     >
       <p
@@ -124,10 +124,10 @@ export function KpiCard({
   return (
     <div
       className={
-        "rounded-lg border p-5 " +
+        "rounded-xl border p-5 " +
         (accent
-          ? "border-gold/30 bg-gold/[0.06]"
-          : "border-paper/10 bg-night")
+          ? "admin-surface-gold border-gold/30 bg-gold/[0.06]"
+          : "admin-surface border-white/8 bg-night")
       }
     >
       <p

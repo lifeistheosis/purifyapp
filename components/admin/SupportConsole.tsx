@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { cn } from "@/lib/cn";
 import { ticketNumber } from "@/lib/support/ticketNumber";
 import type {
   Ticket,
@@ -12,23 +13,117 @@ import type {
 type FullTicket = Ticket & { messages: TicketMessage[] };
 
 const STATUSES: TicketStatus[] = ["open", "pending", "resolved", "closed"];
-const statusTone: Record<TicketStatus, string> = {
-  open: "text-emerald-300 border-emerald-400/30",
-  pending: "text-amber-300 border-amber-400/30",
-  resolved: "text-sky-300 border-sky-400/30",
-  closed: "text-paper/40 border-paper/20",
+const HEART = "❤️";
+
+// Dot color per status, for the picker + selected pill.
+const statusDot: Record<TicketStatus, string> = {
+  open: "bg-emerald-400",
+  pending: "bg-amber-400",
+  resolved: "bg-sky-400",
+  closed: "bg-paper/40",
 };
+const statusText: Record<TicketStatus, string> = {
+  open: "text-emerald-300",
+  pending: "text-amber-300",
+  resolved: "text-sky-300",
+  closed: "text-paper/50",
+};
+
+function when(iso: string): string {
+  return new Date(iso).toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+/** A dark, styled status picker replacing the jarring native <select>. */
+function StatusPicker({
+  value,
+  onChange,
+}: {
+  value: TicketStatus;
+  onChange: (s: TicketStatus) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onDoc(e: MouseEvent) {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className="inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.04] px-3 py-1.5 font-sans text-detail text-paper hover:border-paper/40"
+      >
+        <span className={`h-2 w-2 rounded-full ${statusDot[value]}`} aria-hidden />
+        <span className={statusText[value]}>{value}</span>
+        <span aria-hidden className="text-paper/40">
+          ▾
+        </span>
+      </button>
+      {open && (
+        <ul
+          role="listbox"
+          className="absolute right-0 z-20 mt-1 w-40 overflow-hidden rounded-lg border border-paper/15 bg-night-soft shadow-pop"
+        >
+          {STATUSES.map((s) => (
+            <li key={s}>
+              <button
+                type="button"
+                role="option"
+                aria-selected={s === value}
+                onClick={() => {
+                  onChange(s);
+                  setOpen(false);
+                }}
+                className={
+                  "flex w-full items-center gap-2 px-3 py-2 text-left font-sans text-detail transition-colors hover:bg-paper/[0.06] " +
+                  (s === value ? "bg-paper/[0.04]" : "")
+                }
+              >
+                <span className={`h-2 w-2 rounded-full ${statusDot[s]}`} aria-hidden />
+                <span className={statusText[s]}>{s}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 export function SupportConsole({ initial }: { initial: FullTicket[] }) {
   const [tickets, setTickets] = useState<FullTicket[]>(initial);
   const [selectedId, setSelectedId] = useState<string | null>(
     initial[0]?.id ?? null,
   );
+  // On phones the two panes stack: the list shows first, tapping a ticket
+  // slides in the thread, and a back affordance returns to the list. On md+
+  // both panes are always visible, so this flag only gates the mobile view.
+  const [mobileThreadOpen, setMobileThreadOpen] = useState(false);
   const [reply, setReply] = useState("");
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<string | null>(null);
 
   const selected = tickets.find((t) => t.id === selectedId) ?? null;
+
+  function openTicket(id: string) {
+    setSelectedId(id);
+    setNote(null);
+    setMobileThreadOpen(true);
+  }
 
   async function refresh() {
     const res = await fetch("/api/admin/support");
@@ -71,9 +166,37 @@ export function SupportConsole({ initial }: { initial: FullTicket[] }) {
     await refresh();
   }
 
+  // Double-tap / double-click a message to toggle a heart. Optimistic: flip
+  // it locally, then persist; refresh reconciles.
+  async function toggleReaction(msg: TicketMessage) {
+    if (!selected) return;
+    const next = msg.reaction === HEART ? "" : HEART;
+    setTickets((ts) =>
+      ts.map((t) =>
+        t.id !== selected.id
+          ? t
+          : {
+              ...t,
+              messages: t.messages.map((m) =>
+                m.id === msg.id ? { ...m, reaction: next || null } : m,
+              ),
+            },
+      ),
+    );
+    await fetch("/api/admin/support", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "react",
+        messageId: msg.id,
+        reaction: next,
+      }),
+    }).catch(() => {});
+  }
+
   if (tickets.length === 0) {
     return (
-      <p className="rounded-lg border border-paper/10 bg-night-soft/60 p-6 font-sans text-detail text-paper/60">
+      <p className="rounded-2xl border border-paper/10 bg-night-soft/60 p-8 text-center font-sans text-detail text-paper/60">
         No support tickets yet. When a customer submits the contact form, it
         appears here.
       </p>
@@ -81,104 +204,139 @@ export function SupportConsole({ initial }: { initial: FullTicket[] }) {
   }
 
   return (
-    <div className="grid gap-5 md:grid-cols-[320px_1fr]">
-      {/* List */}
-      <ul className="space-y-2">
-        {tickets.map((t) => (
-          <li key={t.id}>
-            <button
-              type="button"
-              onClick={() => setSelectedId(t.id)}
-              className={
-                "w-full rounded-lg border p-3 text-left transition-colors " +
-                (t.id === selectedId
-                  ? "border-paper/30 bg-paper/[0.06]"
-                  : "border-paper/10 bg-night-soft/50 hover:border-paper/25")
-              }
-            >
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-sans text-eyebrow text-paper/40">
-                  {ticketNumber(t.id)}
-                </span>
-                <span
-                  className={
-                    "rounded-pill border px-2 py-0.5 font-sans text-eyebrow " +
-                    statusTone[t.status]
-                  }
-                >
-                  {t.status}
-                </span>
-              </div>
-              <p className="mt-1 truncate font-sans text-detail font-medium text-paper">
-                {t.subject}
-              </p>
-              <p className="truncate font-sans text-caption text-paper/50">
-                {t.name ? `${t.name} · ` : ""}
-                {t.email}
-              </p>
-            </button>
-          </li>
-        ))}
+    <div className="md:grid md:grid-cols-[340px_1fr] md:gap-6">
+      {/* List — full width on phones; hidden there once a thread is open. */}
+      <ul
+        className={cn(
+          "space-y-2.5",
+          mobileThreadOpen ? "hidden md:block" : "block",
+        )}
+      >
+        {tickets.map((t) => {
+          const active = t.id === selectedId;
+          return (
+            <li key={t.id}>
+              <button
+                type="button"
+                onClick={() => openTicket(t.id)}
+                aria-current={active ? "true" : undefined}
+                className={cn(
+                  "w-full rounded-2xl border p-4 text-left transition-all duration-200",
+                  active
+                    ? "border-gold/30 bg-gold/[0.05] shadow-[0_1px_0_0_rgba(255,255,255,0.04)_inset]"
+                    : "border-paper/10 bg-night-soft/40 hover:border-paper/25 hover:bg-night-soft/60",
+                )}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-sans text-eyebrow tabular-nums text-paper/40">
+                    {ticketNumber(t.id)}
+                  </span>
+                  <span
+                    className={
+                      "inline-flex items-center gap-1.5 rounded-pill border border-paper/15 px-2 py-0.5 font-sans text-eyebrow " +
+                      statusText[t.status]
+                    }
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${statusDot[t.status]}`}
+                      aria-hidden
+                    />
+                    {t.status}
+                  </span>
+                </div>
+                <p className="mt-2 truncate font-sans text-ui font-medium text-paper">
+                  {t.subject}
+                </p>
+                <p className="mt-0.5 truncate font-sans text-caption text-paper/50">
+                  {t.name ? `${t.name} · ` : ""}
+                  {t.email}
+                </p>
+              </button>
+            </li>
+          );
+        })}
       </ul>
 
-      {/* Detail */}
+      {/* Detail — full width on phones; hidden there until a thread is open. */}
       {selected ? (
-        <div className="rounded-lg border border-paper/10 bg-night-soft/60 p-5">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="font-sans text-eyebrow text-paper/40">
+        <div
+          key={selected.id}
+          className={cn(
+            "admin-fade-in mt-4 rounded-2xl border border-paper/10 bg-night-soft/60 p-5 md:mt-0 md:p-6",
+            mobileThreadOpen ? "block" : "hidden md:block",
+          )}
+        >
+          {/* Mobile back affordance to the ticket list. */}
+          <button
+            type="button"
+            onClick={() => setMobileThreadOpen(false)}
+            className="mb-4 inline-flex items-center gap-1.5 font-sans text-detail font-medium text-paper/60 hover:text-paper md:hidden"
+          >
+            <span aria-hidden>←</span> Tickets
+          </button>
+
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="font-sans text-eyebrow tabular-nums text-paper/40">
                 {ticketNumber(selected.id)}
               </p>
-              <h3 className="font-display-serif text-title text-paper">
+              <h3 className="mt-0.5 font-display-serif text-title text-paper">
                 {selected.subject}
               </h3>
-              <p className="font-sans text-caption text-paper/55">
+              <p className="mt-1 font-sans text-caption text-paper/55">
                 {selected.name ? `${selected.name} · ` : ""}
                 {selected.email}
               </p>
             </div>
-            <select
-              value={selected.status}
-              onChange={(e) => void changeStatus(e.target.value as TicketStatus)}
-              className="rounded-lg border border-paper/15 bg-paper/[0.03] px-2 py-1.5 font-sans text-detail text-paper"
-              aria-label="Ticket status"
-            >
-              {STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
+            <StatusPicker value={selected.status} onChange={changeStatus} />
           </div>
 
-          <div className="mt-4 space-y-3">
-            {selected.messages.map((m) => (
+          <p className="mt-4 font-sans text-eyebrow text-paper/35">
+            Double-tap a message to react.
+          </p>
+
+          <div className="mt-3 space-y-3">
+            {selected.messages.map((m, i) => (
               <div
                 key={m.id}
-                className={
-                  "rounded-lg p-3 font-sans text-detail leading-relaxed " +
-                  (m.author === "staff"
-                    ? "ml-8 bg-gold/[0.08] text-paper"
-                    : "mr-8 bg-paper/[0.04] text-paper/85")
-                }
+                onDoubleClick={() => void toggleReaction(m)}
+                title="Double-tap to react"
+                style={{ animationDelay: `${Math.min(i * 45, 360)}ms` }}
+                className={cn(
+                  "admin-fade-in group relative max-w-[85%] cursor-default select-none rounded-2xl px-4 py-3 font-sans text-detail leading-relaxed md:max-w-[80%]",
+                  m.author === "staff"
+                    ? "ml-auto rounded-br-md bg-gold/[0.1] text-paper"
+                    : "mr-auto rounded-bl-md border border-paper/10 bg-paper/[0.03] text-paper/85",
+                )}
               >
-                <p className="mb-1 font-sans text-eyebrow uppercase tracking-wide text-paper/40">
-                  {m.author === "staff" ? "You" : "Customer"}
-                </p>
+                <div className="mb-1 flex items-center justify-between gap-3">
+                  <span className="font-sans text-eyebrow uppercase tracking-wide text-paper/40">
+                    {m.author === "staff" ? "You" : "Customer"}
+                  </span>
+                  <span className="font-sans text-[10px] tabular-nums text-paper/35">
+                    {when(m.created_at)}
+                    {m.author === "staff" ? " · Sent, emailed" : ""}
+                  </span>
+                </div>
                 <p className="whitespace-pre-wrap">{m.body}</p>
+                {m.reaction ? (
+                  <span className="heart-pop mt-1.5 inline-flex items-center rounded-full border border-paper/15 bg-night px-1.5 py-0.5 text-[11px] leading-none">
+                    {m.reaction}
+                  </span>
+                ) : null}
               </div>
             ))}
           </div>
 
-          <div className="mt-4">
+          <div className="mt-5 border-t border-white/6 pt-4">
             <textarea
               rows={4}
               value={reply}
               onChange={(e) => setReply(e.target.value)}
               placeholder="Write a reply. It emails the customer."
-              className="w-full rounded-lg border border-paper/15 bg-paper/[0.03] px-3 py-2.5 font-sans text-ui text-paper placeholder:text-paper/35 focus:border-paper/40 focus:outline-none"
+              className="w-full rounded-xl border border-paper/15 bg-paper/[0.03] px-3.5 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:border-paper/40 focus:outline-none focus:ring-1 focus:ring-paper/20"
             />
-            <div className="mt-2 flex items-center gap-3">
+            <div className="mt-3 flex flex-wrap items-center gap-3">
               <button
                 type="button"
                 onClick={() => void sendReply()}

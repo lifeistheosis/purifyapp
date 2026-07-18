@@ -13,6 +13,9 @@ export type TicketMessage = {
   author: "customer" | "staff";
   body: string;
   created_at: string;
+  /** Optional reaction emoji (double-tap to heart). Absent until the
+   * 20260718 migration is applied. */
+  reaction?: string | null;
 };
 
 export type Ticket = {

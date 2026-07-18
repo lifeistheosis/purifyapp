@@ -930,6 +930,44 @@ div[data-hl="true"] {
  }
 }
 
+/* Admin — premium card surfaces. A faint top-lit gradient over the night base
+   plus a hairline inner highlight, so cards read as raised glass rather than
+   flat panels. Layered via background-image so it composes with the element's
+   own bg-night / bg-gold color. Pair with the existing border classes. */
+.admin-surface {
+ background-image: linear-gradient(
+ 180deg,
+ rgba(255, 255, 255, 0.03),
+ rgba(255, 255, 255, 0)
+ );
+ box-shadow:
+ 0 1px 2px rgba(0, 0, 0, 0.28),
+ inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+.admin-surface-gold {
+ background-image: linear-gradient(
+ 180deg,
+ rgba(255, 255, 255, 0.05),
+ rgba(255, 255, 255, 0)
+ );
+ box-shadow:
+ 0 1px 2px rgba(0, 0, 0, 0.28),
+ inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Admin tab bar — the active tab sits in a soft gold-tinted segment with a
+   glowing underline; inactive tabs get a quiet hover wash. */
+.admin-tab-active {
+ background-image: linear-gradient(
+ 180deg,
+ rgba(201, 162, 39, 0.1),
+ rgba(201, 162, 39, 0)
+ );
+}
+.admin-tab-underline {
+ box-shadow: 0 0 8px rgba(201, 162, 39, 0.55);
+}
+
 /* ── Reader focus mode ───────────────────────────────────────────────
    The Bible reader's ReaderFocusController toggles `html.reader-focus`.
    When set, every element tagged as chrome (app nav, footer, mobile tab

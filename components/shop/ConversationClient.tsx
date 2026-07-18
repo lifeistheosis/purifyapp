@@ -10,6 +10,7 @@ import {
   ShopSignInPrompt,
 } from "@/components/shop/ShopStates";
 import type { ShopConversation, ShopMessage } from "@/lib/shop/types";
+import { fetchThreadMessages } from "@/lib/shop/messages";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -39,17 +40,12 @@ async function load(id: string): Promise<Result> {
   const conversation = (data as Row | null) ?? null;
   if (!conversation) return { signedIn: true, conversation: null, messages: [] };
 
-  const { data: messages } = await supabase
-    .from("shop_messages")
-    .select("id, conversation_id, sender, body, created_at")
-    .eq("conversation_id", conversation.id)
-    .order("created_at", { ascending: true })
-    .limit(500);
+  const messages = await fetchThreadMessages(supabase, conversation.id);
 
   return {
     signedIn: true,
     conversation,
-    messages: (messages ?? []) as ShopMessage[],
+    messages,
   };
 }
 
@@ -115,6 +111,7 @@ export function ConversationClient() {
           viewer="buyer"
           closed={conv.status === "closed"}
           counterpartyName={conv.store?.public_name ?? "Store"}
+          counterpartyLastReadAt={conv.seller_last_read_at}
           onSent={reload}
         />
       </div>
