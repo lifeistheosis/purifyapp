@@ -76,6 +76,43 @@ function run(cmd, extraEnv = {}) {
   execSync(cmd, { stdio: "inherit", env: { ...process.env, ...extraEnv } });
 }
 
+// Prune the RSC prefetch payload duplicate that `next build` emits per route.
+// For every statically-exported route Next writes `index.txt` (the full-route
+// flight payload the client router fetches for soft navigation) AND a
+// byte-identical `__next._full.txt` beside it — the `/_full` segment key is a
+// build-time server-cache artifact that the client segment cache NEVER requests
+// in output:'export' mode (the string "_full" appears nowhere in
+// next/dist/client). So `__next._full.txt` is dead weight that ships in the
+// APK: ~1,750 files, ~247 MB on the current content set. index.txt and every
+// other segment file are load-bearing and left untouched. Next regenerates
+// `_full` on every build, so this must run each build, not once.
+function pruneFullPayloadDuplicates(dir) {
+  let files = 0;
+  let bytes = 0;
+  const walk = (d) => {
+    for (const entry of fs.readdirSync(d, { withFileTypes: true })) {
+      const p = path.join(d, entry.name);
+      if (entry.isDirectory()) {
+        walk(p);
+      } else if (entry.isFile() && entry.name === "__next._full.txt") {
+        bytes += fs.statSync(p).size;
+        fs.rmSync(p);
+        files += 1;
+      }
+    }
+  };
+  if (fs.existsSync(dir)) walk(dir);
+  console.log(
+    `• pruned ${files} __next._full.txt duplicate(s), reclaimed ${(bytes / 1048576).toFixed(1)} MB`,
+  );
+}
+
+// Start from a clean export. `next build` writes into out/ but does not delete
+// stale files from routes that no longer exist, so out/ silently accumulates
+// months of removed content across builds and ships it in the APK. Wipe it so
+// only the current content set is bundled.
+fs.rmSync(path.join(ROOT, "out"), { recursive: true, force: true });
+
 try {
   stashAll();
   run("next build", { BUILD_TARGET: "android" });
@@ -88,5 +125,10 @@ run("node --experimental-strip-types scripts/emit-registries.mjs");
 run("node scripts/build-content-package.mjs --out out/content");
 // Integrity gate: fail the build if the generated package doesn't verify.
 run("node scripts/verify-package.mjs out/content/content-package.json");
+
+// Trim the redundant RSC prefetch duplicates now that the export is complete
+// (after the content package + its integrity gate, so nothing downstream reads
+// the pruned files).
+pruneFullPayloadDuplicates(path.join(ROOT, "out"));
 
 console.log("\n✓ Android local bundle ready: out/ (UI) + out/content/ (data)");
