@@ -6,8 +6,9 @@
 // supplier data appear.
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
-import { Card, DataTable, Pill, ToolbarButton } from "../primitives";
+import { Card, DataTable, Modal, Pill, SubTabs, ToolbarButton } from "../primitives";
 
 /* ── Types (admin payload shapes, deliberately local to this tab) ─────── */
 
@@ -121,6 +122,19 @@ const INVENTORY_STATUSES = [
 function money(cents: number | null | undefined): string {
   if (cents == null) return "";
   return `$${(cents / 100).toFixed(2)}`;
+}
+
+/** Short label for a supplier listing URL ("temu.com", "aliexpress.com").
+ * Supplier URLs are long and full of tracking params, so the product table
+ * shows the host and hangs the full URL off the link's title. Falls back to
+ * the raw string when it will not parse as a URL, since the field is free
+ * text and an admin may have pasted a bare domain. */
+function supplierHost(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url.length > 32 ? `${url.slice(0, 32)}…` : url;
+  }
 }
 
 /* ── Tab shell ─────────────────────────────────────────────────────────── */
@@ -249,6 +263,32 @@ function ProductsPanel() {
               csv: (p) => p.title,
             },
             {
+              key: "source",
+              label: "Source",
+              render: (p) => {
+                const s = sourcing.find((x) => x.product_id === p.id);
+                if (!s?.supplier_url) {
+                  return <span className="text-paper/30">—</span>;
+                }
+                return (
+                  <a
+                    href={s.supplier_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={s.supplier_url}
+                    className="inline-flex items-center gap-1 whitespace-nowrap font-sans text-detail text-gold hover:text-gold-pale"
+                  >
+                    {supplierHost(s.supplier_url)}
+                    {s.supplier_sku ? (
+                      <span className="text-paper/40">· {s.supplier_sku}</span>
+                    ) : null}
+                  </a>
+                );
+              },
+              csv: (p) =>
+                sourcing.find((x) => x.product_id === p.id)?.supplier_url ?? "",
+            },
+            {
               key: "price",
               label: "Price",
               align: "right",
@@ -367,7 +407,7 @@ function ProductsPanel() {
       </Card>
 
       {editing ? (
-        <ProductEditor
+        <ProductSheet
           product={editing === "new" ? null : editing}
           sourcing={
             editing === "new"
@@ -379,6 +419,11 @@ function ProductsPanel() {
             setEditing(null);
             load();
           }}
+          onToggleStatus={(p) =>
+            void quickUpdate(p, {
+              status: p.status === "published" ? "paused" : "published",
+            })
+          }
         />
       ) : null}
     </div>
@@ -452,15 +497,345 @@ const EMPTY_PRODUCT: AdminProduct = {
   subjects: [],
 };
 
-function ProductEditor({
+/* ── Product sheet: overview + edit in one dialog ──────────────────────── */
+
+/**
+ * Clicking a product opens this dialog instead of pushing a form under the
+ * table (which left the row you clicked scrolled off screen). It lands in
+ * read-only Overview — margin, engagement, sourcing at a glance — and only
+ * becomes an editable form when you ask for it, so a quick look can't
+ * accidentally rewrite a listing. A brand new product skips straight to Edit
+ * since there is nothing to view yet.
+ */
+function ProductSheet({
   product,
   sourcing,
   onClose,
   onSaved,
+  onToggleStatus,
 }: {
   product: AdminProduct | null;
   sourcing: Sourcing | null;
   onClose: () => void;
+  onSaved: () => void;
+  onToggleStatus: (p: AdminProduct) => void;
+}) {
+  const [mode, setMode] = useState<"overview" | "edit">(
+    product ? "overview" : "edit",
+  );
+
+  return (
+    <Modal
+      wide
+      title={product ? product.title : "New product"}
+      subtitle={product ? product.slug : "Create an EIKON listing"}
+      onClose={onClose}
+      header={
+        product ? (
+          <SubTabs
+            tabs={
+              [
+                ["overview", "Overview"],
+                ["edit", "Edit"],
+              ] as const
+            }
+            active={mode}
+            onChange={setMode}
+          />
+        ) : null
+      }
+    >
+      {product && mode === "overview" ? (
+        <ProductOverview
+          product={product}
+          sourcing={sourcing}
+          onEdit={() => setMode("edit")}
+          onToggleStatus={onToggleStatus}
+        />
+      ) : (
+        <ProductEditor product={product} sourcing={sourcing} onSaved={onSaved} />
+      )}
+    </Modal>
+  );
+}
+
+/** One label + value pair in the overview's detail lists. */
+function Row({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4 border-b border-white/5 py-1.5 last:border-0">
+      <span className="font-sans text-caption text-paper/45">{label}</span>
+      <span className="text-right font-sans text-detail text-paper/85">
+        {value == null || value === "" ? (
+          <span className="text-paper/25">—</span>
+        ) : (
+          value
+        )}
+      </span>
+    </div>
+  );
+}
+
+/** One big number in the overview's metric strip. */
+function Metric({
+  label,
+  value,
+  tone,
+  hint,
+}: {
+  label: string;
+  value: string;
+  tone?: string;
+  hint?: string;
+}) {
+  return (
+    <div className="rounded-lg border border-white/8 bg-night-soft/40 px-3 py-2.5">
+      <p className="font-sans text-eyebrow uppercase tracking-[1px] text-paper/40">
+        {label}
+      </p>
+      <p
+        className={
+          "mt-0.5 font-sans text-title-sm font-semibold tabular-nums " +
+          (tone ?? "text-paper")
+        }
+      >
+        {value}
+      </p>
+      {hint ? (
+        <p className="font-sans text-eyebrow text-paper/35">{hint}</p>
+      ) : null}
+    </div>
+  );
+}
+
+function ProductOverview({
+  product: p,
+  sourcing: s,
+  onEdit,
+  onToggleStatus,
+}: {
+  product: AdminProduct;
+  sourcing: Sourcing | null;
+  onEdit: () => void;
+  onToggleStatus: (p: AdminProduct) => void;
+}) {
+  const cost = s?.supplier_cost_cents ?? null;
+  const profit = cost != null ? p.price_cents - cost : null;
+  const roi = cost != null && cost > 0 ? ((p.price_cents - cost) / cost) * 100 : null;
+  const views = p.view_count ?? 0;
+  const sold = p.units_sold ?? 0;
+  const conv = views > 0 ? (sold / views) * 100 : null;
+  const hero = p.media[0] ?? null;
+  const roiTone =
+    roi == null
+      ? undefined
+      : roi < 0
+        ? "text-rose-300"
+        : roi < 100
+          ? "text-amber-300"
+          : "text-emerald-300";
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-xl border border-white/8 bg-night-soft/60">
+          {hero ? (
+            <Image
+              src={hero.media_url}
+              alt={hero.alt_text}
+              fill
+              sizes="128px"
+              className="object-contain p-2"
+            />
+          ) : (
+            <span className="flex h-full items-center justify-center font-sans text-eyebrow text-paper/25">
+              No image
+            </span>
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <Pill
+              tone={
+                p.status === "published"
+                  ? "emerald"
+                  : p.status === "paused"
+                    ? "rose"
+                    : "neutral"
+              }
+            >
+              {p.status}
+            </Pill>
+            <Pill>{p.inventory_status.replace(/_/g, " ")}</Pill>
+            {p.image_is_representative ? <Pill tone="gold">Stock image</Pill> : null}
+          </div>
+          {p.subtitle ? (
+            <p className="mt-2 font-sans text-detail text-paper/70">{p.subtitle}</p>
+          ) : null}
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={onEdit}
+              className="rounded-pill bg-paper px-4 py-1.5 font-sans text-detail font-semibold text-night"
+            >
+              Edit product
+            </button>
+            <button
+              type="button"
+              onClick={() => onToggleStatus(p)}
+              className="rounded-pill border border-paper/20 px-4 py-1.5 font-sans text-detail text-paper/75 hover:text-paper"
+            >
+              {p.status === "published" ? "Pause" : "Publish"}
+            </button>
+            <a
+              href={`/shop/${p.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-pill border border-paper/20 px-4 py-1.5 font-sans text-detail text-paper/75 hover:text-paper"
+            >
+              View on site ↗
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <Metric label="Price" value={money(p.price_cents)} />
+        <Metric
+          label="Cost"
+          value={cost == null ? "—" : money(cost)}
+          tone={cost == null ? "text-paper/30" : undefined}
+        />
+        <Metric
+          label="Profit / unit"
+          value={profit == null ? "—" : money(profit)}
+          tone={profit == null ? "text-paper/30" : roiTone}
+        />
+        <Metric
+          label="ROI"
+          value={roi == null ? "—" : `${roi.toFixed(0)}%`}
+          tone={roi == null ? "text-paper/30" : roiTone}
+        />
+        <Metric label="Views" value={String(views)} />
+        <Metric
+          label="Units sold"
+          value={String(sold)}
+          tone={sold > 0 ? "text-emerald-300" : undefined}
+        />
+        <Metric
+          label="Conversion"
+          value={conv == null ? "—" : `${conv.toFixed(1)}%`}
+          tone={conv == null ? "text-paper/30" : undefined}
+          hint={views > 0 ? `${sold} of ${views}` : "no views yet"}
+        />
+        <Metric
+          label="Revenue"
+          value={money(sold * p.price_cents)}
+          hint={profit != null ? `profit ${money(sold * profit)}` : undefined}
+        />
+      </div>
+
+      <div className="grid gap-5 md:grid-cols-2">
+        <div>
+          <p className="mb-1 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/45">
+            Listing
+          </p>
+          <Row label="Category" value={p.category.replace(/_/g, " ")} />
+          <Row label="Classification" value={p.classification.replace(/_/g, " ")} />
+          <Row
+            label="Availability"
+            value={p.inventory_status.replace(/_/g, " ")}
+          />
+          <Row label="Quantity on hand" value={p.quantity_available} />
+          <Row
+            label="Dispatch"
+            value={`${p.dispatch_min_days}–${p.dispatch_max_days} days`}
+          />
+          <Row label="Materials" value={p.materials} />
+          <Row label="Dimensions" value={p.dimensions} />
+          <Row label="Production" value={p.production_method} />
+          <Row label="Maker" value={p.maker_name} />
+          <Row label="Origin" value={p.country_of_origin} />
+          <Row
+            label="Subjects"
+            value={
+              p.subjects.length
+                ? p.subjects.map((x) => x.subject_slug).join(", ")
+                : null
+            }
+          />
+          <Row label="Images" value={p.media.length || null} />
+        </div>
+
+        <div>
+          <p className="mb-1 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/45">
+            Sourcing
+          </p>
+          <Row
+            label="Supplier link"
+            value={
+              s?.supplier_url ? (
+                <a
+                  href={s.supplier_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={s.supplier_url}
+                  className="text-gold hover:text-gold-pale"
+                >
+                  {supplierHost(s.supplier_url)} ↗
+                </a>
+              ) : null
+            }
+          />
+          <Row label="Supplier SKU" value={s?.supplier_sku} />
+          <Row label="Supplier cost" value={cost == null ? null : money(cost)} />
+          <Row
+            label="Lead time"
+            value={s?.lead_time_days == null ? null : `${s.lead_time_days} days`}
+          />
+          <Row label="Stock status" value={s?.stock_status} />
+          <Row
+            label="Resale rights"
+            value={
+              s?.resale_rights_confirmed ? (
+                <span className="text-emerald-300">Confirmed</span>
+              ) : (
+                <span className="text-amber-300">Not confirmed</span>
+              )
+            }
+          />
+          <Row
+            label="Attribution"
+            value={s?.attribution_required ? "Required" : "Not required"}
+          />
+          {s?.packaging_notes ? (
+            <div className="mt-3">
+              <p className="font-sans text-caption text-paper/45">Packaging notes</p>
+              <p className="mt-1 whitespace-pre-wrap font-sans text-detail text-paper/75">
+                {s.packaging_notes}
+              </p>
+            </div>
+          ) : null}
+          {s?.internal_notes ? (
+            <div className="mt-3">
+              <p className="font-sans text-caption text-paper/45">Internal notes</p>
+              <p className="mt-1 whitespace-pre-wrap font-sans text-detail text-paper/75">
+                {s.internal_notes}
+              </p>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProductEditor({
+  product,
+  sourcing,
+  onSaved,
+}: {
+  product: AdminProduct | null;
+  sourcing: Sourcing | null;
   onSaved: () => void;
 }) {
   const [p, setP] = useState<AdminProduct>(product ?? EMPTY_PRODUCT);
@@ -502,20 +877,10 @@ function ProductEditor({
     else setError(data.error ?? "Save failed.");
   }
 
+  // No Card wrapper: the title, close control, and Overview/Edit toggle all
+  // live in the hosting Modal (ProductSheet).
   return (
-    <Card
-      title={product ? `Edit: ${product.title}` : "New product"}
-      accent
-      action={
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-pill border border-paper/20 px-3 py-1 font-sans text-caption text-paper/70"
-        >
-          Close
-        </button>
-      }
-    >
+    <div>
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-1">
           <span className={labelCls}>Slug</span>
@@ -896,7 +1261,7 @@ function ProductEditor({
       >
         {busy ? "Saving…" : "Save product"}
       </button>
-    </Card>
+    </div>
   );
 }
 

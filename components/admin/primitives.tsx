@@ -3,10 +3,11 @@
 // Shared primitives used across every admin tab. Kept colocated so a
 // styling tweak in one place propagates everywhere.
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Sparkline } from "./charts";
 import { CountUp } from "./CountUp";
 import { downloadCsv, toCsv } from "@/lib/admin/csv";
+import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 
 // ── Card ────────────────────────────────────────────────────────────────────
 export function Card({
@@ -52,6 +53,86 @@ export function Card({
       {!subtitle && (title || action) && <div className="mb-4" />}
       {children}
     </section>
+  );
+}
+
+// ── Modal ───────────────────────────────────────────────────────────────────
+// Centered overlay dialog. Closes on Escape, on backdrop click, and from the
+// header's X. The panel scrolls internally and the page behind it is frozen,
+// so a long form never leaves the admin scrolled somewhere unexpected when it
+// closes. The backdrop is a real <button> rather than a click-handled div so
+// it is reachable by keyboard and needs no a11y escape hatch.
+export function Modal({
+  title,
+  subtitle,
+  onClose,
+  header,
+  children,
+  wide,
+}: {
+  title: string;
+  subtitle?: string;
+  onClose: () => void;
+  /** Controls rendered in the header, left of the close button. */
+  header?: ReactNode;
+  children: ReactNode;
+  wide?: boolean;
+}) {
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKey);
+    lockBodyScroll();
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      unlockBodyScroll();
+    };
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-night/80 p-4 backdrop-blur-sm md:p-8">
+      <button
+        type="button"
+        aria-label="Close"
+        onClick={onClose}
+        className="absolute inset-0 h-full w-full cursor-default"
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className={
+          "admin-surface relative my-auto w-full rounded-2xl border border-white/10 bg-night shadow-2xl " +
+          (wide ? "max-w-[1040px]" : "max-w-[760px]")
+        }
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-white/8 px-5 py-4 md:px-6">
+          <div className="min-w-0">
+            <p className="truncate font-sans text-title-sm font-semibold text-paper">
+              {title}
+            </p>
+            {subtitle ? (
+              <p className="mt-0.5 truncate font-sans text-caption text-paper/45">
+                {subtitle}
+              </p>
+            ) : null}
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            {header}
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="rounded-full border border-paper/20 px-2.5 py-1 font-sans text-caption text-paper/60 hover:border-paper/40 hover:text-paper"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+        <div className="px-5 py-5 md:px-6">{children}</div>
+      </div>
+    </div>
   );
 }
 
