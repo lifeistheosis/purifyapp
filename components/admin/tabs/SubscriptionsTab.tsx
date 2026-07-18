@@ -171,6 +171,129 @@ const compField =
 const compLabel =
   "block font-sans text-eyebrow uppercase tracking-[1px] text-paper/50";
 
+/**
+ * Send a claimable gift. Unlike the comp grant above, nothing is written to
+ * the reader's entitlement here: the row waits until they open Purify and
+ * claim it, and the claim EXTENDS whatever time they already have rather than
+ * replacing it. An unclaimed gift costs nothing.
+ */
+function GiftCard() {
+  const [email, setEmail] = useState("");
+  const [tier, setTier] = useState<"plus" | "pro">("pro");
+  const [days, setDays] = useState(90);
+  const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  async function send(e: FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setMsg(null);
+    try {
+      const res = await fetch("/api/admin/gifts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim(),
+          tier,
+          days,
+          message: message.trim() || null,
+        }),
+      });
+      const d = (await res.json()) as { ok?: boolean; error?: string };
+      if (res.ok && d.ok) {
+        setMsg({
+          ok: true,
+          text: `Gift queued for ${email.trim()}. It opens the next time they use Purify.`,
+        });
+        setEmail("");
+        setMessage("");
+      } else {
+        setMsg({ ok: false, text: d.error ?? "Could not send the gift." });
+      }
+    } catch {
+      setMsg({ ok: false, text: "Could not send the gift." });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card
+      title="Send a gift"
+      subtitle="Queues a sealed gift box. They claim it themselves; the time stacks on top of any they already have."
+    >
+      <form
+        onSubmit={send}
+        className="grid gap-3 sm:grid-cols-[1fr_auto_auto_auto] sm:items-end"
+      >
+        <label className="space-y-1">
+          <span className={compLabel}>Account email</span>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="friend@example.com"
+            className={`w-full ${compField}`}
+          />
+        </label>
+        <label className="space-y-1">
+          <span className={compLabel}>Plan</span>
+          <select
+            value={tier}
+            onChange={(e) => setTier(e.target.value as "plus" | "pro")}
+            className={compField}
+          >
+            <option value="plus">Plus</option>
+            <option value="pro">Pro</option>
+          </select>
+        </label>
+        <label className="space-y-1">
+          <span className={compLabel}>Duration</span>
+          <select
+            value={days}
+            onChange={(e) => setDays(Number(e.target.value))}
+            className={compField}
+          >
+            {COMP_DURATIONS.filter(([d]) => d <= 730).map(([d, l]) => (
+              <option key={d} value={d}>
+                {l}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button
+          type="submit"
+          disabled={busy || !email.trim()}
+          className="rounded-pill border border-gold/45 bg-gold/[0.10] px-5 py-2 font-sans text-detail font-semibold text-gold-pale transition-colors hover:bg-gold/20 disabled:opacity-40"
+        >
+          {busy ? "Sending…" : "Send gift"}
+        </button>
+      </form>
+      <label className="mt-3 block space-y-1">
+        <span className={compLabel}>Note on the card (optional)</span>
+        <input
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          maxLength={280}
+          placeholder="Thank you for keeping the lamps lit."
+          className={`w-full ${compField}`}
+        />
+      </label>
+      {msg && (
+        <p
+          className={`mt-3 font-sans text-eyebrow ${
+            msg.ok ? "text-emerald-300" : "text-rose-300"
+          }`}
+        >
+          {msg.text}
+        </p>
+      )}
+    </Card>
+  );
+}
+
 function MembersPanel() {
   const [members, setMembers] = useState<Member[]>([]);
   const [meta, setMeta] = useState<{ enriched: boolean; revenuecat: boolean } | null>(
@@ -313,6 +436,8 @@ function MembersPanel() {
           again updates the plan and extends the end date.
         </p>
       </Card>
+
+      <GiftCard />
 
       {loaded && meta && !meta.revenuecat ? (
         <p className="rounded-md border border-amber-400/25 bg-amber-400/[0.05] px-3 py-2 font-sans text-eyebrow text-amber-200/90">

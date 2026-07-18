@@ -2,6 +2,7 @@ import { AppNav } from "@/components/nav/AppNav";
 import { Footer } from "@/components/layout/Footer";
 import { SyncBridge } from "@/components/profile/SyncBridge";
 import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
+import { GiftBridge } from "@/components/gifts/GiftBridge";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
 import { ScrollToTop } from "@/components/nav/ScrollToTop";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
@@ -34,6 +35,8 @@ export default function AppGroupLayout({
       </div>
       <SyncBridge />
       <PrayerSyncBridge />
+      {/* Shows a claimable gift once per app open; renders nothing otherwise. */}
+      <GiftBridge />
       {/* safe-pt / safe-pb are no-ops on the web; inside the native shell
           they clear the status bar (top) and the tab bar + home indicator
           (bottom). */}

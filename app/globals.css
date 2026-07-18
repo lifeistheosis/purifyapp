@@ -1641,3 +1641,82 @@ html.is-native .history-controls {
  transition: none;
  }
 }
+
+/* ── Gift box ───────────────────────────────────────────────────────────────
+   The claim animation (components/gifts/GiftBox.tsx). Deliberately narrow in
+   what it animates: transform and opacity ONLY, so every step stays on the
+   compositor and never triggers layout or paint. No backdrop-filter anywhere
+   — the Android WebView bleeds imagery through it and drops frames, which is
+   why the shop sub-tab bar carries a flat background too.
+
+   Sequence: the lid unseals and lifts, light swells out of the box, a few
+   embers rise, then the reveal card settles in. Everything is keyframed off a
+   single click so there is no per-frame JS driving it. */
+
+@keyframes gift-lid {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 1; }
+  35%  { transform: translate3d(0, 4px, 0) rotate(-1deg); opacity: 1; }
+  100% { transform: translate3d(0, -128px, 0) rotate(-13deg); opacity: 0; }
+}
+
+@keyframes gift-box-settle {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  22%  { transform: translate3d(0, 5px, 0) scale(0.965); }
+  60%  { transform: translate3d(0, -3px, 0) scale(1.02); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes gift-glow {
+  0%   { transform: scale(0.35); opacity: 0; }
+  40%  { transform: scale(1.15); opacity: 0.95; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+@keyframes gift-ember {
+  0%   { transform: translate3d(0, 0, 0) scale(0.6); opacity: 0; }
+  25%  { opacity: 1; }
+  100% { transform: translate3d(var(--ember-x), -132px, 0) scale(0.2); opacity: 0; }
+}
+
+@keyframes gift-reveal {
+  0%   { transform: translate3d(0, 18px, 0) scale(0.97); opacity: 0; }
+  100% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+}
+
+@keyframes gift-seal-break {
+  0%   { transform: scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: scale(1.5) rotate(22deg); opacity: 0; }
+}
+
+.gift-lid        { animation: gift-lid 900ms cubic-bezier(0.34, 1.2, 0.5, 1) forwards; }
+.gift-box-settle { animation: gift-box-settle 900ms cubic-bezier(0.33, 1, 0.68, 1) forwards; }
+.gift-glow       { animation: gift-glow 1100ms cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.gift-ember      { animation: gift-ember 1200ms cubic-bezier(0.3, 0.8, 0.4, 1) forwards; }
+.gift-reveal     { animation: gift-reveal 520ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.gift-seal-break { animation: gift-seal-break 420ms cubic-bezier(0.4, 0, 0.7, 0.4) forwards; }
+
+/* Idle breathing on the sealed box, so it reads as waiting rather than stuck.
+   Tiny amplitude on purpose: this can be on screen for a while. */
+@keyframes gift-idle {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -5px, 0); }
+}
+.gift-idle { animation: gift-idle 3.4s ease-in-out infinite; }
+
+/* Reduced motion: no travel, no breathing, no embers. The reveal still
+   cross-fades so the state change is legible, just without movement. */
+@media (prefers-reduced-motion: reduce) {
+  .gift-lid,
+  .gift-box-settle,
+  .gift-glow,
+  .gift-ember,
+  .gift-seal-break,
+  .gift-idle {
+    animation: none;
+  }
+  .gift-lid, .gift-ember { opacity: 0; }
+  .gift-reveal {
+    animation: gift-reveal 200ms ease both;
+    transform: none;
+  }
+}
