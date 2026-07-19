@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Search } from "@/components/ui/icons/Search";
 import { searchBible, type SearchHit } from "@/lib/bible/books";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { isMultiReferenceQuery } from "@/lib/bible/parseReferences";
 
 /**
@@ -29,6 +30,7 @@ export function BibleSearch({
   className?: string;
   placeholder?: string;
 }) {
+  const { t, tn } = useTranslate();
   const router = useRouter();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
@@ -118,7 +120,7 @@ export function BibleSearch({
           onFocus={() => setOpen(true)}
           onKeyDown={onKey}
           placeholder={placeholder}
-          aria-label="Search the Bible"
+          aria-label={t("bible.searchAria")}
           className="w-full bg-paper/[0.04] border border-paper/15 rounded-pill pl-10 pr-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/40 transition-colors duration-150"
         />
       </div>
@@ -137,16 +139,15 @@ export function BibleSearch({
               className="block w-full text-left px-4 py-3 font-sans text-ui bg-paper/10 text-paper hover:bg-paper/[0.15] transition-colors"
             >
               <span className="font-medium">
-                Open {multiCount} reference{multiCount === 1 ? "" : "s"}
+                {tn("bible.openReferences", multiCount)}
               </span>
               <span className="block text-caption text-paper/55 mt-0.5">
-                Press Enter to view a stacked list of every verse, range,
-                or chapter in your query
+                {t("bible.pressEnterMulti")}
               </span>
             </button>
           ) : hits.length === 0 ? (
             <p className="px-4 py-3 font-sans text-ui text-paper/55">
-              No matches.
+              {t("bible.noMatches")}
             </p>
           ) : (
             <ul role="listbox">

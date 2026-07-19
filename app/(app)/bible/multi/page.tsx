@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { parseReferencesVerbose } from "@/lib/bible/parseReferences";
 import { loadChapter, loadVerseRange } from "@/lib/bible/load";
+import { T } from "@/components/i18n/T";
 
 // Multi-reference result page.
 //
@@ -11,7 +12,7 @@ import { loadChapter, loadVerseRange } from "@/lib/bible/load";
 // route — they don't reach this page.
 //
 // Each resolved reference renders with its own header and a small
-// "open in chapter →" link back to the standard reader. Unresolvable
+// "<T k="bible.openInChapter" /> →" link back to the standard reader. Unresolvable
 // segments render as quiet "could not resolve" rows so the user sees
 // exactly which part of their query failed.
 
@@ -72,10 +73,10 @@ export default async function MultiPage({
       <div className="mx-auto max-w-[820px] w-full">
         <header className="mb-8 md:mb-10">
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-            Bible · Multi-verse
+            <T k="bible.multiEyebrow" />
           </p>
           <h1 className="font-display-serif text-display-sm md:text-display text-paper tracking-[-0.01em] leading-[1.05]">
-            {resolvedCount} reference{resolvedCount === 1 ? "" : "s"}
+            <T k="bible.referenceCount" count={resolvedCount} />
           </h1>
           <p className="mt-3 font-serif text-lede text-paper/65">
             {resolvedCount === totalCount
@@ -83,7 +84,7 @@ export default async function MultiPage({
               : `${resolvedCount} of ${totalCount} resolved. The rest could not be matched.`}
           </p>
           <p className="mt-2 font-sans text-detail text-paper/45 break-words">
-            <span className="text-paper/55">Query:</span> {query}
+            <span className="text-paper/55"><T k="bible.multiQuery" /></span> {query}
           </p>
         </header>
 
@@ -96,7 +97,7 @@ export default async function MultiPage({
                   className="rounded-md border border-paper/12 bg-paper/[0.02] px-5 py-4"
                 >
                   <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-1">
-                    Could not resolve
+                    <T k="bible.multiCouldNotResolve" />
                   </p>
                   <p className="font-serif text-ui text-paper/70">{b.raw}</p>
                 </div>
@@ -126,7 +127,7 @@ export default async function MultiPage({
                     href={`${chapterHref}${verseAnchor}`}
                     className="font-sans text-detail font-medium text-paper/55 hover:text-paper transition-colors"
                   >
-                    open in chapter →
+                    <T k="bible.openInChapter" /> →
                   </Link>
                 </header>
                 <div className="font-serif text-body text-paper/85 leading-[1.75] space-y-3">
@@ -146,8 +147,7 @@ export default async function MultiPage({
 
         <footer className="mt-12 pt-6 border-t border-paper/8">
           <p className="font-sans text-detail text-paper/45">
-            Bookmark this page to keep the florilegium. The URL carries your
-            query, so it works the same on any device.
+            <T k="bible.multiBookmarkNote" />
           </p>
         </footer>
       </div>

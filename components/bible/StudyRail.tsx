@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ChapterCommentary } from "@/lib/bible/load";
 import { SaintIcon } from "./SaintIcon";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /** A single collapsible commentary card.
  * - Standalone (one note by an author): pass `iconAuthor` + `title`=author +
@@ -88,6 +89,7 @@ function groupByAuthor(notes: Note[]): { author: string; items: Note[] }[] {
  * category label; each distinct commentary stays its own collapsible card
  * (titled by its work) beneath it. Nothing is merged. */
 function FatherGroup({ author, items }: { author: string; items: Note[] }) {
+  const { tn } = useTranslate();
  return (
  <div>
  <div className="flex items-center gap-2 px-0.5 mb-1.5">
@@ -97,7 +99,7 @@ function FatherGroup({ author, items }: { author: string; items: Note[] }) {
  {author}
  </p>
  <p className="font-sans text-eyebrow italic text-paper/55 truncate">
- {items.length} commentaries
+ {tn("bible.commentariesCount", items.length)}
  </p>
  </div>
  </div>
@@ -119,6 +121,7 @@ function VerseSection({
  notes: Note[];
  anchorIds: boolean;
 }) {
+  const { t } = useTranslate();
  const [open, setOpen] = useState(true);
  return (
  <section
@@ -141,14 +144,14 @@ function VerseSection({
  >
  ▾
  </span>
- <span>Verse {verse}</span>
+ <span>{t("bible.verseN", { verse })}</span>
  <span className="rounded-full bg-paper/10 px-1.5 py-0.5 text-eyebrow font-semibold tabular-nums text-paper/55 group-hover/vs:bg-paper/15 group-hover/vs:text-paper/75 transition-colors">
  {notes.length}
  </span>
  </button>
  <a
  href={`#v${verse}`}
- aria-label={`Jump to verse ${verse} in the text`}
+ aria-label={t("bible.jumpToVerse", { verse })}
  className="shrink-0 text-paper/30 hover:text-paper/70 transition-colors text-eyebrow px-1"
  >
  ↑
@@ -184,6 +187,7 @@ export function StudyRail({
  * (e.g. mobile + desktop) don't collide on `#rail-vN` URL fragments. */
  anchorIds?: boolean;
 }) {
+  const { t } = useTranslate();
  const verses = Object.keys(commentary)
  .map(Number)
  .filter((n) => (commentary[String(n)]?.length ?? 0) > 0)
@@ -192,7 +196,7 @@ export function StudyRail({
  if (verses.length === 0) {
  return (
  <div className="px-2 py-6 text-center font-sans text-caption text-paper/40">
- No patristic commentary for this chapter yet.
+ {t("bible.noCommentaryChapter")}
  </div>
  );
  }

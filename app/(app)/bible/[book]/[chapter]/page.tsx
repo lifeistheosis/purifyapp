@@ -39,6 +39,7 @@ import {
  isApiConfigured,
  fetchLicensedChapter,
 } from "@/lib/bible/api-bible";
+import { T } from "@/components/i18n/T";
 
 type Params = Promise<{ book: string; chapter: string }>;
 type Search = Promise<{ v?: string }>;
@@ -241,10 +242,10 @@ export default async function BibleChapterPage({
  <div className="min-w-0 mx-auto w-full max-w-[680px]">
  <header id="chapter-title" className="mb-6">
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
- {b!.name}
+ <T k={`bible.books.${book}`} />
  </p>
  <h1 className="mt-1 font-serif text-display-sm md:text-display leading-none text-paper">
- Chapter {chapterNum}
+ <T k="bible.chapterN" replacements={{ n: chapterNum }} />
  </h1>
  </header>
  <hr className="mb-8 border-0 h-px bg-white/10" />
@@ -253,7 +254,7 @@ export default async function BibleChapterPage({
  <details className="mb-10 group rounded-md border border-paper/10 bg-paper/[0.03] open:bg-paper/[0.05] transition-colors">
  <summary className="cursor-pointer list-none px-6 py-4 flex items-center justify-between">
  <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 group-open:text-paper/75 transition-colors">
- About this book
+ <T k="bible.aboutThisBook" />
  </span>
  <span
  aria-hidden
@@ -274,10 +275,10 @@ export default async function BibleChapterPage({
  "How am I able to read his commentary?"). This names the affordance. */}
  {hasCommentary && !usingLicensed && (
  <p className="mb-8 lg:hidden rounded-md border border-accent/25 bg-accent/[0.06] px-4 py-3 font-sans text-detail leading-[1.55] text-paper/80">
- <span className="font-semibold text-paper">Read with the Fathers.</span>{" "}
- Verse numbers shown in{" "}
- <span className="font-semibold text-[#f2594e]">red with a dot</span> have
- patristic commentary, St. John Chrysostom and others. Tap one to read it.
+ <span className="font-semibold text-paper"><T k="bible.readWithFathers" /></span>{" "}
+ <T k="bible.commentaryHint1" />{" "}
+ <span className="font-semibold text-[#f2594e]"><T k="bible.commentaryHintRed" /></span>{" "}
+ <T k="bible.commentaryHint2" />
  </p>
  )}
 
@@ -306,16 +307,13 @@ export default async function BibleChapterPage({
 
  {!usingLicensed && (
  <p className="hidden md:block mt-10 mb-3 font-sans text-eyebrow text-paper/55 leading-[1.6]" data-reader-chrome>
- ← → chapters · drag across words to highlight a phrase · click any Greek word for definition · Cmd+Enter to save a note
+ ← → <T k="bible.readerShortcuts" />
  </p>
  )}
 
  {!usingLicensed && (
  <p className="mt-6 md:mt-3 font-sans text-eyebrow text-paper/55 leading-[1.6]">
- Old Testament: Brenton&rsquo;s English Septuagint (1851, public domain).
- New Testament: King James Version (public domain). Patristic
- commentary from Schaff&rsquo;s Ante-Nicene and Nicene Fathers
- (public domain).
+ <T k="bible.chapterSources" />
  </p>
  )}
 
@@ -328,7 +326,7 @@ export default async function BibleChapterPage({
  <aside className="hidden lg:block" data-reader-chrome>
  <div className="sticky top-[88px] max-h-[calc(100dvh-104px)] overflow-y-auto scrollbar-thin pr-2 -mr-2">
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- Patristic commentary
+ <T k="bible.patristicCommentary" />
  </p>
  <StudyRail commentary={commentary} />
  </div>

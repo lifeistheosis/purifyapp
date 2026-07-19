@@ -10,6 +10,7 @@ import type {
   ReaderLeading,
 } from "@/components/reader/ReaderPrefs";
 import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 
 const SIZES: { v: ReaderSize; label: string }[] = [
@@ -49,6 +50,7 @@ export function ReaderSettingsMenu({
   showInterlinear: boolean;
   embedded?: boolean;
 }) {
+  const { t } = useTranslate();
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -87,11 +89,11 @@ export function ReaderSettingsMenu({
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label="Reader settings"
+        aria-label={t("bible.readerSettings")}
         className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 px-3.5 h-[42px] font-sans text-detail font-medium text-paper transition-colors"
       >
         <Sliders aria-hidden className="h-4 w-4" />
-        <span>Reader</span>
+        <span>{t("bible.reader")}</span>
         {/* Status dot: reserved space so the button width never shifts as
             interlinear toggles. Suppressed in embedded mode (desktop), where
             Interlinear has its own dedicated pill next to this menu and a
@@ -114,7 +116,7 @@ export function ReaderSettingsMenu({
         <div
           ref={panelRef}
           role="dialog"
-          aria-label="Reader settings"
+          aria-label={t("bible.readerSettings")}
           // Anchor to the side the button sits on so the panel opens into
           // the page, never off it: the desktop (embedded) pill is on the
           // right of the toolbar, the mobile pill is at the left of its
@@ -128,7 +130,7 @@ export function ReaderSettingsMenu({
           {/* Text size */}
           <div>
             <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55 mb-2">
-              Text size
+              {t("bible.textSize")}
             </p>
             <div className="grid grid-cols-4 gap-1.5">
               {SIZES.map((s) => (
@@ -152,7 +154,7 @@ export function ReaderSettingsMenu({
           {/* Font family */}
           <div>
             <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55 mb-2">
-              Font
+              {t("bible.fontLabel")}
             </p>
             <div className="grid grid-cols-3 gap-1.5">
               {FONTS.map((f) => (
@@ -176,7 +178,7 @@ export function ReaderSettingsMenu({
           {/* Line spacing */}
           <div>
             <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55 mb-2">
-              Line spacing
+              {t("bible.lineSpacing")}
             </p>
             <div className="grid grid-cols-3 gap-1.5">
               {LEADINGS.map((l) => (
@@ -230,9 +232,9 @@ export function ReaderSettingsMenu({
                     focus ? "bg-night" : "bg-paper/30",
                   )}
                 />
-                Focus reading
+                {t("bible.focusReading")}
               </span>
-              <span className="font-semibold">{focus ? "On" : "Off"}</span>
+              <span className="font-semibold">{focus ? t("common.on") : t("common.off")}</span>
             </button>
           </div>
           )}
@@ -260,9 +262,9 @@ export function ReaderSettingsMenu({
                       interlinearOn ? "bg-night" : "bg-paper/30",
                     )}
                   />
-                  Interlinear Greek
+                  {t("bible.interlinearGreek")}
                 </span>
-                <span className="font-semibold">{interlinearOn ? "On" : "Off"}</span>
+                <span className="font-semibold">{interlinearOn ? t("common.on") : t("common.off")}</span>
               </button>
             </div>
           )}

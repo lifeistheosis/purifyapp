@@ -13,10 +13,13 @@
     "@purify.app",
     "Promise",
     "ReactNode",
-    "LocaleCode"
+    "LocaleCode",
+    "Orthodox Study Bible"
   ],
   "files": [
     "app/(app)/prayers/morning/page.tsx",
-    "app/(app)/prayers/evening/page.tsx"
+    "app/(app)/prayers/evening/page.tsx",
+    "components/bible/ScriptureAttribution.tsx",
+    "components/bible/Fums.tsx"
   ]
 }

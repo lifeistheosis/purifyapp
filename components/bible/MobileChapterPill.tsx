@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { nextChapter, prevChapter, getBook } from "@/lib/bible/books";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { MobileChapterSheet } from "./MobileChapterSheet";
 
 /**
@@ -55,6 +56,7 @@ export function MobileChapterPill({
   slug: string;
   chapter: number;
 }) {
+  const { t } = useTranslate();
   const book = getBook(slug);
   const prev = prevChapter(slug, chapter);
   const next = nextChapter(slug, chapter);
@@ -64,7 +66,7 @@ export function MobileChapterPill({
   return (
     <>
       <div
-        aria-label="Chapter switcher"
+        aria-label={t("bible.chapterSwitcher")}
         className="md:hidden fixed inset-x-0 z-40 flex justify-center pointer-events-none"
         // Sit clear of the tab bar AND the iOS home indicator, plus a 12px gap.
         style={{

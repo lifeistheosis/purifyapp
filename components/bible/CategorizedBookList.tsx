@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import type { BookCategory } from "@/lib/bible/books";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { hasCommentary } from "@/lib/bible/commentary-index";
 
 /**
@@ -13,9 +16,10 @@ export function CategorizedBookList({
   label,
   categories,
 }: {
-  label: string;
+  label: React.ReactNode;
   categories: BookCategory[];
 }) {
+  const { t, tn } = useTranslate();
   return (
     <section>
       <h2 className="border-b border-gold/20 pb-3 font-display-serif text-title text-paper">
@@ -36,20 +40,20 @@ export function CategorizedBookList({
                 >
                   <span className="flex items-center gap-1.5">
                     <span className="block truncate font-display-serif text-ui text-paper leading-tight transition-colors group-hover:text-gold">
-                      {b.name}
+                      {t(`bible.books.${b.slug}`)}
                     </span>
                     {hasCommentary(b.slug) && (
                       <span
-                        aria-label="Patristic commentary available"
-                        title="Patristic commentary available"
+                        aria-label={t("bible.commentaryAvailable")}
+                        title={t("bible.commentaryAvailable")}
                         className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-gold"
                       />
                     )}
                   </span>
                   <span className="mt-1 block font-sans text-eyebrow text-paper/55 transition-colors group-hover:text-paper/70">
-                    {b.chapters} {b.chapters === 1 ? "chapter" : "chapters"}
+                    {tn("bible.chapterCount", b.chapters)}
                     {hasCommentary(b.slug) && (
-                      <span className="text-gold/80"> · Fathers</span>
+                      <span className="text-gold/80"> · {t("bible.fathersTag")}</span>
                     )}
                   </span>
                 </Link>

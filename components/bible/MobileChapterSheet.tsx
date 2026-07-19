@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Sheet } from "@/components/ui/Sheet";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { getBook, getOldTestament, getNewTestament } from "@/lib/bible/books";
 
 /**
@@ -24,6 +25,7 @@ export function MobileChapterSheet({
   currentSlug: string;
   currentChapter: number;
 }) {
+  const { t } = useTranslate();
   const router = useRouter();
   const currentBook = getBook(currentSlug);
   const initialTestament = (currentBook?.testament ?? "OT") as "OT" | "NT";
@@ -56,19 +58,19 @@ export function MobileChapterSheet({
     >
       {/* OT / NT toggle */}
       <div className="mb-3 inline-flex rounded-pill border border-paper/15 bg-paper/[0.03] p-0.5 text-caption font-medium">
-        {(["OT", "NT"] as const).map((t) => (
+        {(["OT", "NT"] as const).map((tt) => (
           <button
-            key={t}
+            key={tt}
             type="button"
-            onClick={() => setTestament(t)}
+            onClick={() => setTestament(tt)}
             className={
               "px-4 h-8 inline-flex items-center rounded-pill transition-colors " +
-              (testament === t
+              (testament === tt
                 ? "bg-gold text-night"
                 : "text-paper/70 hover:text-paper")
             }
           >
-            {t === "OT" ? "Old" : "New"} Testament
+            {tt === "OT" ? t("bible.oldTestamentShort") : t("bible.newTestamentShort")}
           </button>
         ))}
       </div>
@@ -102,7 +104,7 @@ export function MobileChapterSheet({
       {pickedBook ? (
         <div>
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
-            Chapter
+            {t("bible.chapterLabel")}
           </p>
           <ul className="grid grid-cols-6 gap-1.5 sm:grid-cols-8">
             {Array.from({ length: pickedBook.chapters }, (_, i) => i + 1).map(

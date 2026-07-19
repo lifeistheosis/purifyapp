@@ -26,6 +26,8 @@ const I18N_CONVERTED_GLOBS = [
   "components/fasting/**/*.tsx",
   "components/prayers/**/*.tsx",
   "app/(app)/prayers/**/*.tsx",
+  "components/bible/**/*.tsx",
+  "app/(app)/bible/**/*.tsx",
 ];
 
 const i18nRatchet =
@@ -40,7 +42,7 @@ const i18nRatchet =
               {
                 noStrings: true,
                 allowedStrings: [
-                  "·", "•", "|", "/", "(", ")", ":", "%", "©", "↗", "‹", "›", "→", "←", ".", "✦", "…", "+", "×", "▾", "★", "☆",
+                  "·", "•", "|", "/", "(", ")", ":", "%", "©", "↗", "‹", "›", "→", "←", ".", "✦", "…", "+", "×", "▾", "★", "☆", "← →", "⌕", "⇤", "⇥", "↑", "“", "”.", "Orthodox Study Bible",
                   // Brand names and social handles never translate.
                   "Purify", "@purifymylife", "@purify.app",
                 ],

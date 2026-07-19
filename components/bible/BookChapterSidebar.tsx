@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { nextBook, prevBook, type BibleBook } from "@/lib/bible/books";
 
 export function BookChapterSidebar({
@@ -9,6 +12,7 @@ export function BookChapterSidebar({
   book: BibleBook;
   current: number;
 }) {
+  const { t } = useTranslate();
   const prev = prevBook(book.slug);
   const next = nextBook(book.slug);
 
@@ -19,11 +23,11 @@ export function BookChapterSidebar({
           href="/bible"
           className="inline-flex items-center font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/45 hover:text-paper transition-colors mb-4"
         >
-          ← All books
+          ← {t("bible.allBooks")}
         </Link>
 
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
-          Book
+          {t("bible.bookLabel")}
         </p>
         <div className="flex items-center justify-between gap-2 mb-5">
           {prev ? (
@@ -56,7 +60,7 @@ export function BookChapterSidebar({
         </div>
 
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-          Chapters
+          {t("bible.chaptersLabel")}
         </p>
         <div className="grid grid-cols-6 gap-1">
           {Array.from({ length: book.chapters }, (_, i) => i + 1).map((ch) => (

@@ -1,9 +1,11 @@
 "use client";
 
 import { useInterlinear } from "@/lib/bible/interlinear";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 
 export function InterlinearToggle({ className }: { className?: string }) {
+  const { t } = useTranslate();
   const { on, toggle } = useInterlinear();
   return (
     <button
@@ -27,7 +29,7 @@ export function InterlinearToggle({ className }: { className?: string }) {
           on ? "bg-night" : "bg-paper/30",
         )}
       />
-      <span>Interlinear</span>
+      <span>{t("bible.interlinear")}</span>
     </button>
   );
 }

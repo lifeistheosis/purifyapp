@@ -5,6 +5,7 @@ import { Close } from "@/components/ui/icons/Close";
 import { useEffect, useState } from "react";
 import type { ChapterCommentary } from "@/lib/bible/load";
 import { SaintIcon } from "./SaintIcon";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 
 type Note = { author: string; work: string; text: string };
@@ -98,6 +99,7 @@ function WorkCard({ work, text }: { work: string; text: string }) {
  * category label; each distinct commentary stays its own collapsible card
  * (titled by its work) beneath it. Nothing is merged. */
 function FatherGroup({ author, items }: { author: string; items: Note[] }) {
+  const { tn } = useTranslate();
  return (
  <div>
  <div className="flex items-center gap-2 mb-2 px-0.5">
@@ -107,7 +109,7 @@ function FatherGroup({ author, items }: { author: string; items: Note[] }) {
  {author}
  </p>
  <p className="font-sans text-eyebrow italic text-paper/55 truncate">
- {items.length} commentaries
+ {tn("bible.commentariesCount", items.length)}
  </p>
  </div>
  </div>
@@ -143,6 +145,7 @@ export function MobileCommentarySheet({
  commentary: ChapterCommentary;
  onClose: () => void;
 }) {
+  const { t } = useTranslate();
  // Track whether the sheet is mounted (so we can run the close animation
  // before unmount) and whether it's visually "shown" (so we can play the
  // slide-in animation on first paint).
@@ -198,7 +201,7 @@ export function MobileCommentarySheet({
  {/* Backdrop */}
  <button
  type="button"
- aria-label="Close commentary"
+ aria-label={t("bible.closeCommentary")}
  onClick={onClose}
  className={
  "absolute inset-0 bg-night/70 backdrop-blur-sm transition-opacity duration-200 " +
@@ -224,7 +227,7 @@ export function MobileCommentarySheet({
  <div className="flex items-center justify-between px-5 pt-2 pb-3 border-b border-paper/10">
  <div className="min-w-0">
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
- Patristic commentary
+ {t("bible.patristicCommentary")}
  </p>
  <p className="mt-0.5 font-serif text-body text-paper truncate">
  {bookName} {chapter}:{verse}
@@ -238,7 +241,7 @@ export function MobileCommentarySheet({
  <button
  type="button"
  onClick={onClose}
- aria-label="Close"
+ aria-label={t("common.close")}
  className="shrink-0 h-11 w-11 rounded-full flex items-center justify-center text-paper/65 hover:text-paper hover:bg-paper/[0.06] transition-colors"
  >
  <Close size={16} />
@@ -249,7 +252,7 @@ export function MobileCommentarySheet({
  <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 space-y-3">
  {notes.length === 0 ? (
  <p className="font-sans text-detail text-paper/55 text-center py-10">
- No commentary for this verse.
+ {t("bible.noCommentaryVerse")}
  </p>
  ) : (
  groupByAuthor(notes).map((g, i) =>

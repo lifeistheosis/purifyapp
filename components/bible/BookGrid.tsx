@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import type { BibleBook } from "@/lib/bible/books";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function BookGrid({ books, label }: { books: BibleBook[]; label: string }) {
+  const { t } = useTranslate();
   return (
     <section>
       <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-5">
@@ -14,7 +18,7 @@ export function BookGrid({ books, label }: { books: BibleBook[]; label: string }
             href={`/bible/${b.slug}/1`}
             className="block rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-2 font-sans text-caption font-medium text-paper text-center truncate hover:bg-paper/10 hover:border-paper/30 transition-colors duration-150"
           >
-            {b.name}
+            {t(`bible.books.${b.slug}`)}
           </Link>
         ))}
       </div>

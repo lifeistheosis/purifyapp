@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { writeLastRead } from "@/lib/bible/lastRead";
 
 /**
@@ -27,6 +28,7 @@ export function ReadingProgressBar({
  chapter: number;
  totalVerses: number;
 }) {
+  const { t } = useTranslate();
  const [progress, setProgress] = useState(0);
  const [currentVerse, setCurrentVerse] = useState<number>(1);
  const tickingRef = useRef(false);
@@ -124,7 +126,7 @@ export function ReadingProgressBar({
  </span>
  <span className="text-paper/35">·</span>
  <span className="tabular-nums">
- v{currentVerse} of {totalVerses}
+ {t("bible.verseOf", { verse: currentVerse, total: totalVerses })}
  </span>
  </p>
  </div>

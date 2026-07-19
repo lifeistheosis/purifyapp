@@ -4,6 +4,7 @@ import { Close } from "@/components/ui/icons/Close";
 
 import { useEffect, useRef } from "react";
 import type { Token } from "@/lib/bible/load";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import type { StrongsEntry } from "@/lib/bible/strongs";
 
 // Friendly long-form labels for Robinson-Pierpont parse codes.
@@ -138,6 +139,7 @@ export function WordPopover({
  anchorRect: DOMRect;
  onClose: () => void;
 }) {
+  const { t } = useTranslate();
  const ref = useRef<HTMLDivElement>(null);
 
  useEffect(() => {
@@ -198,7 +200,7 @@ export function WordPopover({
  <button
  type="button"
  onClick={onClose}
- aria-label="Close"
+ aria-label={t("common.close")}
  className="absolute top-2 right-2 h-7 w-7 rounded-full text-paper/60 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui"
  >
  <Close size={13} />
@@ -242,14 +244,14 @@ export function WordPopover({
  </p>
  {token.s && (
  <span className="shrink-0 font-sans text-eyebrow font-semibold uppercase tracking-[1px] rounded-pill bg-paper/10 text-paper/80 px-2 py-0.5">
- Strong&rsquo;s G{token.s}
+ {t("bible.strongsBadge", { n: token.s })}
  </span>
  )}
  </div>
 
  {!entry && (
  <p className="mt-3 font-sans text-detail text-paper/55 italic">
- No lexicon entry found for this Strong&rsquo;s number.
+ {t("bible.noLexiconEntry")}
  </p>
  )}
  </div>

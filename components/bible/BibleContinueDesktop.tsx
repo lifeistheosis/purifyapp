@@ -10,8 +10,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { readLastRead, type LastRead } from "@/lib/bible/lastRead";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function BibleContinueDesktop() {
+  const { t } = useTranslate();
   const [last, setLast] = useState<LastRead | null>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -38,11 +40,11 @@ export function BibleContinueDesktop() {
     >
       <span className="min-w-0">
         <span className="block font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-gold/85">
-          Continue reading
+          {t("bible.continueReading")}
         </span>
         <span className="mt-1 block truncate font-display-serif text-title-sm text-paper transition-colors group-hover:text-gold">
           {cap} {last.chapter}
-          {resumeVerse ? `, verse ${resumeVerse}` : ""}
+          {resumeVerse ? `, ${t("bible.verseWord")} ${resumeVerse}` : ""}
         </span>
       </span>
       <span aria-hidden className="shrink-0 font-serif text-lede text-gold/70 transition-colors group-hover:text-gold">

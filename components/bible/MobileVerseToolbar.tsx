@@ -8,6 +8,7 @@ import { Flower } from "@/components/ui/icons/Flower";
 import { LinkChain } from "@/components/ui/icons/LinkChain";
 import { Pen } from "@/components/ui/icons/Pen";
 import { Sparkle } from "@/components/ui/icons/Sparkle";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Star } from "@/components/ui/icons/Star";
 
 export type MobileVerseAction =
@@ -66,6 +67,7 @@ export function MobileVerseToolbar({
  * Fathers reader bookmarks the whole section, not the paragraph. */
  bookmarkNoun?: string;
 }) {
+  const { t } = useTranslate();
  const bmNoun = bookmarkNoun ?? itemNoun;
  const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
  // Close on Escape.
@@ -157,7 +159,7 @@ export function MobileVerseToolbar({
  <button
  type="button"
  onClick={() => handle("clearWords")}
- aria-label="Clear word highlights"
+ aria-label={t("bible.clearWordHighlights")}
  className={
  "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
  ringIfActive(false)
@@ -212,7 +214,7 @@ export function MobileVerseToolbar({
  <button
  type="button"
  onClick={() => handle("gather")}
- aria-label="Gather to florilegium"
+ aria-label={t("bible.gatherToFlorilegium")}
  className="h-11 w-11 rounded-full border border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10 flex items-center justify-center text-body transition-colors duration-150"
  >
  <Flower size={18} />

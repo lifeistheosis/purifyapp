@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-literals -- API.Bible attribution wording is contractual and never translated */
 /**
  * Required attribution shown beneath any LICENSED translation (NKJV/NIV/NLT).
  * Per the ABS / Biblica agreements, every display of the licensed text must

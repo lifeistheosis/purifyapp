@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useHighlightLegend } from "@/lib/bible/highlightColors";
 
 /**
@@ -10,17 +11,18 @@ import { useHighlightLegend } from "@/lib/bible/highlightColors";
  * Definitions persist in localStorage and apply everywhere highlights show.
  */
 export function HighlightLegend() {
+  const { t } = useTranslate();
   const { colors, labelFor, setLabel, reset } = useHighlightLegend();
   const [editing, setEditing] = useState(false);
 
   return (
     <section
-      aria-label="Highlight colors"
+      aria-label={t("bible.highlightColors")}
       className="mt-10 rounded-xl border border-paper/10 bg-paper/[0.03] px-4 py-3.5"
     >
       <div className="flex items-center justify-between gap-3 mb-3">
         <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
-          Highlight colors
+          {t("bible.highlightColors")}
         </h2>
         <div className="flex items-center gap-3">
           {editing && (
@@ -29,7 +31,7 @@ export function HighlightLegend() {
               onClick={reset}
               className="font-sans text-caption text-paper/55 hover:text-paper/80 transition-colors"
             >
-              Reset
+              {t("prayers.rope.reset")}
             </button>
           )}
           <button
@@ -73,8 +75,7 @@ export function HighlightLegend() {
 
       {editing && (
         <p className="mt-3 font-sans text-eyebrow text-paper/40 leading-relaxed">
-          Name what each color means for you. Saved on this device and used
-          everywhere your highlights appear.
+          {t("bible.highlightLegendNote")}
         </p>
       )}
     </section>

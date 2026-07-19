@@ -27,6 +27,7 @@ import { LinkChain } from "@/components/ui/icons/LinkChain";
 import { Pen } from "@/components/ui/icons/Pen";
 import { Sparkle } from "@/components/ui/icons/Sparkle";
 import { Star } from "@/components/ui/icons/Star";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 
 function tokenize(text: string): string[] {
@@ -80,6 +81,7 @@ export function VerseRow({
  /** Chapter-scoped Strong's lexicon, only entries for this chapter's tokens. */
  strongs?: Record<string, StrongsEntry>;
 }) {
+  const { t } = useTranslate();
  const ann = useVerseAnnotation(book, chapter, verse.n);
  const hl = colorById(ann.color);
  const { labelFor } = useHighlightLegend();
@@ -452,7 +454,7 @@ export function VerseRow({
  href={`#rail-v${verse.n}`}
  className="hidden lg:inline-flex group/cmt items-baseline text-[#f2594e] hover:text-[#ff7a6e] transition-colors"
  aria-label={`Open commentary on verse ${verse.n}`}
- title="Open commentary"
+ title={t("bible.openCommentary")}
  >
  <sup className="font-sans text-eyebrow font-semibold tracking-[0.05em] group-hover/cmt:underline underline-offset-2">
  {verse.n}
@@ -632,7 +634,7 @@ export function VerseRow({
  href={`#rail-v${verse.n}`}
  className="hidden lg:inline-flex text-[#f2594e] hover:text-[#ff7a6e] transition-colors"
  aria-label={`Open commentary on verse ${verse.n}`}
- title="Open commentary"
+ title={t("bible.openCommentary")}
  >
  <span
  aria-hidden
@@ -879,9 +881,9 @@ export function VerseRow({
  <button
  type="button"
  onClick={() => setShowSwatches((v) => !v)}
- aria-label="Choose highlight color"
+ aria-label={t("bible.chooseHighlightColor")}
  aria-expanded={showSwatches}
- title="Highlight color"
+ title={t("bible.highlightColor")}
  className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 flex items-center justify-center transition-colors duration-150"
  >
  <span
@@ -912,8 +914,8 @@ export function VerseRow({
  <button
  type="button"
  onClick={ann.clearWords}
- aria-label="Clear word highlights"
- title="Clear word highlights"
+ aria-label={t("bible.clearWordHighlights")}
+ title={t("bible.clearWordHighlights")}
  className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui md:text-caption transition-colors duration-150"
  >
  <Erase size={16} />
@@ -975,7 +977,7 @@ export function VerseRow({
  {ann.note && !editing && (
  <div className="mt-2 rounded-md border border-paper/15 bg-paper/[0.04] px-3 py-2">
  <p className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45 mb-1">
- Your note
+ {t("bible.yourNote")}
  </p>
  <p className="font-sans text-detail text-paper/85 leading-[1.55] whitespace-pre-wrap">
  {ann.note}
@@ -999,7 +1001,7 @@ export function VerseRow({
  cancelEdit();
  }
  }}
- placeholder="Add a note for this verse…"
+ placeholder={t("bible.notePlaceholder")}
  rows={3}
  className="w-full bg-transparent border-0 outline-none resize-y font-sans text-ui text-paper placeholder:text-paper/40 leading-[1.55]"
  />
@@ -1018,7 +1020,7 @@ export function VerseRow({
  }}
  className="font-sans text-caption text-paper/55 hover:text-paper transition-colors px-2 py-1"
  >
- Delete
+ {t("common.delete")}
  </button>
  )}
  <button
@@ -1026,14 +1028,14 @@ export function VerseRow({
  onClick={cancelEdit}
  className="font-sans text-caption text-paper/55 hover:text-paper transition-colors px-2 py-1"
  >
- Cancel
+ {t("common.cancel")}
  </button>
  <button
  type="button"
  onClick={saveNote}
  className="font-sans text-caption font-medium bg-paper text-night rounded-pill px-3 py-1 hover:bg-paper/90 transition-colors"
  >
- Save
+ {t("common.save")}
  </button>
  </div>
  </div>

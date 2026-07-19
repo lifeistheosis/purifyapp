@@ -10,6 +10,7 @@ import {
 } from "@/components/reader/ReaderPrefs";
 import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
 import { useBookmarks } from "@/lib/bookmarks";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 
 /**
@@ -37,6 +38,7 @@ export function MobileReaderActions({
   bookName: string;
   chapter: number;
 }) {
+  const { t } = useTranslate();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const bookmarks = useBookmarks();
   const isOn = bookmarks.isBookmarked({ kind: "bible-chapter", book, chapter });
@@ -68,7 +70,7 @@ export function MobileReaderActions({
         </button>
         <button
           type="button"
-          aria-label="Reader settings"
+          aria-label={t("bible.readerSettings")}
           onClick={() => setSettingsOpen(true)}
           className="h-10 w-10 inline-flex items-center justify-center rounded-pill text-paper/70 hover:text-paper"
         >
@@ -79,25 +81,24 @@ export function MobileReaderActions({
       <Sheet
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
-        title="Reader settings"
+        title={t("bible.readerSettings")}
       >
         <div className="space-y-4 py-2">
           <div>
             <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
-              Typeface
+              {t("bible.typeface")}
             </p>
             <ReaderFontFamilyButton />
           </div>
           <div>
             <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
-              Size
+              {t("bible.sizeLabel")}
             </p>
             <ReaderFontSizeButton />
           </div>
           <ReadingModeChips />
           <p className="font-sans text-caption text-paper/45 leading-[1.55] pt-2">
-            Your choices are saved on this device and apply to the
-            saint-works reader as well.
+            {t("bible.readerPrefsNote")}
           </p>
         </div>
       </Sheet>

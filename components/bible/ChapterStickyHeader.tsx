@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Mobile-first sticky chapter context. Hidden until the user scrolls past
@@ -21,6 +22,7 @@ export function ChapterStickyHeader({
   chapter: number;
   totalVerses: number;
 }) {
+  const { t } = useTranslate();
   const [show, setShow] = useState(false);
   const [verse, setVerse] = useState<number>(1);
 
@@ -104,7 +106,7 @@ export function ChapterStickyHeader({
           {bookName} {chapter}
         </span>
         <span className="text-paper/55 tabular-nums shrink-0">
-          v {verse} of {totalVerses}
+          {t("bible.verseOf", { verse, total: totalVerses })}
         </span>
       </div>
     </div>

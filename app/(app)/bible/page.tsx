@@ -8,6 +8,7 @@ import {
   getNewTestamentCategories,
 } from "@/lib/bible/books";
 import { BibleMobile } from "@/components/mobile/BibleMobile";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "The Orthodox Bible",
@@ -28,20 +29,19 @@ export default function BiblePage() {
           <div className="mx-auto w-full max-w-[860px] text-center">
             <OrnamentHeadpiece className="mx-auto mb-5 max-w-[400px]" />
             <p className="mb-3 font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/85">
-              Scripture
+              <T k="bible.eyebrow" />
             </p>
             <h1 className="font-display-serif text-heading md:text-display text-paper leading-[1.05]">
-              The Orthodox Bible.
+              <T k="bible.h1" />
             </h1>
             <p className="mx-auto mt-4 max-w-[540px] font-serif italic text-ui md:text-body text-paper/70 leading-[1.65]">
-              The full Orthodox canon: the Septuagint Old Testament and the
-              King James New Testament, with the Fathers reading beside you.
+              <T k="bible.lead" />
             </p>
             <div className="mx-auto mt-8 max-w-[640px]">
               <BibleSearch />
             </div>
             <p className="mt-3 font-sans italic text-caption text-paper/55">
-              Try: &lsquo;John 3:16&rsquo; · &lsquo;1 Cor 13&rsquo; · &lsquo;Psalm 23&rsquo;
+              <T k="bible.tryExamples" />
             </p>
             <div className="mt-8">
               <BibleContinueDesktop />
@@ -59,12 +59,12 @@ export default function BiblePage() {
         >
           <div className="mx-auto grid w-full max-w-[1240px] gap-14 xl:grid-cols-2 xl:gap-16">
             <CategorizedBookList
-              label="The Old Testament"
+              label={<T k="bible.theOldTestament" />}
               categories={getOldTestamentCategories()}
             />
             <div id="nt" className="scroll-mt-20">
               <CategorizedBookList
-                label="The New Testament"
+                label={<T k="bible.theNewTestament" />}
                 categories={getNewTestamentCategories()}
               />
             </div>
@@ -80,26 +80,24 @@ export default function BiblePage() {
           <div className="mx-auto w-full max-w-[860px]">
             <div className="rounded-lg border border-paper/10 bg-paper/[0.02] px-6 py-6">
               <p className="mb-4 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/80">
-                Sources &amp; notes
+                <T k="bible.sourcesNotes" />
               </p>
               <ul className="space-y-2 font-sans text-detail text-paper/60 leading-[1.65]">
                 <li>
-                  Old Testament: Brenton&rsquo;s English Septuagint (1851, public
-                  domain), including the deuterocanon.
-                </li>
-                <li>New Testament: King James Version (public domain).</li>
-                <li>
-                  Patristic commentary: Schaff&rsquo;s Ante-Nicene and Nicene
-                  Fathers (public domain). Book introductions: original to this
-                  edition.
+                  <T k="bible.sourceOt" />
                 </li>
                 <li>
-                  Brenton follows Septuagint numbering for Psalms, which differs
-                  from the Hebrew by one in the middle range.
+                  <T k="bible.sourceNt" />
                 </li>
                 <li>
-                  A public-domain edition. Not affiliated with the trademarked{" "}
-                  <em>Orthodox Study Bible</em> published by Thomas Nelson.
+                  <T k="bible.sourceCommentary" />
+                </li>
+                <li>
+                  <T k="bible.sourcePsalmNumbering" />
+                </li>
+                <li>
+                  <T k="bible.sourceTrademark" />{" "}
+                  <em>Orthodox Study Bible</em> <T k="bible.sourceTrademarkTail" />
                 </li>
               </ul>
             </div>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { getBook } from "@/lib/bible/books";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { MobileChapterSheet } from "./MobileChapterSheet";
 
 /**
@@ -18,6 +19,7 @@ export function MobileBookPill({
   currentSlug: string;
   currentChapter: number;
 }) {
+  const { t } = useTranslate();
   const [open, setOpen] = useState(false);
   const current = getBook(currentSlug);
 
@@ -31,7 +33,7 @@ export function MobileBookPill({
         className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 pl-3 pr-2.5 py-2 font-sans text-detail font-medium text-paper transition-colors"
       >
         <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55">
-          Book
+          {t("bible.bookLabel")}
         </span>
         <span className="font-sans text-detail font-medium text-paper">
           {current?.name ?? "Select"}

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
  nextChapter,
@@ -6,6 +8,7 @@ import {
  prevBook,
  getBook,
 } from "@/lib/bible/books";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * End-of-chapter pager. The NEXT chapter gets a big, visually-weighted tile
@@ -24,6 +27,7 @@ export function ChapterPager({
   * reader's choice survives next/previous without a flash. */
  v?: string;
 }) {
+  const { t } = useTranslate();
  const prev = prevChapter(slug, chapter);
  const next = nextChapter(slug, chapter);
  const currentBook = getBook(slug);
@@ -49,7 +53,7 @@ export function ChapterPager({
  <div className="flex items-center justify-between gap-6">
  <div className="min-w-0">
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold/85 mb-2">
- Continue reading
+ {t("bible.continueReading")}
  </p>
  <h3 className="font-serif text-title md:text-heading text-paper leading-tight">
  {nextBookName} {next.chapter}
@@ -77,7 +81,7 @@ export function ChapterPager({
  className="mt-3 block rounded-md border border-paper/10 bg-paper/[0.02] hover:border-paper/30 hover:bg-paper/[0.04] transition-colors px-5 py-3"
  >
  <span className="block font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/55">
- Previous chapter
+ {t("bible.previousChapter")}
  </span>
  <span className="block mt-1 font-sans text-ui text-paper/75">
  ← {prevBookName} {prev.chapter}
@@ -89,7 +93,7 @@ export function ChapterPager({
  adjacent book */}
  {(pBook || nBook) && (
  <nav
- aria-label="Jump between books"
+ aria-label={t("bible.jumpBetweenBooks")}
  className="mt-6 pt-5 border-t border-white/5 flex items-center justify-between gap-4 font-sans text-caption text-paper/55"
  >
  {pBook ? (

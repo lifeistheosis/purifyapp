@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 
 /**
@@ -37,6 +38,7 @@ export function VerseContextMenu({
  y: number;
  onClose: () => void;
 }) {
+  const { t } = useTranslate();
  const ref = useRef<HTMLDivElement>(null);
 
  useEffect(() => {
@@ -97,7 +99,7 @@ export function VerseContextMenu({
  ref={ref}
  role="menu"
  tabIndex={-1}
- aria-label="Verse actions"
+ aria-label={t("bible.verseActions")}
  className="fixed z-50 rounded-md border border-paper/15 bg-night-soft shadow-pop py-1 backdrop-blur-sm"
  style={{ width: MENU_W, left, top }}
  // Suppress the native right-click on the menu itself so a second

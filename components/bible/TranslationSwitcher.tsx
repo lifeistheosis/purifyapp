@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { getBook } from "@/lib/bible/books";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { writeTranslationPref } from "@/lib/bible/translationPref";
 
 type Translation = {
@@ -94,6 +95,7 @@ export function TranslationSwitcher({
  * Others are shown but disabled so selecting them can't silently fall back. */
  configuredLicensed?: string[];
 }) {
+  const { t } = useTranslate();
  const book = getBook(currentSlug);
  const testament = (book?.testament ?? "OT") as "OT" | "NT";
 
@@ -164,7 +166,7 @@ export function TranslationSwitcher({
  className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
  >
  <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55">
- Translation
+ {t("bible.translationLabel")}
  </span>
  <span className="font-sans text-detail font-medium text-paper">
  {current.shortLabel}
@@ -183,7 +185,7 @@ export function TranslationSwitcher({
  {open && (
  <div
  role="dialog"
- aria-label="Switch translation"
+ aria-label={t("bible.switchTranslation")}
  className="absolute left-0 top-[calc(100%+8px)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-lg border border-paper/15 bg-night shadow-overlay overflow-hidden"
  >
  <div className="px-4 pt-3 pb-2 border-b border-paper/10">
@@ -258,7 +260,7 @@ export function TranslationSwitcher({
  })}
  </ul>
  <div className="border-t border-paper/10 px-3 py-2 font-sans text-eyebrow text-paper/40">
- More translations coming as licensing lands.
+ {t("bible.moreTranslations")}
  </div>
  </div>
  )}

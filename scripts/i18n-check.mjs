@@ -32,6 +32,8 @@ const CONVERTED_DIRS = [
   "components/fasting",
   "components/prayers",
   "app/(app)/prayers",
+  "components/bible",
+  "app/(app)/bible",
 ];
 
 const args = new Set(process.argv.slice(2));
@@ -173,6 +175,8 @@ if (doScan || triageDirs) {
         // ") : headline ? (" or "cond === x ? (" — code, not copy.
         if (re === TEXT_RE && /^[)\]}].*[({[]$/.test(text)) continue;
         if (re === TEXT_RE && /[({[]$/.test(text) && /[?=&|]/.test(text)) continue;
+        // Template-literal interiors are code.
+        if (text.includes("${")) continue;
         if (allowlist.substrings.some((s) => text.includes(s))) continue;
         const line = src.slice(0, m.index).split("\n").length;
         hits.push({ line, text: text.slice(0, 60) });

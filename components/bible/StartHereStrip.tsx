@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type Pick = {
   name: string;
@@ -22,11 +25,12 @@ const PICKS: Pick[] = [
  * night-soft surfaces, one gold hover.
  */
 export function StartHereStrip() {
+  const { t } = useTranslate();
   return (
     <section className="bg-night px-5 pb-12 pt-2 md:px-8 md:pb-16">
       <div className="mx-auto w-full max-w-[1080px]">
         <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">
-          Begin where you stand
+          {t("bible.beginWhereYouStand")}
         </h2>
         <div className="mt-4 grid grid-cols-3 gap-3 lg:grid-cols-6">
           {PICKS.map((p) => (
