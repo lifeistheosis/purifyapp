@@ -15,5 +15,8 @@
     "ReactNode",
     "LocaleCode"
   ],
-  "files": []
+  "files": [
+    "app/(app)/prayers/morning/page.tsx",
+    "app/(app)/prayers/evening/page.tsx"
+  ]
 }

@@ -22,6 +22,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search } from "@/components/ui/icons/Search";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import {
   RULES,
   RULE_CATEGORY_LABEL,
@@ -136,6 +137,7 @@ export function PrayerSearch({
   children: React.ReactNode;
   placeholder?: string;
 }) {
+  const { t } = useTranslate();
   const [q, setQ] = useState("");
 
   const corpus = useMemo<SearchEntry[]>(() => {
@@ -168,7 +170,7 @@ export function PrayerSearch({
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder={placeholder}
-          aria-label="Search the prayer book"
+          aria-label={t("prayers.searchPlaceholder")}
           className="w-full bg-paper/[0.04] border border-paper/15 rounded-pill pl-10 pr-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/40 transition-colors duration-150"
         />
       </div>
@@ -189,16 +191,16 @@ function PrayerSearchResults({
   hits: SearchEntry[];
   query: string;
 }) {
+  const { t, tn } = useTranslate();
   if (hits.length === 0) {
     return (
       <div className="rounded-md border border-paper/12 bg-paper/[0.02] px-5 py-8 text-center">
         <p className="font-serif text-lede text-paper/75">
-          No matches for{" "}
+          {t("prayers.search.noMatchesFor")}{" "}
           <span className="italic text-paper">{query}</span>.
         </p>
         <p className="mt-2 font-sans text-detail text-paper/45">
-          Try a shorter word, or browse the full list of rules below by
-          clearing the search.
+          {t("prayers.search.tryShorter")}
         </p>
       </div>
     );
@@ -215,7 +217,7 @@ function PrayerSearchResults({
   return (
     <div className="space-y-8">
       <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/45">
-        {hits.length} match{hits.length === 1 ? "" : "es"} for{" "}
+        {tn("prayers.search.matchCount", hits.length)}{" "}
         <span className="italic text-paper/65">{query}</span>
       </p>
       {[...groups.entries()].map(([group, list]) => (

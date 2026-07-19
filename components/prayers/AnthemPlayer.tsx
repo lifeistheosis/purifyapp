@@ -6,9 +6,11 @@
 
 import { useState } from "react";
 import { AudioPlayer } from "@/components/prayers/AudioPlayer";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ANTHEM_VERSIONS } from "@/lib/prayers/anthemLyrics";
 
 export function AnthemPlayer() {
+  const { t } = useTranslate();
   const [code, setCode] = useState(ANTHEM_VERSIONS[0].code);
   const version =
     ANTHEM_VERSIONS.find((v) => v.code === code) ?? ANTHEM_VERSIONS[0];
@@ -17,7 +19,7 @@ export function AnthemPlayer() {
     <div>
       <div
         role="tablist"
-        aria-label="Anthem language"
+        aria-label={t("prayers.anthem.languageAria")}
         className="mb-5 inline-flex items-center gap-1 rounded-pill border border-paper/12 bg-paper/[0.03] p-1"
       >
         {ANTHEM_VERSIONS.map((v) => (

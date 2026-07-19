@@ -6,6 +6,7 @@
 // localStorage; this component never hits the network.
 
 import Link from "next/link";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { intentionsForToday, useIntentions } from "@/lib/prayers/storage";
 
 export function TodayDiptychs({
@@ -17,6 +18,7 @@ export function TodayDiptychs({
   namedayLabel: string;
   anniversaryLabel: string;
 }) {
+  const { t } = useTranslate();
   // Subscribe so a change in another tab redraws.
   useIntentions("living");
   useIntentions("departed");
@@ -34,7 +36,7 @@ export function TodayDiptychs({
           href="/prayers/personal"
           className="font-sans text-caption text-paper/55 hover:text-paper transition-colors underline underline-offset-2 decoration-paper/20"
         >
-          Manage diptychs →
+          {t("prayers.diptychs.manage")} →
         </Link>
       </div>
       <ul className="space-y-2">

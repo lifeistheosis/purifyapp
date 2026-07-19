@@ -10,10 +10,13 @@ import { cn } from "@/lib/cn";
 
 export function ShareButton({
   title,
+  titleKey,
   text,
   className,
 }: {
-  title: string;
+  title?: string;
+  /** Catalog key resolved client-side; wins over title when set. */
+  titleKey?: string;
   /** Optional longer body for the share sheet; defaults to the title. */
   text?: string;
   className?: string;
@@ -25,7 +28,8 @@ export function ShareButton({
     const url = typeof window !== "undefined" ? window.location.href : "";
     if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
       try {
-        await navigator.share({ title, text: text ?? title, url });
+        const resolved = titleKey ? t(titleKey) : (title ?? "");
+        await navigator.share({ title: resolved, text: text ?? resolved, url });
       } catch {
         /* user dismissed the share sheet */
       }

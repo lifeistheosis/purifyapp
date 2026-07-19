@@ -11,36 +11,37 @@ import { useEffect, useState } from "react";
 
 import { createClient } from "@/lib/supabase/client";
 import { readPrayedDates, rhythmFor } from "@/lib/prayers/storage";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 
 type Suggestion = {
-  greeting: string;
+  greetingKey: string;
   ruleId: "morning" | "evening";
-  label: string;
+  labelKey: string;
   href: string;
 };
 
 function suggestionFor(hour: number): Suggestion {
   if (hour < 12) {
     return {
-      greeting: "Good morning",
+      greetingKey: "today.greetingMorning",
       ruleId: "morning",
-      label: "the Morning Rule",
+      labelKey: "prayers.today.morningRuleLabel",
       href: "/prayers/morning",
     };
   }
   if (hour < 17) {
     return {
-      greeting: "Good afternoon",
+      greetingKey: "today.greetingAfternoon",
       ruleId: "morning",
-      label: "the Morning Rule",
+      labelKey: "prayers.today.morningRuleLabel",
       href: "/prayers/morning",
     };
   }
   return {
-    greeting: "Good evening",
+    greetingKey: "today.greetingEvening",
     ruleId: "evening",
-    label: "the Evening Rule",
+    labelKey: "prayers.today.eveningRuleLabel",
     href: "/prayers/evening",
   };
 }
@@ -52,6 +53,7 @@ function ymdLocal(d: Date): string {
 }
 
 export function TodayGreeting() {
+  const { t } = useTranslate();
   const [ready, setReady] = useState(false);
   const [name, setName] = useState<string | null>(null);
   const [suggestion, setSuggestion] = useState<Suggestion | null>(null);
@@ -93,20 +95,20 @@ export function TodayGreeting() {
   return (
     <div className="mt-6 rounded-lg border border-gold/25 bg-gold/[0.04] px-5 py-4">
       <p className="font-serif text-lede text-paper/85 leading-snug">
-        {suggestion.greeting}
+        {t(suggestion.greetingKey)}
         {name ? `, ${name}` : ""}.{" "}
         {prayedToday ? (
           <span className="text-paper/65">
-            You have already prayed {suggestion.label} today.
+            {t("prayers.today.alreadyPrayed", { label: t(suggestion.labelKey) })}
           </span>
         ) : (
           <>
-            <span className="text-paper/65">The hour calls for </span>
+            <span className="text-paper/65">{t("prayers.today.hourCallsFor")} </span>
             <Link
               href={suggestion.href}
               className="font-sans text-ui font-semibold text-gold underline decoration-gold/40 underline-offset-4 hover:decoration-gold"
             >
-              {suggestion.label}
+              {t(suggestion.labelKey)}
             </Link>
             <span className="text-paper/65">.</span>
           </>
@@ -126,7 +128,7 @@ export function TodayGreeting() {
             ))}
           </span>
           <span className="font-sans text-caption text-paper/55">
-            your last fourteen days with {suggestion.label}
+            {t("prayers.today.lastFourteenDays", { label: t(suggestion.labelKey) })}
           </span>
         </p>
       ) : null}

@@ -30,11 +30,18 @@ const CONVERTED_DIRS = [
   "components/today",
   "components/calendar",
   "components/fasting",
+  "components/prayers",
+  "app/(app)/prayers",
 ];
 
 const args = new Set(process.argv.slice(2));
 const asJson = args.has("--json");
 const doScan = args.has("--scan");
+// --dirs a,b,c : scan these directories instead of CONVERTED_DIRS and
+// report hits without failing (triage mode for unconverted surfaces).
+const argv = process.argv.slice(2);
+const dirsIdx = argv.indexOf("--dirs");
+const triageDirs = dirsIdx >= 0 && argv[dirsIdx + 1] ? argv[dirsIdx + 1].split(",") : null;
 
 const failures = [];
 const warnings = [];
@@ -132,7 +139,7 @@ coverage.sort((a, b) => b.pct - a.pct);
 // user-facing string props. The allowlist file silences intentional
 // literals (brand names, citations, punctuation-only nodes).
 const scanResults = [];
-if (doScan) {
+if (doScan || triageDirs) {
   const allowlist = fs.existsSync(ALLOWLIST_PATH)
     ? JSON.parse(fs.readFileSync(ALLOWLIST_PATH, "utf8"))
     : { substrings: [], files: [] };
@@ -163,8 +170,9 @@ if (doScan) {
         // text. Props (title=, aria-label=) are always checked.
         if (re === TEXT_RE && !text.includes(" ") && text.length < 10) continue;
         // JSX ternary/expression connectors between two tags, e.g.
-        // ") : headline ? (" — code, not copy.
+        // ") : headline ? (" or "cond === x ? (" — code, not copy.
         if (re === TEXT_RE && /^[)\]}].*[({[]$/.test(text)) continue;
+        if (re === TEXT_RE && /[({[]$/.test(text) && /[?=&|]/.test(text)) continue;
         if (allowlist.substrings.some((s) => text.includes(s))) continue;
         const line = src.slice(0, m.index).split("\n").length;
         hits.push({ line, text: text.slice(0, 60) });
@@ -183,7 +191,7 @@ if (doScan) {
     }
   }
 
-  for (const relDir of CONVERTED_DIRS) {
+  for (const relDir of triageDirs ?? CONVERTED_DIRS) {
     const abs = path.join(ROOT, relDir);
     if (!fs.existsSync(abs)) continue;
     for (const file of walk(abs)) {
@@ -192,9 +200,14 @@ if (doScan) {
       const hits = scanFile(rel);
       if (hits.length > 0) {
         scanResults.push({ file: rel, hits });
-        failures.push(
-          `${rel}: ${hits.length} hardcoded string(s) in a converted directory (first: line ${hits[0].line} "${hits[0].text}")`,
-        );
+        if (triageDirs) {
+          console.log(`${rel} (${hits.length}):`);
+          for (const h of hits.slice(0, 12)) console.log(`   L${h.line} ${h.text}`);
+        } else {
+          failures.push(
+            `${rel}: ${hits.length} hardcoded string(s) in a converted directory (first: line ${hits[0].line} "${hits[0].text}")`,
+          );
+        }
       }
     }
   }

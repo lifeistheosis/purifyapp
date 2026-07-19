@@ -28,6 +28,7 @@ import {
   type RopeSettings,
 } from "@/lib/prayers/storage";
 import { isNativeClient } from "@/lib/platform/native";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const LINES = [
   "Lord Jesus Christ, Son of God, have mercy on me, a sinner.",
@@ -37,6 +38,7 @@ const LINES = [
 ] as const;
 
 export function PrayerRope() {
+  const { t } = useTranslate();
   const settings = useRopeSettings();
   const [count, setCount] = useState(0);
   const [sessionStart] = useState<string>(() => new Date().toISOString());
@@ -188,20 +190,20 @@ export function PrayerRope() {
     <section className="min-h-[calc(100dvh-72px)] bg-night text-paper relative select-none">
       <header className="mx-auto w-full max-w-[600px] px-6 md:px-8 pt-14 text-center">
         <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-4">
-          Prayer · the Rope
+          {t("prayers.rope.eyebrow")}
         </p>
         <h1 className="font-serif text-title-sm md:text-title leading-snug text-paper/90">
           {settings.line}
         </h1>
         <div aria-hidden className="mx-auto mt-6 h-px w-10 bg-gold/50" />
         <p className="mt-5 font-sans text-caption text-paper/40">
-          {knotCount}-knot rope · tap the rope{canPressSpace ? " or press space" : ""}.{" "}
+          {t("prayers.rope.knotRope", { count: knotCount })}{canPressSpace ? " " + t("prayers.rope.orPressSpace") : ""}{" "}
           <button
             type="button"
             onClick={() => setShowSettings(true)}
             className="underline underline-offset-2 decoration-paper/30 hover:decoration-paper hover:text-paper transition-colors"
           >
-            Settings
+            {t("prayers.rope.settings")}
           </button>
         </p>
       </header>
@@ -220,7 +222,7 @@ export function PrayerRope() {
         }}
         role="button"
         tabIndex={0}
-        aria-label={`Advance one knot. Current: ${currentKnot} of ${knotCount}.`}
+        aria-label={t("prayers.rope.advanceAria", { current: currentKnot, total: knotCount })}
       >
         <svg
           viewBox="0 0 400 400"
@@ -301,8 +303,8 @@ export function PrayerRope() {
             fontFamily="ui-sans-serif, system-ui"
             className="select-none pointer-events-none"
           >
-            of {knotCount}
-            {completedLoops > 0 && ` · loop ${completedLoops + 1}`}
+            {t("prayers.rope.ofTotal", { total: knotCount })}
+            {completedLoops > 0 && ` · ${t("prayers.rope.loopN", { n: completedLoops + 1 })}`}
           </text>
         </svg>
       </div>
@@ -315,10 +317,10 @@ export function PrayerRope() {
 
       <footer className="mx-auto w-full max-w-[600px] px-6 md:px-8 pb-12">
         <div className="grid grid-cols-3 border-y border-paper/10 py-6">
-          <Stat label="This session" value={count} />
-          <Stat label="Last 7 days" value={stats.weekKnots + count} />
+          <Stat label={t("prayers.rope.thisSession")} value={count} />
+          <Stat label={t("prayers.rope.last7Days")} value={stats.weekKnots + count} />
           <Stat
-            label={`${new Date().getFullYear()} so far`}
+            label={t("prayers.rope.yearSoFar", { year: new Date().getFullYear() })}
             value={stats.yearKnots + count}
             accent
           />
@@ -330,21 +332,21 @@ export function PrayerRope() {
             disabled={count === 0}
             className="text-gold/85 hover:text-paper transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            Save session
+            {t("prayers.rope.saveSession")}
           </button>
           <button
             type="button"
             onClick={() => setCount((c) => Math.max(0, c - 1))}
             className="text-paper/50 hover:text-paper transition-colors"
           >
-            ← one back
+            ← {t("prayers.rope.oneBack")}
           </button>
           <button
             type="button"
             onClick={() => setCount(0)}
             className="text-paper/40 hover:text-paper transition-colors"
           >
-            Reset
+            {t("prayers.rope.reset")}
           </button>
         </div>
       </footer>
@@ -382,6 +384,7 @@ function SettingsDrawer({
   onChange: (next: RopeSettings) => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslate();
   return (
     <div
       className="fixed inset-0 z-50 bg-night/80 backdrop-blur-sm flex items-end md:items-center justify-center"
@@ -395,25 +398,25 @@ function SettingsDrawer({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Rope settings"
+        aria-label={t("prayers.rope.settingsTitle")}
         className="bg-night border-t md:border border-paper/15 rounded-t-lg md:rounded-lg w-full md:w-[420px] max-h-[85vh] overflow-y-auto p-6"
       >
         <div className="flex items-center justify-between mb-5">
           <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
-            Rope settings
+            {t("prayers.rope.settingsTitle")}
           </p>
           <button
             type="button"
             onClick={onClose}
             className="text-paper/55 hover:text-paper text-lede"
-            aria-label="Close"
+            aria-label={t("common.close")}
           >
             ×
           </button>
         </div>
 
         <fieldset className="mb-5">
-          <legend className="font-sans text-caption text-paper/55 mb-2">Knots</legend>
+          <legend className="font-sans text-caption text-paper/55 mb-2">{t("prayers.rope.knots")}</legend>
           <div className="flex gap-2 flex-wrap">
             {[33, 50, 100].map((k) => (
               <button
@@ -434,7 +437,7 @@ function SettingsDrawer({
         </fieldset>
 
         <fieldset className="mb-5">
-          <legend className="font-sans text-caption text-paper/55 mb-2">Prayer line</legend>
+          <legend className="font-sans text-caption text-paper/55 mb-2">{t("prayers.rope.prayerLine")}</legend>
           <div className="space-y-2">
             {LINES.map((l) => (
               <label
@@ -457,12 +460,12 @@ function SettingsDrawer({
         </fieldset>
 
         <fieldset className="space-y-2 mb-5">
-          <legend className="font-sans text-caption text-paper/55 mb-2">Aids</legend>
+          <legend className="font-sans text-caption text-paper/55 mb-2">{t("prayers.rope.aids")}</legend>
           <label className="flex items-center justify-between gap-3 cursor-pointer">
             <span className="font-sans text-detail text-paper">
-              Vibrate on each knot
+              {t("prayers.rope.vibrate")}
               <span className="block text-eyebrow text-paper/45">
-                Subtle haptic on supported devices.
+                {t("prayers.rope.vibrateNote")}
               </span>
             </span>
             <input
@@ -474,9 +477,9 @@ function SettingsDrawer({
           </label>
           <label className="flex items-center justify-between gap-3 cursor-pointer">
             <span className="font-sans text-detail text-paper">
-              Bell every 25 knots
+              {t("prayers.rope.bell")}
               <span className="block text-eyebrow text-paper/45">
-                Quiet sine-wave tone, ~0.6s.
+                {t("prayers.rope.bellNote")}
               </span>
             </span>
             <input
@@ -489,8 +492,7 @@ function SettingsDrawer({
         </fieldset>
 
         <p className="font-sans text-eyebrow text-paper/40 leading-relaxed">
-          Counts are stored on this device. Signed-in users sync sessions
-          across devices automatically.
+          {t("prayers.rope.syncNote")}
         </p>
       </div>
     </div>

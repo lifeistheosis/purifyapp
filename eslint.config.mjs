@@ -24,6 +24,8 @@ const I18N_CONVERTED_GLOBS = [
   "components/today/**/*.tsx",
   "components/calendar/**/*.tsx",
   "components/fasting/**/*.tsx",
+  "components/prayers/**/*.tsx",
+  "app/(app)/prayers/**/*.tsx",
 ];
 
 const i18nRatchet =
@@ -38,7 +40,7 @@ const i18nRatchet =
               {
                 noStrings: true,
                 allowedStrings: [
-                  "·", "•", "|", "/", "(", ")", ":", "%", "©", "↗", "‹", "›", "→", "←", ".", "✦", "…",
+                  "·", "•", "|", "/", "(", ")", ":", "%", "©", "↗", "‹", "›", "→", "←", ".", "✦", "…", "+", "×", "▾", "★", "☆",
                   // Brand names and social handles never translate.
                   "Purify", "@purifymylife", "@purify.app",
                 ],

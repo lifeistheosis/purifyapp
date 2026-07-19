@@ -1,4 +1,5 @@
 import { listAkathists } from "@/lib/prayers/akathists";
+import { T } from "@/components/i18n/T";
 import {
   PrayerPage,
   PrayerMasthead,
@@ -18,14 +19,11 @@ export default function AkathistsPage() {
   return (
     <PrayerPage width="reading">
       <PrayerMasthead
-        eyebrow="Prayers · Akathists"
-        title="The Akathists."
+        eyebrow={<T k="prayers.akathists.eyebrow" />}
+        title={<T k="prayers.akathists.title" />}
         intro={
           <p>
-            The Akathist is the long-form hymn the Church sings standing
-            throughout, &ldquo;not seated&rdquo; (a-kathisma). Thirteen
-            Kontakia alternate with twelve Ikoi, sung in full at stations along
-            the Church year, and in pieces, quietly, in personal rule.
+            <T k="prayers.akathists.intro" />
           </p>
         }
       />
@@ -40,8 +38,7 @@ export default function AkathistsPage() {
         ))}
       </PrayerIndex>
       <PrayerNote>
-        More akathists are being typeset (Christ, the saints). If you can help,
-        write to team@purify.app.
+        <T k="prayers.akathists.note" />
       </PrayerNote>
     </PrayerPage>
   );

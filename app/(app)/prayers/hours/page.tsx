@@ -1,4 +1,5 @@
 import { listHours } from "@/lib/prayers/hours";
+import { T } from "@/components/i18n/T";
 import {
   PrayerPage,
   PrayerMasthead,
@@ -18,13 +19,11 @@ export default function HoursPage() {
   return (
     <PrayerPage width="reading">
       <PrayerMasthead
-        eyebrow="Prayers · the Hours"
-        title="Standing through the day."
+        eyebrow={<T k="prayers.hoursIndex.eyebrow" />}
+        title={<T k="prayers.hoursIndex.title" />}
         intro={
           <p>
-            The Hours sanctify the daylight at its natural breaks. They are
-            short by design, five to eight minutes, held together by three
-            appointed Psalms, a Troparion, and a dismissal.
+            <T k="prayers.hoursIndex.intro" />
           </p>
         }
       />
@@ -40,9 +39,7 @@ export default function HoursPage() {
         ))}
       </PrayerIndex>
       <PrayerNote>
-        Each hour carries its three appointed Psalms in full, in Brenton&apos;s
-        public-domain Septuagint translation, with the fixed Troparion and
-        dismissal of the hour.
+        <T k="prayers.hoursIndex.note" />
       </PrayerNote>
     </PrayerPage>
   );

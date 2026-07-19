@@ -25,6 +25,7 @@ import {
   toggleRuleBookmark,
 } from "@/lib/prayers/bookmarks";
 import type { Prayer, PrayerVariant, Rule } from "@/lib/prayers/types";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 // Re-exported for back-compat: morning/evening pages import these as types.
 export type { Prayer, PrayerVariant, Rule } from "@/lib/prayers/types";
@@ -79,6 +80,7 @@ export function PrayerRuleReader({
   /** When set, the header shows a star to bookmark the whole rule. */
   ruleHref?: string;
 }) {
+  const { t, tn } = useTranslate();
   const snap = useSyncExternalStore(
     subscribe,
     () => readSnap(rule.id),
@@ -166,8 +168,8 @@ export function PrayerRuleReader({
           </p>
         )}
         <p className="mt-4 font-sans text-caption text-paper/55">
-          About {rule.estimatedMinutes} min · {total}{" "}
-          {total === 1 ? "prayer" : "prayers"}
+          {t("prayers.reader.aboutMin", { min: rule.estimatedMinutes })} ·{" "}
+          {tn("prayers.reader.prayerCount", total)}
           {rule.jurisdiction ? ` · ${rule.jurisdiction}` : ""}
         </p>
       </header>
@@ -175,8 +177,8 @@ export function PrayerRuleReader({
       {/* Progress — today. A quiet line over a hairline, not a card. */}
       <div className="mb-2 flex items-center justify-between gap-4">
         <p className="font-sans text-detail text-paper/50">
-          <span className="text-paper/85 tabular-nums">{completedCount}</span> of{" "}
-          {total} prayed today
+          <span className="text-paper/85 tabular-nums">{completedCount}</span>{" "}
+          {t("prayers.reader.ofPrayedToday", { total })}
         </p>
         <div className="flex items-center gap-3 font-sans text-caption">
           <button
@@ -185,7 +187,7 @@ export function PrayerRuleReader({
             disabled={!hydrated || allDone}
             className="text-paper/45 hover:text-paper transition-colors disabled:opacity-30 disabled:hover:text-paper/45"
           >
-            Mark all
+            {t("prayers.reader.markAll")}
           </button>
           <span className="text-paper/20">·</span>
           <button
@@ -194,7 +196,7 @@ export function PrayerRuleReader({
             disabled={!hydrated || completedCount === 0}
             className="text-paper/45 hover:text-paper transition-colors disabled:opacity-30 disabled:hover:text-paper/45"
           >
-            Reset
+            {t("prayers.rope.reset")}
           </button>
         </div>
       </div>
@@ -208,7 +210,7 @@ export function PrayerRuleReader({
       {/* Completion — a quiet doxology, no banner. */}
       {allDone && (
         <p className="mt-8 text-center font-serif italic text-detail text-gold/70">
-          Glory to God. The rule is complete for today.
+          {t("prayers.reader.complete")}
         </p>
       )}
 
@@ -227,7 +229,7 @@ export function PrayerRuleReader({
 
       <footer className="mt-14">
         <p className="font-sans text-caption text-paper/55">
-          Source: {rule.source}
+          {t("prayers.reader.sourceLabel")} {rule.source}
         </p>
       </footer>
     </article>
@@ -252,18 +254,19 @@ function eyebrowFor(rule: Rule): string {
 // vendor SDK, no autoplay, no analytics. If the file is missing (404)
 // the row stays hidden via the onError handler.
 function AudioRow({ src }: { src: string }) {
+  const { t } = useTranslate();
   const [errored, setErrored] = useState(false);
   if (errored) {
     return (
       <p className="mt-4 font-serif italic text-detail text-paper/35">
-        Audio recording not yet shipped for this prayer.
+        {t("prayers.reader.audioNotShipped")}
       </p>
     );
   }
   return (
     <div className="mt-5 border-t border-paper/10 pt-4">
       <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-2">
-        Sung / Chanted
+        {t("prayers.reader.sungChanted")}
       </p>
       {/* eslint-disable-next-line jsx-a11y/media-has-caption -- chanted prayer audio, no speech track to caption */}
       <audio
@@ -273,7 +276,7 @@ function AudioRow({ src }: { src: string }) {
         onError={() => setErrored(true)}
         className="w-full h-8"
       >
-        Your browser does not support the audio element.
+        {t("prayers.reader.audioUnsupported")}
       </audio>
     </div>
   );
@@ -292,6 +295,7 @@ function PrayerCard({
   onToggle: () => void;
   hydrated: boolean;
 }) {
+  const { t } = useTranslate();
   const bookmarked = useSyncExternalStore(
     subscribe,
     () => isPrayerBookmarked(ruleId, prayer.id),
@@ -353,7 +357,7 @@ function PrayerCard({
         {hasVariants && (
           <div
             role="tablist"
-            aria-label="Jurisdiction wordings"
+            aria-label={t("prayers.reader.jurisdictionWordings")}
             className="mb-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-paper/10 pb-3"
           >
             {variants.map((v, i) => {

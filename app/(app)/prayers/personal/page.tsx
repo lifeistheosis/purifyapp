@@ -4,6 +4,7 @@ import {
   PrayerMasthead,
   PrayerNote,
 } from "@/components/prayers/PrayerBook";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Diptychs: your prayer list",
@@ -15,21 +16,18 @@ export default function PersonalPrayersPage() {
   return (
     <PrayerPage width="reading">
       <PrayerMasthead
-        eyebrow="Personal · Diptychs"
-        title="The names you carry."
+        eyebrow={<T k="prayers.personalPage.eyebrow" />}
+        title={<T k="prayers.personalPage.title" />}
         intro={
           <p>
-            Orthodox prayer is named. The Liturgy commemorates the living and
-            the departed by name; your private rule does the same. Keep two
-            short lists, and read them in the silence after the{" "}
-            <em>Most Holy Theotokos, save us</em>.
+            <T k="prayers.personalPage.intro" />{" "}
+            <em><T k="prayers.personalPage.theotokosLine" /></em>.
           </p>
         }
       />
       <Diptychs />
       <PrayerNote>
-        Your entries stay on this device. Sign in to sync them across devices;
-        nothing is sold or shared with anyone.
+        <T k="prayers.personalPage.note" />
       </PrayerNote>
     </PrayerPage>
   );

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { T } from "@/components/i18n/T";
 import { LESSONS } from "@/lib/prayers/learning";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import {
@@ -168,31 +169,19 @@ export default async function PrayersPage() {
               {/* The prayer of the heart — a calm feature panel. */}
               <div className="flex flex-col justify-center rounded-xl border border-paper/12 bg-paper/[0.02] px-8 py-12 text-center">
                 <p className="mb-6 font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40">
-                  {isDe ? "Das Gebet des Herzens" : "The prayer of the heart"}
+                  <T k="prayers.heart.eyebrow" />
                 </p>
                 <p className="font-serif text-title-sm lg:text-title leading-[1.5] text-paper/90">
-                  {isDe ? (
-                    <>
-                      Herr Jesus Christus,
-                      <br />
-                      Sohn Gottes,
-                      <br />
-                      erbarme Dich meiner, eines Sünders.
-                    </>
-                  ) : (
-                    <>
-                      Lord Jesus Christ,
-                      <br />
-                      Son of God,
-                      <br />
-                      have mercy on me, a sinner.
-                    </>
-                  )}
+                  <>
+                    <T k="prayers.heart.line1" />
+                    <br />
+                    <T k="prayers.heart.line2" />
+                    <br />
+                    <T k="prayers.heart.line3" />
+                  </>
                 </p>
                 <p className="mx-auto mt-6 max-w-[44ch] font-serif italic text-detail text-paper/55 leading-[1.7]">
-                  {isDe
-                    ? "Bete es im Atem, mit dem Herzen, zu jeder Zeit. Die Väter sagen, das Zurückbringen sei die halbe Arbeit."
-                    : "Pray it in the breath, with the heart, at any time. The Fathers say the bringing-back is half the work."}
+                  <T k="prayers.heart.note" />
                 </p>
                 <p className="mt-6">
                   <Link

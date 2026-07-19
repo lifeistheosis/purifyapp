@@ -10,6 +10,7 @@
 // list up to Supabase whenever a signed-in user mutates it.
 
 import { useState } from "react";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import {
   deleteIntention,
   upsertIntention,
@@ -45,6 +46,7 @@ function DiptychSection({
   heading: string;
   intro: string;
 }) {
+  const { t } = useTranslate();
   const items = useIntentions(kind);
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -64,7 +66,7 @@ function DiptychSection({
       <header className="flex items-baseline justify-between gap-3 flex-wrap mb-3">
         <div>
           <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
-            Diptych
+            {t("prayers.diptychs.eyebrow")}
           </p>
           <h2 className="mt-1 font-sans text-title-sm md:text-title font-bold text-paper">
             {heading}
@@ -78,7 +80,7 @@ function DiptychSection({
           }}
           className="inline-flex items-center gap-1.5 rounded-pill border border-gold/40 bg-gold/[0.08] text-gold px-4 py-1.5 font-sans text-detail font-semibold hover:bg-gold/[0.14] transition-colors"
         >
-          + Add
+          + {t("prayers.diptychs.add")}
         </button>
       </header>
       <p className="font-serif text-ui text-paper/75 leading-[1.6] mb-4">
@@ -88,7 +90,7 @@ function DiptychSection({
       {items.length > 5 && (
         <input
           type="search"
-          placeholder="Search"
+          placeholder={t("common.search")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="w-full mb-4 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
@@ -157,6 +159,7 @@ function IntentionCard({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  const { t } = useTranslate();
   return (
     <li className="rounded-md border border-paper/10 bg-paper/[0.02] px-4 py-3 group">
       <div className="flex items-start justify-between gap-3">
@@ -176,10 +179,10 @@ function IntentionCard({
           )}
           <p className="mt-1.5 font-sans text-caption text-paper/45">
             {kind === "living" && entry.nameday && (
-              <>Nameday {formatMmDd(entry.nameday)} · </>
+              <>{t("prayers.diptychs.namedayLabel")} {formatMmDd(entry.nameday)} · </>
             )}
             {kind === "departed" && entry.repose && (
-              <>Reposed {entry.repose} · </>
+              <>{t("prayers.diptychs.reposedLabel")} {entry.repose} · </>
             )}
             {entry.tags && entry.tags.length > 0 && (
               <span>{entry.tags.map((t) => `#${t}`).join(" ")}</span>
@@ -192,14 +195,14 @@ function IntentionCard({
             onClick={onEdit}
             className="font-sans text-eyebrow text-paper/55 hover:text-paper transition-colors"
           >
-            Edit
+            {t("common.edit")}
           </button>
           <button
             type="button"
             onClick={onDelete}
             className="font-sans text-eyebrow text-rose-300/75 hover:text-rose-300 transition-colors"
           >
-            Remove
+            {t("prayers.diptychs.remove")}
           </button>
         </div>
       </div>
@@ -218,6 +221,7 @@ function IntentionForm({
   onCancel: () => void;
   onSave: (entry: Intention) => void;
 }) {
+  const { t } = useTranslate();
   const [name, setName] = useState(initial?.name ?? "");
   const [relationship, setRelationship] = useState(initial?.relationship ?? "");
   const [note, setNote] = useState(initial?.note ?? "");
@@ -252,20 +256,20 @@ function IntentionForm({
              revealed by an explicit user action (add/edit intention), so
              moving focus into its first field is expected, not a steal. */
           autoFocus
-          placeholder="Name"
+          placeholder={t("prayers.diptychs.name")}
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="md:col-span-2 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
         />
         <input
-          placeholder="Relationship (optional)"
+          placeholder={t("prayers.diptychs.relationship")}
           value={relationship}
           onChange={(e) => setRelationship(e.target.value)}
           className="rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
         />
       </div>
       <textarea
-        placeholder="Note (optional, max 500 chars)"
+        placeholder={t("prayers.diptychs.note")}
         maxLength={500}
         rows={2}
         value={note}
@@ -275,7 +279,7 @@ function IntentionForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {kind === "living" ? (
           <input
-            placeholder="Nameday MM-DD (optional)"
+            placeholder={t("prayers.diptychs.nameday")}
             value={nameday}
             onChange={(e) => setNameday(e.target.value)}
             pattern="\d{2}-\d{2}"
@@ -284,14 +288,14 @@ function IntentionForm({
         ) : (
           <input
             type="date"
-            placeholder="Reposed YYYY-MM-DD"
+            placeholder={t("prayers.diptychs.reposed")}
             value={repose}
             onChange={(e) => setRepose(e.target.value)}
             className="rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
           />
         )}
         <input
-          placeholder="Tags (comma-separated, optional)"
+          placeholder={t("prayers.diptychs.tags")}
           value={tagText}
           onChange={(e) => setTagText(e.target.value)}
           className="rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/45"
@@ -303,7 +307,7 @@ function IntentionForm({
           onClick={onCancel}
           className="font-sans text-caption text-paper/65 hover:text-paper transition-colors px-3"
         >
-          Cancel
+          {t("common.cancel")}
         </button>
         <button
           type="button"
@@ -311,7 +315,7 @@ function IntentionForm({
           disabled={!name.trim()}
           className="rounded-pill border border-gold/45 bg-gold/[0.1] text-gold font-sans text-caption font-semibold px-4 py-1.5 hover:bg-gold/[0.18] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Save
+          {t("common.save")}
         </button>
       </div>
     </div>

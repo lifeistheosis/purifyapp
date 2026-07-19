@@ -1,6 +1,6 @@
 "use client";
 
-// "Where you left off": the personal rail of the Today page. Everything is
+// t("prayers.today.whereYouLeftOff"): the personal rail of the Today page. Everything is
 // drawn from the device, no account required: the Bible chapter you were
 // reading (purify:bible:last), your place on the History timeline, the
 // prayers you opened recently, and your saved items. Sections that have
@@ -14,6 +14,7 @@ import { readLastRead, type LastRead } from "@/lib/bible/lastRead";
 import { eventBySlug } from "@/lib/history/events";
 import { loadPosition } from "@/lib/history/scroll";
 import { readRecentPrayers, type RecentPrayer } from "@/lib/prayers/storage";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useBookmarks } from "@/lib/bookmarks";
 
 function RailCard({
@@ -48,6 +49,7 @@ function RailCard({
 }
 
 export function TodayPersonalRail() {
+  const { t } = useTranslate();
   const [mounted, setMounted] = useState(false);
   const [lastRead, setLastRead] = useState<LastRead | null>(null);
   const [historyEvent, setHistoryEvent] = useState<{ title: string; date: string } | null>(null);
@@ -85,9 +87,9 @@ export function TodayPersonalRail() {
     lastRead || historyEvent || recents.length > 0 || bookmarks.length > 0;
 
   return (
-    <section aria-label="Where you left off">
+    <section aria-label={t("prayers.today.whereYouLeftOff")}>
       <p className="mb-3 font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">
-        Where you left off
+        {t("prayers.today.whereYouLeftOff")}
       </p>
       {hasAnything ? (
         <div className="space-y-2.5">
@@ -120,8 +122,7 @@ export function TodayPersonalRail() {
         </div>
       ) : (
         <p className="rounded-lg border border-paper/10 bg-night-soft/40 px-4 py-4 font-serif italic text-detail text-paper/55 leading-[1.6]">
-          Read a chapter, open a prayer, or walk the History timeline, and
-          Today will remember your place here.
+          {t("prayers.today.railEmpty")}
         </p>
       )}
     </section>

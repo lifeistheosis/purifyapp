@@ -15,6 +15,7 @@
 // is often told in loops, so the anthem can keep pace.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import {
   setTrack,
   toggle as toggleAudio,
@@ -62,6 +63,7 @@ export function AudioPlayer({
   /** Right-to-left lyrics (e.g. Arabic). */
   rtl?: boolean;
 }) {
+  const { t } = useTranslate();
   const snap = usePersistentAudio();
   const [showLyrics, setShowLyrics] = useState(false);
   const hasLyrics = Array.isArray(lyrics) && lyrics.length > 0;
@@ -140,7 +142,7 @@ export function AudioPlayer({
             }`}
           >
             <LyricsIcon />
-            Lyrics
+            {t("prayers.audio.lyrics")}
           </button>
         )}
       </div>
@@ -161,7 +163,7 @@ export function AudioPlayer({
           step={0.1}
           value={current}
           onChange={onSeek}
-          aria-label="Seek"
+          aria-label={t("prayers.audio.seek")}
           className="h-1 flex-1 cursor-pointer appearance-none rounded-full accent-[var(--color-gold)]"
           style={{
             background: `linear-gradient(to right, var(--color-gold) ${pct}%, rgba(255,255,255,0.14) ${pct}%)`,
@@ -176,7 +178,7 @@ export function AudioPlayer({
       <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <span className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/40">
-            Loop
+            {t("prayers.audio.loop")}
           </span>
           <div className="inline-flex items-center gap-1 rounded-pill border border-paper/12 bg-paper/[0.03] p-1">
             {LOOP_OPTIONS.map((opt) => (
@@ -206,7 +208,7 @@ export function AudioPlayer({
             step={0.01}
             value={snap.volume}
             onChange={onVolume}
-            aria-label="Volume"
+            aria-label={t("prayers.audio.volume")}
             className="h-1 w-24 cursor-pointer appearance-none rounded-full accent-[var(--color-gold)]"
           />
         </label>

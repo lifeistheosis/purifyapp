@@ -1,5 +1,6 @@
 import { AnthemPlayer } from "@/components/prayers/AnthemPlayer";
 import { ShareButton } from "@/components/ui/ShareButton";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "The Prayer Rope Anthem",
@@ -13,27 +14,20 @@ export default function AnthemPage() {
       <article className="mx-auto w-full max-w-[640px]">
         <header className="text-center">
           <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-4">
-            Prayer · a hymn
+            <T k="prayers.anthem.eyebrow" />
           </p>
           <h1 className="font-serif text-title-sm md:text-title leading-snug text-paper/90">
-            The Prayer Rope Anthem
+            <T k="today.prayNow.anthemTitle" />
           </h1>
           <div aria-hidden className="mx-auto mt-6 h-px w-10 bg-gold/50" />
           <p className="mx-auto mt-6 max-w-[58ch] font-serif text-detail text-paper/70 leading-[1.8]">
-            The English Prayer Rope Anthem is a contemporary Orthodox chant for
-            the prayer rope, sung knot by knot as the rope is told. Verse by
-            verse it lifts the rope&rsquo;s short prayers: to the Holy Trinity,
-            to the Lord Jesus, to the Most Holy Theotokos, to St John the
-            Baptist, and to all the saints and holy angels, each closing on the
-            same refrain.
+            <T k="prayers.anthem.intro1" />
           </p>
           <p className="mx-auto mt-4 max-w-[58ch] font-serif italic text-detail text-paper/50 leading-[1.8]">
-            No single author is recorded for it; the anthem spread across the
-            Orthodox world. It is offered here in English, French, and Arabic.
-            Choose a language, loop it softly, and follow the words below.
+            <T k="prayers.anthem.intro2" />
           </p>
           <div className="mt-7 flex justify-center">
-            <ShareButton title="The Prayer Rope Anthem" />
+            <ShareButton titleKey="today.prayNow.anthemTitle" />
           </div>
         </header>
 
