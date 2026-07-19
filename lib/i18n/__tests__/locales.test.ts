@@ -42,12 +42,10 @@ describe("locale registry", () => {
     expect(getLocale("fil").dir).toBe("ltr");
   });
 
-  it("keeps the eight new locales unselectable until their catalogs land", () => {
-    for (const code of ["fil", "tr", "ka", "hu", "id", "ne", "pl", "ur"]) {
-      expect(isLocaleSelectable(code)).toBe(false);
+  it("every locale is selectable (ready or editorial preview)", () => {
+    for (const code of ALL_CODES) {
+      expect(isLocaleSelectable(code)).toBe(true);
     }
-    expect(isLocaleSelectable("en")).toBe(true);
-    expect(isLocaleSelectable("de")).toBe(true);
   });
 
   it("every locale carries a native label and a comingSoon string", () => {
@@ -65,12 +63,14 @@ describe("locale registry", () => {
 });
 
 describe("catalog loading for new locales", () => {
-  it("empty catalogs fall back to English for every key", () => {
+  it("core keys are translated and missing keys fall back to English", () => {
     const en = getMessages("en");
-    for (const code of ["fil", "tr", "ka", "hu", "id", "ne", "pl", "ur"]) {
+    for (const code of ["fil", "tr", "ka", "hu", "id", "ne", "pl", "ur"] as const) {
       const m = getMessages(code);
-      expect(m).toEqual(en);
-      expect(t(m, "nav.home")).toBe(t(en, "nav.home"));
+      // Core chrome translated (differs from English).
+      expect(t(m, "nav.today")).not.toBe(t(en, "nav.today"));
+      // Long-tail keys fall back to the English value, never the raw key.
+      expect(t(m, "shop.purifyShop")).toBe(t(en, "shop.purifyShop"));
     }
   });
 });

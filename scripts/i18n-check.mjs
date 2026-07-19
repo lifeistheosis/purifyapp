@@ -173,7 +173,12 @@ for (const [code, data] of catalogs) {
   for (const k of present) {
     const want = placeholders(en[k]);
     const got = placeholders(data[k]);
-    const same = want.size === got.size && [...want].every((t) => got.has(t));
+    // Plural-category values may idiomatically omit {count} (Arabic
+    // "one day" carries the number in the word); extra placeholders
+    // are still an error.
+    const same = PLURAL_SUFFIX.test(k)
+      ? [...got].every((t) => want.has(t))
+      : want.size === got.size && [...want].every((t) => got.has(t));
     if (!same) {
       failures.push(
         `${code}.json: ${k} placeholder mismatch (en: {${[...want].join(",")}} vs {${[...got].join(",")}})`,
