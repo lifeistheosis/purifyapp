@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { MobilePremiumButton } from "@/components/nav/MobilePremiumButton";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Mobile top bar for the Today shell.
@@ -12,13 +15,14 @@ import { MobilePremiumButton } from "@/components/nav/MobilePremiumButton";
  * slot. No streak counter — prayer life is not scored back to the user.
  */
 export function MobileTopTabs({ avatar }: { avatar: React.ReactNode }) {
+  const { t } = useTranslate();
   return (
     <header className="sticky top-0 z-30 bg-night/95 backdrop-blur-sm border-b border-paper/8">
       <div className="flex items-center justify-end gap-3 px-5 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-2">
         <MobilePremiumButton />
         <Link
           href="/whats-new"
-          aria-label="What's new"
+          aria-label={t("nav.whatsNew")}
           className="grid h-10 w-10 place-items-center rounded-full text-paper/80 hover:text-paper hover:bg-paper/[0.06] transition-colors"
         >
           <svg

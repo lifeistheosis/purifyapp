@@ -1,48 +1,48 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Quick-access grid on the mobile Today shell — the four core surfaces as
  * large, soft, illustration-tinted cards in the meditation-app idiom.
  * Each card carries a distinct in-palette tint (a calm gradient) and an
  * owned line icon, so the home screen reads as a set of inviting doors
- * rather than a text menu. Data-free; pure navigation.
+ * rather than a text menu. Data-free; pure navigation. Labels come from
+ * the catalog (today.tiles.*) so they follow native locale switches.
  */
 
 type Tile = {
   href: string;
-  label: string;
-  sub: string;
+  key: string;
   tint: string; // CSS background
   icon: React.ReactNode;
 };
 
-export function QuickAccessGrid({ isDe = false }: { isDe?: boolean }) {
+export function QuickAccessGrid() {
+  const { t } = useTranslate();
   const tiles: Tile[] = [
     {
       href: "/prayers",
-      label: isDe ? "Gebete" : "Prayers",
-      sub: isDe ? "Regeln & Hymnen" : "Rules & hymns",
+      key: "prayers",
       tint: "linear-gradient(155deg, #303034 0%, #1f1f22 100%)",
       icon: <HandsIcon />,
     },
     {
       href: "/bible",
-      label: isDe ? "Bibel" : "Scripture",
-      sub: isDe ? "Lesen & hören" : "Read & study",
+      key: "bible",
       tint: "linear-gradient(155deg, #28282c 0%, #18181b 100%)",
       icon: <BookIcon />,
     },
     {
       href: "/saints",
-      label: isDe ? "Heilige" : "Saints",
-      sub: isDe ? "Leben & Ikonen" : "Lives & icons",
+      key: "saints",
       tint: "linear-gradient(155deg, #343438 0%, #232326 100%)",
       icon: <HaloIcon />,
     },
     {
       href: "/calendar",
-      label: isDe ? "Kalender" : "Calendar",
-      sub: isDe ? "Feste & Fasten" : "Feasts & fasts",
+      key: "calendar",
       tint: "linear-gradient(155deg, #2b2b30 0%, #1c1c1f 100%)",
       icon: <CalendarIcon />,
     },
@@ -50,12 +50,12 @@ export function QuickAccessGrid({ isDe = false }: { isDe?: boolean }) {
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      {tiles.map((t) => (
+      {tiles.map((tile) => (
         <Link
-          key={t.href}
-          href={t.href}
+          key={tile.href}
+          href={tile.href}
           className="group relative overflow-hidden rounded-[22px] p-4 shadow-[0_12px_28px_-14px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/10 transition-transform active:scale-[0.98]"
-          style={{ background: t.tint }}
+          style={{ background: tile.tint }}
         >
           <span
             aria-hidden
@@ -65,13 +65,13 @@ export function QuickAccessGrid({ isDe = false }: { isDe?: boolean }) {
             aria-hidden
             className="relative inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-paper/12 text-gold-pale ring-1 ring-inset ring-paper/15"
           >
-            {t.icon}
+            {tile.icon}
           </span>
           <h3 className="relative mt-3 font-serif text-title-sm leading-tight text-paper">
-            {t.label}
+            {t(`today.tiles.${tile.key}`)}
           </h3>
           <p className="relative mt-0.5 font-sans text-caption text-paper/60">
-            {t.sub}
+            {t(`today.tiles.${tile.key}Sub`)}
           </p>
         </Link>
       ))}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 function initialsFromName(name: string | null | undefined): string {
   if (!name) return "";
@@ -23,6 +24,7 @@ function initialsFromName(name: string | null | undefined): string {
  * without a flash of "signed in" before we know.
  */
 export function UserAvatarSmall() {
+  const { t } = useTranslate();
   // With no Supabase env there is no session to look up, so settle on
   // signed-out from the first render. The env is inlined at build time,
   // so server and client renders agree.
@@ -67,7 +69,7 @@ export function UserAvatarSmall() {
     return (
       <Link
         href="/account"
-        aria-label="Account"
+        aria-label={t("nav.yourAccount")}
         className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/55 hover:border-gold transition-colors"
         style={{
           background:
@@ -84,7 +86,7 @@ export function UserAvatarSmall() {
   return (
     <Link
       href="/signin"
-      aria-label="Sign in"
+      aria-label={t("nav.signIn")}
       className="flex h-10 w-10 items-center justify-center rounded-full border border-paper/20 text-paper/70 hover:text-paper hover:border-paper/40 transition-colors"
     >
       <svg

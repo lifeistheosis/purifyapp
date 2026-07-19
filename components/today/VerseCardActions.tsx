@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Client island for the quiet footer row inside the Verse of Day card.
@@ -33,6 +34,7 @@ export function VerseCardActions({
   chapter?: number;
   verse?: number;
 }) {
+  const { t } = useTranslate();
   const [fav, setFav] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [more, setMore] = useState(false);
@@ -96,7 +98,7 @@ export function VerseCardActions({
     // If the locator isn't available, silently do nothing — Favourite
     // requires a verse locator so /saved can resolve it.
     if (!book || !chapter || !verse) {
-      setToast("Cannot favourite this verse");
+      setToast(t("today.verse.cannotFavourite"));
       setTimeout(() => setToast(null), 1500);
       return;
     }
@@ -144,9 +146,9 @@ export function VerseCardActions({
     }
     try {
       await navigator.clipboard.writeText(url);
-      setToast("Link copied");
+      setToast(t("common.linkCopied"));
     } catch {
-      setToast("Could not copy");
+      setToast(t("today.verse.couldNotCopy"));
     }
     setTimeout(() => setToast(null), 1500);
   }
@@ -154,10 +156,10 @@ export function VerseCardActions({
   async function copyText() {
     try {
       await navigator.clipboard.writeText(`${shareText}\n${refLabel}`);
-      setToast("Verse copied");
+      setToast(t("today.verse.verseCopied"));
       setTimeout(() => setToast(null), 1500);
     } catch {
-      setToast("Could not copy");
+      setToast(t("today.verse.couldNotCopy"));
       setTimeout(() => setToast(null), 1500);
     }
     setMore(false);
@@ -173,12 +175,12 @@ export function VerseCardActions({
           className="flex items-center gap-2 text-paper/75 hover:text-paper transition-colors"
         >
           <HeartIcon filled={fav} />
-          <span className="font-sans text-ui">{fav ? "Saved" : "Save"}</span>
+          <span className="font-sans text-ui">{fav ? t("common.saved") : t("common.save")}</span>
         </button>
         <button
           type="button"
           onClick={() => setMore(true)}
-          aria-label="More actions"
+          aria-label={t("today.verse.moreActions")}
           className="flex h-9 w-9 items-center justify-center rounded-full text-paper/55 hover:text-paper hover:bg-paper/[0.06] transition-colors"
         >
           <MoreIcon />
@@ -197,11 +199,11 @@ export function VerseCardActions({
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="More actions"
+          aria-label={t("today.verse.moreActions")}
           className="fixed inset-0 z-50 flex items-end"
         >
           <button
-            aria-label="Close"
+            aria-label={t("common.close")}
             type="button"
             onClick={() => setMore(false)}
             className="absolute inset-0 bg-night/60 backdrop-blur-sm"
@@ -215,15 +217,15 @@ export function VerseCardActions({
               {refLabel}
             </p>
             <SheetItem
-              label="Open chapter"
+              label={t("today.verse.openChapter")}
               onClick={() => {
                 setMore(false);
                 window.location.href = href;
               }}
             />
-            <SheetItem label="Copy verse text" onClick={copyText} />
+            <SheetItem label={t("today.verse.copyVerseText")} onClick={copyText} />
             <SheetItem
-              label="Copy link"
+              label={t("today.verse.copyLink")}
               onClick={() => {
                 void share();
                 setMore(false);
@@ -234,7 +236,7 @@ export function VerseCardActions({
               onClick={() => setMore(false)}
               className="mt-2 w-full rounded-md border border-paper/15 bg-paper/[0.04] py-3 font-sans text-ui font-semibold text-paper/80"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
           </div>
         </div>

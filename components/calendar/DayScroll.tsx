@@ -1,16 +1,18 @@
-import type { Commemoration, FastKind } from "@/lib/calendar/orthodox";
+import type { Commemoration, FastingStatus } from "@/lib/calendar/orthodox";
 import { toneVars, type Tone } from "@/lib/calendar/tone";
 import { OrnamentRule } from "./OrnamentRule";
 import { SectionLabel } from "./SectionLabel";
 import { FastBadge } from "./FastBadge";
 import { CommemorationRow } from "./CommemorationRow";
+import { T } from "@/components/i18n/T";
 
 /**
  * The selected-day "illuminated page": a weekday eyebrow + big date, a
  * centered three-bar Cross rule, then clearly labelled sections — the
  * day's fast tablet, its commemorations as a haloed serif list, and
  * (optionally) its readings. Calm, sectioned chrome; our own serif and
- * sans faces throughout.
+ * sans faces throughout. Section labels are <T> client islands so they
+ * follow native locale switches.
  */
 export function DayScroll({
   weekday,
@@ -19,17 +21,14 @@ export function DayScroll({
   fast,
   commemorations,
   readings,
-  locale = "en",
 }: {
   weekday: string;
   dateLabel: string;
   tone: Tone;
-  fast: { kind: FastKind; label: string; rule: string };
+  fast: FastingStatus;
   commemorations: Commemoration[];
   readings?: React.ReactNode;
-  locale?: string;
 }) {
-  const isDe = locale === "de";
   return (
     <div
       className="rounded-xl border border-gold/15 bg-paper/[0.025] p-6 md:p-7"
@@ -47,12 +46,16 @@ export function DayScroll({
 
       {/* Fasting — kept explicit (the reference omitted it). */}
       <div className="mb-3">
-        <SectionLabel>{isDe ? "Fasten" : "Fasting"}</SectionLabel>
+        <SectionLabel>
+          <T k="calendar.fasting" />
+        </SectionLabel>
       </div>
-      <FastBadge kind={fast.kind} label={fast.label} rule={fast.rule} />
+      <FastBadge fast={fast} />
 
       <div className="mt-7 mb-3.5">
-        <SectionLabel>{isDe ? "Gedenken" : "Commemorations"}</SectionLabel>
+        <SectionLabel>
+          <T k="calendar.commemorations" />
+        </SectionLabel>
       </div>
       {commemorations.length > 0 ? (
         <ul className="space-y-3.5">
@@ -64,16 +67,16 @@ export function DayScroll({
         </ul>
       ) : (
         <p className="font-sans text-detail text-paper/55">
-          {isDe
-            ? "Für diesen Tag ist kein Gedenken vermerkt."
-            : "No commemoration listed for this day."}
+          <T k="calendar.noCommemoration" />
         </p>
       )}
 
       {readings && (
         <>
           <div className="mt-7 mb-3.5">
-            <SectionLabel>{isDe ? "Lesungen" : "Readings"}</SectionLabel>
+            <SectionLabel>
+              <T k="calendar.readings" />
+            </SectionLabel>
           </div>
           {readings}
         </>

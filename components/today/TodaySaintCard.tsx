@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import type { Saint } from "@/lib/saints/saints";
 import { SaintIcon } from "@/components/saints/SaintIcon";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Second card in the mobile Today timeline: the saint of the day.
@@ -17,15 +20,15 @@ export function TodaySaintCard({
   saint,
   fallbackName,
   fallbackNote,
-  eyebrow = "Today's Saint",
   estimateMinutes,
 }: {
   saint?: Saint;
   fallbackName?: string;
   fallbackNote?: string;
-  eyebrow?: string;
   estimateMinutes?: number;
 }) {
+  const { t } = useTranslate();
+  const eyebrow = t("today.saintEyebrow");
   if (saint) {
     const minutes =
       estimateMinutes ??
@@ -52,7 +55,7 @@ export function TodaySaintCard({
           </h3>
           <p className="mt-2.5 inline-flex items-center gap-1.5 font-sans text-caption text-paper/55">
             <ClockIcon />
-            <span>{minutes} min</span>
+            <span>{t("today.minRead", { count: minutes })}</span>
           </p>
         </div>
         <div className="relative shrink-0 self-stretch flex items-center">
@@ -86,7 +89,7 @@ export function TodaySaintCard({
             </p>
           )}
           <p className="mt-3 inline-flex items-center gap-1.5 font-sans text-caption text-paper/55">
-            Open in calendar
+            {t("today.openInCalendar")}
           </p>
         </div>
         <div className="relative shrink-0 self-stretch flex items-center">

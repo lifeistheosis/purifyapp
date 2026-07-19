@@ -4,7 +4,6 @@ import {
  currentSeason,
  fastingStatus,
  formatLongDateDual,
- formatMonthDay,
  greekMonthName,
  monthGrid,
  paschaInfo,
@@ -26,6 +25,7 @@ import { SectionLabel } from "@/components/calendar/SectionLabel";
 import { LocalTodaySync } from "@/components/calendar/LocalTodaySync";
 import StyleToggleLink from "@/components/calendar/StyleToggleLink";
 import { getServerLocale } from "@/lib/i18n/server";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
  title: "Orthodox Calendar",
@@ -109,24 +109,17 @@ async function resolveReadings(refs: ReadingRef[]): Promise<ResolvedReading[]> {
 function ReadingPanel({
  reading,
  size = "md",
- isDe = false,
 }: {
  reading: ResolvedReading;
  size?: "sm" | "md";
- isDe?: boolean;
 }) {
  const { ref, passage } = reading;
- const kindLabel = isDe
- ? ref.kind === "epistle"
- ? "Apostel"
+ const kindKey =
+ ref.kind === "epistle"
+ ? "bible.kindEpistleLong"
  : ref.kind === "ot"
- ? "Altes Testament"
- : "Evangelium"
- : ref.kind === "epistle"
- ? "Epistle"
- : ref.kind === "ot"
- ? "Old Testament"
- : "Gospel";
+ ? "bible.kindOtLong"
+ : "bible.kindGospelLong";
  const firstVerse = passage?.verses?.[0];
  const moreVerses = (passage?.verses?.length ?? 0) > 1;
  const verseText =
@@ -139,7 +132,7 @@ function ReadingPanel({
  rhythm, no baseline tug-of-war between an 11px caps label and a
  14px proper noun. */}
  <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold font-semibold leading-none">
- {kindLabel}
+ <T k={kindKey} />
  </p>
  <p className="mt-2 font-display-serif text-lede md:text-lede text-paper leading-tight">
  {ref.label}
@@ -157,7 +150,7 @@ function ReadingPanel({
  </p>
  ) : (
  <p className="font-sans text-detail text-paper/45 italic mt-4">
- {isDe ? "Versetext nicht verfügbar." : "Verse text unavailable."}
+ <T k="calendar.verseUnavailable" />
  </p>
  )}
 
@@ -165,26 +158,11 @@ function ReadingPanel({
  href={`/bible/${ref.book}/${ref.chapter}#v${ref.from}`}
  className="mt-auto pt-4 inline-block font-sans text-caption font-medium text-gold hover:text-gold-soft transition-colors"
  >
- {isDe ? "Vollständigen Abschnitt lesen →" : "Read full passage →"}
+ <T k="calendar.readFullPassage" /> →
  </Link>
  </div>
  );
 }
-
-const MONTH_NAMES_EN = [
- "January", "February", "March", "April", "May", "June",
- "July", "August", "September", "October", "November", "December",
-];
-const MONTH_NAMES_DE = [
- "Januar", "Februar", "März", "April", "Mai", "Juni",
- "Juli", "August", "September", "Oktober", "November", "Dezember",
-];
-const WEEKDAY_NAMES_EN = [
- "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
-];
-const WEEKDAY_NAMES_DE = [
- "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag",
-];
 
 export default async function CalendarPage({
  searchParams,
@@ -199,7 +177,6 @@ export default async function CalendarPage({
    ? ({} as Awaited<SearchParams>)
    : await searchParams;
  const locale = await getServerLocale();
- const isDe = locale === "de";
  // Resolve the calendar style:
  //   1. ?style= query (per-visit toggle wins)
  //   2. user preference cookie (ProfileSettings writes it)
@@ -261,24 +238,40 @@ export default async function CalendarPage({
  resolveReadings(readingsOn(selectedLookup)),
  ]);
 
+ // Locale-aware date pieces (server locale; the web is per-request
+ // correct, the native export bakes English and client islands carry
+ // the switchable labels).
+ const monthName = (m: number) =>
+   new Intl.DateTimeFormat(locale, { month: "long", timeZone: "UTC" }).format(
+     new Date(Date.UTC(2000, m, 1)),
+   );
+ const monthDay = (d: Date) =>
+   new Intl.DateTimeFormat(locale, { month: "long", day: "numeric", timeZone: "UTC" }).format(d);
+ const weekdayName = (d: Date) =>
+   new Intl.DateTimeFormat(locale, { weekday: "long", timeZone: "UTC" }).format(d);
+
  const paschaPrimary =
- pascha.daysAway === 0
- ? isDe
- ? "Heute"
- : "Today"
- : pascha.daysAway > 0
- ? isDe
- ? `${pascha.daysAway} Tage`
- : `${pascha.daysAway} days`
- : isDe
- ? "Vergangen"
- : "Passed";
+ pascha.daysAway === 0 ? (
+ <T k="today.paschaPrimaryToday" />
+ ) : pascha.daysAway > 0 ? (
+ <T k="today.paschaDays" count={pascha.daysAway} />
+ ) : (
+ <T k="today.paschaPrimaryPassed" />
+ );
  const paschaSecondary =
- pascha.daysAway > 0
- ? isDe
- ? `Bis zum ${formatMonthDay(pascha.date)}, ${pascha.date.getUTCFullYear()}`
- : `Until ${formatMonthDay(pascha.date)}, ${pascha.date.getUTCFullYear()}`
- : pascha.label;
+ pascha.daysAway > 0 ? (
+ <T
+ k="calendar.untilPaschaDate"
+ replacements={{
+ date: monthDay(pascha.date),
+ year: pascha.date.getUTCFullYear(),
+ }}
+ />
+ ) : pascha.daysAway === 0 ? (
+ <T k="today.paschaToday" />
+ ) : (
+ <T k="today.paschaPassed" />
+ );
 
  // Toggle hrefs (preserve month/day, flip style). Both hrefs carry an explicit
  // style: without it, a persisted "old" cookie silently wins over the New
@@ -307,9 +300,7 @@ export default async function CalendarPage({
  <div className="mx-auto max-w-[1280px] w-full">
  <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
  <SectionLabel>
- {isDe
- ? "Orthodoxer Kalender · Heute"
- : "Orthodox Calendar · Today"}
+ <T k="calendar.heroEyebrow" />
  </SectionLabel>
  {/* Typographic style toggle, no eyebrow label. */}
  <div className="inline-flex items-baseline gap-3">
@@ -323,7 +314,7 @@ export default async function CalendarPage({
  : "text-paper/55 hover:text-paper"
  }`}
  >
- {isDe ? "Neu" : "New"}
+ <T k="calendar.styleNew" />
  </StyleToggleLink>
  <span aria-hidden className="text-gold/35 text-caption">·</span>
  <StyleToggleLink
@@ -336,7 +327,7 @@ export default async function CalendarPage({
  : "text-paper/55 hover:text-paper"
  }`}
  >
- {isDe ? "Alt" : "Old"}
+ <T k="calendar.styleOld" />
  </StyleToggleLink>
  </div>
  </div>
@@ -349,14 +340,11 @@ export default async function CalendarPage({
  fast={todayFast}
  paschaPrimary={paschaPrimary}
  paschaSecondary={paschaSecondary}
- locale={locale}
  />
 
  {style === "old" && (
  <p className="mt-4 font-serif italic text-caption text-paper/55 text-right max-w-[1280px]">
- {isDe
- ? "Im Alten (Julianischen) Kalender steht das liturgische Datum heute dreizehn Tage hinter dem bürgerlichen Datum. Beide sind oben angegeben."
- : "On the Old (Julian) calendar, today’s liturgical date is thirteen days behind the civil date. Both are shown above."}
+ <T k="calendar.julianNote" />
  </p>
  )}
  </div>
@@ -368,23 +356,21 @@ export default async function CalendarPage({
  <div className="mx-auto max-w-[1280px] w-full">
  <div className="text-center mb-7">
  <SectionLabel>
- {isDe ? "Lesungen für heute" : "Today’s readings"}
+ <T k="calendar.todaysReadings" />
  </SectionLabel>
  <h2 className="mt-2 font-display-serif text-title-sm md:text-heading text-paper">
- {isDe
- ? `Das Wort für den ${formatMonthDay(today)}`
- : `The Word for ${formatMonthDay(today)}`}
+ <T k="calendar.wordFor" replacements={{ date: monthDay(today) }} />
  </h2>
  <OrnamentRule className="mt-4 max-w-[420px] mx-auto" />
  </div>
  {todayReadings.length === 1 ? (
  <div className="max-w-[560px] mx-auto">
- <ReadingPanel reading={todayReadings[0]} size="md" isDe={isDe} />
+ <ReadingPanel reading={todayReadings[0]} size="md" />
  </div>
  ) : (
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-[920px] mx-auto">
  {todayReadings.map((r, i) => (
- <ReadingPanel key={i} reading={r} size="md" isDe={isDe} />
+ <ReadingPanel key={i} reading={r} size="md" />
  ))}
  </div>
  )}
@@ -400,7 +386,7 @@ export default async function CalendarPage({
  <header className="flex items-end justify-between mb-8 gap-4 flex-wrap">
  <div className="min-w-0">
  <h2 className="font-display-serif text-heading md:text-display-lg text-paper leading-[0.95] tracking-[-0.01em]">
- {(isDe ? MONTH_NAMES_DE : MONTH_NAMES_EN)[month]}{" "}
+ {monthName(month)}{" "}
  <span className="text-paper/55 font-normal">{year}</span>
  </h2>
  <p
@@ -416,21 +402,21 @@ export default async function CalendarPage({
  href={prevMonthHref(year, month)}
  className="font-sans text-caption tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
  >
- {isDe ? "‹ Zurück" : "‹ Prev"}
+ ‹ <T k="calendar.prevMonth" />
  </Link>
  <span aria-hidden className="text-gold/35 text-caption">·</span>
  <Link
  href="/calendar"
  className="font-sans text-caption tracking-[0.5px] text-paper/85 hover:text-paper transition-colors"
  >
- {isDe ? "Heute" : "Today"}
+ <T k="calendar.todayLink" />
  </Link>
  <span aria-hidden className="text-gold/35 text-caption">·</span>
  <Link
  href={nextMonthHref(year, month)}
  className="font-sans text-caption tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
  >
- {isDe ? "Weiter ›" : "Next ›"}
+ <T k="calendar.nextMonth" /> ›
  </Link>
  </nav>
  </header>
@@ -446,12 +432,11 @@ export default async function CalendarPage({
 
  <aside className="lg:sticky lg:top-[88px]">
  <DayScroll
- weekday={(isDe ? WEEKDAY_NAMES_DE : WEEKDAY_NAMES_EN)[selectedDay.getUTCDay()]}
- dateLabel={`${(isDe ? MONTH_NAMES_DE : MONTH_NAMES_EN)[selectedDay.getUTCMonth()]} ${selectedDay.getUTCDate()}, ${selectedDay.getUTCFullYear()}`}
+ weekday={weekdayName(selectedDay)}
+ dateLabel={`${monthDay(selectedDay)}, ${selectedDay.getUTCFullYear()}`}
  tone={selectedTone}
  fast={selectedFast}
  commemorations={selectedCommemorations}
- locale={locale}
  readings={
  selectedReadings.length > 0 ? (
  /* Compact citation list, no verse teasers in the
@@ -460,17 +445,12 @@ export default async function CalendarPage({
  column doesn't leave a big empty rail. */
  <ul className="divide-y divide-paper/8 border-t border-b border-paper/10">
  {selectedReadings.map((r, i) => {
- const kindLabel = isDe
- ? r.ref.kind === "epistle"
- ? "Apostel"
+ const kindKey =
+ r.ref.kind === "epistle"
+ ? "bible.kindEpistleLong"
  : r.ref.kind === "ot"
- ? "Altes Testament"
- : "Evangelium"
- : r.ref.kind === "epistle"
- ? "Epistle"
- : r.ref.kind === "ot"
- ? "Old Testament"
- : "Gospel";
+ ? "bible.kindOtLong"
+ : "bible.kindGospelLong";
  return (
  <li key={i}>
  <Link
@@ -478,7 +458,7 @@ export default async function CalendarPage({
  className="group flex items-baseline justify-between gap-3 py-2.5"
  >
  <span className="font-sans text-eyebrow uppercase tracking-[2px] text-gold font-semibold">
- {kindLabel}
+ <T k={kindKey} />
  </span>
  <span className="font-display-serif text-ui text-paper group-hover:text-gold transition-colors text-right">
  {r.ref.label}
@@ -499,16 +479,12 @@ export default async function CalendarPage({
  {/* COLOPHON */}
  <section className="px-5 md:px-8 py-14 md:py-16">
  <div className="mx-auto max-w-[760px] w-full">
- <Colophon locale={locale} />
+ <Colophon />
  <p className="mt-10 font-serif text-detail text-paper/55 leading-[1.7]">
- {isDe
- ? "Zwei Reckonungen stehen über die Umschaltung oben zur Verfügung. Die voreingestellte, Neue (Revidierte Julianische), wird vom Ökumenischen Patriarchat von Konstantinopel und der Mehrheit der kanonischen orthodoxen Jurisdiktionen für die festen Feste gebraucht. Die Alte (Julianische) Wahl wird von der russischen, serbischen, jerusalemischen und athonitischen Überlieferung gebraucht und steht für die festen Feste dreizehn Tage zurück. Pascha und sein beweglicher Zyklus sind beiden gemein, berechnet nach dem Julianisch gegründeten Algorithmus, der allen kanonischen orthodoxen Kirchen gemein ist."
- : "Two reckonings are available via the toggle above. The default, New (Revised Julian), is used by the Ecumenical Patriarchate of Constantinople and the majority of canonical Orthodox jurisdictions for fixed feasts. The Old (Julian) option is used by the Russian, Serbian, Jerusalem, and Athonite traditions, and runs thirteen days behind for fixed feasts. Pascha and its moveable cycle are shared between both, computed by the Julian-based algorithm common to every canonical Orthodox church."}
+ <T k="calendar.reckoningsNote" />
  </p>
  <p className="mt-3 font-sans text-caption text-paper/40 leading-[1.6]">
- {isDe
- ? "Die Fastenregeln sind eine vereinfachte Lesung gemeiner ostorthodoxer (griechischer) Praxis zur täglichen Orientierung. Die Anweisung deines Priesters hat in jeder einzelnen Frage Vorrang."
- : "Fasting rules are a simplified reading of common Eastern Orthodox (Greek tradition) practice for daily orientation. Your priest’s direction takes precedence for any individual question."}
+ <T k="calendar.fastingDisclaimer" />
  </p>
  </div>
  </section>

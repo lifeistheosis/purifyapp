@@ -1,24 +1,34 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Final card in the mobile Today timeline: the Pascha countdown.
  * Same card shape, with a small three-bar cross above the count.
+ * Client so both lines follow the active locale on native.
  */
 export function PaschaCountdownCard({
   daysAway,
-  label,
-  eyebrow = "Pascha",
+  year,
 }: {
   daysAway: number;
-  label: string;
-  eyebrow?: string;
+  /** The Pascha year being counted toward. */
+  year: number;
 }) {
+  const { t, tn } = useTranslate();
   const primary =
     daysAway === 0
-      ? "Today"
+      ? t("today.paschaPrimaryToday")
       : daysAway > 0
-      ? `${daysAway} days`
-      : "Passed";
+        ? tn("today.paschaDays", daysAway)
+        : t("today.paschaPrimaryPassed");
+  const secondary =
+    daysAway > 0
+      ? t("today.untilPascha", { year })
+      : daysAway === 0
+        ? t("today.paschaToday")
+        : t("today.paschaPassed");
   return (
     <Link
       href="/calendar"
@@ -26,11 +36,11 @@ export function PaschaCountdownCard({
     >
       <ThreeBarCross />
       <div className="min-w-0 flex-1">
-        <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
+        <p className="font-sans text-caption text-paper/55">{t("today.paschaEyebrow")}</p>
         <h3 className="mt-0.5 font-serif text-ui leading-[1.2] text-paper">
           {primary}
         </h3>
-        <p className="mt-0.5 font-sans text-caption text-paper/55">{label}</p>
+        <p className="mt-0.5 font-sans text-caption text-paper/55">{secondary}</p>
       </div>
     </Link>
   );

@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { getRuleMeta } from "@/lib/prayers/rules";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * "Pray now" card on the mobile Today shell. The honest, Purify-quiet
@@ -15,27 +18,24 @@ import { getRuleMeta } from "@/lib/prayers/rules";
  * Built in the existing bespoke Today card idiom (rounded-2xl,
  * border-paper/10, bg-paper/[0.03]), not a copy of any other app's card.
  */
-export function PrayNowCard({ isDe = false }: { isDe?: boolean }) {
+export function PrayNowCard() {
+  const { locale, t } = useTranslate();
   const rule = getRuleMeta("morning");
-  const labels = isDe
-    ? {
-        eyebrow: "Jetzt beten",
-        ruleTitle: rule?.titleDe ?? rule?.title ?? "Morgengebete",
-        minutes: (n: number) => `${n} Min`,
-        begin: "Beginnen",
-        anthemKicker: "Eine Hymne · für das Seil",
-        anthemTitle: "Die Gebetsseil-Hymne",
-        anthemBody: "Knoten für Knoten gesungen. Ein kurzer Gesang.",
-      }
-    : {
-        eyebrow: "Pray now",
-        ruleTitle: rule?.title ?? "Morning prayers",
-        minutes: (n: number) => `${n} min`,
-        begin: "Begin",
-        anthemKicker: "A hymn · for the rope",
-        anthemTitle: "The Prayer Rope Anthem",
-        anthemBody: "Sung knot by knot. A short chant, follow the lyrics.",
-      };
+  // Rule titles still carry a legacy titleDe field; the prayers surface
+  // migrates them to the catalog with the rest of the rules metadata.
+  const ruleTitle =
+    (locale === "de" ? rule?.titleDe : undefined) ??
+    rule?.title ??
+    t("today.prayNow.morningFallback");
+  const labels = {
+    eyebrow: t("today.prayNow.eyebrow"),
+    ruleTitle,
+    minutes: (n: number) => t("today.minRead", { count: n }),
+    begin: t("today.prayNow.begin"),
+    anthemKicker: t("today.prayNow.anthemKicker"),
+    anthemTitle: t("today.prayNow.anthemTitle"),
+    anthemBody: t("today.prayNow.anthemBody"),
+  };
 
   const minutes = rule?.estimatedMinutes;
 

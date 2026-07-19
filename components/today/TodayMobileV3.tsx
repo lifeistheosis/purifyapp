@@ -10,7 +10,6 @@ import {
 } from "@/lib/calendar/orthodox";
 import { CALENDAR_STYLE_COOKIE } from "@/lib/calendar/styleDefault";
 import { getSaint } from "@/lib/saints/saints";
-import { getServerLocale } from "@/lib/i18n/server";
 import { MobileTopTabs } from "./MobileTopTabs";
 import { UserAvatarSmall } from "./UserAvatarSmall";
 import { TimelineRail } from "./TimelineRail";
@@ -23,13 +22,19 @@ import { PaschaCountdownCard } from "./PaschaCountdownCard";
 import { GreetingHeader } from "./GreetingHeader";
 import { QuickAccessGrid } from "./QuickAccessGrid";
 import { FirstStepsNudge } from "@/components/onboarding/FirstStepsNudge";
+import { T } from "@/components/i18n/T";
 
 /**
- * Mobile-only Today shell (v6.10 rework).
+ * Mobile-only Today shell (v6.10 rework; Beta 2.3 i18n pass).
  *
  * Reads the user's calendar-style preference (`purify_calendar_style`
  * cookie, set by ProfileSettings) and shifts the fixed-cycle lookups
  * (saint of the day, fast) accordingly — matching the calendar page.
+ *
+ * This server component computes DATA only; every user-facing string is
+ * rendered by client children (useTranslate) or <T> islands, so the
+ * whole surface follows a native locale switch. The old isDe label maps
+ * are gone; copy lives in the catalogs under today.*.
  *
  * Pascha-relative readings stay on the civil date because both calendar
  * styles compute Pascha from the same Julian algorithm.
@@ -49,89 +54,44 @@ export async function TodayMobileV3() {
   const fast = fastingStatus(lookup);
   const readings = readingsOn(today);
   const pascha = paschaInfo(today);
-  const locale = await getServerLocale();
-  const isDe = locale === "de";
 
   const headline =
     commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
   const headlineSaint =
     headline?.saint ?? (headline?.slug ? getSaint(headline.slug) : null);
 
-  const labels = isDe
-    ? {
-        verseTop: "Vers des Tages",
-        churchToday: "Die Kirche heute",
-        saint: "Heiliger des Tages",
-        fast: "Das Fasten",
-        readings: "Lesungen für heute",
-        readingsEmpty: "Keine Lesungen angesetzt.",
-        pascha: "Pascha",
-        noSaint: "Für diesen Tag ist noch kein Heiliger verzeichnet.",
-      }
-    : {
-        verseTop: "Verse of the Day",
-        churchToday: "The Church today",
-        saint: "Today's Saint",
-        fast: "The Fast",
-        readings: "Today's Readings",
-        readingsEmpty: "No readings appointed.",
-        pascha: "Pascha",
-        noSaint: "No saint indexed for this day.",
-      };
-
-  // Quiet, localized dateline that grounds the surface in the Church's
-  // day rather than a SaaS "refresh" label. UTC to match the fixed-cycle
-  // date lookups above.
-  const dateline = new Intl.DateTimeFormat(isDe ? "de-DE" : "en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    timeZone: "UTC",
-  }).format(today);
-
-  const paschaSecondary =
-    pascha.daysAway > 0
-      ? isDe
-        ? `Bis Pascha ${pascha.date.getUTCFullYear()}`
-        : `Until Pascha ${pascha.date.getUTCFullYear()}`
-      : pascha.label;
-
   return (
     <div className="flex flex-col bg-night">
       <MobileTopTabs avatar={<UserAvatarSmall />} />
 
       <div className="px-5 pt-3 pb-8">
-        <GreetingHeader dateline={dateline} isDe={isDe} />
+        <GreetingHeader date={today.getTime()} />
 
         <FirstStepsNudge />
 
         {/* Hero: the day's word, the dominant element of the surface. */}
-        <VerseOfDayCard labelTop={labels.verseTop} />
+        <VerseOfDayCard />
 
         {/* Pray now: the day's rule + the Prayer Rope Anthem. */}
         <div className="mt-4">
-          <PrayNowCard isDe={isDe} />
+          <PrayNowCard />
         </div>
 
         {/* Quick access: the four core surfaces as soft, inviting doors. */}
         <p className="mt-8 mb-3 font-sans text-eyebrow uppercase tracking-[2px] text-paper/55">
-          {isDe ? "Erkunden" : "Explore"}
+          <T k="today.explore" />
         </p>
-        <QuickAccessGrid isDe={isDe} />
+        <QuickAccessGrid />
 
         {/* The Church today: the saint, the fast, the readings, the count
             to Pascha, kept on the quiet sequenced rail. */}
         <p className="mt-8 mb-3 font-sans text-eyebrow uppercase tracking-[2px] text-paper/55">
-          {labels.churchToday}
+          <T k="today.churchToday" />
         </p>
         <TimelineRail>
           {[
             headlineSaint ? (
-              <TodaySaintCard
-                key="saint"
-                saint={headlineSaint}
-                eyebrow={labels.saint}
-              />
+              <TodaySaintCard key="saint" saint={headlineSaint} />
             ) : headline ? (
               // Commemorated but not deeply profiled in our registry.
               // Render the headline so the user sees the saint's name
@@ -139,7 +99,6 @@ export async function TodayMobileV3() {
               // calendar day, which shows fuller commemoration text.
               <TodaySaintCard
                 key="saint-no-profile"
-                eyebrow={labels.saint}
                 fallbackName={headline.name}
                 fallbackNote={headline.note}
               />
@@ -149,25 +108,19 @@ export async function TodayMobileV3() {
                 className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5"
               >
                 <p className="font-sans text-caption text-paper/55">
-                  {labels.saint}
+                  <T k="today.saintEyebrow" />
                 </p>
                 <p className="mt-2 font-sans text-ui text-paper/55 italic">
-                  {labels.noSaint}
+                  <T k="today.noSaint" />
                 </p>
               </div>
             ),
-            <FastTodayCard key="fast" fast={fast} eyebrow={labels.fast} />,
-            <TodayReadingsCard
-              key="readings"
-              readings={readings}
-              eyebrow={labels.readings}
-              emptyLabel={labels.readingsEmpty}
-            />,
+            <FastTodayCard key="fast" fast={fast} />,
+            <TodayReadingsCard key="readings" readings={readings} />,
             <PaschaCountdownCard
               key="pascha"
               daysAway={pascha.daysAway}
-              label={paschaSecondary}
-              eyebrow={labels.pascha}
+              year={pascha.date.getUTCFullYear()}
             />,
           ]}
         </TimelineRail>

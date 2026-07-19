@@ -1,6 +1,7 @@
 "use client";
 
 import { useMounted } from "@/lib/useMounted";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Warm, time-aware greeting at the top of the mobile Today shell — the
@@ -10,30 +11,29 @@ import { useMounted } from "@/lib/useMounted";
  * resolved after mount). Until then it falls back to the neutral first
  * option, so there is no layout shift, only a word settling in.
  *
- * `dateline` is the already-localized long date from the server.
+ * `date` is the UTC day (ms) from the server; the dateline is formatted
+ * here, client-side, so it follows the active locale on native too.
  */
-export function GreetingHeader({
-  dateline,
-  isDe = false,
-}: {
-  dateline: string;
-  isDe?: boolean;
-}) {
+export function GreetingHeader({ date }: { date: number }) {
+  const { locale, t } = useTranslate();
   // Local hour exists only on the client; until mounted, fall back to the
   // neutral morning option so server and hydration renders agree.
   const mounted = useMounted();
 
-  const greet = (() => {
-    const h = mounted ? new Date().getHours() : 8;
-    if (isDe) {
-      if (h < 12) return "Guten Morgen";
-      if (h < 18) return "Guten Tag";
-      return "Guten Abend";
-    }
-    if (h < 12) return "Good morning";
-    if (h < 18) return "Good afternoon";
-    return "Good evening";
-  })();
+  const h = mounted ? new Date().getHours() : 8;
+  const greet =
+    h < 12
+      ? t("today.greetingMorning")
+      : h < 18
+        ? t("today.greetingAfternoon")
+        : t("today.greetingEvening");
+
+  const dateline = new Intl.DateTimeFormat(locale, {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(date));
 
   return (
     <header className="mb-5">
@@ -44,9 +44,7 @@ export function GreetingHeader({
         {greet}
       </h1>
       <p className="mt-1 font-sans text-detail text-paper/55">
-        {isDe
-          ? "Bleibe heute im Gebet."
-          : "May you abide in prayer today."}
+        {t("today.abide")}
       </p>
     </header>
   );

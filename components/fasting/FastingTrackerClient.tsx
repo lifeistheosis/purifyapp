@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import Link from "next/link";
 import { fastingStatus, type FastKind } from "@/lib/calendar/orthodox";
 import { useFastCheckins, dayKey, isFastingDay } from "@/lib/fasting/tracker";
@@ -26,10 +27,10 @@ const DOT: Record<FastKind, string> = {
   normal: "bg-paper/30",
 };
 
-const STATUS_LABEL: Record<CheckinStatus, string> = {
-  kept: "Kept",
-  partial: "In part",
-  broken: "Broke",
+const STATUS_KEY: Record<CheckinStatus, string> = {
+  kept: "fasting.status.kept",
+  partial: "fasting.status.partial",
+  broken: "fasting.status.broken",
 };
 
 function CheckControl({
@@ -41,6 +42,7 @@ function CheckControl({
   onSet: (s: CheckinStatus) => void;
   size?: "lg" | "sm";
 }) {
+  const { t } = useTranslate();
   const order: CheckinStatus[] = ["kept", "partial", "broken"];
   const active: Record<CheckinStatus, string> = {
     kept: "border-emerald-400/60 bg-emerald-400/15 text-emerald-200",
@@ -64,7 +66,7 @@ function CheckControl({
                 : "border-paper/15 bg-paper/[0.03] text-paper/55 hover:bg-paper/[0.07]"
             }`}
           >
-            {STATUS_LABEL[s]}
+            {t(STATUS_KEY[s])}
           </button>
         );
       })}
@@ -73,6 +75,7 @@ function CheckControl({
 }
 
 export function FastingTrackerClient() {
+  const { locale, t, tn } = useTranslate();
   const today = useMemo(() => new Date(), []);
   const kindOf = useCallback((d: Date) => ruleFor(d).kind, []);
   const { byDay, streak, summary, mark, clear } = useFastCheckins(kindOf, today);
@@ -84,12 +87,12 @@ export function FastingTrackerClient() {
 
   // The last stretch of fasting days (most recent first), for the history list.
   const recent = useMemo(() => {
-    const out: { key: string; date: Date; kind: FastKind; label: string }[] = [];
+    const out: { key: string; date: Date; kind: FastKind; ruleId: string }[] = [];
     const cursor = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     for (let i = 0; i < 60 && out.length < 16; i++) {
       const fs = ruleFor(cursor);
       if (isFastingDay(fs.kind)) {
-        out.push({ key: dayKey(cursor), date: new Date(cursor), kind: fs.kind, label: fs.label });
+        out.push({ key: dayKey(cursor), date: new Date(cursor), kind: fs.kind, ruleId: fs.ruleId });
       }
       cursor.setDate(cursor.getDate() - 1);
     }
@@ -104,7 +107,7 @@ export function FastingTrackerClient() {
   };
 
   const fmtDay = (d: Date) =>
-    d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+    d.toLocaleDateString(locale, { weekday: "short", month: "short", day: "numeric" });
 
   return (
     <section className="min-h-[calc(100dvh-72px)] bg-night px-5 py-10 md:px-8 md:py-14">
@@ -112,10 +115,10 @@ export function FastingTrackerClient() {
         {/* Masthead */}
         <div className="reveal-rise" style={{ animationDelay: "40ms" }}>
           <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
-            The Fast
+            {t("today.fastEyebrow")}
           </p>
           <h1 className="mt-2 font-sans text-display-sm font-bold leading-[1.05] tracking-[-0.02em] text-paper">
-            Keep the fast, day by day
+            {t("fasting.h1")}
           </h1>
         </div>
 
@@ -130,10 +133,8 @@ export function FastingTrackerClient() {
             </p>
             <p className="mt-2 font-sans text-caption text-paper/60">
               {streak === 0
-                ? "fasting days kept. Begin whenever you're ready."
-                : streak === 1
-                  ? "fasting day kept in a row."
-                  : "fasting days kept in a row."}
+                ? t("fasting.streakNone")
+                : tn("fasting.streakKept", streak)}
             </p>
           </div>
           <div className="flex-1 rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
@@ -141,7 +142,9 @@ export function FastingTrackerClient() {
               {summary.kept + summary.partial}
             </p>
             <p className="mt-2 font-sans text-caption text-paper/60">
-              days kept in all{summary.partial ? `, ${summary.partial} in part` : ""}.
+              {summary.partial
+                ? t("fasting.keptInAllPartial", { partial: summary.partial })
+                : t("fasting.keptInAll")}
             </p>
           </div>
         </div>
@@ -151,13 +154,13 @@ export function FastingTrackerClient() {
           className="reveal-rise mt-4 rounded-2xl border border-paper/12 bg-paper/[0.04] p-5"
           style={{ animationDelay: "180ms" }}
         >
-          <p className="font-sans text-caption text-paper/55">Today</p>
+          <p className="font-sans text-caption text-paper/55">{t("calendar.todayLink")}</p>
           <h2 className="mt-1 flex items-center gap-2 font-serif text-lede leading-tight text-paper">
             <span aria-hidden className={`inline-block h-2.5 w-2.5 rounded-full ${DOT[todayFast.kind]}`} />
-            {todayFast.label}
+            {t(`calendar.fast.${todayFast.ruleId}.label`)}
           </h2>
           <p className="mt-2 font-sans text-ui leading-relaxed text-paper/70">
-            {todayFast.rule}
+            {t(`calendar.fast.${todayFast.ruleId}.rule`)}
           </p>
           {todayIsFast ? (
             <div className="mt-4">
@@ -167,13 +170,12 @@ export function FastingTrackerClient() {
                 onSet={(s) => setDay(todayKey, todayFast.kind, s)}
               />
               <p className="mt-3 font-sans text-caption text-paper/45">
-                Kept with your priest&rsquo;s blessing, and with room for the sick, the
-                travelling, expecting mothers, and catechumens. This is a companion, not a rule.
+                {t("fasting.pastoralNote")}
               </p>
             </div>
           ) : (
             <p className="mt-3 font-sans text-caption text-paper/45">
-              No fast today. Rest in it.
+              {t("fasting.noFastToday")}
             </p>
           )}
         </div>
@@ -183,7 +185,7 @@ export function FastingTrackerClient() {
           className="reveal-rise mt-8 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45"
           style={{ animationDelay: "240ms" }}
         >
-          Recent fasting days
+          {t("fasting.recentDays")}
         </p>
         <ul className="reveal-rise mt-3 space-y-2" style={{ animationDelay: "280ms" }}>
           {recent.map((r) => {
@@ -196,11 +198,11 @@ export function FastingTrackerClient() {
               >
                 <div className="min-w-0">
                   <p className="font-sans text-ui text-paper/85">
-                    {isToday ? "Today" : fmtDay(r.date)}
+                    {isToday ? t("calendar.todayLink") : fmtDay(r.date)}
                   </p>
                   <p className="mt-0.5 flex items-center gap-1.5 font-sans text-caption text-paper/50">
                     <span aria-hidden className={`inline-block h-1.5 w-1.5 rounded-full ${DOT[r.kind]}`} />
-                    {r.label}
+                    {t(`calendar.fast.${r.ruleId}.label`)}
                   </p>
                 </div>
                 <CheckControl value={m} onSet={(s) => setDay(r.key, r.kind, s)} />
@@ -213,10 +215,9 @@ export function FastingTrackerClient() {
           className="reveal-rise mt-8 font-sans text-caption leading-[1.6] text-paper/40"
           style={{ animationDelay: "340ms" }}
         >
-          Your marks stay on this device. With Purify Plus they follow you to every
-          device you sign in on. The whole fasting calendar is, and stays, free.{" "}
+          {t("fasting.deviceNote")}{" "}
           <Link href="/calendar" className="text-gold-pale/70 underline-offset-2 hover:underline">
-            See the full calendar
+            {t("fasting.seeFullCalendar")}
           </Link>
           .
         </p>

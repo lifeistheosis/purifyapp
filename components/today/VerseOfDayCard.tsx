@@ -1,5 +1,6 @@
 import { getVerseOfDay } from "@/lib/today/verseOfDay";
 import { VerseCardActions } from "./VerseCardActions";
+import { T } from "@/components/i18n/T";
 
 /**
  * Verse-of-the-day card on the mobile Today shell.
@@ -14,11 +15,7 @@ import { VerseCardActions } from "./VerseCardActions";
  * (Brenton LXX / KJV) via lib/today/verseOfDay.ts. No copyrighted
  * translation is reproduced anywhere on this surface.
  */
-export async function VerseOfDayCard({
-  labelTop = "Verse of the Day",
-}: {
-  labelTop?: string;
-}) {
+export async function VerseOfDayCard() {
   const vod = await getVerseOfDay();
   const text = vod.passage?.verses
     .map((v) => v.text.trim())
@@ -73,15 +70,17 @@ export async function VerseOfDayCard({
         <div className="flex items-center justify-between gap-3">
           <span className="inline-flex items-center gap-2 font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">
             <ThreeBarCross />
-            {labelTop}
+            <T k="today.verseOfDay" />
           </span>
           {vod.source !== "rotation" && (
             <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.05] px-2.5 py-[2px] font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/60">
-              {vod.source === "gospel"
-                ? "Gospel"
-                : vod.source === "epistle"
-                  ? "Epistle"
-                  : "OT"}
+              {vod.source === "gospel" ? (
+                <T k="bible.kindGospel" />
+              ) : vod.source === "epistle" ? (
+                <T k="bible.kindEpistle" />
+              ) : (
+                <T k="bible.kindOt" />
+              )}
             </span>
           )}
         </div>
@@ -91,7 +90,11 @@ export async function VerseOfDayCard({
         </p>
 
         <div className="mt-2 font-serif text-title-sm leading-[1.32] text-paper/95">
-          {text ?? <span className="text-paper/45 italic">Loading verse…</span>}
+          {text ?? (
+            <span className="text-paper/45 italic">
+              <T k="today.loadingVerse" />
+            </span>
+          )}
         </div>
 
         <VerseCardActions

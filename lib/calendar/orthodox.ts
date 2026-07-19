@@ -89,8 +89,34 @@ export type FastKind =
  | "fast-free" // intentionally no fast
  | "normal"; // no special rule
 
+export type FastRuleId =
+ | "twelveDays"
+ | "brightWeek"
+ | "trinityWeek"
+ | "publicanWeek"
+ | "lentPalmSunday"
+ | "lentAnnunciation"
+ | "lentWineOil"
+ | "lentStrict"
+ | "dormitionTransfiguration"
+ | "dormitionWineOil"
+ | "dormitionStrict"
+ | "nativityWeekend"
+ | "nativityWedFri"
+ | "nativityFinal"
+ | "nativityWeekday"
+ | "apostlesWeekend"
+ | "apostlesWedFri"
+ | "apostlesWeekday"
+ | "wednesdayFast"
+ | "fridayFast"
+ | "noFast";
+
 export type FastingStatus = {
  kind: FastKind;
+ /** Stable id for catalog lookup: calendar.fast.{ruleId}.label|rule.
+  * The label/rule fields below stay the canonical English. */
+ ruleId: FastRuleId;
  /** Short human label for the badge. */
  label: string;
  /** Longer one-line explanation. */
@@ -137,6 +163,7 @@ export function fastingStatus(date: Date): FastingStatus {
  ) {
  return {
  kind: "fast-free",
+ ruleId: "twelveDays",
  label: "Fast-free",
  rule: "Twelve Days of Christmas. No fast through Theophany Eve (Jan 4).",
  };
@@ -144,6 +171,7 @@ export function fastingStatus(date: Date): FastingStatus {
  if (inRangeInclusive(d, pascha, brightWeekEnd)) {
  return {
  kind: "fast-free",
+ ruleId: "brightWeek",
  label: "Bright Week, fast-free",
  rule: "The week of the Resurrection. No fast, even on Wednesday and Friday.",
  };
@@ -151,6 +179,7 @@ export function fastingStatus(date: Date): FastingStatus {
  if (inRangeInclusive(d, addDays(pentecost, 1), addDays(pentecost, 7))) {
  return {
  kind: "fast-free",
+ ruleId: "trinityWeek",
  label: "Trinity Week, fast-free",
  rule: "Week after Pentecost. No fast on Wednesday or Friday.",
  };
@@ -158,6 +187,7 @@ export function fastingStatus(date: Date): FastingStatus {
  if (inRangeInclusive(d, addDays(publicanFeast, 1), publicanFreeEnd)) {
  return {
  kind: "fast-free",
+ ruleId: "publicanWeek",
  label: "Fast-free week",
  rule: "Week after the Sunday of the Publican and the Pharisee.",
  };
@@ -168,6 +198,7 @@ export function fastingStatus(date: Date): FastingStatus {
  if (sameDay(d, annunciation) || sameDay(d, palmSunday)) {
  return {
  kind: "fish",
+ ruleId: sameDay(d, palmSunday) ? "lentPalmSunday" : "lentAnnunciation",
  label: "Lent, fish allowed",
  rule: sameDay(d, palmSunday)
  ? "Palm Sunday. Fish, wine, and oil allowed."
@@ -177,12 +208,14 @@ export function fastingStatus(date: Date): FastingStatus {
  if (dow === 0 || dow === 6) {
  return {
  kind: "wine-oil",
+ ruleId: "lentWineOil",
  label: "Lent, wine and oil",
  rule: "Saturday or Sunday of Great Lent. Wine and oil allowed.",
  };
  }
  return {
  kind: "strict",
+ ruleId: "lentStrict",
  label: "Great Lent, strict",
  rule: "Strict fast. No meat, dairy, fish, wine, or oil.",
  };
@@ -193,6 +226,7 @@ export function fastingStatus(date: Date): FastingStatus {
  if (sameDay(d, transfiguration)) {
  return {
  kind: "fish",
+ ruleId: "dormitionTransfiguration",
  label: "Transfiguration, fish allowed",
  rule: "Feast of the Transfiguration. Fish, wine, and oil allowed.",
  };
@@ -200,12 +234,14 @@ export function fastingStatus(date: Date): FastingStatus {
  if (dow === 0 || dow === 6) {
  return {
  kind: "wine-oil",
+ ruleId: "dormitionWineOil",
  label: "Dormition Fast, wine and oil",
  rule: "Saturday or Sunday of the Dormition Fast. Wine and oil allowed.",
  };
  }
  return {
  kind: "strict",
+ ruleId: "dormitionStrict",
  label: "Dormition Fast, strict",
  rule: "Strict fast. No meat, dairy, fish, wine, or oil.",
  };
@@ -217,6 +253,7 @@ export function fastingStatus(date: Date): FastingStatus {
  if (dow === 0 || dow === 6) {
  return {
  kind: "fish",
+ ruleId: "nativityWeekend",
  label: "Nativity Fast, fish allowed",
  rule: "Saturday or Sunday of the Nativity Fast. Fish, wine, and oil allowed.",
  };
@@ -224,12 +261,14 @@ export function fastingStatus(date: Date): FastingStatus {
  if (dow === 3 || dow === 5) {
  return {
  kind: "strict",
+ ruleId: "nativityWedFri",
  label: "Nativity Fast, strict",
  rule: "Wednesday/Friday of the Nativity Fast. No meat, dairy, fish, wine, or oil.",
  };
  }
  return {
  kind: stricter ? "wine-oil" : "fish",
+ ruleId: stricter ? "nativityFinal" : "nativityWeekday",
  label: stricter ? "Nativity Fast, wine and oil" : "Nativity Fast, fish allowed",
  rule: stricter
  ? "The final stretch before Nativity (Dec 20 to 24). Wine and oil only on weekdays."
@@ -242,6 +281,7 @@ export function fastingStatus(date: Date): FastingStatus {
  if (dow === 0 || dow === 6) {
  return {
  kind: "fish",
+ ruleId: "apostlesWeekend",
  label: "Apostles' Fast, fish allowed",
  rule: "Saturday or Sunday of the Apostles' Fast. Fish, wine, and oil allowed.",
  };
@@ -249,12 +289,14 @@ export function fastingStatus(date: Date): FastingStatus {
  if (dow === 3 || dow === 5) {
  return {
  kind: "wine-oil",
+ ruleId: "apostlesWedFri",
  label: "Apostles' Fast, wine and oil",
  rule: "Wednesday/Friday of the Apostles' Fast. Wine and oil allowed.",
  };
  }
  return {
  kind: "fish",
+ ruleId: "apostlesWeekday",
  label: "Apostles' Fast, fish allowed",
  rule: "Apostles' Fast. Fish allowed on weekdays.",
  };
@@ -264,6 +306,7 @@ export function fastingStatus(date: Date): FastingStatus {
  if (dow === 3 || dow === 5) {
  return {
  kind: "wine-oil",
+ ruleId: dow === 3 ? "wednesdayFast" : "fridayFast",
  label: dow === 3 ? "Wednesday fast" : "Friday fast",
  rule: "Wednesday/Friday year-round fast. Wine and oil allowed.",
  };
@@ -271,6 +314,7 @@ export function fastingStatus(date: Date): FastingStatus {
 
  return {
  kind: "normal",
+ ruleId: "noFast",
  label: "No fast",
  rule: "No fast scheduled for this day.",
  };

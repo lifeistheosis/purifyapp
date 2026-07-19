@@ -1,9 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import type { MonthCell } from "@/lib/calendar/orthodox";
 import { Cross } from "@/components/ui/icons/Cross";
 import { toneFor, TONE_RGB } from "@/lib/calendar/tone";
 import { FAST_META } from "./fastMeta";
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 // Strip leading prefix labels so cell names read at a glance.
 function shortName(name: string): string {
@@ -30,6 +33,7 @@ export function CalendarCell({
  href: string;
  isSelected: boolean;
 }) {
+ const { t } = useTranslate();
  if (!cell.inMonth) {
  return (
  <div
@@ -103,7 +107,7 @@ export function CalendarCell({
  <Cross
  size={12}
  className="text-[#d4af37] md:mt-[1px]"
- aria-label="Feast"
+ aria-label={t("calendar.feastAria")}
  />
  )}
  </span>

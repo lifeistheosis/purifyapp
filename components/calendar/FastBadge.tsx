@@ -1,24 +1,27 @@
-import type { FastKind } from "@/lib/calendar/orthodox";
+"use client";
+
+import type { FastingStatus } from "@/lib/calendar/orthodox";
 import { FAST_META } from "./fastMeta";
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * A small tablet showing the day's fast: bespoke icon + label, optionally the
  * one-line rule. Tinted by the fast's own colour (paired with icon + text, so
- * colour is never the sole signal).
+ * colour is never the sole signal). Client so label/rule resolve from the
+ * catalog via the fast's stable ruleId and follow native locale switches.
  */
 export function FastBadge({
-  kind,
-  label,
-  rule,
+  fast,
+  showRule = true,
   className,
 }: {
-  kind: FastKind;
-  label: string;
-  rule?: string;
+  fast: FastingStatus;
+  showRule?: boolean;
   className?: string;
 }) {
-  const meta = FAST_META[kind];
+  const { t } = useTranslate();
+  const meta = FAST_META[fast.kind];
   const Icon = meta.Icon;
   return (
     <div
@@ -41,12 +44,12 @@ export function FastBadge({
           className="font-sans text-ui font-semibold leading-tight"
           style={{ color: `rgb(${meta.rgb})` }}
         >
-          {label}
+          {t(`calendar.fast.${fast.ruleId}.label`)}
         </p>
       </div>
-      {rule && (
+      {showRule && (
         <p className="mt-1.5 font-sans text-caption text-paper/70 leading-[1.5]">
-          {rule}
+          {t(`calendar.fast.${fast.ruleId}.rule`)}
         </p>
       )}
     </div>

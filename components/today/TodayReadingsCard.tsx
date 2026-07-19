@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import type { ReadingRef } from "@/lib/calendar/orthodox";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Fourth card in the mobile Today timeline: the appointed readings
@@ -11,21 +14,15 @@ import type { ReadingRef } from "@/lib/calendar/orthodox";
  * 11:27-30"). A chevron pushes to the far right of each row to keep
  * the tap affordance.
  */
-export function TodayReadingsCard({
-  readings,
-  eyebrow = "Today's Readings",
-  emptyLabel = "No readings appointed.",
-}: {
-  readings: ReadingRef[];
-  eyebrow?: string;
-  emptyLabel?: string;
-}) {
+export function TodayReadingsCard({ readings }: { readings: ReadingRef[] }) {
+  const { t } = useTranslate();
+  const eyebrow = t("today.readingsEyebrow");
   if (!readings.length) {
     return (
       <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5">
         <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
         <p className="mt-2 font-sans text-ui text-paper/55 italic">
-          {emptyLabel}
+          {t("today.readingsEmpty")}
         </p>
       </div>
     );
@@ -37,10 +34,10 @@ export function TodayReadingsCard({
         {readings.map((r, i) => {
           const kind =
             r.kind === "epistle"
-              ? "Epistle"
+              ? t("bible.kindEpistle")
               : r.kind === "ot"
-                ? "OT"
-                : "Gospel";
+                ? t("bible.kindOt")
+                : t("bible.kindGospel");
           return (
             <li key={i}>
               <Link

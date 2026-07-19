@@ -27,6 +27,9 @@ const CONVERTED_DIRS = [
   "components/layout",
   "components/nav",
   "components/i18n",
+  "components/today",
+  "components/calendar",
+  "components/fasting",
 ];
 
 const args = new Set(process.argv.slice(2));
@@ -159,6 +162,9 @@ if (doScan) {
         // copy; eslint jsx-no-literals is the net for one-word JSX
         // text. Props (title=, aria-label=) are always checked.
         if (re === TEXT_RE && !text.includes(" ") && text.length < 10) continue;
+        // JSX ternary/expression connectors between two tags, e.g.
+        // ") : headline ? (" — code, not copy.
+        if (re === TEXT_RE && /^[)\]}].*[({[]$/.test(text)) continue;
         if (allowlist.substrings.some((s) => text.includes(s))) continue;
         const line = src.slice(0, m.index).split("\n").length;
         hits.push({ line, text: text.slice(0, 60) });
