@@ -23,6 +23,14 @@ import it from "./messages/it.json";
 import pt from "./messages/pt.json";
 import bg from "./messages/bg.json";
 import ar from "./messages/ar.json";
+import fil from "./messages/fil.json";
+import tr from "./messages/tr.json";
+import ka from "./messages/ka.json";
+import hu from "./messages/hu.json";
+import id from "./messages/id.json";
+import ne from "./messages/ne.json";
+import pl from "./messages/pl.json";
+import ur from "./messages/ur.json";
 
 const CATALOGS: Record<LocaleCode, Messages> = {
   en: en as Messages,
@@ -38,6 +46,14 @@ const CATALOGS: Record<LocaleCode, Messages> = {
   pt: pt as Messages,
   bg: bg as Messages,
   ar: ar as Messages,
+  fil: fil as Messages,
+  tr: tr as Messages,
+  ka: ka as Messages,
+  hu: hu as Messages,
+  id: id as Messages,
+  ne: ne as Messages,
+  pl: pl as Messages,
+  ur: ur as Messages,
 };
 
 /** Get the message catalog for a locale, falling back to English. */

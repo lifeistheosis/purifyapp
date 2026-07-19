@@ -28,7 +28,9 @@ type Copy = {
 
 // The page renders in the language the reader picked (the "coming soon"
 // locale they clicked), so the recruitment copy lives in every locale.
-const COPY: Record<LocaleCode, Copy> = {
+// Partial: locales added in Beta 2.3 fall back to the English pitch below
+// until their recruitment copy clears the editorial queue.
+const COPY: Partial<Record<LocaleCode, Copy>> & { en: Copy } = {
  en: {
   eyebrow: "Become a language editor",
   h1: "We need you.",

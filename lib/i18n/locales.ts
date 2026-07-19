@@ -29,7 +29,15 @@ export type LocaleCode =
   | "it"
   | "pt"
   | "bg"
-  | "ar";
+  | "ar"
+  | "fil"
+  | "tr"
+  | "ka"
+  | "hu"
+  | "id"
+  | "ne"
+  | "pl"
+  | "ur";
 
 export type Locale = {
   code: LocaleCode;
@@ -47,7 +55,7 @@ export type Locale = {
    * is selectable when `ready || editorial`.
    */
   editorial?: boolean;
-  /** Writing direction. Arabic is rtl; everything else ltr. */
+  /** Writing direction. Arabic and Urdu are rtl; everything else ltr. */
   dir: "ltr" | "rtl";
   /** "Coming soon" rendered in this locale's own language (used by the
    *  locale switcher to mark not-yet-ready languages). */
@@ -76,6 +84,17 @@ export const LOCALES: Locale[] = [
   { code: "pt", nativeLabel: "Português", englishLabel: "Portuguese", ready: false, dir: "ltr", comingSoon: "Em breve" },
   { code: "bg", nativeLabel: "Български", englishLabel: "Bulgarian", ready: false, dir: "ltr", comingSoon: "Скоро" },
   { code: "ar", nativeLabel: "العربية", englishLabel: "Arabic", ready: false, dir: "rtl", comingSoon: "قريباً" },
+  // Beta 2.3 language patch: eight locales added from Play Console
+  // country data. "fil" (not "tl") per BCP-47; CLDR and Intl.PluralRules
+  // both resolve it. Urdu is the second rtl locale after Arabic.
+  { code: "fil", nativeLabel: "Filipino", englishLabel: "Filipino", ready: false, dir: "ltr", comingSoon: "Malapit na" },
+  { code: "tr", nativeLabel: "Türkçe", englishLabel: "Turkish", ready: false, dir: "ltr", comingSoon: "Yakında" },
+  { code: "ka", nativeLabel: "ქართული", englishLabel: "Georgian", ready: false, dir: "ltr", comingSoon: "მალე" },
+  { code: "hu", nativeLabel: "Magyar", englishLabel: "Hungarian", ready: false, dir: "ltr", comingSoon: "Hamarosan" },
+  { code: "id", nativeLabel: "Bahasa Indonesia", englishLabel: "Indonesian", ready: false, dir: "ltr", comingSoon: "Segera" },
+  { code: "ne", nativeLabel: "नेपाली", englishLabel: "Nepali", ready: false, dir: "ltr", comingSoon: "चाँडै आउँदैछ" },
+  { code: "pl", nativeLabel: "Polski", englishLabel: "Polish", ready: false, dir: "ltr", comingSoon: "Wkrótce" },
+  { code: "ur", nativeLabel: "اردو", englishLabel: "Urdu", ready: false, dir: "rtl", comingSoon: "جلد آرہا ہے" },
 ];
 
 /** True if a locale is considered shippable today. */
