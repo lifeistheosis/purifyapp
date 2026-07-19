@@ -196,6 +196,9 @@ if (doScan || triageDirs) {
         if (re === TEXT_RE && /[({[]$/.test(text) && /[?=&|]/.test(text)) continue;
         // Template-literal interiors are code.
         if (text.includes("${")) continue;
+        // Comparison/boolean expressions spanning tag-like operators
+        // (a > b && c < d) are code, not copy.
+        if (/^=|&&|\|\|/.test(text) || /^[=!<>]/.test(text)) continue;
         if (allowlist.substrings.some((s) => text.includes(s))) continue;
         const line = src.slice(0, m.index).split("\n").length;
         hits.push({ line, text: text.slice(0, 60) });

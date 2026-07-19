@@ -83,7 +83,7 @@ export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
   if (!hasAny) return null;
 
   return (
-    <section className="mt-14 border-t border-paper/10 pt-8" aria-label="Related content">
+    <section className="mt-14 border-t border-paper/10 pt-8">
       {preceded.length || resulted.length ? (
         <div className="mb-10">
           <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
@@ -167,7 +167,7 @@ export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
 
       {prev || next ? (
         <nav
-          aria-label="Chronological neighbors"
+         
           className="mt-10 grid gap-3 sm:grid-cols-2"
         >
           {prev ? (

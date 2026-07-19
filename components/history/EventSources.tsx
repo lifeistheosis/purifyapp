@@ -9,15 +9,15 @@ export function EventSources({ sources }: { sources: SourceCitation[] }) {
   const primary = sources.filter((s) => s.kind === "primary");
   const secondary = sources.filter((s) => s.kind === "secondary");
   return (
-    <section className="mt-14 border-t border-paper/10 pt-8" aria-label="Sources">
+    <section className="mt-14 border-t border-paper/10 pt-8">
       <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
         <T k="study.history.sources" />
       </h2>
       {primary.length > 0 ? (
-        <SourceGroup label="Primary sources" sources={primary} />
+        <SourceGroup label={<T k="study.history.primarySources" />} sources={primary} />
       ) : null}
       {secondary.length > 0 ? (
-        <SourceGroup label="Further reading" sources={secondary} />
+        <SourceGroup label={<T k="study.history.furtherReading" />} sources={secondary} />
       ) : null}
     </section>
   );
@@ -27,7 +27,7 @@ function SourceGroup({
   label,
   sources,
 }: {
-  label: string;
+  label: React.ReactNode;
   sources: SourceCitation[];
 }) {
   return (

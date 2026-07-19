@@ -951,5 +951,9 @@
   "study.theology.searchPlaceholder": "Search the library: a doctrine, a heresy, a question…",
   "study.florilegium.deleteConfirm": "Delete this gathering?",
   "study.florilegium.deleteDescription": "The collection and the lines in it are removed from this device. The original verses and writings are untouched.",
-  "study.florilegium.keepIt": "Keep it"
+  "study.florilegium.keepIt": "Keep it",
+  "study.filterTheTimeline": "Filter the timeline",
+  "study.erasOfChurchHistory": "Eras of Church history",
+  "study.history.primarySources": "Primary sources",
+  "study.history.furtherReading": "Further reading"
 }

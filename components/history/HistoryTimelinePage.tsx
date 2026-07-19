@@ -419,7 +419,7 @@ export function HistoryTimelinePage() {
       ) : null}
 
       {/* Overlays (phones + lg tablets; xl uses the sidebar instead). */}
-      <Sheet open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filter the timeline">
+      <Sheet open={filtersOpen} onClose={() => setFiltersOpen(false)} title={t("study.filterTheTimeline")}>
         <TimelineFilters value={state} onChange={update} />
         <div className="mt-6 flex gap-2">
           <button
@@ -447,7 +447,7 @@ export function HistoryTimelinePage() {
         </div>
       </Sheet>
 
-      <Sheet open={erasOpen} onClose={() => setErasOpen(false)} title="Eras of Church history">
+      <Sheet open={erasOpen} onClose={() => setErasOpen(false)} title={t("study.erasOfChurchHistory")}>
         <EraJumpList activeEra={activeEra} counts={eraCounts} onJump={jumpToEra} />
       </Sheet>
 
