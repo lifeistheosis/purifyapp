@@ -934,5 +934,10 @@
   "study.thisRecipeCouldNotBe": "This recipe could not be found.",
   "study.reportedThankYou": "Reported. Thank you.",
   "study.reportThisRecipe": "Report this recipe",
-  "study.trapeza.allDays": "All days"
+  "study.trapeza.allDays": "All days",
+  "study.trapeza.exTitle": "Lenten lentil soup",
+  "study.trapeza.exLine": "Warming and simple, for the days of the fast",
+  "study.trapeza.exIngredients": "One onion, two carrots, brown lentils, olive oil, salt…",
+  "study.trapeza.exMethod": "Soften the onion and carrot in oil, add the lentils and water…",
+  "study.trapeza.exServes": "Four"
 }

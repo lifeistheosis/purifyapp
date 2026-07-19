@@ -128,7 +128,7 @@ export function SubmitRecipeClient() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             maxLength={120}
-            placeholder="Lenten lentil soup"
+            placeholder={t("study.trapeza.exTitle")}
           />
         </div>
 
@@ -188,7 +188,7 @@ export function SubmitRecipeClient() {
             value={summary}
             onChange={(e) => setSummary(e.target.value)}
             maxLength={280}
-            placeholder="Warming and simple, for the days of the fast"
+            placeholder={t("study.trapeza.exLine")}
           />
         </div>
 
@@ -202,7 +202,7 @@ export function SubmitRecipeClient() {
             value={ingredients}
             onChange={(e) => setIngredients(e.target.value)}
             maxLength={2000}
-            placeholder="One onion, two carrots, brown lentils, olive oil, salt…"
+            placeholder={t("study.trapeza.exIngredients")}
           />
         </div>
 
@@ -216,7 +216,7 @@ export function SubmitRecipeClient() {
             value={steps}
             onChange={(e) => setSteps(e.target.value)}
             maxLength={4000}
-            placeholder="Soften the onion and carrot in oil, add the lentils and water…"
+            placeholder={t("study.trapeza.exMethod")}
           />
         </div>
 
@@ -231,7 +231,7 @@ export function SubmitRecipeClient() {
               value={servings}
               onChange={(e) => setServings(e.target.value)}
               maxLength={40}
-              placeholder="Four"
+              placeholder={t("study.trapeza.exServes")}
             />
           </div>
           <div className="flex-1">
