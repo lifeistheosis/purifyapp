@@ -559,12 +559,19 @@ function ProductSheet({
   );
 }
 
-/** One label + value pair in the overview's detail lists. */
+/** One label + value pair in the overview's detail lists.
+ *
+ * Two columns rather than `justify-between`: at the dialog's full width the
+ * latter flung the label and its value to opposite edges of a ~490px column
+ * with a canyon of dead space between them, which is what made the panel look
+ * unfinished. A fixed label column keeps the pair readable at any width. */
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 border-b border-white/5 py-1.5 last:border-0">
-      <span className="font-sans text-caption text-paper/45">{label}</span>
-      <span className="text-right font-sans text-detail text-paper/85">
+    <div className="flex items-baseline gap-4 border-b border-white/5 py-1.5 last:border-0">
+      <span className="w-[42%] shrink-0 font-sans text-caption text-paper/45">
+        {label}
+      </span>
+      <span className="min-w-0 flex-1 font-sans text-detail text-paper/85">
         {value == null || value === "" ? (
           <span className="text-paper/25">—</span>
         ) : (
@@ -734,7 +741,10 @@ function ProductOverview({
         />
       </div>
 
-      <div className="grid gap-5 md:grid-cols-2">
+      {/* Capped and centred: at the dialog's full 1040px these two lists
+          stretched to ~490px each and the shorter Sourcing column left a large
+          void bottom-right. A reading-width block sits deliberately instead. */}
+      <div className="mx-auto grid max-w-[840px] gap-x-10 gap-y-5 md:grid-cols-2">
         <div>
           <p className="mb-1 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/45">
             Listing

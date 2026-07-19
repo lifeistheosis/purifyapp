@@ -98,16 +98,21 @@ export function Modal({
         onClick={onClose}
         className="absolute inset-0 h-full w-full cursor-default"
       />
+      {/* The panel is capped to the viewport and scrolls INTERNALLY. Letting
+          it grow past the viewport pushed the header (close button and the
+          Overview/Edit toggle) off screen, so the only way back to them was
+          scrolling the overlay — reported as the dialog being unusable on a
+          laptop. */}
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
         className={
-          "admin-surface relative my-auto w-full rounded-2xl border border-white/10 bg-night shadow-2xl " +
+          "admin-surface relative my-auto flex max-h-[92dvh] w-full flex-col rounded-2xl border border-white/10 bg-night shadow-2xl " +
           (wide ? "max-w-[1040px]" : "max-w-[760px]")
         }
       >
-        <div className="flex items-start justify-between gap-4 border-b border-white/8 px-5 py-4 md:px-6">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-white/8 px-5 py-4 md:px-6">
           <div className="min-w-0">
             <p className="truncate font-sans text-title-sm font-semibold text-paper">
               {title}
@@ -130,7 +135,10 @@ export function Modal({
             </button>
           </div>
         </div>
-        <div className="px-5 py-5 md:px-6">{children}</div>
+        {/* min-h-0 is what actually lets a flex child scroll. */}
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 md:px-6">
+          {children}
+        </div>
       </div>
     </div>
   );
