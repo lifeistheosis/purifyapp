@@ -90,8 +90,12 @@ export function Modal({
     };
   }, [onClose]);
 
+  // The OVERLAY no longer scrolls: the panel below caps itself and scrolls its
+  // own body. Leaving overflow-y-auto here with an auto-margined panel split
+  // the overflow evenly above and below it, which pushed the dialog down the
+  // screen and cut its bottom off. items-center is what centres it now.
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-night/80 p-4 backdrop-blur-sm md:p-8">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-night/80 p-4 backdrop-blur-sm md:p-8">
       <button
         type="button"
         aria-label="Close"
@@ -108,7 +112,10 @@ export function Modal({
         aria-modal="true"
         aria-label={title}
         className={
-          "admin-surface relative my-auto flex max-h-[92dvh] w-full flex-col rounded-2xl border border-white/10 bg-night shadow-2xl " +
+          // max-h-full, not a dvh fraction: the overlay's own padding is
+          // already subtracted, so the panel can never exceed the space it
+          // actually has. No auto margins — items-center does the centring.
+          "admin-surface relative flex max-h-full w-full flex-col rounded-2xl border border-white/10 bg-night shadow-2xl " +
           (wide ? "max-w-[1040px]" : "max-w-[760px]")
         }
       >
