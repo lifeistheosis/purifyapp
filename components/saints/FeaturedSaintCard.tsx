@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Saint } from "@/lib/saints/saints";
 import { SaintIcon } from "./SaintIcon";
+import { T } from "@/components/i18n/T";
 
 /** Distinguished full-width card for the featured saint (the Theotokos),
  *  pinned above the saints grid. */
@@ -18,7 +19,7 @@ export function FeaturedSaintCard({ saint }: { saint: Saint }) {
         />
         <div className="min-w-0 flex-1">
           <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-2">
-            The Mother of God
+            <T k="saints.motherOfGod" />
           </p>
           {saint.byname && (
             <p className="font-serif text-ui italic text-gold/90 mb-1">
@@ -47,7 +48,7 @@ export function FeaturedSaintCard({ saint }: { saint: Saint }) {
             </ul>
           ) : null}
           <p className="mt-5 font-sans text-ui font-medium text-gold group-hover:text-gold/80 transition-colors duration-150">
-            Read her life →
+            <T k="saints.readHerLife" /> →
           </p>
         </div>
       </div>

@@ -34,6 +34,8 @@ const CONVERTED_DIRS = [
   "app/(app)/prayers",
   "components/bible",
   "app/(app)/bible",
+  "components/saints",
+  "app/(app)/saints",
 ];
 
 const args = new Set(process.argv.slice(2));

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type Props = {
   slug: string;
@@ -12,7 +13,7 @@ type Props = {
   signedIn: boolean;
   /**
    * When true, the corpus for this saint is shipped end-to-end. The
-   * button is replaced by a static "Fully published" badge — there's
+   * button is replaced by a static Fully-published badge — there's
    * nothing more for readers to ask for.
    */
   complete?: boolean;
@@ -69,38 +70,36 @@ function HelpPopover({ children, label }: { children: React.ReactNode; label: st
   );
 }
 
-const REQUEST_EXPLAINER = (
-  <>
-    <p className="font-semibold text-paper mb-2">Requesting more writings</p>
-    <p>
-      A request tells our editorial team{" "}
-      <em className="text-gold">&ldquo;I would like more of this saint&rsquo;s writings published.&rdquo;</em>
-    </p>
-    <p className="mt-2">
-      We translate and publish each saint&rsquo;s corpus in the order readers ask
-      for it; a request moves this saint forward in that work. One request per
-      signed-in account; tap again to withdraw it.
-    </p>
-  </>
-);
+function RequestExplainer() {
+  const { t } = useTranslate();
+  return (
+    <>
+      <p className="font-semibold text-paper mb-2">{t("saints.bump.requesting")}</p>
+      <p>
+        {t("saints.bump.requestExplainer1")}{" "}
+        <em className="text-gold">{t("saints.bump.requestQuote")}</em>
+      </p>
+      <p className="mt-2">{t("saints.bump.requestExplainer2")}</p>
+    </>
+  );
+}
 
-const COMPLETE_EXPLAINER = (
-  <>
-    <p className="font-semibold text-paper mb-2">Fully published</p>
-    <p>
-      Every known work attributed to this saint has been translated and shipped
-      on Purify. There&rsquo;s nothing left to request — so the request button
-      retires and this badge takes its place.
-    </p>
-    <p className="mt-2 text-paper/65">
-      If you spot a missing work or a better translation,{" "}
-      <Link href="/contact" className="text-gold hover:underline">
-        let us know
-      </Link>
-      .
-    </p>
-  </>
-);
+function CompleteExplainer() {
+  const { t } = useTranslate();
+  return (
+    <>
+      <p className="font-semibold text-paper mb-2">{t("saints.bump.fullyPublished")}</p>
+      <p>{t("saints.bump.completeExplainer1")}</p>
+      <p className="mt-2 text-paper/65">
+        {t("saints.bump.completeExplainer2")}{" "}
+        <Link href="/contact" className="text-gold hover:underline">
+          {t("saints.bump.letUsKnow")}
+        </Link>
+        .
+      </p>
+    </>
+  );
+}
 
 export function BumpButton({
   slug,
@@ -110,13 +109,14 @@ export function BumpButton({
   signedIn,
   complete,
 }: Props) {
+  const { t } = useTranslate();
   const [bumped, setBumped] = useState(initialBumped);
   const [total, setTotal] = useState(initialTotal);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState(false);
   const pathname = usePathname();
 
-  // Static "Fully published" state — no interaction, just a help popover.
+  // Static fully-published state — no interaction, just a help popover.
   if (complete) {
     return (
       <div className="inline-flex items-center gap-2">
@@ -127,10 +127,10 @@ export function BumpButton({
           <span aria-hidden="true" className="text-body leading-none">
             ✓
           </span>
-          <span>Fully published</span>
+          <span>{t("saints.bump.fullyPublished")}</span>
         </div>
-        <HelpPopover label="What does Fully published mean?">
-          {COMPLETE_EXPLAINER}
+        <HelpPopover label={t("saints.bump.whatFullyPublished")}>
+          <CompleteExplainer />
         </HelpPopover>
       </div>
     );
@@ -150,10 +150,10 @@ export function BumpButton({
               href={`/signin?next=${encodeURIComponent(next)}`}
               className="font-sans text-detail font-semibold text-gold hover:underline"
             >
-              Sign in to request
+              {t("saints.bump.signInToRequest")}
             </Link>
           </div>
-          <HelpPopover label="What does requesting do?">{REQUEST_EXPLAINER}</HelpPopover>
+          <HelpPopover label={t("saints.bump.whatRequesting")}><RequestExplainer /></HelpPopover>
         </div>
       </div>
     );
@@ -205,7 +205,7 @@ export function BumpButton({
           <span>{bumped ? "Requested" : "Request writings"}</span>
           <span className="tabular-nums opacity-80">{total}</span>
         </button>
-        <HelpPopover label="What does requesting do?">{REQUEST_EXPLAINER}</HelpPopover>
+        <HelpPopover label={t("saints.bump.whatRequesting")}><RequestExplainer /></HelpPopover>
       </div>
       <p className="font-sans text-eyebrow text-paper/45 ms-1">
         {bumped
@@ -214,7 +214,7 @@ export function BumpButton({
       </p>
       {error && (
         <p className="font-sans text-eyebrow text-rose-400 ms-1">
-          Something went wrong. Try again.
+          {t("saints.bump.error")}
         </p>
       )}
     </div>

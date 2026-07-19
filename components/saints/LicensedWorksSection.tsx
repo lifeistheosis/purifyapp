@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { LicensedWork } from "@/lib/saints/licensedWorks";
 import { buildAmazonUrl, getAmazonCoverUrl } from "@/lib/affiliate/amazon";
 import { LicensedWorkCover } from "./LicensedWorkCover";
+import { T } from "@/components/i18n/T";
 
 const ROLE_LABEL: Record<NonNullable<LicensedWork["authorRole"]>, string> = {
   by: "By",
@@ -17,15 +18,13 @@ export function LicensedWorksSection({ works }: { works: LicensedWork[] }) {
     <section className="py-14 border-t border-paper/8">
       <div className="mb-6">
         <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-          Licensed Works
+          <T k="saints.licensedWorks" />
         </p>
         <h2 className="font-sans text-title md:text-display-sm font-bold text-paper tracking-[-0.02em]">
-          Books in print
+          <T k="saints.booksInPrint" />
         </h2>
         <p className="mt-4 max-w-[720px] font-serif italic text-ui text-paper/55 leading-relaxed">
-          These works are licensed and copyrighted by their publishers and
-          cannot be hosted on Purify. As an Amazon Associate, Purify earns
-          from qualifying purchases.
+          <T k="saints.affiliateDisclosure" />
         </p>
       </div>
 
@@ -95,7 +94,7 @@ function LicensedWorkCard({ work }: { work: LicensedWork }) {
           rel="noopener nofollow sponsored"
           className="font-sans text-ui font-medium text-gold/85 hover:text-gold transition-colors"
         >
-          Buy on Amazon →
+          <T k="saints.buyOnAmazon" /> →
         </a>
         {work.directPublisherUrl ? (
           <Link
@@ -104,7 +103,7 @@ function LicensedWorkCard({ work }: { work: LicensedWork }) {
             rel="noopener noreferrer"
             className="font-sans text-detail text-paper/55 hover:text-paper transition-colors"
           >
-            Buy direct from {work.publisher}
+            <T k="saints.buyDirectFrom" /> {work.publisher}
           </Link>
         ) : null}
       </div>

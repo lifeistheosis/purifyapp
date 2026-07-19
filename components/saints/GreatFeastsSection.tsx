@@ -29,7 +29,7 @@ export function GreatFeastsSection({
           href="/prayers"
           className="font-sans text-ui font-medium text-gold hover:text-gold/80 transition-colors"
         >
-          Pray the Akathist to the Theotokos →
+          {t("saints.prayAkathist")} →
         </Link>
       </div>
       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">

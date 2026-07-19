@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Saint } from "@/lib/saints/saints";
+import { T } from "@/components/i18n/T";
 
 /**
  * Desktop-only companion to a saint's Life: the at-a-glance facts and the
@@ -21,7 +22,7 @@ export function SaintStudyRail({ saint }: { saint: Saint }) {
     <div className="pt-14 space-y-10">
       <section className="rail-section">
         <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/45 mb-4">
-          At a glance
+          <T k="saints.atAGlance" />
         </p>
         <dl className="space-y-4">
           {facts.map((f) => (
@@ -40,7 +41,7 @@ export function SaintStudyRail({ saint }: { saint: Saint }) {
       {greatFeasts.length > 0 && (
         <section className="rail-section border-t border-paper/8 pt-8">
           <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/45 mb-4">
-            Great feasts
+            <T k="saints.greatFeasts" />
           </p>
           <ul className="space-y-3">
             {greatFeasts.map((feast) => {

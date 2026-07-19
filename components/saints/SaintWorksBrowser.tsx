@@ -4,11 +4,13 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { Saint, Work } from "@/lib/saints/saints";
 import { FilterPill } from "./FilterPill";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 // How many topic pills to show before collapsing the rest behind "More".
 const PRIMARY_MAX = 10;
 
 export function SaintWorksBrowser({ saint }: { saint: Saint }) {
+  const { t, tn } = useTranslate();
   const [activeTopic, setActiveTopic] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
 
@@ -55,22 +57,21 @@ export function SaintWorksBrowser({ saint }: { saint: Saint }) {
       <div className="flex items-baseline justify-between mb-6 flex-wrap gap-3">
         <div>
           <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-            Writings
+            {t("saints.writings")}
           </p>
           <h2 className="font-sans text-title md:text-display-sm font-bold text-paper tracking-[-0.02em]">
-            Read {saint.pronoun ?? "his"} works
+            {saint.pronoun === "her" ? t("saints.readHerWorks") : t("saints.readHisWorks")}
           </h2>
         </div>
         <span className="font-sans text-detail text-paper/45">
-          {visible.length} of {saint.works.length}{" "}
-          {saint.works.length === 1 ? "work" : "works"}
+          {tn("saints.worksOf", saint.works.length, { shown: visible.length, total: saint.works.length })}
         </span>
       </div>
 
       {buckets.length > 0 && (
         <div className="mb-8 flex flex-wrap items-center gap-2.5">
           <FilterPill
-            label="All topics"
+            label={t("saints.allTopics")}
             count={saint.works.length}
             active={activeTopic === null}
             onClick={() => setActiveTopic(null)}
@@ -109,7 +110,7 @@ export function SaintWorksBrowser({ saint }: { saint: Saint }) {
 
       {visible.length === 0 && (
         <p className="mt-8 font-sans text-ui text-paper/55">
-          No works tagged with that topic yet.
+          {t("saints.noWorksTopic")}
         </p>
       )}
     </section>
@@ -117,6 +118,7 @@ export function SaintWorksBrowser({ saint }: { saint: Saint }) {
 }
 
 function WorkTile({ saintSlug, work }: { saintSlug: string; work: Work }) {
+  const { t } = useTranslate();
   return (
     <li>
       <Link
@@ -152,7 +154,7 @@ function WorkTile({ saintSlug, work }: { saintSlug: string; work: Work }) {
           </ul>
         ) : null}
         <p className="mt-6 font-sans text-ui font-medium text-paper/75 group-hover:text-paper transition-colors duration-150">
-          Open work →
+          {t("saints.openWork")} →
         </p>
       </Link>
     </li>

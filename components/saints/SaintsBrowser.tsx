@@ -16,8 +16,10 @@ import { cn } from "@/lib/cn";
 import { SaintCard } from "./SaintCard";
 import { FeaturedSaintCard } from "./FeaturedSaintCard";
 import { FilterPill } from "./FilterPill";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function SaintsBrowser({ saints }: { saints: Saint[] }) {
+  const { t } = useTranslate();
   const [activeGroup, setActiveGroup] = useState<SaintGroupId | null>(null);
   const [activeCentury, setActiveCentury] = useState<number | null>(null);
   const [kindOpen, setKindOpen] = useState(false);
@@ -34,7 +36,7 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
   const inCentury = (s: Saint) =>
     activeCentury == null || centuryFor(s) === activeCentury;
 
-  // "By kind" pills: each count reflects the *other* active filter (century)
+  // "{t("saints.byKind")}" pills: each count reflects the *other* active filter (century)
   // so the numbers stay truthful as the user narrows down. Only groups with at
   // least one matching saint are shown.
   const groupPills = useMemo(() => {
@@ -47,7 +49,7 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [saints, activeCentury]);
 
-  // "By century" pills: counts reflect the active group filter.
+  // "{t("saints.byCentury")}" pills: counts reflect the active group filter.
   const centuryPills = useMemo(() => {
     const map = new Map<number, number>();
     for (const s of saints) {
@@ -82,7 +84,7 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
           </div>
         ))}
 
-      {/* By kind (collapsible) */}
+      {/* {t("saints.byKind")} (collapsible) */}
       <div className="mt-10">
         <button
           type="button"
@@ -109,7 +111,7 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
               strokeLinejoin="round"
             />
           </svg>
-          <span>By kind</span>
+          <span>{t("saints.byKind")}</span>
           {activeGroup != null && !kindOpen && (
             <span className="text-paper/70 normal-case tracking-normal">
               · {SAINT_GROUP_LABELS[activeGroup]}
@@ -119,7 +121,7 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
         {kindOpen && (
           <div className="flex flex-wrap gap-2.5">
             <FilterPill
-              label="All"
+              label={t("common.all")}
               count={activeCentury == null ? totalAll : groupAllCount}
               active={activeGroup == null}
               onClick={() => setActiveGroup(null)}
@@ -139,7 +141,7 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
         )}
       </div>
 
-      {/* By century (collapsible) */}
+      {/* {t("saints.byCentury")} (collapsible) */}
       <div className="mt-6">
         <button
           type="button"
@@ -166,7 +168,7 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
               strokeLinejoin="round"
             />
           </svg>
-          <span>By century</span>
+          <span>{t("saints.byCentury")}</span>
           {activeCentury != null && !centuryOpen && (
             <span className="text-paper/70 normal-case tracking-normal">
               · {centuryLabel(activeCentury)}
@@ -176,7 +178,7 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
         {centuryOpen && (
         <div className="flex flex-wrap gap-2.5">
           <FilterPill
-            label="All"
+            label={t("common.all")}
             count={activeGroup == null ? totalAll : centuryAllCount}
             active={activeCentury == null}
             onClick={() => setActiveCentury(null)}
@@ -206,7 +208,7 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
 
       {visible.length === 0 && (
         <p className="mt-12 font-sans text-ui text-paper/55 text-center">
-          No saints in the current filter.
+          {t("saints.noSaintsFilter")}
         </p>
       )}
     </>

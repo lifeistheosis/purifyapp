@@ -12,6 +12,7 @@ import {
  type MobileVerseAction,
 } from "@/components/bible/MobileVerseToolbar";
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * One paragraph inside a saint's writing. Mirrors the affordances of the
@@ -41,6 +42,7 @@ export function ParagraphRow({
  paragraphIdx: number;
  text: string;
 }) {
+  const { t } = useTranslate();
  const ann = useParagraphAnnotation(
  saintSlug,
  workSlug,
@@ -282,7 +284,7 @@ export function ParagraphRow({
  {ann.note && !editing && (
  <div className="mt-2 rounded-md border border-paper/15 bg-paper/[0.04] px-3 py-2">
  <p className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45 mb-1">
- Your note
+ {t("bible.yourNote")}
  </p>
  <p className="font-sans text-detail text-paper/85 leading-[1.55] whitespace-pre-wrap">
  {ann.note}
@@ -306,7 +308,7 @@ export function ParagraphRow({
  cancelEdit();
  }
  }}
- placeholder="Add a note for this paragraph…"
+ placeholder={t("saints.paragraphNotePlaceholder")}
  rows={3}
  className="w-full bg-transparent border-0 outline-none resize-y font-sans text-ui text-paper placeholder:text-paper/40 leading-[1.55]"
  />
@@ -327,7 +329,7 @@ export function ParagraphRow({
  }}
  className="font-sans text-caption text-paper/55 hover:text-paper transition-colors px-2 py-1"
  >
- Delete
+ {t("common.delete")}
  </button>
  )}
  <button
@@ -335,14 +337,14 @@ export function ParagraphRow({
  onClick={cancelEdit}
  className="font-sans text-caption text-paper/55 hover:text-paper transition-colors px-2 py-1"
  >
- Cancel
+ {t("common.cancel")}
  </button>
  <button
  type="button"
  onClick={saveNote}
  className="font-sans text-caption font-medium bg-paper text-night rounded-pill px-3 py-1 hover:bg-paper/90 transition-colors"
  >
- Save
+ {t("common.save")}
  </button>
  </div>
  </div>

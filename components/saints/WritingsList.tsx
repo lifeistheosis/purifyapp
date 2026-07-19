@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Saint, Work } from "@/lib/saints/saints";
+import { T } from "@/components/i18n/T";
 
 export function WritingsList({ saint }: { saint: Saint }) {
   return (
@@ -7,15 +8,14 @@ export function WritingsList({ saint }: { saint: Saint }) {
       <div className="flex items-baseline justify-between mb-8 flex-wrap gap-3">
         <div>
           <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-            Writings
+            <T k="saints.writings" />
           </p>
           <h2 className="font-sans text-title md:text-display-sm font-bold text-paper tracking-[-0.02em]">
-            Read his works
+            <T k="saints.readHisWorks" />
           </h2>
         </div>
         <span className="font-sans text-detail text-paper/45">
-          {saint.works.length}{" "}
-          {saint.works.length === 1 ? "work" : "works"} available
+          <T k="saints.worksAvailable" count={saint.works.length} />
         </span>
       </div>
       <ul className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -51,7 +51,7 @@ function WritingTile({ saintSlug, work }: { saintSlug: string; work: Work }) {
           {work.blurb}
         </p>
         <p className="mt-6 font-sans text-ui font-medium text-paper/75 group-hover:text-paper transition-colors duration-150">
-          Open work →
+          <T k="saints.openWork" /> →
         </p>
       </Link>
     </li>

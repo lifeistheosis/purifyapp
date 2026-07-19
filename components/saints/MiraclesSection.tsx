@@ -1,6 +1,7 @@
 import { loadWriting } from "@/lib/saints/load";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
+import { T } from "@/components/i18n/T";
 
 /**
  * "Miracles", a saint's proclaimed miracles told in the exact, verbatim words
@@ -41,7 +42,7 @@ export async function MiraclesSection({ slug }: { slug: string }) {
       {sec.framing && (
        <div className="mb-6 pl-4 border-l-2 border-paper/15">
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-2">
-         Editor&rsquo;s note
+         <T k="saints.editorsNote" />
         </p>
         <p className="font-sans text-ui md:text-body text-paper/70 leading-[1.65] italic">
          {sec.framing}

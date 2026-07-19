@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Search } from "@/components/ui/icons/Search";
 import { SAINTS } from "@/lib/saints/saints";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Instant search for the Saints section. As you type, a dropdown surfaces
@@ -72,6 +73,7 @@ function search(q: string, limit = 8): Hit[] {
 }
 
 export function SaintSearch({ className }: { className?: string }) {
+  const { t } = useTranslate();
  const router = useRouter();
  const [q, setQ] = useState("");
  const [open, setOpen] = useState(false);
@@ -128,8 +130,8 @@ export function SaintSearch({ className }: { className?: string }) {
  }}
  onFocus={() => setOpen(true)}
  onKeyDown={onKey}
- placeholder="Search saints and writings"
- aria-label="Search saints and writings"
+ placeholder={t("saints.searchPlaceholder")}
+ aria-label={t("saints.searchPlaceholder")}
  className="w-full bg-paper/[0.04] border border-paper/15 rounded-pill pl-10 pr-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/40 transition-colors duration-150"
  />
  </div>
@@ -138,7 +140,7 @@ export function SaintSearch({ className }: { className?: string }) {
  <div className="absolute z-50 mt-2 left-0 right-0 rounded-md border border-paper/15 bg-night shadow-lg overflow-hidden">
  {hits.length === 0 ? (
  <p className="px-4 py-3 font-sans text-ui text-paper/55">
- No matches.
+ {t("bible.noMatches")}
  </p>
  ) : (
  <ul role="listbox">

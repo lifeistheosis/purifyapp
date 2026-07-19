@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Sheet } from "@/components/ui/Sheet";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Mobile-only floating pill for the saint-works reader, modeled on
@@ -21,6 +22,7 @@ export function MobileWorkPill({
 }: {
   sections: { n: number; title: string }[];
 }) {
+  const { t } = useTranslate();
   const [currentIdx, setCurrentIdx] = useState(0);
   const [tocOpen, setTocOpen] = useState(false);
 
@@ -75,7 +77,7 @@ export function MobileWorkPill({
   return (
     <>
       <div
-        aria-label="Section switcher"
+        aria-label={t("saints.sectionSwitcher")}
         className="md:hidden fixed inset-x-0 z-40 flex justify-center pointer-events-none"
         style={{
           bottom:
@@ -100,7 +102,7 @@ export function MobileWorkPill({
             onClick={() => setTocOpen(true)}
             className="px-3 h-10 inline-flex items-center font-sans text-detail font-semibold text-paper truncate max-w-[60vw]"
           >
-            Section {current.n} of {total}
+            {t("saints.sectionOf", { n: current.n, total })}
           </button>
           <button
             type="button"
@@ -117,7 +119,7 @@ export function MobileWorkPill({
         </div>
       </div>
 
-      <Sheet open={tocOpen} onClose={() => setTocOpen(false)} title="Contents">
+      <Sheet open={tocOpen} onClose={() => setTocOpen(false)} title={t("saints.contents")}>
         <ol className="grid grid-cols-1 gap-y-1 font-sans text-ui">
           {sections.map((s, i) => {
             const active = i === currentIdx;

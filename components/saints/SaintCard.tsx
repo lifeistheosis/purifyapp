@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Saint } from "@/lib/saints/saints";
 import { SaintIcon } from "./SaintIcon";
+import { T } from "@/components/i18n/T";
 
 export function SaintCard({ saint }: { saint: Saint }) {
   return (
@@ -29,13 +30,13 @@ export function SaintCard({ saint }: { saint: Saint }) {
       </div>
       <div className="mt-5 pt-4 border-t border-paper/8 flex items-center justify-between gap-3 text-caption">
         <span className="font-sans font-semibold uppercase tracking-[1.2px] text-paper/45">
-          Feast {saint.feastDays[0]}
+          <T k="saints.feastLabel" /> {saint.feastDays[0]}
         </span>
         <span className="font-sans text-paper/55 tabular-nums">
           {saint.works.length} {saint.works.length === 1 ? "work" : "works"}
         </span>
         <span className="font-sans text-paper/45 group-hover:text-paper transition-colors duration-150">
-          Read →
+          <T k="saints.read" /> →
         </span>
       </div>
     </Link>

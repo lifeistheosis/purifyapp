@@ -22,6 +22,7 @@ import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslat
 import { RecordRead } from "@/components/reading/RecordRead";
 import { SaintIntercession } from "@/components/saints/SaintIntercession";
 import { SaintIconsRail } from "@/components/shop/SaintIconsRail";
+import { T } from "@/components/i18n/T";
 
 type Params = Promise<{ slug: string }>;
 
@@ -144,7 +145,7 @@ export default async function SaintPage({ params }: { params: Params }) {
           <LicensedWorksSection works={licensedWorks} />
           <ViewInHistory
             events={eventsForSaint(saint.slug)}
-            title="Events during this saint's life"
+            title={<T k="saints.eventsDuringLife" />}
           />
           <SaintIconsRail saintSlug={saint.slug} saintName={saint.name} />
         </ContentShell>

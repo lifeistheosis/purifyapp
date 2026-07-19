@@ -5,19 +5,20 @@
 import Link from "next/link";
 
 import type { HistoryEventMeta } from "@/lib/history/events";
+import { T } from "@/components/i18n/T";
 
 export function ViewInHistory({
   events,
-  title = "In Orthodox History",
+  title,
 }: {
   events: HistoryEventMeta[];
-  title?: string;
+  title?: React.ReactNode;
 }) {
   if (!events.length) return null;
   return (
-    <section className="mt-12 border-t border-paper/10 pt-8" aria-label={title}>
+    <section className="mt-12 border-t border-paper/10 pt-8" aria-label="history">
       <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
-        {title}
+        {title ?? <T k="saints.inOrthodoxHistory" />}
       </p>
       <ul className="mt-4 space-y-2">
         {events.map((e) => (

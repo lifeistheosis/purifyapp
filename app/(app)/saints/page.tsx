@@ -4,6 +4,10 @@ import { SaintSearch } from "@/components/saints/SaintSearch";
 import { Cross } from "@/components/ui/icons/Cross";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
+import { T } from "@/components/i18n/T";
+
+// Deliberate Greek verbatim in every locale (hidden when locale is el).
+const GREEK_HOI_HAGIOI = "Οι Άγιοι";
 
 export const metadata = {
   title: "Saints",
@@ -33,13 +37,11 @@ export default async function SaintsPage() {
               className="mt-3 font-serif text-caption uppercase tracking-[3px] text-gold/65 leading-none"
               style={{ fontFamily: "var(--font-greek), serif" }}
             >
-              Οι Άγιοι
+              {GREEK_HOI_HAGIOI}
             </p>
           )}
           <p className="mt-6 max-w-[620px] font-sans text-body text-paper/75 leading-relaxed">
-            The teachers, ascetics, and wonderworkers of the Eastern Orthodox
-            Church. Each profile gathers a brief life, a list of writings, and
-            the works themselves.
+            <T k="saints.indexLead" />
           </p>
         </header>
 

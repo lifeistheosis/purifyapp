@@ -13,6 +13,7 @@ import {
   loadPosition,
   savePosition,
 } from "@/lib/reader/position";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 // Works with this many sections render as an accordion: each section's body
 // (and its per-paragraph annotation components) mounts only when the section
@@ -28,6 +29,7 @@ export function WritingReader({
  saint: Saint;
  content: WritingContent;
 }) {
+  const { t, tn } = useTranslate();
  const isLong = content.sections.length >= ACCORDION_THRESHOLD;
  const [open, setOpen] = useState<Set<number>>(() => new Set());
  // Shared reader prefs, same provider as the Bible reader, so a font
@@ -178,7 +180,7 @@ export function WritingReader({
  href="/saints"
  className="hover:text-paper transition-colors duration-150"
  >
- Saints
+ {t("nav.saints")}
  </Link>
  <span className="text-paper/30">›</span>
  <Link
@@ -216,10 +218,10 @@ export function WritingReader({
  <summary className="cursor-pointer list-none px-5 py-3.5 flex items-center justify-between">
  <span className="flex items-baseline gap-3">
  <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
- Contents
+ {t("saints.contents")}
  </span>
  <span className="font-sans text-caption text-paper/40">
- {content.sections.length} sections
+ {tn("saints.sectionCount", content.sections.length)}
  </span>
  </span>
  <span
@@ -329,11 +331,11 @@ export function WritingReader({
 
  {sec.notes?.length ? (
  <aside
- aria-label={`Notes on ${sec.title}`}
+ aria-label={t("saints.notesOn", { title: sec.title })}
  className="lg:pt-1 lg:border-l lg:border-paper/10 lg:pl-8"
  >
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-4">
- Notes
+ {t("saints.notes")}
  </p>
  <ul className="space-y-4">
  {sec.notes.map((note, i) => (
@@ -354,7 +356,7 @@ export function WritingReader({
 
  <footer className="max-w-[680px] pt-8 border-t border-paper/8">
  <p className="font-sans text-caption text-paper/40">
- Source: {content.source}
+ {t("prayers.reader.sourceLabel")} {content.source}
  </p>
  </footer>
 
@@ -378,6 +380,7 @@ function SectionBody({
  content: WritingContent;
  sec: Section;
 }) {
+  const { t } = useTranslate();
  return (
  <>
  <div className="flex items-center justify-end mb-2">
@@ -394,7 +397,7 @@ function SectionBody({
  {sec.notes?.length ? (
  <div className="mt-6 pt-5 border-t border-paper/10">
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
- Notes
+ {t("saints.notes")}
  </p>
  <ul className="space-y-3">
  {sec.notes.map((note, i) => (
@@ -422,12 +425,13 @@ function SectionParagraphs({
  content: WritingContent;
  sec: Section;
 }) {
+  const { t } = useTranslate();
  return (
  <>
  {sec.framing && (
  <div className="mb-8 pl-4 border-l-2 border-paper/15">
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-2">
- Editor&rsquo;s note
+ {t("saints.editorsNote")}
  </p>
  <p className="font-sans text-ui md:text-body text-paper/70 leading-[1.65] italic">
  {sec.framing}
