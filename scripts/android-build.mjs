@@ -107,6 +107,62 @@ function pruneFullPayloadDuplicates(dir) {
   );
 }
 
+// Post-export guard (Beta 2.3 language patch). The translated corpus in
+// data/**/i18n and {id}.{locale}.json siblings is hundreds of MB and must
+// NEVER ship in the APK (the app fetches translations from the live API).
+// The export bakes English only and build-content-package skips locale
+// files, so a hit here means a new leak path opened: fail loudly instead
+// of silently shipping a bloated bundle onto a near-full disk.
+// _next/ is exempt: the UI message catalogs are bundled there on purpose
+// (tiny per-locale chunks the client loads when switching language).
+const LOCALE_CODES = [
+  "es", "ro", "el", "ru", "fr", "de", "sr", "uk", "it", "pt", "bg", "ar",
+  "fil", "tr", "ka", "hu", "id", "ne", "pl", "ur",
+];
+const LOCALE_SIBLING_RE = new RegExp(`\\.(${LOCALE_CODES.join("|")})\\.json$`);
+// Warn when the export outgrows this: measured 1.20 GB pre-prune on
+// 2026-07-19 plus ~15% headroom. Revisit when content legitimately grows.
+const OUT_SIZE_BUDGET_BYTES = 1.4 * 1024 ** 3;
+
+function guardExportAgainstI18nLeaks(dir) {
+  const leaks = [];
+  let totalBytes = 0;
+  const walk = (d) => {
+    for (const entry of fs.readdirSync(d, { withFileTypes: true })) {
+      const p = path.join(d, entry.name);
+      if (entry.isDirectory()) {
+        if (entry.name === "_next") continue;
+        if (entry.name === "i18n") {
+          leaks.push(path.relative(dir, p));
+          continue;
+        }
+        walk(p);
+      } else {
+        totalBytes += fs.statSync(p).size;
+        if (LOCALE_SIBLING_RE.test(entry.name)) {
+          leaks.push(path.relative(dir, p));
+        }
+      }
+    }
+  };
+  if (fs.existsSync(dir)) walk(dir);
+  if (leaks.length > 0) {
+    console.error(
+      `✗ i18n content leaked into the export (${leaks.length} path(s)):\n` +
+        leaks.slice(0, 20).map((l) => `    ${l}`).join("\n"),
+    );
+    process.exit(1);
+  }
+  const gb = (totalBytes / 1024 ** 3).toFixed(2);
+  if (totalBytes > OUT_SIZE_BUDGET_BYTES) {
+    console.warn(
+      `⚠ out/ (excluding _next) is ${gb} GB, over the ${(OUT_SIZE_BUDGET_BYTES / 1024 ** 3).toFixed(2)} GB budget — investigate before shipping`,
+    );
+  } else {
+    console.log(`• export size guard: out/ (excluding _next) ${gb} GB, no i18n leaks`);
+  }
+}
+
 // Start from a clean export. `next build` writes into out/ but does not delete
 // stale files from routes that no longer exist, so out/ silently accumulates
 // months of removed content across builds and ships it in the APK. Wipe it so
@@ -130,5 +186,8 @@ run("node scripts/verify-package.mjs out/content/content-package.json");
 // (after the content package + its integrity gate, so nothing downstream reads
 // the pruned files).
 pruneFullPayloadDuplicates(path.join(ROOT, "out"));
+
+// Last: nothing after this may write into out/.
+guardExportAgainstI18nLeaks(path.join(ROOT, "out"));
 
 console.log("\n✓ Android local bundle ready: out/ (UI) + out/content/ (data)");

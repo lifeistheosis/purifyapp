@@ -49,9 +49,29 @@ const add = (type, ref_id, title, key, obj, search) =>
   records.push({ type, ref_id, title, key: key ?? null, json: JSON.stringify(obj), search });
 
 const readJson = (p) => JSON.parse(fs.readFileSync(p, "utf8"));
+
+// Locale content stays OUT of the package: the app bundles English and
+// fetches translations from the live API (Beta 2.3 language patch).
+// Translated files live in i18n/ directories and as {id}.{locale}.json
+// siblings. Keep this list in sync with LocaleCode in lib/i18n/locales.ts
+// (this script is plain Node and cannot import the TS registry).
+const LOCALE_CODES = [
+  "es", "ro", "el", "ru", "fr", "de", "sr", "uk", "it", "pt", "bg", "ar",
+  "fil", "tr", "ka", "hu", "id", "ne", "pl", "ur",
+];
+const LOCALE_SIBLING_RE = new RegExp(`\\.(${LOCALE_CODES.join("|")})\\.json$`);
+let skippedI18n = 0;
+const isLocaleFile = (f) => {
+  if (LOCALE_SIBLING_RE.test(f)) {
+    skippedI18n += 1;
+    return true;
+  }
+  return false;
+};
+
 const listJson = (dir) =>
   fs.existsSync(dir)
-    ? fs.readdirSync(dir).filter((f) => f.endsWith(".json") && !f.includes(".de."))
+    ? fs.readdirSync(dir).filter((f) => f.endsWith(".json") && !isLocaleFile(f))
     : [];
 
 // Flatten every string value in a record for the search body.
@@ -112,10 +132,14 @@ function collectCouncils() {
   if (!fs.existsSync(dir)) return;
   const walk = (d, rel) => {
     for (const e of fs.readdirSync(d)) {
+      if (e === "i18n") {
+        skippedI18n += 1;
+        continue; // translated variants ship via the API, not the package
+      }
       const full = path.join(d, e);
       const r = rel ? `${rel}/${e}` : e;
       if (fs.statSync(full).isDirectory()) walk(full, r);
-      else if (e.endsWith(".json") && !e.includes(".de.")) {
+      else if (e.endsWith(".json") && !isLocaleFile(e)) {
         const j = readJson(full);
         add("council", slugOf(r), j.title ?? slugOf(r), null, j, flattenStrings(j).join(" "));
       }
@@ -215,6 +239,7 @@ function main() {
   fs.writeFileSync(path.join(OUT, "manifest.json"), JSON.stringify(manifest, null, 2));
   const bytes = fs.statSync(path.join(OUT, "content-package.json")).size;
 
+  console.log(`• skipped ${skippedI18n} i18n file(s)/dir(s) (locale content ships via the API)`);
   console.log(`Content package ${VERSION} (${FULL ? "full" : "starter"})`);
   for (const it of manifest.items) console.log(`  ${it.type}: ${it.count}`);
   console.log(`  total: ${records.length} records, ${(bytes / 1024 / 1024).toFixed(2)} MB`);
