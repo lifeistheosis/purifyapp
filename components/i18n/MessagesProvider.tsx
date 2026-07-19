@@ -11,8 +11,18 @@ import {
 import { getLocale, type LocaleCode } from "@/lib/i18n/locales";
 import { loadClientCatalog } from "@/lib/i18n/client";
 import { interpolate, resolvePluralKey } from "@/lib/i18n/plural";
+import enCatalog from "@/lib/i18n/messages/en.json";
 
 type Messages = Record<string, string>;
+
+// The English catalog ships in the client bundle ONCE. Without this,
+// the root layout's `messages` prop serialized the full catalog into
+// every prerendered page's HTML and flight payload: ~135 KB x 2 copies
+// x ~1,750 exported pages, roughly 470 MB inside the APK. The layout
+// now omits the prop for English (the only locale the static export
+// renders); non-English web requests are dynamic and still pass their
+// catalog through the prop.
+const EN_MESSAGES = enCatalog as Messages;
 
 type Ctx = {
   locale: LocaleCode;
@@ -34,14 +44,19 @@ export function MessagesProvider({
   children,
 }: {
   locale: LocaleCode;
-  messages: Messages;
+  /** Omitted for English: the bundled EN_MESSAGES serves as the
+   * catalog, keeping the export free of per-page catalog copies. */
+  messages?: Messages;
   children: ReactNode;
 }) {
   // Server-rendered values are the initial state. On the web they are
   // already correct (cookie-negotiated per request) and never change
   // within a page lifetime; on native the export always hands us "en"
   // and LocaleBootstrap corrects it after mount.
-  const [state, setState] = useState({ locale, messages });
+  const [state, setState] = useState({
+    locale,
+    messages: messages ?? EN_MESSAGES,
+  });
 
   const setLocale = useCallback(async (next: LocaleCode) => {
     const nextMessages = await loadClientCatalog(next);

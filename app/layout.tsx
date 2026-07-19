@@ -176,7 +176,12 @@ export default async function RootLayout({
 }>) {
  const localeCode = await getServerLocale();
  const localeRecord = getLocale(localeCode);
- const messages = getMessages(localeCode);
+ // English rides in the client bundle (see MessagesProvider); passing it
+ // here would serialize ~135 KB into every prerendered page twice. Only
+ // non-English web requests (always dynamic, never exported) send their
+ // catalog over the wire.
+ const messages =
+   localeCode === "en" ? undefined : getMessages(localeCode);
  // Per-request CSP nonce, set by middleware. Read it so any future inline
  // <script nonce={nonce}> tags here will satisfy the strict-dynamic policy.
  // Currently unused by app code; Next's own runtime carries the nonce via

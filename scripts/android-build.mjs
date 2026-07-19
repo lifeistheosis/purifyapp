@@ -120,9 +120,11 @@ const LOCALE_CODES = [
   "fil", "tr", "ka", "hu", "id", "ne", "pl", "ur",
 ];
 const LOCALE_SIBLING_RE = new RegExp(`\\.(${LOCALE_CODES.join("|")})\\.json$`);
-// Warn when the export outgrows this: measured 1.20 GB pre-prune on
-// 2026-07-19 plus ~15% headroom. Revisit when content legitimately grows.
-const OUT_SIZE_BUDGET_BYTES = 1.4 * 1024 ** 3;
+// Warn when the export outgrows this: measured 0.78 GB on 2026-07-19
+// after deduplicating the i18n catalog out of every page payload (the
+// root layout no longer serializes messages for English), plus ~15%
+// headroom. Revisit when content legitimately grows.
+const OUT_SIZE_BUDGET_BYTES = 0.9 * 1024 ** 3;
 
 function guardExportAgainstI18nLeaks(dir) {
   const leaks = [];
