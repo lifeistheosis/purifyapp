@@ -21,28 +21,26 @@ import {
 import { campaignsEnabled } from "@/lib/campaigns/flags";
 import { cn } from "@/lib/cn";
 import { trapezaEnabled } from "@/lib/trapeza/flags";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
-type Child = { key: string; label: string; href: string };
+// Labels come from the catalog at render time (nav.discoverMenu.*).
+type Child = { key: string; href: string };
 
 export const DISCOVER_CHILDREN: Child[] = [
   // The full Discover library, in the same menologion order as the
   // /discover page, minus surfaces that already hold their own
   // top-level nav slot (Saints, Calendar, Bible, Prayers) and the shop
   // (its own top-level button, gated by the marketplace flag).
-  { key: "history", label: "Orthodox History", href: "/history" },
-  { key: "reading", label: "Reading", href: "/reading" },
+  { key: "history", href: "/history" },
+  { key: "reading", href: "/reading" },
   // Community prayer, gated by the campaigns flag until its tables are live.
-  ...(campaignsEnabled()
-    ? [{ key: "campaigns", label: "Prayer Campaigns", href: "/campaigns" }]
-    : []),
+  ...(campaignsEnabled() ? [{ key: "campaigns", href: "/campaigns" }] : []),
   // The fasting-recipe board, gated by its flag until the tables are live.
-  ...(trapezaEnabled()
-    ? [{ key: "trapeza", label: "The Trapeza", href: "/trapeza" }]
-    : []),
+  ...(trapezaEnabled() ? [{ key: "trapeza", href: "/trapeza" }] : []),
   // Theology is the umbrella over Doctrine, Topics, Heresies, and Apologetics;
   // it gets one slot here, not four (they live inside /theology).
-  { key: "theology", label: "Theology", href: "/theology" },
-  { key: "councils", label: "Councils", href: "/councils" },
+  { key: "theology", href: "/theology" },
+  { key: "councils", href: "/councils" },
 ];
 
 /** Hrefs that light up the Discover slot as "active". The two Bible
@@ -71,6 +69,7 @@ export function DiscoverDropdown({
   triggerClassName: string;
   triggerStyle?: CSSProperties;
 }) {
+  const { t } = useTranslate();
   // `open` is the hover/focus intent. `mounted` keeps the panel in the DOM
   // through the close animation, and `visible` drives the transition (off on
   // mount so opening animates from the closed state, and off again before
@@ -229,7 +228,7 @@ export function DiscoverDropdown({
                     : "text-paper/75 hover:text-paper hover:bg-white/[0.04]",
                 )}
               >
-                {c.label}
+                {t(`nav.discoverMenu.${c.key}`)}
               </Link>
             );
           })}

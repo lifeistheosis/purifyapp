@@ -24,7 +24,9 @@ const ALLOWLIST_PATH = path.join(ROOT, "scripts", "i18n", "scan-allowlist.json")
 // surface at a time through Phase 2; the scan hard-fails on literals
 // found under these.
 const CONVERTED_DIRS = [
-  // "components/layout",
+  "components/layout",
+  "components/nav",
+  "components/i18n",
 ];
 
 const args = new Set(process.argv.slice(2));
@@ -139,7 +141,12 @@ if (doScan) {
 
   function scanFile(rel) {
     const full = path.join(ROOT, rel);
-    const src = fs.readFileSync(full, "utf8");
+    // Blank out comments (keeping newlines for line numbers) so doc
+    // comments and type annotations in them cannot match.
+    const src = fs
+      .readFileSync(full, "utf8")
+      .replace(/\/\*[\s\S]*?\*\//g, (c) => c.replace(/[^\n]/g, " "))
+      .replace(/(^|[^:])\/\/[^\n]*/g, (c) => c.replace(/[^\n]/g, " "));
     const hits = [];
     for (const re of [PROP_RE, TEXT_RE]) {
       re.lastIndex = 0;
@@ -147,6 +154,11 @@ if (doScan) {
       while ((m = re.exec(src))) {
         const text = m[1].trim();
         if (!/[A-Za-z]{3}/.test(text)) continue;
+        // Single identifier-like words in a text position are almost
+        // always TS generics (Promise<void>, ReactNode) rather than
+        // copy; eslint jsx-no-literals is the net for one-word JSX
+        // text. Props (title=, aria-label=) are always checked.
+        if (re === TEXT_RE && !text.includes(" ") && text.length < 10) continue;
         if (allowlist.substrings.some((s) => text.includes(s))) continue;
         const line = src.slice(0, m.index).split("\n").length;
         hits.push({ line, text: text.slice(0, 60) });
@@ -159,7 +171,9 @@ if (doScan) {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) yield* walk(full);
-      else if (/\.tsx?$/.test(entry.name)) yield full;
+      // JSX copy lives in .tsx; scanning .ts only yields type-position
+      // false positives.
+      else if (entry.name.endsWith(".tsx")) yield full;
     }
   }
 

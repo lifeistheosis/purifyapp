@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { Lampada } from "@/components/ui/icons/Lampada";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Compact 48px header for mobile-only surfaces (Discover, You, individual
@@ -33,14 +34,15 @@ export function MobileTopBar({
   donate?: boolean;
 }) {
   const router = useRouter();
+  const { t } = useTranslate();
 
   const trailingContent =
     trailing ??
     (donate ? (
       <Link
         href="/support"
-        aria-label="Support Purify"
-        title="Support Purify"
+        aria-label={t("nav.supportPurify")}
+        title={t("nav.supportPurify")}
         className="h-10 w-10 inline-flex items-center justify-center rounded-pill text-gold/80 hover:text-gold transition-colors"
       >
         <Lampada size={20} />
@@ -63,7 +65,7 @@ export function MobileTopBar({
           back === true ? (
             <button
               type="button"
-              aria-label="Back"
+              aria-label={t("nav.back")}
               onClick={() => router.back()}
               className="h-10 w-10 inline-flex items-center justify-center rounded-pill text-paper/80 hover:text-paper"
             >
@@ -72,7 +74,7 @@ export function MobileTopBar({
           ) : (
             <Link
               href={back}
-              aria-label="Back"
+              aria-label={t("nav.back")}
               className="h-10 w-10 inline-flex items-center justify-center rounded-pill text-paper/80 hover:text-paper"
             >
               <span aria-hidden className="text-lede leading-none">‹</span>

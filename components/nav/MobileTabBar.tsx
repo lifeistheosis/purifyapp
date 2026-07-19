@@ -165,7 +165,7 @@ export function MobileTabBar() {
 
   return (
     <nav
-      aria-label="Primary"
+      aria-label={t("nav.tabBarLabel")}
       // Full-width wrapper is transparent and ignores pointer events so taps
       // in the side gutters fall through to content; only the floating bar
       // itself is interactive.

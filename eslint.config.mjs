@@ -18,7 +18,9 @@ const jsxA11yRecommended = {
 // with CONVERTED_DIRS in scripts/i18n-check.mjs. Short punctuation-only
 // literals are allowed; real copy must come from useTranslate()/t().
 const I18N_CONVERTED_GLOBS = [
-  // e.g. "components/layout/**/*.tsx"
+  "components/layout/**/*.tsx",
+  "components/nav/**/*.tsx",
+  "components/i18n/**/*.tsx",
 ];
 
 const i18nRatchet =
@@ -32,7 +34,11 @@ const i18nRatchet =
               "error",
               {
                 noStrings: true,
-                allowedStrings: ["·", "•", "|", "/", "(", ")", ":", "%"],
+                allowedStrings: [
+                  "·", "•", "|", "/", "(", ")", ":", "%", "©", "↗", "‹", "›", "→", "←", ".",
+                  // Brand names and social handles never translate.
+                  "Purify", "@purifymylife", "@purify.app",
+                ],
                 ignoreProps: true,
               },
             ],

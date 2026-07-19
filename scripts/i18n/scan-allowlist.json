@@ -1,4 +1,19 @@
 {
-  "substrings": ["Purify", "EIKON", "RevenueCat", "Stripe", "Supabase"],
+  "substrings": [
+    "Purify",
+    "EIKON",
+    "RevenueCat",
+    "Stripe",
+    "Supabase",
+    "Discord",
+    "Instagram",
+    "TikTok",
+    "Reddit",
+    "@purifymylife",
+    "@purify.app",
+    "Promise",
+    "ReactNode",
+    "LocaleCode"
+  ],
   "files": []
 }
