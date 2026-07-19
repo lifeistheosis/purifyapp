@@ -6,6 +6,7 @@
 
 import "server-only";
 import { DEFAULT_LOCALE, type LocaleCode, resolveLocale } from "./locales";
+import { interpolate, resolvePluralKey } from "./plural";
 
 /** Flat-key catalog. Nested keys use dot notation: "nav.home". */
 export type Messages = Record<string, string>;
@@ -66,6 +67,26 @@ export function getMessages(input: string | null | undefined): Messages {
 }
 
 /** Look up a single key. Returns the key itself on miss (loud failure). */
-export function t(messages: Messages, key: string): string {
-  return messages[key] ?? key;
+export function t(
+  messages: Messages,
+  key: string,
+  replacements?: Record<string, string | number>,
+): string {
+  return interpolate(messages[key] ?? key, replacements);
+}
+
+/**
+ * Server-side plural lookup, CLDR-aware via Intl.PluralRules. Mirrors the
+ * client tn() in <MessagesProvider>; legacy .singular/.plural keys keep
+ * working (see lib/i18n/plural.ts for the lookup order).
+ */
+export function tn(
+  messages: Messages,
+  locale: LocaleCode,
+  keyBase: string,
+  count: number,
+  replacements?: Record<string, string | number>,
+): string {
+  const value = resolvePluralKey(messages, keyBase, count, locale);
+  return interpolate(value, { ...(replacements ?? {}), count });
 }

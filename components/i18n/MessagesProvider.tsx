@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import type { LocaleCode } from "@/lib/i18n/locales";
+import { interpolate, resolvePluralKey } from "@/lib/i18n/plural";
 
 type Messages = Record<string, string>;
 
@@ -41,13 +42,7 @@ export function useTranslate() {
   const locale = (ctx?.locale ?? "en") as LocaleCode;
 
   function t(key: string, replacements?: Record<string, string | number>): string {
-    let value = messages[key] ?? key;
-    if (replacements) {
-      for (const [k, v] of Object.entries(replacements)) {
-        value = value.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
-      }
-    }
-    return value;
+    return interpolate(messages[key] ?? key, replacements);
   }
 
   function tn(
@@ -55,8 +50,8 @@ export function useTranslate() {
     count: number,
     replacements?: Record<string, string | number>,
   ): string {
-    const suffix = count === 1 ? "singular" : "plural";
-    return t(`${keyBase}.${suffix}`, { ...(replacements ?? {}), count });
+    const value = resolvePluralKey(messages, keyBase, count, locale);
+    return interpolate(value, { ...(replacements ?? {}), count });
   }
 
   return { locale, t, tn };
