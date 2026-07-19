@@ -22,6 +22,7 @@ import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n/locales";
 import { MessagesProvider } from "@/components/i18n/MessagesProvider";
+import { LocaleBootstrap } from "@/components/i18n/LocaleBootstrap";
 import { NONCE_HEADER } from "@/lib/security/headers";
 
 const dmSans = DM_Sans({
@@ -195,6 +196,7 @@ export default async function RootLayout({
  >
  <body className="min-h-full flex flex-col">
  <MessagesProvider locale={localeCode} messages={messages}>
+ <LocaleBootstrap />
  {children}
  <FirstRunGate />
  </MessagesProvider>

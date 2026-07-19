@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { LOCALES } from "@/lib/i18n/locales";
+import { LOCALES, type LocaleCode } from "@/lib/i18n/locales";
 import { useTranslate } from "./MessagesProvider";
+import { useApplyLocale } from "./useApplyLocale";
 
 /**
  * Custom locale dropdown for switching languages. Writes the
@@ -31,13 +32,9 @@ import { useTranslate } from "./MessagesProvider";
  * middleware can also negotiate it on the next request when needed.
  */
 
-// 1 year, root path, non-httpOnly so the client can read.
-function writeLocaleCookie(next: string) {
-  document.cookie = `purify_locale=${next}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
-}
-
 export function LocaleSwitcher() {
   const { locale, t } = useTranslate();
+  const applyLocale = useApplyLocale();
   const [pending, setPending] = useState(false);
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -74,15 +71,14 @@ export function LocaleSwitcher() {
     };
   }, [open]);
 
-  function setLocale(next: string) {
+  function setLocale(next: LocaleCode) {
     setOpen(false);
     if (next === locale) return;
     setPending(true);
-    writeLocaleCookie(next);
-    // Hard reload so the root layout re-renders with the new cookie
-    // and every page subsequently navigated to reads through the new
-    // MessagesProvider on first paint.
-    window.location.reload();
+    // Web: cookie + hard reload so the root layout re-renders with the
+    // new cookie and every prefetched RSC payload is invalidated.
+    // Native: catalogs swap in place (no server in the static export).
+    void applyLocale(next).finally(() => setPending(false));
   }
 
   return (
