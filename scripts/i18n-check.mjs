@@ -156,7 +156,16 @@ for (const [code, data] of catalogs) {
   if (code === "en") continue;
   const keys = Object.keys(data);
   const present = keys.filter((k) => enKeys.has(k));
-  const orphaned = keys.filter((k) => !enKeys.has(k));
+  const PLURAL_SUFFIX = /.(zero|one|two|few|many|other|singular|plural)$/;
+  const pluralSibling = (k) => {
+    const mm = k.match(PLURAL_SUFFIX);
+    if (!mm) return false;
+    const base = k.slice(0, -mm[0].length);
+    return ["zero", "one", "two", "few", "many", "other", "singular", "plural"].some(
+      (s) => enKeys.has(base + "." + s),
+    );
+  };
+  const orphaned = keys.filter((k) => !enKeys.has(k) && !pluralSibling(k));
   const missing = [...enKeys].filter((k) => !(k in data));
   for (const k of orphaned) {
     failures.push(`${code}.json: orphaned key not in en.json: ${k}`);
