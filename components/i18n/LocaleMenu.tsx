@@ -132,13 +132,15 @@ export function LocaleMenu({
         </>
       )}
 
-      {/* Coming soon */}
-      <li
-        role="presentation"
-        className="mt-1 border-t border-paper/8 px-3 pb-1 pt-2.5 font-sans text-[10px] uppercase tracking-[0.1em] text-paper/30"
-      >
-        {t("signin.comingSoon")}
-      </li>
+      {/* Coming soon (hidden while every locale ships public) */}
+      {notReady.length > 0 && (
+        <li
+          role="presentation"
+          className="mt-1 border-t border-paper/8 px-3 pb-1 pt-2.5 font-sans text-[10px] uppercase tracking-[0.1em] text-paper/30"
+        >
+          {t("signin.comingSoon")}
+        </li>
+      )}
       {notReady.map((l) => {
         const inner = (
           <>

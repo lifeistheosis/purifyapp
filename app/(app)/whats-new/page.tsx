@@ -30,7 +30,7 @@ const ENTRIES: Entry[] = [
  blurb:
   "The app now speaks twenty-one languages. Pick yours in Settings or the footer and the menus, the Today screen, and the calendar with every fasting rule follow you, on the website and inside the Android app, even offline. The prayers, lives, and writings are being translated next; until each lands, it is shown in English with an honest note.",
  items: [
-  "Twenty-one languages: English, Spanish, Romanian, Greek, Russian, French, German, Serbian, Ukrainian, Italian, Portuguese, Bulgarian, Arabic, Filipino, Turkish, Georgian, Hungarian, Indonesian, Nepali, Polish, and Urdu. Beyond English and German, each is a preview under our language editors' review; whatever is untranslated falls back to English rather than breaking.",
+  "Twenty-one languages, public for everyone from day one: English, Spanish, Romanian, Greek, Russian, French, German, Serbian, Ukrainian, Italian, Portuguese, Bulgarian, Arabic, Filipino, Turkish, Georgian, Hungarian, Indonesian, Nepali, Polish, and Urdu. First-time visitors are greeted in their browser's own language; our language editors keep refining translations in place, and whatever is untranslated falls back to English rather than breaking.",
   "Language switching finally works inside the Android app. Your choice is remembered on the device, follows your account when you sign in, and on first run the app greets you in your phone's own language when we carry it.",
   "New typefaces for Cyrillic, Greek, Arabic script, Georgian, and Devanagari, loaded only when a page needs them, so no language reads as empty boxes.",
   "A Language row now leads your account settings, with the same grouped picker as the footer.",

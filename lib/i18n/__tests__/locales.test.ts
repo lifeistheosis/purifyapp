@@ -55,10 +55,12 @@ describe("locale registry", () => {
     }
   });
 
-  it("Accept-Language negotiation never lands on a not-ready locale", () => {
-    expect(negotiateFromAcceptLanguage("tr-TR,tr;q=0.9")).toBe(DEFAULT_LOCALE);
-    expect(negotiateFromAcceptLanguage("ur-PK")).toBe(DEFAULT_LOCALE);
+  it("Accept-Language negotiation lands on any public locale", () => {
+    expect(negotiateFromAcceptLanguage("tr-TR,tr;q=0.9")).toBe("tr");
+    expect(negotiateFromAcceptLanguage("ur-PK")).toBe("ur");
+    expect(negotiateFromAcceptLanguage("fil-PH,fil;q=0.9")).toBe("fil");
     expect(negotiateFromAcceptLanguage("de-AT,de;q=0.9")).toBe("de");
+    expect(negotiateFromAcceptLanguage("zz")).toBe(DEFAULT_LOCALE);
   });
 });
 

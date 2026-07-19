@@ -66,35 +66,35 @@ export type Locale = {
 
 export const DEFAULT_LOCALE: LocaleCode = "en";
 
-// v6.9.1: only English and German are shippable. The other eleven
-// locales stay in the registry so any stale cookie still resolves
-// to a known shape; isLocaleReady() is the gate. They will return
-// when the editorial team has hand-checked their catalogs.
+// Beta 2.3: all twenty-one locales ship public (owner decision,
+// 2026-07-19). Core chrome is translated per locale and missing keys
+// fall back to English; the editorial team refines translations in
+// place. isLocaleReady() remains the negotiation gate.
 export const LOCALES: Locale[] = [
   { code: "en", nativeLabel: "English", englishLabel: "English", ready: true, dir: "ltr", comingSoon: "Coming soon" },
-  { code: "es", nativeLabel: "Español", englishLabel: "Spanish", ready: false, editorial: true, dir: "ltr", comingSoon: "Próximamente", status: "Machine translation, editorial review in progress" },
-  { code: "ro", nativeLabel: "Română", englishLabel: "Romanian", ready: false, editorial: true, dir: "ltr", comingSoon: "În curând", status: "Machine translation, editorial review in progress" },
-  { code: "el", nativeLabel: "Ελληνικά", englishLabel: "Greek", ready: false, editorial: true, dir: "ltr", comingSoon: "Σύντομα", status: "Machine translation, editorial review in progress" },
-  { code: "ru", nativeLabel: "Русский", englishLabel: "Russian", ready: false, editorial: true, dir: "ltr", comingSoon: "Скоро", status: "Machine translation, editorial review in progress" },
-  { code: "fr", nativeLabel: "Français", englishLabel: "French", ready: false, editorial: true, dir: "ltr", comingSoon: "Bientôt", status: "Editorial preview, in progress" },
+  { code: "es", nativeLabel: "Español", englishLabel: "Spanish", ready: true, dir: "ltr", comingSoon: "Próximamente" },
+  { code: "ro", nativeLabel: "Română", englishLabel: "Romanian", ready: true, dir: "ltr", comingSoon: "În curând" },
+  { code: "el", nativeLabel: "Ελληνικά", englishLabel: "Greek", ready: true, dir: "ltr", comingSoon: "Σύντομα" },
+  { code: "ru", nativeLabel: "Русский", englishLabel: "Russian", ready: true, dir: "ltr", comingSoon: "Скоро" },
+  { code: "fr", nativeLabel: "Français", englishLabel: "French", ready: true, dir: "ltr", comingSoon: "Bientôt" },
   { code: "de", nativeLabel: "Deutsch", englishLabel: "German", ready: true, dir: "ltr", comingSoon: "Demnächst" },
-  { code: "sr", nativeLabel: "Српски", englishLabel: "Serbian", ready: false, editorial: true, dir: "ltr", comingSoon: "Ускоро", status: "Machine translation, editorial review in progress" },
-  { code: "uk", nativeLabel: "Українська", englishLabel: "Ukrainian", ready: false, editorial: true, dir: "ltr", comingSoon: "Незабаром", status: "Machine translation, editorial review in progress" },
-  { code: "it", nativeLabel: "Italiano", englishLabel: "Italian", ready: false, editorial: true, dir: "ltr", comingSoon: "Prossimamente", status: "Machine translation, editorial review in progress" },
-  { code: "pt", nativeLabel: "Português", englishLabel: "Portuguese", ready: false, editorial: true, dir: "ltr", comingSoon: "Em breve", status: "Machine translation, editorial review in progress" },
-  { code: "bg", nativeLabel: "Български", englishLabel: "Bulgarian", ready: false, editorial: true, dir: "ltr", comingSoon: "Скоро", status: "Machine translation, editorial review in progress" },
-  { code: "ar", nativeLabel: "العربية", englishLabel: "Arabic", ready: false, editorial: true, dir: "rtl", comingSoon: "قريباً", status: "Machine translation, editorial review in progress" },
+  { code: "sr", nativeLabel: "Српски", englishLabel: "Serbian", ready: true, dir: "ltr", comingSoon: "Ускоро" },
+  { code: "uk", nativeLabel: "Українська", englishLabel: "Ukrainian", ready: true, dir: "ltr", comingSoon: "Незабаром" },
+  { code: "it", nativeLabel: "Italiano", englishLabel: "Italian", ready: true, dir: "ltr", comingSoon: "Prossimamente" },
+  { code: "pt", nativeLabel: "Português", englishLabel: "Portuguese", ready: true, dir: "ltr", comingSoon: "Em breve" },
+  { code: "bg", nativeLabel: "Български", englishLabel: "Bulgarian", ready: true, dir: "ltr", comingSoon: "Скоро" },
+  { code: "ar", nativeLabel: "العربية", englishLabel: "Arabic", ready: true, dir: "rtl", comingSoon: "قريباً" },
   // Beta 2.3 language patch: eight locales added from Play Console
   // country data. "fil" (not "tl") per BCP-47; CLDR and Intl.PluralRules
   // both resolve it. Urdu is the second rtl locale after Arabic.
-  { code: "fil", nativeLabel: "Filipino", englishLabel: "Filipino", ready: false, editorial: true, dir: "ltr", comingSoon: "Malapit na", status: "Machine translation, editorial review in progress" },
-  { code: "tr", nativeLabel: "Türkçe", englishLabel: "Turkish", ready: false, editorial: true, dir: "ltr", comingSoon: "Yakında", status: "Machine translation, editorial review in progress" },
-  { code: "ka", nativeLabel: "ქართული", englishLabel: "Georgian", ready: false, editorial: true, dir: "ltr", comingSoon: "მალე", status: "Machine translation, editorial review in progress" },
-  { code: "hu", nativeLabel: "Magyar", englishLabel: "Hungarian", ready: false, editorial: true, dir: "ltr", comingSoon: "Hamarosan", status: "Machine translation, editorial review in progress" },
-  { code: "id", nativeLabel: "Bahasa Indonesia", englishLabel: "Indonesian", ready: false, editorial: true, dir: "ltr", comingSoon: "Segera", status: "Machine translation, editorial review in progress" },
-  { code: "ne", nativeLabel: "नेपाली", englishLabel: "Nepali", ready: false, editorial: true, dir: "ltr", comingSoon: "चाँडै आउँदैछ", status: "Machine translation, editorial review in progress" },
-  { code: "pl", nativeLabel: "Polski", englishLabel: "Polish", ready: false, editorial: true, dir: "ltr", comingSoon: "Wkrótce", status: "Machine translation, editorial review in progress" },
-  { code: "ur", nativeLabel: "اردو", englishLabel: "Urdu", ready: false, editorial: true, dir: "rtl", comingSoon: "جلد آرہا ہے", status: "Machine translation, editorial review in progress" },
+  { code: "fil", nativeLabel: "Filipino", englishLabel: "Filipino", ready: true, dir: "ltr", comingSoon: "Malapit na" },
+  { code: "tr", nativeLabel: "Türkçe", englishLabel: "Turkish", ready: true, dir: "ltr", comingSoon: "Yakında" },
+  { code: "ka", nativeLabel: "ქართული", englishLabel: "Georgian", ready: true, dir: "ltr", comingSoon: "მალე" },
+  { code: "hu", nativeLabel: "Magyar", englishLabel: "Hungarian", ready: true, dir: "ltr", comingSoon: "Hamarosan" },
+  { code: "id", nativeLabel: "Bahasa Indonesia", englishLabel: "Indonesian", ready: true, dir: "ltr", comingSoon: "Segera" },
+  { code: "ne", nativeLabel: "नेपाली", englishLabel: "Nepali", ready: true, dir: "ltr", comingSoon: "चाँडै आउँदैछ" },
+  { code: "pl", nativeLabel: "Polski", englishLabel: "Polish", ready: true, dir: "ltr", comingSoon: "Wkrótce" },
+  { code: "ur", nativeLabel: "اردو", englishLabel: "Urdu", ready: true, dir: "rtl", comingSoon: "جلد آرہا ہے" },
 ];
 
 /** True if a locale is considered shippable today. */
