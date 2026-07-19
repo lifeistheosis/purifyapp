@@ -19,7 +19,8 @@
     "discord:list": "node scripts/discord-scan.mjs --list",
     "discord:all": "node scripts/discord-scan.mjs all",
     "discord:audit": "node scripts/discord-scan.mjs all --all-history",
-    "discord:act": "node scripts/discord-act.mjs scripts/discord-actions.json"
+    "discord:act": "node scripts/discord-act.mjs scripts/discord-actions.json",
+    "i18n:check": "node scripts/i18n-check.mjs --scan"
   },
   "dependencies": {
     "@capacitor-community/safe-area": "^8.0.1",

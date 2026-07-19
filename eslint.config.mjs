@@ -12,10 +12,39 @@ const jsxA11yRecommended = {
   rules: jsxA11y.configs.recommended.rules,
 };
 
+// i18n extraction ratchet (Beta 2.3): directories whose UI strings are
+// fully extracted to lib/i18n/messages get jsx-no-literals so hardcoded
+// English cannot creep back in. Grows one surface at a time in lockstep
+// with CONVERTED_DIRS in scripts/i18n-check.mjs. Short punctuation-only
+// literals are allowed; real copy must come from useTranslate()/t().
+const I18N_CONVERTED_GLOBS = [
+  // e.g. "components/layout/**/*.tsx"
+];
+
+const i18nRatchet =
+  I18N_CONVERTED_GLOBS.length === 0
+    ? []
+    : [
+        {
+          files: I18N_CONVERTED_GLOBS,
+          rules: {
+            "react/jsx-no-literals": [
+              "error",
+              {
+                noStrings: true,
+                allowedStrings: ["·", "•", "|", "/", "(", ")", ":", "%"],
+                ignoreProps: true,
+              },
+            ],
+          },
+        },
+      ];
+
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   jsxA11yRecommended,
+  ...i18nRatchet,
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
