@@ -9,9 +9,11 @@
 import Link from "next/link";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { coversTier, ownedLabel } from "@/lib/premium/coverage";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /** Green "You're on Purify Pro/Plus" bar shown at the top of the plan pages. */
 export function CurrentPlanBanner() {
+  const { t } = useTranslate();
   const tier = usePremiumTier();
   if (tier !== "plus" && tier !== "pro") return null;
   const name = tier === "pro" ? "Purify Pro" : "Purify Plus";
@@ -20,13 +22,13 @@ export function CurrentPlanBanner() {
       <div className="mx-auto flex max-w-[760px] flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-400/40 bg-emerald-500/[0.10] px-5 py-3.5">
         <span className="flex items-center gap-2.5 font-sans text-ui font-semibold text-emerald-200">
           <Check />
-          You&rsquo;re on {name}
+          {t("ui.youReOn")} {name}
         </span>
         <Link
           href="/account"
           className="rounded-pill border border-emerald-400/40 px-3.5 py-1.5 font-sans text-caption font-semibold text-emerald-200 transition-colors hover:bg-emerald-500/15"
         >
-          Manage
+          {t("ui.manageX")}
         </Link>
       </div>
     </div>
@@ -100,6 +102,7 @@ export function TierPurchaseOrStatus({
   tier: "plus" | "pro";
   children: React.ReactNode;
 }) {
+  const { t } = useTranslate();
   const userTier = usePremiumTier();
 
   if (userTier === "loading") {
@@ -124,7 +127,7 @@ export function TierPurchaseOrStatus({
           href="/account"
           className="font-sans text-caption font-semibold text-paper/55 underline underline-offset-4 hover:text-paper"
         >
-          Manage subscription
+          {t("ui.manageSubscription")}
         </Link>
       </div>
     </div>

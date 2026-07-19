@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getClientPlan, type ClientPlan } from "@/lib/entitlements/client";
 import type { PremiumPlanCopy, PlanFeature } from "@/lib/premium/plans";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const SOURCE_LABEL: Record<string, string> = {
   google: "Google Play",
@@ -52,6 +53,7 @@ const FREE: ClientPlan = {
 };
 
 export function PlanScreen({ planCopy }: { planCopy: PremiumPlanCopy }) {
+  const { t } = useTranslate();
   const router = useRouter();
   const [plan, setPlan] = useState<ClientPlan | null>(null);
 
@@ -84,7 +86,7 @@ export function PlanScreen({ planCopy }: { planCopy: PremiumPlanCopy }) {
     return (
       <div className="flex min-h-[70vh] items-center justify-center bg-night px-6">
         <p className="animate-pulse font-sans text-ui text-paper/50">
-          Loading your plan…
+          {t("ui.loadingYourPlan")}
         </p>
       </div>
     );
@@ -107,10 +109,10 @@ export function PlanScreen({ planCopy }: { planCopy: PremiumPlanCopy }) {
             <BigCheck />
           </div>
           <p className="mt-5 font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-emerald-300/80">
-            Your plan
+            {t("ui.yourPlan")}
           </p>
           <h1 className="mt-2 font-display-serif text-display-sm text-paper md:text-display">
-            You&rsquo;re on {name}
+            {t("ui.youReOn")} {name}
           </h1>
           <p className="mx-auto mt-4 max-w-[460px] font-sans text-body leading-relaxed text-paper/70">
             {lede}
@@ -122,8 +124,8 @@ export function PlanScreen({ planCopy }: { planCopy: PremiumPlanCopy }) {
           className="reveal-rise mt-9 grid grid-cols-2 gap-3 sm:grid-cols-3"
           style={delay(1)}
         >
-          <StatBox label="Plan" value={isPro ? "Pro" : "Plus"} accent />
-          <StatBox label="Access via" value={source} />
+          <StatBox label={t("ui.plan")} value={isPro ? "Pro" : "Plus"} accent />
+          <StatBox label={t("ui.accessVia")} value={source} />
           <StatBox label={bill.label} value={bill.value} />
         </div>
 
@@ -137,7 +139,7 @@ export function PlanScreen({ planCopy }: { planCopy: PremiumPlanCopy }) {
           }}
         >
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
-            What&rsquo;s included
+            {t("ui.whatSIncluded")}
           </p>
           <ul className="mt-5 space-y-4">
             {features.map((f) => (
@@ -170,14 +172,14 @@ export function PlanScreen({ planCopy }: { planCopy: PremiumPlanCopy }) {
             href="/prayers/today"
             className="rounded-pill border border-emerald-400/50 bg-emerald-500/[0.14] px-6 py-3 font-sans text-ui font-semibold text-emerald-200 transition-colors hover:bg-emerald-500/20"
           >
-            Back to reading
+            {t("ui.backToReading")}
           </Link>
           {plan.source !== "comp" && (
             <Link
               href="/pricing"
               className="rounded-pill border border-paper/20 px-6 py-3 font-sans text-ui font-semibold text-paper/85 transition-colors hover:border-paper/40 hover:text-paper"
             >
-              Manage subscription
+              {t("ui.manageSubscription")}
             </Link>
           )}
         </div>
@@ -186,7 +188,7 @@ export function PlanScreen({ planCopy }: { planCopy: PremiumPlanCopy }) {
             className="reveal-rise mt-4 text-center font-sans text-caption text-paper/40"
             style={delay(3)}
           >
-            Complimentary access, with our thanks. Nothing to manage or pay.
+            {t("ui.complimentaryAccessWithOurThanks")}
           </p>
         )}
       </div>

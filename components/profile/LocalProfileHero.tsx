@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useLocalAccount, releaseLocal } from "@/lib/profile/localAccount";
 import { AccountChoice } from "./AccountChoice";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Mirrors `ProfileHero` for the device-only path. Shown on `/account`
@@ -25,6 +26,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
  * localStorage.
  */
 export function LocalProfileHero() {
+  const { t } = useTranslate();
   const account = useLocalAccount();
   const [upgrading, setUpgrading] = useState(false);
   const [confirmingRelease, setConfirmingRelease] = useState(false);
@@ -51,7 +53,7 @@ export function LocalProfileHero() {
   return (
     <section className="mt-10 rounded-lg border border-paper/15 bg-paper/[0.03] p-6 md:p-7">
       <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-        Reading privately on this device
+        {t("ui.readingPrivatelyOnThisDevice")}
       </p>
       <div className="flex items-center gap-4">
         <span
@@ -70,16 +72,14 @@ export function LocalProfileHero() {
           </p>
           {created ? (
             <p className="mt-1 font-sans text-caption text-paper/55">
-              Claimed locally on {created}
+              {t("ui.claimedLocallyOn")} {created}
             </p>
           ) : null}
         </div>
       </div>
 
       <p className="mt-5 font-serif text-body text-paper/80 leading-[1.7]">
-        Highlights, notes, and bookmarks are saved on this device. They
-        stay yours without an account; signing in adds one thing,
-        keeping them synchronized across your devices.
+        {t("ui.highlightsNotesAndBookmarksAre")}
       </p>
 
       <div className="mt-5 flex flex-col sm:flex-row gap-3">
@@ -88,22 +88,22 @@ export function LocalProfileHero() {
           onClick={() => setUpgrading(true)}
           className="font-sans text-ui font-semibold rounded-pill px-5 py-3 bg-gold text-night hover:bg-gold-soft transition-colors"
         >
-          Sign in to sync across devices →
+          {t("ui.signInToSyncAcross")}
         </button>
         <button
           type="button"
           onClick={() => setConfirmingRelease(true)}
           className="font-sans text-ui font-medium rounded-pill px-5 py-3 border border-paper/25 text-paper/80 hover:border-paper/55 hover:text-paper transition-colors"
         >
-          Remove this name
+          {t("ui.removeThisName")}
         </button>
       </div>
       <ConfirmDialog
         open={confirmingRelease}
-        title="Remove this name?"
+        title={t("ui.removeThisNameX")}
         description="Your highlights, notes, and bookmarks stay on this device, only the name and claim date are removed."
-        confirmLabel="Remove name"
-        cancelLabel="Keep it"
+        confirmLabel={t("ui.removeName")}
+        cancelLabel={t("study.florilegium.keepIt")}
         destructive
         onCancel={() => setConfirmingRelease(false)}
         onConfirm={() => {
@@ -113,9 +113,7 @@ export function LocalProfileHero() {
       />
 
       <p className="mt-5 font-sans text-caption text-paper/45 leading-[1.55]">
-        Signing in syncs your local highlights, notes, and bookmarks to
-        your account the first time, nothing on this device is removed.
-        Reader settings stay on this device for now.
+        {t("ui.signingInSyncsYourLocal")}
       </p>
     </section>
   );

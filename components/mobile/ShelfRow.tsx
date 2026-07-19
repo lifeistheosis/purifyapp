@@ -9,7 +9,7 @@ export function ShelfRow({
   label,
   children,
 }: {
-  label?: string;
+  label?: React.ReactNode;
   children: ReactNode;
 }) {
   return (

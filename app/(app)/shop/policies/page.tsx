@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Shipping & Returns | EIKON",
@@ -17,102 +18,67 @@ export default function ShopPoliciesPage() {
     <section className="bg-night px-5 py-16 md:px-8 md:py-24">
       <article className="mx-auto w-full max-w-[760px]">
         <p className="mb-4 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
-          EIKON · Shipping &amp; Returns
+          <T k="shop.eikonShippingReturns" />
         </p>
         <h1 className="font-sans text-display-sm font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display">
-          How we ship, and how returns work.
+          <T k="shop.howWeShipAndHow" />
         </h1>
         <p className="mt-6 font-serif text-body leading-[1.7] text-paper/65">
-          Effective July 17, 2026. This page is part of the{" "}
+          <T k="shop.effectiveJuly172026This" />{" "}
           <Link href="/terms" className={A}>
-            Terms of Service
+            <T k="ui.termsOfServiceX" />
           </Link>{" "}
-          and applies to every EIKON order.
+          <T k="shop.andAppliesToEveryEikon" />
         </p>
 
-        <h2 className={H2}>How EIKON fulfills orders</h2>
+        <h2 className={H2}><T k="shop.howEikonFulfillsOrders" /></h2>
         <p className={P}>
-          EIKON selects, inspects, and ships every item it sells. Many items
-          are obtained from selected suppliers, inspected, and repackaged by
-          us before they ship, so please read the dispatch window on each
-          listing.
+          <T k="shop.eikonSelectsInspectsAndShips" />
         </p>
 
-        <h2 className={H2}>Shipping and dispatch</h2>
+        <h2 className={H2}><T k="shop.shippingAndDispatch" /></h2>
         <p className={P}>
-          We ship within the United States only. Standard shipping is
-          charged at the flat rate shown at checkout, and is free on every
-          order while you hold an active Purify Pro subscription. Each
-          listing shows an estimated dispatch window; because most items are
-          sourced and inspected before shipping, dispatch commonly takes one
-          to three weeks, and delivery time after dispatch depends on the
-          carrier. These are good-faith estimates, not guarantees. If we
-          cannot dispatch within a materially longer time than estimated, we
-          will email you and offer to wait or to cancel for a full refund.
-          Risk of loss passes when we hand the package to the carrier.
+          <T k="shop.weShipWithinTheUnited" />
         </p>
 
-        <h2 className={H2}>Order changes and cancellations</h2>
+        <h2 className={H2}><T k="shop.orderChangesAndCancellations" /></h2>
         <p className={P}>
-          Tell us as soon as possible if you need to change or cancel an
-          order. We can usually cancel an item that has not yet been sourced
-          or shipped and refund it in full. Special-order items may not be
-          cancellable once we have placed the supplier order; the listing
-          notes when an item is special order.
+          <T k="shop.tellUsAsSoonAs" />
         </p>
 
-        <h2 className={H2}>Returns</h2>
+        <h2 className={H2}><T k="shop.returns" /></h2>
         <p className={P}>
-          Standard stocked items may be returned within 30 days of delivery
-          if unused and undamaged and in their original packaging. For
-          change-of-mind returns, you pay return shipping. We cover return
-          shipping, and replace or refund, when an item arrives incorrect,
-          damaged, or materially different from its description. To start a
-          return, contact us with your order or confirmation number through{" "}
+          <T k="shop.standardStockedItemsMayBe" />{" "}
           <Link href="/support/contact" className={A}>
-            support
+            <T k="shop.support" />
           </Link>
           .
         </p>
 
-        <h2 className={H2}>Refunds</h2>
+        <h2 className={H2}><T k="shop.refunds" /></h2>
         <p className={P}>
-          Approved refunds are issued to your original payment method. Once
-          we approve a refund it is normally processed within a few business
-          days; your bank may take additional time to post it. If an item is
-          lost in transit or never arrives, contact us and we will make it
-          right.
+          <T k="shop.approvedRefundsAreIssuedTo" />
         </p>
 
-        <h2 className={H2}>Product descriptions and natural variation</h2>
+        <h2 className={H2}><T k="shop.productDescriptionsAndNaturalVariation" /></h2>
         <p className={P}>
-          We describe items honestly and label how each is made. Photographs
-          may be representative rather than the exact physical item, and
-          natural materials such as wood, print, and resin vary in grain,
-          tone, and finish. That variation is part of the object and is not a
-          defect.
+          <T k="shop.weDescribeItemsHonestlyAnd" />
         </p>
 
-        <h2 className={H2}>Product safety</h2>
+        <h2 className={H2}><T k="shop.productSafety" /></h2>
         <p className={P}>
-          Some items are combustible. Incense, resin, and charcoal produce an
-          open flame, heat, embers, and smoke. Use them only on a
-          heat-resistant, non-flammable surface with good ventilation; never
-          leave them burning unattended; keep them, and all small parts, away
-          from children and pets; and let ash and charcoal cool fully before
-          disposal. You are responsible for using every product safely and as
-          intended.
+          <T k="shop.someItemsAreCombustibleIncense" />
         </p>
 
-        <h2 className={H2}>Questions</h2>
+        <h2 className={H2}><T k="shop.questions" /></h2>
         <p className={P}>
-          Reach us any time through{" "}
+          <T k="shop.reachUsAnyTimeThrough" />{" "}
           <Link href="/support/contact" className={A}>
-            support
+            <T k="shop.support" />
           </Link>{" "}
-          or at{" "}
+          <T k="shop.orAt" />{" "}
           <a href="mailto:support@purifyapp.net" className={A}>
-            support@purifyapp.net
+            <T k="shop.supportPurifyappNet" />
           </a>
           .
         </p>

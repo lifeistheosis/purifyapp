@@ -6,6 +6,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type AnyBookmark = {
   id: string;
@@ -48,6 +49,7 @@ function hrefFor(b: AnyBookmark): string {
 }
 
 export function SavedPreview() {
+  const { t } = useTranslate();
   const [items, setItems] = useState<AnyBookmark[]>([]);
   const [total, setTotal] = useState(0);
 
@@ -87,7 +89,7 @@ export function SavedPreview() {
     <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4">
       <div className="flex items-baseline justify-between gap-2 mb-3">
         <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/55">
-          Recently saved
+          {t("ui.recentlySaved")}
         </p>
         <Link
           href="/saved"
@@ -98,7 +100,7 @@ export function SavedPreview() {
       </div>
       {items.length === 0 ? (
         <p className="font-sans text-detail text-paper/55 italic">
-          Star a verse, chapter, prayer, or writing to keep it here.
+          {t("ui.starAVerseChapterPrayer")}
         </p>
       ) : (
         <ul className="space-y-2">

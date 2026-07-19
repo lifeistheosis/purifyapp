@@ -21,10 +21,12 @@ import {
   reportCampaign,
 } from "@/lib/campaigns/client";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type Phase = "loading" | "missing" | "ready" | "error";
 
 export function CampaignDetailClient() {
+  const { t } = useTranslate();
   const id = useSearchParams().get("id") ?? "";
   const [phase, setPhase] = useState<Phase>("loading");
   const [campaign, setCampaign] = useState<PrayerCampaign | null>(null);
@@ -168,13 +170,13 @@ export function CampaignDetailClient() {
   );
 
   if (phase === "loading") {
-    return <Centered>Opening the campaign…</Centered>;
+    return <Centered>{t("shop.openingTheCampaign")}</Centered>;
   }
   if (phase === "error") {
     return (
       <Centered>
         <p className="font-serif text-lede text-paper/80">
-          This campaign could not be opened just now.
+          {t("shop.thisCampaignCouldNotBe")}
         </p>
         <div className="mt-4 flex items-center gap-3">
           <button
@@ -185,13 +187,13 @@ export function CampaignDetailClient() {
             }}
             className="inline-flex rounded-pill bg-paper px-4 py-2 font-sans text-ui font-semibold text-night hover:bg-paper/90"
           >
-            Try again
+            {t("error.tryAgain")}
           </button>
           <Link
             href="/campaigns"
             className="inline-flex rounded-pill border border-paper/20 px-4 py-2 font-sans text-ui text-paper/80 hover:border-paper/40"
           >
-            Back to campaigns
+            {t("shop.backToCampaigns")}
           </Link>
         </div>
       </Centered>
@@ -201,13 +203,13 @@ export function CampaignDetailClient() {
     return (
       <Centered>
         <p className="font-serif text-lede text-paper/80">
-          This campaign could not be found.
+          {t("shop.thisCampaignCouldNotBeX")}
         </p>
         <Link
           href="/campaigns"
           className="mt-4 inline-flex rounded-pill border border-paper/20 px-4 py-2 font-sans text-ui text-paper/80 hover:border-paper/40"
         >
-          Back to campaigns
+          {t("shop.backToCampaigns")}
         </Link>
       </Centered>
     );
@@ -229,7 +231,7 @@ export function CampaignDetailClient() {
           href="/campaigns"
           className="font-sans text-caption text-paper/50 hover:text-paper/80"
         >
-          ← All campaigns
+          {t("shop.allCampaigns")}
         </Link>
 
         <div className="mt-5 flex items-center gap-2">
@@ -274,7 +276,7 @@ export function CampaignDetailClient() {
         {/* Suggested prayer */}
         <div className="mt-7 rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
-            Pray
+            {t("prayers.today.pray")}
           </p>
           <p className="mt-2.5 font-serif text-lede italic leading-[1.7] text-paper/90">
             {prayerText(campaign)}
@@ -289,14 +291,14 @@ export function CampaignDetailClient() {
 
           {!isActive ? (
             <p className="font-sans text-ui text-paper/55">
-              This campaign has closed. Glory to God for every prayer offered.
+              {t("shop.thisCampaignHasClosedGlory")}
             </p>
           ) : userId == null ? (
             <Link
               href={`/signin?next=/campaigns/detail?id=${campaign.id}`}
               className="inline-flex w-full items-center justify-center rounded-pill bg-paper px-6 py-4 font-display-serif text-lede text-night transition-colors hover:bg-paper/90"
             >
-              Sign in to pray
+              {t("shop.signInToPray")}
             </Link>
           ) : prayedToday ? (
             <button
@@ -304,7 +306,7 @@ export function CampaignDetailClient() {
               disabled
               className="inline-flex w-full items-center justify-center rounded-pill border border-gold/40 bg-gold/[0.08] px-6 py-4 font-display-serif text-lede text-gold-pale"
             >
-              Prayed today
+              {t("shop.prayedToday")}
             </button>
           ) : (
             <button
@@ -325,12 +327,12 @@ export function CampaignDetailClient() {
                 disabled={busy !== null}
                 className="hover:text-paper/80 disabled:opacity-50"
               >
-                Remove from my prayers
+                {t("shop.removeFromMyPrayers")}
               </button>
             ) : null}
             {userId != null && !isCreator ? (
               reported ? (
-                <span>Reported. Thank you.</span>
+                <span>{t("study.reportedThankYou")}</span>
               ) : (
                 <button
                   type="button"
@@ -338,7 +340,7 @@ export function CampaignDetailClient() {
                   disabled={busy !== null}
                   className="hover:text-paper/80 disabled:opacity-50"
                 >
-                  Report
+                  {t("shop.report")}
                 </button>
               )
             ) : null}
@@ -348,7 +350,7 @@ export function CampaignDetailClient() {
           {isCreator && isActive ? (
             <div className="mt-6 border-t border-paper/8 pt-5">
               <p className="text-center font-sans text-caption text-paper/45">
-                When the time comes, you can close this campaign.
+                {t("shop.whenTheTimeComesYou")}
               </p>
               <div className="mt-3 flex justify-center gap-3">
                 <button
@@ -357,7 +359,7 @@ export function CampaignDetailClient() {
                   disabled={busy !== null}
                   className="rounded-pill border border-paper/20 px-4 py-2 font-sans text-caption font-semibold text-paper/80 hover:border-paper/40 disabled:opacity-50"
                 >
-                  Mark answered
+                  {t("shop.markAnswered")}
                 </button>
                 {campaign.for_whom === "departed" ? (
                   <button
@@ -366,7 +368,7 @@ export function CampaignDetailClient() {
                     disabled={busy !== null}
                     className="rounded-pill border border-paper/20 px-4 py-2 font-sans text-caption font-semibold text-paper/80 hover:border-paper/40 disabled:opacity-50"
                   >
-                    Memory eternal
+                    {t("shop.memoryEternal")}
                   </button>
                 ) : null}
               </div>
@@ -375,9 +377,7 @@ export function CampaignDetailClient() {
         </div>
 
         <p className="mt-8 border-t border-paper/8 pt-5 text-center font-sans text-caption leading-[1.6] text-paper/40">
-          Campaigns are the prayers of the faithful, not the teaching of the
-          Church. Pray with discernment, and take what troubles you to your
-          priest.
+          {t("shop.campaignsAreThePrayersOf")}
         </p>
       </div>
     </section>

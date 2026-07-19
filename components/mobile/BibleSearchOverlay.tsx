@@ -11,8 +11,10 @@ import { useEffect, useState } from "react";
 import { BibleSearch } from "@/components/bible/BibleSearch";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function BibleSearchTrigger() {
+  const { t } = useTranslate();
   const [open, setOpen] = useState(false);
 
   // Lock body scroll while the sheet is open.
@@ -31,7 +33,7 @@ export function BibleSearchTrigger() {
     <>
       <button
         type="button"
-        aria-label="Search the Bible"
+        aria-label={t("bible.searchAria")}
         onClick={() => setOpen(true)}
         className="inline-flex items-center justify-center h-9 w-9 rounded-full border border-paper/15 bg-paper/[0.04] text-paper/75 hover:text-paper active:scale-95 transition-transform"
       >
@@ -45,7 +47,7 @@ export function BibleSearchTrigger() {
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Search the Bible"
+          aria-label={t("bible.searchAria")}
           className="fixed inset-0 z-50 bg-night/95 backdrop-blur-sm flex flex-col"
         >
           <header
@@ -56,20 +58,20 @@ export function BibleSearchTrigger() {
             style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 1rem)" }}
           >
             <p className="font-sans text-caption uppercase tracking-[1.5px] text-paper/55">
-              Search
+              {t("common.search")}
             </p>
             <button
               type="button"
               onClick={() => setOpen(false)}
               className="font-sans text-detail text-paper/75 hover:text-paper"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
           </header>
           <div className="px-5 pt-6 pb-10 flex-1 overflow-y-auto">
             <BibleSearch />
             <p className="mt-3 font-sans italic text-caption text-paper/45">
-              Try: &lsquo;John 3:16&rsquo; · &lsquo;1 Cor 13&rsquo; · &lsquo;Psalm 23&rsquo;
+              {t("ui.tryJohn3161")}
             </p>
           </div>
         </div>

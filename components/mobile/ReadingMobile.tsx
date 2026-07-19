@@ -17,6 +17,7 @@ import type { NextSuggestion, PopularRead, ReadingPath } from "@/lib/reading/cur
 import { loadAllTopics } from "@/lib/topics/topics";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
+import { T } from "@/components/i18n/T";
 
 /**
  * Reading hub, mobile. Mirrors the desktop /reading order, reading first:
@@ -75,7 +76,7 @@ export async function ReadingMobile({
 
  return (
  <MobileShell
- header={<MobileHeader title="Reading" trailing={<UserAvatarSmall />} />}
+ header={<MobileHeader titleKey="nav.reading" trailing={<UserAvatarSmall />} />}
  >
  <header className="text-center mb-7">
  <OrnamentHeadpiece className="mx-auto mb-4 max-w-[320px]" />
@@ -156,9 +157,9 @@ export async function ReadingMobile({
  )}
 
  <p className="mt-10 text-center font-display-serif italic text-detail text-paper/45 leading-[1.55]">
- Through the prayers of our holy Fathers,
+ <T k="ui.throughThePrayersOfOur" />
  <br />
- Lord Jesus Christ our God, have mercy on us.
+ <T k="ui.lordJesusChristOurGod" />
  </p>
  </MobileShell>
  );

@@ -31,6 +31,7 @@ import {
   setGiftSoundEnabled,
 } from "@/lib/gifts/chime";
 import { Reliquary } from "./Reliquary";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export type PendingGift = {
   id: string;
@@ -92,6 +93,7 @@ export function GiftBox({
   /** Called when the box is finished with, claimed or dismissed. */
   onDone: () => void;
 }) {
+  const { t } = useTranslate();
   const [phase, setPhase] = useState<Phase>("sealed");
   const [error, setError] = useState<string | null>(null);
   // Off unless the reader has turned it on before. Read after mount so SSR and
@@ -160,7 +162,7 @@ export function GiftBox({
       className="fixed inset-0 z-[100] flex items-center justify-center px-6"
       role="dialog"
       aria-modal="true"
-      aria-label="A gift for you"
+      aria-label={t("shop.aGiftForYou")}
       style={{
         // Solid base + a soft pool of light. A gradient costs nothing; a
         // backdrop-filter would cost frames.
@@ -172,7 +174,7 @@ export function GiftBox({
         {phase !== "revealed" ? (
           <>
             <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-paper/45">
-              A gift for you
+              {t("shop.aGiftForYou")}
             </p>
 
             {/* Stage. Fixed size so the reveal swap cannot shift layout. */}
@@ -250,7 +252,7 @@ export function GiftBox({
             </div>
 
             <p className="mt-7 font-serif text-body leading-relaxed text-paper/70">
-              Something has been set aside for you.
+              {t("shop.somethingHasBeenSetAside")}
             </p>
 
             <button
@@ -269,7 +271,7 @@ export function GiftBox({
                 disabled={opening}
                 className="font-sans text-caption text-paper/45 underline underline-offset-4 hover:text-paper/70 disabled:opacity-40"
               >
-                Not now
+                {t("onboard.reminders.notNow")}
               </button>
               {/* Sound is off unless asked for, and the ask lives here rather
                   than in a settings page nobody visits — this is the one
@@ -295,7 +297,7 @@ export function GiftBox({
             {error ? (
               <div className="gift-fade-up">
                 <p className="font-display-serif text-title text-paper">
-                  Not just now
+                  {t("shop.notJustNow")}
                 </p>
                 <p className="mx-auto mt-4 max-w-[300px] font-serif text-ui leading-relaxed text-paper/70">
                   {error}
@@ -322,7 +324,7 @@ export function GiftBox({
                     className="gift-fade-up font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-paper/45"
                     style={{ animationDelay: "60ms" }}
                   >
-                    Yours
+                    {t("shop.yours")}
                   </p>
                   <p
                     className="gift-name mt-4 font-display-serif text-display-sm leading-tight text-paper"
@@ -334,7 +336,7 @@ export function GiftBox({
                     className="gift-fade-up mt-1 font-sans text-lede text-gold-pale"
                     style={{ animationDelay: "260ms" }}
                   >
-                    for {lengthLabel(gift.days)}
+                    {t("shop.for")} {lengthLabel(gift.days)}
                   </p>
                   {gift.message ? (
                     <p
@@ -353,7 +355,7 @@ export function GiftBox({
               className="gift-fade-up tap-press relative mt-8 inline-flex min-h-[48px] w-full items-center justify-center rounded-pill bg-paper px-8 font-sans text-ui font-semibold text-night"
               style={{ animationDelay: error ? "120ms" : "500ms" }}
             >
-              Continue
+              {t("common.continue")}
             </button>
           </div>
         )}

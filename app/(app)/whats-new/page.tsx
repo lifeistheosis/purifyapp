@@ -3,6 +3,7 @@ import { ChangelogControls } from "@/components/whats-new/ChangelogControls";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
  title: "What's new",
@@ -1407,134 +1408,83 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
- Beta 1.7 &middot; A walk through the history of the Church
+ <T k="ui.beta17MiddotA" />
  </p>
  </div>
 
  {isDe ? (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Die ganze Geschichte der Kirche, jetzt eine Zeitleiste zum Durchwandern.
+ <T k="ui.dieGanzeGeschichteDerKirche" />
  </h1>
  ) : (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- The whole history of the Church, now a timeline you can walk.
+ <T k="ui.theWholeHistoryOfThe" />
  </h1>
  )}
 
  {isDe ? (
  <>
  <p className="mt-8 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- Wenn du neu hier bist, willkommen. Wir sehen in dieser Woche
- eine echte Welle neuer Leser ankommen, und wir sind sehr
- froh, daß du gekommen bist. Purify ist klein, von Hand gebaut
- und wird von einem kleinen Team von Entwicklern und
- Redakteuren getragen, jeder einzelne von euch, der
- vorbeischaut, zählt. Gieß dir eine Tasse Kaffee ein, schau
- dich um, und wenn etwas kaputt ist oder fehlt, sag uns
- Bescheid. Wir möchten, daß du dich zuhause fühlst.
+ <T k="ui.wennDuNeuHierBist" />
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- Der mit Abstand beste Ort, um mit uns zu sprechen, Fragen zu
- stellen, einen Heiligen vorzuschlagen, einen Tippfehler zu
- melden oder einfach mit anderen orthodoxen Lesern zu beten,
- ist unser Discord. Es ist der Raum, in dem die Redaktion
- täglich lebt, wo du sehen kannst, woran als nächstes
- gearbeitet wird, und wo deine Stimme ändert, was geliefert
- wird. Wir können nicht genug betonen, wie sehr es hilft, dich
- dort dabei zu haben. Tritt{" "}
+ <T k="ui.derMitAbstandBesteOrt" />{" "}
  <a
  href="https://discord.gg/VzBYYUsNJ6"
  target="_blank"
  rel="noopener noreferrer"
  className="text-sky-400 underline underline-offset-2 decoration-sky-400/50 hover:decoration-sky-300 hover:text-sky-300"
  >
- hier
+ <T k="ui.hier" />
  </a>{" "}
- bei.
+ <T k="ui.bei" />
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- Beta 1.7 ist die größte Ausgabe seit dem Beginn von Purify. Die
- ganze Geschichte der orthodoxen Kirche lebt jetzt in der App als{" "}
- <Link href="/history" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">interaktive Zeitleiste</Link>,
- die du mit eigener Hand durchwandern kannst: achtunddreißig
- Ereignisse über elf Zeitalter, vom Feuer von Pfingsten bis zur
- Kirche unserer eigenen Tage, jedes belegt, mit Quellen versehen und
- ehrlich darüber, was gesichert ist und was in liebevoller
- Überlieferung gehalten wird. Daneben wurden die drei Seiten, die du
- am häufigsten öffnest, Heute, die Bibel und Entdecken, zu einem
- stillen, durchdachten Ganzen neu gezeichnet, und die Anmeldung mit
- Google, die verstummt war, singt wieder.
+ <T k="ui.beta17IstDie" />{" "}
+ <Link href="/history" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"><T k="ui.interaktiveZeitleiste" /></Link><T k="ui.dieDuMitEigenerHand" />
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- Die Arbeit darunter bleibt dieselbe. Gebet, Schrift, die
- Heiligen, die Konzile und das Jahr der Kirche, schlicht
- hingestellt, ohne Verfolgung und ohne Werbung. Bete mit der
- Kirche. Lies mit den Vätern. Geh durch das Jahr. Wir sind
- geehrt, daß du irgend etwas davon mit uns tust.
+ <T k="ui.dieArbeitDarunterBleibtDieselbe" />
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- Das vollständige Versionsprotokoll lebt unten, nach Datum
- gruppiert und voreingestellt zugeklappt. Klappe einen Eintrag
- auf, wenn du die Einzelheiten möchtest.
+ <T k="ui.dasVollstNdigeVersionsprotokollLebt" />
  </p>
  </>
  ) : (
  <>
  <p className="mt-8 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- If you are new here, welcome. Purify is small,
- hand-built, and run by a small team of developers and editorial
- hands. Every reader who finds the site matters to us. Pour
- something warm, take a look around, and if anything is broken
- or missing tell us. We want you to feel at home.
+ <T k="ui.ifYouAreNewHere" />
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- The single best place to talk to us, ask questions, request a
- saint, surface a typo, or just pray with other Orthodox readers
- is our Discord. It is the room where the editorial team lives
- day-to-day, where you can see what is being worked on next, and
- where your voice changes what ships. We cannot overstate how much
- it helps to have you in there. Join{" "}
+ <T k="ui.theSingleBestPlaceTo" />{" "}
  <a
  href="https://discord.gg/VzBYYUsNJ6"
  target="_blank"
  rel="noopener noreferrer"
  className="text-sky-400 underline underline-offset-2 decoration-sky-400/50 hover:decoration-sky-300 hover:text-sky-300"
  >
- here
+ <T k="ui.here" />
  </a>
  .
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- Beta 1.7 is the largest patch since Purify began. The whole story
- of the Orthodox Church now lives in the app as an{" "}
- <Link href="/history" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">interactive timeline</Link>{" "}
- you can walk with your own hand: thirty-eight events across eleven
- ages, from the fire of Pentecost to the Church of our own day, each
- one sourced, cited, and honest about what is certain and what is
- held in loving tradition. Around it, the three pages you open most,
- Today, the Bible, and Discover, have been redrawn to feel like one
- quiet, considered whole, and Continue with Google, which had gone
- quiet, sings again.
+ <T k="ui.beta17IsThe" />{" "}
+ <Link href="/history" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"><T k="ui.interactiveTimeline" /></Link>{" "}
+ <T k="ui.youCanWalkWithYour" />
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- The work underneath stays the same. Prayer, Scripture, the
- saints, the Councils, and the year of the Church laid out
- plainly, with no tracking and no advertising. Pray with the
- Church. Read with the Fathers. Walk the year. Bump the saints
- whose words you most want to hear. We are honored you would do
- any of it with us.
+ <T k="ui.theWorkUnderneathStaysThe" />
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- The full release-by-release log lives below, grouped by date and
- collapsed by default. Pop one open when you want the detail.
+ <T k="ui.theFullReleaseByRelease" />
  </p>
  </>
  )}

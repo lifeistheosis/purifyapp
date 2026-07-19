@@ -10,6 +10,7 @@ import { fetchShopHome } from "@/lib/shop/catalogClient";
 import { CATEGORY_LABELS } from "@/lib/shop/format";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import type { ShopCategory } from "@/lib/shop/types";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const TRUST = [
   "Inspected by hand",
@@ -23,6 +24,7 @@ const TRUST = [
  * only when it has real content — no fabricated counts or empty shells.
  */
 export function ShopHomeClient() {
+  const { t } = useTranslate();
   const { data, error, loading, reload } = useAsyncData(fetchShopHome, []);
   const categories = Object.entries(CATEGORY_LABELS) as [ShopCategory, string][];
 
@@ -31,14 +33,13 @@ export function ShopHomeClient() {
       {/* Masthead: tighter promise, honest trust row, a real primary action. */}
       <header className="px-5 pt-9 text-center md:px-0 md:pt-16">
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-          Purify Shop
+          {t("shop.purifyShop")}
         </p>
         <h1 className="mx-auto mt-3 max-w-[640px] font-display-serif text-display-sm md:text-display text-paper leading-[1.05]">
-          Icons for the life of prayer.
+          {t("shop.iconsForTheLifeOf")}
         </h1>
         <p className="mx-auto mt-3.5 max-w-[440px] font-serif text-body md:text-lede text-paper/70 leading-[1.6]">
-          Curated Orthodox icons, faithful to the tradition and inspected by
-          hand.
+          {t("shop.curatedOrthodoxIconsFaithfulTo")}
         </p>
 
         <ul className="mx-auto mt-5 flex max-w-[560px] flex-wrap items-center justify-center gap-x-2 gap-y-2">
@@ -58,11 +59,11 @@ export function ShopHomeClient() {
             href="/shop/category/all"
             className="tap-press inline-flex min-h-[48px] items-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night transition-colors hover:bg-paper/90"
           >
-            Browse Icons
+            {t("shop.browseIcons")}
           </Link>
           <Link
             href="/shop/category/all"
-            aria-label="Search the shop"
+            aria-label={t("shop.searchTheShop")}
             className="tap-press inline-flex h-12 w-12 items-center justify-center rounded-full border border-paper/20 text-paper/75 transition-colors hover:border-paper/40 hover:text-paper"
           >
             <Search size={19} />
@@ -71,7 +72,7 @@ export function ShopHomeClient() {
       </header>
 
       {/* Category carousel: snap scrolling, edge-to-edge on phones. */}
-      <nav aria-label="Browse by category" className="mt-8 -mx-0">
+      <nav aria-label={t("shop.browseByCategory")} className="mt-8 -mx-0">
         <ul className="flex snap-x snap-mandatory gap-2 overflow-x-auto scrollbar-thin px-5 pb-1 md:justify-center md:px-0">
           {categories.map(([slug, label]) => (
             <li key={slug} className="shrink-0 snap-start">
@@ -91,9 +92,9 @@ export function ShopHomeClient() {
 
       {data ? (
         <>
-          <ProductRail title="Featured Icons" products={data.featured} />
+          <ProductRail title={t("shop.featuredIcons")} products={data.featured} />
           <ProductRail
-            title="Ready to Ship"
+            title={t("shop.readyToShipX")}
             products={data.readyToShip}
             seeAllHref="/shop/category/all?inventory=ready_to_ship"
           />
@@ -106,16 +107,16 @@ export function ShopHomeClient() {
                 className="press-card block rounded-lg border border-paper/10 bg-night-soft/60 p-6 md:p-10"
               >
                 <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-                  The founding store
+                  {t("shop.theFoundingStore")}
                 </p>
                 <p className="mt-3 font-display-serif text-heading md:text-display-sm tracking-[0.08em] text-paper">
-                  EIKON
+                  {t("shop.eikon")}
                 </p>
                 <p className="mt-4 max-w-[560px] font-serif text-body text-paper/70 leading-[1.6]">
                   {data.eikon.description}
                 </p>
                 <p className="mt-4 font-sans text-detail font-medium text-paper/70">
-                  Visit the store →
+                  {t("shop.visitTheStore")}
                 </p>
               </Link>
             </section>
@@ -123,9 +124,9 @@ export function ShopHomeClient() {
 
           {/* Recently added */}
           {data.recent.length > 0 ? (
-            <section aria-label="Recently added" className="mt-12 px-5 md:px-0">
+            <section aria-label={t("study.theology.recentlyAdded")} className="mt-12 px-5 md:px-0">
               <h2 className="mb-4 font-display-serif text-title md:text-heading text-paper">
-                Recently Added
+                {t("shop.recentlyAdded")}
               </h2>
               <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
                 {data.recent.map((p, i) => (
@@ -140,20 +141,19 @@ export function ShopHomeClient() {
       ) : null}
 
       {/* Request + Sell (static; always available) */}
-      <section aria-label="Request an icon" className="mt-12 grid gap-4 px-5 md:grid-cols-2 md:px-0">
+      <section aria-label={t("shop.requestAnIcon")} className="mt-12 grid gap-4 px-5 md:grid-cols-2 md:px-0">
         <Link
           href="/shop/request"
           className="press-card block rounded-lg border border-paper/10 bg-night-soft/60 p-6"
         >
           <h2 className="font-display-serif text-title text-paper">
-            Looking for a saint you don&rsquo;t see?
+            {t("shop.lookingForASaintYou")}
           </h2>
           <p className="mt-2 font-serif text-body text-paper/65 leading-[1.6]">
-            Tell us who you&rsquo;re praying with. We&rsquo;ll look for the icon
-            and write back.
+            {t("shop.tellUsWhoYouRe")}
           </p>
           <p className="mt-3 font-sans text-detail font-medium text-paper/70">
-            Request an icon →
+            {t("shop.requestAnIconX")}
           </p>
         </Link>
         <Link
@@ -161,15 +161,13 @@ export function ShopHomeClient() {
           className="press-card block rounded-lg border border-paper/10 bg-night-soft/60 p-6"
         >
           <h2 className="font-display-serif text-title text-paper">
-            Do you make or sell icons?
+            {t("shop.doYouMakeOrSell")}
           </h2>
           <p className="mt-2 font-serif text-body text-paper/65 leading-[1.6]">
-            Purify is opening a curated marketplace for iconographers,
-            monasteries, workshops, and retailers. Applications are reviewed by
-            hand.
+            {t("shop.purifyIsOpeningACuratedX")}
           </p>
           <p className="mt-3 font-sans text-detail font-medium text-paper/70">
-            Sell on Purify →
+            {t("shop.sellOnPurifyX")}
           </p>
         </Link>
       </section>
@@ -177,7 +175,7 @@ export function ShopHomeClient() {
       {/* Merchant disclosure */}
       <footer className="mt-14 border-t border-white/8 px-5 pt-6 md:px-0">
         <p className="font-sans text-caption text-paper/60">
-          Merchants join Purify Shop by application and review.
+          {t("shop.merchantsJoinPurifyShopBy")}
         </p>
       </footer>
     </div>

@@ -21,8 +21,10 @@
 
 import { useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export default function SignOutPage() {
+  const { t } = useTranslate();
   useEffect(() => {
     const goHome = () => window.location.assign("/");
     const fallback = window.setTimeout(goHome, 4000);
@@ -57,10 +59,10 @@ export default function SignOutPage() {
   return (
     <div className="text-center">
       <h1 className="font-sans text-title font-bold text-paper leading-tight mb-2">
-        Signing you out…
+        {t("ui.signingYouOut")}
       </h1>
       <p className="font-serif text-ui text-paper/75">
-        One moment. We are taking you back to the start.
+        {t("ui.oneMomentWeAreTaking")}
       </p>
     </div>
   );

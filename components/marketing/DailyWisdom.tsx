@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { pickDailyWisdom } from "@/data/marketing/daily-wisdom";
+import { T } from "@/components/i18n/T";
 
 /**
  * Server component. Pulls today's daily wisdom entry, a Scripture
@@ -16,7 +17,7 @@ export function DailyWisdom() {
  <section className="bg-night-soft border-y border-white/8 px-5 md:px-8 py-10 md:py-12">
  <div className="mx-auto max-w-[820px] w-full text-center">
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-paper/45 mb-4">
- Daily wisdom · {useVerse ? "Scripture" : "From the Fathers"}
+ <T k="ui.dailyWisdom" /> · {useVerse ? "Scripture" : "From the Fathers"}
  </p>
  <p className="font-serif italic text-lede md:text-title-sm text-paper/90 leading-[1.55]">
  &ldquo;{text}&rdquo;

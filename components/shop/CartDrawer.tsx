@@ -23,8 +23,10 @@ import {
   useCart,
 } from "@/lib/shop/cart";
 import { formatPrice } from "@/lib/shop/format";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function CartDrawer() {
+  const { t } = useTranslate();
   const items = useCart();
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
@@ -61,7 +63,7 @@ export function CartDrawer() {
         )}
       />
       <aside
-        aria-label="Cart"
+        aria-label={t("shop.cart")}
         aria-hidden={!open}
         className={cn(
           "fixed inset-y-0 right-0 z-50 flex w-full max-w-[400px] flex-col bg-night shadow-2xl transition-transform duration-300 ease-out",
@@ -70,13 +72,13 @@ export function CartDrawer() {
       >
         <header className="flex items-center justify-between border-b border-white/8 px-5 py-4">
           <p className="font-display-serif text-title-sm text-paper">
-            Your cart
+            {t("shop.yourCart")}
             {count > 0 ? <span className="text-paper/50"> · {count}</span> : null}
           </p>
           <button
             type="button"
             onClick={() => setOpen(false)}
-            aria-label="Close cart"
+            aria-label={t("shop.closeCart")}
             className="tap-press flex h-9 w-9 items-center justify-center rounded-full text-paper/60 hover:bg-paper/10 hover:text-paper"
           >
             <CloseIcon />
@@ -86,14 +88,14 @@ export function CartDrawer() {
         {items.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
             <p className="font-serif text-body text-paper/60">
-              Your cart is empty.
+              {t("shop.yourCartIsEmpty")}
             </p>
             <Link
               href="/shop"
               onClick={() => setOpen(false)}
               className="tap-press inline-flex min-h-[44px] items-center rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night hover:bg-paper/90"
             >
-              Browse the shop
+              {t("shop.browseTheShop")}
             </Link>
           </div>
         ) : (
@@ -159,7 +161,7 @@ export function CartDrawer() {
                         onClick={() => removeFromCart(item.slug)}
                         className="font-sans text-eyebrow font-medium text-paper/45 underline underline-offset-4 hover:text-paper"
                       >
-                        Remove
+                        {t("prayers.diptychs.remove")}
                       </button>
                     </div>
                   </div>
@@ -169,20 +171,20 @@ export function CartDrawer() {
 
             <div className="border-t border-white/8 px-5 py-4 safe-pb">
               <div className="flex items-center justify-between">
-                <p className="font-sans text-ui text-paper/70">Subtotal</p>
+                <p className="font-sans text-ui text-paper/70">{t("shop.subtotalX")}</p>
                 <p className="font-sans text-title-sm font-semibold text-paper">
                   {formatPrice(subtotal, currency)}
                 </p>
               </div>
               <p className="mt-1 font-sans text-caption text-paper/45">
-                Shipping &amp; taxes calculated at checkout.
+                {t("shop.shippingTaxesCalculatedAtCheckout")}
               </p>
               <Link
                 href="/shop/cart"
                 onClick={() => setOpen(false)}
                 className="tap-press mt-4 inline-flex min-h-[48px] w-full items-center justify-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90"
               >
-                View cart &amp; check out
+                {t("shop.viewCartCheckOut")}
               </Link>
             </div>
           </>

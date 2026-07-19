@@ -15,6 +15,7 @@ import {
 } from "@/lib/shop/browse";
 import { CLASSIFICATION_LABELS } from "@/lib/shop/format";
 import type { ShopClassification } from "@/lib/shop/types";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Search + facet filters for the shop's browsing surfaces. Amazon's clarity
@@ -36,6 +37,7 @@ export function ShopBrowseControls({
   resultCount: number;
   searchPlaceholder?: string;
 }) {
+  const { t } = useTranslate();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const count = activeFilterCount(filters);
@@ -69,7 +71,7 @@ export function ShopBrowseControls({
       <div className="flex items-center gap-2.5">
         {/* Search field */}
         <label className="relative flex min-h-[46px] flex-1 items-center">
-          <span className="sr-only">Search the shop</span>
+          <span className="sr-only">{t("shop.searchTheShop")}</span>
           <span className="pointer-events-none absolute left-4 text-paper/45">
             <Search size={16} />
           </span>
@@ -85,7 +87,7 @@ export function ShopBrowseControls({
           {filters.q ? (
             <button
               type="button"
-              aria-label="Clear search"
+              aria-label={t("shop.clearSearch")}
               onClick={() => onChange({ ...filters, q: "" })}
               className="absolute right-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-paper/55 hover:text-paper"
             >
@@ -113,7 +115,7 @@ export function ShopBrowseControls({
           )}
         >
           <Sliders size={16} />
-          Filters
+          {t("shop.filters")}
           {count > 0 ? (
             <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 font-sans text-[11px] font-bold text-night">
               {count}
@@ -146,7 +148,7 @@ export function ShopBrowseControls({
               }
               className="min-h-[34px] px-2 font-sans text-caption text-paper/55 underline underline-offset-2 hover:text-paper"
             >
-              Clear all
+              {t("shop.clearAll")}
             </button>
           </li>
         </ul>
@@ -160,14 +162,14 @@ export function ShopBrowseControls({
       ) : null}
 
       {/* Phone bottom sheet. */}
-      <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} title="Filters">
+      <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} title={t("shop.filters")}>
         {editor}
         <button
           type="button"
           onClick={() => setSheetOpen(false)}
           className="tap-press mt-5 flex min-h-[48px] w-full items-center justify-center rounded-pill bg-paper font-sans text-ui font-semibold text-night"
         >
-          Show {resultCount} {resultCount === 1 ? "icon" : "icons"}
+          {t("shop.show")} {resultCount} {resultCount === 1 ? "icon" : "icons"}
         </button>
       </Sheet>
     </div>
@@ -183,6 +185,7 @@ function FacetEditor({
   filters: BrowseFilters;
   onChange: (next: BrowseFilters) => void;
 }) {
+  const { t } = useTranslate();
   const classifications = Object.entries(CLASSIFICATION_LABELS) as [
     ShopClassification,
     string,
@@ -193,21 +196,21 @@ function FacetEditor({
     <div className="space-y-5">
       <fieldset>
         <legend className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
-          Availability
+          {t("shop.availability")}
         </legend>
         <div className="mt-2.5">
           <FacetChip
             selected={!!filters.readyOnly}
             onClick={() => onChange({ ...filters, readyOnly: !filters.readyOnly })}
           >
-            Ready to ship
+            {t("shop.readyToShip")}
           </FacetChip>
         </div>
       </fieldset>
 
       <fieldset>
         <legend className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
-          Type
+          {t("shop.type")}
         </legend>
         <div className="mt-2.5 flex flex-wrap gap-2">
           {classifications.map(([slug, label]) => (
@@ -229,7 +232,7 @@ function FacetEditor({
 
       <fieldset>
         <legend className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
-          Price
+          {t("shop.price")}
         </legend>
         <div className="mt-2.5 flex flex-wrap gap-2">
           {bands.map(([band, label]) => (

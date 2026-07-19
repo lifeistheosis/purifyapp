@@ -21,5 +21,10 @@
     "app/(app)/prayers/evening/page.tsx",
     "components/bible/ScriptureAttribution.tsx",
     "components/bible/Fums.tsx"
+  ],
+  "dirPrefixes": [
+    "app/(app)/shop/seller/",
+    "app/admin/",
+    "app/(app)/language-editor/"
   ]
 }

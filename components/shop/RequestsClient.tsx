@@ -14,6 +14,7 @@ import {
   AUTH_UNRESOLVED_MESSAGE,
   resolveUser,
 } from "@/lib/supabase/resolveUser";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const REQUEST_STATUS_LABELS: Record<ShopIconRequest["status"], string> = {
   new: "Received",
@@ -42,14 +43,15 @@ async function load(): Promise<Result> {
 }
 
 export function RequestsClient() {
+  const { t } = useTranslate();
   const { data, error, loading, reload } = useAsyncData(load, []);
 
-  if (loading) return <ShopLoading label="Loading your requests…" />;
+  if (loading) return <ShopLoading label={t("shop.loadingYourRequests")} />;
   if (error) return <ShopError message={error} onRetry={reload} />;
   if (data && !data.signedIn) {
     return (
       <ShopSignInPrompt
-        title="Your icon requests"
+        title={t("shop.yourIconRequests")}
         body="Sign in to see requests tied to your account. Requests sent with an email address only are answered by email."
         next="/shop/requests"
         extra={
@@ -57,7 +59,7 @@ export function RequestsClient() {
             href="/shop/request"
             className="tap-press inline-flex min-h-[44px] items-center rounded-pill border border-paper/20 px-6 font-sans text-ui font-semibold text-paper"
           >
-            New request
+            {t("shop.newRequest")}
           </Link>
         }
       />
@@ -71,24 +73,23 @@ export function RequestsClient() {
       <header className="flex items-end justify-between gap-4 pt-10 md:pt-14">
         <div>
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-            Purify Shop
+            {t("shop.purifyShop")}
           </p>
           <h1 className="mt-2 font-display-serif text-heading text-paper">
-            Your icon requests
+            {t("shop.yourIconRequests")}
           </h1>
         </div>
         <Link
           href="/shop/request"
           className="tap-press inline-flex min-h-[44px] shrink-0 items-center rounded-pill border border-paper/20 px-5 font-sans text-detail font-semibold text-paper hover:border-paper/40"
         >
-          New request
+          {t("shop.newRequest")}
         </Link>
       </header>
 
       {requests.length === 0 ? (
         <p className="mt-8 font-serif text-body text-paper/65 leading-[1.65]">
-          No requests yet. When you ask for an icon, it appears here with its
-          status.
+          {t("shop.noRequestsYetWhenYou")}
         </p>
       ) : (
         <ul className="mt-8 divide-y divide-paper/8 rounded-md border border-paper/12">

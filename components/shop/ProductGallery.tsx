@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 
 import type { ShopProductMedia } from "@/lib/shop/types";
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Product image gallery: native horizontal scroll-snap (swipeable with
@@ -18,6 +19,7 @@ export function ProductGallery({
   media: ShopProductMedia[];
   representative: boolean;
 }) {
+  const { t } = useTranslate();
   const [idx, setIdx] = useState(0);
   const trackRef = useRef<HTMLDivElement | null>(null);
 
@@ -51,7 +53,7 @@ export function ProductGallery({
         ref={trackRef}
         onScroll={onScroll}
         className="flex snap-x snap-mandatory overflow-x-auto rounded-xl border border-paper/8 bg-gradient-to-b from-paper/[0.05] to-paper/[0.02] scrollbar-thin"
-        aria-label="Product images"
+        aria-label={t("shop.productImages")}
       >
         {media.map((m, i) => (
           <div
@@ -119,8 +121,7 @@ export function ProductGallery({
 
       {representative ? (
         <figcaption className="mt-3 text-center font-sans text-caption text-paper/60">
-          Representative image: your icon is the same design and format;
-          natural wood and print variation may differ slightly.
+          {t("shop.representativeImageYourIconIs")}
         </figcaption>
       ) : null}
     </figure>

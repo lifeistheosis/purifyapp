@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { apiFetch } from "@/lib/api/client";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Stripe returns here when the buyer backs out of payment. The pending
@@ -13,6 +14,7 @@ import { apiFetch } from "@/lib/api/client";
  * doors, and an honest note that nothing was charged.
  */
 export function CheckoutCancelledClient() {
+  const { t } = useTranslate();
   const params = useSearchParams();
   const order = params.get("order");
   const product = params.get("product");
@@ -39,30 +41,29 @@ export function CheckoutCancelledClient() {
   return (
     <div className="mx-auto w-full max-w-[560px] px-5 pt-14 text-center md:px-8 md:pt-20">
       <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-        Purify Shop
+        {t("shop.purifyShop")}
       </p>
       <h1 className="mt-3 font-display-serif text-heading md:text-display-sm text-paper">
-        Checkout cancelled.
+        {t("shop.checkoutCancelled")}
       </h1>
       <p className="mt-4 font-serif text-lede text-paper/70 leading-[1.65]">
-        Nothing was charged and no order was placed. The icon will be here
-        whenever you&rsquo;re ready.
+        {t("shop.nothingWasChargedAndNo")}
       </p>
       {!done ? (
-        <p className="mt-3 font-sans text-caption text-paper/45">Tidying up…</p>
+        <p className="mt-3 font-sans text-caption text-paper/45">{t("shop.tidyingUp")}</p>
       ) : null}
       <div className="mt-8 flex justify-center gap-3">
         <Link
           href={product ? `/shop/icons/${product}` : "/shop"}
           className="tap-press inline-flex min-h-[48px] items-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90"
         >
-          Back to the icon
+          {t("shop.backToTheIcon")}
         </Link>
         <Link
           href="/shop"
           className="tap-press inline-flex min-h-[48px] items-center rounded-pill border border-paper/20 px-7 font-sans text-ui font-semibold text-paper hover:border-paper/40"
         >
-          Browse the shop
+          {t("shop.browseTheShop")}
         </Link>
       </div>
     </div>

@@ -28,6 +28,7 @@ import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { SavedPreview } from "./SavedPreview";
 import { SettingsList, type SettingsItem } from "./SettingsList";
 import { readIntentions } from "@/lib/prayers/storage";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type AuthState =
   | { kind: "loading" }
@@ -97,6 +98,7 @@ function readReadingStats(): ReadingStats {
 }
 
 export function YouMobile() {
+  const { t } = useTranslate();
   const [auth, setAuth] = useState<AuthState>({ kind: "loading" });
   const [intentions, setIntentions] = useState(0);
   const [reading, setReading] = useState<ReadingStats>({
@@ -236,7 +238,7 @@ export function YouMobile() {
 
   return (
     <MobileShell
-      header={<MobileHeader title="You" trailing={<UserAvatarSmall />} />}
+      header={<MobileHeader title={t("nav.you")} trailing={<UserAvatarSmall />} />}
       eyebrow={
         signedIn
           ? auth.email
@@ -255,7 +257,7 @@ export function YouMobile() {
           signedIn ? (
             <span>{displayName}</span>
           ) : auth.kind === "anon" ? (
-            <span>Your reading life, on this device.</span>
+            <span>{t("ui.yourReadingLifeOnThis")}</span>
           ) : (
             <span className="italic text-paper/55">…</span>
           )
@@ -263,13 +265,11 @@ export function YouMobile() {
         body={
           signedIn ? (
             <span>
-              Your highlights, notes, and bookmarks sync to every device you
-              sign in on. Manage your profile, password, and sessions below.
+              {t("ui.yourHighlightsNotesAndBookmarks")}
             </span>
           ) : auth.kind === "anon" ? (
             <span>
-              Everything you save lives in this browser. Sign in to carry it
-              across devices, or keep it local; both paths are honoured.
+              {t("ui.everythingYouSaveLivesIn")}
             </span>
           ) : null
         }
@@ -285,7 +285,7 @@ export function YouMobile() {
                 href="/signin?next=/account"
                 className="block w-full text-center rounded-full bg-paper text-night px-4 py-2.5 font-sans text-ui font-semibold"
               >
-                Sign in
+                {t("common.signIn")}
               </Link>
             </div>
           ) : undefined
@@ -294,7 +294,7 @@ export function YouMobile() {
 
       {signedIn ? (
         <div className="mt-6">
-          <MobileSectionLabel>Your reading</MobileSectionLabel>
+          <MobileSectionLabel>{t("ui.yourReading")}</MobileSectionLabel>
           <MobileStatGrid
             cols={2}
             stats={[

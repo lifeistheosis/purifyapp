@@ -14,6 +14,7 @@ import {
   remindersStatus,
   updateReminderTimes,
 } from "@/lib/push/reminders";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type State =
   | { kind: "loading" }
@@ -23,6 +24,7 @@ type State =
   | { kind: "denied" };
 
 export function PushOptIn() {
+  const { t } = useTranslate();
   const [state, setState] = useState<State>({ kind: "loading" });
   const [busy, setBusy] = useState(false);
 
@@ -89,26 +91,22 @@ export function PushOptIn() {
   return (
     <section className="rounded-md border border-paper/12 bg-paper/[0.03] p-5">
       <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
-        Prayer reminders
+        {t("prayers.push.label")}
       </p>
       <p className="font-serif text-body text-paper/85 leading-[1.6] mb-4">
-        One nudge in the morning, one in the evening. Off by default. No
-        third-party notification provider, delivered through your device&rsquo;s
-        own push service.
+        {t("ui.oneNudgeInTheMorning")}
       </p>
       {state.kind === "loading" && (
-        <p className="font-sans text-detail text-paper/55 italic">Checking…</p>
+        <p className="font-sans text-detail text-paper/55 italic">{t("ui.checking")}</p>
       )}
       {state.kind === "unsupported" && (
         <p className="font-sans text-detail text-paper/55">
-          Your browser does not support Web Push. Try a recent Chrome,
-          Edge, or Firefox.
+          {t("ui.yourBrowserDoesNotSupport")}
         </p>
       )}
       {state.kind === "denied" && (
         <p className="font-sans text-detail text-paper/55">
-          Notifications are blocked at the browser level. Re-enable them in
-          your site settings and refresh.
+          {t("ui.notificationsAreBlockedAtThe")}
         </p>
       )}
       {state.kind === "not-subscribed" && (
@@ -126,7 +124,7 @@ export function PushOptIn() {
           <div className="flex gap-4 flex-wrap items-end">
             <label className="flex flex-col gap-1">
               <span className="font-sans text-caption text-paper/55">
-                Morning
+                {t("prayers.push.morning")}
               </span>
               <input
                 type="time"
@@ -139,7 +137,7 @@ export function PushOptIn() {
             </label>
             <label className="flex flex-col gap-1">
               <span className="font-sans text-caption text-paper/55">
-                Evening
+                {t("prayers.push.evening")}
               </span>
               <input
                 type="time"
@@ -157,7 +155,7 @@ export function PushOptIn() {
             disabled={busy}
             className="font-sans text-caption text-paper/55 hover:text-paper transition-colors disabled:opacity-40"
           >
-            Turn off reminders
+            {t("prayers.push.turnOff")}
           </button>
         </div>
       )}

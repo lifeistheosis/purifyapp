@@ -1,3 +1,4 @@
+import { T } from "@/components/i18n/T";
 /**
  * Three small cards explaining what travels across devices with a Purify
  * account. Lives under the SignInPanel on the signed-out /account page,
@@ -22,7 +23,7 @@ export function WhatSyncsStrip() {
   return (
     <section className="mt-10">
       <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-        What syncs
+        <T k="ui.whatSyncs" />
       </p>
       <ul className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {ITEMS.map((it) => (
@@ -40,8 +41,7 @@ export function WhatSyncsStrip() {
         ))}
       </ul>
       <p className="mt-5 font-serif italic text-ui text-paper/55 leading-[1.6]">
-        No password to remember. No tracking. Delete your account at any time
-        and every server row goes with it.
+        <T k="ui.noPasswordToRememberNo" />
       </p>
     </section>
   );

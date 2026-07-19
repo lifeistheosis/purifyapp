@@ -29,6 +29,7 @@ import {
   popularRules,
 } from "@/lib/prayers/rules";
 import { seasonFor, isFastDay } from "@/lib/prayers/season";
+import { T } from "@/components/i18n/T";
 
 type HeroMode = "morning" | "midday" | "evening";
 
@@ -61,19 +62,19 @@ export function PrayersMobile() {
 
   return (
     <MobileShell
-      header={<MobileHeader title="Prayers" trailing={<UserAvatarSmall />} />}
+      header={<MobileHeader titleKey="nav.prayers" trailing={<UserAvatarSmall />} />}
       eyebrow={formatLongDate(today)}
     >
       {/* Quiet masthead */}
       <header className="text-center pt-1">
         <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-4">
-          The Prayer
+          <T k="footer.prayer" />
         </p>
         <h1 className="font-serif text-title leading-[1.15] tracking-[-0.01em] text-paper">
-          Pray without ceasing.
+          <T k="ui.prayWithoutCeasing" />
         </h1>
         <p className="mt-3 font-serif italic text-detail text-paper/45">
-          1 Thessalonians 5:17
+          <T k="ui.1Thessalonians517" />
         </p>
         <div aria-hidden className="mx-auto mt-6 h-px w-10 bg-gold/50" />
         <p className="mx-auto mt-6 max-w-[40ch] font-serif text-body text-paper/70 leading-[1.75]">
@@ -84,18 +85,18 @@ export function PrayersMobile() {
       {/* The prayer of the heart */}
       <div className="my-10 text-center">
         <p className="font-serif text-title-sm leading-[1.5] text-paper/90">
-          Lord Jesus Christ,
+          <T k="prayers.heart.line1" />
           <br />
-          Son of God,
+          <T k="prayers.heart.line2" />
           <br />
-          have mercy on me, a sinner.
+          <T k="prayers.heart.line3" />
         </p>
         <p className="mt-5">
           <Link
             href="/prayers/learning/jesus-prayer"
             className="font-sans text-detail font-medium text-gold/80 underline decoration-gold/30 underline-offset-4"
           >
-            Learn how to pray it →
+            <T k="ui.learnHowToPrayIt" />
           </Link>
         </p>
       </div>
@@ -105,31 +106,31 @@ export function PrayersMobile() {
       <div className="mb-6">
         <FeatureBand
           href="/prayers/anthem"
-          eyebrow="A hymn · for the rope"
-          title="The Prayer Rope Anthem"
-          sub="Sung knot by knot. Play it, follow the lyrics."
+          eyebrow={<T k="today.prayNow.anthemKicker" />}
+          title={<T k="today.prayNow.anthemTitle" />}
+          sub={<T k="ui.anthemSub" />}
         />
       </div>
 
       {/* Practices: the surfaces with their own UI, as soft tiles. */}
       <p className="mb-3 font-sans text-eyebrow uppercase tracking-[2px] text-paper/55">
-        Practices
+        <T k="ui.practices" />
       </p>
       <SoftTileGrid className="mb-8">
-        <SoftTile href="/prayers/today" label="Today" sub="Fast & feast" icon={<Sun size={21} />} tone="a" />
-        <SoftTile href="/prayers/hours" label="The Hours" sub="Sanctify the day" icon={<Lampada size={21} />} tone="b" />
-        <SoftTile href="/prayers/rope" label="The Rope" sub="The Jesus Prayer" icon={<PrayerRope size={21} />} tone="c" />
-        <SoftTile href="/prayers/akathists" label="Akathists" sub="Hymns of praise" icon={<Lyre size={21} />} tone="d" />
-        <SoftTile href="/prayers/learning" label="Learn to pray" sub="A beginner's path" icon={<Orans size={21} />} tone="b" />
-        <SoftTile href="/prayers/personal" label="Personal" sub="Your own rule" icon={<Hands size={21} />} tone="a" />
+        <SoftTile href="/prayers/today" label={<T k="prayers.tabs.today" />} sub={<T k="ui.fastFeast" />} icon={<Sun size={21} />} tone="a" />
+        <SoftTile href="/prayers/hours" label={<T k="ui.theHours" />} sub={<T k="ui.sanctifyTheDay" />} icon={<Lampada size={21} />} tone="b" />
+        <SoftTile href="/prayers/rope" label={<T k="ui.theRope" />} sub={<T k="prayers.jesusPrayer" />} icon={<PrayerRope size={21} />} tone="c" />
+        <SoftTile href="/prayers/akathists" label={<T k="prayers.akathists" />} sub={<T k="ui.hymnsOfPraise" />} icon={<Lyre size={21} />} tone="d" />
+        <SoftTile href="/prayers/learning" label={<T k="ui.learnToPray" />} sub={<T k="ui.aBeginnersPath" />} icon={<Orans size={21} />} tone="b" />
+        <SoftTile href="/prayers/personal" label={<T k="prayers.tabs.personal" />} sub={<T k="ui.yourOwnRule" />} icon={<Hands size={21} />} tone="a" />
       </SoftTileGrid>
 
       <DiptychPreview />
 
       <div className="mt-2">
-        <ContinuePraying label="Continue praying" />
+        <ContinuePraying label={<T k="ui.continuePraying" />} />
 
-        <SuggestedToday season={season} isFast={isFast} label="Suggested for today" />
+        <SuggestedToday season={season} isFast={isFast} label={<T k="ui.suggestedForToday" />} />
 
         {/* Search wraps the index so a typed query replaces the
             popular + categorized + Also-in-this-book lists with
@@ -138,7 +139,7 @@ export function PrayersMobile() {
         <PrayerSearch>
         {popularRules().length > 0 && (
           <>
-            <PrayerSectionLabel>Popular prayer rules</PrayerSectionLabel>
+            <PrayerSectionLabel><T k="ui.popularPrayerRules" /></PrayerSectionLabel>
             <PrayerIndex>
               {popularRules().map((r) => (
                 <PrayerIndexRow

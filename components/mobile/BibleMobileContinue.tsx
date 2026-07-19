@@ -9,8 +9,10 @@
 import { useEffect, useState } from "react";
 import { MobileCard } from "./MobileCard";
 import { readLastRead, type LastRead } from "@/lib/bible/lastRead";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function BibleMobileContinue() {
+  const { t } = useTranslate();
   const [last, setLast] = useState<LastRead | null>(null);
 
   useEffect(() => {
@@ -24,7 +26,7 @@ export function BibleMobileContinue() {
     return (
       <MobileCard eyebrow="Continue reading">
         <p className="mt-2 font-sans text-detail text-paper/55 italic">
-          Open any chapter and this card will remember where you left off.
+          {t("ui.openAnyChapterAndThis")}
         </p>
       </MobileCard>
     );
@@ -45,7 +47,7 @@ export function BibleMobileContinue() {
       href={href}
     >
       <p className="mt-2 font-sans text-detail text-paper/55">
-        Pick up where you left off.
+        {t("account.h1")}
       </p>
       <p className="mt-3 font-sans text-detail font-medium text-paper/75">
         {resumeVerse

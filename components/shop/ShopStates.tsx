@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 // Shared loading / error / sign-in states for the client shop pages. The shop
 // is online-only inside the native shell, so a dropped connection lands on
@@ -104,6 +105,7 @@ export function ShopError({
   message?: string | null;
   onRetry?: () => void;
 }) {
+  const { t } = useTranslate();
   return (
     <div className="mx-auto max-w-[520px] px-5 py-16 text-center">
       <p className="font-serif text-body text-paper/70 leading-[1.6]">
@@ -115,7 +117,7 @@ export function ShopError({
           onClick={onRetry}
           className="tap-press mt-5 inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45"
         >
-          Try again
+          {t("error.tryAgain")}
         </button>
       ) : null}
     </div>
@@ -135,6 +137,7 @@ export function ShopSignInPrompt({
   next: string;
   extra?: React.ReactNode;
 }) {
+  const { t } = useTranslate();
   return (
     <div className="mx-auto w-full max-w-[680px] px-5 pt-10 md:px-8 md:pt-14">
       <h1 className="font-display-serif text-heading text-paper">{title}</h1>
@@ -146,7 +149,7 @@ export function ShopSignInPrompt({
           href={`/signin?next=${encodeURIComponent(next)}`}
           className="tap-press inline-flex min-h-[44px] items-center rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night"
         >
-          Sign in
+          {t("common.signIn")}
         </Link>
         {extra}
       </div>

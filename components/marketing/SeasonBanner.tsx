@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { currentSeason, startOfDayUtc } from "@/lib/calendar/orthodox";
+import { T } from "@/components/i18n/T";
 
 /**
  * Auto-surfacing liturgical season banner. Hidden in ordinary time;
@@ -18,7 +19,7 @@ export function SeasonBanner() {
       <div className="mx-auto max-w-[1240px] w-full flex items-center justify-between gap-4 flex-wrap">
         <div className="min-w-0 flex-1">
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/85">
-            We are in
+            <T k="ui.weAreIn" />
           </p>
           <p className="mt-1 font-sans text-body md:text-lede font-semibold text-paper">
             {season.label}
@@ -34,7 +35,7 @@ export function SeasonBanner() {
           href={season.href}
           className="shrink-0 inline-flex items-center gap-2 rounded-pill border border-gold/55 bg-gold/15 hover:bg-gold/25 px-4 h-[40px] font-sans text-detail font-medium text-paper transition-colors"
         >
-          Open the calendar →
+          <T k="ui.openTheCalendar" /> →
         </Link>
       </div>
     </section>

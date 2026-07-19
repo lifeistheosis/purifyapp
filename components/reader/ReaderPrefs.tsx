@@ -10,6 +10,7 @@ import {
   type ReadingTheme,
 } from "@/lib/reader/readingModes";
 import { useProReadingModes } from "@/components/reader/useProReadingModes";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export type ReaderSize = "sm" | "md" | "lg" | "xl";
 export type ReaderFont = "serif" | "display" | "sans";
@@ -262,6 +263,7 @@ export function useReaderPrefs(): Ctx {
 export const useReaderSize = useReaderPrefs;
 
 export function ReaderFontSizeButton() {
+  const { t } = useTranslate();
   const { size, cycleSize, sizeLabel } = useReaderPrefs();
   return (
     <button
@@ -272,7 +274,7 @@ export function ReaderFontSizeButton() {
       className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
     >
       <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/50">
-        Size
+        {t("ui.size")}
       </span>
       <span aria-hidden className="flex items-end gap-[3px]">
         {SIZES.map((s, i) => {
@@ -299,6 +301,7 @@ export function ReaderFontSizeButton() {
 export const ReaderFontButton = ReaderFontSizeButton;
 
 export function ReaderFontFamilyButton() {
+  const { t } = useTranslate();
   const { font, cycleFont, fontLabel } = useReaderPrefs();
   // Render a tiny "Aa" preview that swaps font-family to advertise the choice.
   const previewClass = FONT_CLASSES[font];
@@ -311,7 +314,7 @@ export function ReaderFontFamilyButton() {
       className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
     >
       <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/50">
-        Font
+        {t("ui.font")}
       </span>
       <span
         aria-hidden
@@ -329,6 +332,7 @@ export function ReaderFontFamilyButton() {
 }
 
 export function ReaderLeadingButton() {
+  const { t } = useTranslate();
   const { leading, cycleLeading, leadingLabel } = useReaderPrefs();
   const gap =
     leading === "loose" ? "4px" : leading === "relaxed" ? "3px" : "2px";
@@ -341,7 +345,7 @@ export function ReaderLeadingButton() {
       className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
     >
       <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/50">
-        Spacing
+        {t("ui.spacing")}
       </span>
       <span
         aria-hidden
@@ -360,14 +364,15 @@ export function ReaderLeadingButton() {
 }
 
 export function ReaderFocusButton() {
+  const { t } = useTranslate();
   const { focus, toggleFocus } = useReaderPrefs();
   return (
     <button
       type="button"
       onClick={toggleFocus}
       aria-pressed={focus}
-      title="Focus reading — hide everything but the text"
-      aria-label="Focus reading"
+      title={t("ui.focusReadingHideEverythingBut")}
+      aria-label={t("bible.focusReading")}
       className={cn(
         "inline-flex items-center gap-2 rounded-pill border px-3 py-2 font-sans text-detail font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-paper/25",
         focus
@@ -376,7 +381,7 @@ export function ReaderFocusButton() {
       )}
     >
       <FocusGlyph />
-      <span>Focus</span>
+      <span>{t("ui.focus")}</span>
     </button>
   );
 }
@@ -416,6 +421,7 @@ function FocusGlyph() {
  * a premium theme id.
  */
 export function ReadingModeController() {
+  const { t } = useTranslate();
   const { focus, setFocus, theme } = useReaderPrefs();
   const { allowed } = useProReadingModes();
   const effectiveTheme = allowed ? theme : "default";
@@ -505,8 +511,8 @@ export function ReadingModeController() {
     <button
       type="button"
       onClick={() => setFocus(false)}
-      aria-label="Exit focus reading (or press Escape)"
-      title="Exit focus reading (Esc)"
+      aria-label={t("ui.exitFocusReadingOrPress")}
+      title={t("ui.exitFocusReadingEsc")}
       data-reader-exit
       className="pointer-events-auto fixed right-3 top-3 z-[120] inline-flex h-[38px] items-center gap-2 rounded-pill border border-paper/25 bg-night/85 px-3.5 font-sans text-detail font-medium text-paper/85 shadow-pop backdrop-blur transition-colors hover:border-paper/45 hover:text-paper"
     >
@@ -524,7 +530,7 @@ export function ReadingModeController() {
         <path d="M18 6 6 18" />
         <path d="m6 6 12 12" />
       </svg>
-      Exit focus
+      {t("ui.exitFocus")}
     </button>,
     document.body,
   );
@@ -540,6 +546,7 @@ export const ReaderFocusController = ReadingModeController;
  * When the Pro gate is locked it routes to /pricing instead of applying.
  */
 export function ReaderThemeButton() {
+  const { t } = useTranslate();
   const { theme, cycleTheme, themeLabel } = useReaderPrefs();
   const { allowed, locked } = useProReadingModes();
   return (
@@ -568,7 +575,7 @@ export function ReaderThemeButton() {
     >
       <ThemeGlyph />
       <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/50">
-        Mode
+        {t("ui.mode")}
       </span>
       <span className="font-sans text-caption text-paper/70">
         {allowed ? themeLabel : "Pro"}

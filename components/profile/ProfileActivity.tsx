@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type Bookmark = {
   id: string;
@@ -108,6 +109,7 @@ function relativeShort(iso: string): string {
  * in sync with the rest of the bookmark UI without a hydrate-in-effect.
  */
 export function ProfileActivity() {
+  const { t } = useTranslate();
   const items = useSyncExternalStore(subscribe, readTopThree, () => EMPTY);
   // Distinct identity between SSR and the first client read tells us whether
   // we have hydrated client storage yet (without triggering a setState).
@@ -117,19 +119,18 @@ export function ProfileActivity() {
     <section className="mt-6">
       <div className="flex items-baseline justify-between gap-3 mb-4">
         <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
-          Last saved
+          {t("ui.lastSaved")}
         </p>
         <Link
           href="/saved"
           className="font-sans text-caption text-paper/55 hover:text-paper transition-colors"
         >
-          See all →
+          {t("ui.seeAll")}
         </Link>
       </div>
       {hydrated && items.length === 0 ? (
         <div className="rounded-md border border-paper/12 bg-paper/[0.02] px-5 py-6 font-serif italic text-ui text-paper/55 leading-[1.55]">
-          Nothing saved yet. Bookmark a verse on any chapter, or a section in a
-          saint&apos;s writing, and it will show up here.
+          {t("ui.nothingSavedYetBookmarkA")}
         </div>
       ) : (
         <ul className="grid grid-cols-1 sm:grid-cols-3 gap-3">

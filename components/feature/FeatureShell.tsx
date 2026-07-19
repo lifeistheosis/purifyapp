@@ -1,5 +1,6 @@
 import * as React from "react";
 import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
+import { T } from "@/components/i18n/T";
 
 type FeatureShellProps = {
   eyebrow: React.ReactNode;
@@ -35,7 +36,7 @@ export function FeatureShell({
         )}
         {children && <div className="mt-12">{children}</div>}
         <p className="mt-12 font-sans text-detail text-paper/40 uppercase tracking-[1.5px]">
-          Coming soon
+          <T k="signin.comingSoon" />
         </p>
       </div>
     </section>

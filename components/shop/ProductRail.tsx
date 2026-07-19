@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import type { ShopProductFull } from "@/lib/shop/types";
 import { ProductCard } from "./ProductCard";
+import { T } from "@/components/i18n/T";
 
 /**
  * Horizontal product rail: an edge-to-edge scroller on phones, the
@@ -30,7 +31,7 @@ export function ProductRail({
             href={seeAllHref}
             className="font-sans text-detail font-medium text-paper/60 hover:text-paper"
           >
-            See all
+            <T k="common.seeAll" />
           </Link>
         ) : null}
       </div>

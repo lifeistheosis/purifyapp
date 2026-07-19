@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Horizontal tab bar for the signed-in /account dashboard.
@@ -19,10 +20,11 @@ const TABS = [
 ];
 
 export function AccountTabs() {
+  const { t } = useTranslate();
   const pathname = usePathname() ?? "";
   return (
     <nav
-      aria-label="Account sections"
+      aria-label={t("ui.accountSections")}
       className="border-b border-paper/10 mb-8"
     >
       <ul className="flex gap-1 overflow-x-auto scrollbar-thin">

@@ -24,6 +24,7 @@ import {
   AUTH_UNRESOLVED_MESSAGE,
   resolveUser,
 } from "@/lib/supabase/resolveUser";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type Result = { signedIn: false } | { signedIn: true; orders: ShopOrder[] };
 
@@ -52,6 +53,7 @@ function UnfinishedRow({
   order: ShopOrder;
   onRemoved: () => void;
 }) {
+  const { t } = useTranslate();
   const [busy, setBusy] = useState(false);
   async function remove() {
     setBusy(true);
@@ -73,7 +75,7 @@ function UnfinishedRow({
           {order.items.map((i) => i.title).join(", ")}
         </p>
         <p className="mt-0.5 font-sans text-caption text-paper/50">
-          You left checkout before paying · nothing was charged
+          {t("shop.youLeftCheckoutBeforePaying")}
         </p>
       </div>
       <button
@@ -89,6 +91,7 @@ function UnfinishedRow({
 }
 
 export function OrdersClient() {
+  const { t } = useTranslate();
   const { data, error, loading, reload } = useAsyncData(load, []);
 
   if (loading) return <ShopListSkeleton />;
@@ -96,7 +99,7 @@ export function OrdersClient() {
   if (data && !data.signedIn) {
     return (
       <ShopSignInPrompt
-        title="Your orders"
+        title={t("shop.yourOrders")}
         body="Sign in to see orders placed with your account. Guest orders are tracked through the email receipt."
         next="/shop/orders"
       />
@@ -112,13 +115,13 @@ export function OrdersClient() {
     <div className="mx-auto w-full max-w-[680px] px-5 pb-8 md:px-8">
       <header className="pt-10 md:pt-14">
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-          Purify Shop
+          {t("shop.purifyShop")}
         </p>
-        <h1 className="mt-2 font-display-serif text-heading text-paper">Your orders</h1>
+        <h1 className="mt-2 font-display-serif text-heading text-paper">{t("shop.yourOrders")}</h1>
       </header>
 
       {unfinished.length > 0 ? (
-        <section aria-label="Unfinished checkout" className="mt-6">
+        <section aria-label={t("shop.unfinishedCheckout")} className="mt-6">
           <ul className="space-y-2">
             {unfinished.map((o) => (
               <UnfinishedRow key={o.id} order={o} onRemoved={reload} />
@@ -129,8 +132,7 @@ export function OrdersClient() {
 
       {orders.length === 0 ? (
         <p className="mt-8 font-serif text-body text-paper/65 leading-[1.65]">
-          No orders yet. When you buy an icon it appears here with its status,
-          from confirmation to delivery.
+          {t("shop.noOrdersYetWhenYou")}
         </p>
       ) : (
         <ul className="mt-8 space-y-5">
@@ -150,7 +152,7 @@ export function OrdersClient() {
                   </p>
                 </div>
                 <p className="mt-1 font-sans text-caption text-paper/60">
-                  Placed{" "}
+                  {t("shop.placed")}{" "}
                   {new Date(o.created_at).toLocaleDateString(undefined, {
                     month: "long",
                     day: "numeric",
@@ -159,7 +161,7 @@ export function OrdersClient() {
                 </p>
 
                 {step >= 0 ? (
-                  <ol className="mt-4 flex items-center gap-1" aria-label="Order progress">
+                  <ol className="mt-4 flex items-center gap-1" aria-label={t("shop.orderProgress")}>
                     {BUYER_ORDER_STEPS.map((s, i) => (
                       <li key={s} className="flex flex-1 flex-col items-center gap-1.5">
                         <span
@@ -189,7 +191,7 @@ export function OrdersClient() {
 
                 {o.outbound_tracking ? (
                   <p className="mt-3 font-sans text-detail text-paper/65">
-                    Tracking: <span className="text-paper">{o.outbound_tracking}</span>
+                    {t("shop.tracking")} <span className="text-paper">{o.outbound_tracking}</span>
                   </p>
                 ) : null}
               </li>

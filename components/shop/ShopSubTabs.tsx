@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { cartCount, openCartDrawer, useCart } from "@/lib/shop/cart";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Sticky buyer navigation inside the shop section on `< md`, the same
@@ -24,6 +25,7 @@ const TABS: { label: string; href: string; exact?: boolean }[] = [
 ];
 
 export function ShopSubTabs() {
+  const { t } = useTranslate();
   const pathname = usePathname() ?? "";
   const count = cartCount(useCart());
 
@@ -33,7 +35,7 @@ export function ShopSubTabs() {
 
   return (
     <nav
-      aria-label="Shop sections"
+      aria-label={t("shop.shopSections")}
       // Solid background, not a translucent frosted one: in the native
       // Android WebView the shop's product imagery bled through a
       // bg-night/92 + backdrop-blur bar as it scrolled, which read as a

@@ -9,8 +9,10 @@ import {
   type PrayerCampaign,
 } from "@/lib/campaigns/campaigns";
 import { fetchMyPrayers, type MyPrayers as MyPrayersData } from "@/lib/campaigns/client";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function MyPrayers() {
+  const { t } = useTranslate();
   const [data, setData] = useState<MyPrayersData | null>(null);
   const [loaded, setLoaded] = useState(false);
 
@@ -28,41 +30,41 @@ export function MyPrayers() {
           href="/campaigns"
           className="font-sans text-caption text-paper/50 hover:text-paper/80"
         >
-          ← All campaigns
+          {t("shop.allCampaigns")}
         </Link>
         <h1 className="mt-4 font-display-serif text-title text-paper">
-          My prayers
+          {t("shop.myPrayers")}
         </h1>
 
         {!loaded ? (
-          <p className="mt-8 font-sans text-ui text-paper/40">Gathering…</p>
+          <p className="mt-8 font-sans text-ui text-paper/40">{t("ui.gathering")}</p>
         ) : !data || data.userId == null ? (
           <div className="mt-6 rounded-2xl border border-paper/10 bg-black/20 p-6 text-center">
             <p className="font-serif text-lede text-paper/80">
-              Sign in to see the campaigns you are praying.
+              {t("shop.signInToSeeThe")}
             </p>
             <Link
               href="/signin?next=/campaigns/mine"
               className="mt-4 inline-flex rounded-pill bg-paper px-6 py-3 font-sans text-ui font-semibold text-night hover:bg-paper/90"
             >
-              Sign in
+              {t("common.signIn")}
             </Link>
           </div>
         ) : (
           <>
             {/* Summary */}
             <div className="mt-6 grid grid-cols-3 gap-3">
-              <Stat value={data.joined.length} label="Praying" />
-              <Stat value={data.totalPrayerDays} label="Prayers offered" />
-              <Stat value={data.created.length} label="Started" />
+              <Stat value={data.joined.length} label={t("shop.praying")} />
+              <Stat value={data.totalPrayerDays} label={t("shop.prayersOffered")} />
+              <Stat value={data.created.length} label={t("shop.started")} />
             </div>
 
-            <Group title="Campaigns you are praying">
+            <Group title={t("shop.campaignsYouArePraying")}>
               {data.joined.length === 0 ? (
                 <Empty>
-                  You have not joined a campaign yet.{" "}
+                  {t("shop.youHaveNotJoinedA")}{" "}
                   <Link href="/campaigns" className="text-gold-pale underline">
-                    Find one to pray.
+                    {t("shop.findOneToPray")}
                   </Link>
                 </Empty>
               ) : (
@@ -80,12 +82,12 @@ export function MyPrayers() {
               )}
             </Group>
 
-            <Group title="Campaigns you started">
+            <Group title={t("shop.campaignsYouStarted")}>
               {data.created.length === 0 ? (
                 <Empty>
-                  You have not started a campaign.{" "}
+                  {t("shop.youHaveNotStartedA")}{" "}
                   <Link href="/campaigns/new" className="text-gold-pale underline">
-                    Start one.
+                    {t("shop.startOne")}
                   </Link>
                 </Empty>
               ) : (

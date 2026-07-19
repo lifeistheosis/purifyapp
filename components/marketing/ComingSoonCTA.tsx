@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type Variant = "primary" | "secondary" | "tertiary" | "ghost" | "inverse";
 
@@ -22,6 +23,7 @@ export function ComingSoonCTA({
   className?: string;
   revertMs?: number;
 }) {
+  const { t } = useTranslate();
   const [shown, setShown] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -59,7 +61,7 @@ export function ComingSoonCTA({
           shown ? "opacity-100" : "opacity-0",
         )}
       >
-        Coming soon
+        {t("signin.comingSoon")}
       </span>
     </Button>
   );

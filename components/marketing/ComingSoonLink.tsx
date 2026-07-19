@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Renders a button-styled card that points at an unreleased feature.
@@ -19,6 +20,7 @@ export function ComingSoonLink({
   revertMs?: number;
   ariaLabel?: string;
 }) {
+  const { t } = useTranslate();
   const [shown, setShown] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -63,7 +65,7 @@ export function ComingSoonLink({
         style={{ background: "rgba(22, 18, 25, 0.92)" }}
       >
         <span className="font-sans text-ui font-semibold uppercase tracking-[1.5px] text-paper">
-          Coming soon
+          {t("signin.comingSoon")}
         </span>
       </div>
     </button>

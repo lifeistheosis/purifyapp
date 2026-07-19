@@ -37,7 +37,7 @@ export function ProfileSettings() {
   return (
     <section className="mt-10 rounded-lg border border-paper/12 bg-paper/[0.02] p-6 md:p-7">
       <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
-        Settings
+        {t("prayers.rope.settings")}
       </p>
 
       <div className="space-y-6">
@@ -47,14 +47,14 @@ export function ProfileSettings() {
         >
           <LanguagePicker />
         </Row>
-        <Row label="Reader font" description="The face of the body text in the Bible and saint readers.">
+        <Row label={t("ui.readerFont")} description="The face of the body text in the Bible and saint readers.">
           <SegGroup
             value={font}
             options={fontOptions}
             onChange={(v) => setFont(v as ReaderFont)}
           />
         </Row>
-        <Row label="Reader size" description="How large the body text appears at default zoom.">
+        <Row label={t("ui.readerSize")} description="How large the body text appears at default zoom.">
           <SegGroup
             value={size}
             options={sizeOptions}
@@ -62,7 +62,7 @@ export function ProfileSettings() {
           />
         </Row>
         <Row
-          label="Interlinear by default"
+          label={t("ui.interlinearByDefault")}
           description="Show the Greek alongside the English on New Testament chapters as soon as you open them."
         >
           <Toggle
@@ -72,7 +72,7 @@ export function ProfileSettings() {
           />
         </Row>
         <Row
-          label="Calendar reckoning"
+          label={t("ui.calendarReckoning")}
           description="The default style used by /calendar when no ?style= query is set. New (Revised Julian) for the Ecumenical Patriarchate and the majority; Old (Julian) for the Russian, Serbian, Athonite, and Jerusalem traditions."
         >
           <SegGroup

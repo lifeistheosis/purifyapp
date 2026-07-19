@@ -24,17 +24,21 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  */
 export function MobileTopBar({
   title,
+  titleKey,
   back,
   trailing,
   donate,
 }: {
   title?: string;
+  /** Catalog key resolved client-side; wins over title. */
+  titleKey?: string;
   back?: true | string;
   trailing?: React.ReactNode;
   donate?: boolean;
 }) {
   const router = useRouter();
   const { t } = useTranslate();
+  const resolvedTitle = titleKey ? t(titleKey) : title;
 
   const trailingContent =
     trailing ??
@@ -84,9 +88,9 @@ export function MobileTopBar({
       </div>
       <h1
         className="flex-1 text-center font-sans text-ui font-semibold text-paper tracking-[-0.005em] truncate"
-        title={title}
+        title={resolvedTitle}
       >
-        {title}
+        {resolvedTitle}
       </h1>
       <div className="min-w-[44px] flex items-center justify-end">
         {trailingContent}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
+import { T } from "@/components/i18n/T";
 
 /**
  * Tiny vertical spine chip representing one book of the Bible. Rendered
@@ -63,7 +64,7 @@ export function BookSpine({
         {name}
       </span>
       <span className="px-2 pb-2 pl-3 font-sans text-eyebrow uppercase tracking-[1px] text-paper/45">
-        {chapters} ch
+        {chapters} <T k="bible.chAbbrev" />
       </span>
     </Link>
   );

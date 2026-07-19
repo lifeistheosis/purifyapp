@@ -47,6 +47,33 @@ const CONVERTED_DIRS = [
   "app/(app)/saved",
   "app/(app)/florilegium",
   "app/(app)/trapeza",
+  "app/(app)/account",
+  "app/(auth)",
+  "app/(app)/premium",
+  "app/(app)/pricing",
+  "app/(app)/plan",
+  "app/(app)/whats-new",
+  "app/(app)/faq",
+  "app/(app)/about",
+  "app/(app)/support",
+  "components/profile",
+  "components/account",
+  "components/premium",
+  "components/onboarding",
+  "components/pwa",
+  "components/mobile",
+  "app/(app)/shop",
+  "app/(app)/campaigns",
+  "components/shop",
+  "components/campaigns",
+  "components/gifts",
+  "components/marketing",
+  "components/reader",
+  "components/ui",
+  "components/native",
+  "components/analytics",
+  "components/feature",
+  "components/content",
   "components/history",
   "components/florilegium",
   "components/theology",
@@ -199,6 +226,7 @@ if (doScan || triageDirs) {
         // Comparison/boolean expressions spanning tag-like operators
         // (a > b && c < d) are code, not copy.
         if (/^=|&&|\|\|/.test(text) || /^[=!<>]/.test(text)) continue;
+        if (text.startsWith("(") && text.includes(".")) continue;
         if (allowlist.substrings.some((s) => text.includes(s))) continue;
         const line = src.slice(0, m.index).split("\n").length;
         hits.push({ line, text: text.slice(0, 60) });
@@ -223,6 +251,7 @@ if (doScan || triageDirs) {
     for (const file of walk(abs)) {
       const rel = path.relative(ROOT, file).replace(/\\/g, "/");
       if (allowlist.files.includes(rel)) continue;
+      if ((allowlist.dirPrefixes ?? []).some((d) => rel.includes(d))) continue;
       const hits = scanFile(rel);
       if (hits.length > 0) {
         scanResults.push({ file: rel, hits });

@@ -5,6 +5,7 @@ import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { YouMobile } from "@/components/mobile/YouMobile";
 import { DesktopAccountGate } from "@/components/profile/DesktopAccountGate";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Your account",
@@ -51,9 +52,7 @@ export default async function AccountPage() {
           {t(m, "account.h1")}
         </h1>
         <p className="mt-6 font-serif text-body text-paper/85 leading-[1.7] max-w-[640px]">
-          Two real ways to use Purify, both free and both private. Keep
-          everything on this device, or sync across devices with email
-          and password (or Google / Apple). Either choice is reversible.
+          <T k="ui.twoRealWaysToUse" />
         </p>
 
         <div className="min-h-[520px]">
@@ -61,13 +60,12 @@ export default async function AccountPage() {
         </div>
 
         <p className="mt-10 font-sans text-ui text-paper/55 leading-[1.65] max-w-[640px]">
-          The full data-handling rules, with every field stored and every
-          third party named, are on the{" "}
+          <T k="ui.theFullDataHandlingRules" />{" "}
           <Link
             href="/privacy"
             className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
           >
-            privacy page
+            <T k="ui.privacyPage" />
           </Link>
           .
         </p>

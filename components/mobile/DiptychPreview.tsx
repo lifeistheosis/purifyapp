@@ -11,8 +11,10 @@ import {
   type Intention,
 } from "@/lib/prayers/storage";
 import { ShelfRow } from "./ShelfRow";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function DiptychPreview() {
+  const { t } = useTranslate();
   const [living, setLiving] = useState<Intention[]>([]);
   const [departed, setDeparted] = useState<Intention[]>([]);
 
@@ -36,7 +38,7 @@ export function DiptychPreview() {
   if (living.length === 0 && departed.length === 0) return null;
 
   return (
-    <ShelfRow label="Today you carry">
+    <ShelfRow label={t("ui.todayYouCarry")}>
       {living.map((p) => (
         <Chip key={`l-${p.id}`} name={p.name} note="living" />
       ))}
@@ -47,7 +49,7 @@ export function DiptychPreview() {
         href="/prayers/personal"
         className="inline-flex items-center justify-center h-[44px] px-3 rounded-md border border-paper/15 bg-paper/[0.03] text-paper/65 font-sans text-caption uppercase tracking-[1px] active:scale-[0.97] transition-transform"
       >
-        Manage →
+        {t("ui.manage")}
       </Link>
     </ShelfRow>
   );

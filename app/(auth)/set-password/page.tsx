@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { SetPasswordForm } from "@/components/auth/SetPasswordForm";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Set a password",
@@ -21,12 +22,10 @@ export default async function SetPasswordPage() {
   return (
     <div>
       <h1 className="font-sans text-title font-bold text-paper leading-tight mb-2">
-        One quick thing
+        <T k="ui.oneQuickThing" />
       </h1>
       <p className="font-serif text-ui text-paper/80 leading-[1.65] mb-7">
-        Your account doesn&rsquo;t have a password yet. Choose one and
-        you&rsquo;ll sign in with your email and password from anywhere
-        &mdash; you won&rsquo;t see this page again.
+        <T k="ui.yourAccountDoesnTHave" />
       </p>
       <SetPasswordForm />
     </div>

@@ -57,7 +57,7 @@ export function BibleMobile() {
 
   return (
     <MobileShell
-      header={<MobileHeader title="Bible" trailing={<BibleSearchTrigger />} />}
+      header={<MobileHeader titleKey="nav.bible" trailing={<BibleSearchTrigger />} />}
       eyebrow="Read"
     >
       <BibleMobileContinue />

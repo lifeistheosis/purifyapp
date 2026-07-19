@@ -3,6 +3,7 @@ import { commemorationsOn, startOfDayUtc } from "@/lib/calendar/orthodox";
 import { getSaint, type Saint } from "@/lib/saints/saints";
 import { SaintIcon } from "@/components/saints/SaintIcon";
 import { ShelfRow } from "./ShelfRow";
+import { T } from "@/components/i18n/T";
 
 type Day = {
   date: Date;
@@ -38,7 +39,7 @@ export function SaintStrip() {
   if (days.length === 0) return null;
 
   return (
-    <ShelfRow label="The week ahead">
+    <ShelfRow label={<T k="ui.theWeekAhead" />}>
       {days.map(({ date, label, saint }) => (
         <Link
           key={date.toISOString() + saint.slug}

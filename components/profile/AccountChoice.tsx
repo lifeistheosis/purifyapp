@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { claimLocal } from "@/lib/profile/localAccount";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Two-card account chooser. Shown on `/account` when the visitor has
@@ -22,6 +23,7 @@ import { claimLocal } from "@/lib/profile/localAccount";
  * informed rather than implicit.
  */
 export function AccountChoice() {
+  const { t } = useTranslate();
   const [localName, setLocalName] = useState("");
   const [localExpanded, setLocalExpanded] = useState(false);
 
@@ -38,25 +40,23 @@ export function AccountChoice() {
         {/* LOCAL */}
         <section className="rounded-lg border border-paper/15 bg-paper/[0.03] p-6 md:p-7 flex flex-col">
           <h2 className="font-sans text-lede font-bold text-paper leading-tight">
-            On this device
+            {t("account.localProfile")}
           </h2>
           <p className="mt-1 font-sans text-caption uppercase tracking-[1.5px] text-paper/55">
-            Private, no account required
+            {t("ui.privateNoAccountRequired")}
           </p>
           <p className="mt-4 font-serif text-ui text-paper/85 leading-[1.65]">
-            Use Purify privately on this device. Everything you save
-            (highlights, notes, bookmarks, reader prefs) is kept in
-            local storage. Nothing leaves this device.
+            {t("ui.usePurifyPrivatelyOnThis")}
           </p>
           <ul className="mt-4 space-y-1.5 font-sans text-detail text-paper/70 leading-[1.55]">
-            <li>+ No email, no sign-in.</li>
-            <li>+ No server-side record of anything you do.</li>
-            <li>+ Works fully offline once a page has loaded.</li>
+            <li>{t("ui.noEmailNoSignIn")}</li>
+            <li>{t("ui.noServerSideRecordOf")}</li>
+            <li>{t("ui.worksFullyOfflineOnceA")}</li>
             <li className="text-paper/55">
-              − Won&rsquo;t follow you to another phone or browser.
+              {t("ui.wonTFollowYouTo")}
             </li>
             <li className="text-paper/55">
-              − Goes away if you clear browser data.
+              {t("ui.goesAwayIfYouClear")}
             </li>
           </ul>
 
@@ -69,14 +69,14 @@ export function AccountChoice() {
                 htmlFor="local-account-name"
                 className="font-sans text-caption text-paper/65"
               >
-                A name to show on this device (optional).
+                {t("ui.aNameToShowOn")}
               </label>
               <input
                 id="local-account-name"
                 type="text"
                 value={localName}
                 onChange={(e) => setLocalName(e.target.value)}
-                placeholder="Edgar"
+                placeholder={t("ui.edgar")}
                 maxLength={48}
                 className="bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/50 transition-colors"
               />
@@ -84,7 +84,7 @@ export function AccountChoice() {
                 type="submit"
                 className="self-start font-sans text-ui font-semibold rounded-pill px-5 py-3 bg-paper text-night hover:bg-paper/90 transition-colors"
               >
-                Use locally
+                {t("ui.useLocally")}
               </button>
             </form>
           ) : (
@@ -93,7 +93,7 @@ export function AccountChoice() {
               onClick={() => setLocalExpanded(true)}
               className="mt-6 self-start font-sans text-ui font-semibold rounded-pill px-5 py-3 border border-paper/30 text-paper hover:bg-paper/[0.06] hover:border-paper/55 transition-colors"
             >
-              Use locally →
+              {t("ui.useLocallyX")}
             </button>
           )}
         </section>
@@ -101,25 +101,23 @@ export function AccountChoice() {
         {/* PUBLIC */}
         <section className="rounded-lg border border-gold/35 bg-gold/[0.05] p-6 md:p-7 flex flex-col">
           <h2 className="font-sans text-lede font-bold text-paper leading-tight">
-            Sign in to sync
+            {t("account.publicAccount")}
           </h2>
           <p className="mt-1 font-sans text-caption uppercase tracking-[1.5px] text-gold">
-            Your reading, on every device
+            {t("ui.yourReadingOnEveryDevice")}
           </p>
           <p className="mt-4 font-serif text-ui text-paper/85 leading-[1.65]">
-            The same things you&rsquo;d save on one device, kept
-            synchronized across all of them. Sign in by email; the
-            account exists for sync and nothing else.
+            {t("ui.theSameThingsYouD")}
           </p>
           <ul className="mt-4 space-y-1.5 font-sans text-detail text-paper/70 leading-[1.55]">
-            <li>+ Open the app on a new phone, sign in, find your work.</li>
-            <li>+ Delete the account and every server-side row anytime.</li>
-            <li>+ Still no ads, no analytics tied to identity, no selling.</li>
+            <li>{t("ui.openTheAppOnA")}</li>
+            <li>{t("ui.deleteTheAccountAndEvery")}</li>
+            <li>{t("ui.stillNoAdsNoAnalytics")}</li>
             <li className="text-paper/55">
-              − Your email and what you save live on a server we run.
+              {t("ui.yourEmailAndWhatYou")}
             </li>
             <li className="text-paper/55">
-              − Requires a working email to receive the sign-in link.
+              {t("ui.requiresAWorkingEmailTo")}
             </li>
           </ul>
 
@@ -128,26 +126,25 @@ export function AccountChoice() {
               href="/signup"
               className="inline-flex items-center justify-center font-sans text-ui font-semibold rounded-pill px-5 py-3 bg-gold text-night hover:bg-gold-soft transition-colors"
             >
-              Create an account →
+              {t("ui.createAnAccountX")}
             </Link>
             <Link
               href="/signin"
               className="inline-flex items-center justify-center font-sans text-detail text-paper/75 hover:text-paper transition-colors"
             >
-              Already have one? Sign in
+              {t("ui.alreadyHaveOneSignIn")}
             </Link>
           </div>
         </section>
       </div>
 
       <p className="mt-6 font-sans text-detail text-paper/55 leading-[1.6]">
-        Either choice is reversible. The long version, with every field
-        stored and every third party named, is on the{" "}
+        {t("ui.eitherChoiceIsReversibleThe")}{" "}
         <Link
           href="/privacy"
           className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
         >
-          privacy page
+          {t("ui.privacyPage")}
         </Link>
         .
       </p>

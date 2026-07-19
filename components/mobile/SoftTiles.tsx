@@ -36,8 +36,8 @@ export function SoftTile({
   external = false,
 }: {
   href: string;
-  label: string;
-  sub?: string;
+  label: React.ReactNode;
+  sub?: React.ReactNode;
   icon: React.ReactNode;
   tone?: Tone;
   /** Render a plain anchor opening in a new context (native shell uses this
@@ -88,9 +88,9 @@ export function FeatureBand({
   icon,
 }: {
   href: string;
-  eyebrow: string;
-  title: string;
-  sub?: string;
+  eyebrow: React.ReactNode;
+  title: React.ReactNode;
+  sub?: React.ReactNode;
   cta?: string;
   icon?: React.ReactNode;
 }) {

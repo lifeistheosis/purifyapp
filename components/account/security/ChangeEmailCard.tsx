@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Change-email card. Supabase sends a confirmation link to the NEW
@@ -9,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
  * old one. We surface that "check your new inbox" state plainly.
  */
 export function ChangeEmailCard({ currentEmail }: { currentEmail: string }) {
+  const { t } = useTranslate();
   const [next, setNext] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,13 +42,11 @@ export function ChangeEmailCard({ currentEmail }: { currentEmail: string }) {
   return (
     <section className="rounded-lg border border-paper/12 bg-paper/[0.02] p-6">
       <h2 className="font-sans text-body font-semibold text-paper mb-1">
-        Change email
+        {t("ui.changeEmail")}
       </h2>
       <p className="font-sans text-detail text-paper/60 mb-5 leading-[1.55]">
-        Current:{" "}
-        <span className="text-paper/85 font-medium">{currentEmail}</span>.
-        We&rsquo;ll send a confirmation link to the new address; the
-        change isn&rsquo;t live until you click it.
+        {t("ui.current")}{" "}
+        <span className="text-paper/85 font-medium">{currentEmail}</span>{t("ui.weLlSendAConfirmation")}
       </p>
       <form onSubmit={submit} className="flex flex-col gap-3 max-w-[420px]">
         <div>
@@ -54,7 +54,7 @@ export function ChangeEmailCard({ currentEmail }: { currentEmail: string }) {
             htmlFor="new-email"
             className="font-sans text-caption font-medium text-paper/75 block mb-1.5"
           >
-            New email
+            {t("ui.newEmail")}
           </label>
           <input
             id="new-email"
@@ -64,7 +64,7 @@ export function ChangeEmailCard({ currentEmail }: { currentEmail: string }) {
             required
             value={next}
             onChange={(e) => setNext(e.target.value)}
-            placeholder="new@somewhere.com"
+            placeholder={t("ui.newSomewhereCom")}
             className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
           />
         </div>
@@ -73,8 +73,7 @@ export function ChangeEmailCard({ currentEmail }: { currentEmail: string }) {
         ) : null}
         {sent ? (
           <p className="font-sans text-detail text-emerald-300">
-            Sent. Open the confirmation in <strong>{next.trim()}</strong> to
-            finish the change.
+            {t("ui.sentOpenTheConfirmationIn")} <strong>{next.trim()}</strong> {t("ui.toFinishTheChange")}
           </p>
         ) : null}
         <button

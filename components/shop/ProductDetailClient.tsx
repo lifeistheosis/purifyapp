@@ -25,6 +25,7 @@ import {
 } from "@/lib/shop/format";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import type { ShopProductDetail } from "@/lib/shop/types";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 function Fact({ term, value }: { term: string; value: string | null }) {
   if (!value) return null;
@@ -51,6 +52,7 @@ type Loaded = {
  * Pro status for the shipping line.
  */
 export function ProductDetailClient({ slug }: { slug: string }) {
+  const { t } = useTranslate();
   const { data, error, loading, reload } = useAsyncData<Loaded>(async () => {
     const [detail, config, pro] = await Promise.all([
       fetchShopProduct(slug).catch((e: unknown) => {
@@ -97,16 +99,16 @@ export function ProductDetailClient({ slug }: { slug: string }) {
     return (
       <div className="mx-auto max-w-[520px] px-5 py-20 text-center">
         <h1 className="font-display-serif text-heading text-paper">
-          Icon not found
+          {t("shop.iconNotFound")}
         </h1>
         <p className="mt-3 font-serif text-body text-paper/70 leading-[1.6]">
-          This listing isn&rsquo;t available.
+          {t("shop.thisListingIsnTAvailable")}
         </p>
         <Link
           href="/shop"
           className="tap-press mt-6 inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45"
         >
-          Back to the shop
+          {t("shop.backToTheShop")}
         </Link>
       </div>
     );
@@ -130,9 +132,9 @@ export function ProductDetailClient({ slug }: { slug: string }) {
 
   return (
     <div className="mx-auto w-full max-w-[1100px] px-5 pb-28 md:px-8 md:pb-8">
-      <nav aria-label="Breadcrumb" className="pt-6 font-sans text-caption text-paper/60">
+      <nav aria-label={t("shop.breadcrumb")} className="pt-6 font-sans text-caption text-paper/60">
         <Link href="/shop" className="hover:text-paper/75">
-          Shop
+          {t("nav.shop")}
         </Link>
         {" / "}
         <Link href={`/shop/${product.store.slug}`} className="hover:text-paper/75">
@@ -174,7 +176,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
               <p className="mt-2 font-serif text-lede text-paper/70">{product.subtitle}</p>
             ) : null}
             <p className="mt-2 font-sans text-detail text-paper/60">
-              Sold by{" "}
+              {t("shop.soldByX")}{" "}
               <Link
                 href={`/shop/${product.store.slug}`}
                 className="text-paper/80 underline underline-offset-4 hover:text-paper"
@@ -220,14 +222,14 @@ export function ProductDetailClient({ slug }: { slug: string }) {
           </header>
 
           {product.description_md ? (
-            <section aria-label="Description" className="mt-8">
+            <section aria-label={t("shop.description")} className="mt-8">
               <PolicyText text={product.description_md} />
             </section>
           ) : null}
 
-          <section aria-label="Details" className="mt-8 rounded-lg border border-paper/10 bg-night-soft/60 p-5">
+          <section aria-label={t("shop.details")} className="mt-8 rounded-lg border border-paper/10 bg-night-soft/60 p-5">
             <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-              Details
+              {t("shop.details")}
             </h2>
             <dl className="mt-3">
               <Fact term="Classification" value={CLASSIFICATION_LABELS[product.classification]} />
@@ -243,9 +245,9 @@ export function ProductDetailClient({ slug }: { slug: string }) {
 
           {/* Shipping and returns */}
           {storeShippingMd || storeReturnMd ? (
-            <section aria-label="Shipping and returns" className="mt-6 rounded-lg border border-paper/10 bg-night-soft/60 p-5">
+            <section aria-label={t("shop.shippingAndReturns")} className="mt-6 rounded-lg border border-paper/10 bg-night-soft/60 p-5">
               <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-                Shipping &amp; returns
+                {t("shop.shippingReturns")}
               </h2>
               {storeShippingMd ? (
                 <div className="mt-3">
@@ -261,13 +263,13 @@ export function ProductDetailClient({ slug }: { slug: string }) {
           ) : null}
 
           {saint ? (
-            <section aria-label="About this saint" className="mt-6">
+            <section aria-label={t("shop.aboutThisSaint")} className="mt-6">
               <Link
                 href={`/saints/${saint.slug}`}
                 className="press-card block rounded-lg border border-paper/10 bg-night-soft/60 p-5"
               >
                 <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-                  From the Purify library
+                  {t("shop.fromThePurifyLibrary")}
                 </p>
                 <p className="mt-2 font-display-serif text-title-sm text-paper">
                   {saint.name}
@@ -276,7 +278,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
                   {saint.shortBio}
                 </p>
                 <p className="mt-2 font-sans text-detail font-medium text-gold">
-                  Read the life →
+                  {t("shop.readTheLife")}
                 </p>
               </Link>
             </section>
@@ -314,7 +316,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
       </div>
 
       <div className="mt-4 md:mt-10 -mx-5 md:mx-0">
-        <ProductRail title="Related icons" products={related} />
+        <ProductRail title={t("shop.relatedIcons")} products={related} />
       </div>
     </div>
   );

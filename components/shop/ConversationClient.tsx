@@ -17,6 +17,7 @@ import {
   AUTH_UNRESOLVED_MESSAGE,
   resolveUser,
 } from "@/lib/supabase/resolveUser";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type Row = ShopConversation & { store: { public_name: string } | null };
 type Result =
@@ -50,15 +51,16 @@ async function load(id: string): Promise<Result> {
 }
 
 export function ConversationClient() {
+  const { t } = useTranslate();
   const id = useSearchParams().get("id") ?? "";
   const { data, error, loading, reload } = useAsyncData(() => load(id), [id]);
 
-  if (loading) return <ShopLoading label="Opening the conversation…" />;
+  if (loading) return <ShopLoading label={t("shop.openingTheConversation")} />;
   if (error) return <ShopError message={error} onRetry={reload} />;
   if (data && !data.signedIn) {
     return (
       <ShopSignInPrompt
-        title="Conversation"
+        title={t("shop.conversation")}
         body="Sign in to read this conversation and reply."
         next={`/shop/messages/detail?id=${id}`}
       />
@@ -68,13 +70,13 @@ export function ConversationClient() {
     return (
       <div className="mx-auto max-w-[520px] px-5 py-20 text-center">
         <h1 className="font-display-serif text-heading text-paper">
-          Conversation not found
+          {t("shop.conversationNotFound")}
         </h1>
         <Link
           href="/shop/messages"
           className="tap-press mt-6 inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45"
         >
-          Messages
+          {t("shop.messages")}
         </Link>
       </div>
     );
@@ -89,7 +91,7 @@ export function ConversationClient() {
           href="/shop/messages"
           className="font-sans text-detail font-medium text-paper/60 hover:text-paper"
         >
-          ← Messages
+          {t("shop.messagesX")}
         </Link>
         <h1 className="mt-3 font-display-serif text-title text-paper">
           {conv.subject}
@@ -99,7 +101,7 @@ export function ConversationClient() {
             href={`/shop/orders/detail?id=${conv.order_id}`}
             className="mt-1 inline-block font-sans text-detail font-medium text-gold"
           >
-            View the order →
+            {t("shop.viewTheOrder")}
           </Link>
         ) : null}
       </header>

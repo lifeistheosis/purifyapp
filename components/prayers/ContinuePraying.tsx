@@ -13,7 +13,7 @@ export function ContinuePraying({
   label = "Continue praying",
   max = 3,
 }: {
-  label?: string;
+  label?: React.ReactNode;
   max?: number;
 }) {
   const mounted = useMounted();

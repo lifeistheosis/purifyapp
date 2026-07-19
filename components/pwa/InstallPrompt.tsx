@@ -8,6 +8,7 @@ import {
   consumeInstallEvent,
   useInstallStore,
 } from "@/lib/pwa/installPromptStore";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Two responsibilities, intentionally co-located so the PWA layer is a
@@ -42,6 +43,7 @@ const MIN_VISITS = 3;
 const HIDE_AFTER_DISMISS_MS = 30 * 24 * 60 * 60 * 1000;
 
 export function InstallPrompt() {
+  const { t } = useTranslate();
   const { event: bip } = useInstallStore();
   const [eligible, setEligible] = useState(false);
   // Lazy initializer, read once at mount.
@@ -157,7 +159,7 @@ export function InstallPrompt() {
       <div className="rounded-2xl border border-gold/45 bg-night/95 backdrop-blur shadow-[0_12px_36px_rgba(0,0,0,0.55)] p-4 flex items-center gap-3">
         <div className="min-w-0 flex-1">
           <p className="font-sans text-detail font-semibold text-paper leading-tight">
-            Add Purify to your home screen
+            {t("ui.addPurifyToYourHome")}
           </p>
           <p className="mt-1 font-sans text-caption text-paper/70 leading-[1.5]">
             {iosHint
@@ -172,13 +174,13 @@ export function InstallPrompt() {
               onClick={install}
               className="rounded-pill bg-gold text-night font-sans text-detail font-semibold px-4 py-2"
             >
-              Install
+              {t("ui.install")}
             </button>
           ) : null}
           <button
             type="button"
             onClick={dismiss}
-            aria-label="Dismiss"
+            aria-label={t("translationDisclaimer.dismiss")}
             className="h-8 w-8 rounded-pill text-paper/60 hover:text-paper inline-flex items-center justify-center"
           >
             ✕

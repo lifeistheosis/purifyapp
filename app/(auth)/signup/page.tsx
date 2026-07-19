@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SignUpForm } from "@/components/auth/SignUpForm";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Create an account",
@@ -10,27 +11,26 @@ export default function SignUpPage() {
   return (
     <div>
       <h1 className="font-sans text-title font-bold text-paper leading-tight mb-2">
-        Create an account
+        <T k="ui.createAnAccount" />
       </h1>
       <p className="font-serif text-ui text-paper/75 mb-7">
-        Sync your highlights, notes, bookmarks, and prayer streak
-        across devices. Free, ad-free, deletable any time.
+        <T k="ui.syncYourHighlightsNotesBookmarks" />
       </p>
       <SignUpForm />
       <p className="mt-6 font-sans text-caption text-paper/45 leading-[1.6]">
-        By creating an account you agree to the{" "}
+        <T k="ui.byCreatingAnAccountYou" />{" "}
         <Link
           href="/terms"
           className="text-paper/70 underline underline-offset-2 decoration-paper/30 hover:text-paper"
         >
-          terms of service
+          <T k="ui.termsOfService" />
         </Link>{" "}
-        and the{" "}
+        <T k="ui.andThe" />{" "}
         <Link
           href="/privacy"
           className="text-paper/70 underline underline-offset-2 decoration-paper/30 hover:text-paper"
         >
-          privacy policy
+          <T k="ui.privacyPolicy" />
         </Link>
         .
       </p>

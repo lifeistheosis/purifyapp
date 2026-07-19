@@ -9,6 +9,7 @@ import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
 import { useProReadingModes } from "@/components/reader/useProReadingModes";
 import { READING_THEMES } from "@/lib/reader/readingModes";
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /** Tiny page/ink swatch advertising each palette inside its chip. Hexes
  * mirror the html[data-reading-mode] blocks in app/globals.css. */
@@ -20,13 +21,14 @@ const THEME_SWATCHES: Record<string, { page: string; ink: string }> = {
 };
 
 export function ReadingModeChips() {
+  const { t } = useTranslate();
   const { theme, setTheme } = useReaderPrefs();
   const { allowed, locked } = useProReadingModes();
 
   return (
     <div>
       <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55 mb-2">
-        Reading mode
+        {t("ui.readingMode")}
         {locked && (
           <span className="ml-2 inline-flex items-center rounded-pill border border-gold/45 bg-gold/12 px-1.5 py-px font-sans text-[10px] font-semibold tracking-[0.6px] text-gold-pale normal-case">
             Purify Pro

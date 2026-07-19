@@ -29,6 +29,7 @@ import {
   AUTH_UNRESOLVED_MESSAGE,
   resolveUser,
 } from "@/lib/supabase/resolveUser";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type OrderItem = {
   title: string;
@@ -83,15 +84,16 @@ async function load(id: string): Promise<Result> {
 }
 
 export function OrderDetailClient() {
+  const { t } = useTranslate();
   const id = useSearchParams().get("id") ?? "";
   const { data, error, loading, reload } = useAsyncData(() => load(id), [id]);
 
-  if (loading) return <ShopLoading label="Loading your order…" />;
+  if (loading) return <ShopLoading label={t("shop.loadingYourOrder")} />;
   if (error) return <ShopError message={error} onRetry={reload} />;
   if (data && !data.signedIn) {
     return (
       <ShopSignInPrompt
-        title="Your order"
+        title={t("shop.yourOrder")}
         body="Sign in to see this order."
         next={`/shop/orders/detail?id=${id}`}
       />
@@ -101,13 +103,13 @@ export function OrderDetailClient() {
     return (
       <div className="mx-auto max-w-[520px] px-5 py-20 text-center">
         <h1 className="font-display-serif text-heading text-paper">
-          Order not found
+          {t("shop.orderNotFound")}
         </h1>
         <Link
           href="/shop/orders"
           className="tap-press mt-6 inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45"
         >
-          Your orders
+          {t("shop.yourOrders")}
         </Link>
       </div>
     );
@@ -125,24 +127,24 @@ export function OrderDetailClient() {
           href="/shop/orders"
           className="font-sans text-detail font-medium text-paper/60 hover:text-paper"
         >
-          ← Your orders
+          {t("shop.yourOrdersX")}
         </Link>
         <h1 className="mt-3 font-display-serif text-heading text-paper">
           {order.items.map((i) => i.title).join(", ")}
         </h1>
         <p className="mt-1 font-sans text-caption text-paper/60">
-          Placed{" "}
+          {t("shop.placed")}{" "}
           {new Date(order.created_at).toLocaleDateString(undefined, {
             month: "long",
             day: "numeric",
             year: "numeric",
           })}{" "}
-          · Sold by {storeName}
+          {t("shop.soldBy")} {storeName}
         </p>
       </header>
 
       <section
-        aria-label="Order progress"
+        aria-label={t("shop.orderProgress")}
         className="mt-6 rounded-lg border border-paper/10 bg-night-soft/60 p-5"
       >
         {step >= 0 ? (
@@ -175,13 +177,13 @@ export function OrderDetailClient() {
         )}
         {order.outbound_tracking ? (
           <p className="mt-4 font-sans text-detail text-paper/65">
-            Tracking: <span className="text-paper">{order.outbound_tracking}</span>
+            {t("shop.tracking")} <span className="text-paper">{order.outbound_tracking}</span>
           </p>
         ) : null}
       </section>
 
       <section
-        aria-label="Items"
+        aria-label={t("shop.items")}
         className="mt-5 rounded-lg border border-paper/10 bg-night-soft/60 p-5"
       >
         <ul className="divide-y divide-white/5">
@@ -200,7 +202,7 @@ export function OrderDetailClient() {
           ))}
         </ul>
         <div className="mt-3 flex items-center justify-between border-t border-white/8 pt-3">
-          <p className="font-sans text-ui font-semibold text-paper">Total</p>
+          <p className="font-sans text-ui font-semibold text-paper">{t("shop.total")}</p>
           <p className="font-sans text-ui font-semibold text-paper">
             {formatPrice(order.total_cents, order.currency)}
           </p>
@@ -213,15 +215,14 @@ export function OrderDetailClient() {
       {order.payment_status === "paid" &&
       order.items.some((item) => item.product?.slug) ? (
         <section
-          aria-label="Review your purchase"
+          aria-label={t("shop.reviewYourPurchase")}
           className="mt-5 rounded-lg border border-paper/10 bg-night-soft/60 p-5"
         >
           <h2 className="font-sans text-ui font-semibold text-paper">
-            Enjoying your {order.items.length > 1 ? "icons" : "icon"}?
+            {t("shop.enjoyingYour")} {order.items.length > 1 ? "icons" : "icon"}?
           </h2>
           <p className="mt-1 font-sans text-caption text-paper/55">
-            Share an honest review to help other buyers. It&rsquo;s marked as a
-            verified purchase.
+            {t("shop.shareAnHonestReviewTo")}
           </p>
           <ul className="mt-3.5 space-y-2.5">
             {order.items.map((item, i) =>
@@ -234,7 +235,7 @@ export function OrderDetailClient() {
                     href={`/shop/icons/${item.product.slug}#reviews`}
                     className="tap-press shrink-0 inline-flex items-center rounded-pill border border-paper/25 px-4 py-1.5 font-sans text-detail font-semibold text-paper hover:border-paper/45"
                   >
-                    Write a review
+                    {t("shop.writeAReview")}
                   </Link>
                 </li>
               ) : null,
@@ -243,7 +244,7 @@ export function OrderDetailClient() {
         </section>
       ) : null}
 
-      <section aria-label="Message the seller" className="mt-5">
+      <section aria-label={t("shop.messageTheSeller")} className="mt-5">
         <BuyerMessageButton
           orderId={order.id}
           storeName={storeName}
@@ -251,7 +252,7 @@ export function OrderDetailClient() {
         />
       </section>
 
-      <section aria-label="Refunds" className="mt-5">
+      <section aria-label={t("shop.refunds")} className="mt-5">
         <BuyerRefundSection
           orderId={order.id}
           eligible={canRequestRefund(

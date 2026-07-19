@@ -21,6 +21,7 @@ import { fetchShopConfig } from "@/lib/shop/catalogClient";
 import { formatPrice } from "@/lib/shop/format";
 import { openStripe } from "@/lib/shop/openStripe";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * The cart. Local until the moment of checkout: items live on the device,
@@ -29,6 +30,7 @@ import { useAsyncData } from "@/lib/shop/useAsyncData";
  * store, one checkout, one shipping charge.
  */
 export function CartClient() {
+  const { t } = useTranslate();
   const router = useRouter();
   const items = useCart();
   const { data: config } = useAsyncData(fetchShopConfig, []);
@@ -77,19 +79,18 @@ export function CartClient() {
       <div className="mx-auto w-full max-w-[680px] px-5 pb-16 md:px-8">
         <header className="pt-10 md:pt-14">
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-            Purify Shop
+            {t("shop.purifyShop")}
           </p>
-          <h1 className="mt-2 font-display-serif text-heading text-paper">Your cart</h1>
+          <h1 className="mt-2 font-display-serif text-heading text-paper">{t("shop.yourCart")}</h1>
         </header>
         <p className="mt-8 font-serif text-body text-paper/65 leading-[1.65]">
-          Nothing here yet. Anything you add waits on this device until
-          you&rsquo;re ready.
+          {t("shop.nothingHereYetAnythingYou")}
         </p>
         <Link
           href="/shop"
           className="tap-press mt-6 inline-flex min-h-[48px] items-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90"
         >
-          Browse the shop
+          {t("shop.browseTheShop")}
         </Link>
       </div>
     );
@@ -99,9 +100,9 @@ export function CartClient() {
     <div className="mx-auto w-full max-w-[680px] px-5 pb-40 md:px-8 md:pb-16">
       <header className="pt-10 md:pt-14">
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-          Purify Shop
+          {t("shop.purifyShop")}
         </p>
-        <h1 className="mt-2 font-display-serif text-heading text-paper">Your cart</h1>
+        <h1 className="mt-2 font-display-serif text-heading text-paper">{t("shop.yourCart")}</h1>
       </header>
 
       <ul className="mt-8 space-y-4">
@@ -163,7 +164,7 @@ export function CartClient() {
                   onClick={() => removeFromCart(item.slug)}
                   className="font-sans text-caption font-medium text-paper/50 underline underline-offset-4 hover:text-paper"
                 >
-                  Remove
+                  {t("prayers.diptychs.remove")}
                 </button>
               </div>
             </div>
@@ -176,7 +177,7 @@ export function CartClient() {
         onClick={clearCart}
         className="mt-4 font-sans text-caption font-medium text-paper/45 underline underline-offset-4 hover:text-paper/70"
       >
-        Clear cart
+        {t("shop.clearCart")}
       </button>
 
       {/* Summary: sticky bottom on phones (Airbnb-style commit bar), a card on md+. */}
@@ -189,7 +190,7 @@ export function CartClient() {
         <div className="mx-auto max-w-[640px] md:mx-0">
           <div className="flex items-center justify-between">
             <p className="font-sans text-ui text-paper/70">
-              Subtotal ({items.length} {items.length === 1 ? "item" : "items"})
+              {t("shop.subtotal")}{items.length} {items.length === 1 ? "item" : "items"})
             </p>
             <p className="font-sans text-title-sm font-semibold text-paper">
               {formatPrice(subtotal, currency)}
@@ -197,7 +198,7 @@ export function CartClient() {
           </div>
           {/* Shipping line, honest to the buyer's real Pro status. */}
           <div className="mt-1.5 flex items-center justify-between gap-3">
-            <p className="font-sans text-caption text-paper/55">Shipping</p>
+            <p className="font-sans text-caption text-paper/55">{t("shop.shipping")}</p>
             {pro ? (
               <p className="font-sans text-caption font-semibold text-emerald-300">
                 {config ? (
@@ -205,7 +206,7 @@ export function CartClient() {
                     {formatPrice(config.flatShippingCents, currency)}
                   </span>
                 ) : null}
-                Free with Purify Pro
+                {t("shop.freeWithPurifyPro")}
               </p>
             ) : (
               <p className="font-sans text-caption text-paper/70">
@@ -220,7 +221,7 @@ export function CartClient() {
               href="/pricing"
               className="mt-1.5 inline-flex items-center gap-1 font-sans text-caption font-medium text-gold hover:text-gold-pale"
             >
-              Free shipping on every order with Purify Pro →
+              {t("shop.freeShippingOnEveryOrder")}
             </Link>
           ) : null}
 
@@ -232,13 +233,13 @@ export function CartClient() {
               className="mt-0.5 h-4 w-4 shrink-0 accent-gold"
             />
             <span className="font-sans text-caption leading-[1.5] text-paper/60">
-              I agree to the{" "}
+              {t("ui.iAgreeToThe")}{" "}
               <Link href="/terms" className="underline underline-offset-2 hover:text-paper/80">
-                Terms
+                {t("shop.terms")}
               </Link>{" "}
-              and the{" "}
+              {t("ui.andThe")}{" "}
               <Link href="/shop/policies" className="underline underline-offset-2 hover:text-paper/80">
-                shipping &amp; refund policy
+                {t("shop.shippingRefundPolicy")}
               </Link>
               .
             </span>

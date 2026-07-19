@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Live counters drawn from localStorage. Reads on mount and any time a
@@ -13,6 +14,7 @@ import { useEffect, useState } from "react";
  * No prayer-streak counters: the rule is the rule, the day is the day.
  */
 export function ProfileStats() {
+  const { t } = useTranslate();
   const [stats, setStats] = useState({
     verses: 0,
     paragraphs: 0,
@@ -87,7 +89,7 @@ export function ProfileStats() {
     <>
       <section className="mt-8">
         <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-          Your reading
+          {t("ui.yourReading")}
         </p>
         <ul className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {readingItems.map((it) => (

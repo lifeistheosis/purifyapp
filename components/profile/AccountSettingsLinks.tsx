@@ -12,8 +12,10 @@ import { useEffect, useState } from "react";
 import { SettingsList, type SettingsItem } from "@/components/mobile/SettingsList";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
 import { readIntentions } from "@/lib/prayers/storage";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function AccountSettingsLinks() {
+  const { t } = useTranslate();
   const [intentions, setIntentions] = useState(0);
 
   useEffect(() => {
@@ -104,7 +106,7 @@ export function AccountSettingsLinks() {
   return (
     <section className="mt-8">
       <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-        Account
+        {t("nav.account")}
       </p>
       <SettingsList items={items} />
     </section>

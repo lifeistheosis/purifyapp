@@ -10,6 +10,7 @@ import {
   hasPurchasedProduct,
 } from "@/lib/shop/catalogClient";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Reviews block on the product page: the aggregate, the verified-buyer write
@@ -29,6 +30,7 @@ export function ReviewsSection({
   productTitle?: string;
   onReviewed?: () => void;
 }) {
+  const { t } = useTranslate();
   const { data, loading, reload } = useAsyncData(
     () => fetchShopReviews(productSlug),
     [productSlug],
@@ -51,9 +53,9 @@ export function ReviewsSection({
   };
 
   return (
-    <section id="reviews" aria-label="Reviews" className="mt-10 scroll-mt-24">
+    <section id="reviews" aria-label={t("shop.reviews")} className="mt-10 scroll-mt-24">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="font-display-serif text-title text-paper">Reviews</h2>
+        <h2 className="font-display-serif text-title text-paper">{t("shop.reviews")}</h2>
         {data && data.reviewCount > 0 ? (
           <RatingStars avg={data.avgStars} count={data.reviewCount} />
         ) : null}
@@ -65,7 +67,7 @@ export function ReviewsSection({
 
       {loading ? (
         <p className="mt-4 font-sans text-caption text-paper/45">
-          Loading reviews…
+          {t("shop.loadingReviews")}
         </p>
       ) : null}
 
@@ -109,7 +111,7 @@ export function ReviewsSection({
         </ul>
       ) : !loading && data && data.reviewCount === 0 ? (
         <p className="mt-4 font-serif text-body text-paper/60 leading-[1.6]">
-          No reviews yet.
+          {t("shop.noReviewsYet")}
           {eligible
             ? " Be the first to review it."
             : " Only verified buyers can leave a review."}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Export, import, and force-sync of the user's local-and-server data.
@@ -18,6 +19,7 @@ import { useRef, useState } from "react";
  * user wants the comfort of a manual prod.)
  */
 export function ProfileData({ signedIn }: { signedIn: boolean }) {
+  const { t } = useTranslate();
   const [busy, setBusy] = useState<"idle" | "export" | "import" | "sync">(
     "idle",
   );
@@ -121,11 +123,10 @@ export function ProfileData({ signedIn }: { signedIn: boolean }) {
   return (
     <section className="mt-10 rounded-lg border border-paper/12 bg-paper/[0.02] p-6 md:p-7">
       <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
-        Your data
+        {t("ui.yourData")}
       </p>
       <p className="font-sans text-detail text-paper/65 leading-[1.55] mb-5 max-w-[560px]">
-        Take what you&rsquo;ve made with you. Export downloads a JSON file
-        with every Purify entry on this device; import merges one back in.
+        {t("ui.takeWhatYouVeMade")}
       </p>
       <div className="flex flex-wrap items-center gap-3">
         <button

@@ -11,8 +11,10 @@ import {
   type PrayerCampaign,
 } from "@/lib/campaigns/campaigns";
 import { fetchCampaigns } from "@/lib/campaigns/client";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function CampaignsClient() {
+  const { t } = useTranslate();
   const [campaigns, setCampaigns] = useState<PrayerCampaign[] | null>(null);
   const [intention, setIntention] = useState<CampaignIntention | null>(null);
 
@@ -33,27 +35,26 @@ export function CampaignsClient() {
       <div className="mx-auto w-full max-w-[760px]">
         <header className="reveal-rise text-center" style={{ animationDelay: "40ms" }}>
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold-pale/70">
-            Together
+            {t("shop.together")}
           </p>
           <h1 className="mt-3 font-display-serif text-display-sm font-bold text-paper">
-            Prayer Campaigns
+            {t("nav.discoverMenu.campaigns")}
           </h1>
           <p className="mx-auto mt-3 max-w-[460px] font-sans text-ui leading-relaxed text-paper/65">
-            Pray with the faithful for a person, a need, or a soul at rest. Join
-            one and it joins your daily prayers.
+            {t("shop.prayWithTheFaithfulFor")}
           </p>
           <div className="mt-6 flex items-center justify-center gap-3">
             <Link
               href="/campaigns/new"
               className="inline-flex items-center gap-2 rounded-pill bg-paper px-5 py-3 font-sans text-ui font-semibold text-night transition-[transform,background-color] duration-150 hover:bg-paper/90 active:scale-[0.98]"
             >
-              Start a campaign
+              {t("shop.startACampaign")}
             </Link>
             <Link
               href="/campaigns/mine"
               className="inline-flex items-center gap-2 rounded-pill border border-paper/20 px-5 py-3 font-sans text-ui font-semibold text-paper/80 transition-[transform,border-color] duration-150 hover:border-paper/40 active:scale-[0.98]"
             >
-              My prayers
+              {t("shop.myPrayers")}
             </Link>
           </div>
         </header>
@@ -64,7 +65,7 @@ export function CampaignsClient() {
           style={{ animationDelay: "120ms" }}
         >
           <FilterChip
-            label="All"
+            label={t("common.all")}
             active={intention === null}
             onClick={() => setIntention(null)}
           />
@@ -82,15 +83,15 @@ export function CampaignsClient() {
         <div className="mt-8 space-y-3">
           {campaigns === null ? (
             <p className="py-10 text-center font-sans text-ui text-paper/40">
-              Gathering the campaigns…
+              {t("shop.gatheringTheCampaigns")}
             </p>
           ) : campaigns.length === 0 ? (
             <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
               <p className="font-serif text-lede text-paper/80">
-                No campaigns here yet.
+                {t("shop.noCampaignsHereYet")}
               </p>
               <p className="mt-2 font-sans text-ui text-paper/55">
-                Be the first to ask the community to pray.
+                {t("shop.beTheFirstToAsk")}
               </p>
             </div>
           ) : (

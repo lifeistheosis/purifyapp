@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { RequestFormIsland } from "@/components/shop/RequestFormIsland";
+import { T } from "@/components/i18n/T";
 
 export const metadata: Metadata = {
   title: "Request an Icon",
@@ -16,16 +17,13 @@ export default function RequestIconPage() {
     <div className="mx-auto w-full max-w-[680px] px-5 md:px-8">
       <header className="pt-10 md:pt-14">
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-          Purify Shop
+          <T k="shop.purifyShop" />
         </p>
         <h1 className="mt-2 font-display-serif text-heading md:text-display-sm text-paper">
-          Request an icon
+          <T k="shop.requestAnIcon" />
         </h1>
         <p className="mt-3 font-serif text-lede text-paper/70 leading-[1.6]">
-          The saints of the Church number in the thousands; no catalog holds
-          them all. Tell us who you&rsquo;re praying with and we&rsquo;ll look
-          for the icon: ready-made where it exists, and honestly, sometimes it
-          doesn&rsquo;t yet.
+          <T k="shop.theSaintsOfTheChurch" />
         </p>
       </header>
       <div className="mt-8 pb-8">

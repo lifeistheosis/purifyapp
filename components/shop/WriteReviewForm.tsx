@@ -6,6 +6,7 @@ import { Star } from "@/components/ui/icons/Star";
 import { cn } from "@/lib/cn";
 import { submitReview } from "@/lib/shop/catalogClient";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const field =
   "w-full rounded-md border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
@@ -29,6 +30,7 @@ export function WriteReviewForm({
   productId: string;
   onSubmitted: () => void;
 }) {
+  const { t } = useTranslate();
   const [stars, setStars] = useState(0);
   const [hover, setHover] = useState(0);
   const [body, setBody] = useState("");
@@ -93,15 +95,15 @@ export function WriteReviewForm({
       onSubmit={submit}
       className="mt-4 rounded-lg border border-paper/10 bg-night-soft/60 p-5"
     >
-      <p className="font-sans text-ui font-semibold text-paper">Write a review</p>
+      <p className="font-sans text-ui font-semibold text-paper">{t("shop.writeAReview")}</p>
       <p className="mt-1 font-sans text-caption text-paper/55">
-        You bought this icon, so your review is marked as a verified purchase.
+        {t("shop.youBoughtThisIconSo")}
       </p>
 
       <div
         className="mt-3 flex items-center gap-1"
         role="group"
-        aria-label="Your rating"
+        aria-label={t("shop.yourRating")}
         onMouseLeave={() => setHover(0)}
       >
         {[1, 2, 3, 4, 5].map((i) => (
@@ -123,26 +125,26 @@ export function WriteReviewForm({
       </div>
 
       <label className="mt-3 block">
-        <span className="sr-only">Your review</span>
+        <span className="sr-only">{t("shop.yourReview")}</span>
         <textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
           rows={3}
           maxLength={4000}
-          placeholder="What did you think of the icon? (optional)"
+          placeholder={t("shop.whatDidYouThinkOf")}
           className={field}
         />
       </label>
 
       <label className="mt-3 block">
-        <span className="sr-only">Your location</span>
+        <span className="sr-only">{t("shop.yourLocation")}</span>
         <input
           type="text"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           maxLength={80}
           disabled={anonymous}
-          placeholder="Your location, e.g. Chicago, IL (optional)"
+          placeholder={t("shop.yourLocationEGChicago")}
           className={cn(field, anonymous && "opacity-50")}
         />
       </label>
@@ -155,12 +157,12 @@ export function WriteReviewForm({
           className="h-4 w-4 accent-paper"
         />
         <span className="font-sans text-detail text-paper/75">
-          Post anonymously (hide my name and location)
+          {t("shop.postAnonymouslyHideMyName")}
         </span>
       </label>
 
       <p className="mt-2 font-sans text-caption text-paper/45">
-        Shown as: <span className="text-paper/70">{postingAs}</span>
+        {t("shop.shownAs")} <span className="text-paper/70">{postingAs}</span>
       </p>
 
       {error ? (

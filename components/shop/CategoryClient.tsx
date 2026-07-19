@@ -11,6 +11,7 @@ import { fetchShopProducts } from "@/lib/shop/catalogClient";
 import { CATEGORY_LABELS } from "@/lib/shop/format";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import type { ShopCategory } from "@/lib/shop/types";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * NOTE: this reads ?q= / ?inventory= from window.location in a mount effect
@@ -22,6 +23,7 @@ import type { ShopCategory } from "@/lib/shop/types";
  * the component a plain, always-hydrating client component.
  */
 export function CategoryClient({ category }: { category: string }) {
+  const { t } = useTranslate();
   const isAll = category === "all";
   const valid = isAll || category in CATEGORY_LABELS;
 
@@ -69,7 +71,7 @@ export function CategoryClient({ category }: { category: string }) {
     <div className="mx-auto w-full max-w-[1200px] px-5 md:px-8">
       <header className="pt-8 md:pt-14">
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-          Purify Shop
+          {t("shop.purifyShop")}
         </p>
         <div className="mt-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <h1 className="font-display-serif text-heading md:text-display-sm text-paper">
@@ -84,7 +86,7 @@ export function CategoryClient({ category }: { category: string }) {
       </header>
 
       {/* Category switcher: a snap carousel with the current page selected. */}
-      <nav aria-label="Browse by category" className="mt-5 -mx-5 md:mx-0">
+      <nav aria-label={t("shop.browseByCategory")} className="mt-5 -mx-5 md:mx-0">
         <ul className="flex snap-x snap-mandatory gap-2 overflow-x-auto scrollbar-thin px-5 pb-1 md:px-0">
           {[["all", "All"] as [string, string], ...categories].map(([slug, label]) => {
             const active = slug === category;
@@ -140,25 +142,25 @@ export function CategoryClient({ category }: { category: string }) {
       {data && data.length > 0 && shown.length === 0 && !loading ? (
         <div className="mt-10 text-center">
           <p className="font-serif text-body text-paper/60">
-            Nothing matches those filters.
+            {t("shop.nothingMatchesThoseFilters")}
           </p>
           <button
             type="button"
             onClick={() => setFilters({ q: "" })}
             className="tap-press mt-4 inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45"
           >
-            Clear filters
+            {t("shop.clearFilters")}
           </button>
         </div>
       ) : null}
 
       {data && data.length === 0 && !loading ? (
         <p className="mt-8 font-serif text-body text-paper/60">
-          Nothing here yet. If you&rsquo;re looking for a particular icon,{" "}
+          {t("shop.nothingHereYetIfYou")}{" "}
           <Link href="/shop/request" className="text-gold underline underline-offset-4">
-            request it
+            {t("shop.requestIt")}
           </Link>{" "}
-          and we&rsquo;ll look for it.
+          {t("shop.andWeLlLookFor")}
         </p>
       ) : null}
     </div>

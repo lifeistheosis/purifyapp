@@ -10,6 +10,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { BookCategory } from "@/lib/bible/books";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type Tab = "ot" | "nt";
 const STORAGE_KEY = "purify:bible:lastTestament";
@@ -21,6 +22,7 @@ export function BibleTabs({
   ot: BookCategory[];
   nt: BookCategory[];
 }) {
+  const { t } = useTranslate();
   const [tab, setTab] = useState<Tab>("nt");
 
   useEffect(() => {
@@ -49,14 +51,14 @@ export function BibleTabs({
     <div>
       <div
         role="tablist"
-        aria-label="Testament"
+        aria-label={t("ui.testament")}
         className="grid grid-cols-2 gap-1 rounded-full border border-paper/10 bg-paper/[0.03] p-1"
       >
         <TabButton active={tab === "ot"} onClick={() => pick("ot")}>
-          Old Testament
+          {t("footer.oldTestament")}
         </TabButton>
         <TabButton active={tab === "nt"} onClick={() => pick("nt")}>
-          New Testament
+          {t("footer.newTestament")}
         </TabButton>
       </div>
 
@@ -95,6 +97,7 @@ function TabButton({
 }
 
 function CategoryBlock({ cat }: { cat: BookCategory }) {
+  const { t } = useTranslate();
   return (
     <section>
       <p className="font-sans text-eyebrow uppercase tracking-[1.8px] text-paper/45 mb-2 px-1">
@@ -114,7 +117,7 @@ function CategoryBlock({ cat }: { cat: BookCategory }) {
                 {b.name}
               </span>
               <span className="shrink-0 font-sans text-caption tabular-nums text-paper/45">
-                {b.chapters} ch
+                {b.chapters} {t("bible.chAbbrev")}
               </span>
             </Link>
           </li>

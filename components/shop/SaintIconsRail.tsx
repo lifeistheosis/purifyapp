@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 import { isNativeClient } from "@/lib/platform/native";
 import type { ShopProductFull } from "@/lib/shop/types";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * "Icons of This Saint", the shop's one appearance on a saint page.
@@ -22,6 +23,7 @@ export function SaintIconsRail({
   saintSlug: string;
   saintName: string;
 }) {
+  const { t } = useTranslate();
   const [products, setProducts] = useState<ShopProductFull[] | null>(null);
 
   useEffect(() => {
@@ -48,13 +50,13 @@ export function SaintIconsRail({
     <section aria-label={`Icons of ${saintName}`} className="mt-12 border-t border-white/8 pt-8">
       <div className="flex items-baseline justify-between gap-4">
         <h2 className="font-display-serif text-title text-paper">
-          Icons of this saint
+          {t("shop.iconsOfThisSaint")}
         </h2>
         <Link
           href="/shop/eikon"
           className="shrink-0 font-sans text-detail text-paper/60 hover:text-paper"
         >
-          Explore EIKON
+          {t("shop.exploreEikon")}
         </Link>
       </div>
       <ul className="mt-4 flex gap-4 overflow-x-auto scrollbar-thin pb-2">
@@ -89,12 +91,12 @@ export function SaintIconsRail({
         })}
       </ul>
       <p className="mt-3 font-sans text-caption text-paper/60">
-        Sold through the Purify Shop.{" "}
+        {t("shop.soldThroughThePurifyShop")}{" "}
         <Link
           href={`/shop/request?subject=${encodeURIComponent(saintName)}`}
           className="underline underline-offset-4 hover:text-paper/70"
         >
-          Request a different icon of {saintName}
+          {t("shop.requestADifferentIconOf")} {saintName}
         </Link>
         .
       </p>

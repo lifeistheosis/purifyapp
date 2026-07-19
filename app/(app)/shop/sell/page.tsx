@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { MerchantApplyGate } from "@/components/shop/MerchantApplyGate";
+import { T } from "@/components/i18n/T";
 
 export const metadata: Metadata = {
   title: "Sell on Purify",
@@ -32,19 +33,17 @@ export default function SellPage() {
     <div className="mx-auto w-full max-w-[760px] px-5 pb-8 md:px-8">
       <header className="pt-10 md:pt-14">
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-          Purify Shop
+          <T k="shop.purifyShop" />
         </p>
         <h1 className="mt-2 font-display-serif text-heading md:text-display-sm text-paper">
-          Sell on Purify
+          <T k="shop.sellOnPurify" />
         </h1>
         <p className="mt-3 font-serif text-lede text-paper/70 leading-[1.6]">
-          Purify is opening a curated marketplace for Orthodox icons. Every
-          merchant is reviewed by hand, every listing must describe its
-          production honestly, and nothing is published automatically.
+          <T k="shop.purifyIsOpeningACurated" />
         </p>
       </header>
 
-      <section aria-label="Who can apply" className="mt-8 grid gap-4 sm:grid-cols-2">
+      <section className="mt-8 grid gap-4 sm:grid-cols-2">
         {WHO.map((w) => (
           <div key={w.title} className="rounded-lg border border-paper/10 bg-night-soft/60 p-5">
             <h2 className="font-display-serif text-title-sm text-paper">{w.title}</h2>
@@ -55,24 +54,23 @@ export default function SellPage() {
         ))}
       </section>
 
-      <section aria-label="How review works" className="mt-8 rounded-lg border border-paper/10 bg-night-soft/60 p-6">
+      <section className="mt-8 rounded-lg border border-paper/10 bg-night-soft/60 p-6">
         <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-          How review works
+          <T k="shop.howReviewWorks" />
         </h2>
         <ol className="mt-3 space-y-2 font-serif text-body text-paper/70 leading-[1.65]">
-          <li>1. You submit the application below.</li>
-          <li>2. A person reads it; we may write back with questions.</li>
-          <li>3. Approved sellers set up their storefront with us before anything goes live.</li>
-          <li>4. Purify administrators approve every store before it opens.</li>
+          <li><T k="shop.1YouSubmitTheApplication" /></li>
+          <li><T k="shop.2APersonReadsIt" /></li>
+          <li><T k="shop.3ApprovedSellersSetUp" /></li>
+          <li><T k="shop.4PurifyAdministratorsApproveEvery" /></li>
         </ol>
         <p className="mt-4 font-sans text-detail text-paper/60">
-          The marketplace currently hosts EIKON, Purify&rsquo;s own store.
-          Independent merchants join through this process.
+          <T k="shop.theMarketplaceCurrentlyHostsEikon" />
         </p>
       </section>
 
       <div className="mt-10">
-        <h2 className="font-display-serif text-title text-paper">Apply</h2>
+        <h2 className="font-display-serif text-title text-paper"><T k="study.apply" /></h2>
         <MerchantApplyGate />
       </div>
     </div>

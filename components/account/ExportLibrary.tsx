@@ -10,6 +10,7 @@ import {
   toMarkdown,
   type LibraryData,
 } from "@/lib/library/exportLibrary";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 function download(filename: string, text: string, type: string) {
   const blob = new Blob([text], { type });
@@ -24,6 +25,7 @@ function download(filename: string, text: string, type: string) {
 }
 
 export function ExportLibrary() {
+  const { t } = useTranslate();
   const [data, setData] = useState<LibraryData | null>(null);
 
   useEffect(() => {
@@ -48,31 +50,29 @@ export function ExportLibrary() {
           href="/account"
           className="font-sans text-caption text-paper/50 hover:text-paper/80"
         >
-          ← Account
+          {t("ui.accountX")}
         </Link>
         <h1 className="mt-4 font-display-serif text-title text-paper">
-          Export your library
+          {t("ui.exportYourLibrary")}
         </h1>
         <p className="mt-2 font-sans text-ui leading-relaxed text-paper/60">
-          Everything you have gathered on this device, yours to keep. Download a
-          readable copy or a full backup you can restore from.
+          {t("ui.everythingYouHaveGatheredOn")}
         </p>
 
         {summary ? (
           <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Stat value={summary.florilegia} label="Florilegia" />
-            <Stat value={summary.gatheredLines} label="Gathered lines" />
-            <Stat value={summary.notes} label="Notes" />
-            <Stat value={summary.names} label="Names" />
+            <Stat value={summary.florilegia} label={t("ui.florilegia")} />
+            <Stat value={summary.gatheredLines} label={t("ui.gatheredLines")} />
+            <Stat value={summary.notes} label={t("saints.notes")} />
+            <Stat value={summary.names} label={t("ui.names")} />
           </div>
         ) : (
-          <p className="mt-7 font-sans text-ui text-paper/40">Gathering…</p>
+          <p className="mt-7 font-sans text-ui text-paper/40">{t("ui.gathering")}</p>
         )}
 
         {empty ? (
           <p className="mt-6 rounded-2xl border border-paper/10 bg-black/20 p-5 font-sans text-ui text-paper/55">
-            You have not gathered anything on this device yet. Save a verse, a
-            quote, or a name, and it will appear here to export.
+            {t("ui.youHaveNotGatheredAnything")}
           </p>
         ) : null}
 
@@ -86,7 +86,7 @@ export function ExportLibrary() {
             }
             className="inline-flex flex-1 items-center justify-center rounded-pill bg-paper px-6 py-4 font-display-serif text-lede text-night transition-colors hover:bg-paper/90 disabled:opacity-40"
           >
-            Download Markdown
+            {t("ui.downloadMarkdown")}
           </button>
           <button
             type="button"
@@ -97,13 +97,12 @@ export function ExportLibrary() {
             }
             className="inline-flex flex-1 items-center justify-center rounded-pill border border-paper/25 px-6 py-4 font-display-serif text-lede text-paper/85 transition-colors hover:border-paper/45 disabled:opacity-40"
           >
-            Download backup (JSON)
+            {t("ui.downloadBackupJson")}
           </button>
         </div>
 
         <p className="mt-6 font-sans text-caption leading-[1.6] text-paper/40">
-          The Markdown copy is for reading and keeping. The JSON backup holds
-          everything in full, so nothing you have gathered is ever locked in.
+          {t("ui.theMarkdownCopyIsFor")}
         </p>
       </div>
     </section>

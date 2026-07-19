@@ -10,6 +10,7 @@ import {
   hasDeliveredOrderFromStore,
 } from "@/lib/shop/catalogClient";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Store-level reviews block on the store page: reviews of the store itself
@@ -28,6 +29,7 @@ export function StoreReviewsSection({
   storeSlug: string;
   storeName: string;
 }) {
+  const { t } = useTranslate();
   const { data, loading, reload } = useAsyncData(
     () => fetchShopStoreReviews(storeSlug),
     [storeSlug],
@@ -51,7 +53,7 @@ export function StoreReviewsSection({
     >
       <div className="flex items-center justify-between gap-4">
         <h2 className="font-display-serif text-title md:text-heading text-paper">
-          What buyers say about {storeName}
+          {t("shop.whatBuyersSayAbout")} {storeName}
         </h2>
         {data && data.reviewCount > 0 ? (
           <RatingStars avg={data.avgStars} count={data.reviewCount} />
@@ -68,7 +70,7 @@ export function StoreReviewsSection({
 
       {loading ? (
         <p className="mt-4 font-sans text-caption text-paper/45">
-          Loading reviews…
+          {t("shop.loadingReviews")}
         </p>
       ) : null}
 
@@ -112,7 +114,7 @@ export function StoreReviewsSection({
         </ul>
       ) : !loading && data && data.reviewCount === 0 ? (
         <p className="mt-4 font-serif text-body text-paper/60 leading-[1.6]">
-          No reviews of {storeName} yet.
+          {t("shop.noReviewsOf")} {storeName} {t("shop.yet")}
           {eligible
             ? " Be the first to share your experience."
             : " Reviews come from buyers whose orders have arrived."}

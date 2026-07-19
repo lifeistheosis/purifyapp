@@ -14,8 +14,10 @@ import {
 } from "@/lib/campaigns/campaigns";
 import { createCampaign } from "@/lib/campaigns/client";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function CreateCampaignClient() {
+  const { t } = useTranslate();
   const router = useRouter();
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [title, setTitle] = useState("");
@@ -87,13 +89,13 @@ export function CreateCampaignClient() {
     return (
       <Shell>
         <p className="font-serif text-lede text-paper/85">
-          Sign in to start a prayer campaign.
+          {t("shop.signInToStartA")}
         </p>
         <Link
           href="/signin?next=/campaigns/new"
           className="mt-5 inline-flex rounded-pill bg-paper px-6 py-3 font-sans text-ui font-semibold text-night hover:bg-paper/90"
         >
-          Sign in
+          {t("common.signIn")}
         </Link>
       </Shell>
     );
@@ -110,20 +112,19 @@ export function CreateCampaignClient() {
         href="/campaigns"
         className="font-sans text-caption text-paper/50 hover:text-paper/80"
       >
-        ← All campaigns
+        {t("shop.allCampaigns")}
       </Link>
       <h1 className="mt-4 font-display-serif text-title text-paper">
-        Start a prayer campaign
+        {t("shop.startAPrayerCampaign")}
       </h1>
       <p className="mt-2 font-sans text-ui leading-relaxed text-paper/60">
-        Ask the community to pray with you for a person, a need, or a soul at
-        rest. Use first names only, and never anyone else’s private details.
+        {t("shop.askTheCommunityToPray")}
       </p>
 
       <form onSubmit={onSubmit} className="mt-7 space-y-6">
         <div className="reveal-rise" style={{ animationDelay: "60ms" }}>
           <label htmlFor="title" className={labelCls}>
-            Title
+            {t("study.title")}
           </label>
           <input
             id="title"
@@ -131,12 +132,12 @@ export function CreateCampaignClient() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             maxLength={120}
-            placeholder="Pray for my grandmother's healing"
+            placeholder={t("shop.prayForMyGrandmotherS")}
           />
         </div>
 
         <div className="reveal-rise" style={{ animationDelay: "120ms" }}>
-          <span className={labelCls}>What is it for?</span>
+          <span className={labelCls}>{t("shop.whatIsItFor")}</span>
           <div className="grid gap-2.5 sm:grid-cols-2">
             {INTENTIONS.map((i) => (
               <SelectCard
@@ -152,7 +153,7 @@ export function CreateCampaignClient() {
 
         {!departedFixed ? (
           <div className="reveal-rise" style={{ animationDelay: "180ms" }}>
-            <span className={labelCls}>For the living or the departed?</span>
+            <span className={labelCls}>{t("shop.forTheLivingOrThe")}</span>
             <div className="grid gap-2.5 sm:grid-cols-2">
               {(["living", "departed"] as ForWhom[]).map((f) => (
                 <SelectCard
@@ -168,7 +169,7 @@ export function CreateCampaignClient() {
         ) : null}
 
         <div className="reveal-rise" style={{ animationDelay: "240ms" }}>
-          <span className={labelCls}>Choose a prayer</span>
+          <span className={labelCls}>{t("shop.chooseAPrayer")}</span>
           <div className="space-y-2.5">
             {prayers.map((p) => (
               <SelectCard
@@ -185,7 +186,7 @@ export function CreateCampaignClient() {
 
         <div>
           <label htmlFor="subject" className={labelCls}>
-            First name or cause (optional)
+            {t("shop.firstNameOrCauseOptional")}
           </label>
           <input
             id="subject"
@@ -193,13 +194,13 @@ export function CreateCampaignClient() {
             value={subjectName}
             onChange={(e) => setSubjectName(e.target.value)}
             maxLength={80}
-            placeholder="Maria, or the persecuted in Nigeria"
+            placeholder={t("shop.mariaOrThePersecutedIn")}
           />
         </div>
 
         <div>
           <label htmlFor="note" className={labelCls}>
-            A word about it (optional)
+            {t("shop.aWordAboutItOptional")}
           </label>
           <textarea
             id="note"
@@ -207,12 +208,12 @@ export function CreateCampaignClient() {
             value={note}
             onChange={(e) => setNote(e.target.value)}
             maxLength={280}
-            placeholder="One or two lines. No private medical or personal details of others."
+            placeholder={t("shop.oneOrTwoLinesNo")}
           />
         </div>
 
         <div className="reveal-rise" style={{ animationDelay: "300ms" }}>
-          <span className={labelCls}>How long should it run?</span>
+          <span className={labelCls}>{t("shop.howLongShouldItRun")}</span>
           <div className="grid gap-2.5 sm:grid-cols-2">
             {DURATIONS.map((d) => (
               <SelectCard
@@ -234,8 +235,7 @@ export function CreateCampaignClient() {
             className="mt-1 h-4 w-4 accent-gold"
           />
           <span className="font-sans text-caption leading-relaxed text-paper/65">
-            This is my own request, or I have this person’s blessing to ask the
-            community to pray for them.
+            {t("shop.thisIsMyOwnRequest")}
           </span>
         </label>
 

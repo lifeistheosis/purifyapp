@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { authOrigin } from "@/lib/site";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 // Mirrors Supabase's UserIdentity loosely. We accept any shape that
 // carries identity_id and provider; the full server-side object is
@@ -48,6 +49,7 @@ export function OAuthConnectionsCard({
    */
   hasPassword?: boolean;
 }) {
+  const { t } = useTranslate();
   const router = useRouter();
   const [identities, setIdentities] = useState<Identity[]>(
     initialIdentities ?? [],
@@ -269,18 +271,17 @@ export function OAuthConnectionsCard({
   return (
     <section className="rounded-lg border border-paper/12 bg-paper/[0.02] p-6">
       <h2 className="font-sans text-body font-semibold text-paper mb-1">
-        Connected accounts
+        {t("ui.connectedAccounts")}
       </h2>
       <p className="font-sans text-detail text-paper/60 mb-5 leading-[1.55]">
-        Sign in faster by linking Google to your account. You can still
-        sign in with email + password at any time.
+        {t("ui.signInFasterByLinking")}
       </p>
       <ul className="flex flex-col gap-3 max-w-[480px]">
         {/* Google, live */}
         <li className="flex items-center justify-between gap-4 rounded-md border border-paper/10 bg-paper/[0.02] px-4 py-3">
           <div className="min-w-0">
             <p className="font-sans text-detail font-medium text-paper">
-              Google
+              {t("ui.google")}
             </p>
             <p className="font-sans text-caption text-paper/55">
               {googleIdentity ? "Connected" : "Not connected"}
@@ -302,7 +303,7 @@ export function OAuthConnectionsCard({
                 onClick={focusPasswordCard}
                 className="font-sans text-caption font-medium rounded-pill border border-gold/45 text-gold bg-gold/[0.06] hover:bg-gold/[0.12] hover:border-gold/70 px-4 py-1.5 transition-colors"
               >
-                Set a password first →
+                {t("ui.setAPasswordFirst")}
               </button>
             )
           ) : (
@@ -321,7 +322,7 @@ export function OAuthConnectionsCard({
         <li className="flex items-center justify-between gap-4 rounded-md border border-paper/10 bg-paper/[0.02] px-4 py-3 opacity-70">
           <div className="min-w-0">
             <p className="font-sans text-detail font-medium text-paper">
-              Apple
+              {t("ui.apple")}
             </p>
             <p className="font-sans text-caption text-paper/55">
               {appleIdentity ? "Connected" : "Coming soon"}
@@ -329,10 +330,10 @@ export function OAuthConnectionsCard({
           </div>
           <span
             aria-disabled="true"
-            title="Sign in with Apple is coming soon"
+            title={t("ui.signInWithAppleIs")}
             className="font-sans text-caption font-medium text-paper/40 cursor-not-allowed"
           >
-            Coming soon
+            {t("signin.comingSoon")}
           </span>
         </li>
       </ul>
@@ -341,24 +342,21 @@ export function OAuthConnectionsCard({
       {googleIdentity && !hasPassword ? (
         <div className="mt-4 rounded-md border border-gold/30 bg-gold/[0.05] p-4">
           <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-gold/85 mb-1.5">
-            Why can&rsquo;t I unlink Google?
+            {t("ui.whyCanTIUnlink")}
           </p>
           <p className="font-sans text-detail text-paper/80 leading-[1.6]">
-            Google is the only way you can sign in to this account right
-            now. If you unlinked it, you&rsquo;d be locked out the next
-            time you sign out.
+            {t("ui.googleIsTheOnlyWay")}
           </p>
           <p className="mt-2 font-sans text-detail text-paper/80 leading-[1.6]">
-            Set a password in the{" "}
+            {t("ui.setAPasswordInThe")}{" "}
             <button
               type="button"
               onClick={focusPasswordCard}
               className="text-gold underline underline-offset-2 hover:text-gold/80 transition-colors"
             >
-              Change password
+              {t("ui.changePassword")}
             </button>{" "}
-            card above first. Once you have email + password as a backup,
-            you&rsquo;ll be able to unlink Google any time.
+            {t("ui.cardAboveFirstOnceYou")}
           </p>
         </div>
       ) : null}
@@ -366,23 +364,20 @@ export function OAuthConnectionsCard({
       {error === "needs-password" ? (
         <div className="mt-4 rounded-md border border-gold/45 bg-gold/[0.08] p-4">
           <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-gold/90 mb-1.5">
-            One step before you can do that
+            {t("ui.oneStepBeforeYouCan")}
           </p>
           <p className="font-sans text-ui text-paper/85 leading-[1.6]">
-            We can&rsquo;t unlink Google yet. Right now, Google is the
-            only way you can sign in to this account, removing
-            it would lock you out.
+            {t("ui.weCanTUnlinkGoogle")}
           </p>
           <p className="mt-2 font-sans text-ui text-paper/85 leading-[1.6]">
-            Set a password first so you have email + password as a
-            backup. Then come back here and Unlink will work.
+            {t("ui.setAPasswordFirstSo")}
           </p>
           <button
             type="button"
             onClick={focusPasswordCard}
             className="mt-3 inline-flex items-center gap-1.5 rounded-pill border border-gold/55 bg-gold/15 text-gold font-sans text-detail font-semibold px-4 py-2 hover:bg-gold/25 hover:border-gold/80 transition-colors"
           >
-            Set a password
+            {t("ui.setAPassword")}
             <span aria-hidden>→</span>
           </button>
         </div>
@@ -393,10 +388,10 @@ export function OAuthConnectionsCard({
       ) : null}
       <ConfirmDialog
         open={confirmingUnlink}
-        title="Unlink Google?"
+        title={t("ui.unlinkGoogle")}
         description="You'll still be able to sign in with your email and password. You can reconnect Google at any time from this page."
-        confirmLabel="Unlink Google"
-        cancelLabel="Keep linked"
+        confirmLabel={t("ui.unlinkGoogleX")}
+        cancelLabel={t("ui.keepLinked")}
         destructive
         pending={pending === "google"}
         onCancel={() => setConfirmingUnlink(false)}

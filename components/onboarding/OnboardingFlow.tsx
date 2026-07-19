@@ -244,6 +244,7 @@ function AccountStep({
   onDone: () => void;
   notNowLabel: string;
 }) {
+  const { t } = useTranslate();
   const [showEmail, setShowEmail] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -304,9 +305,8 @@ function AccountStep({
     return (
       <div className="flex flex-col">
         <p className="rounded-2xl border border-gold/35 bg-gold/[0.06] p-4 font-serif text-detail text-paper/90 leading-[1.6]">
-          We sent a confirmation link to{" "}
-          <span className="font-semibold text-paper">{sentTo}</span>. Open it on
-          any device to finish creating your account.
+          {t("ui.weSentAConfirmationLink")}{" "}
+          <span className="font-semibold text-paper">{sentTo}</span>{t("ui.openItOnAnyDevice")}
         </p>
         <button
           type="button"
@@ -329,7 +329,7 @@ function AccountStep({
           onClick={() => setShowEmail(true)}
           className="mt-3 h-11 rounded-pill border border-paper/20 bg-paper/[0.04] font-sans text-ui font-medium text-paper hover:bg-paper/10 hover:border-paper/35 transition-colors"
         >
-          Sign up with email
+          {t("ui.signUpWithEmail")}
         </button>
       ) : (
         <form onSubmit={createAccount} className="mt-3 flex flex-col gap-2.5">
@@ -340,7 +340,7 @@ function AccountStep({
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@somewhere.com"
+            placeholder={t("ui.youSomewhereCom")}
             className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
           />
           <input
@@ -350,7 +350,7 @@ function AccountStep({
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password (8+ characters)"
+            placeholder={t("ui.password8Characters")}
             className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
           />
           <label className="flex cursor-pointer items-start gap-2.5 py-1">
@@ -361,13 +361,13 @@ function AccountStep({
               className="mt-0.5 h-4 w-4 shrink-0 accent-gold"
             />
             <span className="font-sans text-caption leading-[1.5] text-paper/70 text-left">
-              I agree to the{" "}
+              {t("ui.iAgreeToThe")}{" "}
               <Link href="/terms" className="text-paper underline underline-offset-2">
-                Terms of Service
+                {t("ui.termsOfServiceX")}
               </Link>{" "}
-              and{" "}
+              {t("ui.and")}{" "}
               <Link href="/privacy" className="text-paper underline underline-offset-2">
-                Privacy Policy
+                {t("ui.privacyPolicyX")}
               </Link>
               .
             </span>

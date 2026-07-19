@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 
 import { clearCart } from "@/lib/shop/cart";
 import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Stripe returns here after payment. The order id comes from our own
@@ -18,6 +19,7 @@ import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
  * second, honored by prefers-reduced-motion.
  */
 export function CheckoutSuccessClient() {
+  const { t } = useTranslate();
   const order = useSearchParams().get("order") ?? "";
 
   // The purchase is committed; whatever was in the local cart is bought
@@ -29,6 +31,7 @@ export function CheckoutSuccessClient() {
 
   return (
     <div className="mx-auto w-full max-w-[560px] px-5 pt-14 text-center md:px-8 md:pt-20">
+      {/* eslint-disable-next-line react/jsx-no-literals -- CSS template, not copy */}
       <style>{`
         @keyframes purify-pop {
           0% { transform: scale(0.4); opacity: 0; }
@@ -74,21 +77,20 @@ export function CheckoutSuccessClient() {
 
       <div className="purify-rise purify-rise-1">
         <p className="mt-6 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-          Purify Shop
+          {t("shop.purifyShop")}
         </p>
         <h1 className="mt-3 font-display-serif text-heading md:text-display-sm text-paper">
-          Thank you.
+          {t("study.thankYou")}
         </h1>
       </div>
 
       <div className="purify-rise purify-rise-2">
         <p className="mt-4 font-serif text-lede text-paper/70 leading-[1.65]">
-          Your order is confirmed. A receipt is on its way to your email, and
-          we&rsquo;ll write again when your icon ships.
+          {t("shop.yourOrderIsConfirmedA")}
         </p>
         {order ? (
           <p className="mt-3 font-sans text-caption text-paper/60">
-            Confirmation number:{" "}
+            {t("shop.confirmationNumber")}{" "}
             <span className="font-semibold tracking-wide text-paper/80">
               {orderConfirmationNumber(order)}
             </span>
@@ -101,13 +103,13 @@ export function CheckoutSuccessClient() {
           href="/shop/orders"
           className="tap-press inline-flex min-h-[48px] items-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90"
         >
-          Track your order
+          {t("shop.trackYourOrder")}
         </Link>
         <Link
           href="/shop"
           className="tap-press inline-flex min-h-[48px] items-center rounded-pill border border-paper/20 px-7 font-sans text-ui font-semibold text-paper hover:border-paper/40"
         >
-          Back to the shop
+          {t("shop.backToTheShop")}
         </Link>
       </div>
     </div>

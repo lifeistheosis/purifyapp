@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { PasswordInput } from "@/components/auth/PasswordInput";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Two modes:
@@ -25,6 +26,7 @@ export function ChangePasswordCard({
   email: string;
   hasPassword: boolean;
 }) {
+  const { t } = useTranslate();
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -96,23 +98,21 @@ export function ChangePasswordCard({
     return (
       <section id="change-password" className="rounded-lg border border-gold/35 bg-gold/[0.05] p-6 scroll-mt-24">
         <h2 className="font-sans text-body font-semibold text-paper mb-1">
-          Set a password
+          {t("ui.setAPassword")}
         </h2>
         <p className="font-sans text-detail text-paper/70 mb-5 leading-[1.55]">
-          Your account doesn&rsquo;t have a password yet &mdash; it signs in
-          with Google or Apple, or was set up for you. Choose one to add
-          email + password sign-in from anywhere.
+          {t("ui.yourAccountDoesnTHaveX")}
         </p>
         <form onSubmit={submit} className="flex flex-col gap-3.5 max-w-[420px]">
           <PasswordInput
-            label="Choose a password"
+            label={t("ui.chooseAPassword")}
             value={next}
             onChange={setNext}
             autoComplete="new-password"
             showStrength
           />
           <PasswordInput
-            label="Confirm password"
+            label={t("common.confirmPassword")}
             value={confirm}
             onChange={setConfirm}
             autoComplete="new-password"
@@ -122,7 +122,7 @@ export function ChangePasswordCard({
           ) : null}
           {done ? (
             <p className="font-sans text-detail text-emerald-300">
-              Password set. Reloading…
+              {t("ui.passwordSetReloading")}
             </p>
           ) : null}
           <button
@@ -140,27 +140,27 @@ export function ChangePasswordCard({
   return (
     <section id="change-password" className="rounded-lg border border-paper/12 bg-paper/[0.02] p-6 scroll-mt-24">
       <h2 className="font-sans text-body font-semibold text-paper mb-1">
-        Change password
+        {t("ui.changePassword")}
       </h2>
       <p className="font-sans text-detail text-paper/60 mb-5 leading-[1.55]">
-        We&rsquo;ll verify your current password first.
+        {t("ui.weLlVerifyYourCurrent")}
       </p>
       <form onSubmit={submit} className="flex flex-col gap-3.5 max-w-[420px]">
         <PasswordInput
-          label="Current password"
+          label={t("ui.currentPassword")}
           value={current}
           onChange={setCurrent}
           autoComplete="current-password"
         />
         <PasswordInput
-          label="New password"
+          label={t("ui.newPassword")}
           value={next}
           onChange={setNext}
           autoComplete="new-password"
           showStrength
         />
         <PasswordInput
-          label="Confirm new password"
+          label={t("ui.confirmNewPassword")}
           value={confirm}
           onChange={setConfirm}
           autoComplete="new-password"
@@ -170,7 +170,7 @@ export function ChangePasswordCard({
         ) : null}
         {done ? (
           <p className="font-sans text-detail text-emerald-300">
-            Password updated.
+            {t("ui.passwordUpdated")}
           </p>
         ) : null}
         <button

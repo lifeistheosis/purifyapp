@@ -6,6 +6,7 @@ import {
   pushAllLocalAnnotations,
   pullServerAnnotations,
 } from "@/lib/sync/annotations";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const LAST_KEY = "purify.sync.last";
 const ERR_KEY = "purify.sync.error";
@@ -77,6 +78,7 @@ function relativeShort(iso: string | null): string {
  * hydrate-in-effect setState.
  */
 export function ProfileSyncStatus() {
+  const { t } = useTranslate();
   const { last, err } = useSyncExternalStore(subscribe, readSnapshot, () => EMPTY);
   const [busy, setBusy] = useState(false);
 
@@ -101,25 +103,24 @@ export function ProfileSyncStatus() {
   return (
     <section className="mt-6">
       <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-        Cross-device sync
+        {t("ui.crossDeviceSync")}
       </p>
       <div className="rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-4 flex items-center justify-between gap-4 flex-wrap">
         <div className="min-w-0">
           <p className="font-sans text-detail text-paper">
-            <span className="text-paper/55">Last synced </span>
+            <span className="text-paper/55">{t("ui.lastSynced")} </span>
             <span className="font-semibold tabular-nums">
               {relativeShort(last)}
             </span>
           </p>
           {err && (
             <p className="mt-1.5 font-sans text-caption text-crimson-soft leading-[1.45]">
-              Last attempt failed: {err}
+              {t("ui.lastAttemptFailed")} {err}
             </p>
           )}
           {!err && last && (
             <p className="mt-1 font-sans text-caption text-paper/45">
-              Your highlights, notes, and bookmarks are saved to the server
-              and pulled back on every device.
+              {t("ui.yourHighlightsNotesAndBookmarksXX")}
             </p>
           )}
         </div>

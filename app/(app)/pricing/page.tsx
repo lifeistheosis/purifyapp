@@ -14,6 +14,7 @@ import {
   CurrentPlanBanner,
   TierPurchaseOrStatus,
 } from "@/components/premium/PlanStatus";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Pricing & Purify Plus",
@@ -130,12 +131,10 @@ export default async function PricingPage() {
           fallback={
             <div className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center">
               <p className="font-display-serif text-title text-paper">
-                Purify Plus
+                <T k="study.purifyPlus" />
               </p>
               <p className="mx-auto mt-3 max-w-[320px] font-sans text-ui leading-relaxed text-paper/60">
-                Plus isn&rsquo;t available to open right now. The whole core of
-                Purify stays free, and everything you&rsquo;ve gathered is safe
-                on this device.
+                <T k="ui.plusIsnTAvailableTo" />
               </p>
             </div>
           }
@@ -209,7 +208,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
               {copy.plusTitle}
             </p>
             <span className="rounded-pill border border-gold/40 bg-gold/[0.10] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-gold-pale">
-              Available now
+              <T k="ui.availableNow" />
             </span>
           </div>
           <p className="mt-3 max-w-[560px] font-sans text-ui leading-relaxed text-paper/70">
@@ -272,7 +271,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
               {copy.proTitle}
             </p>
             <span className="rounded-pill border border-gold/50 bg-gold/[0.16] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-gold-pale">
-              Members
+              <T k="ui.members" />
             </span>
           </div>
           <p className="mt-3 max-w-[560px] font-sans text-ui leading-relaxed text-paper/70">

@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { Close } from "@/components/ui/icons/Close";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Shared mobile bottom-sheet primitive, extracted from the bespoke
@@ -40,6 +41,7 @@ export function Sheet({
   children: React.ReactNode;
   bodyClassName?: string;
 }) {
+  const { t } = useTranslate();
   // Two-phase mount: keep the DOM around for ~220ms after `open` flips
   // false so the slide-down animation can complete.
   const [mounted, setMounted] = useState(open);
@@ -101,7 +103,7 @@ export function Sheet({
     >
       <button
         type="button"
-        aria-label="Close"
+        aria-label={t("common.close")}
         onClick={onClose}
         className={
           "absolute inset-0 bg-night/70 backdrop-blur-sm transition-opacity duration-200 " +
@@ -131,7 +133,7 @@ export function Sheet({
           </p>
           <button
             type="button"
-            aria-label="Close"
+            aria-label={t("common.close")}
             onClick={onClose}
             className="h-10 w-10 inline-flex items-center justify-center rounded-pill text-paper/65 hover:text-paper"
           >

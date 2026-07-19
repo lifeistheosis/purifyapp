@@ -7,6 +7,7 @@ import { ChangePasswordCard } from "@/components/account/security/ChangePassword
 import { ChangeEmailCard } from "@/components/account/security/ChangeEmailCard";
 import { OAuthConnectionsCard } from "@/components/account/security/OAuthConnectionsCard";
 import { SignOutEverywhereCard } from "@/components/account/security/SignOutEverywhereCard";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Client-side security tab. Page shell stays server (metadata); the user +
@@ -14,6 +15,7 @@ import { SignOutEverywhereCard } from "@/components/account/security/SignOutEver
  * native local-first export. AccountAuthGate guarantees a signed-in user.
  */
 export function SecurityTabClient() {
+  const { t } = useTranslate();
   const [data, setData] = useState<{
     email: string;
     hasPassword: boolean;
@@ -70,7 +72,7 @@ export function SecurityTabClient() {
   if (!data) {
     return (
       <p className="py-10 text-center font-sans text-caption text-paper/45">
-        Loading your security settings…
+        {t("ui.loadingYourSecuritySettings")}
       </p>
     );
   }

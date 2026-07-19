@@ -20,6 +20,7 @@ import { Cross } from "@/components/ui/icons/Cross";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
+import { T } from "@/components/i18n/T";
 
 function dayOfYearUtc(d: Date): number {
   const start = Date.UTC(d.getUTCFullYear(), 0, 0);
@@ -110,7 +111,7 @@ export async function DiscoverMobile() {
 
   return (
     <MobileShell
-      header={<MobileHeader title="Discover" trailing={<UserAvatarSmall />} />}
+      header={<MobileHeader titleKey="nav.discover" trailing={<UserAvatarSmall />} />}
     >
       {/* Masthead — mirrors the desktop Discover page so the tab opens with
           the calm "whole library" identity. */}
@@ -144,7 +145,7 @@ export async function DiscoverMobile() {
       </MobileCard>
 
       <div className="mt-7">
-        <MobileSectionLabel>The library</MobileSectionLabel>
+        <MobileSectionLabel><T k="ui.theLibrary" /></MobileSectionLabel>
         <SoftTileGrid className="mt-1">
           {entries.map((e, i) => (
             <SoftTile
@@ -162,7 +163,7 @@ export async function DiscoverMobile() {
 
       {(featuredTopic || featuredCouncil) && (
         <div className="mt-7">
-          <MobileSectionLabel>Featured today</MobileSectionLabel>
+          <MobileSectionLabel><T k="ui.featuredToday" /></MobileSectionLabel>
           <div className="space-y-3">
             {featuredTopic && (
               <MobileCard
@@ -175,7 +176,7 @@ export async function DiscoverMobile() {
                   {firstSentence(featuredTopic.definition)}
                 </p>
                 <p className="mt-3 font-sans text-detail font-medium text-paper/75">
-                  {featuredTopic.citations.length} citations from the Fathers →
+                  {featuredTopic.citations.length} <T k="ui.citationsFromTheFathers" />
                 </p>
               </MobileCard>
             )}
@@ -187,10 +188,10 @@ export async function DiscoverMobile() {
                 tint="gold"
               >
                 <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.55]">
-                  Read the canons, the creed, and the editorial framing.
+                  <T k="ui.readTheCanonsTheCreed" />
                 </p>
                 <p className="mt-3 font-sans text-detail font-medium text-paper/75">
-                  Open the council →
+                  <T k="ui.openTheCouncil" />
                 </p>
               </MobileCard>
             )}
@@ -199,9 +200,9 @@ export async function DiscoverMobile() {
       )}
 
       <p className="mt-10 text-center font-display-serif italic text-detail text-paper/45 leading-[1.55]">
-        Through the prayers of our holy Fathers,
+        <T k="ui.throughThePrayersOfOur" />
         <br />
-        Lord Jesus Christ our God, have mercy on us.
+        <T k="ui.lordJesusChristOurGod" />
       </p>
     </MobileShell>
   );

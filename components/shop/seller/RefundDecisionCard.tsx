@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { REFUND_REASON_LABELS } from "@/lib/shop/refunds";
 import type { ShopRefundReason } from "@/lib/shop/types";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const field =
   "w-full rounded-md border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
@@ -26,6 +27,7 @@ export function RefundDecisionCard({
   details: string | null;
   amountLabel: string;
 }) {
+  const { t } = useTranslate();
   const router = useRouter();
   const [busy, setBusy] = useState<false | "approved" | "declined">(false);
   const [note, setNote] = useState("");
@@ -61,10 +63,10 @@ export function RefundDecisionCard({
   return (
     <div className="rounded-lg border border-crimson-soft/40 bg-crimson-soft/[0.06] p-5">
       <p className="font-sans text-ui font-semibold text-paper">
-        Refund requested · {amountLabel}
+        {t("shop.refundRequested")} {amountLabel}
       </p>
       <p className="mt-1.5 font-sans text-detail text-paper/70">
-        Reason: {REFUND_REASON_LABELS[reason]}
+        {t("shop.reason")} {REFUND_REASON_LABELS[reason]}
       </p>
       {details ? (
         <p className="mt-2 rounded-md bg-night/60 p-3 font-serif text-body text-paper/80 leading-[1.6]">
@@ -75,7 +77,7 @@ export function RefundDecisionCard({
       {declining ? (
         <label className="mt-4 block space-y-1.5">
           <span className="font-sans text-caption font-semibold text-paper/60">
-            Why are you declining? The buyer sees this. *
+            {t("shop.whyAreYouDecliningThe")}
           </span>
           <textarea
             value={note}
@@ -110,7 +112,7 @@ export function RefundDecisionCard({
               onClick={() => setDeclining(true)}
               className="tap-press inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper disabled:opacity-60"
             >
-              Decline
+              {t("shop.decline")}
             </button>
           </>
         ) : (
@@ -132,7 +134,7 @@ export function RefundDecisionCard({
               }}
               className="font-sans text-detail font-medium text-paper/60 hover:text-paper"
             >
-              Back
+              {t("nav.back")}
             </button>
           </>
         )}

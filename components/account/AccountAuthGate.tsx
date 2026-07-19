@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { isNativeClient } from "@/lib/platform/native";
 import { resolveUser } from "@/lib/supabase/resolveUser";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Client-side auth gate for the signed-in account dashboard.
@@ -24,6 +25,7 @@ import { resolveUser } from "@/lib/supabase/resolveUser";
  * can't tell.
  */
 export function AccountAuthGate({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslate();
   const router = useRouter();
   const pathname = usePathname();
   const [state, setState] = useState<"loading" | "in" | "out" | "unresolved">(
@@ -68,8 +70,7 @@ export function AccountAuthGate({ children }: { children: React.ReactNode }) {
     return (
       <div className="mx-auto max-w-[520px] px-5 py-16 text-center">
         <p className="font-serif text-body text-paper/70 leading-[1.6]">
-          We couldn&apos;t confirm your sign-in. Check your connection and try
-          again.
+          {t("ui.weCouldnTConfirmYour")}
         </p>
         <button
           type="button"
@@ -79,7 +80,7 @@ export function AccountAuthGate({ children }: { children: React.ReactNode }) {
           }}
           className="tap-press mt-5 inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45"
         >
-          Try again
+          {t("error.tryAgain")}
         </button>
       </div>
     );

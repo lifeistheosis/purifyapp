@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/cn";
 import type { ShopMessage } from "@/lib/shop/types";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const field =
   "w-full rounded-md border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
@@ -43,6 +44,7 @@ export function MessageThread({
    *  for the server-rendered seller context. */
   onSent?: () => void;
 }) {
+  const { t } = useTranslate();
   const router = useRouter();
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
@@ -143,7 +145,7 @@ export function MessageThread({
 
   return (
     <div>
-      <ol className="space-y-3" aria-label="Messages">
+      <ol className="space-y-3" aria-label={t("shop.messages")}>
         {messages.map((m, idx) => {
           const mine = m.sender === viewer;
           // Show the avatar only on the first bubble of a run, the way
@@ -241,7 +243,7 @@ export function MessageThread({
 
       {closed ? (
         <p className="mt-6 rounded-md border border-paper/10 bg-night-soft/60 p-4 font-sans text-detail text-paper/60">
-          This conversation is closed.
+          {t("shop.thisConversationIsClosed")}
         </p>
       ) : (
         // The composer stays within thumb's reach while the thread scrolls
@@ -252,7 +254,7 @@ export function MessageThread({
         >
           <div className="flex items-end gap-2">
             <label className="min-w-0 flex-1">
-              <span className="sr-only">Reply</span>
+              <span className="sr-only">{t("shop.reply")}</span>
               <textarea
                 value={body}
                 onChange={(e) => setBody(e.target.value)}

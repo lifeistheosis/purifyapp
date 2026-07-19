@@ -1,4 +1,5 @@
 import { SignInForm } from "@/components/auth/SignInForm";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Sign in",
@@ -21,10 +22,10 @@ export default async function SignInPage({
   return (
     <div>
       <h1 className="font-sans text-title font-bold text-paper leading-tight mb-2">
-        Welcome back
+        <T k="ui.welcomeBack" />
       </h1>
       <p className="font-serif text-ui text-paper/75 mb-7">
-        Sign in to pick up where you left off.
+        <T k="ui.signInToPickUp" />
       </p>
       {friendly ? (
         <div
@@ -32,7 +33,7 @@ export default async function SignInPage({
           className="mb-5 rounded-md border border-crimson/45 bg-crimson/[0.08] px-4 py-3"
         >
           <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-crimson-soft mb-1">
-            Sign-in failed
+            <T k="ui.signInFailed" />
           </p>
           <p className="font-sans text-detail text-paper/85 leading-[1.55]">
             {friendly}

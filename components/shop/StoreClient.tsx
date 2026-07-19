@@ -18,6 +18,7 @@ import { fetchShopStore } from "@/lib/shop/catalogClient";
 import { CATEGORY_LABELS } from "@/lib/shop/format";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import type { ShopCategory, ShopProductFull, ShopStore } from "@/lib/shop/types";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 function ProductGrid({
   title,
@@ -57,6 +58,7 @@ function contactHref(store: ShopStore): string {
 }
 
 export function StoreClient({ slug }: { slug: string }) {
+  const { t } = useTranslate();
   const { data, error, loading, reload } = useAsyncData(
     () =>
       fetchShopStore(slug).catch((e: unknown) => {
@@ -80,13 +82,13 @@ export function StoreClient({ slug }: { slug: string }) {
     return (
       <div className="mx-auto max-w-[520px] px-5 py-20 text-center">
         <h1 className="font-display-serif text-heading text-paper">
-          Store not found
+          {t("shop.storeNotFound")}
         </h1>
         <Link
           href="/shop"
           className="tap-press mt-6 inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45"
         >
-          Back to the shop
+          {t("shop.backToTheShop")}
         </Link>
       </div>
     );
@@ -169,7 +171,7 @@ export function StoreClient({ slug }: { slug: string }) {
 
       {/* Category quick-jumps (only when the store spans several). */}
       {categoriesPresent.length > 1 ? (
-        <nav aria-label="Store categories" className="mt-6 -mx-5 md:mx-0">
+        <nav aria-label={t("shop.storeCategories")} className="mt-6 -mx-5 md:mx-0">
           <ul className="flex snap-x gap-2 overflow-x-auto scrollbar-thin px-5 pb-1 md:justify-center md:px-0">
             {categoriesPresent.map((c) => (
               <li key={c} className="shrink-0 snap-start">
@@ -190,7 +192,7 @@ export function StoreClient({ slug }: { slug: string }) {
           availability sections. */}
       {isFiltering ? (
         filtered.length > 0 ? (
-          <section aria-label="Results" className="mt-8">
+          <section aria-label={t("shop.results")} className="mt-8">
             <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
               {filtered.map((p, i) => (
                 <li key={p.id} className="rise-in" style={{ animationDelay: `${Math.min(i * 45, 360)}ms` }}>
@@ -202,28 +204,28 @@ export function StoreClient({ slug }: { slug: string }) {
         ) : (
           <div className="mt-12 text-center">
             <p className="font-serif text-body text-paper/60">
-              Nothing here matches those filters.
+              {t("shop.nothingHereMatchesThoseFilters")}
             </p>
             <button
               type="button"
               onClick={() => setFilters({})}
               className="tap-press mt-4 inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45"
             >
-              Clear filters
+              {t("shop.clearFilters")}
             </button>
           </div>
         )
       ) : (
         <>
-          <ProductGrid title="Ready to Ship" products={ready} />
-          <ProductGrid title="Special Order" products={special} />
-          <ProductGrid title="Coming Soon" products={upcoming} />
+          <ProductGrid title={t("shop.readyToShipX")} products={ready} />
+          <ProductGrid title={t("shop.specialOrder")} products={special} />
+          <ProductGrid title={t("shop.comingSoon")} products={upcoming} />
         </>
       )}
 
-      <section aria-label="How it works" className="mt-14 rounded-lg border border-paper/10 bg-night-soft/60 p-6 md:p-8">
+      <section aria-label={t("shop.howItWorks")} className="mt-14 rounded-lg border border-paper/10 bg-night-soft/60 p-6 md:p-8">
         <h2 className="font-display-serif text-title text-paper">
-          How {store.public_name} works
+          {t("shop.how")} {store.public_name} {t("shop.works")}
         </h2>
         {store.operational_disclosure ? (
           <p className="mt-3 font-serif text-body text-paper/70 leading-[1.65]">
@@ -234,7 +236,7 @@ export function StoreClient({ slug }: { slug: string }) {
           {store.shipping_policy_md ? (
             <div>
               <h3 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-                Shipping
+                {t("shop.shipping")}
               </h3>
               <div className="mt-3">
                 <PolicyText text={store.shipping_policy_md} />
@@ -244,7 +246,7 @@ export function StoreClient({ slug }: { slug: string }) {
           {store.return_policy_md ? (
             <div>
               <h3 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-                Returns
+                {t("shop.returns")}
               </h3>
               <div className="mt-3">
                 <PolicyText text={store.return_policy_md} />
@@ -256,7 +258,7 @@ export function StoreClient({ slug }: { slug: string }) {
           href={contactHref(store)}
           className="tap-press mt-6 inline-flex min-h-[44px] items-center rounded-pill border border-paper/20 px-5 font-sans text-ui font-semibold text-paper hover:border-paper/40"
         >
-          Contact {store.public_name}
+          {t("shop.contact")} {store.public_name}
         </Link>
       </section>
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
  title: "About",
@@ -28,170 +29,111 @@ export default async function AboutPage() {
 
  {/* §1 Manifesto / North Star */}
  <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
- The north star
+ <T k="about.northStar" />
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
- Purify is an Eastern Orthodox led project: built, kept, and
- decided by Orthodox Christians, under the Faith confessed by the
- Fathers and the Councils. It is not an app, not a Bible reader,
- not a calendar, not a prayer book. It is one quiet home for all
- of those, set together so that no part stands alone. The
- Scriptures with the Fathers in the margin. The lives of the
- saints with their writings to read in full. Every day of the
- Church&rsquo;s year, fast and feast, in either reckoning. The
- morning and evening rules in the wording the diaspora has
- carried.
+ <T k="ui.purifyIsAnEasternOrthodox" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- The Liturgy is where the Church gathers. This is the room you
- come into between Liturgies: to pray when you rise, to read when
- you have an hour, to walk the year, to keep the fast.
+ <T k="ui.theLiturgyIsWhereThe" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Built for the praying life, not for retention loops. There are no
- analytics watching you read, no advertising in the margins, no
- notifications pulling you back. The site is plain on purpose. It
- hopes to be the only thing open on the screen for a little while,
- and then to be closed.
+ <T k="ui.builtForThePrayingLife" />
  </p>
 
  {/* §2 Radical Textual Honesty */}
  <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
- What it is made of
+ <T k="about.whatItIsMadeOf" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
- Every text named. Every source open.
+ <T k="about.everyTextNamed" />
  </h2>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Purify hides nothing about what it puts in front of you. The
- Scriptures, the prayers, and the Fathers are drawn from sources
- you can verify line by line.
+ <T k="ui.purifyHidesNothingAboutWhat" />
  </p>
  <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
- <strong className="text-paper">Old Testament</strong>, Brenton&rsquo;s
- 1851 English Septuagint, with the deuterocanonical books and
- the Church&rsquo;s Psalter numbering.
+ <strong className="text-paper"><T k="footer.oldTestament" /></strong><T k="ui.brentonS1851EnglishSeptuagint" />
  </li>
  <li>
- <strong className="text-paper">New Testament</strong>, The King
- James Version of 1611.
+ <strong className="text-paper"><T k="footer.newTestament" /></strong><T k="ui.theKingJamesVersionOf" />
  </li>
  <li>
- <strong className="text-paper">Greek</strong>, Nestle 1904,
- polytonic, with Strong&rsquo;s numbers and Robinson morphology
- on every word.
+ <strong className="text-paper"><T k="ui.greek" /></strong><T k="ui.nestle1904PolytonicWithStrong" />
  </li>
  <li>
- <strong className="text-paper">The Fathers</strong>, Schaff&rsquo;s
- Ante-Nicene and Nicene Fathers (1885&ndash;1900), the standard
- English critical editions.
+ <strong className="text-paper"><T k="footer.theFathers" /></strong><T k="ui.schaffSAnteNiceneAnd" />
  </li>
  <li>
- <strong className="text-paper">Daily prayers</strong>, The wording
- carried by the Jordanville Prayer Book, the editions of St.
- Tikhon&rsquo;s Monastery, and Isabel Hapgood&rsquo;s Service Book.
+ <strong className="text-paper"><T k="ui.dailyPrayers" /></strong><T k="ui.theWordingCarriedByThe" />
  </li>
  <li>
- <strong className="text-paper">The Calendar</strong>, Fixed feasts
- on the New (Revised Julian) reckoning of the Ecumenical
- Patriarchate; an Old (Julian) toggle for the Russian, Serbian,
- Athonite, and Jerusalem traditions. Pascha by the algorithm
- shared by all canonical Orthodox churches.
+ <strong className="text-paper"><T k="footer.calendar" /></strong><T k="ui.fixedFeastsOnTheNew" />
  </li>
  </ul>
  <p className="mt-5 font-serif text-body text-paper/85 leading-[1.7]">
- Over ninety per cent of the textual treasury is in the public
- domain. The site also carries three modern translations under
- proper license, the New King James, the New International,
- and the New Living, fetched live from the publishers and
- shown exactly as set, footnotes and all, with their attribution
- intact. Nothing is repackaged. No translation is concealed inside
- a black-box rendering. There are no proprietary lock-ins.
+ <T k="ui.overNinetyPerCentOf" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Where the Orthodox jurisdictions disagree on a point of practice
-, most often the calendar and the fast, Purify
- surfaces both readings and does not arbitrate. The Church has not
- asked it to.
+ <T k="ui.whereTheOrthodoxJurisdictionsDisagree" />
  </p>
 
  {/* §3 Ethical Privacy Covenant */}
  <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
- Your reading life is yours
+ <T k="about.yourReadingLifeIsYours" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
- A covenant on privacy.
+ <T k="about.covenantOnPrivacy" />
  </h2>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- What you highlight, what you note, what you bookmark, the length
- of your prayer streak, these belong to you and only to you.
+ <T k="ui.whatYouHighlightWhatYou" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- By default, all of it lives on your device, in the local storage
- of the browser you are reading in. There is no server row, no
- profile, no copy elsewhere. Purify cannot read it because Purify
- never receives it.
+ <T k="ui.byDefaultAllOfIt" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- If you want your notes and bookmarks to follow you between phone
- and laptop, you may{" "}
- <strong className="text-paper">sign in to sync</strong>, with
- your email and a password, or one of the OAuth providers wired
- into the site. The same data is then stored in a row under your
- name, behind row-level security, so no one else may read it. You
- may sign out at any time, and delete the account and every row
- attached to it from the Data tab on your dashboard. The choice
- between the two paths is named plainly the first time you open{" "}
+ <T k="ui.ifYouWantYourNotes" />{" "}
+ <strong className="text-paper"><T k="ui.signInToSync" /></strong><T k="ui.withYourEmailAndA" />{" "}
  <Link
  href="/account"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- /account
+ <T k="ui.account" />
  </Link>
- , and is reversible in either direction.
+ <T k="ui.andIsReversibleInEither" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- There is no analytics layer. No third-party tracker. No advertising
- network. The full details, with every field and every third party
- named, are set out on the{" "}
+ <T k="ui.thereIsNoAnalyticsLayer" />{" "}
  <Link
  href="/privacy"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- privacy page
+ <T k="ui.privacyPage" />
  </Link>
  .
  </p>
 
  {/* §4 Stewardship & the Road Ahead */}
  <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
- How it is kept
+ <T k="about.howItIsKept" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
- Mission-first, independently built.
+ <T k="about.missionFirst" />
  </h2>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- This work is kept by an independent steward, not a company, and it
- is an Eastern Orthodox led project from top to bottom: the hands
- that build it and the judgment that governs it belong to the
- Orthodox Church&rsquo;s faithful. There is no investor to satisfy,
- no growth team to feed, and no incentive to keep you on the page
- longer than you came to be. What ships, and what does not, is
- decided for the sake of the Faith confessed by the Fathers and for
- the sake of the readers who pray with us.
+ <T k="ui.thisWorkIsKeptBy" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- The{" "}
+ <T k="ui.the" />{" "}
  <a
  href="https://discord.gg/VzBYYUsNJ6"
  target="_blank"
  rel="noopener noreferrer"
  className="text-link hover:text-paper underline underline-offset-2 decoration-link/35"
  >
- Discord server
+ <T k="ui.discordServer" />
  </a>{" "}
- and the Instagram account{" "}
+ <T k="ui.andTheInstagramAccount" />{" "}
  <a
  href="https://instagram.com/purifymylife"
  target="_blank"
@@ -200,110 +142,85 @@ export default async function AboutPage() {
  >
  @purifymylife
  </a>{" "}
- exist for the community, not for the algorithm. Conversation
- about the texts, about the saints, about the year, that
- is what they are for.
+ <T k="ui.existForTheCommunityNot" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Purify is funded today by freewill gifts, transparently itemized
- on the{" "}
+ <T k="ui.purifyIsFundedTodayBy" />{" "}
  <Link
  href="/support"
  className="text-gold underline decoration-gold/50 hover:decoration-gold underline-offset-2"
  >
- Support page
+ <T k="ui.supportPage" />
  </Link>
- . The core spiritual treasury, every saint&rsquo;s life,
- every primary writing of the Fathers, the Scriptures with the
- Greek beside them, the daily prayers, the calendar, will
- remain free of charge, always.
+ <T k="ui.theCoreSpiritualTreasuryEvery" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- A heavier infrastructure layer is on the way, and the licensing
- is being upgraded so that it can be offered honestly. When that
- optional, subscription-funded layer arrives, it will exist solely
- to pay for the work it requires, the servers, the
- production, the rights, and to keep the core forever open
- to anyone who needs it. What is free today will still be free
- then.
+ <T k="ui.aHeavierInfrastructureLayerIs" />
  </p>
 
  {/* §5 Contributors */}
  <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
- Readers who have shaped Purify
+ <T k="ui.readersWhoHaveShapedPurify" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
- Contributors
+ <T k="ui.contributors" />
  </h2>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Purify is editorially small, but it is not alone. Readers in the
- Discord and through /contact regularly send patristic citations,
- corrections, and theological notes that the editors take seriously
- and that shape what ships. The following readers contributed
- substantively to specific patches:
+ <T k="ui.purifyIsEditoriallySmallBut" />
  </p>
  <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
- <strong className="text-paper">ChristosAnesti</strong>, the
- florilegium on the essence-energies distinction (v6.8), including
- the patristic and Scriptural witnesses underlying the new hosted
- page on Gregory Palamas&rsquo;s profile.
+ <strong className="text-paper"><T k="ui.christosanesti" /></strong><T k="ui.theFlorilegiumOnTheEssence" />
  </li>
  </ul>
  <p className="mt-4 font-serif text-ui text-paper/55 leading-[1.65] italic">
- If you have contributed a citation, a translation note, or an
- editorial correction that shipped, and you do not see your handle
- here, write us; we want to keep this list honest.
+ <T k="ui.ifYouHaveContributedA" />
  </p>
 
  {/* §5b Promoters */}
  <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
- Readers who have spread the word
+ <T k="ui.readersWhoHaveSpreadThe" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
- Promoters
+ <T k="ui.promoters" />
  </h2>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Purify has no advertising budget and buys no reach. It grows because
- readers tell other readers. The following have gone out of their way
- to point people here:
+ <T k="ui.purifyHasNoAdvertisingBudget" />
  </p>
  <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
- <strong className="text-paper">Harrison Hill</strong> (
+ <strong className="text-paper"><T k="ui.harrisonHill" /></strong> (
  <a
  href="https://www.tiktok.com/@spyridons.ponder"
  target="_blank"
  rel="noopener noreferrer"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- @Spyridons.ponder
+ <T k="ui.spyridonsPonder" />
  </a>
- ), for sharing Purify with his audience on TikTok.
+ <T k="ui.forSharingPurifyWithHis" />
  </li>
  <li>
- <strong className="text-paper">Markos</strong> (
+ <strong className="text-paper"><T k="ui.markos" /></strong> (
  <a
  href="https://www.tiktok.com/@orthodoxyordeath2"
  target="_blank"
  rel="noopener noreferrer"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- @orthodoxyordeath2
+ <T k="ui.orthodoxyordeath2" />
  </a>{" "}
- on TikTok, @monotheistic.aristotelian on Discord), for
- spreading the word about Purify.
+ <T k="ui.onTiktokMonotheisticAristotelianOn" />
  </li>
  </ul>
  <p className="mt-4 font-serif text-ui text-paper/55 leading-[1.65] italic">
- If you have shared Purify somewhere and would like to be named here,
- write us; we are grateful for every reader you send.
+ <T k="ui.ifYouHaveSharedPurify" />
  </p>
 
  {/* §6 Closing Doxology */}
  <div className="mt-16 pt-10 border-t border-paper/10 text-center">
  <p className="font-serif italic text-title-sm md:text-title tracking-wide leading-[1.4] max-w-[560px] mx-auto text-gold">
- Glory to God for all things.
+ <T k="footer.glory" />
  </p>
  </div>
  </article>
@@ -318,183 +235,119 @@ function AboutDe() {
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
  <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- Über
+ <T k="ui.ber" />
  </p>
  <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- Eine Wohnung für das orthodoxe Leben.
+ <T k="ui.eineWohnungFRDas" />
  </h1>
 
  {/* §1 Manifest / Nordstern */}
  <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
- Der Nordstern
+ <T k="ui.derNordstern" />
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
- Purify ist ein ostkirchlich-orthodox geführtes Werk: gebaut,
- bewahrt und entschieden von orthodoxen Christen, unter dem
- Glauben, den die Väter und die Konzilien bekannt haben. Es ist
- nicht eine App, nicht ein Bibelleser, nicht ein Kalender, nicht
- ein Gebetbuch. Es ist eine stille Wohnung für dies alles, so
- beieinander, daß kein Teil allein steht. Die Schriften mit den
- Vätern am Rand. Die Leben der Heiligen mit ihren Schriften, ganz
- zu lesen. Jeder Tag des Kirchenjahres, Fasten und Fest, nach
- beiden Reckonungen. Die Morgen- und Abendregel im Wortlaut, den
- die Diaspora getragen hat.
+ <T k="ui.purifyIstEinOstkirchlichOrthodox" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Die göttliche Liturgie ist der Ort, wo die Kirche sich versammelt.
- Dies ist die Kammer, in die du zwischen den Liturgien hineingehst:
- um zu beten, wenn du aufstehst, um zu lesen, wenn du eine Stunde
- hast, um das Jahr zu gehen, um das Fasten zu halten.
+ <T k="ui.dieGTtlicheLiturgieIst" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Für das betende Leben gebaut, nicht für Rückbindungsschleifen. Es
- gibt keine Analytik, die dich beim Lesen beobachtet, keine Werbung
- am Rand, keine Benachrichtigungen, die dich zurückziehen. Die Seite
- ist absichtlich schlicht. Sie hofft, eine kleine Weile lang das
- Einzige zu sein, was auf dem Bildschirm offen ist, und dann
- geschlossen zu werden.
+ <T k="ui.fRDasBetendeLeben" />
  </p>
 
  {/* §2 Radikale Texttreue */}
  <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
- Woraus es gemacht ist
+ <T k="ui.worausEsGemachtIst" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
- Jeder Text genannt. Jede Quelle offen.
+ <T k="ui.jederTextGenanntJedeQuelle" />
  </h2>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Purify verbirgt nichts darüber, was es dir vorlegt. Die Schriften,
- die Gebete und die Väter sind aus Quellen geschöpft, die du Zeile
- für Zeile prüfen kannst.
+ <T k="ui.purifyVerbirgtNichtsDarBer" />
  </p>
  <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
- <strong className="text-paper">Altes Testament</strong>, Brentons
- englische Septuaginta von 1851, mit den deuterokanonischen Büchern
- und der Psalterzählung der Kirche.
+ <strong className="text-paper"><T k="ui.altesTestament" /></strong><T k="ui.brentonsEnglischeSeptuagintaVon1851" />
  </li>
  <li>
- <strong className="text-paper">Neues Testament</strong>, die King-James-Bibel
- von 1611.
+ <strong className="text-paper"><T k="ui.neuesTestament" /></strong><T k="ui.dieKingJamesBibelVon" />
  </li>
  <li>
- <strong className="text-paper">Griechisch</strong>, Nestle 1904,
- polytonisch, mit Strong-Nummern und Robinson-Morphologie auf
- jedem Wort.
+ <strong className="text-paper"><T k="ui.griechisch" /></strong><T k="ui.nestle1904PolytonischMitStrong" />
  </li>
  <li>
- <strong className="text-paper">Die Väter</strong>, Schaffs
- Ante-Nicene und Nicene Fathers (1885&ndash;1900), die
- klassischen englischen kritischen Ausgaben.
+ <strong className="text-paper"><T k="ui.dieVTer" /></strong><T k="ui.schaffsAnteNiceneUndNicene" />
  </li>
  <li>
- <strong className="text-paper">Tägliche Gebete</strong>, der
- Wortlaut, den das Jordanville-Gebetbuch, die Ausgaben des
- Hl. Tichon-Klosters und Isabel Hapgoods Service Book tragen.
+ <strong className="text-paper"><T k="ui.tGlicheGebete" /></strong><T k="ui.derWortlautDenDasJordanville" />
  </li>
  <li>
- <strong className="text-paper">Der Kalender</strong>, die festen
- Feste nach der Neuen (Revidierten Julianischen) Reckonung des
- Ökumenischen Patriarchats; eine Umschaltung auf das Alte
- (Julianische) für die russische, serbische, athonitische und
- jerusalemische Überlieferung. Pascha nach dem Algorithmus, den
- alle kanonischen orthodoxen Kirchen teilen.
+ <strong className="text-paper"><T k="ui.derKalender" /></strong><T k="ui.dieFestenFesteNachDer" />
  </li>
  </ul>
  <p className="mt-5 font-serif text-body text-paper/85 leading-[1.7]">
- Über neunzig Prozent des Textschatzes liegen gemeinfrei. Die Seite
- trägt außerdem drei moderne Übersetzungen unter ordentlicher
- Lizenz, die New King James, die New International und
- die New Living,, die unmittelbar von den Verlagen geholt
- und genau so gezeigt werden, wie sie gesetzt sind, mit Fußnoten
- und allem, ihre Verfasserangabe unangetastet. Nichts wird
- umverpackt. Keine Übersetzung wird in einer Blackbox versteckt.
- Es gibt keine geschützten Einbindungen.
+ <T k="ui.berNeunzigProzentDesTextschatzes" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Wo die orthodoxen Jurisdiktionen in einem Punkt der Praxis
- voneinander abweichen, meistens im Kalender und im Fasten
-,, legt Purify beide Lesarten vor und richtet nicht. Die
- Kirche hat es nicht darum gebeten.
+ <T k="ui.woDieOrthodoxenJurisdiktionenIn" />
  </p>
 
  {/* §3 Ethischer Privatheitsbund */}
  <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
- Dein Lese-Leben gehört dir
+ <T k="ui.deinLeseLebenGehRt" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
- Ein Bund über die Privatheit.
+ <T k="ui.einBundBerDiePrivatheit" />
  </h2>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Was du markierst, was du dir notierst, was du als Lesezeichen
- setzt, die Länge deiner Gebets-Strähne, das gehört dir
- und nur dir.
+ <T k="ui.wasDuMarkierstWasDu" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Voreingestellt lebt all das auf deinem Gerät, im Lokalspeicher des
- Browsers, in dem du gerade liest. Es gibt keine Zeile auf einem
- Server, kein Profil, keine Kopie anderswo. Purify kann es nicht
- lesen, weil Purify es niemals empfängt.
+ <T k="ui.voreingestelltLebtAllDasAuf" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Wenn du möchtest, daß deine Notizen und Lesezeichen dir zwischen
- Telefon und Laptop folgen, kannst du ein{" "}
- <strong className="text-paper">öffentliches Konto</strong> öffnen
-, deine E-Mail und ein Paßwort, oder einen der in die Seite
- eingebauten OAuth-Anbieter. Dieselben Daten werden dann in einer
- Zeile unter deinem Namen gespeichert, hinter zeilenstrenger
- Sicherheit, so daß niemand sonst sie lesen kann. Du kannst dich
- jederzeit abmelden und das Konto sowie jede zugehörige Zeile aus
- dem Daten-Reiter deines Dashboards löschen. Die Wahl zwischen
- beiden Wegen wird beim ersten Öffnen von{" "}
+ <T k="ui.wennDuMChtestDa" />{" "}
+ <strong className="text-paper"><T k="ui.ffentlichesKonto" /></strong> <T k="ui.ffnenDeineEMailUnd" />{" "}
  <Link
  href="/account"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- /account
+ <T k="ui.account" />
  </Link>{" "}
- schlicht benannt und ist in beide Richtungen umkehrbar.
+ <T k="ui.schlichtBenanntUndIstIn" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Es gibt keine Analytik-Schicht. Keinen Tracker eines Dritten. Kein
- Werbenetz. Die vollen Einzelheiten, mit jedem Feld und jedem
- Dritten beim Namen, findest du auf der{" "}
+ <T k="ui.esGibtKeineAnalytikSchicht" />{" "}
  <Link
  href="/privacy"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- Datenschutzseite
+ <T k="ui.datenschutzseite" />
  </Link>
  .
  </p>
 
  {/* §4 Verwaltung und der Weg voraus */}
  <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
- Wie es bewahrt wird
+ <T k="ui.wieEsBewahrtWird" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
- Sendungsorientiert, unabhängig gebaut.
+ <T k="ui.sendungsorientiertUnabhNgigGebaut" />
  </h2>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Dieses Werk wird von einer unabhängigen Verwaltung gehalten, nicht
- von einer Firma. Es gibt keinen Investor zu befriedigen, kein
- Wachstumsteam zu speisen und keinen Anreiz, dich länger auf der
- Seite zu halten, als du gekommen bist, um es zu sein. Was
- geliefert wird und was nicht, wird um des Glaubens willen
- entschieden, der von den Vätern bekannt ist, und um der Leser
- willen, die mit uns beten.
+ <T k="ui.diesesWerkWirdVonEiner" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Der{" "}
+ <T k="ui.der" />{" "}
  <a
  href="https://discord.gg/VzBYYUsNJ6"
  target="_blank"
  rel="noopener noreferrer"
  className="text-link hover:text-paper underline underline-offset-2 decoration-link/35"
  >
- Discord-Server
+ <T k="ui.discordServerX" />
  </a>{" "}
- und das Instagram-Konto{" "}
+ <T k="ui.undDasInstagramKonto" />{" "}
  <a
  href="https://instagram.com/purifymylife"
  target="_blank"
@@ -503,112 +356,85 @@ function AboutDe() {
  >
  @purifymylife
  </a>{" "}
- sind für die Gemeinschaft da, nicht für den Algorithmus. Gespräch
- über die Texte, über die Heiligen, über das Jahr, dafür
- sind sie.
+ <T k="ui.sindFRDieGemeinschaft" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Purify wird heute durch freiwillige Gaben getragen, die auf der{" "}
+ <T k="ui.purifyWirdHeuteDurchFreiwillige" />{" "}
  <Link
  href="/support"
  className="text-gold underline decoration-gold/50 hover:decoration-gold underline-offset-2"
  >
- Unterstützungsseite
+ <T k="ui.unterstTzungsseite" />
  </Link>{" "}
- durchsichtig aufgeschlüsselt sind. Der geistliche Kernschatz
-, das Leben jedes Heiligen, jedes wichtige Schreiben der
- Väter, die Schriften mit dem Griechischen daneben, die täglichen
- Gebete, der Kalender, wird immer unentgeltlich bleiben.
+ <T k="ui.durchsichtigAufgeschlSseltSindDer" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Eine schwerere Infrastrukturschicht ist im Werden, und die
- Lizenzierung wird verbessert, damit sie ehrlich angeboten werden
- kann. Wenn diese freiwillige, durch Abonnement getragene Schicht
- kommt, wird sie ausschließlich dazu da sein, die Arbeit zu
- bezahlen, die sie verlangt, die Server, die Produktion,
- die Rechte, und den Kern für jeden, der ihn braucht,
- immer offen zu halten. Was heute frei ist, wird dann noch frei
- sein.
+ <T k="ui.eineSchwerereInfrastrukturschichtIstIm" />
  </p>
 
  {/* §5 Mitarbeiter */}
  <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
- Leser, die Purify mitgeprägt haben
+ <T k="ui.leserDiePurifyMitgeprGt" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
- Mitwirkende
+ <T k="ui.mitwirkende" />
  </h2>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Purify ist redaktionell klein, aber nicht allein. Leser im Discord
- und über /contact schicken regelmäßig patristische Zitate,
- Korrekturen und theologische Anmerkungen, die die Redaktion ernst
- nimmt und die prägen, was geliefert wird. Die folgenden Leser
- haben wesentlich zu bestimmten Patches beigetragen:
+ <T k="ui.purifyIstRedaktionellKleinAber" />
  </p>
  <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
- <strong className="text-paper">ChristosAnesti</strong>, das
- Florilegium zur Wesens-Energien-Unterscheidung (v6.8), samt der
- patristischen und Schrift-Zeugen, die der neuen Seite auf dem
- Profil des heiligen Gregor Palamas zugrunde liegen.
+ <strong className="text-paper"><T k="ui.christosanesti" /></strong><T k="ui.dasFlorilegiumZurWesensEnergien" />
  </li>
  </ul>
  <p className="mt-4 font-serif text-ui text-paper/55 leading-[1.65] italic">
- Wenn du ein Zitat, eine Übersetzungsanmerkung oder eine
- redaktionelle Korrektur beigetragen hast, die geliefert wurde, und
- deinen Namen hier nicht siehst, schreib uns; wir wollen diese
- Liste ehrlich halten.
+ <T k="ui.wennDuEinZitatEine" />
  </p>
 
  {/* §5b Förderer */}
  <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
- Leser, die Purify bekannt gemacht haben
+ <T k="ui.leserDiePurifyBekanntGemacht" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
- Förderer
+ <T k="ui.fRderer" />
  </h2>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Purify hat kein Werbebudget und kauft keine Reichweite. Es wächst,
- weil Leser anderen Lesern davon erzählen. Die folgenden haben sich
- besondere Mühe gegeben, Menschen hierher zu weisen:
+ <T k="ui.purifyHatKeinWerbebudgetUnd" />
  </p>
  <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
- <strong className="text-paper">Harrison Hill</strong> (
+ <strong className="text-paper"><T k="ui.harrisonHill" /></strong> (
  <a
  href="https://www.tiktok.com/@spyridons.ponder"
  target="_blank"
  rel="noopener noreferrer"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- @Spyridons.ponder
+ <T k="ui.spyridonsPonder" />
  </a>
- ), dafür, daß er Purify mit seinem Publikum auf TikTok geteilt hat.
+ <T k="ui.dafRDaErPurify" />
  </li>
  <li>
- <strong className="text-paper">Markos</strong> (
+ <strong className="text-paper"><T k="ui.markos" /></strong> (
  <a
  href="https://www.tiktok.com/@orthodoxyordeath2"
  target="_blank"
  rel="noopener noreferrer"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- @orthodoxyordeath2
+ <T k="ui.orthodoxyordeath2" />
  </a>{" "}
- auf TikTok, @monotheistic.aristotelian auf Discord), dafür,
- daß er Purify bekannt gemacht hat.
+ <T k="ui.aufTiktokMonotheisticAristotelianAuf" />
  </li>
  </ul>
  <p className="mt-4 font-serif text-ui text-paper/55 leading-[1.65] italic">
- Wenn du Purify irgendwo geteilt hast und hier genannt werden
- möchtest, schreib uns; wir sind für jeden Leser dankbar, den du
- schickst.
+ <T k="ui.wennDuPurifyIrgendwoGeteilt" />
  </p>
 
  {/* §6 Schluss-Doxologie */}
  <div className="mt-16 pt-10 border-t border-paper/10 text-center">
  <p className="font-serif italic text-title-sm md:text-title tracking-wide leading-[1.4] max-w-[560px] mx-auto text-gold">
- Ehre sei Gott für alles.
+ <T k="ui.ehreSeiGottFR" />
  </p>
  </div>
  </article>

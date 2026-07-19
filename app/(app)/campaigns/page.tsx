@@ -1,6 +1,7 @@
 import { CampaignsClient } from "@/components/campaigns/CampaignsClient";
 import { FeatureShell } from "@/components/feature/FeatureShell";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Prayer Campaigns",
@@ -12,10 +13,10 @@ export default function CampaignsPage() {
   if (!campaignsEnabled()) {
     return (
       <FeatureShell
-        eyebrow="Together"
-        title="Prayer Campaigns"
-        body="Join the faithful praying for a cause, a person, or a need. Open campaigns, parish-led campaigns, and seasonal initiatives."
-        ctaLabel="See active campaigns"
+        eyebrow={<T k="ui.together" />}
+        title={<T k="nav.discoverMenu.campaigns" />}
+        body={<T k="ui.campaignsBody" />}
+        ctaLabel={<T k="ui.seeActiveCampaigns" />}
       />
     );
   }

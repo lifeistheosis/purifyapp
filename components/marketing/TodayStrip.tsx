@@ -12,6 +12,7 @@ import { SaintIcon } from "@/components/saints/SaintIcon";
 import { FAST_META } from "@/components/calendar/fastMeta";
 import { Cross } from "@/components/ui/icons/Cross";
 import { Halo } from "@/components/ui/icons/Halo";
+import { T } from "@/components/i18n/T";
 
 /**
  * "Today" rail on the home page: four small live tiles that turn the landing
@@ -60,13 +61,13 @@ export function TodayStrip() {
         <div className="flex items-baseline justify-between flex-wrap gap-3 mb-5">
           <p className="inline-flex items-center gap-2 font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/75">
             <Cross size={13} className="text-gold/70" />
-            Today
+            <T k="prayers.tabs.today" />
           </p>
           <Link
             href="/calendar"
             className="font-sans text-caption font-medium text-paper/55 hover:text-paper transition-colors"
           >
-            Open the calendar →
+            <T k="ui.openTheCalendar" /> →
           </Link>
         </div>
 

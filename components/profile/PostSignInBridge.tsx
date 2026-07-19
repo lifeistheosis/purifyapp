@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { releaseLocal } from "@/lib/profile/localAccount";
 import { flushPending } from "@/lib/push/client";
 import { flushPendingNative } from "@/lib/push/native";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Mounted in the signed-in branch of `/account`. Two responsibilities:
@@ -31,6 +32,7 @@ const LOCAL_KEY = "purify_local_account";
 const SESSION_KEY = "purify_just_migrated";
 
 export function PostSignInBridge() {
+  const { t } = useTranslate();
   const [show, setShow] = useState(false);
 
   /* eslint-disable react-hooks/set-state-in-effect */
@@ -93,19 +95,16 @@ export function PostSignInBridge() {
     >
       <div className="min-w-0 flex-1">
         <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-2">
-          Welcome, your local data is syncing
+          {t("ui.welcomeYourLocalDataIs")}
         </p>
         <p className="font-serif text-body text-paper/90 leading-[1.65]">
-          Your highlights, notes, and bookmarks from this device are being
-          pushed to your account now. They&rsquo;ll show up on any device
-          you sign in on. Reader settings stay on this device for now (no
-          server table yet).
+          {t("ui.yourHighlightsNotesAndBookmarksX")}
         </p>
       </div>
       <button
         type="button"
         onClick={dismiss}
-        aria-label="Dismiss"
+        aria-label={t("translationDisclaimer.dismiss")}
         className="shrink-0 h-9 w-9 inline-flex items-center justify-center rounded-pill text-paper/65 hover:text-paper"
       >
         ✕

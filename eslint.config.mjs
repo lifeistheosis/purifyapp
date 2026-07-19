@@ -41,6 +41,33 @@ const I18N_CONVERTED_GLOBS = [
   "app/(app)/saved/**/*.tsx",
   "app/(app)/florilegium/**/*.tsx",
   "app/(app)/trapeza/**/*.tsx",
+  "app/(app)/account/**/*.tsx",
+  "app/(auth)/**/*.tsx",
+  "app/(app)/premium/**/*.tsx",
+  "app/(app)/pricing/**/*.tsx",
+  "app/(app)/plan/**/*.tsx",
+  "app/(app)/whats-new/**/*.tsx",
+  "app/(app)/faq/**/*.tsx",
+  "app/(app)/about/**/*.tsx",
+  "app/(app)/support/**/*.tsx",
+  "components/profile/**/*.tsx",
+  "components/account/**/*.tsx",
+  "components/premium/**/*.tsx",
+  "components/onboarding/**/*.tsx",
+  "components/pwa/**/*.tsx",
+  "components/mobile/**/*.tsx",
+  "app/(app)/shop/**/*.tsx",
+  "app/(app)/campaigns/**/*.tsx",
+  "components/shop/**/*.tsx",
+  "components/campaigns/**/*.tsx",
+  "components/gifts/**/*.tsx",
+  "components/marketing/**/*.tsx",
+  "components/reader/**/*.tsx",
+  "components/ui/**/*.tsx",
+  "components/native/**/*.tsx",
+  "components/analytics/**/*.tsx",
+  "components/feature/**/*.tsx",
+  "components/content/**/*.tsx",
   "components/history/**/*.tsx",
   "components/florilegium/**/*.tsx",
   "components/theology/**/*.tsx",
@@ -61,9 +88,9 @@ const i18nRatchet =
               {
                 noStrings: true,
                 allowedStrings: [
-                  "·", "•", "|", "/", "(", ")", ":", "%", "©", "↗", "‹", "›", "→", "←", ".", "✦", "…", "+", "×", "▾", "★", "☆", "← →", "⌕", "⇤", "⇥", "↑", "“", "”.", "Orthodox Study Bible", "?", "✓", "✎", "†", "&rdquo;", "&ldquo;", "&rsquo;", "~", "–",
+                  "·", "•", "|", "/", "(", ")", ":", "%", "©", "↗", "‹", "›", "→", "←", ".", "✦", "…", "+", "×", "▾", "★", "☆", "← →", "⌕", "⇤", "⇥", "↑", "“", "”.", "Orthodox Study Bible", "?", "✓", "✎", "†", "&rdquo;", "&ldquo;", "&rsquo;", "~", "–", "✕", "☩",
                   // Brand names and social handles never translate.
-                  "Purify", "@purifymylife", "@purify.app",
+                  "Purify", "Purify Pro", "Purify Plus", "A", "a", "@purifymylife", "@purify.app",
                 ],
                 ignoreProps: true,
               },
@@ -72,11 +99,25 @@ const i18nRatchet =
         },
       ];
 
+// Web-only English-by-design surfaces: seller console, admin, and the
+// language-editor recruitment page are out of the i18n ratchet.
+const i18nRatchetExempt = [
+  {
+    files: [
+      "app/(app)/shop/seller/**/*.tsx",
+      "app/admin/**/*.tsx",
+      "app/(app)/language-editor/**/*.tsx",
+    ],
+    rules: { "react/jsx-no-literals": "off" },
+  },
+];
+
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   jsxA11yRecommended,
   ...i18nRatchet,
+  ...i18nRatchetExempt,
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { T } from "@/components/i18n/T";
 
 /**
  * Minimal centered shell for sign-in / sign-up / forgot / reset /
@@ -24,14 +25,14 @@ export default function AuthLayout({
           href="/privacy"
           className="font-sans text-caption text-paper/55 hover:text-paper transition-colors"
         >
-          Privacy
+          <T k="footer.privacy" />
         </Link>
       </header>
       <main className="flex-1 flex items-center justify-center px-5 py-10">
         <div className="w-full max-w-[420px]">{children}</div>
       </main>
       <footer className="px-6 py-5 text-center font-serif italic text-caption text-paper/45">
-        Glory to God for all things.
+        <T k="footer.glory" />
       </footer>
     </div>
   );

@@ -5,6 +5,7 @@ import { getExpenseLines, getMonthlyGoalUsd } from "@/lib/support/expenses";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { isNativeRequest } from "@/lib/platform/nativeRequest";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
  title: "Support",
@@ -64,17 +65,11 @@ export default async function SupportPage() {
  <p className="mt-6 font-serif text-body text-paper/85 leading-[1.7]">
  {isDe ? (
  <>
- Der Kern von Purify, die Heiligen, die Schriften, die
- Gebete, der Kalender, ist frei und bleibt frei. Hinter der
- App steht eine kleine Gemeinschaft, die Quellen beschafft,
- Texte prüft und das Werk trägt.
+ <T k="ui.derKernVonPurifyDie" />
  </>
  ) : (
  <>
- The core of Purify, the saints, the Scriptures, the
- prayers, the calendar, is free, and stays free. Behind the
- app is a small community that sources the texts, reviews
- them, and keeps the work going.
+ <T k="ui.theCoreOfPurifyThe" />
  </>
  )}
  </p>
@@ -87,17 +82,11 @@ export default async function SupportPage() {
  <p className="font-serif text-body text-paper/85 leading-[1.7]">
  {isDe ? (
  <>
- Die Heiligen, die Schriften mit dem Griechischen daneben,
- die täglichen Gebete und der Kalender bleiben unentgeltlich
- für jeden, der sie braucht. Nichts in dieser App ist hinter
- einer Zahlung verschlossen.
+ <T k="ui.dieHeiligenDieSchriftenMit" />
  </>
  ) : (
  <>
- The saints, the Scriptures with the Greek beside them, the
- daily prayers, and the calendar remain free of charge to
- anyone who needs them. Nothing in this app is locked behind
- a payment.
+ <T k="ui.theSaintsTheScripturesWith" />
  </>
  )}
  </p>
@@ -111,22 +100,19 @@ export default async function SupportPage() {
  <p className="font-serif text-body text-paper/85 leading-[1.7]">
  {isDe ? (
  <>
- Fragen, Korrekturen oder ein Text, den du vermisst? Die
- Antworten auf häufige Fragen stehen im{" "}
+ <T k="ui.fragenKorrekturenOderEinText" />{" "}
  <Link href="/faq" className="underline decoration-paper/30 underline-offset-4 hover:text-paper">
- FAQ
+ <T k="footer.faq" />
  </Link>
- ; alles Weitere erreicht uns über die dort genannten Wege.
+ <T k="ui.allesWeitereErreichtUnsBer" />
  </>
  ) : (
  <>
- Questions, corrections, or a text you wish we carried? Start
- with the{" "}
+ <T k="ui.questionsCorrectionsOrAText" />{" "}
  <Link href="/faq" className="underline decoration-paper/30 underline-offset-4 hover:text-paper">
- FAQ
+ <T k="footer.faq" />
  </Link>
- ; anything else reaches us through the contact paths listed
- there.
+ <T k="ui.anythingElseReachesUsThrough" />
  </>
  )}
  </p>
@@ -172,20 +158,11 @@ export default async function SupportPage() {
  <p className="mt-6 font-serif text-body text-paper/85 leading-[1.7]">
  {isDe ? (
  <>
- Der Kern von Purify, die Heiligen, die Schriften, die
- Gebete, der Kalender, ist frei und bleibt frei.
- Hosting, Speicher, Beschaffung und die Menschen, die die
- Arbeit tun, kosten Geld. Wenn die Seite dir geholfen hat,
- kannst du das Licht anhalten oder beschleunigen, was wir als
- Nächstes bauen.
+ <T k="ui.derKernVonPurifyDieX" />
  </>
  ) : (
  <>
- The core of Purify, the saints, the Scriptures, the
- prayers, the calendar, is free, and stays free. Hosting,
- storage, sourcing, and the people who do the work all cost
- money. If the site has helped you, you can keep the lights
- on, or speed up the next thing we build.
+ <T k="ui.theCoreOfPurifyTheX" />
  </>
  )}
  </p>
@@ -227,40 +204,37 @@ export default async function SupportPage() {
  {live ? (
  isDe ? (
  <>
- Echte Zahlen, gezogen von Buy Me a Coffee.
+ <T k="ui.echteZahlenGezogenVonBuy" />
  {live.supporters > 0 ? (
  <>
  {" "}
  {live.supporters}{" "}
  {live.supporters === 1 ? "Unterstützer" : "Unterstützer"}{" "}
- in diesem Monat.
+ <T k="ui.inDiesemMonat" />
  </>
  ) : null}{" "}
- Das Ziel bewegt sich mit den monatlichen Ausgaben unten.
+ <T k="ui.dasZielBewegtSichMit" />
  </>
  ) : (
  <>
- Real numbers, pulled from Buy Me a Coffee.
+ <T k="ui.realNumbersPulledFromBuy" />
  {live.supporters > 0 ? (
  <>
  {" "}
  {live.supporters}{" "}
- {live.supporters === 1 ? "supporter" : "supporters"} this
- month.
+ {live.supporters === 1 ? "supporter" : "supporters"} <T k="ui.thisMonth" />
  </>
  ) : null}{" "}
- The goal moves with the monthly expenses below.
+ <T k="ui.theGoalMovesWithThe" />
  </>
  )
  ) : isDe ? (
  <>
- Wir nennen echte Zahlen, keine Schaubilanzen. Das Ziel bewegt
- sich mit den tatsächlichen monatlichen Ausgaben unten.
+ <T k="ui.wirNennenEchteZahlenKeine" />
  </>
  ) : (
  <>
- We list real numbers, not vanity metrics. The goal moves with
- actual monthly expenses below.
+ <T k="ui.weListRealNumbersNot" />
  </>
  )}
  </p>
@@ -304,17 +278,15 @@ export default async function SupportPage() {
  <p className="font-serif text-body text-paper/80 leading-[1.7] mb-6">
  {isDe ? (
  <>
- Jede Zeile ist echt. Die monatlichen Gesamtkosten zum Stand{" "}
- {SUPPORT.lastUpdated} betragen {formatUsd(totalMonthlyExpense)}.
- Das Förderziel oben ist auf {formatUsd(monthlyGoalUsd)}{" "}
- gesetzt, um Spielraum für die unvorhersehbaren Monate zu lassen.
+ <T k="ui.jedeZeileIstEchtDie" />{" "}
+ {SUPPORT.lastUpdated} <T k="ui.betragen" /> {formatUsd(totalMonthlyExpense)}<T k="ui.dasFRderzielObenIst" /> {formatUsd(monthlyGoalUsd)}{" "}
+ <T k="ui.gesetztUmSpielraumFR" />
  </>
  ) : (
  <>
- Every line is real. Total monthly cost as of{" "}
- {SUPPORT.lastUpdated} is {formatUsd(totalMonthlyExpense)}. The
- funding goal above is set at {formatUsd(monthlyGoalUsd)}
- {" "}to leave some margin for the unpredictable months.
+ <T k="ui.everyLineIsRealTotal" />{" "}
+ {SUPPORT.lastUpdated} <T k="ui.is" /> {formatUsd(totalMonthlyExpense)}<T k="ui.theFundingGoalAboveIs" /> {formatUsd(monthlyGoalUsd)}
+ {" "}<T k="ui.toLeaveSomeMarginFor" />
  </>
  )}
  </p>
@@ -358,26 +330,11 @@ export default async function SupportPage() {
  <p className="font-serif text-body text-paper/85 leading-[1.7]">
  {isDe ? (
  <>
- Die Heiligen, die Schriften mit dem Griechischen daneben, die
- täglichen Gebete und der Kalender bleiben unentgeltlich für
- jeden, der sie braucht. Die Gaben auf dieser Seite sind
- freiwillige Opfer, die die laufenden Kosten decken; sie
- schalten nichts frei und werden nie verlangt. Eine schwerere
- Infrastrukturschicht ist unter ordentlicher Lizenzierung im
- Werden, und wenn sie als freiwilliger, durch Abonnement
- getragener Bereich kommt, wird das, was heute frei ist, dann
- noch frei sein.
+ <T k="ui.dieHeiligenDieSchriftenMitX" />
  </>
  ) : (
  <>
- The saints, the Scriptures with the Greek beside them, the
- daily prayers, and the calendar will remain free of charge to
- anyone who needs them. Gifts on this page are freewill
- offerings that cover running costs; they unlock nothing and
- are never required. A heavier infrastructure layer is on the
- way under proper licensing, and when it arrives as an
- optional, subscription-funded tier, what is free today will
- still be free then.
+ <T k="ui.theSaintsTheScripturesWithX" />
  </>
  )}
  </p>

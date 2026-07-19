@@ -9,6 +9,7 @@ import {
   REFUND_STATUS_LABELS,
 } from "@/lib/shop/refunds";
 import type { ShopRefundRequest } from "@/lib/shop/types";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const field =
   "w-full rounded-md border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
@@ -35,6 +36,7 @@ export function BuyerRefundSection({
    *  for the server-rendered seller context. */
   onChanged?: () => void;
 }) {
+  const { t } = useTranslate();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -109,11 +111,11 @@ export function BuyerRefundSection({
               : latest.status === "processed"
                 ? "The money is on its way back to your payment method."
                 : "The seller declined this request."}
-          {" · "}Reason: {REFUND_REASON_LABELS[latest.reason]}
+          {" · "}{t("shop.reason")} {REFUND_REASON_LABELS[latest.reason]}
         </p>
         {latest.resolution_note ? (
           <p className="mt-2 rounded-md bg-night/60 p-3 font-serif text-body text-paper/80 leading-[1.6]">
-            Seller&rsquo;s note: &ldquo;{latest.resolution_note}&rdquo;
+            {t("shop.sellerSNote")}{latest.resolution_note}&rdquo;
           </p>
         ) : null}
         {error ? (
@@ -128,7 +130,7 @@ export function BuyerRefundSection({
             onClick={() => void withdraw()}
             className="mt-3 font-sans text-detail font-medium text-paper/60 hover:text-paper disabled:opacity-60"
           >
-            Withdraw request
+            {t("shop.withdrawRequest")}
           </button>
         ) : null}
       </div>
@@ -142,25 +144,24 @@ export function BuyerRefundSection({
       {!open ? (
         <>
           <p className="font-sans text-ui font-semibold text-paper">
-            Something wrong with this order?
+            {t("shop.somethingWrongWithThisOrder")}
           </p>
           <p className="mt-1.5 font-sans text-detail text-paper/65">
-            Tell us what happened and the seller will review it. Damaged,
-            wrong, or missing items are always on the seller.
+            {t("shop.tellUsWhatHappenedAnd")}
           </p>
           <button
             type="button"
             onClick={() => setOpen(true)}
             className="tap-press mt-4 inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper"
           >
-            Request a refund
+            {t("shop.requestARefund")}
           </button>
         </>
       ) : (
         <form onSubmit={submit} className="space-y-4">
           <label className="block space-y-1.5">
             <span className="font-sans text-caption font-semibold text-paper/60">
-              What happened? *
+              {t("shop.whatHappened")}
             </span>
             <select name="reason" required defaultValue="damaged" className={field}>
               {Object.entries(REFUND_REASON_LABELS).map(([v, l]) => (
@@ -172,13 +173,13 @@ export function BuyerRefundSection({
           </label>
           <label className="block space-y-1.5">
             <span className="font-sans text-caption font-semibold text-paper/60">
-              Anything that helps
+              {t("shop.anythingThatHelps")}
             </span>
             <textarea
               name="details"
               rows={3}
               maxLength={2000}
-              placeholder="The frame arrived cracked at the corner…"
+              placeholder={t("shop.theFrameArrivedCrackedAt")}
               className={field}
             />
           </label>
@@ -201,7 +202,7 @@ export function BuyerRefundSection({
               onClick={() => setOpen(false)}
               className="font-sans text-detail font-medium text-paper/60 hover:text-paper"
             >
-              Never mind
+              {t("shop.neverMind")}
             </button>
           </div>
         </form>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { apiFetch } from "@/lib/api/client";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const field =
   "w-full rounded-md border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
@@ -32,6 +33,7 @@ const PRODUCT_METHODS = [
  * application is reviewed by a person, and the form says so plainly.
  */
 export function MerchantApplyForm() {
+  const { t } = useTranslate();
   const [state, setState] = useState<"idle" | "busy" | "done">("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -81,18 +83,16 @@ export function MerchantApplyForm() {
     return (
       <div className="rounded-lg border border-paper/10 bg-night-soft/60 p-8">
         <p className="font-display-serif text-title text-paper">
-          Application received.
+          {t("shop.applicationReceived")}
         </p>
         <p className="mt-3 font-serif text-body text-paper/70 leading-[1.65]">
-          Every application is reviewed by a person. We&rsquo;ll write to the
-          email you gave, usually within a couple of weeks. Approval is not
-          automatic and no store is created until review is complete.
+          {t("shop.everyApplicationIsReviewedBy")}
         </p>
         <Link
           href="/shop/sell/application"
           className="mt-5 inline-flex font-sans text-detail font-medium text-gold"
         >
-          View your application status →
+          {t("shop.viewYourApplicationStatus")}
         </Link>
       </div>
     );
@@ -102,14 +102,14 @@ export function MerchantApplyForm() {
     <form onSubmit={onSubmit} className="space-y-5">
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="block space-y-1.5">
-          <span className={labelCls}>Proposed store name *</span>
+          <span className={labelCls}>{t("shop.proposedStoreName")}</span>
           <input name="storeName" required minLength={2} maxLength={120} className={field} />
         </label>
         <label className="block space-y-1.5">
-          <span className={labelCls}>Seller type *</span>
+          <span className={labelCls}>{t("shop.sellerTypeX")}</span>
           <select name="sellerType" required defaultValue="" className={field}>
             <option value="" disabled>
-              Choose…
+              {t("shop.choose")}
             </option>
             {SELLER_TYPES.map((t) => (
               <option key={t.value} value={t.value}>
@@ -119,62 +119,62 @@ export function MerchantApplyForm() {
           </select>
         </label>
         <label className="block space-y-1.5">
-          <span className={labelCls}>Legal or personal name *</span>
+          <span className={labelCls}>{t("shop.legalOrPersonalName")}</span>
           <input name="legalName" required minLength={2} maxLength={200} className={field} />
         </label>
         <label className="block space-y-1.5">
-          <span className={labelCls}>Email *</span>
+          <span className={labelCls}>{t("shop.email")}</span>
           <input name="email" type="email" required maxLength={320} className={field} />
         </label>
         <label className="block space-y-1.5">
-          <span className={labelCls}>Phone</span>
+          <span className={labelCls}>{t("shop.phone")}</span>
           <input name="phone" maxLength={40} className={field} />
         </label>
         <label className="block space-y-1.5">
-          <span className={labelCls}>Country *</span>
+          <span className={labelCls}>{t("shop.countryX")}</span>
           <input name="country" required minLength={2} maxLength={100} className={field} />
         </label>
         <label className="block space-y-1.5">
-          <span className={labelCls}>Shipping origin</span>
+          <span className={labelCls}>{t("shop.shippingOrigin")}</span>
           <input
             name="shippingOrigin"
             maxLength={200}
-            placeholder="City / region parcels ship from"
+            placeholder={t("shop.cityRegionParcelsShipFrom")}
             className={field}
           />
         </label>
         <label className="block space-y-1.5">
-          <span className={labelCls}>Website or portfolio</span>
+          <span className={labelCls}>{t("shop.websiteOrPortfolio")}</span>
           <input
             name="portfolioUrl"
             type="url"
             maxLength={500}
-            placeholder="https://…"
+            placeholder={t("shop.https")}
             className={field}
           />
         </label>
         <label className="block space-y-1.5">
-          <span className={labelCls}>Typical processing time</span>
+          <span className={labelCls}>{t("shop.typicalProcessingTime")}</span>
           <input
             name="processingTime"
             maxLength={200}
-            placeholder="e.g. ready-made ships in 3 days; commissions 6-10 weeks"
+            placeholder={t("shop.eGReadyMadeShips")}
             className={field}
           />
         </label>
         <label className="block space-y-1.5">
-          <span className={labelCls}>Countries served</span>
+          <span className={labelCls}>{t("shop.countriesServed")}</span>
           <input
             name="countriesServed"
             maxLength={500}
-            placeholder="e.g. United States and Canada"
+            placeholder={t("shop.eGUnitedStatesAnd")}
             className={field}
           />
         </label>
       </div>
 
       <fieldset className="space-y-2">
-        <legend className={labelCls}>What do you make or sell?</legend>
+        <legend className={labelCls}>{t("shop.whatDoYouMakeOr")}</legend>
         <div className="grid gap-2 sm:grid-cols-2">
           {PRODUCT_METHODS.map((m) => (
             <label key={m} className="flex items-start gap-3">
@@ -186,35 +186,35 @@ export function MerchantApplyForm() {
       </fieldset>
 
       <fieldset className="space-y-2">
-        <legend className={labelCls}>How do you sell?</legend>
+        <legend className={labelCls}>{t("shop.howDoYouSell")}</legend>
         <div className="grid gap-2 sm:grid-cols-3">
           <label className="flex items-start gap-3">
             <input type="checkbox" name="fulfillmentOfferings" value="ready_made" className={check} />
-            <span className="font-sans text-detail text-paper/75">Ready-made</span>
+            <span className="font-sans text-detail text-paper/75">{t("shop.readyMade")}</span>
           </label>
           <label className="flex items-start gap-3">
             <input type="checkbox" name="fulfillmentOfferings" value="made_to_order" className={check} />
-            <span className="font-sans text-detail text-paper/75">Made to order</span>
+            <span className="font-sans text-detail text-paper/75">{t("shop.madeToOrder")}</span>
           </label>
           <label className="flex items-start gap-3">
             <input type="checkbox" name="fulfillmentOfferings" value="commission" className={check} />
-            <span className="font-sans text-detail text-paper/75">Commissions</span>
+            <span className="font-sans text-detail text-paper/75">{t("shop.commissions")}</span>
           </label>
         </div>
       </fieldset>
 
       <label className="block space-y-1.5">
-        <span className={labelCls}>Your return policy</span>
+        <span className={labelCls}>{t("shop.yourReturnPolicy")}</span>
         <textarea name="returnPolicy" rows={3} maxLength={2000} className={field} />
       </label>
 
       <label className="block space-y-1.5">
-        <span className={labelCls}>About you or your workshop</span>
+        <span className={labelCls}>{t("shop.aboutYouOrYourWorkshop")}</span>
         <textarea
           name="sellerDescription"
           rows={4}
           maxLength={3000}
-          placeholder="Training, tradition, years of practice, what you love to paint or carve…"
+          placeholder={t("shop.trainingTraditionYearsOfPractice")}
           className={field}
         />
       </label>
@@ -222,17 +222,13 @@ export function MerchantApplyForm() {
       <label className="flex items-start gap-3">
         <input type="checkbox" name="rightsDeclaration" required className={check} />
         <span className="font-sans text-detail text-paper/70">
-          I confirm that I hold the rights to reproduce and sell every work I
-          would list, and that my listings will describe production methods
-          truthfully. *
+          {t("shop.iConfirmThatIHold")}
         </span>
       </label>
       <label className="flex items-start gap-3">
         <input type="checkbox" name="agreedStandards" required className={check} />
         <span className="font-sans text-detail text-paper/70">
-          I agree to the Purify marketplace standards: honest description,
-          reverent subject matter, reliable fulfillment, and responsive
-          communication. *
+          {t("shop.iAgreeToThePurify")}
         </span>
       </label>
 
@@ -250,8 +246,7 @@ export function MerchantApplyForm() {
         {state === "busy" ? "Submitting…" : "Submit application"}
       </button>
       <p className="font-sans text-caption text-paper/60">
-        Applications are reviewed by hand and approval is not guaranteed.
-        Submitting does not create a store.
+        {t("shop.applicationsAreReviewedByHandX")}
       </p>
     </form>
   );

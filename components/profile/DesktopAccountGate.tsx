@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Signed-in `/account` serves the native mobile shell (YouMobile) on
@@ -16,6 +17,7 @@ import { useRouter } from "next/navigation";
  * mobile layout.
  */
 export function DesktopAccountGate() {
+  const { t } = useTranslate();
   const router = useRouter();
 
   useEffect(() => {
@@ -47,7 +49,7 @@ export function DesktopAccountGate() {
             href="/account/profile"
             className="font-sans text-detail font-medium text-paper/60 underline underline-offset-4 hover:text-paper"
           >
-            Taking too long? Open your profile →
+            {t("ui.takingTooLongOpenYour")}
           </Link>
         </p>
       </div>

@@ -10,6 +10,7 @@ import {
 } from "@/lib/shop/sellerOrders";
 import type { ShopFulfillmentStatus } from "@/lib/shop/types";
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const field =
   "w-full rounded-md border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
@@ -31,6 +32,7 @@ export function SellerOrderActions({
   paymentStatus: "pending" | "paid" | "refunded" | "cancelled";
   tracking: string | null;
 }) {
+  const { t } = useTranslate();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,7 +78,7 @@ export function SellerOrderActions({
       {needsTracking ? (
         <label className="block space-y-1.5">
           <span className="font-sans text-caption font-semibold text-paper/60">
-            Tracking number *
+            {t("shop.trackingNumber")}
           </span>
           <input
             value={trackingInput}
@@ -123,7 +125,7 @@ export function SellerOrderActions({
             }}
             className="font-sans text-detail font-medium text-paper/60 hover:text-paper disabled:opacity-60"
           >
-            Cancel order
+            {t("shop.cancelOrder")}
           </button>
         ) : null}
       </div>

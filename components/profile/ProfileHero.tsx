@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Displays the signed-in user's display name (editable inline), email,
@@ -48,6 +49,7 @@ export function ProfileHero({
   joinedAt: string;
   lastSignedInAt?: string;
 }) {
+  const { t } = useTranslate();
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(initialDisplayName);
@@ -130,7 +132,7 @@ export function ProfileHero({
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
-            Welcome back
+            {t("ui.welcomeBack")}
           </p>
           {!editing ? (
             <button
@@ -140,12 +142,12 @@ export function ProfileHero({
                 setEditing(true);
               }}
               className="text-left group"
-              aria-label="Edit display name"
+              aria-label={t("ui.editDisplayName")}
             >
               <h2 className="font-display-serif text-title md:text-display-sm text-paper leading-[1.05] tracking-[-0.01em]">
                 {displayName}
                 <span className="ml-3 align-middle font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/35 group-hover:text-paper/65 transition-colors">
-                  Edit
+                  {t("common.edit")}
                 </span>
               </h2>
             </button>
@@ -190,7 +192,7 @@ export function ProfileHero({
               }}
               className="font-sans text-detail text-paper/55 hover:text-paper transition-colors px-3 py-2"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
           </div>
         </div>
@@ -198,7 +200,7 @@ export function ProfileHero({
       <dl className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
           <dt className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/45">
-            Email
+            {t("common.email")}
           </dt>
           <dd className="mt-1 font-sans text-ui text-paper truncate">
             {email}
@@ -207,7 +209,7 @@ export function ProfileHero({
         {memberSince && (
           <div>
             <dt className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/45">
-              Member since
+              {t("ui.memberSince")}
             </dt>
             <dd className="mt-1 font-sans text-ui text-paper">
               {memberSince}
@@ -217,7 +219,7 @@ export function ProfileHero({
         {lastSeen && (
           <div>
             <dt className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/45">
-              Last signed in
+              {t("ui.lastSignedIn")}
             </dt>
             <dd className="mt-1 font-sans text-ui text-paper">
               {lastSeen}

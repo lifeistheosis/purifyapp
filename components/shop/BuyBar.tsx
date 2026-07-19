@@ -8,6 +8,7 @@ import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/cn";
 import { addToCart, openCartDrawer } from "@/lib/shop/cart";
 import { openStripe } from "@/lib/shop/openStripe";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Sticky mobile purchase bar (static sidebar block on md+). Three
@@ -49,6 +50,7 @@ export function BuyBar({
   checkoutOn: boolean;
   subjectForRequest: string;
 }) {
+  const { t } = useTranslate();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -140,10 +142,10 @@ export function BuyBar({
               href={notifyHref}
               className="tap-press inline-flex min-h-[48px] items-center justify-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45"
             >
-              Notify me
+              {t("shop.notifyMe")}
             </Link>
             <p className="font-sans text-caption text-paper/60 md:text-center">
-              Checkout opens soon.
+              {t("shop.checkoutOpensSoon")}
             </p>
           </div>
         ) : (
@@ -151,7 +153,7 @@ export function BuyBar({
             href={notifyHref}
             className="tap-press inline-flex min-h-[48px] shrink-0 items-center justify-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45 md:mt-4"
           >
-            Request this icon
+            {t("shop.requestThisIcon")}
           </Link>
         )}
       </div>
@@ -164,19 +166,19 @@ export function BuyBar({
             className="mt-0.5 h-4 w-4 shrink-0 accent-gold"
           />
           <span className="font-sans text-caption leading-[1.5] text-paper/60">
-            I agree to the{" "}
+            {t("ui.iAgreeToThe")}{" "}
             <Link
               href="/terms"
               className="underline underline-offset-2 hover:text-paper/80"
             >
-              Terms
+              {t("shop.terms")}
             </Link>{" "}
-            and the{" "}
+            {t("ui.andThe")}{" "}
             <Link
               href="/shop/policies"
               className="underline underline-offset-2 hover:text-paper/80"
             >
-              shipping &amp; refund policy
+              {t("shop.shippingRefundPolicy")}
             </Link>
             .
           </span>

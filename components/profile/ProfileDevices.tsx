@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 function parseUA(ua: string): string {
   if (!ua) return "This device";
@@ -21,6 +22,7 @@ function parseUA(ua: string): string {
  * individual lives in v5.4 (needs the Supabase admin API).
  */
 export function ProfileDevices() {
+  const { t } = useTranslate();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
@@ -46,28 +48,27 @@ export function ProfileDevices() {
   return (
     <section className="mt-6">
       <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-        Devices
+        {t("ui.devices")}
       </p>
       <div className="rounded-md border border-paper/12 bg-paper/[0.03] divide-y divide-paper/8 overflow-hidden">
         <div className="px-5 py-4">
           <p className="font-sans text-ui font-semibold text-paper">
             {label}
             <span className="ml-2 font-sans text-eyebrow font-normal uppercase tracking-[1.2px] text-gold/80">
-              This device
+              {t("ui.thisDevice")}
             </span>
           </p>
           <p className="mt-1 font-sans text-caption text-paper/55">
-            Active session
+            {t("ui.activeSession")}
           </p>
         </div>
         <div className="px-5 py-4 flex items-center justify-between gap-4 flex-wrap">
           <div className="min-w-0">
             <p className="font-sans text-ui font-medium text-paper">
-              Sign out of all other devices
+              {t("ui.signOutOfAllOther")}
             </p>
             <p className="mt-1 font-sans text-caption text-paper/55 leading-[1.5] max-w-[480px]">
-              Revokes every active session except this one. Your data stays
-              put; only the sign-in tokens are invalidated.
+              {t("ui.revokesEveryActiveSessionExcept")}
             </p>
             {msg && (
               <p className="mt-2 font-sans text-caption text-paper/80">{msg}</p>

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { apiFetch } from "@/lib/api/client";
 import { SAINTS } from "@/lib/saints/saints";
 import { BUDGET_BAND_LABELS } from "@/lib/shop/format";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const field =
   "w-full rounded-md border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
@@ -26,6 +27,7 @@ export function RequestIconForm({
   defaultSubject?: string;
   defaultNotify?: boolean;
 }) {
+  const { t } = useTranslate();
   const [state, setState] = useState<"idle" | "busy" | "done">("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -75,17 +77,16 @@ export function RequestIconForm({
     return (
       <div className="rounded-lg border border-paper/10 bg-night-soft/60 p-8">
         <p className="font-display-serif text-title text-paper">
-          Your request is with us.
+          {t("shop.yourRequestIsWithUs")}
         </p>
         <p className="mt-3 font-serif text-body text-paper/70 leading-[1.65]">
-          We read every request and answer by email when we find the icon or
-          have a question. There&rsquo;s no obligation on your side.
+          {t("shop.weReadEveryRequestAnd")}
         </p>
         <Link
           href="/shop"
           className="mt-5 inline-flex font-sans text-detail font-medium text-gold"
         >
-          Back to the shop →
+          {t("shop.backToTheShopX")}
         </Link>
       </div>
     );
@@ -94,14 +95,14 @@ export function RequestIconForm({
   return (
     <form onSubmit={onSubmit} className="space-y-5">
       <label className="block space-y-1.5">
-        <span className={labelCls}>Saint or subject *</span>
+        <span className={labelCls}>{t("shop.saintOrSubject")}</span>
         <input
           name="subject"
           required
           minLength={2}
           maxLength={200}
           defaultValue={defaultSubject}
-          placeholder="St Moses the Black, Christ Pantocrator, the Nativity…"
+          placeholder={t("shop.stMosesTheBlackChrist")}
           list="shop-saints"
           className={field}
         />
@@ -114,24 +115,24 @@ export function RequestIconForm({
 
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="block space-y-1.5">
-          <span className={labelCls}>Ready-made or custom?</span>
+          <span className={labelCls}>{t("shop.readyMadeOrCustom")}</span>
           <select name="requestType" defaultValue="either" className={field}>
-            <option value="either">Either</option>
-            <option value="ready_made">Ready-made</option>
-            <option value="custom">Custom work</option>
+            <option value="either">{t("shop.either")}</option>
+            <option value="ready_made">{t("shop.readyMade")}</option>
+            <option value="custom">{t("shop.customWork")}</option>
           </select>
         </label>
         <label className="block space-y-1.5">
-          <span className={labelCls}>Preferred product type</span>
+          <span className={labelCls}>{t("shop.preferredProductType")}</span>
           <input
             name="productPreference"
             maxLength={200}
-            placeholder="Wooden icon, print, laminated…"
+            placeholder={t("shop.woodenIconPrintLaminated")}
             className={field}
           />
         </label>
         <label className="block space-y-1.5">
-          <span className={labelCls}>Preferred size</span>
+          <span className={labelCls}>{t("shop.preferredSize")}</span>
           <input
             name="preferredSize"
             maxLength={100}
@@ -140,9 +141,9 @@ export function RequestIconForm({
           />
         </label>
         <label className="block space-y-1.5">
-          <span className={labelCls}>Budget</span>
+          <span className={labelCls}>{t("shop.budget")}</span>
           <select name="budgetBand" defaultValue="" className={field}>
-            <option value="">Prefer not to say</option>
+            <option value="">{t("shop.preferNotToSay")}</option>
             {Object.entries(BUDGET_BAND_LABELS).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
@@ -151,18 +152,18 @@ export function RequestIconForm({
           </select>
         </label>
         <label className="block space-y-1.5">
-          <span className={labelCls}>Needed by (optional)</span>
+          <span className={labelCls}>{t("shop.neededByOptional")}</span>
           <input name="desiredDate" type="date" className={field} />
         </label>
         {!signedIn ? (
           <label className="block space-y-1.5">
-            <span className={labelCls}>Email *</span>
+            <span className={labelCls}>{t("shop.email")}</span>
             <input
               name="email"
               type="email"
               required
               maxLength={320}
-              placeholder="you@example.com"
+              placeholder={t("shop.youExampleCom")}
               className={field}
             />
           </label>
@@ -170,12 +171,12 @@ export function RequestIconForm({
       </div>
 
       <label className="block space-y-1.5">
-        <span className={labelCls}>Notes</span>
+        <span className={labelCls}>{t("saints.notes")}</span>
         <textarea
           name="notes"
           rows={4}
           maxLength={2000}
-          placeholder="Anything that helps: the occasion, a style you love, a photo reference you have in mind…"
+          placeholder={t("shop.anythingThatHelpsTheOccasion")}
           className={field}
         />
       </label>
@@ -188,7 +189,7 @@ export function RequestIconForm({
           className="mt-1 h-4 w-4 rounded border-paper/30 bg-night accent-[#c9a961]"
         />
         <span className="font-sans text-detail text-paper/70">
-          Email me if this icon becomes available in the shop.
+          {t("shop.emailMeIfThisIcon")}
         </span>
       </label>
 
@@ -206,8 +207,7 @@ export function RequestIconForm({
         {state === "busy" ? "Sending…" : "Send request"}
       </button>
       <p className="font-sans text-caption text-paper/60">
-        Requests go to the Purify Shop team for manual follow-up. Nothing is
-        purchased or promised by sending one.
+        {t("shop.requestsGoToThePurify")}
       </p>
     </form>
   );

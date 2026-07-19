@@ -1,3 +1,4 @@
+import { T } from "@/components/i18n/T";
 /**
  * Verified-buyer badge shown on every review. Each review comes from a real
  * purchaser (the submit RPCs require a delivered order), so the badge is always
@@ -20,11 +21,11 @@ export function VerifiedBuyerBadge({ bought }: { bought?: string | null }) {
         >
           <path d="M13.5 4.5 6 12 2.5 8.5" />
         </svg>
-        Verified buyer
+        <T k="shop.verifiedBuyer" />
       </span>
       {bought ? (
         <span className="font-sans text-caption text-paper/50">
-          Bought {bought}
+          <T k="shop.bought" /> {bought}
         </span>
       ) : null}
     </span>

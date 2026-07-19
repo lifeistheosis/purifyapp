@@ -17,6 +17,7 @@ import {
   AUTH_UNRESOLVED_MESSAGE,
   resolveUser,
 } from "@/lib/supabase/resolveUser";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const STATUS_COPY: Record<ShopApplicationStatus, { label: string; body: string }> = {
   draft: { label: "Draft", body: "Your application hasn't been submitted yet." },
@@ -71,14 +72,15 @@ async function load(): Promise<Result> {
 }
 
 export function ApplicationClient() {
+  const { t } = useTranslate();
   const { data, error, loading, reload } = useAsyncData(load, []);
 
-  if (loading) return <ShopLoading label="Loading your application…" />;
+  if (loading) return <ShopLoading label={t("shop.loadingYourApplication")} />;
   if (error) return <ShopError message={error} onRetry={reload} />;
   if (data && !data.signedIn) {
     return (
       <ShopSignInPrompt
-        title="Your merchant application"
+        title={t("shop.yourMerchantApplication")}
         body="Sign in to see your application status."
         next="/shop/sell/application"
       />
@@ -91,23 +93,23 @@ export function ApplicationClient() {
     <div className="mx-auto w-full max-w-[680px] px-5 pb-8 md:px-8">
       <header className="pt-10 md:pt-14">
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-          Sell on Purify
+          {t("shop.sellOnPurify")}
         </p>
         <h1 className="mt-2 font-display-serif text-heading text-paper">
-          Your merchant application
+          {t("shop.yourMerchantApplication")}
         </h1>
       </header>
 
       {!app ? (
         <div className="mt-8">
           <p className="font-serif text-body text-paper/70 leading-[1.65]">
-            You haven&rsquo;t applied yet.
+            {t("shop.youHavenTAppliedYet")}
           </p>
           <Link
             href="/shop/sell"
             className="tap-press mt-5 inline-flex min-h-[44px] items-center rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night"
           >
-            Start an application
+            {t("shop.startAnApplication")}
           </Link>
         </div>
       ) : (
@@ -125,28 +127,27 @@ export function ApplicationClient() {
               {STATUS_COPY[app.status].body}
             </p>
             <p className="mt-3 font-sans text-caption text-paper/60">
-              Submitted{" "}
+              {t("shop.submitted")}{" "}
               {new Date(app.created_at).toLocaleDateString(undefined, {
                 month: "long",
                 day: "numeric",
                 year: "numeric",
               })}
-              {" · "}applications are reviewed by hand; approval is not
-              automatic.
+              {" · "}{t("shop.applicationsAreReviewedByHand")}
             </p>
           </div>
 
           <dl className="rounded-lg border border-paper/10 bg-night-soft/60 p-6 font-sans text-detail">
             <div className="flex justify-between gap-6 border-b border-white/6 py-2">
-              <dt className="text-paper/60">Seller type</dt>
+              <dt className="text-paper/60">{t("shop.sellerType")}</dt>
               <dd className="text-paper/85">{app.seller_type.replace(/_/g, " ")}</dd>
             </div>
             <div className="flex justify-between gap-6 border-b border-white/6 py-2">
-              <dt className="text-paper/60">Country</dt>
+              <dt className="text-paper/60">{t("shop.country")}</dt>
               <dd className="text-paper/85">{app.country}</dd>
             </div>
             <div className="flex justify-between gap-6 py-2">
-              <dt className="text-paper/60">Contact email</dt>
+              <dt className="text-paper/60">{t("shop.contactEmail")}</dt>
               <dd className="text-paper/85">{app.email}</dd>
             </div>
           </dl>

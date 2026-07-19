@@ -10,6 +10,7 @@ import { SyncOnMount } from "@/components/profile/SyncOnMount";
 import { AccountChipRow } from "@/components/profile/AccountChipRow";
 import { AccountSettingsLinks } from "@/components/profile/AccountSettingsLinks";
 import { PostSignInBridge } from "@/components/profile/PostSignInBridge";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Client-side profile tab. The page shell stays a server component (so it can
@@ -19,6 +20,7 @@ import { PostSignInBridge } from "@/components/profile/PostSignInBridge";
  * time this renders.
  */
 export function ProfileTabClient() {
+  const { t } = useTranslate();
   const [data, setData] = useState<{
     email: string;
     displayName: string;
@@ -92,7 +94,7 @@ export function ProfileTabClient() {
   if (!data) {
     return (
       <p className="py-10 text-center font-sans text-caption text-paper/45">
-        Loading your profile…
+        {t("ui.loadingYourProfile")}
       </p>
     );
   }

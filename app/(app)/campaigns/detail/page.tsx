@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { CampaignDetailClient } from "@/components/campaigns/CampaignDetailClient";
 import { FeatureShell } from "@/components/feature/FeatureShell";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Prayer Campaign",
@@ -13,10 +14,10 @@ export default function CampaignDetailPage() {
   if (!campaignsEnabled()) {
     return (
       <FeatureShell
-        eyebrow="Together"
-        title="Prayer Campaigns"
+        eyebrow={<T k="ui.together" />}
+        title={<T k="nav.discoverMenu.campaigns" />}
         body="Community prayer campaigns are coming soon."
-        ctaLabel="See active campaigns"
+        ctaLabel={<T k="ui.seeActiveCampaigns" />}
       />
     );
   }

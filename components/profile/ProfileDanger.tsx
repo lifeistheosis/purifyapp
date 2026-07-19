@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Sign out, clear local data, delete account. Wraps each destructive action
  * in a confirmation step so an errant tap doesn't wipe a praying life.
  */
 export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
+  const { t } = useTranslate();
   const [confirmClear, setConfirmClear] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -30,10 +32,10 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
         <summary className="cursor-pointer list-none px-5 py-3.5 flex items-center justify-between">
           <span className="flex items-baseline gap-3">
             <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
-              Danger zone
+              {t("ui.dangerZone")}
             </span>
             <span className="font-sans text-caption text-paper/40">
-              Sign out · clear local · delete account
+              {t("ui.signOutClearLocalDelete")}
             </span>
           </span>
           <span
@@ -47,7 +49,7 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
         <div className="px-5 pb-5 pt-2 space-y-5">
           {signedIn && (
             <Row
-              title="Sign out"
+              title={t("common.signOut")}
               body="Sign out on this device. Your local data stays put. Your server-side data stays in your account."
             >
               <form action="/api/auth/signout" method="post">
@@ -55,14 +57,14 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
                   type="submit"
                   className="font-sans text-detail font-medium border border-paper/25 text-paper rounded-pill px-4 py-2 hover:bg-paper/10 transition-colors"
                 >
-                  Sign out
+                  {t("common.signOut")}
                 </button>
               </form>
             </Row>
           )}
 
           <Row
-            title="Clear local data on this device"
+            title={t("ui.clearLocalDataOnThis")}
             body="Wipes every purify:* entry from localStorage. Anything synced to your account is untouched. Reload happens automatically."
           >
             {!confirmClear ? (
@@ -71,7 +73,7 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
                 onClick={() => setConfirmClear(true)}
                 className="font-sans text-detail font-medium border border-paper/25 text-paper rounded-pill px-4 py-2 hover:bg-paper/10 transition-colors"
               >
-                Clear local data…
+                {t("ui.clearLocalData")}
               </button>
             ) : (
               <div className="flex gap-2">
@@ -80,14 +82,14 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
                   onClick={clearLocal}
                   className="font-sans text-detail font-semibold bg-crimson text-paper rounded-pill px-4 py-2 hover:bg-[#a31f24] transition-colors"
                 >
-                  Yes, wipe local
+                  {t("ui.yesWipeLocal")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setConfirmClear(false)}
                   className="font-sans text-detail text-paper/55 hover:text-paper transition-colors px-3 py-2"
                 >
-                  Cancel
+                  {t("common.cancel")}
                 </button>
               </div>
             )}
@@ -95,7 +97,7 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
 
           {signedIn && (
             <Row
-              title="Delete account"
+              title={t("account.deleteAccount")}
               body="Removes your account and every server-side row tied to it (profile, bookmarks, annotations). This cannot be undone. Local data on this device is left alone; clear that separately if you want it gone too."
               destructive
             >
@@ -105,7 +107,7 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
                   onClick={() => setConfirmDelete(true)}
                   className="font-sans text-detail font-medium border border-crimson/40 text-crimson-soft rounded-pill px-4 py-2 hover:bg-crimson/15 transition-colors"
                 >
-                  Delete account…
+                  {t("ui.deleteAccount")}
                 </button>
               ) : (
                 <form action="/api/auth/delete" method="post" className="flex gap-2">
@@ -113,14 +115,14 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
                     type="submit"
                     className="font-sans text-detail font-semibold bg-crimson text-paper rounded-pill px-4 py-2 hover:bg-[#a31f24] transition-colors"
                   >
-                    Yes, delete forever
+                    {t("ui.yesDeleteForever")}
                   </button>
                   <button
                     type="button"
                     onClick={() => setConfirmDelete(false)}
                     className="font-sans text-detail text-paper/55 hover:text-paper transition-colors px-3 py-2"
                   >
-                    Cancel
+                    {t("common.cancel")}
                   </button>
                 </form>
               )}

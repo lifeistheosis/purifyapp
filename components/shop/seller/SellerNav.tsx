@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Console navigation, host-dashboard style: a quiet left rail on
@@ -25,13 +26,14 @@ function isActive(pathname: string, href: string, exact?: boolean) {
 }
 
 export function SellerNav({ storeName }: { storeName: string }) {
+  const { t } = useTranslate();
   const pathname = usePathname() ?? "";
 
   return (
     <>
       {/* Mobile: sticky pill rail, same register as ShopSubTabs. */}
       <nav
-        aria-label="Seller console sections"
+        aria-label={t("shop.sellerConsoleSections")}
         className="md:hidden sticky top-12 z-20 -mx-5 bg-night/92 px-3 py-2 backdrop-blur border-b border-white/8"
       >
         <ul className="flex gap-1 overflow-x-auto scrollbar-thin">
@@ -59,7 +61,7 @@ export function SellerNav({ storeName }: { storeName: string }) {
 
       {/* Desktop: left rail. */}
       <nav
-        aria-label="Seller console sections"
+        aria-label={t("shop.sellerConsoleSections")}
         className="hidden md:block w-[220px] shrink-0"
       >
         <p className="px-4 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/50">
@@ -90,7 +92,7 @@ export function SellerNav({ storeName }: { storeName: string }) {
           href="/shop"
           className="mt-6 block px-4 font-sans text-detail text-paper/55 hover:text-paper"
         >
-          ← Back to the shop
+          {t("shop.backToTheShopXX")}
         </Link>
       </nav>
     </>

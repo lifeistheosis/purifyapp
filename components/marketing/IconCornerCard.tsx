@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { T } from "@/components/i18n/T";
 import {
  commemorationsOn,
  fastingStatus,
@@ -27,7 +28,6 @@ export function IconCornerCard() {
  return (
  <Link
  href="/prayers/today"
- aria-label="Open today's prayer"
  className="group relative block overflow-hidden rounded-card shadow-[0_24px_60px_rgba(0,0,0,0.55)] transition-opacity duration-200 hover:opacity-95"
  style={{
  background:
@@ -49,7 +49,7 @@ export function IconCornerCard() {
  <div className="relative h-full flex flex-col px-6 py-7">
  {/* Eyebrow */}
  <p className="font-sans text-eyebrow uppercase tracking-[2px] text-white/80 font-semibold">
- Today
+ <T k="prayers.tabs.today" />
  </p>
  <p className="mt-1 font-sans text-caption text-white/55">
  {formatLongDate(today)}
@@ -170,7 +170,7 @@ export function IconCornerCard() {
  : "Pascha has passed"}
  </p>
  <p className="font-sans text-caption font-semibold text-white text-center group-hover:underline underline-offset-2">
- Open today&rsquo;s prayer →
+ <T k="prayers.openTodaysPrayer" /> →
  </p>
  </div>
  </div>

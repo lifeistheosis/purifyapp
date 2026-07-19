@@ -39,7 +39,7 @@ export function SuggestedToday({
 }: {
   season: Season;
   isFast: boolean;
-  label?: string;
+  label?: React.ReactNode;
   max?: number;
 }) {
   const mounted = useMounted();

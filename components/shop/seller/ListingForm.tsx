@@ -9,6 +9,7 @@ import {
   INVENTORY_LABELS,
 } from "@/lib/shop/format";
 import type { SellerProduct } from "@/lib/shop/sellerData";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const field =
   "w-full rounded-md border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
@@ -30,6 +31,7 @@ export function ListingForm({
   product: SellerProduct | null;
   storeLive: boolean;
 }) {
+  const { t } = useTranslate();
   const router = useRouter();
   const editing = !!product;
   const [busy, setBusy] = useState<false | "draft" | "published">(false);
@@ -99,16 +101,14 @@ export function ListingForm({
       className="space-y-8"
     >
       <section className="space-y-5">
-        <h2 className="font-display-serif text-title text-paper">Photos</h2>
+        <h2 className="font-display-serif text-title text-paper">{t("shop.photos")}</h2>
         <p className="font-sans text-detail text-paper/60">
-          Paste image URLs for now (uploads arrive with the media pipeline).
-          The first photo is the cover. Alt text is required — describe the
-          icon for someone who can&rsquo;t see it.
+          {t("shop.pasteImageUrlsForNow")}
         </p>
         {media.map((m, i) => (
           <div key={i} className="grid gap-3 rounded-lg border border-paper/10 bg-night-soft/40 p-4 sm:grid-cols-[1fr_1fr_auto]">
             <label className="block space-y-1.5">
-              <span className={labelCls}>Image URL {i === 0 ? "(cover)" : ""}</span>
+              <span className={labelCls}>{t("shop.imageUrl")} {i === 0 ? "(cover)" : ""}</span>
               <input
                 value={m.url}
                 onChange={(e) =>
@@ -116,12 +116,12 @@ export function ListingForm({
                     rows.map((r, j) => (j === i ? { ...r, url: e.target.value } : r)),
                   )
                 }
-                placeholder="https://…"
+                placeholder={t("shop.https")}
                 className={field}
               />
             </label>
             <label className="block space-y-1.5">
-              <span className={labelCls}>Alt text *</span>
+              <span className={labelCls}>{t("shop.altText")}</span>
               <input
                 value={m.alt}
                 onChange={(e) =>
@@ -129,7 +129,7 @@ export function ListingForm({
                     rows.map((r, j) => (j === i ? { ...r, alt: e.target.value } : r)),
                   )
                 }
-                placeholder="Icon of St Nicholas, gold ground…"
+                placeholder={t("shop.iconOfStNicholasGold")}
                 className={field}
               />
             </label>
@@ -138,7 +138,7 @@ export function ListingForm({
               onClick={() => setMedia((rows) => rows.filter((_, j) => j !== i))}
               className="self-end pb-3 font-sans text-detail font-medium text-paper/55 hover:text-paper"
             >
-              Remove
+              {t("prayers.diptychs.remove")}
             </button>
           </div>
         ))}
@@ -148,49 +148,49 @@ export function ListingForm({
             onClick={() => setMedia((rows) => [...rows, { url: "", alt: "" }])}
             className="tap-press inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper"
           >
-            Add photo
+            {t("shop.addPhoto")}
           </button>
         ) : null}
       </section>
 
       <section className="space-y-5">
-        <h2 className="font-display-serif text-title text-paper">The icon</h2>
+        <h2 className="font-display-serif text-title text-paper">{t("shop.theIcon")}</h2>
         <label className="block space-y-1.5">
-          <span className={labelCls}>Title *</span>
+          <span className={labelCls}>{t("shop.title")}</span>
           <input
             name="title"
             required
             minLength={2}
             maxLength={200}
             defaultValue={product?.title ?? ""}
-            placeholder="Icon of Christ Pantocrator, printed and mounted"
+            placeholder={t("shop.iconOfChristPantocratorPrinted")}
             className={field}
           />
         </label>
         <label className="block space-y-1.5">
-          <span className={labelCls}>Subtitle</span>
+          <span className={labelCls}>{t("shop.subtitle")}</span>
           <input
             name="subtitle"
             maxLength={300}
             defaultValue={product?.subtitle ?? ""}
-            placeholder="A quiet line under the title"
+            placeholder={t("shop.aQuietLineUnderThe")}
             className={field}
           />
         </label>
         <label className="block space-y-1.5">
-          <span className={labelCls}>Description</span>
+          <span className={labelCls}>{t("shop.description")}</span>
           <textarea
             name="description"
             rows={6}
             maxLength={8000}
             defaultValue={product?.description_md ?? ""}
-            placeholder="What it is, how it's made, how it arrives. Markdown is fine."
+            placeholder={t("shop.whatItIsHowIt")}
             className={field}
           />
         </label>
         <div className="grid gap-5 sm:grid-cols-2">
           <label className="block space-y-1.5">
-            <span className={labelCls}>Category *</span>
+            <span className={labelCls}>{t("shop.category")}</span>
             <select
               name="category"
               defaultValue={product?.category ?? "saints"}
@@ -204,7 +204,7 @@ export function ListingForm({
             </select>
           </label>
           <label className="block space-y-1.5">
-            <span className={labelCls}>Classification *</span>
+            <span className={labelCls}>{t("shop.classification")}</span>
             <select
               name="classification"
               defaultValue={product?.classification ?? "printed_mounted"}
@@ -218,17 +218,17 @@ export function ListingForm({
             </select>
           </label>
           <label className="block space-y-1.5">
-            <span className={labelCls}>Materials</span>
+            <span className={labelCls}>{t("shop.materials")}</span>
             <input
               name="materials"
               maxLength={500}
               defaultValue={product?.materials ?? ""}
-              placeholder="Lithograph on wood, lacquered"
+              placeholder={t("shop.lithographOnWoodLacquered")}
               className={field}
             />
           </label>
           <label className="block space-y-1.5">
-            <span className={labelCls}>Dimensions</span>
+            <span className={labelCls}>{t("shop.dimensions")}</span>
             <input
               name="dimensions"
               maxLength={300}
@@ -238,17 +238,17 @@ export function ListingForm({
             />
           </label>
           <label className="block space-y-1.5">
-            <span className={labelCls}>Production method</span>
+            <span className={labelCls}>{t("shop.productionMethod")}</span>
             <input
               name="productionMethod"
               maxLength={500}
               defaultValue={product?.production_method ?? ""}
-              placeholder="Giclée print, hand-mounted"
+              placeholder={t("shop.giclEPrintHandMounted")}
               className={field}
             />
           </label>
           <label className="block space-y-1.5">
-            <span className={labelCls}>Maker (public credit)</span>
+            <span className={labelCls}>{t("shop.makerPublicCredit")}</span>
             <input
               name="makerName"
               maxLength={200}
@@ -257,7 +257,7 @@ export function ListingForm({
             />
           </label>
           <label className="block space-y-1.5">
-            <span className={labelCls}>Country of origin</span>
+            <span className={labelCls}>{t("shop.countryOfOrigin")}</span>
             <input
               name="countryOfOrigin"
               maxLength={100}
@@ -274,19 +274,18 @@ export function ListingForm({
             className="mt-1 h-4 w-4 rounded border-paper/30 bg-night accent-[#c9a961]"
           />
           <span className="font-sans text-detail text-paper/70">
-            The photo shows a representative example, not the exact piece the
-            buyer receives. (Shown on the listing; honesty is the policy.)
+            {t("shop.thePhotoShowsARepresentative")}
           </span>
         </label>
       </section>
 
       <section className="space-y-5">
         <h2 className="font-display-serif text-title text-paper">
-          Price &amp; availability
+          {t("shop.priceAvailability")}
         </h2>
         <div className="grid gap-5 sm:grid-cols-2">
           <label className="block space-y-1.5">
-            <span className={labelCls}>Price (USD) *</span>
+            <span className={labelCls}>{t("shop.priceUsd")}</span>
             <input
               name="price"
               type="number"
@@ -300,7 +299,7 @@ export function ListingForm({
             />
           </label>
           <label className="block space-y-1.5">
-            <span className={labelCls}>Availability *</span>
+            <span className={labelCls}>{t("shop.availabilityX")}</span>
             <select
               name="inventoryStatus"
               defaultValue={product?.inventory_status ?? "special_order"}
@@ -314,20 +313,20 @@ export function ListingForm({
             </select>
           </label>
           <label className="block space-y-1.5">
-            <span className={labelCls}>Quantity on hand (ready-to-ship)</span>
+            <span className={labelCls}>{t("shop.quantityOnHandReadyTo")}</span>
             <input
               name="quantity"
               type="number"
               min={0}
               max={100000}
               defaultValue={product?.quantity_available ?? ""}
-              placeholder="Leave blank if not tracked"
+              placeholder={t("shop.leaveBlankIfNotTracked")}
               className={field}
             />
           </label>
           <div className="grid grid-cols-2 gap-3">
             <label className="block space-y-1.5">
-              <span className={labelCls}>Dispatch, from (days) *</span>
+              <span className={labelCls}>{t("shop.dispatchFromDays")}</span>
               <input
                 name="dispatchMin"
                 type="number"
@@ -339,7 +338,7 @@ export function ListingForm({
               />
             </label>
             <label className="block space-y-1.5">
-              <span className={labelCls}>to (days) *</span>
+              <span className={labelCls}>{t("shop.toDays")}</span>
               <input
                 name="dispatchMax"
                 type="number"
@@ -379,7 +378,7 @@ export function ListingForm({
         </button>
         {!storeLive ? (
           <p className="font-sans text-caption text-paper/55">
-            Publishing unlocks when your store goes live.
+            {t("shop.publishingUnlocksWhenYourStore")}
           </p>
         ) : null}
       </div>

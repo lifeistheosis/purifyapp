@@ -16,6 +16,7 @@ import {
   AUTH_UNRESOLVED_MESSAGE,
   resolveUser,
 } from "@/lib/supabase/resolveUser";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const field =
   "w-full rounded-xl border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
@@ -33,13 +34,14 @@ async function loadAuth(): Promise<{ signedIn: boolean }> {
  * the EIKON store, subject "Support".
  */
 export function ShopSupportClient() {
+  const { t } = useTranslate();
   const router = useRouter();
   const { data, error, loading, reload } = useAsyncData(loadAuth, []);
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  if (loading) return <ShopLoading label="Loading…" />;
+  if (loading) return <ShopLoading label={t("common.loading")} />;
   if (error) return <ShopError message={error} onRetry={reload} />;
   if (data && !data.signedIn) {
     return (
@@ -88,14 +90,13 @@ export function ShopSupportClient() {
     <div className="mx-auto w-full max-w-[680px] px-5 pb-16 md:px-8">
       <header className="pt-10 md:pt-14">
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-          Purify Shop
+          {t("shop.purifyShop")}
         </p>
         <h1 className="mt-2 font-display-serif text-heading text-paper">
-          Contact EIKON support
+          {t("shop.contactEikonSupport")}
         </h1>
         <p className="mt-3 font-serif text-body text-paper/70 leading-[1.65]">
-          Questions about an order, an icon, shipping, or a return? Send a
-          message and EIKON will reply here in your shop inbox.
+          {t("shop.questionsAboutAnOrderAn")}
         </p>
       </header>
 
@@ -105,7 +106,7 @@ export function ShopSupportClient() {
       >
         <label className="block">
           <span className="font-sans text-detail font-medium text-paper/80">
-            How can we help?
+            {t("ui.howCanWeHelp")}
           </span>
           <textarea
             value={body}
@@ -135,7 +136,7 @@ export function ShopSupportClient() {
             href="/shop/messages"
             className="font-sans text-detail font-medium text-paper/60 hover:text-paper"
           >
-            View my messages
+            {t("shop.viewMyMessages")}
           </Link>
         </div>
       </form>
