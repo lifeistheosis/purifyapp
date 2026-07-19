@@ -95,7 +95,7 @@ export function TrapezaClient() {
         {/* Filters */}
         <div className="reveal-rise mt-8 space-y-3" style={{ animationDelay: "120ms" }}>
           <ChipRow>
-            <Chip label="All days" active={level === null} onClick={() => setLevel(null)} />
+            <Chip label={t("study.trapeza.allDays")} active={level === null} onClick={() => setLevel(null)} />
             {FAST_LEVELS.map((l) => (
               <Chip
                 key={l.slug}

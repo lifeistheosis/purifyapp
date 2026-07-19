@@ -104,8 +104,8 @@ export function TrapezaDetailClient() {
           </p>
         ) : null}
 
-        <Block title="Ingredients">{recipe.ingredients}</Block>
-        <Block title="Method">{recipe.steps}</Block>
+        <Block title={t("study.ingredients")}>{recipe.ingredients}</Block>
+        <Block title={t("study.method")}>{recipe.steps}</Block>
 
         <p className="mt-8 font-sans text-caption text-paper/45">
           {authorLabel(recipe)}
