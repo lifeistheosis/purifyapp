@@ -2,10 +2,10 @@ import * as React from "react";
 import { ComingSoonCTA } from "@/components/marketing/ComingSoonCTA";
 
 type FeatureShellProps = {
-  eyebrow: string;
-  title: string;
-  body: string;
-  ctaLabel?: string;
+  eyebrow: React.ReactNode;
+  title: React.ReactNode;
+  body: React.ReactNode;
+  ctaLabel?: React.ReactNode;
   children?: React.ReactNode;
 };
 

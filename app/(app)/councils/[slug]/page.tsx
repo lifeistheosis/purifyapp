@@ -279,7 +279,7 @@ export default async function CouncilProfilePage({
 
  <ViewInHistory
   events={eventsForCouncil(c.slug)}
-  title="This council in Orthodox History"
+  title={<T k="study.councils.inHistory" />}
  />
  </article>
  </section>

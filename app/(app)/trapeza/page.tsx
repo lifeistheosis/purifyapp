@@ -1,6 +1,7 @@
 import { FeatureShell } from "@/components/feature/FeatureShell";
 import { TrapezaClient } from "@/components/trapeza/TrapezaClient";
 import { trapezaEnabled } from "@/lib/trapeza/flags";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "The Trapeza",
@@ -12,10 +13,10 @@ export default function TrapezaPage() {
   if (!trapezaEnabled()) {
     return (
       <FeatureShell
-        eyebrow="The Trapeza"
-        title="Fasting at the table"
-        body="Recipes for the days of the fast, kept by the community. Coming soon."
-        ctaLabel="See the recipes"
+        eyebrow={<T k="study.theTrapeza" />}
+        title={<T k="study.trapeza.eyebrow" />}
+        body={<T k="study.trapeza.comingSoonBody" />}
+        ctaLabel={<T k="study.trapeza.seeRecipes" />}
       />
     );
   }

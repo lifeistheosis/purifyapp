@@ -300,7 +300,7 @@ export default async function TheologyHubPage() {
 
         {/* ── Search ────────────────────────────────────────────────────── */}
         <section className="mt-12">
-          <SectionHead title="Search the library" />
+          <SectionHead title={<T k="study.theology.searchLibrary" />} />
           <TheologyFilter items={filterItems} />
         </section>
 
@@ -325,7 +325,7 @@ export default async function TheologyHubPage() {
         {/* ── Featured studies ──────────────────────────────────────────── */}
         {featured.length > 0 ? (
           <section className="mt-14">
-            <SectionHead title="Featured studies" />
+            <SectionHead title={<T k="study.theology.featured" />} />
             <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-6">
               {primary ? <FeaturedPrimary study={primary} /> : null}
               <div className="flex flex-col divide-y divide-paper/[0.08] rounded-xl border border-paper/[0.1] bg-paper/[0.02]">
@@ -339,7 +339,7 @@ export default async function TheologyHubPage() {
 
         {/* ── Recently added ────────────────────────────────────────────── */}
         <section className="mt-14">
-          <SectionHead title="Recently added" />
+          <SectionHead title={<T k="study.theology.recentlyAdded" />} />
           <ul className="divide-y divide-paper/[0.07] border-t border-paper/[0.07]">
             {recent.map((s) => (
               <li key={s.href}>
@@ -375,7 +375,7 @@ export default async function TheologyHubPage() {
 
         {/* ── Doctrinal categories ──────────────────────────────────────── */}
         <section className="mt-14">
-          <SectionHead title="Doctrinal categories" />
+          <SectionHead title={<T k="study.theology.doctrinalCategories" />} />
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-px">
             {THEOLOGY_GROUP_ORDER.map((g) => {
               const label = THEOLOGY_GROUP_LABEL[g];
@@ -409,7 +409,7 @@ export default async function TheologyHubPage() {
         {/* ── Ecumenical Councils ───────────────────────────────────────── */}
         <section className="mt-14">
           <SectionHead
-            title="The Ecumenical Councils"
+            title={<T k="study.theology.ecumenicalCouncils" />}
             seeAll={{ href: "/councils", text: "All councils" }}
           />
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -443,7 +443,7 @@ export default async function TheologyHubPage() {
         {fathers.length > 0 ? (
           <section className="mt-14">
             <SectionHead
-              title="Fathers in these studies"
+              title={<T k="study.theology.fathersInStudies" />}
               seeAll={{ href: "/saints", text: "All saints" }}
             />
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-px">
@@ -495,8 +495,8 @@ function SectionHead({
   title,
   seeAll,
 }: {
-  title: string;
-  seeAll?: { href: string; text: string };
+  title: React.ReactNode;
+  seeAll?: { href: string; text: React.ReactNode };
 }) {
   return (
     <div className="mb-5 flex items-baseline justify-between gap-4 border-b border-paper/[0.08] pb-2.5">

@@ -84,7 +84,7 @@ function Section({
   ornament,
   dropCap = false,
 }: {
-  title: string;
+  title: React.ReactNode;
   blocks?: EssayBlock[];
   /** Era glyph drawn above the section heading. */
   ornament?: string;
@@ -163,24 +163,24 @@ export function EventArticle({
       <p className="mt-8 font-serif text-body text-paper/85 leading-[1.75]">{meta.summary}</p>
 
       <Section
-        title="The world before"
+        title={<T k="study.history.worldBefore" />}
         blocks={body.context}
         ornament={ERA_ORNAMENT[meta.era]}
         dropCap
       />
       <Section
-        title="What happened"
+        title={<T k="study.history.whatHappened" />}
         blocks={body.narrative}
         ornament={ERA_ORNAMENT[meta.era]}
         dropCap={!body.context?.length}
       />
       <Section
-        title="Why it matters to Orthodoxy"
+        title={<T k="study.history.whyItMatters" />}
         blocks={body.significance}
         ornament={ERA_ORNAMENT[meta.era]}
       />
       <Section
-        title="What flowed from it"
+        title={<T k="study.history.whatFlowed" />}
         blocks={body.consequences}
         ornament={ERA_ORNAMENT[meta.era]}
       />

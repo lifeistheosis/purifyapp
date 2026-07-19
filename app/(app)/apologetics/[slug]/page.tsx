@@ -6,6 +6,7 @@ import { RelatedRail } from "@/components/theology/RelatedRail";
 import { getApologeticsMeta, apologeticsParams } from "@/lib/apologetics/topics";
 import { loadApologeticsBody } from "@/lib/apologetics/load";
 import { buildRelated } from "@/lib/theology/relations";
+import { T } from "@/components/i18n/T";
 
 export const dynamicParams = false;
 
@@ -54,7 +55,7 @@ export default async function ApologeticsTopicPage({
       </div>
       <ApologeticsReader body={body} />
       <div className="mx-auto max-w-[760px] w-full">
-        <RelatedRail groups={groups} title="Go deeper" />
+        <RelatedRail groups={groups} title={<T k="study.apologetics.goDeeper" />} />
       </div>
     </section>
   );

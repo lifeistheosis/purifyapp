@@ -1,6 +1,7 @@
 import { FeatureShell } from "@/components/feature/FeatureShell";
 import { SubmitRecipeClient } from "@/components/trapeza/SubmitRecipeClient";
 import { trapezaEnabled } from "@/lib/trapeza/flags";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Share a Recipe",
@@ -11,10 +12,10 @@ export default function SubmitRecipePage() {
   if (!trapezaEnabled()) {
     return (
       <FeatureShell
-        eyebrow="The Trapeza"
-        title="Fasting at the table"
+        eyebrow={<T k="study.theTrapeza" />}
+        title={<T k="study.trapeza.eyebrow" />}
         body="The Trapeza is coming soon."
-        ctaLabel="See the recipes"
+        ctaLabel={<T k="study.trapeza.seeRecipes" />}
       />
     );
   }

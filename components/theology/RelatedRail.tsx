@@ -31,7 +31,7 @@ export function RelatedRail({
   title = "Related study",
 }: {
   groups: RelatedGroups;
-  title?: string;
+  title?: React.ReactNode;
 }) {
   if (!hasAnyRelated(groups)) return null;
 
