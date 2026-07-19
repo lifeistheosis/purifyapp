@@ -70,7 +70,7 @@ export function TheologyFilter({ items }: { items: StudyItem[] }) {
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search the library — a doctrine, a heresy, a question…"
+          placeholder={t("study.theology.searchPlaceholder")}
           aria-label={t("study.theology.searchAria")}
           className="w-full rounded-xl border border-paper/15 bg-paper/[0.04] py-3.5 pl-11 pr-4 font-sans text-lede text-paper placeholder:text-paper/40 focus:border-gold/45 focus:bg-paper/[0.06] focus:outline-none transition-colors"
         />

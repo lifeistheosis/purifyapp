@@ -135,22 +135,23 @@ function Segmented({
   savedCount: number;
   historyCount: number;
 }) {
+  const { t } = useTranslate();
   return (
     <div
       role="tablist"
-      aria-label="Saved and history"
+      aria-label={t("study.saved.savedAndHistory")}
       className="inline-flex items-center gap-1 rounded-pill border border-paper/12 bg-paper/[0.03] p-1"
     >
       <SegButton
         active={tab === "saved"}
         onClick={() => onChange("saved")}
-        label="Saved"
+        label={t("common.saved")}
         count={savedCount}
       />
       <SegButton
         active={tab === "history"}
         onClick={() => onChange("history")}
-        label="History"
+        label={t("study.saved.history")}
         count={historyCount}
       />
     </div>
@@ -232,7 +233,7 @@ function SavedTab({
     <div className="space-y-12">
       {verses.length > 0 && (
         <Group
-          title="Verses"
+          title={t("study.saved.verses")}
           count={verses.length}
           action={
             <button
@@ -241,7 +242,7 @@ function SavedTab({
               aria-pressed={showVerseText}
               className="font-sans text-caption text-paper/45 hover:text-paper transition-colors"
             >
-              {showVerseText ? "Hide text" : "Show text"}
+              {showVerseText ? t("study.saved.hideText") : t("study.saved.showText")}
             </button>
           }
         >
@@ -256,28 +257,28 @@ function SavedTab({
         </Group>
       )}
       {chapters.length > 0 && (
-        <Group title="Chapters" count={chapters.length}>
+        <Group title={t("bible.chaptersLabel")} count={chapters.length}>
           {chapters.map((b) => (
             <Row key={b.id} bookmark={b} onRemove={() => onRemove(b.id)} />
           ))}
         </Group>
       )}
       {writings.length > 0 && (
-        <Group title="Saint writings" count={writings.length}>
+        <Group title={t("study.saved.saintWritings")} count={writings.length}>
           {writings.map((b) => (
             <Row key={b.id} bookmark={b} onRemove={() => onRemove(b.id)} />
           ))}
         </Group>
       )}
       {prayers.length > 0 && (
-        <Group title="Prayers" count={prayers.length}>
+        <Group title={t("nav.prayers")} count={prayers.length}>
           {prayers.map((b) => (
             <Row key={b.id} bookmark={b} onRemove={() => onRemove(b.id)} />
           ))}
         </Group>
       )}
       {products.length > 0 && (
-        <Group title="Saved icons" count={products.length}>
+        <Group title={t("study.saved.savedIcons")} count={products.length}>
           {products.map((b) => (
             <Row key={b.id} bookmark={b} onRemove={() => onRemove(b.id)} />
           ))}

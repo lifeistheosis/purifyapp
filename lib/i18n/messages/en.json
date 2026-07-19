@@ -939,5 +939,17 @@
   "study.trapeza.exLine": "Warming and simple, for the days of the fast",
   "study.trapeza.exIngredients": "One onion, two carrots, brown lentils, olive oil, salt…",
   "study.trapeza.exMethod": "Soften the onion and carrot in oil, add the lentils and water…",
-  "study.trapeza.exServes": "Four"
+  "study.trapeza.exServes": "Four",
+  "study.saved.savedAndHistory": "Saved and history",
+  "study.saved.history": "History",
+  "study.saved.verses": "Verses",
+  "study.saved.saintWritings": "Saint writings",
+  "study.saved.savedIcons": "Saved icons",
+  "study.saved.removeBookmark": "Remove bookmark",
+  "study.saved.hideText": "Hide text",
+  "study.saved.showText": "Show text",
+  "study.theology.searchPlaceholder": "Search the library: a doctrine, a heresy, a question…",
+  "study.florilegium.deleteConfirm": "Delete this gathering?",
+  "study.florilegium.deleteDescription": "The collection and the lines in it are removed from this device. The original verses and writings are untouched.",
+  "study.florilegium.keepIt": "Keep it"
 }

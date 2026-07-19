@@ -105,10 +105,10 @@ export function FlorilegiumDetail({ id }: { id: string }) {
 
       <ConfirmDialog
         open={confirmingDelete}
-        title="Delete this gathering?"
-        description="The collection and the lines in it are removed from this device. The original verses and writings are untouched."
-        confirmLabel="Delete"
-        cancelLabel="Keep it"
+        title={t("study.florilegium.deleteConfirm")}
+        description={t("study.florilegium.deleteDescription")}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("study.florilegium.keepIt")}
         destructive
         onCancel={() => setConfirmingDelete(false)}
         onConfirm={() => {
