@@ -1,5 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Cardo, DM_Sans, DM_Serif_Display, Lora } from "next/font/google";
+import {
+ Cardo,
+ DM_Sans,
+ DM_Serif_Display,
+ Lora,
+ Noto_Naskh_Arabic,
+ Noto_Sans,
+ Noto_Sans_Arabic,
+ Noto_Sans_Devanagari,
+ Noto_Sans_Georgian,
+ Noto_Serif,
+ Noto_Serif_Georgian,
+} from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
@@ -14,22 +26,79 @@ import { NONCE_HEADER } from "@/lib/security/headers";
 
 const dmSans = DM_Sans({
  variable: "--font-dm-sans",
- subsets: ["latin"],
+ subsets: ["latin", "latin-ext"],
  display: "swap",
 });
 
 const dmSerif = DM_Serif_Display({
  variable: "--font-dm-serif",
- subsets: ["latin"],
+ subsets: ["latin", "latin-ext"],
  weight: "400",
  display: "swap",
 });
 
 const lora = Lora({
  variable: "--font-lora",
- subsets: ["latin"],
+ subsets: ["latin", "latin-ext"],
  display: "swap",
  // Variable font, pulls 400 / 500 / 600 / 700 + italics.
+});
+
+// Beta 2.3 language patch: per-script fallbacks for the 21-locale UI.
+// latin-ext above covers Turkish, Polish, Hungarian, Romanian diacritics.
+// Everything below is preload: false on purpose: next/font still emits
+// @font-face rules with unicode-range, so browsers download a script's
+// files only when a page actually renders that script. Latin-script
+// visitors pay nothing; the Android export bundles them all for offline.
+const notoSansX = Noto_Sans({
+ variable: "--font-noto-sans-x",
+ subsets: ["cyrillic", "cyrillic-ext", "greek"],
+ display: "swap",
+ preload: false,
+});
+
+const notoSerifX = Noto_Serif({
+ variable: "--font-noto-serif-x",
+ subsets: ["cyrillic", "cyrillic-ext", "greek"],
+ display: "swap",
+ preload: false,
+});
+
+const notoSansArabic = Noto_Sans_Arabic({
+ variable: "--font-noto-sans-arabic",
+ subsets: ["arabic"],
+ display: "swap",
+ preload: false,
+});
+
+// Naskh (not Nastaliq) for Arabic and Urdu prose: Nastaliq's tall line
+// boxes break the reader layout and its files are several times larger.
+const notoNaskh = Noto_Naskh_Arabic({
+ variable: "--font-noto-naskh",
+ subsets: ["arabic"],
+ display: "swap",
+ preload: false,
+});
+
+const notoSansGeorgian = Noto_Sans_Georgian({
+ variable: "--font-noto-sans-georgian",
+ subsets: ["georgian"],
+ display: "swap",
+ preload: false,
+});
+
+const notoSerifGeorgian = Noto_Serif_Georgian({
+ variable: "--font-noto-serif-georgian",
+ subsets: ["georgian"],
+ display: "swap",
+ preload: false,
+});
+
+const notoSansDevanagari = Noto_Sans_Devanagari({
+ variable: "--font-noto-sans-devanagari",
+ subsets: ["devanagari"],
+ display: "swap",
+ preload: false,
 });
 
 // Cardo: a serif designed for biblical scholarship, covers polytonic Greek
@@ -122,7 +191,7 @@ export default async function RootLayout({
  <html
  lang={localeCode}
  dir={localeRecord.dir}
- className={`${dmSans.variable} ${dmSerif.variable} ${lora.variable} ${cardo.variable} h-full antialiased`}
+ className={`${dmSans.variable} ${dmSerif.variable} ${lora.variable} ${cardo.variable} ${notoSansX.variable} ${notoSerifX.variable} ${notoSansArabic.variable} ${notoNaskh.variable} ${notoSansGeorgian.variable} ${notoSerifGeorgian.variable} ${notoSansDevanagari.variable} h-full antialiased`}
  >
  <body className="min-h-full flex flex-col">
  <MessagesProvider locale={localeCode} messages={messages}>

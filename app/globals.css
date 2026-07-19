@@ -57,15 +57,29 @@
  --chart-hover: rgba(245, 235, 210, 0.2);
  --chart-empty: rgba(245, 235, 210, 0.05);
 
- --font-sans: var(--font-dm-sans), system-ui, -apple-system, "Segoe UI",
+ /* Per-script fallback chains (Beta 2.3, 21 locales): the primary Latin
+    fonts come first, then Noto per-script fonts whose unicode-range
+    @font-face rules only activate for Cyrillic/Greek (ru uk sr bg el),
+    Arabic script (ar ur), Georgian (ka), and Devanagari (ne). Latin
+    pages never touch them. Devanagari has no serif on purpose (size);
+    it falls through to the sans in serif contexts via these chains. */
+ --font-sans: var(--font-dm-sans), var(--font-noto-sans-x),
+ var(--font-noto-sans-arabic), var(--font-noto-sans-georgian),
+ var(--font-noto-sans-devanagari), system-ui, -apple-system, "Segoe UI",
  sans-serif;
- --font-serif: var(--font-lora), Georgia, serif;
+ --font-serif: var(--font-lora), var(--font-noto-serif-x),
+ var(--font-noto-naskh), var(--font-noto-serif-georgian),
+ var(--font-noto-sans-devanagari), Georgia, serif;
  /* Available as `font-display-serif` for big ornate headings if needed. */
- --font-display-serif: var(--font-dm-serif), Georgia, serif;
+ --font-display-serif: var(--font-dm-serif), var(--font-noto-serif-x),
+ var(--font-noto-naskh), var(--font-noto-serif-georgian),
+ var(--font-noto-sans-devanagari), Georgia, serif;
  /* Standard bold heading font: Lora, the verse-of-the-day serif. Applied
     to all headings sitewide via the unlayered h1-h6 rule below, and
     available as the `font-heading` utility. */
- --font-heading: var(--font-lora), Georgia, serif;
+ --font-heading: var(--font-lora), var(--font-noto-serif-x),
+ var(--font-noto-naskh), var(--font-noto-serif-georgian),
+ var(--font-noto-sans-devanagari), Georgia, serif;
 
  /* Type scale — size only (line-height stays per-element via leading-*). */
  --text-eyebrow: 11px;       /* labels, kickers, micro-UI            */
