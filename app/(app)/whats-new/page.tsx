@@ -24,6 +24,21 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 2.3",
+ kind: "Purify learns your language",
+ date: "July 19, 2026",
+ blurb:
+  "The app now speaks twenty-one languages. Pick yours in Settings or the footer and the menus, the Today screen, and the calendar with every fasting rule follow you, on the website and inside the Android app, even offline. The prayers, lives, and writings are being translated next; until each lands, it is shown in English with an honest note.",
+ items: [
+  "Twenty-one languages: English, Spanish, Romanian, Greek, Russian, French, German, Serbian, Ukrainian, Italian, Portuguese, Bulgarian, Arabic, Filipino, Turkish, Georgian, Hungarian, Indonesian, Nepali, Polish, and Urdu. Beyond English and German, each is a preview under our language editors' review; whatever is untranslated falls back to English rather than breaking.",
+  "Language switching finally works inside the Android app. Your choice is remembered on the device, follows your account when you sign in, and on first run the app greets you in your phone's own language when we carry it.",
+  "New typefaces for Cyrillic, Greek, Arabic script, Georgian, and Devanagari, loaded only when a page needs them, so no language reads as empty boxes.",
+  "A Language row now leads your account settings, with the same grouped picker as the footer.",
+  "Plural forms are handled properly per language (Russian and Polish counts, Arabic's six forms).",
+  "Cache version steps to purify-beta-2.3.",
+ ],
+ },
+ {
  version: "Beta 2.2",
  kind: "The shop finds its voice, and its word of honor",
  date: "July 18, 2026",
