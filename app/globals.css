@@ -1643,80 +1643,136 @@ html.is-native .history-controls {
 }
 
 /* ── Gift box ───────────────────────────────────────────────────────────────
-   The claim animation (components/gifts/GiftBox.tsx). Deliberately narrow in
-   what it animates: transform and opacity ONLY, so every step stays on the
-   compositor and never triggers layout or paint. No backdrop-filter anywhere
-   — the Android WebView bleeds imagery through it and drops frames, which is
-   why the shop sub-tab bar carries a flat background too.
+   The claim animation (components/gifts/GiftBox.tsx): a sealed reliquary that
+   strains, cracks its beeswax seal, holds one beat, then floods with light.
 
-   Sequence: the lid unseals and lifts, light swells out of the box, a few
-   embers rise, then the reveal card settles in. Everything is keyframed off a
-   single click so there is no per-frame JS driving it. */
+   Every rule below animates ONLY transform and opacity, so the whole sequence
+   stays on the compositor and never triggers layout or paint. No
+   backdrop-filter anywhere — the Android WebView bleeds imagery through it and
+   drops frames (see the shop sub-tab bar's flat background for the same
+   reason). Timings are expressed as delays off a single state flip, so no JS
+   runs per frame.
 
-@keyframes gift-lid {
-  0%   { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 1; }
-  35%  { transform: translate3d(0, 4px, 0) rotate(-1deg); opacity: 1; }
-  100% { transform: translate3d(0, -128px, 0) rotate(-13deg); opacity: 0; }
+   Timeline, from the tap:
+     0ms     strain begins, the casket shivers against its seal
+     380ms   the seal gives and its halves fall away
+     520ms   one beat of stillness, then the lid bursts upward
+     560ms   light floods, rays turn, embers rise
+    1350ms   reveal: radiance blooms behind the gift's name          */
+
+/* 1. Anticipation: a tight shiver, amplitude rising as the seal strains. */
+@keyframes gift-strain {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+  15%  { transform: translate3d(-1px, 0, 0) rotate(-0.4deg); }
+  30%  { transform: translate3d(1.5px, 0, 0) rotate(0.5deg); }
+  45%  { transform: translate3d(-2px, 1px, 0) rotate(-0.7deg); }
+  60%  { transform: translate3d(2px, -1px, 0) rotate(0.8deg); }
+  75%  { transform: translate3d(-2.5px, 1px, 0) rotate(-1deg); }
+  88%  { transform: translate3d(2px, 0, 0) rotate(0.6deg); }
+  100% { transform: translate3d(0, 2px, 0) rotate(0deg); }
 }
 
-@keyframes gift-box-settle {
+/* 2. The seal gives: halves rotate off their break line and fall. */
+@keyframes gift-seal-left {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate3d(-26px, 34px, 0) rotate(-52deg); opacity: 0; }
+}
+@keyframes gift-seal-right {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate3d(26px, 36px, 0) rotate(58deg); opacity: 0; }
+}
+
+/* 3. The lid, after a held beat. Lifts, tips, and clears the frame. */
+@keyframes gift-lid-burst {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 1; }
+  18%  { transform: translate3d(0, 3px, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate3d(6px, -150px, 0) rotate(-16deg); opacity: 0; }
+}
+
+/* Casket recoil as the lid leaves. */
+@keyframes gift-casket-settle {
   0%   { transform: translate3d(0, 0, 0) scale(1); }
-  22%  { transform: translate3d(0, 5px, 0) scale(0.965); }
-  60%  { transform: translate3d(0, -3px, 0) scale(1.02); }
+  20%  { transform: translate3d(0, 5px, 0) scale(0.97); }
+  62%  { transform: translate3d(0, -2px, 0) scale(1.015); }
   100% { transform: translate3d(0, 0, 0) scale(1); }
 }
 
-@keyframes gift-glow {
-  0%   { transform: scale(0.35); opacity: 0; }
-  40%  { transform: scale(1.15); opacity: 0.95; }
-  100% { transform: scale(1.9); opacity: 0; }
+/* 4. Light out of the opened casket. */
+@keyframes gift-flood {
+  0%   { transform: scale(0.3); opacity: 0; }
+  38%  { transform: scale(1.1); opacity: 1; }
+  /* Final swell is per-level: the grander the gift, the further the light
+     carries. Falls back to the mid value if the var is ever missing. */
+  100% { transform: scale(var(--gift-flood-scale, 1.85)); opacity: 0; }
 }
-
+/* Rays turn slowly as they swell — an icon's glory, not a strobe. */
+@keyframes gift-rays {
+  0%   { transform: rotate(0deg) scale(0.35); opacity: 0; }
+  35%  { opacity: 0.7; }
+  100% { transform: rotate(26deg) scale(1.6); opacity: 0; }
+}
 @keyframes gift-ember {
   0%   { transform: translate3d(0, 0, 0) scale(0.6); opacity: 0; }
-  25%  { opacity: 1; }
-  100% { transform: translate3d(var(--ember-x), -132px, 0) scale(0.2); opacity: 0; }
+  22%  { opacity: 1; }
+  100% { transform: translate3d(var(--ember-x), -140px, 0) scale(0.15); opacity: 0; }
 }
 
-@keyframes gift-reveal {
-  0%   { transform: translate3d(0, 18px, 0) scale(0.97); opacity: 0; }
+/* 5. Payoff: a mandorla blooms, the name settles rather than fades. */
+@keyframes gift-mandorla {
+  0%   { transform: scale(0.4); opacity: 0; }
+  55%  { transform: scale(1.05); opacity: 0.55; }
+  100% { transform: scale(1); opacity: 0.32; }
+}
+@keyframes gift-name {
+  0%   { transform: translate3d(0, 14px, 0) scale(0.94); opacity: 0; }
   100% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
 }
-
-@keyframes gift-seal-break {
-  0%   { transform: scale(1) rotate(0deg); opacity: 1; }
-  100% { transform: scale(1.5) rotate(22deg); opacity: 0; }
+@keyframes gift-fade-up {
+  0%   { transform: translate3d(0, 10px, 0); opacity: 0; }
+  100% { transform: translate3d(0, 0, 0); opacity: 1; }
 }
 
-.gift-lid        { animation: gift-lid 900ms cubic-bezier(0.34, 1.2, 0.5, 1) forwards; }
-.gift-box-settle { animation: gift-box-settle 900ms cubic-bezier(0.33, 1, 0.68, 1) forwards; }
-.gift-glow       { animation: gift-glow 1100ms cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-.gift-ember      { animation: gift-ember 1200ms cubic-bezier(0.3, 0.8, 0.4, 1) forwards; }
-.gift-reveal     { animation: gift-reveal 520ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-.gift-seal-break { animation: gift-seal-break 420ms cubic-bezier(0.4, 0, 0.7, 0.4) forwards; }
-
-/* Idle breathing on the sealed box, so it reads as waiting rather than stuck.
-   Tiny amplitude on purpose: this can be on screen for a while. */
+/* Idle: the sealed casket breathes so it reads as waiting, not frozen. */
 @keyframes gift-idle {
   0%, 100% { transform: translate3d(0, 0, 0); }
   50%      { transform: translate3d(0, -5px, 0); }
 }
-.gift-idle { animation: gift-idle 3.4s ease-in-out infinite; }
 
-/* Reduced motion: no travel, no breathing, no embers. The reveal still
-   cross-fades so the state change is legible, just without movement. */
+.gift-idle          { animation: gift-idle 3.6s ease-in-out infinite; }
+.gift-strain        { animation: gift-strain 520ms cubic-bezier(0.36, 0, 0.66, -0.4) forwards; }
+.gift-seal-left     { animation: gift-seal-left 520ms cubic-bezier(0.3, 0.7, 0.4, 1) 380ms forwards; }
+.gift-seal-right    { animation: gift-seal-right 560ms cubic-bezier(0.3, 0.7, 0.4, 1) 380ms forwards; }
+.gift-lid-burst     { animation: gift-lid-burst 820ms cubic-bezier(0.3, 1.15, 0.5, 1) 520ms forwards; }
+.gift-casket-settle { animation: gift-casket-settle 780ms cubic-bezier(0.33, 1, 0.68, 1) 560ms forwards; }
+.gift-flood         { animation: gift-flood 1000ms cubic-bezier(0.22, 1, 0.36, 1) 540ms forwards; }
+.gift-rays          { animation: gift-rays 1150ms cubic-bezier(0.22, 1, 0.36, 1) 540ms forwards; }
+.gift-ember         { animation: gift-ember 1250ms cubic-bezier(0.3, 0.8, 0.4, 1) forwards; }
+.gift-mandorla      { animation: gift-mandorla 900ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.gift-name          { animation: gift-name 620ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.gift-fade-up       { animation: gift-fade-up 520ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Reduced motion: nothing travels, nothing shivers, nothing rotates. The
+   state change still reads, as a plain cross-fade. */
 @media (prefers-reduced-motion: reduce) {
-  .gift-lid,
-  .gift-box-settle,
-  .gift-glow,
-  .gift-ember,
-  .gift-seal-break,
-  .gift-idle {
+  .gift-idle,
+  .gift-strain,
+  .gift-seal-left,
+  .gift-seal-right,
+  .gift-lid-burst,
+  .gift-casket-settle,
+  .gift-flood,
+  .gift-rays,
+  .gift-ember {
     animation: none;
   }
-  .gift-lid, .gift-ember { opacity: 0; }
-  .gift-reveal {
-    animation: gift-reveal 200ms ease both;
+  .gift-seal-left,
+  .gift-seal-right,
+  .gift-lid-burst,
+  .gift-ember { opacity: 0; }
+  .gift-mandorla { animation: none; opacity: 0.3; }
+  .gift-name,
+  .gift-fade-up {
+    animation: gift-fade-up 220ms ease both;
     transform: none;
   }
 }
