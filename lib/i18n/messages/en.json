@@ -17,7 +17,6 @@
   "nav.premium": "Premium",
   "nav.menuToggle": "Toggle menu",
   "nav.yourAccount": "Your account",
-
   "common.signIn": "Sign in",
   "common.signUp": "Sign up",
   "common.signOut": "Sign out",
@@ -44,7 +43,6 @@
   "common.learnMore": "Learn more",
   "common.readMore": "Read more",
   "common.seeAll": "See all",
-
   "home.heroH1": "The whole Orthodox life, in one quiet place.",
   "home.heroSubtitle": "Pray with the Church. Read with the Fathers. Walk the year. Free, ad-free, yours to keep.",
   "home.seeToday": "See today →",
@@ -56,7 +54,6 @@
   "home.whereWouldYouLikeToBegin": "Where would you like to begin?",
   "home.openPurify": "Open Purify.",
   "home.openPurifySub": "Begin where you stand, at a prayer, at the saint of the day, at a verse of the Gospel.",
-
   "footer.bible": "The Bible",
   "footer.saints": "The Saints",
   "footer.library": "The Library",
@@ -78,7 +75,8 @@
   "footer.thisMonth": "This month",
   "footer.theFasts": "The fasts",
   "footer.languageLabel": "Language",
-
+  "footer.localeGroupAvailable": "Available",
+  "footer.localeGroupInProgress": "In progress",
   "about.eyebrow": "About this work",
   "about.h1": "A sanctuary for the Orthodox life outside the Liturgy.",
   "about.northStar": "The north star",
@@ -88,25 +86,22 @@
   "about.covenantOnPrivacy": "A covenant on privacy.",
   "about.howItIsKept": "How it is kept",
   "about.missionFirst": "Mission-first, independently built.",
-
   "pricing.eyebrow": "Pricing",
   "pricing.h1": "The core is free, always.",
   "pricing.supportLink": "you can support it",
-
   "support.eyebrow": "Support this work",
   "support.h1": "Free now. Donations welcome.",
   "support.thisMonthsGoal": "This month's goal",
   "support.coreStaysFree": "The core stays free",
   "support.thankYou": "Whatever you give, or do not give, we are glad you are here.",
-
   "faq.eyebrow": "FAQ",
   "faq.h1": "Frequently asked questions.",
-
   "privacy.eyebrow": "Privacy",
   "privacy.h1": "What Purify keeps, and what it doesn't.",
-
   "account.eyebrow": "Your account",
   "account.h1": "Pick up where you left off.",
+  "account.languageLabel": "Language",
+  "account.languageDescription": "The language of menus, buttons, and app text. Prayers and readings switch as translations become available.",
   "account.localProfile": "On this device",
   "account.publicAccount": "Sign in to sync",
   "account.localProfileDescription": "Highlights, notes, and bookmarks are saved privately on this device. No account required.",
@@ -119,7 +114,6 @@
   "account.deleteAccount": "Delete account",
   "account.exportData": "Export data",
   "account.importData": "Import data",
-
   "signin.h1": "Welcome back.",
   "signin.subtitle": "Sign in to sync your reading life across devices.",
   "signin.submit": "Sign in",
@@ -129,19 +123,15 @@
   "signin.continueWithApple": "Continue with Apple",
   "signin.continueWithEmail": "Continue with email",
   "signin.comingSoon": "Coming soon",
-
   "signup.h1": "Create your account.",
   "signup.subtitle": "Sync your notes, bookmarks, and highlights across devices.",
   "signup.submit": "Create account",
   "signup.alreadyHaveAccount": "Already have an account? Sign in →",
-
   "forgot.h1": "Reset your password.",
   "forgot.subtitle": "We'll send you a reset link by email.",
   "forgot.submit": "Send reset link",
-
   "reset.h1": "Set a new password.",
   "reset.submit": "Set password",
-
   "topics.eyebrow": "Topical index",
   "topics.h1": "The Fathers, by the questions they answered.",
   "topics.intro": "A doctrinal index for enquirers, catechumens, and lay apologists. Pick a topic and read what the Fathers confessed, with each citation linking straight to the work it is drawn from.",
@@ -151,7 +141,6 @@
   "topics.confessed": "Confessed by the Fathers",
   "topics.refuted": "Refuted by the Fathers",
   "topics.curatedBy": "Curated by {who}",
-
   "discover.eyebrow": "The whole library",
   "discover.h1": "Discover.",
   "discover.subtitle": "Saints, councils, the calendar, and a way into the wider library.",
@@ -180,7 +169,6 @@
   "discover.tile.topicsBlurb": "One thread, traced across the Fathers, side by side.",
   "discover.tile.heresies": "Heresies",
   "discover.tile.heresiesBlurb": "The errors the councils condemned, defined and answered by the Fathers.",
-
   "reading.eyebrow": "The reading room",
   "reading.h1": "Reading.",
   "reading.subtitle": "Sit down with the Fathers. Continue where you left off, see what others return to, and find where to read next.",
@@ -200,7 +188,6 @@
   "reading.surface.topicsBlurb": "One thread, traced across the Fathers, side by side.",
   "reading.surface.collections": "Thematic collections",
   "reading.surface.collectionsBlurb": "Florilegia, the witnesses of the Fathers gathered on one theme.",
-
   "calendar.eyebrow": "The Sacred Calendar",
   "calendar.h1": "Every day of the Church's year.",
   "calendar.today": "Today",
@@ -215,7 +202,6 @@
   "calendar.fast.fish": "Fish allowed",
   "calendar.fast.fastFree": "Fast-free",
   "calendar.fast.none": "No fast",
-
   "prayers.eyebrow": "Pray without ceasing",
   "prayers.h1": "Prayers.",
   "prayers.morningRule": "Morning Rule",
@@ -267,7 +253,6 @@
   "prayers.push.turnOff": "Turn off reminders",
   "prayers.push.morning": "Morning",
   "prayers.push.evening": "Evening",
-
   "saints.eyebrow": "Lives and writings",
   "saints.h1": "The Saints",
   "saints.searchPlaceholder": "Search the saints…",
@@ -293,22 +278,18 @@
   "saints.hisDisciples": "His disciples and successors",
   "saints.herDisciples": "Her disciples and successors",
   "saints.writings": "Writings",
-
   "councils.eyebrow": "The Ecumenical Councils",
   "councils.h1": "The Faith confessed by the Fathers.",
   "councils.first": "First",
   "councils.second": "Second",
   "councils.third": "Third",
   "councils.fourth": "Fourth",
-
   "whatsnew.eyebrow": "What's new",
   "whatsnew.releaseNotes": "Release notes",
   "whatsnew.fromTheTeam": "From Edgar, the Purify Team.",
-
   "translationDisclaimer.title": "Translation in progress",
   "translationDisclaimer.body": "The UI is translated; the body of this page is still in English while editorial review for theological precision completes.",
   "translationDisclaimer.dismiss": "Dismiss",
-
   "pwa.install.download": "Download Purify",
   "pwa.install.open": "Open Purify",
   "pwa.install.openInBrowser": "Open in browser",
@@ -319,10 +300,8 @@
   "pwa.install.modal.chromiumSuppressed": "Purify may already be installed, or your browser paused the install prompt. Open it from your Applications or Start menu.",
   "pwa.install.modal.ipad": "On iPad, tap the Share button in Safari's toolbar, then choose Add to Home Screen.",
   "pwa.install.modal.close": "Close",
-
   "common.share": "Share",
   "common.linkCopied": "Link copied",
-
   "onboard.skip": "Skip",
   "onboard.back": "Back",
   "onboard.continue": "Continue",

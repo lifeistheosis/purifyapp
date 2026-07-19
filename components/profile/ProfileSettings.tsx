@@ -4,6 +4,8 @@ import { useReaderPrefs, type ReaderSize, type ReaderFont } from "@/components/r
 import { useInterlinear } from "@/lib/bible/interlinear";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import type { CalendarStyleDefault } from "@/lib/calendar/styleDefault";
+import { LanguagePicker } from "@/components/i18n/LanguagePicker";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Reading preferences that live in localStorage and persist across visits.
@@ -13,6 +15,7 @@ import type { CalendarStyleDefault } from "@/lib/calendar/styleDefault";
  * (New / Old Julian).
  */
 export function ProfileSettings() {
+  const { t } = useTranslate();
   const { size, setSize, font, setFont } = useReaderPrefs();
   const { on: interlinearOn, toggle: toggleInterlinear } = useInterlinear();
 
@@ -38,6 +41,12 @@ export function ProfileSettings() {
       </p>
 
       <div className="space-y-6">
+        <Row
+          label={t("account.languageLabel")}
+          description={t("account.languageDescription")}
+        >
+          <LanguagePicker />
+        </Row>
         <Row label="Reader font" description="The face of the body text in the Bible and saint readers.">
           <SegGroup
             value={font}
