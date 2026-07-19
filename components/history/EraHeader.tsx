@@ -3,6 +3,7 @@
 // of the Church they are scrolling through (the "active era indicator").
 
 import type { HISTORY_ERAS } from "@/lib/history/events";
+import { T } from "@/components/i18n/T";
 
 export function EraHeader({
   era,
@@ -26,7 +27,7 @@ export function EraHeader({
         {era.blurb}
       </p>
       <p className="sr-only">
-        {count} events in this era
+        {count} <T k="study.eventsInThisEra" />
       </p>
     </header>
   );

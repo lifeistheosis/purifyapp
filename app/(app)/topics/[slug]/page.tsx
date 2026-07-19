@@ -12,6 +12,7 @@ import { RecordRead } from "@/components/reading/RecordRead";
 import { TheologyArticleNav } from "@/components/theology/TheologyArticleNav";
 import { RelatedRail } from "@/components/theology/RelatedRail";
 import { buildRelated } from "@/lib/theology/relations";
+import { T } from "@/components/i18n/T";
 
 type Params = Promise<{ slug: string }>;
 
@@ -114,7 +115,7 @@ export default async function TopicPage({ params }: { params: Params }) {
 
         {topic.curatedBy ? (
           <p className="mt-16 pt-8 border-t border-paper/10 font-sans text-caption text-paper/40">
-            Curated by {topic.curatedBy}
+            <T k="study.curatedBy" /> {topic.curatedBy}
             {topic.curatedOn ? ` · ${topic.curatedOn}` : ""}.
           </p>
         ) : null}

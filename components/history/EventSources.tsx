@@ -2,6 +2,7 @@
 // renders its sources in full; facts and citations are always free.
 
 import type { SourceCitation } from "@/lib/history/load";
+import { T } from "@/components/i18n/T";
 
 export function EventSources({ sources }: { sources: SourceCitation[] }) {
   if (!sources.length) return null;
@@ -10,7 +11,7 @@ export function EventSources({ sources }: { sources: SourceCitation[] }) {
   return (
     <section className="mt-14 border-t border-paper/10 pt-8" aria-label="Sources">
       <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
-        Sources
+        <T k="study.history.sources" />
       </h2>
       {primary.length > 0 ? (
         <SourceGroup label="Primary sources" sources={primary} />

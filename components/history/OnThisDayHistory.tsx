@@ -8,6 +8,7 @@
 import Link from "next/link";
 
 import { historyEventsOn } from "@/lib/history/events";
+import { T } from "@/components/i18n/T";
 
 export function OnThisDayHistory({ date }: { date: Date }) {
   const mmdd = `${String(date.getUTCMonth() + 1).padStart(2, "0")}-${String(
@@ -19,7 +20,7 @@ export function OnThisDayHistory({ date }: { date: Date }) {
   return (
     <div className="my-12">
       <p className="mb-4 font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/55">
-        On this day in Orthodox History
+        <T k="study.history.onThisDay" />
       </p>
       <div className="space-y-3">
         {events.map((e) => (
@@ -35,7 +36,7 @@ export function OnThisDayHistory({ date }: { date: Date }) {
               {e.calendar && e.calendar.basis !== "gregorian" ? (
                 <span className="normal-case tracking-normal text-paper/55">
                   {" "}
-                  · commemorated today
+                  <T k="study.commemoratedToday" />
                 </span>
               ) : null}
             </p>
@@ -46,7 +47,7 @@ export function OnThisDayHistory({ date }: { date: Date }) {
               {e.preview}
             </p>
             <p className="mt-2 font-sans text-detail font-medium text-gold/80">
-              View in History →
+              <T k="study.history.viewInHistoryArrow" />
             </p>
           </Link>
         ))}

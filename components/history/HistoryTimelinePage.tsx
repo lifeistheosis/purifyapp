@@ -54,11 +54,13 @@ import { HistorySearchInline, HistorySearchOverlay } from "./HistorySearch";
 import { TimelineCore } from "./TimelineCore";
 import { TimelineFastScroll } from "./TimelineFastScroll";
 import { ActiveFilterChips, TimelineFilters } from "./TimelineFilters";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const ALL_EVENTS = publishedEvents();
 const CENTURIES = centuriesInDataset();
 
 export function HistoryTimelinePage() {
+  const { t } = useTranslate();
   const isNative = useIsNative();
   const router = useRouter();
 
@@ -280,7 +282,7 @@ export function HistoryTimelinePage() {
           : "tap-press min-h-[44px] shrink-0 rounded-md border border-paper/15 px-2.5 font-sans text-ui font-semibold text-paper/75 min-[420px]:px-3.5"
       }
     >
-      Immersive
+      {t("study.immersive")}
     </button>
   ) : null;
 
@@ -291,14 +293,14 @@ export function HistoryTimelinePage() {
         onClick={() => setErasOpen(true)}
         className="tap-press min-h-[44px] shrink-0 rounded-md border border-paper/15 px-2.5 font-sans text-ui font-semibold text-paper/75 min-[420px]:px-3.5"
       >
-        Eras
+        {t("study.eras")}
       </button>
       <button
         type="button"
         onClick={() => setFiltersOpen(true)}
         className="tap-press min-h-[44px] shrink-0 rounded-md border border-paper/15 px-2.5 font-sans text-ui font-semibold text-paper/75 min-[420px]:px-3.5"
       >
-        Filter{filterCount ? ` · ${filterCount}` : ""}
+        {t("study.filter")}{filterCount ? ` · ${filterCount}` : ""}
       </button>
       {cinematicToggle}
     </>
@@ -319,13 +321,13 @@ export function HistoryTimelinePage() {
               <div className="flex items-center gap-3">
                 {cinematicToggle}
                 <span className="font-sans text-caption text-paper/55">
-                  Artwork and cinematic motion
+                  {t("study.history.artworkMotion")}
                 </span>
               </div>
             ) : null}
             <div>
               <p className="mb-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
-                Eras
+                {t("study.eras")}
               </p>
               <EraJumpList activeEra={activeEra} counts={eraCounts} onJump={jumpToEra} />
             </div>
@@ -357,8 +359,8 @@ export function HistoryTimelinePage() {
                   !isNative && "md:hidden",
                 )}
               >
-                <span className="min-[480px]:hidden">Search…</span>
-                <span className="hidden min-[480px]:inline">Search Church history…</span>
+                <span className="min-[480px]:hidden">{t("study.search")}</span>
+                <span className="hidden min-[480px]:inline">{t("study.searchChurchHistory")}</span>
               </button>
               {!isNative ? (
                 <HistorySearchInline
@@ -400,7 +402,7 @@ export function HistoryTimelinePage() {
             <EventContextRail selected={state.selected} />
             {hasActiveFilters(state) ? (
               <p className="mt-4 text-center font-sans text-caption text-paper/55">
-                {filtered.length} of {ALL_EVENTS.length} events shown
+                {filtered.length} {t("study.of")} {ALL_EVENTS.length} {t("study.eventsShown")}
               </p>
             ) : null}
           </div>
@@ -433,14 +435,14 @@ export function HistoryTimelinePage() {
             }
             className="tap-press min-h-[48px] flex-1 rounded-md border border-paper/20 font-sans text-ui font-semibold text-paper/70"
           >
-            Clear
+            {t("study.clear")}
           </button>
           <button
             type="button"
             onClick={() => setFiltersOpen(false)}
             className="tap-press min-h-[48px] flex-1 rounded-md bg-paper font-sans text-ui font-semibold text-night"
           >
-            Apply
+            {t("study.apply")}
           </button>
         </div>
       </Sheet>

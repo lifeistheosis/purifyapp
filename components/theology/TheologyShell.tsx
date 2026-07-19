@@ -6,6 +6,7 @@
 import Link from "next/link";
 
 import { TheologyNav } from "./TheologyNav";
+import { T } from "@/components/i18n/T";
 
 export function TheologyShell({
   children,
@@ -21,14 +22,14 @@ export function TheologyShell({
         <div className="flex items-center gap-2 border-b border-paper/10 pb-4">
           {isHub ? (
             <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
-              Theology
+              <T k="nav.discoverMenu.theology" />
             </span>
           ) : (
             <Link
               href="/theology"
               className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55 hover:text-paper transition-colors"
             >
-              Theology
+              <T k="nav.discoverMenu.theology" />
             </Link>
           )}
         </div>

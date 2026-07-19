@@ -36,6 +36,23 @@ const CONVERTED_DIRS = [
   "app/(app)/bible",
   "components/saints",
   "app/(app)/saints",
+  "app/(app)/councils",
+  "app/(app)/history",
+  "app/(app)/theology",
+  "app/(app)/topics",
+  "app/(app)/apologetics",
+  "app/(app)/heresies",
+  "app/(app)/discover",
+  "app/(app)/reading",
+  "app/(app)/saved",
+  "app/(app)/florilegium",
+  "app/(app)/trapeza",
+  "components/history",
+  "components/florilegium",
+  "components/theology",
+  "components/saved",
+  "components/reading",
+  "components/trapeza",
 ];
 
 const args = new Set(process.argv.slice(2));

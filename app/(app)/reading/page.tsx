@@ -14,6 +14,7 @@ import { collections } from "@/lib/reading/surfaces";
 import { loadAllTopics } from "@/lib/topics/topics";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
  title: "Reading",
@@ -182,9 +183,9 @@ export default async function ReadingPage() {
 
  {/* Quiet colophon to close the page. */}
  <p className="mt-14 text-center font-display-serif italic text-ui text-paper/45 leading-[1.55]">
- Through the prayers of our holy Fathers,
+ <T k="study.colophon1" />
  <br />
- Lord Jesus Christ our God, have mercy on us.
+ <T k="study.colophon2" />
  </p>
  </article>
  </section>

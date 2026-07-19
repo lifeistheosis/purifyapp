@@ -5,6 +5,7 @@
 import Link from "next/link";
 
 import { TheologyNav } from "./TheologyNav";
+import { T } from "@/components/i18n/T";
 
 export function TheologyArticleNav({ className = "" }: { className?: string }) {
   return (
@@ -13,7 +14,7 @@ export function TheologyArticleNav({ className = "" }: { className?: string }) {
         href="/theology"
         className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55 hover:text-paper transition-colors"
       >
-        Theology
+        <T k="nav.discoverMenu.theology" />
       </Link>
       <div className="mt-3">
         <TheologyNav />

@@ -14,6 +14,7 @@ import {
   publishedEvents,
   type HistoryEventMeta,
 } from "@/lib/history/events";
+import { T } from "@/components/i18n/T";
 
 type RelLink = { label: string; sublabel?: string; href: string };
 
@@ -86,13 +87,13 @@ export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
       {preceded.length || resulted.length ? (
         <div className="mb-10">
           <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
-            The chain of events
+            <T k="study.history.chainOfEvents" />
           </h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {preceded.length ? (
               <div>
                 <p className="mb-2 font-sans text-caption uppercase tracking-[1.4px] text-paper/55">
-                  What led here
+                  <T k="study.history.whatLedHere" />
                 </p>
                 <div className="space-y-2">
                   {preceded.map((s) => (
@@ -104,7 +105,7 @@ export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
             {resulted.length ? (
               <div>
                 <p className="mb-2 font-sans text-caption uppercase tracking-[1.4px] text-paper/55">
-                  What flowed from it
+                  <T k="study.history.whatFlowed" />
                 </p>
                 <div className="space-y-2">
                   {resulted.map((s) => (
@@ -120,7 +121,7 @@ export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
       {groups.length ? (
         <div>
           <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
-            Related in Purify
+            <T k="study.relatedInPurify" />
           </h2>
           <div className="mt-5 space-y-5">
             {groups.map((g) => (
@@ -152,7 +153,7 @@ export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
       {scripture.length ? (
         <div className="mt-8">
           <p className="font-sans text-caption uppercase tracking-[1.4px] text-paper/55">
-            Scripture
+            <T k="today.tiles.bible" />
           </p>
           <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1.5">
             {scripture.map((ref) => (
@@ -175,7 +176,7 @@ export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
               className="tap-press rounded-md border border-paper/12 px-4 py-3 hover:border-paper/25"
             >
               <span className="font-sans text-caption text-paper/55">
-                ← Earlier · {prev.displayDate}
+                <T k="study.earlier" /> {prev.displayDate}
               </span>
               <span className="mt-0.5 block font-sans text-ui font-semibold text-paper/85">
                 {prev.shortTitle ?? prev.title}
@@ -190,7 +191,7 @@ export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
               className="tap-press rounded-md border border-paper/12 px-4 py-3 text-right hover:border-paper/25"
             >
               <span className="font-sans text-caption text-paper/55">
-                Later · {next.displayDate} →
+                <T k="study.later" /> {next.displayDate} →
               </span>
               <span className="mt-0.5 block font-sans text-ui font-semibold text-paper/85">
                 {next.shortTitle ?? next.title}

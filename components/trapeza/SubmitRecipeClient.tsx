@@ -13,8 +13,10 @@ import {
 } from "@/lib/trapeza/recipes";
 import { submitRecipe } from "@/lib/trapeza/client";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function SubmitRecipeClient() {
+  const { t } = useTranslate();
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [title, setTitle] = useState("");
   const [fastLevel, setFastLevel] = useState<FastLevel>("oil_wine");
@@ -64,13 +66,13 @@ export function SubmitRecipeClient() {
     return (
       <Shell>
         <p className="font-serif text-lede text-paper/85">
-          Sign in to share a recipe.
+          {t("study.signInToShareA")}
         </p>
         <Link
           href="/signin?next=/trapeza/new"
           className="mt-5 inline-flex rounded-pill bg-paper px-6 py-3 font-sans text-ui font-semibold text-night hover:bg-paper/90"
         >
-          Sign in
+          {t("common.signIn")}
         </Link>
       </Shell>
     );
@@ -80,17 +82,16 @@ export function SubmitRecipeClient() {
     return (
       <Shell>
         <h1 className="font-display-serif text-title text-paper">
-          Thank you.
+          {t("study.thankYou")}
         </h1>
         <p className="mt-3 font-serif text-lede leading-[1.7] text-paper/80">
-          Your recipe has been sent for review. Once it is checked, it will join
-          the Trapeza for the whole community.
+          {t("study.yourRecipeHasBeenSent")}
         </p>
         <Link
           href="/trapeza"
           className="mt-6 inline-flex rounded-pill border border-paper/20 px-5 py-3 font-sans text-ui font-semibold text-paper/80 hover:border-paper/40"
         >
-          Back to the Trapeza
+          {t("study.backToTheTrapeza")}
         </Link>
       </Shell>
     );
@@ -107,20 +108,19 @@ export function SubmitRecipeClient() {
         href="/trapeza"
         className="font-sans text-caption text-paper/50 hover:text-paper/80"
       >
-        ← The Trapeza
+        {t("study.theTrapeza")}
       </Link>
       <h1 className="mt-4 font-display-serif text-title text-paper">
-        Share a fasting recipe
+        {t("study.shareAFastingRecipe")}
       </h1>
       <p className="mt-2 font-sans text-ui leading-relaxed text-paper/60">
-        Share a dish that keeps the fast. Submissions are reviewed before they
-        join the board. Please share only your own words.
+        {t("study.shareADishThatKeeps")}
       </p>
 
       <form onSubmit={onSubmit} className="mt-7 space-y-6">
         <div>
           <label htmlFor="title" className={labelCls}>
-            Title
+            {t("study.title")}
           </label>
           <input
             id="title"
@@ -133,7 +133,7 @@ export function SubmitRecipeClient() {
         </div>
 
         <div>
-          <span className={labelCls}>What fast does it suit?</span>
+          <span className={labelCls}>{t("study.whatFastDoesItSuit")}</span>
           <div className="flex flex-wrap gap-2">
             {FAST_LEVELS.map((l) => (
               <button
@@ -180,7 +180,7 @@ export function SubmitRecipeClient() {
 
         <div>
           <label htmlFor="summary" className={labelCls}>
-            A line about it (optional)
+            {t("study.aLineAboutItOptional")}
           </label>
           <input
             id="summary"
@@ -194,7 +194,7 @@ export function SubmitRecipeClient() {
 
         <div>
           <label htmlFor="ingredients" className={labelCls}>
-            Ingredients
+            {t("study.ingredients")}
           </label>
           <textarea
             id="ingredients"
@@ -208,7 +208,7 @@ export function SubmitRecipeClient() {
 
         <div>
           <label htmlFor="steps" className={labelCls}>
-            Method
+            {t("study.method")}
           </label>
           <textarea
             id="steps"
@@ -223,7 +223,7 @@ export function SubmitRecipeClient() {
         <div className="flex gap-3">
           <div className="flex-1">
             <label htmlFor="servings" className={labelCls}>
-              Serves (optional)
+              {t("study.servesOptional")}
             </label>
             <input
               id="servings"
@@ -236,7 +236,7 @@ export function SubmitRecipeClient() {
           </div>
           <div className="flex-1">
             <label htmlFor="time" className={labelCls}>
-              Minutes (optional)
+              {t("study.minutesOptional")}
             </label>
             <input
               id="time"

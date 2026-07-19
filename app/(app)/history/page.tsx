@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { ContinueExploring } from "@/components/history/ContinueExploring";
 import { HistoryTimelinePage } from "@/components/history/HistoryTimelinePage";
 import { publishedEvents, HISTORY_ERAS } from "@/lib/history/events";
+import { T } from "@/components/i18n/T";
 
 export const metadata: Metadata = {
   title: "Orthodox History, an interactive timeline of the Church",
@@ -28,19 +29,16 @@ export default function HistoryPage() {
       <header className="px-5 pt-10 md:px-8 md:pt-16">
         <div className="mx-auto w-full max-w-[1440px] text-center">
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
-            Orthodox History
+            <T k="nav.discoverMenu.history" />
           </p>
           <h1 className="mx-auto mt-3 max-w-[720px] font-display-serif text-display-sm md:text-display text-paper leading-[1.05]">
-            The story of the Church, from Pentecost to the present.
+            <T k="study.history.lead" />
           </h1>
           <p className="mx-auto mt-4 max-w-[600px] font-serif text-lede text-paper/70 leading-[1.6]">
-            {count} events across {HISTORY_ERAS.length} eras: councils and
-            schisms, saints and missions, each one sourced, cited, and honest
-            about what is certain and what is tradition.
+            {count} <T k="study.eventsAcross" /> {HISTORY_ERAS.length} <T k="study.erasCouncilsAndSchismsSaints" />
           </p>
           <p className="mt-3 font-sans text-detail text-paper/55">
-            The history, the sources, and the citations are free, for
-            everyone, always.
+            <T k="study.theHistoryTheSourcesAnd" />
           </p>
           <ContinueExploring />
         </div>

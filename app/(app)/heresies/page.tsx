@@ -2,6 +2,7 @@ import Link from "next/link";
 import { HERESIES } from "@/lib/heresies/heresies";
 import { COUNCILS } from "@/lib/councils/councils";
 import { TheologyShell } from "@/components/theology/TheologyShell";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Heresies",
@@ -31,17 +32,13 @@ export default function HeresiesIndexPage() {
     <TheologyShell>
       <header>
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/70">
-          Heresies
+          <T k="discover.tile.heresies" />
         </p>
         <h1 className="mt-3 font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">
-          The errors the Church condemned.
+          <T k="study.heresies.lead" />
         </h1>
         <p className="mt-5 font-serif text-body text-paper/80 leading-[1.75] max-w-[64ch]">
-          Every Ecumenical Council is defined as much by the error it condemned
-          as by the doctrine it confessed. Each profile sets out what the
-          teaching claimed, why the Church rejected it, and the council, saints,
-          and condemnation tied to it. No heretical text is hosted; every
-          quotation is a deep-link into a Father&rsquo;s verbatim refutation.
+          <T k="study.everyEcumenicalCouncilIsDefined" />
         </p>
       </header>
 
@@ -66,7 +63,7 @@ export default function HeresiesIndexPage() {
                           // instead of pushing the page into horizontal
                           // scroll (shrink-0 clipped at 412px and below).
                           <span className="max-w-[45%] font-sans text-caption text-paper/40 text-right leading-tight">
-                            Condemned at {council}
+                            <T k="study.condemnedAt" /> {council}
                           </span>
                         ) : null}
                       </div>
@@ -90,14 +87,14 @@ export default function HeresiesIndexPage() {
       </div>
 
       <p className="mt-12 border-t border-paper/[0.08] pt-6 font-sans text-detail text-paper/50 leading-[1.6]">
-        See{" "}
+        <T k="saints.see" />{" "}
         <Link
           href="/councils"
           className="underline decoration-paper/30 underline-offset-4 hover:text-paper"
         >
-          the Councils
+          <T k="study.heresies.theCouncilsLink" />
         </Link>{" "}
-        for the doctrine each error called forth.
+        <T k="study.forTheDoctrineEachError" />
       </p>
     </TheologyShell>
   );

@@ -18,6 +18,7 @@ import type { EraGroup } from "@/lib/history/filter";
 import { EraHeader } from "./EraHeader";
 import { ERA_HUE } from "./eraHue";
 import { EventCard } from "./EventCard";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function TimelineCore({
   groups,
@@ -30,6 +31,7 @@ export function TimelineCore({
   cinematic?: boolean;
   onSelect?: (slug: string) => void;
 }) {
+  const { t } = useTranslate();
   const router = useRouter();
   const flat = groups.flatMap((g) => g.events);
 
@@ -59,10 +61,10 @@ export function TimelineCore({
     return (
       <div className="rounded-lg border border-paper/10 bg-night-soft/40 px-5 py-10 text-center">
         <p className="font-serif italic text-body text-paper/60">
-          No events match these filters.
+          {t("study.history.noEventsMatch")}
         </p>
         <p className="mt-2 font-sans text-detail text-paper/55">
-          Try clearing a filter or broadening the search.
+          {t("study.history.tryClearing")}
         </p>
       </div>
     );

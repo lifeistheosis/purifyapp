@@ -15,6 +15,7 @@ import {
 } from "@/lib/history/events";
 import { cn } from "@/lib/cn";
 import { CertaintyBadge } from "./CertaintyBadge";
+import { T } from "@/components/i18n/T";
 
 // One ornament glyph per era, so each account carries its age's mark
 // between sections (paired with the era hue set on the page wrapper).
@@ -122,7 +123,7 @@ export function EventArticle({
     <article className="w-full max-w-[760px]">
       <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
         <Link href="/history" className="hover:text-paper">
-          Orthodox History
+          <T k="nav.discoverMenu.history" />
         </Link>
         <span aria-hidden className="mx-2 text-paper/30">
           ·
@@ -187,7 +188,7 @@ export function EventArticle({
       {body.uncertainty ? (
         <aside className="account-reveal mt-12 rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-4">
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/60">
-            A note on certainty
+            <T k="study.history.certaintyNote" />
           </p>
           <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.6]">
             {body.uncertainty}

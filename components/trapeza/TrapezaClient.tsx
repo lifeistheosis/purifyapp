@@ -18,8 +18,10 @@ import {
 } from "@/lib/trapeza/recipes";
 import { fetchRecipes } from "@/lib/trapeza/client";
 import { fastingStatus } from "@/lib/calendar/orthodox";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function TrapezaClient() {
+  const { t } = useTranslate();
   const [recipes, setRecipes] = useState<TrapezaRecipe[] | null>(null);
   const [level, setLevel] = useState<FastLevel | null>(null);
   const [season, setSeason] = useState<RecipeSeason>("any");
@@ -60,32 +62,31 @@ export function TrapezaClient() {
       <div className="mx-auto w-full max-w-[760px]">
         <header className="reveal-rise text-center" style={{ animationDelay: "40ms" }}>
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold-pale/70">
-            The Trapeza
+            {t("nav.discoverMenu.trapeza")}
           </p>
           <h1 className="mt-3 font-display-serif text-display-sm font-bold text-paper">
-            Fasting at the table
+            {t("study.fastingAtTheTable")}
           </h1>
           <p className="mx-auto mt-3 max-w-[460px] font-sans text-ui leading-relaxed text-paper/65">
-            Recipes for the days of the fast, kept by the community. Filter by
-            what the day allows, by season, and by tradition.
+            {t("study.recipesForTheDaysOf")}
           </p>
           <div className="mt-6">
             <Link
               href="/trapeza/new"
               className="inline-flex items-center gap-2 rounded-pill bg-paper px-5 py-3 font-sans text-ui font-semibold text-night transition-[transform,background-color] duration-150 hover:bg-paper/90 active:scale-[0.98]"
             >
-              Share a recipe
+              {t("study.shareARecipe")}
             </Link>
           </div>
           {today ? (
             <p className="mt-4 font-sans text-caption text-paper/55">
-              Today is a {today.label.toLowerCase()} day.{" "}
+              {t("study.todayIsA")} {today.label.toLowerCase()} {t("study.day")}{" "}
               <button
                 type="button"
                 onClick={() => setLevel(today.level)}
                 className="font-semibold text-gold-pale underline underline-offset-2"
               >
-                See recipes for today
+                {t("study.seeRecipesForToday")}
               </button>
             </p>
           ) : null}
@@ -122,15 +123,15 @@ export function TrapezaClient() {
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
           {recipes === null ? (
             <p className="col-span-full py-10 text-center font-sans text-ui text-paper/40">
-              Setting the table…
+              {t("study.settingTheTable")}
             </p>
           ) : recipes.length === 0 ? (
             <div className="col-span-full rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
               <p className="font-serif text-lede text-paper/80">
-                No recipes here yet.
+                {t("study.noRecipesHereYet")}
               </p>
               <p className="mt-2 font-sans text-ui text-paper/55">
-                Share one, and it joins the board once reviewed.
+                {t("study.shareOneAndItJoins")}
               </p>
             </div>
           ) : (

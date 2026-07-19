@@ -24,6 +24,7 @@ import {
   type HistoryEventMeta,
 } from "@/lib/history/events";
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function EventCard({
   event,
@@ -36,6 +37,7 @@ export function EventCard({
   cinematic?: boolean;
   onSelect?: (slug: string) => void;
 }) {
+  const { t } = useTranslate();
   const [open, setOpen] = useState(false);
   const regionId = useId();
   const certainty = certaintyById(event.certainty);
@@ -136,7 +138,7 @@ export function EventCard({
               tabIndex={open ? 0 : -1}
               className="tap-press mt-3 inline-flex min-h-[44px] items-center gap-1.5 rounded-md border border-paper/20 px-4 font-sans text-ui font-semibold text-paper hover:border-paper/40"
             >
-              Read the full account
+              {t("study.history.readFullAccount")}
               <span aria-hidden>→</span>
             </Link>
           </div>

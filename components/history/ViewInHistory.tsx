@@ -46,7 +46,7 @@ export function ViewInHistory({
         href="/history"
         className="mt-3 inline-block font-sans text-detail text-link hover:underline underline-offset-4"
       >
-        Explore the interactive timeline →
+        <T k="study.history.exploreTimelineArrow" />
       </Link>
     </section>
   );

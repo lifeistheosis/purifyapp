@@ -6,6 +6,7 @@ import {
   useFlorilegia,
   type FlorilegiumItemInput,
 } from "@/lib/florilegium/florilegium";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * The "gather" affordance: a small button that opens a popover to drop a
@@ -23,6 +24,7 @@ export function AddToFlorilegium({
   item: FlorilegiumItemInput;
   className?: string;
 }) {
+  const { t } = useTranslate();
   const { florilegia, create, addItem } = useFlorilegia();
   const [open, setOpen] = useState(false);
   const [naming, setNaming] = useState(false);
@@ -87,14 +89,14 @@ export function AddToFlorilegium({
                 htmlFor="florilegium-new"
                 className="block font-sans text-caption text-paper/60 mb-2"
               >
-                Name a new gathering.
+                {t("study.florilegium.nameNewGathering")}
               </label>
               <input
                 id="florilegium-new"
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="On the Cross..."
+                placeholder={t("study.florilegium.namePlaceholder")}
                 maxLength={80}
                 // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
@@ -105,14 +107,14 @@ export function AddToFlorilegium({
                   type="submit"
                   className="font-sans text-caption font-semibold rounded-pill px-3 py-1.5 bg-gold text-night hover:bg-gold-soft transition-colors"
                 >
-                  Gather
+                  {t("study.gather")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setNaming(false)}
                   className="font-sans text-caption text-paper/55 hover:text-paper transition-colors"
                 >
-                  Back
+                  {t("nav.back")}
                 </button>
               </div>
             </form>
@@ -138,7 +140,7 @@ export function AddToFlorilegium({
                 </ul>
               ) : (
                 <p className="px-3 py-2 font-sans text-caption text-paper/45">
-                  No gatherings yet.
+                  {t("study.florilegium.noGatherings")}
                 </p>
               )}
               <div className="mt-1 border-t border-white/10 pt-1">
@@ -147,7 +149,7 @@ export function AddToFlorilegium({
                   onClick={() => setNaming(true)}
                   className="w-full text-left px-3 py-2 rounded font-sans text-detail font-medium text-gold/90 hover:bg-white/[0.05] hover:text-gold transition-colors"
                 >
-                  Begin a new gathering…
+                  {t("study.florilegium.beginNewEllipsis")}
                 </button>
               </div>
             </>

@@ -11,6 +11,7 @@ import { COUNCILS } from "@/lib/councils/councils";
 import { loadAllTopics } from "@/lib/topics/topics";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Discover",
@@ -97,7 +98,7 @@ export default async function DiscoverPage() {
             {/* Where to begin: the two destinations that reward a visit, not a
                 lookup. History wears the gold of a new wing of the library;
                 the reading room keeps the lamp. */}
-            <SectionHeading>Where to begin</SectionHeading>
+            <SectionHeading><T k="study.discover.whereToBegin" /></SectionHeading>
             <div className="mt-5 grid gap-5 lg:grid-cols-2">
               <Link
                 href="/history"
@@ -112,7 +113,7 @@ export default async function DiscoverPage() {
                     <Hourglass size={30} />
                   </span>
                   <span className="rounded-pill border border-gold/40 px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1.4px] text-gold/90">
-                    New
+                    <T k="calendar.styleNew" />
                   </span>
                 </div>
                 <p className="mt-5 font-display-serif text-title md:text-heading text-paper leading-tight transition-colors group-hover:text-gold">
@@ -122,7 +123,7 @@ export default async function DiscoverPage() {
                   {t(m, "discover.tile.historyBlurb")}
                 </p>
                 <p className="mt-5 font-sans text-detail font-semibold text-gold/85">
-                  Explore the interactive timeline →
+                  <T k="study.exploreTheInteractiveTimeline" />
                 </p>
               </Link>
 
@@ -148,7 +149,7 @@ export default async function DiscoverPage() {
             {/* Study the faith: the doctrinal library as one hub card (its four
                 modes as chips), with the Councils beside it. */}
             <div className="mt-14">
-              <SectionHeading>Study the faith</SectionHeading>
+              <SectionHeading><T k="study.discover.studyTheFaith" /></SectionHeading>
               <div className="mt-5 grid gap-5 lg:grid-cols-3">
                 <div
                   className="relative overflow-hidden rounded-xl border border-gold/25 p-7 lg:col-span-2"
@@ -168,9 +169,7 @@ export default async function DiscoverPage() {
                         </p>
                       </Link>
                       <p className="mt-2 max-w-[520px] font-serif italic text-ui text-paper/70 leading-[1.6]">
-                        Doctrine, topics, the heresies the Church condemned, and
-                        apologetics: one connected study of the Faith, drawn from
-                        the Fathers and the Councils.
+                        <T k="study.doctrineTopicsTheHeresiesThe" />
                       </p>
                     </div>
                   </div>
@@ -207,7 +206,7 @@ export default async function DiscoverPage() {
             {/* Featured today: one topic and one council, rotating daily. */}
             {featuredTopic || featuredCouncil ? (
               <div className="mt-14">
-                <SectionHeading>Featured today</SectionHeading>
+                <SectionHeading><T k="study.discover.featuredToday" /></SectionHeading>
                 <div className="mt-5 grid gap-5 lg:grid-cols-2">
                   {featuredTopic ? (
                     <Link
@@ -249,9 +248,9 @@ export default async function DiscoverPage() {
 
             {/* Quiet colophon to close the page. */}
             <p className="mt-16 text-center font-display-serif italic text-ui text-paper/55 leading-[1.55]">
-              Through the prayers of our holy Fathers,
+              <T k="study.colophon1" />
               <br />
-              Lord Jesus Christ our God, have mercy on us.
+              <T k="study.colophon2" />
             </p>
           </article>
         </section>

@@ -4,6 +4,7 @@ import { COUNCILS, getCouncil } from "@/lib/councils/councils";
 import { HERESIES } from "@/lib/heresies/heresies";
 import { ViewInHistory } from "@/components/history/ViewInHistory";
 import { eventsForCouncil } from "@/lib/history/events";
+import { T } from "@/components/i18n/T";
 
 const ORDINAL_NAMES = [
  "",
@@ -53,7 +54,7 @@ export default async function CouncilProfilePage({
  {/* Breadcrumb */}
  <p className="font-sans text-caption uppercase tracking-[1.5px] text-paper/45 mb-6">
  <Link href="/councils" className="hover:text-paper transition-colors">
- The Councils
+ <T k="study.councils.theCouncils" />
  </Link>
  </p>
 
@@ -75,7 +76,7 @@ export default async function CouncilProfilePage({
  {c.presidingEmperor && (
  <div>
  <dt className="text-paper/45 uppercase tracking-[1.2px] text-eyebrow font-semibold">
- Presiding emperor
+ <T k="study.councils.presidingEmperor" />
  </dt>
  <dd className="mt-1 text-paper/85">{c.presidingEmperor}</dd>
  </div>
@@ -83,7 +84,7 @@ export default async function CouncilProfilePage({
  {c.convenedBy && (
  <div>
  <dt className="text-paper/45 uppercase tracking-[1.2px] text-eyebrow font-semibold">
- Convened by
+ <T k="study.councils.convenedBy" />
  </dt>
  <dd className="mt-1 text-paper/85">{c.convenedBy}</dd>
  </div>
@@ -91,7 +92,7 @@ export default async function CouncilProfilePage({
  {c.bishopsAttending && (
  <div>
  <dt className="text-paper/45 uppercase tracking-[1.2px] text-eyebrow font-semibold">
- Bishops attending
+ <T k="study.councils.bishopsAttending" />
  </dt>
  <dd className="mt-1 text-paper/85">{c.bishopsAttending}</dd>
  </div>
@@ -102,7 +103,7 @@ export default async function CouncilProfilePage({
  <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
  <div>
  <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- What the Council defined
+ <T k="study.councils.defined" />
  </h2>
  <ul className="space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-5 marker:text-gold/60">
  {c.defined.map((d, i) => (
@@ -112,7 +113,7 @@ export default async function CouncilProfilePage({
  </div>
  <div>
  <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- What the Council condemned
+ <T k="study.councils.condemned" />
  </h2>
  <ul className="space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-5 marker:text-paper/30">
  {c.condemned.map((x, i) => (
@@ -125,7 +126,7 @@ export default async function CouncilProfilePage({
  {/* Historical narrative */}
  <div className="mt-14">
  <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
- Historical context
+ <T k="study.councils.historicalContext" />
  </h2>
  <div className="space-y-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  {c.life.map((para, i) => (
@@ -138,7 +139,7 @@ export default async function CouncilProfilePage({
  {c.principalFathers && c.principalFathers.length > 0 && (
  <div className="mt-14">
  <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
- The Holy Fathers principally associated
+ <T k="study.councils.fathersAssociated" />
  </h2>
  <ul className="space-y-5">
  {c.principalFathers.map((f, i) => (
@@ -168,7 +169,7 @@ export default async function CouncilProfilePage({
  {c.principalOpposed && c.principalOpposed.length > 0 && (
  <div className="mt-12">
  <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
- The principal opposing parties
+ <T k="study.councils.opposingParties" />
  </h2>
  <ul className="space-y-5">
  {c.principalOpposed.map((o, i) => (
@@ -198,7 +199,7 @@ export default async function CouncilProfilePage({
  {condemnedHeresies.length > 0 && (
  <div className="mt-14">
  <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
- Heresies condemned
+ <T k="study.councils.heresiesCondemned" />
  </h2>
  <ul className="space-y-3">
  {condemnedHeresies.map((h) => (
@@ -257,7 +258,7 @@ export default async function CouncilProfilePage({
  {c.pendingDocuments && c.pendingDocuments.length > 0 && (
  <div className="mt-5 rounded-md border border-dashed border-paper/15 bg-paper/[0.015] px-5 py-4">
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
- Pending
+ <T k="study.pending" />
  </p>
  <ul className="space-y-3">
  {c.pendingDocuments.map((p, i) => (

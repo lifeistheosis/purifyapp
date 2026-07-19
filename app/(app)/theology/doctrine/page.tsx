@@ -6,6 +6,7 @@ import {
   topicsByGroup,
 } from "@/lib/theology/topics";
 import { TheologyShell } from "@/components/theology/TheologyShell";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Doctrine",
@@ -22,15 +23,13 @@ export default function DoctrineIndexPage() {
     <TheologyShell>
       <header>
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/70">
-          Doctrine
+          <T k="study.doctrine" />
         </p>
         <h1 className="mt-3 font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">
-          The mind of the Fathers, set out in long form.
+          <T k="study.theology.doctrineLead" />
         </h1>
         <p className="mt-5 font-serif text-body text-paper/80 leading-[1.75] max-w-[62ch]">
-          Each study lays out the doctrine, traces it through the patristic
-          florilegium, and weighs the conciliar and scriptural witness. Every
-          citation is verbatim, public-domain, and sourced.
+          <T k="study.eachStudyLaysOutThe" />
         </p>
       </header>
 
@@ -60,11 +59,11 @@ export default function DoctrineIndexPage() {
                         </p>
                         {tp.planned ? (
                           <span className="shrink-0 font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
-                            Planned
+                            <T k="study.planned" />
                           </span>
                         ) : tp.estimatedMinutes ? (
                           <span className="shrink-0 font-sans text-caption text-paper/40 tabular-nums">
-                            ~{tp.estimatedMinutes} min
+                            ~{tp.estimatedMinutes} <T k="study.min" />
                           </span>
                         ) : null}
                       </div>

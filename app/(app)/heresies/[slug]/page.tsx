@@ -7,6 +7,7 @@ import { CitationCard } from "@/components/citations/CitationCard";
 import { TheologyArticleNav } from "@/components/theology/TheologyArticleNav";
 import { RelatedRail } from "@/components/theology/RelatedRail";
 import { buildRelated } from "@/lib/theology/relations";
+import { T } from "@/components/i18n/T";
 
 type Params = Promise<{ slug: string }>;
 
@@ -64,17 +65,17 @@ export default async function HeresyProfilePage({
         {/* Dossier metadata header, compact record at the top. */}
         <dl className="mt-6 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-x-5 gap-y-2 border-y border-paper/[0.08] py-4">
           <dt className="font-sans text-caption uppercase tracking-[1.4px] text-paper/40">
-            Period
+            <T k="study.period" />
           </dt>
           <dd className="font-sans text-ui text-paper/80">{h.era}</dd>
           <dt className="font-sans text-caption uppercase tracking-[1.4px] text-paper/40">
-            Proponent
+            <T k="study.proponent" />
           </dt>
           <dd className="font-sans text-ui text-paper/80">{h.heresiarch}</dd>
           {h.alsoCalled?.length ? (
             <>
               <dt className="font-sans text-caption uppercase tracking-[1.4px] text-paper/40">
-                Also called
+                <T k="study.heresies.alsoCalled" />
               </dt>
               <dd className="font-sans text-ui text-paper/80">
                 {h.alsoCalled.join(", ")}
@@ -84,7 +85,7 @@ export default async function HeresyProfilePage({
           {councils.length ? (
             <>
               <dt className="font-sans text-caption uppercase tracking-[1.4px] text-paper/40">
-                Condemned at
+                <T k="study.heresies.condemnedAt" />
               </dt>
               <dd className="font-sans text-ui text-paper/80">
                 {councils.map((c) => `${c.byname} (${c.year})`).join(" · ")}
@@ -98,7 +99,7 @@ export default async function HeresyProfilePage({
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-px overflow-hidden rounded-lg border border-paper/[0.08] bg-paper/[0.06]">
           <div className="bg-night p-5">
             <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
-              The claim
+              <T k="study.heresies.theClaim" />
             </p>
             <p className="mt-3 font-serif text-ui text-paper/85 leading-[1.7]">
               {h.definition}
@@ -109,7 +110,7 @@ export default async function HeresyProfilePage({
               className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px]"
               style={{ color: "var(--ink-rubric, #c1272d)" }}
             >
-              The Orthodox response
+              <T k="study.heresies.orthodoxResponse" />
             </p>
             <p className="mt-3 font-serif text-ui text-paper/85 leading-[1.7]">
               {h.response}
@@ -121,7 +122,7 @@ export default async function HeresyProfilePage({
         {councils.length > 0 && (
           <section className="mt-12">
             <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-              Condemned by the Church
+              <T k="study.heresies.condemnedByChurch" />
             </h2>
             <ul className="space-y-3">
               {councils.map((c) => (
@@ -150,7 +151,7 @@ export default async function HeresyProfilePage({
               className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] mb-5"
               style={{ color: "var(--ink-rubric, #c1272d)" }}
             >
-              Refuted by the Fathers
+              <T k="study.heresies.refutedByFathers" />
             </p>
             <ul className="space-y-4">
               {resolvedRefutations.map((c, i) => (
@@ -166,7 +167,7 @@ export default async function HeresyProfilePage({
 
         {h.curatedBy && (
           <p className="mt-14 pt-8 border-t border-paper/10 font-sans text-caption text-paper/40">
-            Curated by {h.curatedBy}
+            <T k="study.curatedBy" /> {h.curatedBy}
             {h.curatedOn ? ` · ${h.curatedOn}` : ""}.
           </p>
         )}

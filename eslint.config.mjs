@@ -30,6 +30,23 @@ const I18N_CONVERTED_GLOBS = [
   "app/(app)/bible/**/*.tsx",
   "components/saints/**/*.tsx",
   "app/(app)/saints/**/*.tsx",
+  "app/(app)/councils/**/*.tsx",
+  "app/(app)/history/**/*.tsx",
+  "app/(app)/theology/**/*.tsx",
+  "app/(app)/topics/**/*.tsx",
+  "app/(app)/apologetics/**/*.tsx",
+  "app/(app)/heresies/**/*.tsx",
+  "app/(app)/discover/**/*.tsx",
+  "app/(app)/reading/**/*.tsx",
+  "app/(app)/saved/**/*.tsx",
+  "app/(app)/florilegium/**/*.tsx",
+  "app/(app)/trapeza/**/*.tsx",
+  "components/history/**/*.tsx",
+  "components/florilegium/**/*.tsx",
+  "components/theology/**/*.tsx",
+  "components/saved/**/*.tsx",
+  "components/reading/**/*.tsx",
+  "components/trapeza/**/*.tsx",
 ];
 
 const i18nRatchet =
@@ -44,7 +61,7 @@ const i18nRatchet =
               {
                 noStrings: true,
                 allowedStrings: [
-                  "·", "•", "|", "/", "(", ")", ":", "%", "©", "↗", "‹", "›", "→", "←", ".", "✦", "…", "+", "×", "▾", "★", "☆", "← →", "⌕", "⇤", "⇥", "↑", "“", "”.", "Orthodox Study Bible", "?", "✓", "✎", "†", "&rdquo;", "&ldquo;", "&rsquo;",
+                  "·", "•", "|", "/", "(", ")", ":", "%", "©", "↗", "‹", "›", "→", "←", ".", "✦", "…", "+", "×", "▾", "★", "☆", "← →", "⌕", "⇤", "⇥", "↑", "“", "”.", "Orthodox Study Bible", "?", "✓", "✎", "†", "&rdquo;", "&ldquo;", "&rsquo;", "~", "–",
                   // Brand names and social handles never translate.
                   "Purify", "@purifymylife", "@purify.app",
                 ],

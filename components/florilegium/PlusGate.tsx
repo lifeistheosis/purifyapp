@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { T } from "@/components/i18n/T";
 
 /**
  * Shown in place of a Plus feature when the signed-in user is not
@@ -19,7 +20,7 @@ export function PlusGate({
   return (
     <div className="mt-10 rounded-lg border border-gold/30 bg-gold/[0.04] p-6 md:p-8">
       <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-3">
-        Purify Plus
+        <T k="study.purifyPlus" />
       </p>
       <h2 className="font-sans text-title-sm font-bold text-paper leading-tight">
         {feature}
@@ -32,12 +33,11 @@ export function PlusGate({
           href="/pricing"
           className="inline-flex items-center justify-center font-sans text-ui font-semibold rounded-pill px-5 py-3 bg-gold text-night hover:bg-gold-soft transition-colors"
         >
-          See Purify Plus
+          <T k="study.seePurifyPlus" />
         </Link>
       </p>
       <p className="mt-4 font-sans text-caption text-paper/50 leading-[1.55]">
-        Everything you have already gathered stays on this device, free,
-        whether or not you subscribe.
+        <T k="study.everythingYouHaveAlreadyGathered" />
       </p>
     </div>
   );

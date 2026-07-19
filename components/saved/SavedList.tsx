@@ -24,6 +24,7 @@ function VerseText({
   chapter: number;
   verse: number;
 }) {
+  const { t } = useTranslate();
   const key = verseCacheKey(book, chapter, verse);
   const [text, setText] = useState<string | null>(
     () => verseTextCache.get(key) ?? null,
@@ -60,14 +61,14 @@ function VerseText({
   if (error) {
     return (
       <p className="mt-2 font-sans text-caption text-paper/35 italic">
-        Couldn&rsquo;t load the text.
+        {t("study.saved.couldntLoad")}
       </p>
     );
   }
   if (text === null) {
     return (
       <p className="mt-2 font-sans text-caption text-paper/35 italic">
-        Loading…
+        {t("common.loading")}
       </p>
     );
   }
@@ -79,6 +80,7 @@ function VerseText({
 }
 import { useReadingHistory, clearReadingHistory } from "@/lib/reading/history";
 import { useRecentPrayers, clearRecentPrayers } from "@/lib/prayers/storage";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type Tab = "saved" | "history";
 
@@ -199,6 +201,7 @@ function SavedTab({
   bookmarks: Bookmark[];
   onRemove: (id: string) => void;
 }) {
+  const { t } = useTranslate();
   const [showVerseText, setShowVerseText] = useState(false);
 
   const verses = bookmarks.filter((b) => b.kind === "bible-verse");
@@ -213,15 +216,13 @@ function SavedTab({
     return (
       <div className="rounded-lg border border-paper/10 bg-paper/[0.02] p-8 md:p-10">
         <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
-          Nothing saved yet
+          {t("study.nothingSavedYet")}
         </p>
         <p className="font-serif text-lede text-paper/80 leading-[1.65] max-w-[560px]">
-          Open a Bible chapter and tap the &#9734; on a verse, star a saint
-          writing, or bookmark a prayer rule. What you keep lands here.
+          {t("study.openABibleChapterAnd")}
         </p>
         <p className="mt-4 font-sans text-detail text-paper/55 leading-[1.55]">
-          Bookmarks live in your browser. When you sign in, your saved verses,
-          chapters, and writings sync across devices.
+          {t("study.bookmarksLiveInYourBrowser")}
         </p>
       </div>
     );
@@ -385,6 +386,7 @@ function Row({
   onRemove: () => void;
   showText?: boolean;
 }) {
+  const { t } = useTranslate();
   return (
     <li className="px-5 py-4 bg-paper/[0.02] flex items-center gap-4">
       <div className="min-w-0 flex-1">
@@ -393,7 +395,7 @@ function Row({
             {titleFor(bookmark)}
           </p>
           <p className="mt-1 font-sans text-caption text-paper/55 truncate">
-            {subFor(bookmark)} · added {dateLabel(bookmark.addedAt)}
+            {subFor(bookmark)} {t("study.added")} {dateLabel(bookmark.addedAt)}
           </p>
         </Link>
         {showText && bookmark.kind === "bible-verse" && (
@@ -407,8 +409,8 @@ function Row({
       <button
         type="button"
         onClick={onRemove}
-        aria-label="Remove bookmark"
-        title="Remove bookmark"
+        aria-label={t("study.saved.removeBookmark")}
+        title={t("study.saved.removeBookmark")}
         className="shrink-0 h-9 w-9 rounded-full border border-paper/15 text-paper/55 hover:bg-crimson/20 hover:border-crimson/40 hover:text-crimson-soft flex items-center justify-center text-ui transition-colors duration-150"
       >
         ×
@@ -465,6 +467,7 @@ function HistoryTab({
   reading: ReturnType<typeof useReadingHistory>;
   prayers: ReturnType<typeof useRecentPrayers>;
 }) {
+  const { t } = useTranslate();
   const items = useMemo<HistoryItem[]>(() => {
     const merged: HistoryItem[] = [
       ...reading.map((e) => ({
@@ -489,11 +492,10 @@ function HistoryTab({
     return (
       <div className="rounded-lg border border-paper/10 bg-paper/[0.02] p-8 md:p-10">
         <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
-          Nothing read yet
+          {t("study.nothingReadYet")}
         </p>
         <p className="font-serif text-lede text-paper/80 leading-[1.65] max-w-[560px]">
-          Open a verse, a saint&rsquo;s writing, or a prayer and it will appear
-          here, newest first, so you can pick up where you left off.
+          {t("study.openAVerseASaint")}
         </p>
       </div>
     );
@@ -521,7 +523,7 @@ function HistoryTab({
           onClick={onClear}
           className="font-sans text-caption text-paper/45 hover:text-crimson-soft transition-colors"
         >
-          Clear history
+          {t("study.clearHistory")}
         </button>
       </div>
       <div className="space-y-10">

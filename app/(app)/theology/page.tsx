@@ -23,6 +23,7 @@ import { Cross } from "@/components/ui/icons/Cross";
 import { Book } from "@/components/ui/icons/Book";
 import { Scroll } from "@/components/ui/icons/Scroll";
 import { Shield } from "@/components/ui/icons/Shield";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Theology",
@@ -227,16 +228,13 @@ export default async function TheologyHubPage() {
         {/* ── Hero ──────────────────────────────────────────────────────── */}
         <header className="border-b border-paper/10 pb-10 md:pb-12">
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-paper/45">
-            The study library
+            <T k="study.theology.studyLibrary" />
           </p>
           <h1 className="mt-3 font-serif text-display md:text-display-lg font-bold leading-[1.02] tracking-[-0.025em] text-paper">
-            Theology
+            <T k="nav.discoverMenu.theology" />
           </h1>
           <p className="mt-5 max-w-[60ch] font-serif text-lede text-paper/80 leading-[1.7]">
-            One connected study of the Faith, in four modes. Read the doctrine in
-            long form, settle a focused question, learn the errors the Church
-            condemned, or weigh an objection. Every citation is verbatim,
-            public-domain, and sourced to the Fathers and the Councils.
+            <T k="study.oneConnectedStudyOfThe" />
           </p>
 
           {/* Highlighted theological question, the focal point. */}
@@ -247,7 +245,7 @@ export default async function TheologyHubPage() {
             >
               <div>
                 <p className="font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/75">
-                  Begin here
+                  <T k="study.theology.beginHere" />
                 </p>
                 <p className="mt-1.5 font-serif text-title-sm text-paper leading-snug">
                   {FLAGSHIP.question}
@@ -293,7 +291,7 @@ export default async function TheologyHubPage() {
                   aria-hidden
                   className="mt-4 font-sans text-detail text-paper/30 transition-colors group-hover:text-gold"
                 >
-                  Enter →
+                  <T k="study.enter" />
                 </span>
               </Link>
             ))}
@@ -313,14 +311,13 @@ export default async function TheologyHubPage() {
             className="group block rounded-xl border border-paper/[0.1] bg-paper/[0.02] px-6 py-6 transition-colors hover:border-paper/25"
           >
             <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/80">
-              New · Interactive Timeline
+              <T k="study.theology.newTimeline" />
             </p>
             <p className="mt-2 font-display-serif text-title-sm md:text-title text-paper leading-tight transition-colors group-hover:text-gold">
-              Explore Church History
+              <T k="study.theology.exploreHistory" />
             </p>
             <p className="mt-2 max-w-[560px] font-serif italic text-ui text-paper/65 leading-[1.6]">
-              Every doctrine here was confessed somewhere, by someone, against
-              something. Walk the timeline from Pentecost to the present.
+              <T k="study.everyDoctrineHereWasConfessed" />
             </p>
           </Link>
         </section>
@@ -360,7 +357,7 @@ export default async function TheologyHubPage() {
                       </span>
                       {s.date && s.date === newestDate ? (
                         <span className="shrink-0 rounded-full bg-gold/15 px-2 py-0.5 font-sans text-[0.625rem] font-semibold uppercase tracking-[1px] text-gold/90">
-                          New
+                          <T k="calendar.styleNew" />
                         </span>
                       ) : null}
                     </span>
@@ -474,13 +471,13 @@ export default async function TheologyHubPage() {
         {/* ── Closing bridge ────────────────────────────────────────────── */}
         <section className="mt-16 border-t border-paper/10 pt-10 text-center">
           <p className="font-serif italic text-ui text-paper/55">
-            Begin where the Church begins.
+            <T k="study.theology.beginWhereChurchBegins" />
           </p>
           <Link
             href="/theology/doctrine"
             className="group mt-3 inline-flex items-center gap-2 font-serif text-title-sm font-semibold text-paper transition-colors hover:text-gold"
           >
-            Read the Doctrine
+            <T k="study.readTheDoctrine" />
             <span
               aria-hidden
               className="text-gold/70 transition-transform group-hover:translate-x-0.5"

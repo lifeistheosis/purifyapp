@@ -8,8 +8,10 @@ import { useEffect, useState } from "react";
 
 import { eventBySlug } from "@/lib/history/events";
 import { loadPosition } from "@/lib/history/scroll";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function ContinueExploring() {
+  const { t } = useTranslate();
   const [slug, setSlug] = useState<string | null>(null);
 
   /* eslint-disable react-hooks/set-state-in-effect -- one-time hydration
@@ -34,7 +36,7 @@ export function ContinueExploring() {
       className="tap-press mt-5 inline-flex min-h-[44px] items-center gap-2 rounded-pill border border-paper/20 px-4 font-sans text-detail font-semibold text-paper/80 hover:border-paper/40"
     >
       <span aria-hidden className="h-2 w-2 rounded-full bg-crimson" />
-      Continue exploring · {event.shortTitle ?? event.title}
+      {t("study.continueExploring")} {event.shortTitle ?? event.title}
     </button>
   );
 }

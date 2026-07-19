@@ -7,6 +7,7 @@ import {
   useFlorilegia,
   type FlorilegiumItemInput,
 } from "@/lib/florilegium/florilegium";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Controlled centered sheet for gathering a line into a florilegium.
@@ -30,6 +31,7 @@ export function FlorilegiumPickerSheet({
   item: FlorilegiumItemInput | null;
   onClose: () => void;
 }) {
+  const { t } = useTranslate();
   const { florilegia, create, addItem } = useFlorilegia();
   const [mounted, setMounted] = useState(open);
   const [shown, setShown] = useState(false);
@@ -83,7 +85,7 @@ export function FlorilegiumPickerSheet({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Add to a florilegium"
+      aria-label={t("study.florilegium.addTo")}
       className="fixed inset-0 z-[80] flex items-center justify-center px-4"
     >
       <div
@@ -106,7 +108,7 @@ export function FlorilegiumPickerSheet({
       >
         <div className="p-6">
           <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold/85 mb-3">
-            Gather into a florilegium
+            {t("study.florilegium.gatherInto")}
           </p>
 
           {item ? (
@@ -121,14 +123,14 @@ export function FlorilegiumPickerSheet({
                 htmlFor="picker-new-name"
                 className="block font-sans text-caption text-paper/60 mb-2"
               >
-                Name a new gathering.
+                {t("study.florilegium.nameNewGathering")}
               </label>
               <input
                 id="picker-new-name"
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="On the Cross..."
+                placeholder={t("study.florilegium.namePlaceholder")}
                 maxLength={80}
                 // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
@@ -139,14 +141,14 @@ export function FlorilegiumPickerSheet({
                   type="submit"
                   className="font-sans text-detail font-semibold rounded-pill px-5 py-2 bg-gold text-night hover:bg-gold-soft transition-colors"
                 >
-                  Gather
+                  {t("study.gather")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setNaming(false)}
                   className="font-sans text-detail text-paper/60 hover:text-paper transition-colors"
                 >
-                  Back
+                  {t("nav.back")}
                 </button>
               </div>
             </form>
@@ -171,7 +173,7 @@ export function FlorilegiumPickerSheet({
                 </ul>
               ) : (
                 <p className="px-1 py-2 font-sans text-detail text-paper/45">
-                  You have no gatherings yet.
+                  {t("study.florilegium.youHaveNone")}
                 </p>
               )}
               <div className="mt-2 border-t border-white/10 pt-2 flex items-center justify-between gap-3">
@@ -180,14 +182,14 @@ export function FlorilegiumPickerSheet({
                   onClick={() => setNaming(true)}
                   className="font-sans text-detail font-medium text-gold/90 hover:text-gold transition-colors"
                 >
-                  Begin a new gathering…
+                  {t("study.florilegium.beginNewEllipsis")}
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
                   className="font-sans text-detail text-paper/55 hover:text-paper transition-colors"
                 >
-                  Close
+                  {t("common.close")}
                 </button>
               </div>
             </>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 import { useFlorilegia } from "@/lib/florilegium/florilegium";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * The Florilegium hub: the reader's collections, newest first, plus a
@@ -12,6 +13,7 @@ import { useFlorilegia } from "@/lib/florilegium/florilegium";
  * works offline. Sign-in (with Plus) syncs it across devices.
  */
 export function FlorilegiaHub() {
+  const { t } = useTranslate();
   const { florilegia, create } = useFlorilegia();
   const [creating, setCreating] = useState(false);
   const [title, setTitle] = useState("");
@@ -37,14 +39,14 @@ export function FlorilegiaHub() {
             htmlFor="florilegium-title"
             className="block font-sans text-caption text-paper/65 mb-2"
           >
-            Name this gathering.
+            {t("study.florilegium.nameThisGathering")}
           </label>
           <input
             id="florilegium-title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="On the Cross, On stillness, For Pascha..."
+            placeholder={t("study.florilegium.hubPlaceholder")}
             maxLength={80}
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
@@ -55,7 +57,7 @@ export function FlorilegiaHub() {
               type="submit"
               className="font-sans text-ui font-semibold rounded-pill px-5 py-2.5 bg-gold text-night hover:bg-gold-soft transition-colors"
             >
-              Begin
+              {t("today.prayNow.begin")}
             </button>
             <button
               type="button"
@@ -65,7 +67,7 @@ export function FlorilegiaHub() {
               }}
               className="font-sans text-ui font-medium rounded-pill px-5 py-2.5 border border-paper/25 text-paper/80 hover:border-paper/55 hover:text-paper transition-colors"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
           </div>
         </form>
@@ -75,19 +77,17 @@ export function FlorilegiaHub() {
           onClick={() => setCreating(true)}
           className="mb-8 font-sans text-ui font-semibold rounded-pill px-5 py-3 border border-gold/40 text-paper hover:bg-gold/[0.06] hover:border-gold/60 transition-colors"
         >
-          Begin a new gathering →
+          {t("study.florilegium.beginNewArrow")}
         </button>
       )}
 
       {florilegia.length === 0 ? (
         <div className="rounded-md border border-paper/12 bg-paper/[0.02] px-5 py-10 text-center">
           <p className="font-serif italic text-lede text-paper/65 leading-[1.6]">
-            A florilegium is a gathering of flowers.
+            {t("study.florilegium.definition")}
           </p>
           <p className="mt-3 font-sans text-detail text-paper/50 leading-[1.6] max-w-[46ch] mx-auto">
-            As you read, keep the lines that strike you, a verse, a
-            sentence of a Father, here in collections of your own. Begin
-            one above, then add to it from any verse or quotation.
+            {t("study.asYouReadKeepThe")}
           </p>
         </div>
       ) : (

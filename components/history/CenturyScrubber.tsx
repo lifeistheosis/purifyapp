@@ -13,6 +13,7 @@
 import { useState } from "react";
 
 import { centuryLabelOf } from "@/lib/history/events";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function CenturyScrubber({
   centuries,
@@ -32,6 +33,7 @@ export function CenturyScrubber({
    *  invalid. */
   id?: string;
 }) {
+  const { t } = useTranslate();
   const activeIdx = Math.max(
     0,
     centuries.findIndex((c) => c === active),
@@ -50,7 +52,7 @@ export function CenturyScrubber({
           htmlFor={id}
           className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55"
         >
-          Jump by century
+          {t("study.jumpByCentury")}
         </label>
         <output
           htmlFor={id}

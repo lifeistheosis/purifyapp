@@ -14,19 +14,20 @@ import {
   eventBySlug,
 } from "@/lib/history/events";
 import { CertaintyBadge } from "./CertaintyBadge";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function EventContextRail({ selected }: { selected?: string }) {
+  const { t } = useTranslate();
   const event = selected ? eventBySlug(selected) : undefined;
 
   if (!event) {
     return (
       <div className="rounded-lg border border-paper/10 bg-night-soft/40 px-5 py-8">
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
-          Context
+          {t("study.context")}
         </p>
         <p className="mt-3 font-serif italic text-detail text-paper/60 leading-[1.6]">
-          Select an event on the timeline to see its context, certainty, and
-          connections here.
+          {t("study.selectAnEventOnThe")}
         </p>
       </div>
     );
@@ -72,7 +73,7 @@ export function EventContextRail({ selected }: { selected?: string }) {
       {saints.length || councils.length ? (
         <div className="mt-5 border-t border-paper/10 pt-4">
           <p className="font-sans text-caption uppercase tracking-[1.4px] text-paper/55">
-            Connected
+            {t("study.connected")}
           </p>
           <ul className="mt-2 space-y-1">
             {councils.map((c) => (
@@ -103,7 +104,7 @@ export function EventContextRail({ selected }: { selected?: string }) {
         href={`/history/${event.slug}`}
         className="tap-press mt-5 inline-flex min-h-[44px] w-full items-center justify-center rounded-md border border-paper/20 px-4 font-sans text-ui font-semibold text-paper hover:border-paper/40"
       >
-        Open the full account →
+        {t("study.history.openFullAccountArrow")}
       </Link>
     </div>
   );

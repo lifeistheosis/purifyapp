@@ -8,6 +8,7 @@ import type {
 import { saintsCitedIn } from "@/lib/theology/load";
 import { getSaint } from "@/lib/saints/saints";
 import { AddToFlorilegium } from "@/components/florilegium/AddToFlorilegium";
+import { T } from "@/components/i18n/T";
 
 export function TopicReader({ body }: { body: TheologyBody }) {
   const saints = saintsCitedIn(body);
@@ -15,7 +16,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
     <article className="mx-auto max-w-[760px] w-full">
       <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
         <Link href="/theology" className="hover:text-paper">
-          Theology
+          <T k="nav.discoverMenu.theology" />
         </Link>
       </p>
       <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
@@ -41,7 +42,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
 
       {body.florilegium.length > 0 ? (
         <section className="mt-16">
-          <SectionTitle>From the Fathers</SectionTitle>
+          <SectionTitle><T k="study.theology.fromTheFathers" /></SectionTitle>
           <ul className="mt-8 space-y-10">
             {body.florilegium.map((q, i) => (
               <li key={i}>
@@ -54,7 +55,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
 
       {body.councils && body.councils.length > 0 ? (
         <section className="mt-16">
-          <SectionTitle>From the Councils</SectionTitle>
+          <SectionTitle><T k="study.theology.fromTheCouncils" /></SectionTitle>
           <ul className="mt-8 space-y-8">
             {body.councils.map((c, i) => (
               <li
@@ -83,7 +84,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
                       href={`/councils/${c.councilSlug}`}
                       className="font-sans text-detail text-gold/85 underline decoration-gold/30 underline-offset-4 hover:text-gold"
                     >
-                      Read the council
+                      <T k="study.theology.readTheCouncil" />
                     </Link>
                   </p>
                 ) : null}
@@ -95,7 +96,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
 
       {saints.length > 0 ? (
         <section className="mt-16">
-          <SectionTitle>Saints cited</SectionTitle>
+          <SectionTitle><T k="study.theology.saintsCited" /></SectionTitle>
           <ul className="mt-6 flex flex-wrap gap-2">
             {saints.map((s) => {
               const saint = getSaint(s.saintSlug);
@@ -126,7 +127,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
 
       {body.scripture && body.scripture.length > 0 ? (
         <section className="mt-16">
-          <SectionTitle>Scripture cross-references</SectionTitle>
+          <SectionTitle><T k="study.theology.scriptureCrossRefs" /></SectionTitle>
           <ul className="mt-6 divide-y divide-paper/10 border-y border-paper/10">
             {body.scripture.map((s, i) => (
               <li key={i} className="py-3 flex items-baseline gap-4">
@@ -149,7 +150,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
 
       {body.related && body.related.length > 0 ? (
         <section className="mt-16">
-          <SectionTitle>Related</SectionTitle>
+          <SectionTitle><T k="study.related" /></SectionTitle>
           <ul className="mt-6 flex flex-wrap gap-2">
             {body.related.map((slug) => (
               <li key={slug}>
@@ -167,7 +168,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
 
       {body.curatedBy || body.origin ? (
         <p className="mt-20 font-sans text-caption text-paper/35 leading-[1.6]">
-          {body.curatedBy ? <>Curated by {body.curatedBy}</> : null}
+          {body.curatedBy ? <><T k="study.curatedBy" /> {body.curatedBy}</> : null}
           {body.curatedBy && body.curatedOn ? <> · </> : null}
           {body.curatedOn ?? null}
           {body.origin ? (
@@ -295,7 +296,7 @@ function QuotationCard({ q }: { q: Quotation }) {
               rel="noopener noreferrer"
               className="underline decoration-paper/20 underline-offset-4 hover:text-paper/60"
             >
-              Source
+              <T k="study.source" />
             </a>
           </p>
         ) : null}

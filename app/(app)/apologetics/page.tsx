@@ -6,6 +6,7 @@ import {
   apologeticsByGroup,
 } from "@/lib/apologetics/topics";
 import { TheologyShell } from "@/components/theology/TheologyShell";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Apologetics",
@@ -23,16 +24,13 @@ export default function ApologeticsIndexPage() {
     <TheologyShell>
       <header>
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/70">
-          Apologetics
+          <T k="study.apologetics.title" />
         </p>
         <h1 className="mt-3 font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">
-          A reason for the hope that is in you.
+          <T k="study.apologetics.lead" />
         </h1>
         <p className="mt-5 font-serif text-body text-paper/80 leading-[1.75] max-w-[64ch]">
-          Where Doctrine and Topics argue within the faith from the Fathers,
-          Apologetics turns outward, to the questions an enquirer or an objector
-          brings. Each response takes the objection plainly and answers it, then
-          points to the deeper study rather than repeating it.
+          <T k="study.whereDoctrineAndTopicsArgue" />
         </p>
       </header>
 
@@ -62,11 +60,11 @@ export default function ApologeticsIndexPage() {
                         </p>
                         {tp.planned ? (
                           <span className="shrink-0 font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
-                            Planned
+                            <T k="study.planned" />
                           </span>
                         ) : tp.estimatedMinutes ? (
                           <span className="shrink-0 font-sans text-caption text-paper/40 tabular-nums">
-                            ~{tp.estimatedMinutes} min
+                            ~{tp.estimatedMinutes} <T k="study.min" />
                           </span>
                         ) : null}
                       </div>

@@ -12,10 +12,12 @@ import {
   type TrapezaRecipe,
 } from "@/lib/trapeza/recipes";
 import { fetchRecipe, reportRecipe } from "@/lib/trapeza/client";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type Phase = "loading" | "missing" | "ready";
 
 export function TrapezaDetailClient() {
+  const { t } = useTranslate();
   const id = useSearchParams().get("id") ?? "";
   const [phase, setPhase] = useState<Phase>("loading");
   const [recipe, setRecipe] = useState<TrapezaRecipe | null>(null);
@@ -47,19 +49,19 @@ export function TrapezaDetailClient() {
   }, [busy, recipe]);
 
   if (phase === "loading") {
-    return <Centered>Bringing the recipe…</Centered>;
+    return <Centered>{t("study.bringingTheRecipe")}</Centered>;
   }
   if (phase === "missing" || !recipe) {
     return (
       <Centered>
         <p className="font-serif text-lede text-paper/80">
-          This recipe could not be found.
+          {t("study.thisRecipeCouldNotBe")}
         </p>
         <Link
           href="/trapeza"
           className="mt-4 inline-flex rounded-pill border border-paper/20 px-4 py-2 font-sans text-ui text-paper/80 hover:border-paper/40"
         >
-          Back to the Trapeza
+          {t("study.backToTheTrapeza")}
         </Link>
       </Centered>
     );
@@ -84,7 +86,7 @@ export function TrapezaDetailClient() {
           href="/trapeza"
           className="font-sans text-caption text-paper/50 hover:text-paper/80"
         >
-          ← The Trapeza
+          {t("study.theTrapeza")}
         </Link>
 
         <span className="mt-5 inline-block rounded-pill border border-gold/30 bg-gold/[0.08] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[0.5px] text-gold-pale">
@@ -111,7 +113,7 @@ export function TrapezaDetailClient() {
 
         <div className="mt-4 border-t border-paper/8 pt-4 font-sans text-caption text-paper/45">
           {reported ? (
-            <span>Reported. Thank you.</span>
+            <span>{t("study.reportedThankYou")}</span>
           ) : (
             <button
               type="button"
@@ -119,7 +121,7 @@ export function TrapezaDetailClient() {
               disabled={busy}
               className="hover:text-paper/80 disabled:opacity-50"
             >
-              Report this recipe
+              {t("study.reportThisRecipe")}
             </button>
           )}
         </div>

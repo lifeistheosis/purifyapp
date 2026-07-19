@@ -9,6 +9,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const MODES = [
   { key: "doctrine", label: "Doctrine", href: "/theology/doctrine" },
@@ -27,12 +28,13 @@ function activeKey(pathname: string): string | null {
 }
 
 export function TheologyNav() {
+  const { t } = useTranslate();
   const pathname = usePathname();
   const active = activeKey(pathname);
 
   return (
     <nav
-      aria-label="Theology sections"
+      aria-label={t("study.theology.sectionsAria")}
       className="-mx-1 flex gap-1.5 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {MODES.map((m) => {

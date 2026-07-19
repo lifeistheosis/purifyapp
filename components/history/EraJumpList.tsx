@@ -6,6 +6,7 @@
 
 import { HISTORY_ERAS, type Era } from "@/lib/history/events";
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function EraJumpList({
   activeEra,
@@ -19,8 +20,9 @@ export function EraJumpList({
   onJump: (era: Era) => void;
   className?: string;
 }) {
+  const { t } = useTranslate();
   return (
-    <nav aria-label="Historical eras" className={className}>
+    <nav aria-label={t("study.history.historicalEras")} className={className}>
       <ol className="space-y-1">
         {HISTORY_ERAS.map((era) => {
           const count = counts[era.id] ?? 0;

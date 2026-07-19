@@ -7,6 +7,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export type FilterSection =
   | "Doctrine"
@@ -37,6 +38,7 @@ const ORDER: FilterSection[] = [
 ];
 
 export function TheologyFilter({ items }: { items: StudyItem[] }) {
+  const { t } = useTranslate();
   const [q, setQ] = useState("");
   const [scope, setScope] = useState<Scope>(ALL);
   const query = q.trim().toLowerCase();
@@ -69,7 +71,7 @@ export function TheologyFilter({ items }: { items: StudyItem[] }) {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search the library — a doctrine, a heresy, a question…"
-          aria-label="Search theology studies"
+          aria-label={t("study.theology.searchAria")}
           className="w-full rounded-xl border border-paper/15 bg-paper/[0.04] py-3.5 pl-11 pr-4 font-sans text-lede text-paper placeholder:text-paper/40 focus:border-gold/45 focus:bg-paper/[0.06] focus:outline-none transition-colors"
         />
       </div>

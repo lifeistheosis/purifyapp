@@ -15,6 +15,7 @@ import { searchEvents } from "@/lib/history/filter";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 function ResultRow({ event, onNavigate }: { event: HistoryEventMeta; onNavigate?: () => void }) {
   return (
@@ -45,12 +46,13 @@ export function HistorySearchInline({
    *  this component into the same DOM, so a shared id would be invalid. */
   id?: string;
 }) {
+  const { t } = useTranslate();
   const [q, setQ] = useState("");
   const results = searchEvents(publishedEvents(), q, 8);
   return (
     <div className={className}>
       <label className="sr-only" htmlFor={id}>
-        Search Church history
+        {t("study.history.searchChurchHistory")}
       </label>
       <input
         id={id}
@@ -70,7 +72,7 @@ export function HistorySearchInline({
             results.map((e) => <ResultRow key={e.slug} event={e} />)
           ) : (
             <p className="px-3 py-4 font-serif italic text-detail text-paper/60">
-              Nothing in the timeline matches “{q.trim()}”.
+              {t("study.nothingInTheTimelineMatches")}{q.trim()}”.
             </p>
           )}
         </div>
@@ -86,6 +88,7 @@ export function HistorySearchOverlay({
   open: boolean;
   onClose: () => void;
 }) {
+  const { t } = useTranslate();
   const [q, setQ] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -118,12 +121,12 @@ export function HistorySearchOverlay({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Search Church history"
+      aria-label={t("study.history.searchChurchHistory")}
       className="fixed inset-0 z-50 flex flex-col bg-night safe-pt"
     >
       <div className="flex items-center gap-2 border-b border-paper/10 px-4 py-3">
         <label className="sr-only" htmlFor="history-search-overlay">
-          Search Church history
+          {t("study.history.searchChurchHistory")}
         </label>
         <input
           ref={inputRef}
@@ -131,7 +134,7 @@ export function HistorySearchOverlay({
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search Church history…"
+          placeholder={t("study.history.searchChurchHistoryEllipsis")}
           autoComplete="off"
           className="min-h-[44px] w-full rounded-md border border-paper/15 bg-night-soft px-4 font-sans text-ui text-paper placeholder:text-paper/55 focus:border-paper/40 focus:outline-none"
         />
@@ -140,7 +143,7 @@ export function HistorySearchOverlay({
           onClick={onClose}
           className="tap-press min-h-[44px] shrink-0 rounded-md px-3 font-sans text-ui font-semibold text-paper/70 hover:text-paper"
         >
-          Close
+          {t("common.close")}
         </button>
       </div>
       <div className={cn("flex-1 overflow-y-auto px-3 py-2 safe-pb")}>
@@ -149,12 +152,12 @@ export function HistorySearchOverlay({
             results.map((e) => <ResultRow key={e.slug} event={e} onNavigate={onClose} />)
           ) : (
             <p className="px-3 py-6 font-serif italic text-body text-paper/60">
-              Nothing in the timeline matches “{q.trim()}”.
+              {t("study.nothingInTheTimelineMatches")}{q.trim()}”.
             </p>
           )
         ) : (
           <p className="px-3 py-6 font-sans text-detail text-paper/55">
-            Search by name, place, year, or era, “Nicaea”, “1054”, “Constantinople”.
+            {t("study.searchByNamePlaceYear")}
           </p>
         )}
       </div>

@@ -9,6 +9,7 @@ import {
   type FlorilegiumItem,
 } from "@/lib/florilegium/florilegium";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * One florilegium: its gathered lines, each rendered as a pull-quote
@@ -18,6 +19,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
  * chance to hydrate.
  */
 export function FlorilegiumDetail({ id }: { id: string }) {
+  const { t } = useTranslate();
   const { florilegia, remove, removeItem, setItemNote } = useFlorilegia();
   const f = useMemo(
     () => florilegia.find((x) => x.id === id),
@@ -34,14 +36,14 @@ export function FlorilegiumDetail({ id }: { id: string }) {
       return (
         <div className="mt-10 rounded-md border border-paper/12 bg-paper/[0.02] px-5 py-10 text-center">
           <p className="font-serif italic text-lede text-paper/65">
-            This gathering is no longer here.
+            {t("study.florilegium.gone")}
           </p>
           <p className="mt-3">
             <Link
               href="/florilegium"
               className="font-sans text-detail text-gold/85 underline decoration-gold/30 underline-offset-4 hover:text-gold"
             >
-              Back to your florilegia
+              {t("study.florilegium.backToYours")}
             </Link>
           </p>
         </div>
@@ -56,7 +58,7 @@ export function FlorilegiumDetail({ id }: { id: string }) {
         href="/florilegium"
         className="font-sans text-detail text-paper/55 hover:text-paper transition-colors"
       >
-        ← Your florilegia
+        {t("study.florilegium.yoursArrow")}
       </Link>
 
       <h1 className="mt-4 font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
@@ -68,15 +70,13 @@ export function FlorilegiumDetail({ id }: { id: string }) {
         </p>
       ) : null}
       <p className="mt-3 font-sans text-caption text-paper/45">
-        {f.items.length} {f.items.length === 1 ? "line" : "lines"} gathered
+        {f.items.length} {f.items.length === 1 ? "line" : "lines"} {t("study.gathered")}
       </p>
 
       {f.items.length === 0 ? (
         <div className="mt-10 rounded-md border border-paper/12 bg-paper/[0.02] px-5 py-10 text-center">
           <p className="font-serif italic text-body text-paper/60 leading-[1.6] max-w-[48ch] mx-auto">
-            Nothing gathered yet. As you read the Scriptures or the
-            Fathers, use &ldquo;Add to a florilegium&rdquo; on a verse or
-            a quotation to keep it here.
+            {t("study.nothingGatheredYetAsYou")}
           </p>
         </div>
       ) : (
@@ -99,7 +99,7 @@ export function FlorilegiumDetail({ id }: { id: string }) {
           onClick={() => setConfirmingDelete(true)}
           className="font-sans text-detail text-paper/45 hover:text-paper/80 transition-colors"
         >
-          Delete this gathering
+          {t("study.florilegium.deleteThis")}
         </button>
       </div>
 
@@ -132,6 +132,7 @@ function ItemCard({
   onRemove: () => void;
   onNote: (note: string) => void;
 }) {
+  const { t } = useTranslate();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(item.note ?? "");
 
@@ -165,7 +166,7 @@ function ItemCard({
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             rows={3}
-            placeholder="A note of your own..."
+            placeholder={t("study.florilegium.notePlaceholder")}
             className="w-full bg-paper/[0.04] border border-paper/20 rounded-md px-3 py-2 font-serif text-detail text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/50 transition-colors"
           />
           <div className="mt-2 flex gap-3">
@@ -177,7 +178,7 @@ function ItemCard({
               }}
               className="font-sans text-detail font-semibold rounded-pill px-4 py-2 bg-paper text-night hover:bg-paper/90 transition-colors"
             >
-              Save note
+              {t("study.florilegium.saveNote")}
             </button>
             <button
               type="button"
@@ -187,7 +188,7 @@ function ItemCard({
               }}
               className="font-sans text-detail text-paper/60 hover:text-paper transition-colors"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
           </div>
         </div>
@@ -213,7 +214,7 @@ function ItemCard({
               onClick={onRemove}
               className="font-sans text-caption text-paper/45 hover:text-paper/80 transition-colors"
             >
-              Remove
+              {t("prayers.diptychs.remove")}
             </button>
           </div>
         </div>

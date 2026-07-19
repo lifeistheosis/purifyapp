@@ -19,6 +19,7 @@ import {
 } from "@/lib/history/events";
 import type { TimelineFilterState } from "@/lib/history/filter";
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 function Chip({
   active,
@@ -64,6 +65,7 @@ export function TimelineFilters({
   value: TimelineFilterState;
   onChange: (next: TimelineFilterState) => void;
 }) {
+  const { t } = useTranslate();
   const toggleEra = (era: Era) =>
     onChange({ ...value, era: value.era === era ? undefined : era });
   const toggleCategory = (cat: EventCategory) =>
@@ -79,7 +81,7 @@ export function TimelineFilters({
   return (
     <div className="space-y-6">
       <div>
-        <GroupLabel>Era</GroupLabel>
+        <GroupLabel>{t("study.era")}</GroupLabel>
         <div className="mt-3 flex flex-wrap gap-2">
           {HISTORY_ERAS.map((e) => (
             <Chip key={e.id} active={value.era === e.id} onClick={() => toggleEra(e.id)}>
@@ -89,7 +91,7 @@ export function TimelineFilters({
         </div>
       </div>
       <div>
-        <GroupLabel>Category</GroupLabel>
+        <GroupLabel>{t("study.category")}</GroupLabel>
         <div className="mt-3 flex flex-wrap gap-2">
           {EVENT_CATEGORIES.map((c) => (
             <Chip
@@ -104,7 +106,7 @@ export function TimelineFilters({
         </div>
       </div>
       <div>
-        <GroupLabel>Historical certainty</GroupLabel>
+        <GroupLabel>{t("study.history.historicalCertainty")}</GroupLabel>
         <div className="mt-3 flex flex-wrap gap-2">
           {CERTAINTY_LEVELS.map((c) => (
             <Chip
@@ -133,6 +135,7 @@ export function ActiveFilterChips({
   onChange: (next: TimelineFilterState) => void;
   className?: string;
 }) {
+  const { t } = useTranslate();
   const chips: { key: string; label: string; remove: () => void }[] = [];
   if (value.era) {
     const era = HISTORY_ERAS.find((e) => e.id === value.era)!;
@@ -178,7 +181,7 @@ export function ActiveFilterChips({
         >
           {c.label}
           <Close size={11} className="text-paper/60" aria-hidden />
-          <span className="sr-only">Remove filter</span>
+          <span className="sr-only">{t("study.removeFilter")}</span>
         </button>
       ))}
       <button
@@ -188,7 +191,7 @@ export function ActiveFilterChips({
         }
         className="tap-press min-h-[36px] rounded-pill px-3 font-sans text-detail text-paper/60 underline underline-offset-4 hover:text-paper"
       >
-        Clear all
+        {t("study.history.clearAll")}
       </button>
     </div>
   );
