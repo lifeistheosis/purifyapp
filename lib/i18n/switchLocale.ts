@@ -7,6 +7,7 @@
 // Capacitor Preferences under the same key.
 
 import { Preferences } from "@capacitor/preferences";
+import { createClient } from "@/lib/supabase/client";
 import { isNativeClient } from "@/lib/platform/native";
 import type { LocaleCode } from "./locales";
 
@@ -27,9 +28,9 @@ export async function readNativeLocaleChoice(): Promise<string | null> {
 }
 
 /**
- * Persist an explicit user choice everywhere it needs to live. Profile
- * sync (profiles.preferred_language) is layered on by the account
- * wiring; this handles device-local persistence.
+ * Persist an explicit user choice everywhere it needs to live: cookie
+ * (web rendering), Capacitor Preferences (durable native store), and
+ * best-effort profiles.preferred_language for cross-device sync.
  */
 export async function persistLocaleChoice(next: LocaleCode): Promise<void> {
   writeLocaleCookie(next);
@@ -39,5 +40,56 @@ export async function persistLocaleChoice(next: LocaleCode): Promise<void> {
     } catch {
       // Preferences unavailable: the cookie still covers this session.
     }
+  }
+  await syncProfileLocale(next);
+}
+
+/**
+ * Mirror a choice to profiles.preferred_language when signed in.
+ * Best-effort by design: no-ops when signed out, offline, or before
+ * the owner applies the 20260719 migration (the update just errors
+ * server-side and we move on). Capped at 2s so a slow network never
+ * delays the visible language switch.
+ */
+export async function syncProfileLocale(next: LocaleCode): Promise<void> {
+  try {
+    const supabase = createClient();
+    const { data } = await supabase.auth.getSession();
+    const uid = data.session?.user?.id;
+    if (!uid) return;
+    await Promise.race([
+      supabase
+        .from("profiles")
+        .update({
+          preferred_language: next,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", uid),
+      new Promise((resolve) => setTimeout(resolve, 2000)),
+    ]);
+  } catch {
+    // Signed out, offline, or column not applied yet.
+  }
+}
+
+/** Read the signed-in user's stored language; null when signed out,
+ * unset, offline, or the migration is not applied yet. */
+export async function readProfileLocale(): Promise<string | null> {
+  try {
+    const supabase = createClient();
+    const { data } = await supabase.auth.getSession();
+    const uid = data.session?.user?.id;
+    if (!uid) return null;
+    const { data: row } = await supabase
+      .from("profiles")
+      .select("preferred_language")
+      .eq("id", uid)
+      .maybeSingle();
+    return (
+      (row as { preferred_language?: string | null } | null)
+        ?.preferred_language ?? null
+    );
+  } catch {
+    return null;
   }
 }

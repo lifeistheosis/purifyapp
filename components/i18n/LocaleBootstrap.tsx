@@ -16,7 +16,12 @@ import {
   resolveLocale,
   type LocaleCode,
 } from "@/lib/i18n/locales";
-import { readNativeLocaleChoice } from "@/lib/i18n/switchLocale";
+import {
+  persistLocaleChoice,
+  readNativeLocaleChoice,
+  readProfileLocale,
+  syncProfileLocale,
+} from "@/lib/i18n/switchLocale";
 import { isNativeClient } from "@/lib/platform/native";
 import { useSetLocale, useTranslate } from "./MessagesProvider";
 
@@ -45,12 +50,33 @@ export function LocaleBootstrap() {
     ran.current = true;
     if (!isNativeClient()) return;
     void (async () => {
+      // Order: explicit device choice, then the signed-in profile's
+      // preferred_language (fresh device adopting a cross-device
+      // choice), then first-run device-language negotiation.
       const stored = await readNativeLocaleChoice();
-      const target =
-        stored && isLocaleSelectable(stored)
-          ? resolveLocale(stored)
-          : negotiateFromNavigator();
-      if (target && target !== locale) await setLocale(target);
+      if (stored && isLocaleSelectable(stored)) {
+        const target = resolveLocale(stored);
+        if (target !== locale) await setLocale(target);
+        // Backfill the profile when it has no value yet (best-effort,
+        // off the critical path).
+        void (async () => {
+          if ((await readProfileLocale()) === null) {
+            await syncProfileLocale(target);
+          }
+        })();
+        return;
+      }
+      const fromProfile = await readProfileLocale();
+      if (fromProfile && isLocaleSelectable(fromProfile)) {
+        const target = resolveLocale(fromProfile);
+        // Adopt as the device choice so later launches are instant
+        // and work offline.
+        await persistLocaleChoice(target);
+        if (target !== locale) await setLocale(target);
+        return;
+      }
+      const negotiated = negotiateFromNavigator();
+      if (negotiated && negotiated !== locale) await setLocale(negotiated);
     })();
   }, [locale, setLocale]);
 
