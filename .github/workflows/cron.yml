@@ -1,0 +1,100 @@
+name: Scheduled jobs
+
+# The scheduler that was missing. Two cron ROUTES existed
+# (/api/cron/push-deliver, /api/cron/bmc-snapshot) with nothing in the repo
+# calling either of them, so prayer reminders never fired and the donations
+# snapshot never ran. Render's dashboard has no cron job for them; this
+# workflow is the caller, kept in-repo so it is reviewable and versioned.
+#
+# Required repository secrets:
+#   CRON_SECRET  - must match the value set in the Render environment.
+#                  Without it the push route now refuses to run in production
+#                  (it used to be world-callable when the secret was unset).
+# Optional repository variable:
+#   SITE_URL     - defaults to https://purifyapp.net.
+#
+# Caveats worth knowing:
+#   - GitHub's scheduler is best-effort and can lag several minutes under
+#     load. Reminders match on the user's local hour, so a few minutes of
+#     drift is harmless; do not tighten this below hourly expecting precision.
+#   - GitHub disables scheduled workflows on repositories with no activity
+#     for 60 days. If reminders go quiet, check that this workflow is still
+#     enabled before debugging the app.
+#   - Both jobs fail the run on a non-2xx so a silent breakage turns the
+#     Actions tab red instead of logging a cheerful zero forever.
+
+on:
+  schedule:
+    # Hourly, on the hour. push-deliver maps the current UTC hour onto each
+    # subscriber's stored local morning/evening time, so it must run every
+    # hour to cover every timezone.
+    - cron: "0 * * * *"
+    # Once daily at 03:10 UTC for the donations snapshot.
+    - cron: "10 3 * * *"
+  workflow_dispatch:
+    inputs:
+      job:
+        description: "Which job to run now"
+        required: true
+        default: push-deliver
+        type: choice
+        options: [push-deliver, bmc-snapshot, both]
+
+jobs:
+  push-deliver:
+    name: Deliver prayer reminders
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'schedule' && github.event.schedule == '0 * * * *'
+      || (github.event_name == 'workflow_dispatch'
+          && (inputs.job == 'push-deliver' || inputs.job == 'both'))
+    steps:
+      - name: Call /api/cron/push-deliver
+        env:
+          SITE_URL: ${{ vars.SITE_URL || 'https://purifyapp.net' }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CRON_SECRET}" ]; then
+            echo "::error::CRON_SECRET repository secret is not set; the route will refuse to run."
+            exit 1
+          fi
+          body=$(mktemp)
+          code=$(curl -sS -m 120 -o "$body" -w '%{http_code}' \
+            -H "x-cron-secret: ${CRON_SECRET}" \
+            "${SITE_URL}/api/cron/push-deliver")
+          echo "HTTP ${code}"
+          cat "$body"
+          echo
+          if [ "$code" != "200" ]; then
+            echo "::error::push-deliver returned ${code}"
+            exit 1
+          fi
+
+  bmc-snapshot:
+    name: Snapshot donation totals
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'schedule' && github.event.schedule == '10 3 * * *'
+      || (github.event_name == 'workflow_dispatch'
+          && (inputs.job == 'bmc-snapshot' || inputs.job == 'both'))
+    steps:
+      - name: Call /api/cron/bmc-snapshot
+        env:
+          SITE_URL: ${{ vars.SITE_URL || 'https://purifyapp.net' }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+          body=$(mktemp)
+          code=$(curl -sS -m 120 -o "$body" -w '%{http_code}' \
+            -H "x-cron-secret: ${CRON_SECRET}" \
+            "${SITE_URL}/api/cron/bmc-snapshot")
+          echo "HTTP ${code}"
+          cat "$body"
+          echo
+          # 503 means Buy Me a Coffee was unreachable this run, which is
+          # transient and not our bug; anything else non-2xx is a real fault.
+          if [ "$code" != "200" ] && [ "$code" != "503" ]; then
+            echo "::error::bmc-snapshot returned ${code}"
+            exit 1
+          fi
