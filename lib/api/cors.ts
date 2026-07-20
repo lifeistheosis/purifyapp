@@ -20,6 +20,16 @@ const ALLOWED_ORIGINS = new Set([
   "ionic://localhost", // older iOS shells
 ]);
 
+/**
+ * True when the request comes from one of the WebViews we ship. Routes that
+ * apply their own cross-origin defences (e.g. the Sec-Fetch-Site bot guard on
+ * /api/track) use this to make an exception for the native shells without
+ * widening the guard for the open web.
+ */
+export function isAllowedNativeOrigin(origin: string | null): boolean {
+  return !!origin && ALLOWED_ORIGINS.has(origin);
+}
+
 function headersFor(origin: string | null): Record<string, string> {
   if (origin && ALLOWED_ORIGINS.has(origin)) {
     return {
