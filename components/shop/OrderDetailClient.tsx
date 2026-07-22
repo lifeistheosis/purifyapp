@@ -5,19 +5,15 @@ import { useSearchParams } from "next/navigation";
 
 import { BuyerMessageButton } from "@/components/shop/BuyerMessageButton";
 import { BuyerRefundSection } from "@/components/shop/BuyerRefundSection";
+import { OrderProgress } from "@/components/shop/OrderProgress";
 import {
   ShopError,
   ShopLoading,
   ShopSignInPrompt,
 } from "@/components/shop/ShopStates";
-import { cn } from "@/lib/cn";
 import { formatPrice } from "@/lib/shop/format";
 import { canRequestRefund } from "@/lib/shop/refunds";
-import {
-  BUYER_ORDER_STEPS,
-  buyerOrderStatus,
-  buyerStepIndex,
-} from "@/lib/shop/status";
+import { buyerOrderStatus } from "@/lib/shop/status";
 import type {
   ShopOrder,
   ShopRefundRequest,
@@ -35,12 +31,19 @@ type OrderItem = {
   title: string;
   unit_price_cents: number;
   quantity: number;
-  // Joined so a paid order can offer a "write a review" link per item.
-  product: { slug: string } | null;
+  // Joined so a paid order can offer a "write a review" link per item, and
+  // so the tracker can estimate a ship date from the listing's promised
+  // dispatch window. Null when the product was removed since purchase.
+  product: {
+    slug: string;
+    dispatch_min_days: number | null;
+    dispatch_max_days: number | null;
+  } | null;
 };
 
 type OrderRow = Omit<ShopOrder, "items"> & {
   user_id: string | null;
+  updated_at: string | null;
   items: OrderItem[];
   store: { public_name: string } | null;
 };
@@ -65,7 +68,7 @@ async function load(id: string): Promise<Result> {
   const { data } = await supabase
     .from("shop_orders")
     .select(
-      "id, user_id, items_total_cents, shipping_cents, tax_cents, total_cents, currency, payment_status, fulfillment_status, outbound_tracking, created_at, items:shop_order_items(title, unit_price_cents, quantity, product:shop_products(slug)), store:shop_stores(public_name)",
+      "id, user_id, items_total_cents, shipping_cents, tax_cents, total_cents, currency, payment_status, fulfillment_status, outbound_tracking, created_at, updated_at, items:shop_order_items(title, unit_price_cents, quantity, product:shop_products(slug, dispatch_min_days, dispatch_max_days)), store:shop_stores(public_name)",
     )
     .eq("id", id)
     .maybeSingle();
@@ -117,7 +120,6 @@ export function OrderDetailClient() {
 
   const { order, latestRefund } = data;
   const status = buyerOrderStatus(order);
-  const step = buyerStepIndex(status);
   const storeName = order.store?.public_name ?? "the seller";
 
   return (
@@ -143,44 +145,13 @@ export function OrderDetailClient() {
         </p>
       </header>
 
-      <section
-        aria-label={t("shop.orderProgress")}
-        className="mt-6 rounded-lg border border-paper/10 bg-night-soft/60 p-5"
-      >
-        {step >= 0 ? (
-          <ol className="flex items-center gap-1">
-            {BUYER_ORDER_STEPS.map((s, i) => (
-              <li key={s} className="flex flex-1 flex-col items-center gap-1.5">
-                <span
-                  aria-hidden
-                  className={cn(
-                    "h-1.5 w-full rounded-full",
-                    i <= step ? "bg-gold" : "bg-paper/10",
-                  )}
-                />
-                <span
-                  className={cn(
-                    "text-center font-sans text-[10px] leading-tight",
-                    i === step ? "font-semibold text-paper" : "text-paper/60",
-                  )}
-                  aria-current={i === step ? "step" : undefined}
-                >
-                  {s}
-                </span>
-              </li>
-            ))}
-          </ol>
-        ) : (
-          <p className="inline-flex rounded-pill border border-paper/20 px-3 py-1 font-sans text-caption font-semibold text-paper/70">
-            {status}
-          </p>
-        )}
-        {order.outbound_tracking ? (
-          <p className="mt-4 font-sans text-detail text-paper/65">
-            {t("shop.tracking")} <span className="text-paper">{order.outbound_tracking}</span>
-          </p>
-        ) : null}
-      </section>
+      <OrderProgress
+        status={status}
+        placedAt={order.created_at}
+        updatedAt={order.updated_at}
+        items={order.items.map((i) => i.product)}
+        tracking={order.outbound_tracking}
+      />
 
       <section
         aria-label={t("shop.items")}
