@@ -5,7 +5,7 @@
 // (admin-gated, service role). This is the only UI where sourcing and
 // supplier data appear.
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 import { invalidateShopCatalog } from "@/lib/shop/catalogClient";
@@ -1884,6 +1884,7 @@ type AdminProductReview = {
   location: string | null;
   anonymous: boolean;
   order_id: string | null;
+  photo_urls?: string[] | null;
   product: AdminReviewProduct;
   store: AdminReviewStore;
 };
@@ -1897,6 +1898,7 @@ type AdminStoreReview = {
   location: string | null;
   anonymous: boolean;
   order_id: string | null;
+  photo_urls?: string[] | null;
   store: AdminReviewStore;
 };
 
@@ -2152,7 +2154,16 @@ function ReviewsPanel() {
                   key: "body",
                   label: "Review",
                   render: (r) => (
-                    <span className="line-clamp-2 text-paper/70">{r.body || "—"}</span>
+                    <span>
+                      <span className="line-clamp-2 text-paper/70">{r.body || "—"}</span>
+                      {r.photo_urls && r.photo_urls.length > 0 ? (
+                        <span className="mt-0.5 block font-sans text-eyebrow text-paper/40">
+                          {r.photo_urls.length === 1
+                            ? "1 photo"
+                            : `${r.photo_urls.length} photos`}
+                        </span>
+                      ) : null}
+                    </span>
                   ),
                   csv: (r) => r.body ?? "",
                 },
@@ -2238,7 +2249,16 @@ function ReviewsPanel() {
                   key: "body",
                   label: "Review",
                   render: (r) => (
-                    <span className="line-clamp-2 text-paper/70">{r.body || "—"}</span>
+                    <span>
+                      <span className="line-clamp-2 text-paper/70">{r.body || "—"}</span>
+                      {r.photo_urls && r.photo_urls.length > 0 ? (
+                        <span className="mt-0.5 block font-sans text-eyebrow text-paper/40">
+                          {r.photo_urls.length === 1
+                            ? "1 photo"
+                            : `${r.photo_urls.length} photos`}
+                        </span>
+                      ) : null}
+                    </span>
                   ),
                   csv: (r) => r.body ?? "",
                 },
@@ -2308,8 +2328,24 @@ function SeedReviewSheet({
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
   const [anonymous, setAnonymous] = useState(false);
+  const [date, setDate] = useState("");
+  const [photos, setPhotos] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const photoRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  async function addPhoto(file: File) {
+    setUploading(true);
+    setError(null);
+    const form = new FormData();
+    form.append("file", file);
+    const res = await fetch("/api/admin/shop/media", { method: "POST", body: form });
+    const d = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
+    setUploading(false);
+    if (res.ok && d.url) setPhotos((p) => [...p, d.url as string]);
+    else setError(d.error ?? "Upload failed.");
+  }
 
   async function seed() {
     setBusy(true);
@@ -2320,6 +2356,8 @@ function SeedReviewSheet({
       displayName: name.trim() || null,
       location: location.trim() || null,
       anonymous,
+      createdAt: date || null,
+      photoUrls: photos,
     };
     const payload =
       target === "product"
@@ -2407,6 +2445,16 @@ function SeedReviewSheet({
           </select>
         </label>
         <label className="block">
+          <span className={labelCls}>Review date (blank = today)</span>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            max={new Date().toISOString().slice(0, 10)}
+            className={field}
+          />
+        </label>
+        <label className="block">
           <span className={labelCls}>Display name</span>
           <input
             value={name}
@@ -2439,6 +2487,46 @@ function SeedReviewSheet({
             className={field}
           />
         </label>
+        <div className="sm:col-span-2">
+          <span className={labelCls}>Photos (optional)</span>
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            {photos.map((u, i) => (
+              <span
+                key={`${u}-${i}`}
+                className="relative h-16 w-16 overflow-hidden rounded-lg border border-white/10 bg-night"
+              >
+                <Image src={u} alt="" fill sizes="64px" unoptimized className="object-cover" />
+                <button
+                  type="button"
+                  aria-label={`Remove photo ${i + 1}`}
+                  onClick={() => setPhotos((p) => p.filter((_, j) => j !== i))}
+                  className="absolute right-0.5 top-0.5 rounded-full bg-night/80 px-1 font-sans text-eyebrow text-paper/80 hover:text-rose-300"
+                >
+                  ✕
+                </button>
+              </span>
+            ))}
+            <button
+              type="button"
+              onClick={() => photoRef.current?.click()}
+              disabled={uploading || photos.length >= 12}
+              className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-1.5 font-sans text-caption font-semibold text-gold disabled:opacity-50"
+            >
+              {uploading ? "Uploading…" : "Add photo"}
+            </button>
+            <input
+              ref={photoRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) void addPhoto(f);
+                e.target.value = "";
+              }}
+            />
+          </div>
+        </div>
       </div>
       <div className="mt-4 flex items-center justify-between gap-3">
         <label className="flex items-center gap-2">

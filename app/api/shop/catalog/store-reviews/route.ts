@@ -37,13 +37,22 @@ export async function GET(req: Request) {
     return withCors(NextResponse.json(empty), req);
   }
 
-  const { data } = await supabase
-    .from("shop_store_reviews")
-    .select("id, stars, body, created_at, display_name, location, anonymous")
-    .eq("store_id", store.id)
-    .order("created_at", { ascending: false })
-    .limit(100);
-  const reviews = data ?? [];
+  // photo_urls is optional until its migration lands; fall back without it.
+  const fetchRows = (withPhotos: boolean) =>
+    supabase
+      .from("shop_store_reviews")
+      .select(
+        `id, stars, body, created_at, display_name, location, anonymous${withPhotos ? ", photo_urls" : ""}`,
+      )
+      .eq("store_id", store.id)
+      .order("created_at", { ascending: false })
+      .limit(100);
+  let { data, error } = await fetchRows(true);
+  if (error && /photo_urls/i.test(error.message)) {
+    ({ data, error } = await fetchRows(false));
+  }
+  // Cast: the dynamic column string defeats supabase-js's select parser.
+  const reviews = (data ?? []) as unknown as { stars: number }[];
   const reviewCount = reviews.length;
   const total = reviews.reduce((sum, r) => sum + (r.stars as number), 0);
   const avgStars = reviewCount > 0 ? total / reviewCount : null;

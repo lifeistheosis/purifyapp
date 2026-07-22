@@ -180,6 +180,9 @@ export type ShopReview = {
   display_name: string | null;
   location: string | null;
   anonymous: boolean;
+  // Optional until the 20260722_shop_review_seeds_photos migration is
+  // applied; the API falls back to [] when the column is absent.
+  photo_urls?: string[] | null;
 };
 
 export type ShopReviewsData = {
@@ -199,6 +202,7 @@ export type ShopStoreReview = {
   display_name: string | null;
   location: string | null;
   anonymous: boolean;
+  photo_urls?: string[] | null;
 };
 
 export type ShopStoreReviewsData = {
