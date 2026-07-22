@@ -1717,6 +1717,8 @@
   "shop.shipEstimateLate": "Your order is taking longer than estimated. We are on it. You can message the seller below anytime.",
   "shop.trackYourPackage": "Track your package",
   "shop.lastUpdated": "Updated {date}",
+  "shop.previousPhoto": "Previous photo",
+  "shop.nextPhoto": "Next photo",
   "shop.reviewYourPurchase": "Review your purchase",
   "shop.messageTheSeller": "Message the seller",
   "shop.unfinishedCheckout": "Unfinished checkout",
