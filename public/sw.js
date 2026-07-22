@@ -19,7 +19,7 @@
  * really about the runtime caches below — bumping it changes cache names
  * and the activate handler drops the old names).
  */
-const CACHE_VERSION = "purify-beta-2.3.0";
+const CACHE_VERSION = "purify-beta-2.3.0-r2";
 const HTML_CACHE = `${CACHE_VERSION}-html`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const ASSETS_CACHE = `${CACHE_VERSION}-assets`;
@@ -32,6 +32,7 @@ const ALL_CACHES = [HTML_CACHE, STATIC_CACHE, ASSETS_CACHE];
 const NEVER_CACHE = [
   "/api/",
   "/auth/",
+  "/admin", // the operator console must always run the freshly deployed bundle
   "/_next/data/",
   ".supabase.co",
   "api.scripture.api.bible",
