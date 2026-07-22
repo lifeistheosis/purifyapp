@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { ReviewPhotos } from "@/components/shop/ReviewPhotos";
 import { RatingStars } from "@/components/shop/RatingStars";
 import { VerifiedBuyerBadge } from "@/components/shop/VerifiedBuyerBadge";
 import { WriteStoreReviewForm } from "@/components/shop/WriteStoreReviewForm";
@@ -109,6 +110,7 @@ export function StoreReviewsSection({
                   {r.body}
                 </p>
               ) : null}
+              <ReviewPhotos urls={r.photo_urls} />
             </li>
           ))}
         </ul>
