@@ -4,6 +4,7 @@
 // styling tweak in one place propagates everywhere.
 
 import { useEffect, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { Sparkline } from "./charts";
 import { CountUp } from "./CountUp";
 import { downloadCsv, toCsv } from "@/lib/admin/csv";
@@ -94,7 +95,16 @@ export function Modal({
   // own body. Leaving overflow-y-auto here with an auto-margined panel split
   // the overflow evenly above and below it, which pushed the dialog down the
   // screen and cut its bottom off. items-center is what centres it now.
-  return (
+  //
+  // Portalled onto <body> so the `fixed` overlay is anchored to the viewport.
+  // The admin tab wrapper (.admin-fade-in) keeps a persistent translateY(0)
+  // after its entrance animation (animation-fill-mode: both), and any non-none
+  // transform makes that wrapper the containing block for fixed descendants —
+  // which trapped this dialog inside the tab-content box (offset below the
+  // header, as tall as the page) instead of centring it on screen. Portalling
+  // past it fixes every admin dialog, not just this one.
+  if (typeof document === "undefined") return null;
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-night/80 p-4 backdrop-blur-sm md:p-8">
       <button
         type="button"
@@ -147,7 +157,8 @@ export function Modal({
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
