@@ -51,7 +51,7 @@ export async function GET(req: Request) {
   return withCors(
     NextResponse.json(
       { reviews, reviewCount, avgStars },
-      { headers: { "Cache-Control": "public, max-age=60" } },
+      { headers: { "Cache-Control": "public, max-age=30, stale-while-revalidate=300" } },
     ),
     req,
   );

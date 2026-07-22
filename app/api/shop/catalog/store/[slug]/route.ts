@@ -29,7 +29,7 @@ export async function GET(
   return withCors(
     NextResponse.json(
       { store, products },
-      { headers: { "Cache-Control": "public, max-age=120" } },
+      { headers: { "Cache-Control": "public, max-age=30, stale-while-revalidate=300" } },
     ),
     req,
   );

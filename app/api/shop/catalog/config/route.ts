@@ -19,7 +19,7 @@ export async function GET(req: Request) {
         checkoutEnabled: checkoutEnabled(),
         flatShippingCents: flatShippingCents(),
       },
-      { headers: { "Cache-Control": "public, max-age=60" } },
+      { headers: { "Cache-Control": "public, max-age=30, stale-while-revalidate=300" } },
     ),
     req,
   );

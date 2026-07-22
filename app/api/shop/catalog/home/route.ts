@@ -24,7 +24,7 @@ export async function GET(req: Request) {
   return withCors(
     NextResponse.json(
       { featured, readyToShip, recent, eikon },
-      { headers: { "Cache-Control": "public, max-age=120" } },
+      { headers: { "Cache-Control": "public, max-age=30, stale-while-revalidate=300" } },
     ),
     req,
   );
