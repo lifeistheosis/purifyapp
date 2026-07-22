@@ -519,6 +519,171 @@ export function SubTabs<T extends string>({
   );
 }
 
+// ── Filter toolbar ──────────────────────────────────────────────────────────
+// Shared filter controls for the data tables: a search box, a chip row with
+// per-option counts, a compact labelled select, and the bar that frames them
+// with a live "matched of total" count plus a clear-all action. Shared so
+// every tab's filter bar looks and behaves identically.
+
+export function SearchInput({
+  value,
+  onChange,
+  placeholder = "Search…",
+  className = "",
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  className?: string;
+}) {
+  return (
+    <div className={"relative " + className}>
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 20 20"
+        fill="none"
+        className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-paper/35"
+      >
+        <circle cx="9" cy="9" r="5.5" stroke="currentColor" strokeWidth="1.6" />
+        <path
+          d="m13.2 13.2 3.8 3.8"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+        />
+      </svg>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full rounded-pill border border-paper/15 bg-night py-1.5 pl-9 pr-8 font-sans text-detail text-paper placeholder:text-paper/30 focus:border-gold/50 focus:outline-none"
+      />
+      {value ? (
+        <button
+          type="button"
+          aria-label="Clear search"
+          onClick={() => onChange("")}
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full px-1 font-sans text-caption text-paper/45 hover:text-paper"
+        >
+          ✕
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+export function FilterChips<T extends string>({
+  options,
+  active,
+  onChange,
+}: {
+  options: { id: T; label: string; count?: number }[];
+  active: T;
+  onChange: (id: T) => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {options.map((o) => {
+        const on = o.id === active;
+        return (
+          <button
+            key={o.id}
+            type="button"
+            onClick={() => onChange(o.id)}
+            aria-pressed={on}
+            className={
+              "inline-flex items-center gap-1.5 rounded-pill border px-3 py-1 font-sans text-caption font-medium capitalize transition-colors " +
+              (on
+                ? "border-gold bg-gold text-night"
+                : "border-paper/15 text-paper/60 hover:border-paper/35 hover:text-paper")
+            }
+          >
+            {o.label}
+            {o.count != null ? (
+              <span
+                className={
+                  "rounded-full px-1.5 font-sans text-eyebrow font-semibold tabular-nums " +
+                  (on ? "bg-night/15" : "bg-paper/[0.07] text-paper/45")
+                }
+              >
+                {o.count}
+              </span>
+            ) : null}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+export function FilterSelect({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: readonly (readonly [string, string])[];
+}) {
+  return (
+    <label className="inline-flex items-center gap-1.5">
+      <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/40">
+        {label}
+      </span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="rounded-pill border border-paper/15 bg-night px-2.5 py-1 font-sans text-caption text-paper/80 focus:border-gold/50 focus:outline-none"
+      >
+        {options.map(([v, l]) => (
+          <option key={v} value={v}>
+            {l}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+export function FilterBar({
+  children,
+  matched,
+  total,
+  noun,
+  onClear,
+}: {
+  children: ReactNode;
+  matched: number;
+  total: number;
+  /** Plural noun for the count line ("products", "reviews"). */
+  noun: string;
+  /** Rendered as a "Clear filters" action; pass null when nothing is active. */
+  onClear?: (() => void) | null;
+}) {
+  const narrowed = matched !== total;
+  const label = (n: number) => `${n} ${n === 1 ? noun.replace(/s$/, "") : noun}`;
+  return (
+    <div className="mb-3 rounded-lg border border-white/6 bg-paper/[0.02] p-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">{children}</div>
+      <p className="mt-2 font-sans text-eyebrow tabular-nums text-paper/40">
+        {narrowed ? `${matched} of ${label(total)} shown` : label(total)}
+        {onClear ? (
+          <button
+            type="button"
+            onClick={onClear}
+            className="ml-3 font-semibold text-gold hover:text-gold-pale"
+          >
+            Clear filters
+          </button>
+        ) : null}
+      </p>
+    </div>
+  );
+}
+
 // ── Pill ────────────────────────────────────────────────────────────────────
 export function Pill({
   children,
