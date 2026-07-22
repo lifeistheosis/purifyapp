@@ -30,9 +30,16 @@ export function ShopHomeClient() {
 
   return (
     <div className="mx-auto w-full max-w-[1200px] md:px-8">
-      {/* Masthead: tighter promise, honest trust row, a real primary action. */}
-      <header className="px-5 pt-9 text-center md:px-0 md:pt-16">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
+      {/* Masthead: tighter promise, honest trust row, a real primary action.
+          The glow is pure CSS depth (a candle against the night palette), and
+          the compressed rhythm exists so the Featured rail's cards crest into
+          the first viewport instead of a full screen of empty black. */}
+      <header className="relative px-5 pt-9 text-center md:px-0 md:pt-12">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 -top-28 mx-auto h-80 max-w-[760px] rounded-full bg-gold/[0.07] blur-3xl"
+        />
+        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/70">
           {t("shop.purifyShop")}
         </p>
         <h1 className="mx-auto mt-3 max-w-[640px] font-display-serif text-display-sm md:text-display text-paper leading-[1.05]">
@@ -46,9 +53,9 @@ export function ShopHomeClient() {
           {TRUST.map((t) => (
             <li
               key={t}
-              className="inline-flex items-center gap-1.5 rounded-pill border border-paper/12 bg-paper/[0.03] px-3 py-1.5 font-sans text-caption text-paper/70"
+              className="inline-flex items-center gap-1.5 rounded-pill border border-paper/10 bg-paper/[0.03] px-3 py-1.5 font-sans text-caption text-paper/65"
             >
-              <span aria-hidden className="text-paper/55">✓</span>
+              <span aria-hidden className="text-gold/60">✓</span>
               {t}
             </li>
           ))}
@@ -72,13 +79,21 @@ export function ShopHomeClient() {
       </header>
 
       {/* Category carousel: snap scrolling, edge-to-edge on phones. */}
-      <nav aria-label={t("shop.browseByCategory")} className="mt-8 -mx-0">
+      <nav aria-label={t("shop.browseByCategory")} className="mt-7 -mx-0">
         <ul className="flex snap-x snap-mandatory gap-2 overflow-x-auto scrollbar-thin px-5 pb-1 md:justify-center md:px-0">
+          <li className="shrink-0 snap-start">
+            <Link
+              href="/shop/category/all"
+              className="tap-press inline-flex min-h-[44px] items-center rounded-pill border border-gold/35 bg-gold/[0.06] px-4 font-sans text-detail font-semibold text-gold hover:bg-gold/[0.12]"
+            >
+              {t("shop.everything")}
+            </Link>
+          </li>
           {categories.map(([slug, label]) => (
             <li key={slug} className="shrink-0 snap-start">
               <Link
                 href={`/shop/category/${slug}`}
-                className="tap-press inline-flex min-h-[42px] items-center rounded-pill border border-paper/15 bg-paper/[0.03] px-4 font-sans text-detail font-medium text-paper/75 hover:border-paper/35 hover:text-paper"
+                className="tap-press inline-flex min-h-[44px] items-center rounded-pill border border-paper/15 bg-paper/[0.03] px-4 font-sans text-detail font-medium text-paper/75 hover:border-gold/40 hover:text-gold"
               >
                 {label}
               </Link>
@@ -92,7 +107,11 @@ export function ShopHomeClient() {
 
       {data ? (
         <>
-          <ProductRail title={t("shop.featuredIcons")} products={data.featured} />
+          <ProductRail
+            title={t("shop.featuredIcons")}
+            products={data.featured}
+            seeAllHref="/shop/category/all"
+          />
           <ProductRail
             title={t("shop.readyToShipX")}
             products={data.readyToShip}
@@ -104,9 +123,9 @@ export function ShopHomeClient() {
             <section aria-label="EIKON" className="mt-12 px-5 md:px-0">
               <Link
                 href="/shop/eikon"
-                className="press-card block rounded-lg border border-paper/10 bg-night-soft/60 p-6 md:p-10"
+                className="press-card block rounded-lg border border-gold/20 bg-night-soft/60 p-6 md:p-10"
               >
-                <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
+                <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/70">
                   {t("shop.theFoundingStore")}
                 </p>
                 <p className="mt-3 font-display-serif text-heading md:text-display-sm tracking-[0.08em] text-paper">

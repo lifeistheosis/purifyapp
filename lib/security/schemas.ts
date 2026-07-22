@@ -339,3 +339,32 @@ export const trapezaRecipeSubmitSchema = z.object({
 export const trapezaReportSchema = z.object({
   reason: z.string().max(500).optional().nullable(),
 });
+
+/** /api/community/posts POST body. A discussion carries the reader's own
+ *  words; a share carries a VERBATIM gathered line + citation from the
+ *  reader's Florilegium (Purify's own vetted content). */
+export const communityPostSchema = z
+  .object({
+    kind: z.enum(["discussion", "scripture", "father"]),
+    title: z.string().max(160).optional().nullable(),
+    body: z.string().max(4000).optional().nullable(),
+    quoteText: z.string().max(2000).optional().nullable(),
+    quoteSource: z.string().max(300).optional().nullable(),
+    quoteHref: z.string().max(500).startsWith("/").optional().nullable(),
+  })
+  .refine(
+    (p) => p.kind !== "discussion" || (p.body ?? "").trim().length >= 2,
+    { message: "Write a little more before posting." },
+  )
+  .refine(
+    (p) =>
+      p.kind === "discussion" ||
+      ((p.quoteText ?? "").trim().length > 0 &&
+        (p.quoteSource ?? "").trim().length > 0),
+    { message: "A shared line needs its text and its source." },
+  );
+
+/** /api/community/posts/[id]/replies POST body. */
+export const communityReplySchema = z.object({
+  body: z.string().min(1).max(2000),
+});

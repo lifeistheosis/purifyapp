@@ -8,6 +8,10 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
+import { invalidateShopCatalog } from "@/lib/shop/catalogClient";
+import { hasSupplierImage, orderedMedia } from "@/lib/shop/imageRights";
+import { ProductMediaManager } from "../ProductMediaManager";
+
 import {
   Card,
   DataTable,
@@ -23,7 +27,15 @@ import {
 
 /* ── Types (admin payload shapes, deliberately local to this tab) ─────── */
 
-type MediaRow = { id?: string; media_url: string; alt_text: string };
+type MediaRow = {
+  id?: string;
+  media_url: string;
+  alt_text: string;
+  // Carried by the admin select; the rights gate needs them to find the
+  // primary image the storefront would show.
+  sort_order?: number | null;
+  is_primary?: boolean | null;
+};
 type SubjectRow = { subject_type: string; subject_slug: string };
 
 type AdminProduct = {
@@ -237,15 +249,25 @@ function ProductsPanel() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(toPayload(merged, s)),
     });
-    if (res.ok) load();
-    else setStatus("Update failed.");
+    if (res.ok) {
+      invalidateShopCatalog();
+      load();
+    } else setStatus("Update failed.");
   }
 
   const sourcingOf = (id: string) => sourcing.find((x) => x.product_id === id);
 
+  // Published in the DB but filtered out of the storefront by the
+  // supplier-image rights gate: "published" must never overcount what a
+  // shopper can actually see.
+  const gatedHidden = (p: AdminProduct) =>
+    p.status === "published" && hasSupplierImage(p.media);
+
   const q = query.trim().toLowerCase();
   const visible = products.filter((p) => {
-    if (statusFilter !== "all" && p.status !== statusFilter) return false;
+    if (statusFilter === "hidden") {
+      if (!gatedHidden(p)) return false;
+    } else if (statusFilter !== "all" && p.status !== statusFilter) return false;
     if (category !== "all" && p.category !== category) return false;
     if (availability !== "all" && p.inventory_status !== availability) return false;
     if (!q) return true;
@@ -293,7 +315,11 @@ function ProductsPanel() {
     const cost = sourcingOf(p.id)?.supplier_cost_cents;
     if (cost != null) profit += (p.units_sold ?? 0) * (p.price_cents - cost);
   }
-  const published = products.filter((p) => p.status === "published").length;
+  // "Published" counts what the STOREFRONT shows (status published AND past
+  // the image-rights gate); the gap is surfaced as its own number.
+  const hiddenByGate = products.filter(gatedHidden).length;
+  const published =
+    products.filter((p) => p.status === "published").length - hiddenByGate;
   const drafts = products.filter((p) => p.status === "draft").length;
   const outOfStock = products.filter(
     (p) => p.inventory_status === "out_of_stock",
@@ -308,9 +334,10 @@ function ProductsPanel() {
           hint={drafts > 0 ? `${drafts} draft` : undefined}
         />
         <Metric
-          label="Published"
+          label="Live in shop"
           value={String(published)}
           tone={published > 0 ? "text-emerald-300" : undefined}
+          hint={hiddenByGate > 0 ? `${hiddenByGate} hidden by image rights` : undefined}
         />
         <Metric
           label="Out of stock"
@@ -366,6 +393,9 @@ function ProductsPanel() {
                 label: s,
                 count: products.filter((p) => p.status === s).length,
               })),
+              ...(hiddenByGate > 0 || statusFilter === "hidden"
+                ? [{ id: "hidden", label: "hidden", count: hiddenByGate }]
+                : []),
             ]}
             active={statusFilter}
             onChange={setStatusFilter}
@@ -423,9 +453,9 @@ function ProductsPanel() {
                   className="group flex items-center gap-3 text-left"
                 >
                   <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-md border border-white/8 bg-night-soft/60">
-                    {p.media[0] ? (
+                    {orderedMedia(p.media)[0] ? (
                       <Image
-                        src={p.media[0].media_url}
+                        src={orderedMedia(p.media)[0].media_url}
                         alt=""
                         fill
                         sizes="36px"
@@ -565,12 +595,20 @@ function ProductsPanel() {
             {
               key: "status",
               label: "Status",
-              render: (p) => (
-                <Pill tone={p.status === "published" ? "emerald" : p.status === "paused" ? "rose" : "neutral"}>
-                  {p.status}
-                </Pill>
-              ),
-              csv: (p) => p.status,
+              render: (p) =>
+                gatedHidden(p) ? (
+                  <span
+                    title="Published, but the storefront hides it: the primary image is on a supplier CDN. Replace it with an owned photo to make it live."
+                    className="inline-flex"
+                  >
+                    <Pill tone="gold">hidden</Pill>
+                  </span>
+                ) : (
+                  <Pill tone={p.status === "published" ? "emerald" : p.status === "paused" ? "rose" : "neutral"}>
+                    {p.status}
+                  </Pill>
+                ),
+              csv: (p) => (gatedHidden(p) ? "published (hidden)" : p.status),
             },
             {
               key: "actions",
@@ -818,7 +856,7 @@ function ProductOverview({
   const views = p.view_count ?? 0;
   const sold = p.units_sold ?? 0;
   const conv = views > 0 ? (sold / views) * 100 : null;
-  const hero = p.media[0] ?? null;
+  const hero = orderedMedia(p.media)[0] ?? null;
   const roiTone =
     roi == null
       ? undefined
@@ -830,6 +868,18 @@ function ProductOverview({
 
   return (
     <div className="space-y-5">
+      {hasSupplierImage(p.media) ? (
+        <div className="rounded-lg border border-amber-400/30 bg-amber-400/[0.06] p-3">
+          <p className="font-sans text-detail font-semibold text-amber-200">
+            Not shown in the public shop
+          </p>
+          <p className="mt-0.5 font-sans text-caption text-amber-200/80">
+            The primary photo is hosted on a supplier CDN, so the rights gate
+            hides this listing from shoppers even while it is published.
+            Upload an owned or licensed photo to make it live.
+          </p>
+        </div>
+      ) : null}
       <div className="flex flex-col gap-4 sm:flex-row">
         <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-xl border border-white/8 bg-night-soft/60">
           {hero ? (
@@ -1035,7 +1085,20 @@ function ProductEditor({
   sourcing: Sourcing | null;
   onSaved: () => void;
 }) {
-  const [p, setP] = useState<AdminProduct>(product ?? EMPTY_PRODUCT);
+  const [p, setP] = useState<AdminProduct>(() =>
+    product
+      ? {
+          ...product,
+          // Cover-first for the media manager, flags stripped: the draft's
+          // ORDER is the single source of truth, and the server rewrites
+          // sort_order/is_primary from it on save.
+          media: orderedMedia(product.media).map((m) => ({
+            media_url: m.media_url,
+            alt_text: m.alt_text,
+          })),
+        }
+      : EMPTY_PRODUCT,
+  );
   const [supplierName, setSupplierName] = useState("");
   const [src, setSrc] = useState<Partial<Sourcing>>(sourcing ?? {});
   const [busy, setBusy] = useState(false);
@@ -1070,8 +1133,10 @@ function ProductEditor({
     });
     const data = (await res.json()) as { ok?: boolean; error?: string };
     setBusy(false);
-    if (res.ok && data.ok) onSaved();
-    else setError(data.error ?? "Save failed.");
+    if (res.ok && data.ok) {
+      invalidateShopCatalog();
+      onSaved();
+    } else setError(data.error ?? "Save failed.");
   }
 
   // No Card wrapper: the title, close control, and Overview/Edit toggle all
@@ -1250,60 +1315,43 @@ function ProductEditor({
         </span>
       </label>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <label className="space-y-1">
-          <span className={labelCls}>
-            Media (one per line: URL | alt text)
-          </span>
-          <textarea
-            rows={4}
-            value={p.media.map((m) => `${m.media_url} | ${m.alt_text}`).join("\n")}
-            onChange={(e) =>
-              set(
-                "media",
-                e.target.value
-                  .split("\n")
-                  .map((l) => l.trim())
-                  .filter(Boolean)
-                  .map((l) => {
-                    const [url, ...alt] = l.split("|");
-                    return {
-                      media_url: (url ?? "").trim(),
-                      alt_text: alt.join("|").trim(),
-                    };
-                  }),
-              )
-            }
-            className={field}
-          />
-        </label>
-        <label className="space-y-1">
-          <span className={labelCls}>
-            Subjects (one per line: type | slug, e.g. saint | st-nicholas)
-          </span>
-          <textarea
-            rows={4}
-            value={p.subjects.map((s) => `${s.subject_type} | ${s.subject_slug}`).join("\n")}
-            onChange={(e) =>
-              set(
-                "subjects",
-                e.target.value
-                  .split("\n")
-                  .map((l) => l.trim())
-                  .filter(Boolean)
-                  .map((l) => {
-                    const [type, slug] = l.split("|");
-                    return {
-                      subject_type: (type ?? "").trim(),
-                      subject_slug: (slug ?? "").trim(),
-                    };
-                  }),
-              )
-            }
-            className={field}
-          />
-        </label>
+      <div className="mt-4 space-y-1">
+        <span className={labelCls}>
+          Images (the first is the cover shoppers see; saving updates the
+          storefront within seconds)
+        </span>
+        <ProductMediaManager
+          rows={p.media}
+          onChange={(rows) => set("media", rows)}
+        />
       </div>
+
+      <label className="mt-4 block space-y-1">
+        <span className={labelCls}>
+          Subjects (one per line: type | slug, e.g. saint | st-nicholas)
+        </span>
+        <textarea
+          rows={4}
+          value={p.subjects.map((s) => `${s.subject_type} | ${s.subject_slug}`).join("\n")}
+          onChange={(e) =>
+            set(
+              "subjects",
+              e.target.value
+                .split("\n")
+                .map((l) => l.trim())
+                .filter(Boolean)
+                .map((l) => {
+                  const [type, slug] = l.split("|");
+                  return {
+                    subject_type: (type ?? "").trim(),
+                    subject_slug: (slug ?? "").trim(),
+                  };
+                }),
+            )
+          }
+          className={field}
+        />
+      </label>
 
       <div className="mt-6 rounded-lg border border-rose-400/20 bg-rose-400/[0.03] p-4">
         <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-rose-300/80">
@@ -1902,8 +1950,10 @@ function ReviewsPanel() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ target: t, id }),
     });
-    if (res.ok) load();
-    else setStatus("Delete failed.");
+    if (res.ok) {
+      invalidateShopCatalog();
+      load();
+    } else setStatus("Delete failed.");
   }
 
   const productReviews = data?.productReviews ?? [];
@@ -2282,6 +2332,7 @@ function SeedReviewSheet({
     });
     setBusy(false);
     if (res.ok) {
+      invalidateShopCatalog();
       onSaved();
     } else {
       const e = (await res.json().catch(() => ({}))) as { error?: string };

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 
 import { ProductDetailClient } from "@/components/shop/ProductDetailClient";
 import { getProduct, listPublishedProductSlugs } from "@/lib/shop/catalog";
-import { formatPrice } from "@/lib/shop/format";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -19,8 +18,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProduct(slug);
   if (!product) return { title: "Icon not found" };
+  // No price in the baked title: this metadata renders at BUILD time (the
+  // page body fetches live), so a price here would go stale the moment the
+  // price changes in admin and stay wrong until the next deploy.
   return {
-    title: `${product.title} | ${formatPrice(product.price_cents, product.currency)}`,
+    title: `${product.title} | EIKON`,
     description: product.subtitle ?? undefined,
   };
 }

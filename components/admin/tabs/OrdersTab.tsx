@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { Card, DataTable, Pill, SubTabs, ToolbarButton } from "../primitives";
 import { formatPrice } from "@/lib/shop/format";
 import { SELLER_STATUS_LABELS } from "@/lib/shop/sellerOrders";
+import { trackingLink } from "@/lib/shop/trackingLink";
 import type { ShopFulfillmentStatus } from "@/lib/shop/types";
 
 type AdminOrder = {
@@ -85,6 +86,10 @@ export function OrdersTab() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  // Per-order tracking drafts (same idiom as the applications panel's
+  // noteDraft): no sync effect needed, and switching orders never leaks a
+  // half-typed number across.
+  const [trackingDrafts, setTrackingDrafts] = useState<Record<string, string>>({});
 
   useEffect(() => {
     let alive = true;
@@ -122,6 +127,42 @@ export function OrdersTab() {
         setSelected((s) =>
           s && s.id === order.id ? { ...s, fulfillment_status: status } : s,
         );
+        setReloadKey((k) => k + 1);
+      }
+    } catch {
+      setError("Update failed.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function saveTracking() {
+    if (!selected) return;
+    setSaving(true);
+    setError(null);
+    try {
+      const draft =
+        trackingDrafts[selected.id] ?? selected.outbound_tracking ?? "";
+      const outboundTracking = draft.trim() || null;
+      const res = await fetch("/api/admin/shop/orders", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: selected.id, outboundTracking }),
+      });
+      const j = await res.json();
+      if (!res.ok) {
+        setError(j.error ?? "Update failed.");
+      } else {
+        setSelected((s) =>
+          s && s.id === selected.id
+            ? { ...s, outbound_tracking: outboundTracking }
+            : s,
+        );
+        setTrackingDrafts((d) => {
+          const rest = { ...d };
+          delete rest[selected.id];
+          return rest;
+        });
         setReloadKey((k) => k + 1);
       }
     } catch {
@@ -248,9 +289,6 @@ export function OrdersTab() {
                 value={money(selected.total_cents, selected.currency)}
               />
               <Row label="Ship to" value={addr(selected.shipping_address)} />
-              {selected.outbound_tracking && (
-                <Row label="Tracking" value={selected.outbound_tracking} />
-              )}
             </div>
             <div>
               <p className="text-eyebrow uppercase tracking-[1.2px] text-paper/45 mb-2">
@@ -308,6 +346,51 @@ export function OrdersTab() {
                   </option>
                 ))}
               </select>
+              <p className="text-eyebrow uppercase tracking-[1.2px] text-paper/45 mt-4 mb-2">
+                Outbound tracking
+              </p>
+              <div className="flex gap-2">
+                <input
+                  value={
+                    trackingDrafts[selected.id] ??
+                    selected.outbound_tracking ??
+                    ""
+                  }
+                  onChange={(e) =>
+                    setTrackingDrafts((d) => ({
+                      ...d,
+                      [selected.id]: e.target.value,
+                    }))
+                  }
+                  disabled={saving}
+                  placeholder="Tracking number"
+                  className="w-full rounded-md border border-paper/20 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/30 focus:border-gold focus:outline-none disabled:opacity-50"
+                  aria-label="Outbound tracking number"
+                />
+                <ToolbarButton onClick={() => void saveTracking()} loading={saving}>
+                  Save
+                </ToolbarButton>
+              </div>
+              {selected.outbound_tracking ? (
+                (() => {
+                  const link = trackingLink(selected.outbound_tracking);
+                  return link ? (
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 inline-flex font-sans text-eyebrow font-semibold text-gold hover:text-gold-pale"
+                    >
+                      {link.carrier ? `Track via ${link.carrier}` : "Track parcel"} ↗
+                    </a>
+                  ) : null;
+                })()
+              ) : selected.fulfillment_status === "shipped" ? (
+                <p className="mt-2 font-sans text-eyebrow text-amber-300/80">
+                  Shipped without a tracking number: the buyer cannot follow the
+                  parcel. Add one above.
+                </p>
+              ) : null}
               {error && (
                 <p className="mt-2 font-sans text-eyebrow text-rose-300">{error}</p>
               )}

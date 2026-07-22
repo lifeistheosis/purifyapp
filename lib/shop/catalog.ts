@@ -1,6 +1,7 @@
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 
+import { hasSupplierImage } from "./imageRights";
 import type {
   ShopCategory,
   ShopInventoryStatus,
@@ -46,21 +47,10 @@ function orderMedia(p: ShopProductFull): ShopProductFull {
   return p;
 }
 
-// Rights gate. A listing whose primary photo still lives on a supplier's CDN
-// is showing the supplier's copyrighted image, not ours; it must not appear in
-// the public storefront until a real (own or licensed) photo replaces it. This
-// only filters public reads — the admin console uses the service-role path and
-// still sees these listings so they can be fixed. Extend the host list if a new
-// supplier CDN is used.
-const SUPPLIER_IMAGE_HOSTS = ["kwcdn.com"];
-
-function hasSupplierImage(p: ShopProductFull): boolean {
-  const primary = p.media[0];
-  return Boolean(
-    primary?.media_url &&
-      SUPPLIER_IMAGE_HOSTS.some((h) => primary.media_url.includes(h)),
-  );
-}
+// Rights gate: hasSupplierImage lives in ./imageRights so the admin panel
+// can flag exactly what this module hides. It only filters public reads —
+// the admin console uses the service-role path and still sees these
+// listings so they can be fixed.
 
 // The runtime reads below fail soft the same way the build-time enumerators
 // do: supabase-js THROWS on network failure (TypeError: fetch failed) instead
@@ -163,7 +153,7 @@ async function listProductsInner(
   }
   const visible = ((data ?? []) as unknown as ShopProductFull[])
     .map(orderMedia)
-    .filter((p) => !hasSupplierImage(p));
+    .filter((p) => !hasSupplierImage(p.media));
   return visible.slice(offset, offset + want);
 }
 
@@ -182,7 +172,7 @@ export async function getProduct(slug: string): Promise<ShopProductFull | null> 
     if (!data) return null;
     const product = orderMedia(data as unknown as ShopProductFull);
     // Don't serve a product page for a listing still on a supplier's image.
-    if (hasSupplierImage(product)) return null;
+    if (hasSupplierImage(product.media)) return null;
     return product;
   } catch (e) {
     console.warn("[shop] getProduct threw", e instanceof Error ? e.message : e);

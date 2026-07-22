@@ -84,7 +84,7 @@ export async function GET(
         storeShippingMd: store?.shipping_policy_md ?? null,
         storeReturnMd: store?.return_policy_md ?? null,
       },
-      { headers: { "Cache-Control": "public, max-age=120" } },
+      { headers: { "Cache-Control": "public, max-age=30, stale-while-revalidate=300" } },
     ),
     req,
   );

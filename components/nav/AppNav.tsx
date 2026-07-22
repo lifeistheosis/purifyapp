@@ -79,6 +79,7 @@ export function AppNav() {
     { key: "saints", label: t("nav.saints"), href: "/saints" },
     { key: "discover", label: t("nav.discover"), href: "/discover" },
     { key: "calendar", label: t("nav.calendar"), href: "/calendar" },
+    { key: "community", label: t("nav.community"), href: "/community" },
   ];
 
   const SECONDARY = [{ key: "support", label: t("nav.support"), href: "/support" }];

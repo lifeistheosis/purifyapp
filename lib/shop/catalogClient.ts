@@ -37,14 +37,28 @@ export type FetchProductsParams = {
 // Tiny in-memory read cache. Catalog data changes at admin speed, so a
 // short TTL makes back-navigation and tab-hopping instant without ever
 // showing meaningfully stale prices. Errors and non-GET calls never cache.
-const TTL_MS = 2 * 60 * 1000;
+const TTL_MS = 30 * 1000;
 const readCache = new Map<string, { at: number; data: unknown }>();
+let noStoreUntil = 0;
+
+/** Call after any admin write that changes the public catalog (product save,
+ * pause/publish, review seed/delete). Clears this cache AND makes the next
+ * minute of reads bypass the browser HTTP cache, so an admin who edits and
+ * then opens the shop in the same tab sees their change immediately instead
+ * of a cached copy. */
+export function invalidateShopCatalog() {
+  readCache.clear();
+  noStoreUntil = Date.now() + 60 * 1000;
+}
 
 async function getJson<T>(path: string): Promise<T> {
   const hit = readCache.get(path);
   if (hit && Date.now() - hit.at < TTL_MS) return hit.data as T;
 
-  const res = await apiFetch(path);
+  const res = await apiFetch(
+    path,
+    Date.now() < noStoreUntil ? { cache: "no-store" } : {},
+  );
   if (!res.ok) {
     const err = new Error(`Request failed (${res.status})`) as Error & {
       status?: number;
