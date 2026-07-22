@@ -9,7 +9,8 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import { invalidateShopCatalog } from "@/lib/shop/catalogClient";
-import { hasSupplierImage } from "@/lib/shop/imageRights";
+import { hasSupplierImage, orderedMedia } from "@/lib/shop/imageRights";
+import { ProductMediaManager } from "../ProductMediaManager";
 
 import {
   Card,
@@ -452,9 +453,9 @@ function ProductsPanel() {
                   className="group flex items-center gap-3 text-left"
                 >
                   <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-md border border-white/8 bg-night-soft/60">
-                    {p.media[0] ? (
+                    {orderedMedia(p.media)[0] ? (
                       <Image
-                        src={p.media[0].media_url}
+                        src={orderedMedia(p.media)[0].media_url}
                         alt=""
                         fill
                         sizes="36px"
@@ -855,7 +856,7 @@ function ProductOverview({
   const views = p.view_count ?? 0;
   const sold = p.units_sold ?? 0;
   const conv = views > 0 ? (sold / views) * 100 : null;
-  const hero = p.media[0] ?? null;
+  const hero = orderedMedia(p.media)[0] ?? null;
   const roiTone =
     roi == null
       ? undefined
@@ -1084,7 +1085,20 @@ function ProductEditor({
   sourcing: Sourcing | null;
   onSaved: () => void;
 }) {
-  const [p, setP] = useState<AdminProduct>(product ?? EMPTY_PRODUCT);
+  const [p, setP] = useState<AdminProduct>(() =>
+    product
+      ? {
+          ...product,
+          // Cover-first for the media manager, flags stripped: the draft's
+          // ORDER is the single source of truth, and the server rewrites
+          // sort_order/is_primary from it on save.
+          media: orderedMedia(product.media).map((m) => ({
+            media_url: m.media_url,
+            alt_text: m.alt_text,
+          })),
+        }
+      : EMPTY_PRODUCT,
+  );
   const [supplierName, setSupplierName] = useState("");
   const [src, setSrc] = useState<Partial<Sourcing>>(sourcing ?? {});
   const [busy, setBusy] = useState(false);
@@ -1301,60 +1315,43 @@ function ProductEditor({
         </span>
       </label>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <label className="space-y-1">
-          <span className={labelCls}>
-            Media (one per line: URL | alt text)
-          </span>
-          <textarea
-            rows={4}
-            value={p.media.map((m) => `${m.media_url} | ${m.alt_text}`).join("\n")}
-            onChange={(e) =>
-              set(
-                "media",
-                e.target.value
-                  .split("\n")
-                  .map((l) => l.trim())
-                  .filter(Boolean)
-                  .map((l) => {
-                    const [url, ...alt] = l.split("|");
-                    return {
-                      media_url: (url ?? "").trim(),
-                      alt_text: alt.join("|").trim(),
-                    };
-                  }),
-              )
-            }
-            className={field}
-          />
-        </label>
-        <label className="space-y-1">
-          <span className={labelCls}>
-            Subjects (one per line: type | slug, e.g. saint | st-nicholas)
-          </span>
-          <textarea
-            rows={4}
-            value={p.subjects.map((s) => `${s.subject_type} | ${s.subject_slug}`).join("\n")}
-            onChange={(e) =>
-              set(
-                "subjects",
-                e.target.value
-                  .split("\n")
-                  .map((l) => l.trim())
-                  .filter(Boolean)
-                  .map((l) => {
-                    const [type, slug] = l.split("|");
-                    return {
-                      subject_type: (type ?? "").trim(),
-                      subject_slug: (slug ?? "").trim(),
-                    };
-                  }),
-              )
-            }
-            className={field}
-          />
-        </label>
+      <div className="mt-4 space-y-1">
+        <span className={labelCls}>
+          Images (the first is the cover shoppers see; saving updates the
+          storefront within seconds)
+        </span>
+        <ProductMediaManager
+          rows={p.media}
+          onChange={(rows) => set("media", rows)}
+        />
       </div>
+
+      <label className="mt-4 block space-y-1">
+        <span className={labelCls}>
+          Subjects (one per line: type | slug, e.g. saint | st-nicholas)
+        </span>
+        <textarea
+          rows={4}
+          value={p.subjects.map((s) => `${s.subject_type} | ${s.subject_slug}`).join("\n")}
+          onChange={(e) =>
+            set(
+              "subjects",
+              e.target.value
+                .split("\n")
+                .map((l) => l.trim())
+                .filter(Boolean)
+                .map((l) => {
+                  const [type, slug] = l.split("|");
+                  return {
+                    subject_type: (type ?? "").trim(),
+                    subject_slug: (slug ?? "").trim(),
+                  };
+                }),
+            )
+          }
+          className={field}
+        />
+      </label>
 
       <div className="mt-6 rounded-lg border border-rose-400/20 bg-rose-400/[0.03] p-4">
         <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-rose-300/80">

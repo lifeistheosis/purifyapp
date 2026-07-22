@@ -15,16 +15,19 @@ type MediaLike = {
   is_primary?: boolean | null;
 };
 
-/** The image the storefront would show first: primary flag wins, then sort
- * order. Mirrors orderMedia in lib/shop/catalog.ts without mutating. */
-export function primaryMediaUrl(media: MediaLike[]): string | null {
-  if (media.length === 0) return null;
-  const sorted = [...media].sort((a, b) =>
+/** Storefront display order: primary flag wins, then sort order. Mirrors
+ * orderMedia in lib/shop/catalog.ts without mutating the input. */
+export function orderedMedia<T extends MediaLike>(media: T[]): T[] {
+  return [...media].sort((a, b) =>
     Boolean(a.is_primary) !== Boolean(b.is_primary)
       ? Number(Boolean(b.is_primary)) - Number(Boolean(a.is_primary))
       : (a.sort_order ?? 0) - (b.sort_order ?? 0),
   );
-  return sorted[0]?.media_url ?? null;
+}
+
+/** The image the storefront would show first. */
+export function primaryMediaUrl(media: MediaLike[]): string | null {
+  return orderedMedia(media)[0]?.media_url ?? null;
 }
 
 export function isSupplierImageUrl(url: string | null | undefined): boolean {

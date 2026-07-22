@@ -61,11 +61,13 @@ const nextConfig: NextConfig = isAndroid
       // Supplier product photos for dropshipped shop listings live on Temu's
       // CDN. next/image proxies them through /_next/image (same-origin), so the
       // CSP img-src 'self' still covers them. These are placeholders until real
-      // repackaged-product photos replace them.
+      // repackaged-product photos replace them. Admin-uploaded product photos
+      // live in the public shop-media bucket on the Supabase project host.
       images: {
         remotePatterns: [
           { protocol: "https", hostname: "img.kwcdn.com" },
           { protocol: "https", hostname: "aimg.kwcdn.com" },
+          { protocol: "https", hostname: "avbqyvjgcrucjwevwixt.supabase.co" },
         ],
       },
     };
