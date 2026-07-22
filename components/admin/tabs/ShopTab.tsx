@@ -8,7 +8,18 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
-import { Card, DataTable, Modal, Pill, SubTabs, ToolbarButton } from "../primitives";
+import {
+  Card,
+  DataTable,
+  FilterBar,
+  FilterChips,
+  FilterSelect,
+  Modal,
+  Pill,
+  SearchInput,
+  SubTabs,
+  ToolbarButton,
+} from "../primitives";
 
 /* ── Types (admin payload shapes, deliberately local to this tab) ─────── */
 
@@ -118,6 +129,19 @@ const INVENTORY_STATUSES = [
   "coming_soon",
   "out_of_stock",
 ];
+const PRODUCT_STATUSES = ["published", "draft", "paused", "archived"];
+const PRODUCT_CATEGORIES = [
+  "christ",
+  "theotokos",
+  "saints",
+  "feasts",
+  "prayer_corner",
+  "crosses",
+  "sets",
+];
+
+/** "out_of_stock" -> "out of stock" for labels. */
+const pretty = (s: string) => s.replace(/_/g, " ");
 
 function money(cents: number | null | undefined): string {
   if (cents == null) return "";
@@ -145,31 +169,18 @@ export function ShopTab() {
   const [panel, setPanel] = useState<Panel>("products");
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap gap-2">
-        {(
+      <SubTabs
+        tabs={
           [
             ["products", "Products"],
             ["requests", "Icon requests"],
             ["applications", "Merchant applications"],
             ["reviews", "Reviews"],
-          ] as [Panel, string][]
-        ).map(([id, label]) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => setPanel(id)}
-            aria-pressed={panel === id}
-            className={
-              "rounded-pill px-4 py-1.5 font-sans text-detail font-medium transition-colors " +
-              (panel === id
-                ? "bg-gold text-night"
-                : "border border-paper/15 text-paper/65 hover:text-paper")
-            }
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+          ] as const
+        }
+        active={panel}
+        onChange={setPanel}
+      />
       {panel === "products" && <ProductsPanel />}
       {panel === "requests" && <RequestsPanel />}
       {panel === "applications" && <ApplicationsPanel />}
@@ -187,6 +198,14 @@ function ProductsPanel() {
   const [status, setStatus] = useState<string | null>(null);
   const [version, setVersion] = useState(0);
   const load = () => setVersion((v) => v + 1);
+
+  // Table filters. Catalog-scale data, so filtering and sorting run inline on
+  // every render instead of hiding behind memo hooks.
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [category, setCategory] = useState("all");
+  const [availability, setAvailability] = useState("all");
+  const [sort, setSort] = useState("newest");
 
   useEffect(() => {
     let alive = true;
@@ -222,8 +241,95 @@ function ProductsPanel() {
     else setStatus("Update failed.");
   }
 
+  const sourcingOf = (id: string) => sourcing.find((x) => x.product_id === id);
+
+  const q = query.trim().toLowerCase();
+  const visible = products.filter((p) => {
+    if (statusFilter !== "all" && p.status !== statusFilter) return false;
+    if (category !== "all" && p.category !== category) return false;
+    if (availability !== "all" && p.inventory_status !== availability) return false;
+    if (!q) return true;
+    const s = sourcingOf(p.id);
+    return [p.title, p.slug, p.maker_name, p.category, s?.supplier_sku, s?.supplier_url]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase()
+      .includes(q);
+  });
+
+  const roiOf = (p: AdminProduct) => {
+    const cost = sourcingOf(p.id)?.supplier_cost_cents;
+    return cost != null && cost > 0
+      ? (p.price_cents - cost) / cost
+      : Number.NEGATIVE_INFINITY;
+  };
+  if (sort === "title") visible.sort((a, b) => a.title.localeCompare(b.title));
+  else if (sort === "price_desc") visible.sort((a, b) => b.price_cents - a.price_cents);
+  else if (sort === "price_asc") visible.sort((a, b) => a.price_cents - b.price_cents);
+  else if (sort === "views") visible.sort((a, b) => (b.view_count ?? 0) - (a.view_count ?? 0));
+  else if (sort === "sold") visible.sort((a, b) => (b.units_sold ?? 0) - (a.units_sold ?? 0));
+  else if (sort === "roi") visible.sort((a, b) => roiOf(b) - roiOf(a));
+  // "newest" keeps the API order (created_at desc).
+
+  const filtersActive =
+    q !== "" || statusFilter !== "all" || category !== "all" || availability !== "all";
+  const clearFilters = () => {
+    setQuery("");
+    setStatusFilter("all");
+    setCategory("all");
+    setAvailability("all");
+  };
+
+  // Catalog totals stay pinned to the WHOLE catalog, not the filtered view,
+  // so the strip reads as "state of the shop" while filters narrow the table.
+  let views = 0;
+  let sold = 0;
+  let revenue = 0;
+  let profit = 0;
+  for (const p of products) {
+    views += p.view_count ?? 0;
+    sold += p.units_sold ?? 0;
+    revenue += (p.units_sold ?? 0) * p.price_cents;
+    const cost = sourcingOf(p.id)?.supplier_cost_cents;
+    if (cost != null) profit += (p.units_sold ?? 0) * (p.price_cents - cost);
+  }
+  const published = products.filter((p) => p.status === "published").length;
+  const drafts = products.filter((p) => p.status === "draft").length;
+  const outOfStock = products.filter(
+    (p) => p.inventory_status === "out_of_stock",
+  ).length;
+
   return (
     <div className="space-y-5">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+        <Metric
+          label="Products"
+          value={String(products.length)}
+          hint={drafts > 0 ? `${drafts} draft` : undefined}
+        />
+        <Metric
+          label="Published"
+          value={String(published)}
+          tone={published > 0 ? "text-emerald-300" : undefined}
+        />
+        <Metric
+          label="Out of stock"
+          value={String(outOfStock)}
+          tone={outOfStock > 0 ? "text-amber-300" : "text-paper/40"}
+        />
+        <Metric label="Views" value={views.toLocaleString()} />
+        <Metric
+          label="Units sold"
+          value={sold.toLocaleString()}
+          tone={sold > 0 ? "text-emerald-300" : undefined}
+        />
+        <Metric
+          label="Revenue"
+          value={money(revenue)}
+          hint={profit > 0 ? `${money(profit)} profit` : undefined}
+        />
+      </div>
+
       <Card
         title="EIKON products"
         subtitle="Publish, pause, and keep availability honest"
@@ -240,10 +346,72 @@ function ProductsPanel() {
         {status ? (
           <p className="mb-3 font-sans text-detail text-rose-300">{status}</p>
         ) : null}
+        <FilterBar
+          matched={visible.length}
+          total={products.length}
+          noun="products"
+          onClear={filtersActive ? clearFilters : null}
+        >
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search title, slug, maker, supplier…"
+            className="w-full sm:w-72"
+          />
+          <FilterChips
+            options={[
+              { id: "all", label: "All", count: products.length },
+              ...PRODUCT_STATUSES.map((s) => ({
+                id: s,
+                label: s,
+                count: products.filter((p) => p.status === s).length,
+              })),
+            ]}
+            active={statusFilter}
+            onChange={setStatusFilter}
+          />
+          <FilterSelect
+            label="Category"
+            value={category}
+            onChange={setCategory}
+            options={[
+              ["all", "All"],
+              ...PRODUCT_CATEGORIES.map((c) => [c, pretty(c)] as const),
+            ]}
+          />
+          <FilterSelect
+            label="Availability"
+            value={availability}
+            onChange={setAvailability}
+            options={[
+              ["all", "All"],
+              ...INVENTORY_STATUSES.map((s) => [s, pretty(s)] as const),
+            ]}
+          />
+          <FilterSelect
+            label="Sort"
+            value={sort}
+            onChange={setSort}
+            options={[
+              ["newest", "Newest"],
+              ["title", "Title A-Z"],
+              ["price_desc", "Price: high to low"],
+              ["price_asc", "Price: low to high"],
+              ["views", "Most viewed"],
+              ["sold", "Best selling"],
+              ["roi", "Best ROI"],
+            ]}
+          />
+        </FilterBar>
         <DataTable<AdminProduct>
-          rows={products}
+          rows={visible}
           rowKey={(p) => p.id}
-          empty="No products yet. Apply the migration, then seed or create one."
+          csvFilename="eikon-products.csv"
+          empty={
+            products.length
+              ? "No products match these filters."
+              : "No products yet. Apply the migration, then seed or create one."
+          }
           columns={[
             {
               key: "title",
@@ -252,11 +420,30 @@ function ProductsPanel() {
                 <button
                   type="button"
                   onClick={() => setEditing(p)}
-                  className="text-left font-medium text-paper hover:text-gold"
+                  className="group flex items-center gap-3 text-left"
                 >
-                  {p.title}
-                  <span className="block font-sans text-eyebrow text-paper/40">
-                    {p.slug}
+                  <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-md border border-white/8 bg-night-soft/60">
+                    {p.media[0] ? (
+                      <Image
+                        src={p.media[0].media_url}
+                        alt=""
+                        fill
+                        sizes="36px"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <span className="flex h-full w-full items-center justify-center font-sans text-eyebrow text-paper/25">
+                        ·
+                      </span>
+                    )}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block max-w-[280px] truncate font-medium text-paper group-hover:text-gold">
+                      {p.title}
+                    </span>
+                    <span className="block max-w-[280px] truncate font-sans text-eyebrow text-paper/40">
+                      {p.slug} · {pretty(p.category)}
+                    </span>
                   </span>
                 </button>
               ),
@@ -920,7 +1107,7 @@ function ProductEditor({
         <label className="space-y-1">
           <span className={labelCls}>Category</span>
           <select value={p.category} onChange={(e) => set("category", e.target.value)} className={field}>
-            {["christ", "theotokos", "saints", "feasts", "prayer_corner", "crosses", "sets"].map((c) => (
+            {PRODUCT_CATEGORIES.map((c) => (
               <option key={c} value={c}>
                 {c}
               </option>
@@ -1282,6 +1469,8 @@ function RequestsPanel() {
   const [error, setError] = useState<string | null>(null);
   const [version, setVersion] = useState(0);
   const load = () => setVersion((v) => v + 1);
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     let alive = true;
@@ -1310,13 +1499,58 @@ function RequestsPanel() {
     if (r.ok) load();
   }
 
+  const q = query.trim().toLowerCase();
+  const visible = requests.filter((r) => {
+    if (statusFilter !== "all" && r.status !== statusFilter) return false;
+    if (!q) return true;
+    return [r.subject, r.email, r.saint_slug, r.request_type, r.notes]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase()
+      .includes(q);
+  });
+
   return (
     <Card title="Icon requests" subtitle="Demand collection; answer by email">
       {error ? <p className="mb-3 font-sans text-detail text-rose-300">{error}</p> : null}
+      <FilterBar
+        matched={visible.length}
+        total={requests.length}
+        noun="requests"
+        onClear={
+          q || statusFilter !== "all"
+            ? () => {
+                setQuery("");
+                setStatusFilter("all");
+              }
+            : null
+        }
+      >
+        <SearchInput
+          value={query}
+          onChange={setQuery}
+          placeholder="Search subject, email, notes…"
+          className="w-full sm:w-72"
+        />
+        <FilterChips
+          options={[
+            { id: "all", label: "All", count: requests.length },
+            ...REQUEST_STATUSES.map((s) => ({
+              id: s,
+              label: s,
+              count: requests.filter((r) => r.status === s).length,
+            })),
+          ]}
+          active={statusFilter}
+          onChange={setStatusFilter}
+        />
+      </FilterBar>
       <DataTable<IconRequest>
-        rows={requests}
+        rows={visible}
         rowKey={(r) => r.id}
-        empty="No requests yet."
+        empty={
+          requests.length ? "No requests match these filters." : "No requests yet."
+        }
         csvFilename="icon-requests.csv"
         columns={[
           {
@@ -1327,9 +1561,9 @@ function RequestsPanel() {
                 <p className="font-medium text-paper">{r.subject}</p>
                 <p className="font-sans text-eyebrow text-paper/40">
                   {r.request_type}
-                  {r.preferred_size ? ` Â· ${r.preferred_size}` : ""}
-                  {r.budget_band ? ` Â· ${r.budget_band}` : ""}
-                  {r.notify_when_available ? " Â· notify" : ""}
+                  {r.preferred_size ? ` · ${r.preferred_size}` : ""}
+                  {r.budget_band ? ` · ${r.budget_band}` : ""}
+                  {r.notify_when_available ? " · notify" : ""}
                 </p>
                 {r.notes ? (
                   <p className="mt-1 max-w-[360px] font-sans text-eyebrow text-paper/55">
@@ -1386,6 +1620,8 @@ function ApplicationsPanel() {
   const [error, setError] = useState<string | null>(null);
   const [version, setVersion] = useState(0);
   const load = () => setVersion((v) => v + 1);
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     let alive = true;
@@ -1419,31 +1655,95 @@ function ApplicationsPanel() {
     }
   }
 
+  const q = query.trim().toLowerCase();
+  const visible = apps.filter((a) => {
+    if (statusFilter !== "all" && a.status !== statusFilter) return false;
+    if (!q) return true;
+    return [
+      a.proposed_store_name,
+      a.legal_name,
+      a.email,
+      a.country,
+      a.seller_type,
+      a.seller_description,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase()
+      .includes(q);
+  });
+
+  const appTone = (s: string) =>
+    s === "approved" || s === "live"
+      ? ("emerald" as const)
+      : s === "declined" || s === "suspended"
+        ? ("rose" as const)
+        : s === "more_info_required"
+          ? ("gold" as const)
+          : ("neutral" as const);
+
   return (
     <Card
       title="Merchant applications"
       subtitle="Manual review only; approval never auto-creates a store"
     >
       {error ? <p className="mb-3 font-sans text-detail text-rose-300">{error}</p> : null}
+      <FilterBar
+        matched={visible.length}
+        total={apps.length}
+        noun="applications"
+        onClear={
+          q || statusFilter !== "all"
+            ? () => {
+                setQuery("");
+                setStatusFilter("all");
+              }
+            : null
+        }
+      >
+        <SearchInput
+          value={query}
+          onChange={setQuery}
+          placeholder="Search store, name, email, country…"
+          className="w-full sm:w-72"
+        />
+        <FilterChips
+          options={[
+            { id: "all", label: "All", count: apps.length },
+            ...APPLICATION_STATUSES.map((s) => ({
+              id: s,
+              label: pretty(s),
+              count: apps.filter((a) => a.status === s).length,
+            })),
+          ]}
+          active={statusFilter}
+          onChange={setStatusFilter}
+        />
+      </FilterBar>
       {apps.length === 0 ? (
         <p className="font-sans text-detail text-paper/50">No applications yet.</p>
+      ) : visible.length === 0 ? (
+        <p className="font-sans text-detail text-paper/50">
+          No applications match these filters.
+        </p>
       ) : (
         <ul className="space-y-4">
-          {apps.map((a) => {
+          {visible.map((a) => {
             const appNotes = notes.filter((n) => n.application_id === a.id);
             return (
               <li key={a.id} className="rounded-lg border border-paper/10 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <p className="font-medium text-paper">
+                    <p className="flex flex-wrap items-center gap-2 font-medium text-paper">
                       {a.proposed_store_name}
-                      <span className="ms-2 font-sans text-eyebrow text-paper/45">
-                        {a.seller_type.replace(/_/g, " ")} Â· {a.country}
+                      <Pill tone={appTone(a.status)}>{pretty(a.status)}</Pill>
+                      <span className="font-sans text-eyebrow text-paper/45">
+                        {pretty(a.seller_type)} · {a.country}
                       </span>
                     </p>
                     <p className="font-sans text-eyebrow text-paper/50">
-                      {a.legal_name} Â· {a.email}
-                      {a.phone ? ` Â· ${a.phone}` : ""}
+                      {a.legal_name} · {a.email}
+                      {a.phone ? ` · ${a.phone}` : ""}
                     </p>
                     {a.portfolio_url ? (
                       <a
@@ -1475,8 +1775,8 @@ function ApplicationsPanel() {
                   </p>
                 ) : null}
                 <p className="mt-1 font-sans text-eyebrow text-paper/45">
-                  Methods: {a.product_methods.join(", ") || "n/a"} Â· Offers:{" "}
-                  {a.fulfillment_offerings.join(", ") || "n/a"} Â· Applied{" "}
+                  Methods: {a.product_methods.join(", ") || "n/a"} · Offers:{" "}
+                  {a.fulfillment_offerings.join(", ") || "n/a"} · Applied{" "}
                   {new Date(a.created_at).toLocaleDateString()}
                 </p>
 
@@ -1485,7 +1785,7 @@ function ApplicationsPanel() {
                     {appNotes.map((n) => (
                       <li key={n.id} className="font-sans text-eyebrow text-paper/55">
                         <span className="text-paper/35">
-                          {new Date(n.created_at).toLocaleDateString()} Â· {n.admin_email}:
+                          {new Date(n.created_at).toLocaleDateString()} · {n.admin_email}:
                         </span>{" "}
                         {n.note}
                       </li>
@@ -1568,17 +1868,13 @@ function ReviewsPanel() {
   const [status, setStatus] = useState<string | null>(null);
   const [version, setVersion] = useState(0);
   const load = () => setVersion((v) => v + 1);
+  const [seeding, setSeeding] = useState(false);
 
-  // Seed form state.
-  const [target, setTarget] = useState<"product" | "store">("product");
-  const [productId, setProductId] = useState("");
-  const [storeId, setStoreId] = useState("");
-  const [stars, setStars] = useState(5);
-  const [body, setBody] = useState("");
-  const [name, setName] = useState("");
-  const [location, setLocation] = useState("");
-  const [anonymous, setAnonymous] = useState(false);
-  const [busy, setBusy] = useState(false);
+  // Filters shared by both tables.
+  const [query, setQuery] = useState("");
+  const [scope, setScope] = useState("all");
+  const [starsFilter, setStarsFilter] = useState("all");
+  const [source, setSource] = useState("all");
 
   useEffect(() => {
     let alive = true;
@@ -1593,53 +1889,12 @@ function ReviewsPanel() {
       if (!alive) return;
       setData(d);
       setStatus(null);
-      // Default the selects to the first option once data arrives.
-      setProductId((cur) => cur || d.products[0]?.id || "");
-      setStoreId((cur) => cur || d.stores[0]?.id || "");
     }
     run();
     return () => {
       alive = false;
     };
   }, [version]);
-
-  async function seed() {
-    setBusy(true);
-    setStatus(null);
-    const payload =
-      target === "product"
-        ? {
-            target,
-            productId,
-            stars,
-            body: body.trim() || null,
-            displayName: name.trim() || null,
-            location: location.trim() || null,
-            anonymous,
-          }
-        : {
-            target,
-            storeId,
-            stars,
-            body: body.trim() || null,
-            displayName: name.trim() || null,
-            location: location.trim() || null,
-            anonymous,
-          };
-    const res = await fetch("/api/admin/shop/reviews", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    setBusy(false);
-    if (res.ok) {
-      setBody("");
-      load();
-    } else {
-      const e = (await res.json().catch(() => ({}))) as { error?: string };
-      setStatus(e.error ?? "Couldn't save the review.");
-    }
-  }
 
   async function remove(t: "product" | "store", id: string) {
     const res = await fetch("/api/admin/shop/reviews", {
@@ -1651,247 +1906,510 @@ function ReviewsPanel() {
     else setStatus("Delete failed.");
   }
 
+  const productReviews = data?.productReviews ?? [];
+  const storeReviews = data?.storeReviews ?? [];
+
+  const q = query.trim().toLowerCase();
+  function passes(
+    r: {
+      stars: number;
+      body: string | null;
+      display_name: string | null;
+      location: string | null;
+      order_id: string | null;
+    },
+    name: string,
+  ) {
+    if (starsFilter !== "all" && r.stars !== Number(starsFilter)) return false;
+    if (source === "verified" && !r.order_id) return false;
+    if (source === "seeded" && r.order_id) return false;
+    if (!q) return true;
+    return [name, r.display_name, r.location, r.body]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase()
+      .includes(q);
+  }
+  const visibleProduct = productReviews.filter((r) =>
+    passes(r, r.product?.title ?? ""),
+  );
+  const visibleStore = storeReviews.filter((r) =>
+    passes(r, r.store?.public_name ?? ""),
+  );
+  const matched =
+    (scope === "stores" ? 0 : visibleProduct.length) +
+    (scope === "products" ? 0 : visibleStore.length);
+  const total = productReviews.length + storeReviews.length;
+  const filtersActive =
+    q !== "" || scope !== "all" || starsFilter !== "all" || source !== "all";
+
+  const avgOf = (rows: { stars: number }[]) =>
+    rows.length ? rows.reduce((sum, r) => sum + r.stars, 0) / rows.length : null;
+  const avgProduct = avgOf(productReviews);
+  const avgStore = avgOf(storeReviews);
+  const verified =
+    productReviews.filter((r) => r.order_id).length +
+    storeReviews.filter((r) => r.order_id).length;
+  const seeded = total - verified;
+
+  const sourcePill = (orderId: string | null) =>
+    orderId ? <Pill tone="emerald">verified</Pill> : <Pill tone="gold">seeded</Pill>;
+
+  const sectionHeading =
+    "mb-1 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/45";
+
   return (
     <div className="space-y-5">
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+        <Metric
+          label="Product reviews"
+          value={String(productReviews.length)}
+          hint={avgProduct != null ? `${avgProduct.toFixed(1)} ★ average` : undefined}
+        />
+        <Metric
+          label="Store reviews"
+          value={String(storeReviews.length)}
+          hint={avgStore != null ? `${avgStore.toFixed(1)} ★ average` : undefined}
+        />
+        <Metric
+          label="Verified"
+          value={String(verified)}
+          tone={verified > 0 ? "text-emerald-300" : undefined}
+          hint="tied to a real order"
+        />
+        <Metric
+          label="Seeded"
+          value={String(seeded)}
+          tone={seeded > 0 ? "text-gold" : undefined}
+          hint="admin-created"
+        />
+      </div>
+
       <Card
-        title="Seed a test review"
-        subtitle="Real reviews on any product or store, skipping the buyer + delivered gate. They show live."
-        accent
+        title="Reviews"
+        subtitle="Everything currently live on products and stores"
+        action={
+          <ToolbarButton variant="primary" onClick={() => setSeeding(true)}>
+            Seed test review
+          </ToolbarButton>
+        }
       >
         {status ? (
           <p className="mb-3 font-sans text-detail text-rose-300">{status}</p>
         ) : null}
-        <div className="grid gap-3 sm:grid-cols-2">
+        <FilterBar
+          matched={matched}
+          total={total}
+          noun="reviews"
+          onClear={
+            filtersActive
+              ? () => {
+                  setQuery("");
+                  setScope("all");
+                  setStarsFilter("all");
+                  setSource("all");
+                }
+              : null
+          }
+        >
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search product, store, reviewer, text…"
+            className="w-full sm:w-72"
+          />
+          <FilterChips
+            options={[
+              { id: "all", label: "All", count: total },
+              { id: "products", label: "Products", count: productReviews.length },
+              { id: "stores", label: "Stores", count: storeReviews.length },
+            ]}
+            active={scope}
+            onChange={setScope}
+          />
+          <FilterSelect
+            label="Rating"
+            value={starsFilter}
+            onChange={setStarsFilter}
+            options={[
+              ["all", "All"],
+              ["5", "5 stars"],
+              ["4", "4 stars"],
+              ["3", "3 stars"],
+              ["2", "2 stars"],
+              ["1", "1 star"],
+            ]}
+          />
+          <FilterSelect
+            label="Source"
+            value={source}
+            onChange={setSource}
+            options={[
+              ["all", "All"],
+              ["verified", "Verified purchase"],
+              ["seeded", "Seeded"],
+            ]}
+          />
+        </FilterBar>
+
+        {scope !== "stores" ? (
+          <div className="mt-4">
+            <p className={sectionHeading}>Product reviews</p>
+            <DataTable<AdminProductReview>
+              rows={visibleProduct}
+              rowKey={(r) => r.id}
+              csvFilename="product-reviews.csv"
+              empty={
+                productReviews.length
+                  ? "No product reviews match these filters."
+                  : "No product reviews yet."
+              }
+              columns={[
+                {
+                  key: "product",
+                  label: "Product",
+                  render: (r) => (
+                    <span className="text-paper/85">{r.product?.title ?? "—"}</span>
+                  ),
+                  csv: (r) => r.product?.title ?? "",
+                },
+                {
+                  key: "stars",
+                  label: "Rating",
+                  render: (r) => (
+                    <span className="text-gold">{starLabel(r.stars)}</span>
+                  ),
+                  csv: (r) => r.stars,
+                },
+                {
+                  key: "who",
+                  label: "Reviewer",
+                  render: (r) => (
+                    <span>
+                      <span className="block text-paper/85">
+                        {r.anonymous ? "Anonymous" : r.display_name || "—"}
+                      </span>
+                      {r.location && !r.anonymous ? (
+                        <span className="block font-sans text-eyebrow text-paper/40">
+                          {r.location}
+                        </span>
+                      ) : null}
+                    </span>
+                  ),
+                  csv: (r) => (r.anonymous ? "Anonymous" : r.display_name || ""),
+                },
+                {
+                  key: "body",
+                  label: "Review",
+                  render: (r) => (
+                    <span className="line-clamp-2 text-paper/70">{r.body || "—"}</span>
+                  ),
+                  csv: (r) => r.body ?? "",
+                },
+                {
+                  key: "source",
+                  label: "Source",
+                  render: (r) => sourcePill(r.order_id),
+                  csv: (r) => (r.order_id ? "verified" : "seeded"),
+                },
+                {
+                  key: "posted",
+                  label: "Posted",
+                  render: (r) => new Date(r.created_at).toLocaleDateString(),
+                  csv: (r) => r.created_at,
+                },
+                {
+                  key: "actions",
+                  label: "",
+                  align: "right",
+                  render: (r) => (
+                    <ToolbarButton
+                      variant="danger"
+                      onClick={() => void remove("product", r.id)}
+                    >
+                      Delete
+                    </ToolbarButton>
+                  ),
+                },
+              ]}
+            />
+          </div>
+        ) : null}
+
+        {scope !== "products" ? (
+          <div className="mt-6">
+            <p className={sectionHeading}>Store reviews</p>
+            <DataTable<AdminStoreReview>
+              rows={visibleStore}
+              rowKey={(r) => r.id}
+              csvFilename="store-reviews.csv"
+              empty={
+                storeReviews.length
+                  ? "No store reviews match these filters."
+                  : "No store reviews yet."
+              }
+              columns={[
+                {
+                  key: "store",
+                  label: "Store",
+                  render: (r) => (
+                    <span className="text-paper/85">
+                      {r.store?.public_name ?? "—"}
+                    </span>
+                  ),
+                  csv: (r) => r.store?.public_name ?? "",
+                },
+                {
+                  key: "stars",
+                  label: "Rating",
+                  render: (r) => (
+                    <span className="text-gold">{starLabel(r.stars)}</span>
+                  ),
+                  csv: (r) => r.stars,
+                },
+                {
+                  key: "who",
+                  label: "Reviewer",
+                  render: (r) => (
+                    <span>
+                      <span className="block text-paper/85">
+                        {r.anonymous ? "Anonymous" : r.display_name || "—"}
+                      </span>
+                      {r.location && !r.anonymous ? (
+                        <span className="block font-sans text-eyebrow text-paper/40">
+                          {r.location}
+                        </span>
+                      ) : null}
+                    </span>
+                  ),
+                  csv: (r) => (r.anonymous ? "Anonymous" : r.display_name || ""),
+                },
+                {
+                  key: "body",
+                  label: "Review",
+                  render: (r) => (
+                    <span className="line-clamp-2 text-paper/70">{r.body || "—"}</span>
+                  ),
+                  csv: (r) => r.body ?? "",
+                },
+                {
+                  key: "source",
+                  label: "Source",
+                  render: (r) => sourcePill(r.order_id),
+                  csv: (r) => (r.order_id ? "verified" : "seeded"),
+                },
+                {
+                  key: "posted",
+                  label: "Posted",
+                  render: (r) => new Date(r.created_at).toLocaleDateString(),
+                  csv: (r) => r.created_at,
+                },
+                {
+                  key: "actions",
+                  label: "",
+                  align: "right",
+                  render: (r) => (
+                    <ToolbarButton
+                      variant="danger"
+                      onClick={() => void remove("store", r.id)}
+                    >
+                      Delete
+                    </ToolbarButton>
+                  ),
+                },
+              ]}
+            />
+          </div>
+        ) : null}
+      </Card>
+
+      {seeding ? (
+        <SeedReviewSheet
+          data={data}
+          onClose={() => setSeeding(false)}
+          onSaved={() => {
+            setSeeding(false);
+            load();
+          }}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+/* ── Seed review sheet ─────────────────────────────────────────────────────
+ * The seed form used to sit permanently at the top of the panel, pushing the
+ * actual reviews below the fold. It is an occasional testing tool, so it now
+ * lives behind a button in a dialog. */
+function SeedReviewSheet({
+  data,
+  onClose,
+  onSaved,
+}: {
+  data: ReviewsData | null;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [target, setTarget] = useState<"product" | "store">("product");
+  const [productId, setProductId] = useState(data?.products[0]?.id ?? "");
+  const [storeId, setStoreId] = useState(data?.stores[0]?.id ?? "");
+  const [stars, setStars] = useState(5);
+  const [body, setBody] = useState("");
+  const [name, setName] = useState("");
+  const [location, setLocation] = useState("");
+  const [anonymous, setAnonymous] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function seed() {
+    setBusy(true);
+    setError(null);
+    const common = {
+      stars,
+      body: body.trim() || null,
+      displayName: name.trim() || null,
+      location: location.trim() || null,
+      anonymous,
+    };
+    const payload =
+      target === "product"
+        ? { target, productId, ...common }
+        : { target, storeId, ...common };
+    const res = await fetch("/api/admin/shop/reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    setBusy(false);
+    if (res.ok) {
+      onSaved();
+    } else {
+      const e = (await res.json().catch(() => ({}))) as { error?: string };
+      setError(e.error ?? "Couldn't save the review.");
+    }
+  }
+
+  return (
+    <Modal
+      title="Seed a test review"
+      subtitle="A real review, skipping the buyer + delivered gate. It shows live immediately."
+      onClose={onClose}
+    >
+      {error ? (
+        <p className="mb-3 font-sans text-detail text-rose-300">{error}</p>
+      ) : null}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="block">
+          <span className={labelCls}>Target</span>
+          <select
+            value={target}
+            onChange={(e) => setTarget(e.target.value as "product" | "store")}
+            className={field}
+          >
+            <option value="product">A product</option>
+            <option value="store">A store</option>
+          </select>
+        </label>
+        {target === "product" ? (
           <label className="block">
-            <span className={labelCls}>Target</span>
+            <span className={labelCls}>Product</span>
             <select
-              value={target}
-              onChange={(e) => setTarget(e.target.value as "product" | "store")}
+              value={productId}
+              onChange={(e) => setProductId(e.target.value)}
               className={field}
             >
-              <option value="product">A product</option>
-              <option value="store">A store</option>
-            </select>
-          </label>
-          {target === "product" ? (
-            <label className="block">
-              <span className={labelCls}>Product</span>
-              <select
-                value={productId}
-                onChange={(e) => setProductId(e.target.value)}
-                className={field}
-              >
-                {(data?.products ?? []).map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.title}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : (
-            <label className="block">
-              <span className={labelCls}>Store</span>
-              <select
-                value={storeId}
-                onChange={(e) => setStoreId(e.target.value)}
-                className={field}
-              >
-                {(data?.stores ?? []).map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.public_name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
-          <label className="block">
-            <span className={labelCls}>Stars</span>
-            <select
-              value={stars}
-              onChange={(e) => setStars(Number(e.target.value))}
-              className={field}
-            >
-              {[5, 4, 3, 2, 1].map((n) => (
-                <option key={n} value={n}>
-                  {n} {n === 1 ? "star" : "stars"}
+              {(data?.products ?? []).map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.title}
                 </option>
               ))}
             </select>
           </label>
+        ) : (
           <label className="block">
-            <span className={labelCls}>Display name</span>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={anonymous}
-              maxLength={80}
-              placeholder="e.g. Markos V."
-              className={field + (anonymous ? " opacity-50" : "")}
-            />
-          </label>
-          <label className="block">
-            <span className={labelCls}>Location</span>
-            <input
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              disabled={anonymous}
-              maxLength={80}
-              placeholder="e.g. Chicago, IL"
-              className={field + (anonymous ? " opacity-50" : "")}
-            />
-          </label>
-          <label className="block sm:col-span-2">
-            <span className={labelCls}>Review body (optional)</span>
-            <textarea
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              rows={2}
-              maxLength={4000}
-              placeholder="What the reviewer wrote"
+            <span className={labelCls}>Store</span>
+            <select
+              value={storeId}
+              onChange={(e) => setStoreId(e.target.value)}
               className={field}
-            />
+            >
+              {(data?.stores ?? []).map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.public_name}
+                </option>
+              ))}
+            </select>
           </label>
-        </div>
-        <div className="mt-3 flex items-center justify-between gap-3">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={anonymous}
-              onChange={(e) => setAnonymous(e.target.checked)}
-              className="h-4 w-4 accent-gold"
-            />
-            <span className="font-sans text-detail text-paper/75">
-              Post anonymously
-            </span>
-          </label>
-          <button
-            type="button"
-            onClick={() => void seed()}
-            disabled={busy}
-            className="rounded-pill border border-gold/40 bg-gold/[0.08] px-4 py-1.5 font-sans text-caption font-semibold text-gold disabled:opacity-50"
+        )}
+        <label className="block">
+          <span className={labelCls}>Stars</span>
+          <select
+            value={stars}
+            onChange={(e) => setStars(Number(e.target.value))}
+            className={field}
           >
-            {busy ? "Saving…" : "Add review"}
-          </button>
-        </div>
-      </Card>
-
-      <Card title="Product reviews" subtitle="Every review currently live on a product">
-        <DataTable<AdminProductReview>
-          rows={data?.productReviews ?? []}
-          rowKey={(r) => r.id}
-          csvFilename="product-reviews.csv"
-          empty="No product reviews yet."
-          columns={[
-            {
-              key: "product",
-              label: "Product",
-              render: (r) => (
-                <span className="text-paper/85">
-                  {r.product?.title ?? "—"}
-                  {r.order_id ? null : (
-                    <span className="ml-2">
-                      <Pill tone="gold">seeded</Pill>
-                    </span>
-                  )}
-                </span>
-              ),
-              csv: (r) => r.product?.title ?? "",
-            },
-            {
-              key: "stars",
-              label: "Rating",
-              render: (r) => <span className="text-gold">{starLabel(r.stars)}</span>,
-              csv: (r) => r.stars,
-            },
-            {
-              key: "who",
-              label: "Reviewer",
-              render: (r) => (r.anonymous ? "Anonymous" : r.display_name || "—"),
-              csv: (r) => (r.anonymous ? "Anonymous" : r.display_name || ""),
-            },
-            {
-              key: "body",
-              label: "Review",
-              render: (r) => (
-                <span className="line-clamp-2 text-paper/70">{r.body || "—"}</span>
-              ),
-              csv: (r) => r.body ?? "",
-            },
-            {
-              key: "actions",
-              label: "",
-              align: "right",
-              render: (r) => (
-                <ToolbarButton
-                  variant="danger"
-                  onClick={() => void remove("product", r.id)}
-                >
-                  Delete
-                </ToolbarButton>
-              ),
-            },
-          ]}
-        />
-      </Card>
-
-      <Card title="Store reviews" subtitle="Reviews of the store itself">
-        <DataTable<AdminStoreReview>
-          rows={data?.storeReviews ?? []}
-          rowKey={(r) => r.id}
-          csvFilename="store-reviews.csv"
-          empty="No store reviews yet."
-          columns={[
-            {
-              key: "store",
-              label: "Store",
-              render: (r) => (
-                <span className="text-paper/85">
-                  {r.store?.public_name ?? "—"}
-                  {r.order_id ? null : (
-                    <span className="ml-2">
-                      <Pill tone="gold">seeded</Pill>
-                    </span>
-                  )}
-                </span>
-              ),
-              csv: (r) => r.store?.public_name ?? "",
-            },
-            {
-              key: "stars",
-              label: "Rating",
-              render: (r) => <span className="text-gold">{starLabel(r.stars)}</span>,
-              csv: (r) => r.stars,
-            },
-            {
-              key: "who",
-              label: "Reviewer",
-              render: (r) => (r.anonymous ? "Anonymous" : r.display_name || "—"),
-              csv: (r) => (r.anonymous ? "Anonymous" : r.display_name || ""),
-            },
-            {
-              key: "body",
-              label: "Review",
-              render: (r) => (
-                <span className="line-clamp-2 text-paper/70">{r.body || "—"}</span>
-              ),
-              csv: (r) => r.body ?? "",
-            },
-            {
-              key: "actions",
-              label: "",
-              align: "right",
-              render: (r) => (
-                <ToolbarButton
-                  variant="danger"
-                  onClick={() => void remove("store", r.id)}
-                >
-                  Delete
-                </ToolbarButton>
-              ),
-            },
-          ]}
-        />
-      </Card>
-    </div>
+            {[5, 4, 3, 2, 1].map((n) => (
+              <option key={n} value={n}>
+                {n} {n === 1 ? "star" : "stars"}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block">
+          <span className={labelCls}>Display name</span>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            disabled={anonymous}
+            maxLength={80}
+            placeholder="e.g. Markos V."
+            className={field + (anonymous ? " opacity-50" : "")}
+          />
+        </label>
+        <label className="block">
+          <span className={labelCls}>Location</span>
+          <input
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            disabled={anonymous}
+            maxLength={80}
+            placeholder="e.g. Chicago, IL"
+            className={field + (anonymous ? " opacity-50" : "")}
+          />
+        </label>
+        <label className="block sm:col-span-2">
+          <span className={labelCls}>Review body (optional)</span>
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            rows={2}
+            maxLength={4000}
+            placeholder="What the reviewer wrote"
+            className={field}
+          />
+        </label>
+      </div>
+      <div className="mt-4 flex items-center justify-between gap-3">
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={anonymous}
+            onChange={(e) => setAnonymous(e.target.checked)}
+            className="h-4 w-4 accent-gold"
+          />
+          <span className="font-sans text-detail text-paper/75">
+            Post anonymously
+          </span>
+        </label>
+        <button
+          type="button"
+          onClick={() => void seed()}
+          disabled={busy}
+          className="rounded-pill border border-gold/40 bg-gold/[0.08] px-4 py-1.5 font-sans text-caption font-semibold text-gold disabled:opacity-50"
+        >
+          {busy ? "Saving…" : "Add review"}
+        </button>
+      </div>
+    </Modal>
   );
 }
