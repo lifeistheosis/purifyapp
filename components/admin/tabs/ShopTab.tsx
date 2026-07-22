@@ -8,6 +8,9 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
+import { invalidateShopCatalog } from "@/lib/shop/catalogClient";
+import { hasSupplierImage } from "@/lib/shop/imageRights";
+
 import {
   Card,
   DataTable,
@@ -23,7 +26,15 @@ import {
 
 /* ── Types (admin payload shapes, deliberately local to this tab) ─────── */
 
-type MediaRow = { id?: string; media_url: string; alt_text: string };
+type MediaRow = {
+  id?: string;
+  media_url: string;
+  alt_text: string;
+  // Carried by the admin select; the rights gate needs them to find the
+  // primary image the storefront would show.
+  sort_order?: number | null;
+  is_primary?: boolean | null;
+};
 type SubjectRow = { subject_type: string; subject_slug: string };
 
 type AdminProduct = {
@@ -237,15 +248,25 @@ function ProductsPanel() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(toPayload(merged, s)),
     });
-    if (res.ok) load();
-    else setStatus("Update failed.");
+    if (res.ok) {
+      invalidateShopCatalog();
+      load();
+    } else setStatus("Update failed.");
   }
 
   const sourcingOf = (id: string) => sourcing.find((x) => x.product_id === id);
 
+  // Published in the DB but filtered out of the storefront by the
+  // supplier-image rights gate: "published" must never overcount what a
+  // shopper can actually see.
+  const gatedHidden = (p: AdminProduct) =>
+    p.status === "published" && hasSupplierImage(p.media);
+
   const q = query.trim().toLowerCase();
   const visible = products.filter((p) => {
-    if (statusFilter !== "all" && p.status !== statusFilter) return false;
+    if (statusFilter === "hidden") {
+      if (!gatedHidden(p)) return false;
+    } else if (statusFilter !== "all" && p.status !== statusFilter) return false;
     if (category !== "all" && p.category !== category) return false;
     if (availability !== "all" && p.inventory_status !== availability) return false;
     if (!q) return true;
@@ -293,7 +314,11 @@ function ProductsPanel() {
     const cost = sourcingOf(p.id)?.supplier_cost_cents;
     if (cost != null) profit += (p.units_sold ?? 0) * (p.price_cents - cost);
   }
-  const published = products.filter((p) => p.status === "published").length;
+  // "Published" counts what the STOREFRONT shows (status published AND past
+  // the image-rights gate); the gap is surfaced as its own number.
+  const hiddenByGate = products.filter(gatedHidden).length;
+  const published =
+    products.filter((p) => p.status === "published").length - hiddenByGate;
   const drafts = products.filter((p) => p.status === "draft").length;
   const outOfStock = products.filter(
     (p) => p.inventory_status === "out_of_stock",
@@ -308,9 +333,10 @@ function ProductsPanel() {
           hint={drafts > 0 ? `${drafts} draft` : undefined}
         />
         <Metric
-          label="Published"
+          label="Live in shop"
           value={String(published)}
           tone={published > 0 ? "text-emerald-300" : undefined}
+          hint={hiddenByGate > 0 ? `${hiddenByGate} hidden by image rights` : undefined}
         />
         <Metric
           label="Out of stock"
@@ -366,6 +392,9 @@ function ProductsPanel() {
                 label: s,
                 count: products.filter((p) => p.status === s).length,
               })),
+              ...(hiddenByGate > 0 || statusFilter === "hidden"
+                ? [{ id: "hidden", label: "hidden", count: hiddenByGate }]
+                : []),
             ]}
             active={statusFilter}
             onChange={setStatusFilter}
@@ -565,12 +594,20 @@ function ProductsPanel() {
             {
               key: "status",
               label: "Status",
-              render: (p) => (
-                <Pill tone={p.status === "published" ? "emerald" : p.status === "paused" ? "rose" : "neutral"}>
-                  {p.status}
-                </Pill>
-              ),
-              csv: (p) => p.status,
+              render: (p) =>
+                gatedHidden(p) ? (
+                  <span
+                    title="Published, but the storefront hides it: the primary image is on a supplier CDN. Replace it with an owned photo to make it live."
+                    className="inline-flex"
+                  >
+                    <Pill tone="gold">hidden</Pill>
+                  </span>
+                ) : (
+                  <Pill tone={p.status === "published" ? "emerald" : p.status === "paused" ? "rose" : "neutral"}>
+                    {p.status}
+                  </Pill>
+                ),
+              csv: (p) => (gatedHidden(p) ? "published (hidden)" : p.status),
             },
             {
               key: "actions",
@@ -830,6 +867,18 @@ function ProductOverview({
 
   return (
     <div className="space-y-5">
+      {hasSupplierImage(p.media) ? (
+        <div className="rounded-lg border border-amber-400/30 bg-amber-400/[0.06] p-3">
+          <p className="font-sans text-detail font-semibold text-amber-200">
+            Not shown in the public shop
+          </p>
+          <p className="mt-0.5 font-sans text-caption text-amber-200/80">
+            The primary photo is hosted on a supplier CDN, so the rights gate
+            hides this listing from shoppers even while it is published.
+            Upload an owned or licensed photo to make it live.
+          </p>
+        </div>
+      ) : null}
       <div className="flex flex-col gap-4 sm:flex-row">
         <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-xl border border-white/8 bg-night-soft/60">
           {hero ? (
@@ -1070,8 +1119,10 @@ function ProductEditor({
     });
     const data = (await res.json()) as { ok?: boolean; error?: string };
     setBusy(false);
-    if (res.ok && data.ok) onSaved();
-    else setError(data.error ?? "Save failed.");
+    if (res.ok && data.ok) {
+      invalidateShopCatalog();
+      onSaved();
+    } else setError(data.error ?? "Save failed.");
   }
 
   // No Card wrapper: the title, close control, and Overview/Edit toggle all
@@ -1902,8 +1953,10 @@ function ReviewsPanel() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ target: t, id }),
     });
-    if (res.ok) load();
-    else setStatus("Delete failed.");
+    if (res.ok) {
+      invalidateShopCatalog();
+      load();
+    } else setStatus("Delete failed.");
   }
 
   const productReviews = data?.productReviews ?? [];
@@ -2282,6 +2335,7 @@ function SeedReviewSheet({
     });
     setBusy(false);
     if (res.ok) {
+      invalidateShopCatalog();
       onSaved();
     } else {
       const e = (await res.json().catch(() => ({}))) as { error?: string };
