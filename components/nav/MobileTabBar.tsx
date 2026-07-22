@@ -10,6 +10,7 @@ import { Octogram } from "@/components/ui/icons/Octogram";
 import { PrayerRope } from "@/components/ui/icons/PrayerRope";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Lampada } from "@/components/ui/icons/Lampada";
+import { Church } from "@/components/ui/icons/Church";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { shopEnabled } from "@/lib/shop/flags";
 
@@ -112,6 +113,17 @@ export function MobileTabBar() {
           } as Tab,
         ]
       : []),
+    {
+      key: "community",
+      label: t("nav.community"),
+      href: "/community",
+      Icon: Church,
+      matches: (p) =>
+        p === "/community" ||
+        p.startsWith("/community/") ||
+        p === "/campaigns" ||
+        p.startsWith("/campaigns/"),
+    },
     {
       key: "you",
       label: t("nav.you"),

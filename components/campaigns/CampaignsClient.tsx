@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import {
+  daysLeft,
   INTENTIONS,
   intentionLabel,
   statusLabel,
@@ -13,7 +14,7 @@ import {
 import { fetchCampaigns } from "@/lib/campaigns/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
-export function CampaignsClient() {
+export function CampaignsClient({ embedded = false }: { embedded?: boolean }) {
   const { t } = useTranslate();
   const [campaigns, setCampaigns] = useState<PrayerCampaign[] | null>(null);
   const [intention, setIntention] = useState<CampaignIntention | null>(null);
@@ -31,8 +32,18 @@ export function CampaignsClient() {
   }, [intention, load]);
 
   return (
-    <section className="min-h-[calc(100dvh-72px)] bg-night px-5 py-10 md:px-8 md:py-14">
-      <div className="mx-auto w-full max-w-[760px]">
+    <section
+      className={
+        embedded
+          ? "bg-night px-5 pb-16 pt-8 md:px-8"
+          : "min-h-[calc(100dvh-72px)] bg-night px-5 py-10 md:px-8 md:py-14"
+      }
+    >
+      <div className="relative mx-auto w-full max-w-[760px]">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 -top-20 mx-auto h-56 max-w-[560px] rounded-full bg-gold/[0.06] blur-3xl"
+        />
         <header className="reveal-rise text-center" style={{ animationDelay: "40ms" }}>
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold-pale/70">
             {t("shop.together")}
@@ -137,17 +148,24 @@ function CampaignCard({
   campaign: PrayerCampaign;
   index: number;
 }) {
+  const { t } = useTranslate();
   const closed = statusLabel(campaign.status);
+  const left = campaign.status === "active" ? daysLeft(campaign.ends_at) : null;
   return (
     <Link
       href={`/campaigns/detail?id=${campaign.id}`}
       style={{ animationDelay: `${Math.min(index * 50, 300)}ms` }}
-      className="reveal-rise block rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 transition-[transform,border-color] duration-150 hover:border-paper/25 active:scale-[0.99]"
+      className="reveal-rise block rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 transition-[transform,border-color] duration-150 hover:border-gold/30 active:scale-[0.99]"
     >
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <span className="rounded-pill border border-gold/30 bg-gold/[0.08] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[0.5px] text-gold-pale">
           {intentionLabel(campaign.intention)}
         </span>
+        {left != null ? (
+          <span className="rounded-pill border border-paper/15 px-2.5 py-0.5 font-sans text-eyebrow font-semibold text-paper/55">
+            {left === 0 ? "Last day" : left === 1 ? "1 day left" : `${left} days left`}
+          </span>
+        ) : null}
         {closed ? (
           <span className="font-sans text-caption text-paper/50">{closed}</span>
         ) : null}
@@ -155,19 +173,31 @@ function CampaignCard({
       <p className="mt-3 font-display-serif text-title-sm text-paper">
         {campaign.title}
       </p>
+      {campaign.subject_name ? (
+        <p className="mt-0.5 font-sans text-caption text-paper/50">
+          {t("community.forName", { name: campaign.subject_name })}
+        </p>
+      ) : null}
       {campaign.note ? (
         <p className="mt-1.5 line-clamp-2 font-sans text-ui leading-relaxed text-paper/60">
           {campaign.note}
         </p>
       ) : null}
-      <p className="mt-3 font-sans text-caption text-paper/45">
-        {campaign.praying_count === 1
-          ? "1 person praying"
-          : `${campaign.praying_count} praying`}
-        {campaign.prayer_count > 0
-          ? ` · ${campaign.prayer_count} prayers offered`
-          : ""}
-      </p>
+      <div className="mt-3.5 flex items-center justify-between gap-3 border-t border-white/5 pt-3">
+        <p className="font-sans text-caption text-paper/55">
+          <span className="font-semibold text-gold-pale">
+            {campaign.praying_count === 1
+              ? "1 person praying"
+              : `${campaign.praying_count} praying`}
+          </span>
+          {campaign.prayer_count > 0
+            ? ` · ${campaign.prayer_count} prayers offered`
+            : ""}
+        </p>
+        <span className="shrink-0 font-sans text-caption font-semibold text-paper/45">
+          {t("community.join")}
+        </span>
+      </div>
     </Link>
   );
 }
