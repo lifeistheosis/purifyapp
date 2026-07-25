@@ -3,13 +3,23 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
+// Three kept library glyphs, and four bespoke tab glyphs.
+//
+// The tab set lives under icons/tab/ rather than replacing the library icons,
+// because the two have different briefs. A library icon is read alone at
+// whatever size its host gives it; a tab icon is read in a row of seven at
+// exactly 22px, where what matters is that it is optically the same weight as
+// its neighbours and has a silhouette none of them share. Codex, Octogram,
+// PrayerRope and Lampada are all still in use elsewhere (Bible index,
+// Discover, Reading, PrayersMobile, the calendar's fast-free glyph and the
+// mobile headers' donate glyph) and are untouched by this.
 import { Sun } from "@/components/ui/icons/Sun";
-import { Codex } from "@/components/ui/icons/Codex";
-import { Octogram } from "@/components/ui/icons/Octogram";
-import { PrayerRope } from "@/components/ui/icons/PrayerRope";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
-import { Lampada } from "@/components/ui/icons/Lampada";
 import { Church } from "@/components/ui/icons/Church";
+import { Evangelion } from "@/components/ui/icons/tab/Evangelion";
+import { Klimax } from "@/components/ui/icons/tab/Klimax";
+import { Orans } from "@/components/ui/icons/tab/Orans";
+import { Pechat } from "@/components/ui/icons/tab/Pechat";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { shopEnabled } from "@/lib/shop/flags";
 
@@ -66,14 +76,14 @@ export function MobileTabBar() {
       key: "bible",
       label: t("nav.bible"),
       href: "/bible",
-      Icon: Codex,
+      Icon: Evangelion,
       matches: (p) => p === "/bible" || p.startsWith("/bible/"),
     },
     {
       key: "discover",
       label: t("nav.discover"),
       href: "/discover",
-      Icon: Octogram,
+      Icon: Klimax,
       matches: (p) =>
         p === "/discover" ||
         p.startsWith("/discover/") ||
@@ -98,7 +108,7 @@ export function MobileTabBar() {
       key: "prayers",
       label: t("nav.prayers"),
       href: "/prayers",
-      Icon: PrayerRope,
+      Icon: Orans,
       matches: (p) =>
         (p === "/prayers" || p.startsWith("/prayers/")) && p !== "/prayers/today",
     },
@@ -108,7 +118,7 @@ export function MobileTabBar() {
             key: "shop",
             label: "Shop",
             href: "/shop",
-            Icon: Lampada,
+            Icon: Pechat,
             matches: (p: string) => p === "/shop" || p.startsWith("/shop/"),
           } as Tab,
         ]
@@ -175,9 +185,10 @@ export function MobileTabBar() {
                       : "text-paper/55 hover:text-paper/80 font-medium",
                   )}
                 >
-                  {/* Active tabs also thicken the stroke: with the color
-                      shift and the sliding compartment this gives three
-                      selected-state signals, none of them color-only. */}
+                  {/* Active tabs also thicken the stroke. With the colour
+                      shift and the heavier label that is three selected-state
+                      signals, and two of the three are not colour. Every tab
+                      glyph is drawn so its interior stays open at 2.0. */}
                   <Icon
                     size={22}
                     strokeWidth={active ? 2 : undefined}
