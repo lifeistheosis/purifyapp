@@ -1,5 +1,34 @@
 [
  {
+  "id": "beta-2-4",
+  "version": "Beta 2.4",
+  "date": "2026-07-25",
+  "title": "A calmer hand on the phone",
+  "intro": "Nothing new to learn in this one. Purify simply moves better. Screens now settle the way you read them, from the top down, instead of arriving all at once, and the cards and rows you tap finally answer to your finger. On Android the app scrolls more smoothly, and if you have asked your phone to reduce motion, more of Purify now listens.",
+  "sections": [
+   {
+    "heading": "Screens arrive in order",
+    "body": "The greeting, then the day's word, then the prayer rule, then the doors below, each settling a moment after the one above it. A page now reads as it appears rather than landing in one piece."
+   },
+   {
+    "heading": "Everything you tap answers",
+    "body": "The saint of the day, the fast, the appointed readings, and the count to Pascha used to sit still under your finger on a phone. They now press in and spring back like the rest of the app."
+   },
+   {
+    "heading": "Loading looks like the thing it is loading",
+    "body": "Waiting states across Scripture, the saints, the calendar, the councils, and history were each drawn a little differently. They now share one shape, and content no longer jumps when it arrives."
+   },
+   {
+    "heading": "A clearer Today, a shorter door to the saints",
+    "body": "The Today screen's Explore doors were four almost-identical shades of grey pretending to be different; they are one clean surface now, told apart by their icons. And the Saints page opens onto saints, where its heading used to fill a phone screen on its own."
+   },
+   {
+    "heading": "Smoother, and quieter when you ask",
+    "body": "Several blur effects were removed from the places you scroll past in the Android app; they cost frames on a phone and gave nothing back. Reduce Motion is honored in more places, including sheets and dialogs, and a change to the setting now takes effect at once instead of on the next launch."
+   }
+  ]
+ },
+ {
   "id": "beta-2-3",
   "version": "Beta 2.3",
   "date": "2026-07-19",
