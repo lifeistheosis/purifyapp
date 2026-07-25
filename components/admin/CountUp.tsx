@@ -8,13 +8,10 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { prefersReducedMotion } from "@/lib/ui/motion";
+
 function easeOutCubic(t: number): number {
   return 1 - Math.pow(1 - t, 3);
-}
-
-function prefersReducedMotion(): boolean {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 // Format with thousands separators + preserve a string passthrough so

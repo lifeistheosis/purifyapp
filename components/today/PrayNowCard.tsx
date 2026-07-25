@@ -45,16 +45,15 @@ export function PrayNowCard() {
           a clear Begin pill — the Today screen's primary action. */}
       <Link
         href={rule?.href ?? "/prayers/morning"}
-        className="group relative block overflow-hidden rounded-[28px] p-5 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.5)] transition-transform active:scale-[0.99]"
+        className="press-card group relative block overflow-hidden rounded-[28px] p-5 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.5)]"
         style={{
+          // The upper-right glow was a `blur-2xl` element; it is folded into
+          // this gradient instead. Identical result, no filter in the scroll
+          // path (the Android WebView drops frames on those).
           background:
-            "radial-gradient(115% 90% at 88% 12%, rgba(255,255,255,0.16) 0%, transparent 55%), linear-gradient(150deg, #34343a 0%, #232327 60%, #1a1a1d 100%)",
+            "radial-gradient(115% 90% at 88% 12%, rgba(255,255,255,0.18) 0%, transparent 55%), linear-gradient(150deg, #34343a 0%, #232327 60%, #1a1a1d 100%)",
         }}
       >
-        <span
-          aria-hidden
-          className="pointer-events-none absolute -right-6 -top-8 h-32 w-32 rounded-full bg-paper/15 blur-2xl"
-        />
         <div className="relative flex items-start gap-4">
           <span
             aria-hidden

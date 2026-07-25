@@ -19,7 +19,7 @@ export function TimelineRail({ children }: { children: ReactNode[] }) {
         aria-hidden
         className="absolute left-[10px] top-3 bottom-3 w-px bg-paper/12"
       />
-      <ul className="space-y-3.5">
+      <ul className="cascade space-y-3.5">
         {children.map((node, i) => (
           <li key={i} className="relative pl-7">
             <span

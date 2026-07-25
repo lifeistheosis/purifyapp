@@ -9,7 +9,9 @@
 // first frame and provides no auto-advance.
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+
+import { useReducedMotion } from "@/lib/ui/motion";
 import { cn } from "@/lib/cn";
 
 type Frame = { src: string; alt: string };
@@ -38,18 +40,15 @@ const FADE_MS = 1100; // crossfade duration (kept in sync with the className)
 
 function useSlideIndex(count: number) {
   const [index, setIndex] = useState(0);
-  const reducedRef = useRef(false);
+  const reduced = useReducedMotion();
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    reducedRef.current = mq.matches;
-    if (mq.matches) return; // hold on frame 0
+    if (reduced) return; // hold on frame 0
     const id = setInterval(() => {
       setIndex((i) => (i + 1) % count);
     }, FRAME_MS);
     return () => clearInterval(id);
-  }, [count]);
+  }, [count, reduced]);
 
   return index;
 }

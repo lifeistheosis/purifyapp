@@ -42,7 +42,7 @@ export function TodayReadingsCard({ readings }: { readings: ReadingRef[] }) {
             <li key={i}>
               <Link
                 href={`/bible/${r.book}/${r.chapter}#v${r.from}`}
-                className="flex items-center gap-3 py-2 group"
+                className="tap-press flex items-center gap-3 py-2 group"
               >
                 <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.04] px-2 py-[1px] font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/65">
                   {kind}

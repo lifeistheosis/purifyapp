@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { Close } from "@/components/ui/icons/Close";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
+import { useReducedMotion } from "@/lib/ui/motion";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -21,9 +22,19 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  *  - Registers with the shared overlay flag so floating UI (the PWA
  *    install banner) steps aside.
  *
- * Animation: a 220ms slide. Mounting/unmounting is two-phase so the
- * exit animation runs before the DOM node disappears.
+ * Animation: a slide over `--duration-fast`. Mounting/unmounting is
+ * two-phase so the exit animation runs before the DOM node disappears.
+ * Under `prefers-reduced-motion` the sheet appears and disappears
+ * instantly, and the exit hold drops to zero so nothing lingers.
+ *
+ * No `backdrop-filter` on the scrim, deliberately: the Android WebView
+ * bleeds imagery through it and drops frames (see the GiftBox note in
+ * globals.css). A flat dim reads the same and costs nothing.
  */
+// Keep in sync with --duration-fast. A CSS custom property cannot be read
+// from a setTimeout, so this is the one place the value is duplicated.
+const EXIT_MS = 200;
+
 export function Sheet({
   open,
   onClose,
@@ -42,8 +53,9 @@ export function Sheet({
   bodyClassName?: string;
 }) {
   const { t } = useTranslate();
-  // Two-phase mount: keep the DOM around for ~220ms after `open` flips
-  // false so the slide-down animation can complete.
+  const reduced = useReducedMotion();
+  // Two-phase mount: keep the DOM around for the exit animation after
+  // `open` flips false so the slide-down can complete.
   const [mounted, setMounted] = useState(open);
   const [shown, setShown] = useState(false);
 
@@ -55,10 +67,10 @@ export function Sheet({
       return () => cancelAnimationFrame(r);
     } else {
       setShown(false);
-      const t = setTimeout(() => setMounted(false), 220);
+      const t = setTimeout(() => setMounted(false), reduced ? 0 : EXIT_MS);
       return () => clearTimeout(t);
     }
-  }, [open]);
+  }, [open, reduced]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
@@ -106,13 +118,13 @@ export function Sheet({
         aria-label={t("common.close")}
         onClick={onClose}
         className={
-          "absolute inset-0 bg-night/70 backdrop-blur-sm transition-opacity duration-200 " +
+          "absolute inset-0 bg-night/70 transition-opacity duration-fast ease-house motion-reduce:transition-none " +
           (shown ? "opacity-100" : "opacity-0")
         }
       />
       <div
         className={
-          "absolute inset-x-0 bottom-0 max-h-[85dvh] bg-night border-t border-paper/15 rounded-t-3xl shadow-[0_-12px_36px_rgba(0,0,0,0.55)] flex flex-col transition-transform duration-200 ease-out " +
+          "absolute inset-x-0 bottom-0 max-h-[85dvh] bg-night border-t border-paper/15 rounded-t-3xl shadow-[0_-12px_36px_rgba(0,0,0,0.55)] flex flex-col transition-transform duration-fast ease-house motion-reduce:transition-none " +
           (shown ? "translate-y-0" : "translate-y-full")
         }
         style={{

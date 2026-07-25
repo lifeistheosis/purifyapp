@@ -5,47 +5,39 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Quick-access grid on the mobile Today shell — the four core surfaces as
- * large, soft, illustration-tinted cards in the meditation-app idiom.
- * Each card carries a distinct in-palette tint (a calm gradient) and an
- * owned line icon, so the home screen reads as a set of inviting doors
- * rather than a text menu. Data-free; pure navigation. Labels come from
- * the catalog (today.tiles.*) so they follow native locale switches.
+ * large, soft cards in the meditation-app idiom. Data-free; pure
+ * navigation. Labels come from the catalog (today.tiles.*) so they follow
+ * native locale switches.
+ *
+ * The four cards used to carry four "distinct" gradients — #303034,
+ * #28282c, #343438, #2b2b30 — which are four shades of the same grey and
+ * were indistinguishable on a phone. All they actually did was stop the
+ * grid from reading as one object. One shared surface now, with the icon
+ * as the only differentiator; the restraint is what makes the row look
+ * deliberate rather than four boxes that almost match.
+ *
+ * Also gone: the `blur-xl` highlight blob on each card. A backdrop/filter
+ * blur is the one effect the Android WebView reliably drops frames on, and
+ * four of them sat in the scroll path. The same lift comes from a plain
+ * radial-gradient, which costs nothing.
  */
 
 type Tile = {
   href: string;
   key: string;
-  tint: string; // CSS background
   icon: React.ReactNode;
 };
+
+const TILE_SURFACE =
+  "radial-gradient(120% 90% at 88% 6%, rgba(255,255,255,0.07) 0%, transparent 55%), linear-gradient(155deg, #2b2b30 0%, #1b1b1e 100%)";
 
 export function QuickAccessGrid() {
   const { t } = useTranslate();
   const tiles: Tile[] = [
-    {
-      href: "/prayers",
-      key: "prayers",
-      tint: "linear-gradient(155deg, #303034 0%, #1f1f22 100%)",
-      icon: <HandsIcon />,
-    },
-    {
-      href: "/bible",
-      key: "bible",
-      tint: "linear-gradient(155deg, #28282c 0%, #18181b 100%)",
-      icon: <BookIcon />,
-    },
-    {
-      href: "/saints",
-      key: "saints",
-      tint: "linear-gradient(155deg, #343438 0%, #232326 100%)",
-      icon: <HaloIcon />,
-    },
-    {
-      href: "/calendar",
-      key: "calendar",
-      tint: "linear-gradient(155deg, #2b2b30 0%, #1c1c1f 100%)",
-      icon: <CalendarIcon />,
-    },
+    { href: "/prayers", key: "prayers", icon: <HandsIcon /> },
+    { href: "/bible", key: "bible", icon: <BookIcon /> },
+    { href: "/saints", key: "saints", icon: <HaloIcon /> },
+    { href: "/calendar", key: "calendar", icon: <CalendarIcon /> },
   ];
 
   return (
@@ -54,13 +46,13 @@ export function QuickAccessGrid() {
         <Link
           key={tile.href}
           href={tile.href}
-          className="group relative overflow-hidden rounded-[22px] p-4 shadow-[0_12px_28px_-14px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/10 transition-transform active:scale-[0.98]"
-          style={{ background: tile.tint }}
+          // `press-card` instead of a bespoke `active:scale-[0.98]`: the
+          // shared class snaps down in 90ms and springs back over 220ms on
+          // the house curve, which is what makes a press read as a press.
+          // Every tappable surface in the app now uses the same two.
+          className="press-card group relative overflow-hidden rounded-[22px] p-4 shadow-[0_12px_28px_-14px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/10"
+          style={{ background: TILE_SURFACE }}
         >
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -right-5 -bottom-6 h-24 w-24 rounded-full bg-paper/10 blur-xl"
-          />
           <span
             aria-hidden
             className="relative inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-paper/12 text-gold-pale ring-1 ring-inset ring-paper/15"

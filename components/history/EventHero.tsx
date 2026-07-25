@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { getClientEntitlements } from "@/lib/entitlements/client";
 import type { HistoryEventMeta } from "@/lib/history/events";
+import { useReducedMotion } from "@/lib/ui/motion";
 import { cn } from "@/lib/cn";
 
 type Slide = {
@@ -28,13 +29,14 @@ type Slide = {
 export function EventHero({ meta }: { meta: HistoryEventMeta }) {
   const media = meta.media;
   const [on, setOn] = useState(false);
-  const [reduced, setReduced] = useState(false);
+  const reduced = useReducedMotion();
   const [idx, setIdx] = useState(0);
 
   // Same entitlement + preference gate as the timeline's Immersive toggle.
-  /* eslint-disable react-hooks/set-state-in-effect -- client-only state
-     (entitlements, media query) can't be read during SSR; same pattern as
-     HistoryTimelinePage. */
+  // The set-state-in-effect suppression that used to wrap this pair is gone
+  // with the media-query effect: the remaining setState is inside a promise
+  // callback, not synchronous in the effect body, so the rule no longer
+  // fires and the directive was reported as unused.
   useEffect(() => {
     let alive = true;
     getClientEntitlements()
@@ -55,15 +57,6 @@ export function EventHero({ meta }: { meta: HistoryEventMeta }) {
       alive = false;
     };
   }, []);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduced(mq.matches);
-    const onChange = (e: MediaQueryListEvent) => setReduced(e.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   const slides = useMemo<Slide[]>(() => {
     if (!media) return [];

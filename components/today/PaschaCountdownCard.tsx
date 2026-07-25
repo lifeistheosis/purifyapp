@@ -32,7 +32,7 @@ export function PaschaCountdownCard({
   return (
     <Link
       href="/calendar"
-      className="flex items-center gap-3 rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5 transition-colors hover:bg-paper/[0.06]"
+      className="press-card flex items-center gap-3 rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5 hover:bg-paper/[0.06]"
     >
       <ThreeBarCross />
       <div className="min-w-0 flex-1">

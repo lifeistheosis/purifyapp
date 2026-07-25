@@ -113,6 +113,35 @@
  --shadow-raise: 0 8px 24px rgba(0, 0, 0, 0.45);   /* pills, FABs */
  --shadow-pop: 0 8px 32px rgba(0, 0, 0, 0.5);      /* popovers, menus */
  --shadow-overlay: 0 24px 48px rgba(0, 0, 0, 0.6); /* large dropdowns */
+
+ /* ── Motion ────────────────────────────────────────────────────────────
+  Every animation in the app used to hand-type its curve and its duration,
+  which meant ~25 copies of the same cubic-bezier and no way to retune the
+  feel of the product in one place. These are that single source.
+
+  `--ease-house` is the house curve (a strong decelerate: most of the change
+  happens early, so motion arrives rather than drifts). `--ease-pop`
+  overshoots slightly and is for a deliberate pop (a badge bump, a heart),
+  never for entrances. Deliberately NOT named `--ease-out`: that key already
+  exists in Tailwind's default theme, and redefining it would silently
+  restyle every `ease-out` utility already in the tree.
+
+  The duration ladder is deliberately short. Anything above `--duration-slow`
+  reads as sluggish on a phone; the one exception is a full-screen hero,
+  which should use its own literal value and say why.
+
+  `--stagger-step` is the interval between siblings in a `.cascade`. 70ms is
+  slow enough that the eye follows the reading order and fast enough that a
+  ten-item list finishes inside 1s. */
+ --ease-house: cubic-bezier(0.22, 1, 0.36, 1);
+ --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+ --duration-instant: 90ms;   /* press-down, state snaps          */
+ --duration-fast: 200ms;     /* color/opacity on small controls  */
+ --duration-base: 320ms;     /* the default: entrances, fades    */
+ --duration-slow: 480ms;     /* large surfaces, sheets           */
+
+ --stagger-step: 70ms;
 }
 
 /* ----------------------------------------------------------------------
@@ -776,7 +805,7 @@ div[data-hl="true"] {
  to { opacity: 1; transform: translateX(0); }
 }
 .hero-cross-in {
- animation: hero-cross-in 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+ animation: hero-cross-in 900ms var(--ease-house) both;
  animation-delay: 240ms;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -796,7 +825,7 @@ div[data-hl="true"] {
  to { opacity: 1; transform: translateY(0); }
 }
 .hero-copy-in {
- animation: hero-copy-in 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+ animation: hero-copy-in 900ms var(--ease-house) both;
 }
 @media (prefers-reduced-motion: reduce) {
  .hero-copy-in {
@@ -818,7 +847,7 @@ div[data-hl="true"] {
  to { opacity: 1; transform: translateY(0); }
 }
 .appnav-in {
- animation: appnav-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+ animation: appnav-in 420ms var(--ease-house) both;
 }
 @media (prefers-reduced-motion: reduce) {
  .appnav-in {
@@ -889,7 +918,7 @@ div[data-hl="true"] {
  }
 }
 .reveal-rise {
- animation: reveal-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+ animation: reveal-rise 0.5s var(--ease-house) both;
 }
 @media (prefers-reduced-motion: reduce) {
  .reveal-rise {
@@ -969,7 +998,7 @@ div[data-hl="true"] {
 }
 
 .admin-fade-in {
- animation: admin-fade-in 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+ animation: admin-fade-in 360ms var(--ease-house) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1063,7 +1092,7 @@ html.reader-focus [data-reader-exit] {
 ::view-transition-old(root),
 ::view-transition-new(root) {
  animation-duration: 420ms;
- animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+ animation-timing-function: var(--ease-house);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1165,14 +1194,14 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  to { opacity: 1; transform: translateY(0); }
 }
 .onboard-step-in {
- animation: onboard-step-in 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+ animation: onboard-step-in 560ms var(--ease-house) both;
 }
 @keyframes onboard-mark-in {
  from { opacity: 0; transform: scale(0.8); }
  to { opacity: 1; transform: scale(1); }
 }
 .onboard-mark-in {
- animation: onboard-mark-in 640ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+ animation: onboard-mark-in 640ms var(--ease-pop) both;
 }
 @media (prefers-reduced-motion: reduce) {
  .onboard-step-in,
@@ -1195,7 +1224,7 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  to { opacity: 1; transform: translateY(0); }
 }
 .paywall-in {
- animation: paywall-in 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+ animation: paywall-in 620ms var(--ease-house) both;
 }
 @keyframes paywall-mark-in {
  from { opacity: 0; transform: scale(0.72) translateY(6px); }
@@ -1203,7 +1232,7 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 .paywall-mark-in {
- animation: paywall-mark-in 760ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+ animation: paywall-mark-in 760ms var(--ease-pop) both;
 }
 @keyframes paywall-glow-in {
  from { opacity: 0; }
@@ -1242,7 +1271,7 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 .tap-press,
 .press-card {
  transition:
-   transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+   transform 220ms var(--ease-house),
    color 200ms ease-out,
    background-color 220ms ease-out;
  -webkit-tap-highlight-color: transparent;
@@ -1277,13 +1306,71 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  to { opacity: 1; transform: translateY(0); }
 }
 .rise-in {
- animation: rise-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+ animation: rise-in 520ms var(--ease-house) both;
 }
 @media (prefers-reduced-motion: reduce) {
  .rise-in {
  animation: none;
  opacity: 1;
  transform: none;
+ }
+}
+
+/* ── Cascade ──────────────────────────────────────────────────────────
+   The house entrance for any stack of siblings: a screen's sections, a
+   list's rows, a card's lines. Each direct child fades in one
+   `--stagger-step` after the one above it, so the surface resolves in
+   reading order instead of appearing all at once.
+
+   OPACITY ONLY, on purpose, and this is the important part. A staggered
+   fade with no movement reads as "the page is developing"; add a
+   translate and the same stagger reads as "a list is animating in",
+   which is busier and ages badly. It is also the only version that is
+   safe here: a transform on a route-level wrapper establishes a
+   containing block and would displace every fixed descendant (tab bar,
+   reader pills, sheets) — the same reason `.route-fade` is opacity-only.
+   Cheap on the Android WebView for the same reason.
+
+   Usage:
+     <div className="cascade"> … </div>          // direct children stagger
+     <li style={{ "--i": 7 }}>                    // explicit index (wins,
+                                                  // inline beats nth-child)
+     <div className="cascade" style={{ "--cascade-start": "200ms" }}>
+                                                  // hold until a route
+                                                  // fade has finished
+
+   Indices are clamped at 13, so a 200-row list does not end up with a
+   14-second tail; everything past the 14th child arrives together. If a
+   list is long enough for that to matter, cascade the first screenful
+   and leave the rest static. */
+@keyframes cascade-in {
+ from { opacity: 0; }
+ to { opacity: 1; }
+}
+.cascade > * {
+ animation: cascade-in var(--duration-base) var(--ease-house) both;
+ animation-delay: calc(var(--cascade-start, 0ms) + var(--i, 0) * var(--stagger-step));
+}
+.cascade > *:nth-child(1) { --i: 0; }
+.cascade > *:nth-child(2) { --i: 1; }
+.cascade > *:nth-child(3) { --i: 2; }
+.cascade > *:nth-child(4) { --i: 3; }
+.cascade > *:nth-child(5) { --i: 4; }
+.cascade > *:nth-child(6) { --i: 5; }
+.cascade > *:nth-child(7) { --i: 6; }
+.cascade > *:nth-child(8) { --i: 7; }
+.cascade > *:nth-child(9) { --i: 8; }
+.cascade > *:nth-child(10) { --i: 9; }
+.cascade > *:nth-child(11) { --i: 10; }
+.cascade > *:nth-child(12) { --i: 11; }
+.cascade > *:nth-child(13) { --i: 12; }
+/* Clamp. Must stay last so it wins over the specific rules above. */
+.cascade > *:nth-child(n + 14) { --i: 13; }
+
+@media (prefers-reduced-motion: reduce) {
+ .cascade > * {
+ animation: none;
+ opacity: 1;
  }
 }
 
@@ -1298,7 +1385,7 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  100% { transform: scale(1); }
 }
 .badge-bump {
- animation: badge-bump 360ms cubic-bezier(0.22, 1, 0.36, 1);
+ animation: badge-bump 360ms var(--ease-house);
 }
 @keyframes heart-pop {
  0% { transform: scale(1); }
@@ -1306,7 +1393,7 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  100% { transform: scale(1); }
 }
 .heart-pop {
- animation: heart-pop 320ms cubic-bezier(0.22, 1, 0.36, 1);
+ animation: heart-pop 320ms var(--ease-house);
 }
 @media (prefers-reduced-motion: reduce) {
  .badge-bump,
@@ -1327,7 +1414,7 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  to { opacity: 1; }
 }
 .route-fade {
- animation: route-fade 200ms ease-out both;
+ animation: route-fade var(--duration-base) var(--ease-house) both;
 }
 @media (prefers-reduced-motion: reduce) {
  .route-fade {
@@ -1342,7 +1429,7 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
    Pair with `group` on the same element to drive the inner image zoom. */
 .card-lift {
  transition:
-   transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+   transform 260ms var(--ease-house),
    box-shadow 260ms ease-out;
 }
 @media (hover: hover) {
@@ -1392,7 +1479,7 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 .history-expand {
  display: grid;
  grid-template-rows: 0fr;
- transition: grid-template-rows 260ms cubic-bezier(0.22, 1, 0.36, 1);
+ transition: grid-template-rows 260ms var(--ease-house);
 }
 .history-expand > * {
  overflow: hidden;
@@ -1413,7 +1500,7 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  to { opacity: 1; transform: scale(1); }
 }
 .history-marker-in {
- animation: history-marker-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+ animation: history-marker-in 420ms var(--ease-house) both;
 }
 @media (prefers-reduced-motion: reduce) {
  .history-marker-in {
@@ -1450,7 +1537,7 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  border: 1px solid color-mix(in srgb, var(--color-paper) 35%, transparent);
  background: var(--color-night-soft);
  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-night) 80%, transparent);
- transition: transform 120ms cubic-bezier(0.22, 1, 0.36, 1);
+ transition: transform 120ms var(--ease-house);
 }
 .history-scrubber:active::-webkit-slider-thumb {
  transform: scale(1.15);
@@ -1758,12 +1845,12 @@ html.is-native .history-controls {
 .gift-seal-right    { animation: gift-seal-right 560ms cubic-bezier(0.3, 0.7, 0.4, 1) 380ms forwards; }
 .gift-lid-burst     { animation: gift-lid-burst 820ms cubic-bezier(0.3, 1.15, 0.5, 1) 520ms forwards; }
 .gift-casket-settle { animation: gift-casket-settle 780ms cubic-bezier(0.33, 1, 0.68, 1) 560ms forwards; }
-.gift-flood         { animation: gift-flood 1000ms cubic-bezier(0.22, 1, 0.36, 1) 540ms forwards; }
-.gift-rays          { animation: gift-rays 1150ms cubic-bezier(0.22, 1, 0.36, 1) 540ms forwards; }
+.gift-flood         { animation: gift-flood 1000ms var(--ease-house) 540ms forwards; }
+.gift-rays          { animation: gift-rays 1150ms var(--ease-house) 540ms forwards; }
 .gift-ember         { animation: gift-ember 1250ms cubic-bezier(0.3, 0.8, 0.4, 1) forwards; }
-.gift-mandorla      { animation: gift-mandorla 900ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-.gift-name          { animation: gift-name 620ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-.gift-fade-up       { animation: gift-fade-up 520ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.gift-mandorla      { animation: gift-mandorla 900ms var(--ease-house) both; }
+.gift-name          { animation: gift-name 620ms var(--ease-house) both; }
+.gift-fade-up       { animation: gift-fade-up 520ms var(--ease-house) both; }
 
 /* Reduced motion: nothing travels, nothing shivers, nothing rotates. The
    state change still reads, as a plain cross-fade. */
