@@ -3,24 +3,25 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
-// Three kept library glyphs, and four bespoke tab glyphs.
+// Two kept library glyphs (Today, Community) and five bespoke tab glyphs.
 //
 // The tab set lives under icons/tab/ rather than replacing the library icons,
 // because the two have different briefs. A library icon is read alone at
 // whatever size its host gives it; a tab icon is read in a row of seven at
 // exactly 22px, where what matters is that it is optically the same weight as
 // its neighbours and has a silhouette none of them share. Codex, Octogram,
-// PrayerRope and Lampada are all still in use elsewhere (Bible index,
-// Discover, Reading, PrayersMobile, the calendar's fast-free glyph and the
-// mobile headers' donate glyph) and are untouched by this.
+// PrayerRope, Lampada and HaloedHead are all still in use elsewhere (Bible
+// index, Discover, Reading, PrayersMobile, the calendar's fast-free glyph and
+// the mobile headers' donate glyph) and are untouched by this.
 import { Sun } from "@/components/ui/icons/Sun";
-import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Church } from "@/components/ui/icons/Church";
-import { Evangelion } from "@/components/ui/icons/tab/Evangelion";
+import { BookOpen } from "@/components/ui/icons/tab/BookOpen";
 import { Klimax } from "@/components/ui/icons/tab/Klimax";
 import { Orans } from "@/components/ui/icons/tab/Orans";
-import { Pechat } from "@/components/ui/icons/tab/Pechat";
+import { Cart } from "@/components/ui/icons/tab/Cart";
+import { Gear } from "@/components/ui/icons/tab/Gear";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { haptic } from "@/lib/ui/motion";
 import { shopEnabled } from "@/lib/shop/flags";
 
 /**
@@ -76,7 +77,7 @@ export function MobileTabBar() {
       key: "bible",
       label: t("nav.bible"),
       href: "/bible",
-      Icon: Evangelion,
+      Icon: BookOpen,
       matches: (p) => p === "/bible" || p.startsWith("/bible/"),
     },
     {
@@ -118,7 +119,7 @@ export function MobileTabBar() {
             key: "shop",
             label: "Shop",
             href: "/shop",
-            Icon: Pechat,
+            Icon: Cart,
             matches: (p: string) => p === "/shop" || p.startsWith("/shop/"),
           } as Tab,
         ]
@@ -138,7 +139,7 @@ export function MobileTabBar() {
       key: "you",
       label: t("nav.you"),
       href: "/account",
-      Icon: HaloedHead,
+      Icon: Gear,
       matches: (p) =>
         p === "/account" ||
         p.startsWith("/account/") ||
@@ -173,6 +174,14 @@ export function MobileTabBar() {
                 <Link
                   href={href}
                   aria-current={active ? "page" : undefined}
+                  // A tick on selection, and only on a real change of tab.
+                  // Firing it when you re-tap the tab you are already on makes
+                  // the bar feel noisy rather than responsive. Best-effort by
+                  // design: iOS WKWebView has no navigator.vibrate, so this is
+                  // never the only feedback a tap gives.
+                  onClick={() => {
+                    if (!active) haptic("light");
+                  }}
                   className={cn(
                     "tap-press",
                     // rounded-2xl, not the old rounded-[26px]: with no
@@ -189,10 +198,14 @@ export function MobileTabBar() {
                       shift and the heavier label that is three selected-state
                       signals, and two of the three are not colour. Every tab
                       glyph is drawn so its interior stays open at 2.0. */}
+                  {/* `key` flips with the active state so React remounts the
+                      glyph and the pop replays on every selection. Without it
+                      the animation only fires once per mount. */}
                   <Icon
+                    key={active ? "on" : "off"}
                     size={22}
                     strokeWidth={active ? 2 : undefined}
-                    className="transition-[filter] duration-200"
+                    className={cn(active && "tab-pop")}
                   />
                   <span className="leading-none">{label}</span>
                 </Link>
