@@ -59,8 +59,13 @@ const EN: Omit<PricingCopy, "eyebrow" | "h1"> = {
   lede: "The whole spiritual treasury of Purify is free, and it stays free. There is no tier to unlock the Scriptures, the saints, the prayers, the fasting tracker, or the calendar, and there never will be.",
   ...PREMIUM_PLAN_EN,
   web: {
-    monthlyLabel: "$9.99 / month",
-    yearlyLabel: "$99 / year",
+    // Reuse the single source rather than restating the price. These are
+    // only the FALLBACK for the web checkout buttons, which normally show
+    // RevenueCat's own formatted price; a second literal here is exactly
+    // how the site ends up advertising a price the store no longer
+    // charges. Pro already does this (see proPriceMonthly below).
+    monthlyLabel: PREMIUM_PLAN_EN.plusPriceMonthly,
+    yearlyLabel: PREMIUM_PLAN_EN.plusPriceYearly,
     signedOut:
       "Purify Plus is tied to your account, so it follows you across every device. Sign in to subscribe.",
     signIn: "Sign in to subscribe",
@@ -85,8 +90,8 @@ const DE: PricingCopy = {
   lede: "Der ganze geistliche Schatz von Purify ist frei und bleibt frei. Es gibt keine Stufe, um die Schriften, die Heiligen, die Gebete, den Fastentracker oder den Kalender freizuschalten, und wird es nie geben.",
   ...PREMIUM_PLAN_DE,
   web: {
-    monthlyLabel: "9,99 $ / Monat",
-    yearlyLabel: "99 $ / Jahr",
+    monthlyLabel: PREMIUM_PLAN_DE.plusPriceMonthly,
+    yearlyLabel: PREMIUM_PLAN_DE.plusPriceYearly,
     signedOut:
       "Purify Plus ist an dein Konto gebunden und folgt dir auf jedes Gerät. Melde dich an, um zu abonnieren.",
     signIn: "Zum Abonnieren anmelden",

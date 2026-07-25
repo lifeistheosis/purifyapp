@@ -18,8 +18,8 @@
 // revenue/subscriptions estimate (lib/premium/mrr.ts). These MIRROR the
 // display strings; changing a real price is still a release stop-condition.
 export const PLAN_PRICE_CENTS = {
-  plusMonthly: 999,
-  plusYearly: 9900,
+  plusMonthly: 499,
+  plusYearly: 3899,
   proMonthly: 1999,
   proYearly: 19900,
 } as const;
@@ -105,8 +105,8 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
       sub: "The story of the Church in full cinematic dress, with a cinematic expansion coming",
     },
   ],
-  plusPriceMonthly: "$9.99 / month",
-  plusPriceYearly: "$99 / year",
+  plusPriceMonthly: "$4.99 / month",
+  plusPriceYearly: "$38.99 / year",
   plusPromise:
     "A promise already made stays made: pre-launch supporters keep lifetime cross-device sync, no subscription required. That promise covers sync itself; the wider Plus tools belong to the subscription.",
   proTitle: "Purify Pro",
@@ -191,8 +191,8 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
       sub: "Die Geschichte der Kirche in vollem filmischem Gewand, eine filmische Erweiterung kommt",
     },
   ],
-  plusPriceMonthly: "9,99 $ / Monat",
-  plusPriceYearly: "99 $ / Jahr",
+  plusPriceMonthly: "4,99 $ / Monat",
+  plusPriceYearly: "38,99 $ / Jahr",
   plusPromise:
     "Ein gegebenes Versprechen bleibt bestehen: Unterstützer aus der Zeit vor dem Start behalten die geräteübergreifende Synchronisierung auf Lebenszeit, ohne Abonnement. Dieses Versprechen gilt der Synchronisierung selbst; die weiteren Plus-Werkzeuge gehören zum Abonnement.",
   proTitle: "Purify Pro",

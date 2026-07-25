@@ -180,7 +180,7 @@ export default function TermsPage() {
         <h3 className={H3}>Purify Plus</h3>
         <p className={P}>
           Purify Plus is an optional auto-renewing subscription. The standard
-          prices are US $9.99 per month or US $99 per year (local prices are
+          prices are US $4.99 per month or US $38.99 per year (local prices are
           shown in the store before you confirm). New subscribers receive an
           introductory opening discount of 50% off the first year; after the
           first year the subscription renews automatically at the then-current
