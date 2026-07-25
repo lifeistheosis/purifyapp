@@ -42,6 +42,12 @@ export function MobileChapterStrip({
  const active = ch === current;
  return (
  <Link
+ // No prefetch: this strip renders every chapter in the book (150 for
+ // Psalms), so viewport prefetch pulls a full RSC payload per chapter the
+ // reader is merely scrolling past. Measured on /bible/john/3, one page
+ // view fired 137 requests, most of them prefetch for chapters never
+ // opened. The chapter is already bundled on device.
+ prefetch={false}
  key={ch}
  ref={active ? activeRef : undefined}
  href={`/bible/${book.slug}/${ch}`}

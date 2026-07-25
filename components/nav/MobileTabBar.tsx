@@ -2,16 +2,26 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
+// Two kept library glyphs (Today, Community) and five bespoke tab glyphs.
+//
+// The tab set lives under icons/tab/ rather than replacing the library icons,
+// because the two have different briefs. A library icon is read alone at
+// whatever size its host gives it; a tab icon is read in a row of seven at
+// exactly 22px, where what matters is that it is optically the same weight as
+// its neighbours and has a silhouette none of them share. Codex, Octogram,
+// PrayerRope, Lampada and HaloedHead are all still in use elsewhere (Bible
+// index, Discover, Reading, PrayersMobile, the calendar's fast-free glyph and
+// the mobile headers' donate glyph) and are untouched by this.
 import { Sun } from "@/components/ui/icons/Sun";
-import { Codex } from "@/components/ui/icons/Codex";
-import { Octogram } from "@/components/ui/icons/Octogram";
-import { PrayerRope } from "@/components/ui/icons/PrayerRope";
-import { HaloedHead } from "@/components/ui/icons/HaloedHead";
-import { Lampada } from "@/components/ui/icons/Lampada";
 import { Church } from "@/components/ui/icons/Church";
+import { BookOpen } from "@/components/ui/icons/tab/BookOpen";
+import { Klimax } from "@/components/ui/icons/tab/Klimax";
+import { Orans } from "@/components/ui/icons/tab/Orans";
+import { Cart } from "@/components/ui/icons/tab/Cart";
+import { Gear } from "@/components/ui/icons/tab/Gear";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { haptic } from "@/lib/ui/motion";
 import { shopEnabled } from "@/lib/shop/flags";
 
 /**
@@ -26,6 +36,21 @@ import { shopEnabled } from "@/lib/shop/flags";
  * Active state is derived from `usePathname()`, with a small precedence
  * table so adjacent routes (e.g. /saints under Discover, /account under
  * You) light up the correct tab.
+ *
+ * There is deliberately NO sliding highlight behind the active tab. The
+ * earlier version glided a rounded compartment between slots, which had two
+ * problems. Visually, at seven tabs the cell computes to ~58x58px and a
+ * 26px radius turned that compartment into a circle, so it read as a bubble
+ * ballooning out of the bar rather than a compartment inside it. Mechanically
+ * it animated `left`, which is not compositor-accelerated: the app's most
+ * frequent interaction forced a layout every frame for 300ms, on the same
+ * main thread that runs React. Removing it also retired the module-scoped
+ * `lastActiveIndex` and the nested-rAF dance that existed only to keep that
+ * compartment from jumping across the app/page.tsx <-> (app) remount boundary.
+ *
+ * The selected tab is still signalled three ways, only one of which is
+ * colour: text colour, font weight, and icon stroke weight. That keeps the
+ * state legible without relying on hue alone.
  */
 
 type Tab = {
@@ -35,20 +60,6 @@ type Tab = {
   Icon: typeof Sun;
   matches: (p: string) => boolean;
 };
-
-// Matches the `gap-1` gutter between tabs; used to keep the sliding
-// indicator's geometry exactly in step with the flex cells.
-const GAP = 4;
-
-// Module-scoped memory of the last active tab. The bar is mounted in two
-// separate layout subtrees — `app/page.tsx` (Today, "/") and the (app)
-// group layout (Bible/Discover/Prayers/You) — so crossing that boundary
-// REMOUNTS the component. A fresh mount has no prior `left` for CSS to
-// transition from, which made the indicator jump on Today<->Bible. By
-// remembering the previous index here (it survives remounts within the
-// same page session), a remounted bar can render at the OLD slot first and
-// then glide to the new one, so the animation is seamless either way.
-let lastActiveIndex = 0;
 
 export function MobileTabBar() {
   const pathname = usePathname() ?? "/";
@@ -66,14 +77,14 @@ export function MobileTabBar() {
       key: "bible",
       label: t("nav.bible"),
       href: "/bible",
-      Icon: Codex,
+      Icon: BookOpen,
       matches: (p) => p === "/bible" || p.startsWith("/bible/"),
     },
     {
       key: "discover",
       label: t("nav.discover"),
       href: "/discover",
-      Icon: Octogram,
+      Icon: Klimax,
       matches: (p) =>
         p === "/discover" ||
         p.startsWith("/discover/") ||
@@ -98,7 +109,7 @@ export function MobileTabBar() {
       key: "prayers",
       label: t("nav.prayers"),
       href: "/prayers",
-      Icon: PrayerRope,
+      Icon: Orans,
       matches: (p) =>
         (p === "/prayers" || p.startsWith("/prayers/")) && p !== "/prayers/today",
     },
@@ -108,7 +119,7 @@ export function MobileTabBar() {
             key: "shop",
             label: "Shop",
             href: "/shop",
-            Icon: Lampada,
+            Icon: Cart,
             matches: (p: string) => p === "/shop" || p.startsWith("/shop/"),
           } as Tab,
         ]
@@ -128,7 +139,7 @@ export function MobileTabBar() {
       key: "you",
       label: t("nav.you"),
       href: "/account",
-      Icon: HaloedHead,
+      Icon: Gear,
       matches: (p) =>
         p === "/account" ||
         p.startsWith("/account/") ||
@@ -136,44 +147,6 @@ export function MobileTabBar() {
         p.startsWith("/saved/"),
     },
   ];
-
-  // -1 on routes that belong to no tab (e.g. /pricing, /support). The
-  // sliding compartment hides there instead of falsely settling on Today.
-  const matchedIndex = TABS.findIndex(({ matches }) => matches(pathname));
-  const hasActive = matchedIndex >= 0;
-  const activeIndex = hasActive ? matchedIndex : lastActiveIndex;
-
-  // `renderIndex` drives the indicator's position. It starts at the slot
-  // the user was last on (which may differ from `activeIndex` right after a
-  // cross-subtree remount), so the first paint lands at the OLD slot. A
-  // double rAF then advances it to `activeIndex`, giving CSS a real "from"
-  // value to transition out of — the indicator always glides, never jumps.
-  const [renderIndex, setRenderIndex] = useState(lastActiveIndex);
-
-  useEffect(() => {
-    lastActiveIndex = activeIndex;
-    if (renderIndex === activeIndex) return;
-    // Nested rAF: let the browser paint the current (old) slot once, THEN
-    // advance to the target so the transition has a frame to animate from.
-    let inner = 0;
-    const outer = requestAnimationFrame(() => {
-      inner = requestAnimationFrame(() => setRenderIndex(activeIndex));
-    });
-    return () => {
-      cancelAnimationFrame(outer);
-      cancelAnimationFrame(inner);
-    };
-  }, [activeIndex, renderIndex]);
-
-  // Geometry for the single sliding highlight. The bar is N equal flex
-  // cells separated by the GAP gutter, so one slot is
-  //   cell = (100% - (N-1)*gap) / N
-  // and slot i starts at i * (cell + gap). Driving `left` off these calc
-  // strings keeps the indicator pixel-aligned at any bar width while a CSS
-  // transition animates it gliding to the newly selected section.
-  const N = TABS.length;
-  const cell = `((100% - ${(N - 1) * GAP}px) / ${N})`;
-  const slotLeft = `calc(${renderIndex} * (${cell} + ${GAP}px))`;
 
   return (
     <nav
@@ -193,43 +166,46 @@ export function MobileTabBar() {
           "shadow-[0_4px_18px_rgba(0,0,0,0.4)] px-2 py-2",
         )}
       >
-        <ul className="relative flex items-stretch gap-1">
-          {/* Sliding compartment: one shared highlight that glides between
-              slots instead of popping in/out per tab. Sits behind the links
-              (z-0); the links are lifted to z-10. */}
-          <span
-            aria-hidden
-            className={cn(
-              "absolute top-0 bottom-0 z-0 rounded-[26px]",
-              "border border-white/15 bg-white/[0.08]",
-              "transition-[left,opacity] duration-300 ease-out motion-reduce:transition-none",
-              hasActive ? "opacity-100" : "opacity-0",
-            )}
-            style={{ width: `calc(${cell})`, left: slotLeft }}
-          />
+        <ul className="flex items-stretch gap-1">
           {TABS.map(({ key, label, href, Icon, matches }) => {
             const active = matches(pathname);
             return (
-              <li key={key} className="relative z-10 flex-1">
+              <li key={key} className="flex-1">
                 <Link
                   href={href}
                   aria-current={active ? "page" : undefined}
+                  // A tick on selection, and only on a real change of tab.
+                  // Firing it when you re-tap the tab you are already on makes
+                  // the bar feel noisy rather than responsive. Best-effort by
+                  // design: iOS WKWebView has no navigator.vibrate, so this is
+                  // never the only feedback a tap gives.
+                  onClick={() => {
+                    if (!active) haptic("light");
+                  }}
                   className={cn(
                     "tap-press",
-                    "h-[58px] flex flex-col items-center justify-center gap-1.5 rounded-[26px]",
+                    // rounded-2xl, not the old rounded-[26px]: with no
+                    // compartment behind it the radius now only shapes the
+                    // focus ring, and 26px on a 58px-square cell drew a circle.
+                    "h-[58px] flex flex-col items-center justify-center gap-1.5 rounded-2xl",
                     "font-sans text-caption tracking-[0.01em] transition-colors duration-200",
                     active
                       ? "text-paper font-semibold"
                       : "text-paper/55 hover:text-paper/80 font-medium",
                   )}
                 >
-                  {/* Active tabs also thicken the stroke: with the color
-                      shift and the sliding compartment this gives three
-                      selected-state signals, none of them color-only. */}
+                  {/* Active tabs also thicken the stroke. With the colour
+                      shift and the heavier label that is three selected-state
+                      signals, and two of the three are not colour. Every tab
+                      glyph is drawn so its interior stays open at 2.0. */}
+                  {/* `key` flips with the active state so React remounts the
+                      glyph and the pop replays on every selection. Without it
+                      the animation only fires once per mount. */}
                   <Icon
+                    key={active ? "on" : "off"}
                     size={22}
                     strokeWidth={active ? 2 : undefined}
-                    className="transition-[filter] duration-200"
+                    className={cn(active && "tab-pop")}
                   />
                   <span className="leading-none">{label}</span>
                 </Link>

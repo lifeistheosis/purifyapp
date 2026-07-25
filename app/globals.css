@@ -1316,6 +1316,33 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  }
 }
 
+/* ── Tab select ───────────────────────────────────────────────────────
+   The pop the newly-selected tab icon makes. It replaces the sliding
+   compartment that used to sit behind the active tab: that animated `left`,
+   which is not compositor-accelerated, so the app's most frequent interaction
+   forced a layout every frame. This animates transform and opacity only, both
+   of which the compositor handles without touching the main thread, so it
+   stays smooth while React is busy rendering the destination route.
+
+   Deliberately small. The tab already changes colour, font weight and stroke
+   weight; a big bounce on top of three other signals is noise. 86% to 100%
+   over --duration-fast is enough to catch the eye and short enough that it is
+   finished before the route transition starts.
+
+   Applied via a key change on the icon so it replays on every selection. */
+@keyframes tab-pop {
+ from { transform: scale(0.86); opacity: 0.55; }
+ to { transform: scale(1); opacity: 1; }
+}
+.tab-pop {
+ animation: tab-pop var(--duration-fast) var(--ease-house) both;
+}
+@media (prefers-reduced-motion: reduce) {
+ .tab-pop {
+ animation: none;
+ }
+}
+
 /* ── Cascade ──────────────────────────────────────────────────────────
    The house entrance for any stack of siblings: a screen's sections, a
    list's rows, a card's lines. Each direct child fades in one

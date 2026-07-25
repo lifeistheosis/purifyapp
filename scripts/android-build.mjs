@@ -83,9 +83,13 @@ function run(cmd, extraEnv = {}) {
 // build-time server-cache artifact that the client segment cache NEVER requests
 // in output:'export' mode (the string "_full" appears nowhere in
 // next/dist/client). So `__next._full.txt` is dead weight that ships in the
-// APK: ~1,750 files, ~247 MB on the current content set. index.txt and every
-// other segment file are load-bearing and left untouched. Next regenerates
-// `_full` on every build, so this must run each build, not once.
+// APK: ~1,750 files, ~247 MB on the current content set. index.txt is
+// load-bearing and left untouched. Next regenerates `_full` on every build, so
+// this must run each build, not once.
+//
+// NOTE: this comment used to also claim "every other segment file is
+// load-bearing". That was measured and found to be wrong; see
+// pruneSegmentCache below for the evidence.
 function pruneFullPayloadDuplicates(dir) {
   let files = 0;
   let bytes = 0;
@@ -104,6 +108,86 @@ function pruneFullPayloadDuplicates(dir) {
   if (fs.existsSync(dir)) walk(dir);
   console.log(
     `• pruned ${files} __next._full.txt duplicate(s), reclaimed ${(bytes / 1048576).toFixed(1)} MB`,
+  );
+}
+
+// Prune Next 16's client segment cache (`__next.!<b64-route-group>` entries).
+// These exist to let the router prefetch individual layout/page SEGMENTS so a
+// navigation can start before the full route payload arrives. That is a
+// latency optimisation for a network. This app is bundled into the APK and
+// served from https://localhost, so there is no latency to hide, and they cost
+// 194.3 MB of a 816.8 MB export (23.8%).
+//
+// Two distinct kinds, measured on the 2026-07-25 export:
+//
+//   nested `__next.!<key>/...` directory trees — 97.3 MB, 6,720 files.
+//     These CANNOT BE SERVED AT ALL in output:'export'. The client requests a
+//     flat, dot-joined name:
+//        /bible/john/3/__next.!KGFwcCk.bible.$d$book.$d$chapter.__PAGE__.txt
+//     but the export writes a nested path:
+//        /bible/john/3/__next.!KGFwcCk/bible/$d$book/$d$chapter/__PAGE__.txt
+//     No static host maps one onto the other, so these 404 in the app today.
+//     Deleting them is a pure size win with no behaviour change whatsoever.
+//
+//   flat `__next.!<key>.txt` files — 96.9 MB, 1,751 files.
+//     These ARE reachable and are what the router actually uses for segment
+//     prefetch. Removing them makes the router fall back to the full-route
+//     `index.txt`, which is already on disk beside every page.
+//
+// Verified before enabling: the export was served with every `__next.!` request
+// forced to 404, and client-side navigation still worked in all cases tried —
+// same-route (/bible/john/3 -> /bible/john/2), into a dynamic segment
+// (/saints -> /saints/theotokos), and across route trees
+// (/saints/theotokos -> /bible -> /prayers). Soft navigation, correct titles,
+// content rendered. The only loss is prefetch warmth, which buys nothing off a
+// local disk.
+//
+// Next regenerates these every build, so this runs each build.
+function pruneSegmentCache(dir) {
+  let nestedFiles = 0;
+  let nestedBytes = 0;
+  let flatFiles = 0;
+  let flatBytes = 0;
+
+  const measure = (d) => {
+    for (const entry of fs.readdirSync(d, { withFileTypes: true })) {
+      const p = path.join(d, entry.name);
+      if (entry.isDirectory()) measure(p);
+      else if (entry.isFile()) {
+        nestedBytes += fs.statSync(p).size;
+        nestedFiles += 1;
+      }
+    }
+  };
+
+  const walk = (d) => {
+    for (const entry of fs.readdirSync(d, { withFileTypes: true })) {
+      const p = path.join(d, entry.name);
+      if (entry.isDirectory()) {
+        if (entry.name.startsWith("__next.!")) {
+          measure(p);
+          fs.rmSync(p, { recursive: true, force: true });
+        } else {
+          walk(p);
+        }
+      } else if (
+        entry.isFile() &&
+        entry.name.startsWith("__next.!") &&
+        entry.name.endsWith(".txt")
+      ) {
+        flatBytes += fs.statSync(p).size;
+        fs.rmSync(p);
+        flatFiles += 1;
+      }
+    }
+  };
+
+  if (fs.existsSync(dir)) walk(dir);
+  const mb = (b) => (b / 1048576).toFixed(1);
+  console.log(
+    `• pruned segment cache: ${nestedFiles} unreachable file(s) in ` +
+      `${mb(nestedBytes)} MB of nested trees + ${flatFiles} prefetch file(s) ` +
+      `at ${mb(flatBytes)} MB, reclaimed ${mb(nestedBytes + flatBytes)} MB`,
   );
 }
 
@@ -188,6 +272,7 @@ run("node scripts/verify-package.mjs out/content/content-package.json");
 // (after the content package + its integrity gate, so nothing downstream reads
 // the pruned files).
 pruneFullPayloadDuplicates(path.join(ROOT, "out"));
+pruneSegmentCache(path.join(ROOT, "out"));
 
 // Last: nothing after this may write into out/.
 guardExportAgainstI18nLeaks(path.join(ROOT, "out"));

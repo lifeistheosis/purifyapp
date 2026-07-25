@@ -7,6 +7,14 @@ export function SaintCard({ saint }: { saint: Saint }) {
   return (
     <Link
       href={`/saints/${saint.slug}`}
+      // No prefetch. Next prefetches every <Link> that enters the viewport,
+      // and this card renders once per saint in a grid that can hold the full
+      // 1,093-entry set. Scrolling the index therefore fires a continuous
+      // stream of RSC fetches for lives the reader has not asked for, on the
+      // same main thread that is trying to scroll. In the bundled Android app
+      // there is no network latency for that prefetch to hide: the page is
+      // already on the device, so the tap is fast either way.
+      prefetch={false}
       // `press-card` owns the transition (transform + color + background on
       // the house curve), so the old `transition-all` is gone: it animated
       // every animatable property including layout ones, and the card had no
