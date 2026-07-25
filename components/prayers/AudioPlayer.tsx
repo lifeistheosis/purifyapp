@@ -15,6 +15,7 @@
 // is often told in loops, so the anthem can keep pace.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { scrollBehavior } from "@/lib/ui/motion";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import {
   setTrack,
@@ -258,12 +259,9 @@ function LyricsPanel({
       elRect.top - boxRect.top - (box.clientHeight / 2 - el.clientHeight / 2);
     // Skip micro-scrolls (cheaper on mobile) and honor reduced-motion.
     if (Math.abs(delta) < 4) return;
-    const reduce =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     box.scrollTo({
       top: box.scrollTop + delta,
-      behavior: reduce ? "auto" : "smooth",
+      behavior: scrollBehavior(),
     });
   }, [activeIdx, synced]);
 

@@ -27,7 +27,7 @@ import {
   writeRopeSettings,
   type RopeSettings,
 } from "@/lib/prayers/storage";
-import { isNativeClient } from "@/lib/platform/native";
+import { haptic } from "@/lib/ui/motion";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const LINES = [
@@ -80,28 +80,9 @@ export function PrayerRope() {
   const advance = useCallback(() => {
     setCount((c) => {
       const next = c + 1;
-      if (settings.haptics) {
-        // Inside the native app, use the platform haptic engine — iOS
-        // WKWebView never implemented navigator.vibrate, and this knot
-        // tick is the place a real haptic matters most. Browsers keep
-        // the vibrate path.
-        if (isNativeClient()) {
-          import("@capacitor/haptics")
-            .then(({ Haptics, ImpactStyle }) =>
-              Haptics.impact({ style: ImpactStyle.Light }),
-            )
-            .catch(() => {});
-        } else if (
-          typeof navigator !== "undefined" &&
-          "vibrate" in navigator
-        ) {
-          try {
-            navigator.vibrate(8);
-          } catch {
-            /* ignore */
-          }
-        }
-      }
+      // Platform haptic engine inside the native app, vibrate on the web.
+      // This knot tick is the place a real haptic matters most.
+      if (settings.haptics) haptic("light");
       // Bell tone every 25 knots, only when enabled.
       if (settings.bell && next % 25 === 0) {
         playBell();

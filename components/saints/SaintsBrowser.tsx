@@ -198,6 +198,13 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
         )}
       </div>
 
+      {/* Deliberately NOT `cascade`. This grid renders the full filtered set
+          (107 cards unfiltered), and the cascade clamps its stagger at the
+          13th child — so cards 14 and up would all hold at opacity 0 for
+          910ms and then appear at once, which is worse than no animation.
+          A stagger is only worth it where the user can actually see it
+          arrive; here about three cards are above the fold and the masthead
+          cascade above already covers the entrance. */}
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {visible.map((s) => (
           <div key={s.slug} className="cv-card">

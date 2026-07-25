@@ -17,24 +17,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { centuryLabelOf, eraForYear } from "@/lib/history/events";
-import { isNativeClient } from "@/lib/platform/native";
+import { haptic } from "@/lib/ui/motion";
 import { cn } from "@/lib/cn";
 
-// A quiet tick as the thumb crosses into a new century, the PrayerRope
-// pattern: platform haptics inside the native shell, vibrate on the web.
-function hapticTick() {
-  if (isNativeClient()) {
-    import("@capacitor/haptics")
-      .then(({ Haptics, ImpactStyle }) => Haptics.impact({ style: ImpactStyle.Light }))
-      .catch(() => {});
-  } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
-    try {
-      navigator.vibrate(8);
-    } catch {
-      /* ignore */
-    }
-  }
-}
+// A quiet tick as the thumb crosses into a new century.
+const hapticTick = () => haptic("light");
 
 export function TimelineFastScroll({
   centuries,

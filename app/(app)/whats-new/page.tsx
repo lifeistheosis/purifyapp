@@ -24,6 +24,23 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 2.4",
+ kind: "A calmer hand on the phone",
+ date: "July 25, 2026",
+ blurb:
+  "Nothing new to learn in this one. Purify simply moves better. Screens now settle the way you read them, from the top down, instead of arriving all at once, and the cards and rows you tap finally answer to your finger. The Android app does less work while you scroll, and if you have asked your phone to reduce motion, more of Purify now listens.",
+ items: [
+  "Screens arrive in order. The greeting, then the day's word, then the prayer rule, then the doors below, each settling a moment after the one above it, so a page reads as it appears rather than landing in one piece.",
+  "Everything you tap now answers. The saint of the day, the fast, the readings, and the count to Pascha used to sit still under your finger on a phone; they now press in and spring back like the rest of the app.",
+  "Loading looks like the thing it is loading. Waiting states across Scripture, the saints, the calendar, the councils, and history were each drawn a little differently; they now share one shape, and the saints list no longer changes shape when the real lives arrive.",
+  "The Today screen's Explore doors were four almost-identical shades of grey pretending to be different. They are one clean surface now, told apart by their icons.",
+  "The Saints page opens onto saints. Its heading used to fill a phone screen on its own, leaving the first life below the fold.",
+  "Less work while you scroll in the Android app, with several blur effects removed from the places you scroll past; they cost frames on a phone and gave nothing back.",
+  "Reduce Motion is honored in more places, including sheets and dialogs, and a change to the setting now takes effect at once instead of on the next launch.",
+  "Cache version steps to purify-beta-2.4.",
+ ],
+ },
+ {
  version: "Beta 2.3",
  kind: "Purify learns your language",
  date: "July 19, 2026",

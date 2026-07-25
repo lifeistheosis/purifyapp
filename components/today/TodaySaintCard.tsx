@@ -46,7 +46,7 @@ export function TodaySaintCard({
     return (
       <Link
         href={`/saints/${saint.slug}`}
-        className="flex items-stretch gap-3 rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5 transition-colors hover:bg-paper/[0.06]"
+        className="press-card flex items-stretch gap-3 rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5 hover:bg-paper/[0.06]"
       >
         <div className="min-w-0 flex-1">
           <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
@@ -76,7 +76,7 @@ export function TodaySaintCard({
     return (
       <Link
         href="/calendar"
-        className="flex items-stretch gap-3 rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5 transition-colors hover:bg-paper/[0.06]"
+        className="press-card flex items-stretch gap-3 rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5 hover:bg-paper/[0.06]"
       >
         <div className="min-w-0 flex-1">
           <p className="font-sans text-caption text-paper/55">{eyebrow}</p>

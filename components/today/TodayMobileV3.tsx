@@ -64,7 +64,12 @@ export async function TodayMobileV3() {
     <div className="flex flex-col bg-night">
       <MobileTopTabs avatar={<UserAvatarSmall />} />
 
-      <div className="px-5 pt-3 pb-8">
+      {/* `cascade` staggers the direct children below by --stagger-step, so
+          the surface resolves in reading order (greeting, then the day's
+          word, then the rule, then the doors) instead of all at once.
+          Opacity only; see the note in globals.css for why nothing here
+          may translate. */}
+      <div className="cascade px-5 pt-3 pb-8">
         <GreetingHeader date={today.getTime()} />
 
         <FirstStepsNudge />

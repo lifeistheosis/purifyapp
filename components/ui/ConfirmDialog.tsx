@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
+import { useReducedMotion } from "@/lib/ui/motion";
 
 /**
  * Purify-styled confirmation dialog. Replaces `window.confirm()` for
@@ -45,6 +46,7 @@ export function ConfirmDialog({
 }) {
   const [mounted, setMounted] = useState(open);
   const [shown, setShown] = useState(false);
+  const reduced = useReducedMotion();
   const cancelBtnRef = useRef<HTMLButtonElement | null>(null);
 
   /* eslint-disable react-hooks/set-state-in-effect */
@@ -62,10 +64,10 @@ export function ConfirmDialog({
     } else if (mounted) {
       setShown(false);
       setOverlayOpen(false);
-      const t = setTimeout(() => setMounted(false), 200);
+      const t = setTimeout(() => setMounted(false), reduced ? 0 : 200);
       return () => clearTimeout(t);
     }
-  }, [open, mounted]);
+  }, [open, mounted, reduced]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   // Esc closes; Enter confirms (only when not pending and the
@@ -114,7 +116,7 @@ export function ConfirmDialog({
           if (!pending) onCancel();
         }}
         className={
-          "absolute inset-0 bg-night/72 backdrop-blur-sm transition-opacity duration-200 " +
+          "absolute inset-0 bg-night/72 backdrop-blur-sm transition-opacity duration-fast ease-house motion-reduce:transition-none " +
           (shown ? "opacity-100" : "opacity-0")
         }
         style={{
@@ -128,7 +130,7 @@ export function ConfirmDialog({
           calendar's section-card register. */}
       <div
         className={
-          "relative w-full max-w-[420px] rounded-lg border border-paper/15 bg-night-soft/95 shadow-2xl transition-all duration-200 " +
+          "relative w-full max-w-[420px] rounded-lg border border-paper/15 bg-night-soft/95 shadow-2xl transition-all duration-fast ease-house motion-reduce:transition-none " +
           (shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2")
         }
         style={{

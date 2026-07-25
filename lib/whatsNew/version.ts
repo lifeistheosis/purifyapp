@@ -3,6 +3,6 @@
 // "New" badge returns for every reader (their localStorage holds the last
 // version they opened; a mismatch re-arms the badge).
 
-export const CURRENT_VERSION = "Beta 2.3";
+export const CURRENT_VERSION = "Beta 2.4";
 
 export const WHATS_NEW_SEEN_KEY = "purify:whatsNewSeen";

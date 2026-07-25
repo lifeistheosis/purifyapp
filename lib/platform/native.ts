@@ -27,6 +27,19 @@ type CapacitorGlobal = {
  * returns false during SSR. */
 export function isNativeClient(): boolean {
   if (typeof window === "undefined") return false;
+  // Dev-only escape hatch. The app shell (Today, the tab bar) is NativeOnly,
+  // so a plain `npm run dev` browser can never see it — you had to build and
+  // install the APK to look at the mobile UI. Setting
+  // localStorage["purify:force-native"] = "1" simulates the shell so mobile
+  // work is verifiable in a browser at a phone viewport. Compiled out of
+  // production builds; the store bundles are unaffected.
+  if (process.env.NODE_ENV === "development") {
+    try {
+      if (window.localStorage.getItem("purify:force-native") === "1") return true;
+    } catch {
+      // localStorage can throw in a sandboxed frame; fall through.
+    }
+  }
   const cap = (window as { Capacitor?: CapacitorGlobal }).Capacitor;
   if (cap?.isNativePlatform?.()) return true;
   return navigator.userAgent.includes(NATIVE_UA_TOKEN);

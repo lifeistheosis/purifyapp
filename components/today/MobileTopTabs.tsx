@@ -17,7 +17,10 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 export function MobileTopTabs({ avatar }: { avatar: React.ReactNode }) {
   const { t } = useTranslate();
   return (
-    <header className="sticky top-0 z-30 bg-night/95 backdrop-blur-sm border-b border-paper/8">
+    // Solid `bg-night`, not a translucent blur: the Android WebView bleeds
+    // imagery through backdrop-filter and drops frames while scrolling
+    // (same reason the tab bar and the gift sequence avoid it).
+    <header className="sticky top-0 z-30 bg-night border-b border-paper/8">
       <div className="flex items-center justify-end gap-3 px-5 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-2">
         <MobilePremiumButton />
         <Link

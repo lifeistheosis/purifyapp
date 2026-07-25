@@ -7,7 +7,11 @@ export function SaintCard({ saint }: { saint: Saint }) {
   return (
     <Link
       href={`/saints/${saint.slug}`}
-      className="group block rounded-lg bg-night border border-paper/8 p-5 hover:border-paper/25 transition-all duration-200"
+      // `press-card` owns the transition (transform + color + background on
+      // the house curve), so the old `transition-all` is gone: it animated
+      // every animatable property including layout ones, and the card had no
+      // press response at all on a phone, where there is no hover.
+      className="press-card group block rounded-lg bg-night border border-paper/8 p-5 hover:border-paper/25"
     >
       <div className="flex gap-5">
         <SaintIcon saint={saint} size="md" />

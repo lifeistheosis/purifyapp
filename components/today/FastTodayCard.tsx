@@ -27,7 +27,7 @@ export function FastTodayCard({ fast }: { fast: FastingStatus }) {
   return (
     <Link
       href="/fasting"
-      className="block rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5 transition-colors hover:bg-paper/[0.06]"
+      className="press-card block rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5 hover:bg-paper/[0.06]"
     >
       <p className="font-sans text-caption text-paper/55">{t("today.fastEyebrow")}</p>
       <h3 className="mt-1 font-serif text-ui leading-[1.2] text-paper">

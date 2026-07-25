@@ -19,16 +19,21 @@ export default async function SaintsPage() {
   const locale = await getServerLocale();
   const m = getMessages(locale);
   return (
-    <section className="bg-night px-5 md:px-8 py-16 md:py-24">
-      <div className="mx-auto max-w-[1200px] w-full">
-        <header className="border-b border-paper/8 pb-10">
+    // Mobile spent 64px of a 812px screen on empty padding above the
+    // eyebrow, so the masthead alone filled the fold and the first saint sat
+    // below it. Desktop is unchanged.
+    <section className="bg-night px-5 md:px-8 pt-8 pb-12 md:py-24">
+      <div className="mx-auto max-w-[1200px] w-full cascade">
+        <header className="border-b border-paper/8 pb-7 md:pb-10">
           <div className="mb-5 flex items-center gap-2.5 text-gold">
             <Cross size={18} aria-hidden />
             <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
               {t(m, "saints.eyebrow")}
             </p>
           </div>
-          <h1 className="font-display-serif text-display md:text-display-lg text-paper leading-[0.98] tracking-[-0.01em]">
+          {/* 48px was a desktop hero size wearing a phone's clothes. The
+              step to `sm` keeps the large treatment everywhere it fits. */}
+          <h1 className="font-display-serif text-heading sm:text-display md:text-display-lg text-paper leading-[0.98] tracking-[-0.01em]">
             {t(m, "saints.h1")}
           </h1>
           {locale !== "el" && (
@@ -40,7 +45,7 @@ export default async function SaintsPage() {
               {GREEK_HOI_HAGIOI}
             </p>
           )}
-          <p className="mt-6 max-w-[620px] font-sans text-body text-paper/75 leading-relaxed">
+          <p className="mt-5 md:mt-6 max-w-[620px] font-sans text-ui md:text-body text-paper/75 leading-relaxed">
             <T k="saints.indexLead" />
           </p>
         </header>
