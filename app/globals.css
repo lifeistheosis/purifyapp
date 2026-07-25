@@ -1367,6 +1367,19 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 /* Clamp. Must stay last so it wins over the specific rules above. */
 .cascade > *:nth-child(n + 14) { --i: 13; }
 
+/* Sequence the two phases. An `(app)` route is wrapped in `.route-fade`,
+   so without this the page-level cross-fade and the cascade run at the
+   same time and multiply into each other: a child at 50% inside a wrapper
+   at 50% paints at 25%, and the surface reads as one soft mush rather
+   than as content arriving in order. Waiting one `--duration-base` makes
+   it fade, THEN cascade — the whole reason the effect reads as deliberate.
+   Today (`app/page.tsx`) sits outside the `(app)` group and has no route
+   fade, so its cascade correctly starts at zero without any exception
+   here. Specificity beats the base rule, so it needs no `!important`. */
+.route-fade .cascade > * {
+ --cascade-start: var(--duration-base);
+}
+
 @media (prefers-reduced-motion: reduce) {
  .cascade > * {
  animation: none;
