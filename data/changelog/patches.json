@@ -1,5 +1,30 @@
 [
  {
+  "id": "beta-2-5",
+  "version": "Beta 2.5",
+  "date": "2026-07-25",
+  "title": "A lighter app and a clearer bar",
+  "intro": "Two things you should notice. The bar along the bottom has been redrawn, and Purify now takes up a good deal less room on your phone. About a quarter of what the app was carrying turned out to be the same pages stored over and over, and that is gone.",
+  "sections": [
+   {
+    "heading": "The bottom bar, redrawn",
+    "body": "New marks for Scripture, Discover, Prayers, Shop and your account, each drawn to sit at the same weight as the ones beside it. The old set had icons that rendered nearly twice the size of their neighbours and several that ran past their own edges. The circle that used to slide around behind the selected tab is gone; the tab itself now brightens and lifts instead."
+   },
+   {
+    "heading": "Less to carry",
+    "body": "Roughly a quarter of the app was the same content written out several times over by the build. Removing the duplicates takes nothing away from what you can read: every prayer, life and chapter is still there and still works with no signal."
+   },
+   {
+    "heading": "Quieter while you scroll",
+    "body": "The saints list and the Bible chapter strip used to quietly load pages you had not opened while you scrolled past them. On a phone that competed with the scrolling itself. They now wait until you actually choose something."
+   },
+   {
+    "heading": "A small answer to every tap",
+    "body": "Choosing a tab gives a short tick you can feel, and the icon settles in rather than snapping. If you have asked your phone to reduce motion, it stays still."
+   }
+  ]
+ },
+ {
   "id": "beta-2-4",
   "version": "Beta 2.4",
   "date": "2026-07-25",

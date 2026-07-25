@@ -24,6 +24,21 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 2.5",
+ kind: "A lighter app and a clearer bar",
+ date: "July 25, 2026",
+ blurb:
+  "Two things you should notice. The bar along the bottom has been redrawn, and Purify now takes up a good deal less room on your phone. About a quarter of what the app was carrying turned out to be the same pages stored over and over, and that is gone.",
+ items: [
+  "The bottom bar, redrawn. New marks for Scripture, Discover, Prayers, Shop and your account, each drawn to sit at the same weight as the ones beside it. The old set had icons rendering nearly twice the size of their neighbours and several that ran past their own edges.",
+  "The circle that used to slide around behind the selected tab is gone. The tab itself now brightens and lifts instead, which is both calmer to look at and lighter for the phone to draw.",
+  "Roughly a quarter of the app was the same content written out several times over by the build. Removing the duplicates takes nothing away: every prayer, life and chapter is still there and still works with no signal.",
+  "The saints list and the Bible chapter strip used to quietly load pages you had not opened while you scrolled past them. They now wait until you actually choose something.",
+  "Choosing a tab gives a short tick you can feel, and the icon settles in rather than snapping. Reduce Motion keeps it still.",
+  "Cache version steps to purify-beta-2.5.",
+ ],
+ },
+ {
  version: "Beta 2.4",
  kind: "A calmer hand on the phone",
  date: "July 25, 2026",
