@@ -81,21 +81,42 @@ async function handlePOST(req: Request) {
     ? new Date(Date.now() + data.durationDays * 24 * 60 * 60 * 1000).toISOString()
     : null;
 
+  // A picture on a public page is its own affirmation, so it is gated
+  // separately from the blessing clickwrap rather than folded into it.
+  const imageUrl = data.imageUrl?.trim() || null;
+  if (imageUrl && data.photoConsent !== true) {
+    return NextResponse.json(
+      { error: "Please confirm you may share this picture." },
+      { status: 400 },
+    );
+  }
+
   const admin = createAdminClient();
-  const { data: created, error } = await admin
-    .from("prayer_campaigns")
-    .insert({
-      creator_id: user.id,
-      title: data.title.trim(),
-      intention: data.intention,
-      for_whom: forWhom,
-      subject_name: data.subjectName?.trim() || null,
-      note: data.note?.trim() || null,
-      prayer_key: prayerKey,
-      ends_at: endsAt,
-    })
-    .select("id")
-    .single();
+  // Typed loosely on purpose: image_url is only present once
+  // 20260725_prayer_campaign_image.sql has been applied, and supabase-js's
+  // generated insert type rejects the column until then.
+  const row: Record<string, unknown> = {
+    creator_id: user.id,
+    title: data.title.trim(),
+    intention: data.intention,
+    for_whom: forWhom,
+    subject_name: data.subjectName?.trim() || null,
+    note: data.note?.trim() || null,
+    prayer_key: prayerKey,
+    ends_at: endsAt,
+  };
+  const insert = (payload: Record<string, unknown>) =>
+    admin.from("prayer_campaigns").insert(payload).select("id").single();
+
+  // image_url is dropped when its migration has not been applied, so a
+  // campaign still gets created (without the picture) instead of 500ing.
+  let { data: created, error } = await insert(
+    imageUrl ? { ...row, image_url: imageUrl } : row,
+  );
+  if (error && imageUrl && /image_url/i.test(error.message)) {
+    console.warn("[campaigns] image_url column missing; creating without it");
+    ({ data: created, error } = await insert(row));
+  }
   if (error || !created) {
     console.warn("[campaigns] create failed", error?.message);
     return NextResponse.json(

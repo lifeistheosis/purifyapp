@@ -9,6 +9,7 @@ import {
 } from "@/lib/bible/books";
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
+import { SectionMasthead } from "./SectionMasthead";
 import { BibleMobileContinue } from "./BibleMobileContinue";
 import { BibleSearchTrigger } from "./BibleSearchOverlay";
 import { BibleTabs } from "./BibleTabs";
@@ -60,6 +61,9 @@ export function BibleMobile() {
       header={<MobileHeader titleKey="nav.bible" trailing={<BibleSearchTrigger />} />}
       eyebrow="Read"
     >
+      {/* Codex Sinaiticus: the Greek uncial behind the text being read. */}
+      <SectionMasthead section="bible" />
+
       <BibleMobileContinue />
 
       {lead && (

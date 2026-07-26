@@ -12,7 +12,7 @@ import {
   type CampaignIntention,
   type ForWhom,
 } from "@/lib/campaigns/campaigns";
-import { createCampaign } from "@/lib/campaigns/client";
+import { createCampaign, uploadCampaignImage } from "@/lib/campaigns/client";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -30,6 +30,9 @@ export function CreateCampaignClient() {
   const [blessing, setBlessing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [photoConsent, setPhotoConsent] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -66,6 +69,14 @@ export function CreateCampaignClient() {
       setError("Please confirm this is your own request or you have their blessing.");
       return;
     }
+    if (uploading) {
+      setError("Give the picture a moment to finish uploading.");
+      return;
+    }
+    if (imageUrl && !photoConsent) {
+      setError("Please confirm you may share this picture.");
+      return;
+    }
     setBusy(true);
     const res = await createCampaign({
       title: title.trim(),
@@ -76,6 +87,8 @@ export function CreateCampaignClient() {
       prayerKey,
       durationDays: durationDays as 7 | 9 | 40 | null,
       blessing: true,
+      imageUrl,
+      ...(imageUrl ? { photoConsent: true as const } : {}),
     });
     setBusy(false);
     if (res.ok && res.id) {
@@ -212,6 +225,80 @@ export function CreateCampaignClient() {
           />
         </div>
 
+        <div>
+          <span className={labelCls}>A picture (optional)</span>
+          {imageUrl ? (
+            <div className="relative overflow-hidden rounded-xl border border-paper/15">
+              {/* eslint-disable-next-line @next/next/no-img-element -- the
+                  static export runs images unoptimized anyway, and this is a
+                  transient preview of a just-uploaded file. */}
+              <img
+                src={imageUrl}
+                alt="The picture you attached to this campaign"
+                className="block max-h-[260px] w-full object-cover"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setImageUrl(null);
+                  setPhotoConsent(false);
+                }}
+                className="absolute right-3 top-3 rounded-pill bg-night/80 px-3 py-1.5 font-sans text-caption font-semibold text-paper backdrop-blur transition-colors hover:bg-night"
+              >
+                Remove
+              </button>
+            </div>
+          ) : (
+            <label
+              className={`flex cursor-pointer items-center justify-center rounded-xl border border-dashed px-4 py-6 text-center transition-colors ${
+                uploading
+                  ? "border-gold/40 bg-gold/[0.06]"
+                  : "border-paper/20 bg-paper/[0.02] hover:border-gold/45"
+              }`}
+            >
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="sr-only"
+                disabled={uploading}
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  // Let the same file be chosen again after a failure.
+                  e.target.value = "";
+                  if (!file) return;
+                  setError(null);
+                  setUploading(true);
+                  const res = await uploadCampaignImage(file);
+                  setUploading(false);
+                  if (res.ok && res.url) setImageUrl(res.url);
+                  else setError(res.error ?? "Couldn't upload that picture.");
+                }}
+              />
+              <span className="font-sans text-ui text-paper/60">
+                {uploading ? "Uploading…" : "Choose a picture, up to 4 MB"}
+              </span>
+            </label>
+          )}
+          <p className="mt-2 font-sans text-caption leading-relaxed text-paper/45">
+            An icon, a candle, a place, or a photograph. Campaigns are public,
+            so anyone can see what you attach here.
+          </p>
+          {imageUrl ? (
+            <label className="mt-3 flex items-start gap-3">
+              <input
+                type="checkbox"
+                checked={photoConsent}
+                onChange={(e) => setPhotoConsent(e.target.checked)}
+                className="mt-1 h-4 w-4 accent-gold"
+              />
+              <span className="font-sans text-caption leading-relaxed text-paper/65">
+                This picture is mine to share, and anyone in it has given me
+                their blessing to post it.
+              </span>
+            </label>
+          ) : null}
+        </div>
+
         <div className="reveal-rise" style={{ animationDelay: "300ms" }}>
           <span className={labelCls}>{t("shop.howLongShouldItRun")}</span>
           <div className="grid gap-2.5 sm:grid-cols-2">
@@ -245,10 +332,10 @@ export function CreateCampaignClient() {
 
         <button
           type="submit"
-          disabled={busy}
+          disabled={busy || uploading}
           className="inline-flex w-full items-center justify-center rounded-pill bg-paper px-6 py-4 font-display-serif text-lede text-night transition-[transform,background-color] hover:bg-paper/90 active:scale-[0.98] disabled:opacity-50"
         >
-          {busy ? "Starting…" : "Start the campaign"}
+          {busy ? "Starting…" : uploading ? "Uploading…" : "Start the campaign"}
         </button>
       </form>
     </Shell>

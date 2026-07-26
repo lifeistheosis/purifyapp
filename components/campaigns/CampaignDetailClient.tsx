@@ -15,6 +15,7 @@ import {
 } from "@/lib/campaigns/campaigns";
 import {
   closeCampaign,
+  deleteCampaign,
   fetchCampaign,
   leaveCampaign,
   prayCampaign,
@@ -169,6 +170,17 @@ export function CampaignDetailClient() {
     [busy, campaign],
   );
 
+  // Two-step, because taking a campaign down cannot be undone.
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const onDelete = useCallback(async () => {
+    if (busy || !campaign) return;
+    setBusy("delete");
+    const res = await deleteCampaign(campaign.id);
+    setBusy(null);
+    if (res.ok) window.location.href = "/campaigns";
+    else setNote(res.error ?? "Couldn't take it down.");
+  }, [busy, campaign]);
+
   if (phase === "loading") {
     return <Centered>{t("shop.openingTheCampaign")}</Centered>;
   }
@@ -233,6 +245,19 @@ export function CampaignDetailClient() {
         >
           {t("shop.allCampaigns")}
         </Link>
+
+        {campaign.image_url ? (
+          <div className="mt-5 overflow-hidden rounded-2xl border border-paper/10 bg-black/30">
+            {/* eslint-disable-next-line @next/next/no-img-element -- see the
+                note on the campaign card; images are unoptimized in the
+                static export. */}
+            <img
+              src={campaign.image_url}
+              alt={`A picture shared with the campaign ${campaign.title}`}
+              className="block max-h-[420px] w-full object-cover"
+            />
+          </div>
+        ) : null}
 
         <div className="mt-5 flex items-center gap-2">
           <span className="rounded-pill border border-gold/30 bg-gold/[0.08] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[0.5px] text-gold-pale">
@@ -372,6 +397,51 @@ export function CampaignDetailClient() {
                   </button>
                 ) : null}
               </div>
+            </div>
+          ) : null}
+
+          {/* Takedown. Offered whether or not the campaign is still active:
+              the reason to reach for it is usually something published that
+              should not have been, and that does not stop being true once a
+              campaign is closed. */}
+          {isCreator ? (
+            <div className="mt-5 border-t border-paper/8 pt-5 text-center">
+              {confirmDelete ? (
+                <>
+                  <p className="font-sans text-caption leading-relaxed text-paper/60">
+                    Take this campaign down for good? The picture is deleted
+                    with it, and the people praying will no longer see it.
+                    This cannot be undone.
+                  </p>
+                  <div className="mt-3 flex justify-center gap-3">
+                    <button
+                      type="button"
+                      onClick={onDelete}
+                      disabled={busy !== null}
+                      className="rounded-pill border border-crimson-soft/40 px-4 py-2 font-sans text-caption font-semibold text-crimson-soft hover:border-crimson-soft/70 disabled:opacity-50"
+                    >
+                      {busy === "delete" ? "Taking it down…" : "Yes, take it down"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDelete(false)}
+                      disabled={busy !== null}
+                      className="rounded-pill border border-paper/20 px-4 py-2 font-sans text-caption font-semibold text-paper/70 hover:border-paper/40 disabled:opacity-50"
+                    >
+                      Keep it
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(true)}
+                  disabled={busy !== null}
+                  className="font-sans text-caption text-paper/40 hover:text-paper/70 disabled:opacity-50"
+                >
+                  Take this campaign down
+                </button>
+              )}
             </div>
           ) : null}
         </div>

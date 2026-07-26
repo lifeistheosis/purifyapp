@@ -280,6 +280,26 @@ export function isSafeNext(value: string | null | undefined): value is string {
   return true;
 }
 
+/** Reusable: is this URL served by our own Supabase storage?
+ *
+ *  Uploads come back from /api/campaigns/image as a public storage URL, and
+ *  the client hands that URL to the create call. Without this check a client
+ *  could post any absolute URL and have it rendered as a campaign image on a
+ *  public page. Reads the project host from NEXT_PUBLIC_SUPABASE_URL rather
+ *  than hardcoding the ref, so it follows the project if it ever moves. */
+export function isSupabaseStorageUrl(value: string): boolean {
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!base) return false;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "https:") return false;
+    if (url.host !== new URL(base).host) return false;
+    return url.pathname.startsWith("/storage/v1/object/public/");
+  } catch {
+    return false;
+  }
+}
+
 /** /api/campaigns POST body (create a prayer campaign). The server owns every
  *  counter and workflow column; a client only proposes the human fields. The
  *  blessing literal is the privacy affirmation, mirroring the checkout
@@ -309,6 +329,21 @@ export const campaignCreateSchema = z.object({
     .nullable(),
   // "This is my own request, or I have the person's blessing to share it."
   blessing: z.literal(true),
+  // Public URL of an already-uploaded image from /api/campaigns/image. Pinned
+  // to the Supabase storage host so a client can never store an arbitrary
+  // remote URL (which would let a campaign card hotlink anywhere, and leak
+  // viewer IPs to a third-party server).
+  imageUrl: z
+    .string()
+    .url()
+    .max(1000)
+    .refine(isSupabaseStorageUrl, "Image must be uploaded through Purify.")
+    .optional()
+    .nullable(),
+  // Required only when an image is attached: the uploader affirms they may
+  // share this picture. Campaigns are public-read, so this is the same kind
+  // of affirmation as `blessing`, not a duplicate of it.
+  photoConsent: z.literal(true).optional(),
 });
 
 /** /api/campaigns/[id]/report POST body. */

@@ -14,6 +14,19 @@ export const dynamic = "force-dynamic";
  * the rest of the admin console.
  */
 
+/** Recover the object path from a Supabase public storage URL, which looks
+ *  like `<project>/storage/v1/object/public/<bucket>/<path...>`. Returns null
+ *  if the URL is not a public object in the expected bucket, so a malformed or
+ *  foreign URL can never turn into a delete against something else. */
+function storagePathFromPublicUrl(url: string, bucket: string): string | null {
+  const marker = `/storage/v1/object/public/${bucket}/`;
+  const at = url.indexOf(marker);
+  if (at === -1) return null;
+  const path = url.slice(at + marker.length).split("?")[0];
+  if (!path || path.includes("..")) return null;
+  return decodeURIComponent(path);
+}
+
 export async function GET() {
   const adminUser = await getAdminUser();
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -32,7 +45,7 @@ export async function GET() {
     admin
       .from("prayer_campaign_reports")
       .select(
-        "id, reason, created_at, campaign:prayer_campaigns(id, title, status, intention, subject_name)",
+        "id, reason, created_at, campaign:prayer_campaigns(id, title, status, intention, subject_name, image_url)",
       )
       .order("created_at", { ascending: false })
       .limit(200),
@@ -96,12 +109,38 @@ export async function POST(req: Request) {
         .update({ status: "removed", updated_at: now })
         .eq("id", id));
       break;
-    case "remove_campaign":
+    case "remove_campaign": {
+      // Flipping status to 'removed' only hides the row. The campaign image
+      // lives in a PUBLIC bucket, so without this the photo stays reachable
+      // at its URL forever after a moderator takes the campaign down.
+      const { data: removed } = await admin
+        .from("prayer_campaigns")
+        .select("image_url")
+        .eq("id", id)
+        .maybeSingle<{ image_url: string | null }>();
       ({ error } = await admin
         .from("prayer_campaigns")
         .update({ status: "removed", updated_at: now })
         .eq("id", id));
+      if (!error && removed?.image_url) {
+        const path = storagePathFromPublicUrl(removed.image_url, "campaign-media");
+        if (path) {
+          const { error: delError } = await admin.storage
+            .from("campaign-media")
+            .remove([path]);
+          // The takedown itself succeeded; a failed object delete is logged
+          // for a manual sweep rather than surfaced as a failed removal.
+          if (delError) {
+            console.warn(
+              "[admin/community] campaign image not deleted",
+              path,
+              delError.message,
+            );
+          }
+        }
+      }
       break;
+    }
     case "dismiss_campaign_report":
       ({ error } = await admin.from("prayer_campaign_reports").delete().eq("id", id));
       break;

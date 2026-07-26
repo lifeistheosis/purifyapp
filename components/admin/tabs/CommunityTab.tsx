@@ -30,6 +30,7 @@ type CampaignReport = {
     status: string;
     intention: string;
     subject_name: string | null;
+    image_url?: string | null;
   } | null;
 };
 type RecipeReport = {
@@ -182,6 +183,26 @@ export function CommunityTab() {
                 status={rep.campaign?.status}
                 reason={rep.reason}
                 busy={busy}
+                media={
+                  // A reported campaign is often reported FOR its picture, so
+                  // show it here rather than making the owner open the public
+                  // page to find out what was flagged.
+                  rep.campaign?.image_url ? (
+                    <a
+                      href={rep.campaign.image_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-24 shrink-0 overflow-hidden rounded-lg border border-white/10"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={rep.campaign.image_url}
+                        alt={`Image attached to the reported campaign ${rep.campaign.title}`}
+                        className="h-20 w-full object-cover"
+                      />
+                    </a>
+                  ) : null
+                }
                 actions={
                   <>
                     {rep.campaign && rep.campaign.status !== "removed" ? (
@@ -260,29 +281,37 @@ function ReportRow({
   status,
   reason,
   actions,
+  media,
 }: {
   title: string;
   status?: string;
   reason: string | null;
   busy: string | null;
   actions: React.ReactNode;
+  /** Optional thumbnail of the reported content, shown beside the row. */
+  media?: React.ReactNode;
 }) {
   return (
     <div className="rounded-md border border-paper/10 bg-paper/[0.02] p-4">
-      <div className="flex items-center justify-between gap-3">
-        <p className="font-sans text-detail font-semibold text-paper">
-          {title}
-          {status ? (
-            <span className="ml-2 font-normal text-paper/40">· {status}</span>
+      <div className="flex gap-3">
+        {media}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-3">
+            <p className="font-sans text-detail font-semibold text-paper">
+              {title}
+              {status ? (
+                <span className="ml-2 font-normal text-paper/40">· {status}</span>
+              ) : null}
+            </p>
+            <div className="flex flex-wrap gap-2">{actions}</div>
+          </div>
+          {reason ? (
+            <p className="mt-1.5 font-sans text-eyebrow text-paper/55">
+              Reason: {reason}
+            </p>
           ) : null}
-        </p>
-        <div className="flex flex-wrap gap-2">{actions}</div>
+        </div>
       </div>
-      {reason ? (
-        <p className="mt-1.5 font-sans text-eyebrow text-paper/55">
-          Reason: {reason}
-        </p>
-      ) : null}
     </div>
   );
 }

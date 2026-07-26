@@ -5,6 +5,7 @@ import {
 } from "@/lib/calendar/orthodox";
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
+import { SectionMasthead } from "./SectionMasthead";
 import { DiptychPreview } from "./DiptychPreview";
 import { SoftTile, SoftTileGrid, FeatureBand } from "./SoftTiles";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
@@ -65,6 +66,12 @@ export function PrayersMobile() {
       header={<MobileHeader titleKey="nav.prayers" trailing={<UserAvatarSmall />} />}
       eyebrow={formatLongDate(today)}
     >
+      {/* The Deesis: Christ with the Theotokos and the Forerunner
+          interceding, which is what this surface is for. Mobile had no
+          photography at all here; the two icon-bearing prayer components
+          were both inside a `hidden md:block` desktop branch. */}
+      <SectionMasthead section="prayers" />
+
       {/* Quiet masthead */}
       <header className="text-center pt-1">
         <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-4">

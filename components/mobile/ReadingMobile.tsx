@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
+import { SectionMasthead } from "./SectionMasthead";
 import { MobileSectionLabel } from "./MobileSectionLabel";
 import { DiscoverIndex, type DiscoverEntry } from "./DiscoverIndex";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
@@ -78,15 +79,15 @@ export async function ReadingMobile({
  <MobileShell
  header={<MobileHeader titleKey="nav.reading" trailing={<UserAvatarSmall />} />}
  >
+ {/* The Evangelist Luke at his desk: the reading room's own subject. */}
+ <SectionMasthead
+ section="reading"
+ eyebrow={t(m, "reading.eyebrow")}
+ title={t(m, "reading.h1")}
+ />
  <header className="text-center mb-7">
  <OrnamentHeadpiece className="mx-auto mb-4 max-w-[320px]" />
- <p className="font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/85 mb-2">
- {t(m, "reading.eyebrow")}
- </p>
- <h1 className="font-display-serif text-heading text-paper leading-[1.05]">
- {t(m, "reading.h1")}
- </h1>
- <p className="mt-3 font-serif italic text-ui text-paper/70 max-w-[420px] mx-auto leading-[1.6]">
+ <p className="font-serif italic text-ui text-paper/70 max-w-[420px] mx-auto leading-[1.6]">
  {t(m, "reading.subtitle")}
  </p>
  </header>

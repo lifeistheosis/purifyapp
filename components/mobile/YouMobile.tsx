@@ -24,6 +24,7 @@ import { MobileHeader } from "./MobileHeader";
 import { MobileHeroCard } from "./MobileHeroCard";
 import { MobileSectionLabel } from "./MobileSectionLabel";
 import { MobileStatGrid } from "./MobileStatGrid";
+import { SectionMasthead } from "./SectionMasthead";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { SavedPreview } from "./SavedPreview";
 import { SettingsList, type SettingsItem } from "./SettingsList";
@@ -247,6 +248,12 @@ export function YouMobile() {
             : "Loading…"
       }
     >
+      {/* The Ladder of Divine Ascent, which the tab bar already nods to with
+          its Klimax glyph. The personal page is about one's own ascent, and
+          MobileHeroCard's tints are all neutral grey now, so this is the
+          only identity the surface carries. */}
+      <SectionMasthead section="you" />
+
       <MobileHeroCard
         tint="violet"
         eyebrow={signedIn ? "Welcome back" : "Sign in to sync"}

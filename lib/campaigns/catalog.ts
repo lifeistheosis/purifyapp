@@ -18,8 +18,19 @@ function createClient() {
   );
 }
 
-const SELECT =
+const BASE_COLS =
   "id, creator_id, title, intention, for_whom, subject_name, note, prayer_key, ends_at, praying_count, prayer_count, status, created_at";
+
+/** image_url is optional until 20260725_prayer_campaign_image.sql is applied.
+ *  This matters more than it looks: both readers below fail soft to []/null on
+ *  any query error, so naming a column that does not exist yet would empty the
+ *  entire public campaigns board with nothing but a console warning between
+ *  the Render deploy and the owner running the SQL. Same retry idiom as
+ *  app/api/shop/catalog/reviews/route.ts. */
+const selectCols = (withImage: boolean) =>
+  withImage ? `${BASE_COLS}, image_url` : BASE_COLS;
+
+const missingImageColumn = (message: string) => /image_url/i.test(message);
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -39,20 +50,26 @@ export async function listCampaigns(
     const supabase = createClient();
     const limit = Math.min(opts.limit ?? 30, 60);
     const offset = opts.offset ?? 0;
-    let query = supabase
-      .from("prayer_campaigns")
-      .select(SELECT)
-      .neq("status", "removed")
-      .order("created_at", { ascending: false })
-      .range(offset, offset + limit - 1);
-    if (!opts.includeClosed) query = query.eq("status", "active");
-    if (opts.intention) query = query.eq("intention", opts.intention);
-    const { data, error } = await query;
+    const run = (withImage: boolean) => {
+      let query = supabase
+        .from("prayer_campaigns")
+        .select(selectCols(withImage))
+        .neq("status", "removed")
+        .order("created_at", { ascending: false })
+        .range(offset, offset + limit - 1);
+      if (!opts.includeClosed) query = query.eq("status", "active");
+      if (opts.intention) query = query.eq("intention", opts.intention);
+      return query;
+    };
+    let { data, error } = await run(true);
+    if (error && missingImageColumn(error.message)) {
+      ({ data, error } = await run(false));
+    }
     if (error) {
       console.warn("[campaigns] listCampaigns failed", error.message);
       return [];
     }
-    return (data ?? []) as PrayerCampaign[];
+    return (data ?? []) as unknown as PrayerCampaign[];
   } catch (e) {
     console.warn(
       "[campaigns] listCampaigns threw",
@@ -66,17 +83,22 @@ export async function getCampaign(id: string): Promise<PrayerCampaign | null> {
   if (!UUID_RE.test(id)) return null;
   try {
     const supabase = createClient();
-    const { data, error } = await supabase
-      .from("prayer_campaigns")
-      .select(SELECT)
-      .eq("id", id)
-      .neq("status", "removed")
-      .maybeSingle();
+    const run = (withImage: boolean) =>
+      supabase
+        .from("prayer_campaigns")
+        .select(selectCols(withImage))
+        .eq("id", id)
+        .neq("status", "removed")
+        .maybeSingle();
+    let { data, error } = await run(true);
+    if (error && missingImageColumn(error.message)) {
+      ({ data, error } = await run(false));
+    }
     if (error) {
       console.warn("[campaigns] getCampaign failed", error.message);
       return null;
     }
-    return (data as PrayerCampaign | null) ?? null;
+    return (data as unknown as PrayerCampaign | null) ?? null;
   } catch (e) {
     console.warn(
       "[campaigns] getCampaign threw",

@@ -41,6 +41,10 @@ export type CreateCampaignInput = {
   /** Campaign length: 7, 9, or 40 days; omitted/null = ongoing. */
   durationDays?: 7 | 9 | 40 | null;
   blessing: true;
+  /** Public URL returned by uploadCampaignImage, or null for no image. */
+  imageUrl?: string | null;
+  /** Required by the API whenever imageUrl is set. */
+  photoConsent?: true;
 };
 
 export type ApiResult = { ok: boolean; error?: string; id?: string };
@@ -67,6 +71,30 @@ export async function createCampaign(
     body: JSON.stringify(input),
   });
   return readResult(res);
+}
+
+export type UploadResult = { ok: boolean; url?: string; error?: string };
+
+/**
+ * Upload one campaign image and get its public URL back. The URL is not
+ * attached to anything yet; it travels in the create body, where the server
+ * re-validates that it is one of ours. Goes through apiFetch so the native
+ * shell reaches purifyapp.net with a bearer token instead of https://localhost.
+ */
+export async function uploadCampaignImage(file: File): Promise<UploadResult> {
+  try {
+    const body = new FormData();
+    body.append("file", file);
+    const res = await apiFetch("/api/campaigns/image", { method: "POST", body });
+    const json = (await res.json().catch(() => ({}))) as {
+      url?: string;
+      error?: string;
+    };
+    if (res.ok && json.url) return { ok: true, url: json.url };
+    return { ok: false, error: json.error ?? `Upload failed (${res.status}).` };
+  } catch {
+    return { ok: false, error: "Upload failed: network dropped. Try again." };
+  }
 }
 
 export type PrayResult = ApiResult & { alreadyToday?: boolean };
@@ -102,6 +130,12 @@ export async function reportCampaign(
   return readResult(res);
 }
 
+/** Creator takes their own campaign down for good, image included. */
+export async function deleteCampaign(id: string): Promise<ApiResult> {
+  const res = await apiFetch(`/api/campaigns/${id}`, { method: "DELETE" });
+  return readResult(res);
+}
+
 export async function closeCampaign(
   id: string,
   status: "answered" | "memory_eternal",
@@ -129,8 +163,17 @@ export type MyPrayers = {
   totalPrayerDays: number;
 };
 
-const CAMPAIGN_COLS =
+const BASE_COLS =
   "id, creator_id, title, intention, for_whom, subject_name, note, prayer_key, ends_at, praying_count, prayer_count, status, created_at";
+
+/** Same not-yet-migrated guard as lib/campaigns/catalog.ts: My Prayers reads
+ *  Supabase directly, so naming image_url before the migration lands would
+ *  blank the page for everyone. */
+const campaignCols = (withImage: boolean) =>
+  withImage ? `${BASE_COLS}, image_url` : BASE_COLS;
+
+const missingImageColumn = (message: string | undefined) =>
+  Boolean(message && /image_url/i.test(message));
 
 export async function fetchMyPrayers(): Promise<MyPrayers> {
   const empty: MyPrayers = { userId: null, joined: [], created: [], totalPrayerDays: 0 };
@@ -140,18 +183,29 @@ export async function fetchMyPrayers(): Promise<MyPrayers> {
   } = await supabase.auth.getUser();
   if (!user) return empty;
 
-  const [joinedRes, createdRes] = await Promise.all([
-    supabase
-      .from("prayer_campaign_prayers")
-      .select(`last_prayed_at, prayer_days, campaign:prayer_campaigns(${CAMPAIGN_COLS})`)
-      .eq("user_id", user.id)
-      .order("joined_at", { ascending: false }),
-    supabase
-      .from("prayer_campaigns")
-      .select(CAMPAIGN_COLS)
-      .eq("creator_id", user.id)
-      .order("created_at", { ascending: false }),
-  ]);
+  const fetchBoth = (withImage: boolean) => {
+    const cols = campaignCols(withImage);
+    return Promise.all([
+      supabase
+        .from("prayer_campaign_prayers")
+        .select(`last_prayed_at, prayer_days, campaign:prayer_campaigns(${cols})`)
+        .eq("user_id", user.id)
+        .order("joined_at", { ascending: false }),
+      supabase
+        .from("prayer_campaigns")
+        .select(cols)
+        .eq("creator_id", user.id)
+        .order("created_at", { ascending: false }),
+    ]);
+  };
+
+  let [joinedRes, createdRes] = await fetchBoth(true);
+  if (
+    missingImageColumn(joinedRes.error?.message) ||
+    missingImageColumn(createdRes.error?.message)
+  ) {
+    [joinedRes, createdRes] = await fetchBoth(false);
+  }
 
   const joined: MyJoinedCampaign[] = ((joinedRes.data ?? []) as unknown as {
     last_prayed_at: string | null;

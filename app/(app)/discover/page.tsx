@@ -3,6 +3,7 @@ import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { DiscoverMobile } from "@/components/mobile/DiscoverMobile";
 import { Church } from "@/components/ui/icons/Church";
 import { Cross } from "@/components/ui/icons/Cross";
+import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
@@ -95,11 +96,13 @@ export default async function DiscoverPage() {
               </p>
             </header>
 
-            {/* Where to begin: the two destinations that reward a visit, not a
+            {/* Where to begin: the destinations that reward a visit, not a
                 lookup. History wears the gold of a new wing of the library;
-                the reading room keeps the lamp. */}
+                the reading room keeps the lamp; the saints are the people the
+                whole library is about, so they belong here and not buried in
+                a study grid. */}
             <SectionHeading><T k="study.discover.whereToBegin" /></SectionHeading>
-            <div className="mt-5 grid gap-5 lg:grid-cols-2">
+            <div className="mt-5 grid gap-5 lg:grid-cols-3">
               <Link
                 href="/history"
                 className="group relative overflow-hidden rounded-xl border border-gold/25 p-7 transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-gold/55"
@@ -142,6 +145,24 @@ export default async function DiscoverPage() {
                 </p>
                 <p className="mt-5 font-sans text-detail font-semibold text-paper/70">
                   {t(m, "reading.enterReadingRoom")} →
+                </p>
+              </Link>
+
+              <Link
+                href="/saints"
+                className="group relative overflow-hidden rounded-xl border border-paper/12 bg-night-soft/60 p-7 transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-paper/30"
+              >
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-paper/[0.05] text-gold/90">
+                  <HaloedHead size={30} />
+                </span>
+                <p className="mt-5 font-display-serif text-title md:text-heading text-paper leading-tight transition-colors group-hover:text-gold">
+                  {t(m, "discover.tile.saints")}
+                </p>
+                <p className="mt-2 max-w-[440px] font-serif italic text-ui text-paper/70 leading-[1.6]">
+                  {t(m, "discover.tile.saintsBlurb")}
+                </p>
+                <p className="mt-5 font-sans text-detail font-semibold text-paper/70">
+                  {t(m, "saints.eyebrow")} →
                 </p>
               </Link>
             </div>

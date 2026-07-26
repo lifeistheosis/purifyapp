@@ -248,8 +248,15 @@ export function MobileCommentarySheet({
  </button>
  </div>
 
- {/* Scroll body */}
- <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 space-y-3">
+ {/* Scroll body. The extra bottom padding is not decoration: the sheet
+ is pinned to bottom-0 and sits above the tab bar (z-60 over z-50),
+ so without it the last line of a Father lands under the home
+ indicator and is hard to read. Reported from the Android beta,
+ 2026-07-14. */}
+ <div
+ className="flex-1 overflow-y-auto overscroll-contain px-5 pt-4 space-y-3"
+ style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2rem)" }}
+ >
  {notes.length === 0 ? (
  <p className="font-sans text-detail text-paper/55 text-center py-10">
  {t("bible.noCommentaryVerse")}

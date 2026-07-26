@@ -9,6 +9,7 @@ import { MobileShell } from "./MobileShell";
 import { MobileCard } from "./MobileCard";
 import { MobileHeader } from "./MobileHeader";
 import { MobileSectionLabel } from "./MobileSectionLabel";
+import { SectionMasthead } from "./SectionMasthead";
 import { SoftTile, SoftTileGrid, type Tone } from "./SoftTiles";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { type DiscoverEntry } from "./DiscoverIndex";
@@ -17,6 +18,7 @@ import { Church } from "@/components/ui/icons/Church";
 import { Calendar } from "@/components/ui/icons/Calendar";
 import { Codex } from "@/components/ui/icons/Codex";
 import { Cross } from "@/components/ui/icons/Cross";
+import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
@@ -72,6 +74,14 @@ export async function DiscoverMobile() {
   // shared `discover.tile.*` strings.
   const entries: DiscoverEntry[] = [
     {
+      // People first, as the ordering note above says. The Saints row was
+      // missing from this list even though its strings already shipped.
+      label: t(m, "discover.tile.saints"),
+      href: "/saints",
+      blurb: t(m, "discover.tile.saintsBlurb"),
+      Icon: HaloedHead,
+    },
+    {
       label: t(m, "discover.tile.councils"),
       href: "/councils",
       blurb: t(m, "discover.tile.councilsBlurb"),
@@ -113,17 +123,17 @@ export async function DiscoverMobile() {
     <MobileShell
       header={<MobileHeader titleKey="nav.discover" trailing={<UserAvatarSmall />} />}
     >
-      {/* Masthead — mirrors the desktop Discover page so the tab opens with
-          the calm "whole library" identity. */}
+      {/* Masthead — the Menologion of Basil II, since this surface is the
+          app's menologion. The ornament stays underneath as the rule between
+          the plate and the subtitle. */}
+      <SectionMasthead
+        section="discover"
+        eyebrow={t(m, "discover.eyebrow")}
+        title={t(m, "discover.h1")}
+      />
       <header className="text-center mb-7">
         <OrnamentHeadpiece className="mx-auto mb-4 max-w-[320px]" />
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/85 mb-2">
-          {t(m, "discover.eyebrow")}
-        </p>
-        <h1 className="font-display-serif text-heading text-paper leading-[1.05]">
-          {t(m, "discover.h1")}
-        </h1>
-        <p className="mt-3 font-serif italic text-ui text-paper/70 max-w-[420px] mx-auto leading-[1.6]">
+        <p className="font-serif italic text-ui text-paper/70 max-w-[420px] mx-auto leading-[1.6]">
           {t(m, "discover.subtitle")}
         </p>
       </header>

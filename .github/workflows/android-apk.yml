@@ -78,6 +78,14 @@ jobs:
           # bundle so Discover shows the Shop tile (which opens the website
           # in the system browser; the /shop route tree itself stays web-only).
           NEXT_PUBLIC_SHOP_ENABLED: "1"
+          # Prayer Campaigns. Read from a secret rather than hardcoded to "1"
+          # like the shop above, because the feature depends on migrations the
+          # owner applies by hand: an unset secret keeps /campaigns on its
+          # "coming soon" shell in the AAB, which is the safe default. Set it
+          # to 1 once 20260713_prayer_campaigns.sql, its duration follow-up,
+          # and 20260725_prayer_campaign_image.sql are applied in Supabase.
+          # Until then a device walk of campaigns shows the placeholder.
+          NEXT_PUBLIC_CAMPAIGNS_ENABLED: ${{ secrets.NEXT_PUBLIC_CAMPAIGNS_ENABLED }}
 
       # CAP_LOCAL=1 makes capacitor.config.ts use webDir=out (bundled UI) instead
       # of the remote server.url. Empty (remote-wrapper) keeps loading purifyapp.net.

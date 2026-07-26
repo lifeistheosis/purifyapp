@@ -155,8 +155,27 @@ function CampaignCard({
     <Link
       href={`/campaigns/detail?id=${campaign.id}`}
       style={{ animationDelay: `${Math.min(index * 50, 300)}ms` }}
-      className="reveal-rise block rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 transition-[transform,border-color] duration-150 hover:border-gold/30 active:scale-[0.99]"
+      className="reveal-rise block overflow-hidden rounded-2xl border border-paper/10 bg-paper/[0.03] transition-[transform,border-color] duration-150 hover:border-gold/30 active:scale-[0.99]"
     >
+      {campaign.image_url ? (
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-black/30">
+          {/* eslint-disable-next-line @next/next/no-img-element -- images are
+              unoptimized in the static export; a plain img keeps the native
+              shell and the web on one code path. */}
+          <img
+            src={campaign.image_url}
+            alt=""
+            loading="lazy"
+            className="h-full w-full object-cover"
+          />
+          {/* Scrim so the pills below never sit on a bright photo edge. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-night/70 to-transparent"
+          />
+        </div>
+      ) : null}
+      <div className="p-5">
       <div className="flex flex-wrap items-center gap-2">
         <span className="rounded-pill border border-gold/30 bg-gold/[0.08] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[0.5px] text-gold-pale">
           {intentionLabel(campaign.intention)}
@@ -197,6 +216,7 @@ function CampaignCard({
         <span className="shrink-0 font-sans text-caption font-semibold text-paper/45">
           {t("community.join")}
         </span>
+      </div>
       </div>
     </Link>
   );

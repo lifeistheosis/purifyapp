@@ -1,0 +1,44 @@
+[
+  {
+    "thread_id": "1526601549688606851",
+    "thread_name": "The tab which has the options of Bible, Prayers, Discover ect blocks the patristic commentary",
+    "post": "<@1188964234256715857> Thank you for reporting this, and for saying exactly where it bites. You were right.\n\nThe commentary sheet is pinned to the bottom of the screen and sits above the tab bar, so the last lines of a Father were ending up tight against the bottom edge, under the tab bar and the phone's own gesture area, with nothing between them. That is why it got harder to read the further down the commentary you went. It is fixed: the sheet now keeps clear space at the bottom, the phone's home indicator included, so the end of a note reads as easily as the start.\n\nIt goes out in the next build. If you see anything like it elsewhere, on the site or in the app, please open a new thread and tell us. Thank you for taking the time. Closing this one.",
+    "close": true
+  },
+  {
+    "thread_id": "1526000518588268695",
+    "thread_name": "Old Testament (Brenton's Septuagint)",
+    "post": "<@1332144529356099696> Χριστόδουλος is right, and thank you both.\n\nBrenton's 1851 English Septuagint is already the Old Testament in Purify, the whole way through. That includes the deuterocanonical books, Tobit, Judith, Wisdom, Sirach, Baruch and the Maccabees, and it keeps the Psalter numbering used in our services. The New Testament beside it is the King James. Both are public domain, which is exactly why we are able to give them away rather than rent them.\n\nSo the comparison you described, the Septuagint tradition read alongside the KJV, is open to you today. Thank you for asking for it, and for the reason you gave. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1525780805455052861",
+    "thread_name": "Old testament (Giguet French Septuagint)",
+    "post": "<@859509009354194954> Good suggestion, and a well chosen one.\n\nGiguet's French translation of the Septuagint is from the 1860s and is out of copyright, which puts it in the small set of texts we can actually ship rather than only wish for. It also fits what we already do: our Old Testament is the Septuagint, so a French Septuagint sits beside Brenton properly instead of arguing with him.\n\nWe are accepting it. It joins the French work already underway, where a volunteer from this server is helping with the prayers. The honest caveat is sourcing rather than permission: we need a clean and complete digital text before it can go in, and that is usually the slow part.\n\nThank you. Closing the thread, and we will say so here in the server when it lands.",
+    "close": true
+  },
+  {
+    "thread_id": "1526776791165960302",
+    "thread_name": "implement interlinear hebrew in the old testament",
+    "post": "<@1042199614272577646> Thank you both, and thank you for asking it plainly. Here is where we stand.\n\nOur Old Testament is Brenton's English of the Septuagint, because the Septuagint is the Old Testament the Apostles quoted, the Fathers read, and the Church still reads in her services. So the interlinear we have committed to is the Greek of the Septuagint, and that one is on the roadmap.\n\nA Hebrew interlinear is a different thing. It would sit under the Masoretic text, which is not the text our Old Testament follows, and pairing Hebrew words with an English translation made from the Greek would mislead more than it would teach. If we ever add Hebrew it will be alongside a Masoretic edition and clearly labelled as such, not underneath Brenton.\n\nMarkos, Aramaic has the same difficulty and a practical one behind it: for the Peshitta we would need an edition we are licensed to use. Noted and kept on the list.\n\nSo: the Greek interlinear yes, Hebrew not under Brenton. Thank you for caring about the text. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1526546808346513469",
+    "thread_name": "Light Mode",
+    "post": "<@1339292696732373103> Thank you for this, and please thank the people who told you. That is the right reason to ask for something.\n\nYou are right that Purify is dark everywhere. There are lighter reading palettes inside the reading room, Parchment above all, but they only re-colour the reading surface and they sit inside the Pro layer. That is the wrong place for something a person needs in order to read at all.\n\nSo an app-wide light mode is going on the roadmap, and it will not sit behind Pro. Being able to read is not a premium feature.\n\nWe are not going to promise a date, because doing it properly means every surface answering to it rather than a filter laid over the top, and half a light mode is worse than none. But it is accepted, it is wanted, and it is written down.\n\nThank you for bringing it here. Closing the thread, and we will announce it in the server when it lands.",
+    "close": true
+  },
+  {
+    "thread_id": "1525403010790985739",
+    "thread_name": "Pleeeeeeeeeeeeeeeeease! (more commentary)",
+    "post": "<@859509009354194954> Two requests here, and they get two different answers.\n\nMore commentary: yes, and it is already continuous. The patristic commentary grows with almost every patch, verse by verse, from the Fathers whose translations are in the public domain. John and Genesis are both on the list. If you open a new thread naming the chapters where the gap is worst for you, that helps us aim rather than guess.\n\nNikoli345, thank you for offering to help. The way in is the editorial flow rather than the media channel: anything sent needs a source we can cite and a translation we are allowed to use, and then it can go into the app properly attributed instead of living in a chat log. Say the word and we will point you at it.\n\nCommentary in your own language: this is the harder one and we will not pretend otherwise. Translating the Fathers is not a settings toggle. Machine translation of doctrine is the one thing our editorial standards forbid outright, because a mistranslated Father teaches error in the Church's name and does it with her authority. So the interface will keep gaining languages, and translated commentary will follow only where there is a real translation we may use, or a translator whose work can be checked. That is slower. It is also the only honest way to do it.\n\nOn the Coptic Catena: we would rather be right than be first. Thank you for pushing on this. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1529967352047734874",
+    "thread_name": "Bible Verse scrolling",
+    "post": "<@1208363879621460059> Thank you for this, and for being honest about the reason behind it. That is a better reason than most feature requests carry.\n\nWe are not going to build an endless feed. The habit you are describing is the one Purify exists to give back to you, and an infinite scroll of Scripture would train the same restlessness using holier material. Verses are not content to be fed through, and we do not want to teach anyone's thumb that they are.\n\nBut we have heard what you are actually asking for, which is Scripture that comes to you a piece at a time, and that is easy to keep when it lands. Something better than a feed is being built for exactly that, and it is coming soon.\n\nIn the meantime the verse of the day is waiting on Today, and anything that catches you can be saved to your Florilegium and read back whenever you want it.\n\nThank you for asking with your own habits in view. That is a good instinct. Closing the thread.",
+    "close": true
+  }
+]
