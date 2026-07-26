@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { corsPreflight, withCors } from "@/lib/api/cors";
 import { loadVerseRange } from "@/lib/bible/load";
 
 export const runtime = "nodejs";
@@ -13,6 +14,14 @@ export const runtime = "nodejs";
  *
  * Public, deterministic scripture text → cacheable. Returns the canonical
  * book name plus the verses in range.
+ *
+ * CORS is not optional here. /bible/multi renders client-side and calls this
+ * through apiFetch, so in the native shell the request comes from
+ * https://localhost against purifyapp.net. Without the allow-origin header the
+ * browser blocks it and the multi-reference view silently shows every
+ * reference as unresolved, while working perfectly in a desktop browser.
+ * Verified against production on 2026-07-26: this route answered 200 with no
+ * access-control-allow-origin at all.
  */
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
@@ -32,19 +41,27 @@ export async function GET(req: NextRequest) {
     to < from ||
     to - from > 200
   ) {
-    return NextResponse.json({ error: "Bad request" }, { status: 400 });
+    return withCors(
+      NextResponse.json({ error: "Bad request" }, { status: 400 }),
+      req,
+    );
   }
 
   const result = await loadVerseRange(book, chapter, from, to);
   if (!result || result.verses.length === 0) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return withCors(NextResponse.json({ error: "Not found" }, { status: 404 }), req);
   }
 
-  return NextResponse.json(
-    {
-      name: result.name,
-      verses: result.verses.map((v) => ({ n: v.n, text: v.text })),
-    },
-    { headers: { "Cache-Control": "public, max-age=86400, s-maxage=86400" } },
+  return withCors(
+    NextResponse.json(
+      {
+        name: result.name,
+        verses: result.verses.map((v) => ({ n: v.n, text: v.text })),
+      },
+      { headers: { "Cache-Control": "public, max-age=86400, s-maxage=86400" } },
+    ),
+    req,
   );
 }
+
+export const OPTIONS = corsPreflight;

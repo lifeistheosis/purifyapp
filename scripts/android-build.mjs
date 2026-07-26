@@ -27,10 +27,17 @@ const STASH_PATHS = [
   ["app", "api"],
   ["app", "(app)", "campaigns", "[id]"],
   ["app", "(app)", "florilegium", "[id]"],
-  // Purely query-driven / internal routes with no useful static form in the
-  // bundle: the multi-reference lookup (?q=), the editorial language tool, and
-  // the admin dashboard (force-dynamic, online-only, not part of the app).
-  ["app", "(app)", "bible", "multi"],
+  // Internal routes with no useful static form in the bundle: the editorial
+  // language tool and the admin dashboard (force-dynamic, online-only, not
+  // part of the app).
+  //
+  // bible/multi used to be stashed here as "purely query-driven". That was the
+  // cause of an Android beta bug reported 2026-07-26: the search bar pushes to
+  // /bible/multi?q= for a multi-reference query, the route was absent from the
+  // bundle, and the shell dropped the user on Today with their query lost. A
+  // ?q= route is perfectly exportable as a static shell whose client child
+  // reads useSearchParams, which is what /campaigns/detail already does, so it
+  // now ships. Do not re-stash it.
   ["app", "(app)", "language-editor"],
   ["app", "admin"],
   // The shop (EIKON marketplace) now ships in the app: its pages are client

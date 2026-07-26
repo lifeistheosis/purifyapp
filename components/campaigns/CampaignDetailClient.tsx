@@ -253,7 +253,7 @@ export function CampaignDetailClient() {
                 static export. */}
             <img
               src={campaign.image_url}
-              alt={`A picture shared with the campaign ${campaign.title}`}
+              alt={t("campaigns.pictureAlt")}
               className="block max-h-[420px] w-full object-cover"
             />
           </div>
@@ -409,9 +409,7 @@ export function CampaignDetailClient() {
               {confirmDelete ? (
                 <>
                   <p className="font-sans text-caption leading-relaxed text-paper/60">
-                    Take this campaign down for good? The picture is deleted
-                    with it, and the people praying will no longer see it.
-                    This cannot be undone.
+                    {t("campaigns.takeDownConfirm")}
                   </p>
                   <div className="mt-3 flex justify-center gap-3">
                     <button
@@ -420,7 +418,9 @@ export function CampaignDetailClient() {
                       disabled={busy !== null}
                       className="rounded-pill border border-crimson-soft/40 px-4 py-2 font-sans text-caption font-semibold text-crimson-soft hover:border-crimson-soft/70 disabled:opacity-50"
                     >
-                      {busy === "delete" ? "Taking it down…" : "Yes, take it down"}
+                      {busy === "delete"
+                        ? t("campaigns.takeDownBusy")
+                        : t("campaigns.takeDownYes")}
                     </button>
                     <button
                       type="button"
@@ -428,7 +428,7 @@ export function CampaignDetailClient() {
                       disabled={busy !== null}
                       className="rounded-pill border border-paper/20 px-4 py-2 font-sans text-caption font-semibold text-paper/70 hover:border-paper/40 disabled:opacity-50"
                     >
-                      Keep it
+                      {t("campaigns.takeDownKeep")}
                     </button>
                   </div>
                 </>
@@ -439,7 +439,7 @@ export function CampaignDetailClient() {
                   disabled={busy !== null}
                   className="font-sans text-caption text-paper/40 hover:text-paper/70 disabled:opacity-50"
                 >
-                  Take this campaign down
+                  {t("campaigns.takeDown")}
                 </button>
               )}
             </div>

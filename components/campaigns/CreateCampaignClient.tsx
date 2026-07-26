@@ -226,7 +226,7 @@ export function CreateCampaignClient() {
         </div>
 
         <div>
-          <span className={labelCls}>A picture (optional)</span>
+          <span className={labelCls}>{t("campaigns.pictureOptional")}</span>
           {imageUrl ? (
             <div className="relative overflow-hidden rounded-xl border border-paper/15">
               {/* eslint-disable-next-line @next/next/no-img-element -- the
@@ -234,7 +234,7 @@ export function CreateCampaignClient() {
                   transient preview of a just-uploaded file. */}
               <img
                 src={imageUrl}
-                alt="The picture you attached to this campaign"
+                alt={t("campaigns.pictureAlt")}
                 className="block max-h-[260px] w-full object-cover"
               />
               <button
@@ -245,7 +245,7 @@ export function CreateCampaignClient() {
                 }}
                 className="absolute right-3 top-3 rounded-pill bg-night/80 px-3 py-1.5 font-sans text-caption font-semibold text-paper backdrop-blur transition-colors hover:bg-night"
               >
-                Remove
+                {t("campaigns.pictureRemove")}
               </button>
             </div>
           ) : (
@@ -275,13 +275,14 @@ export function CreateCampaignClient() {
                 }}
               />
               <span className="font-sans text-ui text-paper/60">
-                {uploading ? "Uploading…" : "Choose a picture, up to 4 MB"}
+                {uploading
+                  ? t("campaigns.pictureUploading")
+                  : t("campaigns.pictureChoose")}
               </span>
             </label>
           )}
           <p className="mt-2 font-sans text-caption leading-relaxed text-paper/45">
-            An icon, a candle, a place, or a photograph. Campaigns are public,
-            so anyone can see what you attach here.
+            {t("campaigns.pictureNote")}
           </p>
           {imageUrl ? (
             <label className="mt-3 flex items-start gap-3">
@@ -292,8 +293,7 @@ export function CreateCampaignClient() {
                 className="mt-1 h-4 w-4 accent-gold"
               />
               <span className="font-sans text-caption leading-relaxed text-paper/65">
-                This picture is mine to share, and anyone in it has given me
-                their blessing to post it.
+                {t("campaigns.pictureConsent")}
               </span>
             </label>
           ) : null}

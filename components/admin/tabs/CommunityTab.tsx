@@ -197,7 +197,7 @@ export function CommunityTab() {
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={rep.campaign.image_url}
-                        alt={`Image attached to the reported campaign ${rep.campaign.title}`}
+                        alt={`Attached to the reported campaign ${rep.campaign.title}`}
                         className="h-20 w-full object-cover"
                       />
                     </a>
