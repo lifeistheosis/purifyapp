@@ -29,10 +29,35 @@ directory at request time, so a file placed there is published.
 
 ## What the rights pass actually did
 
-Every one of the 41 florilegium entries was fetched live from its cited URL
-during review and confirmed present, in that translation, attributed to that
-Father, at that reference. Entries that could not be confirmed were dropped
-rather than guessed. Findings worth knowing:
+The drafting agents claimed all 41 quotations were verified against their
+cited URLs. **Do not take that claim at face value**, because they used a
+summarising fetch tool, and that tool truncates. Re-checked against raw page
+bytes with `node scripts/verify-florilegium.mjs`:
+
+| Result | Count | What it means |
+| --- | --- | --- |
+| OK | 29 | Full word sequence found on the cited page |
+| PARTIAL | 5 | 60 to 99 percent contiguous. Usually New Advent splicing inline scripture references into the text, or an elision |
+| UNVERIFIED | 7 | Words not on that page. **These need an editor** |
+
+The two worst are both in `council-of-florence.json` and are the same
+problem twice: **Ivan Ostroumoff cited to
+`archive.org/details/historycouncilf00nealgoog`, which is a catalogue
+landing page containing no book text**, so neither quotation can be checked
+at its source. One of them is the duress passage the Florence essay leans on
+materially ("The Pope found this the best way of making the Greeks
+obedient"). Ostroumoff is also a nineteenth-century historian sitting in a
+florilegium of Fathers, which is a category error even if the text checks
+out. Either source him to a page-level scan or move him into the essay as
+narrative.
+
+Note also that quotations here carry **commas where NPNF and ANF print em
+dashes**, because the house style forbids em dashes. That is why the
+verifier ignores punctuation. It is a real editorial decision, silently
+altering punctuation inside quotation marks, and it deserves a ruling: keep
+the source's dash inside quotations, or keep normalising and say so.
+
+Other findings worth knowing:
 
 - A St Gregory the Theologian quotation (Epistle 101) had been silently
   **reordered inside the quotation marks** by the drafter. Corrected against
@@ -55,20 +80,28 @@ rather than guessed. Findings worth knowing:
 Every file's own `editorialNotes` array is the real handover. Read it before
 the essay.
 
-## Defect found in already-published content
+## Defect found in already-published content, now fixed
 
-`data/theology/theosis.json` carries a St Athanasius entry citing *On the
-Incarnation* 54 with the source URL
-`https://www.newadvent.org/fathers/2802.htm`. **That page covers sections 1
-to 29 and does not contain section 54 or the quoted sentence** (verified
-2026-07-25). The quoted wording ("He became man that we might be made god")
-also differs from the standard NPNF rendering ("For He was made man that we
-might be made God"), which suggests a modern translation is being quoted
-under a public-domain citation.
+`data/theology/theosis.json` carried a St Athanasius entry whose text had
+been silently altered from the NPNF source it cites. It read "He became man
+that we might be made god", with the divine pronouns lowercased and a comma
+added. NPNF prints:
 
-No replacement URL is guessed here. An editor should either correct the entry
-to the NPNF wording with a working public-domain source, or remove it. This
-is live on production today.
+> For He was made man that we might be made God; and He manifested Himself
+> by a body that we might receive the idea of the unseen Father; and He
+> endured the insolence of men that we might inherit immortality.
+
+Corrected 2026-07-26, and the reference sharpened from a bare "54" to
+"54.3 (NPNF Second Series, vol. 4)".
+
+**Method note, worth more than the fix.** The first pass concluded the
+source URL was wrong, because a fetch-and-summarise tool reported that
+`newadvent.org/fathers/2802.htm` covered only sections 1 to 29 and did not
+contain the passage. That was false. The page carries all 57 sections; the
+tool had truncated it and then answered confidently from the truncated text.
+The URL was right and the quotation was wrong, which is the opposite of the
+diagnosis. **Before concluding a citation URL is broken, fetch the raw HTML
+and grep it.** A summarising fetch will invent a clean negative.
 
 ## The two apologetics threads
 

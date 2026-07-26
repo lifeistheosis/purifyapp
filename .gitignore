@@ -99,3 +99,4 @@ dogma-scan.json
 data/_generated/
 .android-export-stash/
 test-results/
+.cache/
