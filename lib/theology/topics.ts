@@ -21,6 +21,7 @@ export type TheologyGroup =
   | "mariology"
   | "soteriology"
   | "ecclesiology"
+  | "liturgics"
   | "textual";
 
 export type TheologyTopicMeta = {
@@ -42,6 +43,7 @@ export const THEOLOGY_GROUP_ORDER: TheologyGroup[] = [
   "mariology",
   "soteriology",
   "ecclesiology",
+  "liturgics",
   "textual",
 ];
 
@@ -73,6 +75,12 @@ export const THEOLOGY_GROUP_LABEL: Record<
     en: "The Church",
     de: "Die Kirche",
     subtitle: "Conciliarity, the rejection of papal supremacy, and the unity of the bishops.",
+  },
+  liturgics: {
+    en: "The worship of the Church",
+    de: "Der Gottesdienst der Kirche",
+    subtitle:
+      "The Divine Liturgy, the vesting of the clergy, and the meaning of what the Church does when she prays.",
   },
   textual: {
     en: "Scripture & textual criticism",
@@ -149,6 +157,70 @@ export const THEOLOGY_TOPICS: TheologyTopicMeta[] = [
     group: "textual",
     summary:
       "External support across 99% of the Greek manuscripts, the Old Latin and Syriac versions, and Irenaeus, Tatian, Justin, and Hippolytus, set against the narrow case from Vaticanus, Sinaiticus, and Eusebius. A defense of the Longer Ending on patristic and manuscript grounds.",
+    estimatedMinutes: 22,
+  },
+  // Brought over from the Discord dogma-exegesis and liturgics forums on
+  // 2026-07-26. Every quotation in these six was checked against its cited
+  // source with scripts/audit-florilegium.mjs before landing; two that could
+  // not be matched were removed rather than shipped. The drafting record and
+  // the clergy review notes stay in docs/editorial/dogma-queue/.
+  {
+    slug: "justin-martyr-subordinationism",
+    title: "St Justin Martyr and the charge of subordinationism",
+    subtitle: "Order and origin in God are not inequality of nature.",
+    group: "trinity",
+    summary:
+      "St Justin writes more than a century and a half before Nicaea, in words the Church had not yet fixed. He calls the Son another God and Lord subject to the Maker of all things, and gives him the second place. He also worships him, calls him God, and denies that the Father's essence is divided in begetting him. Everything turns on the difference between order and causal origin, what the Greek Fathers call taxis, and inferiority of nature.",
+    estimatedMinutes: 20,
+  },
+  {
+    slug: "penal-substitution",
+    title: "Penal substitution and the Life-Giving Cross",
+    subtitle:
+      "The Cross heals and it also pays; what the Fathers refuse is a God who must be bought before he can love.",
+    group: "soteriology",
+    summary:
+      "Did Christ die to satisfy a judge, or to heal a disease? The Fathers refuse the choice. They keep the debt, the ransom, and the curse borne, and they insist the payment works by union with our nature rather than by a verdict pronounced over it. Ignatius, Irenaeus, Athanasius, Cyril of Jerusalem, Gregory the Theologian, and John Chrysostom, with the question Gregory asks out loud at Pascha: to whom was the Blood offered?",
+    estimatedMinutes: 15,
+  },
+  {
+    slug: "council-of-florence",
+    title: "Why the Orthodox Church does not receive the Council of Florence",
+    subtitle:
+      "A synod becomes a Council when the whole Church recognises her own faith in it.",
+    group: "ecclesiology",
+    summary:
+      "The Council of Ferrara-Florence (1438-1439) published a decree of union that the Orthodox Church has never received. A council is not made a Council by its convocation, its attendance, or its signatures, but by the Church recognising in it the faith she already holds. Vincent of Lerins, Athanasius, Jerome, Gregory the Great, and the precedent of Ariminum supply the rule by which the Church judged it.",
+    estimatedMinutes: 30,
+  },
+  {
+    slug: "theodore-the-studite-and-rome",
+    title: "St Theodore the Studite and the See of Rome",
+    subtitle:
+      "The appeals of a confessor in exile to the first of the thrones, made inside the order of five, not above it.",
+    group: "ecclesiology",
+    summary:
+      "St Theodore the Studite wrote to the Bishop of Rome in the highest language a Byzantine could use, and those letters are quoted today as a proof of papal supremacy. Read whole, they are the appeals of a persecuted confessor to the one apostolic throne still free to act, sent alongside letters to Alexandria, Antioch and Jerusalem, and aimed at a synod.",
+    estimatedMinutes: 13,
+  },
+  {
+    slug: "the-divine-liturgy",
+    title: "The Divine Liturgy of St John Chrysostom",
+    subtitle:
+      "The Prothesis, the Liturgy of the Catechumens, and the Liturgy of the Faithful, walked in order.",
+    group: "liturgics",
+    summary:
+      "A walk through the Divine Liturgy in the order it is served, explaining what each action is for: the cutting of the Lamb and the gathering of the whole Church on the paten, the antiphons and the reading of the Word, the dismissal of the catechumens, the Great Entrance, the Anaphora and the calling down of the Spirit, and communion.",
+    estimatedMinutes: 26,
+  },
+  {
+    slug: "vestments",
+    title: "Vestments and the garments of the Kingdom",
+    subtitle:
+      "Nothing the priest wears is his own, and the prayers he says while putting it on say exactly that.",
+    group: "liturgics",
+    summary:
+      "The clergy do not dress for the Liturgy, they are vested, and every garment carries a name, a scriptural root, and a prayer said over it. From the holy apparel commanded in Exodus 28 through Clement of Rome, Polycrates of Ephesus, the Apostolic Constitutions and the canons of Laodicea and Trullo, to the sticharion, epitrachelion, zone, epimanikia, epigonation and phelonion as they are actually prayed.",
     estimatedMinutes: 22,
   },
 ];

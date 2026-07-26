@@ -1,0 +1,14 @@
+[
+  {
+    "thread_id": "1530941971038736575",
+    "thread_name": "Multi-verse Bible search doesn't work",
+    "post": "<@1166399169188069529> Found it, and thank you for the precise report. The device, the version, and \"still in the page of the Bible but in reality in today\" were what made it findable.\n\nHere is what was happening. A single reference goes straight to the chapter reader, but two or more send you to a separate multi-reference page. That page was never included in the app bundle: it was left out during the build as a web-only route, on the reasoning that a page driven by a search query has nothing useful to store offline. So in the app you were being sent to a screen that did not exist, and the shell put you back on Today with your query lost. On the website it worked the whole time, which is why it survived this long.\n\nThe reasoning was wrong, and the page now ships with the app. While fixing it we also found that the endpoint it reads verse text from was refusing requests from inside the app, which would have left every reference showing as unresolved even once the page arrived. That is fixed too, so it does not simply fail in a quieter way.\n\nOne honest caveat: this rides in the app bundle, so it reaches you in the next build rather than today. Thank you for catching it, and for saying exactly what you saw. Closing the thread.",
+    "close": true
+  },
+  {
+    "thread_id": "1525443665894445226",
+    "thread_name": "Can't read the last sentences of commentary",
+    "post": "<@1166399169188069529> Fixed, and your screenshots are what proved it. Thank you.\n\nYou were right that you were missing text. The commentary panel sits flush against the bottom of the screen, and it had no clear space beneath it, so the final lines ended up underneath the tab bar and the phone's gesture area with nothing to scroll them into view. The words were there and were being drawn; they were simply out of reach. Your example ends on screen at \"vilissimis herbulis, etc.\" and the text does continue after that, which is exactly what you suspected.\n\nThe panel now keeps clear space at the bottom, the home indicator included, so the end of a Father reads as easily as the beginning.\n\nThanais reported the same thing from the other direction in the suggestions forum, describing the tab bar covering the commentary. Same cause, one fix, and between the two of you it was unmistakable.\n\nThis ships in the app bundle, so it reaches you in the next build. Closing the thread.",
+    "close": true
+  }
+]

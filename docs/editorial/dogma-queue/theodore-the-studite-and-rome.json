@@ -106,7 +106,7 @@
       "author": "St Cyprian of Carthage",
       "work": "Treatise 1, On the Unity of the Church",
       "reference": "Section 4, ANF vol. 5",
-      "text": "And although to all the apostles, after His resurrection, He gives an equal power, and says, As the Father has sent me, even so send I you: Receive the Holy Ghost: Whose soever sins you remit, they shall be remitted unto him; and whose soever sins you retain, they shall be retained, yet, that He might set forth unity, He arranged by His authority the origin of that unity, as beginning from one. Assuredly the rest of the apostles were also the same as was Peter, endowed with a like partnership both of honour and power; but the beginning proceeds from unity.",
+      "text": "And although to all the apostles, after His resurrection, He gives an equal power, and says, As the Father has sent me, even so send I you: Receive the Holy Ghost: Whose soever sins you remit, they shall be remitted unto him; and whose soever sins you retain, they shall be retained; yet, that He might set forth unity, He arranged by His authority the origin of that unity, as beginning from one. Assuredly the rest of the apostles were also the same as was Peter, endowed with a like partnership both of honour and power; but the beginning proceeds from unity.",
       "gloss": "The principle under all of it: Peter is the origin and type of unity, and the apostolic college shares his honour and his power.",
       "source": "https://www.newadvent.org/fathers/050701.htm"
     }
@@ -142,24 +142,6 @@
     "papacy",
     "filioque"
   ],
-  "modernScholarship": [
-    {
-      "work": "John Meyendorff, Byzantine Theology: Historical Trends and Doctrinal Themes",
-      "usedFor": "Framing only. Supports the reading that Theodore's exalted address to Rome belongs to a Byzantine register of honour, that he speaks elsewhere of the Church's body as five-headed, and that he addressed the See of Jerusalem in comparably exalted terms. Named so an editor can trace the drafting. Not quoted anywhere in this study, and the sentence about Jerusalem was rewritten in this pass specifically to stop tracking Meyendorff's phrasing."
-    },
-    {
-      "work": "A. Edward Siecienski, The Papacy and the Orthodox: Sources and History of a Debate",
-      "usedFor": "Framing only. Supports the reading that Theodore's praise of Rome arises from his need to enlist Roman support under persecution and his gratitude when it came, while he continued to hold the pentarchic ideal. Not quoted."
-    },
-    {
-      "work": "Francis Dvornik, Byzantium and the Roman Primacy",
-      "usedFor": "Framing only. Supports the points that Theodore recognised the emperor's customary right to convoke councils, that he urged referral to Rome when no council was called, and that he attributed apostolic character to all the patriarchal sees. Not quoted."
-    },
-    {
-      "work": "Thomas Pratsch, Theodoros Studites (759-826): zwischen Dogma und Pragma",
-      "usedFor": "Background on Theodore's career and on how the Constantinopolitan establishment regarded him. Its judgements about his personal ambition and character were deliberately not carried into this draft. Not quoted."
-    }
-  ],
   "editorialNotes": [
     "WHAT I VERIFIED THIS RUN. Every florilegium entry that remains was fetched from its own source URL during this review and compared word for word against the proposed transcription. Verified exact and unchanged: Council in Trullo canon 36, Nicaea I canon 6, the opening of the Nicaea II definition, and St Basil Letter 70. Verified and then corrected: St Basil Letter 214, Pope St Gregory Book V Epistle 43, St Cyprian On the Unity section 4, and the St Theodore passage from Gardner. Nothing was added from memory. No entry was deleted, because every one of them proved to be genuinely present at a reachable source once the errors below were fixed.",
     "DEFECT FOUND AND FIXED, most serious. The Gregory the Great entry cited the wrong letter and the wrong URL. The draft pointed at newadvent.org/fathers/360207043.htm, which is Book VII, Epistle 43, addressed to Marinianus of Ravenna, and does not contain the universal-title passage at all. The correct text is Book V, Epistle 43, to Eulogius of Alexandria and Anastasius of Antioch, at newadvent.org/fathers/360205043.htm. The draft's wording was also altered: it dropped the opening clause 'For, as your venerable Holiness knows,', dropped the word 'forsooth', collapsed 'But far be this, far be it from the mind of a Christian' into a single 'far be this', and lowercased 'Patriarch' twice. The entry now carries the URL and the exact wording as printed. A reviewer should confirm the NPNF volume number, given here as Second Series vol. 12.",
@@ -184,6 +166,29 @@
     "LINKING. No saint profile exists at data/saints/theodore-the-studite, so no saintSlug is set for the study's own subject. Adding one would make this study link properly and should probably happen before ship. The only saintSlug used is basil-the-great, which exists. Both related slugs, papacy and filioque, exist in data/theology. Note that papacy.json references saintSlugs that are not present in data/saints; that pattern was not copied here.",
     "STORAGE SHAPE. This output has no councils array, so the three conciliar texts sit in the florilegium with the council named as author. If this is stored as data/theology/theodore-the-studite-and-rome.json, move Trullo canon 36, Nicaea I canon 6 and the Nicaea II definition into a councils array with councilSlug values, to match the existing files.",
     "estimatedMinutes was lowered from 16 to 13. It is still an estimate, not a measurement.",
-    "REMAINING SPOT-CHECK. Basil Letter 214, Gregory Book V Epistle 43 and Cyprian section 4 were carried into the draft from data/theology/papacy.json. Three of those three needed correction here, which means the copies sitting in papacy.json are very likely wrong in the same ways. Someone should re-verify those entries in papacy.json against their sources before the next release, and check whether papacy.json is also pointing at the Marinianus letter for Gregory."
+    "REMAINING SPOT-CHECK. Basil Letter 214, Gregory Book V Epistle 43 and Cyprian section 4 were carried into the draft from data/theology/papacy.json. Three of those three needed correction here, which means the copies sitting in papacy.json are very likely wrong in the same ways. Someone should re-verify those entries in papacy.json against their sources before the next release, and check whether papacy.json is also pointing at the Marinianus letter for Gregory.",
+    "CYPRIAN SECTION 4, RE-VERIFIED THIS RUN, THE FLAG WAS A FALSE POSITIVE. scripts/verify-florilegium.mjs scored this entry 52 of 102 words. I fetched newadvent.org/fathers/050701.htm with curl, stripped the tags, and compared the quotation word for word against the page. All 102 words are present, in order, with no substitutions and no reordering. The run breaks at word 52 for one reason only: New Advent splices the inline scripture reference 'John 20:21' into the middle of the ANF text, between 'they shall be retained' and 'yet, that He might set forth unity'. That is site apparatus, not Cyprian and not the ANF translator, and it stays out of the quotation. The entry is kept as genuine. Its work, reference, source URL and gloss are unchanged.",
+    "CYPRIAN SECTION 4, ONE PUNCTUATION MARK RESTORED. The page prints a semicolon at the point where the spliced reference sits: 'they shall be retained; John 20:21 yet, that He might set forth unity'. The draft carried a comma there. With the apparatus removed, the faithful reading is a semicolon, so the comma before 'yet' has been changed back to a semicolon. This is not an em dash case and the house rule does not apply to it. No word was added, removed, reordered, or respelled. This is the only change made to the entry.",
+    "CORRECTION TO AN EARLIER NOTE IN THIS FILE. The earlier Cyprian note claims the draft had 'a semicolon before yet where the text has a comma'. That is backwards, and it is what introduced the comma now reverted. The page has the semicolon. The rest of that note is sound: the His and He capitalisations do match the page, and so does the internal punctuation of the quotation from John. Its substantive warning also stands untouched by this run, that chapter 4 of On the Unity survives in two ancient recensions and the other one carries the chair of Peter primacy language, so a clergy reviewer should still decide whether a study about Roman claims cites this chapter with a framing note or drops it. Verifying the words does not settle that question.",
+    "SCHEMA NOTE, ACTION NEEDED ON REASSEMBLY. The return schema for this pass has no modernScholarship field, so the four framing-only entries in the staged file (Meyendorff, Siecienski, Dvornik, Pratsch, each marked not quoted) could not be carried through this output. That is a limitation of the return shape, not a deletion I made. Re-attach that array unchanged from the staged file before this ships, or the drafting trail behind the copyright notes above is lost.",
+    "SCOPE OF THIS RUN. Only the Cyprian entry was flagged and only the Cyprian entry was touched. The other seven florilegium entries, the essay, the scripture list, the related slugs, and every pre-existing editorial note were carried through byte for byte and were not re-fetched. There are no Ostroumoff entries in this study; that instruction belongs to council-of-florence.json."
+  ],
+  "modernScholarship": [
+    {
+      "work": "John Meyendorff, Byzantine Theology: Historical Trends and Doctrinal Themes",
+      "usedFor": "Framing only. Supports the reading that Theodore's exalted address to Rome belongs to a Byzantine register of honour, that he speaks elsewhere of the Church's body as five-headed, and that he addressed the See of Jerusalem in comparably exalted terms. Named so an editor can trace the drafting. Not quoted anywhere in this study, and the sentence about Jerusalem was rewritten in this pass specifically to stop tracking Meyendorff's phrasing."
+    },
+    {
+      "work": "A. Edward Siecienski, The Papacy and the Orthodox: Sources and History of a Debate",
+      "usedFor": "Framing only. Supports the reading that Theodore's praise of Rome arises from his need to enlist Roman support under persecution and his gratitude when it came, while he continued to hold the pentarchic ideal. Not quoted."
+    },
+    {
+      "work": "Francis Dvornik, Byzantium and the Roman Primacy",
+      "usedFor": "Framing only. Supports the points that Theodore recognised the emperor's customary right to convoke councils, that he urged referral to Rome when no council was called, and that he attributed apostolic character to all the patriarchal sees. Not quoted."
+    },
+    {
+      "work": "Thomas Pratsch, Theodoros Studites (759-826): zwischen Dogma und Pragma",
+      "usedFor": "Background on Theodore's career and on how the Constantinopolitan establishment regarded him. Its judgements about his personal ambition and character were deliberately not carried into this draft. Not quoted."
+    }
   ]
 }

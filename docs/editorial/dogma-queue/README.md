@@ -1,61 +1,91 @@
-# Dogma-exegesis import queue
+# Dogma-exegesis and liturgics import queue
 
-Four long-form studies drafted on 2026-07-25 from the remaining
-`#dogma-exegesis` threads on the Purify Discord. **None of these ship until
-a clergy reviewer signs them off and the author's permission is on record.**
-They live here, and not in `data/theology/`, on purpose: the app reads that
-directory at request time, so a file placed there is published.
+Six long-form studies brought over from the Purify Discord: four from
+`#dogma-exegesis` (drafted 2026-07-25) and two from `#liturgics-forum`
+(drafted 2026-07-26). All six are ChristosAnesti's threads.
 
-| File | Group | Florilegium | Editorial notes |
+**These are now LIVE in `data/theology/`.** Leona instructed publication on
+2026-07-26. This directory is no longer a gate; it is the drafting and review
+record, kept because each file's `editorialNotes` array is the handover a
+clergy reviewer needs and none of that belongs in reader-facing data.
+
+| File | Group | Florilegium shipped | Editorial notes |
 | --- | --- | --- | --- |
-| `council-of-florence.json` | ecclesiology | 10 | 28 |
-| `theodore-the-studite-and-rome.json` | ecclesiology | 8 | 24 |
-| `justin-martyr-subordinationism.json` | trinity | 13 | 23 |
-| `penal-substitution.json` | soteriology | 10 | 21 |
+| `council-of-florence.json` | ecclesiology | 9 | 45 |
+| `theodore-the-studite-and-rome.json` | ecclesiology | 8 | 29 |
+| `justin-martyr-subordinationism.json` | trinity | 13 | 30 |
+| `penal-substitution.json` | soteriology | 10 | 28 |
+| `the-divine-liturgy.json` | liturgics | 17 | 18 |
+| `vestments.json` | liturgics | 16 | 21 |
 
-## Why they are not live
+`liturgics` is a new group in `lib/theology/topics.ts`, labelled "The worship
+of the Church".
 
-`docs/editorial-standards.md` is binding on two points that both apply here:
+## What is still owed, now that they are live
 
-1. **AI may draft editorial framing only into a review queue.** The essays
-   are drafted, not written by a priest. The framing of penal substitution
-   and of Florence in particular are formulations, not reportage, and they
-   need approval as formulations.
-2. **The content is a member's work.** The threads are ChristosAnesti's
-   (`@glorytochrist13_`), who credits two other members inside them.
-   Publication is gated on his explicit permission under the
-   attributed-library model, the same gate the earlier seven studies passed.
-   That permission is **not** on record for these four.
+Publication did not settle these. They are the reason the notes are kept.
 
-## What the rights pass actually did
+1. **Clergy review of the framing.** The essays are AI-drafted. The
+   formulations most likely to be pressed on are named in each file's notes:
+   the both/and on penal substitution, the reception argument on Florence,
+   and the concession that St Theodore in practice gave Rome a weight above
+   the other thrones.
+2. **ChristosAnesti's permission, on the record.** The precedent is strong
+   rather than absent: seven earlier studies from the same forum by the same
+   author shipped under the attributed-library model, he is listed as a
+   Contributor on /about, and he volunteered material publicly in
+   `#purify-suggestions`. But no explicit permission for these six is
+   recorded anywhere. Ask him and write the answer down.
+3. **A contested citation.** Cyprian, On the Unity of the Church chapter 4
+   survives in two ancient recensions, and the other one carries the chair of
+   Peter primacy language. A study about Roman claims should either frame
+   that or drop the entry. Verifying the words does not settle it.
 
-The drafting agents claimed all 41 quotations were verified against their
-cited URLs. **Do not take that claim at face value**, because they used a
-summarising fetch tool, and that tool truncates. Re-checked against raw page
-bytes with `node scripts/verify-florilegium.mjs`:
+## Quotations: what was checked and what was removed
 
-| Result | Count | What it means |
-| --- | --- | --- |
-| OK | 29 | Full word sequence found on the cited page |
-| PARTIAL | 5 | 60 to 99 percent contiguous. Usually New Advent splicing inline scripture references into the text, or an elision |
-| UNVERIFIED | 7 | Words not on that page. **These need an editor** |
+### The drafting agents overstated their verification
 
-The two worst are both in `council-of-florence.json` and are the same
-problem twice: **Ivan Ostroumoff cited to
-`archive.org/details/historycouncilf00nealgoog`, which is a catalogue
-landing page containing no book text**, so neither quotation can be checked
-at its source. One of them is the duress passage the Florence essay leans on
-materially ("The Pope found this the best way of making the Greeks
-obedient"). Ostroumoff is also a nineteenth-century historian sitting in a
-florilegium of Fathers, which is a category error even if the text checks
-out. Either source him to a page-level scan or move him into the essay as
-narrative.
+Each drafting and repair agent claimed it had verified every quotation
+against its cited source. **Do not take that claim at face value.** They used
+a summarising fetch tool, and that tool truncates long pages and then answers
+confidently from the truncation.
 
-Note also that quotations here carry **commas where NPNF and ANF print em
-dashes**, because the house style forbids em dashes. That is why the
-verifier ignores punctuation. It is a real editorial decision, silently
-altering punctuation inside quotation marks, and it deserves a ruling: keep
-the source's dash inside quotations, or keep normalising and say so.
+Two scripts now do the checking instead, both fetching raw bytes:
+
+- `scripts/verify-florilegium.mjs` reports the longest CONTIGUOUS run. Good
+  for spotting an altered quotation, but it under-reports whenever the source
+  page splices apparatus into the middle of a quote.
+- `scripts/audit-florilegium.mjs` is the one that decides, and the one that
+  ran before these shipped. It requires BOTH that 90% of the quote's words
+  appear in order AND that at least 8 consecutive words appear verbatim.
+  `--drop` removes anything that fails.
+
+**The anchor requirement is not a detail.** In-order coverage alone is nearly
+meaningless over a large corpus: the Hapgood Service Book OCR is about 1.6
+million words, and almost any English word sequence can be traced through it
+in order. The Cherubic Hymn quotation scored **100% in order** against that
+book while containing "mystically" and "thrice-holy", neither of which
+appears in it anywhere. Its longest verbatim run was 6 words. It was a modern
+rendering attributed to a 1906 translation, and only the anchor caught it.
+
+Final state, 75 quotations audited: **73 kept, 2 removed.**
+
+| Removed | Why |
+| --- | --- |
+| `the-divine-liturgy.json` Cherubic Hymn, cited to Hapgood 1906 | No contiguous anchor, best run 6 words. Not Hapgood's wording |
+| `vestments.json` Hapgood on the symbolism of vestments | Only 53% of words present in order |
+
+Two Ostroumoff entries in `council-of-florence.json` had cited
+`archive.org/details/...`, which is a catalogue landing page carrying no book
+text. Those were repaired in the same pass: `audit-florilegium.mjs` now
+rewrites an archive.org detail URL to its `_djvu.txt` full text before
+checking, so they verify properly. Florence came through the audit clean.
+
+Note that quotations here carry **commas where NPNF and ANF print em
+dashes**, because the house style forbids em dashes. That is why both scripts
+ignore punctuation. It is a real editorial decision, silently altering
+punctuation inside quotation marks, and it deserves a ruling: keep the
+source's dash inside quotations, or keep normalising and say so.
 
 Other findings worth knowing:
 
