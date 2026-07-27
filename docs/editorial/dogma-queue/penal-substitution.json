@@ -137,6 +137,14 @@
       "text": "For had He achieved nothing but done only this, think how great a thing it were to give His Son for those that had outraged Him. But now He has both well achieved mighty things, and besides, has suffered Him that did no wrong to be punished for those who had done wrong.",
       "gloss": "The strongest penal note in this study, and it is Chrysostom preaching rather than a later system arguing. He says outright that the One who did no wrong was suffered to be punished for those who had. Set beside Gregory's Pascha question it shows the range the Fathers keep: a real punishment borne, and no creditor inside God demanding it.",
       "source": "https://www.newadvent.org/fathers/220211.htm"
+    },
+    {
+      "author": "St Philaret of Moscow",
+      "work": "The Longer Catechism of the Orthodox, Catholic, Eastern Church",
+      "reference": "Q. 208, in R. W. Blackmore's translation, The Doctrine of the Russian Church (1845)",
+      "text": "His voluntary suffering and death on the cross for us, being of infinite value and merit, as the death of one sinless, God and man in one person, is both a perfect satisfaction to the justice of God, which had condemned us for sin to death, and a fund of infinite merit, which has obtained him the right without prejudice to justice, to give us sinners pardon of our sins, and grace to have victory over sin and death.",
+      "gloss": "The both/and stated by a modern Orthodox catechism without embarrassment: the Cross is a perfect satisfaction to justice AND a fund of infinite merit, and the two are one act. Set beside Gregory the Theologian refusing to name a creditor, this is the shape of the Orthodox answer: the debt is real, and there is no one inside God who had to be paid before He could love.",
+      "source": "https://archive.org/details/doctrineofrussia00blac"
     }
   ],
   "scripture": [
@@ -186,6 +194,7 @@
     "theosis"
   ],
   "editorialNotes": [
+    "RECOVERED 2026-07-27, in answer to ChristosAnesti. St Philaret's catechism was named-only because the drafting pass could not verify Blackmore's English in a public domain source. It IS public domain and it IS online: R. W. Blackmore, The Doctrine of the Russian Church (1845), archive.org/details/doctrineofrussia00blac. The Q.208 passage was pulled from the OCR full text and now scores 100% with a 40-word verbatim anchor under scripts/audit-florilegium.mjs. This was the study's strongest single citation for the both/and, as the earlier note said, and it should not have shipped without it. Lesson: 'only a modern translation exists' is a claim to TEST against archive.org, not to assume.",
     "VERIFICATION PASS, THIS RUN. All ten florilegium entries were fetched live from newadvent.org during this review and each quoted string was confirmed present in the ANF/NPNF text on the cited page, attributed to that Father, in that work, at that reference. Nothing in the florilegium rests on model memory. A reviewer with the printed ANF and NPNF volumes should still spot check all ten before ship.",
     "ONE ENTRY WAS CORRECTED, NOT DELETED. Gregory the Theologian, Epistle 101 to Cledonius. The draft printed the two sentences in the wrong order, opening with \"If only half Adam fell\" and then giving \"For that which He has not assumed He has not healed.\" NPNF prints them the other way round, and the draft also began the healing clause with \"For\" removed. Verified twice this run: the printed order is \"For that which He has not assumed He has not healed; but that which is united to His Godhead is also saved. If only half Adam fell...\" The entry now matches the source. This was a silent reordering inside quotation marks and is exactly the class of error a reviewer should assume can recur.",
     "ONE ENTRY WAS ADDED. The drafter flagged a second Chrysostom sentence as retrieved only once and therefore not quoted. It was confirmed twice on independent retrievals this run and is now the tenth florilegium entry: \"For had He achieved nothing but done only this... has suffered Him that did no wrong to be punished for those who had done wrong.\" One caution for the printed-volume check: both retrievals gave \"has\" in \"has both well achieved\" and \"has suffered\"; some NPNF printings read \"hath.\" Confirm against NPNF First Series vol. 12 and correct if the printing differs.",
@@ -216,10 +225,6 @@
     "OUT OF SCOPE THIS PASS, BUT THE RELEASE GATE STILL FAILS. verify-florilegium.mjs exits 1 while anything is unverified, and a full run over docs/editorial/dogma-queue on 2026-07-26 returned ok=25, partial=5, unverified=10. This study is clean on inspection, but real flags remain in the sibling files and were deliberately not touched: Ephesus Canon VII at 66/112 and the Chalcedon Definition of Faith at 31/47 in council-of-florence.json, both of which carry recently restored Greek parentheticals and may be the same apparatus artifact or may not; two Justin Martyr entries in justin-martyr-subordinationism.json, Dialogue with Trypho 56 at 28/72 and First Apology 13 at 36/67; St Cyprian, On the Unity of the Church 4, at 52/102 in theodore-the-studite-and-rome.json; and four ccel.org fetch failures. Each needs the same raw-bytes treatment before the queue can ship."
   ],
   "modernScholarship": [
-    {
-      "work": "St Philaret of Moscow, The Longer Catechism of the Orthodox, Catholic, Eastern Church, Q. 208",
-      "usedFor": "The both/and formulation the thread builds its case on, satisfaction and merit held together. Restated in our own words in the final essay section and deliberately not quoted, because Blackmore's 1845 English (reprinted in Schaff) could not be verified against a public domain source this run. If a reviewer verifies it, promote it to the florilegium; it is the strongest single citation for the both/and."
-    },
     {
       "work": "Hieromartyr Daniel Sysoev, On the Anthropology of the Seventh Day Adventists and Jehovah's Witnesses, VII.4",
       "usedFor": "The critique of imputed righteousness as a verdict over an inwardly unchanged man, and the insistence that justification is a real and gradual renewal. Shapes the second of the three refusals. The English translation is modern and copyrighted, so the drafting was recast away from its phrasing."
