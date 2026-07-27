@@ -183,6 +183,10 @@ export type ShopReview = {
   // Optional until the 20260722_shop_review_seeds_photos migration is
   // applied; the API falls back to [] when the column is absent.
   photo_urls?: string[] | null;
+  // The delivered order this review came from, or null for an operator seed.
+  // The "Verified buyer" badge is gated on this being non-null: only a review
+  // with a real purchase behind it may claim one.
+  order_id?: string | null;
 };
 
 export type ShopReviewsData = {

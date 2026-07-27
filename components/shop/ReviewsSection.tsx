@@ -99,9 +99,14 @@ export function ReviewsSection({
                   })}
                 </span>
               </div>
-              <div className="mt-2">
-                <VerifiedBuyerBadge bought={productTitle} />
-              </div>
+              {/* Only a review tied to a real delivered order earns the badge.
+                  This was unconditional, so operator-seeded rows (order_id
+                  null) were shown to shoppers as verified purchases. */}
+              {r.order_id ? (
+                <div className="mt-2">
+                  <VerifiedBuyerBadge bought={productTitle} />
+                </div>
+              ) : null}
               {r.body ? (
                 <p className="mt-2.5 whitespace-pre-wrap font-serif text-body text-paper/80 leading-[1.6]">
                   {r.body}

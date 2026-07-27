@@ -13,8 +13,16 @@ export const dynamic = "force-dynamic";
  * public surface.
  */
 export async function GET(req: NextRequest) {
+  // Degrade CLOSED, not open. This used to be `if (secret) { ...403... }`,
+  // so with CRON_SECRET unset the check was skipped entirely and any
+  // anonymous GET ran the handler under the service role. Verified against
+  // production: this route answered a caller with no credentials at all.
+  // Same shape as lib/shop/flags.ts, which refuses rather than assumes.
   const secret = process.env.CRON_SECRET;
-  if (secret) {
+  if (!secret) {
+    return NextResponse.json({ error: "Not configured." }, { status: 503 });
+  }
+  {
     const provided = req.headers.get("x-cron-secret") ?? req.nextUrl.searchParams.get("secret");
     if (provided !== secret) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

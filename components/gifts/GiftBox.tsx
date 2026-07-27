@@ -20,7 +20,7 @@
 //     context the host page made — the bug that buried the chapter grid.
 //   * prefers-reduced-motion collapses the whole thing to a cross-fade.
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useMemo, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { apiFetch } from "@/lib/api/client";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
@@ -104,7 +104,14 @@ export function GiftBox({
 
   // How grand this particular gift gets to be. Drives the casket's ornament,
   // the length of the ceremony, and how much light comes out.
-  const pres = giftPresentation(gift.tier, gift.days);
+  // Memoised because `motion` and `light` are read inside useMemo/useCallback
+  // below. Recomputing the object every render gave those hooks a new
+  // identity each time, which is what the compiler flagged: their manual
+  // memoization could not be preserved.
+  const pres = useMemo(
+    () => giftPresentation(gift.tier, gift.days),
+    [gift.tier, gift.days],
+  );
   const { motion, light } = pres;
   /** Everything after the lid starts moving is timed off this. */
   const burstAt = motion.strainMs + motion.beatMs;

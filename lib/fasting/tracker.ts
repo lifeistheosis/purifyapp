@@ -114,11 +114,16 @@ export function useFastCheckins(kindOf: (d: Date) => FastKind, today: Date = new
     return m;
   }, [byDay]);
 
+  // `today` is a Date, so it is a fresh object every render and cannot be a
+  // dep directly. Hoisting the day string makes the memo stable within a day
+  // AND makes the dep array statically analysable, which the previous inline
+  // `dayKey(today)` call was not: it needed an eslint-disable that then hid
+  // the whole array from the rules-of-hooks checker.
+  const todayKey = dayKey(today);
   const streak = useMemo(
     () => computeStreak(statusByDay, kindOf, today),
-    // today is a Date; key on its day so the memo is stable within a day
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [statusByDay, kindOf, dayKey(today)],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `today` is keyed by todayKey
+    [statusByDay, kindOf, todayKey],
   );
 
   const summary = useMemo(() => summarize(list), [list]);

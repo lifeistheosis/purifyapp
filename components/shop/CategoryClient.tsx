@@ -33,11 +33,14 @@ export function CategoryClient({ category }: { category: string }) {
   // like ?q=nicholas or ?inventory=ready_to_ship still work; typing afterward
   // is pure local state (no history spam). One-time URL read, same hydration
   // pattern as FavoriteButton's mounted gate.
-  /* eslint-disable-next-line react-hooks/set-state-in-effect */
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const q = params.get("q") ?? "";
     const readyOnly = params.get("inventory") === "ready_to_ship";
+    // The disable belongs on the setState line, not on the useEffect line.
+    // Sitting above the hook it silenced nothing the rule actually reports,
+    // which is why this stayed a build-breaking error.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (q || readyOnly) setFilters({ q, readyOnly });
   }, []);
 
