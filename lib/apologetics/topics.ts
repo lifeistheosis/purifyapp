@@ -50,7 +50,7 @@ export const APOLOGETICS_TOPICS: ApologeticsTopicMeta[] = [
     group: "existence",
     summary:
       "The classical and contemporary denial of God, and the Orthodox answer: that the order, intelligibility, and contingency of the world, and the moral and personal depths of man, point beyond themselves to their uncreated Cause, whom the Church knows not as a conclusion of argument only but as the living God.",
-    estimatedMinutes: 12,
+    estimatedMinutes: 16,
   },
   {
     slug: "deism",

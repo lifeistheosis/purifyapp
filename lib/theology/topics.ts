@@ -223,6 +223,16 @@ export const THEOLOGY_TOPICS: TheologyTopicMeta[] = [
       "The clergy do not dress for the Liturgy, they are vested, and every garment carries a name, a scriptural root, and a prayer said over it. From the holy apparel commanded in Exodus 28 through Clement of Rome, Polycrates of Ephesus, the Apostolic Constitutions and the canons of Laodicea and Trullo, to the sticharion, epitrachelion, zone, epimanikia, epigonation and phelonion as they are actually prayed.",
     estimatedMinutes: 22,
   },
+  {
+    slug: "essence-energies",
+    title: "The Essence and the Energies",
+    subtitle:
+      "God is unknowable in his essence and truly given in his energies, and both are wholly God.",
+    group: "trinity",
+    summary:
+      "If God's will is numerically the same reality as his eternal and unchangeable essence, then the act by which he wills this world is as necessary as he is, and creation stops being a gift. The Orthodox answer distinguishes the essence, which no creature will ever grasp, from the uncreated energies, in which God genuinely gives himself, without dividing God into parts. Built on St Basil's Letters 234 and 235, with Irenaeus, Athanasius, Gregory of Nyssa, Gregory the Theologian, Cyril of Jerusalem, John Chrysostom and John of Damascus.",
+    estimatedMinutes: 30,
+  },
 ];
 
 export function getTopicMeta(slug: string): TheologyTopicMeta | undefined {
