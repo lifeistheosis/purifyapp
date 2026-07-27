@@ -1708,6 +1708,8 @@
   "community.signInToPost": "Sign in to share with the community.",
   "community.signIn": "Sign in",
   "community.gathering": "Gathering the conversation…",
+  "community.loadFailed": "We could not load the conversation just now.",
+  "community.tryAgain": "Try again",
   "community.quietHere": "It's quiet here.",
   "community.quietHereBody": "Be the first to share a line or start a discussion.",
   "community.houseRules": "Speak with charity. Shared lines come verbatim from Scripture and the Fathers inside Purify; personal posts are the poster's own words, not Purify's teaching.",

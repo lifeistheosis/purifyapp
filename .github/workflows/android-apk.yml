@@ -86,6 +86,13 @@ jobs:
           # and 20260725_prayer_campaign_image.sql are applied in Supabase.
           # Until then a device walk of campaigns shows the placeholder.
           NEXT_PUBLIC_CAMPAIGNS_ENABLED: ${{ secrets.NEXT_PUBLIC_CAMPAIGNS_ENABLED }}
+          # Community Conversations. Hardcoded like SHOP_ENABLED above rather
+          # than read from a secret, because 20260722_community.sql is verified
+          # applied in production (community_posts and community_post_replies
+          # both answer 200, both public_read policies live). Without this line
+          # the AAB ships Conversations dark forever even after Render is
+          # fixed, because NEXT_PUBLIC_* is inlined at build time.
+          NEXT_PUBLIC_COMMUNITY_ENABLED: "1"
 
       # CAP_LOCAL=1 makes capacitor.config.ts use webDir=out (bundled UI) instead
       # of the remote server.url. Empty (remote-wrapper) keeps loading purifyapp.net.

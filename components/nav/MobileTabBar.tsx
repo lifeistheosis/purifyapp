@@ -17,7 +17,7 @@ import { Sun } from "@/components/ui/icons/Sun";
 import { Church } from "@/components/ui/icons/Church";
 import { BookOpen } from "@/components/ui/icons/tab/BookOpen";
 import { Klimax } from "@/components/ui/icons/tab/Klimax";
-import { Orans } from "@/components/ui/icons/tab/Orans";
+import { OrthodoxCross } from "@/components/ui/icons/tab/OrthodoxCross";
 import { Cart } from "@/components/ui/icons/tab/Cart";
 import { Gear } from "@/components/ui/icons/tab/Gear";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -109,7 +109,7 @@ export function MobileTabBar() {
       key: "prayers",
       label: t("nav.prayers"),
       href: "/prayers",
-      Icon: Orans,
+      Icon: OrthodoxCross,
       matches: (p) =>
         (p === "/prayers" || p.startsWith("/prayers/")) && p !== "/prayers/today",
     },

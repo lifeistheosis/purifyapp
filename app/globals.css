@@ -276,6 +276,14 @@ html.has-cart-fab .back-to-top {
     to scrollTo explicitly, so they're unaffected. */
  scroll-behavior: auto;
  scroll-padding-top: 72px;
+ /* Kill the rubber-band stretch when you scroll past the end. This MUST
+    live on the ROOT element: unlike `overflow`, `overscroll-behavior`
+    propagates to the viewport only from the root, never from body. The
+    identical declaration on `body` below has therefore been inert the
+    whole time, which is why the app kept bouncing while the rule meant
+    to stop it never applied. `none` also disables swipe-down
+    pull-to-refresh, which an installed app should not have. */
+ overscroll-behavior: none;
  }
 
  @media (prefers-reduced-motion: reduce) {

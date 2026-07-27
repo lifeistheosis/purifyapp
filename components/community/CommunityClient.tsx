@@ -11,6 +11,7 @@ import {
   createCommunityPost,
   deleteCommunityPost,
   fetchCommunityPosts,
+  type PostsResult,
   fetchReplies,
   uploadAvatar,
 } from "@/lib/community/client";
@@ -106,7 +107,9 @@ function ConversationsPanel() {
   const { t } = useTranslate();
   const [me, setMe] = useState<Me>(null);
   const [authSettled, setAuthSettled] = useState(false);
-  const [posts, setPosts] = useState<CommunityPost[] | null | undefined>(undefined);
+  // undefined = still loading. Otherwise the discriminated result from
+  // fetchCommunityPosts, so "dark", "empty" and "failed" stay distinct.
+  const [result, setResult] = useState<PostsResult | undefined>(undefined);
   const [version, setVersion] = useState(0);
 
   useEffect(() => {
@@ -138,8 +141,8 @@ function ConversationsPanel() {
   useEffect(() => {
     let alive = true;
     void (async () => {
-      const list = await fetchCommunityPosts();
-      if (alive) setPosts(list);
+      const next = await fetchCommunityPosts();
+      if (alive) setResult(next);
     })();
     return () => {
       alive = false;
@@ -150,7 +153,7 @@ function ConversationsPanel() {
 
   return (
     <section className="mx-auto w-full max-w-[680px] px-5 pb-16 pt-8">
-      {posts === null ? (
+      {result?.state === "dark" ? (
         <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
           <p className="font-serif text-lede text-paper/80">
             {t("community.openingSoon")}
@@ -178,11 +181,27 @@ function ConversationsPanel() {
           ) : null}
 
           <div className="mt-6 space-y-4">
-            {posts === undefined ? (
+            {result === undefined ? (
               <p className="py-10 text-center font-sans text-ui text-paper/40">
                 {t("community.gathering")}
               </p>
-            ) : posts.length === 0 ? (
+            ) : result.state === "error" ? (
+              // Say so, and offer the way out. Rendering the empty state here
+              // would tell the reader the community is quiet when in fact we
+              // could not reach it.
+              <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
+                <p className="font-serif text-lede text-paper/80">
+                  {t("community.loadFailed")}
+                </p>
+                <button
+                  type="button"
+                  onClick={reload}
+                  className="mt-4 inline-flex items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
+                >
+                  {t("community.tryAgain")}
+                </button>
+              </div>
+            ) : result.posts.length === 0 ? (
               <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
                 <p className="font-serif text-lede text-paper/80">
                   {t("community.quietHere")}
@@ -192,7 +211,7 @@ function ConversationsPanel() {
                 </p>
               </div>
             ) : (
-              posts.map((p) => (
+              result.posts.map((p) => (
                 <PostCard key={p.id} post={p} me={me} onChanged={reload} />
               ))
             )}
