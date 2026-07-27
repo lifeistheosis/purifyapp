@@ -30,12 +30,15 @@ Publication did not settle these. They are the reason the notes are kept.
    the both/and on penal substitution, the reception argument on Florence,
    and the concession that St Theodore in practice gave Rome a weight above
    the other thrones.
-2. **ChristosAnesti's permission, on the record.** The precedent is strong
-   rather than absent: seven earlier studies from the same forum by the same
-   author shipped under the attributed-library model, he is listed as a
-   Contributor on /about, and he volunteered material publicly in
-   `#purify-suggestions`. But no explicit permission for these six is
-   recorded anywhere. Ask him and write the answer down.
+2. **ChristosAnesti's permission: GRANTED.** Confirmed by the owner on
+   2026-07-27. The publication gate on all six studies is cleared.
+
+   Note carefully what this does and does not unlock. It covers HIS work:
+   his research, his argument, his selection of sources. It cannot and does
+   not unlock the **modern copyrighted translations** several of his
+   citations depend on (Sysoev, Justin Popovich, Theophan, Nikolai
+   Velimirovich in their current English). Those are a third party's rights,
+   not his to grant, and they stay out.
 3. **A contested citation.** Cyprian, On the Unity of the Church chapter 4
    survives in two ancient recensions, and the other one carries the chair of
    Peter primacy language. A study about Roman claims should either frame
@@ -139,3 +142,40 @@ and grep it.** A summarising fetch will invent a clean negative.
 Ends` are not in this queue. They are apologetics rather than dogma, and
 `data/apologetics/atheism.json` already exists, so they belong as an
 enrichment of that topic rather than as new studies. Not started.
+
+
+## Recovering the named-only citations, 2026-07-27
+
+St Philaret was restored to the penal substitution study after being dropped
+as "modern translation only". That was an assumption, not a finding:
+Blackmore's English is 1845, public domain, and on the Internet Archive. The
+passage now scores 100% with a 40-word verbatim anchor.
+
+So every other named-only citation was re-tested against archive.org rather
+than left on the same assumption. Results:
+
+| Citation | Verdict |
+| --- | --- |
+| **Philo of Alexandria** | **Recoverable.** Yonge's 1854 translation has several public domain editions. Rights were never the blocker here. The open question is editorial, not legal: whether a Hellenistic Jewish philosopher belongs in a florilegium of Church Fathers, or whether he belongs in the essay body as vocabulary. Owner's call. |
+| **St Innocent of Alaska** | **Promising.** An 1833 edition of Indication of the Way into the Kingdom of Heaven surfaces. The 1833 date is the Russian original, so the English edition still needs dating before anything is quoted. |
+| St Fulgentius of Ruspe | Ambiguous. A hit exists but its dating is unclear from the catalogue record. |
+| St Germanus of Constantinople | No pre-1929 English found. Stays named-only. |
+| St Symeon the New Theologian | No pre-1929 English found. Stays named-only. |
+| St Proclus of Constantinople | No pre-1929 English found. Stays named-only. |
+| St Photios | No pre-1929 English found. Stays named-only. |
+| St Theophan the Recluse | No pre-1929 English found. Stays named-only. |
+| St Nikolai Velimirovich | No pre-1929 English found. Reposed 1956; his English is modern throughout. |
+
+A catalogue hit is NOT a verified quotation. Philaret only counted because the
+text was pulled and matched word for word. Anything promoted off this table
+must clear `scripts/audit-florilegium.mjs` the same way.
+
+**St Innocent of Penza is a separate matter and is not on this table.** His
+claims, that Christ tasted eternal death and drank a cup of the Father's
+wrath, are the hardest penal statements in the source thread. They are held
+back for clergy review, not for rights, and finding a public domain text
+would not by itself settle that.
+
+**Origen** does not appear in the source thread at all. Quoting him in an
+Orthodox app needs a deliberate decision and framing given the anathemas
+under Justinian and the Fifth Council, and he is not "St Origen".
