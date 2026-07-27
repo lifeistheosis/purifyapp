@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BoardMessage } from "@/components/whats-new/BoardMessage";
 import { ChangelogControls } from "@/components/whats-new/ChangelogControls";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
@@ -1455,19 +1456,20 @@ export default async function WhatsNewPage() {
  {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
  </p>
  <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
- <T k="ui.beta17MiddotA" />
+ {t(m, "whatsnew.chip")}
  </p>
  </div>
 
- {isDe ? (
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- <T k="ui.dieGanzeGeschichteDerKirche" />
+ {t(m, "whatsnew.h1")}
  </h1>
- ) : (
- <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- <T k="ui.theWholeHistoryOfThe" />
- </h1>
- )}
+
+ {/* The weekly note. Written into data/changelog/board.json, newest first.
+ It replaced a hand-written block that only got rewritten on a big
+ patch and so sat on Beta 1.7 for eight releases. */}
+ <div className="mt-10">
+ <BoardMessage />
+ </div>
 
  {isDe ? (
  <>
@@ -1486,11 +1488,6 @@ export default async function WhatsNewPage() {
  <T k="ui.hier" />
  </a>{" "}
  <T k="ui.bei" />
- </p>
-
- <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- <T k="ui.beta17IstDie" />{" "}
- <Link href="/history" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"><T k="ui.interaktiveZeitleiste" /></Link><T k="ui.dieDuMitEigenerHand" />
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
@@ -1521,12 +1518,6 @@ export default async function WhatsNewPage() {
  </p>
 
  <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- <T k="ui.beta17IsThe" />{" "}
- <Link href="/history" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"><T k="ui.interactiveTimeline" /></Link>{" "}
- <T k="ui.youCanWalkWithYour" />
- </p>
-
- <p className="mt-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  <T k="ui.theWorkUnderneathStaysThe" />
  </p>
 
@@ -1540,8 +1531,8 @@ export default async function WhatsNewPage() {
  <div className="mt-16 pt-10 border-t border-paper/10">
  <p className="font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  {isDe
- ? "Danke, daß du durch acht Major-Versionen bei uns geblieben bist. Ehre sei Gott für alles."
- : "Thank you for staying with us through eight majors. Glory to God for all things."}
+ ? "Danke, daß du mit uns gehst. Ehre sei Gott für alles."
+                : "Thank you for walking this with us. Glory to God for all things."}
  </p>
 
  <p
