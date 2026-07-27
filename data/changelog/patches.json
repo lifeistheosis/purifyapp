@@ -1,649 +1,698 @@
 [
- {
-  "id": "beta-2-5",
-  "version": "Beta 2.5",
-  "date": "2026-07-25",
-  "title": "A lighter app and a clearer bar",
-  "intro": "Two things you should notice. The bar along the bottom has been redrawn, and Purify now takes up a good deal less room on your phone. About a quarter of what the app was carrying turned out to be the same pages stored over and over, and that is gone.",
-  "sections": [
-   {
-    "heading": "The bottom bar, redrawn",
-    "body": "New marks for Scripture, Discover, Prayers, Shop and your account, each drawn to sit at the same weight as the ones beside it. The old set had icons that rendered nearly twice the size of their neighbours and several that ran past their own edges. The circle that used to slide around behind the selected tab is gone; the tab itself now brightens and lifts instead."
-   },
-   {
-    "heading": "Less to carry",
-    "body": "Roughly a quarter of the app was the same content written out several times over by the build. Removing the duplicates takes nothing away from what you can read: every prayer, life and chapter is still there and still works with no signal."
-   },
-   {
-    "heading": "Quieter while you scroll",
-    "body": "The saints list and the Bible chapter strip used to quietly load pages you had not opened while you scrolled past them. On a phone that competed with the scrolling itself. They now wait until you actually choose something."
-   },
-   {
-    "heading": "A small answer to every tap",
-    "body": "Choosing a tab gives a short tick you can feel, and the icon settles in rather than snapping. If you have asked your phone to reduce motion, it stays still."
-   }
-  ]
- },
- {
-  "id": "beta-2-4",
-  "version": "Beta 2.4",
-  "date": "2026-07-25",
-  "title": "A calmer hand on the phone",
-  "intro": "Nothing new to learn in this one. Purify simply moves better. Screens now settle the way you read them, from the top down, instead of arriving all at once, and the cards and rows you tap finally answer to your finger. On Android the app scrolls more smoothly, and if you have asked your phone to reduce motion, more of Purify now listens.",
-  "sections": [
-   {
-    "heading": "Screens arrive in order",
-    "body": "The greeting, then the day's word, then the prayer rule, then the doors below, each settling a moment after the one above it. A page now reads as it appears rather than landing in one piece."
-   },
-   {
-    "heading": "Everything you tap answers",
-    "body": "The saint of the day, the fast, the appointed readings, and the count to Pascha used to sit still under your finger on a phone. They now press in and spring back like the rest of the app."
-   },
-   {
-    "heading": "Loading looks like the thing it is loading",
-    "body": "Waiting states across Scripture, the saints, the calendar, the councils, and history were each drawn a little differently. They now share one shape, and content no longer jumps when it arrives."
-   },
-   {
-    "heading": "A clearer Today, a shorter door to the saints",
-    "body": "The Today screen's Explore doors were four almost-identical shades of grey pretending to be different; they are one clean surface now, told apart by their icons. And the Saints page opens onto saints, where its heading used to fill a phone screen on its own."
-   },
-   {
-    "heading": "Smoother, and quieter when you ask",
-    "body": "Several blur effects were removed from the places you scroll past in the Android app; they cost frames on a phone and gave nothing back. Reduce Motion is honored in more places, including sheets and dialogs, and a change to the setting now takes effect at once instead of on the next launch."
-   }
-  ]
- },
- {
-  "id": "beta-2-3",
-  "version": "Beta 2.3",
-  "date": "2026-07-19",
-  "title": "Purify learns your language",
-  "intro": "This release opens Purify to the whole household of the faith: the app now speaks twenty-one languages. Pick yours in Settings or in the footer, and the menus, the Today screen, the calendar with every fasting rule, and the app's chrome follow you, on the website and inside the Android app, even offline. The prayers, lives, and writings themselves are being translated next; until each one lands, it is shown in English with an honest note. The core of Purify stays free, today and always.",
-  "sections": [
-   {
-    "heading": "Twenty-one languages",
-    "body": "English, Spanish, Romanian, Greek, Russian, French, German, Serbian, Ukrainian, Italian, Portuguese, Bulgarian, Arabic, Filipino, Turkish, Georgian, Hungarian, Indonesian, Nepali, Polish, and Urdu. Every language is available to everyone from day one, and the site greets first-time visitors in their browser's own language. Our language editors keep refining the translations in place; anything not yet translated falls back to English rather than breaking."
-   },
-   {
-    "heading": "The app finally switches",
-    "body": "Language switching now works inside the Android app, not just on the website. Your choice is remembered on the device, follows your account when you sign in, and on first run the app greets you in your phone's own language when we carry it."
-   },
-   {
-    "heading": "Every script renders true",
-    "body": "New typefaces for Cyrillic, Greek, Arabic script, Georgian, and Devanagari, loaded only when a page actually needs them, so no language reads as empty boxes."
-   },
-   {
-    "heading": "A language home in Settings",
-    "body": "A Language row now leads your account settings, with the same grouped picker as the footer: available languages, previews under review, and the ones still to come."
-   }
-  ]
- },
- {
-  "id": "beta-2-2",
-  "version": "Beta 2.2",
-  "date": "2026-07-18",
-  "title": "The shop finds its voice, and its word of honor",
-  "intro": "This release lets the EIKON shop speak and be spoken to. You can now reach the Purify team from inside the shop, hear back in a living conversation, and mark a message with a small heart. And the word of others carries real weight: reviews now come only from those who received what they bought, so a rating is a testimony, not a guess. The core of Purify stays free, today and always.",
-  "sections": [
-   {
-    "heading": "A word of honor on every review",
-    "body": "A review now stands on what actually arrived. You may leave one for a product only after your order is marked delivered, so a rating is the testimony of someone who held the thing in their hands. Every review carries a verified-buyer mark naming what was bought. And you can now review a whole shop, not only its products, so a maker's care over many orders is seen as one."
-   },
-   {
-    "heading": "The shop can speak, and be spoken to",
-    "body": "A new door, Contact EIKON support, sits in the shop and in your messages: it opens a real conversation with the Purify team about an order or a question, and picks the thread back up where you left it. Inside a conversation you now see the honest state of your last message, delivered when it has arrived and read when it has been seen, so you are never left wondering."
-   },
-   {
-    "heading": "A small heart, where it belongs",
-    "body": "Messages in the shop can now be marked with a heart: a double-tap on a phone, or a quiet heart button, to say a thing landed without needing more words. It is a small warmth in a place that was only ever plain text before."
-   },
-   {
-    "heading": "A cleaner desk on our side",
-    "body": "The team's support desk and the admin were given a calmer, clearer hand so your questions are answered with less friction and less delay. Cache version steps to purify-beta-2.2."
-   }
-  ]
- },
- {
-  "id": "beta-2-1",
-  "version": "Beta 2.1",
-  "date": "2026-07-17",
-  "title": "The plan finds its shape, and reading finds its light",
-  "intro": "This release gives the three plans their true shape and brings the first of Pro's premium layer to life. Standard remains the complete Orthodox foundation, free forever. Purify Plus is now purely the premium reading and study experience. And Purify Pro becomes the complete premium experience: new reading modes that change the very light of the page, the EIKON Box on its way, and the shop's member benefits gathered in one place. The core of Purify stays free, today and always.",
-  "sections": [
-   {
-    "heading": "Three plans, cleanly cut",
-    "body": "Standard carries the whole foundation: the Scriptures, the saints and the Fathers, theology and the Councils, Orthodox History, the prayers, the calendar with its fasts, and Prayer Campaigns. No ads, no tracking, no surprise locks. Purify Plus is the premium reading and study experience: your library, notes, highlights, and collections on every device you sign in on. Purify Pro is everything in Plus and the complete premium experience. Free EIKON shipping now belongs to Pro's member benefits, alongside member discount codes and early access."
-   },
-   {
-    "heading": "Premium Reading Modes",
-    "body": "Reading has found its light. Four modes now live in the reader settings: Focus, which clears everything but the text; Candlelight, warm amber for the late hours; Monastery, cool stone and quiet indigo; and Parchment, aged paper with dark ink. They re-light the Scriptures and the writings of the Fathers alike, and your choice is remembered on your device. Reading modes are part of Purify Pro; while the beta is open they are free for everyone to try."
-   },
-   {
-    "heading": "Purify Pro, in the app",
-    "body": "The subscription screen in the Android app now carries both tiers: a quiet switch under the hero moves between Plus and Pro, each with its own live prices from Google Play and its own list of what is included. Anyone who holds Plus and steps up to Pro is told honestly how to end the old plan so no one pays twice."
-   },
-   {
-    "heading": "The EIKON Box, on its way",
-    "body": "Pro's box is coming: a curated monthly box of Orthodox devotional goods, an icon, a prayer rope, incense, a booklet, or seasonal gifts, with contents that vary month to month. Studio Audio, professionally narrated Scripture, saints, and history, is also on the road ahead. Both are named on the plan today and will light up as they arrive; nothing is charged for what has not yet shipped."
-   }
-  ]
- },
- {
-  "id": "beta-2-0-1",
-  "version": "Beta 2.0.1",
-  "date": "2026-07-14",
-  "title": "A cleaner walk through the whole app",
-  "intro": "A polish release. Purify Premium now has a home of its own, Discover reads more calmly, and the Fasting, Prayer Campaigns, and Trapeza screens move with a lighter hand on the phone. A fault that could leave a signed-in reader stuck on 'opening the campaign' is fixed, and the EIKON shop shows its icons in full again and asks you, after an order, to share an honest word. The core of Purify stays free, today and always.",
-  "sections": [
-   {
-    "heading": "Purify Premium, in one place",
-    "body": "A new Premium page lays out the three plans side by side, Standard, Plus, and Pro, with everything each one carries and the opening half-off-first-year offer. A quiet marker in the header leads you there whenever you want to look. Nothing about the free core changes."
-   },
-   {
-    "heading": "A calmer Discover",
-    "body": "Discover was carrying duplicate doorways and a wall of small buttons. It now reads in a few clear rooms, and the doctrinal library, Theology, Apologetics, Topics, and the heresies the Church answered, gathers under one hub instead of four scattered tiles."
-   },
-   {
-    "heading": "Prayer Campaigns open every time",
-    "body": "A signed-in reader could land on a campaign that stayed stuck on 'opening the campaign' when their session was slow to confirm. The campaign now appears as soon as it loads, and a failure offers a way back instead of a spinner that never ends. Starting a campaign is a gentler, carded flow too."
-   },
-   {
-    "heading": "Lighter on the phone",
-    "body": "The Fasting, Prayer Campaigns, and Trapeza screens share one quiet, minimal design now, with a soft entrance as each section settles in and a small give under your thumb. Cleaner, calmer, and quicker to read."
-   },
-   {
-    "heading": "The EIKON shop, set right",
-    "body": "Featured icons were hiding all but one behind a stricter image check; the shelf is full again, and every card lines up to the same baseline. After an order is placed, the shop now invites you to leave an honest, verified review to help the next person praying."
-   }
-  ]
- },
- {
-  "id": "beta-2-0",
-  "version": "Beta 2.0",
-  "date": "2026-07-13",
-  "title": "The fast kept, the table shared, and prayers held in common",
-  "intro": "Welcome, and glory to Jesus Christ. This is the fullest release yet. You can keep the fast day by day now, share a prayer in common, and set the table with recipes for the season. Your gathered library can be carried anywhere and kept as your own copy. The one true cross stands over the whole app, the top of every screen sits right, sign-in and your account hold steady, and the EIKON shop has been rebuilt around search and clean cards. The core of Purify, the Scriptures, the prayers, the saints, the calendar, and the new fasting tracker, is free, today and always.",
-  "sections": [
-   {
-    "heading": "Keep the fast, day by day",
-    "body": "A new fasting tracker meets you where the calendar already is. It tells you plainly what today's fast asks, and lets you mark the day: kept, in part, or broke. A gentle streak counts the days you have kept, forgiving today until it is out and never scolding. Kept, not tracked, with room for the sick, the travelling, expecting mothers, and catechumens, and always under your priest's blessing. It works free and offline, kept on your device."
-   },
-   {
-    "heading": "Pray together",
-    "body": "Prayer Campaigns are a place to ask the Church to pray with you: for healing, for comfort and strength, for the persecuted, in thanksgiving, or for the departed, memory eternal. Start one in a few words, join the ones that move you, and mark that you have prayed. First names only, and only what you have a blessing to share. It is, and stays, free."
-   },
-   {
-    "heading": "The Trapeza, the shared table",
-    "body": "The Trapeza is a board of fasting-friendly recipes, sorted by the fast, the season, and the tradition. A few plain dishes from the Purify kitchen to begin, and you can send your own for the board."
-   },
-   {
-    "heading": "Carry your library, and keep a copy",
-    "body": "You can now export your notes, highlights, bookmarks, and collections and keep them as your own copy, yours to hold whatever comes."
-   },
-   {
-    "heading": "One cross, everywhere",
-    "body": "The three-bar Orthodox cross now stands over the whole app: the mark beside the name, the browser tab, and the icon on your home screen. One cross, the true one, in every place Purify appears."
-   },
-   {
-    "heading": "Purify's plan, made plain",
-    "body": "The plan now reads in three clear parts. Standard is free and always will be: the Scriptures, the prayers, the saints, the calendar, the fasting tracker, and the community. Purify Plus carries your library across every device. And a new Purify Pro adds a members' layer, a devotional icon mailed each month and codes for the EIKON shop. Both paid tiers open at half off the first year. Everything you use today stays free."
-   },
-   {
-    "heading": "The top bar sits right",
-    "body": "The status-bar inset was being applied twice, which left a dead band under the top bar across the app. It is applied once now, and the gap is gone."
-   },
-   {
-    "heading": "Sign-in and your account hold steady",
-    "body": "Several deep faults in how the app confirmed your sign-in have been closed. The account gate now trusts your device's own session instead of a network check that could hang, and the Profile and Security screens read the same way, so the account pages open when they should."
-   },
-   {
-    "heading": "The reader obeys the back button",
-    "body": "On Android, the back button now closes the reader's settings sheet instead of leaving the page, and the handler no longer churns or leaks."
-   },
-   {
-    "heading": "The EIKON shop, rebuilt",
-    "body": "The marketplace now has search, filters, and premium cards, and a category page that used to break now holds. New icons join the shelves, and the first prayer ropes: knotted wool komboskini for the Jesus Prayer."
-   },
-   {
-    "heading": "Small comforts",
-    "body": "The app no longer bounces past the top and bottom of a page, the rubber-band pull that never belonged in a prayer book. The reminder time pickers now render in the dark with a clear focus ring. The cache version steps to purify-beta-2.0."
-   }
-  ],
-  "future": [],
-  "closing": "Many of these came from your reports. If anything still misbehaves, write to lifeistheosis@gmail.com. I read every one, and I pray for the people who send them.",
-  "signOff": "From Edgar, the Purify Team"
- },
- {
-  "id": "beta-1-9-5",
-  "version": "Beta 1.9.5",
-  "date": "2026-07-12",
-  "title": "Sign-in that cannot jam, and a Plus screen worthy of the name",
-  "intro": "Welcome, and glory to Jesus Christ. Two pieces of work in this patch. First, the deepest sign-in fault we have found yet: a single stuck tab could quietly jam the machinery every other tab uses to confirm your sign-in, and the app could only offer a retry that never succeeded. That machinery now frees itself. Second, the Purify Plus screen has been made worthy of what it sells: the true Purify cross, honest spacing, and the full list of what Plus actually includes. The core of Purify stays free, today and always.",
-  "sections": [
-   {
-    "heading": "Sign-in frees itself now",
-    "body": "Your browser coordinates sign-in checks across tabs through a shared lock. If one tab froze while holding it, every other tab waited forever, and the account page could only say it could not confirm your sign-in. The app now waits five seconds, then proceeds without the lock. The worst case of proceeding is a harmless duplicate token refresh; the worst case of waiting was an account page that never opened. We reproduced the jam deliberately and the page now resolves in seconds, and that exact scenario runs as an automated test on every build."
-   },
-   {
-    "heading": "The Plus screen, made worthy",
-    "body": "The subscription screen now wears the true Purify cross, the same minimalist three-bar mark as the wordmark, instead of a heavier redraw. The dead band above the hero is gone; the screen breathes the way it was designed to. And the included list now tells the whole truth: cross-device sync, notes and highlights and bookmarks, custom collections and the Florilegium, free EIKON shipping on every order while Plus is active, and Immersive History, the cinematic dress on the story of the Church. Every line names something that works today."
-   }
-  ],
-  "future": [],
-  "closing": "Both fixes came from your reports, one from a screenshot sent the same hour. If anything else misbehaves, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
-  "signOff": "From Edgar, the Purify Team"
- },
- {
-  "id": "beta-1-9-4",
-  "version": "Beta 1.9.4",
-  "date": "2026-07-12",
-  "title": "Purify Plus opens again, and highlights learn to look like ink",
-  "intro": "Welcome, and glory to Jesus Christ. This patch mends the most serious kind of bug we can ship: tapping Purify Plus closed the app outright. The fault was two billing components speaking different versions of the same language deep in the Android layer, and it is fixed at the root. While we were in the reader we also freed anyone the app had trapped in focus mode, and gave highlights the look they always deserved: ink on the words, not a bar in the margin. The core of Purify stays free, today and always.",
-  "sections": [
-   {
-    "heading": "Purify Plus opens again",
-    "body": "Tapping Purify Plus crashed the app the moment the subscription screen tried to wake the billing machinery. Two of its components had drifted onto incompatible versions, and the collision brought the whole app down. They now move in lockstep, and the paywall opens, prices load from Google Play, and Restore works as intended. If Plus ever cannot load, you will see a calm explanation instead of a crash."
-   },
-   {
-    "heading": "A guaranteed way out of focus mode",
-    "body": "Focus reading hides the app around the text. A recent restructuring accidentally left the top bar standing invisible over the Exit button, swallowing every tap, and on a phone there is no Escape key to fall back on. The exit now floats above everything by construction, the app chrome truly steps aside, and a new automated test presses the real button on every build so this cannot quietly return."
-   },
-   {
-    "heading": "Highlights look like ink now",
-    "body": "A highlighted verse used to wear a plain colored bar down its left margin. It now carries a quiet wash of its color across the words themselves, line by line, the way a real highlighter moves. Word-level highlights stay brighter inside it, and the writings of the saints receive the same treatment in gold."
-   }
-  ],
-  "future": [],
-  "closing": "The Plus crash was reported by a reader and reproduced within the hour. If anything else misbehaves, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
-  "signOff": "From Edgar, the Purify Team"
- },
- {
-  "id": "beta-1-9-3",
-  "version": "Beta 1.9.3",
-  "date": "2026-07-11",
-  "title": "One hand for every symbol, and two checkout bugs caught live",
-  "intro": "Welcome, and glory to Jesus Christ. Two kinds of work in this patch. First, we walked the live shop the way a customer would and caught two real bugs at the door: a product page that could sit loading forever, and a checkout that returned buyers to a dead page after paying or backing out. Both are fixed and the whole cancel path is now verified against live Stripe. Second, every symbol in the app's buttons and controls now comes from one hand: our own icon family, drawn on one grid with one stroke, replacing the mismatched keyboard characters and third-party glyphs that had crept in. The core of Purify stays free, today and always.",
-  "sections": [
-   {
-    "heading": "Checkout, walked and mended",
-    "body": "Backing out of a live payment used to strand you on a broken page, and the same flaw would have caught paying customers after checkout. Return addresses now always point home. We also proved the abandon path end to end against live Stripe: leave the payment page and the attempt cancels itself, with nothing charged and nothing lingering in your orders."
-   },
-   {
-    "heading": "Pages that never say almost",
-    "body": "A product page could hang on its loading bones if the app was waiting on a stale sign-in check held by another tab. Pages now refuse to wait on niceties: the shipping perk check gives itself a short deadline and steps aside, and the page simply loads."
-   },
-   {
-    "heading": "The webhook grew armor",
-    "body": "The machinery that marks orders paid now verifies the charged amount against the order before believing anything, and if a payment lands on an order that was cancelled a heartbeat earlier, the payment wins and the order is restored. Eleven new tests hold these rules in place."
-   },
-   {
-    "heading": "One family of symbols",
-    "body": "The bookmark star, the note pen, the copy link, the highlight spark, the cart plus and minus, the close cross, the menu lines, the rating stars, the save heart: all now drawn in Purify's own hand, on one grid, with one stroke, crisp in every button on every screen. The link symbol no longer turns into a colored emoji on Android, and the same action now wears the same symbol everywhere it appears."
-   },
-   {
-    "heading": "A clearer footing on the bottom bar",
-    "body": "The selected tab now speaks three ways: its color, its sliding backdrop, and a slightly firmer line in the icon itself, so the active tab reads clearly without leaning on color alone."
-   }
-  ],
-  "future": [],
-  "closing": "Found by walking the aisles ourselves, mended the same afternoon. If anything else is loose, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
-  "signOff": "From Edgar, the Purify Team"
- },
- {
-  "id": "beta-1-9-2",
-  "version": "Beta 1.9.2",
-  "date": "2026-07-11",
-  "title": "The shop, refined: a cart, honest orders, and a smoother checkout",
-  "intro": "Welcome, and glory to Jesus Christ. The shop opened its doors inside the app this morning, and the first walkers-through found the loose boards by evening. This patch mends every one of them and adds the piece most shops are born with: a cart. Icons pages no longer error on desktop, walking away from checkout no longer leaves a ghost in your orders, and paying for an icon now ends with a moment worthy of the purchase. The core of Purify stays free, today and always.",
-  "sections": [
-   {
-    "heading": "A cart, at last",
-    "body": "Every icon page now carries Add to cart beside Buy now. The cart lives on your device, shows a running count on its tab, lets you adjust quantities, and checks out everything in one payment with one shipping charge. Purify Plus members still ship free on every order."
-   },
-   {
-    "heading": "Orders that tell the truth",
-    "body": "Starting a checkout and then walking away used to leave a phantom order marked as confirmed. No more. Backing out of the payment page cancels the attempt on the spot, unfinished checkouts appear only as a quiet removable note, never among your real orders, and anything unpaid says plainly: Awaiting Payment."
-   },
-   {
-    "heading": "Icon pages on desktop, mended",
-    "body": "Opening an icon or the EIKON storefront on the desktop website could answer with an internal server error. The root cause is fixed and every shop page opens cleanly on every screen."
-   },
-   {
-    "heading": "A proper amen to your payment",
-    "body": "When your payment goes through, a gold ring now draws its check, and the confirmation rises beneath it. Small, quick, and honored if your device asks for reduced motion."
-   },
-   {
-    "heading": "Faster, calmer surfaces",
-    "body": "Shop pages now load with quiet placeholder cards instead of a bare loading line, browsing back and forth is instant, messages show who is speaking with the composer always in reach, and the browser tab reads cleanly on every shop page."
-   },
-   {
-    "heading": "Account, always reachable",
-    "body": "On desktop, the account page could sit on a loading skeleton if the redirect script never woke. The skeleton now carries a plain link to your profile that works even with no script at all."
-   }
-  ],
-  "future": [],
-  "closing": "Found within hours, mended within hours. If anything else is loose, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
-  "signOff": "From Edgar, the Purify Team"
- },
- {
-  "id": "beta-1-9-1",
-  "version": "Beta 1.9.1",
-  "date": "2026-07-11",
-  "title": "The Fathers, doubled: the whole Psalter with Augustine",
-  "intro": "Welcome, and glory to Jesus Christ. This patch is one thing only, and it is a large thing: commentary. A reader on the Discord asked for more of the Fathers, enough to stand beside any catena Bible, and this is the answer. The library of patristic commentary in Purify roughly doubles today, to four thousand four hundred and eighty-one verse-notes across twenty-three books of Scripture, from fifteen Fathers of the Church. Every word of it is the Fathers' own, from named public-domain translations, and we tell you exactly which. The core of Purify stays free, today and always.",
-  "sections": [
-   {
-    "heading": "The whole Psalter, with St. Augustine",
-    "body": "The crown of this patch. St. Augustine's Expositions on the Book of Psalms now stands beside every one of the hundred and fifty psalms, one thousand eight hundred and ninety-eight notes keyed verse by verse. Open any psalm, tap a red-dotted verse, and Augustine prays it with you. Because Purify's Psalter is the Septuagint and Augustine preached from it too, his psalm often meets yours word for word. From the Nicene and Post-Nicene Fathers, volume eight."
-   },
-   {
-    "heading": "The six days, with St. Basil",
-    "body": "St. Basil the Great's nine homilies of the Hexaemeron, the Church's great preaching on the days of creation, now stand in Genesis 1 in full, each homily set on the verse whose command it opens with. In the beginning God made the heaven and the earth; Basil takes it from there."
-   },
-   {
-    "heading": "A second voice on the Gospel of John",
-    "body": "St. Augustine's one hundred and twenty-four Tractates on the Gospel of John now read alongside St. John Chrysostom's eighty-eight homilies, two Fathers on one Gospel, across all twenty-one chapters. Where they stand on the same verse, you read them together."
-   },
-   {
-    "heading": "Revelation, opened",
-    "body": "The Apocalypse receives its first commentary in Purify: St. Victorinus of Pettau, bishop and martyr of the Diocletianic persecution, whose commentary on Revelation is the earliest that survives from the whole Church. Eighty-eight notes across nineteen chapters, from the Ante-Nicene Fathers, volume seven."
-   },
-   {
-    "heading": "The first verse, reachable",
-    "body": "Commentary on a chapter's opening verse was hidden on phones: the illuminated drop cap left no room for the red marker, and the long-press menu pointed at a desktop-only panel. The opening verse now carries its marker after the text, and the menu opens the commentary sheet properly. Genesis 1:1, John 1:1, and every psalm's opening are reachable with a tap."
-   },
-   {
-    "heading": "On languages, honestly",
-    "body": "The same reader asked for commentary in the app's other languages. The Fathers here are public-domain English translations, named on every note, and we will not run them through a machine and call it a translation. Faithful editions in other languages are future work, done properly or not at all."
-   }
-  ],
-  "future": [],
-  "closing": "Asked for on the Discord, and answered with the biggest single addition of the Fathers Purify has ever shipped. If a note sits on the wrong verse or a word looks wrong, write to lifeistheosis@gmail.com; every citation names its source so you can check us. I read every email, and I pray for the people who send them.",
-  "signOff": "From Edgar, the Purify Team"
- },
- {
-  "id": "beta-1-9",
-  "version": "Beta 1.9",
-  "date": "2026-07-11",
-  "title": "The shop comes inside",
-  "intro": "Welcome, and glory to Jesus Christ. Until now the EIKON shop opened in your phone's browser, a door that led out of the app. This patch brings the whole shop inside: a Shop tab on the bottom bar, every icon browsable and buyable without leaving Purify or signing in again, checkout completed in the app, and your orders and your messages to the seller waiting when you return. And a first for EIKON: reviews you can trust, left only by people who actually bought the item, with a plain count of how many have sold. The core of Purify stays free, today and always.",
-  "sections": [
-   {
-    "heading": "The shop, inside the app",
-    "body": "The marketplace now lives in Purify itself, not a browser window. A new Shop tab sits on the bottom bar beside Today, the Bible, Discover, and Prayers. Browse the icons, open a listing, read the details, and buy, all without leaving the app and without signing in a second time. Your orders and your conversations with the seller are there when you come back."
-   },
-   {
-    "heading": "Checkout, without leaving",
-    "body": "Buying an icon now happens in the app. You tap Buy, the secure Stripe page opens over the app to take the card, and when it closes you land back on your orders, where the new order appears and moves from confirmed to shipped. Purify Plus members still ship free on every order."
-   },
-   {
-    "heading": "Reviews you can trust",
-    "body": "Every icon and every store can now carry a star rating, and a review can be left only by someone who actually bought the item, so no rating is idle talk. Each listing shows its average stars, how many reviews it has, and a plain count of how many have sold. Where nothing has sold or been reviewed yet, nothing is shown; we would rather say little than pad it out."
-   },
-   {
-    "heading": "Message the seller, reach your requests",
-    "body": "Now that the shop is inside the app, messaging the seller and tracking an Icon Request work from your pocket the same as on the web. Ask about an order, request a saint the catalog does not hold yet, and read the replies, all in one place."
-   }
-  ],
-  "future": [],
-  "closing": "The shop was the last room of Purify that still opened outward; now every room is under one roof. If anything is loose, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
-  "signOff": "From Edgar, the Purify Team"
- },
- {
-  "id": "beta-1-8-2",
-  "version": "Beta 1.8.2",
-  "date": "2026-07-11",
-  "title": "The account pages, mended",
-  "intro": "Welcome, and glory to Jesus Christ. A quick repair patch for three crashes the first users found on the app: the account pages, the Purify Plus screen, and a top bar that slipped under the clock in the reader. All three are mended. The core of Purify stays free, today and always.",
-  "sections": [
-   {
-    "heading": "Your account, reachable again",
-    "body": "On the app, opening Account and security, or Notifications, was bouncing you back to sign-in or closing the screen. The offline app checks who you are the wrong way on those pages; it now checks the right way, so your profile, security, notification, and session settings all open as they should, without signing you out."
-   },
-   {
-    "heading": "Purify Plus opens cleanly",
-    "body": "The Purify Plus screen could close the app if the store took a moment to answer. It now opens to a calm screen every time, and never closes the app if billing is slow to load."
-   },
-   {
-    "heading": "The top bar clears the clock",
-    "body": "In the Bible reader, the little book-and-verse strip at the top could slip up under the phone's clock and battery. It now sits clear of the status bar, in the reader and everywhere else the top bar appears."
-   }
-  ],
-  "future": [],
-  "closing": "Small and quick, offered with thanks to everyone testing on day one. If anything else is loose, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
-  "signOff": "From Edgar, the Purify Team"
- },
- {
-  "id": "beta-1-8-1",
-  "version": "Beta 1.8.1",
-  "date": "2026-07-10",
-  "title": "Launch-day repairs, with thanks",
-  "intro": "Welcome, and glory to Jesus Christ. The doors opened today, and the first walkers-through found the loose boards. This patch mends them the same day: Google sign-in on the Play build, an account step in the welcome flow, the Plus screen set right with the true mark of the app, the shop reachable from your phone, and a set of small collisions and rough edges smoothed. Thank you to everyone who wrote in within hours; this is what a launch day should look like.",
-  "sections": [
-   {
-    "heading": "Signing in, truly mended",
-    "body": "Google sign-in on the Play-installed app was failing at the last step and calling it a cancellation; the app's Play signing certificate was not fully registered on our side. It is registered now, and the app also tells the truth about what went wrong if anything like it ever recurs. Creating an account now signs you in immediately, no confirmation detour, and you stay signed in on that device. The welcome flow gained a fourth step: keep your journey with a Google or email account, entirely optional."
-   },
-   {
-    "heading": "The Plus screen, set right",
-    "body": "The Purify Plus screen now wears the app's own mark, the white three-bar cross in the black circle, and the signed-out view no longer strands a lone button at the bottom of an empty screen: what Plus includes is laid out before the door asks for a key."
-   },
-   {
-    "heading": "The shop, in your pocket",
-    "body": "Discover now carries the EIKON shop on phones. In the app it opens the storefront in your browser, where checkout lives; on the mobile site it is simply another door in the library."
-   },
-   {
-    "heading": "Small collisions, smoothed",
-    "body": "The bookmark button no longer hides behind the Android status bar when you scroll. The book picker in the Bible is a proper bottom sheet on phones instead of a desktop popover. The saints index scrolls lighter on mid-range phones. And the About page now says plainly what has always been true: Purify is an Eastern Orthodox led project."
-   }
-  ],
-  "future": [],
-  "closing": "A launch is a beginning, not a finish line. If anything else is loose, write to lifeistheosis@gmail.com and it will be mended with the same speed. I read every email, and I pray for the people who send them.",
-  "signOff": "From Edgar, the Purify Team"
- },
- {
-  "id": "beta-1-8",
-  "version": "Beta 1.8",
-  "date": "2026-07-10",
-  "title": "The doors open: the EIKON shop, Purify Plus, and the Hours",
-  "intro": "Welcome, and glory to Jesus Christ. This patch opens two doors we have been building behind for a long season. The EIKON shop is open: hand-picked icons and prayer goods, each one inspected before it ships to you. And Purify Plus arrives on Android, the optional subscription that keeps the lamps lit, with cross-device sync, notes and highlights everywhere, and free shipping on everything in the shop. Alongside the doors, the prayer corner grows: the Little Hours now carry their Psalms in full, a rule of protection joins the devotional shelf, and the greatest born of women, St. John the Baptist, takes his place among the saints. The core of Purify stays free, today and always.",
-  "sections": [
-   {
-    "heading": "The EIKON shop is open",
-    "body": "A marketplace for the prayer corner at /shop, beginning with the EIKON store: icons, prayer ropes, censers, and the goods of a working prayer life. Every item is sourced, inspected by our own hands, and repackaged before it ships; every listing says plainly how it is made and where it comes from. Checkout is by card through Stripe, shipping within the United States, and the shipping and returns policy is written in plain words at /shop/policies. If an icon you love is missing, the Request an Icon door is open."
-   },
-   {
-    "heading": "Purify Plus, on Android",
-    "body": "The optional subscription is live in the Android app: $9.99 a month or $99 a year, billed securely through Google Play, cancel anytime. Plus carries your library across devices, syncs your notes, highlights, and bookmarks, unlocks custom collections and the Florilegium, and ships everything in the EIKON shop free while your subscription is active. Buying it genuinely unlocks it: the entitlement is written server-side to your account the moment Google confirms the purchase, and Restore brings it back on any device you sign in on. What is free today stays free; Plus pays for the servers and the work, it never buys back what was given."
-   },
-   {
-    "heading": "The Hours, in full",
-    "body": "The First, Third, Sixth, and Ninth Hours now carry their three appointed Psalms each in full, in Brenton's public-domain Septuagint translation, with the fixed troparion and dismissal of each hour. The Book of Hours was asked for on the Discord, with the psalm structure laid out carefully by the one who asked; here it is, and the Hours now stand in the daily rule beside Compline."
-   },
-   {
-    "heading": "Prayers of protection, and the Forerunner",
-    "body": "A new rule of protection joins the devotional shelf: Psalm 90 and Psalm 26 in full, the Let God arise verses prayed with the sign of the Cross, and the petition for the guard of the angel, every word verbatim from public-domain sources. And St. John the Baptist, the Forerunner, of whom the Lord said that among them born of women there hath not risen a greater, takes his place among the saints with his whole scriptural witness, from the annunciation to Zacharias to the Beheading. Both were asked for on the Discord."
-   },
-   {
-    "heading": "Repairs you asked for",
-    "body": "The calendar's New and Old toggle no longer sticks on Old for installed-app readers; the choice now holds everywhere. Focus mode releases you again on desktop, by the exit button or the Escape key. The buttons at the very top of the screen answer taps again on iPhone. And the Read the Gospel with Chrysostom door now tells you plainly how to open the commentary beside the text. Each of these came from a community report, named in the suggestions forum, and each is mended."
-   },
-   {
-    "heading": "The small print, kept honest",
-    "body": "The Terms of Service now spell out the subscription plainly, the price, the renewal, and how to cancel, and the shop's shipping and returns policy stands at /shop/policies as part of them. Agreement is now a real checkbox at signup and at checkout, and your acceptance is recorded, because a promise should be provable on both sides. The privacy policy already names every processor involved: Stripe for the shop, Google Play and RevenueCat for Plus."
-   }
-  ],
-  "future": [],
-  "closing": "Two doors and a fuller prayer corner. If an item arrives short of what you hoped, if a psalm reads wrong, or if Plus does not unlock what it promised, write to me at lifeistheosis@gmail.com and it will be made right. I read every email, and I pray for the people who send them.",
-  "signOff": "From Edgar, the Purify Team"
- },
- {
-  "id": "beta-1-7",
-  "version": "Beta 1.7",
-  "date": "2026-07-04",
-  "title": "A walk through the history of the Church",
-  "intro": "Welcome, and glory to Jesus Christ. This is the largest patch since Purify began, and the one I most wanted to build. The whole story of the Orthodox Church now lives in the app as an interactive timeline you can walk with your own hand: thirty-eight events across eleven ages, from the fire of Pentecost to the Church of our own day, each one sourced, cited, and honest about what is certain and what is held in loving tradition. Around it, the three pages you open most, Today, the Bible, and Discover, have been redrawn to feel like one quiet, considered whole. And Continue with Google, which had gone quiet, sings again. However you came to be here, new face or old friend, thank you for walking this history with us.",
-  "sections": [
-   {
-    "heading": "Orthodox History, an interactive timeline",
-    "body": "A new home under Discover: the two thousand years of the Church laid out as a timeline you move through by hand, divided into eleven ages from the Apostolic Age to the present. Thirty-eight events to begin, the councils and the schisms, the saints and the missions and the martyrs, each with its own page, its full account, and its sources shown in the open. Move by era, jump by century, search by name or year or place, and filter by category. Every event links into the saints, councils, and doctrine already in the app, and each saint and council page now points back to its place in history. It all works without an account, and on Android it works fully offline."
-   },
-   {
-    "heading": "Honest about what is certain",
-    "body": "Church history holds firm dates and treasured traditions side by side, and Purify never pretends the second are the first. Every event wears a plain label, from Historically Attested to Traditional Account to Disputed, and says so wherever it matters. The facts, the sources, and the citations are free for everyone, always. A richer, cinematic way to experience the history, with artwork and gentle motion, is being prepared for Purify Plus; the history itself will never move behind it."
-   },
-   {
-    "heading": "On this day, and where you left off",
-    "body": "Today has become a personal daily page. It greets you by the hour, names the rule that hour calls for, and remembers your rhythm of prayer. Beside it, a quiet thread of your own: the chapter you were reading, your place on the History timeline, the prayers you opened, your saved passages. When a firmly dated event falls on today, it appears here as On This Day in Orthodox History."
-   },
-   {
-    "heading": "The library, redrawn",
-    "body": "Discover, the Bible, and the Today page now share one calm editorial hand instead of three. The Bible's canon reads as a single library rather than a wall of coloured tiles, and remembers the exact verse you left off at. Discover leads with what is worth returning to and shows the life of the day. The section marks throughout have been redrawn to suit what they open, an hourglass for history, a shield for the defense of the faith."
-   },
-   {
-    "heading": "Signing in, mended",
-    "body": "Continue with Google stopped working for a spell, turned away at the door with an error that was ours to fix, not yours. It is mended. If you have only ever signed in with Google, that is the door to use; if you set a password in the early days, it still works, and Forgot password will always let you set a fresh one. The Google and Apple marks on the sign-in buttons are drawn properly now, too."
-   }
-  ],
-  "future": [],
-  "closing": "This one took a while, and it was worth every hour. If a date looks wrong, a source looks thin, or an event you love is missing, tell me, this is a beginning and not an end. Write to me at lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
-  "signOff": "From Edgar, the Purify Team"
- },
- {
-  "id": "beta-1-6",
-  "version": "Beta 1.6",
-  "date": "2026-06-20",
-  "title": "Steadier on Android",
-  "intro": "A repair patch, written with the Android beta testers in hand. You opened the app, you found the rough edges, and you wrote them down kindly. This is the answer to that: sign-in that finishes where it starts, a top of the screen that no longer hides its own buttons, and a handful of quiet fixes. Thank you for testing. Glory to God for patient hands.",
-  "sections": [
-   {
-    "heading": "Signing in, and out, the way it should",
-    "body": "Continue with Google now completes inside the app, with the native account picker, instead of sending you out to a separate browser and leaving you signed in everywhere but here. And signing out no longer ends on an error screen; it simply lets you go, quietly, back to the start."
-   },
-   {
-    "heading": "Nothing hiding behind the clock",
-    "body": "On Android the very top of the screen used to slip up under the status bar, taking buttons with it. The welcome's Skip, the Cancel in Bible search, the app's own header: all of them now sit below the clock and the battery, where your thumb can actually reach them. The Android back button closes the search sheet instead of feeling stuck."
-   },
-   {
-    "heading": "A few quiet repairs",
-    "body": "Long prayer titles read in full now, rather than trailing off mid-word. Turning on prayer reminders no longer stumbles. And the app finally wears its own icon, the three-bar cross, in your app drawer and on your home screen, in place of the placeholder it shipped with."
-   }
-  ],
-  "future": [],
-  "closing": "Small as it is, every patch is offered with thanks for the people praying alongside this work. If something feels off, or there is a feature you wish existed, write to me at lifeistheosis@gmail.com. I read every email.",
-  "signOff": "From Edgar, the Purify Team"
- },
- {
-  "id": "beta-1-2",
-  "version": "Beta 1.2",
-  "date": "2026-06-14",
-  "title": "A gentler welcome",
-  "intro": "A small patch about first steps. New here? Purify now opens with a short, skippable welcome that helps you set your calendar and find a good place to begin. Everyone who has been here before is left exactly where they were. Glory to God for new faces.",
-  "sections": [
-   {
-    "heading": "A first-run welcome",
-    "body": "Open Purify for the first time and you are met with three quiet screens: a word about what this is, a chance to choose the calendar you keep, New or Old, and a gentle pointer toward a first step, depending on what draws you. It is entirely skippable, and it never shows again once you are in. If you have used Purify before, you will not see it at all."
-   },
-   {
-    "heading": "Begin here",
-    "body": "After the welcome, the Today screen carries a single calm pointer toward that first step, the Gospel of John, the morning rule, the saints, or the day's reading, which you can follow or dismiss with a tap. No checklist, no streak, no score. Just one open door. Prayer is not a game to be won."
-   }
-  ],
-  "future": [],
-  "closing": "Small as it is, every patch is offered with thanks for the people praying alongside this work. If something feels off, or there is a feature you wish existed, write to me at lifeistheosis@gmail.com. I read every email.",
-  "signOff": "From Edgar, the Purify Team"
- },
- {
-  "id": "beta-1-1",
-  "version": "Beta 1.1",
-  "date": "2026-06-03",
-  "title": "A little tidying",
-  "intro": "A small housekeeping patch. Nothing new to learn, just a few surfaces made calmer and easier to move through. Glory to God for the quiet weeks that let us polish what is already here.",
-  "sections": [
-   {
-    "heading": "The saints, sorted",
-    "body": "The saints index now lets you filter by kind, not only by century. Browse the Apostles, the Cappadocian Fathers, the Church Fathers, the Desert and monastic saints, the Fathers of the Councils, the Martyrs, the Wonderworkers, the Holy Women, and more. A saint can belong to several of these at once, and the counts on each filter update as you narrow down. Both the 'By kind' and 'By century' rows fold away with a tap when you want them out of the way. The Most Holy Theotokos remains pinned at the top, as the most perfect of the saints."
-   },
-   {
-    "heading": "A lighter Today",
-    "body": "The cards on the mobile Today screen, the verse of the day, the saint, the fast, the readings, and the Pascha countdown, have been tightened up so more of the day fits on the screen at once without feeling cramped."
-   },
-   {
-    "heading": "Home polish",
-    "body": "The four 'Why Purify' pillars now carry hand-drawn illustrations instead of plain glyphs, and the 'What we are made of' provenance cards have been trimmed to a single clear line each. Less to read, the same honesty about where every text comes from."
-   }
-  ],
-  "future": [],
-  "closing": "Small as it is, every patch is offered with thanks for the people praying alongside this work. If something feels off, or there is a feature you wish existed, write to me at lifeistheosis@gmail.com. I read every email.",
-  "signOff": "From Edgar, the Purify Team"
- },
- {
-  "id": "beta-1-0",
-  "version": "Beta 1.0",
-  "date": "2026-05-15",
-  "title": "Hello, faithful",
-  "intro": "Glory to Jesus Christ. This is the first public look at Purify, the Orthodox companion app I have been building. Everything you see is the work of one person; God willing, the team will grow. Thank you for being here at the beginning.\n\nPurify is meant to be a single home for the Orthodox spiritual life: the Scriptures, the prayers, the saints, the seasons of the Church year, and a marketplace that supports those who carry the Faith. The free tier is broad and complete; the paid tier exists to keep the lights on, fund patristic commentary curation, and support priests through paid blessings.",
-  "sections": [
-   {
-    "heading": "The Orthodox Bible",
-    "body": "The full Orthodox canon, all 77 books, end to end. Old Testament from Brenton's English Septuagint of 1851, including the deuterocanonical books that most modern English Bibles omit. New Testament from the King James Version. Both are public domain. Brenton in particular is the English form of the Greek Septuagint, the version of the Old Testament read by the Apostles themselves and still used by the Orthodox Church.\n\nYou can switch books from anywhere with a search-friendly dropdown. Arrow keys move between chapters. Books are grouped by their traditional sections: Pentateuch, Historical, Wisdom, Prophets, Gospels, Acts, Pauline Epistles, Catholic Epistles, Revelation. Twelve of the most-read books carry short Orthodox introductions; the rest will follow."
-   },
-   {
-    "heading": "Patristic commentary",
-    "body": "Brief commentary from the Fathers appears in a side rail next to the verses they wrote on. The current corpus includes Basil the Great, John Chrysostom, Augustine, Cyril of Alexandria, Jerome, Gregory of Nyssa, and Gregory the Theologian. The two Gregories and Basil, the three Cappadocians, are the heart of fourth-century Orthodox theology, and their voices will only grow louder in future patches.\n\nClicking a verse with commentary scrolls the rail to that verse. Clicking a commentary card expands the quote inline. Saint icons appear as the photos themselves where available, and as deterministic initials in colored circles where they are not yet uploaded."
-   },
-   {
-    "heading": "Reader controls",
-    "body": "Cycle text size through four presets: Small, Medium, Large, X-Large. Swap between three font families: Serif, Display, Sans. Highlight verses with a single click on the toolbar, or highlight individual words by clicking, or stretch the highlight across as many words as you like with a drag. Add a personal note to any verse. Everything saves locally to your device for now; cloud sync arrives with accounts."
-   },
-   {
-    "heading": "Learn to pray",
-    "body": "A six-lesson beginner path for anyone new to Orthodox prayer: what prayer is, the Sign of the Cross, the Jesus Prayer, the Trisagion, and a simple morning and evening rule. Each lesson is about five minutes, with the full text of the prayer and a short 'try this' application."
-   },
-   {
-    "heading": "The rest of the app",
-    "body": "Pricing tier, account scaffolding, prayer campaigns, the Orthodox calendar, saints' works, the marketplace, and monastery directory are all real routes. They are currently stubs and waiting for the features that fill them in next. Mobile responsiveness, a PWA manifest, and the dark Hallow-style design are in across the whole app."
-   }
-  ],
-  "future": [
-   {
-    "title": "More patristic commentary",
-    "body": "The Cappadocians have hundreds of pages of Bible commentary. So do Chrysostom, Maximus the Confessor, and John of Damascus. Careful ingestion from public-domain sources, mapped to specific verses, with brief modern summaries written for readers new to the Fathers."
-   },
-   {
-    "title": "The Orthodox calendar",
-    "body": "Feasts, fasts, saints of the day, in both the New (Revised Julian) and Old (Julian) calendars, plus jurisdictional options for those who follow Antiochian, Greek, Russian, Serbian, or other traditional cycles."
-   },
-   {
-    "title": "NKJV and the Orthodox Study Bible",
-    "body": "Licensing outreach is open to Thomas Nelson / HarperCollins Christian Publishing for the NKJV text and the published Orthodox Study Bible notes. Until they say yes, the Brenton + KJV public-domain edition is what we ship. The infrastructure to drop NKJV in is already built and waiting."
-   },
-   {
-    "title": "Daily readings",
-    "body": "The lectionary, the appointed Gospel, Epistle, and Old Testament for each day of the Church year, pulled directly into the Bible reader so you can pray with the Church wherever you are."
-   },
-   {
-    "title": "Accounts and cloud sync",
-    "body": "Optional sign-in so your highlights, notes, and prayer-plan progress travel with you across devices. Local-only is fine for now; nothing of yours leaves your device today."
-   },
-   {
-    "title": "Full prayer plans",
-    "body": "Morning and evening rules from the standard prayer books, akathists, the canon to the Theotokos, Holy Week services, and seasonal plans for Great Lent and Pascha. Personal plan-building for the paid tier."
-   },
-   {
-    "title": "The Marketplace",
-    "body": "Verified monastery storefronts, independent iconographers, prayer rope makers, Orthodox booksellers, and paid blessings that fund priests directly. Stripe Connect for sellers and donations."
-   },
-   {
-    "title": "Audio",
-    "body": "Reading the Scriptures aloud, the akathists, the prayer rules, and the lives of saints, so you can pray while walking or driving."
-   },
-   {
-    "title": "Native mobile apps",
-    "body": "iOS and Android, with offline reading of the Bible, prayer book, and lives of saints. The web app is the foundation; the native shells follow once the web feels right."
-   }
-  ],
-  "closing": "This is a beta. Things will break. The web font sometimes flashes before swapping to your preferred size. Highlights live in your browser, not in the cloud, until accounts ship. Some chapters do not yet have patristic commentary; those that do are the ones the Fathers wrote on most.\n\nI am building this in the evenings while running other work. If something is wrong, or there is a feature you wish existed, please write to me at lifeistheosis@gmail.com. I read every email.\n\nMay the Lord bless this small offering.",
-  "signOff": "From Edgar, the Purify Team"
- }
+  {
+    "id": "beta-2-6",
+    "version": "Beta 2.6",
+    "date": "2026-07-27",
+    "title": "Six new studies, the saints in Discover, and a cross where the goalpost was",
+    "intro": "A large content release and a handful of fixes you asked for by name. The theology library grew by six long-form studies and opened a new shelf on the worship of the Church. Discover finally has the saints on it. And the Prayers tab is no longer wearing a goalpost.",
+    "sections": [
+      {
+        "heading": "The worship of the Church, a new shelf",
+        "body": "Two studies open a new section in the theology library. The Divine Liturgy of St John Chrysostom is walked in the order it is actually served, from the cutting of the Lamb at the table of preparation, through the antiphons and the reading of the Word, the dismissal of the catechumens, the Great Entrance and the calling down of the Spirit, to communion. Beside it, the vestments: every garment with its name, its root in Exodus, and the prayer the priest says while putting it on."
+      },
+      {
+        "heading": "Four studies from the dogma side",
+        "body": "Why the Orthodox Church does not receive the Council of Florence, and what makes a synod a Council in the first place. What St Theodore the Studite was actually asking of Rome when he wrote to it from exile, read alongside the letters he sent to Alexandria, Antioch and Jerusalem at the same time. Whether St Justin Martyr can fairly be called a subordinationist, and the difference between order and inequality in God. And penal substitution: how the Cross both heals and pays, and what the Fathers refuse."
+      },
+      {
+        "heading": "Every quotation checked against its source",
+        "body": "The part you cannot see. All 75 quotations in the six new studies were matched word by word against the public domain edition each one cites, and two were removed because they could not be confirmed. One of them was a well known text that turned out to be a modern wording carrying a very old citation. A checker now lives in the repository so this happens every time rather than once."
+      },
+      {
+        "heading": "The saints, in Discover",
+        "body": "Discover lists the saints now, first in the library on a phone and as a third door on a wide screen. The strings for it had been written months ago and were never connected to anything."
+      },
+      {
+        "heading": "Orthodox imagery across the app",
+        "body": "Five surfaces that were built out of line drawings on grey now open on a real image, each one public domain and recorded: the Codex Sinaiticus on Scripture, the Deesis on Prayers, the Menologion of Basil II on Discover, the Evangelist Luke from the Ostromir Gospels on Reading, and the Ladder of Divine Ascent on your own page."
+      },
+      {
+        "heading": "A cross where the goalpost was",
+        "body": "The Prayers tab carried a mark meant to be the ancient prayer posture, arms raised. Drawn without a head or hands and shrunk to the size of a tab, it was two uprights and a crossbar. It is the Orthodox three bar cross now."
+      },
+      {
+        "heading": "The screen no longer stretches",
+        "body": "Scrolling past the end of a page pulled the whole screen away from the edge and let it snap back, which is a browser habit and not something an app should do. The rule meant to stop it had been written on the wrong element and had never once applied."
+      },
+      {
+        "heading": "Multi reference search works in the app",
+        "body": "Searching two or more references at once, like 1 Tim 2:5, Prov 8:7, used to drop you back on Today with your query lost whenever you were in the Android app. The page it sends you to had been left out of the app bundle. It ships now, and the service it reads verse text from will answer the app, which it previously refused to do."
+      },
+      {
+        "heading": "The end of a commentary is readable again",
+        "body": "The patristic commentary panel sits against the bottom of the screen, and the last lines of a Father were ending up underneath the tab bar and the phone's gesture area. It now keeps clear space beneath it. The panel can also be pulled down to close, which the handle at its top had been promising for some time."
+      },
+      {
+        "heading": "A weekly note instead of a stale one",
+        "body": "The message at the top of this page used to be rewritten only when a large release shipped, so it sat introducing Beta 1.7 while the app had moved on eight releases. It is a weekly note now, and if a week is missed it says nothing rather than something out of date."
+      }
+    ]
+  },
+  {
+    "id": "beta-2-5",
+    "version": "Beta 2.5",
+    "date": "2026-07-25",
+    "title": "A lighter app and a clearer bar",
+    "intro": "Two things you should notice. The bar along the bottom has been redrawn, and Purify now takes up a good deal less room on your phone. About a quarter of what the app was carrying turned out to be the same pages stored over and over, and that is gone.",
+    "sections": [
+      {
+        "heading": "The bottom bar, redrawn",
+        "body": "New marks for Scripture, Discover, Prayers, Shop and your account, each drawn to sit at the same weight as the ones beside it. The old set had icons that rendered nearly twice the size of their neighbours and several that ran past their own edges. The circle that used to slide around behind the selected tab is gone; the tab itself now brightens and lifts instead."
+      },
+      {
+        "heading": "Less to carry",
+        "body": "Roughly a quarter of the app was the same content written out several times over by the build. Removing the duplicates takes nothing away from what you can read: every prayer, life and chapter is still there and still works with no signal."
+      },
+      {
+        "heading": "Quieter while you scroll",
+        "body": "The saints list and the Bible chapter strip used to quietly load pages you had not opened while you scrolled past them. On a phone that competed with the scrolling itself. They now wait until you actually choose something."
+      },
+      {
+        "heading": "A small answer to every tap",
+        "body": "Choosing a tab gives a short tick you can feel, and the icon settles in rather than snapping. If you have asked your phone to reduce motion, it stays still."
+      }
+    ]
+  },
+  {
+    "id": "beta-2-4",
+    "version": "Beta 2.4",
+    "date": "2026-07-25",
+    "title": "A calmer hand on the phone",
+    "intro": "Nothing new to learn in this one. Purify simply moves better. Screens now settle the way you read them, from the top down, instead of arriving all at once, and the cards and rows you tap finally answer to your finger. On Android the app scrolls more smoothly, and if you have asked your phone to reduce motion, more of Purify now listens.",
+    "sections": [
+      {
+        "heading": "Screens arrive in order",
+        "body": "The greeting, then the day's word, then the prayer rule, then the doors below, each settling a moment after the one above it. A page now reads as it appears rather than landing in one piece."
+      },
+      {
+        "heading": "Everything you tap answers",
+        "body": "The saint of the day, the fast, the appointed readings, and the count to Pascha used to sit still under your finger on a phone. They now press in and spring back like the rest of the app."
+      },
+      {
+        "heading": "Loading looks like the thing it is loading",
+        "body": "Waiting states across Scripture, the saints, the calendar, the councils, and history were each drawn a little differently. They now share one shape, and content no longer jumps when it arrives."
+      },
+      {
+        "heading": "A clearer Today, a shorter door to the saints",
+        "body": "The Today screen's Explore doors were four almost-identical shades of grey pretending to be different; they are one clean surface now, told apart by their icons. And the Saints page opens onto saints, where its heading used to fill a phone screen on its own."
+      },
+      {
+        "heading": "Smoother, and quieter when you ask",
+        "body": "Several blur effects were removed from the places you scroll past in the Android app; they cost frames on a phone and gave nothing back. Reduce Motion is honored in more places, including sheets and dialogs, and a change to the setting now takes effect at once instead of on the next launch."
+      }
+    ]
+  },
+  {
+    "id": "beta-2-3",
+    "version": "Beta 2.3",
+    "date": "2026-07-19",
+    "title": "Purify learns your language",
+    "intro": "This release opens Purify to the whole household of the faith: the app now speaks twenty-one languages. Pick yours in Settings or in the footer, and the menus, the Today screen, the calendar with every fasting rule, and the app's chrome follow you, on the website and inside the Android app, even offline. The prayers, lives, and writings themselves are being translated next; until each one lands, it is shown in English with an honest note. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "Twenty-one languages",
+        "body": "English, Spanish, Romanian, Greek, Russian, French, German, Serbian, Ukrainian, Italian, Portuguese, Bulgarian, Arabic, Filipino, Turkish, Georgian, Hungarian, Indonesian, Nepali, Polish, and Urdu. Every language is available to everyone from day one, and the site greets first-time visitors in their browser's own language. Our language editors keep refining the translations in place; anything not yet translated falls back to English rather than breaking."
+      },
+      {
+        "heading": "The app finally switches",
+        "body": "Language switching now works inside the Android app, not just on the website. Your choice is remembered on the device, follows your account when you sign in, and on first run the app greets you in your phone's own language when we carry it."
+      },
+      {
+        "heading": "Every script renders true",
+        "body": "New typefaces for Cyrillic, Greek, Arabic script, Georgian, and Devanagari, loaded only when a page actually needs them, so no language reads as empty boxes."
+      },
+      {
+        "heading": "A language home in Settings",
+        "body": "A Language row now leads your account settings, with the same grouped picker as the footer: available languages, previews under review, and the ones still to come."
+      }
+    ]
+  },
+  {
+    "id": "beta-2-2",
+    "version": "Beta 2.2",
+    "date": "2026-07-18",
+    "title": "The shop finds its voice, and its word of honor",
+    "intro": "This release lets the EIKON shop speak and be spoken to. You can now reach the Purify team from inside the shop, hear back in a living conversation, and mark a message with a small heart. And the word of others carries real weight: reviews now come only from those who received what they bought, so a rating is a testimony, not a guess. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "A word of honor on every review",
+        "body": "A review now stands on what actually arrived. You may leave one for a product only after your order is marked delivered, so a rating is the testimony of someone who held the thing in their hands. Every review carries a verified-buyer mark naming what was bought. And you can now review a whole shop, not only its products, so a maker's care over many orders is seen as one."
+      },
+      {
+        "heading": "The shop can speak, and be spoken to",
+        "body": "A new door, Contact EIKON support, sits in the shop and in your messages: it opens a real conversation with the Purify team about an order or a question, and picks the thread back up where you left it. Inside a conversation you now see the honest state of your last message, delivered when it has arrived and read when it has been seen, so you are never left wondering."
+      },
+      {
+        "heading": "A small heart, where it belongs",
+        "body": "Messages in the shop can now be marked with a heart: a double-tap on a phone, or a quiet heart button, to say a thing landed without needing more words. It is a small warmth in a place that was only ever plain text before."
+      },
+      {
+        "heading": "A cleaner desk on our side",
+        "body": "The team's support desk and the admin were given a calmer, clearer hand so your questions are answered with less friction and less delay. Cache version steps to purify-beta-2.2."
+      }
+    ]
+  },
+  {
+    "id": "beta-2-1",
+    "version": "Beta 2.1",
+    "date": "2026-07-17",
+    "title": "The plan finds its shape, and reading finds its light",
+    "intro": "This release gives the three plans their true shape and brings the first of Pro's premium layer to life. Standard remains the complete Orthodox foundation, free forever. Purify Plus is now purely the premium reading and study experience. And Purify Pro becomes the complete premium experience: new reading modes that change the very light of the page, the EIKON Box on its way, and the shop's member benefits gathered in one place. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "Three plans, cleanly cut",
+        "body": "Standard carries the whole foundation: the Scriptures, the saints and the Fathers, theology and the Councils, Orthodox History, the prayers, the calendar with its fasts, and Prayer Campaigns. No ads, no tracking, no surprise locks. Purify Plus is the premium reading and study experience: your library, notes, highlights, and collections on every device you sign in on. Purify Pro is everything in Plus and the complete premium experience. Free EIKON shipping now belongs to Pro's member benefits, alongside member discount codes and early access."
+      },
+      {
+        "heading": "Premium Reading Modes",
+        "body": "Reading has found its light. Four modes now live in the reader settings: Focus, which clears everything but the text; Candlelight, warm amber for the late hours; Monastery, cool stone and quiet indigo; and Parchment, aged paper with dark ink. They re-light the Scriptures and the writings of the Fathers alike, and your choice is remembered on your device. Reading modes are part of Purify Pro; while the beta is open they are free for everyone to try."
+      },
+      {
+        "heading": "Purify Pro, in the app",
+        "body": "The subscription screen in the Android app now carries both tiers: a quiet switch under the hero moves between Plus and Pro, each with its own live prices from Google Play and its own list of what is included. Anyone who holds Plus and steps up to Pro is told honestly how to end the old plan so no one pays twice."
+      },
+      {
+        "heading": "The EIKON Box, on its way",
+        "body": "Pro's box is coming: a curated monthly box of Orthodox devotional goods, an icon, a prayer rope, incense, a booklet, or seasonal gifts, with contents that vary month to month. Studio Audio, professionally narrated Scripture, saints, and history, is also on the road ahead. Both are named on the plan today and will light up as they arrive; nothing is charged for what has not yet shipped."
+      }
+    ]
+  },
+  {
+    "id": "beta-2-0-1",
+    "version": "Beta 2.0.1",
+    "date": "2026-07-14",
+    "title": "A cleaner walk through the whole app",
+    "intro": "A polish release. Purify Premium now has a home of its own, Discover reads more calmly, and the Fasting, Prayer Campaigns, and Trapeza screens move with a lighter hand on the phone. A fault that could leave a signed-in reader stuck on 'opening the campaign' is fixed, and the EIKON shop shows its icons in full again and asks you, after an order, to share an honest word. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "Purify Premium, in one place",
+        "body": "A new Premium page lays out the three plans side by side, Standard, Plus, and Pro, with everything each one carries and the opening half-off-first-year offer. A quiet marker in the header leads you there whenever you want to look. Nothing about the free core changes."
+      },
+      {
+        "heading": "A calmer Discover",
+        "body": "Discover was carrying duplicate doorways and a wall of small buttons. It now reads in a few clear rooms, and the doctrinal library, Theology, Apologetics, Topics, and the heresies the Church answered, gathers under one hub instead of four scattered tiles."
+      },
+      {
+        "heading": "Prayer Campaigns open every time",
+        "body": "A signed-in reader could land on a campaign that stayed stuck on 'opening the campaign' when their session was slow to confirm. The campaign now appears as soon as it loads, and a failure offers a way back instead of a spinner that never ends. Starting a campaign is a gentler, carded flow too."
+      },
+      {
+        "heading": "Lighter on the phone",
+        "body": "The Fasting, Prayer Campaigns, and Trapeza screens share one quiet, minimal design now, with a soft entrance as each section settles in and a small give under your thumb. Cleaner, calmer, and quicker to read."
+      },
+      {
+        "heading": "The EIKON shop, set right",
+        "body": "Featured icons were hiding all but one behind a stricter image check; the shelf is full again, and every card lines up to the same baseline. After an order is placed, the shop now invites you to leave an honest, verified review to help the next person praying."
+      }
+    ]
+  },
+  {
+    "id": "beta-2-0",
+    "version": "Beta 2.0",
+    "date": "2026-07-13",
+    "title": "The fast kept, the table shared, and prayers held in common",
+    "intro": "Welcome, and glory to Jesus Christ. This is the fullest release yet. You can keep the fast day by day now, share a prayer in common, and set the table with recipes for the season. Your gathered library can be carried anywhere and kept as your own copy. The one true cross stands over the whole app, the top of every screen sits right, sign-in and your account hold steady, and the EIKON shop has been rebuilt around search and clean cards. The core of Purify, the Scriptures, the prayers, the saints, the calendar, and the new fasting tracker, is free, today and always.",
+    "sections": [
+      {
+        "heading": "Keep the fast, day by day",
+        "body": "A new fasting tracker meets you where the calendar already is. It tells you plainly what today's fast asks, and lets you mark the day: kept, in part, or broke. A gentle streak counts the days you have kept, forgiving today until it is out and never scolding. Kept, not tracked, with room for the sick, the travelling, expecting mothers, and catechumens, and always under your priest's blessing. It works free and offline, kept on your device."
+      },
+      {
+        "heading": "Pray together",
+        "body": "Prayer Campaigns are a place to ask the Church to pray with you: for healing, for comfort and strength, for the persecuted, in thanksgiving, or for the departed, memory eternal. Start one in a few words, join the ones that move you, and mark that you have prayed. First names only, and only what you have a blessing to share. It is, and stays, free."
+      },
+      {
+        "heading": "The Trapeza, the shared table",
+        "body": "The Trapeza is a board of fasting-friendly recipes, sorted by the fast, the season, and the tradition. A few plain dishes from the Purify kitchen to begin, and you can send your own for the board."
+      },
+      {
+        "heading": "Carry your library, and keep a copy",
+        "body": "You can now export your notes, highlights, bookmarks, and collections and keep them as your own copy, yours to hold whatever comes."
+      },
+      {
+        "heading": "One cross, everywhere",
+        "body": "The three-bar Orthodox cross now stands over the whole app: the mark beside the name, the browser tab, and the icon on your home screen. One cross, the true one, in every place Purify appears."
+      },
+      {
+        "heading": "Purify's plan, made plain",
+        "body": "The plan now reads in three clear parts. Standard is free and always will be: the Scriptures, the prayers, the saints, the calendar, the fasting tracker, and the community. Purify Plus carries your library across every device. And a new Purify Pro adds a members' layer, a devotional icon mailed each month and codes for the EIKON shop. Both paid tiers open at half off the first year. Everything you use today stays free."
+      },
+      {
+        "heading": "The top bar sits right",
+        "body": "The status-bar inset was being applied twice, which left a dead band under the top bar across the app. It is applied once now, and the gap is gone."
+      },
+      {
+        "heading": "Sign-in and your account hold steady",
+        "body": "Several deep faults in how the app confirmed your sign-in have been closed. The account gate now trusts your device's own session instead of a network check that could hang, and the Profile and Security screens read the same way, so the account pages open when they should."
+      },
+      {
+        "heading": "The reader obeys the back button",
+        "body": "On Android, the back button now closes the reader's settings sheet instead of leaving the page, and the handler no longer churns or leaks."
+      },
+      {
+        "heading": "The EIKON shop, rebuilt",
+        "body": "The marketplace now has search, filters, and premium cards, and a category page that used to break now holds. New icons join the shelves, and the first prayer ropes: knotted wool komboskini for the Jesus Prayer."
+      },
+      {
+        "heading": "Small comforts",
+        "body": "The app no longer bounces past the top and bottom of a page, the rubber-band pull that never belonged in a prayer book. The reminder time pickers now render in the dark with a clear focus ring. The cache version steps to purify-beta-2.0."
+      }
+    ],
+    "future": [],
+    "closing": "Many of these came from your reports. If anything still misbehaves, write to lifeistheosis@gmail.com. I read every one, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
+    "id": "beta-1-9-5",
+    "version": "Beta 1.9.5",
+    "date": "2026-07-12",
+    "title": "Sign-in that cannot jam, and a Plus screen worthy of the name",
+    "intro": "Welcome, and glory to Jesus Christ. Two pieces of work in this patch. First, the deepest sign-in fault we have found yet: a single stuck tab could quietly jam the machinery every other tab uses to confirm your sign-in, and the app could only offer a retry that never succeeded. That machinery now frees itself. Second, the Purify Plus screen has been made worthy of what it sells: the true Purify cross, honest spacing, and the full list of what Plus actually includes. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "Sign-in frees itself now",
+        "body": "Your browser coordinates sign-in checks across tabs through a shared lock. If one tab froze while holding it, every other tab waited forever, and the account page could only say it could not confirm your sign-in. The app now waits five seconds, then proceeds without the lock. The worst case of proceeding is a harmless duplicate token refresh; the worst case of waiting was an account page that never opened. We reproduced the jam deliberately and the page now resolves in seconds, and that exact scenario runs as an automated test on every build."
+      },
+      {
+        "heading": "The Plus screen, made worthy",
+        "body": "The subscription screen now wears the true Purify cross, the same minimalist three-bar mark as the wordmark, instead of a heavier redraw. The dead band above the hero is gone; the screen breathes the way it was designed to. And the included list now tells the whole truth: cross-device sync, notes and highlights and bookmarks, custom collections and the Florilegium, free EIKON shipping on every order while Plus is active, and Immersive History, the cinematic dress on the story of the Church. Every line names something that works today."
+      }
+    ],
+    "future": [],
+    "closing": "Both fixes came from your reports, one from a screenshot sent the same hour. If anything else misbehaves, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
+    "id": "beta-1-9-4",
+    "version": "Beta 1.9.4",
+    "date": "2026-07-12",
+    "title": "Purify Plus opens again, and highlights learn to look like ink",
+    "intro": "Welcome, and glory to Jesus Christ. This patch mends the most serious kind of bug we can ship: tapping Purify Plus closed the app outright. The fault was two billing components speaking different versions of the same language deep in the Android layer, and it is fixed at the root. While we were in the reader we also freed anyone the app had trapped in focus mode, and gave highlights the look they always deserved: ink on the words, not a bar in the margin. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "Purify Plus opens again",
+        "body": "Tapping Purify Plus crashed the app the moment the subscription screen tried to wake the billing machinery. Two of its components had drifted onto incompatible versions, and the collision brought the whole app down. They now move in lockstep, and the paywall opens, prices load from Google Play, and Restore works as intended. If Plus ever cannot load, you will see a calm explanation instead of a crash."
+      },
+      {
+        "heading": "A guaranteed way out of focus mode",
+        "body": "Focus reading hides the app around the text. A recent restructuring accidentally left the top bar standing invisible over the Exit button, swallowing every tap, and on a phone there is no Escape key to fall back on. The exit now floats above everything by construction, the app chrome truly steps aside, and a new automated test presses the real button on every build so this cannot quietly return."
+      },
+      {
+        "heading": "Highlights look like ink now",
+        "body": "A highlighted verse used to wear a plain colored bar down its left margin. It now carries a quiet wash of its color across the words themselves, line by line, the way a real highlighter moves. Word-level highlights stay brighter inside it, and the writings of the saints receive the same treatment in gold."
+      }
+    ],
+    "future": [],
+    "closing": "The Plus crash was reported by a reader and reproduced within the hour. If anything else misbehaves, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
+    "id": "beta-1-9-3",
+    "version": "Beta 1.9.3",
+    "date": "2026-07-11",
+    "title": "One hand for every symbol, and two checkout bugs caught live",
+    "intro": "Welcome, and glory to Jesus Christ. Two kinds of work in this patch. First, we walked the live shop the way a customer would and caught two real bugs at the door: a product page that could sit loading forever, and a checkout that returned buyers to a dead page after paying or backing out. Both are fixed and the whole cancel path is now verified against live Stripe. Second, every symbol in the app's buttons and controls now comes from one hand: our own icon family, drawn on one grid with one stroke, replacing the mismatched keyboard characters and third-party glyphs that had crept in. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "Checkout, walked and mended",
+        "body": "Backing out of a live payment used to strand you on a broken page, and the same flaw would have caught paying customers after checkout. Return addresses now always point home. We also proved the abandon path end to end against live Stripe: leave the payment page and the attempt cancels itself, with nothing charged and nothing lingering in your orders."
+      },
+      {
+        "heading": "Pages that never say almost",
+        "body": "A product page could hang on its loading bones if the app was waiting on a stale sign-in check held by another tab. Pages now refuse to wait on niceties: the shipping perk check gives itself a short deadline and steps aside, and the page simply loads."
+      },
+      {
+        "heading": "The webhook grew armor",
+        "body": "The machinery that marks orders paid now verifies the charged amount against the order before believing anything, and if a payment lands on an order that was cancelled a heartbeat earlier, the payment wins and the order is restored. Eleven new tests hold these rules in place."
+      },
+      {
+        "heading": "One family of symbols",
+        "body": "The bookmark star, the note pen, the copy link, the highlight spark, the cart plus and minus, the close cross, the menu lines, the rating stars, the save heart: all now drawn in Purify's own hand, on one grid, with one stroke, crisp in every button on every screen. The link symbol no longer turns into a colored emoji on Android, and the same action now wears the same symbol everywhere it appears."
+      },
+      {
+        "heading": "A clearer footing on the bottom bar",
+        "body": "The selected tab now speaks three ways: its color, its sliding backdrop, and a slightly firmer line in the icon itself, so the active tab reads clearly without leaning on color alone."
+      }
+    ],
+    "future": [],
+    "closing": "Found by walking the aisles ourselves, mended the same afternoon. If anything else is loose, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
+    "id": "beta-1-9-2",
+    "version": "Beta 1.9.2",
+    "date": "2026-07-11",
+    "title": "The shop, refined: a cart, honest orders, and a smoother checkout",
+    "intro": "Welcome, and glory to Jesus Christ. The shop opened its doors inside the app this morning, and the first walkers-through found the loose boards by evening. This patch mends every one of them and adds the piece most shops are born with: a cart. Icons pages no longer error on desktop, walking away from checkout no longer leaves a ghost in your orders, and paying for an icon now ends with a moment worthy of the purchase. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "A cart, at last",
+        "body": "Every icon page now carries Add to cart beside Buy now. The cart lives on your device, shows a running count on its tab, lets you adjust quantities, and checks out everything in one payment with one shipping charge. Purify Plus members still ship free on every order."
+      },
+      {
+        "heading": "Orders that tell the truth",
+        "body": "Starting a checkout and then walking away used to leave a phantom order marked as confirmed. No more. Backing out of the payment page cancels the attempt on the spot, unfinished checkouts appear only as a quiet removable note, never among your real orders, and anything unpaid says plainly: Awaiting Payment."
+      },
+      {
+        "heading": "Icon pages on desktop, mended",
+        "body": "Opening an icon or the EIKON storefront on the desktop website could answer with an internal server error. The root cause is fixed and every shop page opens cleanly on every screen."
+      },
+      {
+        "heading": "A proper amen to your payment",
+        "body": "When your payment goes through, a gold ring now draws its check, and the confirmation rises beneath it. Small, quick, and honored if your device asks for reduced motion."
+      },
+      {
+        "heading": "Faster, calmer surfaces",
+        "body": "Shop pages now load with quiet placeholder cards instead of a bare loading line, browsing back and forth is instant, messages show who is speaking with the composer always in reach, and the browser tab reads cleanly on every shop page."
+      },
+      {
+        "heading": "Account, always reachable",
+        "body": "On desktop, the account page could sit on a loading skeleton if the redirect script never woke. The skeleton now carries a plain link to your profile that works even with no script at all."
+      }
+    ],
+    "future": [],
+    "closing": "Found within hours, mended within hours. If anything else is loose, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
+    "id": "beta-1-9-1",
+    "version": "Beta 1.9.1",
+    "date": "2026-07-11",
+    "title": "The Fathers, doubled: the whole Psalter with Augustine",
+    "intro": "Welcome, and glory to Jesus Christ. This patch is one thing only, and it is a large thing: commentary. A reader on the Discord asked for more of the Fathers, enough to stand beside any catena Bible, and this is the answer. The library of patristic commentary in Purify roughly doubles today, to four thousand four hundred and eighty-one verse-notes across twenty-three books of Scripture, from fifteen Fathers of the Church. Every word of it is the Fathers' own, from named public-domain translations, and we tell you exactly which. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "The whole Psalter, with St. Augustine",
+        "body": "The crown of this patch. St. Augustine's Expositions on the Book of Psalms now stands beside every one of the hundred and fifty psalms, one thousand eight hundred and ninety-eight notes keyed verse by verse. Open any psalm, tap a red-dotted verse, and Augustine prays it with you. Because Purify's Psalter is the Septuagint and Augustine preached from it too, his psalm often meets yours word for word. From the Nicene and Post-Nicene Fathers, volume eight."
+      },
+      {
+        "heading": "The six days, with St. Basil",
+        "body": "St. Basil the Great's nine homilies of the Hexaemeron, the Church's great preaching on the days of creation, now stand in Genesis 1 in full, each homily set on the verse whose command it opens with. In the beginning God made the heaven and the earth; Basil takes it from there."
+      },
+      {
+        "heading": "A second voice on the Gospel of John",
+        "body": "St. Augustine's one hundred and twenty-four Tractates on the Gospel of John now read alongside St. John Chrysostom's eighty-eight homilies, two Fathers on one Gospel, across all twenty-one chapters. Where they stand on the same verse, you read them together."
+      },
+      {
+        "heading": "Revelation, opened",
+        "body": "The Apocalypse receives its first commentary in Purify: St. Victorinus of Pettau, bishop and martyr of the Diocletianic persecution, whose commentary on Revelation is the earliest that survives from the whole Church. Eighty-eight notes across nineteen chapters, from the Ante-Nicene Fathers, volume seven."
+      },
+      {
+        "heading": "The first verse, reachable",
+        "body": "Commentary on a chapter's opening verse was hidden on phones: the illuminated drop cap left no room for the red marker, and the long-press menu pointed at a desktop-only panel. The opening verse now carries its marker after the text, and the menu opens the commentary sheet properly. Genesis 1:1, John 1:1, and every psalm's opening are reachable with a tap."
+      },
+      {
+        "heading": "On languages, honestly",
+        "body": "The same reader asked for commentary in the app's other languages. The Fathers here are public-domain English translations, named on every note, and we will not run them through a machine and call it a translation. Faithful editions in other languages are future work, done properly or not at all."
+      }
+    ],
+    "future": [],
+    "closing": "Asked for on the Discord, and answered with the biggest single addition of the Fathers Purify has ever shipped. If a note sits on the wrong verse or a word looks wrong, write to lifeistheosis@gmail.com; every citation names its source so you can check us. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
+    "id": "beta-1-9",
+    "version": "Beta 1.9",
+    "date": "2026-07-11",
+    "title": "The shop comes inside",
+    "intro": "Welcome, and glory to Jesus Christ. Until now the EIKON shop opened in your phone's browser, a door that led out of the app. This patch brings the whole shop inside: a Shop tab on the bottom bar, every icon browsable and buyable without leaving Purify or signing in again, checkout completed in the app, and your orders and your messages to the seller waiting when you return. And a first for EIKON: reviews you can trust, left only by people who actually bought the item, with a plain count of how many have sold. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "The shop, inside the app",
+        "body": "The marketplace now lives in Purify itself, not a browser window. A new Shop tab sits on the bottom bar beside Today, the Bible, Discover, and Prayers. Browse the icons, open a listing, read the details, and buy, all without leaving the app and without signing in a second time. Your orders and your conversations with the seller are there when you come back."
+      },
+      {
+        "heading": "Checkout, without leaving",
+        "body": "Buying an icon now happens in the app. You tap Buy, the secure Stripe page opens over the app to take the card, and when it closes you land back on your orders, where the new order appears and moves from confirmed to shipped. Purify Plus members still ship free on every order."
+      },
+      {
+        "heading": "Reviews you can trust",
+        "body": "Every icon and every store can now carry a star rating, and a review can be left only by someone who actually bought the item, so no rating is idle talk. Each listing shows its average stars, how many reviews it has, and a plain count of how many have sold. Where nothing has sold or been reviewed yet, nothing is shown; we would rather say little than pad it out."
+      },
+      {
+        "heading": "Message the seller, reach your requests",
+        "body": "Now that the shop is inside the app, messaging the seller and tracking an Icon Request work from your pocket the same as on the web. Ask about an order, request a saint the catalog does not hold yet, and read the replies, all in one place."
+      }
+    ],
+    "future": [],
+    "closing": "The shop was the last room of Purify that still opened outward; now every room is under one roof. If anything is loose, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
+    "id": "beta-1-8-2",
+    "version": "Beta 1.8.2",
+    "date": "2026-07-11",
+    "title": "The account pages, mended",
+    "intro": "Welcome, and glory to Jesus Christ. A quick repair patch for three crashes the first users found on the app: the account pages, the Purify Plus screen, and a top bar that slipped under the clock in the reader. All three are mended. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "Your account, reachable again",
+        "body": "On the app, opening Account and security, or Notifications, was bouncing you back to sign-in or closing the screen. The offline app checks who you are the wrong way on those pages; it now checks the right way, so your profile, security, notification, and session settings all open as they should, without signing you out."
+      },
+      {
+        "heading": "Purify Plus opens cleanly",
+        "body": "The Purify Plus screen could close the app if the store took a moment to answer. It now opens to a calm screen every time, and never closes the app if billing is slow to load."
+      },
+      {
+        "heading": "The top bar clears the clock",
+        "body": "In the Bible reader, the little book-and-verse strip at the top could slip up under the phone's clock and battery. It now sits clear of the status bar, in the reader and everywhere else the top bar appears."
+      }
+    ],
+    "future": [],
+    "closing": "Small and quick, offered with thanks to everyone testing on day one. If anything else is loose, write to lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
+    "id": "beta-1-8-1",
+    "version": "Beta 1.8.1",
+    "date": "2026-07-10",
+    "title": "Launch-day repairs, with thanks",
+    "intro": "Welcome, and glory to Jesus Christ. The doors opened today, and the first walkers-through found the loose boards. This patch mends them the same day: Google sign-in on the Play build, an account step in the welcome flow, the Plus screen set right with the true mark of the app, the shop reachable from your phone, and a set of small collisions and rough edges smoothed. Thank you to everyone who wrote in within hours; this is what a launch day should look like.",
+    "sections": [
+      {
+        "heading": "Signing in, truly mended",
+        "body": "Google sign-in on the Play-installed app was failing at the last step and calling it a cancellation; the app's Play signing certificate was not fully registered on our side. It is registered now, and the app also tells the truth about what went wrong if anything like it ever recurs. Creating an account now signs you in immediately, no confirmation detour, and you stay signed in on that device. The welcome flow gained a fourth step: keep your journey with a Google or email account, entirely optional."
+      },
+      {
+        "heading": "The Plus screen, set right",
+        "body": "The Purify Plus screen now wears the app's own mark, the white three-bar cross in the black circle, and the signed-out view no longer strands a lone button at the bottom of an empty screen: what Plus includes is laid out before the door asks for a key."
+      },
+      {
+        "heading": "The shop, in your pocket",
+        "body": "Discover now carries the EIKON shop on phones. In the app it opens the storefront in your browser, where checkout lives; on the mobile site it is simply another door in the library."
+      },
+      {
+        "heading": "Small collisions, smoothed",
+        "body": "The bookmark button no longer hides behind the Android status bar when you scroll. The book picker in the Bible is a proper bottom sheet on phones instead of a desktop popover. The saints index scrolls lighter on mid-range phones. And the About page now says plainly what has always been true: Purify is an Eastern Orthodox led project."
+      }
+    ],
+    "future": [],
+    "closing": "A launch is a beginning, not a finish line. If anything else is loose, write to lifeistheosis@gmail.com and it will be mended with the same speed. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
+    "id": "beta-1-8",
+    "version": "Beta 1.8",
+    "date": "2026-07-10",
+    "title": "The doors open: the EIKON shop, Purify Plus, and the Hours",
+    "intro": "Welcome, and glory to Jesus Christ. This patch opens two doors we have been building behind for a long season. The EIKON shop is open: hand-picked icons and prayer goods, each one inspected before it ships to you. And Purify Plus arrives on Android, the optional subscription that keeps the lamps lit, with cross-device sync, notes and highlights everywhere, and free shipping on everything in the shop. Alongside the doors, the prayer corner grows: the Little Hours now carry their Psalms in full, a rule of protection joins the devotional shelf, and the greatest born of women, St. John the Baptist, takes his place among the saints. The core of Purify stays free, today and always.",
+    "sections": [
+      {
+        "heading": "The EIKON shop is open",
+        "body": "A marketplace for the prayer corner at /shop, beginning with the EIKON store: icons, prayer ropes, censers, and the goods of a working prayer life. Every item is sourced, inspected by our own hands, and repackaged before it ships; every listing says plainly how it is made and where it comes from. Checkout is by card through Stripe, shipping within the United States, and the shipping and returns policy is written in plain words at /shop/policies. If an icon you love is missing, the Request an Icon door is open."
+      },
+      {
+        "heading": "Purify Plus, on Android",
+        "body": "The optional subscription is live in the Android app: $9.99 a month or $99 a year, billed securely through Google Play, cancel anytime. Plus carries your library across devices, syncs your notes, highlights, and bookmarks, unlocks custom collections and the Florilegium, and ships everything in the EIKON shop free while your subscription is active. Buying it genuinely unlocks it: the entitlement is written server-side to your account the moment Google confirms the purchase, and Restore brings it back on any device you sign in on. What is free today stays free; Plus pays for the servers and the work, it never buys back what was given."
+      },
+      {
+        "heading": "The Hours, in full",
+        "body": "The First, Third, Sixth, and Ninth Hours now carry their three appointed Psalms each in full, in Brenton's public-domain Septuagint translation, with the fixed troparion and dismissal of each hour. The Book of Hours was asked for on the Discord, with the psalm structure laid out carefully by the one who asked; here it is, and the Hours now stand in the daily rule beside Compline."
+      },
+      {
+        "heading": "Prayers of protection, and the Forerunner",
+        "body": "A new rule of protection joins the devotional shelf: Psalm 90 and Psalm 26 in full, the Let God arise verses prayed with the sign of the Cross, and the petition for the guard of the angel, every word verbatim from public-domain sources. And St. John the Baptist, the Forerunner, of whom the Lord said that among them born of women there hath not risen a greater, takes his place among the saints with his whole scriptural witness, from the annunciation to Zacharias to the Beheading. Both were asked for on the Discord."
+      },
+      {
+        "heading": "Repairs you asked for",
+        "body": "The calendar's New and Old toggle no longer sticks on Old for installed-app readers; the choice now holds everywhere. Focus mode releases you again on desktop, by the exit button or the Escape key. The buttons at the very top of the screen answer taps again on iPhone. And the Read the Gospel with Chrysostom door now tells you plainly how to open the commentary beside the text. Each of these came from a community report, named in the suggestions forum, and each is mended."
+      },
+      {
+        "heading": "The small print, kept honest",
+        "body": "The Terms of Service now spell out the subscription plainly, the price, the renewal, and how to cancel, and the shop's shipping and returns policy stands at /shop/policies as part of them. Agreement is now a real checkbox at signup and at checkout, and your acceptance is recorded, because a promise should be provable on both sides. The privacy policy already names every processor involved: Stripe for the shop, Google Play and RevenueCat for Plus."
+      }
+    ],
+    "future": [],
+    "closing": "Two doors and a fuller prayer corner. If an item arrives short of what you hoped, if a psalm reads wrong, or if Plus does not unlock what it promised, write to me at lifeistheosis@gmail.com and it will be made right. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
+    "id": "beta-1-7",
+    "version": "Beta 1.7",
+    "date": "2026-07-04",
+    "title": "A walk through the history of the Church",
+    "intro": "Welcome, and glory to Jesus Christ. This is the largest patch since Purify began, and the one I most wanted to build. The whole story of the Orthodox Church now lives in the app as an interactive timeline you can walk with your own hand: thirty-eight events across eleven ages, from the fire of Pentecost to the Church of our own day, each one sourced, cited, and honest about what is certain and what is held in loving tradition. Around it, the three pages you open most, Today, the Bible, and Discover, have been redrawn to feel like one quiet, considered whole. And Continue with Google, which had gone quiet, sings again. However you came to be here, new face or old friend, thank you for walking this history with us.",
+    "sections": [
+      {
+        "heading": "Orthodox History, an interactive timeline",
+        "body": "A new home under Discover: the two thousand years of the Church laid out as a timeline you move through by hand, divided into eleven ages from the Apostolic Age to the present. Thirty-eight events to begin, the councils and the schisms, the saints and the missions and the martyrs, each with its own page, its full account, and its sources shown in the open. Move by era, jump by century, search by name or year or place, and filter by category. Every event links into the saints, councils, and doctrine already in the app, and each saint and council page now points back to its place in history. It all works without an account, and on Android it works fully offline."
+      },
+      {
+        "heading": "Honest about what is certain",
+        "body": "Church history holds firm dates and treasured traditions side by side, and Purify never pretends the second are the first. Every event wears a plain label, from Historically Attested to Traditional Account to Disputed, and says so wherever it matters. The facts, the sources, and the citations are free for everyone, always. A richer, cinematic way to experience the history, with artwork and gentle motion, is being prepared for Purify Plus; the history itself will never move behind it."
+      },
+      {
+        "heading": "On this day, and where you left off",
+        "body": "Today has become a personal daily page. It greets you by the hour, names the rule that hour calls for, and remembers your rhythm of prayer. Beside it, a quiet thread of your own: the chapter you were reading, your place on the History timeline, the prayers you opened, your saved passages. When a firmly dated event falls on today, it appears here as On This Day in Orthodox History."
+      },
+      {
+        "heading": "The library, redrawn",
+        "body": "Discover, the Bible, and the Today page now share one calm editorial hand instead of three. The Bible's canon reads as a single library rather than a wall of coloured tiles, and remembers the exact verse you left off at. Discover leads with what is worth returning to and shows the life of the day. The section marks throughout have been redrawn to suit what they open, an hourglass for history, a shield for the defense of the faith."
+      },
+      {
+        "heading": "Signing in, mended",
+        "body": "Continue with Google stopped working for a spell, turned away at the door with an error that was ours to fix, not yours. It is mended. If you have only ever signed in with Google, that is the door to use; if you set a password in the early days, it still works, and Forgot password will always let you set a fresh one. The Google and Apple marks on the sign-in buttons are drawn properly now, too."
+      }
+    ],
+    "future": [],
+    "closing": "This one took a while, and it was worth every hour. If a date looks wrong, a source looks thin, or an event you love is missing, tell me, this is a beginning and not an end. Write to me at lifeistheosis@gmail.com. I read every email, and I pray for the people who send them.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
+    "id": "beta-1-6",
+    "version": "Beta 1.6",
+    "date": "2026-06-20",
+    "title": "Steadier on Android",
+    "intro": "A repair patch, written with the Android beta testers in hand. You opened the app, you found the rough edges, and you wrote them down kindly. This is the answer to that: sign-in that finishes where it starts, a top of the screen that no longer hides its own buttons, and a handful of quiet fixes. Thank you for testing. Glory to God for patient hands.",
+    "sections": [
+      {
+        "heading": "Signing in, and out, the way it should",
+        "body": "Continue with Google now completes inside the app, with the native account picker, instead of sending you out to a separate browser and leaving you signed in everywhere but here. And signing out no longer ends on an error screen; it simply lets you go, quietly, back to the start."
+      },
+      {
+        "heading": "Nothing hiding behind the clock",
+        "body": "On Android the very top of the screen used to slip up under the status bar, taking buttons with it. The welcome's Skip, the Cancel in Bible search, the app's own header: all of them now sit below the clock and the battery, where your thumb can actually reach them. The Android back button closes the search sheet instead of feeling stuck."
+      },
+      {
+        "heading": "A few quiet repairs",
+        "body": "Long prayer titles read in full now, rather than trailing off mid-word. Turning on prayer reminders no longer stumbles. And the app finally wears its own icon, the three-bar cross, in your app drawer and on your home screen, in place of the placeholder it shipped with."
+      }
+    ],
+    "future": [],
+    "closing": "Small as it is, every patch is offered with thanks for the people praying alongside this work. If something feels off, or there is a feature you wish existed, write to me at lifeistheosis@gmail.com. I read every email.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
+    "id": "beta-1-2",
+    "version": "Beta 1.2",
+    "date": "2026-06-14",
+    "title": "A gentler welcome",
+    "intro": "A small patch about first steps. New here? Purify now opens with a short, skippable welcome that helps you set your calendar and find a good place to begin. Everyone who has been here before is left exactly where they were. Glory to God for new faces.",
+    "sections": [
+      {
+        "heading": "A first-run welcome",
+        "body": "Open Purify for the first time and you are met with three quiet screens: a word about what this is, a chance to choose the calendar you keep, New or Old, and a gentle pointer toward a first step, depending on what draws you. It is entirely skippable, and it never shows again once you are in. If you have used Purify before, you will not see it at all."
+      },
+      {
+        "heading": "Begin here",
+        "body": "After the welcome, the Today screen carries a single calm pointer toward that first step, the Gospel of John, the morning rule, the saints, or the day's reading, which you can follow or dismiss with a tap. No checklist, no streak, no score. Just one open door. Prayer is not a game to be won."
+      }
+    ],
+    "future": [],
+    "closing": "Small as it is, every patch is offered with thanks for the people praying alongside this work. If something feels off, or there is a feature you wish existed, write to me at lifeistheosis@gmail.com. I read every email.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
+    "id": "beta-1-1",
+    "version": "Beta 1.1",
+    "date": "2026-06-03",
+    "title": "A little tidying",
+    "intro": "A small housekeeping patch. Nothing new to learn, just a few surfaces made calmer and easier to move through. Glory to God for the quiet weeks that let us polish what is already here.",
+    "sections": [
+      {
+        "heading": "The saints, sorted",
+        "body": "The saints index now lets you filter by kind, not only by century. Browse the Apostles, the Cappadocian Fathers, the Church Fathers, the Desert and monastic saints, the Fathers of the Councils, the Martyrs, the Wonderworkers, the Holy Women, and more. A saint can belong to several of these at once, and the counts on each filter update as you narrow down. Both the 'By kind' and 'By century' rows fold away with a tap when you want them out of the way. The Most Holy Theotokos remains pinned at the top, as the most perfect of the saints."
+      },
+      {
+        "heading": "A lighter Today",
+        "body": "The cards on the mobile Today screen, the verse of the day, the saint, the fast, the readings, and the Pascha countdown, have been tightened up so more of the day fits on the screen at once without feeling cramped."
+      },
+      {
+        "heading": "Home polish",
+        "body": "The four 'Why Purify' pillars now carry hand-drawn illustrations instead of plain glyphs, and the 'What we are made of' provenance cards have been trimmed to a single clear line each. Less to read, the same honesty about where every text comes from."
+      }
+    ],
+    "future": [],
+    "closing": "Small as it is, every patch is offered with thanks for the people praying alongside this work. If something feels off, or there is a feature you wish existed, write to me at lifeistheosis@gmail.com. I read every email.",
+    "signOff": "From Edgar, the Purify Team"
+  },
+  {
+    "id": "beta-1-0",
+    "version": "Beta 1.0",
+    "date": "2026-05-15",
+    "title": "Hello, faithful",
+    "intro": "Glory to Jesus Christ. This is the first public look at Purify, the Orthodox companion app I have been building. Everything you see is the work of one person; God willing, the team will grow. Thank you for being here at the beginning.\n\nPurify is meant to be a single home for the Orthodox spiritual life: the Scriptures, the prayers, the saints, the seasons of the Church year, and a marketplace that supports those who carry the Faith. The free tier is broad and complete; the paid tier exists to keep the lights on, fund patristic commentary curation, and support priests through paid blessings.",
+    "sections": [
+      {
+        "heading": "The Orthodox Bible",
+        "body": "The full Orthodox canon, all 77 books, end to end. Old Testament from Brenton's English Septuagint of 1851, including the deuterocanonical books that most modern English Bibles omit. New Testament from the King James Version. Both are public domain. Brenton in particular is the English form of the Greek Septuagint, the version of the Old Testament read by the Apostles themselves and still used by the Orthodox Church.\n\nYou can switch books from anywhere with a search-friendly dropdown. Arrow keys move between chapters. Books are grouped by their traditional sections: Pentateuch, Historical, Wisdom, Prophets, Gospels, Acts, Pauline Epistles, Catholic Epistles, Revelation. Twelve of the most-read books carry short Orthodox introductions; the rest will follow."
+      },
+      {
+        "heading": "Patristic commentary",
+        "body": "Brief commentary from the Fathers appears in a side rail next to the verses they wrote on. The current corpus includes Basil the Great, John Chrysostom, Augustine, Cyril of Alexandria, Jerome, Gregory of Nyssa, and Gregory the Theologian. The two Gregories and Basil, the three Cappadocians, are the heart of fourth-century Orthodox theology, and their voices will only grow louder in future patches.\n\nClicking a verse with commentary scrolls the rail to that verse. Clicking a commentary card expands the quote inline. Saint icons appear as the photos themselves where available, and as deterministic initials in colored circles where they are not yet uploaded."
+      },
+      {
+        "heading": "Reader controls",
+        "body": "Cycle text size through four presets: Small, Medium, Large, X-Large. Swap between three font families: Serif, Display, Sans. Highlight verses with a single click on the toolbar, or highlight individual words by clicking, or stretch the highlight across as many words as you like with a drag. Add a personal note to any verse. Everything saves locally to your device for now; cloud sync arrives with accounts."
+      },
+      {
+        "heading": "Learn to pray",
+        "body": "A six-lesson beginner path for anyone new to Orthodox prayer: what prayer is, the Sign of the Cross, the Jesus Prayer, the Trisagion, and a simple morning and evening rule. Each lesson is about five minutes, with the full text of the prayer and a short 'try this' application."
+      },
+      {
+        "heading": "The rest of the app",
+        "body": "Pricing tier, account scaffolding, prayer campaigns, the Orthodox calendar, saints' works, the marketplace, and monastery directory are all real routes. They are currently stubs and waiting for the features that fill them in next. Mobile responsiveness, a PWA manifest, and the dark Hallow-style design are in across the whole app."
+      }
+    ],
+    "future": [
+      {
+        "title": "More patristic commentary",
+        "body": "The Cappadocians have hundreds of pages of Bible commentary. So do Chrysostom, Maximus the Confessor, and John of Damascus. Careful ingestion from public-domain sources, mapped to specific verses, with brief modern summaries written for readers new to the Fathers."
+      },
+      {
+        "title": "The Orthodox calendar",
+        "body": "Feasts, fasts, saints of the day, in both the New (Revised Julian) and Old (Julian) calendars, plus jurisdictional options for those who follow Antiochian, Greek, Russian, Serbian, or other traditional cycles."
+      },
+      {
+        "title": "NKJV and the Orthodox Study Bible",
+        "body": "Licensing outreach is open to Thomas Nelson / HarperCollins Christian Publishing for the NKJV text and the published Orthodox Study Bible notes. Until they say yes, the Brenton + KJV public-domain edition is what we ship. The infrastructure to drop NKJV in is already built and waiting."
+      },
+      {
+        "title": "Daily readings",
+        "body": "The lectionary, the appointed Gospel, Epistle, and Old Testament for each day of the Church year, pulled directly into the Bible reader so you can pray with the Church wherever you are."
+      },
+      {
+        "title": "Accounts and cloud sync",
+        "body": "Optional sign-in so your highlights, notes, and prayer-plan progress travel with you across devices. Local-only is fine for now; nothing of yours leaves your device today."
+      },
+      {
+        "title": "Full prayer plans",
+        "body": "Morning and evening rules from the standard prayer books, akathists, the canon to the Theotokos, Holy Week services, and seasonal plans for Great Lent and Pascha. Personal plan-building for the paid tier."
+      },
+      {
+        "title": "The Marketplace",
+        "body": "Verified monastery storefronts, independent iconographers, prayer rope makers, Orthodox booksellers, and paid blessings that fund priests directly. Stripe Connect for sellers and donations."
+      },
+      {
+        "title": "Audio",
+        "body": "Reading the Scriptures aloud, the akathists, the prayer rules, and the lives of saints, so you can pray while walking or driving."
+      },
+      {
+        "title": "Native mobile apps",
+        "body": "iOS and Android, with offline reading of the Bible, prayer book, and lives of saints. The web app is the foundation; the native shells follow once the web feels right."
+      }
+    ],
+    "closing": "This is a beta. Things will break. The web font sometimes flashes before swapping to your preferred size. Highlights live in your browser, not in the cloud, until accounts ship. Some chapters do not yet have patristic commentary; those that do are the ones the Fathers wrote on most.\n\nI am building this in the evenings while running other work. If something is wrong, or there is a feature you wish existed, please write to me at lifeistheosis@gmail.com. I read every email.\n\nMay the Lord bless this small offering.",
+    "signOff": "From Edgar, the Purify Team"
+  }
 ]

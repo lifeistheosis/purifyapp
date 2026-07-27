@@ -25,6 +25,26 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 2.6",
+ kind: "Six new studies, the saints in Discover, and a cross where the goalpost was",
+ date: "July 27, 2026",
+ blurb:
+  "A large content release and a handful of fixes asked for by name. The theology library grew by six long-form studies and opened a new shelf on the worship of the Church, Discover finally lists the saints, and the Prayers tab is no longer wearing a goalpost.",
+ items: [
+  "A new shelf in the theology library: the worship of the Church. The Divine Liturgy of St John Chrysostom walked in the order it is served, and the vestments with the prayer said over each garment.",
+  "Four studies from the dogma side: the Council of Florence, St Theodore the Studite and Rome, St Justin Martyr and the charge of subordinationism, and penal substitution.",
+  "All 75 quotations in the six new studies were checked word by word against the public domain edition each cites. Two were removed because they could not be confirmed, one of them a familiar text carrying a citation that did not hold. A checker now lives in the repository.",
+  "Discover lists the saints, first in the library on a phone and as a third door on a wide screen.",
+  "Five surfaces that were line drawings on grey now open on a real image, each public domain and recorded: Codex Sinaiticus, the Deesis, the Menologion of Basil II, the Evangelist Luke, and the Ladder of Divine Ascent.",
+  "The Prayers tab carries the Orthodox three bar cross. The mark before it was meant to be the ancient prayer posture and, drawn without head or hands at tab size, read as a goalpost.",
+  "Scrolling past the end of a page no longer stretches the screen. The rule meant to prevent it had been written on the wrong element and had never applied.",
+  "Multi reference search works inside the Android app. The results page had been left out of the app bundle, so searching two references at once dropped you on Today with the query lost.",
+  "The last lines of a patristic commentary are readable again, and the panel can be pulled down to close.",
+  "The message at the top of this page is a weekly note now, rather than one rewritten only on a large release.",
+  "Cache version steps to purify-beta-2.6.0.",
+ ],
+ },
+ {
  version: "Beta 2.5",
  kind: "A lighter app and a clearer bar",
  date: "July 25, 2026",
