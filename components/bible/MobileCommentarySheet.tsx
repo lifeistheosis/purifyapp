@@ -2,7 +2,7 @@
 
 import { Close } from "@/components/ui/icons/Close";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ChapterCommentary } from "@/lib/bible/load";
 import { SaintIcon } from "./SaintIcon";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -152,6 +152,17 @@ export function MobileCommentarySheet({
  const [mounted, setMounted] = useState(false);
  const [shown, setShown] = useState(false);
 
+ // Drag-to-dismiss. `drag` is the live finger offset in px (0 = at rest,
+ // positive = pulled down); null means no drag in progress, which is also
+ // what re-enables the CSS transition. Kept in a ref as well so the pointer
+ // handlers can read the latest value without re-subscribing.
+ const [drag, setDrag] = useState<number | null>(null);
+ const dragRef = useRef<{ startY: number; last: number } | null>(null);
+ const scrollRef = useRef<HTMLDivElement | null>(null);
+
+ /** Past this many px, or fast enough, letting go closes the sheet. */
+ const DISMISS_PX = 110;
+
  // Drive the mount-with-animation phases off the `verse` prop. The
  // setStates here are unavoidable: the slide-in/out timing isn't React
  // state, it's coupled to the DOM. Pattern matches other delayed-unmount
@@ -159,6 +170,8 @@ export function MobileCommentarySheet({
  /* eslint-disable react-hooks/set-state-in-effect */
  useEffect(() => {
  if (verse !== null) {
+ setDrag(null);
+ dragRef.current = null;
  setMounted(true);
  const id = requestAnimationFrame(() => setShown(true));
  return () => cancelAnimationFrame(id);
@@ -192,6 +205,38 @@ export function MobileCommentarySheet({
  return () => window.removeEventListener("keydown", onKey);
  }, [mounted, onClose]);
 
+ // Pointer drag. Starting the drag is only allowed when the scroll body is
+ // already at the top, otherwise pulling down inside a long Father would
+ // fight the scroll instead of reading it.
+ const onPointerDown = useCallback((e: React.PointerEvent) => {
+ const sc = scrollRef.current;
+ if (sc && sc.scrollTop > 0) return;
+ dragRef.current = { startY: e.clientY, last: 0 };
+ setDrag(0);
+ }, []);
+
+ const onPointerMove = useCallback((e: React.PointerEvent) => {
+ const d = dragRef.current;
+ if (!d) return;
+ // Downward only. Pulling up must not lift the sheet off the bottom edge.
+ const dy = Math.max(0, e.clientY - d.startY);
+ d.last = dy;
+ setDrag(dy);
+ }, []);
+
+ const endDrag = useCallback(() => {
+ const d = dragRef.current;
+ dragRef.current = null;
+ if (!d) return;
+ if (d.last > DISMISS_PX) {
+ // Let the existing close animation finish the journey.
+ setDrag(null);
+ onClose();
+ } else {
+ setDrag(null);
+ }
+ }, [onClose]);
+
  if (!mounted) return null;
 
  const notes = verse !== null ? commentary[String(verse)] ?? [] : [];
@@ -211,12 +256,22 @@ export function MobileCommentarySheet({
  {/* Sheet */}
  <div
  className={
- "absolute inset-x-0 bottom-0 max-h-[85dvh] flex flex-col rounded-t-3xl border-t border-paper/15 bg-night shadow-[0_-12px_40px_rgba(0,0,0,0.5)] transition-transform duration-200 ease-out " +
+ "absolute inset-x-0 bottom-0 max-h-[85dvh] flex flex-col rounded-t-3xl border-t border-paper/15 bg-night shadow-[0_-12px_40px_rgba(0,0,0,0.5)] ease-out " +
+ // No transition WHILE dragging, or the sheet lags the finger.
+ (drag === null ? "transition-transform duration-200 " : "") +
  (shown ? "translate-y-0" : "translate-y-full")
  }
+ style={drag !== null ? { transform: `translateY(${drag}px)` } : undefined}
  >
- {/* Grab handle */}
- <div className="flex justify-center pt-2.5 pb-1">
+ {/* Grab handle. touch-none stops the browser claiming the gesture as a
+ scroll before the pointer handlers see it. */}
+ <div
+ className="flex justify-center pt-2.5 pb-1 touch-none cursor-grab active:cursor-grabbing"
+ onPointerDown={onPointerDown}
+ onPointerMove={onPointerMove}
+ onPointerUp={endDrag}
+ onPointerCancel={endDrag}
+ >
  <span
  aria-hidden
  className="block h-1 w-10 rounded-full bg-paper/25"
@@ -254,6 +309,7 @@ export function MobileCommentarySheet({
  indicator and is hard to read. Reported from the Android beta,
  2026-07-14. */}
  <div
+ ref={scrollRef}
  className="flex-1 overflow-y-auto overscroll-contain px-5 pt-4 space-y-3"
  style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2rem)" }}
  >
