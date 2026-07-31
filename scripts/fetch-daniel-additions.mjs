@@ -79,6 +79,26 @@ function download(url, dest) {
   });
 }
 
+/**
+ * Extract a zip without assuming `unzip` is on PATH.
+ *
+ * Node runs execSync through cmd.exe on Windows, where Git Bash's
+ * /usr/bin/unzip is usually NOT visible, so the obvious command works from
+ * one terminal and fails from another. PowerShell's Expand-Archive ships
+ * with Windows and is always reachable, so prefer it there and keep unzip
+ * for everywhere else.
+ */
+function extract(zip, dir) {
+  if (process.platform === "win32") {
+    execSync(
+      `powershell -NoProfile -Command "Expand-Archive -LiteralPath '${zip}' -DestinationPath '${dir}' -Force"`,
+      { stdio: "inherit" },
+    );
+    return;
+  }
+  execSync(`cd "${dir}" && unzip -qo "${zip}"`);
+}
+
 async function ensureSources() {
   await fs.mkdir(TMP, { recursive: true });
   for (const [name, s] of Object.entries(SOURCES)) {
@@ -90,7 +110,7 @@ async function ensureSources() {
     for (const f of await fs.readdir(s.dir)) {
       await fs.unlink(path.join(s.dir, f)).catch(() => {});
     }
-    execSync(`cd "${s.dir}" && unzip -qo "${s.zip}"`);
+    extract(s.zip, s.dir);
   }
 }
 
@@ -147,13 +167,25 @@ function parseUsfm(text) {
   return chapters;
 }
 
+/** Every .usfm under `dir`, at any depth: some archives nest a folder. */
+async function usfmFiles(dir) {
+  const out = [];
+  for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...(await usfmFiles(full)));
+    else if (/\.usfm$/i.test(entry.name)) out.push(full);
+  }
+  return out;
+}
+
 async function readBook(dir, code) {
-  const files = await fs.readdir(dir);
-  const match = files.find(
-    (f) => f.toUpperCase().includes(code) && /\.usfm$/i.test(f),
+  const files = await usfmFiles(dir);
+  // USFM filenames carry the book code, e.g. "27-DAGeng-Brenton.usfm".
+  const match = files.find((f) =>
+    path.basename(f).toUpperCase().includes(code),
   );
   if (!match) return null;
-  return parseUsfm(await fs.readFile(path.join(dir, match), "utf8"));
+  return parseUsfm(await fs.readFile(match, "utf8"));
 }
 
 function chapterFile(chapter, verses, source) {
