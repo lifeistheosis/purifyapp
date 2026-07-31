@@ -38,6 +38,7 @@ const ENTRIES: Entry[] = [
   "The historical timeline opens quickly on a phone. Scrolling used to measure every card on the list on every frame and write to storage twice a frame, and opening an event animated its height, which re-laid out everything beneath it. Both are gone.",
   "The icon of the First Council of Nicaea was a two megabyte file where a two hundred kilobyte one does the same job. The history section is a third smaller.",
   "St Diodore of Tarsus has been removed from the saints. He was condemned after his death as a forerunner of Nestorianism and is not commemorated by the Church; he should not have been in the registry, on October 22, or among the fathers of the Second Council.",
+  "Coming next: Bel and the Dragon, and Susanna, and the missing middle of Daniel 3. Someone asked whether Bel and the Dragon was missing from Daniel. It is, along with Susanna and the Song of the Three Holy Children. They will be restored as Daniel 13 and 14 from the same public domain Brenton Septuagint the rest of the Old Testament is set in, in the next update.",
   "Cache version steps to purify-beta-2.7.0.",
  ],
  },
