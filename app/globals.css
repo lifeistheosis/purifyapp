@@ -1522,22 +1522,43 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  contain-intrinsic-size: auto 200px;
 }
 
-/* Event-card expansion: grid-rows trick animates height without measuring
-   layout in JS. 260ms sits inside the 220–360ms card-expansion band. */
+/* Event-card expansion.
+
+   This used to transition `grid-template-rows: 0fr -> 1fr` over 260ms. No
+   layout was measured in JS, which is what the old comment claimed, but
+   grid-template-rows is not a compositor property: every frame of those
+   260ms relaid out the card AND reflowed the whole <ol> beneath it, which
+   in turn re-evaluated contain-intrinsic-size for every following
+   `.history-cv` card. On a mid-range phone that turned a tap into hundreds
+   of milliseconds of main-thread work. Reported 2026-07-31.
+
+   Now the row change is instant (one layout pass) and the reveal itself is
+   transform + opacity, on the compositor, which is what the section header
+   above promises. 200ms is --duration-fast, on the house ladder, instead of
+   the old off-ladder 260ms. */
 .history-expand {
  display: grid;
  grid-template-rows: 0fr;
- transition: grid-template-rows 260ms var(--ease-house);
 }
 .history-expand > * {
  overflow: hidden;
+ opacity: 0;
+ transform: translateY(-4px);
+ transition:
+ opacity var(--duration-fast) var(--ease-house),
+ transform var(--duration-fast) var(--ease-house);
 }
 .history-expand[data-open="true"] {
  grid-template-rows: 1fr;
 }
+.history-expand[data-open="true"] > * {
+ opacity: 1;
+ transform: none;
+}
 @media (prefers-reduced-motion: reduce) {
- .history-expand {
+ .history-expand > * {
  transition: none;
+ transform: none;
  }
 }
 

@@ -5,6 +5,7 @@
 // Premium Reading Modes; the Focus toggle (chrome half) stays separate
 // and composes with any palette.
 
+import { useRouter } from "next/navigation";
 import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
 import { useProReadingModes } from "@/components/reader/useProReadingModes";
 import { READING_THEMES } from "@/lib/reader/readingModes";
@@ -22,6 +23,7 @@ const THEME_SWATCHES: Record<string, { page: string; ink: string }> = {
 
 export function ReadingModeChips() {
   const { t } = useTranslate();
+  const router = useRouter();
   const { theme, setTheme } = useReaderPrefs();
   const { allowed, locked } = useProReadingModes();
 
@@ -45,7 +47,14 @@ export function ReadingModeChips() {
               type="button"
               onClick={() => {
                 if (allowed) setTheme(t.id);
-                else if (locked) window.location.href = "/pricing";
+                // Router push, never `window.location.href`. The Android
+                // export is trailingSlash:true, so the bundled file is
+                // /pricing/index.html; a raw assignment to the bare string
+                // is unresolvable in the Capacitor shell, which falls back
+                // to the root document and dumps the reader on Today.
+                // Reported by a member on 2026-07-31. Same failure shape as
+                // the bible/multi note in scripts/android-build.mjs.
+                else if (locked) router.push("/pricing");
               }}
               title={t.blurb}
               aria-pressed={active}

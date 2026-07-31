@@ -58,6 +58,24 @@ export function startOfDayUtc(d: Date): Date {
  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 12));
 }
 
+/**
+ * The reader's OWN calendar day, mapped into the UTC-noon frame the lookups
+ * above expect. This is what every "today" surface must use.
+ *
+ * `startOfDayUtc` reads the UTC day, which runs ahead of local time for the
+ * whole Western hemisphere: a reader in Florida asking "who is commemorated
+ * today" at 9pm on the 30th was being shown the 31st. Use this instead
+ * wherever the question is "what day is it for the person holding the
+ * phone", and keep `startOfDayUtc` only for normalising a date that is
+ * already a calendar day rather than an instant.
+ *
+ * Client-only by nature: on the server "local" is the server's timezone,
+ * which is meaningless to the reader. Every caller is a client component.
+ */
+export function startOfDayLocal(d: Date): Date {
+ return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 12));
+}
+
 function addDays(d: Date, days: number): Date {
  const out = new Date(d);
  out.setUTCDate(out.getUTCDate() + days);

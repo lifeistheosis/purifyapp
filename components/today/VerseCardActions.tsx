@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -35,6 +36,7 @@ export function VerseCardActions({
   verse?: number;
 }) {
   const { t } = useTranslate();
+  const router = useRouter();
   const [fav, setFav] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [more, setMore] = useState(false);
@@ -220,7 +222,10 @@ export function VerseCardActions({
               label={t("today.verse.openChapter")}
               onClick={() => {
                 setMore(false);
-                window.location.href = href;
+                // Router push, not `window.location.href`: a raw string nav
+                // does not resolve against the trailingSlash export bundled
+                // in the Android shell, which falls back to Today.
+                router.push(href);
               }}
             />
             <SheetItem label={t("today.verse.copyVerseText")} onClick={copyText} />

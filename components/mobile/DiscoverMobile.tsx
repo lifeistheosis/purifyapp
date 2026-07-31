@@ -1,14 +1,10 @@
-import {
-  fastingStatus,
-  paschaInfo,
-  startOfDayUtc,
-} from "@/lib/calendar/orthodox";
 import { loadAllTopics } from "@/lib/topics/topics";
 import { COUNCILS } from "@/lib/councils/councils";
 import { MobileShell } from "./MobileShell";
 import { MobileCard } from "./MobileCard";
 import { MobileHeader } from "./MobileHeader";
 import { MobileSectionLabel } from "./MobileSectionLabel";
+import { FeaturedToday } from "./FeaturedToday";
 import { SectionMasthead } from "./SectionMasthead";
 import { SoftTile, SoftTileGrid, type Tone } from "./SoftTiles";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
@@ -23,11 +19,6 @@ import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { T } from "@/components/i18n/T";
-
-function dayOfYearUtc(d: Date): number {
-  const start = Date.UTC(d.getUTCFullYear(), 0, 0);
-  return Math.floor((d.getTime() - start) / 86_400_000);
-}
 
 function firstSentence(s: string): string {
   if (!s) return "";
@@ -51,20 +42,23 @@ const LIBRARY_TONES: Tone[] = ["a", "b", "c", "d"];
  *   5. Closing colophon.
  */
 export async function DiscoverMobile() {
-  const today = startOfDayUtc(new Date());
-  const fast = fastingStatus(today);
-  const pascha = paschaInfo(today);
-
   const locale = await getServerLocale();
   const m = getMessages(locale);
 
+  // Summarised here (the topic bodies are loaded off disk) but PICKED on
+  // the device, because this is a server component and the Android export
+  // renders it once at build time. See components/mobile/FeaturedToday.tsx.
   const topics = await loadAllTopics();
-  const featuredTopic = topics.length
-    ? topics[dayOfYearUtc(today) % topics.length]
-    : null;
-  const featuredCouncil = COUNCILS.length
-    ? COUNCILS[dayOfYearUtc(today) % COUNCILS.length]
-    : null;
+  const featuredTopics = topics.map((topic) => ({
+    slug: topic.slug,
+    title: topic.title,
+    definition: firstSentence(topic.definition),
+    citationCount: topic.citations.length,
+  }));
+  const featuredCouncils = COUNCILS.map((council) => ({
+    slug: council.slug,
+    byname: council.byname,
+  }));
 
   // The library index. Order reads like a menologion table of contents:
   // people first (saints), then the doctrinal record together (the councils,
@@ -104,11 +98,11 @@ export async function DiscoverMobile() {
     {
       label: t(m, "discover.tile.calendar"),
       href: "/calendar",
-      blurb: `${fast.label}. ${
-        pascha.daysAway > 0
-          ? `Pascha in ${pascha.daysAway} days.`
-          : pascha.label
-      }`,
+      // Was an interpolated "<fast>. Pascha in N days." built from a
+      // server-computed date. SoftTile does not render `blurb` at all, so
+      // it was dead string-building over a date that the Android export
+      // froze at build time. The static blurb matches its siblings.
+      blurb: t(m, "discover.tile.calendarBlurb"),
       Icon: Calendar,
     },
     {
@@ -171,43 +165,7 @@ export async function DiscoverMobile() {
         </SoftTileGrid>
       </div>
 
-      {(featuredTopic || featuredCouncil) && (
-        <div className="mt-7">
-          <MobileSectionLabel><T k="ui.featuredToday" /></MobileSectionLabel>
-          <div className="space-y-3">
-            {featuredTopic && (
-              <MobileCard
-                eyebrow="Featured topic"
-                title={featuredTopic.title}
-                href={`/topics/${featuredTopic.slug}`}
-                tint="warm"
-              >
-                <p className="mt-2 font-serif italic text-ui text-paper/75 leading-[1.5]">
-                  {firstSentence(featuredTopic.definition)}
-                </p>
-                <p className="mt-3 font-sans text-detail font-medium text-paper/75">
-                  {featuredTopic.citations.length} <T k="ui.citationsFromTheFathers" />
-                </p>
-              </MobileCard>
-            )}
-            {featuredCouncil && (
-              <MobileCard
-                eyebrow="Featured council"
-                title={featuredCouncil.byname}
-                href={`/councils/${featuredCouncil.slug}`}
-                tint="gold"
-              >
-                <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.55]">
-                  <T k="ui.readTheCanonsTheCreed" />
-                </p>
-                <p className="mt-3 font-sans text-detail font-medium text-paper/75">
-                  <T k="ui.openTheCouncil" />
-                </p>
-              </MobileCard>
-            )}
-          </div>
-        </div>
-      )}
+      <FeaturedToday topics={featuredTopics} councils={featuredCouncils} />
 
       <p className="mt-10 text-center font-display-serif italic text-detail text-paper/45 leading-[1.55]">
         <T k="ui.throughThePrayersOfOur" />

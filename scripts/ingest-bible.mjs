@@ -113,6 +113,18 @@ const ASSERTIONS = [
   ["john", 3, 36],
   ["tobit", 1, null],
   ["1-maccabees", 1, null],
+  // Daniel. bolls.life's LXXE Daniel is the 12-chapter form with the
+  // deuterocanonical sections stripped and chapter 3 renumbered so verse 24
+  // follows verse 23 with no visible gap. That shipped unnoticed for months
+  // because nothing here checked Daniel, until a member asked in 2026-07
+  // why Bel and the Dragon was missing. Chapter 3 must carry the Prayer of
+  // Azariah and the Song of the Three Holy Children (3:24-90), and the book
+  // must run to 14 chapters with Susanna and Bel. If this source cannot
+  // supply them, do NOT let it overwrite Daniel: use
+  // scripts/fetch-daniel-additions.mjs, which reads Brenton from ebible.org.
+  ["daniel", 3, 97],
+  ["daniel", 13, 64],
+  ["daniel", 14, 42],
 ];
 
 function cleanVerse(raw) {

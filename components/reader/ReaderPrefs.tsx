@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/cn";
 import {
   READING_THEMES,
@@ -547,6 +548,7 @@ export const ReaderFocusController = ReadingModeController;
  */
 export function ReaderThemeButton() {
   const { t } = useTranslate();
+  const router = useRouter();
   const { theme, cycleTheme, themeLabel } = useReaderPrefs();
   const { allowed, locked } = useProReadingModes();
   return (
@@ -554,7 +556,9 @@ export function ReaderThemeButton() {
       type="button"
       onClick={() => {
         if (allowed) cycleTheme();
-        else if (locked) window.location.href = "/pricing";
+        // Router push, not `window.location.href`: see the note in
+        // ReadingModeChips. A raw string nav breaks in the Android shell.
+        else if (locked) router.push("/pricing");
       }}
       title={
         allowed

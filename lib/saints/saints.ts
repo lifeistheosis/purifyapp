@@ -2744,43 +2744,6 @@ export const SAINTS: Saint[] = [
  ],
  },
  {
- slug: "diodore-of-tarsus",
- byname: "Teacher of St. Chrysostom",
- iconUrl: "/saints/icons/diodore-of-tarsus.jpg",
- name: "St. Diodore of Tarsus",
- epithet: "Bishop of Tarsus · Confessor · Founder of the Antiochene Exegetical School",
- born: "c. 320 (Antioch)",
- reposed: "c. 390 (Tarsus)",
- feastDays: ["October 22"],
- see: "Tarsus in Cilicia",
- shortBio:
- "Founder of the Antiochene school of biblical interpretation that produced St. John Chrysostom and St. Theodore of Mopsuestia. A staunch Nicene through the Arianizing decades and a presider at the Second Ecumenical Council; bishop of Tarsus from 378 until his death some twelve years later.",
- life: [
- "Diodore was born around the year 320 in Antioch of a Christian family. He studied at the philosophical schools of Athens and returned to Antioch as a young layman to teach the rudiments of biblical interpretation. With his friend St. Flavian (later the patriarch of Antioch), he organized the lay anti-Arian community of the city through the long pressure of the Arianizing emperors.",
- "He took monastic tonsure and was ordained presbyter by St. Meletius of Antioch around 360. As a presbyter he led the public worship of the Nicene community of Antioch during the periods of Meletius's exile. Among his pupils in his small school of biblical interpretation were the young John Chrysostom and Theodore of Mopsuestia: the principal teachers of the Antiochene exegetical tradition, with its preference for the literal-historical sense over the Alexandrian allegorical method.",
- "He was exiled by Valens in the early 370s to Armenia, where he passed several years in the school of St. Basil the Great. On the change of imperial policy under Theodosius in 378, he returned to Antioch and was made bishop of Tarsus in Cilicia, the metropolitan see of his patriarchate.",
- "He came to the Second Ecumenical Council in 381 as one of the Council's leading theological voices on the side of Meletius and the Nicene party. After Meletius's death during the Council, his weight was felt in the canonical settlement of the new patriarchates. He returned to Tarsus and held the see for twelve more years until his death around 390.",
- "Most of his exegetical and dogmatic writings have been lost. He wrote against the Arians, against the Eunomians, against the Apollinarians, on the difference between providence and fate, and a commentary on most of the books of the Bible. Fragments survive, and through his disciple Chrysostom his manner of reading the Scriptures, the literal sense disciplined by the rule of faith and oriented to preaching, has carried through the whole later Eastern tradition.",
- ],
- quotes: [
- {
- text: "We do not deny the higher senses; but we will not seek them where the letter has not first been served.",
- source: "Traditional summary of his exegetical method, preserved in fragments by St. John Chrysostom and the Antiochene tradition",
- },
- ],
- works: [
- {
- slug: "the-school-of-antioch",
- title: "The School of Antioch",
- subtitle: "A short Life and the surviving exegetical fragments",
- year: "Traditional Life with patristic fragments",
- blurb:
- "A brief Life of the bishop whose small school at Antioch produced St. John Chrysostom; with surviving fragments of his exegetical writings preserved in patristic catenae and the troparion of his October 22 feast.",
- topics: ["Exegesis", "Antioch", "Episcopate", "Confessor", "Discipleship"],
- },
- ],
- },
- {
  slug: "epiphanius-of-salamis",
  byname: "Hammer of Heresies",
  iconUrl: "/saints/icons/epiphanius-of-salamis.jpg",

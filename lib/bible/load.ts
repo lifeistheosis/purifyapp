@@ -61,9 +61,12 @@ export async function loadVerseRange(
 
 /**
  * Loads the original-language (Greek NT or Greek LXX OT) text for a chapter.
- * Returns null if the chapter has no original-language file (e.g. a few
- * deuterocanonical sections like Susanna or Bel that weren't shipped in v1).
- * Same shape as loadChapter so the reader can treat it interchangeably.
+ * Returns null if the chapter has no original-language file. Same shape as
+ * loadChapter so the reader can treat it interchangeably.
+ *
+ * Susanna and Bel used to be named here as known gaps. They are Daniel 13
+ * and 14 now (scripts/fetch-daniel-additions.mjs); a null from this function
+ * means a genuinely absent file, not a section we chose not to ship.
  */
 export async function loadOriginal(
   bookSlug: string,

@@ -33,7 +33,21 @@ export const metadata = {
  "Today's saint, today's fast, and the month at a glance, following the New (Revised Julian) calendar.",
 };
 
-// Hourly ISR so today rolls forward without a redeploy.
+// Hourly ISR so today rolls forward without a redeploy ON THE WEBSITE.
+// This does NOTHING for the Android app: `output: "export"` has no server
+// to revalidate against, so the exported HTML holds whatever day the build
+// was cut on. The website is additionally corrected per visit by
+// <LocalTodaySync>, which re-requests with ?today=<local date>.
+//
+// KNOWN GAP (Android): searchParams are forced empty below, so on the
+// native shell neither ?today= nor month navigation reaches this component,
+// and the calendar stays on the build day and the build month. Fixing it
+// means rendering this page client-side, which is blocked on reading verse
+// text without a filesystem: ReadingPanel prints the appointed passage, and
+// the reader can select ANY day, so unlike the Verse of the Day card there
+// is no bounded window to precompute. That is the same problem the dormant
+// SQLite content reader (lib/content/*) was meant to solve. Tracked as its
+// own piece of work, not part of the Beta 2.7 day fix.
 export const revalidate = 3600;
 
 type SearchParams = Promise<{

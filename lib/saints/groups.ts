@@ -156,7 +156,6 @@ export const SAINT_GROUP_MEMBERSHIP: Record<string, SaintGroupId[]> = {
   "maximus-the-confessor": ["church-fathers", "desert-monastics"],
   "symeon-the-new-theologian": ["church-fathers", "desert-monastics"],
   "cyril-of-jerusalem": ["church-fathers", "hierarchs", "council-fathers"],
-  "diodore-of-tarsus": ["church-fathers", "hierarchs", "council-fathers"],
   "epiphanius-of-salamis": ["church-fathers", "hierarchs"],
   "gregory-palamas": ["church-fathers", "hierarchs"],
   "theophylact-of-ohrid": ["church-fathers", "hierarchs"],

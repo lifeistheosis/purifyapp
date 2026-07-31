@@ -1,4 +1,4 @@
-import type { FastKind } from "@/lib/calendar/orthodox";
+import { startOfDayLocal, type FastKind } from "@/lib/calendar/orthodox";
 
 /**
  * The fasting tracker's pure core: types and the streak arithmetic, kept
@@ -52,9 +52,7 @@ export function dayKey(d: Date): string {
  * raw local-midnight date would cross the UTC boundary for readers ahead of
  * UTC and compute the previous day's rule. Always feed fastingStatus this.
  */
-export function localDayToUtcNoon(d: Date): Date {
-  return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 12));
-}
+export const localDayToUtcNoon = startOfDayLocal;
 
 /**
  * The current streak: consecutive fasting days, scanning back from today,

@@ -652,7 +652,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       resultedIn: ["first-council-of-constantinople"],
     },
     media: {
-      hero: "/history/media/first-council-of-nicaea.png",
+      hero: "/history/media/first-council-of-nicaea.jpg",
       alt: "Fresco of the First Ecumenical Council: the emperor and the assembled fathers with the condemned Arius below",
       work: "Fresco of the First Ecumenical Council, Megalo Meteoron monastery",
       artist: "Photograph by Jjensen",

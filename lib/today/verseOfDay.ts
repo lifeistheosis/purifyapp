@@ -2,6 +2,9 @@ import "server-only";
 import { loadVerseRange, type Verse } from "@/lib/bible/load";
 import { readingsOn, startOfDayUtc } from "@/lib/calendar/orthodox";
 import versesJson from "@/data/today/verses.json";
+import { verseDayKey, type VerseOfDayEntry } from "./verseOfDay.types";
+
+export { verseDayKey, type VerseOfDayEntry };
 
 type VerseRef = {
   book: string;
@@ -61,6 +64,52 @@ export async function getVerseOfDay(today: Date = new Date()): Promise<VerseOfDa
   const idx = dayOfYearUtc(day) % ROTATION.length;
   const rot = ROTATION[idx];
   return buildSingleVerse(rot.book, rot.chapter, rot.from, rot.label, "rotation");
+}
+
+function toEntry(vod: VerseOfDay): VerseOfDayEntry {
+  const text =
+    vod.passage?.verses
+      .map((v) => v.text.trim())
+      .join(" ")
+      .replace(/\s+/g, " ")
+      .trim() ?? null;
+  return {
+    label: vod.ref.label,
+    text: text || null,
+    href: vod.href,
+    source: vod.source,
+    book: vod.ref.book,
+    bookName: vod.passage?.name ?? vod.ref.book,
+    chapter: vod.ref.chapter,
+    verse: vod.ref.from,
+  };
+}
+
+/**
+ * A date-keyed table of verses, starting at `base` and running `days`
+ * forward.
+ *
+ * WHY A TABLE. The Android target is a static export: a server component
+ * renders once, at build time, so a card that resolved "today" on the
+ * server showed the build day for the entire life of that APK. The verse
+ * text cannot move to the client (it is read from data/bible at build time
+ * through `server-only` code), so instead the build precomputes a window of
+ * days and a client child picks the reader's local day out of it. The web
+ * build renders per request and only needs a couple of days to cover
+ * whichever side of UTC the reader is on.
+ */
+export async function getVerseOfDayTable(
+  base: Date,
+  days: number,
+): Promise<Record<string, VerseOfDayEntry>> {
+  const out: Record<string, VerseOfDayEntry> = {};
+  const start = startOfDayUtc(base);
+  for (let i = 0; i < days; i++) {
+    const d = new Date(start);
+    d.setUTCDate(d.getUTCDate() + i);
+    out[verseDayKey(d)] = toEntry(await getVerseOfDay(d));
+  }
+  return out;
 }
 
 /**

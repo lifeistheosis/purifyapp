@@ -190,36 +190,73 @@ export function HistoryTimelinePage() {
     }
   }, [hydrated]);
 
+  // The scroll spy. This used to run on every animation frame: it walked
+  // every [data-event-slug] card calling getBoundingClientRect(), then wrote
+  // BOTH sessionStorage and localStorage synchronously. Two compounding
+  // costs made tapping a card feel slow on a phone:
+  //
+  //   1. Every card carries `.history-cv` (content-visibility: auto).
+  //      Calling getBoundingClientRect() on such an element defeats the
+  //      optimisation outright: the browser must lay out the subtree it had
+  //      skipped in order to answer. So the spy un-skipped the whole
+  //      timeline, every frame.
+  //   2. Two synchronous storage writes per frame, each with a
+  //      JSON.stringify in front of it.
+  //
+  // An IntersectionObserver answers the same question ("which card is at the
+  // 120px reference line") off the main thread, and the position write is
+  // debounced to the trailing edge of a scroll.
   useEffect(() => {
     if (!hydrated) return;
-    let ticking = false;
-    const record = () => {
-      ticking = false;
-      const cards = document.querySelectorAll<HTMLElement>("[data-event-slug]");
+    const cards = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-event-slug]"),
+    );
+    if (!cards.length) return;
+
+    // Cards currently crossing the reference line, in document order.
+    const visible = new Set<HTMLElement>();
+    let writeTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const commit = () => {
       let top: HTMLElement | null = null;
       for (const card of cards) {
-        const r = card.getBoundingClientRect();
-        if (r.bottom > 120) {
+        if (visible.has(card)) {
           top = card;
           break;
         }
       }
-      if (top) {
-        const r = top.getBoundingClientRect();
-        scroll.savePosition(top.dataset.eventSlug!, Math.round(r.top - 120));
-        const meta = ALL_EVENTS.find((e) => e.slug === top!.dataset.eventSlug);
-        if (meta) setActiveEra(meta.era);
-      }
+      if (!top) return;
+      const slug = top.dataset.eventSlug;
+      if (!slug) return;
+      const meta = ALL_EVENTS.find((e) => e.slug === slug);
+      if (meta) setActiveEra(meta.era);
+      // One rect, on the trailing edge, for one card. Cheap enough that
+      // un-skipping that single subtree does not matter.
+      scroll.savePosition(slug, Math.round(top.getBoundingClientRect().top - 120));
     };
-    const onScroll = () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(record);
-      }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const el = entry.target as HTMLElement;
+          if (entry.isIntersecting) visible.add(el);
+          else visible.delete(el);
+        }
+        if (writeTimer) clearTimeout(writeTimer);
+        writeTimer = setTimeout(commit, 150);
+      },
+      // Top of the root pushed DOWN to the 120px reference line, so a card
+      // intersects exactly when the old `rect.bottom > 120` test passed and
+      // the first one in document order is the same card the rAF loop picked.
+      { rootMargin: "-120px 0px 0px 0px", threshold: 0 },
+    );
+
+    for (const card of cards) observer.observe(card);
+
+    return () => {
+      observer.disconnect();
+      if (writeTimer) clearTimeout(writeTimer);
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    record();
-    return () => window.removeEventListener("scroll", onScroll);
   }, [hydrated, filtered]);
 
   // ----- jumps --------------------------------------------------------------

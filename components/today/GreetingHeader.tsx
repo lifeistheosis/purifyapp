@@ -1,25 +1,29 @@
 "use client";
 
-import { useMounted } from "@/lib/useMounted";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { useMounted } from "@/lib/useMounted";
+import { useToday } from "@/lib/calendar/useToday";
 
 /**
  * Warm, time-aware greeting at the top of the mobile Today shell — the
  * meditation-app "Good morning" pattern, adapted to Purify's reverent
- * register. The greeting is derived from the user's LOCAL hour on the
- * client (the server renders in UTC, so a time-of-day greeting must be
- * resolved after mount). Until then it falls back to the neutral first
- * option, so there is no layout shift, only a word settling in.
+ * register. Both halves are resolved on the device: the greeting from the
+ * reader's local hour, the dateline from the reader's local day.
  *
- * `date` is the UTC day (ms) from the server; the dateline is formatted
- * here, client-side, so it follows the active locale on native too.
+ * The dateline used to arrive as a `date` prop computed in a server
+ * component, which meant the Android build baked the build day into the
+ * APK and the app read the wrong date until the next release. See
+ * lib/calendar/useToday.ts. The dateline is blank for the frame before
+ * hydration rather than wrong, and is reserved with a non-breaking space so
+ * nothing shifts when it lands.
  */
-export function GreetingHeader({ date }: { date: number }) {
+export function GreetingHeader() {
   const { locale, t } = useTranslate();
+  const mounted = useMounted();
+  const today = useToday();
+
   // Local hour exists only on the client; until mounted, fall back to the
   // neutral morning option so server and hydration renders agree.
-  const mounted = useMounted();
-
   const h = mounted ? new Date().getHours() : 8;
   const greet =
     h < 12
@@ -28,12 +32,14 @@ export function GreetingHeader({ date }: { date: number }) {
         ? t("today.greetingAfternoon")
         : t("today.greetingEvening");
 
-  const dateline = new Intl.DateTimeFormat(locale, {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(date));
+  const dateline = today
+    ? new Intl.DateTimeFormat(locale, {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        timeZone: "UTC",
+      }).format(today)
+    : " ";
 
   return (
     <header className="mb-5">

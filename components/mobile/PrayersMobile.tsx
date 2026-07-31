@@ -1,8 +1,9 @@
+"use client";
+
 import Link from "next/link";
-import {
-  formatLongDate,
-  startOfDayUtc,
-} from "@/lib/calendar/orthodox";
+import { formatLongDate } from "@/lib/calendar/orthodox";
+import { useToday } from "@/lib/calendar/useToday";
+import { useMounted } from "@/lib/useMounted";
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
 import { SectionMasthead } from "./SectionMasthead";
@@ -34,8 +35,10 @@ import { T } from "@/components/i18n/T";
 
 type HeroMode = "morning" | "midday" | "evening";
 
+/** The reader's own hour, not UTC: "Stand before God before the day takes
+ *  you" is wrong copy to show someone at 9pm because a server said 02:00. */
 function heroModeFor(d: Date): HeroMode {
-  const h = d.getUTCHours();
+  const h = d.getHours();
   if (h < 12) return "morning";
   if (h < 19) return "midday";
   return "evening";
@@ -56,15 +59,19 @@ const TIME_LINE: Record<HeroMode, string> = {
  * hub uses, so the two read as one design.
  */
 export function PrayersMobile() {
-  const today = startOfDayUtc(new Date());
-  const mode = heroModeFor(new Date());
-  const season = seasonFor(today);
-  const isFast = isFastDay(today);
+  // Resolved on the device. This was `startOfDayUtc(new Date())` in a
+  // server component, so the Android static export froze the dateline, the
+  // season and the fast at build time. See lib/calendar/useToday.ts.
+  const today = useToday();
+  const mounted = useMounted();
+  const mode = mounted ? heroModeFor(new Date()) : "morning";
+  const season = today ? seasonFor(today) : null;
+  const isFast = today ? isFastDay(today) : false;
 
   return (
     <MobileShell
       header={<MobileHeader titleKey="nav.prayers" trailing={<UserAvatarSmall />} />}
-      eyebrow={formatLongDate(today)}
+      eyebrow={today ? formatLongDate(today) : " "}
     >
       {/* The Deesis: Christ with the Theotokos and the Forerunner
           interceding, which is what this surface is for. Mobile had no
@@ -137,7 +144,9 @@ export function PrayersMobile() {
       <div className="mt-2">
         <ContinuePraying label={<T k="ui.continuePraying" />} />
 
-        <SuggestedToday season={season} isFast={isFast} label={<T k="ui.suggestedForToday" />} />
+        {season && (
+          <SuggestedToday season={season} isFast={isFast} label={<T k="ui.suggestedForToday" />} />
+        )}
 
         {/* Search wraps the index so a typed query replaces the
             popular + categorized + Also-in-this-book lists with
