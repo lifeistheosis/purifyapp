@@ -30,6 +30,8 @@ import { SavedPreview } from "./SavedPreview";
 import { SettingsList, type SettingsItem } from "./SettingsList";
 import { readIntentions } from "@/lib/prayers/storage";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
+import { eikonBoxEnabled } from "@/lib/eikonBox/flags";
 
 type AuthState =
   | { kind: "loading" }
@@ -161,6 +163,7 @@ export function YouMobile() {
   const signedIn = auth.kind === "signed-in";
   const displayName = signedIn ? auth.displayName : "On this device";
   const memberSince = signedIn ? formatJoined(auth.joinedAt) : "";
+  const tier = usePremiumTier();
 
   const settings: SettingsItem[] = [];
 
@@ -180,13 +183,26 @@ export function YouMobile() {
     });
   }
 
+  settings.push({
+    label: "Purify Premium",
+    href: "/pricing",
+    hint: "Plus and Pro: sync, collections, the members' layer",
+    icon: <Glyph kind="sparkle" />,
+  });
+
+  // The Pro perk, directly under the tier it belongs to, so it reads as a
+  // membership benefit rather than a stray link. Hidden entirely for
+  // everyone else: an unclaimable row is worse than no row.
+  if (eikonBoxEnabled() && tier === "pro") {
+    settings.push({
+      label: "Claim your EIKON Box",
+      href: "/account/eikon-box",
+      hint: "This month's box, and where it ships",
+      icon: <Glyph kind="box" />,
+    });
+  }
+
   settings.push(
-    {
-      label: "Purify Premium",
-      href: "/pricing",
-      hint: "Plus and Pro: sync, collections, the members' layer",
-      icon: <Glyph kind="sparkle" />,
-    },
     {
       label: "Diptychs",
       href: "/prayers/personal",
@@ -348,7 +364,8 @@ function Glyph({
     | "bolt"
     | "cross"
     | "signout"
-    | "sparkle";
+    | "sparkle"
+    | "box";
 }) {
   const props = {
     width: 14,
@@ -374,6 +391,14 @@ function Glyph({
         <svg {...props}>
           <circle cx="12" cy="12" r="3" />
           <circle cx="12" cy="12" r="9" />
+        </svg>
+      );
+    case "box":
+      return (
+        <svg {...props}>
+          <path d="M3 8l9-5 9 5v8l-9 5-9-5z" />
+          <path d="M3 8l9 5 9-5" />
+          <path d="M12 13v10" />
         </svg>
       );
     case "bell":

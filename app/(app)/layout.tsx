@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { SyncBridge } from "@/components/profile/SyncBridge";
 import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
 import { GiftBridge } from "@/components/gifts/GiftBridge";
+import { EikonBoxBridge } from "@/components/eikonBox/EikonBoxBridge";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
 import { ScrollToTop } from "@/components/nav/ScrollToTop";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
@@ -37,6 +38,9 @@ export default function AppGroupLayout({
       <PrayerSyncBridge />
       {/* Shows a claimable gift once per app open; renders nothing otherwise. */}
       <GiftBridge />
+      {/* Same posture for this month's EIKON Box: Pro members only, once per
+          app open, silent for everyone else. */}
+      <EikonBoxBridge />
       {/* safe-pt / safe-pb are no-ops on the web; inside the native shell
           they clear the status bar (top) and the tab bar + home indicator
           (bottom). */}

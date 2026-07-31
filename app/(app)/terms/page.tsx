@@ -26,7 +26,7 @@ export default function TermsPage() {
           The terms, plainly.
         </h1>
         <p className="mt-6 font-serif text-body leading-[1.7] text-paper/65">
-          Effective July 17, 2026. These terms are a binding agreement
+          Effective July 31, 2026. These terms are a binding agreement
           between you and Purify (&ldquo;Purify,&rdquo; &ldquo;we,&rdquo;
           &ldquo;us&rdquo;), covering the website at purifyapp.net, the
           Purify mobile applications, and the EIKON shop. By using Purify or
@@ -193,21 +193,37 @@ export default function TermsPage() {
           Purify Pro is an optional auto-renewing subscription that includes
           everything in Purify Plus and adds the premium experience layer:
           premium reading modes in the app, the EIKON Box, and EIKON member
-          benefits. The EIKON Box is a curated box of Orthodox devotional
-          goods, such as an icon, a prayer rope, incense, a booklet, or
-          seasonal items, mailed to active members each month. Its contents
-          are a curated selection that varies month to month; no specific
-          item is promised, and a box cannot be exchanged for cash. EIKON
-          member benefits include free standard shipping on EIKON shop orders
-          while your Pro subscription is active (without Pro, shipping is
-          charged at the rate shown at checkout) and periodic discount codes
-          for the EIKON shop. The standard prices are US $19.99 per month or
-          US $199 per year. New subscribers receive the same introductory 50%
-          discount for the first year, after which Pro renews at the
-          then-current standard price until you cancel. The box is sent only
-          while your subscription is active and a valid shipping address is
-          on file. Discount codes apply to eligible EIKON items, may not be
-          combined with other offers, and have no cash value.
+          benefits. The standard prices are US $19.99 per month or US $199 per
+          year. New subscribers receive the same introductory 50% discount for
+          the first year, after which Pro renews at the then-current standard
+          price until you cancel.
+        </p>
+        <p className={P}>
+          The EIKON Box is claimed, not sent automatically. Each month we open
+          a box and announce it in the app. While the claim window for that box
+          is open, an active Pro member may claim it once and give a shipping
+          address. We then gather and ship to the number of boxes claimed. A
+          box you do not claim before its window closes is not carried over to
+          a later month, is not replaced, and is not refunded or exchanged for
+          cash or credit. Your subscription pays for the Purify Pro tier as a
+          whole, not for a box in any particular month. One box per member per
+          month. Contents are a curated selection that varies month to month;
+          no specific item is promised. You must be an active Pro member at the
+          moment you claim. If your subscription ends after you have claimed
+          but before that box ships, we still send it. We ship to United States
+          addresses at present, and you are responsible for the accuracy of the
+          address you give us. If a box comes back to us as undeliverable we
+          will write to the email on your account; we may reship once at our
+          discretion, and we are not obliged to reship a second time. We may
+          cancel a drop before it ships, in which case nothing further is owed
+          to you.
+        </p>
+        <p className={P}>
+          EIKON member benefits include free standard shipping on EIKON shop
+          orders while your Pro subscription is active (without Pro, shipping
+          is charged at the rate shown at checkout) and periodic discount codes
+          for the EIKON shop. Discount codes apply to eligible EIKON items, may
+          not be combined with other offers, and have no cash value.
         </p>
         <h3 className={H3}>Billing, cancellation, and refunds</h3>
         <p className={P}>
@@ -218,8 +234,9 @@ export default function TermsPage() {
           by Stripe; you can cancel from the manage-subscription link on the
           pricing page. Either way, cancellation takes effect at the end of the
           current billing period and you keep your subscription until then;
-          canceling Pro also stops any future monthly item after the current
-          period, and a monthly item already shipped is not refundable.
+          canceling Pro means you may no longer claim a new box once your paid
+          period ends; a box you have already claimed will still be sent, and a
+          box already shipped is not refundable.
           Renewals, cancellations, and refunds for purchases made through Apple
           or Google are governed by that platform&rsquo;s billing terms; web
           purchases are governed by these terms and the provider&rsquo;s rules.

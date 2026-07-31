@@ -131,7 +131,7 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
     {
       id: "eikon-box",
       title: "The EIKON Box",
-      sub: "A curated monthly box of Orthodox devotional goods: an icon, a prayer rope, incense, a booklet, or seasonal gifts. Contents vary month to month.",
+      sub: "A curated monthly box of Orthodox devotional goods: an icon, a prayer rope, incense, a booklet, or seasonal gifts. Each month we open a box and you claim yours in the app while the window is open.",
     },
     {
       id: "eikon-benefits",
@@ -142,7 +142,7 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
   proPriceMonthly: "$19.99 / month",
   proPriceYearly: "$199 / year",
   proNote:
-    "The EIKON Box is a curated surprise: contents vary month to month, and no specific item is promised. It ships while your subscription is active and a shipping address is on file.",
+    "The EIKON Box is claimed, not sent automatically. Each month we open a box, you claim it in the app inside the claim window, and we gather and ship to the number claimed. Contents vary month to month and no specific item is promised. A box you do not claim before the window closes is not carried over and is not refunded. United States addresses for now.",
   proInApp: "Get Purify Pro in the Android app",
   supportKicker: "Purify is kept by those it helps.",
   supportLine:
@@ -217,7 +217,7 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
     {
       id: "eikon-box",
       title: "Die EIKON-Box",
-      sub: "Eine kuratierte monatliche Box orthodoxer Andachtsgüter: eine Ikone, eine Gebetsschnur, Weihrauch, ein Büchlein oder saisonale Gaben. Der Inhalt wechselt von Monat zu Monat.",
+      sub: "Eine kuratierte monatliche Box orthodoxer Andachtsgüter: eine Ikone, eine Gebetsschnur, Weihrauch, ein Büchlein oder saisonale Gaben. Jeden Monat öffnen wir eine Box, und du forderst deine in der App an, solange das Fenster offen ist.",
     },
     {
       id: "eikon-benefits",
@@ -228,7 +228,7 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
   proPriceMonthly: "19,99 $ / Monat",
   proPriceYearly: "199 $ / Jahr",
   proNote:
-    "Die EIKON-Box ist eine kuratierte Überraschung: Der Inhalt wechselt von Monat zu Monat, kein bestimmter Artikel wird versprochen. Sie wird versandt, solange dein Abonnement aktiv ist und eine Lieferadresse hinterlegt ist.",
+    "Die EIKON-Box wird angefordert, nicht automatisch versandt. Jeden Monat öffnen wir eine Box, du forderst sie innerhalb des Anforderungsfensters in der App an, und wir beschaffen und versenden nach der Zahl der Anforderungen. Der Inhalt wechselt von Monat zu Monat, und kein bestimmter Artikel wird versprochen. Eine Box, die du nicht vor Fensterschluss anforderst, wird nicht übertragen und nicht erstattet. Derzeit nur Adressen in den Vereinigten Staaten.",
   proInApp: "Purify Pro in der Android-App holen",
   supportKicker: "Purify wird von denen getragen, denen es hilft.",
   supportLine:

@@ -11,12 +11,15 @@
 import { useEffect, useState } from "react";
 import { SettingsList, type SettingsItem } from "@/components/mobile/SettingsList";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
+import { eikonBoxEnabled } from "@/lib/eikonBox/flags";
 import { readIntentions } from "@/lib/prayers/storage";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 
 export function AccountSettingsLinks() {
   const { t } = useTranslate();
   const [intentions, setIntentions] = useState(0);
+  const tier = usePremiumTier();
 
   useEffect(() => {
     function recompute() {
@@ -40,6 +43,18 @@ export function AccountSettingsLinks() {
       hint: "Cross-device sync, notes & highlights, collections",
       icon: <Glyph kind="sparkle" />,
     },
+    // Mirrors the mobile "You" list: the Pro perk sits directly under the
+    // tier it belongs to, and is hidden entirely for everyone else.
+    ...(eikonBoxEnabled() && tier === "pro"
+      ? [
+          {
+            label: "Claim your EIKON Box",
+            href: "/account/eikon-box",
+            hint: "This month's box, and where it ships",
+            icon: <Glyph kind="box" />,
+          } satisfies SettingsItem,
+        ]
+      : []),
     {
       label: "Diptychs",
       href: "/prayers/personal",
@@ -126,7 +141,8 @@ function Glyph({
     | "bolt"
     | "cross"
     | "signout"
-    | "sparkle";
+    | "sparkle"
+    | "box";
 }) {
   const props = {
     width: 14,
@@ -145,6 +161,14 @@ function Glyph({
         <svg {...props}>
           <circle cx="12" cy="12" r="3" />
           <circle cx="12" cy="12" r="9" />
+        </svg>
+      );
+    case "box":
+      return (
+        <svg {...props}>
+          <path d="M3 8l9-5 9 5v8l-9 5-9-5z" />
+          <path d="M3 8l9 5 9-5" />
+          <path d="M12 13v10" />
         </svg>
       );
     case "bell":

@@ -13,6 +13,7 @@ import { MessagesTab } from "./tabs/MessagesTab";
 import { UsersHubTab } from "./tabs/UsersHubTab";
 import { PushTab } from "./tabs/PushTab";
 import { ShopHubTab } from "./tabs/ShopHubTab";
+import { EikonBoxTab } from "./tabs/EikonBoxTab";
 import { CommunityTab } from "./tabs/CommunityTab";
 import { TrafficHubTab } from "./tabs/TrafficHubTab";
 import { Toolbar, ToolbarButton } from "./primitives";
@@ -31,6 +32,7 @@ type TabId =
   | "users"
   | "push"
   | "shop"
+  | "eikon-box"
   | "community"
   | "traffic";
 
@@ -43,6 +45,7 @@ const TABS: { id: TabId; label: string; eyebrow: string; component: ComponentTyp
   { id: "users", label: "Users", eyebrow: "Profiles + carts", component: UsersHubTab },
   { id: "push", label: "Push", eyebrow: "Broadcast notifications", component: PushTab },
   { id: "shop", label: "Shop", eyebrow: "EIKON + marketplace", component: ShopHubTab },
+  { id: "eikon-box", label: "EIKON Box", eyebrow: "Monthly drops + claims", component: EikonBoxTab },
   { id: "community", label: "Community", eyebrow: "Campaigns + Trapeza moderation", component: CommunityTab },
   { id: "traffic", label: "Traffic", eyebrow: "Site analytics", component: TrafficHubTab },
 ];

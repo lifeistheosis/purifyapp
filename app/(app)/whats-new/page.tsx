@@ -25,6 +25,23 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 2.7",
+ kind: "The app knows what day it is",
+ date: "July 31, 2026",
+ blurb:
+  "One real bug, and it was the big one. The app was showing the day it was built rather than the day it is. If your Today screen has been stuck on a date that never moved, this is the release that fixes it. You will need this update installed for the fix to reach you.",
+ items: [
+  "Today, Prayers, Discover and the daily prayer page were all reading the date from the moment the app was built, which is why the day, the saint, the fast, the readings and the count to Pascha could all sit still for weeks. Every one of them now reads the date from your phone, and rolls over at midnight while the app is open.",
+  "The date is your own date now. The app had been using UTC, so from about seven in the evening in the United States you were shown tomorrow's commemoration and tomorrow's fast. Evening is evening again.",
+  "The prayer of the hour follows your clock too. The morning, midday and evening lines on the Prayers tab were chosen from UTC, so the app could greet you with \"stand before God before the day takes you\" at nine at night.",
+  "Changing a reading mode no longer throws you back to Today. Tapping a locked palette tried to open the Pro page in a way the app could not resolve, and the shell answered by dropping you on the home screen. Two other buttons had the same fault and were fixed with it.",
+  "The historical timeline opens quickly on a phone. Scrolling used to measure every card on the list on every frame and write to storage twice a frame, and opening an event animated its height, which re-laid out everything beneath it. Both are gone.",
+  "The icon of the First Council of Nicaea was a two megabyte file where a two hundred kilobyte one does the same job. The history section is a third smaller.",
+  "St Diodore of Tarsus has been removed from the saints. He was condemned after his death as a forerunner of Nestorianism and is not commemorated by the Church; he should not have been in the registry, on October 22, or among the fathers of the Second Council.",
+  "Cache version steps to purify-beta-2.7.0.",
+ ],
+ },
+ {
  version: "Beta 2.6",
  kind: "Six new studies, the saints in Discover, and a cross where the goalpost was",
  date: "July 27, 2026",

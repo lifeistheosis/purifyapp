@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
+import { eikonBoxEnabled } from "@/lib/eikonBox/flags";
 
 /**
  * Horizontal tab bar for the signed-in /account dashboard.
@@ -22,13 +24,22 @@ const TABS = [
 export function AccountTabs() {
   const { t } = useTranslate();
   const pathname = usePathname() ?? "";
+  // Pro-only tab. usePremiumTier caches the last known tier in localStorage
+  // and adopts it before paint, so a returning Pro member does not watch the
+  // tab appear. Deep-linking as a free member still works: the page itself
+  // renders the "what Pro includes" state rather than 404ing.
+  const tier = usePremiumTier();
+  const tabs =
+    eikonBoxEnabled() && tier === "pro"
+      ? [...TABS, { label: "EIKON Box", href: "/account/eikon-box" }]
+      : TABS;
   return (
     <nav
       aria-label={t("ui.accountSections")}
       className="border-b border-paper/10 mb-8"
     >
       <ul className="flex gap-1 overflow-x-auto scrollbar-thin">
-        {TABS.map((t) => {
+        {tabs.map((t) => {
           const active =
             pathname === t.href || pathname.startsWith(t.href + "/");
           return (

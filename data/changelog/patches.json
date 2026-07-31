@@ -1,5 +1,34 @@
 [
   {
+    "id": "beta-2-7",
+    "version": "Beta 2.7",
+    "date": "2026-07-31",
+    "title": "The app knows what day it is",
+    "intro": "One real bug, and it was the big one. The app was showing the day it was built rather than the day it is. If your Today screen has been stuck on a date that never moved, this is the release that fixes it. You will need this update installed for the fix to reach you.",
+    "sections": [
+      {
+        "heading": "The day was frozen at the moment the app was built",
+        "body": "Today, Prayers, Discover and the daily prayer page all read the date once, when the app was assembled, and then kept it. That is why the day, the saint of the day, the fast, the appointed readings and the count to Pascha could sit still for weeks at a time. Every one of those surfaces now reads the date from your own phone, and rolls over at midnight while the app is open or the next time you come back to it."
+      },
+      {
+        "heading": "And it is your date now, not the world's",
+        "body": "Underneath the freeze was a second, quieter fault: the app worked in UTC. From about seven in the evening across the United States that is already tomorrow, so you were shown tomorrow's commemoration and tomorrow's fasting rule while it was still today where you were standing. The morning, midday and evening lines on the Prayers tab had the same trouble, and could greet you with \"stand before God before the day takes you\" at nine at night."
+      },
+      {
+        "heading": "Changing a reading mode no longer throws you back to Today",
+        "body": "Tapping a palette you do not have yet was meant to open the Pro page. It opened it in a way the app could not resolve, and the app answered by putting you back on the home screen. Two other buttons had exactly the same fault and were repaired at the same time."
+      },
+      {
+        "heading": "The historical timeline is quick on a phone again",
+        "body": "Scrolling the timeline measured every card on the list on every single frame and wrote your position to storage twice a frame, which on a mid range phone is most of a tap's worth of work happening continuously. Opening an event then animated its height, which re-laid out every card beneath it for the length of the animation. Both are gone, and the icon of the First Council of Nicaea is now a two hundred kilobyte file rather than a two megabyte one."
+      },
+      {
+        "heading": "St Diodore of Tarsus has been removed from the saints",
+        "body": "He was condemned after his death as a forerunner of Nestorianism and is not commemorated by the Church. He should not have been in the registry, on the calendar for October 22, or listed among the fathers of the Second Ecumenical Council, and he is in none of them now."
+      }
+    ]
+  },
+  {
     "id": "beta-2-6",
     "version": "Beta 2.6",
     "date": "2026-07-27",
