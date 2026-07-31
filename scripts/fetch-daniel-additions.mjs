@@ -99,19 +99,59 @@ function extract(zip, dir) {
   execSync(`cd "${dir}" && unzip -qo "${zip}"`);
 }
 
-async function ensureSources() {
+/**
+ * Fetch and unpack a source, reusing an archive already sitting in .tmp/.
+ *
+ * The reuse is the point, not an optimisation: ebible.org went down midway
+ * through this work (2026-07-31, DNS not resolving from two networks), so
+ * the escape hatch is to obtain eng-Brenton_usfm.zip by any means at all,
+ * drop it in .tmp/, and run this with no network.
+ *
+ * `optional` sources warn and continue. The Greek is best effort: the reader
+ * degrades gracefully when an original-language chapter is missing, and
+ * refusing to restore the English because a second archive was unreachable
+ * would be the wrong trade.
+ */
+async function ensureSource(name, s, { optional = false } = {}) {
   await fs.mkdir(TMP, { recursive: true });
-  for (const [name, s] of Object.entries(SOURCES)) {
-    if (!fssync.existsSync(s.zip)) {
-      console.log(`downloading ${name} (${s.url}) ...`);
+  if (!fssync.existsSync(s.zip)) {
+    console.log(`downloading ${name} (${s.url}) ...`);
+    try {
       await download(s.url, s.zip);
+    } catch (e) {
+      try {
+        fssync.unlinkSync(s.zip);
+      } catch {
+        /* nothing to clean up */
+      }
+      if (optional) {
+        console.warn(`  ! ${name} unavailable (${e.message}); continuing without it`);
+        return false;
+      }
+      console.error(`\nCould not download ${name}: ${e.message}`);
+      if (/ENOTFOUND|EAI_AGAIN|ETIMEDOUT/.test(e.code || e.message)) {
+        console.error(
+          `\nThat is a DNS failure, not a bad URL. ebible.org was up earlier\n` +
+            `today, so this is most likely their outage. Either retry later, or\n` +
+            `download ${path.basename(s.zip)} however you can, put it in\n` +
+            `  ${TMP}\n` +
+            `and run this again. With the archive present it needs no network.`,
+        );
+      }
+      process.exit(1);
     }
-    await fs.mkdir(s.dir, { recursive: true });
-    for (const f of await fs.readdir(s.dir)) {
-      await fs.unlink(path.join(s.dir, f)).catch(() => {});
-    }
-    extract(s.zip, s.dir);
   }
+  await fs.mkdir(s.dir, { recursive: true });
+  for (const f of await fs.readdir(s.dir)) {
+    await fs.unlink(path.join(s.dir, f)).catch(() => {});
+  }
+  extract(s.zip, s.dir);
+  return true;
+}
+
+async function ensureSources() {
+  await ensureSource("en", SOURCES.en);
+  return { greek: await ensureSource("gr", SOURCES.gr, { optional: true }) };
 }
 
 /**
@@ -205,7 +245,7 @@ function fail(msg) {
 }
 
 async function main() {
-  await ensureSources();
+  const { greek: haveGreek } = await ensureSources();
 
   const en = await readBook(SOURCES.en.dir, DANIEL_CODE);
   const enSus = await readBook(SOURCES.en.dir, SUSANNA_CODE);
@@ -253,9 +293,9 @@ async function main() {
 
   // Greek side. Best effort: the reader falls back gracefully when an
   // original-language chapter is absent, so a miss here is not fatal.
-  const gr = await readBook(SOURCES.gr.dir, DANIEL_CODE);
-  const grSus = await readBook(SOURCES.gr.dir, SUSANNA_CODE);
-  const grBel = await readBook(SOURCES.gr.dir, BEL_CODE);
+  const gr = haveGreek ? await readBook(SOURCES.gr.dir, DANIEL_CODE) : null;
+  const grSus = haveGreek ? await readBook(SOURCES.gr.dir, SUSANNA_CODE) : null;
+  const grBel = haveGreek ? await readBook(SOURCES.gr.dir, BEL_CODE) : null;
   if (gr) {
     await fs.mkdir(GR_OUT, { recursive: true });
     for (const c of Object.keys(gr).map(Number).sort((a, b) => a - b)) {
