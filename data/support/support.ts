@@ -24,7 +24,7 @@ export const SUPPORT = {
       note: "Always-on web service with one small worker.",
     },
     {
-      label: "Domain (purify.app)",
+      label: "Domain (purifyapp.net)",
       monthlyUsd: 2,
       note: "Annualized to a per-month figure.",
     },
@@ -58,12 +58,12 @@ export const SUPPORT = {
     },
     {
       label: "Monthly supporter",
-      href: "mailto:team@purify.app?subject=Monthly%20supporter",
+      href: "mailto:team@purifyapp.net?subject=Monthly%20supporter",
       note: "Email us to set up a recurring gift. Stripe link coming soon.",
     },
     {
       label: "Direct (zero-fee)",
-      href: "mailto:team@purify.app?subject=Direct%20gift",
+      href: "mailto:team@purifyapp.net?subject=Direct%20gift",
       note: "Wire, check, or in-person. No processing fees.",
     },
   ],

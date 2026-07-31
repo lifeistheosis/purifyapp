@@ -2,9 +2,27 @@ import "server-only";
 import fs from "node:fs/promises";
 import path from "node:path";
 
+/**
+ * Whose words `paragraphs` holds. Explicit, never inferred.
+ *
+ * The corpus goal is 100% verbatim: every paragraph a real text from a
+ * public-domain source, quoted exactly. `editorial` exists so that anything
+ * not yet meeting that bar is visibly and machine-readably marked as
+ * Purify's prose rather than passing as the saint speaking. It is a debt
+ * marker, not a content type.
+ *
+ * - `saint`      the saint's own words in a public-domain translation
+ * - `scripture`  canonical Scripture, quoted exactly
+ * - `liturgical` hymnography or prayer, verbatim, authored by the Church
+ * - `editorial`  Purify's own prose. Never rendered as the saint speaking.
+ */
+export type Voice = "saint" | "scripture" | "liturgical" | "editorial";
+
 export type Section = {
   n: number;
   title: string;
+  /** Required. See {@link Voice}. */
+  voice: Voice;
   /**
    * Editorial intro placed ABOVE the saint's words: context, dating, the
    * commentator's reading. One paragraph, roughly ~120 words. Optional. When

@@ -231,10 +231,10 @@ const QUESTIONS: QA[] = [
         <p>
           For feedback: email{" "}
           <a
-            href="mailto:team@purify.app"
+            href="mailto:team@purifyapp.net"
             className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
           >
-            team@purify.app
+            team@purifyapp.net
           </a>
           . We read everything. We answer most things.
         </p>

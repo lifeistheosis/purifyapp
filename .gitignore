@@ -43,3 +43,7 @@ next-env.d.ts
 
 # fetcher tmp
 .tmp/
+
+# Cached public-domain source pages for scripts/ingest (re-fetch with fetch.sh)
+scripts/ingest/.cache/
+__pycache__/

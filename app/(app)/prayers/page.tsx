@@ -294,7 +294,7 @@ export default function PrayersPage() {
             </h2>
           </div>
           <a
-            href="mailto:team@purify.app?subject=Akathists"
+            href="mailto:team@purifyapp.net?subject=Akathists"
             className="group flex flex-col sm:flex-row gap-6 rounded-lg border border-paper/12 bg-paper/[0.02] hover:border-paper/30 hover:bg-paper/[0.04] transition-colors p-6 md:p-7"
           >
             <PrayerIcon slug="theotokos-of-vladimir" size="md" />

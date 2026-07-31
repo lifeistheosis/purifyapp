@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { SAINTS, getWork } from "@/lib/saints/saints";
 import { loadWriting } from "@/lib/saints/load";
 import { WritingReader } from "@/components/saints/WritingReader";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { writingSchema } from "@/lib/seo/jsonld";
 
 type Params = Promise<{ slug: string; work: string }>;
 
@@ -16,7 +18,7 @@ export async function generateMetadata({ params }: { params: Params }) {
   const found = getWork(slug, work);
   if (!found) return { title: "Writing" };
   return {
-    title: `${found.work.title} — ${found.saint.name}`,
+    title: `${found.work.title}, by ${found.saint.name}`,
     description: found.work.blurb,
   };
 }
@@ -30,6 +32,7 @@ export default async function WritingPage({ params }: { params: Params }) {
 
   return (
     <section className="bg-night px-5 md:px-8">
+      <JsonLd data={writingSchema(found.saint, found.work, content)} />
       <div className="mx-auto max-w-[1100px] w-full">
         <WritingReader saint={found.saint} content={content} />
       </div>

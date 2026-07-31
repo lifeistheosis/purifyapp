@@ -126,32 +126,49 @@ export function WritingReader({
                 </div>
               )}
 
-              {/* Citation eyebrow — when set, marks the paragraphs below as
-                  drawn from a specific source (e.g. a KJV reference, a
-                  liturgical hymn). Absence means the paragraphs are either
-                  the saint's own text (no framing) or a faithful retelling
-                  (framing acknowledges it). */}
-              {sec.citation && (
+              {/* Citation eyebrow — the specific reference for the text
+                  below (a KJV chapter and verse, a liturgical hymn, an
+                  edition and page). */}
+              {sec.citation && sec.voice !== "editorial" && (
                 <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-[#d4af37]/85 mb-4">
                   {sec.citation}
                 </p>
               )}
 
-              <div className="space-y-5">
-                {sec.paragraphs.map((p, i) => (
-                  <ParagraphRow
-                    key={i}
-                    saintSlug={saint.slug}
-                    saintName={saint.name}
-                    workSlug={content.slug}
-                    workTitle={content.title}
-                    sectionN={sec.n}
-                    sectionTitle={sec.title}
-                    paragraphIdx={i}
-                    text={p}
-                  />
-                ))}
-              </div>
+              {/* Editorial prose is set apart from the saint's own words by
+                  every signal available at once: a labelled band, sans-serif
+                  instead of the reading serif, reduced contrast, and an
+                  indent rule. A reader skimming must never mistake Purify's
+                  summary for a Father speaking. Verbatim text keeps the
+                  full-contrast serif and no chrome at all. */}
+              {sec.voice === "editorial" ? (
+                <div className="rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-4">
+                  <p className="font-sans text-[11px] font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
+                    Summary by Purify, not {saint.name}&rsquo;s words
+                  </p>
+                  <div className="space-y-4 font-sans text-[15.5px] text-paper/65 leading-[1.65]">
+                    {sec.paragraphs.map((p, i) => (
+                      <p key={i}>{p}</p>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-5">
+                  {sec.paragraphs.map((p, i) => (
+                    <ParagraphRow
+                      key={i}
+                      saintSlug={saint.slug}
+                      saintName={saint.name}
+                      workSlug={content.slug}
+                      workTitle={content.title}
+                      sectionN={sec.n}
+                      sectionTitle={sec.title}
+                      paragraphIdx={i}
+                      text={p}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
             {sec.notes?.length ? (

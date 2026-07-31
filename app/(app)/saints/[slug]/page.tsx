@@ -3,6 +3,8 @@ import { SAINTS, getSaint } from "@/lib/saints/saints";
 import { SaintHero } from "@/components/saints/SaintHero";
 import { LifeSection } from "@/components/saints/LifeSection";
 import { SaintWorksBrowser } from "@/components/saints/SaintWorksBrowser";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { saintProfileSchema } from "@/lib/seo/jsonld";
 
 type Params = Promise<{ slug: string }>;
 
@@ -27,6 +29,7 @@ export default async function SaintPage({ params }: { params: Params }) {
 
   return (
     <section className="bg-night px-5 md:px-8">
+      <JsonLd data={saintProfileSchema(saint)} />
       <div className="mx-auto max-w-[1100px] w-full">
         <SaintHero saint={saint} />
         <LifeSection paragraphs={saint.life} />

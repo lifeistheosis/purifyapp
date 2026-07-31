@@ -1,8 +1,7 @@
 import type { MetadataRoute } from "next";
 import { allChapterParams, BOOKS } from "@/lib/bible/books";
 import { SAINTS } from "@/lib/saints/saints";
-
-const SITE = "https://purify.app";
+import { SITE } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

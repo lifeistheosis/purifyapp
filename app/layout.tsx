@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Cardo, DM_Sans, DM_Serif_Display, Lora } from "next/font/google";
 import "./globals.css";
+import { SITE } from "@/lib/site";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { websiteSchema } from "@/lib/seo/jsonld";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -33,7 +36,7 @@ const cardo = Cardo({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://purify.app"),
+  metadataBase: new URL(SITE),
   title: {
     default: "Purify, Orthodox prayer, calendar, and Scripture",
     template: "%s | Purify",
@@ -88,7 +91,10 @@ export default function RootLayout({
       lang="en"
       className={`${dmSans.variable} ${dmSerif.variable} ${lora.variable} ${cardo.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <JsonLd data={websiteSchema()} />
+        {children}
+      </body>
     </html>
   );
 }

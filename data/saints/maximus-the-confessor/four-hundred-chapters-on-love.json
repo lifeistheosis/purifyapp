@@ -14,7 +14,8 @@
       ],
       "notes": [
         "Maximus arranges the Centuries as a ladder of virtues: each rung depends on the one below."
-      ]
+      ],
+      "voice": "saint"
     },
     {
       "n": 2,
@@ -25,7 +26,8 @@
       ],
       "notes": [
         "The chain returns to where it began: faith opens fear, and the path ends in love. For Maximus, love is both the gate and the destination."
-      ]
+      ],
+      "voice": "saint"
     },
     {
       "n": 3,
@@ -36,7 +38,8 @@
       ],
       "notes": [
         "Equal love for all is the test. Where hatred lingers for one person, the soul is still divided."
-      ]
+      ],
+      "voice": "saint"
     }
   ]
 }

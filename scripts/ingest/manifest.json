@@ -1,0 +1,84 @@
+{
+  "_readme": [
+    "Which public-domain page each verbatim section comes from.",
+    "",
+    "`paras` is a [start, end) slice over the paragraphs the extractor pulls",
+    "from `url`, so a re-run reproduces the exact same text. `framing` is",
+    "Purify's editorial context; it renders in a labelled band and never as",
+    "the saint speaking. `citation` is the precise printed reference.",
+    "",
+    "Fetch pages with scripts/ingest/fetch.sh, then build with build.py."
+  ],
+
+  "john-chrysostom/homilies-on-john": {
+    "title": "Homilies on the Gospel of John",
+    "subtitle": "Selected homilies, preached at Antioch c. 391",
+    "source": "Nicene and Post-Nicene Fathers, Series I, Volume 14, ed. Philip Schaff (1889). Translation by G. T. Stupart. Public domain. Footnotes, Greek glosses and the editor's bracketed insertions have been removed; the running text is unaltered.",
+    "sections": [
+      {
+        "n": 1,
+        "title": "Why John speaks so high",
+        "framing": "Chrysostom opens the series by asking why the Spirit chose an unlettered Galilean fisherman to deliver the most exalted theology in Scripture. The argument that follows is his own, in full.",
+        "citation": "Homily 1 on the Gospel of St. John",
+        "url": "https://www.ccel.org/ccel/schaff/npnf114.iv.iv.html",
+        "paras": [0, 11]
+      },
+      {
+        "n": 2,
+        "title": "The Bread of Life",
+        "framing": "Preached on John 6:53-54, where Christ promises His own flesh as the food of eternal life. Chrysostom is blunt where later ages grew careful.",
+        "citation": "Homily 46 on the Gospel of St. John, on John 6:53-54",
+        "url": "https://www.ccel.org/ccel/schaff/npnf114.iv.xlix.html",
+        "paras": [0, 12]
+      }
+    ]
+  },
+
+  "augustine-of-hippo/tractates-on-john": {
+    "title": "Tractates on the Gospel of John",
+    "subtitle": "Lectures preached at Hippo",
+    "source": "Nicene and Post-Nicene Fathers, Series I, Volume 7, ed. Philip Schaff (1888). Translation by John Gibb. Public domain. Footnotes and editorial insertions removed; the running text is unaltered.",
+    "sections": [
+      {
+        "n": 1,
+        "title": "The mountains and the light",
+        "framing": "The opening lecture of the series. Augustine sets out why John's Gospel demands a different kind of hearer from the other three.",
+        "citation": "Tractate 1, on John 1:1-5",
+        "url": "https://www.ccel.org/ccel/schaff/npnf107.iii.ii.html",
+        "paras": [0, 10]
+      },
+      {
+        "n": 2,
+        "title": "No one comes unless drawn",
+        "framing": "Tractate 26 gives Augustine's mature reading of the Bread of Life discourse, and the sentence on being drawn to Christ that later centuries argued over without pause.",
+        "citation": "Tractate 26, on John 6:41-59",
+        "url": "https://www.ccel.org/ccel/schaff/npnf107.iii.xxvii.html",
+        "paras": [0, 10]
+      }
+    ]
+  },
+
+  "irenaeus-of-lyons/against-heresies-on-john": {
+    "title": "Against Heresies",
+    "subtitle": "On the Gospel of John and the Word made flesh",
+    "source": "Ante-Nicene Fathers, Volume 1, ed. Alexander Roberts and James Donaldson (1885). Public domain. Footnotes and Greek glosses removed; the running text is unaltered.",
+    "sections": [
+      {
+        "n": 1,
+        "title": "The Gospels are four",
+        "framing": "Answering teachers who wanted one Gospel only, or a Gospel of their own invention. This is the passage the later tradition of the four living creatures rests on.",
+        "citation": "Against Heresies, Book III, Chapter 11",
+        "url": "https://www.ccel.org/ccel/schaff/anf01.ix.iv.xii.html",
+        "paras": [0, 9]
+      },
+      {
+        "n": 2,
+        "title": "The Word became what we are",
+        "framing": "The opening of Book V, and the clearest statement of recapitulation: that Christ became what we are in order to make us what He is.",
+        "citation": "Against Heresies, Book V, Chapter 1",
+        "url": "https://www.ccel.org/ccel/schaff/anf01.ix.vii.ii.html",
+        "paras": [0, 3]
+      }
+    ]
+  }
+}

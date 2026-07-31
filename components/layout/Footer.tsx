@@ -50,7 +50,7 @@ const cols: { heading: string; links: LinkItem[] }[] = [
       { label: "Your saved", href: "/saved" },
       { label: "Your account", href: "/account" },
       { label: "Discord", href: "https://discord.gg/VzBYYUsNJ6", external: true },
-      { label: "Write to us", href: "mailto:team@purify.app" },
+      { label: "Write to us", href: "mailto:team@purifyapp.net" },
     ],
   },
 ];
