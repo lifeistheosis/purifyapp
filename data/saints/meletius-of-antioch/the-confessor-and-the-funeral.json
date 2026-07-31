@@ -31,14 +31,17 @@
         "What has happened to us, my brethren? Our father has gone away from us, leaving us his orphaned children. The shepherd has gone to lay down his life for the sheep, and we who are sheep are left as a flock without our shepherd. Yet we know that he is not gone from us in spirit; for the Faith which he taught us is among us still, and the prayers he prayed for us continue to be prayed in the Liturgy he handed down.",
         "He was three times exiled, three times restored. He suffered everything that a bishop in his time could suffer, and he kept what he had received. He gave us the Faith of Nicaea, not in the words of dispute but in the practice of the Liturgy, that you yourselves bore on your shoulders to your homes in the hour of his exile, when the doors of his cathedral were nailed shut against his return.",
         "Now he has returned to us, in the manner that is given a holy bishop to return: not in his own person, that we might see his face once more, but in the relics of his body, that we might honour them with the honour due to one through whom we have received the things that abide. Let us bury him with hymns and with thanksgivings, and let us learn from his life that the Faith he taught us is worth the long pain by which he kept it for us."
-      ]
+      ],
+      "voice": "witness",
+      "voiceAuthor": "John Chrysostom"
     },
     {
       "n": 4,
       "title": "Apolytikion of St. Meletius (Tone 4)",
       "paragraphs": [
         "Bishop Meletius, herald of the Word, supreme primate, and friend of God: by the lessons of your wisdom you have enlightened the Church, and by the boldness of your confession you have torn down the impiety of heresy. Father, intercede with Christ our God to grant our souls the great mercy."
-      ]
+      ],
+      "voice": "liturgical"
     }
   ]
 }

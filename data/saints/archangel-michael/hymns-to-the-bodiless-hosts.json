@@ -11,21 +11,24 @@
       "framing": "The Synaxis of the Archangel Michael and the other Bodiless Powers (November 8 on either calendar reckoning) is the principal feast of the angels in the Eastern Orthodox year. It is set on the eighth day of the ninth month from March (the month of the Annunciation), the eighth recalling the day of the Resurrection and the age to come, the ninth signalling the nine angelic orders Pseudo-Dionysius enumerates in The Celestial Hierarchy.",
       "paragraphs": [
         "Three hymns from the festal service are appointed below in their classic American Russian Orthodox public-domain English: the Apolytikion (the dismissal hymn that names the feast), the Kontakion (the festal poem that summarizes its meaning), and a Megalynalia from the All-Night Vigil. Each is given as it stands in Hapgood's Service Book of 1906, with the chapter divisions of that volume."
-      ]
+      ],
+      "voice": "editorial"
     },
     {
       "n": 2,
       "title": "Apolytikion (Tone 4)",
       "paragraphs": [
         "O Captains of the Heavenly Hosts, we, the unworthy, beseech you that by your supplications you will encompass us beneath the wings of your immaterial glory, and faithfully preserve us who fall down and cry to you: Deliver us from all dangers, as Captains of the Powers on high."
-      ]
+      ],
+      "voice": "liturgical"
     },
     {
       "n": 3,
       "title": "Kontakion (Tone 2)",
       "paragraphs": [
         "Supreme Commanders of God, ministers of divine glory, leaders of the Angels and guides of men, ask what is profitable for us and great mercy, as Supreme Commanders of the Bodiless Hosts."
-      ]
+      ],
+      "voice": "liturgical"
     },
     {
       "n": 4,
@@ -41,7 +44,8 @@
       "paragraphs": [
         "Higher than the Cherubim and more glorious beyond compare than the Seraphim, thou hast brought forth God the Word: O true Theotokos, thee do we magnify.",
         "From the dignity of every Bodiless Power thou hast been exalted as Mother of the Most High; for, having borne our God in the flesh, thou didst keep thy virginity intact, and didst become the Lady of the Angels and the joy of men."
-      ]
+      ],
+      "voice": "liturgical"
     },
     {
       "n": 6,

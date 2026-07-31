@@ -11,28 +11,32 @@
       "framing": "St. Nektarios reposed on the night of November 8/9, 1920, at the Aretaieio public hospital in Athens, after a long illness. His glorification by the Ecumenical Patriarchate of Constantinople on April 20, 1961 was the first formal canonization of a saint of the modern era in the Greek-speaking Orthodox world, and the festal hymns appointed for him at that glorification have been sung in every Greek-tradition parish ever since.",
       "paragraphs": [
         "Below is the Apolytikion in Tone 1, the Kontakion, the Megalynarion, and a short Rule of Life as he gave it to the sisters of the Holy Trinity Monastery on Aegina."
-      ]
+      ],
+      "voice": "editorial"
     },
     {
       "n": 2,
       "title": "Apolytikion (Tone 1)",
       "paragraphs": [
         "O faithful, let us honour Nektarios, divine servant of Christ, offspring of Selybria and guardian of Aegina, who in these latter years was manifested as the true friend of virtue. Every kind of healing wells up for those who in piety cry, Glory to Christ who has glorified you. Glory to him who, through you, has worked wonders. Glory to him who, through you, works healings for all."
-      ]
+      ],
+      "voice": "liturgical"
     },
     {
       "n": 3,
       "title": "Kontakion",
       "paragraphs": [
         "Let us, the faithful, honour with one mouth the new bright star of the Church and the new defender, for he is glorified by the unction of the Spirit. Set in Aegina as a fountain of myrrh, by his pure and most ascetic life he has shown himself a treasure of grace divine; for he pours out healings of various kinds upon those who reverently cry: Rejoice, O Father Nektarios."
-      ]
+      ],
+      "voice": "liturgical"
     },
     {
       "n": 4,
       "title": "Megalynarion",
       "paragraphs": [
         "Rejoice, O wonder-working Hierarch of Christ, glory of Pentapolis and of Aegina; rejoice, fragrant rose of Selybria; rejoice, O Nektarios, sweet-smelling boast of Orthodoxy in these our latter days."
-      ]
+      ],
+      "voice": "liturgical"
     },
     {
       "n": 5,

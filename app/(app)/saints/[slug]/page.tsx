@@ -18,6 +18,8 @@ import { getServerLocale } from "@/lib/i18n/server";
 import { ViewInHistory } from "@/components/history/ViewInHistory";
 import { eventsForSaint } from "@/lib/history/events";
 import { getSaintBioOverrides } from "@/lib/i18n/localizedContent";
+import { saintJsonLd } from "@/lib/seo/jsonld";
+import { sameAsFor } from "@/lib/saints/authority";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 import { RecordRead } from "@/components/reading/RecordRead";
 import { SaintIntercession } from "@/components/saints/SaintIntercession";
@@ -113,8 +115,17 @@ export default async function SaintPage({ params }: { params: Params }) {
   };
   const bioIsLocalized = Boolean(bioOverrides);
 
+  // sameAs only when an identity was resolved through the live authority
+  // APIs; sameAsFor returns undefined otherwise, so an unverified saint
+  // makes no identity claim rather than a guessed one.
+  const jsonLd = saintJsonLd(effectiveSaint, sameAsFor(slug));
+
   return (
     <section className="bg-night px-5 md:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <RecordRead
         kind="saint"
         href={`/saints/${saint.slug}`}

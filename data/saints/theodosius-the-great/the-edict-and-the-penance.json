@@ -16,7 +16,8 @@
       ],
       "notes": [
         "The Edict named the standard of orthodoxy by reference to two living bishops, Damasus of Rome and Peter of Alexandria, rather than by spelling out the Nicene Symbol. The Council of Constantinople the following year (381) supplied the Symbol the Edict had assumed."
-      ]
+      ],
+      "voice": "saint"
     },
     {
       "n": 2,
@@ -33,14 +34,17 @@
       "paragraphs": [
         "He had loved David especially, because David, when his sin was rebuked, did not hide it but confessed it openly, and did public penance. Theodosius, when he learned the multitude of the slain, was struck with a great grief, and laid off the imperial purple, and put on the dress of a penitent, and stood at the door of the church for many months, refusing to be received again to the Holy Mysteries until the canonical period was fulfilled.",
         "I refused him admittance into the church, because I held that he ought to do public penance before he was admitted to the sacraments which he had outraged. He did not resist; he did not contest the discipline of the Church; he wept his way through the months that the canons require, and at the last he was received again with great rejoicing, the Emperor of the Romans standing as a penitent before the bishop of Milan."
-      ]
+      ],
+      "voice": "witness",
+      "voiceAuthor": "Ambrose of Milan"
     },
     {
       "n": 4,
       "title": "Apolytikion of St. Theodosius the Great (Tone 8)",
       "paragraphs": [
         "Equal to Constantine in defending the Faith, and a most pious Emperor of the Romans, you preserved the holy Church without blemish, and led many to the worship of the consubstantial Trinity. By your prayers, O Theodosius, may we be granted the great mercy of God."
-      ]
+      ],
+      "voice": "liturgical"
     }
   ]
 }
