@@ -1417,6 +1417,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "john-the-baptist",
  byname: "The Forerunner",
+ iconUrl: "/saints/icons/john-the-baptist.jpg",
  name: "Holy Prophet, Forerunner, and Baptist John",
  epithet: "The Forerunner · Greatest born of women",
  born: "1st century BC (hill country of Judea)",

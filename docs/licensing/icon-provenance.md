@@ -16,6 +16,7 @@ iconographers' permission to use them.
 | --- | --- | --- | --- | --- |
 | `praying3.jpg` | The father running to receive the Prodigal Son, with the fatted calf and the music of the feast | Tom Clark | `TomClarkIcons.com` | Permission confirmed by the owner, 2026-07-25. **Action: Leona to file the written permission (email or message) alongside this doc so the basis survives a rights audit.** |
 | `icon4.jpg` | The father embracing the Prodigal Son, the swine and the far country behind him | Alevizakis | `IconsAlevizakis.com` | Permission confirmed by the owner, 2026-07-25. **Action: same, file the written permission.** |
+| `john-the-baptist.jpg` | St John the Forerunner as the Angel of the Desert: winged, in the camel-hair garment, holding the cross-staff, his own head on the platter at his feet and Christ blessing from the cloud. Inscribed Ὁ ἍΓ ΙΩ | **Not yet recorded** | none found | Permission confirmed by the owner, 2026-08-01. **Action: Leona to supply the iconographer's name for attribution, and file the written permission. The name is the blocking gap: the row cannot credit anyone until it is given.** |
 
 Both render as the full-bleed backdrop of `/prayers` through
 `components/prayers/PrayerSlideshow.tsx` (`PrayerSlideshowHero`, mounted at
@@ -27,6 +28,20 @@ The other two frames in that slideshow, `praying2.jpg` (the Agony in the
 Garden, inscribed Ἡ ΑΓΩΝΙΑ) and `praying.jpg` (a monk in prostration before
 the icon of Christ in his cave), are undocumented and should be traced to a
 source. They carry no watermark.
+
+## `john-the-baptist.jpg`, added 2026-08-01
+
+Wired to `Saint.iconUrl` for `john-the-baptist`, who had no icon at all and
+was rendering the initials placeholder. Subject verified by opening the
+file, per the rule below, not inferred from its name: it arrived as
+`jjj.jpg`.
+
+It is a contemporary studio work, not a public-domain one, and carries no
+watermark or embedded credit, so nothing in the file itself identifies the
+iconographer. The rights basis is the owner's confirmation of permission,
+recorded above. **Until the iconographer is named, this image is attributed
+to nobody**, which is weaker than the two rows above it and should not be
+left standing.
 
 ## Alt-text correction, 2026-07-25
 
