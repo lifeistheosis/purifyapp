@@ -2,14 +2,20 @@
 
 // "Suggested for Today" rail — context-aware prayer suggestions.
 //
-// Liturgical context (season, fast day, feast) is computed on the server and
-// passed in as serializable props, because the hub is ISR-cached. The time of
-// day is the one piece that must be read on the client (the visitor's own
-// clock), so it is computed after mount behind a gate to avoid a hydration
-// mismatch. Only real, seeded rules are ever suggested — never a planned one.
+// Liturgical context (season, fast day) used to be computed on the server
+// and passed in. That froze it: the desktop Prayers tree ships into the
+// Android static export, where a server component answers "what day is it"
+// once, at build time, so a tablet was shown the build day's season and
+// fast. Both are derived here now, from the reader's own day, alongside the
+// time of day which was always read on the client.
+//
+// The props remain, so a caller that genuinely knows the context can still
+// pass it. Only real, seeded rules are ever suggested, never a planned one.
 
 import { PrayerSectionLabel, PrayerIndex, PrayerIndexRow } from "./PrayerBook";
 import { useMounted } from "@/lib/useMounted";
+import { useToday } from "@/lib/calendar/useToday";
+import { isFastDay, seasonFor } from "@/lib/prayers/season";
 import {
   RULES,
   type RuleMeta,
@@ -32,22 +38,25 @@ function pickable(r: RuleMeta): boolean {
 }
 
 export function SuggestedToday({
-  season,
-  isFast,
+  season: seasonProp,
+  isFast: isFastProp,
   label = "Suggested for today",
   max = 3,
 }: {
-  season: Season;
-  isFast: boolean;
+  season?: Season;
+  isFast?: boolean;
   label?: React.ReactNode;
   max?: number;
 }) {
   const mounted = useMounted();
+  const today = useToday();
 
   // Stable server render: a quiet placeholder slot is avoided entirely by
   // gating on mount. The masthead above already carries the day's context.
-  if (!mounted) return null;
+  if (!mounted || !today) return null;
 
+  const season = seasonProp ?? seasonFor(today);
+  const isFast = isFastProp ?? isFastDay(today);
   const tod = timeOfDayNow(new Date());
   const chosen: RuleMeta[] = [];
   const seen = new Set<string>();

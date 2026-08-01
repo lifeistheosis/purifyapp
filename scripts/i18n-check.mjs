@@ -31,6 +31,7 @@ const CONVERTED_DIRS = [
   "components/calendar",
   "components/fasting",
   "components/prayers",
+  "components/discover",
   "app/(app)/prayers",
   "components/bible",
   "app/(app)/bible",

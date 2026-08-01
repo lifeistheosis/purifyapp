@@ -1,6 +1,11 @@
 "use client";
 
 import { useToday } from "@/lib/calendar/useToday";
+import {
+  pickFeatured,
+  type FeaturedCouncilSummary,
+  type FeaturedTopicSummary,
+} from "@/lib/discover/featured";
 import { MobileCard } from "./MobileCard";
 import { MobileSectionLabel } from "./MobileSectionLabel";
 import { T } from "@/components/i18n/T";
@@ -17,22 +22,10 @@ import { T } from "@/components/i18n/T";
  * handful of each, so the payload is a few KB) and the day is chosen here.
  */
 
-export type FeaturedTopicSummary = {
-  slug: string;
-  title: string;
-  definition: string;
-  citationCount: number;
-};
-
-export type FeaturedCouncilSummary = {
-  slug: string;
-  byname: string;
-};
-
-function dayOfYearLocal(d: Date): number {
-  const start = Date.UTC(d.getUTCFullYear(), 0, 0);
-  return Math.floor((d.getTime() - start) / (1000 * 60 * 60 * 24));
-}
+export type {
+  FeaturedTopicSummary,
+  FeaturedCouncilSummary,
+} from "@/lib/discover/featured";
 
 export function FeaturedToday({
   topics,
@@ -44,9 +37,7 @@ export function FeaturedToday({
   const today = useToday();
   if (!today || (!topics.length && !councils.length)) return null;
 
-  const n = dayOfYearLocal(today);
-  const topic = topics.length ? topics[n % topics.length] : null;
-  const council = councils.length ? councils[n % councils.length] : null;
+  const { topic, council } = pickFeatured(topics, councils, today);
 
   return (
     <div className="mt-7">

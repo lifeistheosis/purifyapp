@@ -1,17 +1,10 @@
 import Link from "next/link";
 import { T } from "@/components/i18n/T";
 import { LESSONS } from "@/lib/prayers/learning";
-import {
-  commemorationsOn,
-  fastingStatus,
-  formatMonthDay,
-  paschaInfo,
-  startOfDayUtc,
-} from "@/lib/calendar/orthodox";
-import { FAST_DOT } from "@/lib/calendar/fastDot";
 import { PrayerIcon } from "@/components/prayers/PrayerIcon";
 import { PrayerSlideshowHero } from "@/components/prayers/PrayerSlideshow";
 import { PrayersMobile } from "@/components/mobile/PrayersMobile";
+import { PrayersDayCard } from "@/components/prayers/PrayersDayCard";
 import {
   PrayerMasthead,
   PrayerSectionLabel,
@@ -29,7 +22,6 @@ import {
   popularRules,
   type RuleMeta,
 } from "@/lib/prayers/rules";
-import { seasonFor, isFastDay } from "@/lib/prayers/season";
 import { getServerLocale } from "@/lib/i18n/server";
 
 function titleOf(r: RuleMeta, isDe: boolean): string {
@@ -46,32 +38,13 @@ export const metadata = {
     "Daily prayer in the Orthodox tradition: today's rule, morning and evening rules, the prayer of the heart, akathists, the liturgical hours, and a beginner's path.",
 };
 
-// Hourly ISR so the day strip rolls forward without a redeploy.
-export const revalidate = 3600;
+// No `revalidate`: getServerLocale() awaits cookies(), so this page is
+// already dynamic on the web, and under `output: "export"` ISR does not
+// exist. Everything day-dependent now resolves on the device.
 
 export default async function PrayersPage() {
   const locale = await getServerLocale();
   const isDe = locale === "de";
-  const today = startOfDayUtc(new Date());
-  const fast = fastingStatus(today);
-  const pascha = paschaInfo(today);
-  const season = seasonFor(today);
-  const isFast = isFastDay(today);
-  const commemorations = commemorationsOn(today);
-  const headline =
-    commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
-
-  const paschaLine =
-    pascha.daysAway > 0
-      ? isDe
-        ? `${pascha.daysAway} Tage bis Pascha`
-        : `${pascha.daysAway} days to Pascha`
-      : pascha.daysAway === 0
-        ? isDe
-          ? "Pascha ist heute"
-          : "Pascha is today"
-        : pascha.label;
-
   // "Also in this book" — the surfaces with their own dedicated UI, shown as
   // tiles on the desktop grid.
   const alsoEntries: {
@@ -182,49 +155,10 @@ export default async function PrayersPage() {
                 </p>
               </div>
 
-              {/* The day, as a card. */}
-              <Link
-                href="/prayers/today"
-                className="group flex flex-col justify-between rounded-xl border border-paper/12 bg-paper/[0.03] px-7 py-8 transition-colors hover:border-paper/30"
-              >
-                <div>
-                  <p className="mb-5 font-sans text-eyebrow uppercase tracking-[2.5px] text-gold/70">
-                    {isDe ? "Heute" : "Today"}
-                  </p>
-                  <div className="flex items-baseline gap-3">
-                    <span className="font-serif text-display-sm text-paper leading-none tabular-nums">
-                      {today.getUTCDate()}
-                    </span>
-                    <span className="font-serif text-title-sm text-paper/70">
-                      {formatMonthDay(today).split(" ")[0]}
-                    </span>
-                  </div>
-                  <p className="mt-5 font-serif text-ui text-paper leading-snug">
-                    {headline?.name ??
-                      (isDe ? "Mit der Kirche beten" : "Pray with the Church")}
-                  </p>
-                  <p className="mt-2.5 flex items-center gap-2 font-sans text-caption text-paper/45">
-                    <span
-                      aria-hidden
-                      className={`inline-block h-1.5 w-1.5 rounded-full ${FAST_DOT[fast.kind]}`}
-                    />
-                    <span>
-                      {fast.label}
-                      <span className="text-paper/25"> · </span>
-                      {paschaLine}
-                    </span>
-                  </p>
-                </div>
-                <span className="mt-8 inline-flex items-center gap-1.5 font-sans text-detail font-medium text-gold/80 transition-colors group-hover:text-paper">
-                  {isDe ? "Heute öffnen" : "Open today"}
-                  <span
-                    aria-hidden
-                    className="transition-transform duration-200 group-hover:translate-x-0.5"
-                  >
-                    →
-                  </span>
-                </span>
-              </Link>
+              {/* The day, as a card. Client-side: this tree ships into
+                  the Android export, where a server component freezes the
+                  date at build time. */}
+              <PrayersDayCard />
             </div>
 
             {/* Featured: The Prayer Rope Anthem, a hymn to accompany
@@ -288,8 +222,6 @@ export default async function PrayersPage() {
               </div>
               <div>
                 <SuggestedToday
-                  season={season}
-                  isFast={isFast}
                   label={isDe ? "Für heute empfohlen" : "Suggested for today"}
                 />
               </div>

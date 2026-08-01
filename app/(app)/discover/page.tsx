@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { DiscoverMobile } from "@/components/mobile/DiscoverMobile";
+import { FeaturedTodayDesktop } from "@/components/discover/FeaturedTodayDesktop";
 import { Church } from "@/components/ui/icons/Church";
 import { Cross } from "@/components/ui/icons/Cross";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
-import { startOfDayUtc } from "@/lib/calendar/orthodox";
 import { COUNCILS } from "@/lib/councils/councils";
 import { loadAllTopics } from "@/lib/topics/topics";
 import { getServerLocale } from "@/lib/i18n/server";
@@ -19,18 +19,9 @@ export const metadata = {
     "A way into the wider library: Orthodox history, the reading room, the whole theological study of the Faith, and the Councils.",
 };
 
-export const revalidate = 3600;
-
-function dayOfYearUtc(d: Date): number {
-  const start = Date.UTC(d.getUTCFullYear(), 0, 0);
-  return Math.floor((d.getTime() - start) / 86_400_000);
-}
-
-function firstSentence(s: string): string {
-  if (!s) return "";
-  const match = s.match(/^.+?[.!?](?:\s|$)/);
-  return (match ? match[0] : s).trim();
-}
+// No `revalidate`: getServerLocale() awaits cookies(), which already makes
+// this page dynamic on the web, and under `output: "export"` ISR does not
+// exist at all. Anything day-dependent here resolves on the device.
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
@@ -44,15 +35,22 @@ export default async function DiscoverPage() {
   const locale = await getServerLocale();
   const m = getMessages(locale);
 
-  const today = startOfDayUtc(new Date());
-
   const topics = await loadAllTopics();
-  const featuredTopic = topics.length
-    ? topics[dayOfYearUtc(today) % topics.length]
-    : null;
-  const featuredCouncil = COUNCILS.length
-    ? COUNCILS[dayOfYearUtc(today) % COUNCILS.length]
-    : null;
+
+  // Summaries only: the client picks the day's pair, so it needs the
+  // candidates, not the whole corpus.
+  const featuredTopics = topics.map((tp) => ({
+    slug: tp.slug,
+    title: tp.title,
+    definition: tp.definition ?? "",
+    citationCount: 0,
+  }));
+  const featuredCouncils = COUNCILS.map((c) => ({
+    slug: c.slug,
+    byname: c.byname,
+    year: c.year,
+    location: c.location,
+  }));
 
   // The doctrinal study library — Doctrine, Topics, Heresies, Apologetics —
   // is one connected surface (/theology). It is shown here as a single hub
@@ -222,48 +220,15 @@ export default async function DiscoverPage() {
               </div>
             </div>
 
-            {/* Featured today: one topic and one council, rotating daily. */}
-            {featuredTopic || featuredCouncil ? (
-              <div className="mt-14">
-                <SectionHeading><T k="study.discover.featuredToday" /></SectionHeading>
-                <div className="mt-5 grid gap-5 lg:grid-cols-2">
-                  {featuredTopic ? (
-                    <Link
-                      href={`/topics/${featuredTopic.slug}`}
-                      className="group rounded-xl border border-paper/12 bg-paper/[0.03] p-6 transition-colors hover:border-gold/35"
-                    >
-                      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
-                        {t(m, "discover.tile.topics")}
-                      </p>
-                      <p className="mt-2 font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-gold">
-                        {featuredTopic.title}
-                      </p>
-                      {featuredTopic.definition ? (
-                        <p className="mt-1.5 font-serif italic text-detail text-paper/65 leading-[1.55] line-clamp-2">
-                          {firstSentence(featuredTopic.definition)}
-                        </p>
-                      ) : null}
-                    </Link>
-                  ) : null}
-                  {featuredCouncil ? (
-                    <Link
-                      href={`/councils/${featuredCouncil.slug}`}
-                      className="group rounded-xl border border-paper/12 bg-paper/[0.03] p-6 transition-colors hover:border-gold/35"
-                    >
-                      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
-                        {t(m, "discover.tile.councils")}
-                      </p>
-                      <p className="mt-2 font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-gold">
-                        {featuredCouncil.byname}
-                      </p>
-                      <p className="mt-1.5 font-serif italic text-detail text-paper/65 leading-[1.55]">
-                        {featuredCouncil.year} · {featuredCouncil.location}
-                      </p>
-                    </Link>
-                  ) : null}
-                </div>
-              </div>
-            ) : null}
+            {/* Featured today: one topic and one council, rotating daily.
+                Picked on the device, not here: this tree ships into the
+                Android export, where a server component's answer to "what
+                day is it" is frozen at build time. */}
+            <FeaturedTodayDesktop
+              topics={featuredTopics}
+              councils={featuredCouncils}
+              heading={<T k="study.discover.featuredToday" />}
+            />
 
             {/* Quiet colophon to close the page. */}
             <p className="mt-16 text-center font-display-serif italic text-ui text-paper/55 leading-[1.55]">

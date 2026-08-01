@@ -25,6 +25,7 @@ const I18N_CONVERTED_GLOBS = [
   "components/calendar/**/*.tsx",
   "components/fasting/**/*.tsx",
   "components/prayers/**/*.tsx",
+  "components/discover/**/*.tsx",
   "app/(app)/prayers/**/*.tsx",
   "components/bible/**/*.tsx",
   "app/(app)/bible/**/*.tsx",
