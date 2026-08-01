@@ -1889,5 +1889,7 @@
   "prayers.pause": "Pause",
   "prayers.stop": "Stop",
   "prayers.nowPlaying": "Now playing",
-  "prayers.dismissPlayer": "Dismiss player"
+  "prayers.dismissPlayer": "Dismiss player",
+  "community.notifications": "When someone answers you",
+  "community.repliedToYou": "replied to your post"
 }

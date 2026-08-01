@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { CampaignsClient } from "@/components/campaigns/CampaignsClient";
+import { NotificationsInbox } from "@/components/community/NotificationsInbox";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import {
   addReply,
@@ -180,6 +181,10 @@ function ConversationsPanel() {
         </div>
       ) : (
         <>
+          {/* What came back to you, above what you might say next. Renders
+              nothing when there is nothing, including before the
+              notifications migration is applied. */}
+          {authSettled && me ? <NotificationsInbox /> : null}
           {authSettled && me ? (
             <Composer me={me} onPosted={reload} onAvatarChanged={(url) => setMe((m) => (m ? { ...m, avatar: url } : m))} />
           ) : authSettled ? (

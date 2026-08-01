@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { corsPreflight, withCors } from "@/lib/api/cors";
 import { communityEnabled } from "@/lib/community/flags";
+import { notifyOfReply } from "@/lib/community/notify";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { communityReplySchema } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -125,6 +126,20 @@ async function handlePOST(req: Request, id: string) {
     // counter is cosmetic and the migration recomputes it.
     console.warn("[community] reply_count bump failed", bumpError.message);
   }
+
+  // Tell the author someone answered. Best effort on purpose: the reply is
+  // stored and is the thing that matters, so a notification that cannot be
+  // written must not fail the request. Skipped when you reply to yourself,
+  // and skipped silently when the table is absent, which is how this ships
+  // dark until 20260801_community_notifications.sql is applied.
+  await notifyOfReply({
+    admin,
+    postId: id,
+    replyId: created.id,
+    actorId: user.id,
+    actorName: authorName,
+    excerpt: parsed.data.body.trim(),
+  });
 
   return NextResponse.json({ ok: true, id: created.id });
 }

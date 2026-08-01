@@ -20,6 +20,7 @@ import { Klimax } from "@/components/ui/icons/tab/Klimax";
 import { OrthodoxCross } from "@/components/ui/icons/tab/OrthodoxCross";
 import { Cart } from "@/components/ui/icons/tab/Cart";
 import { Gear } from "@/components/ui/icons/tab/Gear";
+import { NotificationsBadge } from "@/components/community/NotificationsInbox";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { haptic } from "@/lib/ui/motion";
 import { shopEnabled } from "@/lib/shop/flags";
@@ -210,12 +211,16 @@ export function MobileTabBar() {
                   {/* `key` flips with the active state so React remounts the
                       glyph and the pop replays on every selection. Without it
                       the animation only fires once per mount. */}
-                  <Icon
-                    key={active ? "on" : "off"}
-                    size={22}
-                    strokeWidth={active ? 2 : undefined}
-                    className={cn(active && "tab-pop")}
-                  />
+                  {/* Relative so the unread dot can sit on the glyph. */}
+                  <span className="relative inline-flex">
+                    <Icon
+                      key={active ? "on" : "off"}
+                      size={22}
+                      strokeWidth={active ? 2 : undefined}
+                      className={cn(active && "tab-pop")}
+                    />
+                    {key === "community" ? <NotificationsBadge /> : null}
+                  </span>
                   {/* truncate, not wrap: a two-line label would change the
                       bar's height on one locale and not another. The full
                       word is still on the destination's own header. */}
