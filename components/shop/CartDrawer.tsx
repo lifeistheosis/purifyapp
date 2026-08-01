@@ -62,9 +62,16 @@ export function CartDrawer() {
           open ? "opacity-100" : "pointer-events-none opacity-0",
         )}
       />
+      {/* `inert` when closed, not just aria-hidden. The drawer is always in
+          the DOM and merely slid off-screen, so aria-hidden alone left its
+          close button and its links in the tab order: a keyboard user
+          tabbing through any shop page walked into an invisible drawer.
+          axe reports that as aria-hidden-focus, serious, on every shop
+          surface. `inert` removes the subtree from focus and from the
+          accessibility tree together, which is the whole fix. */}
       <aside
         aria-label={t("shop.cart")}
-        aria-hidden={!open}
+        inert={!open}
         className={cn(
           "fixed inset-y-0 right-0 z-50 flex w-full max-w-[400px] flex-col bg-night shadow-2xl transition-transform duration-300 ease-out",
           open ? "translate-x-0" : "translate-x-full",
