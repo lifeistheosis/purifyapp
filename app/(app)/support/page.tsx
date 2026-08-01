@@ -6,6 +6,7 @@ import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { isNativeRequest } from "@/lib/platform/nativeRequest";
 import { T } from "@/components/i18n/T";
+import { ProgressBar } from "@/components/ui/ProgressBar";
 
 export const metadata = {
  title: "Support",
@@ -194,12 +195,15 @@ export default async function SupportPage() {
  {Math.round(pct * 100)}%
  </p>
  </div>
- <div className="h-[6px] rounded-full bg-paper/8 overflow-hidden">
- <div
- className="h-full bg-gold transition-[width] duration-500"
- style={{ width: `${Math.round(pct * 100)}%` }}
+ {/* Decorative: the amount raised, the goal and the percentage are all
+     spelled out in the two lines above. */}
+ <ProgressBar
+ value={pct}
+ height={6}
+ durationMs={500}
+ className="rounded-full"
+ trackClassName="bg-paper/8"
  />
- </div>
  <p className="mt-3 font-sans text-caption text-paper/55">
  {live ? (
  isDe ? (

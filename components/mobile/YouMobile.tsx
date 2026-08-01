@@ -28,6 +28,7 @@ import { SectionMasthead } from "./SectionMasthead";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { SavedPreview } from "./SavedPreview";
 import { SettingsList, type SettingsItem } from "./SettingsList";
+import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
 import { SettingsGlyph as Glyph } from "./SettingsGlyph";
 import { readIntentions } from "@/lib/prayers/storage";
 import { useReadingStats } from "@/lib/profile/useReadingStats";
@@ -112,6 +113,11 @@ export function YouMobile() {
   }, []);
 
   const signedIn = auth.kind === "signed-in";
+  // The session resolves on the device in the native build, so this is the
+  // state a reader actually opens the You tab in. It used to render the whole
+  // shell with an ellipsis for a name, "Loading..." for an eyebrow and four
+  // empty counters, which reads as a broken screen rather than a loading one.
+  const loadingAuth = auth.kind === "loading";
   const displayName = signedIn ? auth.displayName : "On this device";
   const memberSince = signedIn ? formatJoined(auth.joinedAt) : "";
   const tier = usePremiumTier();
@@ -226,15 +232,37 @@ export function YouMobile() {
     });
   }
 
+  if (loadingAuth) {
+    return (
+      <MobileShell
+        header={<MobileHeader title={t("nav.you")} trailing={<UserAvatarSmall />} />}
+      >
+        <Skeleton weight="faint" className="h-3 w-48" />
+        <Skeleton
+          weight="mid"
+          rounded="rounded-2xl"
+          className="mt-4 aspect-[16/9] w-full"
+        />
+        {/* The hero card: name, member-since, a line of copy, the avatar. */}
+        <Skeleton weight="mid" rounded="rounded-2xl" className="mt-6 h-[164px] w-full" />
+        <div className="mt-7">
+          <Skeleton weight="strong" className="h-3 w-28" />
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} weight="faint" rounded="rounded-2xl" className="h-[76px]" />
+            ))}
+          </div>
+        </div>
+        <SkeletonList rows={4} className="mt-7" />
+      </MobileShell>
+    );
+  }
+
   return (
     <MobileShell
       header={<MobileHeader title={t("nav.you")} trailing={<UserAvatarSmall />} />}
       eyebrow={
-        signedIn
-          ? auth.email
-          : auth.kind === "anon"
-            ? "Private on this device · no account needed"
-            : "Loading…"
+        signedIn ? auth.email : "Private on this device · no account needed"
       }
     >
       {/* The Ladder of Divine Ascent, which the tab bar already nods to with

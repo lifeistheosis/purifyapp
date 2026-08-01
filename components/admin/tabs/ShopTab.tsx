@@ -242,17 +242,21 @@ function ProductsPanel() {
 
   async function quickUpdate(p: AdminProduct, patch: Partial<AdminProduct>) {
     // Quick actions reuse the full upsert with the row's current values.
-    const merged = { ...p, ...patch };
-    const s = sourcing.find((x) => x.product_id === p.id);
-    const res = await fetch("/api/admin/shop/products", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(toPayload(merged, s)),
-    });
-    if (res.ok) {
-      invalidateShopCatalog();
-      load();
-    } else setStatus("Update failed.");
+    try {
+      const merged = { ...p, ...patch };
+      const s = sourcing.find((x) => x.product_id === p.id);
+      const res = await fetch("/api/admin/shop/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(toPayload(merged, s)),
+      });
+      if (res.ok) {
+        invalidateShopCatalog();
+        load();
+      } else setStatus("Update failed.");
+    } catch {
+      setStatus("Update failed: network dropped. Try again.");
+    }
   }
 
   const sourcingOf = (id: string) => sourcing.find((x) => x.product_id === id);
@@ -1111,32 +1115,37 @@ function ProductEditor({
   async function save() {
     setBusy(true);
     setError(null);
-    const payload = {
-      ...toPayload(p, null),
-      sourcing: {
-        supplierName: supplierName || null,
-        supplierSku: src.supplier_sku ?? null,
-        supplierCostCents: src.supplier_cost_cents ?? null,
-        supplierUrl: src.supplier_url ?? null,
-        leadTimeDays: src.lead_time_days ?? null,
-        stockStatus: src.stock_status ?? null,
-        attributionRequired: Boolean(src.attribution_required),
-        resaleRightsConfirmed: Boolean(src.resale_rights_confirmed),
-        packagingNotes: src.packaging_notes ?? null,
-        internalNotes: src.internal_notes ?? null,
-      },
-    };
-    const res = await fetch("/api/admin/shop/products", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const data = (await res.json()) as { ok?: boolean; error?: string };
-    setBusy(false);
-    if (res.ok && data.ok) {
-      invalidateShopCatalog();
-      onSaved();
-    } else setError(data.error ?? "Save failed.");
+    try {
+      const payload = {
+        ...toPayload(p, null),
+        sourcing: {
+          supplierName: supplierName || null,
+          supplierSku: src.supplier_sku ?? null,
+          supplierCostCents: src.supplier_cost_cents ?? null,
+          supplierUrl: src.supplier_url ?? null,
+          leadTimeDays: src.lead_time_days ?? null,
+          stockStatus: src.stock_status ?? null,
+          attributionRequired: Boolean(src.attribution_required),
+          resaleRightsConfirmed: Boolean(src.resale_rights_confirmed),
+          packagingNotes: src.packaging_notes ?? null,
+          internalNotes: src.internal_notes ?? null,
+        },
+      };
+      const res = await fetch("/api/admin/shop/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      if (res.ok && data.ok) {
+        invalidateShopCatalog();
+        onSaved();
+      } else setError(data.error ?? `Save failed (${res.status}).`);
+    } catch {
+      setError("Save failed: network dropped. Your edits are still here; try again.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   // No Card wrapper: the title, close control, and Overview/Edit toggle all
@@ -1947,15 +1956,19 @@ function ReviewsPanel() {
   }, [version]);
 
   async function remove(t: "product" | "store", id: string) {
-    const res = await fetch("/api/admin/shop/reviews", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ target: t, id }),
-    });
-    if (res.ok) {
-      invalidateShopCatalog();
-      load();
-    } else setStatus("Delete failed.");
+    try {
+      const res = await fetch("/api/admin/shop/reviews", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ target: t, id }),
+      });
+      if (res.ok) {
+        invalidateShopCatalog();
+        load();
+      } else setStatus("Delete failed.");
+    } catch {
+      setStatus("Delete failed: network dropped. Try again.");
+    }
   }
 
   const productReviews = data?.productReviews ?? [];
@@ -2338,43 +2351,56 @@ function SeedReviewSheet({
   async function addPhoto(file: File) {
     setUploading(true);
     setError(null);
-    const form = new FormData();
-    form.append("file", file);
-    const res = await fetch("/api/admin/shop/media", { method: "POST", body: form });
-    const d = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
-    setUploading(false);
-    if (res.ok && d.url) setPhotos((p) => [...p, d.url as string]);
-    else setError(d.error ?? "Upload failed.");
+    // try/finally: a thrown fetch (flaky network) must never strand the
+    // dialog on "Uploading…" with no error — that is exactly how a seed
+    // ends up saved without its photo.
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/admin/shop/media", { method: "POST", body: form });
+      const d = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
+      if (res.ok && d.url) setPhotos((p) => [...p, d.url as string]);
+      else setError(d.error ?? `Upload failed (${res.status}). Try again.`);
+    } catch {
+      setError("Upload failed: network dropped. Try again.");
+    } finally {
+      setUploading(false);
+    }
   }
 
   async function seed() {
     setBusy(true);
     setError(null);
-    const common = {
-      stars,
-      body: body.trim() || null,
-      displayName: name.trim() || null,
-      location: location.trim() || null,
-      anonymous,
-      createdAt: date || null,
-      photoUrls: photos,
-    };
-    const payload =
-      target === "product"
-        ? { target, productId, ...common }
-        : { target, storeId, ...common };
-    const res = await fetch("/api/admin/shop/reviews", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    setBusy(false);
-    if (res.ok) {
-      invalidateShopCatalog();
-      onSaved();
-    } else {
-      const e = (await res.json().catch(() => ({}))) as { error?: string };
-      setError(e.error ?? "Couldn't save the review.");
+    try {
+      const common = {
+        stars,
+        body: body.trim() || null,
+        displayName: name.trim() || null,
+        location: location.trim() || null,
+        anonymous,
+        createdAt: date || null,
+        photoUrls: photos,
+      };
+      const payload =
+        target === "product"
+          ? { target, productId, ...common }
+          : { target, storeId, ...common };
+      const res = await fetch("/api/admin/shop/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        invalidateShopCatalog();
+        onSaved();
+      } else {
+        const e = (await res.json().catch(() => ({}))) as { error?: string };
+        setError(e.error ?? `Couldn't save the review (${res.status}).`);
+      }
+    } catch {
+      setError("Couldn't save: network dropped. Your fields are still here; try again.");
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -2543,10 +2569,11 @@ function SeedReviewSheet({
         <button
           type="button"
           onClick={() => void seed()}
-          disabled={busy}
+          disabled={busy || uploading}
+          title={uploading ? "Wait for the photo upload to finish" : undefined}
           className="rounded-pill border border-gold/40 bg-gold/[0.08] px-4 py-1.5 font-sans text-caption font-semibold text-gold disabled:opacity-50"
         >
-          {busy ? "Saving…" : "Add review"}
+          {busy ? "Saving…" : uploading ? "Photo uploading…" : "Add review"}
         </button>
       </div>
     </Modal>

@@ -32,15 +32,24 @@ export function TodayMobileV3() {
       {/* `cascade` staggers the direct children below by --stagger-step, so
           the surface resolves in reading order (greeting, then the day's
           word, then the rule, then the doors) instead of all at once.
-          Opacity only; see the note in globals.css for why nothing here
-          may translate. */}
-      <div className="cascade px-5 pt-3 pb-8">
+          `cascade-tight` shortens the step for a screen arriving, and
+          `cascade-rise` adds the few px of upward travel. Today has no
+          `.route-fade` ancestor (app/page.tsx sits outside the (app) group),
+          so this cascade correctly starts at zero rather than waiting on a
+          route fade that never runs. */}
+      <div className="cascade cascade-tight cascade-rise px-5 pt-3 pb-8">
         <GreetingHeader />
 
         <FirstStepsNudge />
 
-        {/* Hero: the day's word, the dominant element of the surface. */}
-        <VerseOfDayCard />
+        {/* Hero: the day's word, the dominant element of the surface.
+            `rise-none` because VerseCardActions inside it renders a
+            `fixed inset-0` sheet inline: a translating ancestor would be a
+            containing block for it and displace the sheet. This child fades
+            with the rest and does not move. */}
+        <div className="rise-none">
+          <VerseOfDayCard />
+        </div>
 
         {/* Pray now: the day's rule + the Prayer Rope Anthem. */}
         <div className="mt-4">

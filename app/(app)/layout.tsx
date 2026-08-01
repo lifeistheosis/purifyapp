@@ -44,7 +44,13 @@ export default function AppGroupLayout({
       {/* safe-pt / safe-pb are no-ops on the web; inside the native shell
           they clear the status bar (top) and the tab bar + home indicator
           (bottom). */}
-      <main className="flex-1 safe-pt safe-pb">{children}</main>
+      {/* data-route-content: the target of the route-exit fade. It is a
+          SIBLING of MobileTabBar below, never an ancestor, so the bar does
+          not fade with the content and the selected tab answers a tap
+          immediately. See lib/ui/routeTransition.ts. */}
+      <main data-route-content className="flex-1 safe-pt safe-pb">
+        {children}
+      </main>
       <div data-app-chrome className="contents">
         <WebOnly>
           <Footer />

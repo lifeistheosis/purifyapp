@@ -262,3 +262,210 @@ test("/account (signed out) renders the local-profile hero + sign-in path", asyn
     page.locator('a[href*="/signin"]').filter({ visible: true }).first(),
   ).toBeVisible();
 });
+
+/**
+ * The tab transition, and the constraint it is built around.
+ *
+ * A tab switch fades the outgoing content out (a body flag the tab bar
+ * raises, see lib/ui/routeTransition.ts), fades the incoming route in, lifts
+ * the title a few px and staggers the sections. The titles and the sections
+ * TRANSLATE, which the route wrapper above them must never do: a transform
+ * makes an element a containing block for `position: fixed` descendants, and
+ * `translateY(0)` is a transform. Every rise therefore fills `backwards`, so
+ * the element is handed back to `transform: none` when it finishes.
+ *
+ * These probes assert the consequence rather than the declaration (the CSS
+ * declarations are guarded in lib/ui/__tests__/motionDoctrine.test.ts): after
+ * the entrance settles, nothing is left holding a transform, and the tab bar
+ * is still pinned to the viewport.
+ */
+test.describe("tab transition (Capacitor UA)", () => {
+  test.use({
+    userAgent: `${devices["iPhone 14 Pro"].userAgent} ${NATIVE_UA_TOKEN}`,
+  });
+
+  /** Past the longest tail: enter 260 + 13 * 38 + 320, with headroom. */
+  const SETTLED_MS = 1_400;
+
+  const MOVING = ".route-fade, .title-in, .cascade-rise > *";
+
+  for (const path of ["/", "/bible", "/discover", "/prayers", "/account"]) {
+    test(`${path}: the entrance leaves no containing block behind`, async ({
+      page,
+    }) => {
+      await page.goto(path);
+      await page.waitForTimeout(SETTLED_MS);
+
+      const stuck = await page.evaluate((sel) => {
+        return [...document.querySelectorAll(sel)]
+          .filter((el) => {
+            const t = getComputedStyle(el).transform;
+            return t !== "none" && t !== "";
+          })
+          .map((el) => `${el.tagName}.${String(el.className).slice(0, 60)}`);
+      }, MOVING);
+
+      expect(
+        stuck,
+        `These still hold a transform after the entrance, so each is a ` +
+          `containing block for any fixed descendant. The fill mode is the ` +
+          `usual cause: it must be backwards, never both or forwards.\n  ` +
+          `${stuck.join("\n  ")}`,
+      ).toEqual([]);
+    });
+  }
+
+  test("the tab bar is still pinned to the bottom of the viewport", async ({
+    page,
+  }) => {
+    await page.goto("/bible");
+    await page.waitForTimeout(SETTLED_MS);
+    const nav = page.getByRole("navigation").filter({ hasText: "Bible" }).first();
+    const box = await nav.boundingBox();
+    const height = page.viewportSize()!.height;
+    // If an ancestor became a containing block, a `fixed` bar is positioned
+    // against that ancestor instead of the viewport and this number drifts.
+    expect(box).not.toBeNull();
+    expect(box!.y + box!.height).toBeGreaterThan(height - 8);
+  });
+
+  test("the entrance shifts nothing", async ({ page }) => {
+    await page.goto("/discover");
+    const cls = await page.evaluate(
+      () =>
+        new Promise<number>((resolve) => {
+          let total = 0;
+          new PerformanceObserver((list) => {
+            for (const e of list.getEntries() as (PerformanceEntry & {
+              hadRecentInput?: boolean;
+              value?: number;
+            })[]) {
+              if (!e.hadRecentInput) total += e.value ?? 0;
+            }
+          }).observe({ type: "layout-shift", buffered: true });
+          setTimeout(() => resolve(total), 1_600);
+        }),
+    );
+    // Opacity and transform do not shift layout. Anything above the noise
+    // floor means something animated a property that does.
+    expect(cls).toBeLessThan(0.02);
+  });
+
+  test("reduced motion: nothing moves, and nothing is left hidden", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/bible");
+    await page.waitForTimeout(400);
+
+    const names = await page.evaluate(
+      (sel) =>
+        [...document.querySelectorAll(sel)].map(
+          (el) => getComputedStyle(el).animationName,
+        ),
+      MOVING,
+    );
+    expect(names.length).toBeGreaterThan(0);
+    expect(names.every((n) => n === "none")).toBe(true);
+
+    // And the exit fade is inert: the content never drops below full opacity.
+    await page
+      .getByRole("navigation")
+      .getByRole("link", { name: /^Discover$/i })
+      .click();
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            getComputedStyle(
+              document.querySelector("[data-route-content]")!,
+            ).opacity,
+        ),
+      )
+      .toBe("1");
+  });
+
+  test("rapid taps settle to one entrance and clear the flag", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const bar = page.getByRole("navigation").first();
+    for (const label of ["Bible", "Discover", "Prayers"]) {
+      await bar
+        .getByRole("link", { name: new RegExp(`^${label}$`, "i") })
+        .click({ noWaitAfter: true });
+      await page.waitForTimeout(100);
+    }
+    await page.waitForTimeout(SETTLED_MS);
+
+    // The exit is a transition toward a fixed target, so a second tap while
+    // already faded is a no-op and nothing queues; the entrance is a mount
+    // animation on a node the router replaces, so only the last one exists.
+    expect(
+      await page.evaluate(() => ({
+        exitFlag: document.body.dataset.routeExit ?? null,
+        wrappers: document.querySelectorAll(".route-fade").length,
+        opacity: getComputedStyle(
+          document.querySelector("[data-route-content]")!,
+        ).opacity,
+      })),
+    ).toEqual({ exitFlag: null, wrappers: 1, opacity: "1" });
+  });
+
+  test("a navigation that never answers still restores the screen", async ({
+    page,
+  }) => {
+    await page.goto("/bible");
+    await page.waitForTimeout(SETTLED_MS);
+    // Kill every subsequent request so the tap can never commit. Without the
+    // watchdog in lib/ui/routeTransition.ts this leaves a blank screen.
+    await page.route("**/*", (route) => route.abort());
+    await page
+      .getByRole("navigation")
+      .getByRole("link", { name: /^Discover$/i })
+      .click({ noWaitAfter: true });
+
+    await expect
+      .poll(
+        () =>
+          page.evaluate(
+            () =>
+              getComputedStyle(
+                document.querySelector("[data-route-content]")!,
+              ).opacity,
+          ),
+        { timeout: 5_000 },
+      )
+      .toBe("1");
+  });
+
+  test("scrolling and opening a sheet never start a page transition", async ({
+    page,
+  }) => {
+    await page.goto("/bible");
+    await page.waitForTimeout(SETTLED_MS);
+    // Stamp the wrapper so a remount is detectable by identity, not by guess.
+    await page.evaluate(() => {
+      (document.querySelector(".route-fade") as HTMLElement & {
+        __probe?: string;
+      }).__probe = "kept";
+    });
+
+    await page.mouse.wheel(0, 600);
+    await page.waitForTimeout(200);
+    await page.mouse.wheel(0, -600);
+    await page.waitForTimeout(200);
+
+    expect(
+      await page.evaluate(() => ({
+        exitFlag: document.body.dataset.routeExit ?? null,
+        kept:
+          (
+            document.querySelector(".route-fade") as HTMLElement & {
+              __probe?: string;
+            }
+          )?.__probe ?? null,
+      })),
+    ).toEqual({ exitFlag: null, kept: "kept" });
+  });
+});

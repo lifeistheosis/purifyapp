@@ -167,7 +167,11 @@ export default async function Home() {
  {/* No safe-pt: TodayMobileV3's header (MobileTopTabs) is `sticky top-0`
     and owns the status-bar inset itself, clearing the bar at rest AND when
     pinned on scroll. Adding safe-pt here too double-padded the top. */}
- <div className="flex-1 safe-pb">
+ {/* data-route-content: the target of the route-exit fade. It has to be
+    a SIBLING of MobileTabBar, never an ancestor, so the bar does not fade
+    with the content and the selected tab answers a tap immediately. See
+    lib/ui/routeTransition.ts. */}
+ <div data-route-content className="flex-1 safe-pb">
  <TodayMobileV3 />
  </div>
  <MobileTabBar />

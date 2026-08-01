@@ -26,6 +26,7 @@ import {
   usePersistentAudio,
 } from "@/lib/prayers/persistentAudioStore";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ProgressBar } from "@/components/ui/ProgressBar";
 
 /** Where the full player lives, so the bar can hand off rather than duplicate. */
 const PLAYER_HREF = "/prayers/anthem";
@@ -77,15 +78,18 @@ export function NowPlayingBar() {
             {fmt(currentTime)}
             {duration > 0 ? ` / ${fmt(duration)}` : ""}
           </p>
-          <span
-            aria-hidden
-            className="mt-1 block h-[2px] w-full overflow-hidden rounded-full bg-paper/15"
-          >
-            <span
-              className="block h-full bg-paper/50"
-              style={{ width: `${pct}%` }}
-            />
-          </span>
+          {/* Decorative: the elapsed and total time sit in the line above,
+              so a second announcement of the same number is noise. No label
+              means the shared bar renders aria-hidden. 150ms because this
+              follows audio position, where the default step would lag. */}
+          <ProgressBar
+            value={pct / 100}
+            height={2}
+            tone="paper"
+            durationMs={150}
+            className="mt-1 rounded-full"
+            trackClassName="bg-paper/15"
+          />
         </Link>
 
         <button

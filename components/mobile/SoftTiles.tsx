@@ -49,7 +49,7 @@ export function SoftTile({
     <Tag
       href={href}
       {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      className="group relative overflow-hidden rounded-[22px] p-4 shadow-[0_12px_28px_-14px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/10 transition-transform active:scale-[0.98]"
+      className="press-card group relative overflow-hidden rounded-[22px] p-4 shadow-[0_12px_28px_-14px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/10"
       style={{ background: TONES[tone] }}
     >
       <span
@@ -99,7 +99,7 @@ export function FeatureBand({
   return (
     <Link
       href={href}
-      className="group relative block overflow-hidden rounded-[28px] p-5 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.5)] transition-transform active:scale-[0.99]"
+      className="press-card group relative block overflow-hidden rounded-[28px] p-5 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.5)]"
       style={{
         background:
           "radial-gradient(115% 90% at 88% 12%, rgba(255,255,255,0.16) 0%, transparent 55%), linear-gradient(150deg, #34343a 0%, #232327 60%, #1a1a1d 100%)",

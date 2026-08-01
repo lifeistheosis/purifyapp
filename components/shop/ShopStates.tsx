@@ -2,24 +2,41 @@
 
 import Link from "next/link";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
+import { cn } from "@/lib/cn";
 
 // Shared loading / error / sign-in states for the client shop pages. The shop
 // is online-only inside the native shell, so a dropped connection lands on
 // ShopError with a retry rather than a blank screen.
 
+/**
+ * The wait on a shop page that is a list (orders, messages, requests, an
+ * application). Was a single centred line of text, which reads as an empty
+ * screen rather than a loading one. The label survives as the accessible
+ * name, so a screen reader still hears what is being fetched.
+ */
 export function ShopLoading({ label = "Loading…" }: { label?: string }) {
   return (
-    <p className="py-16 text-center font-sans text-caption text-paper/45">
-      {label}
-    </p>
+    <div aria-busy aria-label={label} className="py-8">
+      <SkeletonList rows={3} />
+    </div>
   );
 }
 
-/** Shimmer building block. */
+/**
+ * Shimmer building block. A thin wrapper over the shared `Skeleton` rather
+ * than a second implementation of it: the shop's bones carry a hairline
+ * border and the app's do not, and that is the only difference worth
+ * keeping.
+ */
 function Bone({ className }: { className?: string }) {
   return (
-    <div
-      className={`animate-pulse rounded-lg border border-paper/8 bg-paper/[0.04] ${className ?? ""}`}
+    <Skeleton
+      weight="faint"
+      rounded="rounded-lg"
+      // bg kept at the shop's exact shade rather than the shared weights,
+      // so consolidating the primitive changes no pixels.
+      className={cn("border border-paper/8 bg-paper/[0.04]", className)}
     />
   );
 }

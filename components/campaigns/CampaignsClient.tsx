@@ -13,6 +13,7 @@ import {
 } from "@/lib/campaigns/campaigns";
 import { fetchCampaigns } from "@/lib/campaigns/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 export function CampaignsClient({ embedded = false }: { embedded?: boolean }) {
   const { t } = useTranslate();
@@ -93,9 +94,23 @@ export function CampaignsClient({ embedded = false }: { embedded?: boolean }) {
         {/* List */}
         <div className="mt-8 space-y-3">
           {campaigns === null ? (
-            <p className="py-10 text-center font-sans text-ui text-paper/40">
-              {t("shop.gatheringTheCampaigns")}
-            </p>
+            // Client-fetched, so no route loading.tsx covers this. Campaign
+            // cards are image-led, so the placeholder is a plate over two
+            // lines rather than the generic list row.
+            <div aria-busy aria-label={t("shop.gatheringTheCampaigns")} className="cascade cascade-tight space-y-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="overflow-hidden rounded-2xl border border-paper/10"
+                >
+                  <Skeleton weight="mid" rounded="rounded-none" className="aspect-[16/9] w-full" />
+                  <div className="space-y-2 p-4">
+                    <Skeleton weight="strong" className="h-4 w-[65%]" />
+                    <Skeleton weight="faint" className="h-3 w-[40%]" />
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : campaigns.length === 0 ? (
             <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
               <p className="font-serif text-lede text-paper/80">

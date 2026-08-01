@@ -25,6 +25,23 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 2.9",
+ kind: "The app moves like one thing",
+ date: "August 1, 2026",
+ blurb:
+  "Almost all of this one is about how Purify answers your thumb rather than what is in it. Moving between the seven tabs was a hard cut: one screen vanished, the next appeared already finished, and on a slower phone there was a blank moment in between with nothing to say that your tap had registered. Screens now leave and arrive. Titles and cards settle rather than snap. And the Fathers' commentary, which a reader in the Android beta reported twice, is finally clear of the tab bar.",
+ items: [
+  "The tab bar no longer covers the commentary. A reader in the Android beta reported twice that the last lines of a Father were unreachable, and then that a second commentary on the same verse could not be opened at all. Both were the same fault: the bar at the foot of the app was drawn on top of the sheet. Text sat behind it, and any commentary heading that scrolled into that band took the tap itself. The July fix added space at the bottom of the sheet, which moved the text but left the bar taking the taps, because space underneath cannot stop something drawn on top. The bar now steps aside for as long as the sheet is open.",
+  "The mark that opens a commentary is big enough to hit. On a phone, a verse with commentary carries a small red verse number and a dot, and tapping it opens the sheet. That mark measured five pixels tall, so a tap landed beside it more often than on it. The area that answers your thumb is now about twenty five pixels square. The mark itself is unchanged: same size, same colour, same place, and the lines of the verse have not moved by a pixel.",
+  "Moving between tabs is one motion instead of a cut. Tapping a tab begins fading the screen you are leaving in the same instant as the tap, before the app has started building the one you asked for, and the new screen fades in as it arrives. Leaving takes about a seventh of a second and arriving about a quarter. The bar itself never fades, so the tab you pressed lights up immediately and the app answers you before the page does.",
+  "Screens settle into place. A screen's title, and then the cards under it, rise a few pixels as they fade in, each a fraction behind the one above: six pixels for a title, eight for a card, thirty eight thousandths of a second apart. The reading screens are deliberately left out, because their chapter pill, verse toolbar, progress bar and commentary sheet are pinned to the glass, and anything that moves the page underneath them drags them out of position. That is the same fault as the tab bar over the commentary, and it is now guarded by a test.",
+  "Everything you press answers the same way. How far a control dips when you hold it is two numbers for the whole app, one for small things like pills and icon buttons and one for large tappable cards and rows, rather than being retyped at every place that wanted the effect. Seven places on the mobile screens had rolled their own slightly different version and now use the shared ones.",
+  "Waiting looks like the screen you are waiting for. Discover, Prayers, Account and the campaigns list showed a line of grey text while they loaded, or nothing at all. Each now shows the shape of what is coming, so the layout does not jump when the content lands.",
+  "If you have asked your phone for less motion, there is none. Every animation here is switched off when your device is set to reduce motion. Not shortened, switched off.",
+  "The two thin gold progress bars, the one at the top of a chapter and the one on a saint's work, are now the same piece of the app rather than two copies of the same eight lines. Cache version steps to purify-beta-2.9.0.",
+ ],
+ },
+ {
  version: "Beta 2.8",
  kind: "Daniel is whole again, and the app stops saying everything twice",
  date: "August 1, 2026",

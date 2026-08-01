@@ -55,22 +55,29 @@ export function ProductMediaManager({
   async function upload(file: File) {
     setBusy(true);
     setError(null);
-    const body = new FormData();
-    body.append("file", file);
-    const res = await fetch("/api/admin/shop/media", { method: "POST", body });
-    const data = (await res.json().catch(() => ({}))) as {
-      url?: string;
-      error?: string;
-    };
-    setBusy(false);
-    if (res.ok && data.url) {
-      const cleanAlt = file.name
-        .replace(/\.[a-z0-9]+$/i, "")
-        .replace(/[-_]+/g, " ")
-        .trim();
-      onChange([...rows, { media_url: data.url, alt_text: cleanAlt }]);
-    } else {
-      setError(data.error ?? "Upload failed.");
+    // try/finally: a thrown fetch (flaky network) must never strand the
+    // manager on "Uploading…" with no visible error.
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      const res = await fetch("/api/admin/shop/media", { method: "POST", body });
+      const data = (await res.json().catch(() => ({}))) as {
+        url?: string;
+        error?: string;
+      };
+      if (res.ok && data.url) {
+        const cleanAlt = file.name
+          .replace(/\.[a-z0-9]+$/i, "")
+          .replace(/[-_]+/g, " ")
+          .trim();
+        onChange([...rows, { media_url: data.url, alt_text: cleanAlt }]);
+      } else {
+        setError(data.error ?? `Upload failed (${res.status}). Try again.`);
+      }
+    } catch {
+      setError("Upload failed: network dropped. Try again.");
+    } finally {
+      setBusy(false);
     }
   }
 

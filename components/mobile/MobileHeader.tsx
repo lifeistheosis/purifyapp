@@ -35,7 +35,11 @@ export function MobileHeader({
     // inside the (app) layout's <main class="safe-pt">, which already clears
     // the bar. Adding env(safe-area-inset-top) here too double-padded the top.
     <header className="flex items-center justify-between gap-3 px-5 pt-4 pb-2">
-      <h1 className="min-w-0 truncate font-sans text-lede font-bold tracking-[-0.01em] text-paper">
+      {/* `title-in` lifts the title a few px as the screen arrives. One edit
+          covers Bible, Discover, Prayers, Reading and You, because this
+          header owns the h1 for all of them. Transform only: the opacity is
+          already owned by `.route-fade` above it. */}
+      <h1 className="title-in min-w-0 truncate font-sans text-lede font-bold tracking-[-0.01em] text-paper">
         {resolvedTitle}
       </h1>
       {/* The gold Premium pill is always present (the mobile parallel of the

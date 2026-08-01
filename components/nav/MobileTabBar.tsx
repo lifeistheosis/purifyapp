@@ -25,6 +25,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { haptic } from "@/lib/ui/motion";
 import { shopEnabled } from "@/lib/shop/flags";
 import { useOverlayOpen } from "@/lib/ui/overlay";
+import { beginRouteExit } from "@/lib/ui/routeTransition";
 
 /**
  * Persistent bottom tab bar on `< md` viewports. Hidden on desktop, which
@@ -223,8 +224,21 @@ export function MobileTabBar() {
                   // the bar feel noisy rather than responsive. Best-effort by
                   // design: iOS WKWebView has no navigator.vibrate, so this is
                   // never the only feedback a tap gives.
+                  //
+                  // The exit fade starts here, in the same tick as the tap and
+                  // before React schedules the navigation, so the outgoing
+                  // screen begins leaving while the destination is still being
+                  // rendered. It fades `[data-route-content]`, which is a
+                  // sibling of this bar, so the bar itself never dims and the
+                  // selected state answers instantly. Guarded by the same
+                  // `!active` check: re-tapping the current tab navigates
+                  // nowhere, and fading the screen for it would be a flicker
+                  // with no destination. See lib/ui/routeTransition.ts.
                   onClick={() => {
-                    if (!active) haptic("light");
+                    if (!active) {
+                      haptic("light");
+                      beginRouteExit();
+                    }
                   }}
                   className={cn(
                     "tap-press",

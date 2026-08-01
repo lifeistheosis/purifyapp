@@ -30,6 +30,17 @@ import { Star } from "@/components/ui/icons/Star";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 
+/**
+ * The mobile commentary marker is a superscript verse number plus a 5px dot,
+ * sized for the page, not for a thumb: as laid out its button box measures
+ * about 19x5, well under the 24x24 WCAG 2.5.8 asks for, and a real tap on it
+ * misses more often than it lands. This grows the touch region only, with an
+ * out-of-flow pseudo-element centred on the marker, so the superscript keeps
+ * its deliberate size and the verse line box is untouched.
+ */
+const TAP_TARGET =
+ "relative touch-manipulation after:absolute after:content-[''] after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:h-6 after:w-full after:min-w-6";
+
 function tokenize(text: string): string[] {
  return text.trim().split(/\s+/);
 }
@@ -471,7 +482,10 @@ export function VerseRow({
  e.stopPropagation();
  onOpenCommentary?.();
  }}
- className="lg:hidden group/cmt inline-flex items-baseline text-[#f2594e] active:text-[#ff7a6e] transition-colors"
+ className={cn(
+ "lg:hidden group/cmt inline-flex items-baseline text-[#f2594e] active:text-[#ff7a6e] transition-colors",
+ TAP_TARGET,
+ )}
  aria-label={`Open commentary on verse ${verse.n}`}
  >
  <sup className="font-sans text-eyebrow font-semibold tracking-[0.05em]">
@@ -648,7 +662,10 @@ export function VerseRow({
  e.stopPropagation();
  onOpenCommentary?.();
  }}
- className="lg:hidden inline-flex items-baseline text-[#f2594e] active:text-[#ff7a6e] transition-colors"
+ className={cn(
+ "lg:hidden inline-flex items-baseline text-[#f2594e] active:text-[#ff7a6e] transition-colors",
+ TAP_TARGET,
+ )}
  aria-label={`Open commentary on verse ${verse.n}`}
  >
  <span

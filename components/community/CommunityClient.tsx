@@ -29,6 +29,7 @@ import {
   type FlorilegiumItem,
 } from "@/lib/florilegium/florilegium";
 import { resolveUser } from "@/lib/supabase/resolveUser";
+import { SkeletonList } from "@/components/ui/Skeleton";
 
 /**
  * The Community tab: prayer campaigns and conversations side by side.
@@ -203,9 +204,14 @@ function ConversationsPanel() {
 
           <div className="mt-6 space-y-4">
             {result === undefined ? (
-              <p className="py-10 text-center font-sans text-ui text-paper/40">
-                {t("community.gathering")}
-              </p>
+              // The conversations feed is fetched on the device, so a route
+              // loading.tsx never covers this wait. Skeleton rows rather than
+              // a line of text: they say how much is coming and where it will
+              // sit, and the swap is a change of contents rather than a
+              // reflow. The word "Gathering" is kept as the accessible name.
+              <div aria-busy aria-label={t("community.gathering")}>
+                <SkeletonList rows={4} />
+              </div>
             ) : result.state === "error" ? (
               // Say so, and offer the way out. Rendering the empty state here
               // would tell the reader the community is quiet when in fact we

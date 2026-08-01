@@ -47,7 +47,7 @@ export function DiptychPreview() {
       ))}
       <Link
         href="/prayers/personal"
-        className="inline-flex items-center justify-center h-[44px] px-3 rounded-md border border-paper/15 bg-paper/[0.03] text-paper/65 font-sans text-caption uppercase tracking-[1px] active:scale-[0.97] transition-transform"
+        className="tap-press inline-flex items-center justify-center h-[44px] px-3 rounded-md border border-paper/15 bg-paper/[0.03] text-paper/65 font-sans text-caption uppercase tracking-[1px]"
       >
         {t("ui.manage")}
       </Link>

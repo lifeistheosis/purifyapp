@@ -142,6 +142,40 @@
  --duration-slow: 480ms;     /* large surfaces, sheets           */
 
  --stagger-step: 70ms;
+
+ /* A tighter step, for a screen ARRIVING rather than a list settling in.
+  70ms is right when the eye is meant to follow each row down; on a page
+  entrance the same interval reads as the screen being slow to assemble.
+  38ms is felt but not counted.
+
+  Scoped, never global: `.cascade-tight` rebinds --stagger-step for its own
+  subtree, so the ten-plus existing `.cascade` call sites keep 70ms.
+  TO RETUNE THE STAGGER: change this one number. */
+ --stagger-step-tight: 38ms;
+
+ /* Route transition, the two halves of one motion, tuned together. The exit
+  is about half the entrance: content that is leaving should stop competing
+  for attention quickly, content that is arriving should be gentle enough to
+  register. --duration-route-enter also decides when the destination's
+  cascade starts (see `.route-fade .cascade > *`).
+  TO RETUNE THE PAGE FADE: change these two. */
+ --duration-route-exit: 140ms;
+ --duration-route-enter: 260ms;
+ --duration-title: 280ms;
+
+ /* Entrance travel. The ONLY two distances in the route-entrance system;
+  everything else is opacity. Small on purpose: past about 10px a staggered
+  rise stops reading as settling and starts reading as a list animating in.
+  TO RETUNE THE TRAVEL: change these. Setting both to 0px turns all movement
+  off without touching a single component. */
+ --rise-title: 6px;
+ --rise-card: 8px;
+
+ /* How far a pressed control dips. Was hard-typed in the touch-feedback
+  rules below. Smaller number, deeper dip.
+  TO RETUNE THE PRESS: change these. */
+ --press-scale-sm: 0.97;   /* small controls: pills, icon buttons */
+ --press-scale-card: 0.98; /* large tappable cards and list rows  */
 }
 
 /* ----------------------------------------------------------------------
@@ -1286,11 +1320,11 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  touch-action: manipulation;
 }
 .tap-press:active {
- transform: scale(0.96);
+ transform: scale(var(--press-scale-sm));
  transition-duration: 90ms;
 }
 .press-card:active {
- transform: scale(0.98);
+ transform: scale(var(--press-scale-card));
  background-color: rgba(255, 255, 255, 0.03);
  transition-duration: 90ms;
 }
@@ -1412,13 +1446,133 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
    fade, so its cascade correctly starts at zero without any exception
    here. Specificity beats the base rule, so it needs no `!important`. */
 .route-fade .cascade > * {
- --cascade-start: var(--duration-base);
+ --cascade-start: var(--duration-route-enter);
 }
 
 @media (prefers-reduced-motion: reduce) {
  .cascade > * {
  animation: none;
  opacity: 1;
+ }
+}
+
+/* ── Cascade modifiers ────────────────────────────────────────────────
+   Two opt-in modifiers on the cascade above. Both are ADDITIVE: `.cascade`
+   itself is unchanged, so Today, the saints index, TimelineRail, the
+   Skeleton family and the seven route `loading.tsx` files keep exactly the
+   behaviour they have now.
+
+   `.cascade-tight` — a faster step, for a screen arriving. It rebinds
+                      --stagger-step for its own subtree; the base rule reads
+                      the variable at the child, so inheritance does the work
+                      and no selector is duplicated.
+
+   `.cascade-rise`  — adds a small upward travel to the fade. Pair it with
+                      `.cascade`; it only swaps the animation-name, so the
+                      duration, easing and stagger delay still come from the
+                      base rule.
+
+   ── The rule for `.cascade-rise`, and it is not negotiable ──
+   A transform makes an element a containing block for `position: fixed`
+   descendants, and a stacking context. `translateY(0)` is a transform;
+   `none` is not. So a rise with `animation-fill-mode: both` would leave
+   every child permanently displacing anything fixed inside it. That is the
+   shape of the tab-bar-over-the-commentary-sheet bug (5ee95ed3), and it is
+   why `.route-fade` and `.cascade` are opacity-only.
+
+   `backwards` is what makes the travel safe here: the from-state is held
+   only through the stagger delay, and when the animation ends the child
+   returns to its base style, transform: none. The hazard is bounded by the
+   entrance instead of lasting the life of the page.
+
+   Even so: never put `.cascade-rise` on a subtree that renders a `fixed` or
+   `sticky` element inline. In this codebase that means the reader routes,
+   whose chrome (MobileChapterPill, MobileNextChapterFab, MobileVerseToolbar,
+   MobileCommentarySheet, ReadingProgressBar, MobileWorkPill) is fixed and
+   not portaled. Put `.rise-none` on the one offending child when the rest
+   of the screen should still rise.
+
+   TO RETUNE: --stagger-step-tight (the interval) and --rise-card (the
+   travel, 0px to disable) in the @theme block at the top of this file. */
+@keyframes cascade-rise-in {
+ from { opacity: 0; transform: translateY(var(--rise-card, 8px)); }
+}
+
+.cascade-tight {
+ --stagger-step: var(--stagger-step-tight);
+}
+
+.cascade.cascade-rise > * {
+ animation-name: cascade-rise-in;
+ animation-fill-mode: backwards;
+}
+
+/* Escape hatch: this child fades but does not move, for a child that
+   renders an inline `fixed` element. components/today/VerseCardActions.tsx
+   is the one such child in the tree today. */
+.cascade.cascade-rise > .rise-none {
+ animation-name: cascade-in;
+}
+
+@media (prefers-reduced-motion: reduce) {
+ .cascade.cascade-rise > * {
+ animation: none;
+ opacity: 1;
+ transform: none;
+ }
+}
+
+/* ── Title entrance ───────────────────────────────────────────────────
+   The page title lifts a few px into place as its screen arrives.
+
+   TRANSFORM ONLY, and that is the design rather than an oversight. On an
+   `(app)` route the title sits inside `.route-fade`, which already owns the
+   opacity; on Today it sits inside a `.cascade` child, which also owns the
+   opacity. A second opacity ramp on top would multiply with the first (a
+   title at 50% inside a wrapper at 50% paints at 25%) and the heading would
+   arrive muddier than the body text under it. It only moves.
+
+   `backwards`, never `both`: when the animation ends the element returns to
+   its base style, so `transform` is `none` again and the heading is not a
+   containing block for anything. A heading holds text and could not hold
+   fixed chrome anyway; the fill makes that true by construction rather than
+   by inspection.
+
+   Few call sites by design: components/mobile/MobileHeader.tsx owns the h1
+   for Bible, Discover, Prayers and You, plus GreetingHeader for Today and
+   ShopHomeClient for Shop.
+
+   TO RETUNE: --rise-title (0px disables the movement) and --duration-title. */
+@keyframes title-in {
+ from { transform: translateY(var(--rise-title, 6px)); }
+}
+.title-in {
+ animation: title-in var(--duration-title) var(--ease-house) backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+ .title-in {
+ animation: none;
+ transform: none;
+ }
+}
+
+/* ── Completion mark ──────────────────────────────────────────────────
+   A finished action draws its check rather than popping it. `pathLength=1`
+   on the icon's path normalises the geometry, so these dash values are
+   exact whatever size the icon renders at.
+
+   Deliberately not `--ease-pop`: an overshoot on a confirmation reads as
+   celebration, and this app confirms, it does not congratulate. */
+@keyframes check-draw {
+ from { stroke-dasharray: 1; stroke-dashoffset: 1; }
+ to { stroke-dasharray: 1; stroke-dashoffset: 0; }
+}
+.check-draw path {
+ animation: check-draw var(--duration-base) var(--ease-house) backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+ .check-draw path {
+ animation: none;
  }
 }
 
@@ -1453,20 +1607,71 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 /* Route entrance. The in-app routes wrap their page content in
    app/(app)/template.tsx, which re-mounts on navigation; this fades that
    content in so a tab switch or a drill-in arrives gently instead of
-   hard-cutting ("teleporting"). Opacity ONLY — no transform — so the
-   fade never establishes a containing block that would displace fixed
+   hard-cutting ("teleporting"). Opacity ONLY, no transform, so the fade
+   never establishes a containing block that would displace fixed
    descendants (tab bar, reader pills, overlays). Reduced-motion users get
-   the instant swap. */
+   the instant swap.
+
+   `backwards`, NOT `both`, and that is a correctness choice rather than a
+   stylistic one. `both` keeps the animation in effect after it finishes,
+   which makes this wrapper a PERMANENT stacking context: every z-index
+   inside it, including the commentary sheet's z-[60], is scoped to the
+   wrapper and paints below the root-level z-50 tab bar. That is the fault
+   reported twice from the Android beta and fixed in 5ee95ed3 by stepping
+   the bar aside on the overlay flag, since raising the sheet's z-index
+   could not reach it. `backwards` fills only during the (zero) delay and
+   hands the element back to its base style, opacity: 1, when the animation
+   ends: visually identical, but the stacking context now lasts one
+   animation instead of the life of the page. The overlay-flag fix stays as
+   defence in depth, and BibleSearchOverlay (fixed inset-0 z-50, rendered
+   inline inside this wrapper and not wired to the overlay flag) stops
+   being trapped for free.
+
+   Guarded by tests/smoke/mobile-shell.spec.ts. If that regression fails,
+   this line is the first thing to revert. */
 @keyframes route-fade {
  from { opacity: 0; }
  to { opacity: 1; }
 }
 .route-fade {
- animation: route-fade var(--duration-base) var(--ease-house) both;
+ animation: route-fade var(--duration-route-enter) var(--ease-house) backwards;
 }
 @media (prefers-reduced-motion: reduce) {
  .route-fade {
  animation: none;
+ }
+}
+
+/* ── Route exit ───────────────────────────────────────────────────────
+   The outgoing half of a tab switch. React does not keep the previous tree
+   mounted across a navigation, so this cannot be a component animation: by
+   the time the destination renders, the old screen is already gone. The tab
+   bar instead raises a flag on document.body the instant a tab is tapped
+   (lib/ui/routeTransition.ts, the same shape as lib/ui/overlay.ts), and
+   this fades the CONTENT, never the chrome, while the navigation resolves.
+
+   The target is `<main data-route-content>` in app/(app)/layout.tsx and the
+   equivalent wrapper in app/page.tsx. Both are SIBLINGS of MobileTabBar, so
+   the bar never fades and the selected tab answers immediately, which is
+   the point: the tap must feel answered before anything else moves.
+
+   Opacity only, for the same containing-block reason as `.route-fade`.
+
+   Note that the transition is declared on the FLAGGED state, not on the
+   base rule. That is deliberate. When the flag is removed the transition
+   declaration goes with it, so the element snaps back to opacity 1 in one
+   frame and `.route-fade` owns the entrance alone. Were the transition on
+   the base rule, the wrapper would ramp 0 to 1 at the same time as the
+   route fade, and a child at 50% inside a wrapper at 50% paints at 25%:
+   the soft mush the cascade comment above warns about. */
+body[data-route-exit] [data-route-content] {
+ opacity: 0;
+ transition: opacity var(--duration-route-exit) var(--ease-house);
+}
+@media (prefers-reduced-motion: reduce) {
+ body[data-route-exit] [data-route-content] {
+ opacity: 1;
+ transition: none;
  }
 }
 

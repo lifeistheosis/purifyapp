@@ -53,7 +53,7 @@ export function BookSpine({
         "relative inline-flex flex-col justify-between shrink-0",
         "h-[120px] w-[68px] rounded-md overflow-hidden",
         "border border-paper/10 bg-paper/[0.03]",
-        "active:scale-[0.97] transition-transform",
+        "tap-press",
       )}
     >
       <span

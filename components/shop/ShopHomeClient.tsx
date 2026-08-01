@@ -42,7 +42,7 @@ export function ShopHomeClient() {
         <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/70">
           {t("shop.purifyShop")}
         </p>
-        <h1 className="mx-auto mt-3 max-w-[640px] font-display-serif text-display-sm md:text-display text-paper leading-[1.05]">
+        <h1 className="title-in mx-auto mt-3 max-w-[640px] font-display-serif text-display-sm md:text-display text-paper leading-[1.05]">
           {t("shop.iconsForTheLifeOf")}
         </h1>
         <p className="mx-auto mt-3.5 max-w-[440px] font-serif text-body md:text-lede text-paper/70 leading-[1.6]">
@@ -147,6 +147,12 @@ export function ShopHomeClient() {
               <h2 className="mb-4 font-display-serif text-title md:text-heading text-paper">
                 {t("shop.recentlyAdded")}
               </h2>
+              {/* Hand-rolled stagger, kept on purpose for now. `.cascade` with
+                  `cascade-tight cascade-rise` is the successor and reads the
+                  same, but this is a product GRID rather than a reading-order
+                  column, and its 520ms per-card `rise-in` is slower than the
+                  cascade's 320ms. Migrate it when the other `.rise-in` call
+                  sites are consolidated, not before. */}
               <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
                 {data.recent.map((p, i) => (
                   <li key={p.id} className="rise-in" style={{ animationDelay: `${Math.min(i * 45, 360)}ms` }}>

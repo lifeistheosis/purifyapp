@@ -45,7 +45,11 @@ export function MobileCard({
       {...(props as { href: string })}
       className={cn(
         "relative block overflow-hidden rounded-2xl border border-paper/10 p-4",
-        href && "active:scale-[0.995] transition-transform",
+        // press-card, not a hand-rolled active:scale. The shared class also
+        // carries the faint brighten, the fast-down/slow-back timing that
+        // makes a press read as a press, touch-action: manipulation, and the
+        // reduced-motion opt-out. See globals.css "Touch feedback".
+        href && "press-card",
         className,
       )}
       style={bg ? { background: bg } : undefined}

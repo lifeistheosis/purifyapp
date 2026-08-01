@@ -17,6 +17,7 @@ import "./globals.css";
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { AppThemeController } from "@/components/theme/AppThemeController";
 import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
+import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
 import { NativeBridge } from "@/components/native/NativeBridge";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
 import { SITE_URL } from "@/lib/site";
@@ -226,6 +227,10 @@ export default async function RootLayout({
  <MessagesProvider locale={localeCode} messages={messages}>
  <AppThemeController />
  <LocaleBootstrap />
+ {/* Root layout, for the same reason as NowPlayingBar below: Today sits
+     outside the (app) group, so a bridge mounted in (app)/template.tsx
+     would never clear the exit fade on a tap into Today. */}
+ <RouteExitBridge />
  {children}
  {/* Root layout, not (app)/layout.tsx. Today is app/page.tsx, outside
      the (app) group, so a bar mounted there would unmount on every

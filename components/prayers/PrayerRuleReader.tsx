@@ -26,6 +26,7 @@ import {
 } from "@/lib/prayers/bookmarks";
 import type { Prayer, PrayerVariant, Rule } from "@/lib/prayers/types";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ProgressBar } from "@/components/ui/ProgressBar";
 
 // Re-exported for back-compat: morning/evening pages import these as types.
 export type { Prayer, PrayerVariant, Rule } from "@/lib/prayers/types";
@@ -200,12 +201,10 @@ export function PrayerRuleReader({
           </button>
         </div>
       </div>
-      <div className="h-px w-full bg-paper/10 overflow-hidden">
-        <div
-          className="h-full bg-gold/70 transition-[width] duration-300 ease-out"
-          style={{ width: `${Math.round(progress * 100)}%` }}
-        />
-      </div>
+      {/* Decorative: the line directly above already reads "n of m prayed
+          today", so a progressbar announcing the same fraction would say it
+          twice. No label means the shared bar renders aria-hidden. */}
+      <ProgressBar value={progress} height={1} trackClassName="bg-paper/10" />
 
       {/* Completion — a quiet doxology, no banner. */}
       {allDone && (

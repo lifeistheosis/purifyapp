@@ -53,7 +53,7 @@ export function SavedPreview() {
             <li key={b.id}>
               <Link
                 href={bookmarkHref(b)}
-                className="flex items-center justify-between gap-3 rounded-md border border-paper/8 bg-paper/[0.02] px-3 py-2.5 active:scale-[0.99] transition-transform"
+                className="press-card flex items-center justify-between gap-3 rounded-md border border-paper/8 bg-paper/[0.02] px-3 py-2.5"
               >
                 <span className="font-sans text-detail text-paper truncate flex-1">
                   {b.label ?? "Bookmark"}

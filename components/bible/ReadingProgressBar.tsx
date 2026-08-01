@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { writeLastRead } from "@/lib/bible/lastRead";
+import { ProgressBar } from "@/components/ui/ProgressBar";
 
 /**
  * Slim sticky progress bar at the top of a chapter, plus a mobile-only
@@ -136,12 +137,11 @@ export function ReadingProgressBar({
  desktop it sits flush under the 72px AppNav. */}
  <div
  aria-hidden
- className="fixed left-0 right-0 z-30 h-[2px] bg-white/5 top-[80px] below-topbar-line md:top-[72px]"
+ className="fixed left-0 right-0 z-30 top-[80px] below-topbar-line md:top-[72px]"
  >
- <div
- className="h-full bg-gold origin-left transition-transform duration-150 ease-out"
- style={{ transform: `scaleX(${progress})` }}
- />
+ {/* Decorative, and scroll-driven: 150ms so the fill tracks the thumb
+     instead of trailing it. */}
+ <ProgressBar value={progress} height={2} durationMs={150} />
  </div>
  </>
  );
