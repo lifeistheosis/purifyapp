@@ -350,3 +350,52 @@ awaiting her review.**
 Still not done from the approved plan: Release E (community notifications,
 identity, reactions, feed) and Release F (chant player, still blocked on the
 anthem recording rights in `docs/licensing/audio-provenance.md`).
+
+### Addendum — 2026-08-01, Releases E and F
+
+**Release F, the player, done without adding audio.** The engineering never
+needed new tracks, so the owner's go-ahead unblocked it while the rights
+question stayed untouched. `components/prayers/NowPlayingBar.tsx` is mounted
+in the **root** layout, not `(app)/layout.tsx`: Today is `app/page.tsx`,
+outside the `(app)` group, so a bar mounted there unmounts on every Today
+tap, which is exactly when someone walks away from the player. Verified that
+playback and the bar both survive a Today tap.
+
+Dismissing needed a verb the store lacked. `stop()` rewinds but keeps the
+track loaded so the anthem page can resume, which left the bar sitting there
+rewound and unclosable; `unload()` is the other meaning and `stop()` is
+untouched for its existing caller.
+
+`duckFor()` added to the store, and `PrayerRope`'s bell calls it. The rope
+runs its own `AudioContext` oscillator with no knowledge of the store, so a
+bead struck during the anthem sounded straight over it. The duck touches the
+element volume only, never `setVolume` and never the snapshot, so a volume
+slider does not twitch per knot, and overlapping ducks extend rather than
+stack.
+
+**STILL OPEN and NOT a permission question**: whether the three anthem
+recordings already shipping are team-produced or licensed
+(`docs/licensing/audio-provenance.md`). No audio was added, so nothing here
+depends on it, but a chant library does.
+
+**Release E, notifications, done and DARK pending a migration.**
+`supabase/migrations/20260801_community_notifications.sql` must be applied
+in the Supabase SQL editor (project avbqyvjgcrucjwevwixt) before any of it
+lights up. Until then the route answers an empty inbox, the badge never
+renders, and `/community` is unchanged. Verified against the unapplied
+state: page renders normally, no console errors.
+
+Design notes worth keeping: the actor's `user_id` is deliberately NOT stored
+(it is also the RevenueCat appUserID and the avatar storage path segment,
+which is why the public feed stopped serving it); the table has **no insert
+policy at all**, because rows are written by the service role from the reply
+route and never by a client; and reads use the REQUEST-scoped client rather
+than the service role, so RLS scopes an inbox to its owner instead of an
+`.eq()` that could be forgotten. Writing a notification is best effort and
+never fails the reply.
+
+Not done from Release E: identity (a public profile, `profiles` is still
+self-select RLS with no `avatar_url`, and avatar upload still exists only in
+the Community composer), reactions, and the feed work (threading,
+pagination, filter by kind). Notifications were the first and largest of the
+four and the rest are independent of it.

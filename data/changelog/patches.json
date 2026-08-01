@@ -59,6 +59,14 @@
         "body": "Reviews of a store carried a Verified buyer badge whether or not there was a delivered order behind them. Product reviews had already been corrected for this; store reviews had not. The badge now appears only where a real purchase backs it. The reviews themselves are unchanged; only the claim about them is."
       },
       {
+        "heading": "The anthem can be paused from anywhere",
+        "body": "You could start the Prayer Rope Anthem, walk to another screen, and have no way to stop it short of going back and finding the page again. A small bar now sits at the foot of the app whenever something is playing, with the track, the time, and a play and pause you can reach from any screen. It stays out of the way on the anthem page itself, where the full player is already in front of you. And the prayer rope's bead no longer strikes over the top of the chant: the music steps back while the tone sounds and comes up again as it fades."
+      },
+      {
+        "heading": "When someone answers you, you will know",
+        "body": "Until now a reply reached nobody. If someone answered your post you found out by opening the tab again and scrolling down to look. Replies now come back to you: a mark on the Community tab when something is waiting, and a short list at the top of Conversations of who answered and what they said. Nothing is sent to your email and nothing is pushed to your phone."
+      },
+      {
         "heading": "Also",
         "body": "The Today screen had four buttons to Prayers, Bible, Saints and Calendar sitting just above the bar that already carries those, and it called the Bible Scripture while the tab beside it said Bible. They are gone and the day's commemoration has moved up the screen. Cache version steps to purify-beta-2.8.0."
       }
