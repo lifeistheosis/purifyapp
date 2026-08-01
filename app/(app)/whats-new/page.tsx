@@ -42,6 +42,8 @@ const ENTRIES: Entry[] = [
   "The tab bar fits other languages. In Greek, Russian, Romanian and French it ran off the side of the screen and the last tab was partly or wholly unreachable.",
   "A tablet knows what day it is. Beta 2.7 unfroze the date everywhere a phone could see it and missed the wider layout. Discover's featured topic and council, and the day card on Prayers, were still stuck on the day the app was built. The guard meant to catch this was only watching part of the app; it watches all of it now.",
   "The Today screen had four buttons to Prayers, Bible, Saints and Calendar just above the bar that already carries those, and called the Bible Scripture while the tab beside it said Bible. They are gone and the day's commemoration has moved up the screen.",
+  "Susanna, Bel and the Dragon, and the middle of Daniel 3 are here, as the last update promised. Daniel now has fourteen chapters: Susanna is 13 and Bel is 14, and chapter 3 runs to ninety-five verses, with the three young men falling bound into the furnace at verse 23, the Song of the Three from 24 to 90, and Nabuchodonosor hearing them sing at 91. All of it from the same public domain Brenton Septuagint as the rest of the Old Testament.",
+  "One consequence of that: Daniel 3 verses 1 to 23 are where they always were, but sixty-seven verses were restored in the middle, so anything you had highlighted or bookmarked in that chapter after verse 23 now sits at a different number.",
   "Cache version steps to purify-beta-2.8.0.",
  ],
  },

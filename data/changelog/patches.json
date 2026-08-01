@@ -4,7 +4,7 @@
     "version": "Beta 2.8",
     "date": "2026-08-01",
     "title": "The app stops saying everything twice",
-    "intro": "A release about repetition. The same place was offered to you under three different names, screens announced themselves twice before you had read anything, and the prayer index printed thirty-four rows for twenty-seven prayers. Most of this release is deletion. There is also one real fault underneath it: readers on the Old Calendar were being shown the wrong saint and the wrong fast on the daily prayer page.",
+    "intro": "A release about repetition. The same place was offered to you under three different names, screens announced themselves twice before you had read anything, and the prayer index printed thirty-four rows for twenty-seven prayers. Most of this release is deletion. There is also one real fault underneath it: readers on the Old Calendar were being shown the wrong saint and the wrong fast on the daily prayer page. It also carries the Daniel restoration the last update promised.",
     "sections": [
       {
         "heading": "The Old Calendar was ignored on the daily prayer page",
@@ -37,6 +37,10 @@
       {
         "heading": "A tablet knows what day it is",
         "body": "Beta 2.7 unfroze the date everywhere a phone could see it and missed the wider layout, which a tablet shows. On a tablet, Discover's featured topic and council, and the day card on Prayers, were still stuck on the day the app was built. They read the date from the device now, like everything else. The guard that is supposed to catch this class of fault was only watching part of the app, which is why it did not catch it. It watches all of it now."
+      },
+      {
+        "heading": "Susanna, Bel and the Dragon, and the middle of Daniel 3",
+        "body": "Someone asked whether Bel and the Dragon was missing from Daniel. It was, and so was more than that. Susanna was absent, and chapter 3 was short its middle, where the Prayer of Azariah and the Song of the Three Holy Children belong. The last update said these were coming; here they are. Daniel now has fourteen chapters: Susanna is chapter 13 and Bel is chapter 14, and chapter 3 runs to ninety-five verses, with the three young men falling bound into the furnace at verse 23, the Song from 24 to 90, and Nabuchodonosor hearing them sing at 91. Every verse is from the same public domain Brenton Septuagint the rest of the Old Testament is set in. One consequence worth knowing: Daniel 3 verses 1 to 23 are where they always were, but because sixty-seven verses were restored in the middle, anything you had highlighted or bookmarked in that chapter after verse 23 now sits at a different number."
       },
       {
         "heading": "Also",
