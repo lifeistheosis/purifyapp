@@ -97,3 +97,73 @@ Owner directives received and executed:
 - F-10 note: a stale service worker on the local prod preview silently stranded hydration during the highlight-wash verification (no console errors, no failed requests; fixed by unregister+cache clear). Third sighting of this signature; consider promoting F-10 above "low urgency".
 - **F-16 (P1): Purify Plus tap crashed the Android app.** RevenueCat capacitor plugins on mismatched majors (11 vs 13) since 8d07ed8b (06-19); native hybrid-common 17/18 collision at Purchases.configure. Pinned matched 13.2.0 pair; Beta 1.9.4 staged (all 4 identifiers + notes). Residual: device sandbox purchase after AAB #44+.
 - **F-13 root fix (2026-07-12)**: owner hit the retry state live on /account ("couldn't confirm your sign-in"). Cause: jammed cross-tab auth lock; supabase-js hands custom locks an `undefined` acquire timeout (= wait forever). resilientLock.ts caps it and falls back to LOCKLESS on timeout. Proven by a jam-the-lock smoke test (sign-in prompt in 6.8s, retry copy absent). Ships web on next push; native in AAB #44+.
+
+---
+
+## Addendum — 2026-08-01 Release B (mobile de-duplication), branch `feat/release-b-repetition` off `feat/community-safety`
+
+Eleven commits, Beta 2.8 cut. Local only, unpushed. Verification: tsc 0,
+eslint 0 errors, vitest 571/571 (18 new), `npm run build` clean,
+`npm run build:android` clean, browser walk in the native shell at 375px
+and the web tree at 1280px.
+
+**The approved audit's headline recommendation was wrong and was reversed.**
+`~/.claude/plans/time-to-formulate-a-typed-cake.md` §1.1 called
+`/prayers/today` "a second, worse copy of the Today tab" and Release B was
+scoped to retire it. It cannot be retired: `app/page.tsx:166` puts
+`TodayMobileV3` behind `NativeOnly` and the marketing home behind
+`WebOnly`, so **the web has no Today tab and `/prayers/today` is its only
+Today surface**. It is also the PWA manifest shortcut, the install CTA
+target, the 404 tile, the footer and navbar link, the sitemap's only daily
+entry, and `public/sw.js:86`'s offline fallback. Four blocks live only
+there (the on-this-day history, the "where you left off" rail, today's
+diptych namedays, the greeting's 14-day rhythm dots). The duplication was
+native-only and was fixed natively: three in-app doors closed, route kept.
+
+**New finding, fixed: the Old Calendar was ignored on `/prayers/today`.**
+It called `commemorationsOn`/`fastingStatus` on the unshifted civil date
+while `ChurchTodayRail` shifted them, so an Old Calendar reader saw one
+saint and one fasting rule on Today and different ones on the daily prayer
+page. Now shared in `lib/calendar/useChurchDay.ts`, which preserves the
+load-bearing asymmetry: commemoration and fast shift, readings and Pascha
+do not. Verified live at both styles. A third copy of the same bug on the
+desktop Prayers day card went with it.
+
+**New finding, fixed: every "Last saved" card on `/account/profile` linked
+to `/bible/undefined/undefined`.** `ProfileActivity` carried a local
+`Bookmark` type describing the *server* jsonb row (`locator: {...}`);
+`lib/sync/bookmarks.ts` flattens that shape before it reaches
+localStorage. Four bookmark href resolvers are now one exhaustive
+`bookmarkHref` in `lib/bookmarks.ts`.
+
+**Audit items closed:** §2.6 tab bar overflow (`min-w-0` + truncate;
+measured 7 equal 43.6px cells, no overflow at 375px with Greek-length
+labels). §5 double h1, `/prayers/today` lighting the Today tab, the
+duplicated prayer rules, the four `/saints` names, the three dead
+`MobileTopBar` mounts.
+
+**Audit counts corrected:** the double h1 was two routes (`/discover`,
+`/reading`), not "every section" (`SectionMasthead`'s h1 is conditional on
+a `title` prop only those two passed); the duplicated prayer rules were 7
+steady-state, not 11.
+
+**Guard widened.** `noFrozenDay.test.ts` watched three component
+directories, which is exactly why it missed `/discover` and `/prayers`
+computing the day server-side and shipping into the export behind
+`hidden md:*` (frozen on an Android tablet at md+). It now walks `app` and
+`components` with one documented exemption, `/calendar`, plus a third
+assertion that the exemption still names a real file. Proven to fail on a
+deliberate probe before being accepted.
+
+**F-19 and F-20 were NOT touched and remain `corrected-unverified`.** This
+release edits `MobileTabBar` twice (route matching, then `min-w-0` +
+truncate) but changes no z-index, no `overflow-visible`, no positioning and
+no `pointer-events`. Both still need the device check.
+
+**Not done, deliberately:** the 13 routes that match no tab (`/history`,
+`/fasting`, `/premium`, `/pricing`, `/whats-new`, `/about`, `/support`,
+`/privacy`, `/terms`, `/faq`, `/plan`, `/trapeza`, `/florilegium`) still
+leave the bar dark, and two of them are reached straight from Today cards.
+Which tab owns `/pricing` is a design decision, not a de-duplication one.
+Also left: the `blur-xl` blobs in `SoftTiles.tsx:57,108`, and
+`/account/export` sitting outside the `(signed)` group.
