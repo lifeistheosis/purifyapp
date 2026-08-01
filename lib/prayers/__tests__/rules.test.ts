@@ -12,9 +12,11 @@ import fs from "node:fs";
 import path from "node:path";
 import {
   RULES,
+  RULE_CATEGORY_ORDER,
   readerRules,
   planIdParams,
   popularRules,
+  indexRules,
   getRuleMeta,
 } from "@/lib/prayers/rules";
 import type { Rule } from "@/lib/prayers/types";
@@ -84,5 +86,37 @@ describe("Prayer rule registry", () => {
       expect(getRuleMeta(r.id)).toBeTruthy();
       expect(r.planned).toBeFalsy();
     }
+  });
+
+  // Both Prayers surfaces print the popular rail, then every category in
+  // full. With no exclusion between the two, seven rules rendered twice on
+  // one screen. These pin the invariant that made that possible.
+  describe("the index says each rule once", () => {
+    const indexed = RULE_CATEGORY_ORDER.flatMap((c) => indexRules(c));
+
+    it("shows nothing the popular rail already showed", () => {
+      const popular = new Set(popularRules().map((r) => r.id));
+      const repeated = indexed.filter((r) => popular.has(r.id));
+      expect(repeated.map((r) => r.id)).toEqual([]);
+    });
+
+    it("lists every rule at most once across all categories", () => {
+      const ids = indexed.map((r) => r.id);
+      expect(ids.length).toBe(new Set(ids).size);
+    });
+
+    it("leaves every rule reachable from somewhere on the page", () => {
+      // The index, the popular rail, and the two Practices tiles between
+      // them must still cover the whole registry: de-duplicating must not
+      // silently drop a prayer off the surface.
+      const reachable = new Set([
+        ...indexed.map((r) => r.id),
+        ...popularRules().map((r) => r.id),
+        "rope",
+        "intercessory",
+      ]);
+      const missing = RULES.filter((r) => !reachable.has(r.id)).map((r) => r.id);
+      expect(missing).toEqual([]);
+    });
   });
 });

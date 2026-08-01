@@ -389,3 +389,31 @@ export function planIdParams(): { planId: string }[] {
 export function popularRules(): RuleMeta[] {
  return RULES.filter((r) => r.popular);
 }
+
+/**
+ * Ids already shown above the index, so the index can leave them out.
+ *
+ * Both Prayers surfaces print the popular rail and then every category in
+ * full, with no exclusion between them, so seven rules appeared twice on
+ * one screen: 34 rows for 27 prayers. `rope` and `intercessory` are here
+ * too because the Practices tiles are exact-href doors to them.
+ *
+ * The tiles stay: a tile is a door to a surface with its own UI, which is
+ * a different offer from a line in an index. The index is what should not
+ * repeat itself.
+ */
+const ABOVE_THE_INDEX = new Set(["rope", "intercessory"]);
+
+export function indexedRuleIds(): ReadonlySet<string> {
+ const out = new Set(ABOVE_THE_INDEX);
+ for (const r of popularRules()) out.add(r.id);
+ return out;
+}
+
+/** Rules for a category, minus anything the page already showed above it. */
+export function indexRules(
+ category: RuleCategory,
+ exclude: ReadonlySet<string> = indexedRuleIds(),
+): RuleMeta[] {
+ return rulesByCategory(category).filter((r) => !exclude.has(r.id));
+}

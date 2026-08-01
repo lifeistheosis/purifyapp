@@ -26,7 +26,7 @@ import { SuggestedToday } from "@/components/prayers/SuggestedToday";
 import {
   RULE_CATEGORY_ORDER,
   RULE_CATEGORY_LABEL,
-  rulesByCategory,
+  indexRules,
   popularRules,
 } from "@/lib/prayers/rules";
 import { seasonFor, isFastDay } from "@/lib/prayers/season";
@@ -171,7 +171,7 @@ export function PrayersMobile() {
         )}
 
         {RULE_CATEGORY_ORDER.map((category) => {
-          const rules = rulesByCategory(category);
+          const rules = indexRules(category);
           if (rules.length === 0) return null;
           return (
             <div key={category}>

@@ -3,7 +3,6 @@ import { ReadingMobile } from "@/components/mobile/ReadingMobile";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
 import { ContinueReading } from "@/components/reading/ContinueReading";
 import { NextRead } from "@/components/reading/NextRead";
-import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Church } from "@/components/ui/icons/Church";
 import { Book } from "@/components/ui/icons/Book";
 import { Quill } from "@/components/ui/icons/Quill";
@@ -38,12 +37,6 @@ export default async function ReadingPage() {
  href: "/saints",
  blurb: t(m, "reading.surface.patristicBlurb"),
  Icon: Quill,
- },
- {
- label: t(m, "reading.surface.saints"),
- href: "/saints",
- blurb: t(m, "reading.surface.saintsBlurb"),
- Icon: HaloedHead,
  },
  {
  label: t(m, "reading.surface.councils"),

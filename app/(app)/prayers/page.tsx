@@ -25,7 +25,7 @@ import { SuggestedToday } from "@/components/prayers/SuggestedToday";
 import {
   RULE_CATEGORY_ORDER,
   RULE_CATEGORY_LABEL,
-  rulesByCategory,
+  indexRules,
   popularRules,
   type RuleMeta,
 } from "@/lib/prayers/rules";
@@ -335,7 +335,7 @@ export default async function PrayersPage() {
             {/* The book proper — every prayer rule, by category, two columns. */}
             <div className="mt-8 grid gap-x-12 gap-y-10 md:grid-cols-2">
               {RULE_CATEGORY_ORDER.map((category) => {
-                const rules = rulesByCategory(category);
+                const rules = indexRules(category);
                 if (rules.length === 0) return null;
                 const cat = RULE_CATEGORY_LABEL[category];
                 return (
