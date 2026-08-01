@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { useBookmarks, type Bookmark } from "@/lib/bookmarks";
+import { bookmarkHref, useBookmarks, type Bookmark } from "@/lib/bookmarks";
 import { useMounted } from "@/lib/useMounted";
 
 /* ── Verse text (lazy, on demand) ──────────────────────────────────────── */
@@ -319,27 +319,6 @@ function Group({
   );
 }
 
-function hrefFor(b: Bookmark): string {
-  switch (b.kind) {
-    case "bible-verse":
-      return `/bible/${b.book}/${b.chapter}#v${b.verse}`;
-    case "bible-chapter":
-      return `/bible/${b.book}/${b.chapter}`;
-    case "writing-section":
-      return `/saints/${b.saintSlug}/${b.workSlug}#s${b.sectionN}`;
-    case "prayer":
-      return `/prayers/${b.ruleId}#${b.prayerId}`;
-    case "prayer-rule":
-      return b.href;
-    case "history-event":
-      return `/history/${b.eventSlug}`;
-    case "product":
-      return `/shop/icons/${b.productSlug}`;
-    default:
-      return "/saved";
-  }
-}
-
 function titleFor(b: Bookmark): string {
   if (b.kind === "writing-section") return b.sectionTitle;
   return b.label;
@@ -391,7 +370,7 @@ function Row({
   return (
     <li className="px-5 py-4 bg-paper/[0.02] flex items-center gap-4">
       <div className="min-w-0 flex-1">
-        <Link href={hrefFor(bookmark)} className="block group">
+        <Link href={bookmarkHref(bookmark)} className="block group">
           <p className="font-sans text-ui font-semibold text-paper group-hover:text-paper transition-colors truncate">
             {titleFor(bookmark)}
           </p>

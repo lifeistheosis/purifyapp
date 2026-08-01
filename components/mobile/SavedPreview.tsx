@@ -1,89 +1,34 @@
 "use client";
 
-// Three-row preview of the user's most recent bookmarks. Reads
-// purify:bookmarks directly — same shape VerseCardActions and the
-// /saved page use. Empty state is a single quiet line.
+// Three-row preview of the user's most recent bookmarks, read through
+// lib/bookmarks.ts, the same store /saved and the account dashboard use.
+// It used to parse purify:bookmarks itself against a hand-written
+// permissive type, which is how the three surfaces drifted apart.
+// Empty state is a single quiet line.
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { bookmarkHref, useBookmarks, type Bookmark } from "@/lib/bookmarks";
 
-type AnyBookmark = {
-  id: string;
-  kind: string;
-  label?: string;
-  book?: string;
-  chapter?: number;
-  verse?: number;
-  saintSlug?: string;
-  workSlug?: string;
-  ruleId?: string;
-  prayerId?: string;
-  href?: string;
-  eventSlug?: string;
-  addedAt?: number;
-};
-
-const KIND_LABEL: Record<string, string> = {
+const KIND_LABEL: Record<Bookmark["kind"], string> = {
   "bible-verse": "Verse",
   "bible-chapter": "Chapter",
   "writing-section": "Writing",
-  "prayer": "Prayer",
+  prayer: "Prayer",
   "prayer-rule": "Prayer rule",
   "history-event": "History",
+  product: "Icon",
 };
-
-function hrefFor(b: AnyBookmark): string {
-  if (b.kind === "bible-verse" && b.book && b.chapter && b.verse)
-    return `/bible/${b.book}/${b.chapter}#v${b.verse}`;
-  if (b.kind === "bible-chapter" && b.book && b.chapter)
-    return `/bible/${b.book}/${b.chapter}`;
-  if (b.kind === "writing-section" && b.saintSlug && b.workSlug)
-    return `/saints/${b.saintSlug}/${b.workSlug}`;
-  if (b.kind === "prayer" && b.ruleId)
-    return `/prayers/${b.ruleId}#${b.prayerId ?? ""}`;
-  if (b.kind === "prayer-rule" && typeof b.href === "string") return b.href;
-  if (b.kind === "history-event" && typeof b.eventSlug === "string")
-    return `/history/${b.eventSlug}`;
-  return "/saved";
-}
 
 export function SavedPreview() {
   const { t } = useTranslate();
-  const [items, setItems] = useState<AnyBookmark[]>([]);
-  const [total, setTotal] = useState(0);
-
-  useEffect(() => {
-    function recompute() {
-      try {
-        const raw = localStorage.getItem("purify:bookmarks");
-        const parsed = raw ? JSON.parse(raw) : [];
-        if (Array.isArray(parsed)) {
-          const sorted = [...parsed].sort(
-            (a, b) => (b.addedAt ?? 0) - (a.addedAt ?? 0),
-          );
-          setItems(sorted.slice(0, 3) as AnyBookmark[]);
-          setTotal(parsed.length);
-        } else {
-          setItems([]);
-          setTotal(0);
-        }
-      } catch {
-        setItems([]);
-        setTotal(0);
-      }
-    }
-    recompute();
-    function on() {
-      recompute();
-    }
-    window.addEventListener("purify:bookmark", on);
-    window.addEventListener("storage", on);
-    return () => {
-      window.removeEventListener("purify:bookmark", on);
-      window.removeEventListener("storage", on);
-    };
-  }, []);
+  const { bookmarks } = useBookmarks();
+  const total = bookmarks.length;
+  const items = useMemo(
+    () => [...bookmarks].sort((a, b) => b.addedAt - a.addedAt).slice(0, 3),
+    [bookmarks],
+  );
 
   return (
     <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4">
@@ -107,7 +52,7 @@ export function SavedPreview() {
           {items.map((b) => (
             <li key={b.id}>
               <Link
-                href={hrefFor(b)}
+                href={bookmarkHref(b)}
                 className="flex items-center justify-between gap-3 rounded-md border border-paper/8 bg-paper/[0.02] px-3 py-2.5 active:scale-[0.99] transition-transform"
               >
                 <span className="font-sans text-detail text-paper truncate flex-1">

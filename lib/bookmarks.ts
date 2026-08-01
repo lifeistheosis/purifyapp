@@ -150,6 +150,36 @@ function matches(b: Bookmark, loc: BookmarkLocator): boolean {
  * their fields were serialized in a different order (the cause of the duplicate
  * spam when server rows merged back with a different jsonb key order).
  */
+/**
+ * Where a bookmark points. Exhaustive over the union, so adding a kind
+ * without giving it a destination is a type error rather than a card that
+ * silently sends the reader to /saved.
+ *
+ * Three surfaces resolved this themselves and one of them, the account
+ * dashboard's "Last saved" strip, was reading a nested `locator` object.
+ * That shape is the server's jsonb row; lib/sync/bookmarks.ts flattens it
+ * before it ever reaches localStorage, so every one of those links
+ * resolved to /bible/undefined/undefined.
+ */
+export function bookmarkHref(b: Bookmark): string {
+ switch (b.kind) {
+ case "bible-verse":
+ return `/bible/${b.book}/${b.chapter}#v${b.verse}`;
+ case "bible-chapter":
+ return `/bible/${b.book}/${b.chapter}`;
+ case "writing-section":
+ return `/saints/${b.saintSlug}/${b.workSlug}#s${b.sectionN}`;
+ case "prayer":
+ return `/prayers/${b.ruleId}#${b.prayerId}`;
+ case "prayer-rule":
+ return b.href;
+ case "history-event":
+ return `/history/${b.eventSlug}`;
+ case "product":
+ return `/shop/icons/${b.productSlug}`;
+ }
+}
+
 export function bookmarkKey(b: Bookmark): string {
  let loc: Record<string, unknown>;
  switch (b.kind) {

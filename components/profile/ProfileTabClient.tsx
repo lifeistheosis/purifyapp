@@ -110,9 +110,18 @@ export function ProfileTabClient() {
         joinedAt={data.joinedAt}
         lastSignedInAt={data.lastSignedInAt}
       />
-      <ProfileStats />
+      {/* Desktop only. On a phone this screen is one tap below the You
+          tab, which already shows the same four counters and eight of
+          these nine rows; DesktopAccountGate redirects signed-in desktop
+          users straight here, so at md and above this IS the dashboard and
+          both blocks have to stay. */}
+      <div className="hidden md:block">
+        <ProfileStats />
+      </div>
       <ProfileActivity />
-      <AccountSettingsLinks />
+      <div className="hidden md:block">
+        <AccountSettingsLinks />
+      </div>
     </>
   );
 }

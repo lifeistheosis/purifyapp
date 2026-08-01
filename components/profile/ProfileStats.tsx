@@ -1,83 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { useReadingStats } from "@/lib/profile/useReadingStats";
 
 /**
- * Live counters drawn from localStorage. Reads on mount and any time a
- * `purify:annotation` or `purify:bookmark` event fires (the in-app
- * annotation & bookmark hooks dispatch both).
+ * Live counters drawn from localStorage, shared with the You tab through
+ * lib/profile/useReadingStats.ts. This surface and that one used to run
+ * two separate scans of the same keys, which is two answers waiting to
+ * disagree about how much a reader has gathered.
  *
  * Four cards: verses highlighted, paragraphs highlighted, notes written,
  * bookmarks saved. The numbers update without a reload because every
- * highlight, note, or bookmark change broadcasts an event we listen to.
- * No prayer-streak counters: the rule is the rule, the day is the day.
+ * highlight, note, or bookmark change broadcasts an event the hook
+ * listens to. No prayer-streak counters: the rule is the rule, the day is
+ * the day.
  */
 export function ProfileStats() {
   const { t } = useTranslate();
-  const [stats, setStats] = useState({
-    verses: 0,
-    paragraphs: 0,
-    notes: 0,
-    bookmarks: 0,
-  });
-
-  useEffect(() => {
-    function recompute() {
-      let verses = 0;
-      let paragraphs = 0;
-      let notes = 0;
-      for (let i = 0; i < window.localStorage.length; i++) {
-        const k = window.localStorage.key(i);
-        if (!k) continue;
-        if (k.startsWith("purify:bible:")) {
-          try {
-            const v = JSON.parse(window.localStorage.getItem(k) ?? "{}");
-            if (v.highlighted) verses++;
-            if (typeof v.note === "string" && v.note.trim().length > 0) notes++;
-          } catch {
-            /* ignore */
-          }
-        } else if (k.startsWith("purify:saint:")) {
-          try {
-            const v = JSON.parse(window.localStorage.getItem(k) ?? "{}");
-            if (v.highlighted) paragraphs++;
-            if (typeof v.note === "string" && v.note.trim().length > 0) notes++;
-          } catch {
-            /* ignore */
-          }
-        }
-      }
-      let bookmarks = 0;
-      try {
-        const raw = window.localStorage.getItem("purify:bookmarks");
-        if (raw) {
-          const arr = JSON.parse(raw);
-          if (Array.isArray(arr)) bookmarks = arr.length;
-        }
-      } catch {
-        /* ignore */
-      }
-      setStats({
-        verses,
-        paragraphs,
-        notes,
-        bookmarks,
-      });
-    }
-    recompute();
-    function on() {
-      recompute();
-    }
-    window.addEventListener("purify:annotation", on);
-    window.addEventListener("purify:bookmark", on);
-    window.addEventListener("storage", on);
-    return () => {
-      window.removeEventListener("purify:annotation", on);
-      window.removeEventListener("purify:bookmark", on);
-      window.removeEventListener("storage", on);
-    };
-  }, []);
+  const stats = useReadingStats();
 
   const readingItems = [
     { label: "Verses highlighted", value: stats.verses },

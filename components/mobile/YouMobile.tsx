@@ -28,9 +28,12 @@ import { SectionMasthead } from "./SectionMasthead";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { SavedPreview } from "./SavedPreview";
 import { SettingsList, type SettingsItem } from "./SettingsList";
+import { SettingsGlyph as Glyph } from "./SettingsGlyph";
 import { readIntentions } from "@/lib/prayers/storage";
+import { useReadingStats } from "@/lib/profile/useReadingStats";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
+import { campaignsEnabled } from "@/lib/campaigns/flags";
 import { eikonBoxEnabled } from "@/lib/eikonBox/flags";
 
 type AuthState =
@@ -42,13 +45,6 @@ type AuthState =
       displayName: string;
       joinedAt: string | null;
     };
-
-type ReadingStats = {
-  verses: number;
-  paragraphs: number;
-  notes: number;
-  bookmarks: number;
-};
 
 function formatJoined(iso: string | null): string {
   if (!iso) return "";
@@ -63,53 +59,11 @@ function formatJoined(iso: string | null): string {
   }
 }
 
-/** Scan localStorage for the same reading counters the desktop dashboard shows. */
-function readReadingStats(): ReadingStats {
-  let verses = 0;
-  let paragraphs = 0;
-  let notes = 0;
-  let bookmarks = 0;
-  if (typeof window === "undefined")
-    return { verses, paragraphs, notes, bookmarks };
-  try {
-    for (let i = 0; i < window.localStorage.length; i++) {
-      const k = window.localStorage.key(i);
-      if (!k) continue;
-      try {
-        if (k.startsWith("purify:bible:")) {
-          const v = JSON.parse(window.localStorage.getItem(k) ?? "{}");
-          if (v.highlighted) verses++;
-          if (typeof v.note === "string" && v.note.trim().length > 0) notes++;
-        } else if (k.startsWith("purify:saint:")) {
-          const v = JSON.parse(window.localStorage.getItem(k) ?? "{}");
-          if (v.highlighted) paragraphs++;
-          if (typeof v.note === "string" && v.note.trim().length > 0) notes++;
-        }
-      } catch {
-        /* skip malformed key */
-      }
-    }
-    const raw = window.localStorage.getItem("purify:bookmarks");
-    if (raw) {
-      const arr = JSON.parse(raw);
-      if (Array.isArray(arr)) bookmarks = arr.length;
-    }
-  } catch {
-    /* storage blocked */
-  }
-  return { verses, paragraphs, notes, bookmarks };
-}
-
 export function YouMobile() {
   const { t } = useTranslate();
   const [auth, setAuth] = useState<AuthState>({ kind: "loading" });
   const [intentions, setIntentions] = useState(0);
-  const [reading, setReading] = useState<ReadingStats>({
-    verses: 0,
-    paragraphs: 0,
-    notes: 0,
-    bookmarks: 0,
-  });
+  const reading = useReadingStats();
 
   useEffect(() => {
     (async () => {
@@ -138,24 +92,21 @@ export function YouMobile() {
       }
     })();
 
+    // Reading counters live in useReadingStats; this only tracks the
+    // diptych count, which nothing else on the surface reads.
     function recompute() {
       setIntentions(
         readIntentions("living").length + readIntentions("departed").length,
       );
-      setReading(readReadingStats());
     }
     recompute();
     function on() {
       recompute();
     }
     window.addEventListener("purify:intentions", on);
-    window.addEventListener("purify:annotation", on);
-    window.addEventListener("purify:bookmark", on);
     window.addEventListener("storage", on);
     return () => {
       window.removeEventListener("purify:intentions", on);
-      window.removeEventListener("purify:annotation", on);
-      window.removeEventListener("purify:bookmark", on);
       window.removeEventListener("storage", on);
     };
   }, []);
@@ -211,6 +162,25 @@ export function YouMobile() {
           ? "The names you carry, living and reposed"
           : `${intentions} names you carry`,
       icon: <Glyph kind="halo" />,
+    },
+    // These two used to exist only on the desktop dashboard's settings
+    // list. That list no longer renders on a phone, so they live here now
+    // rather than nowhere.
+    ...(campaignsEnabled()
+      ? [
+          {
+            label: "My prayers",
+            href: "/campaigns/mine",
+            hint: "Campaigns you pray with the community",
+            icon: <Glyph kind="halo" />,
+          } satisfies SettingsItem,
+        ]
+      : []),
+    {
+      label: "Export your library",
+      href: "/account/export",
+      hint: "Download everything you have gathered",
+      icon: <Glyph kind="bolt" />,
     },
     {
       label: "Notifications",
@@ -352,101 +322,3 @@ export function YouMobile() {
 }
 
 // Small inline icon set so SettingsList rows have a left affordance.
-function Glyph({
-  kind,
-}: {
-  kind:
-    | "user"
-    | "halo"
-    | "bell"
-    | "lock"
-    | "heart"
-    | "bolt"
-    | "cross"
-    | "signout"
-    | "sparkle"
-    | "box";
-}) {
-  const props = {
-    width: 14,
-    height: 14,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 1.8,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-    "aria-hidden": true,
-  };
-  switch (kind) {
-    case "user":
-      return (
-        <svg {...props}>
-          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-          <circle cx="12" cy="7" r="4" />
-        </svg>
-      );
-    case "halo":
-      return (
-        <svg {...props}>
-          <circle cx="12" cy="12" r="3" />
-          <circle cx="12" cy="12" r="9" />
-        </svg>
-      );
-    case "box":
-      return (
-        <svg {...props}>
-          <path d="M3 8l9-5 9 5v8l-9 5-9-5z" />
-          <path d="M3 8l9 5 9-5" />
-          <path d="M12 13v10" />
-        </svg>
-      );
-    case "bell":
-      return (
-        <svg {...props}>
-          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-        </svg>
-      );
-    case "lock":
-      return (
-        <svg {...props}>
-          <rect x="3" y="11" width="18" height="11" rx="2" />
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-        </svg>
-      );
-    case "heart":
-      return (
-        <svg {...props}>
-          <path d="M12 21s-7-4.35-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.65-9.5 9-9.5 9z" />
-        </svg>
-      );
-    case "bolt":
-      return (
-        <svg {...props}>
-          <path d="M13 2 3 14h8l-1 8 10-12h-8z" />
-        </svg>
-      );
-    case "cross":
-      return (
-        <svg {...props}>
-          <path d="M12 3v18" />
-          <path d="M5 8h14" />
-        </svg>
-      );
-    case "signout":
-      return (
-        <svg {...props}>
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-          <path d="m16 17 5-5-5-5" />
-          <path d="M21 12H9" />
-        </svg>
-      );
-    case "sparkle":
-      return (
-        <svg {...props}>
-          <path d="M12 3c.4 4.5 2.5 6.6 7 7-4.5.4-6.6 2.5-7 7-.4-4.5-2.5-6.6-7-7 4.5-.4 6.6-2.5 7-7z" />
-        </svg>
-      );
-  }
-}
