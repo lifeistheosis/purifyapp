@@ -167,3 +167,48 @@ leave the bar dark, and two of them are reached straight from Today cards.
 Which tab owns `/pricing` is a design decision, not a de-duplication one.
 Also left: the `blur-xl` blobs in `SoftTiles.tsx:57,108`, and
 `/account/export` sitting outside the `(signed)` group.
+
+### Addendum — 2026-08-01, e2e triage (same session)
+
+The smoke suite had been failing 8 of 47 on `feat/community-safety`, before
+Release B. Verified pre-existing by checking out the base, rebuilding, and
+reproducing the identical 8. Now 47 passed / 2 skipped / 0 failed.
+
+**One real accessibility bug, seven tests' worth.** `components/shop/CartDrawer.tsx`
+lives in the shop layout permanently and is only slid off-screen, so
+`aria-hidden={!open}` left its close button and its links in the tab order.
+A keyboard user tabbing any shop page walked into an invisible drawer. axe:
+`aria-hidden-focus`, serious, 64 violations, failing 5 shop specs and both
+seller-console specs. Fixed with `inert` when closed, which removes focus
+and the a11y tree together.
+
+**One assertion that could only ever fail.** `history.spec.ts` matched
+`section[aria-label='Sources']`, which no component has ever emitted. The
+sources block was also an unnamed `<section>`, so it was not exposed as a
+landmark at all; it is now named from its own heading via
+`aria-labelledby` (not a hardcoded English `aria-label`, so the name stays
+translated).
+
+**One product conflict, resolved by the owner.** `shop.spec.ts` encoded the
+2026-07-05 decision "no review theatre: no stars, no ratings, nowhere" as
+"the EIKON storefront never says the word reviews". Reviews v2 (`6c7d3007`)
+later shipped store-level reviews behind a delivery gate on purpose. Owner
+confirmed 2026-08-01 that the feature stands and the assertion was stale.
+The spec now asserts the part actually objected to: no star glyphs, and no
+invitation to review for someone who has not bought.
+
+**OPEN, and worth a decision: the verified-buyer badge is not gated at the
+store level.** `app/api/shop/catalog/store-reviews/route.ts:41-49` selects
+every row in `shop_store_reviews` for the store with no filter on an order,
+and `components/shop/StoreReviewsSection.tsx:106` renders
+`<VerifiedBuyerBadge bought={storeName} />` on every one of them
+unconditionally. `VerifiedBuyerBadge`'s own docstring justifies itself with
+"the submit RPCs require a delivered order, so the badge is always
+truthful", which holds for reviews written through the app and does not
+hold for admin-seeded rows. The 2026-07-27 audit already records that
+seeded rows exist in prod with `order_id: null`. So a seeded review is
+currently shown to shoppers under a "Verified buyer / Bought EIKON" badge.
+Not changed here: it is live commerce behaviour and the owner deferred the
+adjacent seeded-review cleanup on 2026-08-01. The narrow fix is to filter
+the read path to reviews with a delivered order, or to render the badge
+per-review rather than unconditionally.

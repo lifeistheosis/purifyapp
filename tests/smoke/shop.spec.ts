@@ -104,9 +104,24 @@ test("EIKON storefront tells its operational story without naming its parent", a
   );
   // The operational story, honestly told.
   await expect(page.locator("body")).toContainText(/inspected/i);
-  // No review theatre: no stars, no ratings, nowhere.
-  await expect(page.getByText(/\breviews\b/i)).toHaveCount(0);
+
+  // The 2026-07-05 decision was "no review theatre: no stars, no ratings,
+  // nowhere", and this asserted the storefront never said "reviews" at
+  // all. Reviews v2 (6c7d3007) then shipped store-level reviews behind a
+  // delivery gate on purpose, which is the real-reviewer answer to the
+  // same concern, and the owner confirmed on 2026-08-01 that the feature
+  // stands and this assertion was the stale half.
+  //
+  // What is still asserted is the part that was actually objected to:
+  // decorative star glyphs, and any invitation to review from someone who
+  // has not bought. NOTE this does NOT assert that every displayed review
+  // has an order behind it. It cannot: the store-reviews read path returns
+  // every row for the store with no delivery filter, so an admin-seeded
+  // row is shown with a verified-buyer badge. Logged in the audit ledger.
   await expect(page.locator("text=/★|☆/")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: /post your review|submit review/i }),
+  ).toHaveCount(0);
   await expectNoA11yViolations(page);
 });
 
