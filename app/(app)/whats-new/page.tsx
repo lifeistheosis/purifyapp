@@ -25,6 +25,27 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 2.8",
+ kind: "The app stops saying everything twice",
+ date: "August 1, 2026",
+ blurb:
+  "A release about repetition. The same place was offered to you under three different names, screens announced themselves twice before you had read anything, and the prayer index printed thirty-four rows for twenty-seven prayers. Most of this release is deletion. There is also one real fault underneath it: readers on the Old Calendar were being shown the wrong saint and the wrong fast on the daily prayer page.",
+ items: [
+  "The Old Calendar is kept on the daily prayer page. If you keep the Old (Julian) Calendar, that page was showing the New Calendar's commemoration and fasting rule while the Today screen, one tap away, showed the right ones. The appointed readings and the count to Pascha deliberately do not shift with it, because both reckonings work out Pascha the same way.",
+  "One name for one place. The daily prayer page was offered inside the app as a tile called Today in Prayers, a tile called Daily readings in Discover, and a chip called Prayer on your account screen, all the same screen. The tiles are gone, and tapping in Prayers no longer moves the lit tab to Today.",
+  "The reading room listed the saints twice, as Patristic works and The saints' writings, both going to the same place with nothing to tell them apart. It lists them once.",
+  "Each prayer is listed once. The index showed the popular rules and then every category in full without leaving out what it had just shown, so seven prayers appeared twice and two more repeated the tiles above them. Every prayer is still there. The suggestions for the hour still sit at the top.",
+  "Screens say their name once. Discover said Discover in the bar, again over the picture, and a third time on the tab below. The picture keeps its place and its credit and stops repeating the title.",
+  "Three title bars on Discover, Reading and Prayers were being drawn that no screen size could ever show, which is why those screens had no back bar.",
+  "The account screen no longer repeats itself. Opening Account and security repeated eight of the nine rows you had just left, under a second copy of your name and the same four counters. On a phone it is the security, sessions and data screen it was meant to be; Export your library and My prayers moved onto the You tab so nothing was lost. On a computer it is unchanged.",
+  "Recently saved items led nowhere. The Last saved cards on the account dashboard were built from the wrong description of a bookmark, so every one linked to a chapter that does not exist. They open what you saved.",
+  "The tab bar fits other languages. In Greek, Russian, Romanian and French it ran off the side of the screen and the last tab was partly or wholly unreachable.",
+  "A tablet knows what day it is. Beta 2.7 unfroze the date everywhere a phone could see it and missed the wider layout. Discover's featured topic and council, and the day card on Prayers, were still stuck on the day the app was built. The guard meant to catch this was only watching part of the app; it watches all of it now.",
+  "The Today screen had four buttons to Prayers, Bible, Saints and Calendar just above the bar that already carries those, and called the Bible Scripture while the tab beside it said Bible. They are gone and the day's commemoration has moved up the screen.",
+  "Cache version steps to purify-beta-2.8.0.",
+ ],
+ },
+ {
  version: "Beta 2.7",
  kind: "The app knows what day it is",
  date: "July 31, 2026",
