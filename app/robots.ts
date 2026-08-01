@@ -1,50 +1,42 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL as SITE } from "@/lib/site";
+import {
+  ANSWER_ENGINES,
+  USER_TRIGGERED,
+  TRAINING_BOTS,
+  NEVER_CRAWLABLE,
+  SCRIPTURE_PREFIX,
+  TRAINABLE_PREFIX,
+} from "@/lib/seo/aiCrawlers";
 
 // Static for the Android export (output:export); unchanged on the website.
 export const dynamic = "force-static";
 
-// The ABS / Biblica licenses prohibit using the Scripture content to train
-// generative AI / LLMs. Block known AI crawlers so the licensed text is not
-// scraped into training corpora.
-const AI_BOTS = [
-  "GPTBot",
-  "OAI-SearchBot",
-  "ChatGPT-User",
-  "CCBot",
-  "Google-Extended",
-  "anthropic-ai",
-  "ClaudeBot",
-  "Claude-Web",
-  "PerplexityBot",
-  "Applebot-Extended",
-  "Bytespider",
-  "Amazonbot",
-  "Meta-ExternalAgent",
-  "cohere-ai",
-  // Added 2026-05: bring the disallow list up to twenty-two named agents
-  // covering the major model-training and AI-assistant crawlers active
-  // today. The privacy page advertises this exact count.
-  "Diffbot",
-  "FacebookBot",
-  "YouBot",
-  "Timpi",
-  "MistralAI-User",
-  "DuckAssistBot",
-  "Scrapy",
-  "PanguBot",
-];
-
+// The three-tier AI policy, why each tier exists, and the rule that it has to
+// stay in step with the privacy page, all live in lib/seo/aiCrawlers.ts.
+// This file only renders it.
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/admin"],
+        disallow: NEVER_CRAWLABLE,
       },
-      // AI/LLM training & scraping crawlers: disallowed everywhere.
-      { userAgent: AI_BOTS, disallow: "/" },
+      // Tiers 1 and 2: the whole library except Scripture.
+      {
+        userAgent: [...ANSWER_ENGINES, ...USER_TRIGGERED],
+        allow: "/",
+        disallow: [...NEVER_CRAWLABLE, SCRIPTURE_PREFIX],
+      },
+      // Tier 3: /saints and nothing else. Both spellings are listed because
+      // robots.txt resolves by longest match, so a bare "/saints" request
+      // would otherwise fall through to the "/" disallow.
+      {
+        userAgent: [...TRAINING_BOTS],
+        allow: [TRAINABLE_PREFIX, `${TRAINABLE_PREFIX}/`],
+        disallow: "/",
+      },
     ],
     sitemap: `${SITE}/sitemap.xml`,
     host: SITE,

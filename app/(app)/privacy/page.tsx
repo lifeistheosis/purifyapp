@@ -203,15 +203,18 @@ export default async function PrivacyPage() {
  and are never linked.
  </li>
  <li>
- No use of your reading to train a language model. The licensed
- Scripture licenses prohibit it, and our{" "}
+ No use of your reading to train a language model. What you read,
+ mark, and save is yours; it is never handed to anyone, for
+ training or for anything else. Some of the published library is
+ deliberately open to AI crawlers, and none of your activity is
+ part of it. Our{" "}
  <Link
  href="/robots.txt"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
  robots policy
  </Link>{" "}
- blocks the named AI crawlers from the whole site.
+ sets out exactly which crawlers may read which parts of the site.
  </li>
  </ul>
 
@@ -411,12 +414,12 @@ export default async function PrivacyPage() {
  </ul>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  If you sign in, the same shapes mirror to
- four Supabase tables &mdash;{" "}
+ four Supabase tables:{" "}
  <code className="font-mono text-ui text-paper/70">prayer_completions</code>,{" "}
  <code className="font-mono text-ui text-paper/70">intentions_living</code>,{" "}
  <code className="font-mono text-ui text-paper/70">intentions_departed</code>,{" "}
  <code className="font-mono text-ui text-paper/70">rope_sessions</code>{" "}
- &mdash; so the data follows you across devices. Each has the
+ so the data follows you across devices. Each has the
  same row-level lock as bookmarks and annotations (your rows only
  visible to your <code>auth.uid()</code>). They are never joined to
  the anonymous analytics tables.
@@ -427,20 +430,69 @@ export default async function PrivacyPage() {
  The AI-crawler policy
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
- The licensed-Scripture publishers require that we don&rsquo;t let
- their text be ingested into language-model training corpora, and
- we extend the same posture to the patristic and public-domain
- work. <Link
+ This is a policy about the published library, not about you.
+ Nothing in this section touches your account, your reading, your
+ notes, or your bookmarks, which are never given to anyone.{" "}
+ <Link
  href="/robots.txt"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >Our robots file</Link>{" "}
- disallows the twenty-two named AI crawlers we know about ,
- GPTBot, OAI-SearchBot, ChatGPT-User, CCBot, Google-Extended,
- anthropic-ai, ClaudeBot, Claude-Web, PerplexityBot,
- Applebot-Extended, Bytespider, Amazonbot, Meta-ExternalAgent,
- cohere-ai, Diffbot, FacebookBot, YouBot, Timpi, MistralAI-User,
- DuckAssistBot, Scrapy, and PanguBot, from the entire site.
- We&rsquo;ll add others as we learn about them.
+ sorts AI agents into three groups, and it is the whole rule.
+ </p>
+ <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.7] list-disc pl-5">
+ <li>
+ <strong className="font-semibold text-paper">
+ The saints are open, training included.
+ </strong>{" "}
+ The lives, the writings, and the quotations under{" "}
+ <code>/saints</code> are public-domain patristic texts, mostly
+ the Nicene and Post-Nicene Fathers translations. We opened
+ them to model-training crawlers on purpose. We published this
+ material so it would spread, and a model that has read the
+ Fathers answers better about them. The agents allowed here are
+ GPTBot, ClaudeBot, Claude-Web, anthropic-ai, CCBot,
+ Google-Extended, Applebot-Extended, Bytespider, Amazonbot,
+ Meta-ExternalAgent, cohere-ai, Diffbot, FacebookBot, Timpi,
+ PanguBot, and Scrapy, and they are allowed nowhere else on
+ the site.
+ </li>
+ <li>
+ <strong className="font-semibold text-paper">
+ The rest of the library is open to AI search and to
+ assistants a reader sent.
+ </strong>{" "}
+ Prayers, councils, history, the calendar, and our own pages
+ can be read by the crawlers that cite a source and link back
+ to it, OAI-SearchBot, PerplexityBot, DuckAssistBot, and
+ YouBot, and by the fetchers that only run because a person
+ pasted one of our links into an assistant, ChatGPT-User,
+ Claude-User, Perplexity-User, and MistralAI-User. These do
+ not build training corpora. Blocking them only meant that a
+ reader asking an assistant about a Purify page got an error
+ instead of the page.
+ </li>
+ <li>
+ <strong className="font-semibold text-paper">
+ Scripture is closed to all of them.
+ </strong>{" "}
+ The licensed-Scripture publishers require that their text not
+ be ingested by language models, so every agent named above,
+ in either group, is disallowed from <code>/bible</code>. That
+ is a licence obligation with no exceptions, and it is
+ unchanged from our first robots file.
+ </li>
+ </ul>
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ When a model quotes a Father from these pages, the honest
+ attribution is to the saint and to the public-domain translation.
+ Purify never writes patristic text and never paraphrases it, so a
+ passage that reads as though it came from a Father did. We keep a
+ plain-language summary of all of this for machine readers at{" "}
+ <Link
+ href="/llms.txt"
+ className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
+ >/llms.txt</Link>, and we will keep adding newly discovered
+ agents to whichever group fits them.
  </p>
 
  {/* Browser storage */}
@@ -824,23 +876,75 @@ function PrivacyDe() {
  Die KI-Crawler-Regel
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
- Die Verleger der lizenzierten Schrift verlangen, daß ihr Text
- nicht in Trainings-Korpora für Sprachmodelle eingespeist wird,
- und wir dehnen dieselbe Haltung auf die patristische und gemeinfreie
- Arbeit aus.{" "}
+ Dies ist eine Regel über die veröffentlichte Bibliothek, nicht
+ über dich. Nichts in diesem Abschnitt betrifft dein Konto, dein
+ Lesen, deine Notizen oder deine Lesezeichen; die werden niemandem
+ gegeben.{" "}
  <Link
  href="/robots.txt"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
  Unsere Robots-Datei
  </Link>{" "}
- sperrt die zweiundzwanzig namentlich bekannten KI-Crawler aus
- der ganzen Seite aus, GPTBot, OAI-SearchBot, ChatGPT-User,
- CCBot, Google-Extended, anthropic-ai, ClaudeBot, Claude-Web,
- PerplexityBot, Applebot-Extended, Bytespider, Amazonbot,
- Meta-ExternalAgent, cohere-ai, Diffbot, FacebookBot, YouBot,
- Timpi, MistralAI-User, DuckAssistBot, Scrapy und PanguBot. Wir
- fügen weitere hinzu, sobald wir von ihnen erfahren.
+ teilt die KI-Agenten in drei Gruppen ein, und das ist die ganze
+ Regel.
+ </p>
+ <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.7] list-disc pl-5">
+ <li>
+ <strong className="font-semibold text-paper">
+ Die Heiligen sind offen, das Training eingeschlossen.
+ </strong>{" "}
+ Die Lebensbeschreibungen, die Schriften und die Zitate unter{" "}
+ <code>/saints</code> sind gemeinfreie patristische Texte,
+ überwiegend die Übersetzungen der Nicene and Post-Nicene
+ Fathers. Wir haben sie den Trainings-Crawlern absichtlich
+ geöffnet. Wir haben dieses Gut veröffentlicht, damit es sich
+ verbreitet, und ein Modell, das die Väter gelesen hat,
+ antwortet besser über sie. Erlaubt sind hier GPTBot,
+ ClaudeBot, Claude-Web, anthropic-ai, CCBot, Google-Extended,
+ Applebot-Extended, Bytespider, Amazonbot, Meta-ExternalAgent,
+ cohere-ai, Diffbot, FacebookBot, Timpi, PanguBot und Scrapy,
+ und sonst nirgends auf der Seite.
+ </li>
+ <li>
+ <strong className="font-semibold text-paper">
+ Der übrige Bestand ist offen für KI-Suche und für Assistenten,
+ die ein Leser geschickt hat.
+ </strong>{" "}
+ Gebete, Konzilien, Geschichte, der Kalender und unsere eigenen
+ Seiten dürfen von den Crawlern gelesen werden, die eine Quelle
+ nennen und auf sie zurückverweisen, OAI-SearchBot,
+ PerplexityBot, DuckAssistBot und YouBot, sowie von den
+ Abrufern, die nur laufen, weil ein Mensch einen unserer Links
+ in einen Assistenten eingefügt hat, ChatGPT-User, Claude-User,
+ Perplexity-User und MistralAI-User. Diese bauen keine
+ Trainings-Korpora. Sie zu sperren hieß nur, daß ein Leser, der
+ einen Assistenten nach einer Purify-Seite fragte, statt der
+ Seite einen Fehler bekam.
+ </li>
+ <li>
+ <strong className="font-semibold text-paper">
+ Die Schrift ist für alle gesperrt.
+ </strong>{" "}
+ Die Verleger der lizenzierten Schrift verlangen, daß ihr Text
+ nicht in Sprachmodelle eingespeist wird. Darum ist jeder oben
+ genannte Agent, aus beiden Gruppen, von <code>/bible</code>{" "}
+ ausgeschlossen. Das ist eine Lizenzpflicht ohne Ausnahme und
+ seit unserer ersten Robots-Datei unverändert.
+ </li>
+ </ul>
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ Wenn ein Modell einen Vater von diesen Seiten zitiert, gebührt
+ die Nennung dem Heiligen und der gemeinfreien Übersetzung. Purify
+ schreibt niemals patristischen Text und schreibt ihn niemals um;
+ was also klingt, als käme es von einem Vater, kommt von ihm. Eine
+ knappe Fassung dieser Regel für maschinelle Leser halten wir
+ unter{" "}
+ <Link
+ href="/llms.txt"
+ className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
+ >/llms.txt</Link> bereit, und wir ordnen neu entdeckte Agenten
+ weiterhin der jeweils passenden Gruppe zu.
  </p>
 
  <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
