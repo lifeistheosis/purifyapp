@@ -293,3 +293,50 @@ order is sourced.
 **The assertions are no longer a floor.** Duplicate numbers, stray leading
 letters and spaced punctuation now stop the write. The old `>= 90` check
 passed on the broken chapter, which is how this shipped in the first place.
+
+### Addendum — 2026-08-01, Releases C and D
+
+**Release C, themes, mechanism done.** `components/theme/AppThemeController.tsx`
+is mounted in the root layout and applies `data-reading-mode` app-wide. The
+mechanism already existed and was proven; what confined it to two reader
+routes was `ReadingModeController`'s unmount cleanup, which stripped the
+attribute so a palette could never "leak" onto another surface. That strip
+is gone. A pre-paint inline script in `app/layout.tsx` (first child of
+`<body>`, carrying the CSP nonce) sets the attribute before the body
+renders, because the palette lives in localStorage and the server cannot
+read it. **The Pro gate moved with the application**, into the controller;
+leaving it in ReaderPrefs would have let a non-Pro reader keep a premium
+palette app-wide. `lib/premium/plans.ts` is untouched: this promoted the
+mechanism, not the entitlement, so no pricing stop condition was crossed.
+Verified: `--color-night` goes #101013 -> #171006 under Candlelight on
+/settings, carries to /discover through a full page load, and survives a
+cold load on Today.
+
+**The `#d4af37` purge was NOT done, and the audit's framing of it is wrong.**
+The census is **25** occurrences, not the 55 the audit claimed, and most are
+not fossils of the retired gold: they are deliberate premium-gold branding
+on `/premium`, `/pricing`, `PremiumNavCta`, `MobilePremiumButton`,
+`PlanStatus`, `WhatsNewChip`, and the calendar feast marker, where
+`CalendarCell.tsx` carries a comment saying the literal hex is there to
+"keep the feast marker truly gold" against the neutral `--color-gold`
+(#eaeaec). Deleting them would flatten the premium identity to near-white,
+which is a brand decision and not a cleanup. The real defect is that they
+do not follow the palette: under Candlelight or Parchment the premium
+surfaces stay metallic while everything else re-themes. **The right fix is a
+`--color-premium` token themed per palette, not deletion.** Left for the
+owner.
+
+**Release D, `/settings`, done.** New route outside the `(signed)` group,
+because none of what it holds ever needed an account: reader font and size,
+the interlinear default and the calendar reckoning were plain localStorage
+sitting behind `AccountAuthGate` on a tab called "Data". The palette picker
+now sits at the top of it. Push, export and account security are LINKED,
+not reimplemented, so there is still one of each. The You tab's
+"Notifications" row (which pointed at "Data") now says Settings and goes
+here, and the You tab lights on `/settings`.
+
+Still not done from the approved plan: Release E (community notifications,
+identity, reactions, feed) and Release F (chant player, still blocked on the
+anthem recording rights in `docs/licensing/audio-provenance.md`). The two
+council entries for Jerusalem 1672 and Orange 529 were drafted but never
+spliced into the registry; only the `reception` field landed.
