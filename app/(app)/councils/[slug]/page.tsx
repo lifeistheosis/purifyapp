@@ -99,6 +99,31 @@ export default async function CouncilProfilePage({
  )}
  </dl>
 
+ {/* How the Church received it. Placed ABOVE what the council defined,
+     because a reader who skims the defined list and stops has to have
+     already been told that this one was not adopted whole. Absent on the
+     seven, which are received without qualification. */}
+ {c.reception && (
+ <aside
+ className={`mt-10 rounded-lg border px-5 py-4 ${
+ c.reception.status === "not-received"
+ ? "border-crimson/30 bg-crimson/[0.06]"
+ : "border-gold/25 bg-gold/[0.05]"
+ }`}
+ >
+ <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+ {c.reception.status === "not-received" ? (
+ <T k="study.councils.notReceived" />
+ ) : (
+ <T k="study.councils.receivedInPart" />
+ )}
+ </p>
+ <p className="mt-2 font-serif text-ui text-paper/80 leading-[1.6]">
+ {c.reception.note}
+ </p>
+ </aside>
+ )}
+
  {/* Defined / Condemned */}
  <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
  <div>

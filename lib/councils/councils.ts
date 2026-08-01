@@ -60,10 +60,34 @@ export type Council = {
  slug: string;
  /**
   * "ecumenical" (the seven councils received by the whole Church) or "local"
-  * (a regional / pre-Ecumenical synod). Absent is treated as ecumenical, so
-  * the seven original entries need no change.
+  * (a regional synod). Absent is treated as ecumenical, so the seven
+  * original entries need no change.
+  *
+  * "local" no longer implies "pre-Ecumenical": the Synod of Jerusalem met in
+  * 1672, nearly nine centuries after the seventh council.
   */
  kind?: "ecumenical" | "local";
+ /**
+  * How the Church received this council's decisions, for councils where that
+  * is not simply "received in full".
+  *
+  * A local council being listed here is not a claim that the Church adopted
+  * everything it decided. Carthage 256 is the standing example: it is
+  * honoured, and St. Cyprian is a hieromartyr and a Father, but his rigorist
+  * rule on rebaptism was not the rule the Church settled on. Without a field
+  * for it that qualification lives only in prose, where a reader skimming the
+  * defined/condemned lists will miss it.
+  */
+ reception?: {
+  /**
+   * "full" for received without qualification, "qualified" where the Church
+   * kept the witness but not the whole discipline, "not-received" for a
+   * council the Orthodox Church does not receive as authoritative.
+   */
+  status: "full" | "qualified" | "not-received";
+  /** One or two sentences, shown on the council profile beside the status. */
+  note: string;
+ };
  /** The council's place in the seven. Omitted for local councils. */
  ordinal?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
  /** Long form, e.g. "The First Ecumenical Council". */
@@ -802,6 +826,10 @@ export const COUNCILS: Council[] = [
  location: "Carthage in Roman Africa (near modern Tunis, Tunisia)",
  convenedBy: "St. Cyprian, Bishop of Carthage",
  bishopsAttending: "Eighty-seven bishops of Africa, Numidia, and Mauretania",
+ reception: {
+ status: "qualified",
+ note: "Honoured as the witness of a hieromartyr to the unity of the Church, but its rule that all who come from heresy or schism must be baptised was not the rule the Church settled on. The later canonical tradition, in the canons of St. Basil the Great and of the councils, receives many converts by chrismation or by confession of faith according to economy.",
+ },
  shortBio:
  "Two synods of the African Church under St. Cyprian of Carthage, the second gathering eighty-seven bishops who each gave sentence that baptism conferred outside the Church is no baptism, so that converts from heresy and schism must be baptised. Honoured for the witness of a great hieromartyr to the unity of the Church, its rigorist discipline was later moderated by the canonical tradition, which receives many converts by chrismation according to economy.",
  defined: [
