@@ -163,10 +163,10 @@ export function PrayersTodayClient() {
                   {day.readings.map((r, i) => {
                     const kindLabel =
                       r.kind === "epistle"
-                        ? t("bible.kindEpistle")
+                        ? t("bible.kindEpistleLong")
                         : r.kind === "ot"
-                          ? t("bible.kindOt")
-                          : t("bible.kindGospel");
+                          ? t("bible.kindOtLong")
+                          : t("bible.kindGospelLong");
                     return (
                       <PrayerIndexRow
                         key={i}

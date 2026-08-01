@@ -7,6 +7,13 @@
 // colour changes.
 //
 // Plain constant, no "use client": server and client components both read it.
+//
+// Not folded into components/calendar/fastMeta.tsx, which is the other
+// half of this story: that one holds the icon, the short label and an
+// "R G B" triplet for the calendar's own colour system, and it imports four
+// icon components. This is a Tailwind class and is read by a server page,
+// so it stays a leaf. If you add a third fasting-presentation map, fold it
+// into one of these two rather than starting a fourth.
 
 import type { FastKind } from "./orthodox";
 
