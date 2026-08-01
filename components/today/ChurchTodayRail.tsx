@@ -1,16 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
-import {
-  commemorationsOn,
-  fastingStatus,
-  paschaInfo,
-  readingsOn,
-  shiftForStyle,
-} from "@/lib/calendar/orthodox";
-import { getSaint } from "@/lib/saints/saints";
-import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
-import { useToday } from "@/lib/calendar/useToday";
+import { useChurchDay } from "@/lib/calendar/useChurchDay";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { T } from "@/components/i18n/T";
 import { TimelineRail } from "./TimelineRail";
@@ -27,32 +17,16 @@ import { PaschaCountdownCard } from "./PaschaCountdownCard";
  * TodayMobileV3 server component, which meant the Android static export
  * baked the build day into the APK and every one of these four cards was
  * wrong until the next release. See lib/calendar/useToday.ts for the full
- * account. The calendar-style preference is read from localStorage here
- * rather than from the cookie, because the native shell has no server to
- * read a cookie at request time.
+ * account. The calendar-style preference is read from localStorage rather
+ * than from the cookie, because the native shell has no server to read a
+ * cookie at request time.
  *
- * Pascha-relative readings stay on the civil date because both calendar
- * styles compute Pascha from the same Julian algorithm.
+ * The derivation itself, including why the Old Calendar shift applies to
+ * the commemoration and the fast but not to the readings or the count to
+ * Pascha, lives in lib/calendar/useChurchDay.ts.
  */
 export function ChurchTodayRail() {
-  const today = useToday();
-  const [style] = useCalendarStyleDefault();
-
-  const day = useMemo(() => {
-    if (!today) return null;
-    const lookup = shiftForStyle(today, style);
-    const commemorations = commemorationsOn(lookup);
-    const headline =
-      commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
-    return {
-      headline,
-      headlineSaint:
-        headline?.saint ?? (headline?.slug ? getSaint(headline.slug) : null),
-      fast: fastingStatus(lookup),
-      readings: readingsOn(today),
-      pascha: paschaInfo(today),
-    };
-  }, [today, style]);
+  const day = useChurchDay();
 
   // One frame before hydration. Reserving the rail's height keeps the
   // surface from jumping when the real day lands.

@@ -8,8 +8,8 @@ import {
   formatMonthDay,
   paschaInfo,
   startOfDayUtc,
-  type FastKind,
 } from "@/lib/calendar/orthodox";
+import { FAST_DOT } from "@/lib/calendar/fastDot";
 import { PrayerIcon } from "@/components/prayers/PrayerIcon";
 import { PrayerSlideshowHero } from "@/components/prayers/PrayerSlideshow";
 import { PrayersMobile } from "@/components/mobile/PrayersMobile";
@@ -49,15 +49,6 @@ export const metadata = {
 
 // Hourly ISR so the day strip rolls forward without a redeploy.
 export const revalidate = 3600;
-
-const FAST_DOT: Record<FastKind, string> = {
-  strict: "bg-crimson",
-  "wine-oil": "bg-gold",
-  fish: "bg-sage",
-  fast: "bg-paper/40",
-  "fast-free": "bg-emerald-400",
-  normal: "bg-paper/30",
-};
 
 export default async function PrayersPage() {
   const locale = await getServerLocale();

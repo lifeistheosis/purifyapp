@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import type { FastingStatus, FastKind } from "@/lib/calendar/orthodox";
+import type { FastingStatus } from "@/lib/calendar/orthodox";
+import { FAST_DOT } from "@/lib/calendar/fastDot";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -16,14 +17,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  */
 export function FastTodayCard({ fast }: { fast: FastingStatus }) {
   const { t } = useTranslate();
-  const dot: Record<FastKind, string> = {
-    strict: "bg-crimson",
-    "wine-oil": "bg-gold",
-    fish: "bg-sage",
-    fast: "bg-paper/40",
-    "fast-free": "bg-emerald-400",
-    normal: "bg-paper/30",
-  };
+  const dot = FAST_DOT;
   return (
     <Link
       href="/fasting"

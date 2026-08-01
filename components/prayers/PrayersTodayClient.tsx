@@ -1,18 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
 import Link from "next/link";
-import {
-  commemorationsOn,
-  fastingStatus,
-  formatLongDate,
-  paschaInfo,
-  readingsOn,
-  type FastKind,
-} from "@/lib/calendar/orthodox";
-import { useToday } from "@/lib/calendar/useToday";
+import { formatLongDate } from "@/lib/calendar/orthodox";
+import { FAST_DOT } from "@/lib/calendar/fastDot";
+import { useChurchDay } from "@/lib/calendar/useChurchDay";
 import { SaintIcon } from "@/components/saints/SaintIcon";
-import { getSaint } from "@/lib/saints/saints";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { TodayDiptychs } from "@/components/prayers/TodayDiptychs";
 import { TodayGreeting } from "@/components/prayers/TodayGreeting";
@@ -26,15 +18,6 @@ import {
   PrayerIndexRow,
   PrayerNote,
 } from "@/components/prayers/PrayerBook";
-
-const FAST_DOT: Record<FastKind, string> = {
-  strict: "bg-crimson",
-  "wine-oil": "bg-gold",
-  fish: "bg-sage",
-  fast: "bg-paper/40",
-  "fast-free": "bg-emerald-400",
-  normal: "bg-paper/30",
-};
 
 const QUIET_LINK =
   "font-sans text-detail text-paper/55 underline decoration-paper/20 underline-offset-4 transition-colors hover:text-paper hover:decoration-paper/50";
@@ -52,25 +35,17 @@ const QUIET_LINK =
  * Copy comes from useTranslate() rather than the server catalog, which is
  * the pattern the rest of the mobile surfaces already use and means the
  * page follows a native locale switch without a reload.
+ *
+ * The day is derived by lib/calendar/useChurchDay.ts, shared with the Today
+ * tab's rail. This page used to derive it itself and skipped the Old
+ * (Julian) Calendar shift, so an Old Calendar reader was shown the wrong
+ * saint and the wrong fasting rule here while the Today tab, one tap away,
+ * showed the right ones.
  */
 export function PrayersTodayClient() {
   const { t } = useTranslate();
-  const today = useToday();
-
-  const day = useMemo(() => {
-    if (!today) return null;
-    const commemorations = commemorationsOn(today);
-    const headline =
-      commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
-    return {
-      fast: fastingStatus(today),
-      pascha: paschaInfo(today),
-      readings: readingsOn(today),
-      headline,
-      headlineSaint:
-        headline?.saint ?? (headline?.slug ? getSaint(headline.slug) : null),
-    };
-  }, [today]);
+  const day = useChurchDay();
+  const today = day?.today ?? null;
 
   return (
     <section className="relative isolate min-h-screen overflow-hidden bg-night">
@@ -102,10 +77,10 @@ export function PrayersTodayClient() {
                         aria-hidden
                         className={`inline-block h-1.5 w-1.5 rounded-full ${FAST_DOT[day.fast.kind]}`}
                       />
-                      {day.fast.label}
+                      {t(`calendar.fast.${day.fast.ruleId}.label`)}
                     </p>
                     <p className="mt-1.5 font-sans text-caption text-paper/55 leading-[1.55]">
-                      {day.fast.rule}
+                      {t(`calendar.fast.${day.fast.ruleId}.rule`)}
                     </p>
                   </>
                 ) : (
@@ -188,10 +163,10 @@ export function PrayersTodayClient() {
                   {day.readings.map((r, i) => {
                     const kindLabel =
                       r.kind === "epistle"
-                        ? "Epistle"
+                        ? t("bible.kindEpistle")
                         : r.kind === "ot"
-                          ? "Old Testament"
-                          : "Gospel";
+                          ? t("bible.kindOt")
+                          : t("bible.kindGospel");
                     return (
                       <PrayerIndexRow
                         key={i}
