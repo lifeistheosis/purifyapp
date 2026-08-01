@@ -16,16 +16,21 @@ import { sectionMedia, type SectionKey } from "@/lib/media/sections";
  *
  * A section with no registry entry renders nothing, so this can be adopted
  * one surface at a time.
+ *
+ * There is deliberately no `title` prop. It used to render an <h1> over the
+ * plate, and MobileShell's header already carries the surface's h1, so
+ * Discover and Reading announced themselves twice before the reader had
+ * read anything. The plate keeps its eyebrow and its credit; the name of
+ * the surface belongs to the header bar. lib/ui/__tests__/oneH1.test.ts
+ * holds this.
  */
 export function SectionMasthead({
   section,
   eyebrow,
-  title,
   children,
 }: {
   section: SectionKey;
   eyebrow?: React.ReactNode;
-  title?: React.ReactNode;
   children?: React.ReactNode;
 }) {
   const media = sectionMedia(section);
@@ -56,11 +61,6 @@ export function SectionMasthead({
             <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-gold/85">
               {eyebrow}
             </p>
-          ) : null}
-          {title ? (
-            <h1 className="mt-1 font-display-serif text-heading leading-[1.05] text-paper">
-              {title}
-            </h1>
           ) : null}
           {children}
         </div>
