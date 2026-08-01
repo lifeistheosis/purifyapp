@@ -83,9 +83,11 @@ export function PrayersMobile() {
         <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-4">
           <T k="footer.prayer" />
         </p>
-        <h1 className="font-serif text-title leading-[1.15] tracking-[-0.01em] text-paper">
+        {/* h2, not h1: MobileHeader above already names the section, and
+            one surface should say its name once. */}
+        <h2 className="font-serif text-title leading-[1.15] tracking-[-0.01em] text-paper">
           <T k="ui.prayWithoutCeasing" />
-        </h1>
+        </h2>
         <p className="mt-3 font-serif italic text-detail text-paper/45">
           <T k="ui.1Thessalonians517" />
         </p>

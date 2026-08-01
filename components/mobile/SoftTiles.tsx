@@ -62,9 +62,11 @@ export function SoftTile({
       >
         {icon}
       </span>
-      <h3 className="relative mt-3 font-serif text-title-sm leading-tight text-paper">
+      {/* h2: these tiles sit directly under the surface's single h1, so h3
+          skipped a level. The size comes from the class, not the tag. */}
+      <h2 className="relative mt-3 font-serif text-title-sm leading-tight text-paper">
         {label}
-      </h3>
+      </h2>
       {sub ? (
         <p className="relative mt-0.5 font-sans text-caption text-paper/60">
           {sub}
@@ -118,9 +120,9 @@ export function FeatureBand({
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold-pale/80">
             {eyebrow}
           </p>
-          <h3 className="mt-1 font-serif text-title-sm leading-[1.15] text-paper">
+          <h2 className="mt-1 font-serif text-title-sm leading-[1.15] text-paper">
             {title}
-          </h3>
+          </h2>
           {sub ? (
             <p className="mt-1.5 font-sans text-caption text-paper/65 leading-[1.5]">
               {sub}

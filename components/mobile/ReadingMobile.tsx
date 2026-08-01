@@ -79,12 +79,9 @@ export async function ReadingMobile({
  <MobileShell
  header={<MobileHeader titleKey="nav.reading" trailing={<UserAvatarSmall />} />}
  >
- {/* The Evangelist Luke at his desk: the reading room's own subject. */}
- <SectionMasthead
- section="reading"
- eyebrow={t(m, "reading.eyebrow")}
- title={t(m, "reading.h1")}
- />
+ {/* The Evangelist Luke at his desk: the reading room's own subject.
+     No `title`: MobileHeader above is the surface's h1. */}
+ <SectionMasthead section="reading" eyebrow={t(m, "reading.eyebrow")} />
  <header className="text-center mb-7">
  <OrnamentHeadpiece className="mx-auto mb-4 max-w-[320px]" />
  <p className="font-serif italic text-ui text-paper/70 max-w-[420px] mx-auto leading-[1.6]">

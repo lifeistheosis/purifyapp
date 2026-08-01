@@ -113,11 +113,9 @@ export async function DiscoverMobile() {
       {/* Masthead — the Menologion of Basil II, since this surface is the
           app's menologion. The ornament stays underneath as the rule between
           the plate and the subtitle. */}
-      <SectionMasthead
-        section="discover"
-        eyebrow={t(m, "discover.eyebrow")}
-        title={t(m, "discover.h1")}
-      />
+      {/* No `title`: MobileHeader above is the surface's h1. The plate
+          keeps its eyebrow and its credit. */}
+      <SectionMasthead section="discover" eyebrow={t(m, "discover.eyebrow")} />
       <header className="text-center mb-7">
         <OrnamentHeadpiece className="mx-auto mb-4 max-w-[320px]" />
         <p className="font-serif italic text-ui text-paper/70 max-w-[420px] mx-auto leading-[1.6]">
