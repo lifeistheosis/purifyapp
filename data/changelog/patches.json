@@ -4,7 +4,7 @@
     "version": "Beta 2.8",
     "date": "2026-08-01",
     "title": "Daniel is whole again, and the app stops saying everything twice",
-    "intro": "Two things in this one. Three passages that were missing from Daniel are restored, which is what the last update said would happen. And the app has stopped repeating itself: the same page was offered to you under three different names, screens announced themselves twice before you had read a word, and the prayer index printed thirty-four rows for twenty-seven prayers. Underneath all of it sat one real fault worth naming on its own: readers who keep the Old Calendar were being shown the wrong saint and the wrong fast on the daily prayer page.",
+    "intro": "Two things lead this one. Three passages that were missing from Daniel are restored, which is what the last update said would happen. And the app has stopped repeating itself: the same page was offered to you under three different names, screens announced themselves twice before you had read a word, and the prayer index printed thirty-four rows for twenty-seven prayers. Underneath all of it sat one real fault worth naming on its own: readers who keep the Old Calendar were being shown the wrong saint and the wrong fast on the daily prayer page. There is also a Settings screen now, the reading palettes colour the whole app rather than two screens, and two more councils have been added.",
     "sections": [
       {
         "heading": "Susanna, Bel and the Dragon, and the middle of Daniel 3",
@@ -41,6 +41,22 @@
       {
         "heading": "A tablet knows what day it is",
         "body": "Beta 2.7 unfroze the date everywhere a phone could see it and missed the wider layout, which a tablet shows. On a tablet, Discover's featured topic and council, and the day card on Prayers, were still stuck on the day the app was built. They read the date from the device now, like everything else. The guard that is supposed to catch this class of fault was only watching part of the app, which is why it did not catch it. It watches all of it now."
+      },
+      {
+        "heading": "The palette you pick is now the app's palette",
+        "body": "Candlelight, Monastery and Parchment only ever coloured the two reading screens, and the moment you left one you were back on the standard night palette. They colour the whole app now, and the choice is remembered, so opening Purify in the morning finds it the way you left it rather than flashing the old colours first. The palettes themselves are unchanged."
+      },
+      {
+        "heading": "There is a Settings screen",
+        "body": "There was not one before. The reading font and size, the interlinear default and the calendar reckoning were behind a sign-in, on a tab called Data, which is also where the row marked Notifications led. None of those ever needed an account, and they do not need one now: Settings opens whether you are signed in or not, and the palette sits at the top of it. The things that genuinely need an account, reminders and exporting your library, are linked from there rather than moved, so there is still one of each."
+      },
+      {
+        "heading": "Two more councils, and a line saying how each was received",
+        "body": "The Synod of Jerusalem of 1672, which answered the Calvinist confession printed under Cyril Lucaris' name and is the fullest statement the Church made in the modern period, and the Second Council of Orange of 529, which the Orthodox Church does not receive and which is here because it is cited so often in Western writing on grace that a reader is likely to meet it and deserves to be told plainly where it stands. Every council page that needs one now carries a line about how the Church received it, placed above what the council defined rather than below. The Councils of Carthage of 256 have gained that line too: St. Cyprian is honoured as a hieromartyr, and his rule that everyone coming from heresy must be baptised is not the rule the Church settled on."
+      },
+      {
+        "heading": "A review only says Verified buyer when it is one",
+        "body": "Reviews of a store carried a Verified buyer badge whether or not there was a delivered order behind them. Product reviews had already been corrected for this; store reviews had not. The badge now appears only where a real purchase backs it. The reviews themselves are unchanged; only the claim about them is."
       },
       {
         "heading": "Also",
