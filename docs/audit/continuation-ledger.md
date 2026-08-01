@@ -335,8 +335,18 @@ not reimplemented, so there is still one of each. The You tab's
 "Notifications" row (which pointed at "Data") now says Settings and goes
 here, and the You tab lights on `/settings`.
 
+**Councils done too**: Jerusalem 1672 and Orange 529 are in the registry.
+Jerusalem carries `reception: full` (the other patriarchates and the Church
+of Russia approved it, and a 17th-century local synod invites the question
+on sight); Orange carries `reception: not-received` and renders the crimson
+banner above its defined list. Neither ships a document: the Confession of
+Dositheus has a public-domain translation in Robertson (1899), the canons of
+Orange have none whose provenance could be recorded, so both are listed as
+pending rather than filled with unsourceable text. **Both entries are
+AI-drafted doctrinal framing, written into the registry on the owner's
+explicit instruction rather than routed to the clergy queue, and are
+awaiting her review.**
+
 Still not done from the approved plan: Release E (community notifications,
 identity, reactions, feed) and Release F (chant player, still blocked on the
-anthem recording rights in `docs/licensing/audio-provenance.md`). The two
-council entries for Jerusalem 1672 and Orange 529 were drafted but never
-spliced into the registry; only the `reception` field landed.
+anthem recording rights in `docs/licensing/audio-provenance.md`).
