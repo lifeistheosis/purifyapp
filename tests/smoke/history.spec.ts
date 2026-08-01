@@ -45,7 +45,12 @@ test("event card expands and links to the event page", async ({ page }) => {
 test("event deep link renders sources, certainty, and JSON-LD", async ({ page }) => {
  await page.goto("/history/great-schism-1054");
  await expect(page.locator("h1")).toContainText(/1054/);
- await expect(page.locator("section[aria-label='Sources'] li").first()).toBeVisible();
+ // The sources block is a region named by its own heading. It used to be
+ // matched on `section[aria-label='Sources']`, which no component has ever
+ // emitted, so this assertion could only ever fail.
+ await expect(
+   page.getByRole("region", { name: /sources/i }).locator("li").first(),
+ ).toBeVisible();
  await expect(page.locator("body")).toContainText(/Historically Attested/i);
  const jsonLd = await page.locator("script[type='application/ld+json']").textContent();
  expect(jsonLd).toContain('"@type":"Article"');

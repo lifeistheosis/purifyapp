@@ -9,8 +9,18 @@ export function EventSources({ sources }: { sources: SourceCitation[] }) {
   const primary = sources.filter((s) => s.kind === "primary");
   const secondary = sources.filter((s) => s.kind === "secondary");
   return (
-    <section className="mt-14 border-t border-paper/10 pt-8">
-      <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+    // aria-labelledby, not aria-label: an unnamed <section> is not exposed
+    // as a landmark at all, so the citations were unreachable by landmark
+    // navigation. Naming it from its own heading keeps the name translated
+    // rather than pinning an English string into the markup.
+    <section
+      aria-labelledby="event-sources-heading"
+      className="mt-14 border-t border-paper/10 pt-8"
+    >
+      <h2
+        id="event-sources-heading"
+        className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55"
+      >
         <T k="study.history.sources" />
       </h2>
       {primary.length > 0 ? (
