@@ -147,7 +147,8 @@ export function MobileTabBar() {
         p === "/account" ||
         p.startsWith("/account/") ||
         p === "/saved" ||
-        p.startsWith("/saved/"),
+        p.startsWith("/saved/") ||
+        p === "/settings",
     },
   ];
 

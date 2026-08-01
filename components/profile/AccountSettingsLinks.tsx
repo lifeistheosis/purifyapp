@@ -82,10 +82,10 @@ export function AccountSettingsLinks() {
       icon: <Glyph kind="bolt" />,
     },
     {
-      label: "Notifications",
-      href: "/account/data",
-      hint: "Prayer reminders, off by default",
-      icon: <Glyph kind="bell" />,
+      label: "Settings",
+      href: "/settings",
+      hint: "Reading, the calendar, language, notifications",
+      icon: <Glyph kind="bolt" />,
     },
     {
       label: "Privacy",

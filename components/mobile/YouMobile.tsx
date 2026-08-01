@@ -182,11 +182,14 @@ export function YouMobile() {
       hint: "Download everything you have gathered",
       icon: <Glyph kind="bolt" />,
     },
+    // Was "Notifications" pointing at a tab called "Data" that held the
+    // reader font, the calendar reckoning, export and delete account. The
+    // notifications themselves are still there and reachable from /settings.
     {
-      label: "Notifications",
-      href: "/account/data",
-      hint: "Prayer reminders, off by default",
-      icon: <Glyph kind="bell" />,
+      label: "Settings",
+      href: "/settings",
+      hint: "Reading, the calendar, language, notifications",
+      icon: <Glyph kind="bolt" />,
     },
     {
       label: "Privacy",
