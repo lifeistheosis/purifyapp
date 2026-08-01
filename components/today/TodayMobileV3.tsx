@@ -4,7 +4,6 @@ import { VerseOfDayCard } from "./VerseOfDayCard";
 import { PrayNowCard } from "./PrayNowCard";
 import { ChurchTodayRail } from "./ChurchTodayRail";
 import { GreetingHeader } from "./GreetingHeader";
-import { QuickAccessGrid } from "./QuickAccessGrid";
 import { FirstStepsNudge } from "@/components/onboarding/FirstStepsNudge";
 import { T } from "@/components/i18n/T";
 
@@ -48,11 +47,11 @@ export function TodayMobileV3() {
           <PrayNowCard />
         </div>
 
-        {/* Quick access: the four core surfaces as soft, inviting doors. */}
-        <p className="mt-8 mb-3 font-sans text-eyebrow uppercase tracking-[2px] text-paper/55">
-          <T k="today.explore" />
-        </p>
-        <QuickAccessGrid />
+        {/* The "Explore" grid stood here: four tiles to /prayers, /bible,
+            /saints and /calendar. Two were the same href as a tab 200px
+            below it and the other two lit the Discover tab, so it restated
+            the tab bar and called Bible "Scripture" while the tab said
+            "Bible". The tab bar is the navigation. */}
 
         {/* The Church today: the saint, the fast, the readings, the count
             to Pascha, kept on the quiet sequenced rail. */}

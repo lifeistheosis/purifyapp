@@ -153,7 +153,7 @@ export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
       {scripture.length ? (
         <div className="mt-8">
           <p className="font-sans text-caption uppercase tracking-[1.4px] text-paper/55">
-            <T k="today.tiles.bible" />
+            <T k="bible.eyebrow" />
           </p>
           <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1.5">
             {scripture.map((ref) => (
