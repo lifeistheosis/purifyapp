@@ -423,30 +423,19 @@ function FocusGlyph() {
  */
 export function ReadingModeController() {
   const { t } = useTranslate();
-  const { focus, setFocus, theme } = useReaderPrefs();
-  const { allowed } = useProReadingModes();
-  const effectiveTheme = allowed ? theme : "default";
+  const { focus, setFocus } = useReaderPrefs();
 
-  // Reflect the palette. A plain attribute swap: the CSS variables change
-  // in one paint and every utility color follows. No View Transition here —
-  // palette switches happen from an open settings sheet, where a full-page
-  // crossfade reads as lag rather than polish.
-  useEffect(() => {
-    const el = document.documentElement;
-    if (effectiveTheme === "default") {
-      el.removeAttribute("data-reading-mode");
-    } else {
-      el.setAttribute("data-reading-mode", effectiveTheme);
-    }
-  }, [effectiveTheme]);
-
-  // Unmount safety, mirroring the focus class below: never leak a reading
-  // palette onto non-reader surfaces.
-  useEffect(() => {
-    return () => {
-      document.documentElement.removeAttribute("data-reading-mode");
-    };
-  }, []);
+  // The palette is applied app-wide by components/theme/AppThemeController,
+  // mounted in the root layout, and is NOT applied or stripped here any more.
+  //
+  // This used to own it, and stripped `data-reading-mode` on unmount so a
+  // palette could never "leak" onto a non-reader surface. That was the whole
+  // reason a chosen palette stopped at the reader's edge: leaving the reader
+  // put you back on the default colours. The palette is the app's palette
+  // now, so leaking is the intended behaviour and the strip is gone.
+  //
+  // The Pro gate is unchanged and still lives here in `effectiveTheme`: this
+  // release promoted the mechanism, not the entitlement.
 
   // Sync `html.reader-focus` with the `focus` preference. Uses the View
   // Transitions API when available so the browser crossfades the entire page

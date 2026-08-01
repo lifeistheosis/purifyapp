@@ -15,6 +15,7 @@ import {
 import { headers } from "next/headers";
 import "./globals.css";
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
+import { AppThemeController } from "@/components/theme/AppThemeController";
 import { NativeBridge } from "@/components/native/NativeBridge";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
 import { SITE_URL } from "@/lib/site";
@@ -169,6 +170,19 @@ export const viewport: Viewport = {
  viewportFit: "cover",
 };
 
+// Sets the palette before the first paint. Kept as a string literal rather
+// than a function so nothing here depends on bundling order. The key and
+// the valid ids mirror lib/reader/readingModes.ts; the try/catch matters
+// because a blocked storage API must fall back to the default palette
+// rather than throw before the app has rendered anything at all.
+const THEME_PREPAINT = [
+  "(function(){try{",
+  "var t=localStorage.getItem('purify.reader.theme');",
+  "if(t&&['candlelight','monastery','parchment'].indexOf(t)>-1){",
+  "document.documentElement.setAttribute('data-reading-mode',t);}",
+  "}catch(e){}})();",
+].join("");
+
 export default async function RootLayout({
  children,
 }: Readonly<{
@@ -182,13 +196,11 @@ export default async function RootLayout({
  // catalog over the wire.
  const messages =
    localeCode === "en" ? undefined : getMessages(localeCode);
- // Per-request CSP nonce, set by middleware. Read it so any future inline
- // <script nonce={nonce}> tags here will satisfy the strict-dynamic policy.
- // Currently unused by app code; Next's own runtime carries the nonce via
- // its build pipeline once the request header is set. Skipped in the Android
- // static export (no request headers, and no CSP/middleware there) so the root
- // layout — and thus every page — can be statically rendered.
- // eslint-disable-next-line @typescript-eslint/no-unused-vars
+ // Per-request CSP nonce, set by middleware. The pre-paint theme script
+ // below carries it, so strict-dynamic accepts that one inline script.
+ // Skipped in the Android static export (no request headers, and no CSP or
+ // middleware there) so the root layout, and thus every page, can still be
+ // statically rendered.
  const nonce =
    process.env.BUILD_TARGET === "android"
      ? undefined
@@ -200,7 +212,18 @@ export default async function RootLayout({
  className={`${dmSans.variable} ${dmSerif.variable} ${lora.variable} ${cardo.variable} ${notoSansX.variable} ${notoSerifX.variable} ${notoSansArabic.variable} ${notoNaskh.variable} ${notoSansGeorgian.variable} ${notoSerifGeorgian.variable} ${notoSansDevanagari.variable} h-full antialiased`}
  >
  <body className="min-h-full flex flex-col">
+ {/* Pre-paint. The palette lives in localStorage, which the server
+     cannot read, so without this the first paint is always the default
+     palette and a reader on Candlelight or Parchment gets a flash of
+     the wrong one on every cold load. Runs before the body renders and
+     is deliberately tiny and dependency-free. Carries the CSP nonce;
+     the Android export has no nonce and needs none. */}
+ <script
+ nonce={nonce}
+ dangerouslySetInnerHTML={{ __html: THEME_PREPAINT }}
+ />
  <MessagesProvider locale={localeCode} messages={messages}>
+ <AppThemeController />
  <LocaleBootstrap />
  {children}
  <FirstRunGate />
