@@ -375,28 +375,54 @@ export const trapezaReportSchema = z.object({
   reason: z.string().max(500).optional().nullable(),
 });
 
-/** /api/community/posts POST body. A discussion carries the reader's own
- *  words; a share carries a VERBATIM gathered line + citation from the
- *  reader's Florilegium (Purify's own vetted content). */
+/**
+ * /api/community/posts POST body.
+ *
+ * A discussion carries the reader's own words. A SHARE carries only a
+ * LOCATOR into Purify's own library, never the quotation itself:
+ *
+ *   scripture  book / chapter / verse. The route loads the verse and writes
+ *              both the text and the citation. Nothing the caller typed is
+ *              stored.
+ *   father     saintSlug / work / text. The route loads that work and
+ *              refuses the post unless the text is found in it verbatim.
+ *
+ * This used to accept `quoteText`, `quoteSource` and `quoteHref` as free
+ * strings, with the only server check being that the href began with "/".
+ * The composer offers Florilegium lines and the code says "no fresh
+ * doctrinal text enters the app through this surface", but that was a
+ * property of the UI, not of the API: anyone with a token could post
+ * invented patristic text under a saint's name and it rendered as vetted.
+ * See lib/community/verifyQuote.ts.
+ */
 export const communityPostSchema = z
   .object({
     kind: z.enum(["discussion", "scripture", "father"]),
     title: z.string().max(160).optional().nullable(),
     body: z.string().max(4000).optional().nullable(),
+    /** scripture locator */
+    book: z.string().max(60).optional().nullable(),
+    chapter: z.number().int().positive().max(200).optional().nullable(),
+    verse: z.number().int().positive().max(400).optional().nullable(),
+    /** father locator */
+    saintSlug: z.string().max(80).optional().nullable(),
+    work: z.string().max(80).optional().nullable(),
+    /** Only read for `father`, and only to be checked against the work. */
     quoteText: z.string().max(2000).optional().nullable(),
-    quoteSource: z.string().max(300).optional().nullable(),
-    quoteHref: z.string().max(500).startsWith("/").optional().nullable(),
   })
   .refine(
     (p) => p.kind !== "discussion" || (p.body ?? "").trim().length >= 2,
     { message: "Write a little more before posting." },
   )
   .refine(
+    (p) => p.kind !== "scripture" || (p.book && p.chapter && p.verse),
+    { message: "A shared verse needs its book, chapter and verse." },
+  )
+  .refine(
     (p) =>
-      p.kind === "discussion" ||
-      ((p.quoteText ?? "").trim().length > 0 &&
-        (p.quoteSource ?? "").trim().length > 0),
-    { message: "A shared line needs its text and its source." },
+      p.kind !== "father" ||
+      (p.saintSlug && p.work && (p.quoteText ?? "").trim().length > 0),
+    { message: "A shared line from the Fathers has to name the work it came from." },
   );
 
 /** /api/community/posts/[id]/replies POST body. */

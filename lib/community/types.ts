@@ -7,7 +7,9 @@ export type CommunityPostKind = "discussion" | "scripture" | "father";
 /** Public shape of a community_posts row, snake_case mirroring the columns. */
 export type CommunityPost = {
   id: string;
-  user_id: string;
+  // No `user_id`. The feed is public and cached, so it must not carry the
+  // Supabase auth uuid (also the RevenueCat appUserID and the avatar storage
+  // path segment). Ownership comes from GET /api/community/mine instead.
   kind: CommunityPostKind;
   title: string | null;
   body: string | null;
@@ -23,7 +25,6 @@ export type CommunityPost = {
 export type CommunityReply = {
   id: string;
   post_id: string;
-  user_id: string;
   body: string;
   author_name: string;
   author_avatar: string | null;

@@ -6,9 +6,20 @@ import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { communityPostSchema } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
+import {
+  isRefusal,
+  verifyFatherQuote,
+  verifyScriptureQuote,
+  type VerifiedQuote,
+} from "@/lib/community/verifyQuote";
 
+// `user_id` is DELIBERATELY not selected. It is the Supabase auth uuid, and
+// the same value is the RevenueCat appUserID and the segment in the public
+// avatar storage path, so serving it to unauthenticated readers hands out a
+// cross-system identifier for free. Ownership is still enforced: the DELETE
+// route reads user_id server-side and compares it to the caller's token.
 const POST_COLS =
-  "id, user_id, kind, title, body, quote_text, quote_source, quote_href, author_name, author_avatar, reply_count, created_at";
+  "id, kind, title, body, quote_text, quote_source, quote_href, author_name, author_avatar, reply_count, created_at";
 
 /** Latest visible community posts (public read). */
 export async function GET(req: Request) {
@@ -82,6 +93,32 @@ async function handlePOST(req: Request) {
     (user.email ? user.email.split("@")[0] : "") ||
     "Reader";
 
+  // The quotation is built HERE, from our own library, never accepted from
+  // the caller. A share that cannot be traced to the work it cites is
+  // refused rather than published. See lib/community/verifyQuote.ts.
+  let quote: VerifiedQuote | null = null;
+  if (p.kind === "scripture") {
+    const v = await verifyScriptureQuote({
+      book: p.book,
+      chapter: p.chapter,
+      verse: p.verse,
+    });
+    if (isRefusal(v)) {
+      return NextResponse.json({ error: v.reason }, { status: 400 });
+    }
+    quote = v;
+  } else if (p.kind === "father") {
+    const v = await verifyFatherQuote({
+      saintSlug: p.saintSlug,
+      work: p.work,
+      text: p.quoteText,
+    });
+    if (isRefusal(v)) {
+      return NextResponse.json({ error: v.reason }, { status: 400 });
+    }
+    quote = v;
+  }
+
   const admin = createAdminClient();
   const { data: created, error } = await admin
     .from("community_posts")
@@ -90,9 +127,9 @@ async function handlePOST(req: Request) {
       kind: p.kind,
       title: p.kind === "discussion" ? p.title?.trim() || null : null,
       body: p.body?.trim() || null,
-      quote_text: p.kind === "discussion" ? null : p.quoteText?.trim() || null,
-      quote_source: p.kind === "discussion" ? null : p.quoteSource?.trim() || null,
-      quote_href: p.kind === "discussion" ? null : p.quoteHref || null,
+      quote_text: quote?.quoteText ?? null,
+      quote_source: quote?.quoteSource ?? null,
+      quote_href: quote?.quoteHref ?? null,
       author_name: authorName.slice(0, 80),
       author_avatar: meta.avatar_url || null,
     })

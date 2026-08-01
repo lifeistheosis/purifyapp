@@ -8,8 +8,9 @@ import { communityReplySchema } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
+// `user_id` is deliberately not selected; see the note in ../../route.ts.
 const REPLY_COLS =
-  "id, post_id, user_id, body, author_name, author_avatar, created_at";
+  "id, post_id, body, author_name, author_avatar, created_at";
 
 export async function GET(
   req: Request,
@@ -26,7 +27,11 @@ export async function GET(
   const { data } = await admin
     .from("community_post_replies")
     .select(REPLY_COLS)
+    // Reads through the service role, which bypasses RLS, so the status
+    // filter has to be explicit here. Without it a removed reply would
+    // still be served to every reader.
     .eq("post_id", id)
+    .eq("status", "visible")
     .order("created_at", { ascending: true })
     .limit(200);
   return withCors(NextResponse.json({ replies: data ?? [] }), req);
@@ -107,10 +112,19 @@ async function handlePOST(req: Request, id: string) {
     );
   }
 
-  await admin
-    .from("community_posts")
-    .update({ reply_count: (post.reply_count ?? 0) + 1 })
-    .eq("id", id);
+  // Atomic. This was a read-modify-write off a `post` fetched earlier, so
+  // two replies landing together both wrote the same number and one count
+  // was lost. Campaigns already used an RPC for exactly this
+  // (prayer_campaign_bump_counts); Community never got the same treatment.
+  const { error: bumpError } = await admin.rpc("community_bump_reply_count", {
+    p_post_id: id,
+    p_delta: 1,
+  });
+  if (bumpError) {
+    // The reply is already stored and is the thing that matters; a drifted
+    // counter is cosmetic and the migration recomputes it.
+    console.warn("[community] reply_count bump failed", bumpError.message);
+  }
 
   return NextResponse.json({ ok: true, id: created.id });
 }

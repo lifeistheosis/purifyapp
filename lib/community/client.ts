@@ -58,14 +58,59 @@ export async function fetchCommunityPosts(): Promise<PostsResult> {
   }
 }
 
+/**
+ * A share sends a LOCATOR into Purify's library, not the quotation. The
+ * server loads the cited verse or work and writes the text and citation
+ * itself, so an invented quotation cannot be published under a saint's name.
+ * See lib/community/verifyQuote.ts.
+ */
 export type CreatePostInput = {
   kind: "discussion" | "scripture" | "father";
   title?: string | null;
   body?: string | null;
+  /** scripture locator */
+  book?: string | null;
+  chapter?: number | null;
+  verse?: number | null;
+  /** father locator */
+  saintSlug?: string | null;
+  work?: string | null;
+  /** Only for `father`, and only ever checked against the cited work. */
   quoteText?: string | null;
-  quoteSource?: string | null;
-  quoteHref?: string | null;
 };
+
+/** Ids of the caller's own posts and replies. See app/api/community/mine. */
+export async function fetchMyCommunityIds(): Promise<{
+  postIds: string[];
+  replyIds: string[];
+}> {
+  try {
+    const res = await apiFetch("/api/community/mine");
+    if (!res.ok) return { postIds: [], replyIds: [] };
+    const data = (await res.json()) as { postIds?: string[]; replyIds?: string[] };
+    return { postIds: data.postIds ?? [], replyIds: data.replyIds ?? [] };
+  } catch {
+    return { postIds: [], replyIds: [] };
+  }
+}
+
+/** Report a post or a reply. Exactly one id. */
+export async function reportCommunityItem(input: {
+  postId?: string;
+  replyId?: string;
+  reason?: string | null;
+}): Promise<CommunityResult> {
+  try {
+    const res = await apiFetch("/api/community/report", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(input),
+    });
+    return readResult(res);
+  } catch {
+    return { ok: false, error: NETWORK_ERROR };
+  }
+}
 
 export async function createCommunityPost(
   input: CreatePostInput,

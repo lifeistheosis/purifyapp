@@ -10,6 +10,8 @@ import {
   addReply,
   createCommunityPost,
   deleteCommunityPost,
+  fetchMyCommunityIds,
+  reportCommunityItem,
   fetchCommunityPosts,
   type PostsResult,
   fetchReplies,
@@ -111,6 +113,7 @@ function ConversationsPanel() {
   // fetchCommunityPosts, so "dark", "empty" and "failed" stay distinct.
   const [result, setResult] = useState<PostsResult | undefined>(undefined);
   const [version, setVersion] = useState(0);
+  const [myPostIds, setMyPostIds] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
     let alive = true;
@@ -148,6 +151,19 @@ function ConversationsPanel() {
       alive = false;
     };
   }, [version]);
+
+  // Which rows are the reader's own. A separate authenticated call because
+  // the feed is cached and public, so it deliberately carries no author id.
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      const ids = await fetchMyCommunityIds();
+      if (alive) setMyPostIds(new Set(ids.postIds));
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [version, authSettled]);
 
   const reload = () => setVersion((v) => v + 1);
 
@@ -212,7 +228,7 @@ function ConversationsPanel() {
               </div>
             ) : (
               result.posts.map((p) => (
-                <PostCard key={p.id} post={p} me={me} onChanged={reload} />
+                <PostCard key={p.id} post={p} me={me} myPostIds={myPostIds} onChanged={reload} />
               ))
             )}
           </div>
@@ -261,13 +277,20 @@ function Composer({
             body: body.trim(),
           })
         : picked
-          ? await createCommunityPost({
-              kind: picked.kind,
-              body: body.trim() || null,
-              quoteText: picked.text,
-              quoteSource: shareSource(picked),
-              quoteHref: shareHref(picked),
-            })
+          ? await (async () => {
+              // Send WHERE the line came from, never the line itself. The
+              // server rebuilds the quotation from our library and refuses
+              // anything it cannot find there.
+              const loc = shareLocator(picked);
+              if (!loc) {
+                return {
+                  ok: false as const,
+                  error:
+                    "This line does not carry a link back to the work it came from, so we cannot publish it under that name. Open it in the reader and gather it again.",
+                };
+              }
+              return createCommunityPost({ ...loc, body: body.trim() || null });
+            })()
           : { ok: false, error: t("community.pickALine") };
     setBusy(false);
     if (res.ok) {
@@ -434,11 +457,36 @@ function shareSource(item: FlorilegiumItem): string {
   return item.work ? `${item.author}, ${item.work}` : item.author;
 }
 
-function shareHref(item: FlorilegiumItem): string | null {
+/**
+ * The locator the server needs to rebuild this quotation from our own
+ * library, or null when it cannot be traced.
+ *
+ * Scripture always resolves: the item carries book, chapter and verse.
+ * A Father resolves only when we can name the WORK, which means parsing the
+ * work slug out of the deep link, since `item.work` is a printed title
+ * ("On the Incarnation") and the loader needs a slug.
+ *
+ * Null means the line cannot be verified against the work it claims, and the
+ * composer refuses to share it rather than asking the server to take the
+ * text on trust. That is the whole point: see lib/community/verifyQuote.ts.
+ */
+function shareLocator(
+  item: FlorilegiumItem,
+):
+  | { kind: "scripture"; book: string; chapter: number; verse: number }
+  | { kind: "father"; saintSlug: string; work: string; quoteText: string }
+  | null {
   if (item.kind === "scripture") {
-    return `/bible/${item.book}/${item.chapter}`;
+    return {
+      kind: "scripture",
+      book: item.book,
+      chapter: item.chapter,
+      verse: item.verse,
+    };
   }
-  return item.href ?? (item.saintSlug ? `/saints/${item.saintSlug}` : null);
+  const m = item.href?.match(/^\/saints\/([a-z0-9-]+)\/([a-z0-9-]+)/);
+  if (!m) return null;
+  return { kind: "father", saintSlug: m[1], work: m[2], quoteText: item.text };
 }
 
 /* ── Post card ─────────────────────────────────────────────────────────── */
@@ -446,10 +494,13 @@ function shareHref(item: FlorilegiumItem): string | null {
 function PostCard({
   post,
   me,
+  myPostIds,
   onChanged,
 }: {
   post: CommunityPost;
   me: Me;
+  /** From GET /api/community/mine. The feed itself carries no author id. */
+  myPostIds: Set<string>;
   onChanged: () => void;
 }) {
   const { t } = useTranslate();
@@ -457,7 +508,15 @@ function PostCard({
   const [replies, setReplies] = useState<CommunityReply[] | null>(null);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
-  const mine = me?.id === post.user_id;
+  const [reported, setReported] = useState(false);
+  const mine = myPostIds.has(post.id);
+
+  async function report() {
+    // Optimistic and one-way: there is no un-report, and the unique index
+    // server-side makes a second tap a no-op.
+    setReported(true);
+    await reportCommunityItem({ postId: post.id });
+  }
 
   async function toggleReplies() {
     const next = !open;
@@ -507,6 +566,18 @@ function PostCard({
             className="ml-auto shrink-0 rounded-pill border border-paper/15 px-3 py-1 font-sans text-eyebrow font-semibold text-paper/50 hover:border-rose-400/40 hover:text-rose-300 disabled:opacity-50"
           >
             {t("community.delete")}
+          </button>
+        ) : me ? (
+          // Reporting requires an account: an anonymous report cannot be
+          // weighed and cannot be rate-limited meaningfully.
+          <button
+            type="button"
+            onClick={() => void report()}
+            disabled={reported}
+            aria-label="Report this post"
+            className="ml-auto shrink-0 rounded-pill border border-paper/12 px-3 py-1 font-sans text-eyebrow font-semibold text-paper/40 hover:border-rose-400/40 hover:text-rose-300 disabled:opacity-60 disabled:hover:border-paper/12 disabled:hover:text-paper/40"
+          >
+            {reported ? "Reported" : "Report"}
           </button>
         ) : null}
       </div>

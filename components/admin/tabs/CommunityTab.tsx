@@ -39,10 +39,36 @@ type RecipeReport = {
   created_at: string;
   recipe: { id: string; title: string; status: string } | null;
 };
+/** A reported Conversations post or reply. Exactly one of post/reply is set. */
+type ConversationReport = {
+  id: string;
+  post_id: string | null;
+  reply_id: string | null;
+  reason: string | null;
+  created_at: string;
+  post: {
+    id: string;
+    kind: string;
+    title: string | null;
+    body: string | null;
+    quote_text: string | null;
+    quote_source: string | null;
+    author_name: string;
+    status: string;
+  } | null;
+  reply: {
+    id: string;
+    post_id: string;
+    body: string;
+    author_name: string;
+    status: string;
+  } | null;
+};
 type CommunityData = {
   pendingRecipes: PendingRecipe[];
   campaignReports: CampaignReport[];
   recipeReports: RecipeReport[];
+  conversationReports: ConversationReport[];
 };
 
 type Action =
@@ -50,7 +76,10 @@ type Action =
   | "remove_recipe"
   | "remove_campaign"
   | "dismiss_campaign_report"
-  | "dismiss_recipe_report";
+  | "dismiss_recipe_report"
+  | "remove_community_post"
+  | "remove_community_reply"
+  | "dismiss_community_report";
 
 export function CommunityTab() {
   const [data, setData] = useState<CommunityData | null>(null);
@@ -81,13 +110,13 @@ export function CommunityTab() {
   }, [version]);
 
   const act = useCallback(
-    async (action: Action, id: string) => {
+    async (action: Action, id: string, reason?: string) => {
       setBusy(id + action);
       try {
         await fetch("/api/admin/community", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ action, id }),
+          body: JSON.stringify({ action, id, reason: reason ?? null }),
         });
         reload();
       } finally {
@@ -106,6 +135,94 @@ export function CommunityTab() {
 
   return (
     <div className="space-y-5">
+      {/* First, because until now this queue had nowhere to live: the tab
+          named "Community" covered campaigns and Trapeza only, so a
+          reported Conversations post could be acted on only in the SQL
+          editor. Conversations is live in the Android build. */}
+      <Card
+        title="Reported conversations"
+        subtitle="Posts and replies readers have flagged. Removing hides it from everyone and keeps the row."
+        accent={data.conversationReports.length > 0}
+      >
+        {data.conversationReports.length === 0 ? (
+          <Empty>Nothing reported.</Empty>
+        ) : (
+          <div className="space-y-3">
+            {data.conversationReports.map((rep) => {
+              const isReply = Boolean(rep.reply_id);
+              const target = isReply ? rep.reply : rep.post;
+              const text = isReply
+                ? rep.reply?.body
+                : rep.post?.body || rep.post?.quote_text || rep.post?.title;
+              const alreadyRemoved = target?.status === "removed";
+              return (
+                <div
+                  key={rep.id}
+                  className="rounded-md border border-paper/10 bg-paper/[0.02] p-4"
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Pill tone={isReply ? "neutral" : "gold"}>
+                      {isReply ? "reply" : rep.post?.kind ?? "post"}
+                    </Pill>
+                    {alreadyRemoved && <Pill tone="rose">already removed</Pill>}
+                    <span className="font-sans text-caption text-paper/45">
+                      {target?.author_name ?? "unknown"} ·{" "}
+                      {new Date(rep.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  <p className="mt-2 font-sans text-detail text-paper/80 line-clamp-4">
+                    {text || <span className="italic text-paper/40">(no text)</span>}
+                  </p>
+                  {rep.post?.quote_source && (
+                    <p className="mt-1 font-sans text-caption text-paper/45">
+                      {rep.post.quote_source}
+                    </p>
+                  )}
+                  {rep.reason && (
+                    <p className="mt-2 font-sans text-caption text-rose-300/80">
+                      Reason: {rep.reason}
+                    </p>
+                  )}
+
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {!alreadyRemoved && (
+                      <ToolbarButton
+                        variant="danger"
+                        loading={
+                          busy ===
+                          (isReply ? rep.reply_id : rep.post_id) +
+                            (isReply
+                              ? "remove_community_reply"
+                              : "remove_community_post")
+                        }
+                        onClick={() =>
+                          act(
+                            isReply
+                              ? "remove_community_reply"
+                              : "remove_community_post",
+                            (isReply ? rep.reply_id : rep.post_id) as string,
+                            rep.reason ?? undefined,
+                          )
+                        }
+                      >
+                        Remove {isReply ? "reply" : "post"}
+                      </ToolbarButton>
+                    )}
+                    <ToolbarButton
+                      loading={busy === rep.id + "dismiss_community_report"}
+                      onClick={() => act("dismiss_community_report", rep.id)}
+                    >
+                      Dismiss
+                    </ToolbarButton>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </Card>
+
       <Card
         title="Pending recipes"
         subtitle="Submissions waiting to join the Trapeza. Publish or remove."

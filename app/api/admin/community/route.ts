@@ -33,6 +33,18 @@ export async function GET() {
 
   const admin = createAdminClient();
 
+  // Conversations reports. These had NO admin surface at all: the tab named
+  // "Community" covered only campaigns and Trapeza, so a reported post or
+  // reply could only be acted on by hand in the SQL editor.
+  const conversationReportsQuery = admin
+    .from("community_reports")
+    .select(
+      "id, post_id, reply_id, reason, created_at, post:community_posts(id, kind, title, body, quote_text, quote_source, author_name, status), reply:community_post_replies(id, post_id, body, author_name, status)",
+    )
+    .eq("status", "open")
+    .order("created_at", { ascending: false })
+    .limit(100);
+
   const [pendingRecipes, campaignReports, recipeReports] = await Promise.all([
     admin
       .from("trapeza_recipes")
@@ -61,6 +73,7 @@ export async function GET() {
       pendingRecipes: pendingRecipes.data ?? [],
       campaignReports: campaignReports.data ?? [],
       recipeReports: recipeReports.data ?? [],
+      conversationReports: (await conversationReportsQuery).data ?? [],
     },
     { headers: { "Cache-Control": "no-store" } },
   );
@@ -73,8 +86,15 @@ const actionSchema = z.object({
     "remove_campaign",
     "dismiss_campaign_report",
     "dismiss_recipe_report",
+    // Conversations. `remove_*` soft-remove: the row stays, so the record of
+    // what was said survives the decision. Hard deletion is the reader's
+    // own tool for their own post, not a moderation tool.
+    "remove_community_post",
+    "remove_community_reply",
+    "dismiss_community_report",
   ]),
   id: z.string().uuid(),
+  reason: z.string().max(300).optional().nullable(),
 });
 
 export async function POST(req: Request) {
@@ -91,7 +111,7 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid action." }, { status: 400 });
   }
-  const { action, id } = parsed.data;
+  const { action, id, reason } = parsed.data;
   const admin = createAdminClient();
   const now = new Date().toISOString();
 
@@ -146,6 +166,81 @@ export async function POST(req: Request) {
       break;
     case "dismiss_recipe_report":
       ({ error } = await admin.from("trapeza_recipe_reports").delete().eq("id", id));
+      break;
+
+    // ── Conversations ────────────────────────────────────────────────
+    // Soft-remove, with who decided and why. The reply policy now reads
+    // `status = 'visible'`, so this hides it from every reader while the
+    // row survives for the next time the same account does it again.
+    case "remove_community_post":
+      ({ error } = await admin
+        .from("community_posts")
+        .update({
+          status: "removed",
+          removed_reason: reason?.trim() || null,
+          removed_by_email: adminUser.email ?? null,
+        })
+        .eq("id", id));
+      if (!error) {
+        await admin
+          .from("community_reports")
+          .update({
+            status: "actioned",
+            handled_by_email: adminUser.email ?? null,
+            handled_at: now,
+          })
+          .eq("post_id", id)
+          .eq("status", "open");
+      }
+      break;
+
+    case "remove_community_reply": {
+      const { data: reply } = await admin
+        .from("community_post_replies")
+        .select("post_id")
+        .eq("id", id)
+        .maybeSingle();
+      ({ error } = await admin
+        .from("community_post_replies")
+        .update({
+          status: "removed",
+          removed_reason: reason?.trim() || null,
+          removed_by_email: adminUser.email ?? null,
+        })
+        .eq("id", id));
+      if (!error) {
+        // The parent's counter has to follow, or the post advertises a
+        // reply the reader cannot see.
+        if (reply?.post_id) {
+          await admin.rpc("community_bump_reply_count", {
+            p_post_id: reply.post_id,
+            p_delta: -1,
+          });
+        }
+        await admin
+          .from("community_reports")
+          .update({
+            status: "actioned",
+            handled_by_email: adminUser.email ?? null,
+            handled_at: now,
+          })
+          .eq("reply_id", id)
+          .eq("status", "open");
+      }
+      break;
+    }
+
+    // Dismissing is recorded, not deleted: a post reported five times and
+    // dismissed five times reads very differently from one reported once.
+    case "dismiss_community_report":
+      ({ error } = await admin
+        .from("community_reports")
+        .update({
+          status: "dismissed",
+          handled_by_email: adminUser.email ?? null,
+          handled_at: now,
+        })
+        .eq("id", id));
       break;
   }
 
