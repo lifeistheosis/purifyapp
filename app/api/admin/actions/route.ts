@@ -98,7 +98,9 @@ export async function POST(req: NextRequest) {
         saints: ["/saints", "/saints/[slug]"],
         councils: ["/councils", "/councils/[slug]"],
         home: ["/"],
-        all: ["/", "/saints", "/councils", "/today", "/whats-new"],
+        // "/today" was listed here and is not a route, so it revalidated
+        // nothing. The daily surface lives at /prayers/today.
+        all: ["/", "/saints", "/councils", "/prayers/today", "/whats-new"],
       };
       for (const p of map[parsed.target]) {
         // Next 16 requires the "page" or "layout" type for dynamic routes.

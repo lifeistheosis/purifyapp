@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Cross } from "@/components/ui/icons/Cross";
-import { Hands } from "@/components/ui/icons/Hands";
 import { Halo } from "@/components/ui/icons/Halo";
 import { Compass } from "@/components/ui/icons/Compass";
 
@@ -9,22 +8,24 @@ import { Compass } from "@/components/ui/icons/Compass";
  * Saved / Prayer / Giving pattern from the YouVersion profile tab.
  *
  *  - Saved → bookmarks page.
- *  - Prayer → today's prayer surface.
  *  - Saints → the saints index, the "lives" they're following.
  *  - Discover → the wider library, for jumping out of the profile view.
+ *
+ * A fourth chip, "Prayer", pointed at /prayers/today. That page is the
+ * web's Today surface and is no longer reached from inside the app, where
+ * the Today tab is one tap away in the bar below this row.
  *
  * Server component, all links are static.
  */
 const CHIPS: { label: string; href: string; Icon: typeof Cross; tint: string }[] = [
   { label: "Saved", href: "/saved", Icon: Cross, tint: "text-gold" },
-  { label: "Prayer", href: "/prayers/today", Icon: Hands, tint: "text-link" },
   { label: "Saints", href: "/saints", Icon: Halo, tint: "text-gold-pale" },
   { label: "Discover", href: "/discover", Icon: Compass, tint: "text-sage-soft" },
 ];
 
 export function AccountChipRow() {
   return (
-    <ul className="md:hidden grid grid-cols-4 gap-2 mb-6">
+    <ul className="md:hidden grid grid-cols-3 gap-2 mb-6">
       {CHIPS.map(({ label, href, Icon, tint }) => (
         <li key={href}>
           <Link

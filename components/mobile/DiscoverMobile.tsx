@@ -12,7 +12,6 @@ import { type DiscoverEntry } from "./DiscoverIndex";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
 import { Church } from "@/components/ui/icons/Church";
 import { Calendar } from "@/components/ui/icons/Calendar";
-import { Codex } from "@/components/ui/icons/Codex";
 import { Cross } from "@/components/ui/icons/Cross";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
@@ -104,12 +103,6 @@ export async function DiscoverMobile() {
       // froze at build time. The static blurb matches its siblings.
       blurb: t(m, "discover.tile.calendarBlurb"),
       Icon: Calendar,
-    },
-    {
-      label: t(m, "discover.tile.dailyReadings"),
-      href: "/prayers/today",
-      blurb: t(m, "discover.tile.dailyReadingsBlurb"),
-      Icon: Codex,
     },
   ];
 

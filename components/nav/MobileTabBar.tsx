@@ -29,13 +29,17 @@ import { shopEnabled } from "@/lib/shop/flags";
  * keeps the existing AppNav.
  *
  * Tabs, in the order chosen by the user:
- *   Today  ·  Bible  ·  Discover  ·  Prayers  ·  Shop  ·  You
+ *   Today · Bible · Discover · Prayers · Shop · Community · You
  * Shop appears only while the marketplace flag is on (it is inside the app now,
- * Beta 1.9); commerce sits after the study surfaces, before the account.
+ * Beta 1.9); commerce sits after the study surfaces, before the account. So
+ * this is six tabs by default and seven in the shipped APK, which sets
+ * NEXT_PUBLIC_SHOP_ENABLED.
  *
  * Active state is derived from `usePathname()`, with a small precedence
  * table so adjacent routes (e.g. /saints under Discover, /account under
- * You) light up the correct tab.
+ * You) light up the correct tab. `/prayers/today` used to be carved out of
+ * Prayers and handed to Today, back when the in-app tiles pointed at it;
+ * they no longer do, and it is a /prayers route, so it lights Prayers.
  *
  * There is deliberately NO sliding highlight behind the active tab. The
  * earlier version glided a rounded compartment between slots, which had two
@@ -71,7 +75,7 @@ export function MobileTabBar() {
       label: t("nav.today"),
       href: "/",
       Icon: Sun,
-      matches: (p) => p === "/" || p === "/prayers/today",
+      matches: (p) => p === "/",
     },
     {
       key: "bible",
@@ -110,8 +114,7 @@ export function MobileTabBar() {
       label: t("nav.prayers"),
       href: "/prayers",
       Icon: OrthodoxCross,
-      matches: (p) =>
-        (p === "/prayers" || p.startsWith("/prayers/")) && p !== "/prayers/today",
+      matches: (p) => p === "/prayers" || p.startsWith("/prayers/"),
     },
     ...(shopEnabled()
       ? [

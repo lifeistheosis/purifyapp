@@ -10,7 +10,6 @@ import { SectionMasthead } from "./SectionMasthead";
 import { DiptychPreview } from "./DiptychPreview";
 import { SoftTile, SoftTileGrid, FeatureBand } from "./SoftTiles";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
-import { Sun } from "@/components/ui/icons/Sun";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { PrayerRope } from "@/components/ui/icons/PrayerRope";
 import { Lyre } from "@/components/ui/icons/Lyre";
@@ -131,7 +130,6 @@ export function PrayersMobile() {
         <T k="ui.practices" />
       </p>
       <SoftTileGrid className="mb-8">
-        <SoftTile href="/prayers/today" label={<T k="prayers.tabs.today" />} sub={<T k="ui.fastFeast" />} icon={<Sun size={21} />} tone="a" />
         <SoftTile href="/prayers/hours" label={<T k="ui.theHours" />} sub={<T k="ui.sanctifyTheDay" />} icon={<Lampada size={21} />} tone="b" />
         <SoftTile href="/prayers/rope" label={<T k="ui.theRope" />} sub={<T k="prayers.jesusPrayer" />} icon={<PrayerRope size={21} />} tone="c" />
         <SoftTile href="/prayers/akathists" label={<T k="prayers.akathists" />} sub={<T k="ui.hymnsOfPraise" />} icon={<Lyre size={21} />} tone="d" />
