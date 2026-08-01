@@ -58,9 +58,9 @@ const DANIEL_CODE = "DAG";
 const SUSANNA_CODE = "SUS";
 const BEL_CODE = "BEL";
 // The Greek archive keeps the Song of the Three as its own book (S3Y) and
-// leaves DAG on the short Aramaic division. Brenton's English DAG carries
-// the Song inline. See alignGreekToBrenton.
-const SONG_CODE = "S3Y";
+// leaves DAG on the short Aramaic division, while Brenton's English DAG
+// carries the Song inline. S3Y is deliberately NOT read: see the note in
+// alignGreekToBrenton on why the Song has no Greek column.
 
 /**
  * Put the Greek on Brenton's chapter division so the interlinear lines up.
@@ -84,13 +84,7 @@ const SONG_CODE = "S3Y";
  *
  * Chapters 1, 2 and 7 to 12 already agree and pass through untouched.
  */
-// Brenton's own numbering of the Song, which is not contiguous: it runs
-// 25-66, omits 67-70 entirely, then resumes 71-90.
-const SONG_EN_HEAD = Array.from({ length: 42 }, (_, i) => 25 + i);
-const SONG_EN_GAP = 4;
-const SONG_EN_TAIL = Array.from({ length: 20 }, (_, i) => 71 + i);
-
-function alignGreekToBrenton(gr, song) {
+function alignGreekToBrenton(gr) {
   const at = (chap, n) => (gr[chap] ?? []).find((v) => v.n === n);
   const out = {};
   for (const c of Object.keys(gr).map(Number)) out[c] = [...gr[c]];
@@ -494,8 +488,7 @@ async function main() {
   const grSus = haveGreek ? await readBook(SOURCES.gr.dir, SUSANNA_CODE) : null;
   const grBel = haveGreek ? await readBook(SOURCES.gr.dir, BEL_CODE) : null;
   if (gr) {
-    const grS3y = haveGreek ? await readBook(SOURCES.gr.dir, SONG_CODE) : null;
-    const aligned = alignGreekToBrenton(gr, grS3y);
+    const aligned = alignGreekToBrenton(gr);
     await fs.mkdir(GR_OUT, { recursive: true });
     for (const c of Object.keys(aligned).map(Number).sort((a, b) => a - b)) {
       await fs.writeFile(
