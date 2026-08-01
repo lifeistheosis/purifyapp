@@ -212,3 +212,61 @@ Not changed here: it is live commerce behaviour and the owner deferred the
 adjacent seeded-review cleanup on 2026-08-01. The narrow fix is to filter
 the read path to reviews with a delivered order, or to render the badge
 per-review rather than unconditionally.
+
+### Addendum — 2026-08-01, Daniel restoration is DEFECTIVE, do not merge as-is
+
+Commit `6973e124` ("Restore Susanna, Bel, and the middle of Daniel 3") and its
+notes commit are on `feat/daniel-additions`, PUSHED but NOT merged and NOT
+deployed. An adversarial check of the Beta 2.8 notes found three defects,
+all reconfirmed by hand.
+
+**1. Three verses numbered 72.** Brenton numbers the Song with `72a` and
+`72b`. The parser at `scripts/fetch-daniel-additions.mjs:259` uses
+`/^\v\s+(\d+)\s*(.*)$/`, capturing digits only, so the letter falls into
+the verse text:
+```
+72: "O ye light and darkness, bless ye the Lord..."
+72: "a O ye frost and heat, bless ye the Lord..."
+72: "b O ye frost and snow, bless ye the Lord..."
+```
+`VerseRow.tsx` sets `id={`v${verse.n}`}`, so three DOM nodes share `v72`
+and the `#v72` deep link plus the commentary anchor resolve to the wrong
+verse.
+
+**2. Punctuation regression across the whole book.** `flush()` line 241
+replaces every USFM marker with a SPACE, so `\add saying\add*,` became
+`saying ,`. 135 of the 357 pre-existing verses changed wording, because
+ebible.org's Brenton is a different digitisation from the bolls.life LXXE
+feed that `scripts/ingest-bible.mjs` used for the other 49 OT books. Same
+`brenton-lxx-pd` label, two streams.
+
+**3. The Greek interlinear is broken across Daniel.** en/gr verse counts
+were 33/33, 34/34, 31/31, 28/28 at `670d57da`; they are now 95/33, 37/34,
+30/31, 29/28. `app/(app)/bible/[book]/[chapter]/page.tsx` joins the panes
+by verse number, so English 3:24-97 renders a blank Greek column and all of
+Daniel 4 is off by three (English 4:1 pairs with Greek 4:1, which is really
+English 4:4).
+
+**The notes are also numerically wrong.** Chapter 3 ends at verse 97, not
+95 (95 is the stored-entry count; Brenton has no verses 67-70, and only 93
+distinct numbers exist). "Sixty-seven verses restored" is really 65 entries
+over 63 distinct numbers. And old 3:31-33 did not merely renumber, they
+left the chapter: old 3:31 is now 4:1.
+
+**Owner decision 2026-08-01: keep Brenton's Greek division and align the
+Greek to it.** Note this is a SPLICE, not a regeneration, and the approval
+was given before that was known. The Greek archive has the material in
+separate books: `.tmp/grclxx/49-S3Ygrclxx.usfm` (Song of the Three, 66
+markers spanning 1-67), `50-SUSgrclxx.usfm`, `51-BELgrclxx.usfm`, while
+`66-DAGgrclxx.usfm` is the short Daniel (12 chapters, ch3 = 33). Susanna
+and Bel already align at 64/42. The remaining work:
+- fix the verse regex to carry a letter suffix, and merge `72a`/`72b` into
+  72 rather than emitting duplicates (apply the SAME rule to both panes so
+  they stay aligned);
+- strip the space a stripped marker leaves before `,.;:!?`;
+- splice Greek S3Y into Greek Daniel 3 at an offset of +23 (Greek S3Y 1 ->
+  Greek 3:24), and shift Greek 3:31-33 into 4:1-3 with the cascade through
+  chapters 4 to 6, so both panes carry Brenton's division;
+- assert contiguity and en/gr equality per chapter, not just a floor. The
+  existing guard is `if ((en[3] ?? []).length < 90)`, which passes at 95
+  and asserts nothing about duplicates, gaps, or the Greek.
