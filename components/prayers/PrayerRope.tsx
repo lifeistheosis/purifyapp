@@ -27,6 +27,7 @@ import {
   writeRopeSettings,
   type RopeSettings,
 } from "@/lib/prayers/storage";
+import { duckFor } from "@/lib/prayers/persistentAudioStore";
 import { haptic } from "@/lib/ui/motion";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -106,6 +107,11 @@ export function PrayerRope() {
 
   function playBell() {
     try {
+      // Get out of the chant's way. The bell is its own AudioContext and
+      // knows nothing about the persistent player, so without this a bead
+      // struck during the anthem sounded straight over it. The chant keeps
+      // playing, just under the bead; it lifts again when the tone decays.
+      duckFor(700);
       type WindowWithLegacyAudio = Window & { webkitAudioContext?: typeof AudioContext };
       const ctorWindow = window as WindowWithLegacyAudio;
       const Ctx = window.AudioContext ?? ctorWindow.webkitAudioContext;

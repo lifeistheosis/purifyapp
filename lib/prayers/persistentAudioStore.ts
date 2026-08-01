@@ -208,6 +208,37 @@ export function setVolume(v: number): void {
   update({ volume: clamped });
 }
 
+/**
+ * Briefly lower the playing audio, then restore it.
+ *
+ * For the prayer rope's bead tone. The rope runs its own AudioContext
+ * oscillator with no knowledge of this store, so a bead struck during the
+ * anthem used to sound straight over the chant at full volume. Ducking is
+ * the right shape rather than pausing: the chant is meant to continue under
+ * the bead, just out of the way of it.
+ *
+ * Deliberately does NOT go through setVolume, and deliberately does not
+ * touch the snapshot: this is a transient dip, not a change to the reader's
+ * chosen volume, and publishing it would make a volume slider twitch on
+ * every bead. Overlapping ducks (a fast decade) extend the existing one
+ * rather than stacking, so the restore always returns to the real level.
+ */
+let duckTimer: ReturnType<typeof setTimeout> | null = null;
+
+export function duckFor(ms: number, factor = 0.25): void {
+  if (typeof window === "undefined") return;
+  if (!audioEl || audioEl.paused) return;
+  const target = snapshot.volume;
+  audioEl.volume = Math.max(0, Math.min(1, target * factor));
+  if (duckTimer) clearTimeout(duckTimer);
+  duckTimer = setTimeout(() => {
+    duckTimer = null;
+    // Read the snapshot again rather than closing over `target`: the reader
+    // may have moved the slider while the duck was running.
+    if (audioEl) audioEl.volume = snapshot.volume;
+  }, ms);
+}
+
 export function setLoopMode(mode: LoopMode): void {
   const a = ensureElement();
   a.loop = mode === "inf";
@@ -221,6 +252,31 @@ export function stop(): void {
     audioEl.currentTime = 0;
   }
   update({ playing: false, currentTime: 0 });
+}
+
+/**
+ * Put the player away entirely: stop, and forget what was loaded.
+ *
+ * Distinct from stop(), which rewinds but deliberately keeps the track
+ * loaded so the anthem page's own controls still have something to resume.
+ * The now-playing bar needs the other meaning, because it renders whenever
+ * a track is loaded: dismissing it has to actually clear the track or the
+ * bar simply sits there rewound and will not go away.
+ */
+export function unload(): void {
+  if (audioEl) {
+    audioEl.pause();
+    audioEl.removeAttribute("src");
+    audioEl.load();
+  }
+  update({
+    src: null,
+    title: null,
+    artist: null,
+    playing: false,
+    currentTime: 0,
+    duration: 0,
+  });
 }
 
 function subscribe(cb: () => void): () => void {

@@ -16,6 +16,7 @@ import { headers } from "next/headers";
 import "./globals.css";
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { AppThemeController } from "@/components/theme/AppThemeController";
+import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
 import { NativeBridge } from "@/components/native/NativeBridge";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
 import { SITE_URL } from "@/lib/site";
@@ -226,6 +227,11 @@ export default async function RootLayout({
  <AppThemeController />
  <LocaleBootstrap />
  {children}
+ {/* Root layout, not (app)/layout.tsx. Today is app/page.tsx, outside
+     the (app) group, so a bar mounted there would unmount on every
+     Today tap, which is exactly when a reader walks away from the
+     player. Renders nothing until something is loaded. */}
+ <NowPlayingBar />
  <FirstRunGate />
  </MessagesProvider>
  <AnalyticsTracker />

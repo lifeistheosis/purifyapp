@@ -1884,5 +1884,10 @@
   "settings.export": "Export your library",
   "settings.exportHint": "Download everything you have gathered.",
   "settings.accountSecurity": "Account and security",
-  "settings.accountSecurityHint": "Profile, password, sessions."
+  "settings.accountSecurityHint": "Profile, password, sessions.",
+  "prayers.play": "Play",
+  "prayers.pause": "Pause",
+  "prayers.stop": "Stop",
+  "prayers.nowPlaying": "Now playing",
+  "prayers.dismissPlayer": "Dismiss player"
 }
