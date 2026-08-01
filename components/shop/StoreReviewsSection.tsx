@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ReviewPhotos } from "@/components/shop/ReviewPhotos";
 import { RatingStars } from "@/components/shop/RatingStars";
 import { VerifiedBuyerBadge } from "@/components/shop/VerifiedBuyerBadge";
+import { wearsVerifiedBadge } from "@/lib/shop/reviews";
 import { WriteStoreReviewForm } from "@/components/shop/WriteStoreReviewForm";
 import {
   fetchShopStoreReviews,
@@ -18,8 +19,10 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * (EIKON), distinct from the ratings on its individual products. Same shape as
  * the product ReviewsSection — the aggregate, the verified-buyer write form
  * (only for a buyer whose order from this store has arrived), and the list.
- * Each review's badge reads "Bought {storeName}" since a store review proves a
- * delivered order from the store, not a specific product.
+ * A review's badge reads "Bought {storeName}" rather than naming a product,
+ * since a store review evidences a delivered order from the store. It is
+ * shown only when the row actually carries that order: seeded rows do not
+ * go through the write gate and may not claim a purchase.
  */
 export function StoreReviewsSection({
   storeId,
@@ -102,9 +105,16 @@ export function StoreReviewsSection({
                   })}
                 </span>
               </div>
-              <div className="mt-2">
-                <VerifiedBuyerBadge bought={storeName} />
-              </div>
+              {/* Only a review tied to a real delivered order earns the
+                  badge. This was unconditional, so operator-seeded rows
+                  (order_id null) were shown to shoppers as verified
+                  purchases. The product page was fixed for this; the store
+                  page was not. */}
+              {wearsVerifiedBadge(r) ? (
+                <div className="mt-2">
+                  <VerifiedBuyerBadge bought={storeName} />
+                </div>
+              ) : null}
               {r.body ? (
                 <p className="mt-2.5 whitespace-pre-wrap font-serif text-body text-paper/80 leading-[1.6]">
                   {r.body}

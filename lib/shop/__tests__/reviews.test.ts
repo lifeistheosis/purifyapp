@@ -4,6 +4,7 @@ import { productRating, unitsSoldLabel } from "@/lib/shop/format";
 import {
   hasDeliveredFromStore,
   isVerifiedBuyer,
+  wearsVerifiedBadge,
   type PurchasedOrder,
 } from "@/lib/shop/reviews";
 
@@ -96,6 +97,29 @@ describe("hasDeliveredFromStore (store-review eligibility)", () => {
 
   it("rejects with no orders", () => {
     expect(hasDeliveredFromStore([])).toBe(false);
+  });
+});
+
+describe("wearsVerifiedBadge (which published reviews may claim a purchase)", () => {
+  it("lets a review with a real order behind it wear the badge", () => {
+    expect(wearsVerifiedBadge({ order_id: "8f0a1c2e-0000-4000-8000-000000000000" })).toBe(true);
+  });
+
+  it("refuses the badge to an operator-seeded row", () => {
+    // The admin seeding route inserts with order_id null, bypassing the
+    // delivered-order gate. Both review surfaces used to render the badge
+    // unconditionally, so these were shown to shoppers as verified buyers.
+    expect(wearsVerifiedBadge({ order_id: null })).toBe(false);
+  });
+
+  it("refuses the badge when the field is absent entirely", () => {
+    // A catalog response from before order_id was selected. Absent is not
+    // evidence of a purchase, so it must not read as one.
+    expect(wearsVerifiedBadge({})).toBe(false);
+  });
+
+  it("refuses the badge on an empty string", () => {
+    expect(wearsVerifiedBadge({ order_id: "" })).toBe(false);
   });
 });
 

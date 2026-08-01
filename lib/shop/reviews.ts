@@ -34,3 +34,25 @@ export function hasDeliveredFromStore(
     (o) => o.payment_status === "paid" && o.fulfillment_status === "delivered",
   );
 }
+
+/**
+ * Whether a review that is ALREADY published may display the
+ * "Verified buyer" badge.
+ *
+ * This is a display rule, separate from the two write rules above, because
+ * not every stored review went through them: the admin seeding route
+ * inserts rows directly with `order_id` null, bypassing the delivered-order
+ * gate in SQL. Both review surfaces rendered the badge unconditionally on
+ * the assumption that every stored row had earned it, so seeded rows were
+ * shown to shoppers as verified purchases. The product page was corrected;
+ * the store page was not, until now.
+ *
+ * A null `order_id` is treated as unverified even though it can also mean a
+ * real order was later deleted (the column is ON DELETE SET NULL). Claiming
+ * a purchase we cannot evidence is the failure that matters here.
+ */
+export function wearsVerifiedBadge(review: {
+  order_id?: string | null;
+}): boolean {
+  return typeof review.order_id === "string" && review.order_id.length > 0;
+}

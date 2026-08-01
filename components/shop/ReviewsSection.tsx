@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ReviewPhotos } from "@/components/shop/ReviewPhotos";
 import { RatingStars } from "@/components/shop/RatingStars";
 import { VerifiedBuyerBadge } from "@/components/shop/VerifiedBuyerBadge";
+import { wearsVerifiedBadge } from "@/lib/shop/reviews";
 import { WriteReviewForm } from "@/components/shop/WriteReviewForm";
 import {
   fetchShopReviews,
@@ -102,7 +103,7 @@ export function ReviewsSection({
               {/* Only a review tied to a real delivered order earns the badge.
                   This was unconditional, so operator-seeded rows (order_id
                   null) were shown to shoppers as verified purchases. */}
-              {r.order_id ? (
+              {wearsVerifiedBadge(r) ? (
                 <div className="mt-2">
                   <VerifiedBuyerBadge bought={productTitle} />
                 </div>

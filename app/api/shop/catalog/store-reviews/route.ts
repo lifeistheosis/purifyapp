@@ -37,12 +37,22 @@ export async function GET(req: Request) {
     return withCors(NextResponse.json(empty), req);
   }
 
+  // order_id is selected so the client can tell a real purchase from an
+  // operator-seeded row, exactly as the product review route already does.
+  // It used to be absent here, and StoreReviewsSection rendered "Verified
+  // buyer / Bought {store}" on EVERY row unconditionally, so admin-seeded
+  // reviews (inserted with order_id null, bypassing the delivered-order
+  // gate) were shown to shoppers as verified purchases. The product path
+  // was fixed for this reason and the store path was left behind. Same
+  // fabricated-review practice this project already declined once, arriving
+  // by a different door, and the same FTC exposure under 16 CFR Part 465.
+  //
   // photo_urls is optional until its migration lands; fall back without it.
   const fetchRows = (withPhotos: boolean) =>
     supabase
       .from("shop_store_reviews")
       .select(
-        `id, stars, body, created_at, display_name, location, anonymous${withPhotos ? ", photo_urls" : ""}`,
+        `id, stars, body, created_at, display_name, location, anonymous, order_id${withPhotos ? ", photo_urls" : ""}`,
       )
       .eq("store_id", store.id)
       .order("created_at", { ascending: false })

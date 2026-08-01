@@ -196,8 +196,12 @@ export type ShopReviewsData = {
 };
 
 /** A public store-level review row (a review of the store itself, e.g. EIKON).
- *  Same shape as ShopReview; every one is from a buyer with a delivered order
- *  from the store. */
+ *  Same shape as ShopReview.
+ *
+ *  This used to say "every one is from a buyer with a delivered order from
+ *  the store". That was not true: the admin seeding route inserts rows with
+ *  `order_id` null, bypassing the delivered-order gate, and the badge was
+ *  rendered unconditionally on top of that assumption. */
 export type ShopStoreReview = {
   id: string;
   stars: number;
@@ -207,6 +211,10 @@ export type ShopStoreReview = {
   location: string | null;
   anonymous: boolean;
   photo_urls?: string[] | null;
+  // The delivered order this review came from, or null for an operator seed.
+  // The "Verified buyer" badge is gated on this being non-null: only a review
+  // with a real purchase behind it may claim one.
+  order_id?: string | null;
 };
 
 export type ShopStoreReviewsData = {
