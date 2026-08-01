@@ -150,6 +150,104 @@ test("saint-work reader renders MobileTopBar + section pill", async ({
   await expect(page.getByText(/Section \d+ of \d+/)).toBeVisible();
 });
 
+/**
+ * Regression: the tab bar must not sit on top of an open commentary sheet.
+ *
+ * An `(app)` route is wrapped in `.route-fade`, whose animation is declared
+ * `both`, so its opacity animation stays in effect forever and the wrapper is
+ * a permanent stacking context. That traps the sheet's z-[60] inside it, and
+ * the root-level z-50 tab bar paints over the bottom 83px of the sheet. The
+ * text under the bar was unreadable and, worse, any collapsed commentary
+ * header that scrolled into that band could not be tapped open.
+ *
+ * Reported twice from the Android beta by the same reader (#android-forums,
+ * 2026-07-11 and again 2026-08-01 after a bottom-padding bump that moved the
+ * text but left the interception). The bar now steps aside on the shared
+ * overlay flag. Asserting on hit-testing rather than on z-index, because
+ * z-index is exactly what lied here.
+ */
+test.describe("commentary sheet vs the tab bar (Capacitor UA)", () => {
+  test.use({
+    userAgent: `${devices["iPhone 14 Pro"].userAgent} ${NATIVE_UA_TOKEN}`,
+  });
+
+  test("tab bar yields the whole sheet to taps while it is open", async ({
+    page,
+  }) => {
+    await page.goto("/bible/john/5");
+
+    const trigger = page
+      .locator('button[aria-label="Open commentary on verse 19"]')
+      .first();
+    await trigger.waitFor({ state: "attached" });
+    // dispatchEvent, not click(): the verse marker is a ~5px-tall superscript
+    // and a coordinate tap is flaky at that size. The trigger's hit area is
+    // not what this test is about.
+    // The sheet carries no accessible name of its own, so it is located by
+    // the reference in its header rather than by role name.
+    const sheet = page
+      .locator('div[role="dialog"][aria-modal="true"]')
+      .filter({ hasText: "John 5:19" })
+      .first();
+    await expect(async () => {
+      await trigger.dispatchEvent("click");
+      await expect(sheet).toBeVisible({ timeout: 2_000 });
+    }).toPass({ timeout: 20_000 });
+
+    // No point up the tab bar's band may be answered by the tab bar.
+    //
+    // Asserted as "not the nav" rather than "is the sheet" on purpose: under
+    // `next dev` the dev-tools overlay also sits at the bottom of the viewport
+    // and perturbs hit-testing, which would make an "is the sheet" assertion
+    // fail for a reason that has nothing to do with this regression. The bar
+    // swallowing the tap is the whole bug, so that is what is asserted.
+    const intercepted = await page.evaluate(() => {
+      const nav = [...document.querySelectorAll("nav")].find((n) =>
+        String(n.className).includes("z-50"),
+      );
+      if (!nav) return ["tab bar not found"];
+      const bad: string[] = [];
+      for (const dy of [12, 24, 40, 60, 80]) {
+        const el = document.elementFromPoint(
+          window.innerWidth / 2,
+          window.innerHeight - dy,
+        );
+        if (el && nav.contains(el)) {
+          bad.push(`${dy}px from bottom -> tab bar (${el.tagName})`);
+        }
+      }
+      return bad;
+    });
+    expect(intercepted).toEqual([]);
+
+    // The bar is also visually out of the way, so the last lines of a Father
+    // are readable rather than sitting behind it.
+    await expect
+      .poll(async () =>
+        page.evaluate(() => {
+          const nav = [...document.querySelectorAll("nav")].find((n) =>
+            String(n.className).includes("z-50"),
+          );
+          return nav ? getComputedStyle(nav).opacity : null;
+        }),
+      )
+      .toBe("0");
+
+    // And it comes back once the sheet closes, or the app loses its nav.
+    await page.keyboard.press("Escape");
+    await expect
+      .poll(async () =>
+        page.evaluate(() => {
+          const nav = [...document.querySelectorAll("nav")].find((n) =>
+            String(n.className).includes("z-50"),
+          );
+          return nav ? getComputedStyle(nav).opacity : null;
+        }),
+      )
+      .toBe("1");
+  });
+});
+
 test("/account (signed out) renders the local-profile hero + sign-in path", async ({
   page,
 }) => {

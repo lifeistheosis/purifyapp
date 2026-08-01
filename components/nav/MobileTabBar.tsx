@@ -24,6 +24,7 @@ import { NotificationsBadge } from "@/components/community/NotificationsInbox";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { haptic } from "@/lib/ui/motion";
 import { shopEnabled } from "@/lib/shop/flags";
+import { useOverlayOpen } from "@/lib/ui/overlay";
 
 /**
  * Persistent bottom tab bar on `< md` viewports. Hidden on desktop, which
@@ -69,6 +70,26 @@ type Tab = {
 export function MobileTabBar() {
   const pathname = usePathname() ?? "/";
   const { t } = useTranslate();
+  // Step aside while a modal sheet is open. This is not cosmetic: the bar was
+  // eating taps and hiding text through the sheet.
+  //
+  // An `(app)` route is wrapped in `.route-fade`, whose animation is declared
+  // `both`, so the opacity animation stays in effect forever and the wrapper is
+  // a permanent stacking context. Every z-index inside it, including the
+  // commentary sheet's z-[60], is therefore scoped to that wrapper and paints
+  // BELOW this root-level z-50 bar. Raising the sheet's z-index cannot fix
+  // that; only leaving the wrapper or removing the bar can.
+  //
+  // The visible consequence, reported twice from the Android beta by the same
+  // reader (#android-forums, 2026-07-11 and 2026-08-01): the last lines of a
+  // Father sat behind the bar, and any collapsed commentary header that
+  // scrolled into the bar's 83px band could not be tapped open at all. A
+  // bottom-padding bump in July moved the text but left the interception,
+  // because padding cannot stop a bar that paints on top from taking the tap.
+  //
+  // Hiding the bar for the duration also makes the sheet a real modal: an
+  // aria-modal dialog should not have live navigation sitting over it.
+  const overlayOpen = useOverlayOpen();
 
   const TABS: Tab[] = [
     {
@@ -156,14 +177,27 @@ export function MobileTabBar() {
   return (
     <nav
       aria-label={t("nav.tabBarLabel")}
+      // Hidden from assistive tech too while a sheet is open, for the same
+      // reason it is hidden visually: it is outside the open dialog.
+      aria-hidden={overlayOpen || undefined}
       // Full-width wrapper is transparent and ignores pointer events so taps
       // in the side gutters fall through to content; only the floating bar
       // itself is interactive.
-      className="md:hidden fixed inset-x-0 bottom-0 z-50 px-3 safe-bottom-pad pointer-events-none"
+      className={cn(
+        "md:hidden fixed inset-x-0 bottom-0 z-50 px-3 safe-bottom-pad pointer-events-none",
+        // Faded rather than unmounted: the sheet slides up over 200ms, and a
+        // bar that blinks out instantly is visible in the gap before the sheet
+        // covers it. Matching durations makes the handoff read as one motion.
+        "transition-opacity duration-200",
+        overlayOpen && "opacity-0",
+      )}
     >
       <div
         className={cn(
-          "pointer-events-auto relative mx-auto mb-1.5 max-w-md overflow-visible",
+          "relative mx-auto mb-1.5 max-w-md overflow-visible",
+          // The tap interception lives here, on the only part of the bar that
+          // is interactive, so this is what has to be switched off.
+          overlayOpen ? "pointer-events-none" : "pointer-events-auto",
           // Grounded bar: a solid elevated surface (no glassy blur or sheen),
           // a single hairline border, and a restrained shadow so it reads as a
           // quiet raised bar rather than a floating glass pill.

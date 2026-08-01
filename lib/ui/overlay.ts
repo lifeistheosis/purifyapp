@@ -14,6 +14,8 @@
  * flag if two open at once.
  */
 
+import { useSyncExternalStore } from "react";
+
 let depth = 0;
 
 function sync() {
@@ -34,6 +36,33 @@ export function setOverlayOpen(open: boolean): void {
 export function isOverlayOpen(): boolean {
   if (typeof document === "undefined") return false;
   return document.body.dataset.overlayOpen === "1";
+}
+
+/**
+ * Reactive form of `isOverlayOpen`, for floating UI that must step aside the
+ * moment a sheet opens rather than whenever it happens to re-render next.
+ *
+ * `isOverlayOpen()` read at render time is a snapshot: nothing re-renders the
+ * caller when the flag flips. That is tolerable for the install banner, which
+ * is transient, and not tolerable for the tab bar, which is always mounted and
+ * would otherwise keep sitting on top of an open sheet for the rest of the
+ * session.
+ *
+ * Subscribes to the `data-overlay-open` attribute the depth counter above
+ * writes, exactly as this module's header describes.
+ */
+export function useOverlayOpen(): boolean {
+  return useSyncExternalStore(subscribeOverlay, isOverlayOpen, () => false);
+}
+
+function subscribeOverlay(onChange: () => void): () => void {
+  if (typeof document === "undefined") return () => {};
+  const mo = new MutationObserver(onChange);
+  mo.observe(document.body, {
+    attributes: true,
+    attributeFilter: ["data-overlay-open"],
+  });
+  return () => mo.disconnect();
 }
 
 /**
