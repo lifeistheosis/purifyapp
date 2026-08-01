@@ -58,20 +58,45 @@ const DANIEL_CODE = "DAG";
 const SUSANNA_CODE = "SUS";
 const BEL_CODE = "BEL";
 
-function download(url, dest) {
+/**
+ * The write stream is opened only after a 200 is in hand.
+ *
+ * It used to be opened first, which meant a DNS failure or a 404 still
+ * created the destination file. That empty file then looked like a cached
+ * archive to the next run, so the download was skipped and unzip failed on
+ * nothing, reporting a corrupt archive for what was really a network fault.
+ * Nothing touches the destination path unless there is a body to write.
+ */
+function download(url, dest, redirectsLeft = 5) {
   return new Promise((resolve, reject) => {
-    const file = fssync.createWriteStream(dest);
     https
       .get(url, (res) => {
         if ([301, 302, 303, 307, 308].includes(res.statusCode)) {
-          file.close();
-          fssync.unlinkSync(dest);
-          return download(res.headers.location, dest).then(resolve).catch(reject);
+          res.resume();
+          if (redirectsLeft <= 0) {
+            return reject(new Error(`too many redirects for ${url}`));
+          }
+          const next = new URL(res.headers.location, url).toString();
+          return download(next, dest, redirectsLeft - 1).then(resolve).catch(reject);
         }
         if (res.statusCode !== 200) {
-          file.close();
+          res.resume();
           return reject(new Error(`HTTP ${res.statusCode} for ${url}`));
         }
+        const file = fssync.createWriteStream(dest);
+        file.on("error", (e) => {
+          file.close();
+          reject(e);
+        });
+        res.on("error", (e) => {
+          file.close();
+          try {
+            fssync.unlinkSync(dest);
+          } catch {
+            /* nothing to clean up */
+          }
+          reject(e);
+        });
         res.pipe(file);
         file.on("finish", () => file.close(() => resolve()));
       })
@@ -112,9 +137,46 @@ function extract(zip, dir) {
  * refusing to restore the English because a second archive was unreachable
  * would be the wrong trade.
  */
+/**
+ * A cached archive is only usable if it is actually an archive.
+ *
+ * `existsSync` alone is not enough: an earlier run of this script created
+ * the write stream before it knew whether the request would succeed, so a
+ * DNS failure left a ZERO-BYTE .zip behind. On the next run that file
+ * exists, the download is skipped, and unzip fails on an empty archive,
+ * which reads as a corrupt download rather than as the network problem it
+ * actually was. Checking the PKZip magic bytes also catches the other
+ * classic failure here, an HTML error page saved under a .zip name.
+ */
+function hasUsableArchive(zip) {
+  let fd;
+  try {
+    if (!fssync.existsSync(zip)) return false;
+    if (fssync.statSync(zip).size < 1024) return false;
+    const magic = Buffer.alloc(2);
+    fd = fssync.openSync(zip, "r");
+    fssync.readSync(fd, magic, 0, 2, 0);
+    return magic.toString("latin1") === "PK";
+  } catch {
+    return false;
+  } finally {
+    if (fd !== undefined) fssync.closeSync(fd);
+  }
+}
+
 async function ensureSource(name, s, { optional = false } = {}) {
   await fs.mkdir(TMP, { recursive: true });
-  if (!fssync.existsSync(s.zip)) {
+  if (!hasUsableArchive(s.zip)) {
+    // Clear the unusable remnant so the download below is not skipped and
+    // so a half-written file never reaches unzip.
+    try {
+      if (fssync.existsSync(s.zip)) {
+        console.log(`  discarding unusable ${path.basename(s.zip)}`);
+        fssync.unlinkSync(s.zip);
+      }
+    } catch {
+      /* best effort */
+    }
     console.log(`downloading ${name} (${s.url}) ...`);
     try {
       await download(s.url, s.zip);

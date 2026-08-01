@@ -1,1 +1,388 @@
-{"book":"daniel","name":"Daniel","chapter":3,"verses":[{"n":1,"text":"In his eighteenth year Nabuchodonosor the king made a golden image, its height was sixty cubits, its breadth six cubits: and he set it up in the plain of Deira, in the province of Babylon."},{"n":2,"text":"And he sent forth to gather the governors, and the captains, and the heads of provinces, chiefs, and princes, and those who were in authority, and all the rulers of districts, to come to the dedication of the image."},{"n":3,"text":"So the heads of provinces, the governors, the captains, the chiefs, the great princes, those who were in authority, and all the rulers of districts, were gathered to the dedication of the image which king Nabuchodonosor had set up; and they stood before the image."},{"n":4,"text":"Then a herald cried aloud, To you it is commanded, ye peoples, tribes, and languages,"},{"n":5,"text":"at what hour ye shall hear the sound of the trumpet, and pipe, and harp, and sackbut, and psaltery, and every kind of music, ye shall fall down and worship the golden image which king Nabuchodonosor has set up."},{"n":6,"text":"And whosoever shall not fall down and worship, in the same hour he shall be cast into the burning fiery furnace."},{"n":7,"text":"And it came to pass when the nations heard the sound of the trumpet, and pipe, and harp, and sackbut, and psaltery, and all kinds of music, all the nations, tribes, and languages, fell down and worshipped the golden image which king Nabuchodonosor had set up."},{"n":8,"text":"Then came near certain Chaldeans, and accused the Jews to the king, saying,"},{"n":9,"text":"O king, live for ever."},{"n":10,"text":"Thou, O king, has made a decree that every man who shall hear the sound of the trumpet, and pipe, and harp, sackbut, and psaltery, and all kinds of music,"},{"n":11,"text":"and shall not fall down and worship the golden image, shall be cast into the burning fiery furnace."},{"n":12,"text":"There are certain Jews whom thou has appointed over the affairs of the province of Babylon, Sedrach, Misach, and Abdenago, who have not obeyed thy decree, O king: they serve not thy gods, and worship not the golden image which thou hast set up."},{"n":13,"text":"Then Nabuchodonosor in wrath and anger commanded to bring Sedrach, Misach, and Abdenago: and they were brought before the king."},{"n":14,"text":"And Nabuchodonosor answered and said to them, Is it true, Sedrach, Misach, and Abdenago, that ye serve not my gods, and worship not the golden image which I have set up?"},{"n":15,"text":"Now then if ye be ready, whensoever ye shall hear the sound of the trumpet, and pipe, and harp, and sackbut, and psaltery, and harmony, and every kind of music, to fall down and worship the golden image which I have made; well: but if ye worship not, in the same hour ye shall be cast into the burning fiery furnace; and who is the God that shall deliver you out of my hand?"},{"n":16,"text":"Then answered Sedrach, Misach and Abdenago and said to king Nabuchodonosor, We have no need to answer thee concerning this matter."},{"n":17,"text":"For our God whom we serve is in the heavens, able to deliver us from the burning fiery furnace, and he will rescue us from thy hands, O king."},{"n":18,"text":"But if not, be it known to thee, O king, that we will not serve thy gods, nor worship the image which thou hast set up."},{"n":19,"text":"Then Nabuchodonosor was filled with wrath, and the form of his countenance was changed toward Sedrach, Misach, and Abdenago: and he gave orders to heat the furnace seven times more than usual, until it should burn to the uttermost."},{"n":20,"text":"And he commanded mighty men to bind Sedrach, Misach, and Abdenago, and to cast them into the burning fiery furnace."},{"n":21,"text":"Then those men were bound with their coats, and caps, and hose, and were cast into the midst of the burning fiery furnace,"},{"n":22,"text":"forasmuch as the king's word prevailed; and the furnace was made exceeding hot."},{"n":23,"text":"Then these three men, Sedrach, Misach, and Abdenago, fell bound into the midst of the burning furnace, and walked in the midst of the flame, singing praise to God, and blessing the Lord."},{"n":24,"text":"And Nabuchodonosor heard them singing praises; and he wondered, and rose up in haste, and said to his nobles, Did we not cast three men bound into the midst of the fire? and they said to the king, Yes, O king."},{"n":25,"text":"And the king said, But I see four men loose, and walking in the midst of the fire, and there has no harm happened to them; and the appearance of the fourth is like the Son of God."},{"n":26,"text":"Then Nabuchodonosor drew near to the door of the burning fiery furnace, and said, Sedrach, Misach, and Abdenago, ye servants of the most high God, proceed forth, and come hither. So Sedrach, Misach, and Abdenago, came forth out of the midst of the fire."},{"n":27,"text":"Then were assembled the satraps, and captains, and heads of provinces, and the royal princes; and they saw the men, and perceived that the fire had not had power against their bodies, and the hair of their head was not burnt, and their coats were not scorched, nor was the smell of fire upon them."},{"n":28,"text":"And king Nabuchodonosor answered and said, Blessed be the God of Sedrach, Misach, and Abdenago, who has sent his angel, and delivered his servants, because they trusted in him; and they have changed the king's word, and delivered their bodies to be burnt, that they might not serve nor worship any god, except their own God."},{"n":29,"text":"Wherefore I publish a decree: Every people, tribe, or language, that shall speak reproachfully against the God of Sedrach, Misach, and Abdenago shall be destroyed, and their houses shall be plundered: because there is no other God who shall be able to deliver thus."},{"n":30,"text":"Then the king promoted Sedrach, Misach, and Abdenago, in the province of Babylon, and advanced them, and gave them authority to rule over all the Jews who were in his kingdom."},{"n":31,"text":"King Nabuchodonosor to all nations, tribes, and tongues, who dwell in all the earth; Peace be multiplied to you."},{"n":32,"text":"It seemed good to me to declare to you the signs and wonders which the most high God has wrought with me,"},{"n":33,"text":"how great and mighty they are: his kingdom is an everlasting kingdom, and his power to all generations."}],"source":"brenton-lxx-pd"}
+{
+  "book": "daniel",
+  "name": "Daniel",
+  "chapter": 3,
+  "verses": [
+    {
+      "n": 1,
+      "text": "In his eighteenth year Nabuchodonosor the king made a golden image, its height was sixty cubits, its breadth six cubits: and he set it up in the plain of Deira, in the province of Babylon."
+    },
+    {
+      "n": 2,
+      "text": "And he sent forth to gather the governors, and the captains, and the heads of provinces, chiefs, and princes, and those who were in authority, and all the rulers of districts, to come to the dedication of the image."
+    },
+    {
+      "n": 3,
+      "text": "So the heads of provinces, the governors, the captains, the chiefs, the great princes, those who were in authority, and all the rulers of districts, were gathered to the dedication of the image which king Nabuchodonosor had set up; and they stood before the image."
+    },
+    {
+      "n": 4,
+      "text": "Then a herald cried aloud, To you it is commanded, ye peoples, tribes, and languages,"
+    },
+    {
+      "n": 5,
+      "text": "at what hour ye shall hear the sound of the trumpet, and pipe, and harp, and sackbut, and psaltery, and every kind of music, ye shall fall down and worship the golden image which king Nabuchodonosor has set up."
+    },
+    {
+      "n": 6,
+      "text": "And whosoever shall not fall down and worship, in the same hour he shall be cast into the burning fiery furnace."
+    },
+    {
+      "n": 7,
+      "text": "And it came to pass when the nations heard the sound of the trumpet, and pipe, and harp, and sackbut, and psaltery, and all kinds of music, all the nations, tribes, and languages, fell down and worshipped the golden image which king Nabuchodonosor had set up."
+    },
+    {
+      "n": 8,
+      "text": "Then came near certain Chaldeans, and accused the Jews to the king, saying ,"
+    },
+    {
+      "n": 9,
+      "text": "O king, live for ever."
+    },
+    {
+      "n": 10,
+      "text": "Thou, O king, hast made a decree, that every man who shall hear the sound of the trumpet, and pipe, and harp, sackbut, and psaltery, and all kinds of music,"
+    },
+    {
+      "n": 11,
+      "text": "and shall not fall down and worship the golden image, shall be cast into the burning fiery furnace."
+    },
+    {
+      "n": 12,
+      "text": "There are certain Jews whom thou hast appointed over the affairs of the province of Babylon, Sedrach, Misach, and Abdenago, who have not obeyed thy decree, O king: they serve not thy gods, and worship not the golden image which thou hast set up."
+    },
+    {
+      "n": 13,
+      "text": "Then Nabuchodonosor in wrath and anger commanded to bring Sedrach, Misach, and Abdenago: and they were brought before the king."
+    },
+    {
+      "n": 14,
+      "text": "And Nabuchodonosor answered and said to them, Is it true, Sedrach, Misach, and Abdenago, that ye serve not my gods, and worship not the golden image which I have set up?"
+    },
+    {
+      "n": 15,
+      "text": "Now then if ye be ready, whensoever ye shall hear the sound of the trumpet, and pipe, and harp, and sackbut, and psaltery, and harmony, and every kind of music, to fall down and worship the golden image which I have made; well : but if ye worship not, in the same hour ye shall be cast into the burning fiery furnace; and who is the God that shall deliver you out of my hand?"
+    },
+    {
+      "n": 16,
+      "text": "Then answered Sedrach, Misach, and Abdenago, and said to king Nabuchodonosor, We have no need to answer thee concerning this matter."
+    },
+    {
+      "n": 17,
+      "text": "For our God whom we serve is in the heavens, able to deliver us from the burning fiery furnace, and he will rescue us from thy hands, O king."
+    },
+    {
+      "n": 18,
+      "text": "But if not, be it known to thee, O king, that we will not serve thy gods, nor worship the image which thou hast set up."
+    },
+    {
+      "n": 19,
+      "text": "Then Nabuchodonosor was filled with wrath, and the form of his countenance was changed toward Sedrach, Misach, and Abdenago: and he gave orders to heat the furnace seven times more than usual , until it should burn to the uttermost."
+    },
+    {
+      "n": 20,
+      "text": "And he commanded mighty men to bind Sedrach, Misach, and Abdenago, and to cast them into the burning fiery furnace."
+    },
+    {
+      "n": 21,
+      "text": "Then those men were bound with their coats, and caps, and hose, and were cast into the midst of the burning fiery furnace,"
+    },
+    {
+      "n": 22,
+      "text": "forasmuch as the king's word prevailed; and the furnace was made exceeding hot."
+    },
+    {
+      "n": 23,
+      "text": "Then these three men, Sedrach, Misach, and Abdenago, fell bound into the midst of the burning furnace,"
+    },
+    {
+      "n": 24,
+      "text": "and walked in the midst of the flame, singing praise to God, and blessing the Lord."
+    },
+    {
+      "n": 25,
+      "text": "Then Azarias stood up, and prayed on this manner; and opening his mouth in the midst of the fire said,"
+    },
+    {
+      "n": 26,
+      "text": "Blessed art thou, O Lord God of our fathers: thy name is worthy to be praised and glorified for evermore:"
+    },
+    {
+      "n": 27,
+      "text": "for thou art righteous in all the things that thou hast done to us: yea, true are all thy works, thy ways are right, and all thy judgments truth."
+    },
+    {
+      "n": 28,
+      "text": "In all the things that thou hast brought upon us, and upon the holy city of our fathers, even Jerusalem, thou hast executed true judgment: for according to truth and judgment didst thou bring all these things upon us because of our sins."
+    },
+    {
+      "n": 29,
+      "text": "For we have sinned and committed iniquity, departing from thee. In all things have we trespassed, and not obeyed thy commandments,"
+    },
+    {
+      "n": 30,
+      "text": "nor kept them, neither done as thou hast commanded us, that it might go well with us."
+    },
+    {
+      "n": 31,
+      "text": "Wherefore all that thou hast brought upon us, and every thing that thou hast done to us, thou hast done in true judgment."
+    },
+    {
+      "n": 32,
+      "text": "And thou didst deliver us into the hands of lawless enemies, most hateful forsakers of God , and to an unjust king, and the most wicked in all the world."
+    },
+    {
+      "n": 33,
+      "text": "And now we cannot open our mouths, we are become a shame and reproach to thy servants, and to them that worship thee."
+    },
+    {
+      "n": 34,
+      "text": "Yet deliver us not up wholly, for thy name's sake, neither disannul thou thy covenant:"
+    },
+    {
+      "n": 35,
+      "text": "and cause not thy mercy to depart from us, for thy beloved Abraham's sake, for thy servant Isaac's sake, and for thy holy Israel's sake;"
+    },
+    {
+      "n": 36,
+      "text": "to whom thou hast spoken and promised, that thou wouldest multiply their seed as the stars of heaven, and as the sand that lieth upon the seashore."
+    },
+    {
+      "n": 37,
+      "text": "For we, O Lord, are become less than any nation, and be kept under this day in all the world because of our sins."
+    },
+    {
+      "n": 38,
+      "text": "Neither is there at this time prince, or prophet, or leader, or burnt offering, or sacrifice, or oblation, or incense, or place to sacrifice before thee, and to find mercy."
+    },
+    {
+      "n": 39,
+      "text": "Nevertheless in a contrite heart and an humble spirit let us be accepted. Like as in the burnt offerings of rams and bullocks, and like as in ten thousands of fat lambs:"
+    },
+    {
+      "n": 40,
+      "text": "so let our sacrifice be in thy sight this day, and grant that we may wholly go after thee: for they shall not be confounded that put their trust in thee."
+    },
+    {
+      "n": 41,
+      "text": "And now we follow thee with all our heart, we fear thee, and seek thy face. Put us not to shame:"
+    },
+    {
+      "n": 42,
+      "text": "but deal with us after thy lovingkindness, and according to the multitude of thy mercies."
+    },
+    {
+      "n": 43,
+      "text": "Deliver us also according to thy marvellous works, and give glory to thy name, O Lord:"
+    },
+    {
+      "n": 44,
+      "text": "and let all them that do thy servants hurt be ashamed; and let them be confounded in all their power and might, and let their strength be broken;"
+    },
+    {
+      "n": 45,
+      "text": "and let them know that thou art Lord, the only God, and glorious over the whole world."
+    },
+    {
+      "n": 46,
+      "text": "And the king's servants, that put them in, ceased not to make the oven hot with rosin, pitch, tow, and small wood;"
+    },
+    {
+      "n": 47,
+      "text": "so that the flame streamed forth above the furnace forty and nine cubits."
+    },
+    {
+      "n": 48,
+      "text": "And it passed through, and burned those Chaldeans it found about the furnace."
+    },
+    {
+      "n": 49,
+      "text": "But the angel of the Lord came down into the oven together with Azarias and his fellows, and smote the flame of the fire out of the oven;"
+    },
+    {
+      "n": 50,
+      "text": "and made the midst of the furnace as it had been a moist whistling wind, so that the fire touched them not at all, neither hurt nor troubled them."
+    },
+    {
+      "n": 51,
+      "text": "Then the three, as out of one mouth, praised, glorified, and blessed, God in the furnace, saying,"
+    },
+    {
+      "n": 52,
+      "text": "Blessed art thou, O Lord God of our fathers: and to be praised and exalted above all for ever. And blessed is thy glorious and holy name: and to be praised and exalted above all for ever."
+    },
+    {
+      "n": 53,
+      "text": "Blessed art thou in the temple of thy holy glory: and to be praised and glorified above all for ever."
+    },
+    {
+      "n": 54,
+      "text": "Blessed art thou that beholdest the depths, and sittest upon the cherubim: and to be praised and exalted above all for ever."
+    },
+    {
+      "n": 55,
+      "text": "Blessed art thou on the glorious throne of thy kingdom: and to be praised and glorified above all for ever."
+    },
+    {
+      "n": 56,
+      "text": "Blessed art thou in the firmament of heaven: and above all to be praised and glorified for ever."
+    },
+    {
+      "n": 57,
+      "text": "O all ye works of the Lord, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 58,
+      "text": "O ye heavens, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 59,
+      "text": "O ye angels of the Lord, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 60,
+      "text": "O all ye waters that be above the heaven, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 61,
+      "text": "O all ye powers of the Lord, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 62,
+      "text": "O ye sun and moon, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 63,
+      "text": "O ye stars of heaven, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 64,
+      "text": "O every shower and dew, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 65,
+      "text": "O all ye winds, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 66,
+      "text": "O ye fire and heat, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 71,
+      "text": "O ye nights and days, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 72,
+      "text": "O ye light and darkness, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 72,
+      "text": "a O ye frost and heat, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 72,
+      "text": "b O ye frost and snow, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 73,
+      "text": "O ye lightnings and clouds, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 74,
+      "text": "O let the earth bless the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 75,
+      "text": "O ye mountains and little hills, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 76,
+      "text": "O all ye things that grow on the earth, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 77,
+      "text": "O ye seas and rivers, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 78,
+      "text": "O ye fountains, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 79,
+      "text": "O ye whales, and all that move in the waters, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 80,
+      "text": "O all ye fowls of the air, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 81,
+      "text": "O all ye beasts and cattle, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 82,
+      "text": "O ye children of men, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 83,
+      "text": "O Israel, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 84,
+      "text": "O ye priests of the Lord, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 85,
+      "text": "O ye servants of the Lord, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 86,
+      "text": "O ye spirits and souls of the righteous, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 87,
+      "text": "O ye holy and humble men of heart, bless ye the Lord: praise and exalt him above all for ever."
+    },
+    {
+      "n": 88,
+      "text": "O Ananias, Azarias, and Misael, bless ye the Lord; praise and exalt him above all for ever: for he hath delivered us from hell, and saved us from the hand of death, and delivered us out of the midst of the furnace and burning flame: even out of the midst of the fire hath he delivered us."
+    },
+    {
+      "n": 89,
+      "text": "O give thanks unto the Lord, because he is gracious: for his mercy endureth for ever."
+    },
+    {
+      "n": 90,
+      "text": "O all ye that worship the Lord, bless the God of gods, praise him and give him thanks: for his mercy endureth for ever."
+    },
+    {
+      "n": 91,
+      "text": "And Nabuchodonosor heard them singing praises; and he wondered, and rose up in haste, and said to his nobles, Did we not cast three men bound into the midst of the fire? and they said to the king, Yes, O king."
+    },
+    {
+      "n": 92,
+      "text": "And the king said, But I see four men loose, and walking in the midst of the fire, and there has no harm happened to them; and the appearance of the fourth is like the Son of God."
+    },
+    {
+      "n": 93,
+      "text": "Then Nabuchodonosor drew near to the door of the burning fiery furnace, and said, Sedrach, Misach, and Abdenago, ye servants of the most high God, proceed forth, and come hither. So Sedrach, Misach, and Abdenago, came forth out of the midst of the fire."
+    },
+    {
+      "n": 94,
+      "text": "Then were assembled the satraps, and captains, and heads of provinces, and the royal princes; and they saw the men, and perceived that the fire had not had power against their bodies, and the hair of their head was not burnt, and their coats were not scorched, nor was the smell of fire upon them."
+    },
+    {
+      "n": 95,
+      "text": "And king Nabuchodonosor answered and said, Blessed be the God of Sedrach, Misach, and Abdenago, who has sent his angel, and delivered his servants, because they trusted in him; and they have changed the king's word, and delivered their bodies to be burnt, that they might not serve nor worship any god, except their own God."
+    },
+    {
+      "n": 96,
+      "text": "Wherefore I publish a decree: Every people, tribe, or language, that shall speak reproachfully against the God of Sedrach, Misach, and Abdenago, shall be destroyed, and their houses shall be plundered: because there is no other God who shall be able to deliver thus."
+    },
+    {
+      "n": 97,
+      "text": "Then the king promoted Sedrach, Misach, and Abdenago, in the province of Babylon, and advanced them, and gave them authority to rule over all the Jews who were in his kingdom."
+    }
+  ],
+  "source": "brenton-lxx-pd"
+}

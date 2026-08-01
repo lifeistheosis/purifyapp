@@ -1,1 +1,124 @@
-{"book":"daniel","name":"Daniel","chapter":6,"verses":[{"n":1,"text":"And it pleased Darius, and he set over the kingdom a hundred and twenty satraps, to be in all his kingdom;"},{"n":2,"text":"and over them three governors, of whom one was, Daniel; for the satraps to give account to them, that the king should not be troubled."},{"n":3,"text":"And Daniel was over them, for there was an excellent spirit in him; and the king set him over all his kingdom."},{"n":4,"text":"Then the governors and satraps sought to find occasion against Daniel; but they found against him no occasion, nor trespass, nor error, because he was faithful."},{"n":5,"text":"And the governors said, We shall not find occasion against Daniel, except in the ordinances of his God."},{"n":6,"text":"Then the governors and satraps stood by the king, and said to him, King Darius, live for ever."},{"n":7,"text":"All who preside over thy kingdom, captains and satraps, chiefs and local governors, have taken counsel together, to establish by a royal statue and to confirm a decree, that whosoever shall ask a petition of any god or man for thirty days, save of thee, O king, shall be cast into the den of lions."},{"n":8,"text":"Now then, O king, establish the decree, and publish a writ, that the decree of the Persians and Medes be not changed."},{"n":9,"text":"Then king Darius commanded the decree to be written."},{"n":10,"text":"And when Daniel knew that the decree was ordered, he went into his house; and his windows were opened in his chambers toward Jerusalem, and three times in the day he knelt upon his knees, and prayed and gave thanks before his God, as he used to do before."},{"n":11,"text":"Then these men watched, and found Daniel praying and supplicating to his God."},{"n":12,"text":"And they came and said to the king, O king, has thou not made a decree, that whatsoever man shall ask a petition of any god or man for thirty days, but of thee, O king, shall be cast into the den of lions? And the king said, The word is true, and the decree of the Medes and Persians shall not pass."},{"n":13,"text":"Then they answered and said before the king, Daniel of the children of the captivity of Judea, has not submitted to thy decree; and three times in the day he makes his requests of his God."},{"n":14,"text":"Then the king, when he heard the saying, was much grieved for Daniel and he greatly exerted himself for Daniel to deliver him: and he exerted himself till evening to deliver him."},{"n":15,"text":"Then those men said to the king, Know, O king, that the law of the Medes and Persians is that we must not change any decree of statue which the king shall make."},{"n":16,"text":"Then the king commanded, and they brought Daniel, and cast him into the den of lions. But the king said to Daniel, Thy God whom thou servest continually, he will deliver thee."},{"n":17,"text":"And they brought a stone, and put it on the mouth of the den; and the king sealed it with his ring, and with the ring of his nobles; that the case might not be altered with regard to Daniel."},{"n":18,"text":"And the king departed to his house, and lay down fasting, and they brought him no food; and his sleep departed from him. But God shut the mouths of the lions, and they not molest Daniel."},{"n":19,"text":"Then the king arose very early in the morning, and came in hast to the den of lions."},{"n":20,"text":"And when he drew near to the den, he cried with a loud voice, Daniel, servant of the living God, has thy God, whom thou servest continually, been able to deliver thee from the lion's mouth?"},{"n":21,"text":"And Daniel said to the king, O king, live for ever."},{"n":22,"text":"My God has sent his angel, and stopped the lions' mouths, and they have not hurt me: for uprightness was found in me before him; and moreover before thee, O king, I have committed no trespass."},{"n":23,"text":"Then the king was very glad for him, and he commanded to bring Daniel out of the den. So Daniel was brought out of the den, and there was found no hurt upon him, because he believed in his God."},{"n":24,"text":"And the king commanded, and they brought the men that had accused Daniel, and they were cast into the den of lions, they, and their children, and their wives: and they reached not the bottom of the den before the lions had the mastery of them, and utterly broke to pieces all their bones."},{"n":25,"text":"Then king Darius wrote to all nations, tribes, and languages, who dwell in all the earth, saying, Peace be multiplied to you."},{"n":26,"text":"This decree has been set forth by me in every dominion of my kingdom, that men tremble and fear before the God of Daniel: for he is the living and eternal God, and his kingdom shall not be destroyed, and his dominion is for ever."},{"n":27,"text":"He helps and delivers, and works signs and wonders in the heaven and on the earth, who has rescued Daniel from the power of the lions."},{"n":28,"text":"And Daniel prospered in the reign of Darius, and in the reign of Cyrus the Persian."}],"source":"brenton-lxx-pd"}
+{
+  "book": "daniel",
+  "name": "Daniel",
+  "chapter": 6,
+  "verses": [
+    {
+      "n": 1,
+      "text": "And Darius the Mede succeeded to the kingdom, being sixty-two years old ."
+    },
+    {
+      "n": 2,
+      "text": "And it pleased Darius, and he set over the kingdom a hundred and twenty satraps, to be in all his kingdom;"
+    },
+    {
+      "n": 3,
+      "text": "and over them three governors, of whom one was Daniel; for the satraps to give account to them, that the king should not be troubled."
+    },
+    {
+      "n": 4,
+      "text": "And Daniel was over them, for there was an excellent spirit in him; and the king set him over all his kingdom."
+    },
+    {
+      "n": 5,
+      "text": "Then the governors and satraps sought to find occasion against Daniel; but they found against him no occasion, nor trespass, nor error, because he was faithful."
+    },
+    {
+      "n": 6,
+      "text": "And the governors said, We shall not find occasion against Daniel, except in the ordinances of his God."
+    },
+    {
+      "n": 7,
+      "text": "Then the governors and satraps stood by the king, and said to him, King Darius, live for ever."
+    },
+    {
+      "n": 8,
+      "text": "All who preside over thy kingdom, captains and satraps, chiefs and local governors, have taken counsel together, to establish by a royal statute and to confirm a decree, that whosoever shall ask a petition of any god or man for thirty days, save of thee, O king, shall be cast into the den of lions."
+    },
+    {
+      "n": 9,
+      "text": "Now then, O king, establish the decree, and publish a writ, that the decree of the Persians and Medes be not changed."
+    },
+    {
+      "n": 10,
+      "text": "Then king Darius commanded the decree to be written."
+    },
+    {
+      "n": 11,
+      "text": "And when Daniel knew that the decree was ordered, he went into his house; and his windows were opened in his chambers toward Jerusalem, and three times in the day he knelt upon his knees, and prayed and gave thanks before his God, as he used to do before."
+    },
+    {
+      "n": 12,
+      "text": "Then these men watched, and found Daniel praying and supplicating to his God."
+    },
+    {
+      "n": 13,
+      "text": "And they came and said to the king, O king, hast thou not made a decree, that whatsoever man shall ask a petition of any god or man for thirty days, but of thee, O king, shall be cast into the den of lions? And the king said, The word is true, and the decree of the Medes and Persians shall not pass."
+    },
+    {
+      "n": 14,
+      "text": "Then they answered and said before the king, Daniel of the children of the captivity of Judea, has not submitted to thy decree; and three times in the day he makes his requests of his God."
+    },
+    {
+      "n": 15,
+      "text": "Then the king, when he heard the saying, was much grieved for Daniel, and he greatly exerted himself for Daniel to deliver him: and he exerted himself till evening to deliver him."
+    },
+    {
+      "n": 16,
+      "text": "Then those men said to the king, Know, O king, that the law of the Medes and Persians is, that we must not change any decree or statute which the king shall make."
+    },
+    {
+      "n": 17,
+      "text": "Then the king commanded, and they brought Daniel, and cast him into the den of lions. But the king said to Daniel, Thy God whom thou servest continually, he will deliver thee."
+    },
+    {
+      "n": 18,
+      "text": "And they brought a stone, and put it on the mouth of the den; and the king sealed it with his ring, and with the ring of his nobles; that the case might not be altered with regard to Daniel."
+    },
+    {
+      "n": 19,
+      "text": "And the king departed to his house, and lay down fasting, and they brought him no food; and his sleep departed from him. But God shut the mouths of the lions, and they did not molest Daniel."
+    },
+    {
+      "n": 20,
+      "text": "Then the king arose very early in the morning, and came in haste to the den of lions."
+    },
+    {
+      "n": 21,
+      "text": "And when he drew near to the den, he cried with a loud voice, Daniel, servant of the living God, has thy God, whom thou servest continually, been able to deliver thee from the lion's mouth?"
+    },
+    {
+      "n": 22,
+      "text": "And Daniel said to the king, O king, live for ever."
+    },
+    {
+      "n": 23,
+      "text": "My God has sent his angel, and stopped the lions' mouths, and they have not hurt me: for uprightness was found in me before him; and moreover before thee, O king, I have committed no trespass."
+    },
+    {
+      "n": 24,
+      "text": "Then the king was very glad for him, and he commanded to bring Daniel out of the den. So Daniel was brought out of the den, and there was found no hurt upon him, because he believed in his God."
+    },
+    {
+      "n": 25,
+      "text": "And the king commanded, and they brought the men that had accused Daniel, and they were cast into the den of lions, they, and their children, and their wives: and they reached not the bottom of the den before the lions had the mastery of them, and utterly broke to pieces all their bones."
+    },
+    {
+      "n": 26,
+      "text": "Then king Darius wrote to all nations, tribes, and languages, who dwell in all the earth, saying , Peace be multiplied to you."
+    },
+    {
+      "n": 27,
+      "text": "This decree has been set forth by me in every dominion of my kingdom, that men tremble and fear before the God of Daniel: for he is the living and eternal God, and his kingdom shall not be destroyed, and his dominion is for ever."
+    },
+    {
+      "n": 28,
+      "text": "He helps and delivers, and works signs and wonders in the heaven and on the earth, who has rescued Daniel from the power of the lions."
+    },
+    {
+      "n": 29,
+      "text": "And Daniel prospered in the reign of Darius, and in the reign of Cyrus the Persian."
+    }
+  ],
+  "source": "brenton-lxx-pd"
+}
