@@ -173,7 +173,12 @@ export function MobileTabBar() {
           {TABS.map(({ key, label, href, Icon, matches }) => {
             const active = matches(pathname);
             return (
-              <li key={key} className="flex-1">
+              // min-w-0: flex-1 is `flex: 1 1 0%`, but a flex item's
+              // min-width defaults to auto, so without this the cell
+              // refuses to shrink below its label's min-content width and
+              // the bar runs off the screen. It did, in Greek, French,
+              // Romanian and Russian.
+              <li key={key} className="flex-1 min-w-0">
                 <Link
                   href={href}
                   aria-current={active ? "page" : undefined}
@@ -210,7 +215,12 @@ export function MobileTabBar() {
                     strokeWidth={active ? 2 : undefined}
                     className={cn(active && "tab-pop")}
                   />
-                  <span className="leading-none">{label}</span>
+                  {/* truncate, not wrap: a two-line label would change the
+                      bar's height on one locale and not another. The full
+                      word is still on the destination's own header. */}
+                  <span className="block max-w-full truncate leading-none">
+                    {label}
+                  </span>
                 </Link>
               </li>
             );
