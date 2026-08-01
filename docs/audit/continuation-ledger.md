@@ -213,7 +213,7 @@ adjacent seeded-review cleanup on 2026-08-01. The narrow fix is to filter
 the read path to reviews with a delivered order, or to render the badge
 per-review rather than unconditionally.
 
-### Addendum — 2026-08-01, Daniel restoration is DEFECTIVE, do not merge as-is
+### Addendum — 2026-08-01, Daniel restoration was defective, FIXED in `dd20204c`
 
 Commit `6973e124` ("Restore Susanna, Bel, and the middle of Daniel 3") and its
 notes commit are on `feat/daniel-additions`, PUSHED but NOT merged and NOT
@@ -270,3 +270,26 @@ and Bel already align at 64/42. The remaining work:
 - assert contiguity and en/gr equality per chapter, not just a floor. The
   existing guard is `if ((en[3] ?? []).length < 90)`, which passes at 95
   and asserts nothing about duplicates, gaps, or the Greek.
+
+**RESOLVED, same session, commit `dd20204c`.** All three defects fixed and
+verified: the verse regex now captures the letter suffix and appends a
+lettered line to the verse it subdivides (one entry per number); the
+marker-stripping no longer leaves a space before punctuation; and the Greek
+is put onto Brenton's division by a mapping read off the two texts at each
+seam (3:91, 4:1, 6:1 each pair with the Greek sentence that says the same
+thing). Chapter 3 ends at 97 and holds 93 verses; 63 were restored; old
+3:31-33 are now 4:1-3.
+
+**The Song deliberately has no Greek line, and that is the finished state,
+not a shortfall.** Brenton and the `grclxx` edition order the canticle
+differently, not merely number it differently: Brenton's 3:71 is "O ye
+nights and days" where the Greek at the same point reads "cold and heat".
+Verse 25 and 88-90 line up, the middle does not, and no offset reconciles
+them. Splicing on a best guess would put English verses beside Greek verses
+that are not theirs with no way for the reader to tell. 63 English verses
+(3:24-90) render an empty Greek column until a Greek text on Brenton's own
+order is sourced.
+
+**The assertions are no longer a floor.** Duplicate numbers, stray leading
+letters and spaced punctuation now stop the write. The old `>= 90` check
+passed on the broken chapter, which is how this shipped in the first place.
