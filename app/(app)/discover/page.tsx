@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { DiscoverMobile } from "@/components/mobile/DiscoverMobile";
 import { Church } from "@/components/ui/icons/Church";
 import { Cross } from "@/components/ui/icons/Cross";
@@ -69,7 +68,6 @@ export default async function DiscoverPage() {
     <>
       <DiscoverMobile />
       <div className="hidden md:contents">
-        <MobileTopBar title={t(m, "discover.h1").replace(/\.$/, "")} />
         <section className="relative bg-night min-h-[calc(100dvh-72px)] md:px-8 md:py-16">
           {/* A quiet gold wash behind the masthead, the one bit of warmth on
               an otherwise monochrome page. */}

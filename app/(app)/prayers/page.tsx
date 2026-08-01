@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { T } from "@/components/i18n/T";
 import { LESSONS } from "@/lib/prayers/learning";
-import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import {
   commemorationsOn,
   fastingStatus,
@@ -126,7 +125,6 @@ export default async function PrayersPage() {
     <>
       <PrayersMobile />
       <div className="hidden md:block">
-        <MobileTopBar title={isDe ? "Gebete" : "Prayers"} />
         <section className="relative isolate overflow-hidden bg-night min-h-screen">
           <div
             className="pointer-events-none absolute inset-x-0 top-0 h-[460px]"
