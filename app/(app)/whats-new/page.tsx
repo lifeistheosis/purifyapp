@@ -26,11 +26,13 @@ type Entry = {
 const ENTRIES: Entry[] = [
  {
  version: "Beta 2.8",
- kind: "The app stops saying everything twice",
+ kind: "Daniel is whole again, and the app stops saying everything twice",
  date: "August 1, 2026",
  blurb:
-  "A release about repetition. The same place was offered to you under three different names, screens announced themselves twice before you had read anything, and the prayer index printed thirty-four rows for twenty-seven prayers. Most of this release is deletion. There is also one real fault underneath it: readers on the Old Calendar were being shown the wrong saint and the wrong fast on the daily prayer page.",
+  "Two things in this one. Three passages that were missing from Daniel are restored, which is what the last update said would happen. And the app has stopped repeating itself: the same page was offered to you under three different names, screens announced themselves twice before you had read a word, and the prayer index printed thirty-four rows for twenty-seven prayers. Underneath all of it sat one real fault worth naming on its own: readers who keep the Old Calendar were being shown the wrong saint and the wrong fast on the daily prayer page.",
  items: [
+  "Susanna, Bel and the Dragon, and the middle of Daniel 3 are here, as the last update promised. Daniel now has fourteen chapters: Susanna is 13 and Bel is 14, and chapter 3 runs to ninety-five verses, with the three young men falling bound into the furnace at verse 23, the Song of the Three from 24 to 90, and Nabuchodonosor hearing them sing at 91. All of it from the same public domain Brenton Septuagint as the rest of the Old Testament.",
+  "One consequence of that: Daniel 3 verses 1 to 23 are where they always were, but sixty-seven verses were restored in the middle, so anything you had highlighted or bookmarked in that chapter after verse 23 now sits at a different number.",
   "The Old Calendar is kept on the daily prayer page. If you keep the Old (Julian) Calendar, that page was showing the New Calendar's commemoration and fasting rule while the Today screen, one tap away, showed the right ones. The appointed readings and the count to Pascha deliberately do not shift with it, because both reckonings work out Pascha the same way.",
   "One name for one place. The daily prayer page was offered inside the app as a tile called Today in Prayers, a tile called Daily readings in Discover, and a chip called Prayer on your account screen, all the same screen. The tiles are gone, and tapping in Prayers no longer moves the lit tab to Today.",
   "The reading room listed the saints twice, as Patristic works and The saints' writings, both going to the same place with nothing to tell them apart. It lists them once.",
@@ -42,8 +44,6 @@ const ENTRIES: Entry[] = [
   "The tab bar fits other languages. In Greek, Russian, Romanian and French it ran off the side of the screen and the last tab was partly or wholly unreachable.",
   "A tablet knows what day it is. Beta 2.7 unfroze the date everywhere a phone could see it and missed the wider layout. Discover's featured topic and council, and the day card on Prayers, were still stuck on the day the app was built. The guard meant to catch this was only watching part of the app; it watches all of it now.",
   "The Today screen had four buttons to Prayers, Bible, Saints and Calendar just above the bar that already carries those, and called the Bible Scripture while the tab beside it said Bible. They are gone and the day's commemoration has moved up the screen.",
-  "Susanna, Bel and the Dragon, and the middle of Daniel 3 are here, as the last update promised. Daniel now has fourteen chapters: Susanna is 13 and Bel is 14, and chapter 3 runs to ninety-five verses, with the three young men falling bound into the furnace at verse 23, the Song of the Three from 24 to 90, and Nabuchodonosor hearing them sing at 91. All of it from the same public domain Brenton Septuagint as the rest of the Old Testament.",
-  "One consequence of that: Daniel 3 verses 1 to 23 are where they always were, but sixty-seven verses were restored in the middle, so anything you had highlighted or bookmarked in that chapter after verse 23 now sits at a different number.",
   "Cache version steps to purify-beta-2.8.0.",
  ],
  },

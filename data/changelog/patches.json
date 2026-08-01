@@ -3,12 +3,20 @@
     "id": "beta-2-8",
     "version": "Beta 2.8",
     "date": "2026-08-01",
-    "title": "The app stops saying everything twice",
-    "intro": "A release about repetition. The same place was offered to you under three different names, screens announced themselves twice before you had read anything, and the prayer index printed thirty-four rows for twenty-seven prayers. Most of this release is deletion. There is also one real fault underneath it: readers on the Old Calendar were being shown the wrong saint and the wrong fast on the daily prayer page. It also carries the Daniel restoration the last update promised.",
+    "title": "Daniel is whole again, and the app stops saying everything twice",
+    "intro": "Two things in this one. Three passages that were missing from Daniel are restored, which is what the last update said would happen. And the app has stopped repeating itself: the same page was offered to you under three different names, screens announced themselves twice before you had read a word, and the prayer index printed thirty-four rows for twenty-seven prayers. Underneath all of it sat one real fault worth naming on its own: readers who keep the Old Calendar were being shown the wrong saint and the wrong fast on the daily prayer page.",
     "sections": [
+      {
+        "heading": "Susanna, Bel and the Dragon, and the middle of Daniel 3",
+        "body": "Someone asked whether Bel and the Dragon was missing from Daniel. It was, and so was more than that. Susanna was absent, and chapter 3 was short its middle, where the Prayer of Azariah and the Song of the Three Holy Children belong. The last update said these were coming; here they are. Daniel now has fourteen chapters: Susanna is chapter 13 and Bel is chapter 14, and chapter 3 runs to ninety-five verses, with the three young men falling bound into the furnace at verse 23, the Song from 24 to 90, and Nabuchodonosor hearing them sing at 91. Every verse is from the same public domain Brenton Septuagint the rest of the Old Testament is set in. One consequence worth knowing: Daniel 3 verses 1 to 23 are where they always were, but because sixty-seven verses were restored in the middle, anything you had highlighted or bookmarked in that chapter after verse 23 now sits at a different number."
+      },
       {
         "heading": "The Old Calendar was ignored on the daily prayer page",
         "body": "If you keep the Old (Julian) Calendar, the daily prayer page was showing you the New Calendar's commemoration and the New Calendar's fasting rule, while the Today screen one tap away showed the right ones. Two screens, two different saints, the same second. The page now keeps the calendar you keep. The appointed readings and the count to Pascha deliberately do not shift with it, because both reckonings work out Pascha the same way."
+      },
+      {
+        "heading": "Recently saved items led nowhere",
+        "body": "The Last saved cards on the account dashboard were built from the wrong description of a bookmark, so every one of them linked to a chapter that does not exist. They open what you saved."
       },
       {
         "heading": "One name for one place",
@@ -27,20 +35,12 @@
         "body": "Opening Account and security from the You tab landed you on a screen that repeated eight of the nine rows you had just left, under a second copy of your name and a second copy of the same four counters. On a phone that screen is now the security, sessions and data screen it was meant to be, and the two rows that only lived there, Export your library and My prayers, have moved onto the You tab so nothing was lost. On a computer, where that screen is the whole dashboard, it is unchanged."
       },
       {
-        "heading": "Recently saved items led nowhere",
-        "body": "The Last saved cards on the account dashboard were built from the wrong description of a bookmark, so every one of them linked to a chapter that does not exist. They open what you saved."
-      },
-      {
         "heading": "The tab bar fits other languages",
         "body": "In Greek, Russian, Romanian and French the bar ran off the side of the screen and the last tab was partly or wholly unreachable. The seven tabs now divide the width evenly in every language."
       },
       {
         "heading": "A tablet knows what day it is",
         "body": "Beta 2.7 unfroze the date everywhere a phone could see it and missed the wider layout, which a tablet shows. On a tablet, Discover's featured topic and council, and the day card on Prayers, were still stuck on the day the app was built. They read the date from the device now, like everything else. The guard that is supposed to catch this class of fault was only watching part of the app, which is why it did not catch it. It watches all of it now."
-      },
-      {
-        "heading": "Susanna, Bel and the Dragon, and the middle of Daniel 3",
-        "body": "Someone asked whether Bel and the Dragon was missing from Daniel. It was, and so was more than that. Susanna was absent, and chapter 3 was short its middle, where the Prayer of Azariah and the Song of the Three Holy Children belong. The last update said these were coming; here they are. Daniel now has fourteen chapters: Susanna is chapter 13 and Bel is chapter 14, and chapter 3 runs to ninety-five verses, with the three young men falling bound into the furnace at verse 23, the Song from 24 to 90, and Nabuchodonosor hearing them sing at 91. Every verse is from the same public domain Brenton Septuagint the rest of the Old Testament is set in. One consequence worth knowing: Daniel 3 verses 1 to 23 are where they always were, but because sixty-seven verses were restored in the middle, anything you had highlighted or bookmarked in that chapter after verse 23 now sits at a different number."
       },
       {
         "heading": "Also",
