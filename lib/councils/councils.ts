@@ -864,6 +864,121 @@ export const COUNCILS: Council[] = [
  },
  ],
  },
+ {
+ slug: "jerusalem-1672",
+ kind: "local",
+ name: "The Synod of Jerusalem",
+ byname: "Synod of Jerusalem (1672)",
+ year: 1672,
+ location:
+ "Jerusalem and Bethlehem, at the reconsecration of the Church of the Nativity",
+ convenedBy: "Dositheos II, Patriarch of Jerusalem",
+ bishopsAttending:
+ "The Patriarch of Jerusalem with the metropolitans, archimandrites and priests gathered for the reconsecration",
+ reception: {
+ status: "full",
+ note: "A local synod whose decrees were approved by the other patriarchates and by the Church of Russia, and which is received across the Orthodox Church as an authoritative statement of the faith against the Calvinist reading of it. Its scholastic vocabulary, borrowed from the Western debate it was answering, is discussed by Orthodox theologians without the substance of the decrees being in question.",
+ },
+ shortBio:
+ "The synod that answered the Calvinist Confession published in the name of Cyril Lucaris. Gathered by Patriarch Dositheos at the reconsecration of the Church of the Nativity, it set out in eighteen decrees what the Orthodox Church actually holds on Scripture, grace, the Mysteries and the saints, and it remains the fullest confessional statement the Church made in the modern period.",
+ defined: [
+ "That Scripture is read within the Church and interpreted by her: the Church does not take her authority from the book, nor the book its authority from private judgement, and the two are not to be set against each other.",
+ "That God predestines no one to perdition. He foreknows all, wills all men to be saved, and crowns those who freely cooperate with His grace.",
+ "That a man is justified by faith working through love, not by a faith held apart from the life it produces.",
+ "That the Mysteries are seven, and that they convey what they signify: baptism regenerates, and in the Eucharist the bread and the wine are changed into the Body and Blood of the Lord.",
+ "That the honour given to the Theotokos and the saints, and to their icons and relics, is veneration and not the worship due to God alone, and that the saints are asked for their prayers.",
+ "That the books the Church has always read in her assemblies, which the Reformed had begun to set aside as apocryphal, belong to Scripture.",
+ ],
+ condemned: [
+ "The Confession printed at Geneva in 1629 under the name of Cyril Lucaris, Patriarch of Constantinople, holding unconditional election, the bondage of the will, and justification by faith alone; the synod judged it foreign to the Orthodox faith and denied that a patriarch of the Church had written it.",
+ "The claim that Scripture alone, read privately, is the rule of faith apart from the Church that received and preserved it.",
+ "The teaching that God decrees the damnation of any man irrespective of his own will and works.",
+ ],
+ life: [
+ "In 1629 there appeared at Geneva a Confession of Faith, in Latin and soon after in Greek, published under the name of Cyril Lucaris, Patriarch of Constantinople. It was Calvinist throughout: unconditional election, the bondage of the will, justification by faith alone, two Mysteries rather than seven, and the rejection of the veneration of icons. Whether Lucaris wrote it, wrote part of it, or had it written for him has been argued ever since. What was not in doubt was the use being made of it, for Protestant Europe now had, or appeared to have, the signature of an Eastern patriarch on its side.",
+ "The Orthodox East answered several times over the next forty years, at Constantinople in 1638, at Jassy in 1642, and most fully at Jerusalem in 1672. Dositheos II, Patriarch of Jerusalem, had gathered hierarchs and clergy for the reconsecration of the Church of the Nativity at Bethlehem, restored after long neglect. With them assembled he laid the Confession before the synod, and the synod set out the faith of the Church point against point.",
+ "The acts fall into six chapters, and the confession Dositheos drew up runs to eighteen decrees with four questions appended. It is a deliberate answer rather than a free composition: each decree stands where one of the Genevan articles had stood. Where the Confession said that God predestines some to life and passes over the rest, the synod answered that God wills all men to be saved and that no one is predestined to perdition. Where it said faith alone, the synod answered faith working through love. Where it reduced the Mysteries to two, the synod named the seven.",
+ "The synod also took up the books of the Old Testament that the Reformed had begun to print apart as apocrypha, and confessed that the Church reads them as Scripture, as she always had. It is the same judgement that puts Susanna and Bel and the Dragon in the Church's Daniel.",
+ "Its language has been discussed since. Dositheos was answering Western arguments in Western terms, and some of his vocabulary, most often noted in the word he uses for the change in the Eucharist, is the vocabulary of the schools rather than of the Fathers. Orthodox theologians have said so plainly without setting aside what the decrees confess. The synod's authority rests not on its phrasing but on its having been received: the other patriarchates approved it, the Church of Russia approved it, and it has been cited as a standard of Orthodox teaching from that day to this.",
+ ],
+ principalFathers: [
+ {
+ name: "Dositheos II, Patriarch of Jerusalem",
+ role: "Convened the synod, drew up the eighteen decrees, and afterwards published the acts; the principal Orthodox controversialist of his century.",
+ },
+ ],
+ principalOpposed: [
+ {
+ name: "The Confession published under the name of Cyril Lucaris",
+ teaching:
+ "A Calvinist confession printed at Geneva in 1629 bearing the name of the Patriarch of Constantinople, teaching unconditional election, the bondage of the will, justification by faith alone, and the rejection of icons.",
+ },
+ ],
+ documents: [],
+ pendingDocuments: [
+ {
+ title: "The Confession of Dositheus (eighteen decrees, with the four questions)",
+ note: "The confession itself. Public-domain English exists in J. N. W. B. Robertson, The Acts and Decrees of the Synod of Jerusalem (London, 1899), and in Schaff's Creeds of Christendom; the text will be wired in once a translation is prepared and its provenance recorded.",
+ },
+ {
+ title: "The Acts of the Synod (the six chapters)",
+ note: "The synodal acts preceding the confession, including the judgement on the Genevan Confession and on the question of its authorship. Public-domain English in Robertson (1899); not yet shipped.",
+ },
+ ],
+ },
+ {
+ slug: "orange-529",
+ kind: "local",
+ name: "The Second Council of Orange",
+ byname: "Council of Orange (529)",
+ year: 529,
+ location: "Arausio in Gaul (modern Orange, France)",
+ convenedBy: "St. Caesarius, Bishop of Arles",
+ bishopsAttending: "Fourteen bishops of southern Gaul",
+ reception: {
+ status: "not-received",
+ note: "A Western provincial synod. The Orthodox Church does not receive it as authoritative and took no part in it: it was held in Gaul, in Latin, within a controversy about grace and free will that the Latin West conducted in Augustine's terms and the Greek East did not. It is listed here because it is constantly cited in Western discussion of grace, and a reader who meets it deserves to be told plainly where it stands.",
+ },
+ shortBio:
+ "A council of fourteen bishops of southern Gaul, gathered by St. Caesarius of Arles, which settled the long Latin argument over whether the first movement toward God comes from man or from grace. It answered: from grace. Its twenty-five canons became the West's standing statement on the question, and were never the subject of Eastern conciliar action.",
+ defined: [
+ "That the beginning of faith is itself the gift of God, so that the first turning of a man toward God is not his own achievement to which grace is afterwards added.",
+ "That grace goes before every good work, and that whatever good a man does, God has first worked in him the willing of it.",
+ "That the whole man, mind and will alike, was wounded by the sin of Adam, and that no one is restored by his own strength.",
+ "That baptism gives grace truly, and that all the baptised, with Christ's help, are able to do what belongs to salvation if they will faithfully labour.",
+ ],
+ condemned: [
+ "The teaching later called Semipelagian, held in Gaul by monks of Marseilles and Lerins, that the beginning of faith may come from a man's own will with grace following to strengthen it.",
+ "The proposition that any man is predestined by God to evil. The council's conclusion rejects this in as many words, and is to that extent narrower than what was later built upon it in the West.",
+ ],
+ life: [
+ "The Latin West spent the century after Augustine's death arguing about what he had said. Augustine had answered Pelagius, who taught that a man could take the first step toward God unaided, by insisting that grace precedes and enables every good movement of the will. Monks in southern Gaul, at Marseilles and at Lerins, accepted his answer on nearly everything and stopped short at one point: they wished to say that the first stirring of faith, the initium fidei, might arise from the man himself, with grace meeting and completing it. Their position is called Semipelagianism, a name given to it long afterwards and by its opponents.",
+ "St. Caesarius, Bishop of Arles, a monk of Lerins who had become the leading hierarch of Gaul, judged that the question needed settling. He asked Rome for help, and Pope Felix IV sent him a set of propositions drawn largely from Augustine and from Prosper of Aquitaine. In the summer of 529, at the dedication of a church at Orange, Caesarius put them to the fourteen bishops assembled with him. They approved twenty-five canons and added a conclusion in their own words. Boniface II confirmed the council two years later.",
+ "The canons say, in many forms, one thing: that God is first. Not that man is passive, and not that anyone is predestined to be lost, which the conclusion denies explicitly, but that no one turns toward God whom God has not already turned.",
+ "It has no standing in the East, and that is the honest part to say. The Greek Fathers had addressed the relation of grace and freedom in their own vocabulary, that of synergy, the working together of God and man, in which the whole initiative belongs to God and the whole response is genuinely the man's own. The Eastern Church was not represented at Orange, took no action upon it, and has never numbered it among the councils she receives. Its canons are cited constantly in Western theology, and in the Reformation debates most of all, which is why an Orthodox reader is likely to meet it and to want to know what it is.",
+ "St. Caesarius of Arles is himself commemorated in the Orthodox calendar. That a Father is venerated does not make a provincial synod over which he presided a council of the whole Church, and the distinction is worth keeping clear.",
+ ],
+ principalFathers: [
+ {
+ name: "St. Caesarius of Arles",
+ role: "Bishop of Arles and the leading hierarch of Gaul; sought the propositions from Rome, presided over the council, and wrote its concluding statement.",
+ },
+ ],
+ principalOpposed: [
+ {
+ name: "The Semipelagian position of the Gallic monks",
+ teaching:
+ "That the first movement of faith may begin in a man's own will, with the grace of God following to strengthen and complete it, rather than preceding it.",
+ },
+ ],
+ documents: [],
+ pendingDocuments: [
+ {
+ title: "The Twenty-Five Canons, with the Conclusion",
+ note: "The canons and the concluding statement. Wired in once a translation whose public-domain status can be recorded is prepared: the English versions in common circulation are mostly modern, and the editorial standard here is public domain and verbatim or nothing.",
+ },
+ ],
+ },
 ];
 
 export function getCouncil(slug: string): Council | null {
