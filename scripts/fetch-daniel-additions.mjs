@@ -57,6 +57,91 @@ const SOURCES = {
 const DANIEL_CODE = "DAG";
 const SUSANNA_CODE = "SUS";
 const BEL_CODE = "BEL";
+// The Greek archive keeps the Song of the Three as its own book (S3Y) and
+// leaves DAG on the short Aramaic division. Brenton's English DAG carries
+// the Song inline. See alignGreekToBrenton.
+const SONG_CODE = "S3Y";
+
+/**
+ * Put the Greek on Brenton's chapter division so the interlinear lines up.
+ *
+ * The two sources divide Daniel differently, and the first run wrote them
+ * out as they came: English chapter 3 ran to 97 while Greek chapter 3
+ * stopped at 33, so the whole restored Song had a blank Greek column and
+ * every verse of Daniel 4 was three out. The reader joins the panes on the
+ * verse number alone (app/(app)/bible/[book]/[chapter]/page.tsx), so a
+ * mismatched division silently pairs the wrong lines rather than failing.
+ *
+ * The mapping below was not assumed, it was read off the two texts by
+ * matching the sentences at each seam:
+ *
+ *   EN 3:91 "And Nabuchodonosor heard them singing praises"
+ *     == GR 3:24 "Καὶ Ναβουχοδονόσορ ἤκουσεν ὑμνούντων αὐτῶν"
+ *   EN 4:1  "King Nabuchodonosor to all nations, tribes, and tongues"
+ *     == GR 3:31 "Ναβουχοδονόσορ ὁ βασιλεὺς πᾶσι τοῖς λαοῖς, φυλαῖς"
+ *   EN 6:1  "And Darius the Mede succeeded to the kingdom"
+ *     == GR 5:31 "καὶ Δαρεῖος ὁ Μῆδος παρέλαβε τὴν βασιλείαν"
+ *
+ * Chapters 1, 2 and 7 to 12 already agree and pass through untouched.
+ */
+// Brenton's own numbering of the Song, which is not contiguous: it runs
+// 25-66, omits 67-70 entirely, then resumes 71-90.
+const SONG_EN_HEAD = Array.from({ length: 42 }, (_, i) => 25 + i);
+const SONG_EN_GAP = 4;
+const SONG_EN_TAIL = Array.from({ length: 20 }, (_, i) => 71 + i);
+
+function alignGreekToBrenton(gr, song) {
+  const at = (chap, n) => (gr[chap] ?? []).find((v) => v.n === n);
+  const out = {};
+  for (const c of Object.keys(gr).map(Number)) out[c] = [...gr[c]];
+
+  // Chapter 3: the furnace narrative keeps 1-23; the Song is spliced in at
+  // 24-90 from S3Y (its verse 1 is Brenton's 3:24); the narrative that the
+  // short division numbers 24-30 becomes 91-97.
+  const ch3 = [];
+  for (let n = 1; n <= 23; n++) {
+    const v = at(3, n);
+    if (v) ch3.push({ n, text: v.text });
+  }
+  // The Song deliberately gets NO Greek line, and this is the honest answer
+  // rather than a shortfall. Brenton and this Greek edition do not merely
+  // number the canticle differently, they order it differently: Brenton's
+  // 3:71 is "O ye nights and days" where the Greek at the same point reads
+  // "bless ye, cold and heat". Verse 25 and verses 88 to 90 line up, the
+  // middle does not, and no offset reconciles them because the mismatch is
+  // in the sequence itself. Splicing on a best guess would pair English
+  // verses with Greek verses that are not their counterparts, which is worse
+  // than an empty column: the reader would have no way to know. The pane
+  // renders blank for 3:24-90 until a Greek text on Brenton's own order is
+  // sourced.
+
+  for (let n = 24; n <= 30; n++) {
+    const v = at(3, n);
+    if (v) ch3.push({ n: n + 67, text: v.text });
+  }
+  out[3] = ch3.sort((a, b) => a.n - b.n);
+
+  // Chapter 4: the short division's 3:31-33 open it, then its own 1-34
+  // shift down by three.
+  const ch4 = [];
+  for (let n = 31; n <= 33; n++) {
+    const v = at(3, n);
+    if (v) ch4.push({ n: n - 30, text: v.text });
+  }
+  for (const v of gr[4] ?? []) ch4.push({ n: v.n + 3, text: v.text });
+  out[4] = ch4.sort((a, b) => a.n - b.n);
+
+  // Chapter 5 keeps 1-30; its verse 31 is Brenton's 6:1, and chapter 6
+  // shifts down by one behind it.
+  out[5] = (gr[5] ?? []).filter((v) => v.n <= 30).map((v) => ({ n: v.n, text: v.text }));
+  const ch6 = [];
+  const darius = at(5, 31);
+  if (darius) ch6.push({ n: 1, text: darius.text });
+  for (const v of gr[6] ?? []) ch6.push({ n: v.n + 1, text: v.text });
+  out[6] = ch6.sort((a, b) => a.n - b.n);
+
+  return out;
+}
 
 /**
  * The write stream is opened only after a 200 is in hand.
@@ -228,6 +313,7 @@ function parseUsfm(text) {
   const chapters = {};
   let curChap = null;
   let curVerse = null;
+  let curSuffix = "";
   let buffer = "";
 
   function flush() {
@@ -240,8 +326,29 @@ function parseUsfm(text) {
       .replace(/\\x\s.*?\\x\*/gs, "")
       .replace(/\\[a-z0-9]+\*?/gi, " ")
       .replace(/\s+/g, " ")
+      // A stripped marker leaves a space where it stood, so `\add saying\add*,`
+      // came out as "saying ,". This affected every verse whose markup sat
+      // against punctuation: 135 of Daniel's verses changed wording on the
+      // first run purely from this.
+      .replace(/\s+([,.;:!?·])/g, "$1")
+      .replace(/([([«])\s+/g, "$1")
       .trim();
-    if (clean) chapters[curChap].push({ n: curVerse, text: clean });
+    if (!clean) {
+      buffer = "";
+      return;
+    }
+    // A lettered verse (Brenton numbers two lines of the Song 72a and 72b)
+    // is a subdivision of the verse before it, not a new one. Appending
+    // keeps one entry per number: emitting three verses numbered 72 gave
+    // three DOM nodes the same `v72` id, so the deep link and the
+    // commentary anchor both resolved to the wrong line.
+    const existing = chapters[curChap];
+    const prev = existing.length ? existing[existing.length - 1] : null;
+    if (curSuffix && prev && prev.n === curVerse) {
+      prev.text += " " + clean;
+    } else {
+      existing.push({ n: curVerse, text: clean });
+    }
     buffer = "";
   }
 
@@ -251,15 +358,20 @@ function parseUsfm(text) {
       flush();
       curChap = parseInt(line.slice(3).trim(), 10);
       curVerse = null;
+      curSuffix = "";
       chapters[curChap] = [];
       continue;
     }
     if (line.startsWith("\\v ")) {
       flush();
-      const m = line.match(/^\\v\s+(\d+)\s*(.*)$/);
+      // The letter suffix is captured, not discarded. Dropping it silently
+      // turned "\v 72a O ye frost and heat" into verse 72 with the text
+      // "a O ye frost and heat".
+      const m = line.match(/^\\v\s+(\d+)([a-z]?)\s*(.*)$/);
       if (!m) continue;
       curVerse = parseInt(m[1], 10);
-      buffer = m[2];
+      curSuffix = m[2];
+      buffer = m[3];
       continue;
     }
     if (curVerse == null) continue;
@@ -334,6 +446,29 @@ async function main() {
   if (belVerses.length < 40)
     fail(`Bel and the Dragon has ${belVerses.length} verses, expected ~42`);
 
+  // A floor is not enough. The first run passed `>= 90` with a chapter 3
+  // that carried three verses numbered 72, and nothing here looked at the
+  // Greek at all, so the interlinear shipped misaligned through four
+  // chapters. These assert the shape, not just the size.
+  for (const [c, verses] of Object.entries(en)) {
+    const seen = new Set();
+    for (const v of verses) {
+      if (seen.has(v.n)) fail(`Daniel ${c}:${v.n} appears more than once in the English`);
+      seen.add(v.n);
+    }
+    const stray = verses.find((v) => /^[a-z]\s/.test(v.text));
+    if (stray)
+      fail(
+        `Daniel ${c}:${stray.n} begins with a stray letter (${JSON.stringify(stray.text.slice(0, 20))}). ` +
+          `A lettered verse marker leaked into the text.`,
+      );
+  }
+  const spaced = Object.entries(en).flatMap(([c, vs]) =>
+    vs.filter((v) => /\s[,.;:]/.test(v.text)).map((v) => `${c}:${v.n}`),
+  );
+  if (spaced.length)
+    fail(`space before punctuation in ${spaced.length} verse(s), e.g. Daniel ${spaced[0]}`);
+
   await fs.mkdir(EN_OUT, { recursive: true });
   for (const c of enChapters) {
     await fs.writeFile(
@@ -359,11 +494,13 @@ async function main() {
   const grSus = haveGreek ? await readBook(SOURCES.gr.dir, SUSANNA_CODE) : null;
   const grBel = haveGreek ? await readBook(SOURCES.gr.dir, BEL_CODE) : null;
   if (gr) {
+    const grS3y = haveGreek ? await readBook(SOURCES.gr.dir, SONG_CODE) : null;
+    const aligned = alignGreekToBrenton(gr, grS3y);
     await fs.mkdir(GR_OUT, { recursive: true });
-    for (const c of Object.keys(gr).map(Number).sort((a, b) => a - b)) {
+    for (const c of Object.keys(aligned).map(Number).sort((a, b) => a - b)) {
       await fs.writeFile(
         path.join(GR_OUT, `${c}.json`),
-        chapterFile(c, gr[c], GR_SOURCE),
+        chapterFile(c, aligned[c], GR_SOURCE),
       );
     }
     if (grSus)
