@@ -25,10 +25,20 @@ import { VerseOfDayView } from "./VerseOfDayView";
  */
 const WINDOW_DAYS = process.env.BUILD_TARGET === "android" ? 400 : 3;
 
-export async function VerseOfDayCard() {
+export async function VerseOfDayCard({
+  headingId,
+}: {
+  /**
+   * Promotes the card's "Verse of the Day" label to a real `<h2 id>` so a
+   * page can name a landmark with it. Mobile Today passes nothing and its
+   * markup is unchanged; /prayers/today passes an id because the verse is a
+   * section of a longer page there, not the whole screen.
+   */
+  headingId?: string;
+} = {}) {
   // Start a day back so a reader behind UTC still finds their local day.
   const base = new Date();
   base.setUTCDate(base.getUTCDate() - 1);
   const table = await getVerseOfDayTable(base, WINDOW_DAYS);
-  return <VerseOfDayView table={table} />;
+  return <VerseOfDayView table={table} headingId={headingId} />;
 }

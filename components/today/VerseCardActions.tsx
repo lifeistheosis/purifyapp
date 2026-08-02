@@ -109,7 +109,7 @@ export function VerseCardActions({
     if (existing) {
       writeAll(all.filter((b) => b.id !== existing.id));
       setFav(false);
-      setToast("Removed from saved");
+      setToast(t("today.verse.removedFromSaved"));
     } else {
       const id =
         typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -127,7 +127,7 @@ export function VerseCardActions({
       };
       writeAll([entry, ...all]);
       setFav(true);
-      setToast("Saved to bookmarks");
+      setToast(t("today.verse.savedToBookmarks"));
     }
     setTimeout(() => setToast(null), 1500);
   }
