@@ -75,7 +75,9 @@ const JOBS = [
     topics: ["Prayer","The Our Father","Forgiveness","Daily Bread"],
     title: "On the Lord's Prayer",
     subtitle: "The oldest Latin commentary on the Our Father",
-    page: `${ANF5}/The_Treatises_of_Cyprian/On_the_Lord%27s_Prayer`,
+    // Literal apostrophe, NOT %27: fetchWikitext runs encodeURIComponent over
+    // this, so a pre-encoded title gets double-encoded to %2527 and 404s.
+    page: `${ANF5}/The_Treatises_of_Cyprian/On_the_Lord's_Prayer`,
     expected: 36,
     source:
       "St. Cyprian of Carthage, On the Lord's Prayer (Treatise IV), written c. 252. " +

@@ -69,7 +69,7 @@ Status key: **live** = profile exists and the calendar links to it. **held** = d
 | 08-19 | Andrew Stratelates and the 2,593 | `andrew-stratelates` | live | Synaxarion | none |
 | 08-19 | Donskoy Icon | (icon) | out of scope | | |
 | 08-20 | Prophet Samuel | `prophet-samuel` | live, scripture | | **1 Kingdoms** (Brenton LXX, in app) |
-| 08-21 | Apostle Thaddeus of the Seventy | `thaddeus-of-edessa` | live | **Eusebius, Ecclesiastical History I.13** (NPNF2 Vol 1) | **Eusebius EH I.13**, the Abgar correspondence and the mission of Thaddeus (PD) |
+| 08-21 | Apostle Thaddeus of the Seventy | `thaddeus-of-edessa` | live | **Eusebius, Ecclesiastical History I.13** (NPNF2 Vol 1) | **SHIPPED**: Eusebius EH I.13 (20 sections), the Abgar correspondence and the mission of Thaddeus |
 | 08-21 | Abraham of Smolensk | `abraham-of-smolensk` | live | Russian Life by Ephraim | none PD in English |
 | 08-22 | Agathonicus and companions | `agathonicus-of-nicomedia` | live | Synaxarion | none |
 | 08-22 | Anthusa and her servants | `anthusa-the-martyr` | held | Synaxarion | none |
@@ -91,7 +91,7 @@ Status key: **live** = profile exists and the calendar links to it. **held** = d
 | 08-30 | Alexander, John and Paul the New of Constantinople | `patriarchs-alexander-john-paul` | live | Synaxarion | none |
 | 08-30 | Alexander of Svir | `alexander-of-svir` | live | Life by Irodion | none PD in English |
 | 08-31 | Deposition of the Sash | (feast) | live | | |
-| 08-31 | Cyprian, Bishop of Carthage | `cyprian-of-carthage` | live | **Pontius the Deacon, Life and Passion of Cyprian** (ANF Vol 5) | **the whole ANF Vol 5 Cyprian corpus**: Pontius's Life, 12 treatises, 82 epistles, the Seventh Council of Carthage |
+| 08-31 | Cyprian, Bishop of Carthage | `cyprian-of-carthage` | live | **Pontius the Deacon, Life and Passion of Cyprian** (ANF Vol 5) | **SHIPPED**: Pontius's Life (19ch), On the Unity (27ch), On the Lord's Prayer (36ch), On the Mortality (26ch). Still available: the other 8 treatises, 82 epistles, the Seventh Council of Carthage |
 
 ## The six held commemorations
 
@@ -133,6 +133,20 @@ What it lands:
 | Thaddeus | Eusebius, Church History I.13, the Abgar documents | 20 |
 
 After pasting the registry entries, `npx vitest run lib/saints/__tests__/saints.integrity.test.ts` is the check: it fails if a registered work has no file, if a file disagrees with the registry on its slugs, if a writing carries no source, or if a menologion entry points at a saint that does not exist.
+
+### Status: run, and what the first run exposed
+
+**All five landed, 128 chapters, roughly 31,500 words of Cyprian and Eusebius, registered and live.**
+
+The first live run found three defects that no amount of offline reasoning had:
+
+1. **404 on the Lord's Prayer.** The page title was written pre-encoded as `On_the_Lord%27s_Prayer`, and `fetchWikitext` runs `encodeURIComponent` over it, so the percent sign became `%25` and the request asked for `%2527`. Titles now carry the literal apostrophe.
+
+2. **`==Footnotes==` shipped as verbatim text.** The stripper handled templates, refs, spans and links but not heading syntax, so every one of the four files that did land ended with a paragraph of Wikisource's own markup sitting inside a Father's text. Headings are now removed, and `splitNumberedChapters` aborts on any surviving markup rather than trusting the stripper to have been exhaustive.
+
+3. **Em dash handling, wrong twice.** Site policy converts em dashes to commas, and the nineteenth-century editions punctuate with a mark before the dash constantly, so a blind swap produced "divine teachings,, foundations". The substitution is now punctuation-aware. It also has to match horizontal whitespace only: the first attempt let a dash consume the blank line after CCEL's "Argument." block, which merged the editorial summary into chapter 1 and silently cost the treatise its first chapter.
+
+Defect 3 is the one worth remembering. It did not throw and it did not look wrong on the page. The count assertion caught it, because 36 chapters had quietly become 35. **Assert the expected count even when the parse looks clean.**
 
 ## Open questions for the owner
 

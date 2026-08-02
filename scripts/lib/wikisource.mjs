@@ -41,8 +41,30 @@ export async function fetchWikitext(pageTitle) {
   return text;
 }
 
+/**
+ * Site policy is no em dashes in visible text, and the existing NPNF ingest
+ * (scripts/lib/npnf-homilies.mjs) already converts them to commas, so the
+ * saints corpus is consistent about it. The nineteenth-century editions
+ * punctuate with a mark BEFORE the dash constantly (",—" and ";—" and ".—"),
+ * and a blind swap turns those into ",, " and ";, " and "., ". So: when the
+ * dash follows punctuation, the punctuation already does the work and the
+ * dash simply goes. Otherwise it becomes a comma.
+ */
+function replaceEmDashes(t) {
+  const DASH = "(?:&#8212;|—)";
+  // Horizontal whitespace only. A dash that sits at the end of a block, which
+  // is how CCEL closes its "Argument." summaries, must not be allowed to eat
+  // the blank line after it: that merges the summary into chapter 1 and the
+  // chapter parser then loses the first chapter of the work.
+  const H = "[^\\S\\r\\n]*";
+  return t
+    .replace(new RegExp(`([,;:.!?])${H}${DASH}${H}`, "g"), "$1 ")
+    .replace(new RegExp(`${H}${DASH}${H}`, "g"), ", ")
+    .replace(/,[^\S\r\n]*,/g, ",")
+    .replace(/[^\S\r\n]+([,;:.!?])/g, "$1");
+}
+
 const ENTITIES = {
-  "&#8212;": ", ",
   "&#8211;": "-",
   "&#8216;": "‘",
   "&#8217;": "’",
@@ -73,8 +95,20 @@ export function toParagraphs(wikitext) {
   // [[Target|Label]] and [[Target]].
   t = t.replace(/\[\[[^\]|]*\|([^\]]*)\]\]/g, "$1");
   t = t.replace(/\[\[([^\]]*)\]\]/g, "$1");
+  // Section headings (== Footnotes ==, == Notes ==). These are Wikisource's
+  // own structure, not the Father's words, and the whole line goes. Missing
+  // this put a literal "==Footnotes==" paragraph on the end of every text in
+  // the first August run.
+  t = t.replace(/^\s*={2,6}[^\n=][^\n]*?={2,6}\s*$/gm, "");
   // Bold/italic markup.
   t = t.replace(/'{2,5}/g, "");
+  // CCEL sets a horizontal rule as a long run of em dashes on its own line.
+  // It has to go BEFORE em dash substitution, or the run collapses into a
+  // string of commas that glues the title block onto chapter 1 and the
+  // chapter parser then finds nothing.
+  t = t.replace(/^[ \t]*(?:&#8212;|—){3,}[ \t]*$/gm, "");
+  // Em dashes next, so the punctuation-aware rules see them intact.
+  t = replaceEmDashes(t);
   // Numeric and named entities.
   for (const [k, v] of Object.entries(ENTITIES)) t = t.split(k).join(v);
   t = t.replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)));
@@ -128,6 +162,20 @@ export function splitNumberedChapters(paragraphs, { expected, work }) {
     }
     if (chapters[i].paragraphs.join(" ").length < 80) {
       throw new Error(`${work}: chapter ${chapters[i].n} came out nearly empty`);
+    }
+    // Any surviving wiki markup means the stripper missed a construct and
+    // something that is not the Father's words is about to be shipped as if
+    // it were. Abort rather than let it through: this is the check that would
+    // have caught the "==Footnotes==" paragraph in the first August run.
+    for (const p of chapters[i].paragraphs) {
+      const leak = p.match(/(=={2,}|\{\{|\}\}|\[\[|\]\]|<\/?[a-z]+[ >]|&#\d+;)/i);
+      if (leak) {
+        throw new Error(
+          `${work}: chapter ${chapters[i].n} still contains markup ` +
+            `(${JSON.stringify(leak[0])}). The stripper missed a construct; ` +
+            `fix toParagraphs rather than shipping this.`,
+        );
+      }
     }
   }
   return chapters;

@@ -4137,6 +4137,42 @@ export const SAINTS: Saint[] = [
           "The Life in brief: the rhetor's conversion, the reluctant election, the flight of 250 and the storm it raised, the two schisms, the plague, the quarrel with Rome, and the field of Sextus.",
         topics: ["Martyrdom", "The Church", "Repentance", "Persecution"],
       },
+      {
+        slug: "the-life-and-passion-of-cyprian",
+        title: "The Life and Passion of Cyprian",
+        subtitle: "By Pontius the Deacon, who was with him",
+        year: "c. 259",
+        blurb:
+          "The deacon who followed him into exile writes down what the layfolk already had: the conversion, the election, the flight and its defense, the exile at Curubis, and the field of Sextus. The earliest surviving Christian biography of a bishop.",
+        topics: ["Martyrdom", "Repentance", "The Church", "Courage"],
+      },
+      {
+        slug: "on-the-unity-of-the-church",
+        title: "On the Unity of the Church",
+        subtitle: "Read at the Council of Carthage, 251",
+        year: "251",
+        blurb:
+          "The treatise the whole later argument about what the Church is has to go through. Many rays and one light, many branches and one root, many streams and one source, and the coat of Christ that was not divided.",
+        topics: ["The Church", "Unity", "Schism", "Baptism"],
+      },
+      {
+        slug: "on-the-lords-prayer",
+        title: "On the Lord's Prayer",
+        subtitle: "The oldest Latin commentary on the Our Father",
+        year: "c. 252",
+        blurb:
+          "Cyprian takes the prayer a phrase at a time and asks, of each one, what it commits the person praying it to. Tertullian set the pattern and Augustine inherited it, but this is the one the Latin Church learned it from.",
+        topics: ["Prayer", "The Our Father", "Forgiveness", "Daily Bread"],
+      },
+      {
+        slug: "on-the-mortality",
+        title: "On the Mortality",
+        subtitle: "Written in the plague at Carthage, 252",
+        year: "c. 252",
+        blurb:
+          "Written with the dead in the streets of Carthage, for Christians who found they were afraid of dying in a bed and were ashamed of being afraid.",
+        topics: ["Death", "Hope", "Fear", "Resurrection"],
+      },
     ],
   },
 
@@ -4362,6 +4398,15 @@ export const SAINTS: Saint[] = [
         blurb:
           "The two Thaddeuses distinguished, the letters Eusebius says he took from the Edessene archive, the healing of the king, and where the Image Not Made by Hands comes into it.",
         topics: ["Apostles", "Mission", "Icons", "Faith"],
+      },
+      {
+        slug: "the-abgar-documents",
+        title: "The Abgar Documents",
+        subtitle: "Eusebius, Church History I.13, from the archive of Edessa",
+        year: "c. 313",
+        blurb:
+          "Eusebius says he took these out of the public record office of Edessa and translated them from the Syriac: a king writing to Christ, a reply, and the mission of Thaddeus to the city. Printed as he printed it, for the reader to weigh.",
+        topics: ["Apostles", "Mission", "Faith", "Healing"],
       },
     ],
   },
