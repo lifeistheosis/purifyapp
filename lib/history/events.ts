@@ -1159,7 +1159,12 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     slug: "council-of-florence",
     title: "The Council of Ferrara–Florence and St Mark of Ephesus",
     shortTitle: "Florence",
-    aliases: ["Council of Ferrara-Florence", "Union of Florence"],
+    aliases: [
+      "Council of Ferrara-Florence",
+      "Union of Florence",
+      "Laetentur Caeli",
+      "Union of 1439",
+    ],
     yearStart: 1438,
     yearEnd: 1439,
     displayDate: "1438–1439",
@@ -1167,7 +1172,10 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     era: "late-byzantine",
     categories: ["councils", "schisms", "doctrine"],
     region: "Ferrara & Florence, Italy",
-    importance: 2,
+    // Raised from 2 on 2026-08-02. Every neighbouring event in this era is
+    // era-defining, and Florence is where the Orthodox doctrine of reception
+    // was stated in its sharpest form: it belongs at the same weight.
+    importance: 1,
     preview: "A union signed under the shadow of the Turks, and refused by the Orthodox people.",
     summary:
       "With Constantinople desperate for Western aid, emperor and patriarch lead a delegation to Italy and accept a union on Rome's terms, the filioque, purgatory, papal primacy. Mark, metropolitan of Ephesus, alone refuses to sign; when the delegates come home, the people side with Mark, and the union dies before the City does.",
@@ -1176,9 +1184,54 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["mark-of-ephesus"],
-      theology: ["filioque", "papacy"],
-      precededBy: ["sack-of-constantinople-1204"],
+      theology: ["filioque", "papacy", "council-of-florence"],
+      precededBy: ["great-schism-1054", "sack-of-constantinople-1204"],
       resultedIn: ["fall-of-constantinople"],
+    },
+    media: {
+      hero: "/history/media/council-of-florence.jpg",
+      alt: "A crowned and bearded king in a plumed hat and gold-embroidered green robe, riding in procession through a green landscape",
+      work: "The Journey of the Magi (detail traditionally identified as John VIII Palaiologos)",
+      artist: "Benozzo Gozzoli",
+      workDate: "1459–1461",
+      source: "Wikimedia Commons",
+      license: "Public domain",
+      evidenceUrl:
+        "https://commons.wikimedia.org/wiki/File:Gozzoli,_Benozzo_-_Cavalcata_dei_Re_Magi_-_Ioannes_VIII_Palaiologus.jpg",
+      gallery: [
+        {
+          src: "/history/media/council-of-florence-pisanello.jpg",
+          alt: "A sheet of pen studies: the emperor on horseback, two horses' heads, a standing figure from behind, and lines of Arabic script",
+          work: "Studies of John VIII Palaiologos and his retinue, drawn at the council",
+          artist: "Pisanello",
+          workDate: "1438–1439",
+          source: "Wikimedia Commons",
+          license: "Public domain",
+          evidenceUrl:
+            "https://commons.wikimedia.org/wiki/File:Sketches_of_John_VIII_Palaiologos_during_his_visit_at_the_council_of_Florence_in_1438_by_Pisanello.jpg",
+        },
+        {
+          src: "/history/media/council-of-florence-decree.jpg",
+          alt: "The parchment of the union decree, two columns of Latin and Greek text above a long block of subscriptions, with the emperor's signature in the margin and two lead seals on cords",
+          work: "The bull of union Laetentur Caeli, with the subscriptions and the emperor's signature",
+          artist: "Papal chancery of Eugenius IV",
+          workDate: "6 July 1439",
+          source: "Wikimedia Commons",
+          license: "Public domain",
+          evidenceUrl: "https://commons.wikimedia.org/wiki/File:Union_1439.jpg",
+        },
+        {
+          src: "/history/media/council-of-florence-woodcut.jpg",
+          alt: "Woodcut of the council: a tiara-crowned pope surrounded by mitred bishops, the dove of the Holy Spirit above, titled Concilium Florentinum 1439",
+          work: "Concilium Florentinum, from the Nuremberg Chronicle",
+          artist: "Michael Wolgemut workshop, published by Hartmann Schedel",
+          workDate: "1493",
+          source: "Rijksmuseum via Wikimedia Commons",
+          license: "CC0",
+          evidenceUrl:
+            "https://commons.wikimedia.org/wiki/File:Concilie_van_Ferrara-Florence_Concilium_florentinum_(titel_op_object)_Liber_Chronicarum_(serietitel),_RP-P-2016-49-72-4.jpg",
+        },
+      ],
     },
   },
   {

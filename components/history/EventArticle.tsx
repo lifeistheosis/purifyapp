@@ -6,7 +6,7 @@
 import Link from "next/link";
 
 import type { EssayBlock } from "@/lib/theology/load";
-import type { HistoryEventBody } from "@/lib/history/load";
+import type { ChronologyEntry, HistoryEventBody } from "@/lib/history/load";
 import {
   categoryById,
   eraById,
@@ -111,6 +111,63 @@ function Section({
   );
 }
 
+/** The account's own timeline: the dated steps of an event that ran for
+ *  months or years, on a single rule so the reader can see the shape of it
+ *  without re-reading the narrative. Semantic <ol>, so it is crawlable and
+ *  reads in order to a screen reader. */
+function Chronology({
+  entries,
+  ornament,
+  title,
+}: {
+  entries?: ChronologyEntry[];
+  ornament?: string;
+  title: React.ReactNode;
+}) {
+  if (!entries?.length) return null;
+  return (
+    <section className="account-reveal mt-12">
+      {ornament ? (
+        <div aria-hidden className="account-ornament mb-6">
+          {ornament}
+        </div>
+      ) : null}
+      <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+        {title}
+      </h2>
+      <ol className="mt-5 border-l border-paper/15 pl-5">
+        {entries.map((e, i) => (
+          <li key={i} className="relative py-3 first:pt-0 last:pb-0">
+            <span
+              aria-hidden
+              className={cn(
+                "absolute -left-[calc(1.25rem+3px)] top-[1.35em] h-[5px] w-[5px] rounded-full",
+                e.pivotal ? "bg-paper/80 ring-4 ring-night" : "bg-paper/35",
+              )}
+            />
+            <p
+              className={cn(
+                "font-sans text-caption uppercase tracking-[1.2px]",
+                e.pivotal ? "text-paper/75" : "text-paper/50",
+              )}
+            >
+              {e.date}
+            </p>
+            <p
+              className={cn(
+                "mt-1 font-serif text-detail leading-[1.65]",
+                e.pivotal ? "text-paper/90" : "text-paper/75",
+              )}
+            >
+              {e.text}
+            </p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
 export function EventArticle({
   meta,
   body,
@@ -173,6 +230,11 @@ export function EventArticle({
         blocks={body.narrative}
         ornament={ERA_ORNAMENT[meta.era]}
         dropCap={!body.context?.length}
+      />
+      <Chronology
+        entries={body.chronology}
+        ornament={ERA_ORNAMENT[meta.era]}
+        title={<T k="study.history.stepByStep" />}
       />
       <Section
         title={<T k="study.history.whyItMatters" />}
