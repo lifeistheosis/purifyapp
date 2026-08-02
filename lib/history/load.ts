@@ -23,12 +23,28 @@ export type SourceCitation = {
   note?: string;
 };
 
+/** One dated step inside a long event, for the account's own timeline.
+ *  `date` is printed exactly as written and is never parsed or inferred, so
+ *  a step may be as loose as "January 1439" or as firm as "6 July 1439";
+ *  the registry's `precision` still governs the event as a whole. */
+export type ChronologyEntry = {
+  /** Printed date line, e.g. "6 July 1439". */
+  date: string;
+  /** What happened at that date, one sentence. */
+  text: string;
+  /** The turning points, drawn heavier than the surrounding steps. */
+  pivotal?: boolean;
+};
+
 export type HistoryEventBody = {
   slug: string;
   /** The full historical narrative, in theology's EssayBlock shape. */
   narrative: EssayBlock[];
   /** The world before: what the reader needs to understand the moment. */
   context?: EssayBlock[];
+  /** Dated steps for events that unfold over months or years. Optional:
+   *  a point event has nothing to lay out. */
+  chronology?: ChronologyEntry[];
   /** Why this matters to Orthodoxy, the theological reading. */
   significance?: EssayBlock[];
   /** What flowed from it. */

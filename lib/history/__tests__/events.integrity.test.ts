@@ -210,6 +210,37 @@ describe("editorial gate: sources & publication", () => {
     }
   });
 
+  it("chronology steps carry a date and a claim, and run forwards", () => {
+    for (const e of publishedEvents()) {
+      const body = JSON.parse(fs.readFileSync(bodyPath(e.slug), "utf8"));
+      if (body.chronology === undefined) continue;
+      expect(Array.isArray(body.chronology), `${e.slug} chronology must be an array`).toBe(true);
+      expect(body.chronology.length, `${e.slug}: an empty chronology should be omitted`).toBeGreaterThan(0);
+      // A chronology deliberately reaches outside the event's own years (the
+      // run-up and the aftermath are the point), so there is no window to
+      // check. What must hold is that it reads forwards: an out-of-order
+      // step is an editing slip that looks perfectly fine on the page.
+      let lastYear = -Infinity;
+      for (const [i, step] of body.chronology.entries()) {
+        expect(typeof step.date === "string" && step.date.trim() !== "", `${e.slug} chronology[${i}].date`).toBe(true);
+        expect(typeof step.text === "string" && step.text.trim() !== "", `${e.slug} chronology[${i}].text`).toBe(true);
+        if (step.pivotal !== undefined) {
+          expect(typeof step.pivotal, `${e.slug} chronology[${i}].pivotal`).toBe("boolean");
+        }
+        // Year is read off the printed date line; a step phrased without one
+        // ("the following spring") simply does not constrain its neighbours.
+        const year = step.date.match(/\b(\d{3,4})\b/);
+        if (!year) continue;
+        const y = Number(year[1]);
+        expect(
+          y,
+          `${e.slug} chronology[${i}] "${step.date}" goes backwards`,
+        ).toBeGreaterThanOrEqual(lastYear);
+        lastYear = y;
+      }
+    }
+  });
+
   it("no orphan body files", () => {
     if (!fs.existsSync(DATA_DIR)) return;
     for (const f of fs.readdirSync(DATA_DIR)) {

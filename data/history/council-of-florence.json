@@ -1,18 +1,234 @@
 {
   "slug": "council-of-florence",
   "context": [
-    { "kind": "para", "text": "By the 1430s the empire was a city and a coastline, and only Western arms could save it. Emperor John VIII and the aged Patriarch Joseph led some seven hundred Greeks, bishops, monks, scholars, to Italy for a council of union, hoping doctrine could be settled and a crusade secured." }
+    {
+      "kind": "para",
+      "text": "By the 1430s the Roman Empire of the East was a city, a stretch of the Peloponnese, and a handful of islands. Thessalonica, the second city, had fallen to Murad II in 1430. The Ottoman frontier ran around Constantinople on every side, and the walls that had held for a thousand years were now the only argument the empire had left. Emperor John VIII Palaiologos went to Italy because Western arms were the only help still imaginable, and because the price the West named for them was one his predecessors had already tried to pay."
+    },
+    {
+      "kind": "para",
+      "text": "That earlier attempt is the thing to hold in mind, because everyone at Florence remembered it. In 1274 at the Second Council of Lyons, Michael VIII Palaiologos had bought Western protection with a union his own Church would not accept. He imposed it by force, deposed and imprisoned those who resisted, and when he died in 1282 his son repudiated the union and the Church buried him without a funeral. Union on Rome's terms had been signed once, and it had not held. The Greeks who sailed in 1437 knew the story. So did the Latins."
+    },
+    {
+      "kind": "para",
+      "text": "Rome had a crisis of its own, and it is the reason the pope was willing to pay for everything. Since 1431 the Council of Basel had been asserting that a general council stands above the pope, and Eugenius IV was fighting for his office against it. Both Basel and Eugenius courted the Greeks, because whichever assembly the Greeks attended would look like the true council of the Church. Eugenius won that race in 1437. The Greek delegation was therefore not merely a guest at Ferrara. It was the proof Eugenius needed that he, and not Basel, spoke for the West, and it arrived at his expense."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "At Ferrara and then Florence the Greeks debated purgatory, the filioque, the azymes, and papal primacy through months of attrition. Worn by poverty, homesickness, and imperial pressure, most gradually yielded; the decree of union, Laetentur Caeli, was signed on July 6, 1439, conceding the filioque's legitimacy and the pope's primacy 'as it is contained in the acts of the ecumenical councils and the sacred canons', a formula each side read its own way." },
-    { "kind": "para", "text": "Mark Eugenikos, metropolitan of Ephesus, alone among the bishops refused to sign; when the pope heard it he is reported to have said, 'Then we have accomplished nothing.' Mark's case was the old one: the creed is complete, the Fathers of East and West agree when rightly read, and a union without truth is no union. Home in Constantinople, the signatories were met with grief and revulsion; most repudiated their signatures, the promised crusade died at Varna in 1444, and the union was formally renounced by the Orthodox patriarchs. The Church glorified Mark as a pillar of Orthodoxy." }
+    {
+      "kind": "para",
+      "text": "Some seven hundred Greeks sailed from Constantinople on papal galleys on 27 November 1437 and reached Venice on 8 February 1438. The emperor came, and with him the aged Patriarch Joseph II, proxies for the patriarchs of Alexandria, Antioch, and Jerusalem, and the men whose names the council would be remembered by: Mark Eugenikos of Ephesus, Bessarion of Nicaea, Isidore of Kiev, the lay theologian George Scholarios, the philosopher George Gemistos Plethon, and Sylvester Syropoulos, the patriarch's ecclesiarch, who would write down what he saw."
+    },
+    { "kind": "heading", "level": 3, "text": "Ferrara: whether the addition could be made" },
+    {
+      "kind": "para",
+      "text": "The first session with the Greeks present opened at Ferrara on 9 April 1438. Committees took up purgatory through the summer and got nowhere. The public sessions began on 8 October and ran to 13 December, and they turned on a question narrower than the one most readers expect. It was not yet whether the filioque is true. It was whether anyone had been permitted to put it into the Creed at all. Mark of Ephesus argued the canonical case: the Third Ecumenical Council at Ephesus had forbidden any man to bring forward a different faith as a rival to the Symbol of Nicaea, and Chalcedon had written the same prohibition into its own Definition. A see that adds a clause to a conciliar Symbol, and then convenes a council to require the addition of everyone else, has not developed the faith; it has legislated over a text that was never its own."
+    },
+    { "kind": "heading", "level": 3, "text": "Florence: whether the doctrine was true" },
+    {
+      "kind": "para",
+      "text": "Plague and money moved the council. Florence offered to pay, the transfer was decreed in January 1439, and the first Florentine session sat on 26 February. Now the subject changed to the doctrine itself, and eight sessions between 2 and 24 March put Mark of Ephesus against John of Montenero, the Dominican provincial of Lombardy, in the most substantial debate the two traditions have ever held face to face. Montenero built a florilegium of Latin Fathers; the Greeks answered that the Father alone is cause within the Godhead, that the Spirit has his existence from the Father, and that to name Father and Son together as one principle gives the Son what belongs to the Father alone. Each side accused the other's manuscripts of corruption, and a disputed passage of St Basil's Against Eunomius became a running quarrel. After 24 March the public debates stopped. Nothing had been settled by argument, and everything that followed was settled by negotiation."
+    },
+    { "kind": "heading", "level": 3, "text": "The wearing down" },
+    {
+      "kind": "para",
+      "text": "The Greeks had travelled at papal expense and lived on a papal allowance, and the allowance was an instrument. When they would not comply their pay stopped, and bishops sold their clothes; when they agreed it was handed out at once. They were poor, far from home, sick of Italy, and under an emperor who would not let them leave and who wanted a treaty. Patriarch Joseph II, who had said he would sooner suffer any pain than turn traitor to what the Ecumenical Councils had handed down, died in Florence on 10 June 1439, three weeks before the decree was signed. Two days earlier the delegation had accepted the Latin formula on the procession. Bessarion, who had come as a defender of the Greek position, had by then concluded that the two traditions said the same thing in different words, and he carried others with him."
+    },
+    { "kind": "heading", "level": 3, "text": "Laetentur Caeli" },
+    {
+      "kind": "para",
+      "text": "The decree was signed on 5 July 1439 and proclaimed on 6 July in the cathedral of Santa Maria del Fiore, read out in Latin by Cardinal Cesarini and in Greek by Bessarion. It settled four things in Rome's favour: that the Holy Spirit proceeds from the Father and the Son as from one principle and by a single spiration; that souls not fully purified are cleansed after death; that the Eucharist may be consecrated in unleavened as well as leavened bread; and that the Roman Pontiff holds primacy over the whole world and is the true vicar of Christ, head of the whole Church, with the rights of the Eastern patriarchs formally reserved. The primacy clause was qualified by the phrase 'as it is contained in the acts of the ecumenical councils and the sacred canons', which each side read its own way and which settled nothing. Thirty-three Greeks signed."
+    },
+    {
+      "kind": "para",
+      "text": "Mark of Ephesus did not. He was the only bishop of the Eastern delegation who refused, and he was neither deposed nor silenced for it, because the emperor would not let him be touched. Later Greek writers report that when Eugenius was told Mark had not subscribed, he answered, 'Then we have accomplished nothing.' The remark does not appear in the Latin acts, and it may be a Greek author's summary of what everyone could see. It was, in any case, correct. Mark's case had never been that the Latins argued badly. It was that the Symbol was closed, that the Fathers of East and West agree when they are read whole, and that a union which requires the faith to be adjusted is not a union but a surrender with a document attached."
+    },
+    {
+      "kind": "para",
+      "text": "The council did not end with the Greeks. They left Florence on 26 August 1439 and reached Constantinople on 1 February 1440. Eugenius stayed in session for years afterwards and published further decrees of union with the Armenians in 1439 and the Copts in 1442, which had as little effect as the first. What the Greeks brought home was not an army. It was a piece of paper with their names on it, and a Church that did not want it."
+    }
+  ],
+  "chronology": [
+    {
+      "date": "1274",
+      "text": "The Second Council of Lyons: Michael VIII Palaiologos accepts union with Rome to buy Western protection. His Church refuses it, and his son repudiates it in 1282."
+    },
+    {
+      "date": "March 1430",
+      "text": "Thessalonica, the empire's second city, falls to Murad II. Little is left beyond Constantinople and the Morea."
+    },
+    {
+      "date": "September 1437",
+      "text": "Eugenius IV transfers his council from Basel to Ferrara, winning the race with the conciliarists for the Greeks' presence."
+    },
+    {
+      "date": "27 November 1437",
+      "text": "About seven hundred Greeks sail from Constantinople on papal galleys, at papal expense."
+    },
+    { "date": "8 February 1438", "text": "The delegation lands at Venice." },
+    {
+      "date": "9 April 1438",
+      "text": "The first session at Ferrara with the Greeks present.",
+      "pivotal": true
+    },
+    {
+      "date": "Summer 1438",
+      "text": "Committees take up purgatory and reach no agreement."
+    },
+    {
+      "date": "8 October to 13 December 1438",
+      "text": "Public sessions at Ferrara on whether the addition to the Creed was lawful. Mark of Ephesus speaks for the Greeks."
+    },
+    {
+      "date": "January 1439",
+      "text": "Plague and Florentine money move the council to Florence."
+    },
+    {
+      "date": "2 to 24 March 1439",
+      "text": "Eight sessions on the procession of the Holy Spirit: Mark of Ephesus against John of Montenero. The public debates end without agreement.",
+      "pivotal": true
+    },
+    {
+      "date": "8 June 1439",
+      "text": "The Greek delegation accepts the Latin formula on the procession."
+    },
+    {
+      "date": "10 June 1439",
+      "text": "Patriarch Joseph II dies at Florence, three weeks before the signing."
+    },
+    {
+      "date": "5 July 1439",
+      "text": "The decree of union is signed by thirty-three Greeks. Mark of Ephesus refuses.",
+      "pivotal": true
+    },
+    {
+      "date": "6 July 1439",
+      "text": "Laetentur Caeli is proclaimed in Santa Maria del Fiore, in Latin by Cardinal Cesarini and in Greek by Bessarion.",
+      "pivotal": true
+    },
+    {
+      "date": "1 February 1440",
+      "text": "The delegation reaches Constantinople. Signatories begin repudiating their signatures almost at once."
+    },
+    {
+      "date": "1441",
+      "text": "Isidore of Kiev, now a cardinal, proclaims the union in Moscow and is arrested by Grand Prince Vasily II."
+    },
+    {
+      "date": "1443",
+      "text": "An encyclical issued at Jerusalem in the name of the patriarchs of Alexandria, Antioch, and Jerusalem rejects the union."
+    },
+    {
+      "date": "23 June 1444",
+      "text": "The repose of St Mark of Ephesus. The Church commemorates him on 19 January as a pillar of Orthodoxy."
+    },
+    {
+      "date": "10 November 1444",
+      "text": "The crusade the union was meant to buy is destroyed at Varna. Cardinal Cesarini, who had read the decree aloud at Florence, dies in the rout.",
+      "pivotal": true
+    },
+    {
+      "date": "December 1448",
+      "text": "The Russian bishops elect Jonah metropolitan without reference to Constantinople. Moscow afterwards dates its independence from its refusal of Florence."
+    },
+    {
+      "date": "12 December 1452",
+      "text": "The union is proclaimed in Hagia Sophia by Isidore as papal legate. The people largely stay away."
+    },
+    {
+      "date": "29 May 1453",
+      "text": "Constantinople falls to Mehmed II after a siege of fifty-three days.",
+      "pivotal": true
+    },
+    {
+      "date": "January 1454",
+      "text": "George Scholarios, an opponent of the union, is enthroned as Patriarch Gennadios II, the first under Ottoman rule."
+    },
+    {
+      "date": "1484",
+      "text": "A synod at Constantinople under Patriarch Symeon formally sets the union aside and prescribes how Latins are to be received.",
+      "pivotal": true
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "Florence is Orthodoxy's classic lesson that the faith is not the hierarchy's to trade: reception by the whole body of the Church judges even an imposing council. Mark of Ephesus stands in the Orthodox memory beside Athanasius, one man, and the truth, against the world." }
+    {
+      "kind": "para",
+      "text": "Florence is where Orthodoxy learned to say out loud what it had always believed about councils. A synod is not made a Council by its convocation, its attendance, or its signatures. It becomes one when the whole body of the Church recognises in it the faith she already holds. By every external measure Florence was impressive: an emperor, a pope, both episcopates, more than a year of genuine debate, and an overwhelming majority subscribing. None of that was enough, because the one thing it never obtained was reception. The Church did not hear her own voice in it, and so it was not a Council whose enforcement failed. It was never a Council."
+    },
+    {
+      "kind": "para",
+      "text": "This is not an argument invented for the occasion. In 359 the emperor Constantius assembled at Ariminum a synod far larger than Nicaea and kept the bishops there until they signed away the word by which Nicaea had confessed the Son. Jerome's line about the aftermath is the one the Church has never forgotten: the whole world groaned, and was astonished to find itself Arian. Numbers did not save Ariminum, and imperial backing did not save it. Florence stands in that succession, and the East's refusal of it was the same act performed a thousand years later."
+    },
+    {
+      "kind": "para",
+      "text": "It leaves Mark of Ephesus where the Orthodox memory keeps him, beside Athanasius: one man and the truth against the world. But the lesson is not that a bishop should trust his own conscience over the Church. Mark's whole case was that he was holding what the Church had already received and had no authority to revise. What Florence teaches is narrower and harder than heroism. The faith is not the hierarchy's to trade, not for armies, not for peace, not even for the ending of a schism the Church genuinely grieves, and the price is always presented as small."
+    }
   ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "The help never came. The crusade the union was meant to purchase was destroyed at Varna on 10 November 1444, and Cardinal Cesarini, who had read the decree aloud in Florence five years earlier, died in the rout. What finally reached the City in 1453 was a few hundred men. The union was proclaimed in Hagia Sophia on 12 December 1452 and the people largely stayed away. Doukas, a historian sympathetic to the union and hostile to the man, reports the megas doux Loukas Notaras saying he would rather see the Sultan's turban in the midst of the City than the Latin mitre. Whether or not Notaras said it, it is a fair record of how the union was received. Constantinople fell on 29 May 1453."
+    },
+    {
+      "kind": "para",
+      "text": "In Rus the consequences outlasted everyone. Isidore of Kiev came home a cardinal, proclaimed the union in Moscow in 1441, and was arrested. In December 1448 the Russian bishops elected Jonah metropolitan without reference to Constantinople, and the Russian Church has dated its independence from that refusal ever since. The idea of Moscow as the guardian of an Orthodoxy that Constantinople had bartered away begins here, and it shaped Russian church consciousness for centuries."
+    },
+    {
+      "kind": "para",
+      "text": "The formal end came in 1484, when a synod at Constantinople under Patriarch Symeon set the union aside and prescribed how Latin converts were to be received. By then George Scholarios, who had gone to Florence as a layman in the emperor's train, had been enthroned as Patriarch Gennadios II under Mehmed II. Florence's one lasting fruit was unintended and not theological: Plethon's lectures on Plato helped set off the Florentine revival of Greek philosophy, and Bessarion, who stayed in Italy as a cardinal, left his manuscript collection to Venice, where it became the core of the Marciana. The council that failed to unite the Churches did more than any other event to carry Greek learning into the Latin West."
+    }
+  ],
+  "uncertainty": "Florence is unusually well documented and unusually contested, because almost every witness had a side. The Greek acts and Sylvester Syropoulos's memoirs are the fullest accounts of the pressure on the delegation, and Syropoulos wrote as a man who had signed and regretted it. Eugenius IV's reported remark, 'Then we have accomplished nothing', comes from later Greek sources and is not in the Latin acts. The authenticity of the dying Patriarch Joseph II's written acceptance of the union has long been questioned by Orthodox writers. The 1443 encyclical from Jerusalem is accepted by most Orthodox historians and doubted by some Western ones, who question whether the synod met as described. The saying attributed to Loukas Notaras about the turban and the mitre is reported by Doukas, who despised him. The four decisions of the decree, the date of the signing, the number of Greek signatures, and Mark of Ephesus's refusal are not in doubt.",
   "sources": [
-    { "label": "The decree Laetentur Caeli and the Greek acts of Florence, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1", "kind": "primary", "note": "The union decree of July 6, 1439." },
-    { "label": "Sylvester Syropoulos, Memoirs", "kind": "primary", "note": "A Greek participant's candid account of the pressures at the council." },
-    { "label": "Joseph Gill, The Council of Florence (Cambridge)", "author": "Joseph Gill", "kind": "secondary", "note": "The standard scholarly history of the council." }
+    {
+      "label": "The decree Laetentur Caeli, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1",
+      "kind": "primary",
+      "note": "The union decree of 6 July 1439, with the four points as promulgated."
+    },
+    {
+      "label": "Concilium Florentinum: Documenta et Scriptores (Pontificium Institutum Orientalium Studiorum), the Greek and Latin acts",
+      "kind": "primary",
+      "note": "The critical edition of the sessions, including the March 1439 debates between Mark of Ephesus and John of Montenero."
+    },
+    {
+      "label": "Sylvester Syropoulos, Memoirs",
+      "kind": "primary",
+      "note": "A participant's account of the delegation's poverty, homesickness, and imperial pressure. Partisan, and indispensable."
+    },
+    {
+      "label": "St Mark of Ephesus, Encyclical Letter to all Orthodox Christians",
+      "kind": "primary",
+      "note": "Written after the return, it states the refusal in his own words rather than his admirers'."
+    },
+    {
+      "label": "Doukas, Historia Turco-Byzantina",
+      "kind": "primary",
+      "note": "The hostile witness for the mood in the City between 1452 and the fall, including the saying attributed to Loukas Notaras."
+    },
+    {
+      "label": "Ivan N. Ostroumoff, The History of the Council of Florence, translated by Basil Popoff, edited by J. M. Neale (Joseph Masters, 1861)",
+      "author": "Ivan N. Ostroumoff",
+      "kind": "secondary",
+      "url": "https://archive.org/stream/historycouncilf00nealgoog/historycouncilf00nealgoog_djvu.txt",
+      "note": "The nineteenth-century Orthodox history, public domain, source of the detail that the papal allowance was stopped and restarted to obtain compliance."
+    },
+    {
+      "label": "Joseph Gill, The Council of Florence (Cambridge University Press, 1959)",
+      "author": "Joseph Gill",
+      "kind": "secondary",
+      "note": "The standard scholarly history, written by a Catholic Jesuit and sympathetic to the union. The best test of the Orthodox reading is that it survives this book."
+    },
+    {
+      "label": "Deno J. Geanakoplos, 'The Council of Florence (1438-1439) and the Problem of Union between the Greek and Latin Churches', Church History 24 (1955)",
+      "author": "Deno J. Geanakoplos",
+      "kind": "secondary",
+      "note": "On why the union failed at home: the gulf between the delegation and the people it returned to."
+    },
+    {
+      "label": "Steven Runciman, The Fall of Constantinople 1453 (Cambridge University Press, 1965)",
+      "author": "Steven Runciman",
+      "kind": "secondary",
+      "note": "For Varna, the proclamation in Hagia Sophia in December 1452, and the siege."
+    }
   ]
 }
