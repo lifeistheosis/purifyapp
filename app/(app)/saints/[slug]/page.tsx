@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { SAINTS, getSaint } from "@/lib/saints/saints";
-import { SITE_URL } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
 import { getEffectiveComplete } from "@/lib/admin/saintOverrides";
 import { SaintHero } from "@/components/saints/SaintHero";
@@ -19,6 +18,8 @@ import { getServerLocale } from "@/lib/i18n/server";
 import { ViewInHistory } from "@/components/history/ViewInHistory";
 import { eventsForSaint } from "@/lib/history/events";
 import { getSaintBioOverrides } from "@/lib/i18n/localizedContent";
+import { saintJsonLd } from "@/lib/seo/jsonld";
+import { sameAsFor } from "@/lib/saints/authority";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 import { RecordRead } from "@/components/reading/RecordRead";
 import { SaintIntercession } from "@/components/saints/SaintIntercession";
@@ -114,50 +115,10 @@ export default async function SaintPage({ params }: { params: Params }) {
   };
   const bioIsLocalized = Boolean(bioOverrides);
 
-  // Person schema. /saints is the one tree open to AI training crawlers (see
-  // app/robots.ts), so it is also the one tree where machine readers most need
-  // the facts stated plainly rather than inferred from prose: which name, which
-  // dates, which feast days, and which writings actually belong to this saint.
-  // `born`/`reposed` are human strings ("c. 347", "September 14, 407"), so they
-  // go in the description-level fields, not the date fields, which demand
-  // ISO 8601 and would be wrong more often than right.
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "@id": `${SITE_URL}/saints/${saint.slug}`,
-    name: saint.name,
-    ...(saint.byname ? { alternateName: saint.byname } : {}),
-    description: effectiveSaint.shortBio,
-    disambiguatingDescription: effectiveSaint.epithet,
-    url: `${SITE_URL}/saints/${saint.slug}`,
-    ...(saint.iconUrl ? { image: `${SITE_URL}${saint.iconUrl}` } : {}),
-    ...(saint.see ? { affiliation: { "@type": "Organization", name: saint.see } } : {}),
-    ...(saint.feastDays.length
-      ? { additionalProperty: saint.feastDays.map((d) => ({
-          "@type": "PropertyValue",
-          name: "Feast day",
-          value: d,
-        })) }
-      : {}),
-    ...(saint.works.length
-      ? {
-          subjectOf: saint.works.map((w) => ({
-            "@type": "CreativeWork",
-            name: w.title,
-            ...(w.subtitle ? { alternateName: w.subtitle } : {}),
-            abstract: w.blurb,
-            ...(w.topics.length ? { about: w.topics } : {}),
-            url: `${SITE_URL}/saints/${saint.slug}/${w.slug}`,
-            author: { "@id": `${SITE_URL}/saints/${saint.slug}` },
-          })),
-        }
-      : {}),
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `${SITE_URL}/saints/${saint.slug}`,
-      publisher: { "@type": "Organization", name: "Purify", url: SITE_URL },
-    },
-  };
+  // sameAs only when an identity was resolved through the live authority
+  // APIs; sameAsFor returns undefined otherwise, so an unverified saint
+  // makes no identity claim rather than a guessed one.
+  const jsonLd = saintJsonLd(effectiveSaint, sameAsFor(slug));
 
   return (
     <section className="bg-night px-5 md:px-8">

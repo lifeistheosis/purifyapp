@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { WritingContent, Section } from "@/lib/saints/load";
 import type { Saint } from "@/lib/saints/saints";
 import { ParagraphRow } from "./ParagraphRow";
+import { VoiceBand } from "./VoiceBand";
 import { SectionBookmarkButton } from "./SectionBookmarkButton";
 import { MobileWorkPill } from "./MobileWorkPill";
 import { FONT_CLASSES, SIZE_CLASSES, useReaderPrefs } from "@/components/reader/ReaderPrefs";
@@ -445,7 +446,16 @@ function SectionParagraphs({
  </p>
  )}
 
- <div className="space-y-5">
+ {/* Whose words these are, when they are not the saint's. Sits directly
+ above the text it qualifies, so a reader who skipped the editor's
+ note above still cannot mistake a retelling or a hymn for a Father
+ speaking. Renders nothing for `voice: "saint"` and for the sections
+ not yet classified. */}
+ <VoiceBand voice={sec.voice} voiceAuthor={sec.voiceAuthor} saint={saint} />
+
+ {/* Editorial prose drops out of the reading serif into sans, so the
+ register is legible at a glance and not only from the band. */}
+ <div className={sec.voice === "editorial" ? "space-y-5 font-sans" : "space-y-5"}>
  {sec.paragraphs.map((p, i) => (
  <ParagraphRow
  key={i}
