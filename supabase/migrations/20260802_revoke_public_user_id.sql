@@ -1,0 +1,92 @@
+-- Stop serving the auth uuid to anonymous readers
+--
+-- ⚠ NOT YET APPLIED. Stage and verify first; see the checklist at the bottom.
+--
+-- ── The hole ───────────────────────────────────────────────────────────────
+--
+-- app/api/community/posts/route.ts says exactly why user_id must not be
+-- served: it is the Supabase auth uuid, it is also the RevenueCat appUserID,
+-- and it is the path segment in the public avatar bucket. Serving it to
+-- unauthenticated readers hands out a cross-system identifier for free.
+--
+-- But that redaction lives only in that route's SELECT column list. RLS is
+-- ROW-scoped, not column-scoped, and NEXT_PUBLIC_SUPABASE_ANON_KEY ships in
+-- the client bundle, so PostgREST is directly reachable by anyone. A single
+-- request against the base table returns the column the route omits.
+--
+-- The sharpest case is shop reviews. A review submitted with anonymous=true
+-- stores no display name, and the route's own comment says "nothing private
+-- is exposed here". True of the route. Not true of the table: the author's
+-- uuid is right there, and community_posts maps uuids to display names.
+--
+-- Column privileges are the fix because they are enforced by Postgres for
+-- every client, not by whichever query happens to be written.
+--
+-- ── Why only four tables ───────────────────────────────────────────────────
+--
+-- prayer_campaigns.creator_id and trapeza_recipes.author_id are DELIBERATELY
+-- not revoked here. Both are read with the anon key today, and Postgres
+-- requires SELECT privilege on a column to reference it in a WHERE clause as
+-- well as in a select list, so revoking either would break working features:
+--
+--   lib/campaigns/catalog.ts:22      selects creator_id (anon key)
+--   lib/campaigns/client.ts:167,197  selects it and filters .eq("creator_id")
+--   components/campaigns/CampaignDetailClient.tsx:231  compares it for isCreator
+--   lib/trapeza/catalog.ts:25        selects author_id (anon key)
+--   lib/trapeza/client.ts:102,104    selects it and filters .eq("author_id")
+--
+-- Those two need a code change first: return a boolean ("is this yours") from
+-- a server route rather than shipping the uuid to the browser and comparing
+-- it there. Tracked separately so this migration stays revertible on its own.
+--
+-- The four below have no such caller. Every read of them goes through a
+-- server route using either the service role (which bypasses column grants)
+-- or a select list that does not mention user_id:
+--
+--   app/api/community/posts/route.ts        service role, user_id not selected
+--   app/api/community/mine/route.ts         service role
+--   app/api/community/posts/[id]/replies    service role
+--   app/api/shop/catalog/reviews/route.ts   anon, selects no user_id
+--   app/api/shop/catalog/store-reviews      anon, selects no user_id
+--   app/api/admin/*                         service role
+--
+-- ── What this does not do ──────────────────────────────────────────────────
+--
+-- It does not un-leak anything already scraped. Treat the historic exposure
+-- as a disclosure and decide separately whether it warrants notification.
+
+revoke select (user_id) on public.community_posts from anon, authenticated;
+revoke select (user_id) on public.community_post_replies from anon, authenticated;
+revoke select (user_id) on public.shop_reviews from anon, authenticated;
+revoke select (user_id) on public.shop_store_reviews from anon, authenticated;
+
+-- Rollback, if a surface turns out to depend on it after all:
+--
+--   grant select (user_id) on public.community_posts to anon, authenticated;
+--   grant select (user_id) on public.community_post_replies to anon, authenticated;
+--   grant select (user_id) on public.shop_reviews to anon, authenticated;
+--   grant select (user_id) on public.shop_store_reviews to anon, authenticated;
+--
+-- ── Verification checklist, staging first, then production ─────────────────
+--
+-- A. Direct PostgREST, with the PUBLIC anon key. Each must now fail:
+--      GET $URL/rest/v1/shop_reviews?select=user_id
+--      GET $URL/rest/v1/shop_store_reviews?select=user_id
+--      GET $URL/rest/v1/community_posts?select=user_id&status=eq.visible
+--      GET $URL/rest/v1/community_post_replies?select=user_id&status=eq.visible
+--    And each must still succeed without that column:
+--      GET $URL/rest/v1/shop_reviews?select=id,stars,body
+--      GET $URL/rest/v1/community_posts?select=id,author_name&status=eq.visible
+--
+-- B. In-app, signed OUT: a product page's reviews render; a store page's
+--    reviews render; /community Conversations lists posts and replies.
+--
+-- C. In-app, signed IN: the same three, plus "my posts" ownership marks still
+--    resolve on /community (that path is service-role, so it should be
+--    unaffected; confirm rather than assume), and posting a reply still works.
+--
+-- D. Admin: the moderation queues under /admin still list reported posts and
+--    replies (service role, expected unaffected).
+--
+-- Anything in B, C or D failing means a caller was missed. Roll back with the
+-- grants above rather than leaving a surface broken.
