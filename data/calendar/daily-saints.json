@@ -1834,7 +1834,8 @@
     },
     {
       "name": "Seven Holy Maccabean Martyrs",
-      "note": "and their mother Solomonia, and teacher Eleazar, +166 BC"
+      "note": "and their mother Solomonia, and teacher Eleazar, +166 BC",
+      "slug": "maccabean-martyrs"
     }
   ],
   "08-02": [
@@ -1860,7 +1861,8 @@
   "08-04": [
     {
       "name": "Seven Sleepers of Ephesus",
-      "note": "+250 (and awakened ca. 446)"
+      "note": "+250 (and awakened ca. 446)",
+      "slug": "seven-sleepers-of-ephesus"
     },
     {
       "name": "Virgin-martyr Eudocia",
@@ -1891,6 +1893,11 @@
     {
       "name": "Ven. Or of the Thebaid",
       "note": "Desert Father, +ca. 390"
+    },
+    {
+      "name": "St. Irene the Empress",
+      "slug": "irene-the-empress",
+      "note": "who restored the holy icons and convened the Seventh Council, +803"
     }
   ],
   "08-08": [
@@ -1912,23 +1919,27 @@
     },
     {
       "name": "St. Herman of Alaska",
-      "note": "Wonderworker and enlightener of America, +1837"
+      "note": "Wonderworker and enlightener of America, +1837",
+      "slug": "herman-of-alaska"
     }
   ],
   "08-10": [
     {
       "name": "Martyr Lawrence the Archdeacon of Rome",
-      "note": "+258"
+      "note": "+258",
+      "slug": "lawrence-the-archdeacon"
     },
     {
       "name": "Hieromartyr Sixtus II, Pope of Rome",
-      "note": "+258"
+      "note": "+258",
+      "slug": "sixtus-of-rome"
     }
   ],
   "08-11": [
     {
       "name": "Martyr Euplus the Deacon of Catania",
-      "note": "+304"
+      "note": "+304",
+      "slug": "euplus-of-catania"
     },
     {
       "name": "Sts. Theodore and Vasily of the Kiev Caves",
@@ -1953,7 +1964,8 @@
     },
     {
       "name": "St. Tikhon, Bishop of Voronezh and Zadonsk",
-      "note": "+1783"
+      "note": "+1783",
+      "slug": "tikhon-of-zadonsk"
     }
   ],
   "08-14": [
@@ -2022,7 +2034,8 @@
   "08-21": [
     {
       "name": "Apostle Thaddeus of the Seventy",
-      "note": "first apostle to Edessa, +44"
+      "note": "first apostle to Edessa, +44",
+      "slug": "thaddeus-of-edessa"
     },
     {
       "name": "Ven. Abraham of Smolensk",
@@ -2058,6 +2071,11 @@
     {
       "name": "Translation of the Relics of St. Peter, Metropolitan of Moscow",
       "note": "in the year 1479"
+    },
+    {
+      "name": "St. Cosmas of Aetolia, Equal-to-the-Apostles",
+      "slug": "cosmas-of-aetolia",
+      "note": "preacher of the Greek enslavement, +1779"
     }
   ],
   "08-25": [
@@ -2068,7 +2086,8 @@
     },
     {
       "name": "Apostle Titus of the Seventy, Bishop of Crete",
-      "note": "disciple of the Apostle Paul, +1st c."
+      "note": "disciple of the Apostle Paul, +1st c.",
+      "slug": "titus-of-crete"
     }
   ],
   "08-26": [
@@ -2084,7 +2103,8 @@
   "08-27": [
     {
       "name": "St. Pimen the Great of Egypt",
-      "note": "father of the abba, +450"
+      "note": "father of the abba, +450",
+      "slug": "pimen-the-great"
     },
     {
       "name": "Great-martyr Phanourios the Newly-Revealed",
@@ -2099,7 +2119,8 @@
   "08-28": [
     {
       "name": "St. Moses the Ethiopian of Scete",
-      "note": "the brigand who became a desert father, +ca. 400"
+      "note": "the brigand who became a desert father, +ca. 400",
+      "slug": "moses-the-ethiopian"
     },
     {
       "name": "St. Augustine of Hippo",
@@ -2114,7 +2135,8 @@
   "08-29": [
     {
       "name": "Beheading of the Honored Forerunner John the Baptist",
-      "kind": "feast"
+      "kind": "feast",
+      "slug": "john-the-baptist"
     }
   ],
   "08-30": [
@@ -2134,7 +2156,8 @@
     },
     {
       "name": "Hieromartyr Cyprian, Bishop of Carthage",
-      "note": "+258"
+      "note": "+258",
+      "slug": "cyprian-of-carthage"
     }
   ],
   "09-01": [
