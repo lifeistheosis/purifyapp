@@ -4,21 +4,23 @@
 // user's diptychs, on /prayers/today. Renders nothing when there's no
 // match (and on the server). All data is read straight from
 // localStorage; this component never hits the network.
+//
+// This keeps its box while the rest of the page loses theirs: it appears on
+// a handful of days a year and has to read as an interruption when it does.
 
 import Link from "next/link";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { intentionsForToday, useIntentions } from "@/lib/prayers/storage";
+import { TodayHeading } from "@/components/prayers/TodayHeading";
 
 export function TodayDiptychs({
   heading,
   namedayLabel,
-  anniversaryLabel,
 }: {
   heading: string;
   namedayLabel: string;
-  anniversaryLabel: string;
 }) {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   // Subscribe so a change in another tab redraws.
   useIntentions("living");
   useIntentions("departed");
@@ -27,46 +29,50 @@ export function TodayDiptychs({
   if (namedays.length === 0 && anniversaries.length === 0) return null;
 
   return (
-    <section className="mt-6 rounded-lg border border-paper/12 bg-paper/[0.03] p-5">
-      <div className="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
-        <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/85">
+    <section
+      aria-labelledby="today-diptych"
+      className="rounded-lg border border-paper/12 bg-paper/[0.03] p-5"
+    >
+      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-3">
+        <TodayHeading id="today-diptych" tone="gold" className="tracking-[1.5px]">
           {heading}
-        </p>
+        </TodayHeading>
         <Link
           href="/prayers/personal"
-          className="font-sans text-caption text-paper/55 hover:text-paper transition-colors underline underline-offset-2 decoration-paper/20"
+          className="rounded-sm font-sans text-caption text-paper/60 underline decoration-paper/25 underline-offset-2 transition-colors duration-200 hover:text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-4"
         >
-          {t("prayers.diptychs.manage")} →
+          {t("prayers.diptychs.manage")} {"→"}
         </Link>
       </div>
       <ul className="space-y-2">
         {namedays.map((e) => (
           <li
             key={`l-${e.id}`}
-            className="font-sans text-ui text-paper flex items-baseline gap-2"
+            className="flex items-baseline gap-2 font-sans text-ui text-paper"
           >
             <span aria-hidden className="text-gold">
-              ✦
+              {"✦"}
             </span>
             <span className="font-semibold">{e.name}</span>
-            <span className="text-paper/55 text-caption">
-              · {namedayLabel}
+            <span className="text-caption text-paper/60">
+              {"·"} {namedayLabel}
             </span>
           </li>
         ))}
         {anniversaries.map(({ entry, years }) => (
           <li
             key={`d-${entry.id}`}
-            className="font-sans text-ui text-paper flex items-baseline gap-2"
+            className="flex items-baseline gap-2 font-sans text-ui text-paper"
           >
             <span aria-hidden className="text-paper/45">
-              +
+              {"+"}
             </span>
             <span className="font-semibold">{entry.name}</span>
-            <span className="text-paper/55 text-caption">
-              · {years}
-              {years === 1 ? "st" : years === 2 ? "nd" : years === 3 ? "rd" : "th"}{" "}
-              {anniversaryLabel}
+            {/* The ordinal used to be built inline as "st"/"nd"/"rd"/"th",
+                in all 21 locales. A plural key says the same thing and
+                translates. */}
+            <span className="text-caption text-paper/60">
+              {"·"} {tn("prayers.today.anniversaryYears", years)}
             </span>
           </li>
         ))}

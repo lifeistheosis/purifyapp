@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { nativeGoogleAvailable, nativeGoogleIdToken } from "@/lib/auth/nativeGoogle";
@@ -18,6 +19,7 @@ export function OAuthButtons({
   disabled = false,
   disabledHint,
   redirectTo = "/account/profile",
+  showTermsNotice = true,
 }: {
   /** Gate the providers behind a prior action, e.g. clickwrap consent on
    *  sign-up. Sign-in leaves this off. */
@@ -26,6 +28,17 @@ export function OAuthButtons({
   /** Where to land after auth completes. Onboarding passes "/" so the user
    *  stays on Today instead of being bounced to the profile page. */
   redirectTo?: string;
+  /**
+   * Show the "by continuing you agree" line above the providers. Defaults ON
+   * and lives HERE rather than at the call sites, because a notice that each
+   * caller has to remember is a notice that gets forgotten: onboarding
+   * rendered this component with no consent surface of any kind, so a reader
+   * could create an account through Google having never been shown the Terms.
+   *
+   * Only pass false where a clickwrap checkbox already governs the button
+   * (SignUpForm), so the same agreement is not asked for twice.
+   */
+  showTermsNotice?: boolean;
 } = {}) {
   const [pendingGoogle, setPendingGoogle] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,6 +91,28 @@ export function OAuthButtons({
 
   return (
     <div>
+      {/* Directly above the button, not below it and not on another screen.
+          Conspicuous notice adjacent to the action is what makes continuing
+          count as agreeing; the same words placed underneath would not. */}
+      {showTermsNotice ? (
+        <p className="mb-3 font-sans text-caption leading-[1.5] text-paper/55">
+          By continuing, you agree to our{" "}
+          <Link
+            href="/terms"
+            className="text-paper/80 underline decoration-paper/30 underline-offset-2 hover:decoration-paper/60"
+          >
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link
+            href="/privacy"
+            className="text-paper/80 underline decoration-paper/30 underline-offset-2 hover:decoration-paper/60"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </p>
+      ) : null}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <button
           type="button"

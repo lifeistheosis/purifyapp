@@ -9,8 +9,17 @@ import Link from "next/link";
 
 import { historyEventsOn } from "@/lib/history/events";
 import { T } from "@/components/i18n/T";
+import { TodayHeading } from "@/components/prayers/TodayHeading";
+import { cn } from "@/lib/cn";
 
-export function OnThisDayHistory({ date }: { date: Date }) {
+export function OnThisDayHistory({
+  date,
+  className,
+}: {
+  date: Date;
+  /** The caller owns the spacing; single-caller, so no default margin. */
+  className?: string;
+}) {
   const mmdd = `${String(date.getUTCMonth() + 1).padStart(2, "0")}-${String(
     date.getUTCDate(),
   ).padStart(2, "0")}`;
@@ -18,16 +27,16 @@ export function OnThisDayHistory({ date }: { date: Date }) {
   if (!events.length) return null;
 
   return (
-    <div className="my-12">
-      <p className="mb-4 font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/55">
+    <section aria-labelledby="today-onthisday" className={cn(className)}>
+      <TodayHeading id="today-onthisday" className="mb-4 tracking-[2.5px]">
         <T k="study.history.onThisDay" />
-      </p>
+      </TodayHeading>
       <div className="space-y-3">
         {events.map((e) => (
           <Link
             key={e.slug}
             href={`/history/${e.slug}`}
-            className="tap-press block rounded-lg border border-paper/12 bg-night-soft/50 px-5 py-4 hover:border-paper/25"
+            className="tap-press block rounded-lg border border-paper/12 bg-night-soft/50 px-5 py-4 transition-colors duration-200 hover:border-paper/25 hover:bg-night-soft/80 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-4"
           >
             <p className="font-sans text-caption font-semibold uppercase tracking-[1.4px] text-paper/60">
               {e.displayDate}
@@ -40,9 +49,12 @@ export function OnThisDayHistory({ date }: { date: Date }) {
                 </span>
               ) : null}
             </p>
-            <p className="mt-1 font-heading text-title-sm text-paper leading-snug">
+            {/* Was a <p className="font-heading">: heading appearance
+                without heading semantics. The unlayered h1..h6 rule in
+                globals.css supplies the same face. */}
+            <h3 className="mt-1 text-title-sm text-paper leading-snug">
               {e.title}
-            </p>
+            </h3>
             <p className="mt-1 font-serif text-detail text-paper/60 leading-[1.55]">
               {e.preview}
             </p>
@@ -52,6 +64,6 @@ export function OnThisDayHistory({ date }: { date: Date }) {
           </Link>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

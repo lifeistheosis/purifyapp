@@ -1,0 +1,39 @@
+{
+  "saint": "sixtus-of-rome",
+  "slug": "taken-in-the-cemetery",
+  "title": "Taken in the Cemetery",
+  "subtitle": "A short Life of Sixtus II, the peacemaker who was killed at the altar",
+  "source": "An editorial Life in the Purify voice. The date and circumstances of the martyrdom come from St. Cyprian of Carthage's own letter reporting it, Epistle 80 in the Ante-Nicene Fathers Vol. 5 (ed. Roberts and Donaldson, 1886), written within weeks of the event and the earliest witness there is, together with the fourth-century Depositio Martyrum and the Roman synaxarion. The account of his relations with Cyprian follows Cyprian's correspondence in the same volume.",
+  "sections": [
+    {
+      "n": 1,
+      "title": "A short episcopate in a bad year",
+      "framing": "Sixtus the Second was bishop of Rome for about eleven months. He inherited a quarrel that had nearly split the Latin churches in two, and he handled it by declining to press it. Then Valerian's second edict arrived and he was dead within the month. His feast on the tenth of August, kept with his archdeacon Lawrence, is one of the oldest fixed commemorations in the Roman church.",
+      "paragraphs": [
+        "He became bishop of Rome around the end of August in the year two hundred and fifty seven. What he found waiting for him was the rebaptism controversy: his predecessor Stephen had come close to breaking communion with the churches of Africa and of Asia Minor over whether converts from heresy must be baptized again, and the letters on both sides had grown hot enough that a schism between Rome and Carthage was a live possibility.",
+        "Sixtus let it cool. He did not surrender Rome's position and he did not enforce it, and communion with Africa held. Cyprian, who had been Stephen's opponent in the matter, wrote of him warmly, and the deacon Pontius, in his Life of Cyprian, calls him a good and peaceable bishop. It is a small thing to have done and it prevented a large disaster."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "The sixth of August",
+      "paragraphs": [
+        "In the summer of two hundred and fifty eight Valerian issued a second edict against the Christians, harsher than the first. Bishops, presbyters and deacons were no longer to be exiled but executed on identification, and Christians of senatorial and equestrian rank were to lose their property and, if they persisted, their lives. Rome had been meeting for worship in the cemeteries outside the walls, and the edict specifically forbade it.",
+        "On the sixth of August, two hundred and fifty eight, Sixtus was presiding at the liturgy in the cemetery of Praetextatus, on the Appian Way. The soldiers came in while he was seated in the chair, teaching. He was killed there, and four of his seven deacons with him: Januarius, Vincent, Magnus and Stephen. Two more, Felicissimus and Agapitus, were taken and killed the same day. The seventh was Lawrence, who was not with him, and who was killed four days later.",
+        "St. Cyprian of Carthage, then in exile at Curubis in Africa, received the report and wrote it at once to the bishop Successus and through him to the African churches. His letter is the primary source: it names the day, says that Sixtus was executed in the cemetery on the eighth of the Ides of August with four deacons, and says plainly what everyone reading it already understood, that the persecution had now reached the bishops and would reach the writer next. It did, five weeks later."
+      ],
+      "notes": [
+        "Epistle 80 is the rare case of one martyr reporting another's death in his own hand, in the interval between them. Cyprian was beheaded on the fourteenth of September of the same year."
+      ]
+    },
+    {
+      "n": 3,
+      "title": "The grave and the memory",
+      "paragraphs": [
+        "He was buried in the cemetery of Callistus, in the crypt of the popes, where the Roman bishops of the third century lie together. Pope Damasus, a century later, cut an inscription for him there in verse. The graffiti of pilgrims scratched into the plaster around that crypt are among the oldest physical evidence of Christian veneration of the martyrs anywhere.",
+        "His name entered the Roman canon of the Mass. The Eastern Church commemorates him on the tenth of August with Lawrence, among the martyrs of the undivided Church, whose witness precedes any division between East and West and belongs to both.",
+        "The writings that circulated in later centuries under his name, the collection of ethical maxims known as the Sentences of Sextus, are not his. They belong to a Pythagorean compilation lightly Christianized, and this app does not attribute them to him."
+      ]
+    }
+  ]
+}

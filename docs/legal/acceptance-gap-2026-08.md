@@ -1,5 +1,37 @@
 # The acceptance gap: accounts created in the Android app before 2026-08-02
 
+## Correction, 2026-08-02 (later the same day)
+
+The diagnosis below was incomplete. It is kept because it is accurate as far
+as it goes, but it explains only a quarter of the gap.
+
+The counts came back: **41 of 878 accounts have an acceptance row.** 4.7%. The
+native relative-fetch bug cannot account for that, because the website email
+path always worked.
+
+The larger cause: **acceptance was only ever recorded by the two email/password
+forms. The OAuth callback recorded nothing**, so no Google sign-up had ever
+produced a row, on web or native. And in the in-app onboarding flow
+`<OAuthButtons />` was rendered with no consent surface at all, the checkbox
+being inside the email form, so an in-app Google sign-up was never even shown
+the Terms.
+
+| Path | Asked | Recorded |
+|---|---|---|
+| Email, web | yes | yes (most of the 41) |
+| Email, native | yes | no, fixed by the change below |
+| Google, web | yes (checkbox gated the button) | **no** |
+| Google, in-app onboarding | **no** | **no** |
+
+Split of the 837: **572 post-feature** (`terms_acceptances` was created
+2026-07-10) and **265 pre-feature**, which are not a failure at all, only a
+period before the table existed.
+
+Fixed in the same release: the notice moved inside `OAuthButtons` so no call
+site can omit it, and the auth callback records acceptance idempotently. See
+`lib/legal/serverAcceptance.ts` and
+`supabase/migrations/20260802_terms_acceptance_idempotent.sql`.
+
 ## What happened
 
 Both sign-up paths recorded the Terms clickwrap like this:
@@ -54,6 +86,21 @@ missing one: a missing record is a known gap, a fabricated one is a false
 statement that looks like evidence.
 
 ## What should be done
+
+**Update, 2026-08-02.** With 837 of 878 accounts affected, this is not a
+remediation cohort, it is the whole user base, and a flow built around
+apologising for a bug would be the wrong shape. `TERMS_VERSION` is 2026-07-31
+and genuinely recent, so the right move is a normal "our Terms were updated"
+sheet shown to everyone: one tap, recorded honestly to now, no explanation of
+a failure required. It collapses all three cohorts into one flow.
+
+It must not block reading. Scripture, prayers, saints and the calendar stay
+open; gate only the account-bound surfaces the Terms actually govern (sync,
+shop, community). Locking someone out of the Psalms over a legal tap would be
+the most out-of-character thing this app could do, and it would be our failure
+charged to them.
+
+The original framing follows.
 
 **Re-prompt.** On next launch, an affected signed-in account should be shown
 the current Terms and asked to accept, and the acceptance recorded then, dated
