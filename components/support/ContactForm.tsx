@@ -4,8 +4,15 @@ import { useState } from "react";
 
 /**
  * Support request form. Posts to /api/support/tickets, which creates the
- * ticket and emails a confirmation with a ticket number. Anonymous is fine;
- * a signed-in user's email can be prefilled by the server page.
+ * ticket and returns its number. Anonymous is fine; a signed-in user's email
+ * can be prefilled by the server page.
+ *
+ * The success panel shows the ticket number and does NOT promise a
+ * confirmation email. The route only sends a receipt to a signed-in user's
+ * own account address, because sending one to an arbitrary address in the
+ * form is what made this endpoint a mail relay. Telling an anonymous
+ * submitter to watch their inbox would be a promise the server no longer
+ * keeps, so the number on screen is the receipt.
  */
 export function ContactForm({ defaultEmail = "" }: { defaultEmail?: string }) {
   const [email, setEmail] = useState(defaultEmail);
@@ -53,7 +60,7 @@ export function ContactForm({ defaultEmail = "" }: { defaultEmail?: string }) {
           {ticketNumber}
         </p>
         <p className="mt-3 font-sans text-caption text-paper/55">
-          A confirmation is on its way to {email}.
+          Keep this number. We&rsquo;ll reply to {email}.
         </p>
       </div>
     );
