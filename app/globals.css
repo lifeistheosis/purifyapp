@@ -301,6 +301,20 @@ html.has-cart-fab .back-to-top {
  right: 30px;
 }
 
+/* iOS Safari and the Android WebView auto-zoom the page when a focused form
+ control has a font-size below 16px. Our UI text is 14px, so any input in a
+ popup (sign-in, search, the command palette) would zoom the viewport on
+ focus. Pin form controls to 16px on phones to stop that, without disabling
+ pinch-zoom the way maximum-scale would. Unlayered, so it beats the 14px
+ text-* utilities. */
+@media (max-width: 767px) {
+ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+ textarea,
+ select {
+ font-size: 16px;
+ }
+}
+
 @layer base {
  html {
  /* Keep route-change scroll resets instant. A global `smooth` made
