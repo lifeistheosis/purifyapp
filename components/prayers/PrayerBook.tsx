@@ -138,6 +138,7 @@ export function PrayerIndexRow({
   meta,
   planned = false,
   plannedLabel = "Planned",
+  headingLevel = 2,
 }: {
   href: string;
   title: ReactNode;
@@ -150,15 +151,22 @@ export function PrayerIndexRow({
    */
   planned?: boolean;
   plannedLabel?: ReactNode;
+  /**
+   * The row title's heading level. Defaults to `h2`, which is what all six
+   * existing callers render. Pass `3` when the index already sits under an
+   * `h2` of its own, so the page's heading outline does not skip a level.
+   */
+  headingLevel?: 2 | 3;
 }) {
+  const H = headingLevel === 3 ? "h3" : "h2";
   if (planned) {
     return (
       <li className="border-b border-paper/10">
         <div className="flex items-baseline gap-5 py-5 md:py-6">
           <div className="min-w-0 flex-1">
-            <h2 className="font-serif text-title-sm text-paper/45 leading-snug">
+            <H className="font-serif text-title-sm text-paper/45 leading-snug">
               {title}
-            </h2>
+            </H>
             {description && (
               <p className="mt-1.5 font-sans text-detail text-paper/55 leading-[1.6]">
                 {description}
@@ -174,11 +182,16 @@ export function PrayerIndexRow({
   }
   return (
     <li className="border-b border-paper/10">
-      <Link href={href} className="group flex items-baseline gap-5 py-5 md:py-6">
+      {/* -mx-3 px-3 lets the hover wash reach past the text without moving
+          the row's optical left edge off the hairline above it. */}
+      <Link
+        href={href}
+        className="group -mx-3 flex items-baseline gap-5 rounded-md px-3 py-5 transition-colors duration-200 hover:bg-paper/[0.03] focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-4 md:py-6"
+      >
         <div className="min-w-0 flex-1">
-          <h2 className="font-serif text-title-sm text-paper/90 group-hover:text-paper leading-snug transition-colors">
+          <H className="font-serif text-title-sm text-paper/90 group-hover:text-paper leading-snug transition-colors">
             {title}
-          </h2>
+          </H>
           {description && (
             <p className="mt-1.5 font-sans text-detail text-paper/50 leading-[1.6]">
               {description}
@@ -192,7 +205,7 @@ export function PrayerIndexRow({
         )}
         <span
           aria-hidden
-          className="shrink-0 self-center font-serif text-lede text-paper/25 transition-all duration-200 group-hover:text-gold/70 group-hover:translate-x-0.5"
+          className="shrink-0 self-center font-serif text-lede text-paper/45 transition-all duration-200 group-hover:text-gold/70 group-hover:translate-x-0.5"
         >
           →
         </span>

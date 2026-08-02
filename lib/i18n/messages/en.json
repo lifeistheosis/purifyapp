@@ -1892,5 +1892,18 @@
   "prayers.nowPlaying": "Now playing",
   "prayers.dismissPlayer": "Dismiss player",
   "community.notifications": "When someone answers you",
-  "community.repliedToYou": "replied to your post"
+  "community.repliedToYou": "replied to your post",
+  "calendar.fast.plain": "Fast",
+  "prayers.today.rhythmMerged": "your last fourteen days of prayer",
+  "prayers.today.continueReading": "Continue reading",
+  "prayers.today.continueInHistory": "Continue in History",
+  "prayers.today.recentPrayer": "Recent prayer",
+  "prayers.today.savedEyebrow": "Saved",
+  "prayers.today.atVerse": "at verse {verse}",
+  "prayers.today.savedItems.one": "{count} saved item",
+  "prayers.today.savedItems.other": "{count} saved items",
+  "prayers.today.anniversaryYears.one": "{count} year since falling asleep",
+  "prayers.today.anniversaryYears.other": "{count} years since falling asleep",
+  "today.verse.removedFromSaved": "Removed from saved",
+  "today.verse.savedToBookmarks": "Saved to bookmarks"
 }
