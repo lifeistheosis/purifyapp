@@ -26,10 +26,30 @@ import {
   type EntitlementRow,
 } from "./entitlements";
 
+/**
+ * True only while `npm run build:android` is producing the static export.
+ *
+ * This is a build-time constant, so the branch it guards is eliminated
+ * rather than skipped, and `cookies()` is never reached during the export.
+ * That matters: there is no request to read a cookie from in a static
+ * render, so calling it opts the route into dynamic rendering, and the
+ * export runs with `dynamic = "error"`. Merging feat/developer-options
+ * broke `npm run build:android` on /florilegium in exactly this way.
+ */
+const IS_STATIC_EXPORT = process.env.BUILD_TARGET === "android";
+
 export async function getEntitlements(): Promise<Entitlements> {
   // Developer test-premium override. Cookie is only a hint; we verify the
   // signed-in account is an allowlisted developer before granting.
-  if ((await cookies()).get(DEV_PLUS_COOKIE)?.value === "1") {
+  //
+  // Absent from the native bundle on purpose. The Developer panel is a
+  // web convenience, and the override is still honoured on the client
+  // (lib/entitlements/client.ts), which is where the native app resolves
+  // its entitlements anyway.
+  if (
+    !IS_STATIC_EXPORT &&
+    (await cookies()).get(DEV_PLUS_COOKIE)?.value === "1"
+  ) {
     const dev = await createClient();
     const {
       data: { user },
