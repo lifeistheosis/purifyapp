@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { apiFetch } from "@/lib/api/client";
+import { NotConfirmedError, expectOk } from "@/lib/api/expectOk";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 function parseUA(ua: string): string {
@@ -25,17 +27,28 @@ export function ProfileDevices() {
   const { t } = useTranslate();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
 
   async function signOutOthers() {
     setBusy(true);
     setMsg(null);
+    setFailed(false);
     try {
-      const res = await fetch("/api/auth/signout-others", { method: "POST" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      // apiFetch, because a relative path inside the native shell reaches
+      // https://localhost where app/api is stashed out of the export.
+      const res = await apiFetch("/api/auth/signout-others", { method: "POST" });
+      // expectOk, not res.ok: the shell can answer that same request with the
+      // SPA fallback, HTTP 200 and an HTML body, and this control then said
+      // "Signed out of all other devices" while every other session stayed
+      // live. A security control that lies is worse than one that is missing.
+      await expectOk(res);
       setMsg("Signed out of all other devices.");
     } catch (e) {
+      setFailed(true);
       setMsg(
-        `Something went wrong: ${e instanceof Error ? e.message : String(e)}`,
+        e instanceof NotConfirmedError
+          ? `${e.message} Your other sessions may still be active.`
+          : "Couldn't reach the server. Your other sessions may still be active.",
       );
     } finally {
       setBusy(false);
@@ -71,7 +84,17 @@ export function ProfileDevices() {
               {t("ui.revokesEveryActiveSessionExcept")}
             </p>
             {msg && (
-              <p className="mt-2 font-sans text-caption text-paper/80">{msg}</p>
+              // role="alert" so the outcome of a security action is announced,
+              // and a distinct colour so a failure cannot be mistaken for the
+              // success it used to always claim.
+              <p
+                role="alert"
+                className={`mt-2 font-sans text-caption ${
+                  failed ? "text-crimson-soft" : "text-paper/80"
+                }`}
+              >
+                {msg}
+              </p>
             )}
           </div>
           <button

@@ -1,16 +1,56 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import { apiFetch } from "@/lib/api/client";
+import { NotConfirmedError, expectOk } from "@/lib/api/expectOk";
+import { createClient } from "@/lib/supabase/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Sign out, clear local data, delete account. Wraps each destructive action
  * in a confirmation step so an errant tap doesn't wipe a praying life.
+ *
+ * Both server-side actions here used to be plain `<form action="/api/...">`
+ * POSTs. Inside the native shell that posts to https://localhost, where
+ * app/api has been stashed out of the export and nothing answers: the reader
+ * confirmed "delete forever", landed on an error page, and still had an
+ * account. A form POST also cannot report failure, which is why deletion is
+ * now a fetch whose success is asserted from the response body.
  */
 export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
   const { t } = useTranslate();
   const [confirmClear, setConfirmClear] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  async function deleteAccount() {
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      const res = await apiFetch("/api/auth/delete", { method: "POST" });
+      // Only a JSON body saying ok:true counts. Anything else, including a
+      // 200 carrying the shell's HTML fallback, is a deletion that did not
+      // happen and must never be reported as one.
+      await expectOk(res);
+      // The account is gone; drop the local session before leaving so the app
+      // does not spend a moment believing it is still signed in.
+      try {
+        await createClient().auth.signOut();
+      } catch {
+        // Already invalid server-side. Navigating away is enough.
+      }
+      window.location.assign("/");
+    } catch (e) {
+      setDeleteError(
+        e instanceof NotConfirmedError
+          ? `${e.message} Your account has not been deleted.`
+          : "Couldn't reach the server. Your account has not been deleted.",
+      );
+      setDeleting(false);
+    }
+  }
 
   function clearLocal() {
     const keys: string[] = [];
@@ -52,14 +92,17 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
               title={t("common.signOut")}
               body="Sign out on this device. Your local data stays put. Your server-side data stays in your account."
             >
-              <form action="/api/auth/signout" method="post">
-                <button
-                  type="submit"
-                  className="font-sans text-detail font-medium border border-paper/25 text-paper rounded-pill px-4 py-2 hover:bg-paper/10 transition-colors"
-                >
-                  {t("common.signOut")}
-                </button>
-              </form>
+              {/* /signout, not a POST to /api/auth/signout. The dedicated
+                  page already handles the native case correctly with a client
+                  signOut({ scope: "local" }); the form POST simply died at
+                  https://localhost and left the reader signed in on an error
+                  page. Two sign-out affordances, and only one worked. */}
+              <Link
+                href="/signout"
+                className="inline-flex font-sans text-detail font-medium border border-paper/25 text-paper rounded-pill px-4 py-2 hover:bg-paper/10 transition-colors"
+              >
+                {t("common.signOut")}
+              </Link>
             </Row>
           )}
 
@@ -110,21 +153,34 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
                   {t("ui.deleteAccount")}
                 </button>
               ) : (
-                <form action="/api/auth/delete" method="post" className="flex gap-2">
-                  <button
-                    type="submit"
-                    className="font-sans text-detail font-semibold bg-crimson text-paper rounded-pill px-4 py-2 hover:bg-[#a31f24] transition-colors"
-                  >
-                    {t("ui.yesDeleteForever")}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setConfirmDelete(false)}
-                    className="font-sans text-detail text-paper/55 hover:text-paper transition-colors px-3 py-2"
-                  >
-                    {t("common.cancel")}
-                  </button>
-                </form>
+                <div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={deleteAccount}
+                      disabled={deleting}
+                      className="font-sans text-detail font-semibold bg-crimson text-paper rounded-pill px-4 py-2 hover:bg-[#a31f24] transition-colors disabled:opacity-60"
+                    >
+                      {deleting ? "Deleting…" : t("ui.yesDeleteForever")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDelete(false)}
+                      disabled={deleting}
+                      className="font-sans text-detail text-paper/55 hover:text-paper transition-colors px-3 py-2 disabled:opacity-60"
+                    >
+                      {t("common.cancel")}
+                    </button>
+                  </div>
+                  {deleteError && (
+                    <p
+                      role="alert"
+                      className="mt-3 font-sans text-caption text-crimson-soft"
+                    >
+                      {deleteError}
+                    </p>
+                  )}
+                </div>
               )}
             </Row>
           )}
