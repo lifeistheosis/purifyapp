@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { SITE_URL } from "@/lib/site";
 import { rateLimited, ipKey } from "@/lib/security/ratelimit";
 import { isSafeNext } from "@/lib/security/schemas";
+import { recordSignInAcceptance } from "@/lib/legal/serverAcceptance";
 
 /**
  * Auth callback. Handles four sources:
@@ -97,6 +98,27 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createClient();
 
+  /**
+   * Record the Terms acceptance for the session this callback just
+   * established. This is the only server-side moment an OAuth sign-up is
+   * observable: the provider redirects straight here and no client code of
+   * ours runs in between, which is why no Google account had ever produced an
+   * acceptance row.
+   *
+   * Deliberately NOT called for `recovery` or `email_change`. Those are not
+   * sign-ups, the reader was shown no notice, and recording one would be
+   * inventing an agreement that was never offered.
+   *
+   * Idempotent, so calling it on a repeat sign-in is a no-op. See
+   * lib/legal/serverAcceptance.ts.
+   */
+  const recordAcceptanceFor = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) await recordSignInAcceptance(user.id, user.email ?? null);
+  };
+
   // Preferred path: stateless OTP verification (cross-browser safe).
   if (tokenHash && type) {
     const { error } = await supabase.auth.verifyOtp({
@@ -104,6 +126,9 @@ export async function GET(request: NextRequest) {
       token_hash: tokenHash,
     });
     if (error) return fail(error.message);
+    if (type === "signup" || type === "magiclink" || type === "invite") {
+      await recordAcceptanceFor();
+    }
     return NextResponse.redirect(new URL(safeNext, base));
   }
 
@@ -111,6 +136,7 @@ export async function GET(request: NextRequest) {
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) return fail(error.message);
+    await recordAcceptanceFor();
     return NextResponse.redirect(new URL(safeNext, base));
   }
 
