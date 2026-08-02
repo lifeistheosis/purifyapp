@@ -10,6 +10,7 @@ export const ONBOARDING_VERSION = 1;
 
 const ONBOARDED_KEY = "purify:onboarded"; // stores the version number once done
 const FOCUS_KEY = "purify:focus"; // JSON array of Focus ids
+const DEPTH_KEY = "purify:depth"; // "inquirer" | "faithful"
 const NUDGE_DISMISSED_KEY = "purify:firststeps.dismissed";
 const NUDGE_ELIGIBLE_KEY = "purify:firststeps.eligible";
 
@@ -147,6 +148,38 @@ export function writeFocus(focus: Focus[]): void {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.setItem(FOCUS_KEY, JSON.stringify(focus));
+  } catch {
+    /* ignore */
+  }
+  emit();
+}
+
+/**
+ * How much the reader already knows, which decides REGISTER and nothing else:
+ * the same saint introduced as "who was St Mary of Egypt" or as her Life in
+ * Sophronius' own words. Never used to withhold content.
+ *
+ * Null is "not answered" and is deliberately distinct from "inquirer": a
+ * reader who skipped the question has not told us they are a beginner.
+ */
+export type Depth = "inquirer" | "faithful";
+const DEPTH_VALUES: readonly Depth[] = ["inquirer", "faithful"];
+
+export function readDepth(): Depth | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(DEPTH_KEY);
+    return DEPTH_VALUES.includes(raw as Depth) ? (raw as Depth) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function writeDepth(depth: Depth | null): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (depth) window.localStorage.setItem(DEPTH_KEY, depth);
+    else window.localStorage.removeItem(DEPTH_KEY);
   } catch {
     /* ignore */
   }

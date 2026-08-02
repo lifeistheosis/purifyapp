@@ -18,6 +18,7 @@ import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { AppThemeController } from "@/components/theme/AppThemeController";
 import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
 import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
+import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
 import { NativeBridge } from "@/components/native/NativeBridge";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
@@ -237,6 +238,9 @@ export default async function RootLayout({
      Mounted in (app)/layout.tsx this bridge never ran for them, so their
      prayer history was written locally and never pushed or pulled. */}
  <PrayerSyncBridge />
+ {/* Same reason again: onboarding runs over Today, so the reader who states
+     their interests and then signs in may never mount the (app) layout. */}
+ <ProfilePrefsBridge />
  {children}
  {/* Root layout, not (app)/layout.tsx. Today is app/page.tsx, outside
      the (app) group, so a bar mounted there would unmount on every
