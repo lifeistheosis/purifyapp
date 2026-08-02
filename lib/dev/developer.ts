@@ -23,12 +23,25 @@ export function isDeveloperEmail(email?: string | null): boolean {
 // so a forged cookie does nothing for a normal user.
 export const DEV_PLUS_COOKIE = "pf_dev_plus";
 
-/** Full Plus, returned when an allowlisted developer enables test premium. */
+/**
+ * Full Plus, returned when an allowlisted developer enables test premium.
+ *
+ * Plus only, never Pro. This branch was written before the Pro tier existed
+ * and the type has since grown `pro` and `proFeatures`; they are set false
+ * deliberately rather than to satisfy the compiler. Pro is a paid membership
+ * with PHYSICAL fulfillment behind it (the monthly mailed icon, shop codes),
+ * and the EIKON Box loop reads `pro_until` from the table directly, so a
+ * developer toggling a client-side override into `pro: true` would see a
+ * claim UI for a box that is never going to be posted. Test the Pro software
+ * layer with a comped subscription, not with this.
+ */
 export const DEV_PLUS_ENTITLEMENTS: Entitlements = {
   supporter: false,
   plus: true,
+  pro: false,
   sync: true,
   plusFeatures: true,
+  proFeatures: false,
 };
 
 // Feature flags a developer can preview ahead of release. Add real

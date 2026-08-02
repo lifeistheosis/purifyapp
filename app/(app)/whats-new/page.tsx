@@ -25,6 +25,25 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
+ version: "Beta 3.0",
+ kind: "Today, on a computer",
+ date: "August 2, 2026",
+ blurb:
+  "On the web there is no Today tab. /prayers/today is the only Today the site has, and it had been showing less of the day than the phone does, on a page built for a narrow column. It is rebuilt for the screen it actually opens on. Around it: August has its saints, the Council of Florence has its full account, and a run of Android repairs that had been waiting on branches has landed, including the discovery that the app had never reported a single session.",
+ items: [
+  "Today on a computer is a different page. It opens with the date and the day's fast set against it, then the one rule the hour asks for with a button to begin, then the Verse of the Day, which the web did not carry at all. Beside them, in their own column, is the Church's own reckoning of the day: the saint with their icon, the fast in full words, the appointed readings, and the count to Pascha. Those are drawn by the same piece of the app the phone uses, so the two can no longer disagree about the day. The page is a third shorter than it was and holds more, and the whole of it is visible without scrolling on an ordinary laptop.",
+  "The date reads in your language. The heading on that page was assembled from a list of English weekday and month names, so it read Sunday, August 2, 2026 in all twenty one languages Purify offers. It now reads in yours. Four other places on the same page were English in every language too: where you left off, the diptych anniversaries, and the two notes the verse card shows when you save a verse.",
+  "August has its saints. Eleven for the first part of the month and the rest after it, each with a Life, and, where a public domain text exists, their own writings to read in full. Three faults in the ingest that reads those texts were found and fixed by the run itself.",
+  "The Council of Florence, at length. A fuller account of what was agreed and what became of it, a step by step timeline, and the artwork.",
+  "The pages say whose words are whose. A saint's writing on Purify is sometimes his own text, sometimes the Church's hymns to him, sometimes a witness account, and sometimes our own retelling. Every one of those was being published to search engines and to machine readers as a book he wrote. Each section now declares its voice, and a work carrying our prose is credited to Purify and marked as being about him, not by him. This is the one kind of mistake nothing ever corrects, because it is copied and repeated.",
+  "The Android app had never reported a session. Not a screen view, not a session, nothing. Every install was invisible, so the numbers for the app read zero and looked like an app nobody had opened.",
+  "Notifications stopped counting sends that never happened. The app recorded a delivery when it queued one, so the log showed sends that had not left. It also had no scheduler to send them with, which now exists. Delivery itself still waits on its keys being set.",
+  "A run of Android repairs. The native app was registering the website's service worker, which could serve it a stale bundle from the web. Reinstalling now gives a clean slate rather than restoring the old one. The gap above the keyboard is no longer a grey box. Safe area spacing around the notch and the home bar is handled by one thing instead of two fighting.",
+  "Form fields no longer zoom the page. Tapping a text field on a phone zoomed the whole page in, because the field's text was under sixteen pixels. Every form control is pinned to sixteen now.",
+  "Housekeeping. Developer accounts can turn on test premium and individual feature flags without touching a real subscription. Two Discord operations scripts for the beta programme. The cache version steps to purify-beta-3.0.0, so a returning reader is served this build rather than the last one.",
+ ],
+ },
+ {
  version: "Beta 2.9",
  kind: "The app moves like one thing",
  date: "August 1, 2026",
