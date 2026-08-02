@@ -1,7 +1,6 @@
 import { AppNav } from "@/components/nav/AppNav";
 import { Footer } from "@/components/layout/Footer";
 import { SyncBridge } from "@/components/profile/SyncBridge";
-import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
 import { GiftBridge } from "@/components/gifts/GiftBridge";
 import { EikonBoxBridge } from "@/components/eikonBox/EikonBoxBridge";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
@@ -35,7 +34,13 @@ export default function AppGroupLayout({
         </WebOnly>
       </div>
       <SyncBridge />
-      <PrayerSyncBridge />
+      {/* PrayerSyncBridge is NOT here. It moved to the root layout, because
+          Today is app/page.tsx, outside this group: a reader who cold-starts
+          onto Today and prays from there never mounted this layout, so their
+          prayer history never pushed or pulled. Same reason as RouteExitBridge
+          and NowPlayingBar. Do not add a second mount here; installPrayerSync-
+          Bridge has a module-level `started` flag and the two teardowns would
+          fight over it. */}
       {/* Shows a claimable gift once per app open; renders nothing otherwise. */}
       <GiftBridge />
       {/* Same posture for this month's EIKON Box: Pro members only, once per

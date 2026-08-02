@@ -17,6 +17,7 @@ import "./globals.css";
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { AppThemeController } from "@/components/theme/AppThemeController";
 import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
+import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
 import { NativeBridge } from "@/components/native/NativeBridge";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
@@ -231,6 +232,11 @@ export default async function RootLayout({
      outside the (app) group, so a bridge mounted in (app)/template.tsx
      would never clear the exit fade on a tap into Today. */}
  <RouteExitBridge />
+ {/* Root layout, for the same reason. Today is app/page.tsx, outside the
+     (app) group, and Today is where a reader prays the morning rule from.
+     Mounted in (app)/layout.tsx this bridge never ran for them, so their
+     prayer history was written locally and never pushed or pulled. */}
+ <PrayerSyncBridge />
  {children}
  {/* Root layout, not (app)/layout.tsx. Today is app/page.tsx, outside
      the (app) group, so a bar mounted there would unmount on every

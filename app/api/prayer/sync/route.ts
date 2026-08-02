@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/server";
+import { corsPreflight, withCors } from "@/lib/api/cors";
+import { createClientFromRequest } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,7 +10,19 @@ export const dynamic = "force-dynamic";
 // has across prayer_completions, intentions_living, intentions_departed,
 // rope_sessions. POST upserts a batch.
 //
-// Both routes use the signed-in (SSR) Supabase client — RLS does the gating.
+// Auth is `createClientFromRequest`, NOT the cookie-only `createClient`, and
+// every response goes through `withCors`. Both are required, not stylistic:
+// the Android app is a static export served from https://localhost with
+// app/api stashed out of the tree, so it reaches this route cross-origin at
+// purifyapp.net with a Bearer token and no cookies. A cookie-only client
+// answers 401 to every native reader, and without the CORS headers (plus the
+// OPTIONS preflight, which a JSON body + Authorization header makes
+// mandatory) the WebView drops the response before the app sees it.
+//
+// This was silently broken: the client swallows every error, so prayer
+// history simply never left the phone. See lib/prayers/sync.ts.
+//
+// RLS still does the actual gating.
 
 const IntentionSchema = z.object({
   id: z.string().uuid(),
@@ -47,12 +60,17 @@ const PayloadSchema = z.object({
   }),
 });
 
-export async function GET() {
-  const supa = await createClient();
+export async function GET(req: NextRequest) {
+  const supa = await createClientFromRequest(req);
   const {
     data: { user },
   } = await supa.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) {
+    return withCors(
+      NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+      req,
+    );
+  }
 
   const [
     { data: completions },
@@ -82,43 +100,54 @@ export async function GET() {
       .limit(2000),
   ]);
 
-  return NextResponse.json(
-    {
-      completions: (completions ?? []).map((r) => ({
-        ruleId: r.rule_id as string,
-        date: r.prayed_on as string,
-      })),
-      intentions: {
-        living: (living ?? []).map(rowToIntention),
-        departed: (departed ?? []).map(rowToIntention),
-      },
-      rope: {
-        sessions: (rope ?? []).map((s) => ({
-          id: s.id as string,
-          startedAt: s.started_at as string,
-          knots: s.knots as number,
-          line: (s.line as string) ?? "",
+  return withCors(
+    NextResponse.json(
+      {
+        completions: (completions ?? []).map((r) => ({
+          ruleId: r.rule_id as string,
+          date: r.prayed_on as string,
         })),
+        intentions: {
+          living: (living ?? []).map(rowToIntention),
+          departed: (departed ?? []).map(rowToIntention),
+        },
+        rope: {
+          sessions: (rope ?? []).map((s) => ({
+            id: s.id as string,
+            startedAt: s.started_at as string,
+            knots: s.knots as number,
+            line: (s.line as string) ?? "",
+          })),
+        },
       },
-    },
-    { headers: { "Cache-Control": "no-store" } },
+      { headers: { "Cache-Control": "no-store" } },
+    ),
+    req,
   );
 }
 
 export async function POST(req: NextRequest) {
-  const supa = await createClient();
+  const supa = await createClientFromRequest(req);
   const {
     data: { user },
   } = await supa.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) {
+    return withCors(
+      NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+      req,
+    );
+  }
 
   let parsed;
   try {
     parsed = PayloadSchema.parse(await req.json());
   } catch (err) {
-    return NextResponse.json(
-      { error: "Invalid body", detail: String(err) },
-      { status: 400 },
+    return withCors(
+      NextResponse.json(
+        { error: "Invalid body", detail: String(err) },
+        { status: 400 },
+      ),
+      req,
     );
   }
 
@@ -167,8 +196,12 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  return NextResponse.json({ ok: true });
+  return withCors(NextResponse.json({ ok: true }), req);
 }
+
+// A JSON body plus an Authorization header is a "non-simple" request, so the
+// WebView sends OPTIONS first and never reaches POST without this.
+export const OPTIONS = corsPreflight;
 
 function rowToIntention(r: Record<string, unknown>) {
   return {

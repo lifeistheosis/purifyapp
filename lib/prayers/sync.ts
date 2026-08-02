@@ -10,6 +10,7 @@
 //   - All network errors are swallowed silently so the UI never
 //     blocks on connectivity.
 
+import { apiFetch } from "@/lib/api/client";
 import { createClient } from "@/lib/supabase/client";
 import {
   readIntentions,
@@ -17,11 +18,35 @@ import {
   readRopeSessions,
   writeIntentions,
   type Intention,
-  type IntentionKind,
   type RopeSession,
 } from "./storage";
 
 const SYNC_DEBOUNCE_MS = 800;
+
+// Every rule that has ever been prayed on this device leaves a
+// `purify.prayers.<id>.dates` key behind. Scanning for them is deliberate:
+// the previous hardcoded ["morning","evening"] pair silently dropped the
+// other 25 rules in lib/prayers/rules.ts, so completing Compline was written
+// locally and never left the phone. It also means the `day:*` rhythm strands
+// sync with no further work here.
+const DATES_KEY = /^purify\.prayers\.(.+)\.dates$/;
+
+function syncedRuleIds(): string[] {
+  if (typeof window === "undefined") return [];
+  const ids: string[] = [];
+  try {
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const key = window.localStorage.key(i);
+      const m = key ? DATES_KEY.exec(key) : null;
+      // The schema caps ruleId at 80 chars; a longer one would fail
+      // validation for the whole batch, so drop it here instead.
+      if (m && m[1].length <= 80) ids.push(m[1]);
+    }
+  } catch {
+    /* ignore */
+  }
+  return ids;
+}
 
 type SyncPayload = {
   completions: { ruleId: string; date: string }[];
@@ -30,9 +55,10 @@ type SyncPayload = {
 };
 
 function gatherLocal(): SyncPayload {
-  // Completions: every (ruleId, date) tuple from both rules' dates arrays.
+  // Completions: every (ruleId, date) tuple across every rule this device
+  // has a record for.
   const completions: { ruleId: string; date: string }[] = [];
-  for (const ruleId of ["morning", "evening"]) {
+  for (const ruleId of syncedRuleIds()) {
     for (const date of readPrayedDates(ruleId)) {
       completions.push({ ruleId, date });
     }
@@ -54,7 +80,11 @@ function gatherLocal(): SyncPayload {
 export async function pushAllLocalPrayerState(): Promise<void> {
   try {
     const payload = gatherLocal();
-    const r = await fetch("/api/prayer/sync", {
+    // apiFetch, not fetch: inside the native shell a relative path resolves to
+    // https://localhost, where app/api has been stashed out of the export and
+    // nothing answers. apiFetch rewrites to SITE_URL and attaches the Bearer
+    // token, because cookies do not travel cross-origin.
+    const r = await apiFetch("/api/prayer/sync", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -71,7 +101,7 @@ export async function pushAllLocalPrayerState(): Promise<void> {
  */
 export async function syncPrayersFromServer(): Promise<void> {
   try {
-    const r = await fetch("/api/prayer/sync", { cache: "no-store" });
+    const r = await apiFetch("/api/prayer/sync", { cache: "no-store" });
     if (!r.ok) return;
     const j = (await r.json()) as {
       completions: { ruleId: string; date: string }[];
