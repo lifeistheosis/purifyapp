@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
+import { findUserByEmail } from "@/lib/admin/users";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -39,32 +40,26 @@ export async function POST(req: Request) {
     );
   }
   const { email, tier, days } = parsed.data;
-  const target = email.trim().toLowerCase();
 
   const admin = createAdminClient();
 
   // Resolve email -> account. profiles has no email column, so the source of
-  // truth is auth; page through it (lists are small) until we find a match.
-  let userId: string | null = null;
-  let name: string | null = null;
-  for (let page = 1; page <= 25 && !userId; page++) {
-    const { data, error } = await admin.auth.admin.listUsers({
-      page,
-      perPage: 200,
-    });
-    if (error) break;
-    const users = data?.users ?? [];
-    const hit = users.find((u) => (u.email ?? "").toLowerCase() === target);
-    if (hit) {
-      userId = hit.id;
-      const md = (hit.user_metadata ?? {}) as {
-        full_name?: string;
-        name?: string;
-      };
-      name = md.full_name ?? md.name ?? null;
-    }
-    if (users.length < 200) break; // reached the last page
+  // truth is auth. Shared with the gift route via lib/admin/users.
+  let recipient;
+  try {
+    recipient = await findUserByEmail(admin, email);
+  } catch (err) {
+    return NextResponse.json(
+      {
+        error: `Could not reach the account directory: ${
+          err instanceof Error ? err.message : "unknown error"
+        }`,
+      },
+      { status: 502 },
+    );
   }
+  const userId = recipient?.id ?? null;
+  const name = recipient?.name ?? null;
 
   if (!userId) {
     return NextResponse.json(
@@ -97,7 +92,7 @@ export async function POST(req: Request) {
     ok: true,
     userId,
     name,
-    email: target,
+    email: recipient?.email ?? email.trim().toLowerCase(),
     tier: tier === "pro" ? "Pro" : "Plus",
     until,
   });

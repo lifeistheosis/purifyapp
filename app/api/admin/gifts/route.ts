@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
+import { emailsByUserId, findUserByEmail } from "@/lib/admin/users";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -38,17 +39,14 @@ export async function GET() {
     [k: string]: unknown;
   }[];
 
-  // Attach recipient emails so the table is readable.
+  // Attach recipient emails so the table is readable. Emails live in auth,
+  // never in profiles, so this resolves through the auth admin API.
   const ids = [...new Set(rows.map((r) => r.user_id))];
-  const emailById = new Map<string, string>();
-  if (ids.length > 0) {
-    const { data: profiles } = await admin
-      .from("profiles")
-      .select("id, email")
-      .in("id", ids);
-    for (const p of (profiles ?? []) as { id: string; email: string }[]) {
-      emailById.set(p.id, p.email);
-    }
+  let emailById = new Map<string, string>();
+  try {
+    emailById = await emailsByUserId(admin, ids);
+  } catch {
+    // Non-fatal: the table still renders, just without addresses.
   }
 
   return NextResponse.json(
@@ -71,16 +69,26 @@ export async function POST(req: Request) {
   }
 
   const admin = createAdminClient();
-  const target = parsed.email.trim().toLowerCase();
 
-  // Resolve the account by email through the profiles mirror.
-  const { data: profile } = await admin
-    .from("profiles")
-    .select("id, email")
-    .ilike("email", target)
-    .maybeSingle();
+  // Resolve the account by email. Auth is the only source of truth: profiles
+  // has no email column, and querying one made this route reject every address.
+  let recipient;
+  try {
+    recipient = await findUserByEmail(admin, parsed.email);
+  } catch (err) {
+    // A lookup failure is NOT "no such account" — say so, or the next person
+    // debugging this chases the same ghost.
+    return NextResponse.json(
+      {
+        error: `Could not reach the account directory: ${
+          err instanceof Error ? err.message : "unknown error"
+        }`,
+      },
+      { status: 502 },
+    );
+  }
 
-  if (!profile) {
+  if (!recipient) {
     return NextResponse.json(
       {
         error:
@@ -91,7 +99,7 @@ export async function POST(req: Request) {
   }
 
   const { error } = await admin.from("gifts").insert({
-    user_id: (profile as { id: string }).id,
+    user_id: recipient.id,
     tier: parsed.tier,
     days: parsed.days,
     message: parsed.message?.trim() || null,
@@ -104,7 +112,7 @@ export async function POST(req: Request) {
 
   return NextResponse.json({
     ok: true,
-    email: (profile as { email: string }).email,
+    email: recipient.email,
     tier: parsed.tier,
     days: parsed.days,
   });
