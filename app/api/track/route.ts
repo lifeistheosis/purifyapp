@@ -1,8 +1,9 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { geolocate, clientIp } from "@/lib/analytics/geo";
 import { trackSchema } from "@/lib/security/schemas";
 import { rateLimited, ipKey } from "@/lib/security/ratelimit";
+import { corsPreflight, corsRoute, isAllowedNativeOrigin } from "@/lib/api/cors";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -33,12 +34,27 @@ function parsePrimaryLanguage(header: string | null): string | null {
  *   - Content-Type must be application/json.
  *   - Body validated by zod (sessionId pattern + path shape).
  *   - Rate-limited: 120 events/min per IP and 600 inserts/day per IP.
- *   - Sec-Fetch-Site, when present, must be same-origin.
+ *   - Sec-Fetch-Site, when present, must be same-origin OR the request must
+ *     come from one of the native shells we ship.
+ *
+ * Native shells call this cross-origin from https://localhost (the static
+ * export has no /api), so this route answers the CORS preflight and makes a
+ * narrow Sec-Fetch-Site exception for allow-listed shell origins. Without
+ * both, every Android pageview was rejected and the app was invisible to
+ * every dashboard. See lib/api/cors.ts for the origin allow-list.
  */
-export async function POST(req: NextRequest) {
-  // Cheap origin sanity. Real browsers send this; bots usually don't.
+async function handlePOST(req: Request) {
+  // Cheap origin sanity. Real browsers send this; bots usually don't. The
+  // native shells legitimately post cross-site, so exempt only those origins.
   const sfs = req.headers.get("sec-fetch-site");
-  if (sfs && sfs !== "same-origin" && sfs !== "same-site" && sfs !== "none") {
+  const fromNativeShell = isAllowedNativeOrigin(req.headers.get("origin"));
+  if (
+    sfs &&
+    sfs !== "same-origin" &&
+    sfs !== "same-site" &&
+    sfs !== "none" &&
+    !fromNativeShell
+  ) {
     return NextResponse.json({ ok: false }, { status: 403 });
   }
 
@@ -137,3 +153,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false }, { status: 200 });
   }
 }
+
+export const POST = corsRoute(handlePOST);
+export const OPTIONS = corsPreflight;
