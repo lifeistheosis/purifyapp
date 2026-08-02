@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { recordAcceptance } from "@/lib/legal/recordAcceptance";
 import { authOrigin } from "@/lib/site";
 import { PasswordInput } from "./PasswordInput";
 import { OAuthButtons } from "./OAuthButtons";
@@ -45,13 +46,19 @@ export function SignUpForm() {
       return;
     }
     setPending(true);
-    // Record the clickwrap acceptance (fire-and-forget: recording must
-    // never block account creation; the checkbox gate above still holds).
-    void fetch("/api/legal/accept", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ context: "signup", email: email.trim() }),
-    }).catch(() => {});
+    // Recorded BEFORE the account exists, and awaited. The checkbox gate is a
+    // client-side control; it proves nothing on its own, so the server-side
+    // record has to actually land. A failure aborts rather than producing an
+    // account with no acceptance row.
+    try {
+      await recordAcceptance("signup", email.trim());
+    } catch (e) {
+      setError(
+        e instanceof Error ? e.message : "Couldn't record your agreement.",
+      );
+      setPending(false);
+      return;
+    }
     try {
       const supabase = createClient();
       const origin = authOrigin();

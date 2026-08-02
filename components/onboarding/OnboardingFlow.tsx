@@ -13,6 +13,7 @@ import {
 import { enableReminders as enablePush } from "@/lib/push/reminders";
 import { PurifyMark } from "@/components/ui/PurifyMark";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
+import { recordAcceptance } from "@/lib/legal/recordAcceptance";
 import { createClient } from "@/lib/supabase/client";
 
 /**
@@ -265,12 +266,19 @@ function AccountStep({
       return;
     }
     setPending(true);
-    // Record the clickwrap acceptance (fire-and-forget, same as /signup).
-    void fetch("/api/legal/accept", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ context: "signup", email: email.trim() }),
-    }).catch(() => {});
+    // Recorded BEFORE the account exists, and awaited. A failure aborts the
+    // sign-up rather than producing an account we cannot show agreed to
+    // anything. See lib/legal/recordAcceptance.ts for why that ordering is
+    // the safe half-state.
+    try {
+      await recordAcceptance("signup", email.trim());
+    } catch (e) {
+      setError(
+        e instanceof Error ? e.message : "Couldn't record your agreement.",
+      );
+      setPending(false);
+      return;
+    }
     try {
       const supabase = createClient();
       const { data, error: err } = await supabase.auth.signUp({
