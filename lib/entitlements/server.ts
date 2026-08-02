@@ -9,8 +9,14 @@
 // so it is free to sprinkle at call sites now and have them light up
 // correctly when the flag flips.
 
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { isNativeRequest } from "@/lib/platform/nativeRequest";
+import {
+  isDeveloperEmail,
+  DEV_PLUS_COOKIE,
+  DEV_PLUS_ENTITLEMENTS,
+} from "@/lib/dev/developer";
 import {
   deriveEntitlements,
   plusEnforcedFor,
@@ -21,6 +27,16 @@ import {
 } from "./entitlements";
 
 export async function getEntitlements(): Promise<Entitlements> {
+  // Developer test-premium override. Cookie is only a hint; we verify the
+  // signed-in account is an allowlisted developer before granting.
+  if ((await cookies()).get(DEV_PLUS_COOKIE)?.value === "1") {
+    const dev = await createClient();
+    const {
+      data: { user },
+    } = await dev.auth.getUser();
+    if (isDeveloperEmail(user?.email)) return DEV_PLUS_ENTITLEMENTS;
+  }
+
   const enforced = plusEnforcedFor(await isNativeRequest());
   if (!enforced) return OPEN_ENTITLEMENTS;
 
