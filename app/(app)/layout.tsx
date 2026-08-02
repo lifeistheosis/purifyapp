@@ -46,6 +46,11 @@ export default function AppGroupLayout({
       {/* Same posture for this month's EIKON Box: Pro members only, once per
           app open, silent for everyone else. */}
       <EikonBoxBridge />
+      {/* UpdateBridge is NOT here, for the same reason as PrayerSyncBridge:
+          the native app cold-starts onto Today, which is app/page.tsx and
+          outside this group, so a reader who opens the app and stays on
+          Today would never be told a new build exists. It lives in the root
+          layout with the other bridges that have to survive that. */}
       {/* safe-pt / safe-pb are no-ops on the web; inside the native shell
           they clear the status bar (top) and the tab bar + home indicator
           (bottom). */}

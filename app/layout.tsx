@@ -20,6 +20,7 @@ import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
 import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
 import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
+import { UpdateBridge } from "@/components/update/UpdateBridge";
 import { NativeBridge } from "@/components/native/NativeBridge";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
 import { SITE_URL } from "@/lib/site";
@@ -241,6 +242,12 @@ export default async function RootLayout({
  {/* Same reason again: onboarding runs over Today, so the reader who states
      their interests and then signs in may never mount the (app) layout. */}
  <ProfilePrefsBridge />
+ {/* And again: the app opens on Today, so an update prompt mounted in the
+     (app) layout would never reach the reader who opens Purify, prays, and
+     closes it, which is most of them. Renders nothing on the web, and
+     nothing on native until lib/appUpdate/release.ts declares a
+     versionCode above the installed one. */}
+ <UpdateBridge />
  {children}
  {/* Root layout, not (app)/layout.tsx. Today is app/page.tsx, outside
      the (app) group, so a bar mounted there would unmount on every

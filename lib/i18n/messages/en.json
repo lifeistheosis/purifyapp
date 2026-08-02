@@ -1905,5 +1905,10 @@
   "prayers.today.anniversaryYears.one": "{count} year since falling asleep",
   "prayers.today.anniversaryYears.other": "{count} years since falling asleep",
   "today.verse.removedFromSaved": "Removed from saved",
-  "today.verse.savedToBookmarks": "Saved to bookmarks"
+  "today.verse.savedToBookmarks": "Saved to bookmarks",
+  "update.title": "A new version of Purify",
+  "update.body": "There is a newer version in the Play Store. Installing it keeps your Purify current with the calendar, the saints, and the fixes that have landed since your build, and it is the only way the app receives them.",
+  "update.versions": "You have {installed}. The current version is {latest}.",
+  "update.cta": "Open the Play Store",
+  "update.later": "Later"
 }

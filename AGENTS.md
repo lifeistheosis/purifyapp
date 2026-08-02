@@ -47,6 +47,7 @@ Web-only trees are stashed out of the export in `scripts/android-build.mjs` (`sh
 ## Release ritual (Beta X.Y[.Z])
 
 1. Bump all four version identifiers: `lib/whatsNew/version.ts`, `public/sw.js` CACHE_VERSION, `android/app/build.gradle` versionName, and a new entry in `data/changelog/patches.json` **and** the inline ENTRIES in `app/(app)/whats-new/page.tsx`.
+   1a. **After the AAB is live on the track**, and not before, set `androidVersionCode` in `lib/appUpdate/release.ts` to the versionCode Play is actually serving (CI derives it from the workflow run number). That value is what tells installed apps a newer build exists. Setting it early prompts every reader to fetch a build that does not exist yet; leaving it behind is harmless, so late is the safe direction. `0` means "prompt nobody", which is the correct resting state for an unreleased branch. `lib/appUpdate/__tests__/release.test.ts` holds `versionName` in step with the other four.
 2. Verify: typecheck, unit tests, `npm run build:android` exports cleanly (the critical native gate), web `npm run build` when server code changed, and a browser walk of the changed flows.
 3. Commit on a branch, merge to `main`. **Pushing `origin main` deploys the website via Render** — treat push as a production action. AAB: GitHub Actions "Android build" on main with local-first CHECKED (browser, `lifeistheosis` login).
 4. Patch notes may not claim features that are dark in production (anything gated on an unapplied migration or unset env).
