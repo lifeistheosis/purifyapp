@@ -17,7 +17,7 @@ import {
   type TrapezaRecipe,
 } from "@/lib/trapeza/recipes";
 import { fetchRecipes } from "@/lib/trapeza/client";
-import { fastingStatus } from "@/lib/calendar/orthodox";
+import { useChurchDay } from "@/lib/calendar/useChurchDay";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function TrapezaClient() {
@@ -30,13 +30,24 @@ export function TrapezaClient() {
     null,
   );
 
+  // Today's fast, so we can offer "recipes for today". Through useChurchDay
+  // rather than a direct fastingStatus call, which was wrong three ways: it
+  // passed a raw `new Date()` where the lookup expects the UTC-noon frame (so
+  // a reader ahead of UTC got the previous day's rule), it never applied
+  // shiftForStyle (so Old Calendar readers were offered the New Calendar's
+  // food), and it ran once on mount with an empty dep array (so the app left
+  // open overnight kept offering yesterday's).
+  const churchDay = useChurchDay();
+
   useEffect(() => {
-    // Read today's fast from the calendar so we can offer "recipes for today".
-    const f = fastingStatus(new Date());
-    const levels = recipeLevelsForFastKind(f.kind);
+    if (!churchDay) return;
+    const levels = recipeLevelsForFastKind(churchDay.fast.kind);
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setToday({ level: levels[levels.length - 1], label: f.label });
-  }, []);
+    setToday({
+      level: levels[levels.length - 1],
+      label: churchDay.fast.label,
+    });
+  }, [churchDay]);
 
   const load = useCallback(
     async (l: FastLevel | null, s: RecipeSeason, t: RecipeTradition) => {

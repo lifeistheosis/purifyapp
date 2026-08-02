@@ -3,12 +3,30 @@
 import { useCallback, useMemo } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import Link from "next/link";
-import { fastingStatus, type FastKind } from "@/lib/calendar/orthodox";
+import {
+  fastingStatus,
+  shiftForStyle,
+  type CalStyle,
+  type FastKind,
+} from "@/lib/calendar/orthodox";
+import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
+import { useToday } from "@/lib/calendar/useToday";
 import { useFastCheckins, dayKey, isFastingDay } from "@/lib/fasting/tracker";
 import { type CheckinStatus, localDayToUtcNoon } from "@/lib/fasting/streak";
 
-/** Today's rule for a local calendar day, read in the frame fastingStatus expects. */
-const ruleFor = (d: Date) => fastingStatus(localDayToUtcNoon(d));
+/**
+ * Today's rule for a local calendar day, read in the frame fastingStatus
+ * expects, and SHIFTED for the reader's reckoning.
+ *
+ * The shift is not optional. Without it an Old (Julian) Calendar reader was
+ * shown the New Calendar rule here while Today and /prayers/today, which both
+ * go through useChurchDay, showed them the shifted one. Two screens, two
+ * different fasts, the same second. That is precisely the drift
+ * lib/calendar/useChurchDay.ts was created to end, and this file was the one
+ * surface still outside it.
+ */
+const ruleFor = (d: Date, style: CalStyle) =>
+  fastingStatus(shiftForStyle(localDayToUtcNoon(d), style));
 
 /**
  * The fasting tracker: today's rule, a gentle check-in, the current streak,
@@ -76,12 +94,31 @@ function CheckControl({
 
 export function FastingTrackerClient() {
   const { locale, t, tn } = useTranslate();
-  const today = useMemo(() => new Date(), []);
-  const kindOf = useCallback((d: Date) => ruleFor(d).kind, []);
+  const [style] = useCalendarStyleDefault();
+  // useToday() is the tick, not the value: it re-fires at local midnight and
+  // on visibilitychange/focus. The previous `useMemo(() => new Date(), [])`
+  // froze at mount, so the native app left open overnight kept showing
+  // yesterday's rule and checked yesterday's box. The wall-clock Date is
+  // rebuilt on each tick because everything below (dayKey, the `recent`
+  // cursor) works in local getters; converting the whole file to the UTC-noon
+  // frame would be a wider change than this bug warrants.
+  // useToday() returns the reader's local day in the UTC-noon frame, so it is
+  // read back with UTC getters (see lib/rhythm/dayKey.ts for why local getters
+  // on that frame are wrong past UTC+12) and rebuilt as the local-midnight
+  // wall-clock Date the rest of this file works in.
+  const tick = useToday();
+  const today = useMemo(
+    () =>
+      tick
+        ? new Date(tick.getUTCFullYear(), tick.getUTCMonth(), tick.getUTCDate())
+        : new Date(),
+    [tick],
+  );
+  const kindOf = useCallback((d: Date) => ruleFor(d, style).kind, [style]);
   const { byDay, streak, summary, mark, clear } = useFastCheckins(kindOf, today);
 
   const todayKey = dayKey(today);
-  const todayFast = ruleFor(today);
+  const todayFast = ruleFor(today, style);
   const todayIsFast = isFastingDay(todayFast.kind);
   const todayMark = byDay.get(todayKey)?.status;
 
@@ -90,7 +127,7 @@ export function FastingTrackerClient() {
     const out: { key: string; date: Date; kind: FastKind; ruleId: string }[] = [];
     const cursor = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     for (let i = 0; i < 60 && out.length < 16; i++) {
-      const fs = ruleFor(cursor);
+      const fs = ruleFor(cursor, style);
       if (isFastingDay(fs.kind)) {
         out.push({ key: dayKey(cursor), date: new Date(cursor), kind: fs.kind, ruleId: fs.ruleId });
       }

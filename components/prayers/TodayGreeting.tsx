@@ -12,7 +12,8 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { readPrayedDates, rhythmFor } from "@/lib/prayers/storage";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { cn } from "@/lib/cn";
+import { RhythmRow } from "@/components/rhythm/RhythmRow";
+import { todayKey } from "@/lib/rhythm/dayKey";
 
 type Suggestion = {
   greetingKey: string;
@@ -114,23 +115,17 @@ export function TodayGreeting() {
           </>
         )}
       </p>
+      {/* Still hidden until there is something to show: an empty row on a
+          reader's first morning would be fourteen reproaches. */}
       {prayedAny ? (
-        <p className="mt-3 flex items-center gap-2">
-          <span className="flex items-center gap-[5px]" aria-hidden>
-            {rhythm.map((d) => (
-              <span
-                key={d.date}
-                className={cn(
-                  "h-1.5 w-1.5 rounded-full",
-                  d.prayed ? "bg-gold" : "bg-paper/15",
-                )}
-              />
-            ))}
-          </span>
-          <span className="font-sans text-caption text-paper/55">
-            {t("prayers.today.lastFourteenDays", { label: t(suggestion.labelKey) })}
-          </span>
-        </p>
+        <RhythmRow
+          className="mt-3"
+          days={rhythm.map((d) => ({ date: d.date, kept: d.prayed }))}
+          todayKey={todayKey()}
+          label={t("prayers.today.lastFourteenDays", {
+            label: t(suggestion.labelKey),
+          })}
+        />
       ) : null}
     </div>
   );
