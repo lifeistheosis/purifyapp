@@ -98,6 +98,42 @@ describe("interlinear data integrity", () => {
     expect(offenders, offenders.join("\n  ")).toEqual([]);
   });
 
+  it("no original-language chapter numbers past the book's real chapter count", () => {
+    // This is the assertion that would have caught the 2 Maccabees
+    // corruption. data/bible/original/2-maccabees/ held EIGHTEEN chapter
+    // files for a book with fifteen, and all eighteen were 4 Maccabees. Every
+    // file's `book` field said "2-maccabees", so the label check above passes
+    // cleanly; only the count betrayed it.
+    // Books where the Greek genuinely has more chapters than the English,
+    // because the LXX divides them differently. These are correct data, not
+    // corruption, and must not be "fixed" by deleting a file.
+    //
+    // joel: the LXX has four chapters. LXX Joel 3 is Brenton's Joel 2:28-32
+    //   ("I will pour out my Spirit"), and LXX Joel 4 is Brenton's Joel 3.
+    //   Serving these beside the English needs a chapter MAPPING, which
+    //   loadOriginal does not have; until it does, the interlinear stays
+    //   NT-only and none of this is reached.
+    const VERSIFICATION_EXEMPT = new Set(["joel"]);
+
+    const offenders: string[] = [];
+    for (const slug of dirs(ORIGINAL)) {
+      if (VERSIFICATION_EXEMPT.has(slug)) continue;
+      const meta = BY_SLUG.get(slug);
+      if (!meta) {
+        offenders.push(`original/${slug} is not a book in books.json`);
+        continue;
+      }
+      for (const n of chapterFiles(ORIGINAL, slug)) {
+        if (n > meta.chapters) {
+          offenders.push(
+            `original/${slug}/${n}.json but ${slug} has ${meta.chapters} chapters`,
+          );
+        }
+      }
+    }
+    expect(offenders, offenders.join("\n  ")).toEqual([]);
+  });
+
   it("no english-tagged chapter numbers past the book's real chapter count", () => {
     const offenders: string[] = [];
     for (const slug of dirs(TAGGED)) {
