@@ -84,12 +84,32 @@ async function searchCommons(query) {
     .filter((t) => /\.(jpg|jpeg|png)$/i.test(t));
 }
 
+/**
+ * Public-domain family only. Mirrors PD_PATTERN in fetch-shop-media.mjs.
+ *
+ * This gate did not exist. This script populated all 110 saint icons while
+ * its sibling, fetch-shop-media.mjs, refused anything that failed the same
+ * check. Two of the files it fetched are watermarked works by living
+ * iconographers. A licence check is not optional for a script that downloads
+ * images into a shipped app.
+ */
+const PD_PATTERN = /^(pd|public domain|cc0)/i;
+
 async function fileUrl(title) {
   const r = await get(
-    `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=imageinfo&iiprop=url&format=json`,
+    `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=imageinfo&iiprop=url|extmetadata&format=json`,
   );
   const json = JSON.parse(r.body.toString());
-  return Object.values(json.query?.pages || {})[0]?.imageinfo?.[0]?.url ?? null;
+  const info = Object.values(json.query?.pages || {})[0]?.imageinfo?.[0];
+  if (!info?.url) return null;
+  const meta = info.extmetadata || {};
+  const short = (meta.LicenseShortName?.value || "").trim();
+  const license = short || (meta.License?.value || "").trim();
+  if (!PD_PATTERN.test(license)) {
+    console.warn(`  skip (license: ${license || "unknown"}) ${title}`);
+    return null;
+  }
+  return info.url;
 }
 
 (async () => {
