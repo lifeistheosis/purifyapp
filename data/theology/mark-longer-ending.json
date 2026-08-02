@@ -16,22 +16,38 @@
       "kind": "para",
       "text": "Mark 16:9-20 is supported by over 99% of the Greek manuscripts of the Gospel of Mark, by over thirty (closer to forty) early patristic references, and by a wide range of versional witnesses, Latin, Syriac, Gothic, Coptic. Out of roughly 1,650 Greek manuscripts of Mark, only three end at 16:8; one of those three is a medieval commentary in which the same commentator's longer work treats verses 9-20. The Longer Ending is the normal form of the text from its initial production at Rome onward."
     },
-    { "kind": "heading", "text": "The early manuscripts that stop at v. 8", "level": 2 },
+    {
+      "kind": "heading",
+      "text": "The early manuscripts that stop at v. 8",
+      "level": 2
+    },
     {
       "kind": "para",
       "text": "Codex Vaticanus (B) stops at v. 8, but leaves an entire blank column after it. This is \"memorial space\": a scribe who knew his exemplar was missing something marked the gap with empty parchment. Codex Sinaiticus (Aleph) also stops at v. 8, with a replacement four-leaf bifolium in its own ending. Both are fourth-century Egyptian-tradition manuscripts; both carry physical signs that the scribes were aware of an ending they could not include from their exemplars. Outside Egypt, the verses are everywhere."
     },
-    { "kind": "heading", "text": "Eusebius does not know the Shorter Ending", "level": 2 },
+    {
+      "kind": "heading",
+      "text": "Eusebius does not know the Shorter Ending",
+      "level": 2
+    },
     {
       "kind": "para",
       "text": "The objection from Eusebius of Caesarea (Ad Marinum) is often cited; less often noticed is what Eusebius does not say. He shows no awareness of the so-called Shorter Ending, the alternative two-sentence ending that appears in a handful of late Egyptian manuscripts. If the Shorter Ending had been a known variant in the early fourth century at Caesarea, a scholar of Eusebius' caliber would have mentioned it. He does not, because the ending that was disputed in his circle was the Longer Ending preserved in the wider Church, not a competing shorter form."
     },
-    { "kind": "heading", "text": "The patristic chain in the second century", "level": 2 },
+    {
+      "kind": "heading",
+      "text": "The patristic chain in the second century",
+      "level": 2
+    },
     {
       "kind": "para",
       "text": "Mark 16:9-20 is attested by at least four second-century witnesses, more than a hundred years before Vaticanus and Sinaiticus. Justin Martyr (c. 155) uses in his First Apology a phrase, ἐξελθόντες πανταχοῦ ἐκήρυξαν (\"going out, they preached everywhere\"), which occurs nowhere else in the surviving Greek of any author except Mark 16:20. Tatian's Diatessaron (172) wove the four Gospels into one harmony and included the twelve verses. The Epistula Apostolorum (c. 150) echoes the narrative shape of the Longer Ending. Irenaeus of Lyons (c. 184) quotes Mark 16:19 by name in Book III of Against Heresies."
     },
-    { "kind": "heading", "text": "The manuscript notes that defend the passage", "level": 2 },
+    {
+      "kind": "heading",
+      "text": "The manuscript notes that defend the passage",
+      "level": 2
+    },
     {
       "kind": "para",
       "text": "Where later Greek manuscripts contain marginal notes about Mark 16:9-20, they almost always defend the passage rather than impugn it. Manuscripts 20, 215, and 300, with the Jerusalem Colophon, carry a note that reads: \"From here to the end forms no part of the text in some of the copies. But in the ancient ones, it all appears intact.\" The scribes are reporting that they knew of late copies missing the ending, but that the older copies they consulted contained it whole."
@@ -84,23 +100,47 @@
       "reference": "256",
       "text": "We have assuredly the rule of truth which the Lord by his divine precept commanded to his Apostles, saying, \"Go ye, lay on hands in my name, expel demons.\" And in another place: \"Go ye and teach,\" etc.",
       "gloss": "A North African bishop, at a conciliar session in 256, cites Mark 16:15-18 as the apostolic mandate. The Longer Ending was the conciliar text of the third-century African Church."
-    },
-    {
-      "author": "James Snapp Jr",
-      "work": "Authentic Case for Mark 16:9-20, Fourth Edition",
-      "reference": "p. 13",
-      "text": "Out of about 1,650 Greek manuscripts of the Gospel of Mark, only three Greek manuscripts end the text at 16:8. Two of those three are early. These two early copies, Codex Vaticanus and Codex Sinaiticus, represent a form of the text of Mark which circulated in Egypt in the early 200s and was taken from there to the city of Caesarea, where it was still found in the 300s. Although the text of Mark in Codex Vaticanus stops at 16:8, the copyist left a clear indication that he recollected the absent verses: after Mark 16:8, there is a distinct blank space in Codex Vaticanus, including an entire blank column. This is an example of \"memorial space.\"",
-      "gloss": "Modern textual scholarship's case for the Longer Ending, as a summary of the manuscript record."
     }
   ],
   "scripture": [
-    { "ref": "Mark 16:9-20", "bibleRef": "Mark 16:9", "note": "The Longer Ending itself." },
-    { "ref": "Mark 16:15", "bibleRef": "Mark 16:15", "note": "Go ye into all the world, the Great Commission as Mark records it." },
-    { "ref": "Mark 16:16", "bibleRef": "Mark 16:16", "note": "He that believeth and is baptized shall be saved." },
-    { "ref": "Mark 16:18", "bibleRef": "Mark 16:18", "note": "They shall take up serpents, cited by Hippolytus, the Apostolic Constitutions, and the Didascalia." },
-    { "ref": "Mark 16:19", "bibleRef": "Mark 16:19", "note": "Quoted by Irenaeus in Against Heresies III.10." },
-    { "ref": "Mark 16:20", "bibleRef": "Mark 16:20", "note": "Quoted in unique Greek phrasing by Justin Martyr." },
-    { "ref": "Matthew 28:19", "bibleRef": "Matthew 28:19", "note": "Paired with Mark 16:15-18 in the conciliar citation of Vincentius." }
+    {
+      "ref": "Mark 16:9-20",
+      "bibleRef": "Mark 16:9",
+      "note": "The Longer Ending itself."
+    },
+    {
+      "ref": "Mark 16:15",
+      "bibleRef": "Mark 16:15",
+      "note": "Go ye into all the world, the Great Commission as Mark records it."
+    },
+    {
+      "ref": "Mark 16:16",
+      "bibleRef": "Mark 16:16",
+      "note": "He that believeth and is baptized shall be saved."
+    },
+    {
+      "ref": "Mark 16:18",
+      "bibleRef": "Mark 16:18",
+      "note": "They shall take up serpents, cited by Hippolytus, the Apostolic Constitutions, and the Didascalia."
+    },
+    {
+      "ref": "Mark 16:19",
+      "bibleRef": "Mark 16:19",
+      "note": "Quoted by Irenaeus in Against Heresies III.10."
+    },
+    {
+      "ref": "Mark 16:20",
+      "bibleRef": "Mark 16:20",
+      "note": "Quoted in unique Greek phrasing by Justin Martyr."
+    },
+    {
+      "ref": "Matthew 28:19",
+      "bibleRef": "Matthew 28:19",
+      "note": "Paired with Mark 16:15-18 in the conciliar citation of Vincentius."
+    }
   ],
-  "related": ["comma-johanneum", "filioque"]
+  "related": [
+    "comma-johanneum",
+    "filioque"
+  ]
 }
