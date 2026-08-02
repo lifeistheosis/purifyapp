@@ -13,6 +13,7 @@ import {
 import { enableReminders as enablePush } from "@/lib/push/reminders";
 import { PurifyMark } from "@/components/ui/PurifyMark";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
+import { authOrigin } from "@/lib/site";
 import { createClient } from "@/lib/supabase/client";
 
 /**
@@ -277,7 +278,15 @@ function AccountStep({
         email: email.trim(),
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/api/auth/callback?next=/`,
+          // authOrigin(), NOT window.location.origin. Inside the Capacitor
+          // shell the origin is https://localhost, so Supabase would mail a
+          // confirmation link to https://localhost/api/auth/callback, which
+          // resolves nowhere on any device. Every account created through
+          // in-app onboarding with email confirmation on was unconfirmable.
+          // authOrigin (lib/site.ts) returns SITE_URL for every origin except
+          // http://localhost and http://127.*, which are local web dev only.
+          // components/auth/SignUpForm.tsx:57 already does this correctly.
+          emailRedirectTo: `${authOrigin()}/api/auth/callback?next=/`,
         },
       });
       if (err) throw err;
