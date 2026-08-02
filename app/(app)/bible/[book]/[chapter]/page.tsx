@@ -33,6 +33,7 @@ import {
  loadOriginal,
  loadEnglishTagged,
 } from "@/lib/bible/load";
+import { interlinearAvailable } from "@/lib/bible/interlinearBooks";
 import { strongsMap } from "@/lib/bible/strongs";
 import {
  isLicensed,
@@ -103,9 +104,12 @@ export default async function BibleChapterPage({
  const usingLicensed = Boolean(licensed);
 
  // Interlinear (Greek + English Strong's tags) is NT-only, and only ever on
- // the public-domain text, never overlaid on licensed translations.
- const isNT = b!.testament === "NT";
- const showInterlinear = isNT && !usingLicensed;
+ // the public-domain text, never overlaid on licensed translations. The
+ // per-book availability check also blocks any book whose interlinear data is
+ // known to be wrong, all-or-nothing, so a reader never gets half of it.
+ // See lib/bible/interlinearBooks.ts.
+ const showInterlinear =
+   interlinearAvailable(book, b!.testament) && !usingLicensed;
  const [data, intro, commentary, original, englishTagged] = await Promise.all([
  usingLicensed ? Promise.resolve(null) : loadChapter(book, chapterNum),
  chapterNum === 1 ? loadIntro(book) : Promise.resolve(null),
