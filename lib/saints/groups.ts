@@ -222,6 +222,31 @@ export const SAINT_GROUP_MEMBERSHIP: Record<string, SaintGroupId[]> = {
   "titus-of-crete": ["apostles", "hierarchs"],
   "euplus-of-catania": ["martyrs"],
   "seven-sleepers-of-ephesus": ["martyrs"],
+
+  // August, batch 2
+  "basil-the-blessed": ["wonderworkers"],
+  "dalmatus-of-constantinople": ["desert-monastics", "council-fathers"],
+  "anthony-the-roman": ["desert-monastics", "wonderworkers"],
+  "eusignius-of-antioch": ["martyrs"],
+  "dometius-the-persian": ["desert-monastics", "martyrs"],
+  "or-of-the-thebaid": ["desert-monastics"],
+  "aemilian-of-cyzicus": ["hierarchs"],
+  "myron-of-crete": ["hierarchs", "wonderworkers"],
+  "theodore-and-vasily-of-the-caves": ["desert-monastics", "martyrs"],
+  "photius-and-anicetus": ["martyrs"],
+  "diomedes-the-physician": ["martyrs", "wonderworkers"],
+  "myron-of-cyzicus": ["martyrs"],
+  "floros-and-lauros": ["martyrs"],
+  "andrew-stratelates": ["martyrs"],
+  "abraham-of-smolensk": ["desert-monastics", "wonderworkers"],
+  "agathonicus-of-nicomedia": ["martyrs"],
+  "lupus-of-thessaloniki": ["martyrs"],
+  "peter-of-moscow": ["hierarchs", "wonderworkers"],
+  "adrian-and-natalia": ["martyrs", "women"],
+  "phanourios-the-newly-revealed": ["martyrs"],
+  "job-of-pochaev": ["desert-monastics", "wonderworkers"],
+  "alexander-of-svir": ["desert-monastics", "wonderworkers"],
+  "patriarchs-alexander-john-paul": ["hierarchs", "council-fathers"],
 };
 
 export function groupsForSlug(slug: string): SaintGroupId[] {

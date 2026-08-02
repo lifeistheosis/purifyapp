@@ -29,69 +29,75 @@ The shell in this environment has no outbound DNS. Verbatim primary text therefo
 
 ## Inventory
 
-Status key: **live** = profile exists and the calendar links to it. **batch 1** / **batch 2** = planned, in this workstream. **scripture** = the commemoration's primary text is Scripture, already in the app, and the profile cross-links rather than duplicating.
+Status key: **live** = profile exists and the calendar links to it. **held** = deliberately not profiled, see below. **scripture** = the commemoration's primary text is Scripture, already in the app, and the profile cross-links rather than duplicating. Every row below is current as of the two commits on `feat/august-menologion`.
 
 | Day | Commemoration | Slug | Status | Life source | Primary text (PD) |
 |---|---|---|---|---|---|
 | 08-01 | Procession of the Cross | (feast) | live | | |
-| 08-01 | Seven Holy Maccabean Martyrs, Solomonia, Eleazar | `maccabean-martyrs` | batch 1 | 2 Maccabees 6-7 | **2 Macc 6-7** (Brenton LXX, in app); **St. Gregory the Theologian, Oration 15 on the Maccabees** (NPNF2 Vol 7) |
-| 08-02 | Translation of the relics of Stephen | (feast) | batch 2 | | Acts 6-7 |
-| 08-02 | Blessed Basil, Fool-for-Christ of Moscow | `basil-the-blessed` | batch 2 | Russian synaxarion | none PD |
-| 08-03 | Isaac, Dalmatus and Faustus of the Studion | `dalmatus-of-constantinople` | batch 2 | Synaxarion | none PD |
-| 08-03 | Anthony the Roman of Novgorod | `anthony-the-roman` | batch 2 | Novgorod Life | none PD |
-| 08-04 | Seven Sleepers of Ephesus | `seven-sleepers-of-ephesus` | batch 1 | Synaxarion; Gregory of Tours | none PD in English |
-| 08-04 | Virgin-martyr Eudocia of Persia | `eudocia-of-persia` | batch 2 | Synaxarion | none |
+| 08-01 | Seven Holy Maccabean Martyrs, Solomonia, Eleazar | `maccabean-martyrs` | live | 2 Maccabees 6-7 | **2 Macc 6-7** (Brenton LXX, in app); **St. Gregory the Theologian, Oration 15 on the Maccabees** (NPNF2 Vol 7) |
+| 08-02 | Translation of the relics of Stephen | `stephen-the-protomartyr` | live | Acts 6-7 | **Acts 6-7** (KJV and Brenton, in app) |
+| 08-02 | Blessed Basil, Fool-for-Christ of Moscow | `basil-the-blessed` | live | Russian synaxarion | none PD |
+| 08-03 | Isaac, Dalmatus and Faustus of the Studion | `dalmatus-of-constantinople` | live | Synaxarion | none PD |
+| 08-03 | Anthony the Roman of Novgorod | `anthony-the-roman` | live | Novgorod Life | none PD |
+| 08-04 | Seven Sleepers of Ephesus | `seven-sleepers-of-ephesus` | live | Synaxarion; Gregory of Tours | none PD in English |
+| 08-04 | Virgin-martyr Eudocia of Persia | `eudocia-of-persia` | held | Synaxarion | none |
 | 08-05 | Forefeast of the Transfiguration | (feast) | live | | |
-| 08-05 | Martyr Eusignius of Antioch | `eusignius-of-antioch` | batch 2 | Synaxarion | none |
+| 08-05 | Martyr Eusignius of Antioch | `eusignius-of-antioch` | live | Synaxarion | none |
 | 08-06 | Transfiguration | (feast) | live | | St. Ephraim, On the Transfiguration (already in app) |
-| 08-07 | Venerable-martyr Dometius the Persian | `dometius-the-persian` | batch 2 | Synaxarion | none |
-| 08-07 | Or of the Thebaid | `or-of-the-thebaid` | batch 2 | Palladius, *Lausiac History* | **Lausiac History** ch. on Or (PD) |
-| 08-08 | Aemilian the Confessor of Cyzicus | `aemilian-of-cyzicus` | batch 2 | Synaxarion | none |
-| 08-08 | Myron the Wonderworker of Crete | `myron-of-crete` | batch 2 | Synaxarion | none |
+| 08-07 | Venerable-martyr Dometius the Persian | `dometius-the-persian` | live | Synaxarion | none |
+| 08-07 | Or of the Thebaid | `or-of-the-thebaid` | live | Palladius, *Lausiac History* | **Lausiac History** ch. on Or (PD) |
+| 08-08 | Aemilian the Confessor of Cyzicus | `aemilian-of-cyzicus` | live | Synaxarion | none |
+| 08-08 | Myron the Wonderworker of Crete | `myron-of-crete` | live | Synaxarion | none |
 | 08-09 | Apostle Matthias | `apostle-matthias` | live | | |
-| 08-09 | Herman of Alaska | `herman-of-alaska` | batch 1 | Valaam Life (1894); the mission records | none PD in English |
-| 08-10 | Lawrence the Archdeacon of Rome | `lawrence-the-archdeacon` | batch 1 | **St. Ambrose, On the Duties of the Clergy I.41** (NPNF2 Vol 10); Prudentius, *Peristephanon* II | **Ambrose I.41** (PD) |
-| 08-10 | Sixtus II, Pope of Rome | `sixtus-of-rome` | batch 1 | **Cyprian, Epistle 80** (ANF Vol 5) | **Epistle 80** (PD) |
-| 08-11 | Euplus the Deacon of Catania | `euplus-of-catania` | batch 1 | The *Acts of Euplus* (court record, Ruinart) | **Acts of Euplus** (PD) |
-| 08-11 | Theodore and Vasily of the Kiev Caves | `theodore-and-vasily` | batch 2 | *Kiev Caves Paterikon* | none PD in English |
-| 08-12 | Photius and Anicetus of Nicomedia | `photius-and-anicetus` | batch 2 | Synaxarion | none |
-| 08-12 | Pamphilus and Capito | `pamphilus-and-capito` | batch 2 | Synaxarion | none |
+| 08-09 | Herman of Alaska | `herman-of-alaska` | live | Valaam Life (1894); the mission records | none PD in English |
+| 08-10 | Lawrence the Archdeacon of Rome | `lawrence-the-archdeacon` | live | **St. Ambrose, On the Duties of the Clergy I.41** (NPNF2 Vol 10); Prudentius, *Peristephanon* II | **Ambrose I.41** (PD) |
+| 08-10 | Sixtus II, Pope of Rome | `sixtus-of-rome` | live | **Cyprian, Epistle 80** (ANF Vol 5) | **Epistle 80** (PD) |
+| 08-11 | Euplus the Deacon of Catania | `euplus-of-catania` | live | The *Acts of Euplus* (court record, Ruinart) | **Acts of Euplus** (PD) |
+| 08-11 | Theodore and Vasily of the Kiev Caves | `theodore-and-vasily-of-the-caves` | live | *Kiev Caves Paterikon* | none PD in English |
+| 08-12 | Photius and Anicetus of Nicomedia | `photius-and-anicetus` | live | Synaxarion | none |
+| 08-12 | Pamphilus and Capito | `pamphilus-and-capito` | held | Synaxarion | none |
 | 08-13 | Translation of the relics of Maximus the Confessor | `maximus-the-confessor` | live | | |
-| 08-13 | Tikhon of Voronezh and Zadonsk | `tikhon-of-zadonsk` | batch 1 | Russian synaxarion; his own retirement records | none PD in English (his works are modern translations) |
-| 08-14 | Prophet Micah | `prophet-micah` | batch 2, scripture | | **Micah** (Brenton LXX, in app) |
+| 08-13 | Tikhon of Voronezh and Zadonsk | `tikhon-of-zadonsk` | live | Russian synaxarion; his own retirement records | none PD in English (his works are modern translations) |
+| 08-14 | Prophet Micah | `prophet-micah` | live, scripture | | **Micah** (Brenton LXX, in app) |
 | 08-15 | Dormition | `theotokos` | live | | |
-| 08-16 | Translation of the Image Not Made by Hands | (feast) | batch 2 | | tied to `thaddeus-of-edessa` |
-| 08-16 | Martyr Diomedes the Physician | `diomedes-the-physician` | batch 2 | Synaxarion | none |
-| 08-17 | Martyr Myron of Cyzicus | `myron-of-cyzicus` | batch 2 | Synaxarion | none |
-| 08-17 | Straton, Philip and Eutychian | `straton-and-companions` | batch 2 | Synaxarion | none |
-| 08-18 | Floros and Lauros of Illyricum | `floros-and-lauros` | batch 2 | Synaxarion | none |
-| 08-18 | John and George of Constantinople | `john-and-george-of-constantinople` | batch 2 | Synaxarion | none |
-| 08-19 | Andrew Stratelates and the 2,593 | `andrew-stratelates` | batch 2 | Synaxarion | none |
+| 08-16 | Translation of the Image Not Made by Hands | (feast) | live | | tied to `thaddeus-of-edessa` |
+| 08-16 | Martyr Diomedes the Physician | `diomedes-the-physician` | live | Synaxarion | none |
+| 08-17 | Martyr Myron of Cyzicus | `myron-of-cyzicus` | live | Synaxarion | none |
+| 08-17 | Straton, Philip and Eutychian | `straton-and-companions` | held | Synaxarion | none |
+| 08-18 | Floros and Lauros of Illyricum | `floros-and-lauros` | live | Synaxarion | none |
+| 08-18 | John and George of Constantinople | `john-and-george-of-constantinople` | held | Synaxarion | none |
+| 08-19 | Andrew Stratelates and the 2,593 | `andrew-stratelates` | live | Synaxarion | none |
 | 08-19 | Donskoy Icon | (icon) | out of scope | | |
-| 08-20 | Prophet Samuel | `prophet-samuel` | batch 2, scripture | | **1 Kingdoms** (Brenton LXX, in app) |
-| 08-21 | Apostle Thaddeus of the Seventy | `thaddeus-of-edessa` | batch 1 | **Eusebius, Ecclesiastical History I.13** (NPNF2 Vol 1) | **Eusebius EH I.13**, the Abgar correspondence and the mission of Thaddeus (PD) |
-| 08-21 | Abraham of Smolensk | `abraham-of-smolensk` | batch 2 | Russian Life by Ephraim | none PD in English |
-| 08-22 | Agathonicus and companions | `agathonicus-of-nicomedia` | batch 2 | Synaxarion | none |
-| 08-22 | Anthusa and her servants | `anthusa-the-martyr` | batch 2 | Synaxarion | none |
+| 08-20 | Prophet Samuel | `prophet-samuel` | live, scripture | | **1 Kingdoms** (Brenton LXX, in app) |
+| 08-21 | Apostle Thaddeus of the Seventy | `thaddeus-of-edessa` | live | **Eusebius, Ecclesiastical History I.13** (NPNF2 Vol 1) | **Eusebius EH I.13**, the Abgar correspondence and the mission of Thaddeus (PD) |
+| 08-21 | Abraham of Smolensk | `abraham-of-smolensk` | live | Russian Life by Ephraim | none PD in English |
+| 08-22 | Agathonicus and companions | `agathonicus-of-nicomedia` | live | Synaxarion | none |
+| 08-22 | Anthusa and her servants | `anthusa-the-martyr` | held | Synaxarion | none |
 | 08-23 | Irenaeus of Lyons | `irenaeus-of-lyons` | live | | |
-| 08-23 | Hieromartyr Lupus | `lupus-of-thessaloniki` | batch 2 | Synaxarion | none |
-| 08-24 | Eutyches, disciple of John the Theologian | `eutyches-the-disciple` | batch 2 | Synaxarion | none |
-| 08-24 | Peter, Metropolitan of Moscow | `peter-of-moscow` | batch 2 | Russian Life by Cyprian of Kiev | none PD in English |
+| 08-23 | Hieromartyr Lupus | `lupus-of-thessaloniki` | live | Synaxarion | none |
+| 08-24 | Eutyches, disciple of John the Theologian | `eutyches-the-disciple` | held | Synaxarion | none |
+| 08-24 | Peter, Metropolitan of Moscow | `peter-of-moscow` | live | Russian Life by Cyprian of Kiev | none PD in English |
 | 08-25 | Translation of the relics of Bartholomew | `apostle-bartholomew` | live | | |
-| 08-25 | Apostle Titus of the Seventy | `titus-of-crete` | batch 1 | Titus, 2 Timothy 4:10, 2 Corinthians | **Chrysostom, Homilies on Titus** (already in app, cross-linked) |
-| 08-26 | Adrian and Natalia of Nicomedia | `adrian-and-natalia` | batch 2 | Synaxarion | none |
+| 08-25 | Apostle Titus of the Seventy | `titus-of-crete` | live | Titus, 2 Timothy 4:10, 2 Corinthians | **Chrysostom, Homilies on Titus** (already in app, cross-linked) |
+| 08-26 | Adrian and Natalia of Nicomedia | `adrian-and-natalia` | live | Synaxarion | none |
 | 08-26 | Vladimir Icon | (icon) | out of scope | | |
-| 08-27 | Pimen the Great | `pimen-the-great` | batch 1 | **Apophthegmata Patrum**; Palladius | **The Sayings of Abba Poemen** (Budge, *The Paradise of the Fathers*, 1907, PD) |
-| 08-27 | Phanourios the Newly-Revealed | `phanourios-the-newly-revealed` | batch 2 | Rhodian tradition | none |
+| 08-27 | Pimen the Great | `pimen-the-great` | live | **Apophthegmata Patrum**; Palladius | **The Sayings of Abba Poemen** (Budge, *The Paradise of the Fathers*, 1907, PD) |
+| 08-27 | Phanourios the Newly-Revealed | `phanourios-the-newly-revealed` | live | Rhodian tradition | none |
 | 08-27 | Hosius of Cordova | `hosius-of-cordova` | live | | |
-| 08-28 | Moses the Ethiopian of Scete | `moses-the-ethiopian` | batch 1 | **Apophthegmata Patrum**; Sozomen VI.29; Palladius | **The Sayings of Abba Moses** (Budge, PD); **Sozomen VI.29** (NPNF2 Vol 2) |
+| 08-28 | Moses the Ethiopian of Scete | `moses-the-ethiopian` | live | **Apophthegmata Patrum**; Sozomen VI.29; Palladius | **The Sayings of Abba Moses** (Budge, PD); **Sozomen VI.29** (NPNF2 Vol 2) |
 | 08-28 | Augustine of Hippo | `augustine-of-hippo` | live | | |
-| 08-28 | Job of Pochaev | `job-of-pochaev` | batch 2 | Life by Dositheus | none PD in English |
+| 08-28 | Job of Pochaev | `job-of-pochaev` | live | Life by Dositheus | none PD in English |
 | 08-29 | Beheading of the Forerunner | `john-the-baptist` | live | | |
-| 08-30 | Alexander, John and Paul the New of Constantinople | `patriarchs-alexander-john-paul` | batch 2 | Synaxarion | none |
-| 08-30 | Alexander of Svir | `alexander-of-svir` | batch 2 | Life by Irodion | none PD in English |
+| 08-30 | Alexander, John and Paul the New of Constantinople | `patriarchs-alexander-john-paul` | live | Synaxarion | none |
+| 08-30 | Alexander of Svir | `alexander-of-svir` | live | Life by Irodion | none PD in English |
 | 08-31 | Deposition of the Sash | (feast) | live | | |
-| 08-31 | Cyprian, Bishop of Carthage | `cyprian-of-carthage` | batch 1 | **Pontius the Deacon, Life and Passion of Cyprian** (ANF Vol 5) | **the whole ANF Vol 5 Cyprian corpus**: Pontius's Life, 12 treatises, 82 epistles, the Seventh Council of Carthage |
+| 08-31 | Cyprian, Bishop of Carthage | `cyprian-of-carthage` | live | **Pontius the Deacon, Life and Passion of Cyprian** (ANF Vol 5) | **the whole ANF Vol 5 Cyprian corpus**: Pontius's Life, 12 treatises, 82 epistles, the Seventh Council of Carthage |
+
+## The six held commemorations
+
+Six commemorations were deliberately left without a profile rather than given a padded one. In each case what survives is a name, a place, a manner of death and a year, and nothing else: Eudocia of Persia (08-04), Pamphilus and Capito (08-12), Straton, Philip and Eutychian (08-17), John and George of Constantinople (08-18), Anthusa and her servants (08-22), and Eutyches the disciple of John the Theologian (08-24). They keep their line in the menologion with the name and the note, which is the whole of what the Church has kept about them, and the calendar shows it. A profile page whose Life is three sentences of inference would be worse than the line.
+
+If a synaxarion account turns up with real content in it, any of the six is a small addition: a registry entry, a group tag, and one line in the calendar wiring.
 
 ## The one large corpus
 

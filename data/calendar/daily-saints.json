@@ -1841,21 +1841,25 @@
   "08-02": [
     {
       "name": "Translation of Relics of Stephen the First-Martyr",
-      "kind": "feast"
+      "kind": "feast",
+      "slug": "stephen-the-protomartyr"
     },
     {
       "name": "Blessed Basil, Fool-for-Christ of Moscow",
-      "note": "the Wonderworker, +1557"
+      "note": "the Wonderworker, +1557",
+      "slug": "basil-the-blessed"
     }
   ],
   "08-03": [
     {
       "name": "Saints Isaac, Dalmatus, and Faustus of the Studion",
-      "note": "+4-5th c."
+      "note": "+4-5th c.",
+      "slug": "dalmatus-of-constantinople"
     },
     {
       "name": "Ven. Anthony the Roman of Novgorod",
-      "note": "+1147"
+      "note": "+1147",
+      "slug": "anthony-the-roman"
     }
   ],
   "08-04": [
@@ -1876,7 +1880,8 @@
     },
     {
       "name": "Martyr Eusignius of Antioch",
-      "note": "the soldier, +362"
+      "note": "the soldier, +362",
+      "slug": "eusignius-of-antioch"
     }
   ],
   "08-06": [
@@ -1888,11 +1893,13 @@
   "08-07": [
     {
       "name": "Venerable-martyr Dometius the Persian",
-      "note": "+363"
+      "note": "+363",
+      "slug": "dometius-the-persian"
     },
     {
       "name": "Ven. Or of the Thebaid",
-      "note": "Desert Father, +ca. 390"
+      "note": "Desert Father, +ca. 390",
+      "slug": "or-of-the-thebaid"
     },
     {
       "name": "St. Irene the Empress",
@@ -1903,11 +1910,13 @@
   "08-08": [
     {
       "name": "St. Aemilian the Confessor, Bishop of Cyzicus",
-      "note": "iconophile, +820"
+      "note": "iconophile, +820",
+      "slug": "aemilian-of-cyzicus"
     },
     {
       "name": "St. Myron the Wonderworker, Bishop of Crete",
-      "note": "+350"
+      "note": "+350",
+      "slug": "myron-of-crete"
     }
   ],
   "08-09": [
@@ -1943,13 +1952,15 @@
     },
     {
       "name": "Sts. Theodore and Vasily of the Kiev Caves",
-      "note": "+1098"
+      "note": "+1098",
+      "slug": "theodore-and-vasily-of-the-caves"
     }
   ],
   "08-12": [
     {
       "name": "Martyrs Photius and Anicetus",
-      "note": "of Nicomedia, +ca. 305"
+      "note": "of Nicomedia, +ca. 305",
+      "slug": "photius-and-anicetus"
     },
     {
       "name": "Martyrs Pamphilus and Capito",
@@ -1971,7 +1982,8 @@
   "08-14": [
     {
       "name": "Prophet Micah",
-      "note": "of the Twelve, +8th c. BC"
+      "note": "of the Twelve, +8th c. BC",
+      "slug": "prophet-micah"
     },
     {
       "name": "Forefeast of the Dormition of the Theotokos",
@@ -1992,13 +2004,15 @@
     },
     {
       "name": "Martyr Diomedes the Physician",
-      "note": "of Tarsus, +298"
+      "note": "of Tarsus, +298",
+      "slug": "diomedes-the-physician"
     }
   ],
   "08-17": [
     {
       "name": "Martyr Myron of Cyzicus",
-      "note": "+250"
+      "note": "+250",
+      "slug": "myron-of-cyzicus"
     },
     {
       "name": "Martyrs Straton, Philip, and Eutychian",
@@ -2008,7 +2022,8 @@
   "08-18": [
     {
       "name": "Martyrs Floros and Lauros of Illyricum",
-      "note": "+2nd c."
+      "note": "+2nd c.",
+      "slug": "floros-and-lauros"
     },
     {
       "name": "Sts. John and George, Patriarchs of Constantinople",
@@ -2018,7 +2033,8 @@
   "08-19": [
     {
       "name": "Martyr Andrew Stratelates and 2,593 soldiers with him",
-      "note": "+ca. 300"
+      "note": "+ca. 300",
+      "slug": "andrew-stratelates"
     },
     {
       "name": "Donskoy Icon of the Theotokos",
@@ -2028,7 +2044,8 @@
   "08-20": [
     {
       "name": "Prophet Samuel",
-      "note": "the seer of Israel"
+      "note": "the seer of Israel",
+      "slug": "prophet-samuel"
     }
   ],
   "08-21": [
@@ -2039,13 +2056,15 @@
     },
     {
       "name": "Ven. Abraham of Smolensk",
-      "note": "the wonderworker, +1221"
+      "note": "the wonderworker, +1221",
+      "slug": "abraham-of-smolensk"
     }
   ],
   "08-22": [
     {
       "name": "Martyr Agathonicus and Companions of Nicomedia",
-      "note": "+ca. 300"
+      "note": "+ca. 300",
+      "slug": "agathonicus-of-nicomedia"
     },
     {
       "name": "Martyr Anthusa and her servants",
@@ -2060,7 +2079,8 @@
     },
     {
       "name": "Hieromartyr Lupus",
-      "note": "slave of Demetrius of Thessaloniki, +306"
+      "note": "slave of Demetrius of Thessaloniki, +306",
+      "slug": "lupus-of-thessaloniki"
     }
   ],
   "08-24": [
@@ -2070,7 +2090,8 @@
     },
     {
       "name": "Translation of the Relics of St. Peter, Metropolitan of Moscow",
-      "note": "in the year 1479"
+      "note": "in the year 1479",
+      "slug": "peter-of-moscow"
     },
     {
       "name": "St. Cosmas of Aetolia, Equal-to-the-Apostles",
@@ -2093,7 +2114,8 @@
   "08-26": [
     {
       "name": "Martyrs Adrian and Natalia of Nicomedia",
-      "note": "+ca. 305"
+      "note": "+ca. 305",
+      "slug": "adrian-and-natalia"
     },
     {
       "name": "Vladimir Icon of the Theotokos",
@@ -2108,7 +2130,8 @@
     },
     {
       "name": "Great-martyr Phanourios the Newly-Revealed",
-      "note": "of Rhodes"
+      "note": "of Rhodes",
+      "slug": "phanourios-the-newly-revealed"
     },
     {
       "name": "St. Hosius of Cordova, Confessor",
@@ -2129,7 +2152,8 @@
     },
     {
       "name": "St. Job of Pochaev",
-      "note": "abbot and wonderworker, +1651"
+      "note": "abbot and wonderworker, +1651",
+      "slug": "job-of-pochaev"
     }
   ],
   "08-29": [
@@ -2142,11 +2166,13 @@
   "08-30": [
     {
       "name": "Saints Alexander, John, and Paul the New, Patriarchs of Constantinople",
-      "note": "4th and 8th c."
+      "note": "4th and 8th c.",
+      "slug": "patriarchs-alexander-john-paul"
     },
     {
       "name": "St. Alexander of Svir",
-      "note": "wonderworker, +1533"
+      "note": "wonderworker, +1533",
+      "slug": "alexander-of-svir"
     }
   ],
   "08-31": [
