@@ -46,15 +46,20 @@ const QUIET_LINK =
  *
  * TWO THINGS ABOUT THE ROOT ELEMENT, both load-bearing:
  *
- *   - no `isolate`. components/today/VerseCardActions.tsx renders its action
- *     sheet as `fixed inset-0 z-50` INLINE rather than through a portal. A
- *     stacking context on this subtree scopes that sheet to the page and lets
- *     the root-level tab bar paint over it.
- *   - no `.cascade` anywhere above the verse card, for the same reason:
- *     `.cascade > *` carries `animation-fill-mode: both`, which makes every
- *     direct child a PERMANENT stacking context. `.rise-none` swaps the
- *     animation name, not the fill mode, so it is not an escape hatch. See
- *     the route-fade stacking note in app/globals.css.
+ *   - no `isolate`, and
+ *   - no `.cascade` anywhere above the verse card, because `.cascade > *`
+ *     carries `animation-fill-mode: both`, which makes every direct child a
+ *     PERMANENT stacking context. `.rise-none` swaps the animation name, not
+ *     the fill mode, so it is not an escape hatch. See the route-fade
+ *     stacking note in app/globals.css.
+ *
+ * Both are now DEFENCE IN DEPTH rather than load-bearing. They were
+ * load-bearing while VerseCardActions rendered its action sheet as
+ * `fixed inset-0 z-50` inline: a stacking context here scoped that sheet to
+ * the page and let the root-level tab bar paint over it. That sheet is on
+ * components/ui/Sheet.tsx now and portals to <body>, so it competes at the
+ * root. Keep both rules anyway. The next inline overlay somebody adds to
+ * this tree will need them, and finding out the hard way costs a beta cycle.
  */
 export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
   const { t } = useTranslate();

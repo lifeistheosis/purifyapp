@@ -187,7 +187,6 @@ function InstallFallbackModal({
   useEffect(() => {
     if (open) {
       setMounted(true);
-      setOverlayOpen(true);
       const r = requestAnimationFrame(() => {
         setShown(true);
         closeBtnRef.current?.focus();
@@ -195,12 +194,20 @@ function InstallFallbackModal({
       return () => cancelAnimationFrame(r);
     } else if (mounted) {
       setShown(false);
-      setOverlayOpen(false);
       const tm = setTimeout(() => setMounted(false), 200);
       return () => clearTimeout(tm);
     }
   }, [open, mounted]);
   /* eslint-enable react-hooks/set-state-in-effect */
+
+  // Keyed on `mounted` with a cleanup, per the contract in lib/ui/overlay.ts.
+  // Previously set and cleared inline above, which released the flag at the
+  // start of the exit and left no unmount path for the depth counter.
+  useEffect(() => {
+    if (!mounted) return;
+    setOverlayOpen(true);
+    return () => setOverlayOpen(false);
+  }, [mounted]);
 
   useEffect(() => {
     if (!shown) return;

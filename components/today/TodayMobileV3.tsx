@@ -43,10 +43,12 @@ export function TodayMobileV3() {
         <FirstStepsNudge />
 
         {/* Hero: the day's word, the dominant element of the surface.
-            `rise-none` because VerseCardActions inside it renders a
-            `fixed inset-0` sheet inline: a translating ancestor would be a
-            containing block for it and displace the sheet. This child fades
-            with the rest and does not move. */}
+            `rise-none` so this child fades with the rest and does not move.
+            It was required while VerseCardActions rendered a `fixed inset-0`
+            sheet inline, where a translating ancestor becomes its containing
+            block and displaces it. That sheet portals to <body> now, so this
+            is defence in depth: kept because the card is the obvious place
+            for the next inline overlay, and the failure is silent. */}
         <div className="rise-none">
           <VerseOfDayCard />
         </div>
