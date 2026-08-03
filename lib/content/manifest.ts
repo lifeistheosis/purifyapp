@@ -128,6 +128,45 @@ export async function ensureSchema(store: ContentStore): Promise<void> {
 export class PackageImportError extends Error {}
 
 /**
+ * The searchable body for a record, derived from the record itself.
+ *
+ * The packager used to ship this as a `search` field alongside `json`, which
+ * meant every word of the library travelled twice in the same file: 18.62 MB
+ * of a 38.39 MB package was a lowercased copy of text already sitting in the
+ * `json` column beside it. Deriving it here instead halves the package, and
+ * it is safe to do because `canonicalRecords()` never included `search` in
+ * the checksum, so nothing about package integrity changes.
+ *
+ * `search` is still honoured when present, so an older package on a device
+ * that has not been replaced yet imports exactly as it did before.
+ *
+ * Must stay byte-identical in behaviour to the packager's old flattener
+ * (scripts/build-content-package.mjs): every string value in the record, in
+ * document order, joined by a space, lowercased.
+ */
+export function searchBodyFor(r: PackageRecord): string {
+  if (typeof r.search === "string") return r.search.toLowerCase();
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(r.json);
+  } catch {
+    // A record whose json will not parse cannot be indexed; the title still
+    // makes it findable, and importPackage's checksum has already passed, so
+    // this is defensive rather than expected.
+    return r.title.toLowerCase();
+  }
+  const out: string[] = [];
+  const flatten = (v: unknown): void => {
+    if (typeof v === "string") out.push(v);
+    else if (Array.isArray(v)) for (const x of v) flatten(x);
+    else if (v && typeof v === "object")
+      for (const x of Object.values(v)) flatten(x);
+  };
+  flatten(parsed);
+  return out.join(" ").toLowerCase();
+}
+
+/**
  * Import a package transactionally. On any failure (bad checksum, interrupted
  * write) the transaction rolls back and the prior library + content_version
  * are untouched. Returns the newly installed contentVersion.
@@ -155,7 +194,7 @@ export async function importPackage(
       );
       await tx.run(
         "INSERT INTO search_index (type, ref_id, title, body) VALUES (?, ?, ?, ?)",
-        [r.type, r.ref_id, r.title.toLowerCase(), (r.search ?? r.title).toLowerCase()],
+        [r.type, r.ref_id, r.title.toLowerCase(), searchBodyFor(r)],
       );
     }
     await tx.run("INSERT OR REPLACE INTO meta (key, value) VALUES (?, ?)", [
