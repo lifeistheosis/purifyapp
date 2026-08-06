@@ -28,7 +28,26 @@ import { useIsNative, nativePlatform } from "@/lib/platform/native";
  * It replaces a permanently disabled "Apple · Coming soon" button that had been
  * visible since launch, which was its own submission risk: a dead control in a
  * shipped binary is a routine 2.1 "app is incomplete" flag.
+ *
+ * APPLE IS GATED ON AN ENV FLAG, and defaults OFF. The button working depends
+ * on a Supabase provider that this repo cannot see or configure, and shipping it
+ * ungated on 2026-08-06 put a control on the live sign-in page that answered
+ * every tap with "Unsupported provider": the provider was disabled and its
+ * Client IDs field held an Apple ID email rather than a Services ID. Replacing
+ * a button labelled "coming soon" with one that simply fails is not an
+ * improvement, so the flag stays off until the provider is genuinely live.
+ *
+ * Turning it on is two steps and they must happen in this order:
+ *   1. Supabase > Auth > Providers > Apple: Client IDs = the Services ID AND
+ *      the bundle id net.purifyapp.purify, a valid secret key, enabled.
+ *   2. NEXT_PUBLIC_APPLE_SIGNIN_ENABLED=1 on Render (then REDEPLOY, since
+ *      NEXT_PUBLIC_* is inlined at build time) and as a GitHub secret.
+ *
+ * The iOS release workflow REQUIRES the flag and fails without it, because an
+ * iOS build that offers Google without Apple is a guideline 4.8 rejection. So
+ * the gate cannot quietly ship a non-compliant binary; it can only delay one.
  */
+const APPLE_ENABLED = process.env.NEXT_PUBLIC_APPLE_SIGNIN_ENABLED === "1";
 export function OAuthButtons({
   disabled = false,
   disabledHint,
@@ -59,8 +78,9 @@ export function OAuthButtons({
   const isNative = useIsNative();
 
   // Apple has no native sheet on Android and no working web fallback inside the
-  // app, so it is offered everywhere except the Android shell.
-  const showApple = !(isNative && nativePlatform() === "android");
+  // app, so it is offered everywhere except the Android shell, and only once the
+  // Supabase provider behind it is actually live.
+  const showApple = APPLE_ENABLED && !(isNative && nativePlatform() === "android");
 
   async function go(provider: "google" | "apple") {
     if (disabled) return;

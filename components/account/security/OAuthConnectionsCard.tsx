@@ -8,6 +8,12 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useIsNative } from "@/lib/platform/native";
 
+// Same gate as components/auth/OAuthButtons.tsx: offering "Connect" while the
+// Supabase Apple provider is disabled produces an error, not a connection. The
+// row still reports connected state truthfully either way, so an account linked
+// through Apple is never described as unlinked.
+const APPLE_ENABLED = process.env.NEXT_PUBLIC_APPLE_SIGNIN_ENABLED === "1";
+
 // Mirrors Supabase's UserIdentity loosely. We accept any shape that
 // carries identity_id and provider; the full server-side object is
 // forwarded as-is to unlinkIdentity which needs all of it.
@@ -374,7 +380,7 @@ export function OAuthConnectionsCard({
               {appleIdentity ? "Connected" : "Not connected"}
             </p>
           </div>
-          {!appleIdentity && !isNative ? (
+          {APPLE_ENABLED && !appleIdentity && !isNative ? (
             <button
               type="button"
               onClick={connectApple}

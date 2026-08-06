@@ -75,6 +75,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Fails BEFORE the 40-minute build rather than at App Store review.
+      # Purify offers Google sign-in, so guideline 4.8 requires an equivalent
+      # private login, and the Apple button is gated off by default because it
+      # depends on a Supabase provider this repo cannot see. Shipping the iOS
+      # binary with the gate closed means submitting an app that fails 4.8.
+      - name: Refuse to build without Sign in with Apple
+        run: |
+          if [ "${{ secrets.NEXT_PUBLIC_APPLE_SIGNIN_ENABLED }}" != "1" ]; then
+            echo "::error::NEXT_PUBLIC_APPLE_SIGNIN_ENABLED is not \"1\". Configure the Supabase Apple provider first (Client IDs must hold the Services ID AND the bundle id net.purifyapp.purify, plus a valid secret key, and the provider must be enabled), then set this secret. See docs/IOS_BUILD_SETUP.md."
+            exit 1
+          fi
+
       - name: Show the toolchain
         run: |
           set -euo pipefail
@@ -121,6 +133,12 @@ jobs:
           # sign-in fails with "Unacceptable audience in id_token".
           NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
           NEXT_PUBLIC_GOOGLE_IOS_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_IOS_CLIENT_ID }}
+          # Must be "1" here, and the step below refuses the build otherwise.
+          # An iOS binary that offers Google without Sign in with Apple is a
+          # guideline 4.8 rejection, and the flag is only safe to set once the
+          # Supabase Apple provider is genuinely live, so this doubles as the
+          # check that it is.
+          NEXT_PUBLIC_APPLE_SIGNIN_ENABLED: ${{ secrets.NEXT_PUBLIC_APPLE_SIGNIN_ENABLED }}
 
       # CAP_LOCAL=1 makes capacitor.config.ts use webDir=out (the bundled UI)
       # instead of the remote server.url.
