@@ -1,5 +1,107 @@
 [
   {
+    "id": "beta-3-1",
+    "version": "Beta 3.1",
+    "date": "2026-08-06",
+    "title": "Purify on iPhone",
+    "intro": "Purify has been an Android app and a website. It is an iPhone app as well now, built from the same library and working the same way with no signal, and that is most of this release. The rest is a short run of repairs. One of them took the navigation away for as long as the anthem was playing. One is a single word in the Psalter that has been wrong since it was transcribed. And one is the half of a fix from four days ago that had been left undone, so that accounts made inside the app were shown the Terms and then kept no record of it. Beta 3.0 was finished on the second of August and held back so that it and the iPhone app could arrive together, so everything in its notes arrives with this.",
+    "sections": [
+      {
+        "heading": "Purify has an iPhone app",
+        "body": "There has been an iOS folder in Purify since the middle of June. What was in it would not have built, and had it built it would have been the wrong app: a window onto the website rather than Purify itself, which is neither what the Android app is nor something Apple accepts. It is a real app now, made from the same library and working the same way. The prayers, the Scriptures, the saints, the councils, the calendar and the whole reading room travel with it and open with no signal, exactly as on Android. As this goes out it is with Apple rather than on the App Store. Every app and every update is reviewed, and there is no honest way to name the day it will appear, so this note will not pretend to. One thing an iPhone reader should know in advance: swiping from the left edge to go back does nothing yet. Android's own back button has been handled for a long time and the iPhone gesture has not, and it is the first thing on the list after this."
+      },
+      {
+        "heading": "Starting the anthem took the navigation away",
+        "body": "The player and the row of tabs were both pinned to the bottom of the screen, and the player was drawn on top of it. So beginning the anthem covered the navigation completely, and it stayed covered for as long as the music played: the only way to leave the screen you were on was to stop praying along. It was reported from a device, with a screenshot. The note in the code said the player sat above the tab bar so it would never be covered, which was an answer to the wrong question. Deciding which of two things paints on top does not stop them standing in the same place. The player now sits above the bar by exactly the bar's own height, measured from the same value the rest of the app uses for it, so the two cannot drift apart. On the website, where there is no tab bar, it stays at the bottom where it belongs."
+      },
+      {
+        "heading": "The sheet on a verse was three faults, and only one of them showed",
+        "body": "Reported from a device as popups having no animation. It did not animate, and looking into that turned up two worse things in the same forty lines. It never told the tab bar to step aside, and it was drawn at the same depth as that bar while being rendered in place rather than lifted out to the top of the page, which means its depth was measured against the wrong thing entirely. Together those left the tab bar lit and, worse, still tappable over an open panel. That is the same shape as a fault reported twice from the Android beta, which cost a release to find the first time. Purify already had a component that had solved all three, with seven screens using it, so the verse panel now uses it too. Two further faults of the same kind were fixed while there: one panel raised the flag that moves the tab bar and never lowered it if it was closed by its parent, which left the tab bar dead for the rest of the session, and two others lowered it at the start of their closing animation, so the bar came back a fifth of a second before the panel had gone. This one has not been opened on a device yet, which is the only reason it is described here rather than declared fixed."
+      },
+      {
+        "heading": "Six titles in the reading room were set in the wrong face",
+        "body": "They were rendering in DM Serif Display, which the app keeps for large ornate headings, at nineteen pixels in a list. That face draws its thin strokes very thin on purpose, and at list size they go spindly, so the titles read worse than the face the rest of the app reads in. They were paragraphs rather than headings, which is exactly how they slipped past the rule that puts every real heading in the right face. The page's own title keeps the display face, because at that size it is the ornate heading the face was added for."
+      },
+      {
+        "heading": "Psalm 135:4 said along where it should say alone",
+        "body": "To him who along has wrought great wonders. Brenton reads alone, which is what the Greek says. A single transcription slip, and the whole psalter was checked to be sure it was the only one. It was. It came to light while confirming something worth writing down: Purify's Psalm 135 is the Polyeleos, Give thanks to the Lord for he is good, with its twenty-six fold refrain. A psalter of one hundred and fifty-one psalms is numbered the Septuagint way, so this is not the Psalm 135 of a King James Bible, and anything matched to Purify by that number needs to know which of the two it means."
+      },
+      {
+        "heading": "Sign in with Apple",
+        "body": "The sign-in screen has carried a greyed-out Apple button labelled coming soon since it was built, and the connected-accounts screen said coming soon even to readers whose account was already linked through Apple. It works now, on the iPhone app and on the website. It is not offered in the Android app, where Apple provides no way to do it properly and the alternative is a button that fails after you have committed to it. It depends on configuration held outside the app, so if the button is present and does not complete, that is the reason and it is ours to fix, not anything you have done."
+      },
+      {
+        "heading": "Accounts made inside the app left no record of agreeing to the Terms",
+        "body": "Beta 3.0 said that five hundred and seventy-two accounts made through Google had never been shown the Terms, and fixed it. The fix was only half a fix, and this is the other half. The part that records the agreement runs on the website, at the moment the account comes back from Google. In the app nothing comes back from anywhere: it asks Google directly and is answered directly, so that moment never happens and nothing was written down. Everyone was shown the notice, which is the part that matters most, but the app kept no record of having shown it. It records one now, before it moves you on, and it does not repeat one for the same person. This depends on a change to the database that has to be applied by hand, so until that is done the record is still not being kept, and it should not be assumed to be."
+      },
+      {
+        "heading": "Housekeeping, and what is still not on",
+        "body": "The iPhone app carries the same launcher cross as Android; the one in the project was still a stock placeholder from the day it was created, on a white background that would have flashed white every time the app opened. The check that holds Purify's version numbers in step now covers the iPhone one as well, which is the actual reason it sat at 1.0 for the whole of the Beta 2 series: it was in nobody's list. Two things are still dark and are not claimed here. Prayer reminders still cannot be delivered, for the reason given at length in the Beta 3.0 notes, and that has not changed. And Purify Plus is not purchasable on iPhone in this build; where it cannot be bought, the app says so plainly rather than offering a button that fails. Beta 3.0 was finished on the second of August and held so that it and the iPhone app could arrive together, so everything in its notes arrives with this one."
+      }
+    ]
+  },
+  {
+    "id": "beta-3-0",
+    "version": "Beta 3.0",
+    "date": "2026-08-02",
+    "title": "What the app was not saying",
+    "intro": "Nearly everything here is something Purify already knew and was not telling you. The account of the Council of Florence was four paragraphs on the council the Orthodox reading of church history keeps returning to. A Father's page did not say when the words on it were not his. August could name six of its sixty-two commemorations. The daily page on a computer showed less of the day than the phone does, and its date read in English whatever language you had chosen. Accounts created through Google were shown no Terms at all, five hundred and seventy-two of them. The Android app had never reported a single session, and the prayer reminders had nothing scheduled to send them. This release is mostly the app saying what it already had.",
+    "sections": [
+      {
+        "heading": "The Council of Florence, at full length, and a new kind of section under it",
+        "body": "Florence was the thinnest account in the timeline, four paragraphs and three sources with no artwork, on the council the Orthodox reading of church history keeps returning to. It is about seven times longer now, sixteen paragraphs against four: the run up that everyone at the council remembered, the two questions actually put, whether the addition to the Creed was lawful and whether it was true, the wearing down of a delegation living on a papal allowance, and the decree of 5 July 1439 that thirty-three Greeks signed and Mark of Ephesus did not. There is a section on what flowed from it, from Varna to the synod of 1484 that set the union aside, and a note saying plainly which parts of the story are contested. Sources go from three to nine, four of them modern histories, one of which is sympathetic to the union. Under the narrative sits something new to the format rather than to this one article: a step by step timeline, twenty-four dated steps from 1274 to 1484 with its seven turning points drawn heavier. Any long event can carry one now, and Florence is the first to use it. It is a numbered list underneath, so it reads in order to a screen reader, and a check refuses any timeline whose steps lack a date, lack a claim, or run backwards. Four images arrive with it, shown in Immersive History, each with its source and licence recorded: Pisanello's sketches of the emperor made at the council itself, the decree with its Latin and Greek columns and its two seals, a Gozzoli fresco, and a Nuremberg Chronicle woodcut. Florence sits higher on the timeline now and answers to two more names in search, Laetentur Caeli and the Union of 1439. And five studies in the theology library, among them the one on why the Church does not receive Florence, now carry a link to the events behind them."
+      },
+      {
+        "heading": "Saints' pages say whose words you are reading",
+        "body": "A Father's page is set in serif, and a reader skimming it is entitled to assume the serif is the Father speaking. On a number of works that assumption was wrong, and nothing on the page said so except a sentence at the end of a long editor's note. The Martyrdom of Polycarp is the church of Smyrna writing about him. St Nicholas's troparion is the Church's hymn to him. The miracles in the Life of Antony are Athanasius narrating. Each of those sections now carries a quiet band above it naming whose words follow, set in sans against the reading serif so a skimmer registers it without being shouted at. Where the words are the saint's own, which is the usual case, it says nothing at all. One hundred and thirty-three sections across fifty-three works are labelled so far, fewer than one in ten of the library, and the rest are left unlabelled rather than guessed at. The same restraint now governs what search engines and machine readers are told: a work carrying our own retelling is no longer published as a book the saint wrote, and a work whose sections are not yet labelled makes no claim about its author at all. That is the one class of mistake nothing ever corrects, because it is copied and repeated."
+      },
+      {
+        "heading": "August has its saints",
+        "body": "The whole month, in two passes: thirty-seven new profiles, eleven for the first part of August and twenty-six after it. The month can now name forty-eight of its sixty-two commemorations, against six before this release. Stephen the Protomartyr, the first martyr of the Church, had no profile at all, and the second of August pointed nowhere. Two feasts that existed in the registry but had no place in the month are in it now, Irene the Empress on the seventh and Cosmas of Aetolia on the twenty-fourth. Where a public domain text exists the saint arrives with their own writings to read in full, one hundred and twenty-eight chapters and about thirty-one thousand five hundred words of them. Cyprian of Carthage comes with four: The Life and Passion of Cyprian, written by his own deacon Pontius, On the Unity of the Church, On the Lord's Prayer, and On the Mortality. The Abgar documents come with Thaddeus of Edessa. Six commemorations were held back rather than written thin, and the reason for each is written down. The tool that fetches and prepares these texts is new, and three faults in it were caught by the run itself, one of them visible to a reader: files that landed before the fix ended with a stray footnotes heading sitting inside a Father's text as though he had said it."
+      },
+      {
+        "heading": "Today, on a computer",
+        "body": "On the web there is no Today tab. The daily prayer page is the only Today the site has, and it had been showing less of the day than the phone does, laid out for a narrow column. It now opens with the date and the day's fast set against it, then the one rule the hour asks for with a button to begin, then the Verse of the Day, which the web did not carry at all. Beside them, in their own column, is the Church's own reckoning of the day: the saint with their icon, the fast in full words, the appointed readings, and the count to Pascha. Those are drawn by the same part of the app the phone uses, so the two can no longer disagree about what day it is. The page holds more and is close to a third shorter, from about 2,500 pixels tall to about 1,800 on a 1440 by 900 screen, and the first screenful carries the date, the rule for the hour, the whole verse card and all four of the Church's cards. The wait before it appears looks like the page now as well. It had been borrowing the phone's loading shape, which on a computer was one large pulsing grey block."
+      },
+      {
+        "heading": "The Today page can be read by more people",
+        "body": "Every small label on it was drawn faint. The labelling the whole page is built from sat at just under four to one against the background, and the arrow at the end of each prayer row at a little over two to one, where the readable standard is four and a half to one. They have been lifted out of that range, and the labels on the Church's cards sit near six to one. The page also had one heading and then eight blocks with no heading at all, which a screen reader met as a wall, and one line that was styled to look like a heading without being one. Every section carries a real heading now, in order, with no level skipped. And each prayer row shows a clear ring when you reach it by keyboard and lights as you pass over it with a mouse, which the rows did not do before. Those rows are listed in six places in the app, so that part reaches well beyond this page."
+      },
+      {
+        "heading": "The date reads in your language",
+        "body": "The heading on the Today page was assembled from a list of English weekday and month names, so it read Sunday, August 2, 2026 in all twenty-one languages Purify offers. It reads in yours now. Nine more strings on the same page were English in every language for the same reason: the whole of the section that remembers where you left off, the anniversaries in your diptych, and the two notes the verse card shows when you save a verse."
+      },
+      {
+        "heading": "Accounts made with Google were never shown the Terms",
+        "body": "Creating an account through Google presented no Terms notice of any kind, while the two email forms both did. Five hundred and seventy-two accounts were made that way and were never shown them. Signing in and signing up with Google now carry the notice, and it sits above the buttons rather than below them, so it is passed on the way to the account and not after it."
+      },
+      {
+        "heading": "The Android app had never reported a session",
+        "body": "Not a screen view, not a session, nothing, for as long as it has been installed on anything. The cause was narrow. The app runs from its own address on the device and posts to purifyapp.net, and the endpoint receiving those posts refused anything that did not come from the website itself, so every pageview from an installed app was turned away. The endpoint now recognises the app's own shells by name, and nothing else. Reporting works from this build onward, which means the record starts when the next Android build is installed rather than filling in anything already on a phone."
+      },
+      {
+        "heading": "Prayer reminders had nothing to send them",
+        "body": "Two scheduled jobs existed in the code, one to deliver prayer reminders and one to record the day's donations, and nothing anywhere called either of them. A schedule exists now and is kept in the repository so it can be read and changed like everything else, but it will not run until one secret is set in two places, and the donations record waits on that same secret. Delivery waits on more than that: no phone has ever been able to register for a notification, because the step that asks your permission is itself waiting on its keys, so there is nothing yet to send to. What arrives here is the mechanism, and an honest count. The sending panel used to write a line saying a broadcast had gone out when it had resolved nobody to send it to, which happened three times in July. It now refuses the send and says which part failed."
+      },
+      {
+        "heading": "The app will tell you when there is a new version",
+        "body": "Purify cannot make your phone update itself. Whether an app updates on its own is a setting in the Play Store, on your device, and no app is allowed to reach in and change it. What Purify can stop doing is leaving you to find out on your own. When you open it and the version you have is behind the one on the store, it now says so, with a button that takes you to the listing and a Later that costs nothing. It asks once each time you open the app, not once per screen. It will not make the download smaller, and that is the part worth being honest about: Purify is a large app because the whole library travels with it and works with no signal, and a large update is exactly the kind the Play Store holds back until you are on wi-fi. Making that download much smaller is the next piece of work."
+      },
+      {
+        "heading": "A run of Android repairs",
+        "body": "The app was registering the website's background worker, which could serve it a stale copy of the site instead of its own. That worker is now cleared away on launch, along with the copies it had kept, so a tester stuck on an old bundle comes right the next time the app opens, and reinstalling gives a clean slate rather than restoring what was there before. The bar at the top of the screen had been slipping under the status bar, because the spacing around the notch and the home bar was being read as nothing at all. It is handled by one thing now instead of two disagreeing. The gap above the keyboard is no longer a grey box. As with everything on this list that lives in the app rather than on the site, none of it reaches a phone until the next build is installed."
+      },
+      {
+        "heading": "Form fields no longer zoom the page",
+        "body": "Tapping a text field on a phone zoomed the whole page in, because the text inside the field was under sixteen pixels and the browser magnifies to compensate. Every form control is pinned to sixteen now."
+      },
+      {
+        "heading": "Housekeeping",
+        "body": "A developer panel for the accounts on the allow list, reached from a row only those accounts see on the mobile account screen, which can switch on a test subscription without touching a real one. New checks run over the saints' library with every change: they refuse a registered work with no file behind it, a file that disagrees with the registry, a writing nothing cites, and a date in the month pointing at nobody, and they flag an em dash anywhere a reader can see one, with the ten that already exist listed by name so the debt stays visible and nothing new joins it. The blurb on the Apostles now names the Seventy He sent ahead of Him two by two. The cache version steps to purify-beta-3.0.0, so a returning reader is served this build rather than the last one."
+      }
+    ]
+  },
+  {
     "id": "beta-2-9",
     "version": "Beta 2.9",
     "date": "2026-08-01",

@@ -20,6 +20,7 @@ import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
 import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
 import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
+import { UpdateBridge } from "@/components/update/UpdateBridge";
 import { NativeBridge } from "@/components/native/NativeBridge";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
 import { SITE_URL } from "@/lib/site";
@@ -29,6 +30,7 @@ import { getLocale } from "@/lib/i18n/locales";
 import { MessagesProvider } from "@/components/i18n/MessagesProvider";
 import { LocaleBootstrap } from "@/components/i18n/LocaleBootstrap";
 import { NONCE_HEADER } from "@/lib/security/headers";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 
 const dmSans = DM_Sans({
  variable: "--font-dm-sans",
@@ -202,13 +204,12 @@ export default async function RootLayout({
    localeCode === "en" ? undefined : getMessages(localeCode);
  // Per-request CSP nonce, set by middleware. The pre-paint theme script
  // below carries it, so strict-dynamic accepts that one inline script.
- // Skipped in the Android static export (no request headers, and no CSP or
+ // Skipped in the native static export (no request headers, and no CSP or
  // middleware there) so the root layout, and thus every page, can still be
  // statically rendered.
- const nonce =
-   process.env.BUILD_TARGET === "android"
-     ? undefined
-     : (await headers()).get(NONCE_HEADER) ?? undefined;
+ const nonce = IS_STATIC_EXPORT
+   ? undefined
+   : (await headers()).get(NONCE_HEADER) ?? undefined;
  return (
  <html
  lang={localeCode}
@@ -241,6 +242,12 @@ export default async function RootLayout({
  {/* Same reason again: onboarding runs over Today, so the reader who states
      their interests and then signs in may never mount the (app) layout. */}
  <ProfilePrefsBridge />
+ {/* And again: the app opens on Today, so an update prompt mounted in the
+     (app) layout would never reach the reader who opens Purify, prays, and
+     closes it, which is most of them. Renders nothing on the web, and
+     nothing on native until lib/appUpdate/release.ts declares a
+     versionCode above the installed one. */}
+ <UpdateBridge />
  {children}
  {/* Root layout, not (app)/layout.tsx. Today is app/page.tsx, outside
      the (app) group, so a bar mounted there would unmount on every

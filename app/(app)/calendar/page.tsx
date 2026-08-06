@@ -26,6 +26,7 @@ import { LocalTodaySync } from "@/components/calendar/LocalTodaySync";
 import StyleToggleLink from "@/components/calendar/StyleToggleLink";
 import { getServerLocale } from "@/lib/i18n/server";
 import { T } from "@/components/i18n/T";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 
 export const metadata = {
  title: "Orthodox Calendar",
@@ -183,11 +184,10 @@ export default async function CalendarPage({
 }: {
  searchParams: SearchParams;
 }) {
- // Android static export can't read searchParams/cookies (would force dynamic);
- // it renders the default (New calendar) and the client adjusts from the
- // ?style= param + local calendar-style preference. Website unchanged.
- const isAndroid = process.env.BUILD_TARGET === "android";
- const params = isAndroid
+ // The native static export can't read searchParams/cookies (would force
+ // dynamic); it renders the default (New calendar) and the client adjusts from
+ // the ?style= param + local calendar-style preference. Website unchanged.
+ const params = IS_STATIC_EXPORT
    ? ({} as Awaited<SearchParams>)
    : await searchParams;
  const locale = await getServerLocale();
@@ -195,7 +195,7 @@ export default async function CalendarPage({
  //   1. ?style= query (per-visit toggle wins)
  //   2. user preference cookie (ProfileSettings writes it)
  //   3. fall back to New (Revised Julian)
- const cookieStyle = isAndroid
+ const cookieStyle = IS_STATIC_EXPORT
    ? undefined
    : (await cookies()).get(CALENDAR_STYLE_COOKIE)?.value;
  const style: CalStyle =

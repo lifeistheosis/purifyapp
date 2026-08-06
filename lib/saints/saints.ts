@@ -4099,6 +4099,947 @@ export const SAINTS: Saint[] = [
     ],
     works: [],
   },
+
+  // ---------------------------------------------------------------------
+  // The August menologion. See docs/editorial/august-menologion.md for the
+  // per-day inventory, the public-domain source behind each Life, and which
+  // verbatim corpora are still pending an ingest run.
+  // ---------------------------------------------------------------------
+
+  {
+    slug: "cyprian-of-carthage",
+    byname: "Bishop and Martyr of Carthage",
+    name: "St. Cyprian of Carthage",
+    epithet:
+      "Rhetor · Bishop of Carthage · Martyr under Valerian · Father of the Latin Church",
+    born: "c. 210 (Carthage, Roman Africa)",
+    reposed: "September 14, 258 (beheaded at Carthage)",
+    feastDays: ["August 31"],
+    see: "Carthage",
+    pronoun: "his",
+    shortBio:
+      "A wealthy teacher of rhetoric at Carthage who was baptized in middle life, sold his gardens for the poor, and was made bishop by the acclamation of the people two years later. He governed the African church through the Decian persecution, the schisms over the lapsed, and a plague in which he set the Christians of Carthage to nurse the pagans who had called for their deaths. He wrote On the Unity of the Church, quarreled hard with Rome and stayed in communion with it, and was beheaded under Valerian.",
+    life: [
+      "Thascius Caecilius Cyprianus was born at Carthage around the year 210, of a wealthy family, and taught rhetoric publicly in a city where that made a man's voice count. He was converted in middle life through an old presbyter named Caecilianus, was baptized around 246, sold his gardens and gave the price to the poor, and put away the pagan authors for the Scriptures and for Tertullian, whom he read every day.",
+      "Around 248 the people of Carthage acclaimed him bishop against his own resistance and against the objection of five presbyters, who opposed him for the rest of his life. In 250 the Emperor Decius ordered every subject of the empire to sacrifice, and the lapse in Carthage was immediate and enormous. Cyprian withdrew into hiding and governed the church by letter for over a year, a decision attacked at the time and defended by him in writing, which is why so much of his correspondence survives.",
+      "The question of the lapsed then split the Latin churches twice, once toward laxity under Novatus and Felicissimus at Carthage, and once toward rigor under Novatian at Rome. Against both, Cyprian wrote On the Lapsed and On the Unity of the Catholic Church, read at the Council of Carthage in 251: the sun with many rays and one light, the tree with many branches and one root, the spring with many streams and one source.",
+      "When plague came into Carthage in 252 and the dead were left in the streets, he divided the city by districts and set the church to bury the dead and nurse the sick without asking whose they were, including the households that had been demanding their blood. He wrote On the Mortality in the middle of it, for Christians frightened of dying in a bed rather than gloriously under a sword.",
+      "He and Stephen of Rome quarreled hard between 255 and 257 over whether a baptism given by heretics is a baptism, and neither yielded, and communion held. At the great council of eighty seven African bishops in 256 he said at the opening that no one among them set himself up as a bishop of bishops. The Church afterward followed neither man simply, and honors as a saint the man whose position it did not adopt whole.",
+      "Valerian's edict against the clergy reached him in 257 and he was exiled to Curubis. From there he wrote to the African bishops that Sixtus of Rome had been taken in a cemetery on the sixth of August, 258, and beheaded, and that the persecution would come for him next. It did. He was tried by the proconsul Galerius Maximus at Carthage and beheaded on the fourteenth of September, 258, having ordered that twenty five gold pieces be given to the executioner. The Church keeps his memory on the thirty first of August.",
+    ],
+    works: [
+      {
+        slug: "the-bishop-of-carthage",
+        title: "The Bishop of Carthage",
+        subtitle: "A short Life, from his conversion to the sword",
+        year: "c. 210 to 258",
+        blurb:
+          "The Life in brief: the rhetor's conversion, the reluctant election, the flight of 250 and the storm it raised, the two schisms, the plague, the quarrel with Rome, and the field of Sextus.",
+        topics: ["Martyrdom", "The Church", "Repentance", "Persecution"],
+      },
+      {
+        slug: "the-life-and-passion-of-cyprian",
+        title: "The Life and Passion of Cyprian",
+        subtitle: "By Pontius the Deacon, who was with him",
+        year: "c. 259",
+        blurb:
+          "The deacon who followed him into exile writes down what the layfolk already had: the conversion, the election, the flight and its defense, the exile at Curubis, and the field of Sextus. The earliest surviving Christian biography of a bishop.",
+        topics: ["Martyrdom", "Repentance", "The Church", "Courage"],
+      },
+      {
+        slug: "on-the-unity-of-the-church",
+        title: "On the Unity of the Church",
+        subtitle: "Read at the Council of Carthage, 251",
+        year: "251",
+        blurb:
+          "The treatise the whole later argument about what the Church is has to go through. Many rays and one light, many branches and one root, many streams and one source, and the coat of Christ that was not divided.",
+        topics: ["The Church", "Unity", "Schism", "Baptism"],
+      },
+      {
+        slug: "on-the-lords-prayer",
+        title: "On the Lord's Prayer",
+        subtitle: "The oldest Latin commentary on the Our Father",
+        year: "c. 252",
+        blurb:
+          "Cyprian takes the prayer a phrase at a time and asks, of each one, what it commits the person praying it to. Tertullian set the pattern and Augustine inherited it, but this is the one the Latin Church learned it from.",
+        topics: ["Prayer", "The Our Father", "Forgiveness", "Daily Bread"],
+      },
+      {
+        slug: "on-the-mortality",
+        title: "On the Mortality",
+        subtitle: "Written in the plague at Carthage, 252",
+        year: "c. 252",
+        blurb:
+          "Written with the dead in the streets of Carthage, for Christians who found they were afraid of dying in a bed and were ashamed of being afraid.",
+        topics: ["Death", "Hope", "Fear", "Resurrection"],
+      },
+    ],
+  },
+
+  {
+    slug: "lawrence-the-archdeacon",
+    byname: "Lawrence of Rome",
+    name: "St. Lawrence the Archdeacon",
+    epithet: "Archdeacon of Rome · Martyr under Valerian",
+    born: "unknown",
+    reposed: "August 10, 258 (Rome)",
+    feastDays: ["August 10"],
+    see: "(deacon of Rome)",
+    pronoun: "his",
+    shortBio:
+      "Archdeacon of the church of Rome under Sixtus II, who held the alms of the city and knew by name everyone the Church was feeding. Ordered by the prefect to hand over the treasures of the Church, he gave everything away to the poor and then produced the poor themselves as the treasure. He was killed four days after his bishop, in August of 258, and buried on the Via Tiburtina, where Constantine built a basilica over the grave.",
+    life: [
+      "Lawrence was archdeacon of the Roman church under Sixtus the Second. The office carried the alms of the city: the money and goods given for the widows, orphans, prisoners and poor of a large congregation, kept in a chest and a register that the archdeacon held.",
+      "In the summer of 258 Valerian's second edict ordered clergy executed on identification and the property of the Church confiscated. Sixtus was found presiding at the liturgy in the cemetery of Praetextatus on the sixth of August and killed there with four of his deacons. St. Ambrose, writing at Milan a century and a third later, gives the exchange between the bishop being led away and the deacon left behind, and the promise that he would follow in three days.",
+      "The prefect wanted the money. Lawrence, so the tradition runs, asked for three days, spent them distributing everything to the poor, and came back on the third day with a crowd of the crippled, the blind, the widowed and the orphaned of the Roman church behind him, and said that these were the treasures of the Church.",
+      "The tradition says he was bound on a gridiron over a slow fire and spoke from it, and the gridiron has been his emblem in East and West ever since. Historians note that the edict of 258 prescribed beheading for clergy and that Sixtus and his deacons were beheaded under it four days earlier, and that the fire may be the tradition's way of saying what the death meant. The Church has never made the manner of it an article of faith.",
+      "He was buried on the tenth of August, 258, in the catacomb on the Via Tiburtina. Constantine raised a basilica over the grave within seventy years, and it stands there still. The Eastern Church keeps his memory on the tenth of August with Sixtus, among the martyrs of the undivided Church.",
+    ],
+    works: [
+      {
+        slug: "the-treasures-of-the-church",
+        title: "The Treasures of the Church",
+        subtitle:
+          "A short Life of the archdeacon of Rome, and what the tradition says he answered",
+        year: "258",
+        blurb:
+          "What a Roman deacon's office actually was, what the prefect asked for, what Lawrence produced, and what can and cannot be established about how he died.",
+        topics: ["Martyrdom", "Almsgiving", "The Poor", "Diaconate"],
+      },
+    ],
+  },
+
+  {
+    slug: "sixtus-of-rome",
+    byname: "Sixtus II",
+    name: "St. Sixtus, Pope of Rome",
+    epithet: "Bishop of Rome · Peacemaker · Martyr under Valerian",
+    born: "unknown",
+    reposed: "August 6, 258 (killed at the altar, cemetery of Praetextatus, Rome)",
+    feastDays: ["August 10"],
+    see: "Rome",
+    pronoun: "his",
+    shortBio:
+      "Bishop of Rome for about eleven months. He inherited the rebaptism quarrel that had nearly broken communion between Rome and the churches of Africa and Asia Minor, and he settled it by declining to press it, which is a small thing to have done and prevented a large disaster. Valerian's second edict found him presiding at the liturgy in a cemetery on the Appian Way, and he was killed in the chair with four of his deacons.",
+    life: [
+      "He became bishop of Rome at the end of August 257 and found the rebaptism controversy waiting for him. His predecessor Stephen had come close to breaking communion with Africa and with Asia Minor over whether converts from heresy must be baptized again, and the letters had grown hot enough that a schism was a live possibility.",
+      "Sixtus let it cool. He neither surrendered Rome's position nor enforced it, and communion held. St. Cyprian of Carthage, who had been Stephen's opponent in the matter, wrote of him warmly, and Cyprian's deacon Pontius calls him a good and peaceable bishop.",
+      "In the summer of 258 Valerian issued a second edict: clergy to be executed on identification rather than exiled, Christians of rank to lose their property and then their lives, and the cemetery assemblies outside the walls specifically forbidden.",
+      "On the sixth of August, 258, Sixtus was seated in the chair teaching at the liturgy in the cemetery of Praetextatus on the Appian Way when the soldiers came in. He was killed there with four of his deacons, Januarius, Vincent, Magnus and Stephen, and two more were taken and killed the same day. The seventh deacon, Lawrence, was not with him and was killed four days later.",
+      "Cyprian, in exile at Curubis, received the report and wrote it at once to the African bishops in the letter numbered eightieth in his collection, naming the day and adding that the persecution had reached the bishops and would reach him next. He was buried in the crypt of the popes in the cemetery of Callistus, where the pilgrims' graffiti are still on the plaster. The East keeps his memory on the tenth of August with Lawrence.",
+    ],
+    works: [
+      {
+        slug: "taken-in-the-cemetery",
+        title: "Taken in the Cemetery",
+        subtitle: "A short Life of Sixtus II, the peacemaker who was killed at the altar",
+        year: "257 to 258",
+        blurb:
+          "Eleven months as bishop of Rome: the quarrel he refused to escalate, the edict that ended it, and the letter one martyr wrote about another five weeks before his own turn came.",
+        topics: ["Martyrdom", "The Church", "Unity", "Persecution"],
+      },
+    ],
+  },
+
+  {
+    slug: "maccabean-martyrs",
+    byname: "The Seven Holy Youths and Solomonia",
+    name: "The Holy Maccabean Martyrs",
+    epithet:
+      "Seven brothers, their mother Solomonia, and their teacher Eleazar · Martyrs under Antiochus Epiphanes",
+    reposed: "c. 166 BC (Antioch, under Antiochus IV Epiphanes)",
+    feastDays: ["August 1"],
+    see: "(martyrs of Israel)",
+    pronoun: "his",
+    shortBio:
+      "Seven brothers tortured to death in a single day in front of their mother, who watched all seven and encouraged each of them, and died last; with them the aged scribe Eleazar, who refused even to pretend to eat what the Law forbade, on the ground that the young would learn the pretense. They are the only saints in the calendar who died before the Nativity, and they died confessing the resurrection of the body.",
+    life: [
+      "Antiochus the Fourth, called Epiphanes, ruled the Seleucid empire from Antioch and set out to abolish the practice of the Jewish religion. From about 167 BC the Temple was rededicated to Olympian Zeus, sacrifice and circumcision and the Sabbath were forbidden on pain of death, and the copies of the Law were burned. It was not a punishment of crimes but an attempt to make a people stop being what it was.",
+      "The second book of Maccabees records what happened when the policy met people who would not comply. Eleazar, a scribe of the first rank and ninety years old, was ordered to eat swine's flesh and refused, and refused as well the offer of friends to substitute lawful meat and let him pretend, because the young would learn from the pretense that a man may apostatize at ninety. He was beaten to death.",
+      "Then seven brothers were taken with their mother and tortured one after another in the king's presence, each given the same choice and each refusing it. What sets the account apart from every other martyrdom in the Old Testament is that they argue: they say why they are choosing to die, and the reason they give is the resurrection of the body.",
+      "Their mother spoke to each of them in their own language and told them she did not know how they came into her womb, that it was not she who gave them breath and life, and that the Creator who formed the beginning of man would give it back to them. She died last. St. Gregory the Theologian, preaching on their feast, says that they suffered for Christ before Christ suffered, and that no one should count them lesser for coming before the Cross.",
+      "Scripture does not name them. The Menaion does: Abim, Antonius, Gurias, Eleazar, Eusebonus, Alimus and Marcellus, with their mother Solomonia and their teacher Eleazar. Their relics were venerated at Antioch by the fourth century, which is where Chrysostom preached on them. The Church keeps their memory on the first of August, the day the Dormition fast begins, and the placement is deliberate.",
+    ],
+    works: [
+      {
+        slug: "the-seven-and-their-mother",
+        title: "The Seven and Their Mother",
+        subtitle:
+          "A short account of the Maccabean martyrs, and why the Church of Christ keeps their day",
+        year: "c. 166 BC",
+        blurb:
+          "The persecution under Antiochus, the refusal of an old scribe to even pretend, seven deaths in one day, and the oldest sustained confession of the resurrection of the body in the Scriptures of Israel.",
+        topics: ["Martyrdom", "Resurrection", "Fasting", "The Law"],
+      },
+    ],
+  },
+
+  {
+    slug: "pimen-the-great",
+    byname: "Abba Poemen",
+    name: "St. Pimen the Great",
+    epithet: "Father of Scetis · The most quoted elder of the desert",
+    born: "c. 340 (Egypt)",
+    reposed: "c. 450 (Terenuthis, Egypt)",
+    feastDays: ["August 27"],
+    see: "(monk of Scetis)",
+    pronoun: "his",
+    shortBio:
+      "An Egyptian monk who held no office, founded nothing, and wrote nothing, and who is nonetheless the most cited man in the whole literature of the desert: roughly a quarter of the alphabetical Sayings of the Desert Fathers are his. His name means shepherd. He is severe about judgment and gentle with the person judged, and he corrected the extremists of his own generation by telling monks to eat and to sleep.",
+    life: [
+      "He was born in Egypt around the middle of the fourth century and went out to the desert of Scetis as a young man with his brothers, Anoub the eldest and Paisios the youngest, and they lived as a small community under one roof, which is the setting of a great many of the stories about him.",
+      "The tradition preserves the visit of their mother, who came out to the desert to see her sons and was not admitted, and to whom Poemen spoke through the closed door: that if she saw them here she would not see them there. She went away comforted, which is the detail that keeps the story from being merely hard.",
+      "He was not an extremist, and the desert used him to correct its extremists. He is on record telling monks to eat, telling them to sleep, and telling a man who had fasted himself into a stupor that this was no achievement. His measure of a monk is what has happened to the heart, not what has happened to the stomach.",
+      "Around the year 407 the Mazices came down on Scetis and destroyed it, and Poemen and Anoub led a small group to Terenuthis on the Nile and sheltered in an abandoned pagan temple. He lived on to great old age, and his cell became a place people traveled to with the questions monks actually have. The answers were written down by whoever was standing there, which is why the Sayings read like real conversation rather than a treatise.",
+      "His themes are three, said a hundred ways: weep for your own sins and not your neighbor's; guard the thoughts at the point of entry rather than fighting them after they have settled; and let discernment rank above zeal, because a good thing done at the wrong measure is not a good thing. Through John Cassian, who visited Egypt in these very years, that teaching passed into the whole later hesychast tradition. The Church keeps his memory on the twenty seventh of August.",
+    ],
+    works: [
+      {
+        slug: "the-shepherd-of-scetis",
+        title: "The Shepherd of Scetis",
+        subtitle: "A short Life of Abba Poemen, the most quoted father of the desert",
+        year: "c. 340 to c. 450",
+        blurb:
+          "The brothers at Scetis, the mother at the door, the sack of 407 and the flight to Terenuthis, and the three things he said over and over for sixty years.",
+        topics: ["Humility", "Watchfulness", "Discernment", "Judging Others"],
+      },
+    ],
+  },
+
+  {
+    slug: "herman-of-alaska",
+    byname: "Elder of Spruce Island",
+    name: "St. Herman of Alaska",
+    epithet:
+      "Monk of Valaam · Wonderworker of All America · First saint glorified in North America",
+    born: "c. 1756 (Russia)",
+    reposed: "December 13, 1836 or 1837 (Spruce Island, Alaska)",
+    feastDays: ["August 9", "December 13"],
+    see: "(simple monk)",
+    pronoun: "his",
+    shortBio:
+      "One of ten monks sent from Valaam across Siberia and the Pacific in 1794 to found the first Orthodox mission in North America. Within a decade the others were dead, recalled, or worn out, and he was the mission. He stayed forty three years, never took ordination, taught and fed the orphans of the epidemics, and spent four decades filing complaints against the Russian-American Company on behalf of the Aleut and Alutiiq people it was destroying.",
+    life: [
+      "He was born in Russia around 1756, of a merchant family, and entered monastic life young. He was at the Trinity-St. Sergius hermitage near Petersburg and then at Valaam on Lake Ladoga, where he was tonsured with the name Herman and lived about fifteen years, most of them in a forest cell at a distance from the monastery. He was never ordained. He remained a simple monk his whole life, which in the Russian tradition is a station and not a lack.",
+      "In 1793 the Holy Synod assembled a mission for the new American colonies. Herman was chosen with nine others under the archimandrite Joasaph, and they crossed Siberia by land and the Pacific by sea and reached Kodiak Island on the twenty fourth of September, 1794, having traveled something close to eight thousand miles. Joasaph, consecrated bishop, went down with his ship in 1799, and by the early 1800s the mission was, in practice, Herman.",
+      "The Russian-American Company held the trading monopoly and in practice the colony, and its treatment of the native people ran from exploitation to atrocity: forced hunting parties, hostages taken from villages, and a mortality its own records do not hide. Herman took the side of the Aleut and Alutiiq against the Company and never stopped, in writing, to the managers and over their heads to the imperial authorities. The chief manager Alexander Baranov regarded him as an intolerable nuisance. He had no rank, no office and no protection, and he kept filing for four decades, and some of it worked.",
+      "After about 1811 he moved across the strait to Spruce Island, which he called New Valaam, and lived there in a forest cell for the rest of his life, keeping a garden, teaching, and gathering the orphans of the epidemics into what amounted to a school. The people of Kodiak held him for a saint while he was alive and did not particularly need Russia's permission for it.",
+      "He reposed on Spruce Island in the winter of 1836 or 1837, having told those with him the day, asked for candles and for the Acts of the Apostles to be read, and died as they read. He was glorified on the ninth of August, 1970, the first canonization of a saint in North America. His memory is kept on the ninth of August, the day of the glorification, and the thirteenth of December, the day of his repose.",
+    ],
+    works: [
+      {
+        slug: "the-north-american-elder",
+        title: "The North American Elder",
+        subtitle: "A short Life of the monk of Spruce Island, first saint glorified in America",
+        year: "c. 1756 to 1837",
+        blurb:
+          "Valaam, the eight thousand miles, the collapse of the mission, forty years of complaints against the fur company, and the cell on Spruce Island.",
+        topics: ["Monasticism", "Mission", "Justice", "Poverty"],
+      },
+    ],
+  },
+
+  {
+    slug: "tikhon-of-zadonsk",
+    byname: "Tikhon of Voronezh",
+    name: "St. Tikhon of Zadonsk",
+    epithet: "Bishop of Voronezh · Teacher of the Russian Church · Recluse of Zadonsk",
+    born: "1724 (Korotsko, Novgorod region)",
+    reposed: "August 13, 1783 (Zadonsk)",
+    feastDays: ["August 13", "May 14"],
+    see: "Voronezh",
+    pronoun: "his",
+    shortBio:
+      "Born into a poverty so complete that his family nearly gave him away for food, he climbed the whole of the eighteenth-century Russian church ladder, reached a bishopric before forty, and then resigned it at forty three to live fourteen years as an ordinary monk at Zadonsk. Almost everything he wrote comes from those years, including On True Christianity and A Spiritual Treasury Gathered from the World.",
+    life: [
+      "He was born Timothy in the village of Korotsko in the Novgorod region in 1724, the youngest son of a village sacristan who died and left the family destitute. The poverty is not a pious flourish: the family came near to giving him away to a coachman for food, and he worked in the fields for bread as a boy.",
+      "At sixteen he was taken into the Novgorod seminary on a state place, and he was very good at it. He stayed on to teach Greek, then rhetoric and philosophy, and in 1758 was tonsured a monk with the name Tikhon. Advancement came fast: rector, archimandrite, vicar bishop in 1761, and in February 1763 bishop of Voronezh.",
+      "Voronezh was enormous, poor, thinly clergied, with a half-pagan folk festival still running in the town and priests who could barely read the service. He spent four and a half years on it, founded a seminary, wrote instructions the clergy could actually use, preached constantly, and shut down the festival by walking into it. Then his health broke and he asked to be released.",
+      "From 1769 he lived at the monastery of the Nativity of the Theotokos at Zadonsk with no rank, wearing what the monks wore, refusing to be served, and asking to be treated as the last of the brotherhood. He suffered long stretches of what he called darkness, and wrote out of it rather than around it. He gave his pension away in small sums, in person, and went into the villages and the jails himself, and serfs who came to his door were let in.",
+      "He died at Zadonsk on the thirteenth of August, 1783, in his sixtieth year. The Holy Synod glorified him in 1861 before a crowd the reports put in the hundreds of thousands. Dostoevsky read him closely and used him for the elder Zosima. The Church keeps his memory on the thirteenth of August and on the fourteenth of May, the uncovering of his relics.",
+    ],
+    works: [
+      {
+        slug: "the-bishop-who-resigned",
+        title: "The Bishop Who Resigned",
+        subtitle: "A short Life of St. Tikhon of Voronezh and Zadonsk",
+        year: "1724 to 1783",
+        blurb:
+          "The destitute childhood, the fast climb, four and a half hard years at Voronezh, and the fourteen years at Zadonsk that produced everything he is read for.",
+        topics: ["Humility", "Repentance", "Despondency", "Almsgiving"],
+      },
+    ],
+  },
+
+  {
+    slug: "thaddeus-of-edessa",
+    byname: "Addai, Apostle of the Seventy",
+    name: "St. Thaddeus of Edessa",
+    epithet: "One of the Seventy · Apostle of Edessa and Mesopotamia",
+    reposed: "c. 44 (Beirut, Phoenicia)",
+    feastDays: ["August 21", "January 4"],
+    see: "Edessa",
+    pronoun: "his",
+    shortBio:
+      "One of the Seventy, sent by the Apostle Thomas to Edessa on the eastern edge of the Roman world, where according to the documents Eusebius says he found in the city archive he healed King Abgar and brought the royal house to the faith. The Syriac churches call him Mar Addai and trace their foundation to him. He is not the Apostle Jude Thaddeus, one of the Twelve, whom the Menaion commemorates separately.",
+    life: [
+      "Thaddeus, called Addai in Syriac, was a Jew of Edessa by origin who came to Jerusalem for a feast, heard the preaching of John the Forerunner, was baptized, and afterward followed Christ and was numbered among the seventy whom the Lord sent out two by two ahead of Him.",
+      "Eusebius of Caesarea, writing early in the fourth century, says he found in the public record office of Edessa, in Syriac, a letter from King Abgar the Fifth to Jesus and a reply, and translated them. The king has heard of the healings, believes the healer to be God or the Son of God, and offers Him the shelter of a small city out of reach of the Jerusalem authorities. The reply blesses him for believing without seeing, says the mission must first be finished, and promises that a disciple will be sent afterward.",
+      "After the Ascension, Eusebius continues, Thomas sent Thaddeus to Edessa. He lodged with a man named Tobias, began to heal, and was brought to the king, who understood at once who had sent him. Abgar was healed, the city heard the preaching, and Edessa is remembered as the first state whose ruler professed the faith, generations before Armenia and long before Rome.",
+      "The later Syriac Doctrine of Addai adds what the Eastern tradition has kept: that a court painter could not make a portrait of Christ, and that Christ pressed a cloth to His face and sent the image instead. That image is the subject of the feast on the sixteenth of August, the translation of the Image Not Made by Hands from Edessa to Constantinople in 944.",
+      "Historians treat the Abgar correspondence as a document of the church of Edessa rather than a transcript, and generally date the conversion of the royal house to Abgar the Eighth around the year 200. What is not in dispute is that Edessa was Christian very early and held Thaddeus for its apostle from the beginning. The tradition sends him on into Mesopotamia and Syria and finally to Beirut, where he reposed, and the Church keeps his memory on the twenty first of August.",
+    ],
+    works: [
+      {
+        slug: "the-mission-to-abgar",
+        title: "The Mission to Abgar",
+        subtitle: "A short Life of Thaddeus of the Seventy, apostle of Edessa",
+        year: "1st century",
+        blurb:
+          "The two Thaddeuses distinguished, the letters Eusebius says he took from the Edessene archive, the healing of the king, and where the Image Not Made by Hands comes into it.",
+        topics: ["Apostles", "Mission", "Icons", "Faith"],
+      },
+      {
+        slug: "the-abgar-documents",
+        title: "The Abgar Documents",
+        subtitle: "Eusebius, Church History I.13, from the archive of Edessa",
+        year: "c. 313",
+        blurb:
+          "Eusebius says he took these out of the public record office of Edessa and translated them from the Syriac: a king writing to Christ, a reply, and the mission of Thaddeus to the city. Printed as he printed it, for the reader to weigh.",
+        topics: ["Apostles", "Mission", "Faith", "Healing"],
+      },
+    ],
+  },
+
+  {
+    slug: "titus-of-crete",
+    byname: "Titus of the Seventy",
+    name: "St. Titus, Bishop of Crete",
+    epithet: "Companion of the Apostle Paul · First bishop of Gortyna · One of the Seventy",
+    reposed: "1st century (Gortyna, Crete)",
+    feastDays: ["August 25", "January 4"],
+    see: "Gortyna",
+    pronoun: "his",
+    shortBio:
+      "A Greek converted through Paul and taken by him to Jerusalem as the living test case for whether a Gentile must become a Jew first. Paul trusted him with the two hardest assignments he had, the collection and Corinth, and left him in Crete to appoint presbyters in every city. The Epistle to Titus is the working brief for that job. He is the patron saint of Crete.",
+    life: [
+      "He was a Greek and a Gentile by birth, converted through Paul, who calls him his true child according to a common faith. When Paul went up to Jerusalem to lay his gospel before the pillars of the Church he took Titus with him, and the fact that Titus was not compelled to be circumcised is the point Paul makes when he tells the story in Galatians. The Church's decision that a Gentile need not first become a Jew was made with him standing there.",
+      "Afterward he is the man Paul sends when a situation has gone wrong. When the correspondence with Corinth reached its worst it was Titus who went, Titus who got the church back, and Titus whose return Paul describes with visible relief. He was also given charge of the collection for the poor of Jerusalem, which meant carrying other people's money a long way, and Paul's language about the arrangements is that of a man who intends to make an accusation of embezzlement impossible.",
+      "Paul left him in Crete, as the first chapter of the epistle says, to set in order the things that were lacking and to appoint presbyters in every city. The letter is short and unsentimental: qualifications for presbyters and bishops, a local reputation for lying that Paul quotes a Cretan poet about, and then the relation between what a Christian believes and how a Christian behaves in an ordinary household.",
+      "He was later sent from Nicopolis to Dalmatia, which is the last thing the New Testament says of him. The tradition brings him back to Crete and keeps him there as bishop of Gortyna, the Roman capital of the island, into great old age, and says he died in peace in his nineties.",
+      "The ruins of the basilica of St. Titus at Gortyna are still standing, and his head is venerated at Heraklion, returned from Venice in 1966 after seven centuries. St. John Chrysostom's six homilies on the epistle written to him are in this app in full. The Church keeps his memory on the twenty fifth of August.",
+    ],
+    works: [
+      {
+        slug: "left-behind-in-crete",
+        title: "Left Behind in Crete",
+        subtitle: "A short Life of Titus of the Seventy, first bishop of Gortyna",
+        year: "1st century",
+        blurb:
+          "The uncircumcised Greek at the Jerusalem council, the man sent to Corinth when Corinth broke, and the brief Paul left him with on an island full of new converts and no structure.",
+        topics: ["Apostles", "The Church", "Order", "Gentiles"],
+      },
+    ],
+  },
+
+  {
+    slug: "euplus-of-catania",
+    byname: "Euplus the Deacon",
+    name: "St. Euplus of Catania",
+    epithet: "Deacon of Catania · Martyr under Diocletian",
+    reposed: "August 12, 304 (beheaded at Catania, Sicily)",
+    feastDays: ["August 11"],
+    see: "(deacon of Catania)",
+    pronoun: "his",
+    shortBio:
+      "A deacon of Catania in Sicily who, in a persecution whose first edict ordered the Scriptures handed over and burned, walked to the governor's council chamber carrying the book of the Gospels and called out that he was a Christian. His Acts are among the small group of martyr records that historians of every confession treat as essentially what was said in the room.",
+    life: [
+      "The persecution Diocletian began in 303 opened not with executions but with a book confiscation: the churches to be demolished, the Scriptures to be handed over and burned. Clergy who complied were called traditores, the handers-over, and the word became a permanent insult.",
+      "Euplus was a deacon of the church of Catania, on the eastern coast of Sicily under Etna. Nothing survives of his life before the trial, not his parents, not his age, not how long he had served. What survives is a transcript.",
+      "In the spring of 304 he came to the governor's council chamber carrying the book of the Gospels, stood where he could be heard, and called out that he was a Christian and wished to die for it. The officers brought him in. The governor Calvisianus asked what he was carrying, whose it was, and whether he knew that possession of the books was itself the offense. He said he knew, and that he could not give them up and live. He was ordered to read from them, and did.",
+      "He was tortured, questioned again, and would not sacrifice. The sentence, as the Acts record it, was that Euplus, having refused the gods and confessed the Christian superstition and having been found with the writings, should be beheaded. They hung the book around his neck and led him out with a herald announcing the charge in front, and he was beheaded on the twelfth of August, 304.",
+      "The Eastern Church keeps his memory on the eleventh of August, the West on the twelfth. His relics were carried out of Sicily before the Arab conquest and are venerated at Trevico in southern Italy. He died holding a book.",
+    ],
+    works: [
+      {
+        slug: "the-deacon-with-the-book",
+        title: "The Deacon With the Book",
+        subtitle: "A short Life of Euplus of Catania, killed for owning the Gospels",
+        year: "304",
+        blurb:
+          "The edict that came for the Scriptures first, a deacon who forced the issue at the courtroom door, and one of the dozen martyr records that read like a transcript rather than a composition.",
+        topics: ["Martyrdom", "Scripture", "Confession", "Persecution"],
+      },
+    ],
+  },
+
+  {
+    slug: "seven-sleepers-of-ephesus",
+    byname: "The Seven Youths of Ephesus",
+    name: "The Seven Sleepers of Ephesus",
+    epithet:
+      "Maximilian, Jamblichus, Martinian, John, Dionysius, Exacustodianus and Antoninus · Confessors under Decius",
+    reposed: "sealed in the cave c. 250; the waking placed in the reign of Theodosius II, c. 446",
+    feastDays: ["August 4", "October 22"],
+    see: "Ephesus",
+    pronoun: "his",
+    shortBio:
+      "Seven young men of Ephesus who refused to sacrifice under Decius, hid in a cave above the city, and were sealed inside; and who, the tradition says, woke about two hundred years later in the reign of Theodosius the Second, at a moment when the Church was arguing over whether the body rises. The Church commemorates them as a sign rather than as a biography.",
+    life: [
+      "In the persecution under Decius, around the year 250, seven young men of Ephesus of good family confessed themselves Christians and would not sacrifice. They were stripped of rank and given time to reconsider, gave away what they had, and went up to a cave on the mountain above the city to pray. The emperor, returning, ordered the mouth of the cave sealed with stone.",
+      "The tradition says they slept for close to two hundred years, and that in the reign of Theodosius the Second the stones were taken away by a landowner who wanted them for building. The seven woke believing they had slept a night. One went down into Ephesus to buy bread, keeping to the walls out of fear of the persecution, found crosses over the gates of a Christian city, and was arrested for treasure hunting when he offered a coin of Decius at a baker's stall.",
+      "The bishop and the governor came up to the cave and the emperor himself came to Ephesus, and after they had told what happened they lay down again and died, and were buried where they were. The Menaion names them Maximilian, Jamblichus, Martinian, John, Dionysius, Exacustodianus, who is also called Constantine, and Antoninus.",
+      "The reason the account was told and retold in exactly those decades is that a dispute over the resurrection of the body was live in the Church at the time, some teaching that the soul rises and the body does not. The waking was received as an answer given in fact rather than in argument: these bodies had been laid down and were standing up again.",
+      "A cemetery and church of the Seven Sleepers on the slope above Ephesus are real, were excavated in the 1920s, and hold hundreds of graves and inscriptions dedicated to them from the fifth century onward. That the veneration existed at Ephesus in the fifth century is documented fact; the sleep itself is the tradition of the Church, held as tradition. Their memory is kept on the fourth of August and again on the twenty second of October, and in the hymns of the day they are not called wise or eloquent but sleepers, which is what the Church calls the dead.",
+    ],
+    works: [
+      {
+        slug: "the-sleepers-of-ephesus",
+        title: "The Sleepers of Ephesus",
+        subtitle:
+          "A short account of the seven youths, and of the argument their waking settled",
+        year: "c. 250 and c. 446",
+        blurb:
+          "The cave under Decius, the coin at the baker's stall, the fifth-century dispute over the resurrection of the body, and a clear line between what is documented and what is tradition.",
+        topics: ["Resurrection", "Martyrdom", "Tradition", "Hope"],
+      },
+    ],
+  },
+
+  // ---------------------------------------------------------------------
+  // August, batch 2. These are the commemorations whose tradition is firm
+  // but whose surviving corpus is a Life and nothing else, and the Russian
+  // and Greek saints whose own writings exist in English only under
+  // copyright. They ship with a profile and no works rather than with a
+  // padded reading page. Where a public-domain text turns up later, it is
+  // added through scripts/ingest-august-works.mjs like any other.
+  // ---------------------------------------------------------------------
+
+  {
+    slug: "basil-the-blessed",
+    byname: "Fool for Christ of Moscow",
+    name: "St. Basil the Blessed",
+    epithet: "Fool for Christ · Wonderworker of Moscow",
+    born: "c. 1468 (Yelokhovo, near Moscow)",
+    reposed: "August 2, 1557 (Moscow)",
+    feastDays: ["August 2"],
+    see: "(layman)",
+    pronoun: "his",
+    shortBio:
+      "A shoemaker's apprentice who left the trade to walk the streets of Moscow naked in the winter for over sixty years, taking on the folly of Christ. He smashed goods in the market and was found to have been destroying spoiled food, wept at the doors of houses where people were feasting, and was the one man in Russia who could rebuke Ivan the Terrible to his face and be listened to.",
+    life: [
+      "He was born to peasants at Yelokhovo outside Moscow around 1468 and was apprenticed to a shoemaker. The tradition dates his change to the day a merchant ordered boots and Basil wept, because he had seen that the man would be dead before they were finished, which he was.",
+      "From about the age of sixteen he lived on the streets of Moscow with nothing, through Russian winters, for the rest of his life. He took what the tradition calls the folly of Christ: behaving as a madman so that the honor due to holiness could not attach to him, and so that he could say things nobody else was free to say. He overturned market stalls and was found to have destroyed food that was spoiled or bread that was short weight. He threw stones at the houses of the devout and kissed the walls of the houses of the notorious, and explained, when pressed, that the demons stood outside the first and the angels wept outside the second.",
+      "He rebuked the Tsar. Ivan the Fourth, who executed men for less, feared him and let him speak, and the accounts have Basil telling him to his face that he had been elsewhere in his mind during the liturgy. Ivan carried his coffin.",
+      "He reposed on the second of August, 1557, and was buried at the church of the Trinity on the Moat, beside Red Square. The cathedral raised there over the graves of the Kazan campaign is known to the whole world by his name rather than its own, which is a fair summary of what Moscow thought of him.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "dalmatus-of-constantinople",
+    byname: "Isaac, Dalmatus and Faustus",
+    name: "Sts. Isaac, Dalmatus and Faustus",
+    epithet: "Founders of the Dalmatian monastery at Constantinople · Confessors",
+    reposed: "Isaac c. 383; Dalmatus c. 440; Faustus 5th century",
+    feastDays: ["August 3"],
+    see: "Constantinople",
+    pronoun: "his",
+    shortBio:
+      "Three generations of one monastery. Isaac came out of the desert to stand in front of the Arian emperor Valens as he rode out to the Gothic war and tell him he would not come back, which he did not. Dalmatus, an officer of the imperial guard, gave up his commission to become his disciple and gave the house its name. Faustus was Dalmatus's son, who came with him.",
+    life: [
+      "Isaac was a monk of the East who came to Constantinople in the reign of Valens, when the Arians held the churches and the Orthodox were shut out of them. As the emperor rode out against the Goths in 378, Isaac took hold of his bridle in the road and told him to give the churches back to the Orthodox and he would prosper, and that if he would not, he would not return. Valens had him thrown into a pit and rode on to Adrianople, where the army was destroyed and he died in a burning farmhouse.",
+      "Isaac was released, and under Theodosius he was honored and settled outside the walls, where a monastery gathered around him. He was present at the Second Ecumenical Council in 381.",
+      "Dalmatus was an officer of the imperial guard under Theodosius. He left the service with his son Faustus, gave what he had to the poor, and entered Isaac's house, and succeeded him as its abbot. He kept a strict enclosure and left it once in forty eight years, in 431, when the Council of Ephesus had condemned Nestorius and the news was being suppressed at Constantinople. Dalmatus walked out of his monastery at the head of the monks of the city, went through the streets to the palace, and forced the matter into the open.",
+      "The monastery kept his name for centuries afterward as the Dalmatian, and the Church keeps all three on the third of August.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "anthony-the-roman",
+    byname: "Anthony of Novgorod",
+    name: "St. Anthony the Roman",
+    epithet: "Founder of the Nativity monastery at Novgorod",
+    born: "c. 1067 (Rome)",
+    reposed: "August 3, 1147 (Novgorod)",
+    feastDays: ["August 3"],
+    see: "(abbot)",
+    pronoun: "his",
+    shortBio:
+      "A wealthy Roman who gave his goods away, lived on a rock at the edge of the sea, and, in the account Novgorod has told for nine centuries, was carried on that rock up the Neva to Novgorod in the year 1106. He founded the monastery of the Nativity of the Theotokos there and was its abbot for forty years.",
+    life: [
+      "The Life says he was born at Rome about 1067 of wealthy Christian parents of the Greek rite, that he gave away what he inherited, put the rest into a barrel and cast it into the sea, and lived for a year on a rock on the shore in prayer.",
+      "On the fifth of September, 1105, the tradition says, a storm broke the rock free and carried it, and Anthony on it, out to sea and north, and set it down on the bank of the Volkhov at Novgorod on the eighth of September, 1106. He knew neither the language nor the country. The barrel he had thrown into the sea at Rome was later drawn up in the nets of Novgorod fishermen and given to him, and he used what was in it to buy the land for a monastery.",
+      "Bishop Nikita received him, and Anthony founded there the monastery of the Nativity of the Most Holy Theotokos, and was its abbot until his repose on the third of August, 1147. His relics were uncovered in 1597 and he was glorified the same year.",
+      "The stone is still shown at the monastery church in Novgorod. The Church tells the account as the Life tells it, and it is one of the places where the Russian tradition is plainly aware that it is repeating something extraordinary and repeats it anyway.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "eusignius-of-antioch",
+    byname: "The Soldier of a Hundred and Ten Years",
+    name: "St. Eusignius of Antioch",
+    epithet: "Soldier of the Roman armies · Martyr under Julian",
+    born: "c. 252",
+    reposed: "August 5, 362 (beheaded at Antioch)",
+    feastDays: ["August 5"],
+    see: "(soldier)",
+    pronoun: "his",
+    shortBio:
+      "A soldier who served sixty years in the Roman armies, who said he had seen the Cross in the sky over Constantine's camp with his own eyes, and who retired to Antioch and lived to a hundred and ten. When Julian the Apostate came through the city and began restoring the sacrifices, this very old man told him to his face what his own uncle had seen, and was beheaded for it.",
+    life: [
+      "He was born about the year 252 and spent sixty years under arms, serving under Constantius Chlorus and then under Constantine. The tradition has him among the soldiers who saw the sign of the Cross in the sky before the battle at the Milvian Bridge, and this is the whole point of the story that follows: by the reign of Julian he was the last man alive who could say he had been there.",
+      "He retired to Antioch, where he was born, and lived in prayer and almsgiving into extreme old age. In 362 the Emperor Julian, who had been raised a Christian and had renounced it, came to Antioch to prepare his Persian campaign and to restore the old sacrifices.",
+      "Eusignius, then a hundred and ten years old, was brought before him, or came before him, and told him about Constantine: the vision, the victory, the empire given to a man who had confessed Christ, and the folly of the nephew who was now trying to undo it. Julian had him beheaded on the fifth of August, 362. Julian himself was dead within the year, in Persia.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "dometius-the-persian",
+    byname: "Dometius of Nisibis",
+    name: "St. Dometius the Persian",
+    epithet: "Convert from the Magi · Monk of Nisibis · Martyr under Julian",
+    reposed: "c. 363 (stoned in a cave near Cyrrhus, Syria)",
+    feastDays: ["August 7"],
+    see: "(monk)",
+    pronoun: "his",
+    shortBio:
+      "A Persian raised in the religion of the Magi who became a Christian, fled his own country for Nisibis on the Roman frontier, and became a monk. He lived at last in a cave in the mountains near Cyrrhus, healing those who came, and was stoned to death there with two of his disciples on the order of Julian the Apostate.",
+    life: [
+      "He was born in Persia in the reign of Constantine and brought up in the religion of the Magi. He was converted by a Christian named Uarus, was baptized, and had to leave the country for it. He crossed into the Roman empire and entered the monastery of Sergius at Nisibis, and was tonsured there.",
+      "The respect he was given at Nisibis drove him out of it. He went on to a monastery near Cyrrhus in Syria under an archimandrite named Urbelus, was ordained deacon, and refused the priesthood, and when the pressure to take it continued he left for the mountains and lived in a cave.",
+      "People found him there, as they always do. The sick were brought to him and were healed, and the country people around began to be baptized in numbers.",
+      "In 362 or 363 the Emperor Julian passed through Syria on his way to the Persian war, heard that the population was going out to a hermit in the hills, and sent soldiers with orders to stop it. They found Dometius at prayer at the mouth of the cave with two disciples, and stoned all three where they stood.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "or-of-the-thebaid",
+    byname: "Abba Or",
+    name: "St. Or of the Thebaid",
+    epithet: "Desert Father of the Thebaid · Father of a thousand monks",
+    reposed: "c. 390 (the Thebaid, Egypt)",
+    feastDays: ["August 7"],
+    see: "(monk)",
+    pronoun: "his",
+    shortBio:
+      "One of the great fathers of the Egyptian desert, described by Palladius and by the Historia Monachorum as an old man with a snow-white beard who governed about a thousand monks in the Thebaid and whose face, they say, was that of an angel. He had spent his first years alone in the deep desert eating herbs, and could not read until, the account says, he was given the Scriptures by heart.",
+    life: [
+      "Palladius, who traveled Egypt around the year 388 and wrote the Lausiac History from what he saw, gives him a chapter, and the anonymous Historia Monachorum in Aegypto, written by monks who made the same journey a few years later, gives him another. Both describe an extremely old man, very tall, with a completely white beard, presiding over a settlement of monks in the Thebaid.",
+      "The account says he lived his early years alone in the further desert, eating wild herbs and roots, and that he could not read, and that after long prayer he was able to recite the Scriptures from memory when they were needed. Whatever a modern reader does with that, the men who wrote it down had gone to Egypt precisely to check what they had heard, and they wrote what the community told them.",
+      "He came in from the deep desert and founded monasteries in the cultivated land at the desert's edge, and something close to a thousand monks were under him by the end. The travelers describe the brothers coming out to meet visitors singing, and the old man weeping when he received them.",
+      "He reposed around 390. His memory is kept on the seventh of August. His words survive only in the two travel accounts and in a handful of sayings, and this app links him to the Lausiac History rather than to a corpus of his own, because he left none.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "aemilian-of-cyzicus",
+    byname: "Aemilian the Confessor",
+    name: "St. Aemilian, Bishop of Cyzicus",
+    epithet: "Bishop of Cyzicus · Confessor for the holy icons",
+    reposed: "c. 820 (in exile)",
+    feastDays: ["August 8"],
+    see: "Cyzicus",
+    pronoun: "his",
+    shortBio:
+      "Bishop of Cyzicus in the second iconoclast crisis. Summoned to the palace with the other bishops in 815 and ordered to accept the removal of the icons, he was the one who answered first and answered plainly, that a matter of the faith of the Church is not settled in a palace, and he was deposed and exiled and died there.",
+    life: [
+      "The Emperor Leo the Fifth, called the Armenian, reopened the iconoclast persecution that the Seventh Ecumenical Council had closed a generation earlier. At the end of 814 he summoned the Patriarch Nikephoros and the bishops of the capital and its neighborhood and pressed them to accept the removal of the images.",
+      "Aemilian of Cyzicus was among them, with Euthymius of Sardis, Michael of Synada, Theophylact of Nicomedia and Joseph of Thessalonica. The tradition records that when the emperor demanded an answer, Aemilian spoke first: that a question of the Church's faith is examined in the Church and not in a palace, and that if the emperor wished it discussed, he should leave the room.",
+      "He was deposed and sent into exile with the rest and died there about the year 820. He is called the Confessor because he did not recant and was not killed, which is the office the word names.",
+      "The Church keeps his memory on the eighth of August. The icons were restored for good in 843, twenty three years after he died in exile for them.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "myron-of-crete",
+    byname: "Myron the Wonderworker",
+    name: "St. Myron, Bishop of Crete",
+    epithet: "Farmer · Bishop of Crete · Wonderworker",
+    reposed: "c. 350 (Crete)",
+    feastDays: ["August 8"],
+    see: "Crete",
+    pronoun: "his",
+    shortBio:
+      "A Cretan farmer who worked his own land and gave most of what it produced away, and who was made bishop of the island for it. The story Crete has kept about him is the one where he caught thieves in his own threshing floor, found they could not lift the sacks they had filled, helped them load the grain onto their backs, and told them not to tell anyone.",
+    life: [
+      "He was a landowner and a farmer of Crete, married, of good reputation, who worked his fields himself and gave away most of the harvest, so that the poor of the district came to his threshing floor as a matter of course.",
+      "One night he found men in the threshing floor filling sacks from his grain. The account says they were struck motionless and could not lift what they had taken. Myron helped them load it onto their shoulders, sent them off with it, and asked them to say nothing about it, and the thing came out later because they could not keep quiet.",
+      "He was ordained and in time made bishop of the island, in the years after the peace of the Church, and served into very great old age. The other account Crete tells of him is the crossing of the river Triton in flood, which he is said to have commanded to stand still until his people had passed, and then given leave to run again.",
+      "He reposed about the year 350, over a hundred years old. The Church keeps his memory on the eighth of August, and the town of Agios Myron in Crete carries his name.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "theodore-and-vasily-of-the-caves",
+    byname: "Theodore and Vasily of the Kiev Caves",
+    name: "Sts. Theodore and Vasily of the Kiev Caves",
+    epithet: "Monks of the Caves · Martyrs for a treasure that was not theirs",
+    reposed: "1098 (Kiev)",
+    feastDays: ["August 11"],
+    see: "(monks)",
+    pronoun: "his",
+    shortBio:
+      "Two monks of the Kiev Caves, one a wealthy man who had given everything away and then found buried treasure in his own cell and was tormented by it, the other the friend who talked him into burying it again. A prince heard the story, wanted the money, and had them both tortured to death in a single night when they would not say where it was.",
+    life: [
+      "Theodore had come to the Caves monastery a rich man, had given his property away, and afterward was harassed by the thought that he had been rash and would be destitute in his old age. In digging in the cave that was his cell he uncovered a buried hoard of Varangian silver and gold, and the thought became unbearable.",
+      "Vasily, his friend and neighbor in the caves, argued him out of it. Theodore buried the treasure again and would not afterward say where, and by the account he was given peace about it and never troubled by the thought again.",
+      "The story got out. Prince Mstislav Svyatopolkovich had Theodore brought and questioned, and when he said he had genuinely forgotten the place, had him tortured. Vasily was brought and tortured with him for the same answer. In the night, in a rage and in drink, the prince shot Vasily with an arrow, and Vasily drew it out and said the prince would die by the same. Both monks were dead by morning.",
+      "The prince was killed by an arrow the following year at Vladimir. The two are buried in the Near Caves at Kiev, and the Church keeps their memory on the eleventh of August.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "photius-and-anicetus",
+    byname: "Anicetus and Photius of Nicomedia",
+    name: "Sts. Photius and Anicetus",
+    epithet: "Martyrs of Nicomedia under Diocletian",
+    reposed: "c. 305 (Nicomedia)",
+    feastDays: ["August 12"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "An uncle and his nephew. Anicetus was a magistrate of Nicomedia who, when Diocletian set up the instruments of torture in the public square and offered rewards for informers, walked out in front of the assembly and said he was a Christian. Photius, his nephew, came out of the crowd and embraced him, and the two were killed together after three years in prison.",
+    life: [
+      "Nicomedia was Diocletian's eastern capital and the place where the great persecution was published in 303. The tradition sets this account there: the emperor had the engines of torture displayed in the open and promised rewards to anyone who would give up Christians.",
+      "Anicetus was a member of the city's governing class. He came forward himself, told the emperor that the display was a confession of weakness, and said that he was a Christian. He was tortured, and the accounts of what he survived are of the kind the martyrologies tell.",
+      "His nephew Photius came out of the crowd, embraced him publicly, and refused the offer of his life. The two were held for three years and then killed together, thrown into a heated furnace in the year 305 or thereabouts.",
+      "The Church keeps them on the twelfth of August. Their relics were later translated to Constantinople.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "diomedes-the-physician",
+    byname: "Diomedes of Tarsus",
+    name: "St. Diomedes the Physician",
+    epithet: "Physician of Tarsus · Unmercenary · Martyr under Diocletian",
+    reposed: "c. 298 (Nicaea, Bithynia)",
+    feastDays: ["August 16"],
+    see: "(physician)",
+    pronoun: "his",
+    shortBio:
+      "A physician of Tarsus in Cilicia who treated bodies for nothing and used the visit to speak about Christ, and who baptized a great many of the people he had healed. He was arrested under Diocletian and died on the road before the sentence could be carried out, and the soldiers beheaded the body anyway.",
+    life: [
+      "He was born at Tarsus in Cilicia, the Apostle Paul's city, was trained as a physician, and practiced without taking payment, which is why the Church numbers him among the Unmercenaries. He treated whoever came, and while he treated them he preached, and the accounts say that a large number of his patients were baptized.",
+      "He moved to Nicaea in Bithynia and continued there. Under Diocletian he was denounced, and soldiers were sent from the emperor to bring him.",
+      "They found him on the road outside the city. The account says he asked leave to pray, prayed, and died where he knelt. The soldiers, who had orders to produce him, cut off the head and carried it back, and were blinded on the road; when the emperor ordered the head returned to the body, their sight came back and they were baptized.",
+      "The Church keeps his memory on the sixteenth of August, and he is commemorated in the Orthodox tradition among the holy physicians, with Cosmas and Damian, Panteleimon and Hermolaus.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "myron-of-cyzicus",
+    byname: "Myron the Presbyter",
+    name: "St. Myron of Cyzicus",
+    epithet: "Presbyter of Achaia · Martyr under Decius",
+    reposed: "c. 250",
+    feastDays: ["August 17"],
+    see: "(presbyter)",
+    pronoun: "his",
+    shortBio:
+      "A presbyter of a good and wealthy family, gentle by disposition, who was serving the liturgy on the feast of the Nativity when soldiers came into the church to take his congregation. He went out and stood between them, and the persecution turned on him instead.",
+    life: [
+      "He was of a well-off family in Achaia and was ordained presbyter, and the accounts are unanimous that his character was mild, that he was generous with what he had, and that he was loved by his people.",
+      "On the feast of the Nativity, in the persecution of Decius, the governor Antipater came into the church with soldiers to seize the congregation at the liturgy. Myron came out from the altar and put himself in front of them and rebuked the governor, and the soldiers took him instead.",
+      "He was tortured over a long period and finally beheaded, about the year 250. The Church keeps his memory on the seventeenth of August.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "floros-and-lauros",
+    byname: "The Stonemasons of Illyricum",
+    name: "Sts. Floros and Lauros",
+    epithet: "Twin brothers · Stonemasons · Martyrs of Illyricum",
+    reposed: "2nd century (Ulpiana, Illyricum)",
+    feastDays: ["August 18"],
+    see: "(laymen)",
+    pronoun: "his",
+    shortBio:
+      "Twin brothers, stonemasons by trade, who were hired to build a pagan temple in Illyricum, spent their wages on the poor as they earned them, and when the building was finished set a cross in it, gathered the local Christians, and kept vigil in it all night. They were thrown alive into a dry well and covered over.",
+    life: [
+      "They were brothers, said to be twins, trained in stonecutting at Byzantium under two Christian masters who were themselves martyred. They moved on to Illyricum and worked there.",
+      "The governor of the province hired them to build a temple. They took the wage and gave it away to the poor of the district as fast as it came in, and when the work was finished they set a cross in the completed building, called together the Christians of the place, and spent the night there in prayer.",
+      "The account says that the son of the pagan priest had been injured on the site and was healed, and that the priest and his son were converted, and that the whole company of local Christians, some hundreds, were burned. Floros and Lauros were sent to the governor of the region, who had them thrown into a deep dry well and the mouth of it filled in.",
+      "Their relics were found uncorrupted many years later and translated to Constantinople. In the Russian tradition they became, for reasons that belong to folk piety rather than to the Life, the patrons of horses, and the eighteenth of August was for centuries the day the horses were blessed.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "andrew-stratelates",
+    byname: "Andrew the Commander",
+    name: "St. Andrew Stratelates",
+    epithet: "Roman commander in Syria · Martyr with 2,593 soldiers",
+    reposed: "c. 300 (the Taurus mountains, Cilicia)",
+    feastDays: ["August 19"],
+    see: "(soldier)",
+    pronoun: "his",
+    shortBio:
+      "A Roman officer in Syria under Maximian who, sent against a much larger Persian force with a small command, told his men that the gods of the empire were nothing and that they should call on Christ, and won. He and the soldiers who had called on Christ with him were baptized, dismissed the service, and were hunted down and killed in the Cilician mountains.",
+    life: [
+      "Andrew held the rank of tribune in the Roman army in Syria in the reign of Maximian and was already a Christian in conviction, though not yet baptized. When a large Persian force crossed the frontier he was given a small command and sent against it.",
+      "Before the engagement he told his soldiers that the gods whose names they were about to invoke did not exist, and that the God who made heaven and earth would help them if they called on Him. They did, and they broke the Persian force, and the victory was reported at once to the imperial court along with the manner of it.",
+      "The governor Antiochus had him brought and questioned. Andrew would not sacrifice, nor would the soldiers with him. Rather than execute a decorated commander and a body of victorious troops openly, which the accounts say was thought too dangerous, they were released and then pursued.",
+      "Andrew and the men with him went into the mountains of Cilicia, where they were baptized by the bishop of Tarsus, and were caught in a defile in the Taurus and killed to a man, the tradition numbering them two thousand five hundred and ninety three. A spring is said to have opened at the place. The Church keeps them on the nineteenth of August.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "abraham-of-smolensk",
+    byname: "Abraham the Preacher",
+    name: "St. Abraham of Smolensk",
+    epithet: "Priest-monk of Smolensk · Preacher · Wonderworker",
+    reposed: "c. 1221 (Smolensk)",
+    feastDays: ["August 21"],
+    see: "(abbot)",
+    pronoun: "his",
+    shortBio:
+      "A priest-monk of Smolensk who preached constantly, in a century when preaching in Rus was rare, and drew such crowds that the clergy of the city accused him of heresy and of leading the people astray. He was tried, forbidden to serve, and vindicated when a drought that had gripped the city broke on the day he was restored.",
+    life: [
+      "He was the only surviving child of a wealthy Smolensk family, born after twelve daughters, and when his parents died he gave the inheritance to the poor and the monasteries and entered the monastery of the Dormition outside Smolensk. He was tonsured and later ordained.",
+      "What made him unusual was that he preached, and that he read: the Life written by his disciple Ephraim says he worked through the Fathers and taught out of them, and had icons painted of the Last Judgment and of the trial of the soul and preached on them. The city came out to hear him, and he heard confessions for hours a day.",
+      "The clergy of Smolensk brought charges against him before the bishop, accusing him of false teaching, of reading forbidden books, and of drawing the people away. He was tried, and the charges failed, but he was silenced and confined to his monastery.",
+      "A drought followed and would not break. The Life says the bishop was told to lift the ban, that he called Abraham back and asked his prayers, and that the rain came before he had reached his own monastery again. He was given the abbacy of the monastery of the Holy Cross and served there until his repose, about the year 1221. His Life by Ephraim is one of the best pieces of writing to survive from pre-Mongol Rus.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "agathonicus-of-nicomedia",
+    byname: "Agathonicus and companions",
+    name: "St. Agathonicus of Nicomedia",
+    epithet: "Martyr under Maximian · Killed at Selymbria",
+    reposed: "c. 305 (Selymbria, Thrace)",
+    feastDays: ["August 22"],
+    see: "(martyr)",
+    pronoun: "his",
+    shortBio:
+      "A man of noble family at Nicomedia who converted a number of pagans, including some of the imperial household, and was taken with several companions when the persecution reached them. They were marched west toward the capital and killed on the road at Selymbria in Thrace.",
+    life: [
+      "He was of a distinguished Nicomedian family and used the standing it gave him to argue for the faith, and the accounts credit him with the conversion of a number of educated pagans, among them men connected to the court.",
+      "The official Eutolmius, sent into the region against the Christians, took the ascetic Zoticus and his disciples, who were killed on the spot, and then arrested Agathonicus with his companions Princeps, Theoprepius, Acindynus and Severian.",
+      "They were made to walk toward Byzantium in chains. Theoprepius and Acindynus could not keep up and were killed on the road, and Princeps died of the treatment. The rest reached Selymbria in Thrace, where Agathonicus was interrogated a final time and beheaded with the others, about the year 305.",
+      "A church was built over the grave, and the Emperor Constantine is credited with enlarging it. The Church keeps his memory on the twenty second of August.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "lupus-of-thessaloniki",
+    byname: "Lupus the Servant",
+    name: "St. Lupus of Thessaloniki",
+    epithet: "Servant of St. Demetrius · Martyr under Maximian",
+    reposed: "c. 306 (Thessaloniki)",
+    feastDays: ["August 23"],
+    see: "(layman)",
+    pronoun: "his",
+    shortBio:
+      "The servant of St. Demetrius of Thessaloniki, who was with him at the end. He dipped his master's ring and the hem of his garment in the blood, and the accounts say that everything he touched with them afterward was healed, until the authorities understood where it was coming from and took him too.",
+    life: [
+      "Demetrius, deacon and later patron of Thessaloniki, was speared in the baths of the city in the persecution under Maximian. Lupus was his servant and was present.",
+      "He took his master's ring and dipped it, and the hem of his own garment, in the blood. With them, the account says, he healed the sick of Thessaloniki in numbers, and the city knew about it quickly.",
+      "The emperor was still in Thessaloniki. Lupus was arrested, and the tradition says the first attempts on him failed and that he asked for and received baptism before the end. He was beheaded, about the year 306.",
+      "The Church keeps him on the twenty third of August, the day after the leavetaking of the Dormition. He is one of the small number of saints whose whole recorded story is his relation to another saint, and the Church has never regarded that as a lesser thing.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "peter-of-moscow",
+    byname: "Peter the Wonderworker",
+    name: "St. Peter, Metropolitan of Moscow",
+    epithet: "Metropolitan of All Rus · The hierarch who moved the see to Moscow",
+    born: "c. 1260 (Volhynia)",
+    reposed: "December 21, 1326 (Moscow)",
+    feastDays: ["August 24", "December 21"],
+    see: "Kiev and All Rus",
+    pronoun: "his",
+    shortBio:
+      "Metropolitan of all Rus in the years when the country was under the Horde and had no capital worth the name. He moved his residence to Moscow, then a minor town, and told its prince to build a stone cathedral to the Dormition and that the city would rise above all the others. He was buried in the wall of it before it was finished.",
+    life: [
+      "He was born in Volhynia about 1260, entered a monastery at twelve, was an icon painter, and founded a monastery on the river Rata. He was consecrated Metropolitan of Kiev and All Rus at Constantinople in 1308.",
+      "His years in office were spent traveling a country that had been broken by the Mongol invasion and was quarreling with itself, and he was accused before the Patriarch by the party of Tver and cleared at a council at Pereyaslavl in 1311.",
+      "He settled at last at Moscow, which was then a small principality of no particular standing, and worked with its prince Ivan Kalita. The Life records what he told him: to build a stone church to the Dormition of the Theotokos in the Kremlin, and that if he did, the city would be exalted above all the cities of Rus and the hierarchs would live in it. The cathedral was begun in 1326.",
+      "Peter died on the twenty first of December of that year and was buried in the wall of the unfinished church, and Moscow became what he had said it would. He was glorified in 1339. The Church keeps the twenty fourth of August for the translation of his relics into the rebuilt Dormition Cathedral in 1479, and the twenty first of December for his repose.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "adrian-and-natalia",
+    byname: "Adrian and Natalia of Nicomedia",
+    name: "Sts. Adrian and Natalia",
+    epithet: "Officer of the imperial court and his wife · Martyrs of Nicomedia",
+    reposed: "c. 305 (Nicomedia)",
+    feastDays: ["August 26"],
+    see: "(laity)",
+    pronoun: "his",
+    shortBio:
+      "The head of the imperial court's judicial office at Nicomedia, twenty eight years old and a pagan, who watched twenty three Christians being tortured, asked them what they expected to get for it, and put his own name on the register. His wife Natalia, a secret Christian, spent the weeks that followed getting into the prison in disguise to keep him from weakening.",
+    life: [
+      "Adrian was an officer of the court at Nicomedia under Maximian, in charge of the praetorium, and he was present when a group of twenty three Christians taken in a cave outside the city were brought in and tortured. He asked them what reward they were expecting, and the answer they gave him was the one from the Apostle: what eye has not seen, nor ear heard.",
+      "He told the clerks to add his name to the list of the accused. He was twenty eight and had been married thirteen months.",
+      "Natalia, his wife, was a Christian and had kept it from him. When the news came that he was in prison she came to the prison and got in, cut her hair and dressed as a man to keep getting in, and served the prisoners. When Adrian was released briefly to bring her word of the date, she shut the door in his face, believing he had recanted, until he explained.",
+      "The end was brutal even by the standard of these accounts: the prisoners' limbs were broken on an anvil, and Natalia was there, and held her husband's hands to it. She carried away one of his hands and afterward crossed to Byzantium with the relics, where she died soon after. The Church keeps them both on the twenty sixth of August.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "phanourios-the-newly-revealed",
+    byname: "Phanourios of Rhodes",
+    name: "St. Phanourios the Newly-Revealed",
+    epithet: "Great-martyr · Made known by his icon at Rhodes",
+    reposed: "date unknown",
+    feastDays: ["August 27"],
+    see: "(martyr)",
+    pronoun: "his",
+    shortBio:
+      "A martyr about whom nothing was known until his icon was dug out of a ruined church at Rhodes in the fifteenth century, with twelve scenes of his trial and death painted around him and his name written above. The Church accepted the icon as the record, and has venerated him ever since on the evidence of a painting.",
+    life: [
+      "The account is that in the years of the Frankish rule at Rhodes, workmen clearing rubble outside the walls uncovered the ruins of a church and, in it, a number of icons, all of them ruined by time except one, which was intact.",
+      "It showed a young soldier holding a cross with a lighted candle set in it, and around him twelve scenes: standing before the judge, beaten, in prison, scraped, burned, thrown to the beasts, crushed under a stone, and at the last standing in the fire. His name was written on it, Phanourios, and the name itself means the one who reveals, or the one made manifest.",
+      "The metropolitan of Rhodes, Nilus, took the icon as sufficient and asked leave of the Latin authorities to restore the church, which was given. No Life, no Acts and no date have ever been recovered. What the Church has of him is the icon and the twelve scenes on it.",
+      "He is invoked for things that are lost, which is a play on his name that has become part of the tradition, and the loaf called the phanouropita is baked for his feast and given away, by custom in memory of his mother. The Church keeps his memory on the twenty seventh of August.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "job-of-pochaev",
+    byname: "Job of Pochaev",
+    name: "St. Job of Pochaev",
+    epithet: "Abbot of Pochaev · Defender of Orthodoxy in Volhynia · Printer",
+    born: "c. 1551 (Pokutia, Galicia)",
+    reposed: "October 28, 1651 (Pochaev)",
+    feastDays: ["August 28", "October 28"],
+    see: "(abbot)",
+    pronoun: "his",
+    shortBio:
+      "Abbot of Pochaev in the century when the Union of Brest was being pressed on the Orthodox of the Polish-Lithuanian lands by law and by force. He held the monastery, ran its press, wrote against the Union, and defended the house through twenty years of litigation and armed raids. He lived past a hundred.",
+    life: [
+      "He was born John Zalizo in Galicia about 1551 and entered the monastery of the Transfiguration at Ugornitsy at twelve. He was tonsured, ordained, and became known well beyond his own house, and Prince Constantine of Ostrog, the great lay patron of the Orthodox in the Commonwealth, brought him to the Dubno monastery, where he was abbot for over twenty years.",
+      "The Union of Brest was concluded in 1596 and the Orthodox of those lands lost their legal standing. Job left Dubno for the mountain at Pochaev in Volhynia, where there was a small brotherhood and the Pochaev icon of the Theotokos, and he was made abbot there against his wish.",
+      "He built the monastery into the Orthodox stronghold of the region: a stone church, a press that printed Orthodox books when printing them was the point of the fight, and a school. He wrote against the Union himself. He also spent two decades in the courts, defending the monastery's lands against a neighboring lord who raided them and once carried off the monastery's property outright.",
+      "He kept a severe personal rule through all of it and is said to have spent days at a time in a cave on the mountain. He reposed on the twenty eighth of October, 1651, at about a hundred years old. His relics were uncovered in 1659 and he was glorified. The Church keeps the twenty eighth of August for the uncovering of his relics and the twenty eighth of October for his repose.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "alexander-of-svir",
+    byname: "Alexander of Svir",
+    name: "St. Alexander of Svir",
+    epithet: "Abbot of the Holy Trinity on the Svir · Seer of the Holy Trinity",
+    born: "June 15, 1448 (Mandera, on the Oyat)",
+    reposed: "August 30, 1533 (the Svir monastery)",
+    feastDays: ["August 30", "April 17"],
+    see: "(abbot)",
+    pronoun: "his",
+    shortBio:
+      "A monk of Valaam who went off alone into the forest between Lakes Ladoga and Onega and lived there seven years without seeing anyone. He is the only saint of the Russian Church to whom the tradition ascribes an appearance of the Holy Trinity as three men, as to Abraham at Mamre, and the monastery he founded on the river Svir became one of the great houses of the Russian north.",
+    life: [
+      "He was born Amos in 1448 in a village on the Oyat river, of peasant parents, and went north to Valaam at nineteen against their wishes. He was tonsured Alexander and spent about thirteen years there, part of it as a hermit on one of the islands.",
+      "About 1485 he left for the mainland forest near the river Svir and lived alone in it for seven years, seeing no one, on what the forest gave. He was found by a hunter, and after that people began to come, and a brotherhood grew up around him that he did not want and did not refuse.",
+      "The Life records that in the twenty third year of his life there, at prayer at night, a great light filled the place and three men came in to him in shining garments, and told him to build a church and gather a house in the name of the Father and the Son and the Holy Spirit. He asked in whose name the church was to be dedicated, and was told, in the name of the Trinity. Russian iconography has a distinct type for it, and it is unique in the Russian calendar.",
+      "He was made abbot against his will by the archbishop of Novgorod, and remained the poorest and least-served man in his own monastery. He reposed on the thirtieth of August, 1533, aged eighty five. His relics were uncovered incorrupt in 1641, were seized by the Soviet authorities in 1918 and displayed as an exhibit, and were found again and returned to the monastery in 1998. The Church keeps his memory on the thirtieth of August and on the seventeenth of April.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "patriarchs-alexander-john-paul",
+    byname: "Three Patriarchs of Constantinople",
+    name: "Sts. Alexander, John and Paul the New",
+    epithet: "Patriarchs of Constantinople · Commemorated together",
+    reposed: "Alexander 340; John 595; Paul 784",
+    feastDays: ["August 30"],
+    see: "Constantinople",
+    pronoun: "his",
+    shortBio:
+      "Three patriarchs of the capital, four centuries apart, kept on one day: Alexander, who was patriarch when Arius was to be received back into communion and prayed instead; John the Faster, who was the first to be called Ecumenical Patriarch and the most ascetic man ever to hold the office; and Paul the Fourth, who served under the iconoclasts, could not bear it, and resigned.",
+    life: [
+      "Alexander was bishop of Constantinople from 314 and represented the see at the First Ecumenical Council. In 336 the Emperor Constantine, persuaded that Arius had signed an acceptable confession, ordered that he be received back into communion in the church of the capital, and Alexander was to do it. He shut himself in and prayed that either he or Arius should be taken first. Arius died that day, on the way to the church. Alexander reposed in 340.",
+      "John the Fourth, called the Faster, was patriarch from 582 to 595. He was famous for an austerity that was extreme even by the standard of the time, for giving away everything the see had, and for the penitential canons that circulate under his name. He was the first bishop of Constantinople to use the title Ecumenical Patriarch, which drew a sharp objection from St. Gregory the Great at Rome and became, centuries later, one of the standing points of dispute between the sees.",
+      "Paul the Fourth, called the New, was made patriarch in 780 under the iconoclast regime and had to sign the customary undertaking against the icons in order to take office. It broke him. In 784 he left the patriarchate without warning, entered a monastery, and told the Empress Irene and the council that came to ask why, that the Church was in error and that a council must be called to restore the icons. He died a monk soon after. The council he demanded met at Nicaea in 787.",
+      "The Church keeps the three of them together on the thirtieth of August.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "stephen-the-protomartyr",
+    byname: "The First Martyr",
+    name: "St. Stephen the Protomartyr",
+    epithet: "First of the Seven Deacons · First martyr of the Church · Archdeacon",
+    reposed: "c. 34 (stoned outside Jerusalem)",
+    feastDays: ["December 27", "August 2"],
+    see: "(deacon of Jerusalem)",
+    pronoun: "his",
+    shortBio:
+      "The first of the seven men the apostles laid hands on to serve the tables of the Jerusalem church, and the first Christian to be killed for the Name. His defense before the Sanhedrin is the longest speech in the Book of Acts, and Saul of Tarsus was standing there holding the coats.",
+    life: [
+      "The Greek-speaking widows of the Jerusalem church were being overlooked in the daily distribution, and the apostles would not leave the word of God to serve tables, so the assembly chose seven men of good report, full of the Spirit and of wisdom, and Stephen is named first among them. That is where the diaconate begins.",
+      "The Acts says he did great wonders and signs among the people, and that men from the synagogue of the Freedmen disputed with him and were not able to resist the wisdom and the spirit by which he spoke. They brought false witnesses and charged him with speaking against the Temple and the Law, and the council looked at him, the text says, and saw his face as it had been the face of an angel.",
+      "His answer is the seventh chapter of Acts: the whole history of Israel retold from Abraham forward as a history of God meeting His people outside the land and outside the Temple, and of the people refusing the ones He sent. It ends with the charge that they had betrayed and murdered the Righteous One, and they stopped their ears.",
+      "They ran him out of the city and stoned him, and the witnesses laid their clothes at the feet of a young man named Saul. He saw the heavens opened and the Son of Man standing at the right hand of God, and he died praying for the men who were killing him, which is the second time in the New Testament that prayer is made and the first was from the Cross.",
+      "His relics were found at Kaphar Gamala near Jerusalem in the year 415, an event the Church commemorates in its own right, and were translated to Constantinople and later to Rome. The Church keeps his memory on the twenty seventh of December, on the day after the Nativity, and again on the second of August for the translation of the relics.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "prophet-micah",
+    byname: "Micah the Morasthite",
+    name: "The Prophet Micah",
+    epithet: "One of the Twelve Minor Prophets · Contemporary of Isaiah",
+    reposed: "8th century BC (Judah)",
+    feastDays: ["August 14"],
+    see: "(prophet)",
+    pronoun: "his",
+    shortBio:
+      "A prophet of the small town of Moresheth in the Judean lowlands, who prophesied under Jotham, Ahaz and Hezekiah, in the years the northern kingdom fell to Assyria. He named Bethlehem as the birthplace of the Ruler whose goings forth have been from of old, seven hundred years before the Magi were sent there on the strength of it.",
+    life: [
+      "Micah was from Moresheth-Gath, a country town in the Judean lowlands rather than the capital, and the difference shows in his book: his anger is at what the landowners and the courts of Jerusalem were doing to the smallholders of places like his own, at judges who ruled for a bribe, priests who taught for hire, and prophets who prophesied for money.",
+      "He prophesied in the reigns of Jotham, Ahaz and Hezekiah of Judah, the same decades as Isaiah at Jerusalem and Hosea in the north, and he saw Samaria fall to Assyria and Sennacherib's army come up into Judah.",
+      "Two passages of his are among the best known in the prophets. The first is the word about Bethlehem Ephratha, little among the thousands of Judah, out of which shall come forth the One who is to be ruler in Israel, whose goings forth have been from of old, from everlasting: the verse the chief priests quoted to Herod when the Magi asked where the King was to be born. The second is the answer to the question of what the Lord requires, which is to do justly, to love mercy, and to walk humbly with God.",
+      "The Book of Micah is in this app in full in the Brenton Septuagint. The Church commemorates him on the fourteenth of August, and he is not to be confused with the earlier Micah son of Imlah, who confronted Ahab and is commemorated on the fifth of January.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "prophet-samuel",
+    byname: "Samuel the Seer",
+    name: "The Prophet Samuel",
+    epithet: "Last of the Judges · The prophet who anointed Saul and David",
+    reposed: "11th century BC (Ramah)",
+    feastDays: ["August 20"],
+    see: "(prophet and judge)",
+    pronoun: "his",
+    shortBio:
+      "Asked of God by a barren woman and given back to Him, he grew up sleeping in the sanctuary at Shiloh and was called by name in the night while he was still a boy. He was the last of the judges of Israel, the prophet who anointed both its first king and its greatest, and the one who told Saul that obedience is better than sacrifice.",
+    life: [
+      "Hannah, childless and taunted for it, prayed at the sanctuary at Shiloh so intently that the priest Eli took her for drunk, and vowed that if she were given a son she would give him to the Lord for his whole life. Samuel was born, and she kept the vow and brought him to Shiloh when he was weaned, and her song of thanksgiving is the model the Church hears again in the Magnificat.",
+      "The boy slept in the temple where the ark of God was, and the word of the Lord was rare in those days. He was called three times in the night and three times went to Eli, until Eli understood, and told him what to say. The word he was given was against Eli's own house.",
+      "He judged Israel from Ramah and rode a circuit of the towns, and he was the last man to hold the country together without a king. When the people demanded a king so that they might be like the other nations, he warned them exactly what a king would take from them, and then anointed the one God chose, Saul the son of Kish.",
+      "When Saul spared what he had been told to destroy and made an offering of it, Samuel gave him the answer that has been quoted against religious display ever since: that to obey is better than sacrifice, and to hearken than the fat of rams. He anointed David at Bethlehem while Saul still reigned, and he died at Ramah and all Israel mourned him.",
+      "The books of Kingdoms that carry his story are in this app in full in the Brenton Septuagint. His relics were translated to Constantinople in 406. The Church keeps his memory on the twentieth of August.",
+    ],
+    works: [],
+  },
 ];
 
 export function getSaint(slug: string): Saint | null {

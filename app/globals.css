@@ -225,6 +225,19 @@ html.is-native .safe-pb {
 html.is-native .safe-pb-reader {
  padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + 68px);
 }
+/* The now-playing bar sits ABOVE the tab bar, not on top of it.
+   Both were pinned to bottom-0 and the player carried the higher z-index
+   (z-55 against the bar's z-50), so starting the anthem hid the whole tab
+   bar and the app lost its navigation until playback was stopped. Raising a
+   z-index cannot fix two things claiming the same 86px; the player has to
+   move. Scoped to the native shell for the same reason .safe-pb is: the tab
+   bar is NativeOnly, so on the web the player belongs at the bottom.
+   padding-bottom is zeroed here because the tab bar below already clears the
+   home indicator, and keeping the player's own inset would count it twice. */
+html.is-native .now-playing-lift {
+ bottom: calc(var(--inset-bottom) + var(--tab-bar-h));
+ padding-bottom: 0;
+}
 html.is-native .safe-pt {
  padding-top: var(--inset-top);
 }
@@ -299,6 +312,20 @@ html.is-native .below-topbar-line {
 html.has-cart-fab .back-to-top {
  bottom: 5.75rem; /* 24px cart offset + 56px cart + 12px gap */
  right: 30px;
+}
+
+/* iOS Safari and the Android WebView auto-zoom the page when a focused form
+ control has a font-size below 16px. Our UI text is 14px, so any input in a
+ popup (sign-in, search, the command palette) would zoom the viewport on
+ focus. Pin form controls to 16px on phones to stop that, without disabling
+ pinch-zoom the way maximum-scale would. Unlayered, so it beats the 14px
+ text-* utilities. */
+@media (max-width: 767px) {
+ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+ textarea,
+ select {
+ font-size: 16px;
+ }
 }
 
 @layer base {

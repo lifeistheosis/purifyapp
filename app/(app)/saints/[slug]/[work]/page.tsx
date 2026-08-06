@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { SAINTS, getWork } from "@/lib/saints/saints";
 import { loadWriting } from "@/lib/saints/load";
+import { writingJsonLd } from "@/lib/seo/jsonld";
 import { WritingReader } from "@/components/saints/WritingReader";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { MobileWorkProgressBar } from "@/components/saints/MobileWorkProgressBar";
@@ -14,7 +15,6 @@ import {
 import { getServerLocale } from "@/lib/i18n/server";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 import { RecordRead } from "@/components/reading/RecordRead";
-import { SITE_URL } from "@/lib/site";
 
 type Params = Promise<{ slug: string; work: string }>;
 
@@ -42,31 +42,10 @@ export default async function WritingPage({ params }: { params: Params }) {
   const content = await loadWriting(slug, work, locale);
   if (!content) notFound();
 
-  // CreativeWork schema, authored by the saint and not by Purify. These pages
-  // carry verbatim public-domain patristic text and are open to AI training
-  // crawlers (see app/robots.ts), so the authorship needs to be unambiguous in
-  // the markup: a machine reader that mistakes the translation for Purify's
-  // own writing would misattribute a Father.
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CreativeWork",
-    "@id": `${SITE_URL}/saints/${found.saint.slug}/${found.work.slug}`,
-    name: found.work.title,
-    ...(found.work.subtitle ? { alternateName: found.work.subtitle } : {}),
-    abstract: found.work.blurb,
-    ...(found.work.topics.length ? { about: found.work.topics } : {}),
-    ...(found.work.year ? { temporalCoverage: found.work.year } : {}),
-    inLanguage: locale,
-    isAccessibleForFree: true,
-    url: `${SITE_URL}/saints/${found.saint.slug}/${found.work.slug}`,
-    author: {
-      "@type": "Person",
-      "@id": `${SITE_URL}/saints/${found.saint.slug}`,
-      name: found.saint.name,
-      url: `${SITE_URL}/saints/${found.saint.slug}`,
-    },
-    publisher: { "@type": "Organization", name: "Purify", url: SITE_URL },
-  };
+  // Structured data. The @type and the author follow the sections' `voice`:
+  // a work carrying Purify's own prose is never published as a Book the
+  // saint wrote. See lib/seo/jsonld.ts.
+  const jsonLd = writingJsonLd(found.saint, content);
 
   return (
     <ReaderPrefsProvider>

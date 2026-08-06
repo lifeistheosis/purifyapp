@@ -213,6 +213,9 @@ export function SignUpForm() {
       </div>
 
       <OAuthButtons
+        // The checkbox above already governs this button, so the inline
+        // notice would ask for the same agreement twice on one screen.
+        showTermsNotice={false}
         disabled={!agreed}
         disabledHint="Agree to the Terms and Privacy Policy first."
       />

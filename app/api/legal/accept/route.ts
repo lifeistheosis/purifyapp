@@ -54,12 +54,31 @@ export async function POST(req: Request) {
 
   try {
     const admin = createAdminClient();
-    const { error } = await admin.from("terms_acceptances").insert({
+    const row = {
       user_id: user?.id ?? null,
       email: user?.email ?? parsed.data.email ?? null,
       context: parsed.data.context,
       terms_version: TERMS_VERSION,
-    });
+    };
+    // A signed-in signup acceptance must be idempotent, because the native
+    // OAuth path records one on EVERY sign-in (it has no server-side callback
+    // to hook, unlike the web). `terms_acceptances_signup_unique` makes the
+    // repeat a conflict, and a plain insert would turn that conflict into
+    // ok:false, i.e. a returning reader blocked from signing in by the very
+    // record that says they already agreed.
+    //
+    // Only for a resolved user: the index is partial on `user_id is not null`,
+    // and email sign-ups legitimately write a row before the account exists.
+    // Checkout acceptances legitimately repeat, so they stay plain inserts too.
+    const idempotent = !!user && parsed.data.context === "signup";
+    const { error } = idempotent
+      ? await admin
+          .from("terms_acceptances")
+          .upsert(row, {
+            onConflict: "user_id,terms_version",
+            ignoreDuplicates: true,
+          })
+      : await admin.from("terms_acceptances").insert(row);
     if (error) {
       console.warn("[legal] acceptance insert failed", error.message);
       return withCors(NextResponse.json({ ok: false }), req);

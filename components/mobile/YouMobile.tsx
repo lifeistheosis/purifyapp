@@ -36,6 +36,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
 import { eikonBoxEnabled } from "@/lib/eikonBox/flags";
+import { isDeveloperEmail } from "@/lib/dev/developer";
 
 type AuthState =
   | { kind: "loading" }
@@ -222,6 +223,15 @@ export function YouMobile() {
       icon: <Glyph kind="cross" />,
     },
   );
+
+  if (signedIn && isDeveloperEmail(auth.email)) {
+    settings.push({
+      label: "Developer",
+      href: "/account/developer",
+      hint: "Test premium, feature flags, themes",
+      icon: <Glyph kind="bolt" />,
+    });
+  }
 
   if (signedIn) {
     settings.push({

@@ -55,9 +55,14 @@ export function NowPlayingBar() {
 
   return (
     <div
-      // Above the tab bar (z-50) so it is never covered, and it carries its
-      // own safe-area padding because it sits at the very bottom on a phone.
-      className="fixed inset-x-0 bottom-0 z-[55] px-3 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] pointer-events-none md:pb-2"
+      // z-55 keeps it above the tab bar (z-50) so it is never covered, but
+      // that alone was the bug: both were pinned to bottom-0, so the player
+      // simply painted over the whole tab bar and the app lost its
+      // navigation for as long as the anthem played. `now-playing-lift`
+      // moves it above the bar inside the native shell (globals.css); on the
+      // web there is no tab bar and it stays at the bottom with its own
+      // safe-area padding.
+      className="now-playing-lift fixed inset-x-0 bottom-0 z-[55] px-3 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] pointer-events-none md:pb-2"
     >
       <div className="pointer-events-auto mx-auto flex max-w-md items-center gap-3 rounded-2xl border border-white/10 bg-night-soft/95 px-3 py-2 shadow-[0_4px_18px_rgba(0,0,0,0.45)] backdrop-blur-sm">
         <button

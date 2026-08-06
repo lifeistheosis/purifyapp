@@ -19,15 +19,25 @@ const securityHeaders = [
   { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
 ];
 
-// Android local-first build target. `BUILD_TARGET=android next build` produces
-// a fully static export (out/) that Capacitor bundles in the APK, so the app
-// renders locally with no network. The default (web) build is unchanged: SSR,
-// redirects, security headers, and image optimization stay on for purifyapp.net.
-// redirects()/headers() need a server and are unsupported by output:export, so
-// they are omitted in the Android target.
-const isAndroid = process.env.BUILD_TARGET === "android";
+// Native local-first build target. `BUILD_TARGET=android|ios next build` produces
+// a fully static export (out/) that Capacitor bundles into the app, so it renders
+// locally with no network. Android loads it from https://localhost and iOS from
+// capacitor://localhost; both need the identical export, which is why one flag
+// covers both. The default (web) build is unchanged: SSR, redirects, security
+// headers, and image optimization stay on for purifyapp.net. redirects() and
+// headers() need a server and are unsupported by output:export, so they are
+// omitted in the native targets.
+//
+// This duplicates lib/platform/buildTarget.ts on purpose. next.config.ts is
+// loaded outside the app's module graph and does not resolve the "@/" alias, so
+// importing the helper here works until it abruptly does not. The two are held
+// in step by lib/platform/__tests__/buildTarget.test.ts, which reads this file
+// as text, the same trick lib/appUpdate/__tests__/release.test.ts uses on
+// build.gradle.
+const isNative =
+  process.env.BUILD_TARGET === "android" || process.env.BUILD_TARGET === "ios";
 
-const nextConfig: NextConfig = isAndroid
+const nextConfig: NextConfig = isNative
   ? {
       output: "export",
       // Capacitor serves files from disk: trailing slashes give every route its

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Sheet } from "@/components/ui/Sheet";
 
 /**
  * Client island for the quiet footer row inside the Verse of Day card.
@@ -109,7 +110,7 @@ export function VerseCardActions({
     if (existing) {
       writeAll(all.filter((b) => b.id !== existing.id));
       setFav(false);
-      setToast("Removed from saved");
+      setToast(t("today.verse.removedFromSaved"));
     } else {
       const id =
         typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -127,7 +128,7 @@ export function VerseCardActions({
       };
       writeAll([entry, ...all]);
       setFav(true);
-      setToast("Saved to bookmarks");
+      setToast(t("today.verse.savedToBookmarks"));
     }
     setTimeout(() => setToast(null), 1500);
   }
@@ -197,55 +198,46 @@ export function VerseCardActions({
         )}
       </div>
 
-      {more && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={t("today.verse.moreActions")}
-          className="fixed inset-0 z-50 flex items-end"
-        >
-          <button
-            aria-label={t("common.close")}
-            type="button"
-            onClick={() => setMore(false)}
-            className="absolute inset-0 bg-night/60 backdrop-blur-sm"
-          />
-          <div className="relative w-full rounded-t-2xl border-t border-paper/10 bg-night px-5 pt-3 pb-7 safe-pb">
-            <div
-              aria-hidden
-              className="mx-auto mb-3 h-1 w-10 rounded-full bg-paper/20"
-            />
-            <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/45 mb-3">
-              {refLabel}
-            </p>
-            <SheetItem
-              label={t("today.verse.openChapter")}
-              onClick={() => {
-                setMore(false);
-                // Router push, not `window.location.href`: a raw string nav
-                // does not resolve against the trailingSlash export bundled
-                // in the Android shell, which falls back to Today.
-                router.push(href);
-              }}
-            />
-            <SheetItem label={t("today.verse.copyVerseText")} onClick={copyText} />
-            <SheetItem
-              label={t("today.verse.copyLink")}
-              onClick={() => {
-                void share();
-                setMore(false);
-              }}
-            />
-            <button
-              type="button"
-              onClick={() => setMore(false)}
-              className="mt-2 w-full rounded-md border border-paper/15 bg-paper/[0.04] py-3 font-sans text-ui font-semibold text-paper/80"
-            >
-              {t("common.cancel")}
-            </button>
-          </div>
-        </div>
-      )}
+      {/* This was a hand-rolled `fixed inset-0 z-50` sheet with no animation
+          in either direction, no overlay flag, and no portal. Three faults in
+          one, and the last two are not cosmetic: at z-50 it tied with the
+          root-level tab bar, and rendered inline it was scoped to whatever
+          stacking context Today's tree created, so the bar stayed lit AND
+          tappable over an open modal. That is the shape of 5ee95ed3.
+
+          Sheet portals to <body>, holds the overlay flag across the whole
+          exit so the tab bar steps aside, and carries the reduced-motion
+          escape. `desktop` because this card is on /prayers/today, which is
+          the web's only Today and is viewed on a laptop.
+
+          The old explicit Cancel row is gone: Sheet's title bar has a close
+          button, and the backdrop, Escape and Android back all dismiss. */}
+      <Sheet
+        open={more}
+        onClose={() => setMore(false)}
+        title={refLabel}
+        desktop
+        bodyClassName="space-y-1 pb-2"
+      >
+        <SheetItem
+          label={t("today.verse.openChapter")}
+          onClick={() => {
+            setMore(false);
+            // Router push, not `window.location.href`: a raw string nav
+            // does not resolve against the trailingSlash export bundled
+            // in the Android shell, which falls back to Today.
+            router.push(href);
+          }}
+        />
+        <SheetItem label={t("today.verse.copyVerseText")} onClick={copyText} />
+        <SheetItem
+          label={t("today.verse.copyLink")}
+          onClick={() => {
+            void share();
+            setMore(false);
+          }}
+        />
+      </Sheet>
     </>
   );
 }

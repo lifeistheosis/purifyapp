@@ -2,12 +2,20 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { apiFetch } from "@/lib/api/client";
 
 /**
  * Anonymous visit tracker. Generates an ephemeral per-tab session id (kept in
  * sessionStorage, no cookie, no PII), and pings /api/track on first load, on
  * every route change, and on a heartbeat so the admin Live View knows who is
  * currently on the site. Fire-and-forget; never blocks or errors the page.
+ *
+ * Uses apiFetch, not a bare relative fetch: inside the Capacitor shell the app
+ * is served from https://localhost with app/api stashed out of the static
+ * export, so a relative "/api/track" 404s into the swallowed catch below. That
+ * made 100% of Android usage invisible to every dashboard. apiFetch rewrites
+ * the path to SITE_URL when native; /api/track answers the CORS preflight and
+ * exempts the shell origins from its Sec-Fetch-Site guard.
  */
 function getSessionId(): string {
   try {
@@ -39,7 +47,7 @@ export function AnalyticsTracker() {
       path: pathname,
       referrer: document.referrer || null,
     });
-    void fetch("/api/track", {
+    void apiFetch("/api/track", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body,
@@ -52,7 +60,7 @@ export function AnalyticsTracker() {
     const id = setInterval(() => {
       if (document.visibilityState !== "visible") return;
       if (pathname?.startsWith("/admin")) return;
-      void fetch("/api/track", {
+      void apiFetch("/api/track", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId: getSessionId(), path: pathname }),

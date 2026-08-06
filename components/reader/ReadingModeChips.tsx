@@ -53,7 +53,7 @@ export function ReadingModeChips() {
                 // is unresolvable in the Capacitor shell, which falls back
                 // to the root document and dumps the reader on Today.
                 // Reported by a member on 2026-07-31. Same failure shape as
-                // the bible/multi note in scripts/android-build.mjs.
+                // the bible/multi note in scripts/native-build.mjs.
                 else if (locked) router.push("/pricing");
               }}
               title={t.blurb}

@@ -19,8 +19,11 @@ import { T } from "@/components/i18n/T";
  */
 export function VerseOfDayView({
   table,
+  headingId,
 }: {
   table: Record<string, VerseOfDayEntry>;
+  /** See VerseOfDayCard: promotes the label to a named `<h2>`. */
+  headingId?: string;
 }) {
   const today = useToday();
   const key = today ? verseDayKey(today) : null;
@@ -29,6 +32,7 @@ export function VerseOfDayView({
   const keys = Object.keys(table);
   const vod = (key && table[key]) || (keys.length ? table[keys[0]] : null);
   const stale = Boolean(key && keys.length && !table[key]);
+  const Label = headingId ? "h2" : "span";
 
   return (
     <article
@@ -75,10 +79,23 @@ export function VerseOfDayView({
         {/* Eyebrow row: label + a small owned three-bar cross anchoring
             this as the day's word, with the kind chip on the right. */}
         <div className="flex items-center justify-between gap-3">
-          <span className="inline-flex items-center gap-2 font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">
+          {/* The inline font is not a style preference: globals.css sets
+              h1..h6 to Lora 700 UNLAYERED, which beats any font-* utility,
+              so an <h2 className="font-sans"> would still render as bold
+              Lora and this 11px uppercase label would change face the
+              moment it became a heading. */}
+          <Label
+            id={headingId}
+            style={
+              headingId
+                ? { fontFamily: "var(--font-sans)", fontWeight: 600 }
+                : undefined
+            }
+            className="inline-flex items-center gap-2 font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80"
+          >
             <ThreeBarCross />
             <T k="today.verseOfDay" />
-          </span>
+          </Label>
           {vod && vod.source !== "rotation" && !stale && (
             <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.05] px-2.5 py-[2px] font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/60">
               {vod.source === "gospel" ? (

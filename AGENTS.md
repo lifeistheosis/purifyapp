@@ -16,8 +16,13 @@ npm run test:unit        # vitest (must be green; ~250 tests)
 npm run lint             # eslint
 npm run build            # WEB production build (SSR)
 npm run build:android    # local-first static export -> out/ (the native gate)
+npm run build:ios        # the same export for iOS (the second native gate)
 npm run test:e2e         # Playwright smoke + axe (needs a server)
 ```
+
+Both native builds are `scripts/native-build.mjs --platform <p>` and both write to
+`out/`, which the script wipes on entry. Run them one after the other, never at
+the same time in one checkout.
 
 Node ≥ 22.5 required (`lib/content` uses `node:sqlite`); local dev and CI use Node 24. If `tsc` reports errors under `.next/dev/types` referencing stashed routes, run `rm -rf .next && npx next typegen` (stale generated types from a mixed dev/android build — a known trap).
 
@@ -29,7 +34,7 @@ Node ≥ 22.5 required (`lib/content` uses `node:sqlite`); local dev and CI use 
 
 Native cross-origin plumbing: `lib/api/client.ts` (`apiFetch`: absolute `SITE_URL` + `Authorization: Bearer <supabase token>` when native), `lib/supabase/server.ts` (`createClientFromRequest`: bearer-or-cookie), `lib/api/cors.ts` (origin allow-list; authenticated routes export `OPTIONS`). Public catalog reads (`lib/shop/catalog.ts`) use a **cookie-less** anon client on purpose — the cookie-bound client throws in static render contexts (this caused a production 500 on 2026-07-11; do not "simplify" it back).
 
-Web-only trees are stashed out of the export in `scripts/android-build.mjs` (`shop/seller`, `support/contact`, admin, …). The Android gradle step in `.github/workflows/android-apk.yml` runs **one artifact per invocation** — merging those lines OOMs the runner.
+Web-only trees are stashed out of the export in `scripts/native-build.mjs` (`shop/seller`, `support/contact`, admin, …). The Android gradle step in `.github/workflows/android-apk.yml` runs **one artifact per invocation** — merging those lines OOMs the runner.
 
 ## Money and data safeguards
 
@@ -46,9 +51,10 @@ Web-only trees are stashed out of the export in `scripts/android-build.mjs` (`sh
 
 ## Release ritual (Beta X.Y[.Z])
 
-1. Bump all four version identifiers: `lib/whatsNew/version.ts`, `public/sw.js` CACHE_VERSION, `android/app/build.gradle` versionName, and a new entry in `data/changelog/patches.json` **and** the inline ENTRIES in `app/(app)/whats-new/page.tsx`.
-2. Verify: typecheck, unit tests, `npm run build:android` exports cleanly (the critical native gate), web `npm run build` when server code changed, and a browser walk of the changed flows.
-3. Commit on a branch, merge to `main`. **Pushing `origin main` deploys the website via Render** — treat push as a production action. AAB: GitHub Actions "Android build" on main with local-first CHECKED (browser, `lifeistheosis` login).
+1. Bump all **six** version identifiers: `lib/whatsNew/version.ts`, `public/sw.js` CACHE_VERSION, `android/app/build.gradle` versionName, **`MARKETING_VERSION` (twice) in `ios/App/App.xcodeproj/project.pbxproj`**, and a new entry in `data/changelog/patches.json` **and** the inline ENTRIES in `app/(app)/whats-new/page.tsx`.
+   1a. **After each store's build is live**, and not before, set `androidVersionCode` / `iosBuildNumber` in `lib/appUpdate/release.ts` to the number that store is actually serving (both CI jobs derive theirs from their own workflow run number). That value is what tells installed apps a newer build exists. Setting it early prompts every reader to fetch a build that does not exist yet; leaving it behind is harmless, so late is the safe direction. `0` means "prompt nobody", which is the correct resting state for an unreleased branch. The two move independently: whichever store approves first can start prompting. iOS additionally needs the real Adam ID in `iosStoreUrl`, and the test refuses to let `iosBuildNumber` rise while the placeholder is there. `lib/appUpdate/__tests__/release.test.ts` holds `versionName` in step with build.gradle **and** project.pbxproj; iOS spent the whole Beta 2 series stuck at 1.0 precisely because it was in nobody's list.
+2. Verify: typecheck, unit tests, `npm run build:android` **and** `npm run build:ios` export cleanly (the two native gates; same `out/`, so run them one after the other), web `npm run build` when server code changed, and a browser walk of the changed flows.
+3. Commit on a branch, and merge to `main` **through a pull request**, because `ci.yml` runs on `main` only: a local merge deploys to Render before anything has been checked. **Pushing `origin main` deploys the website via Render**, so treat the merge as a production action. AAB: GitHub Actions "Android build" on main with local-first CHECKED (browser, `lifeistheosis` login). IPA: "iOS build (signed)", same place; see `docs/IOS_BUILD_SETUP.md`.
 4. Patch notes may not claim features that are dark in production (anything gated on an unapplied migration or unset env).
 
 ## Definition of done

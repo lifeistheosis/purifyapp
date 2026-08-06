@@ -14,6 +14,7 @@
 // apiFetch rewrites to SITE_URL and attaches the Bearer token.
 
 import { apiFetch } from "@/lib/api/client";
+import { nativePlatform as platform } from "@/lib/platform/native";
 import { MORNING_DEFAULT, EVENING_DEFAULT } from "./client";
 
 const TOKEN_KEY = "purify:push.native-token"; // last token we registered
@@ -26,13 +27,6 @@ export type NativeEnableResult =
   | { ok: false; reason: "denied" | "unsupported" };
 
 type Receive = "prompt" | "prompt-with-rationale" | "granted" | "denied";
-
-function platform(): "ios" | "android" | null {
-  const cap = (window as { Capacitor?: { getPlatform?: () => string } })
-    .Capacitor;
-  const p = cap?.getPlatform?.();
-  return p === "ios" || p === "android" ? p : null;
-}
 
 function tz(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;

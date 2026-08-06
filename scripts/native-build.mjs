@@ -1,20 +1,58 @@
-// Orchestrates the Android local-first build:
+// Orchestrates the local-first build for BOTH native platforms:
 //   1. stash app/api out of the tree (route handlers can't live in a static
 //      export; they stay on the remote website and are called over the network
 //      for auth / billing / sync / content-updates / licensed Bible),
-//   2. run the Next static export (BUILD_TARGET=android → output:'export'),
+//   2. run the Next static export (BUILD_TARGET=android|ios → output:'export'),
 //   3. ALWAYS restore app/api (finally), even if the build fails,
 //   4. emit TS registries + build the content package into out/content.
 //
-// The website build (npm run build) is untouched — app/api is only moved for
-// the duration of the export and restored immediately after.
+// Usage: node scripts/native-build.mjs --platform android|ios
+//        (npm run build:android / npm run build:ios)
+//
+// The export itself is IDENTICAL for the two platforms. Everything that differs
+// is downstream in Capacitor: Android serves the bundle from https://localhost,
+// iOS from capacitor://localhost. The platform is threaded through only so
+// BUILD_TARGET is accurate, because lib/platform/buildTarget.ts derives
+// IS_STATIC_EXPORT from it and app code branches on that.
+//
+// BOTH platforms write to the SAME out/ directory, and step 0 below wipes it.
+// Never run the two concurrently in one checkout: the second wipe lands in the
+// middle of the first build. In CI they are separate jobs on separate runners,
+// so this only bites locally.
+//
+// The website build (npm run build) is untouched: app/api is only moved for the
+// duration of the export and restored immediately after.
 
 import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
+const PLATFORMS = ["android", "ios"];
+
+function parsePlatform(argv) {
+  const i = argv.indexOf("--platform");
+  const value = i >= 0 ? argv[i + 1] : undefined;
+  if (!value) {
+    console.error(
+      `✗ --platform is required (one of: ${PLATFORMS.join(", ")})\n` +
+        "  e.g. node scripts/native-build.mjs --platform ios",
+    );
+    process.exit(1);
+  }
+  if (!PLATFORMS.includes(value)) {
+    console.error(
+      `✗ unknown platform "${value}" (expected one of: ${PLATFORMS.join(", ")})`,
+    );
+    process.exit(1);
+  }
+  return value;
+}
+
+const PLATFORM = parsePlatform(process.argv.slice(2));
+const LABEL = PLATFORM === "ios" ? "iOS" : "Android";
+
 const ROOT = process.cwd();
-const STASH_DIR = path.join(ROOT, ".android-export-stash");
+const STASH_DIR = path.join(ROOT, ".native-export-stash");
 
 // Route trees excluded from the static export and restored afterwards:
 //   - app/api: 31 route handlers — can't be exported; stay remote (auth,
@@ -256,6 +294,45 @@ function guardExportAgainstI18nLeaks(dir) {
   }
 }
 
+// Two exported paths that differ only in case are two files on Linux and ONE
+// file on a case-insensitive filesystem. The Android export is produced on
+// ubuntu-latest; the iOS export is produced on a macOS runner, where the volume
+// is case-insensitive by default. So a collision that is invisible on Android
+// silently drops a page from the iOS bundle, and the failure surfaces to a
+// reader as a route that 404s inside the app.
+//
+// Cheaper to assert than to debug from a crash report, and it runs on both
+// platforms so Android catches the collision before iOS ever ships it.
+function guardExportAgainstCaseCollisions(dir) {
+  const seen = new Map(); // lowercased path -> first real path
+  const collisions = [];
+  const walk = (d) => {
+    for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+      const full = path.join(d, e.name);
+      const rel = path.relative(dir, full);
+      const key = rel.toLowerCase();
+      const prior = seen.get(key);
+      if (prior && prior !== rel) collisions.push([prior, rel]);
+      else seen.set(key, rel);
+      if (e.isDirectory()) walk(full);
+    }
+  };
+  if (!fs.existsSync(dir)) return;
+  walk(dir);
+  if (collisions.length > 0) {
+    console.error(
+      `✗ ${collisions.length} exported path(s) differ only in case, which collide on a\n` +
+        "  case-insensitive filesystem (the macOS runner that builds the IPA):\n" +
+        collisions
+          .slice(0, 20)
+          .map(([a, b]) => `    ${a}\n    ${b}`)
+          .join("\n"),
+    );
+    process.exit(1);
+  }
+  console.log("• case-collision guard: no exported paths collide");
+}
+
 // Start from a clean export. `next build` writes into out/ but does not delete
 // stale files from routes that no longer exist, so out/ silently accumulates
 // months of removed content across builds and ships it in the APK. Wipe it so
@@ -264,7 +341,7 @@ fs.rmSync(path.join(ROOT, "out"), { recursive: true, force: true });
 
 try {
   stashAll();
-  run("next build", { BUILD_TARGET: "android" });
+  run("next build", { BUILD_TARGET: PLATFORM });
 } finally {
   restoreAll();
 }
@@ -283,5 +360,6 @@ pruneSegmentCache(path.join(ROOT, "out"));
 
 // Last: nothing after this may write into out/.
 guardExportAgainstI18nLeaks(path.join(ROOT, "out"));
+guardExportAgainstCaseCollisions(path.join(ROOT, "out"));
 
-console.log("\n✓ Android local bundle ready: out/ (UI) + out/content/ (data)");
+console.log(`\n✓ ${LABEL} local bundle ready: out/ (UI) + out/content/ (data)`);

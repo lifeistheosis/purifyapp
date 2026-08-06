@@ -9,8 +9,15 @@
 // so it is free to sprinkle at call sites now and have them light up
 // correctly when the flag flips.
 
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { isNativeRequest } from "@/lib/platform/nativeRequest";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
+import {
+  isDeveloperEmail,
+  DEV_PLUS_COOKIE,
+  DEV_PLUS_ENTITLEMENTS,
+} from "@/lib/dev/developer";
 import {
   deriveEntitlements,
   plusEnforcedFor,
@@ -20,7 +27,37 @@ import {
   type EntitlementRow,
 } from "./entitlements";
 
+/**
+ * IS_STATIC_EXPORT is true while either native bundle is being exported, and it
+ * is a build-time constant, so the branch it guards below is eliminated rather
+ * than skipped and `cookies()` is never reached during the export.
+ *
+ * That matters here specifically: there is no request to read a cookie from in a
+ * static render, so calling it opts the route into dynamic rendering, and the
+ * export runs with `dynamic = "error"`. Merging feat/developer-options broke
+ * `npm run build:android` on /florilegium in exactly this way. The same trap now
+ * exists twice over, once per platform.
+ */
+
 export async function getEntitlements(): Promise<Entitlements> {
+  // Developer test-premium override. Cookie is only a hint; we verify the
+  // signed-in account is an allowlisted developer before granting.
+  //
+  // Absent from the native bundle on purpose. The Developer panel is a
+  // web convenience, and the override is still honoured on the client
+  // (lib/entitlements/client.ts), which is where the native app resolves
+  // its entitlements anyway.
+  if (
+    !IS_STATIC_EXPORT &&
+    (await cookies()).get(DEV_PLUS_COOKIE)?.value === "1"
+  ) {
+    const dev = await createClient();
+    const {
+      data: { user },
+    } = await dev.auth.getUser();
+    if (isDeveloperEmail(user?.email)) return DEV_PLUS_ENTITLEMENTS;
+  }
+
   const enforced = plusEnforcedFor(await isNativeRequest());
   if (!enforced) return OPEN_ENTITLEMENTS;
 

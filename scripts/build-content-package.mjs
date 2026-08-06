@@ -45,8 +45,32 @@ const STARTER_BOOKS = [
 ];
 
 const records = [];
-const add = (type, ref_id, title, key, obj, search) =>
-  records.push({ type, ref_id, title, key: key ?? null, json: JSON.stringify(obj), search });
+
+/**
+ * The `search` argument is accepted and deliberately DROPPED.
+ *
+ * It used to be written into the package as a lowercased flattening of every
+ * string in `obj`, which is text already present verbatim in `json` on the
+ * same record. On the last full build that duplicate was 18.62 MB of a 38.39
+ * MB package: the whole library, twice, in one file that ships inside the
+ * APK.
+ *
+ * The device rebuilds it at import time instead, from the `json` it already
+ * has, in `searchBodyFor()` in lib/content/manifest.ts. Two reasons this is
+ * safe rather than clever:
+ *   - `canonicalRecords()` never included `search` in the SHA-256, so the
+ *     package checksum is byte-identical before and after this change.
+ *   - `importPackage` still honours a `search` field when it finds one, so a
+ *     package built before this change imports exactly as it used to.
+ *
+ * The call sites keep passing it so the flattening stays visible at the point
+ * each record type is built, and so restoring it is one line if a device ever
+ * turns out not to have the CPU budget to index 1,008 records on first run.
+ */
+const add = (type, ref_id, title, key, obj, search) => {
+  void search;
+  records.push({ type, ref_id, title, key: key ?? null, json: JSON.stringify(obj) });
+};
 
 const readJson = (p) => JSON.parse(fs.readFileSync(p, "utf8"));
 

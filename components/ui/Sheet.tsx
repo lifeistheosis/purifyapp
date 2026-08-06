@@ -45,12 +45,26 @@ export function Sheet({
    * `space-y-3` etc. to control the children layout.
    */
   bodyClassName,
+  /**
+   * Let the sheet render above `md` as well.
+   *
+   * Off by default, because the house convention is that desktop uses a
+   * dropdown or popover instead, and the seven existing callers all rely on
+   * that. Opt in when the same surface is shown on both (the Today verse
+   * card is on /prayers/today, which is the web's desktop Today), and the
+   * alternative would be a second affordance to build and keep in step.
+   *
+   * On desktop the panel stops being full-bleed: a 1920px-wide bar holding
+   * three menu items reads as a mistake. It caps and centres instead.
+   */
+  desktop = false,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
   children: React.ReactNode;
   bodyClassName?: string;
+  desktop?: boolean;
 }) {
   const { t } = useTranslate();
   const reduced = useReducedMotion();
@@ -108,7 +122,9 @@ export function Sheet({
   // chrome the way a modal should.
   return createPortal(
     <div
-      className="md:hidden fixed inset-0 z-[60]"
+      className={
+        (desktop ? "" : "md:hidden ") + "fixed inset-0 z-[60]"
+      }
       role="dialog"
       aria-modal="true"
       aria-label={title}
@@ -125,6 +141,11 @@ export function Sheet({
       <div
         className={
           "absolute inset-x-0 bottom-0 max-h-[85dvh] bg-night border-t border-paper/15 rounded-t-3xl shadow-[0_-12px_36px_rgba(0,0,0,0.55)] flex flex-col transition-transform duration-fast ease-house motion-reduce:transition-none " +
+          // Desktop: a capped, centred panel lifted off the edge, so it reads
+          // as a floating menu rather than a bar across the whole screen.
+          (desktop
+            ? "md:mx-auto md:max-w-[440px] md:bottom-6 md:rounded-3xl md:border "
+            : "") +
           (shown ? "translate-y-0" : "translate-y-full")
         }
         style={{

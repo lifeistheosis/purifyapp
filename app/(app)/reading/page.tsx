@@ -96,7 +96,7 @@ export default async function ReadingPage() {
  className="group flex items-center gap-5 py-5 px-1 hover:bg-gold/[0.04] transition-colors"
  >
  <div className="min-w-0 flex-1">
- <p className="font-display-serif text-lede md:text-title-sm text-paper leading-tight group-hover:text-gold transition-colors">
+ <p className="font-serif text-lede md:text-title-sm text-paper leading-tight group-hover:text-gold transition-colors">
  {p.title}
  </p>
  <p className="mt-1.5 font-serif italic text-detail md:text-ui text-paper/65 leading-[1.55]">
@@ -131,7 +131,7 @@ export default async function ReadingPage() {
  <Icon size={28} />
  </span>
  <div className="min-w-0 flex-1">
- <p className="font-display-serif text-lede md:text-title-sm text-paper leading-tight group-hover:text-gold transition-colors">
+ <p className="font-serif text-lede md:text-title-sm text-paper leading-tight group-hover:text-gold transition-colors">
  {label}
  </p>
  <p className="mt-1.5 font-serif italic text-detail md:text-ui text-paper/65 leading-[1.55]">
@@ -163,7 +163,7 @@ export default async function ReadingPage() {
  href={`/topics/${tp.slug}`}
  className="group rounded-card border border-gold/20 bg-paper/[0.02] p-5 hover:bg-gold/[0.04] hover:border-gold/40 transition-colors"
  >
- <p className="font-display-serif text-lede text-paper leading-tight group-hover:text-gold transition-colors">
+ <p className="font-serif text-lede text-paper leading-tight group-hover:text-gold transition-colors">
  {tp.title}
  </p>
  </Link>
@@ -173,7 +173,7 @@ export default async function ReadingPage() {
  )}
 
  {/* Quiet colophon to close the page. */}
- <p className="mt-14 text-center font-display-serif italic text-ui text-paper/45 leading-[1.55]">
+ <p className="mt-14 text-center font-serif italic text-ui text-paper/45 leading-[1.55]">
  <T k="study.colophon1" />
  <br />
  <T k="study.colophon2" />

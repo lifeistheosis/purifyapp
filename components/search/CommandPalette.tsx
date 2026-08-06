@@ -40,13 +40,63 @@ function score(item: SearchItem, q: string): number {
   return -1;
 }
 
-export function CommandPalette({ items }: { items: SearchItem[] }) {
+/**
+ * The corpus, fetched once per app open and shared by every mount.
+ *
+ * Module scope rather than state, because it is immutable for the life of
+ * the build and a second palette mount should not fetch it twice. The
+ * in-flight promise is cached too, so two opens in quick succession share
+ * one request.
+ */
+let corpusCache: SearchItem[] | null = null;
+let corpusInFlight: Promise<SearchItem[]> | null = null;
+
+function loadCorpus(): Promise<SearchItem[]> {
+  if (corpusCache) return Promise.resolve(corpusCache);
+  if (corpusInFlight) return corpusInFlight;
+  // Relative on purpose, NOT apiFetch. This file is bundled into the export
+  // and served from https://localhost inside the native shell, so a relative
+  // fetch is the one that works offline. Same posture as
+  // lib/content/bootstrap.ts loading the bundled content package.
+  corpusInFlight = fetch("/search-corpus.json")
+    .then((r) => (r.ok ? r.json() : []))
+    .then((items: SearchItem[]) => {
+      corpusCache = Array.isArray(items) ? items : [];
+      return corpusCache;
+    })
+    .catch(() => {
+      // A palette with nothing in it still opens, still takes a query, and
+      // still says it found nothing. It never blocks the app.
+      corpusCache = [];
+      return corpusCache;
+    })
+    .finally(() => {
+      corpusInFlight = null;
+    });
+  return corpusInFlight;
+}
+
+export function CommandPalette() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
+  const [items, setItems] = useState<SearchItem[]>(corpusCache ?? []);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
+
+  // Fetched on first open, not on mount: the palette is on every screen and
+  // most readers never open it, so this costs nothing until it is wanted.
+  useEffect(() => {
+    if (!open || corpusCache) return;
+    let alive = true;
+    loadCorpus().then((c) => {
+      if (alive) setItems(c);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [open]);
 
   // Global Cmd/Ctrl+K toggle, desktop pointers only.
   useEffect(() => {

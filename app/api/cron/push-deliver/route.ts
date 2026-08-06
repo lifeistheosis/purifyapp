@@ -36,6 +36,10 @@ export async function GET(req: NextRequest) {
   // Same shape as lib/shop/flags.ts, which refuses rather than assumes.
   const secret = process.env.CRON_SECRET;
   if (!secret) {
+    // Closed in EVERY environment, not just production. fix/native-analytics-
+    // blackout proposed leaving dev open "so the loop is easy to drive"; that
+    // is the same shape as the bug being fixed, and a dev build pointed at a
+    // production database is not hypothetical here.
     return NextResponse.json({ error: "Not configured." }, { status: 503 });
   }
   {
@@ -53,6 +57,15 @@ export async function GET(req: NextRequest) {
   const web = await deliverWeb(supa, now);
   const native = await deliverNative(supa, now);
 
+  // A query failure means we do not know who was due, which is not the same
+  // as "nobody was due". Answer 500 so the scheduler's run goes red instead
+  // of logging a cheerful zero forever.
+  const errors = [...(web.errors ?? []), ...(native.errors ?? [])];
+  if (errors.length > 0) {
+    console.error("[cron/push-deliver] query failures", errors);
+    return NextResponse.json({ ok: false, errors, web, native }, { status: 500 });
+  }
+
   return NextResponse.json({ ok: true, web, native });
 }
 
@@ -62,9 +75,10 @@ async function deliverWeb(
   supa: ReturnType<typeof createAdminClient>,
   now: Date,
 ) {
-  const { data: rows } = await supa
+  const { data: rows, error } = await supa
     .from("push_subscriptions")
     .select("endpoint, p256dh, auth, morning_time, evening_time, timezone");
+  const errors = error ? [`push_subscriptions: ${error.message}`] : [];
 
   const candidates: {
     endpoint: string;
@@ -84,7 +98,12 @@ async function deliverWeb(
   }
 
   if (!webPushConfigured()) {
-    return { mode: "dry-run", reason: "VAPID env vars not set", candidates: candidates.length };
+    return {
+      mode: "dry-run",
+      reason: "VAPID env vars not set",
+      candidates: candidates.length,
+      errors,
+    };
   }
 
   let sent = 0;
@@ -98,7 +117,7 @@ async function deliverWeb(
     if (r.ok) sent++;
     else failed++;
   }
-  return { sent, failed, candidates: candidates.length };
+  return { sent, failed, candidates: candidates.length, errors };
 }
 
 // --- Native (APNs / FCM) ------------------------------------------------
@@ -107,9 +126,10 @@ async function deliverNative(
   supa: ReturnType<typeof createAdminClient>,
   now: Date,
 ) {
-  const { data: rows } = await supa
+  const { data: rows, error } = await supa
     .from("device_push_tokens")
     .select("token, platform, morning_time, evening_time, timezone");
+  const errors = error ? [`device_push_tokens: ${error.message}`] : [];
 
   const candidates: {
     token: string;
@@ -127,7 +147,12 @@ async function deliverNative(
   }
 
   if (!apnsConfigured() && !fcmConfigured()) {
-    return { mode: "dry-run", reason: "APNs/FCM env not set", candidates: candidates.length };
+    return {
+      mode: "dry-run",
+      reason: "APNs/FCM env not set",
+      candidates: candidates.length,
+      errors,
+    };
   }
 
   let sent = 0;
@@ -143,5 +168,5 @@ async function deliverNative(
     else if (res.skipped) skipped++;
     else failed++;
   }
-  return { sent, failed, skipped, candidates: candidates.length };
+  return { sent, failed, skipped, candidates: candidates.length, errors };
 }

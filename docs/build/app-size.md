@@ -21,7 +21,7 @@ client-side at runtime, so each route ships its text several times:
 
 ## Safe optimizations applied (this pass)
 
-All in `scripts/android-build.mjs` and `scripts/optimize-images.mjs`; **no
+All in `scripts/native-build.mjs` and `scripts/optimize-images.mjs`; **no
 reader, route, or `next.config.ts` change** (reading is untouched).
 
 1. **Wipe `out/` each build.** `next build` writes into `out/` but never deletes

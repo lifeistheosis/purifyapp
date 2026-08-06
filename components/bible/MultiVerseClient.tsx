@@ -15,7 +15,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * This used to be a force-dynamic server page that called loadChapter and
  * loadVerseRange directly. Those are server-only (they read data/bible off the
  * filesystem), so the route could not be exported and was stashed out of the
- * Android bundle in scripts/android-build.mjs. In the app the push to
+ * Android bundle in scripts/native-build.mjs. In the app the push to
  * /bible/multi?q= therefore hit a route that did not exist and the shell
  * dropped the user back on Today, which reads as "it kicked me out" and loses
  * the query. Reported from the Android beta on 2026-07-26.

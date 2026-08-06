@@ -1,21 +1,25 @@
 /// <reference types="@capacitor-community/safe-area" />
 import type { CapacitorConfig } from "@capacitor/cli";
 
-// Native shell configuration. The iOS and Android apps are thin Capacitor
-// shells that load the production site; the web app detects the shell via
-// the appended user-agent token (see lib/platform/native.ts) and adapts:
-// store-noncompliant surfaces (external donation links, PWA install
-// prompts) are hidden, and native plugins (splash, status bar, haptics,
-// share) take over their web equivalents.
+// Native shell configuration. The web app detects the shell via the appended
+// user-agent token (see lib/platform/native.ts) and adapts: store-noncompliant
+// surfaces (external donation links, PWA install prompts) are hidden, and
+// native plugins (splash, status bar, haptics, share) take over their web
+// equivalents.
 //
-// webDir is a required field but unused at runtime because server.url
-// points at production; capacitor-shell/ holds only a minimal offline
-// fallback page.
-// Local-first build target. With CAP_LOCAL=1 the shell loads the bundled static
-// export (out/) from inside the APK instead of fetching purifyapp.net, so the
-// app opens and navigates with no network. Default (unset) keeps the current
-// production remote-wrapper behavior untouched — the remote server.url is only
-// retired in M5, once the bundled build is proven offline on-device.
+// BOTH stores ship local-first (CAP_LOCAL=1). Android runs at https://localhost
+// and iOS at capacitor://localhost, and each bundles the static export plus the
+// content package, so the app opens and navigates with no network. Never ship a
+// remote-wrapper build to the App Store: a Capacitor shell whose only content is
+// a remote website is the textbook guideline 4.2 rejection.
+//
+// Build target. CAP_LOCAL=1 is what both release workflows set, and it is the
+// only shape that ships to a store: webDir points at the static export in out/.
+//
+// With CAP_LOCAL unset the shell falls back to loading purifyapp.net remotely
+// and webDir is unused (capacitor-shell/ holds only a minimal offline fallback
+// page). That path survives for quick smoke builds of the shell itself. It is
+// not shippable: Play tolerates it, the App Store rejects it under 4.2.
 const LOCAL = process.env.CAP_LOCAL === "1";
 
 const config: CapacitorConfig = {
@@ -33,9 +37,16 @@ const config: CapacitorConfig = {
   ios: {
     appendUserAgent: "PurifyNative",
     backgroundColor: "#101013",
-    // Required for service workers in WKWebView; pairs with the
-    // WKAppBoundDomains array in Info.plist (purifyapp.net).
-    limitsNavigationsToAppBoundDomains: true,
+    // NO limitsNavigationsToAppBoundDomains. It was set for service workers in
+    // WKWebView, but the native shell has no service worker to protect:
+    // components/pwa/InstallPrompt.tsx unregisters every registration and wipes
+    // every cache inside the shell precisely so a stale bundle cannot survive
+    // an app update. What the flag DID do was block top-level navigation to
+    // accounts.google.com, which is the web OAuth fallback, and cap the app at
+    // ten app-bound domains forever. Removed together with the WKAppBoundDomains
+    // array in Info.plist; setting one without the other is worse than either.
+    // iOS runs local-first on the default capacitor:// scheme, which lib/api/cors.ts
+    // already allow-lists as capacitor://localhost.
   },
   android: {
     appendUserAgent: "PurifyNative",

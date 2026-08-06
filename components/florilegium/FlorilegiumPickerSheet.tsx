@@ -42,12 +42,10 @@ export function FlorilegiumPickerSheet({
   useEffect(() => {
     if (open) {
       setMounted(true);
-      setOverlayOpen(true);
       const r = requestAnimationFrame(() => setShown(true));
       return () => cancelAnimationFrame(r);
     } else if (mounted) {
       setShown(false);
-      setOverlayOpen(false);
       const t = setTimeout(() => {
         setMounted(false);
         setNaming(false);
@@ -57,6 +55,21 @@ export function FlorilegiumPickerSheet({
     }
   }, [open, mounted]);
   /* eslint-enable react-hooks/set-state-in-effect */
+
+  // The overlay flag is keyed on `mounted` with a cleanup, which is the
+  // contract lib/ui/overlay.ts states and Sheet.tsx follows. It used to be
+  // set and cleared inline in the effect above, which was wrong twice:
+  //
+  //   - no unmount path. The counter is global and depth-counted, so a
+  //     parent unmounting this while open left the tab bar dead for the
+  //     rest of the session.
+  //   - cleared at the START of the exit, so the tab bar faded back in 200ms
+  //     before the panel had finished leaving.
+  useEffect(() => {
+    if (!mounted) return;
+    setOverlayOpen(true);
+    return () => setOverlayOpen(false);
+  }, [mounted]);
 
   useEffect(() => {
     if (!shown) return;

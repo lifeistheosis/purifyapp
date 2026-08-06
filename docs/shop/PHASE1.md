@@ -77,7 +77,7 @@ to the disabled state; nothing 500s.
 ## Android / offline
 
 `app/(app)/shop` is stashed from the Android static export
-(`scripts/android-build.mjs` STASH_PATHS) — the marketplace is web/PWA-only
+(`scripts/native-build.mjs` STASH_PATHS) — the marketplace is web/PWA-only
 in Phase 1 and requires a connection. The saint-page "Icons of This Saint"
 rail fetches client-side and renders nothing offline or in the native shell.
 

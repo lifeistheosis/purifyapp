@@ -41,6 +41,7 @@ import {
  fetchLicensedChapter,
 } from "@/lib/bible/api-bible";
 import { T } from "@/components/i18n/T";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 
 type Params = Promise<{ book: string; chapter: string }>;
 type Search = Promise<{ v?: string }>;
@@ -77,12 +78,10 @@ export default async function BibleChapterPage({
  searchParams: Search;
 }) {
  const { book, chapter } = await params;
- // Android static export can't read searchParams (would force dynamic). The
+ // The native static export can't read searchParams (would force dynamic). The
  // ?v= licensed-translation/verse param is online/client-only anyway, so the
  // export always renders the bundled public-domain text. Website unchanged.
- const { v } = (process.env.BUILD_TARGET === "android"
-   ? {}
-   : await searchParams) as { v?: string };
+ const { v } = (IS_STATIC_EXPORT ? {} : await searchParams) as { v?: string };
  const chapterNum = Number(chapter);
  const b = getBook(book);
  if (!b || !Number.isInteger(chapterNum) || chapterNum < 1 || chapterNum > b.chapters) {

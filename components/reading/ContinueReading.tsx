@@ -31,7 +31,7 @@ export function ContinueReading() {
  className="group flex items-center gap-5 py-5 px-1 hover:bg-gold/[0.04] transition-colors"
  >
  <div className="min-w-0 flex-1">
- <p className="font-display-serif text-lede md:text-title-sm text-paper leading-tight group-hover:text-gold transition-colors truncate">
+ <p className="font-serif text-lede md:text-title-sm text-paper leading-tight group-hover:text-gold transition-colors truncate">
  {e.label}
  </p>
  </div>

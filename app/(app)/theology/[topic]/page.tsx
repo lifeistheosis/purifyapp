@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { TopicReader } from "@/components/theology/TopicReader";
 import { TheologyArticleNav } from "@/components/theology/TheologyArticleNav";
 import { RelatedRail } from "@/components/theology/RelatedRail";
+import { ViewInHistory } from "@/components/history/ViewInHistory";
+import { eventsForTheologyTopic } from "@/lib/history/events";
 import { getTopicMeta, topicParams } from "@/lib/theology/topics";
 import { loadTopicBody, saintsCitedIn } from "@/lib/theology/load";
 import { buildRelated } from "@/lib/theology/relations";
@@ -52,6 +54,10 @@ export default async function TheologyTopicPage({
       </div>
       <TopicReader body={body} />
       <div className="mx-auto max-w-[760px] w-full">
+        {/* A study argues from the sources; the account says what happened.
+            Rendered only when a curated event actually cites this topic, so
+            it can never be an empty shell (same contract as saints). */}
+        <ViewInHistory events={eventsForTheologyTopic(topic)} />
         <RelatedRail groups={groups} />
       </div>
     </section>

@@ -71,7 +71,7 @@ export function NextRead({
  {c.lead}
  </p>
  )}
- <p className="font-display-serif text-lede text-paper leading-tight group-hover:text-gold transition-colors">
+ <p className="font-serif text-lede text-paper leading-tight group-hover:text-gold transition-colors">
  {c.title}
  </p>
  <p className="mt-1.5 font-serif italic text-detail text-paper/65 leading-[1.55]">

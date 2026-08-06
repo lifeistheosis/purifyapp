@@ -22,23 +22,51 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<!-- Google Sign-In's iOS callback. The value is the REVERSED client id
+	     (com.googleusercontent.apps.NNNN-xxxx) and is injected as a build
+	     setting by .github/workflows/ios-release.yml, which fails the build
+	     when the secret is missing rather than shipping an empty scheme.
+	     Xcode expands $(VAR) in Info.plist the same way it does for
+	     $(MARKETING_VERSION) above. -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>net.purifyapp.purify.google</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>$(GOOGLE_REVERSED_CLIENT_ID)</string>
+			</array>
+		</dict>
+	</array>
+	<!-- Pre-answers the export-compliance question so TestFlight builds are
+	     not held on every upload. @capacitor-community/sqlite links SQLCipher,
+	     but lib/content/storage/capacitorStore.ts opens every database with
+	     "no-encryption", so the app uses no non-exempt encryption. Revisit
+	     this if the content store is ever opened with a passphrase. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<!-- Load-bearing, not paperwork. CommunityClient and CreateCampaignClient
+	     both render an image file input, and both ship in the export;
+	     WKWebView's picker offers "Take Photo", and iOS terminates the app
+	     the instant it reaches the camera with no purpose string. -->
+	<key>NSCameraUsageDescription</key>
+	<string>Purify uses the camera so you can take a photo to attach to a prayer campaign or a post.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Purify uses your photo library so you can attach an existing photo to a prayer campaign or a post.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Purify saves an image to your photo library when you choose to save one you have shared.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>armv7</string>
-	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-	</array>
-	<key>WKAppBoundDomains</key>
-	<array>
-		<string>purifyapp.net</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>

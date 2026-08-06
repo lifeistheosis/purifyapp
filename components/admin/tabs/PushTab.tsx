@@ -115,7 +115,7 @@ export function PushTab() {
           j.status === "sent"
             ? `Sent to ${j.recipients} recipient(s).`
             : j.status === "enqueued"
-              ? `Logged (dry run — no push secrets set). ${j.recipients} would receive it.`
+              ? `Nothing was delivered: no push secrets are set, so every transport dry-ran. ${j.recipients} device(s) would have received it.`
               : `Attempted ${j.recipients}; all deliveries failed.`,
         );
         setTitle("");

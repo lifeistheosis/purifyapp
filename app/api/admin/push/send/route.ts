@@ -69,6 +69,40 @@ export async function POST(req: Request) {
 
   const admin = createAdminClient();
   const resolved = await resolveAudience(admin, audience as Audience);
+
+  // Fail loudly on a precondition failure instead of "sending" to nobody.
+  // When the push migrations are missing, the audience query errors, every
+  // list comes back empty, every transport dry-runs, and the broadcast log
+  // records a healthy-looking `enqueued` for 0 recipients. Refuse instead,
+  // and do not write a log row for a send that was never attempted.
+  if (resolved.errors.length > 0) {
+    console.error("[admin/push/send] audience unresolved", resolved.errors);
+    return NextResponse.json(
+      {
+        error:
+          "Audience could not be resolved, so nothing was sent. Check that the push migrations are applied.",
+        details: resolved.errors,
+      },
+      { status: 503 },
+    );
+  }
+
+  // Sending to nobody is never intentional. Three real broadcasts were
+  // logged `enqueued` with recipients_count 0 (2026-07-18, 2026-07-19)
+  // because no device has ever registered: the tables exist but are empty,
+  // so there is no query error to catch. Refuse, and say why.
+  if (resolved.total === 0) {
+    return NextResponse.json(
+      {
+        error:
+          "No registered devices for this audience, so nothing was sent. Web push needs the VAPID keys set; Android needs google-services.json in the build and FCM_SERVICE_ACCOUNT_JSON on the server.",
+        recipients: 0,
+        audience,
+      },
+      { status: 409 },
+    );
+  }
+
   const result = await broadcast(
     admin,
     { title, body: text, url },
@@ -76,6 +110,12 @@ export async function POST(req: Request) {
   );
 
   const status = broadcastStatus(result);
+  // `enqueued` means every transport dry-ran: the payload never left the
+  // server. Say so in the response so the admin UI cannot read it as success.
+  const warning =
+    status === "enqueued"
+      ? "Nothing was actually delivered: no push credentials are configured, so every transport dry-ran."
+      : undefined;
 
   await admin.from("push_broadcasts").insert({
     title,
@@ -91,6 +131,7 @@ export async function POST(req: Request) {
     ok: true,
     status,
     recipients: resolved.total,
+    ...(warning ? { warning } : {}),
     result,
   });
 }
