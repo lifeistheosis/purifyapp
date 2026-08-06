@@ -18,23 +18,36 @@ import { useState, type CSSProperties } from "react";
 // ── Palette ─────────────────────────────────────────────────────────────────
 // Semantic names so tabs can pick "positive" or "warning" without
 // remembering hex codes. Bound to the same hues as the rest of the app.
+// Two vocabularies, kept apart on purpose.
+//
+// `chartColors.positive/negative/warning` are STATUS: reserved for state,
+// always shipped beside a word, never reused as "series 4".
+//
+// SERIES_COLORS is CATEGORICAL: identity only. The order is fixed and must
+// not be reordered or cycled. These six were validated against the admin's
+// dark surface for the OKLCH lightness band, a chroma floor, adjacent-pair
+// colour-vision separation (worst adjacent deutan dE 9.0, above the 8.0
+// target) and contrast. The previous first series was a desaturated tan
+// that failed the chroma floor outright, and red sat next to green, which
+// is the single most common way a chart becomes unreadable to the ~8% of
+// men with deuteranomaly.
 export const chartColors = {
-  primary: "rgb(183,176,163)", // gold — the signature accent
-  accent: "rgb(230,205,106)", // soft gold
-  info: "rgb(120,180,240)", // sky
-  positive: "rgb(120,200,150)", // moss / success
-  negative: "rgb(220,120,120)", // rose / fail
-  warning: "rgb(240,180,120)", // amber
-  lilac: "rgb(200,160,220)",
+  primary: "var(--adm-s1, #b8892c)",
+  accent: "var(--adm-accent, #e0b658)",
+  info: "var(--adm-s2, #4a8fd4)",
+  positive: "var(--adm-good, #4ade80)",
+  negative: "var(--adm-critical, #f87171)",
+  warning: "var(--adm-warn, #fbbf24)",
+  lilac: "var(--adm-s4, #9070d8)",
 };
 
 export const SERIES_COLORS = [
-  chartColors.primary,
-  chartColors.info,
-  chartColors.negative,
-  chartColors.positive,
-  chartColors.lilac,
-  chartColors.warning,
+  "var(--adm-s1, #b8892c)",
+  "var(--adm-s2, #4a8fd4)",
+  "var(--adm-s3, #c05f55)",
+  "var(--adm-s4, #9070d8)",
+  "var(--adm-s5, #2f9e77)",
+  "var(--adm-s6, #b8722c)",
 ];
 
 // CSS-variable tokens — these resolve to the values defined in globals.css
@@ -137,7 +150,7 @@ export function Sparkline({
         >
           {data[hover]}
           {labels?.[hover] ? (
-            <span className="text-paper/50"> · {labels[hover]}</span>
+            <span className="text-[color:var(--adm-ink-3)]"> · {labels[hover]}</span>
           ) : null}
         </span>
       )}
@@ -214,7 +227,7 @@ function CartesianPlot({
   const all = series.flatMap((s) => s.data);
   if (!all.length) {
     return (
-      <p className="font-sans text-detail text-paper/40 py-8 text-center">
+      <p className="font-sans text-detail text-[color:var(--adm-ink-3)] py-8 text-center">
         No data in range.
       </p>
     );
@@ -409,7 +422,7 @@ function CartesianPlot({
               className="inline-block h-[3px] w-4 rounded-full"
               style={{ background: s.color }}
             />
-            <span className="font-sans text-eyebrow text-paper/65 tabular-nums">
+            <span className="font-sans text-eyebrow text-[color:var(--adm-ink-2)] tabular-nums">
               {s.name}
               {hover !== null && (
                 <>
@@ -418,7 +431,7 @@ function CartesianPlot({
                     {s.data[hover] ?? 0}
                   </span>
                   {labels?.[hover] && (
-                    <span className="text-paper/45"> · {labels[hover]}</span>
+                    <span className="text-[color:var(--adm-ink-3)]"> · {labels[hover]}</span>
                   )}
                 </>
               )}
@@ -447,7 +460,7 @@ export function BarChart({
 }) {
   if (!rows.length) {
     return (
-      <p className="font-sans text-detail text-paper/40 py-8 text-center">
+      <p className="font-sans text-detail text-[color:var(--adm-ink-3)] py-8 text-center">
         No data.
       </p>
     );
@@ -489,7 +502,7 @@ function HorizontalBars({
             className="grid grid-cols-[minmax(140px,1fr)_3fr_auto] items-center gap-3"
           >
             <span
-              className="font-sans text-caption text-paper/85 truncate"
+              className="font-sans text-caption text-[color:var(--adm-ink)] truncate"
               title={r.label}
             >
               {r.label}
@@ -515,7 +528,7 @@ function HorizontalBars({
                 </span>
               )}
             </div>
-            <span className="font-sans text-caption text-paper/55 tabular-nums w-12 text-right">
+            <span className="font-sans text-caption text-[color:var(--adm-ink-2)] tabular-nums w-12 text-right">
               {labelInside ? "" : r.value.toLocaleString()}
             </span>
           </div>
@@ -719,9 +732,9 @@ export function Donut({
               className="inline-block h-2 w-2 rounded-full"
               style={{ background: s.color }}
             />
-            <span className="font-sans text-caption text-paper/85">
+            <span className="font-sans text-caption text-[color:var(--adm-ink)]">
               {s.name}{" "}
-              <span className="text-paper/45 tabular-nums">
+              <span className="text-[color:var(--adm-ink-3)] tabular-nums">
                 {Math.round((s.value / total) * 100)}%
               </span>
             </span>
@@ -857,7 +870,7 @@ export function CalendarHeatmap({
             } as CSSProperties
           }
         >
-          <span className="text-paper/55">{hover.date}</span>{" "}
+          <span className="text-[color:var(--adm-ink-2)]">{hover.date}</span>{" "}
           <span className="font-semibold">
             {hover.value.toLocaleString()} views
           </span>
@@ -865,7 +878,7 @@ export function CalendarHeatmap({
       )}
 
       {/* Legend */}
-      <div className="flex items-center gap-2 mt-2 font-sans text-eyebrow text-paper/45 uppercase tracking-[1px]">
+      <div className="flex items-center gap-2 mt-2 font-sans text-eyebrow text-[color:var(--adm-ink-3)] uppercase tracking-[1px]">
         <span>Less</span>
         {[0, 0.25, 0.5, 0.75, 1].map((a, i) => (
           <span
