@@ -1,0 +1,359 @@
+name: iOS build (signed)
+
+# Signed, uploadable iOS build. Replaces the old unsigned ios-ipa.yml, which
+# produced something nobody could install: it targeted macos-14 (Xcode 15, below
+# Capacitor 8's floor), ran a bare `cap sync ios` with no web build, so the app
+# was a remote wrapper around purifyapp.net (the textbook App Store 4.2
+# rejection), hand-zipped a Payload that needed AltStore to sideload, and
+# stripped CODE_SIGN_ENTITLEMENTS so it could not exercise push at all.
+#
+# This builds the same local-first bundle Android ships, signs it with the
+# distribution certificate, and uploads it to App Store Connect for TestFlight.
+#
+# ── Secrets this needs (Settings > Secrets and variables > Actions) ──────────
+#
+#   APPLE_TEAM_ID                     Membership details on developer.apple.com.
+#                                     Not really a secret; a secret only so it
+#                                     is entered once, next to the others.
+#   IOS_DIST_CERT_P12_BASE64          Apple Distribution certificate + key, as a
+#                                     base64 .p12. See docs/IOS_BUILD_SETUP.md
+#                                     for generating the CSR without a Mac.
+#   IOS_DIST_CERT_PASSWORD            The password chosen when exporting it.
+#   APPSTORE_API_KEY_ID               App Store Connect > Users and Access >
+#   APPSTORE_API_ISSUER_ID            Integrations > App Store Connect API.
+#   APPSTORE_API_PRIVATE_KEY_BASE64   The AuthKey_XXXX.p8, base64. Downloadable
+#                                     ONCE; if lost, revoke and make a new key.
+#   NEXT_PUBLIC_REVENUECAT_IOS_KEY    RevenueCat > iOS app > public SDK key.
+#   NEXT_PUBLIC_GOOGLE_IOS_CLIENT_ID  Google Cloud > Credentials > iOS client.
+#   GOOGLE_REVERSED_CLIENT_ID         The same id reversed, for the callback URL
+#                                     scheme in Info.plist.
+#
+# An App Store Connect API key is used rather than an Apple ID plus
+# app-specific password because the latter is 2FA-fragile, ties CI to a person,
+# and cannot create or update provisioning profiles, which -allowProvisioningUpdates
+# needs to do every time the app's capabilities change.
+
+on:
+  workflow_dispatch:
+    inputs:
+      local_first:
+        description: "Bundle the local-first offline build (out/). Leave checked. Unchecking produces the remote-wrapper shape the App Store rejects under 4.2."
+        type: boolean
+        default: true
+      upload:
+        description: "Upload to App Store Connect (TestFlight). Uncheck to build and sign without delivering."
+        type: boolean
+        default: true
+      build_number:
+        description: "Override CFBundleVersion. Leave empty to use the workflow run number. Only needed to recover from a duplicate-build-number rejection."
+        type: string
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    # Capacitor 8 requires Xcode 16+, so macos-14 (Xcode 15) cannot build this
+    # at all. The Xcode step below prints what the runner actually has rather
+    # than assuming a path, because that is the single most likely thing to
+    # need adjusting on the first run.
+    runs-on: macos-15
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          # Capacitor 8 CLI requires Node >= 22.
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Show the toolchain
+        run: |
+          set -euo pipefail
+          echo "Xcodes available on this runner:"
+          ls -d /Applications/Xcode*.app || true
+          xcodebuild -version
+          swift --version
+          # Capacitor 8 needs 16+. Fail loudly here rather than 40 minutes
+          # later inside a Swift compile with a confusing error.
+          MAJOR="$(xcodebuild -version | head -1 | sed -E 's/Xcode ([0-9]+).*/\1/')"
+          if [ "$MAJOR" -lt 16 ]; then
+            echo "::error::Xcode $MAJOR is below Capacitor 8's minimum of 16. Pick a newer runner image or xcode-select a newer Xcode."
+            exit 1
+          fi
+
+      # The same static export Android bundles. NEXT_PUBLIC_* are public values
+      # (already baked into the deployed web bundle) but must be present AT
+      # BUILD TIME, because Next inlines them: a value set later on Render never
+      # reaches an app that was already compiled.
+      - name: Build local-first web bundle
+        if: ${{ inputs.local_first }}
+        run: npm run build:ios
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_PLUS_ENFORCED_NATIVE: ${{ secrets.NEXT_PUBLIC_PLUS_ENFORCED_NATIVE }}
+          NEXT_PUBLIC_VAPID_KEY: ${{ secrets.NEXT_PUBLIC_VAPID_KEY }}
+          NEXT_PUBLIC_API_BIBLE_KEY: ${{ secrets.NEXT_PUBLIC_API_BIBLE_KEY }}
+          NEXT_PUBLIC_CAMPAIGNS_ENABLED: ${{ secrets.NEXT_PUBLIC_CAMPAIGNS_ENABLED }}
+          NEXT_PUBLIC_SHOP_ENABLED: "1"
+          NEXT_PUBLIC_COMMUNITY_ENABLED: "1"
+          # iOS-specific. The StoreKit key is a DIFFERENT RevenueCat app from
+          # Android's; billingAvailable() gates on the key for this platform, so
+          # if it is unset the paywall renders its "unavailable" state rather
+          # than a purchase button that fails at the sheet. That is the correct
+          # shape for a build whose products are not live yet, but it means
+          # Purify Plus is unbuyable in that build: do not claim otherwise in
+          # the patch notes.
+          NEXT_PUBLIC_REVENUECAT_IOS_KEY: ${{ secrets.NEXT_PUBLIC_REVENUECAT_IOS_KEY }}
+          # Google's native picker on iOS runs with the iOS client id, and the
+          # token it mints carries that id as its audience. The same id must be
+          # on Supabase's Google provider authorised list or every iPhone
+          # sign-in fails with "Unacceptable audience in id_token".
+          NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
+          NEXT_PUBLIC_GOOGLE_IOS_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_IOS_CLIENT_ID }}
+
+      # CAP_LOCAL=1 makes capacitor.config.ts use webDir=out (the bundled UI)
+      # instead of the remote server.url.
+      - name: Sync Capacitor into the iOS project
+        run: npx cap sync ios
+        env:
+          CAP_LOCAL: ${{ inputs.local_first && '1' || '' }}
+
+      # Package.swift is generated by the sync above and deliberately untracked
+      # (see ios/.gitignore for the full reasoning). The Capacitor CLI builds
+      # its dependency paths with path.relative(), which emits BACKSLASHES when
+      # the sync runs on Windows; those are invalid escape sequences inside
+      # Swift string literals, and the committed file sat unparseable for 432
+      # commits without anyone noticing, because nothing ever tried to build it.
+      #
+      # This is the check that makes that impossible to repeat.
+      - name: Verify the generated Swift package
+        run: |
+          set -euo pipefail
+          PKG=ios/App/CapApp-SPM/Package.swift
+          test -f "$PKG" || { echo "::error::$PKG was not generated by cap sync."; exit 1; }
+          if grep -q '\\' "$PKG"; then
+            echo "::error::$PKG contains a backslash, so it was generated on Windows and will not parse."
+            grep -n '\\' "$PKG" || true
+            exit 1
+          fi
+          COUNT="$(grep -c '\.package(' "$PKG" || true)"
+          echo "Swift package declares $COUNT dependencies."
+          # 15 Capacitor plugins in package.json + capacitor-swift-pm itself.
+          if [ "$COUNT" -lt 16 ]; then
+            echo "::error::Only $COUNT package dependencies; expected at least 16. A plugin failed to sync, and whatever it powers will be silently dead in the build."
+            cat "$PKG"
+            exit 1
+          fi
+
+      - name: Import the signing certificate
+        env:
+          CERT_B64: ${{ secrets.IOS_DIST_CERT_P12_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.IOS_DIST_CERT_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [ -z "$CERT_B64" ]; then
+            echo "::error::IOS_DIST_CERT_P12_BASE64 is not set. See docs/IOS_BUILD_SETUP.md."
+            exit 1
+          fi
+          KEYCHAIN="$RUNNER_TEMP/purify-signing.keychain-db"
+          KEYCHAIN_PASSWORD="$(uuidgen)"
+          echo "$CERT_B64" | base64 -d > "$RUNNER_TEMP/dist.p12"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          # Default is a 5-minute auto-lock, which is shorter than this build.
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/dist.p12" -k "$KEYCHAIN" -P "$CERT_PASSWORD" \
+            -T /usr/bin/codesign -T /usr/bin/security -f pkcs12
+          security list-keychains -d user -s "$KEYCHAIN" login.keychain-db
+          # Without this, codesign blocks on a GUI authorisation prompt that no
+          # one can answer on a headless runner, and the job hangs to timeout
+          # rather than failing.
+          security set-key-partition-list -S apple-tool:,apple:,codesign: \
+            -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" >/dev/null
+          rm -f "$RUNNER_TEMP/dist.p12"
+
+          echo "Signing identities now visible:"
+          security find-identity -v -p codesigning
+          if ! security find-identity -v -p codesigning | grep -q "Apple Distribution"; then
+            echo "::error::No Apple Distribution identity in the keychain. The .p12 may be a development certificate, or missing its private key."
+            exit 1
+          fi
+
+      - name: Install the App Store Connect API key
+        env:
+          ASC_KEY_B64: ${{ secrets.APPSTORE_API_PRIVATE_KEY_BASE64 }}
+          ASC_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "$ASC_KEY_B64" ] || [ -z "$ASC_KEY_ID" ]; then
+            echo "::error::APPSTORE_API_PRIVATE_KEY_BASE64 / APPSTORE_API_KEY_ID are not set."
+            exit 1
+          fi
+          # xcodebuild reads it by path; altool looks for it in this directory.
+          # Written to both so neither step needs the other's convention.
+          echo "$ASC_KEY_B64" | base64 -d > "$RUNNER_TEMP/AuthKey.p8"
+          mkdir -p ~/.appstoreconnect/private_keys
+          cp "$RUNNER_TEMP/AuthKey.p8" ~/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8
+
+      - name: Fill in the team on ExportOptions
+        env:
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "$TEAM_ID" ]; then
+            echo "::error::APPLE_TEAM_ID is not set (Membership details on developer.apple.com)."
+            exit 1
+          fi
+          sed -i '' "s/__APPLE_TEAM_ID__/$TEAM_ID/" ios/ExportOptions.plist
+          plutil -p ios/ExportOptions.plist
+
+      - name: Archive
+        env:
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          ASC_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+          REVERSED_CLIENT_ID: ${{ secrets.GOOGLE_REVERSED_CLIENT_ID }}
+          BUILD_NUMBER_INPUT: ${{ inputs.build_number }}
+        run: |
+          set -euo pipefail
+          if [ -z "$REVERSED_CLIENT_ID" ]; then
+            echo "::error::GOOGLE_REVERSED_CLIENT_ID is not set. Info.plist would ship an empty URL scheme and Google sign-in could not call back."
+            exit 1
+          fi
+          # Its own counter, independent of Android's. App Store Connect only
+          # requires the build number to increase within a version train.
+          # RENAMING OR RECREATING THIS WORKFLOW FILE RESETS run_number, and the
+          # upload is then rejected as a duplicate; the build_number input is
+          # the way out of that.
+          BUILD_NUMBER="${BUILD_NUMBER_INPUT:-${{ github.run_number }}}"
+          echo "CFBundleVersion will be $BUILD_NUMBER"
+          echo "IOS_BUILD_NUMBER=$BUILD_NUMBER" >> "$GITHUB_ENV"
+
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -clonedSourcePackagesDirPath "$RUNNER_TEMP/spm" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            DEVELOPMENT_TEAM="$TEAM_ID" \
+            CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
+            GOOGLE_REVERSED_CLIENT_ID="$REVERSED_CLIENT_ID" \
+            archive
+
+      # An archive can be signed with the wrong entitlements and still look
+      # perfectly healthy until a push silently fails to arrive in production,
+      # weeks later, on a build nobody can rebuild identically. Assert instead.
+      - name: Check the signed entitlements
+        run: |
+          set -euo pipefail
+          APP="$RUNNER_TEMP/App.xcarchive/Products/Applications/App.app"
+          test -d "$APP" || { echo "::error::App.app missing from the archive."; exit 1; }
+          echo "--- entitlements ---"
+          codesign -d --entitlements :- "$APP" 2>/dev/null | tee "$RUNNER_TEMP/ents.txt"
+          echo "--- info ---"
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP/Info.plist"
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP/Info.plist"
+          if ! grep -q 'applesignin' "$RUNNER_TEMP/ents.txt"; then
+            echo "::error::Sign in with Apple entitlement is missing. Guideline 4.8 requires it while Google sign-in is offered, and the button would fail at runtime."
+            exit 1
+          fi
+          # aps-environment is "development" in the checked-in entitlements;
+          # -exportArchive rewrites it to "production" for an App Store build.
+          # This step runs BEFORE the export, so development is expected here.
+          grep -q 'aps-environment' "$RUNNER_TEMP/ents.txt" || {
+            echo "::error::No aps-environment entitlement; push cannot work."
+            exit 1
+          }
+
+      - name: Export the IPA
+        env:
+          ASC_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -exportArchive \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -exportOptionsPlist ios/ExportOptions.plist \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+          ls -la "$RUNNER_TEMP/export"
+          IPA="$(ls "$RUNNER_TEMP/export"/*.ipa | head -1)"
+          echo "IPA_PATH=$IPA" >> "$GITHUB_ENV"
+          echo "Exported $(du -h "$IPA" | cut -f1)"
+
+      # Confirms the export produced a PRODUCTION push entitlement. A build that
+      # ships "development" here registers tokens against sandbox APNs, and
+      # every notification to a real install disappears without an error.
+      - name: Check the exported entitlements
+        run: |
+          set -euo pipefail
+          WORK="$RUNNER_TEMP/ipa-check"
+          rm -rf "$WORK" && mkdir -p "$WORK"
+          unzip -q "$IPA_PATH" -d "$WORK"
+          APP="$(ls -d "$WORK"/Payload/*.app | head -1)"
+          codesign -d --entitlements :- "$APP" 2>/dev/null | tee "$RUNNER_TEMP/ents-export.txt"
+          if ! grep -A1 'aps-environment' "$RUNNER_TEMP/ents-export.txt" | grep -q 'production'; then
+            echo "::error::The exported build carries a non-production aps-environment. Push would go to sandbox APNs and never arrive."
+            exit 1
+          fi
+          echo "aps-environment is production."
+
+      - name: Upload to App Store Connect
+        if: ${{ inputs.upload }}
+        env:
+          ASC_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          # Validate first: it catches the common rejections (bad icon, missing
+          # usage string, duplicate build number) in seconds, where the upload
+          # would spend minutes transferring before saying the same thing.
+          xcrun altool --validate-app -f "$IPA_PATH" -t ios \
+            --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"
+          xcrun altool --upload-app -f "$IPA_PATH" -t ios \
+            --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"
+          echo "Uploaded. TestFlight processing usually takes 5 to 15 minutes."
+
+      # Also published as a release asset, mirroring the Android job, so the
+      # exact artifact that went to Apple can be re-downloaded and inspected.
+      - name: Publish to the ios-release release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ios-release
+          name: Purify iOS (signed)
+          prerelease: true
+          body: >
+            Signed iOS build of Purify, local-first (the same bundle the Android
+            app ships). Uploaded to App Store Connect for TestFlight when the
+            workflow's upload input is checked. Replaced on every run. The
+            CFBundleVersion is the workflow run number; set it in
+            lib/appUpdate/release.ts only AFTER the build is live.
+          files: ${{ env.IPA_PATH }}
+          fail_on_unmatched_files: true
+
+      - name: Clean up the keychain
+        if: always()
+        run: |
+          security delete-keychain "$RUNNER_TEMP/purify-signing.keychain-db" || true
+          rm -f ~/.appstoreconnect/private_keys/AuthKey_*.p8 "$RUNNER_TEMP/AuthKey.p8" || true

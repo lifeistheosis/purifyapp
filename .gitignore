@@ -91,8 +91,19 @@ dogma-scan.json
 *.p12
 *.mobileprovision
 *.cer
+# The intermediate files from generating the Apple distribution certificate
+# without a Mac (docs/IOS_BUILD_SETUP.md). The .key is the private half of the
+# signing identity, and the .b64 is the whole .p12 in a form that does not look
+# like a certificate to anyone skim-reading a diff, which is exactly why it
+# needs naming here rather than relying on *.p12 above.
+*.key
+*.csr
+*.p12.b64
+distribution.pem
+# App Store Connect API key. Downloadable once; grants release automation.
+AuthKey_*.p8
 
-# Generated local-first content package (built at Android build time)
+# Generated local-first content package (built at native build time)
 .content-build/
 
 # Generated content registries (emitted from TS at build time)
