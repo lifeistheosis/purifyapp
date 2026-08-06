@@ -31,9 +31,51 @@ describe("the declared release", () => {
     expect(CURRENT_RELEASE.versionName.replace(/^Beta\s+/, "")).toBe(m![1]);
   });
 
-  it("has a non-negative integer versionCode, where 0 means no prompt", () => {
-    expect(Number.isInteger(CURRENT_RELEASE.androidVersionCode)).toBe(true);
-    expect(CURRENT_RELEASE.androidVersionCode).toBeGreaterThanOrEqual(0);
+  it("agrees with the Xcode project about the version name", () => {
+    // The reason iOS sat at MARKETING_VERSION 1.0 while the product shipped
+    // Beta 3.0 is that the release ritual listed four identifiers and this was
+    // not one of them. Holding it here means it cannot drift again without a
+    // red build, which is the only mechanism that has ever worked for the
+    // other four.
+    const pbx = fs.readFileSync(
+      path.join(ROOT, "ios/App/App.xcodeproj/project.pbxproj"),
+      "utf8",
+    );
+    const versions = [...pbx.matchAll(/MARKETING_VERSION\s*=\s*([^;]+);/g)].map(
+      (m) => m[1].trim().replace(/^"|"$/g, ""),
+    );
+    expect(versions.length, "MARKETING_VERSION not found in project.pbxproj")
+      .toBeGreaterThan(0);
+    // Debug and Release must not disagree with each other either.
+    expect(new Set(versions).size, `MARKETING_VERSION differs across configurations: ${versions.join(", ")}`).toBe(1);
+    expect(CURRENT_RELEASE.versionName.replace(/^Beta\s+/, "")).toBe(versions[0]);
+  });
+
+  it("has non-negative integer build numbers, where 0 means no prompt", () => {
+    for (const [name, value] of [
+      ["androidVersionCode", CURRENT_RELEASE.androidVersionCode],
+      ["iosBuildNumber", CURRENT_RELEASE.iosBuildNumber],
+    ] as const) {
+      expect(Number.isInteger(value), `${name} must be an integer`).toBe(true);
+      expect(value, `${name} must not be negative`).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it("does not point iOS readers at a placeholder listing once it prompts", () => {
+    // iosStoreUrl carries a zeroed Adam ID until the App Store Connect record
+    // exists. That is harmless while iosBuildNumber is 0, because
+    // checkForUpdate returns before it is ever read. Raising the number without
+    // filling in the id would hand every iPhone reader a dead App Store link,
+    // so the two must move together.
+    expect(CURRENT_RELEASE.iosStoreUrl.startsWith("https://apps.apple.com/")).toBe(
+      true,
+    );
+    if (CURRENT_RELEASE.iosBuildNumber > 0) {
+      expect(
+        CURRENT_RELEASE.iosStoreUrl,
+        "set the real Adam ID before declaring an iOS build",
+      ).not.toContain("id0000000000");
+    }
   });
 
   it("points at Purify's own Play listing, over https", () => {

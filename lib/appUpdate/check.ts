@@ -17,7 +17,7 @@
 // their prayers.
 
 import { apiFetch } from "@/lib/api/client";
-import { isNativeClient } from "@/lib/platform/native";
+import { isNativeClient, nativePlatform } from "@/lib/platform/native";
 import type { ReleaseInfo } from "./release";
 
 export type UpdateStatus = {
@@ -64,11 +64,28 @@ export async function checkForUpdate(): Promise<UpdateStatus | null> {
     return null;
   }
 
-  const declared = Number(latest?.androidVersionCode);
+  // Each store gets its own number and its own listing. Comparing an iPhone's
+  // CFBundleVersion against Play's versionCode is meaningless in both
+  // directions, and before this branch existed an iOS reader could be told to
+  // go and install an Android build.
+  const platform = nativePlatform();
+  const declared = Number(
+    platform === "ios" ? latest?.iosBuildNumber : latest?.androidVersionCode,
+  );
   // 0 is the deliberate "no release declared" state, and anything
-  // non-numeric is a malformed answer. Neither prompts.
+  // non-numeric is a malformed answer. Neither prompts. A build older than
+  // this field is also missing it entirely, which reads as undefined and so
+  // takes the same silent path.
   if (!Number.isFinite(declared) || declared <= 0) return null;
   if (declared <= installed.code) return null;
 
   return { installed: installed.name, latest };
+}
+
+/** The listing to send THIS reader to. Android's on Android and web, Apple's
+ * on iOS. */
+export function storeUrlFor(latest: ReleaseInfo): string {
+  return nativePlatform() === "ios"
+    ? latest.iosStoreUrl
+    : latest.androidStoreUrl;
 }

@@ -21,17 +21,38 @@
 export type ReleaseInfo = {
   /** Play versionCode of the current release. 0 disables the prompt entirely. */
   androidVersionCode: number;
+  /**
+   * iOS CFBundleVersion of the current release, which the workflow derives from
+   * its own run number exactly as Android does. 0 disables the prompt.
+   *
+   * Its own counter, not shared with Android: the two workflows have separate
+   * run numbers, and App Store Connect only requires the build number to
+   * increase within a CFBundleShortVersionString train.
+   */
+  iosBuildNumber: number;
   /** Human version, shown to the reader. */
   versionName: string;
   /** Store listing. Android app links hand this to the Play app. */
   androidStoreUrl: string;
+  /** Store listing. iOS opens this in the App Store app. */
+  iosStoreUrl: string;
 };
 
 export const CURRENT_RELEASE: ReleaseInfo = {
-  // 0 until Beta 3.0 is actually promoted on Play. Nobody is prompted while
-  // this is 0, which is the correct state for a release that is still held.
+  // Both 0 until Beta 3.1 is actually live on each store, and they move
+  // independently: Play and the App Store will not promote on the same day, and
+  // whichever lands first should start prompting without waiting for the other.
+  // Nobody is prompted while a number is 0, which is the correct state for a
+  // release that is still held.
   androidVersionCode: 0,
-  versionName: "Beta 3.0",
+  iosBuildNumber: 0,
+  versionName: "Beta 3.1",
   androidStoreUrl:
     "https://play.google.com/store/apps/details?id=net.purifyapp.purify",
+  // PLACEHOLDER. Apple does not resolve a listing from the slug; the numeric
+  // Adam ID is required and does not exist until the App Store Connect record
+  // is created. This is unreachable while iosBuildNumber is 0 (checkForUpdate
+  // returns before reading it), and release.test.ts fails the build if the
+  // number is ever raised while the id is still zeros.
+  iosStoreUrl: "https://apps.apple.com/app/id0000000000",
 };

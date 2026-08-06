@@ -26,7 +26,7 @@ import {
   purchase,
   restore,
   billingAvailable,
-  MANAGE_SUBSCRIPTION_URL,
+  manageSubscriptionUrl,
   type PlusPackages,
 } from "@/lib/billing/revenuecat";
 import { presentCustomerCenter } from "@/lib/billing/revenuecatUi";
@@ -164,12 +164,12 @@ export function PlusPaywall() {
     try {
       const shown = await presentCustomerCenter();
       if (!shown && typeof window !== "undefined") {
-        window.open(MANAGE_SUBSCRIPTION_URL, "_blank");
+        window.open(manageSubscriptionUrl(), "_blank");
       }
     } catch (e) {
       console.error("[PlusPaywall] manage failed:", e);
       if (typeof window !== "undefined") {
-        window.open(MANAGE_SUBSCRIPTION_URL, "_blank");
+        window.open(manageSubscriptionUrl(), "_blank");
       }
     }
   }, []);

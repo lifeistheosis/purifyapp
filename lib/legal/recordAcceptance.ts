@@ -79,3 +79,48 @@ export async function recordAcceptance(
   }
   if (!res.ok || body.ok !== true) throw new AcceptanceNotRecordedError();
 }
+
+/**
+ * Record the acceptance for an OAuth sign-in that completed IN THE APP.
+ *
+ * The web has a server-side moment where this can be observed: the provider
+ * redirects to /api/auth/callback, which calls recordSignInAcceptance. The
+ * native app has no such moment. It calls `supabase.auth.signInWithIdToken`
+ * directly from the WebView, the callback route never runs, and so the P0-5b
+ * fix, written after 572 accounts were found to have agreed to nothing, landed
+ * on web only. Android has shipped with that hole ever since, and iOS would
+ * have launched repeating it.
+ *
+ * Unlike recordAcceptance above, this does NOT throw, and the difference is not
+ * an inconsistency. For an email sign-up the record is written BEFORE the
+ * account, so refusing to continue leaves no account behind. Here the account
+ * already exists by the time a token can be exchanged, so throwing would strand
+ * someone who is already signed in on an error screen and still not produce the
+ * row. Best-effort and logged is what the server side does for the same reason.
+ *
+ * Idempotent: /api/legal/accept upserts for a signed-in signup, so calling this
+ * on every sign-in is a no-op after the first, and records a fresh row when
+ * TERMS_VERSION is bumped.
+ */
+export async function recordNativeSignInAcceptance(
+  email: string | null,
+): Promise<void> {
+  try {
+    const res = await apiFetch("/api/legal/accept", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ context: "signup", email: email ?? undefined }),
+    });
+    const body = (await res.json().catch(() => ({}))) as { ok?: unknown };
+    if (!res.ok || body.ok !== true) {
+      // Logged, never swallowed: an empty catch is how the original hole
+      // stayed invisible.
+      console.warn("[legal] native sign-in acceptance not recorded");
+    }
+  } catch (e) {
+    console.warn(
+      "[legal] native sign-in acceptance threw",
+      (e as Error).message,
+    );
+  }
+}

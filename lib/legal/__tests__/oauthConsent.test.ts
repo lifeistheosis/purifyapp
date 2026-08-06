@@ -59,7 +59,11 @@ describe("asking: the Terms notice", () => {
     // Notice placed after the button is not conspicuous notice.
     const src = read(OAUTH_BUTTONS);
     const notice = src.indexOf("By continuing, you agree");
-    const grid = src.indexOf('className="grid grid-cols-1');
+    // Matched on the class list rather than on `className="…`: the container
+    // became a template literal when the Apple button started being hidden in
+    // the Android shell, and the point of this test is the ORDER, not how the
+    // attribute happens to be quoted.
+    const grid = src.indexOf("grid grid-cols-1");
     expect(notice).toBeGreaterThan(-1);
     expect(grid).toBeGreaterThan(-1);
     expect(notice).toBeLessThan(grid);
@@ -110,6 +114,58 @@ describe("recording: the callback", () => {
     const guard = /type === "signup" \|\| type === "magiclink" \|\| type === "invite"/;
     expect(src).toMatch(guard);
     expect(src).not.toMatch(/type === "recovery"[\s\S]{0,80}recordAcceptanceFor/);
+  });
+});
+
+describe("recording: the native path", () => {
+  // The callback tests above pass while the app records nothing at all.
+  // /api/auth/callback is a REDIRECT target, and the native app never
+  // redirects: OAuthButtons calls signInWithIdToken straight from the WebView.
+  // So the P0-5b fix landed on web only and Android shipped the hole it was
+  // written to close. This suite is the half that was missing.
+  const src = read(OAUTH_BUTTONS);
+
+  it("records acceptance after a native ID-token sign-in", () => {
+    expect(src).toMatch(/recordNativeSignInAcceptance/);
+    const nativeBranch = src.slice(src.indexOf("signInWithIdToken"));
+    expect(
+      nativeBranch,
+      "signInWithIdToken must be followed by an acceptance write",
+    ).toMatch(/recordNativeSignInAcceptance\(/);
+  });
+
+  it("records BEFORE navigating away, or the write never lands", () => {
+    // window.location.assign tears the page down. A write started after it,
+    // or not awaited, is the original fire-and-forget bug in a new costume.
+    const i = src.indexOf("recordNativeSignInAcceptance(");
+    const j = src.indexOf("window.location.assign");
+    expect(i).toBeGreaterThan(-1);
+    expect(j).toBeGreaterThan(-1);
+    expect(i, "acceptance must be recorded before navigation").toBeLessThan(j);
+    expect(src).toMatch(/await recordNativeSignInAcceptance\(/);
+  });
+
+  it("does not abort a sign-in that already succeeded", () => {
+    // Unlike the email path, the account exists by now; throwing would strand
+    // a signed-in reader on an error screen AND still not produce the row.
+    const writer = read("lib/legal/recordAcceptance.ts");
+    const fn = writer.slice(writer.indexOf("export async function recordNativeSignInAcceptance"));
+    expect(fn).not.toMatch(/throw\s/);
+    // But it must still be logged. An empty catch is how this hid for 572
+    // accounts.
+    expect(fn).toMatch(/console\.warn/);
+  });
+
+  it("writes idempotently, so a returning reader is not locked out", () => {
+    // The partial unique index turns every sign-in after the first into a
+    // conflict. A plain insert would answer ok:false, and if the caller ever
+    // treats that as fatal the record of agreement becomes the thing that
+    // blocks signing in.
+    const route = read("app/api/legal/accept/route.ts");
+    expect(route).toMatch(/onConflict:\s*"user_id,terms_version"/);
+    expect(route).toMatch(/ignoreDuplicates:\s*true/);
+    // Scoped: checkout acceptances repeat legitimately, one per order.
+    expect(route).toMatch(/context === "signup"/);
   });
 });
 

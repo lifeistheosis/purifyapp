@@ -45,6 +45,37 @@ export function isNativeClient(): boolean {
   return navigator.userAgent.includes(NATIVE_UA_TOKEN);
 }
 
+export type NativePlatform = "ios" | "android";
+
+/**
+ * WHICH shell, for the few things that genuinely differ between the stores:
+ * which RevenueCat key configures billing, which store an update prompt links
+ * to, which provider a native sign-in button should offer.
+ *
+ * Null on the web, and null inside the shell if Capacitor has not injected
+ * itself yet, so callers must treat null as "not a store build" rather than
+ * "some other store".
+ *
+ * Deliberately NOT derived from the user-agent: both shells append the same
+ * "PurifyNative" token, and they should keep doing so. The server has no reason
+ * to care which phone is asking, and the routes that DO care (push device
+ * registration) are handed an explicit platform field. Splitting the token
+ * would put a second thing to keep in sync in front of the /api/track
+ * Sec-Fetch-Site exemption and the native entitlement gate.
+ */
+export function nativePlatform(): NativePlatform | null {
+  if (typeof window === "undefined") return null;
+  const cap = (window as { Capacitor?: { getPlatform?: () => string } })
+    .Capacitor;
+  const p = cap?.getPlatform?.();
+  return p === "ios" || p === "android" ? p : null;
+}
+
+/** True inside the iOS app specifically. */
+export function isIOSClient(): boolean {
+  return nativePlatform() === "ios";
+}
+
 // The value never changes within a page lifetime, so the store never
 // notifies; useSyncExternalStore still gives us the correct
 // server-snapshot (false) vs client-snapshot split without a

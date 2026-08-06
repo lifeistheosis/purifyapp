@@ -4,16 +4,30 @@ import Link from "next/link";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { nativeGoogleAvailable, nativeGoogleIdToken } from "@/lib/auth/nativeGoogle";
+import { nativeAppleAvailable, nativeAppleIdToken } from "@/lib/auth/nativeApple";
+import { recordNativeSignInAcceptance } from "@/lib/legal/recordAcceptance";
+import { useIsNative, nativePlatform } from "@/lib/platform/native";
 
 /**
- * Continue-with-Google and Continue-with-Apple buttons. Used by both
+ * Continue-with-Google and Sign-in-with-Apple buttons. Used by both
  * SignInForm and SignUpForm (the OAuth flow doesn't distinguish).
  *
- * Google is wired and live (configured in Supabase Dashboard).
- * Apple is intentionally disabled with a "Coming soon" label, the
- * provider config (Apple Developer account, Services ID, key) hasn't
- * been set up yet. The button is left visible so the layout
- * stays right and so anyone curious knows it's planned.
+ * Both providers take one of two routes depending on where they are running.
+ * Inside the app, the native sheet returns an ID token that goes straight to
+ * signInWithIdToken; on the web, the ordinary same-origin PKCE redirect. The
+ * native route exists because a redirect opens in a cookie jar that is not the
+ * WebView's, so the PKCE verifier is never found (see lib/auth/nativeGoogle).
+ *
+ * Apple is offered on iOS and on the web, and HIDDEN in the Android app. Apple
+ * has no native sheet on Android, and the web fallback there hits exactly the
+ * cross-jar PKCE failure above, so the only honest options were "hide it" or
+ * "ship a button that cannot work". It is offered at all because App Store
+ * guideline 4.8 requires an equivalent private login wherever a third-party
+ * social login is offered, and Purify offers Google.
+ *
+ * It replaces a permanently disabled "Apple · Coming soon" button that had been
+ * visible since launch, which was its own submission risk: a dead control in a
+ * shipped binary is a routine 2.1 "app is incomplete" flag.
  */
 export function OAuthButtons({
   disabled = false,
@@ -40,26 +54,43 @@ export function OAuthButtons({
    */
   showTermsNotice?: boolean;
 } = {}) {
-  const [pendingGoogle, setPendingGoogle] = useState(false);
+  const [pending, setPending] = useState<"google" | "apple" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const isNative = useIsNative();
 
-  async function go() {
+  // Apple has no native sheet on Android and no working web fallback inside the
+  // app, so it is offered everywhere except the Android shell.
+  const showApple = !(isNative && nativePlatform() === "android");
+
+  async function go(provider: "google" | "apple") {
     if (disabled) return;
-    setPendingGoogle(true);
+    setPending(provider);
     setError(null);
     try {
       const supabase = createClient();
 
-      // Native app: skip the browser redirect entirely. The native account
-      // picker returns a Google ID token we exchange in-place, so there's no
-      // Custom Tab and no cross-jar PKCE failure (see lib/auth/nativeGoogle).
-      if (nativeGoogleAvailable()) {
-        const token = await nativeGoogleIdToken();
-        const { error: err } = await supabase.auth.signInWithIdToken({
-          provider: "google",
+      // Native app: skip the browser redirect entirely. The native sheet
+      // returns an ID token we exchange in-place, so there's no Custom Tab and
+      // no cross-jar PKCE failure (see lib/auth/nativeGoogle).
+      const nativeAvailable =
+        provider === "google" ? nativeGoogleAvailable() : nativeAppleAvailable();
+      if (nativeAvailable) {
+        const token =
+          provider === "google"
+            ? await nativeGoogleIdToken()
+            : await nativeAppleIdToken();
+        const { data, error: err } = await supabase.auth.signInWithIdToken({
+          provider,
           token,
         });
         if (err) throw err;
+        // The web records this in /api/auth/callback, which the native path
+        // never reaches. Without this line every account created in the app
+        // agrees to the Terms it was shown and leaves no trace of having done
+        // so, which is the 572-account hole from P0-5b, still open on Android.
+        // Best-effort and never throws: the account already exists by now, so
+        // failing here must not strand someone who is signed in.
+        await recordNativeSignInAcceptance(data.user?.email ?? null);
         window.location.assign(redirectTo);
         return;
       }
@@ -74,7 +105,7 @@ export function OAuthButtons({
       // is already the current origin too, so this stays self-contained there.)
       const origin = window.location.origin;
       const { error: err } = await supabase.auth.signInWithOAuth({
-        provider: "google",
+        provider,
         options: {
           redirectTo: `${origin}/api/auth/callback?next=${encodeURIComponent(redirectTo)}`,
         },
@@ -82,10 +113,11 @@ export function OAuthButtons({
       if (err) throw err;
       // On success Supabase redirects the page; no state cleanup needed.
     } catch (e) {
+      const label = provider === "google" ? "Google" : "Apple";
       setError(
-        e instanceof Error ? e.message : "Couldn't start Google sign-in.",
+        e instanceof Error ? e.message : `Couldn't start ${label} sign-in.`,
       );
-      setPendingGoogle(false);
+      setPending(null);
     }
   }
 
@@ -113,27 +145,31 @@ export function OAuthButtons({
           .
         </p>
       ) : null}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <div
+        className={`grid grid-cols-1 gap-2 ${showApple ? "sm:grid-cols-2" : ""}`}
+      >
         <button
           type="button"
-          disabled={pendingGoogle || disabled}
-          onClick={go}
+          disabled={pending !== null || disabled}
+          onClick={() => go("google")}
           title={disabled ? disabledHint : undefined}
           className="inline-flex items-center justify-center gap-2 h-11 rounded-pill border border-paper/20 bg-paper/[0.04] hover:bg-paper/10 hover:border-paper/35 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-sans text-ui font-medium text-paper"
         >
           <GoogleGlyph />
-          {pendingGoogle ? "Connecting…" : "Continue with Google"}
+          {pending === "google" ? "Connecting…" : "Continue with Google"}
         </button>
-        <button
-          type="button"
-          disabled
-          aria-disabled="true"
-          title="Sign in with Apple is coming soon"
-          className="inline-flex items-center justify-center gap-2 h-11 rounded-pill border border-paper/15 bg-paper/[0.02] cursor-not-allowed font-sans text-ui font-medium text-paper/45"
-        >
-          <AppleGlyph />
-          Apple · Coming soon
-        </button>
+        {showApple ? (
+          <button
+            type="button"
+            disabled={pending !== null || disabled}
+            onClick={() => go("apple")}
+            title={disabled ? disabledHint : undefined}
+            className="inline-flex items-center justify-center gap-2 h-11 rounded-pill border border-paper/20 bg-paper/[0.04] hover:bg-paper/10 hover:border-paper/35 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-sans text-ui font-medium text-paper"
+          >
+            <AppleGlyph />
+            {pending === "apple" ? "Connecting…" : "Continue with Apple"}
+          </button>
+        ) : null}
       </div>
       {disabled && disabledHint ? (
         <p className="mt-2 font-sans text-caption leading-[1.5] text-paper/50">

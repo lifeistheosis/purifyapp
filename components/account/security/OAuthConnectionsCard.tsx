@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { authOrigin } from "@/lib/site";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { useIsNative } from "@/lib/platform/native";
 
 // Mirrors Supabase's UserIdentity loosely. We accept any shape that
 // carries identity_id and provider; the full server-side object is
@@ -25,9 +26,12 @@ type Identity = {
 
 /**
  * Lists which OAuth identities are linked to the current user and
- * lets them connect / disconnect Google. Apple is shown but marked
- * "Coming soon" until the provider config is in place (Apple
- * Developer account required).
+ * lets them connect / disconnect Google, and connect Apple.
+ *
+ * Apple used to be rendered permanently as "Coming soon", which was wrong in
+ * both directions once the provider went live in Beta 3.1: it told readers a
+ * working feature did not exist, and it said "Coming soon" even to someone
+ * whose account was already linked through Apple.
  *
  * Linking a new identity hits `supabase.auth.linkIdentity()`, which
  * requires the project's "Manual Linking" setting to be enabled in
@@ -54,7 +58,8 @@ export function OAuthConnectionsCard({
   const [identities, setIdentities] = useState<Identity[]>(
     initialIdentities ?? [],
   );
-  const [pending, setPending] = useState<"google" | null>(null);
+  const [pending, setPending] = useState<"google" | "apple" | null>(null);
+  const isNative = useIsNative();
   const [error, setError] = useState<string | null>(null);
   const [confirmingUnlink, setConfirmingUnlink] = useState(false);
 
@@ -154,6 +159,40 @@ export function OAuthConnectionsCard({
     identities.find((i) => i.provider === "google") ?? null;
   const appleIdentity =
     identities.find((i) => i.provider === "apple") ?? null;
+
+  /** Web-only: linkIdentity is a redirect flow with no ID-token equivalent, so
+   * the native sign-in route cannot be reused for linking. */
+  async function connectApple() {
+    setPending("apple");
+    setError(null);
+    try {
+      const supabase = createClient();
+      const origin = authOrigin();
+      const { error: err } = await supabase.auth.linkIdentity({
+        provider: "apple",
+        options: {
+          redirectTo: `${origin}/api/auth/callback?next=/account/security`,
+        },
+      });
+      if (err) throw err;
+    } catch (e) {
+      const raw = e instanceof Error ? e.message : "";
+      if (/manual linking is disabled/i.test(raw)) {
+        setError(
+          "Linking new providers from inside the app is currently off. The site maintainer needs to enable Manual Linking in Supabase Dashboard → Authentication → Settings. In the meantime you can sign out and sign in with Apple directly.",
+        );
+      } else if (
+        /identity is already linked/i.test(raw) ||
+        /identity_already_exists/i.test(raw)
+      ) {
+        await load({ forceRefresh: true });
+        setError(null);
+      } else {
+        setError(raw || "Couldn't connect Apple.");
+      }
+      setPending(null);
+    }
+  }
 
   async function connectGoogle() {
     setPending("google");
@@ -318,23 +357,33 @@ export function OAuthConnectionsCard({
           )}
         </li>
 
-        {/* Apple, coming soon */}
-        <li className="flex items-center justify-between gap-4 rounded-md border border-paper/10 bg-paper/[0.02] px-4 py-3 opacity-70">
+        {/* Apple. Live as of Beta 3.1; this row said "Coming soon" even to
+            readers who were already signed in through Apple.
+
+            Connecting is web-only, and not because of the App Store: linking
+            takes a redirect, and linkIdentity has no ID-token form, so the
+            native path that makes sign-in work cannot be used to link. Inside
+            the app the row reports state and offers no action, which is honest.
+            Unlinking Apple is not offered yet on either surface. */}
+        <li className="flex items-center justify-between gap-4 rounded-md border border-paper/10 bg-paper/[0.02] px-4 py-3">
           <div className="min-w-0">
             <p className="font-sans text-detail font-medium text-paper">
               {t("ui.apple")}
             </p>
             <p className="font-sans text-caption text-paper/55">
-              {appleIdentity ? "Connected" : "Coming soon"}
+              {appleIdentity ? "Connected" : "Not connected"}
             </p>
           </div>
-          <span
-            aria-disabled="true"
-            title={t("ui.signInWithAppleIs")}
-            className="font-sans text-caption font-medium text-paper/40 cursor-not-allowed"
-          >
-            {t("signin.comingSoon")}
-          </span>
+          {!appleIdentity && !isNative ? (
+            <button
+              type="button"
+              onClick={connectApple}
+              disabled={pending !== null}
+              className="font-sans text-caption font-semibold rounded-pill bg-paper text-night px-4 py-1.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
+            >
+              {pending === "apple" ? "Opening…" : "Connect"}
+            </button>
+          ) : null}
         </li>
       </ul>
       {/* Always-on explainer when the user has no password set, so a

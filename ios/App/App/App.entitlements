@@ -7,5 +7,15 @@
 	     "production" automatically at archive/export time. -->
 	<key>aps-environment</key>
 	<string>development</string>
+	<!-- Sign in with Apple. Required by App Store review guideline 4.8 because
+	     the app offers Google sign-in; see components/auth/OAuthButtons.tsx.
+	     With automatic signing and -allowProvisioningUpdates, xcodebuild enables
+	     the capability on the App ID and regenerates the profile from this file,
+	     so adding the key here is the whole change on the build side. The
+	     Services ID, key, and Supabase provider config are dashboard work. -->
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
 </dict>
 </plist>

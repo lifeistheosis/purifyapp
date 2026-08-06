@@ -2,17 +2,17 @@
 
 // Native (Capacitor) billing wrapper around the RevenueCat SDK.
 //
-// RevenueCat fronts Google Play Billing now and StoreKit when iOS unparks,
-// so the app talks to one API and the server hears about purchases through
-// one webhook (app/api/billing/revenuecat). Purify only cares about a
-// single entitlement, `plus`; everything here resolves to "is Plus active".
+// RevenueCat fronts Google Play Billing on Android and StoreKit on iOS, so the
+// app talks to one API and the server hears about purchases through one webhook
+// (app/api/billing/revenuecat). Purify only cares about a single entitlement,
+// `plus`; everything here resolves to "is Plus active".
 //
 // SSR / web safety: every function dynamic-imports the plugin and bails
 // unless we are inside the native shell. The website ships the same bundle
 // but must never call into the native plugin (it would reject), so callers
 // gate on isNativeClient() and these functions double-check.
 
-import { isNativeClient } from "@/lib/platform/native";
+import { isNativeClient, nativePlatform } from "@/lib/platform/native";
 import type {
   CustomerInfo,
   PurchasesPackage,
@@ -25,17 +25,38 @@ import type {
 export const PLUS_ENTITLEMENT_ID = "plus";
 export const PRO_ENTITLEMENT_ID = "pro";
 
-// The public Android SDK key (goog_…) from the RevenueCat dashboard,
-// inlined into the client bundle. Android-only at launch; an iOS key gets
-// added here when iOS unparks.
+// The public SDK keys from the RevenueCat dashboard (goog_… for Play, appl_…
+// for StoreKit), inlined into the client bundle at build time. Each store's app
+// is a separate RevenueCat app with its own key, and configuring the SDK with
+// the wrong one fails at the store boundary rather than at configure(), so this
+// must be chosen by platform and never defaulted.
 const ANDROID_API_KEY = process.env.NEXT_PUBLIC_REVENUECAT_ANDROID_KEY ?? "";
+const IOS_API_KEY = process.env.NEXT_PUBLIC_REVENUECAT_IOS_KEY ?? "";
+
+/** The key for the store this build is running in. Empty on web, and empty on
+ * a platform whose key was not set at build time. */
+function apiKey(): string {
+  switch (nativePlatform()) {
+    case "ios":
+      return IOS_API_KEY;
+    case "android":
+      return ANDROID_API_KEY;
+    default:
+      return "";
+  }
+}
 
 let configured = false;
 
-/** True only inside the native shell with a key present. Web always false,
- * so the paywall hides itself rather than showing dead buttons. */
+/** True only inside the native shell with that platform's key present. Web
+ * always false, so the paywall hides itself rather than showing dead buttons.
+ *
+ * A platform whose key is unset degrades the same way: PlusPaywall renders its
+ * "unavailable" phase. That is the correct resting state for a store where the
+ * products are not live yet, and it is why shipping iOS ahead of its StoreKit
+ * products does not show anyone a broken purchase button. */
 export function billingAvailable(): boolean {
-  return isNativeClient() && ANDROID_API_KEY.length > 0;
+  return isNativeClient() && apiKey().length > 0;
 }
 
 /**
@@ -51,7 +72,7 @@ export async function initBilling(supabaseUserId: string): Promise<boolean> {
   if (!configured) {
     await Purchases.setLogLevel({ level: LOG_LEVEL.WARN });
     await Purchases.configure({
-      apiKey: ANDROID_API_KEY,
+      apiKey: apiKey(),
       appUserID: supabaseUserId,
     });
     configured = true;
@@ -177,3 +198,26 @@ export async function restore(): Promise<boolean> {
 /** Deep link to the Play Store subscriptions center for Purify. */
 export const MANAGE_SUBSCRIPTION_URL =
   "https://play.google.com/store/account/subscriptions?package=net.purifyapp.purify";
+
+/** Apple's subscription centre. Not app-specific: iOS has no per-app deep link,
+ * this opens the reader's subscription list in Settings/App Store. */
+export const APPLE_MANAGE_SUBSCRIPTION_URL =
+  "https://apps.apple.com/account/subscriptions";
+
+/**
+ * Where "manage subscription" should send THIS reader.
+ *
+ * A subscription bought through StoreKit can only be cancelled through Apple,
+ * and one bought through Play only through Google. Sending an iPhone subscriber
+ * to the Play Store, which is what the single constant above did for everyone,
+ * lands them on a page that cannot see their subscription and offers no way to
+ * cancel it, which is the shape of complaint that becomes a refund and a review.
+ *
+ * Falls back to Play on web, matching where the only purchasable subscription
+ * came from before web billing existed.
+ */
+export function manageSubscriptionUrl(): string {
+  return nativePlatform() === "ios"
+    ? APPLE_MANAGE_SUBSCRIPTION_URL
+    : MANAGE_SUBSCRIPTION_URL;
+}

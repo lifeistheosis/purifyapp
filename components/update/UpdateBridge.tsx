@@ -17,7 +17,11 @@
 
 import { useEffect, useState } from "react";
 
-import { checkForUpdate, type UpdateStatus } from "@/lib/appUpdate/check";
+import {
+  checkForUpdate,
+  storeUrlFor,
+  type UpdateStatus,
+} from "@/lib/appUpdate/check";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
 
@@ -72,9 +76,10 @@ export function UpdateBridge() {
         {/* A plain anchor, not Browser.open(): a Play listing URL is an
             Android app link, so the system hands it to the Play app itself
             rather than opening the store in a web view the reader then has
-            to back out of. */}
+            to back out of. apps.apple.com behaves the same way on iOS, which
+            is why storeUrlFor picks the listing rather than the component. */}
         <a
-          href={status.latest.androidStoreUrl}
+          href={storeUrlFor(status.latest)}
           target="_blank"
           rel="noreferrer"
           onClick={() => setOpen(false)}
