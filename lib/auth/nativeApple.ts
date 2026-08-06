@@ -41,9 +41,12 @@ export function nativeAppleAvailable(): boolean {
 async function ensureInit(): Promise<void> {
   if (initialized) return;
   const { SocialLogin } = await import("@capgo/capacitor-social-login");
-  // redirectUrl is for the web/Android half of the plugin's Apple support,
-  // which we never use; the native sheet needs no callback URL.
-  await SocialLogin.initialize({ apple: {} });
+  // redirectUrl is the plugin's web/Android callback, which this file never
+  // uses. It must be the EMPTY STRING rather than omitted: the plugin's own
+  // definitions say "Use empty string '' for iOS to prevent redirect", and
+  // leaving it undefined is not documented to mean the same thing. Getting this
+  // wrong sends the native sheet looking for a callback that does not exist.
+  await SocialLogin.initialize({ apple: { redirectUrl: "" } });
   initialized = true;
 }
 
