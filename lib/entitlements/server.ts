@@ -12,6 +12,7 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { isNativeRequest } from "@/lib/platform/nativeRequest";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import {
   isDeveloperEmail,
   DEV_PLUS_COOKIE,
@@ -27,16 +28,16 @@ import {
 } from "./entitlements";
 
 /**
- * True only while `npm run build:android` is producing the static export.
+ * IS_STATIC_EXPORT is true while either native bundle is being exported, and it
+ * is a build-time constant, so the branch it guards below is eliminated rather
+ * than skipped and `cookies()` is never reached during the export.
  *
- * This is a build-time constant, so the branch it guards is eliminated
- * rather than skipped, and `cookies()` is never reached during the export.
- * That matters: there is no request to read a cookie from in a static
- * render, so calling it opts the route into dynamic rendering, and the
- * export runs with `dynamic = "error"`. Merging feat/developer-options
- * broke `npm run build:android` on /florilegium in exactly this way.
+ * That matters here specifically: there is no request to read a cookie from in a
+ * static render, so calling it opts the route into dynamic rendering, and the
+ * export runs with `dynamic = "error"`. Merging feat/developer-options broke
+ * `npm run build:android` on /florilegium in exactly this way. The same trap now
+ * exists twice over, once per platform.
  */
-const IS_STATIC_EXPORT = process.env.BUILD_TARGET === "android";
 
 export async function getEntitlements(): Promise<Entitlements> {
   // Developer test-premium override. Cookie is only a hint; we verify the

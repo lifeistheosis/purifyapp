@@ -17,7 +17,7 @@ import { buildSearchCorpus } from "@/lib/search/buildCorpus";
  * in the native shell and therefore works with no network, the same way
  * lib/content/bootstrap.ts already loads the bundled content package.
  *
- * Deliberately NOT under app/api: scripts/android-build.mjs stashes that
+ * Deliberately NOT under app/api: scripts/native-build.mjs stashes that
  * whole tree out of the export, and a search corpus that vanished from the
  * app but worked on the web is exactly the class of bug this codebase keeps
  * being bitten by.

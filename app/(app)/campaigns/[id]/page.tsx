@@ -6,7 +6,7 @@ type Params = Promise<{ id: string }>;
  * Legacy pretty URL for a campaign. The real detail view is the query-string
  * route (/campaigns/detail?id=), because the native app ships a static export
  * with no server to resolve a dynamic segment: this whole directory is stashed
- * out of the bundle in scripts/android-build.mjs.
+ * out of the bundle in scripts/native-build.mjs.
  *
  * It used to render a FeatureShell reading "Campaign #<uuid> ... Stubbed for
  * now", so any web visitor who guessed or was linked to /campaigns/<id> got a

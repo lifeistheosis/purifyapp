@@ -30,6 +30,7 @@ import { getLocale } from "@/lib/i18n/locales";
 import { MessagesProvider } from "@/components/i18n/MessagesProvider";
 import { LocaleBootstrap } from "@/components/i18n/LocaleBootstrap";
 import { NONCE_HEADER } from "@/lib/security/headers";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 
 const dmSans = DM_Sans({
  variable: "--font-dm-sans",
@@ -203,13 +204,12 @@ export default async function RootLayout({
    localeCode === "en" ? undefined : getMessages(localeCode);
  // Per-request CSP nonce, set by middleware. The pre-paint theme script
  // below carries it, so strict-dynamic accepts that one inline script.
- // Skipped in the Android static export (no request headers, and no CSP or
+ // Skipped in the native static export (no request headers, and no CSP or
  // middleware there) so the root layout, and thus every page, can still be
  // statically rendered.
- const nonce =
-   process.env.BUILD_TARGET === "android"
-     ? undefined
-     : (await headers()).get(NONCE_HEADER) ?? undefined;
+ const nonce = IS_STATIC_EXPORT
+   ? undefined
+   : (await headers()).get(NONCE_HEADER) ?? undefined;
  return (
  <html
  lang={localeCode}

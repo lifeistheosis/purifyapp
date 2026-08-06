@@ -1,5 +1,6 @@
 import { SignInForm } from "@/components/auth/SignInForm";
 import { T } from "@/components/i18n/T";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 
 export const metadata = {
   title: "Sign in",
@@ -13,11 +14,12 @@ export default async function SignInPage({
 }: {
   searchParams: Search;
 }) {
-  // Android static export can't read searchParams (would force dynamic); the
+  // The native static export can't read searchParams (would force dynamic); the
   // ?next/?error params are read client-side there. Website unchanged.
-  const { next, error } = (process.env.BUILD_TARGET === "android"
-    ? {}
-    : await searchParams) as { next?: string; error?: string };
+  const { next, error } = (IS_STATIC_EXPORT ? {} : await searchParams) as {
+    next?: string;
+    error?: string;
+  };
   const friendly = error ? friendlyError(error) : null;
   return (
     <div>

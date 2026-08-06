@@ -9,15 +9,16 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { DEFAULT_LOCALE, isLocaleSelectable, type LocaleCode } from "./locales";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 
 const LOCALE_COOKIE = "purify_locale";
 
 export async function getServerLocale(): Promise<LocaleCode> {
-  // Android static export has no request context: there are no cookies to read,
-  // and calling cookies() would force the page dynamic and break `output:export`.
-  // Render the canonical default locale; the app switches locale client-side.
-  // The website (BUILD_TARGET unset) is unaffected and still reads the cookie.
-  if (process.env.BUILD_TARGET === "android") return DEFAULT_LOCALE;
+  // The native static export (Android and iOS) has no request context: there are
+  // no cookies to read, and calling cookies() would force the page dynamic and
+  // break `output:export`. Render the canonical default locale; the app switches
+  // locale client-side. The website is unaffected and still reads the cookie.
+  if (IS_STATIC_EXPORT) return DEFAULT_LOCALE;
   const store = await cookies();
   const value = store.get(LOCALE_COOKIE)?.value;
   // Selectable covers fully-ready locales and editorial-preview ones; missing

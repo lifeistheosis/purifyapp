@@ -6,13 +6,14 @@
 
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 
 export async function createClient() {
-  // Android static export has no request cookies; calling cookies() would force
-  // pages dynamic and break output:export. Return a cookie-less anon client so
-  // pages render the signed-out shell at build time; the app authenticates
-  // client-side at runtime. The website (BUILD_TARGET unset) is unaffected.
-  if (process.env.BUILD_TARGET === "android") {
+  // The native static export (Android and iOS) has no request cookies; calling
+  // cookies() would force pages dynamic and break output:export. Return a
+  // cookie-less anon client so pages render the signed-out shell at build time;
+  // the app authenticates client-side at runtime. The website is unaffected.
+  if (IS_STATIC_EXPORT) {
     // Fall back to placeholders so the static export never crashes when the
     // public keys aren't set on the build runner ("URL and Key are required").
     // When the real NEXT_PUBLIC_* values ARE provided at build time they're

@@ -1,4 +1,5 @@
 import { getVerseOfDayTable } from "@/lib/today/verseOfDay";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { VerseOfDayView } from "./VerseOfDayView";
 
 /**
@@ -23,7 +24,7 @@ import { VerseOfDayView } from "./VerseOfDayView";
  * Verse text is Purify's public-domain Bible (Brenton LXX / KJV) via
  * lib/today/verseOfDay.ts. No copyrighted translation appears here.
  */
-const WINDOW_DAYS = process.env.BUILD_TARGET === "android" ? 400 : 3;
+const WINDOW_DAYS = IS_STATIC_EXPORT ? 400 : 3;
 
 export async function VerseOfDayCard({
   headingId,

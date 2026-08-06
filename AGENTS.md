@@ -16,8 +16,13 @@ npm run test:unit        # vitest (must be green; ~250 tests)
 npm run lint             # eslint
 npm run build            # WEB production build (SSR)
 npm run build:android    # local-first static export -> out/ (the native gate)
+npm run build:ios        # the same export for iOS (the second native gate)
 npm run test:e2e         # Playwright smoke + axe (needs a server)
 ```
+
+Both native builds are `scripts/native-build.mjs --platform <p>` and both write to
+`out/`, which the script wipes on entry. Run them one after the other, never at
+the same time in one checkout.
 
 Node ≥ 22.5 required (`lib/content` uses `node:sqlite`); local dev and CI use Node 24. If `tsc` reports errors under `.next/dev/types` referencing stashed routes, run `rm -rf .next && npx next typegen` (stale generated types from a mixed dev/android build — a known trap).
 
@@ -29,7 +34,7 @@ Node ≥ 22.5 required (`lib/content` uses `node:sqlite`); local dev and CI use 
 
 Native cross-origin plumbing: `lib/api/client.ts` (`apiFetch`: absolute `SITE_URL` + `Authorization: Bearer <supabase token>` when native), `lib/supabase/server.ts` (`createClientFromRequest`: bearer-or-cookie), `lib/api/cors.ts` (origin allow-list; authenticated routes export `OPTIONS`). Public catalog reads (`lib/shop/catalog.ts`) use a **cookie-less** anon client on purpose — the cookie-bound client throws in static render contexts (this caused a production 500 on 2026-07-11; do not "simplify" it back).
 
-Web-only trees are stashed out of the export in `scripts/android-build.mjs` (`shop/seller`, `support/contact`, admin, …). The Android gradle step in `.github/workflows/android-apk.yml` runs **one artifact per invocation** — merging those lines OOMs the runner.
+Web-only trees are stashed out of the export in `scripts/native-build.mjs` (`shop/seller`, `support/contact`, admin, …). The Android gradle step in `.github/workflows/android-apk.yml` runs **one artifact per invocation** — merging those lines OOMs the runner.
 
 ## Money and data safeguards
 
