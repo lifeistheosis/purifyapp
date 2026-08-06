@@ -112,3 +112,7 @@ data/_generated/
 test-results/
 .cache/
 *.log
+
+# Generated Sign in with Apple client secret (a bearer credential, 6-month life).
+# Regenerate with scripts/apple-client-secret.mjs
+.apple-client-secret.jwt
