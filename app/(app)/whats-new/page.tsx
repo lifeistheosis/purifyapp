@@ -25,7 +25,7 @@ type Entry = {
 // Newest first. Grouped by `date` (string equality).
 const ENTRIES: Entry[] = [
  {
- version: "Beta 3.1",
+ version: "1.0",
  kind: "Purify on iPhone",
  date: "August 6, 2026",
  blurb:

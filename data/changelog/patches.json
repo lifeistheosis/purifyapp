@@ -1,7 +1,7 @@
 [
   {
     "id": "beta-3-1",
-    "version": "Beta 3.1",
+    "version": "1.0",
     "date": "2026-08-06",
     "title": "Purify on iPhone",
     "intro": "Purify has been an Android app and a website. It is an iPhone app as well now, built from the same library and working the same way with no signal, and that is most of this release. The rest is a short run of repairs. One of them took the navigation away for as long as the anthem was playing. One is a single word in the Psalter that has been wrong since it was transcribed. And one is the half of a fix from four days ago that had been left undone, so that accounts made inside the app were shown the Terms and then kept no record of it. Beta 3.0 was finished on the second of August and held back so that it and the iPhone app could arrive together, so everything in its notes arrives with this.",

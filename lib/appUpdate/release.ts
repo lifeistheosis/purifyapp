@@ -39,14 +39,14 @@ export type ReleaseInfo = {
 };
 
 export const CURRENT_RELEASE: ReleaseInfo = {
-  // Both 0 until Beta 3.1 is actually live on each store, and they move
+  // Both 0 until 1.0 is actually live on each store, and they move
   // independently: Play and the App Store will not promote on the same day, and
   // whichever lands first should start prompting without waiting for the other.
   // Nobody is prompted while a number is 0, which is the correct state for a
   // release that is still held.
   androidVersionCode: 0,
   iosBuildNumber: 0,
-  versionName: "Beta 3.1",
+  versionName: "1.0",
   androidStoreUrl:
     "https://play.google.com/store/apps/details?id=net.purifyapp.purify",
   // The real Adam ID, from the App Store Connect record created 2026-08-06
