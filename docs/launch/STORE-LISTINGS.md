@@ -13,7 +13,20 @@ every claim true of the build we ship (free core, no ads, no tracking).
 
 ## Apple App Store
 
-**App name** (30 max): `Purify: Orthodox Prayer` (23)
+> **2026-08-06, submission-ready pass.** The record now exists in App Store
+> Connect: **"Purify: Orthodox Hub"**, Adam ID `6798897857`, iOS 1.0, Prepare
+> for Submission. `Purify` alone was already taken by another developer, which
+> is why the name carries a suffix; `CFBundleDisplayName` is still `Purify`, so
+> the home screen reads "Purify" either way.
+>
+> **The "no purchases" claim below was corrected.** Purify Plus exists. It is
+> not purchasable in the v1 iOS build because `NEXT_PUBLIC_REVENUECAT_IOS_KEY`
+> is unset, so `billingAvailable()` is false and the paywall renders its
+> "unavailable" state. That makes "no purchases in this build" true, but see
+> the open question at the bottom of this section before submitting.
+
+**App name** (30 max): `Purify: Orthodox Hub` (20). Must match the App Store
+Connect record exactly.
 
 **Subtitle** (30 max): `Bible, saints, prayer book` (26)
 
@@ -39,7 +52,7 @@ every claim true of the build we ship (free core, no ads, no tracking).
 > • Bible search, including multi-passage lookup
 >
 > THE LIBRARY
-> • The lives of more than fifty saints, with their writings to read in full
+> • The lives of more than a hundred saints, with their writings to read in full
 > • The Ecumenical Councils and the councils before Nicaea, in their own words
 > • Theology studies, doctrinal topics, heresies answered, and apologetics
 > • Reading positions remembered, so long works pick up where you left off
@@ -71,7 +84,24 @@ every claim true of the build we ship (free core, no ads, no tracking).
   (purpose: Analytics; anonymized page views, 90-day purge)
 
 **Review notes** (paste, then add the test account credentials):
-> Purify is a free Orthodox Christian prayer and reading app. There are no purchases, no ads, and no tracking. No account is needed; the optional account exists only to synchronize bookmarks across devices. A password-based test account is provided below (the app also supports emailed magic links, but the password path is faster for review). Suggested flow: Today tab, then Bible > John 1 > tap a verse for patristic commentary, then Prayers > The Prayer Rope (haptics), then Discover > Saints. Account deletion is built in at Account > Data > Danger zone. All texts are public-domain translations with sources named in-app. Privacy policy: https://purifyapp.net/privacy. Terms: https://purifyapp.net/terms.
+> Purify is an Orthodox Christian prayer and reading app. The whole library is free and there are no ads. This build contains no in-app purchases: a subscription (Purify Plus) exists on other platforms, and the pricing screen describes it, but it is not purchasable here and the app says so rather than offering a button that cannot complete. No account is needed to read anything; the optional account exists to synchronize bookmarks and highlights across devices, and offers Google and Sign in with Apple alongside email. A password-based test account is provided below (the app also supports emailed magic links, but the password path is faster for review). Suggested flow: Today tab, then Bible > John 1 > tap a verse for patristic commentary, then Prayers > The Prayer Rope (haptics), then Discover > Saints. Account deletion is built in at Account > Data > Danger zone. All texts are public-domain translations with sources named in-app. Privacy policy: https://purifyapp.net/privacy. Terms: https://purifyapp.net/terms.
+
+**Open question to settle BEFORE submitting.** The app ships a `/pricing` screen
+that describes Purify Plus while the build has no in-app purchase to sell,
+because the StoreKit products cannot exist until the Paid Apps agreement leaves
+"Pending User Info" (it is waiting on the W-9). Two honest options:
+
+1. **Submit free-only.** Keep the pricing screen, and say plainly in the review
+   notes that Plus is not sold in this build. Risk: a reviewer reads a described
+   subscription with no purchase path as an incomplete app (2.1), or asks where
+   the IAP is.
+2. **Wait for the W-9**, create the subscription group and the `plus` / `pro`
+   products, set `NEXT_PUBLIC_REVENUECAT_IOS_KEY`, and submit with the purchase
+   working. Slower, and it is the shape Apple expects.
+
+Option 2 is the safer submission. Option 1 gets the app in front of people
+sooner and can be followed by a 3.2 that turns billing on. This is a business
+call, not a technical one, and it is Leona's.
 
 ---
 
