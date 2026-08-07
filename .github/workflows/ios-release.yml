@@ -54,11 +54,20 @@ permissions:
 
 jobs:
   build:
-    # Capacitor 8 requires Xcode 16+, so macos-14 (Xcode 15) cannot build this
-    # at all. The Xcode step below prints what the runner actually has rather
-    # than assuming a path, because that is the single most likely thing to
-    # need adjusting on the first run.
-    runs-on: macos-15
+    # macos-15 builds this fine and Apple will not accept the result. Its Xcode
+    # is 16.4, which carries the iOS 18.5 SDK, and App Store Connect now
+    # rejects at validation:
+    #
+    #   Validation failed (409) SDK version issue. This app was built with the
+    #   iOS 18.5 SDK. All iOS and iPadOS apps must be built with the iOS 26 SDK
+    #   or later, included in Xcode 26 or later.
+    #
+    # That arrives ten minutes in, after a clean archive, export and signature,
+    # so the whole build looks healthy right up to the last step. macos-26 is
+    # generally available and defaults to Xcode 26.6.
+    #
+    # Capacitor 8's own floor is Xcode 16, which is now far below Apple's.
+    runs-on: macos-26
     timeout-minutes: 90
 
     steps:
@@ -118,6 +127,14 @@ jobs:
           echo "Xcode major version: $MAJOR"
           if [ "$MAJOR" -lt 16 ]; then
             echo "::error::Xcode $MAJOR is below Capacitor 8's minimum of 16. Pick a newer runner image or xcode-select a newer Xcode."
+            exit 1
+          fi
+          # Apple's floor, checked here rather than discovered by altool ten
+          # minutes later on an otherwise perfect IPA. Only enforced when the
+          # build is actually going to Apple; a signing-only run on an older
+          # Xcode is still useful for checking the certificate path.
+          if [ "${{ inputs.upload }}" = "true" ] && [ "$MAJOR" -lt 26 ]; then
+            echo "::error::Xcode $MAJOR carries an SDK older than iOS 26, and App Store Connect refuses those uploads outright. Use runs-on: macos-26, or uncheck the upload input to build without delivering."
             exit 1
           fi
 

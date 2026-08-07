@@ -277,6 +277,24 @@ automatic signing and nothing about the repository has to know about CI.
 Do not put `CODE_SIGN_IDENTITY` back into `project.pbxproj`: paired with the
 automatic style still declared there, it is the first failure above.
 
+## The runner has to be macos-26
+
+Apple requires the iOS 26 SDK for anything uploaded to App Store Connect. The
+`macos-15` image tops out at Xcode 16.4, which carries iOS 18.5, and the
+rejection arrives at the very end:
+
+```
+Validation failed (409) SDK version issue. This app was built with the iOS 18.5
+SDK. All iOS and iPadOS apps must be built with the iOS 26 SDK or later,
+included in Xcode 26 or later.
+```
+
+Ten minutes of clean archive, export and signature, refused at the last step.
+The job runs on `macos-26` (Xcode 26.6 by default) and the toolchain step now
+fails in three seconds if the selected Xcode is older than 26 while the upload
+input is checked. Unchecking upload relaxes that, since a signing-only run on an
+older Xcode is still a useful check of the certificate path.
+
 ## Related
 
 - `docs/NATIVE_PUSH_SETUP.md` — APNs keys and the delivery cron. iOS talks to
