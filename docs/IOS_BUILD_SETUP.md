@@ -53,27 +53,52 @@ openssl x509 -inform DER -in distribution.cer -out distribution.pem
 openssl x509 -noout -modulus -in distribution.pem | openssl md5
 openssl rsa  -noout -modulus -in purify_dist.key  | openssl md5
 
-# -legacy is REQUIRED, not a fallback. OpenSSL 3 defaults to AES-256-CBC with
-# PBKDF2, and macOS `security import` cannot read that, so the keychain step in
-# ios-release.yml fails with an unhelpful error. -legacy writes PBE-SHA1-3DES,
-# which it does read.
-openssl pkcs12 -export -legacy -inkey purify_dist.key -in distribution.pem \
+# The default export (AES-256-CBC with PBKDF2) is what macOS 15 wants. Apple's
+# DTS has confirmed macOS 15 was updated to read modern PKCS#12 crypto, where
+# macOS 14 could only read the legacy shape, so -legacy is the flag for OLD
+# runners, not a general requirement. The workflow no longer depends on either
+# answer: it re-wraps the bundle into both shapes on the runner and imports
+# whichever one the Security framework there accepts.
+#
+# Type the password, or paste it from somewhere you can see every character.
+# See the warning below about what a stray control character does here.
+openssl pkcs12 -export -inkey purify_dist.key -in distribution.pem \
   -name "Apple Distribution: Edgar Augustin" \
   -out purify_dist.p12 -passout pass:CHOOSE_A_PASSWORD
 base64 -w0 purify_dist.p12 > purify_dist.p12.b64
 ```
 
-Note that reading a `-legacy` bundle back also needs the flag
+Reading a `-legacy` bundle back also needs the flag
 (`openssl pkcs12 -legacy -in purify_dist.p12 ...`). Without it OpenSSL 3 reports
 `Algorithm (RC2-40-CBC) unsupported`, which looks like a corrupt file and is not.
 
-**Done for Purify on 2026-08-06.** Certificate
+> **The password must contain no whitespace or control characters, and you must
+> be able to see all of it.** The first certificate generated here was exported
+> with a password ending in a carriage return, picked up from a file. Nothing
+> displays that: not the terminal, not the text file it was stored in, not the
+> GitHub secret form. Every human-readable copy of the password was the 32
+> visible characters, and those 32 characters do not open the bundle. Three
+> runs of the workflow failed on it, each reporting only
+> `security: SecKeychainItemImport: The user name or passphrase you entered is
+> not correct`, which was true and gave nothing to act on. `security` says that
+> sentence for a wrong password, a truncated secret, and a cipher it does not
+> implement alike. The workflow now checks the password with `openssl` first,
+> which distinguishes the three, and tolerates the trailing carriage return with
+> a loud warning so a build is never blocked by it again.
+
+**Done for Purify on 2026-08-06, replaced 2026-08-07.** Certificate
 `Apple Distribution: Edgar Augustin (KFBT4D3T4L)`, valid until **2027-08-07**,
-verified to match the private key, with the key readable out of the bundle and a
-wrong password correctly rejected. Artifacts live in `C:\Users\Leona\purify-keys`
-alongside the Android upload keystore. **That folder is the one irreplaceable
-thing here:** without `purify_dist.key` the certificate is useless and you would
-revoke and start over.
+verified to match the private key. The certificate and key never changed; only
+the bundle around them did. `purify_dist_modern.p12` in
+`C:\Users\Leona\purify-keys` is the replacement: same leaf (SHA-256 fingerprint
+`99:C1:D0:20:…:9B:99`), same private key, wrapped as AES-256-CBC/PBKDF2 with a
+SHA-256 MAC, and opened by the 32 visible characters with nothing appended.
+`purify_dist_modern.p12.b64` next to it is what `IOS_DIST_CERT_P12_BASE64`
+should hold. The original `purify_dist.p12` is kept only as the record of what
+went wrong.
+
+That folder is the one irreplaceable thing here: without `purify_dist.key` the
+certificate is useless and you would revoke and start over.
 
 Keep `purify_dist.key` somewhere safe. Losing it means revoking the certificate
 and starting over, and Apple caps distribution certificates per team. The root
@@ -99,8 +124,8 @@ Settings → Secrets and variables → Actions:
 | Secret | Where it comes from |
 |---|---|
 | `APPLE_TEAM_ID` | developer.apple.com → Membership details |
-| `IOS_DIST_CERT_P12_BASE64` | `purify_dist.p12.b64` from step 2 |
-| `IOS_DIST_CERT_PASSWORD` | the password chosen in step 2 |
+| `IOS_DIST_CERT_P12_BASE64` | `purify_dist_modern.p12.b64` from step 2 |
+| `IOS_DIST_CERT_PASSWORD` | the password chosen in step 2, visible characters only |
 | `APPSTORE_API_KEY_ID` | the 10-character Key ID from step 3 |
 | `APPSTORE_API_ISSUER_ID` | the UUID above the key list on that page |
 | `APPSTORE_API_PRIVATE_KEY_BASE64` | base64 of `AuthKey_XXXXXXXXXX.p8` |
@@ -173,7 +198,17 @@ nobody" and is the correct resting state.
 
 ## What the workflow checks for you
 
-Three assertions exist because each failure is invisible until it is expensive:
+Four assertions exist because each failure is invisible until it is expensive:
+
+- **The certificate secrets are diagnosed before they are used.** `openssl`
+  opens the bundle first, so the log says which of "wrong password", "truncated
+  paste", and "cipher this runner will not read" actually happened, instead of
+  `security`'s single sentence for all three. The bundle is then re-wrapped into
+  both the modern and the legacy shape and imported until one is accepted, and
+  the log names the one that worked. Apple's WWDR G3 intermediate is installed
+  in the same step, because the .p12 carries only the leaf and
+  `find-identity -v` lists nothing without the issuer, which reads like a
+  missing certificate rather than a missing chain.
 
 - **`Package.swift` has no backslashes and declares at least 16 packages.** The
   Capacitor CLI writes that file's dependency paths with `path.relative()`,
