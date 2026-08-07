@@ -133,9 +133,19 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
           NEXT_PUBLIC_PLUS_ENFORCED_NATIVE: ${{ secrets.NEXT_PUBLIC_PLUS_ENFORCED_NATIVE }}
-          NEXT_PUBLIC_VAPID_KEY: ${{ secrets.NEXT_PUBLIC_VAPID_KEY }}
-          NEXT_PUBLIC_API_BIBLE_KEY: ${{ secrets.NEXT_PUBLIC_API_BIBLE_KEY }}
           NEXT_PUBLIC_CAMPAIGNS_ENABLED: ${{ secrets.NEXT_PUBLIC_CAMPAIGNS_ENABLED }}
+          NEXT_PUBLIC_EIKON_BOX_ENABLED: ${{ secrets.NEXT_PUBLIC_EIKON_BOX_ENABLED }}
+          # NEXT_PUBLIC_VAPID_KEY and NEXT_PUBLIC_API_BIBLE_KEY are deliberately
+          # NOT here. Both look like they belong and neither reaches anything:
+          #   - VAPID is read only by lib/push/client.ts, the Web Push path.
+          #     lib/push/reminders.ts branches on isNativeClient() and sends the
+          #     native shells to APNs/FCM instead, so that path is unreachable
+          #     in this bundle.
+          #   - API_BIBLE_KEY is read only by app/api/admin/health, and
+          #     scripts/native-build.mjs stashes app/api out of the export.
+          # Both still matter on the website, where they are Render env, not
+          # Actions secrets. Listing them here only lengthens the list of
+          # secrets someone thinks they have to set before iOS can build.
           NEXT_PUBLIC_SHOP_ENABLED: "1"
           NEXT_PUBLIC_COMMUNITY_ENABLED: "1"
           # iOS-specific. The StoreKit key is a DIFFERENT RevenueCat app from
@@ -529,6 +539,27 @@ jobs:
           echo "CFBundleVersion will be $BUILD_NUMBER"
           echo "IOS_BUILD_NUMBER=$BUILD_NUMBER" >> "$GITHUB_ENV"
 
+          # SwiftPM aborts the archive when a binary target's artifact is
+          # already sitting in its shared cache:
+          #
+          #   failed downloading '...FBSDKCoreKit_Basics-Dynamic_XCFramework.zip'
+          #   which is required by binary target 'FBSDKCoreKit_Basics':
+          #   /Users/runner/Library/Caches/org.swift.swiftpm/artifacts/... already
+          #   exists in file system
+          #
+          # Nothing is wrong with the zip or the network. The resolve simply
+          # happens twice against one cache, once under `cap sync ios` above and
+          # once here, and the second pass refuses to overwrite the first's work
+          # instead of reusing it. (The artifact comes from
+          # @capgo/capacitor-social-login, which depends on the Facebook iOS SDK
+          # even though only Google and Apple sign-in are used.)
+          #
+          # Both the clone directory and the artifact cache are pointed at paths
+          # this job owns and cleared first, so the archive resolves once from a
+          # known-empty state. On an ephemeral runner that costs one download.
+          rm -rf "$HOME/Library/Caches/org.swift.swiftpm" \
+                 "$RUNNER_TEMP/spm" "$RUNNER_TEMP/spm-cache"
+
           xcodebuild \
             -project ios/App/App.xcodeproj \
             -scheme App \
@@ -536,6 +567,7 @@ jobs:
             -destination 'generic/platform=iOS' \
             -archivePath "$RUNNER_TEMP/App.xcarchive" \
             -clonedSourcePackagesDirPath "$RUNNER_TEMP/spm" \
+            -packageCachePath "$RUNNER_TEMP/spm-cache" \
             -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" \
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID" \

@@ -72,8 +72,16 @@ jobs:
           NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
           NEXT_PUBLIC_PLUS_ENFORCED_NATIVE: ${{ secrets.NEXT_PUBLIC_PLUS_ENFORCED_NATIVE }}
-          NEXT_PUBLIC_VAPID_KEY: ${{ secrets.NEXT_PUBLIC_VAPID_KEY }}
-          NEXT_PUBLIC_API_BIBLE_KEY: ${{ secrets.NEXT_PUBLIC_API_BIBLE_KEY }}
+          # NEXT_PUBLIC_VAPID_KEY and NEXT_PUBLIC_API_BIBLE_KEY used to be here.
+          # Both look like they belong and neither reaches anything:
+          #   - VAPID is read only by lib/push/client.ts, the Web Push path.
+          #     lib/push/reminders.ts branches on isNativeClient() and sends the
+          #     native shells to APNs/FCM, so that path is unreachable here.
+          #   - API_BIBLE_KEY is read only by app/api/admin/health, and
+          #     scripts/native-build.mjs stashes app/api out of the export.
+          # Both still matter on the website, where they are Render env, not
+          # Actions secrets. Listing them here only lengthened the list of
+          # secrets someone thinks they have to set before a build can run.
           # Public flag, not a secret: lets shopEnabled() gates pass in the
           # bundle so Discover shows the Shop tile (which opens the website
           # in the system browser; the /shop route tree itself stays web-only).
@@ -93,6 +101,12 @@ jobs:
           # the AAB ships Conversations dark forever even after Render is
           # fixed, because NEXT_PUBLIC_* is inlined at build time.
           NEXT_PUBLIC_COMMUNITY_ENABLED: "1"
+          # EIKON Box. Read by lib/eikonBox/flags.ts, and until now passed by no
+          # workflow at all, so setting the Actions secret did nothing to the
+          # bundle and the feature would have stayed dark in every build no
+          # matter what the secrets page said. Same secret-gated shape as
+          # campaigns above: unset keeps it dark, which is the safe default.
+          NEXT_PUBLIC_EIKON_BOX_ENABLED: ${{ secrets.NEXT_PUBLIC_EIKON_BOX_ENABLED }}
 
       # CAP_LOCAL=1 makes capacitor.config.ts use webDir=out (bundled UI) instead
       # of the remote server.url. Empty (remote-wrapper) keeps loading purifyapp.net.
