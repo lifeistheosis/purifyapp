@@ -100,8 +100,12 @@ dogma-scan.json
 *.csr
 *.p12.b64
 distribution.pem
-# App Store Connect API key. Downloadable once; grants release automation.
-AuthKey_*.p8
+# Apple .p8 keys. Downloadable once each, and there is more than one kind:
+# AuthKey_*.p8 is the App Store Connect API key that grants release automation,
+# SubscriptionKey_*.p8 is the In-App Purchase key RevenueCat signs with, and
+# APNs auth keys use no fixed prefix at all. Ignoring the whole extension rather
+# than one prefix, because the prefix rule silently covered only the first kind.
+*.p8
 
 # Generated local-first content package (built at native build time)
 .content-build/
