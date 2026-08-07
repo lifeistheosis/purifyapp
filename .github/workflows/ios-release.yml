@@ -498,6 +498,22 @@ jobs:
           echo "PROFILE_UUID=$UUID" >> "$GITHUB_ENV"
           echo "PROFILE_NAME=$NAME" >> "$GITHUB_ENV"
 
+          # The App target names this profile in project.pbxproj, because
+          # signing settings passed on the xcodebuild command line apply to
+          # EVERY target in the build, and the SwiftPM dependencies reject that:
+          #
+          #   RevenueCat_RevenueCatUI does not support provisioning profiles,
+          #   but provisioning profile Purify App Store (CI) has been manually
+          #   specified.
+          #
+          # So the name lives in two places and they have to agree. Checked here
+          # rather than discovered five minutes into a compile.
+          if ! grep -q "PROVISIONING_PROFILE_SPECIFIER = \"$NAME\";" ios/App/App.xcodeproj/project.pbxproj; then
+            echo "::error::The App target does not name the profile this step just created ($NAME). Update PROVISIONING_PROFILE_SPECIFIER in ios/App/App.xcodeproj/project.pbxproj, or PROFILE_NAME in this workflow, so the two match."
+            exit 1
+          fi
+          echo "The App target names this profile."
+
       - name: Point ExportOptions at the team and the profile
         env:
           TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
@@ -574,9 +590,6 @@ jobs:
             DEVELOPMENT_TEAM="$TEAM_ID" \
             CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
             GOOGLE_REVERSED_CLIENT_ID="$REVERSED_CLIENT_ID" \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
-            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
             archive
 
       # An archive can be signed with the wrong entitlements and still look
