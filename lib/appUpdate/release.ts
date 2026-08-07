@@ -49,10 +49,10 @@ export const CURRENT_RELEASE: ReleaseInfo = {
   versionName: "Beta 3.1",
   androidStoreUrl:
     "https://play.google.com/store/apps/details?id=net.purifyapp.purify",
-  // PLACEHOLDER. Apple does not resolve a listing from the slug; the numeric
-  // Adam ID is required and does not exist until the App Store Connect record
-  // is created. This is unreachable while iosBuildNumber is 0 (checkForUpdate
-  // returns before reading it), and release.test.ts fails the build if the
-  // number is ever raised while the id is still zeros.
-  iosStoreUrl: "https://apps.apple.com/app/id0000000000",
+  // The real Adam ID, from the App Store Connect record created 2026-08-06
+  // ("Purify: Orthodox Hub", bundle net.purifyapp.purify). Apple does not
+  // resolve a listing from the slug, so this numeric id is the only form that
+  // works. Still unreachable until iosBuildNumber rises above 0, because
+  // checkForUpdate returns before reading it.
+  iosStoreUrl: "https://apps.apple.com/app/id6798897857",
 };
