@@ -190,3 +190,42 @@ export async function uploadAvatar(
     return { ok: false, error: NETWORK_ERROR };
   }
 }
+
+/**
+ * Block the author of a post or reply.
+ *
+ * Identified by the item, never by a user id: the feed deliberately does not
+ * carry `user_id`, and the route resolves the author server-side. See
+ * app/api/community/block/route.ts.
+ */
+export async function blockCommunityAuthor(input: {
+  postId?: string;
+  replyId?: string;
+}): Promise<CommunityResult> {
+  try {
+    const res = await apiFetch("/api/community/block", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(input),
+    });
+    return readResult(res);
+  } catch {
+    return { ok: false, error: NETWORK_ERROR };
+  }
+}
+
+/** Lift a block, by the block row's own id (from GET /api/community/block). */
+export async function unblockCommunityAuthor(
+  id: string,
+): Promise<CommunityResult> {
+  try {
+    const res = await apiFetch("/api/community/block", {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    return readResult(res);
+  } catch {
+    return { ok: false, error: NETWORK_ERROR };
+  }
+}

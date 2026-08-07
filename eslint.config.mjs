@@ -134,6 +134,13 @@ const eslintConfig = defineConfig([
     // `npx cap sync` drops into the native shells) — not source.
     "android/app/src/main/assets/**",
     "ios/App/App/public/**",
+    // Installed Claude skills. Third-party bundles that happen to contain
+    // .js and .ts, none of it this project's code and none of it shipped.
+    // Left unignored they contributed 1,813 of the repo's 1,813 lint errors,
+    // which turns `npm run lint` into noise nobody reads. The lint step was
+    // already red for two weeks once because a real failure was invisible
+    // in exactly this way.
+    ".claude/**",
   ]),
 ]);
 

@@ -12,6 +12,7 @@ import {
   createCommunityPost,
   deleteCommunityPost,
   fetchMyCommunityIds,
+  blockCommunityAuthor,
   reportCommunityItem,
   fetchCommunityPosts,
   type PostsResult,
@@ -520,6 +521,7 @@ function PostCard({
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [reported, setReported] = useState(false);
+  const [blocked, setBlocked] = useState(false);
   const mine = myPostIds.has(post.id);
 
   async function report() {
@@ -527,6 +529,16 @@ function PostCard({
     // server-side makes a second tap a no-op.
     setReported(true);
     await reportCommunityItem({ postId: post.id });
+  }
+
+  async function block() {
+    // Optimistic like report, but this one changes what the reader sees, so
+    // the feed is refetched: the block filters server-side and every other
+    // post by that author should disappear in the same beat.
+    setBlocked(true);
+    const res = await blockCommunityAuthor({ postId: post.id });
+    if (res.ok) onChanged();
+    else setBlocked(false);
   }
 
   async function toggleReplies() {
@@ -579,17 +591,31 @@ function PostCard({
             {t("community.delete")}
           </button>
         ) : me ? (
-          // Reporting requires an account: an anonymous report cannot be
-          // weighed and cannot be rate-limited meaningfully.
-          <button
-            type="button"
-            onClick={() => void report()}
-            disabled={reported}
-            aria-label="Report this post"
-            className="ml-auto shrink-0 rounded-pill border border-paper/12 px-3 py-1 font-sans text-eyebrow font-semibold text-paper/40 hover:border-rose-400/40 hover:text-rose-300 disabled:opacity-60 disabled:hover:border-paper/12 disabled:hover:text-paper/40"
-          >
-            {reported ? "Reported" : "Report"}
-          </button>
+          // Both require an account: an anonymous report cannot be weighed or
+          // rate-limited, and a block has to belong to somebody to be applied.
+          <div className="ml-auto flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={() => void report()}
+              disabled={reported}
+              aria-label="Report this post"
+              className="rounded-pill border border-paper/12 px-3 py-1 font-sans text-eyebrow font-semibold text-paper/40 hover:border-rose-400/40 hover:text-rose-300 disabled:opacity-60 disabled:hover:border-paper/12 disabled:hover:text-paper/40"
+            >
+              {reported ? "Reported" : "Report"}
+            </button>
+            {/* Reporting asks someone else to act; blocking takes effect for
+                this reader straight away. App Review guideline 1.2 asks for
+                both, and Conversations shipped with only the first. */}
+            <button
+              type="button"
+              onClick={() => void block()}
+              disabled={blocked}
+              aria-label={`Block ${post.author_name}`}
+              className="rounded-pill border border-paper/12 px-3 py-1 font-sans text-eyebrow font-semibold text-paper/40 hover:border-rose-400/40 hover:text-rose-300 disabled:opacity-60 disabled:hover:border-paper/12 disabled:hover:text-paper/40"
+            >
+              {blocked ? "Blocked" : "Block"}
+            </button>
+          </div>
         ) : null}
       </div>
 

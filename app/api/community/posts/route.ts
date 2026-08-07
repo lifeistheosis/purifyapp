@@ -21,16 +21,35 @@ import {
 const POST_COLS =
   "id, kind, title, body, quote_text, quote_source, quote_href, author_name, author_avatar, reply_count, created_at";
 
-/** Latest visible community posts (public read). */
+/**
+ * Latest visible community posts.
+ *
+ * Public for a signed-out reader. For a signed-in one the authors they have
+ * blocked are removed, which is the half of guideline 1.2 that makes the
+ * block button mean anything: reporting asks someone else to act, blocking
+ * has to take effect immediately and for that reader alone.
+ *
+ * Blocking is applied here rather than in the client because the feed does
+ * not carry `user_id` (see POST_COLS above) and should not start carrying it
+ * just to let the client filter. The exclusion is resolved server-side and
+ * the uuids never leave this handler.
+ */
 export async function GET(req: Request) {
   if (!communityEnabled()) {
     return withCors(NextResponse.json({ error: "Not found." }, { status: 404 }), req);
   }
   const admin = createAdminClient();
-  const { data, error } = await admin
+
+  const blocked = await blockedAuthorIds(req, admin);
+
+  let query = admin
     .from("community_posts")
     .select(POST_COLS)
-    .eq("status", "visible")
+    .eq("status", "visible");
+  if (blocked.length > 0) {
+    query = query.not("user_id", "in", `(${blocked.join(",")})`);
+  }
+  const { data, error } = await query
     .order("created_at", { ascending: false })
     .limit(50);
   if (error) {
@@ -40,10 +59,52 @@ export async function GET(req: Request) {
   return withCors(
     NextResponse.json(
       { posts: data ?? [] },
-      { headers: { "Cache-Control": "public, max-age=15" } },
+      {
+        headers: {
+          // A filtered feed is one reader's feed. Serving it from a shared
+          // cache would hand somebody else's blocklist-shaped view to the
+          // next caller, so personalised responses are never cacheable.
+          "Cache-Control":
+            blocked.length > 0
+              ? "private, no-store"
+              : "public, max-age=15",
+        },
+      },
     ),
     req,
   );
+}
+
+/**
+ * The auth uuids this caller has blocked, or [] when signed out.
+ *
+ * Never throws and never fails the feed: if the lookup breaks, the reader
+ * sees an unfiltered feed rather than an error page. That is the softer of
+ * the two failures, and it is logged.
+ */
+async function blockedAuthorIds(
+  req: Request,
+  admin: ReturnType<typeof createAdminClient>,
+): Promise<string[]> {
+  try {
+    const supa = await createClientFromRequest(req);
+    const {
+      data: { user },
+    } = await supa.auth.getUser();
+    if (!user) return [];
+    const { data, error } = await admin
+      .from("community_blocks")
+      .select("blocked_id")
+      .eq("blocker_id", user.id)
+      .limit(500);
+    if (error) {
+      console.warn("[community] block lookup failed", error.message);
+      return [];
+    }
+    return (data ?? []).map((r) => r.blocked_id as string);
+  } catch {
+    return [];
+  }
 }
 
 /** Create a post. Signed-in only; author identity snapshotted server-side. */
