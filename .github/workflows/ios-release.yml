@@ -719,6 +719,13 @@ jobs:
       # Also published as a release asset, mirroring the Android job, so the
       # exact artifact that went to Apple can be re-downloaded and inspected.
       - name: Publish to the ios-release release
+        # Runs even when the upload failed, as long as an IPA was actually
+        # built. Runs #9 and #10 both produced a correctly signed IPA and then
+        # lost it, because altool rejected the upload and this step never ran:
+        # forty minutes of runner time discarded over a problem that had nothing
+        # to do with the artifact. An IPA that exists is worth keeping whether
+        # or not Apple accepted it that minute.
+        if: ${{ !cancelled() && env.IPA_PATH != '' }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ios-release
