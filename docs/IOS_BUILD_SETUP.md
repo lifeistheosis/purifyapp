@@ -47,13 +47,33 @@ Distribution**, download the resulting `distribution.cer`, then:
 
 ```bash
 openssl x509 -inform DER -in distribution.cer -out distribution.pem
-openssl pkcs12 -export -inkey purify_dist.key -in distribution.pem \
+
+# Confirm Apple issued this certificate against THIS key before going further.
+# The two MD5s must match; if they do not, the .cer belongs to a different CSR.
+openssl x509 -noout -modulus -in distribution.pem | openssl md5
+openssl rsa  -noout -modulus -in purify_dist.key  | openssl md5
+
+# -legacy is REQUIRED, not a fallback. OpenSSL 3 defaults to AES-256-CBC with
+# PBKDF2, and macOS `security import` cannot read that, so the keychain step in
+# ios-release.yml fails with an unhelpful error. -legacy writes PBE-SHA1-3DES,
+# which it does read.
+openssl pkcs12 -export -legacy -inkey purify_dist.key -in distribution.pem \
+  -name "Apple Distribution: Edgar Augustin" \
   -out purify_dist.p12 -passout pass:CHOOSE_A_PASSWORD
 base64 -w0 purify_dist.p12 > purify_dist.p12.b64
 ```
 
-If macOS `security import` later rejects the `.p12`, re-export it with `-legacy`
-(OpenSSL 3 defaults to an algorithm the macOS keychain does not read).
+Note that reading a `-legacy` bundle back also needs the flag
+(`openssl pkcs12 -legacy -in purify_dist.p12 ...`). Without it OpenSSL 3 reports
+`Algorithm (RC2-40-CBC) unsupported`, which looks like a corrupt file and is not.
+
+**Done for Purify on 2026-08-06.** Certificate
+`Apple Distribution: Edgar Augustin (KFBT4D3T4L)`, valid until **2027-08-07**,
+verified to match the private key, with the key readable out of the bundle and a
+wrong password correctly rejected. Artifacts live in `C:\Users\Leona\purify-keys`
+alongside the Android upload keystore. **That folder is the one irreplaceable
+thing here:** without `purify_dist.key` the certificate is useless and you would
+revoke and start over.
 
 Keep `purify_dist.key` somewhere safe. Losing it means revoking the certificate
 and starting over, and Apple caps distribution certificates per team. The root
