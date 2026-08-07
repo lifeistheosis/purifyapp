@@ -451,7 +451,44 @@ jobs:
           mkdir -p ~/.appstoreconnect/private_keys
           cp "$RUNNER_TEMP/AuthKey.p8" ~/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8
 
-      - name: Fill in the team on ExportOptions
+      # Archiving with AUTOMATIC signing asks Apple for an iOS App *Development*
+      # profile. Development profiles require at least one registered device,
+      # this team has none, and nobody here installs by cable, so the archive
+      # died with "Your team has no devices from which to generate a
+      # provisioning profile" and "No profiles for 'net.purifyapp.purify' were
+      # found". Neither sentence mentions the actual constraint.
+      #
+      # An App Store profile carries no device list, so it sidesteps that. It is
+      # minted here from the API key two steps up rather than pasted in as
+      # another secret, which also means it is reissued on every run and cannot
+      # drift behind the App ID's capabilities. See scripts/ios-provisioning-profile.py.
+      - name: Create the App Store provisioning profile
+        env:
+          ASC_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+          ASC_KEY_PATH: ${{ runner.temp }}/AuthKey.p8
+          BUNDLE_ID: net.purifyapp.purify
+          PROFILE_NAME: Purify App Store (CI)
+          OUT_PATH: ${{ runner.temp }}/purify.mobileprovision
+        run: |
+          set -euo pipefail
+          OUTPUT="$(python3 scripts/ios-provisioning-profile.py)"
+          printf '%s\n' "$OUTPUT"
+          UUID="$(printf '%s\n' "$OUTPUT" | sed -n 's/^UUID=//p')"
+          NAME="$(printf '%s\n' "$OUTPUT" | sed -n 's/^NAME=//p')"
+          if [ -z "$UUID" ] || [ -z "$NAME" ]; then
+            echo "::error::The profile step returned no UUID or name."
+            exit 1
+          fi
+          # Xcode looks for installed profiles by UUID filename, in this
+          # directory only.
+          DEST="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$DEST"
+          cp "$RUNNER_TEMP/purify.mobileprovision" "$DEST/$UUID.mobileprovision"
+          echo "PROFILE_UUID=$UUID" >> "$GITHUB_ENV"
+          echo "PROFILE_NAME=$NAME" >> "$GITHUB_ENV"
+
+      - name: Point ExportOptions at the team and the profile
         env:
           TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
@@ -461,6 +498,13 @@ jobs:
             exit 1
           fi
           sed -i '' "s/__APPLE_TEAM_ID__/$TEAM_ID/" ios/ExportOptions.plist
+          # The archive is signed manually against the profile above, so the
+          # export has to be told the same thing. Leaving it automatic makes
+          # -exportArchive go back to Apple for a profile of its own choosing,
+          # which is the behaviour this whole step exists to stop.
+          /usr/libexec/PlistBuddy -c "Set :signingStyle manual" ios/ExportOptions.plist
+          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles dict" ios/ExportOptions.plist
+          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:net.purifyapp.purify string $PROFILE_NAME" ios/ExportOptions.plist
           plutil -p ios/ExportOptions.plist
 
       - name: Archive
@@ -492,13 +536,15 @@ jobs:
             -destination 'generic/platform=iOS' \
             -archivePath "$RUNNER_TEMP/App.xcarchive" \
             -clonedSourcePackagesDirPath "$RUNNER_TEMP/spm" \
-            -allowProvisioningUpdates \
             -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" \
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             DEVELOPMENT_TEAM="$TEAM_ID" \
             CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
             GOOGLE_REVERSED_CLIENT_ID="$REVERSED_CLIENT_ID" \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
             archive
 
       # An archive can be signed with the wrong entitlements and still look
@@ -518,9 +564,11 @@ jobs:
             echo "::error::Sign in with Apple entitlement is missing. Guideline 4.8 requires it while Google sign-in is offered, and the button would fail at runtime."
             exit 1
           fi
-          # aps-environment is "development" in the checked-in entitlements;
-          # -exportArchive rewrites it to "production" for an App Store build.
-          # This step runs BEFORE the export, so development is expected here.
+          # Only presence is asserted here, not the value. The checked-in
+          # entitlements say "development"; an archive signed against the App
+          # Store profile carries "production" already. Either is fine at this
+          # point, and the exported IPA is checked strictly below, which is the
+          # artifact that actually reaches anyone.
           grep -q 'aps-environment' "$RUNNER_TEMP/ents.txt" || {
             echo "::error::No aps-environment entitlement; push cannot work."
             exit 1
