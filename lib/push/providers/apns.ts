@@ -13,9 +13,33 @@ import "server-only";
 
 export type SendResult = { ok: true } | { ok: false; gone: boolean };
 
+/**
+ * The signing key, or null when APNS_KEY_P8 is absent or is not really the
+ * base64 of a .p8 file.
+ *
+ * Same trap as FCM_SERVICE_ACCOUNT_JSON, which took the push-deliver cron down
+ * in production on 2026-08-07: `Buffer.from(x, "base64")` never throws, it just
+ * drops characters it does not recognise, so a wrong value decodes to garbage
+ * and the failure surfaces later and somewhere else. Checking for the PEM
+ * header here means a bad key dry-runs, like a missing one, instead of failing
+ * mid-send once real devices are registered.
+ */
+function readSigningKey(): string | null {
+  const raw = process.env.APNS_KEY_P8;
+  if (!raw) return null;
+  const decoded = Buffer.from(raw, "base64").toString("utf8");
+  if (!decoded.includes("BEGIN PRIVATE KEY")) {
+    console.error(
+      "[push/apns] APNS_KEY_P8 is set but does not decode to a PEM private key, so iOS push is dry-running. It must be base64 of the .p8 file's contents.",
+    );
+    return null;
+  }
+  return decoded;
+}
+
 export function apnsConfigured(): boolean {
   return Boolean(
-    process.env.APNS_KEY_P8 &&
+    readSigningKey() &&
       process.env.APNS_KEY_ID &&
       process.env.APNS_TEAM_ID &&
       process.env.APNS_BUNDLE_ID,
@@ -32,10 +56,8 @@ async function getClient(): Promise<ApnsClientLike> {
   if (!clientPromise) {
     clientPromise = (async () => {
       const { ApnsClient, Host } = await import("apns2");
-      const signingKey = Buffer.from(
-        process.env.APNS_KEY_P8 as string,
-        "base64",
-      ).toString("utf8");
+      // Non-null because every caller reaches this through apnsConfigured().
+      const signingKey = readSigningKey() as string;
       return new ApnsClient({
         team: process.env.APNS_TEAM_ID as string,
         keyId: process.env.APNS_KEY_ID as string,
