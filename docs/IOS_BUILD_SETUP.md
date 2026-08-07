@@ -277,6 +277,54 @@ automatic signing and nothing about the repository has to know about CI.
 Do not put `CODE_SIGN_IDENTITY` back into `project.pbxproj`: paired with the
 automatic style still declared there, it is the first failure above.
 
+## RevenueCat on iOS, and the two .p8 files that are not the same file
+
+Checked 2026-08-07: the RevenueCat project (`Purify: Orthodox Hub`, `2ed00c93`)
+has **no App Store app**. Its only store app is Android, alongside a Web Billing
+app and a Test Store. So `NEXT_PUBLIC_REVENUECAT_IOS_KEY` is not a secret
+somebody forgot to paste; the key has never existed.
+
+Creating the app cannot be finished without an **In-App Purchase key**, which
+RevenueCat validates as mandatory even though the form's Save button enables
+without it:
+
+```
+The following fields have errors: In-App Purchase Key ID and In-App Purchase Issuer ID
+```
+
+**That key is not the one in `C:\Users\Leona\purify-keys`.** Two different Apple
+keys, both `.p8`, both from Users and Access → Integrations, different tabs:
+
+| | Tab | File name | Used by |
+|---|---|---|---|
+| App Store Connect API key | **App Store Connect API** | `AuthKey_XXXXXXXXXX.p8` | this workflow, for provisioning and upload |
+| In-App Purchase key | **In-App Purchase** | `SubscriptionKey_XXXXXXXXXX.p8` | RevenueCat, for StoreKit 2 transactions |
+
+Uploading the App Store Connect API key where the In-App Purchase key belongs
+fails, and RevenueCat's own hint (the `SubscriptionKey_` filename format) is the
+only thing on screen that says so.
+
+Order of operations:
+
+1. App Store Connect → Users and Access → Integrations → **In-App Purchase** →
+   generate a key. **The `.p8` downloads once.** Note its Key ID; the Issuer ID
+   is the same team issuer already recorded in `asc_issuer_id.txt`.
+2. RevenueCat → Apps → **+ Add app → App Store**. Bundle ID
+   `net.purifyapp.purify`. Upload the `.p8`, paste Key ID and Issuer ID, save.
+3. Copy the generated `appl_…` public key into the GitHub Actions secret
+   `NEXT_PUBLIC_REVENUECAT_IOS_KEY`.
+4. Create the subscription products. App Store Connect currently has **zero
+   subscription groups and zero in-app purchases**, so there is nothing for
+   RevenueCat to sell yet. Once they exist, import them into the Product Catalog
+   and attach them to the offerings the app already reads: the **current**
+   offering is Plus, and Pro is looked up as `pro` / `purify_pro` /
+   `default_pro`. Entitlement identifiers are `plus` and `pro`.
+
+Steps 1 to 3 are safe to do before step 4. `PlusPaywall` sets its phase from
+`plus.monthly || plus.yearly || pro.monthly || pro.yearly`, so a build with the
+key but no products renders the same "unavailable" state as a build with no key
+at all. Nobody is shown a purchase button that cannot work.
+
 ## The runner has to be macos-26
 
 Apple requires the iOS 26 SDK for anything uploaded to App Store Connect. The
