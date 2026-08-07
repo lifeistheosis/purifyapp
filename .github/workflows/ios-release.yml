@@ -92,11 +92,30 @@ jobs:
           set -euo pipefail
           echo "Xcodes available on this runner:"
           ls -d /Applications/Xcode*.app || true
-          xcodebuild -version
-          swift --version
+
+          # NEVER pipe xcodebuild or swift straight into head. `head` closes the
+          # pipe after the first line, the tool keeps writing, and because these
+          # are Objective-C tools an EPIPE surfaces as an UNCAUGHT
+          # NSFileHandleOperationException ("Broken pipe") that aborts the
+          # process with a nonzero status instead of exiting quietly. Under
+          # `set -o pipefail` that kills the step, and it is a RACE: the first
+          # run of this workflow survived it and the second did not, which makes
+          # it look like a flaky runner rather than a bug in this file.
+          #
+          # Capture the whole output first, then parse the string. `head` then
+          # reads from a here-string with no live writer to signal.
+          XCODEBUILD_VERSION="$(xcodebuild -version)"
+          echo "$XCODEBUILD_VERSION"
+          swift --version || true
+
           # Capacitor 8 needs 16+. Fail loudly here rather than 40 minutes
           # later inside a Swift compile with a confusing error.
-          MAJOR="$(xcodebuild -version | head -1 | sed -E 's/Xcode ([0-9]+).*/\1/')"
+          MAJOR="$(printf '%s\n' "$XCODEBUILD_VERSION" | sed -n '1s/Xcode \([0-9][0-9]*\).*/\1/p')"
+          if [ -z "$MAJOR" ]; then
+            echo "::error::Could not parse an Xcode version from: $XCODEBUILD_VERSION"
+            exit 1
+          fi
+          echo "Xcode major version: $MAJOR"
           if [ "$MAJOR" -lt 16 ]; then
             echo "::error::Xcode $MAJOR is below Capacitor 8's minimum of 16. Pick a newer runner image or xcode-select a newer Xcode."
             exit 1
