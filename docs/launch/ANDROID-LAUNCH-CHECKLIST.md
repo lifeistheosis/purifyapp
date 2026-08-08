@@ -113,7 +113,7 @@ Enforcement is **native-only**.
 | `NEXT_PUBLIC_REVENUECAT_ANDROID_KEY` on Render | ⬜ | L |
 | `npx cap sync android` + green AAB **with the plugin linked** | ⚠️ | C/T |
 | Device test: buy monthly/yearly → webhook → Florilegium + sync unlock; restore; cancel-to-period-end; expiry-to-free; billing-unavailable fallback | ⬜ | T |
-| **Launch switch:** set `NEXT_PUBLIC_PLUS_ENFORCED_NATIVE=true` **then rebuild AAB** (inlined at build time — not a runtime flip). Web stays open. | ⬜ | L (last step) |
+| **Launch switch:** set `NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=true` **then rebuild AAB** (inlined at build time, not a runtime flip). Web and iOS stay open. Do NOT use the legacy `NEXT_PUBLIC_PLUS_ENFORCED_NATIVE` secret: it is still honoured for Android, but it used to be passed to `ios-release.yml` too, which would have enforced Plus in an iOS build where nobody can buy it. | ⬜ | L (last step) |
 
 ## 4. Play Console store listing + Data safety (from `PLAY_STORE_LISTING.md`)
 

@@ -12,8 +12,7 @@
 
 import { useEffect, useState } from "react";
 import { plusEnforcedFor } from "@/lib/entitlements/entitlements";
-import { getClientEntitlements } from "@/lib/entitlements/client";
-import { isNativeClient } from "@/lib/platform/native";
+import { getClientEntitlements, clientSurface } from "@/lib/entitlements/client";
 
 export type ProReadingModesGate = {
   /** May premium themes be applied right now? */
@@ -24,10 +23,10 @@ export type ProReadingModesGate = {
 };
 
 export function useProReadingModes(): ProReadingModesGate {
-  // Enforcement flags are compile-time constants and isNativeClient is
-  // stable for the page lifetime, so this branch never changes after mount.
-  // SSR renders with isNative=false, which maps to the (off) web flag.
-  const enforced = plusEnforcedFor(isNativeClient());
+  // Enforcement flags are compile-time constants and the surface is stable
+  // for the page lifetime, so this branch never changes after mount. SSR
+  // renders as "web", which maps to the (off) web flag.
+  const enforced = plusEnforcedFor(clientSurface());
   const [gate, setGate] = useState<ProReadingModesGate>(() =>
     enforced ? { allowed: false, locked: false } : { allowed: true, locked: false },
   );

@@ -58,7 +58,14 @@ export async function getEntitlements(): Promise<Entitlements> {
     if (isDeveloperEmail(user?.email)) return DEV_PLUS_ENTITLEMENTS;
   }
 
-  const enforced = plusEnforcedFor(await isNativeRequest());
+  // The server cannot tell the two store builds apart: both shells send the
+  // same "PurifyNative" UA token, deliberately (lib/platform/native.ts). It
+  // therefore asks as "native-unknown", which enforces only when both stores
+  // are launched. The native app resolves its own entitlements on the client
+  // anyway (lib/entitlements/client.ts), where Capacitor names the platform.
+  const enforced = plusEnforcedFor(
+    (await isNativeRequest()) ? "native-unknown" : "web",
+  );
   if (!enforced) return OPEN_ENTITLEMENTS;
 
   const supabase = await createClient();

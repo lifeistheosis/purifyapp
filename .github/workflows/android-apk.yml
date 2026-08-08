@@ -71,6 +71,11 @@ jobs:
           NEXT_PUBLIC_REVENUECAT_ANDROID_KEY: ${{ secrets.NEXT_PUBLIC_REVENUECAT_ANDROID_KEY }}
           NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          # Android's own launch switch. The legacy shared
+          # NEXT_PUBLIC_PLUS_ENFORCED_NATIVE secret is still honoured by
+          # lib/entitlements/entitlements.ts and still means Android, which is
+          # what every launch checklist meant by it. Prefer the explicit name.
+          NEXT_PUBLIC_PLUS_ENFORCED_ANDROID: ${{ secrets.NEXT_PUBLIC_PLUS_ENFORCED_ANDROID }}
           NEXT_PUBLIC_PLUS_ENFORCED_NATIVE: ${{ secrets.NEXT_PUBLIC_PLUS_ENFORCED_NATIVE }}
           # NEXT_PUBLIC_VAPID_KEY and NEXT_PUBLIC_API_BIBLE_KEY used to be here.
           # Both look like they belong and neither reaches anything:
