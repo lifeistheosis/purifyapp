@@ -18,7 +18,8 @@ const SOURCE_LABEL: Record<string, string> = {
   apple: "App Store",
   stripe: "Web billing",
   comp: "Complimentary",
-  unknown: "—",
+  gift: "Gift",
+  unknown: "Not recorded",
 };
 
 function fmtDate(iso: string): string {

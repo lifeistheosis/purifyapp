@@ -18,13 +18,15 @@ export function LicensedWorkCover({
   title,
   author,
 }: {
-  src: string;
+  /** null when there is no rights-cleared image to show, which is the case
+   * for every Amazon cover while no associate tag is configured. */
+  src: string | null;
   title: string;
   author: string;
 }) {
   const [failed, setFailed] = useState(false);
 
-  if (failed) {
+  if (failed || !src) {
     return (
       <div className="h-full w-full flex flex-col items-center justify-center gap-2 px-4 py-5 text-center bg-gradient-to-b from-night to-[#0f0c12]">
         <span
