@@ -5,6 +5,7 @@ import { getExpenseLines, getMonthlyGoalUsd } from "@/lib/support/expenses";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { isNativeRequest } from "@/lib/platform/nativeRequest";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { T } from "@/components/i18n/T";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 
@@ -46,7 +47,13 @@ function ago(iso: string): string {
 }
 
 export default async function SupportPage() {
- const native = await isNativeRequest();
+ // IS_STATIC_EXPORT is the load-bearing half. isNativeRequest() returns false
+ // during a native export on purpose (no request to read a UA from), so on its
+ // own it renders the WEB branch into the bundle and ships Cash App, PayPal and
+ // Buy Me a Coffee inside the binary. That is the 3.1.1 exposure this page's
+ // own header comment says it prevents. Checking the build target instead of
+ // the request is what actually keeps them out.
+ const native = IS_STATIC_EXPORT || (await isNativeRequest());
  const locale = await getServerLocale();
  const isDe = locale === "de";
  const m = getMessages(locale);

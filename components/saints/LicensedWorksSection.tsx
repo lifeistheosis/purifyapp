@@ -1,6 +1,10 @@
 import Link from "next/link";
 import type { LicensedWork } from "@/lib/saints/licensedWorks";
-import { buildAmazonUrl, getAmazonCoverUrl } from "@/lib/affiliate/amazon";
+import {
+  buildAmazonUrl,
+  getAmazonCoverUrl,
+  HAS_AMAZON_TAG,
+} from "@/lib/affiliate/amazon";
 import { LicensedWorkCover } from "./LicensedWorkCover";
 import { T } from "@/components/i18n/T";
 
@@ -23,8 +27,17 @@ export function LicensedWorksSection({ works }: { works: LicensedWork[] }) {
         <h2 className="font-sans text-title md:text-display-sm font-bold text-paper tracking-[-0.02em]">
           <T k="saints.booksInPrint" />
         </h2>
+        {/* The earnings sentence is an affirmative claim, so it renders only
+            where it is true: a build with an associate tag, which is the
+            website and never a store binary. */}
         <p className="mt-4 max-w-[720px] font-serif italic text-ui text-paper/55 leading-relaxed">
           <T k="saints.affiliateDisclosure" />
+          {HAS_AMAZON_TAG ? (
+            <>
+              {" "}
+              <T k="saints.affiliateEarnings" />
+            </>
+          ) : null}
         </p>
       </div>
 
