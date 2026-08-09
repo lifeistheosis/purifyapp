@@ -104,7 +104,10 @@ export function BibleSearch({
   const showDropdown = open && q.trim().length > 0;
 
   return (
-    <div ref={containerRef} className={`relative ${className ?? ""}`}>
+    // `z-20` matches SaintSearch: this wrapper is a stacking context for the
+    // length of the entrance animation, and the dropdown must clear whatever
+    // block follows it on the page.
+    <div ref={containerRef} className={`relative z-20 ${className ?? ""}`}>
       <div className="relative">
         <Search
           aria-hidden
@@ -126,7 +129,7 @@ export function BibleSearch({
       </div>
 
       {showDropdown && (
-        <div className="absolute z-50 mt-2 left-0 right-0 rounded-md border border-paper/15 bg-night shadow-lg overflow-hidden">
+        <div className="absolute z-50 mt-2 left-0 right-0 rounded-md border border-paper/15 bg-night shadow-lg max-h-[min(60vh,26rem)] overflow-y-auto overscroll-contain scrollbar-thin">
           {isMulti ? (
             // Multi-mode: a single deliberate row that previews the
             // florilegium and routes to the multi-result page on Enter
