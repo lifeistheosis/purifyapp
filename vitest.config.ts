@@ -10,6 +10,20 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["lib/**/__tests__/**/*.test.ts"],
+    // Nineteen of these suites are data-integrity checks that walk and parse
+    // the content corpus synchronously. interlinearData alone reads over 1,300
+    // files. Vitest's 5000ms default does not fit that on a loaded machine, and
+    // on Windows several failed in roughly two runs out of three: always pure
+    // timeouts, never a real offender.
+    //
+    // That is worse than slow. A suite that is red for no reason trains you to
+    // ignore red, so a genuine regression gets waved through as "the flaky
+    // one", and ci.yml runs on main, so it can fail a deploy for nothing.
+    //
+    // 30s is chosen to be generous for the corpus while still failing a
+    // genuinely hung test in reasonable time. Raise it if the corpus outgrows
+    // it; do not solve a timeout by checking less.
+    testTimeout: 30_000,
   },
   resolve: {
     alias: {

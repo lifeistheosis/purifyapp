@@ -23,7 +23,7 @@
 // "block the book" a single indivisible action, so a future regeneration
 // cannot quietly unblock a book whose data is still wrong.
 
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -66,17 +66,6 @@ function englishVerseCount(slug: string, chapter: number): number | null {
   };
   return j.verses.length;
 }
-
-// Every assertion here walks and JSON-parses the whole interlinear corpus,
-// which is over 1,300 files, synchronously. That does not fit vitest's default
-// 5000ms on a loaded machine: on Windows these failed in roughly two runs out
-// of three, most often "every original-language file declares the book its
-// directory names", which reads all of data/bible/original. The failures were
-// pure timeouts, never a real offender, and they made a red suite meaningless
-// and would fail CI spuriously on a repo where CI gates main.
-//
-// The corpus only grows, so raise the ceiling rather than trimming coverage.
-vi.setConfig({ testTimeout: 60_000 });
 
 describe("interlinear data integrity", () => {
   it("every english-tagged file declares the book its directory names", () => {
