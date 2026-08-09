@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { Lampada } from "@/components/ui/icons/Lampada";
+import { SearchTrigger } from "@/components/search/SearchTrigger";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -40,18 +41,26 @@ export function MobileTopBar({
   const { t } = useTranslate();
   const resolvedTitle = titleKey ? t(titleKey) : title;
 
-  const trailingContent =
-    trailing ??
-    (donate ? (
-      <Link
-        href="/support"
-        aria-label={t("nav.supportPurify")}
-        title={t("nav.supportPurify")}
-        className="h-10 w-10 inline-flex items-center justify-center rounded-pill text-gold/80 hover:text-gold transition-colors"
-      >
-        <Lampada size={20} />
-      </Link>
-    ) : null);
+  // Search sits in every mobile bar, beside whatever else the page asked for.
+  // It is not part of the `trailing` fallback chain on purpose: a page that
+  // passes its own trailing action (a translation switcher, say) must not
+  // thereby lose the only way a phone has to open the palette.
+  const trailingContent = (
+    <div className="flex items-center gap-0.5">
+      <SearchTrigger />
+      {trailing ??
+        (donate ? (
+          <Link
+            href="/support"
+            aria-label={t("nav.supportPurify")}
+            title={t("nav.supportPurify")}
+            className="h-10 w-10 inline-flex items-center justify-center rounded-pill text-gold/80 hover:text-gold transition-colors"
+          >
+            <Lampada size={20} />
+          </Link>
+        ) : null)}
+    </div>
+  );
 
   return (
     <div

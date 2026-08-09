@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { MobilePremiumButton } from "@/components/nav/MobilePremiumButton";
+import { SearchTrigger } from "@/components/search/SearchTrigger";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -23,6 +24,9 @@ export function MobileTopTabs({ avatar }: { avatar: React.ReactNode }) {
     <header className="sticky top-0 z-30 bg-night border-b border-paper/8">
       <div className="flex items-center justify-end gap-3 px-5 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-2">
         <MobilePremiumButton />
+        {/* Today has no MobileTopBar, so without this the front door is the
+            one screen a phone reader cannot open the search from. */}
+        <SearchTrigger className="text-paper/80 hover:bg-paper/[0.06]" />
         <Link
           href="/whats-new"
           aria-label={t("nav.whatsNew")}
