@@ -167,6 +167,17 @@ export type CommentaryNote = {
   work: string;
   citation: string;
   text: string;
+  /**
+   * An optional editorial digest: one or two sentences, third person, in
+   * Purify's voice, saying what the Father is arguing here. Never a paraphrase
+   * presented as his words, which docs/editorial-standards.md forbids
+   * absolutely; a summary ABOUT the text, which the same document permits.
+   *
+   * Optional on purpose. Most notes will not have one for a long time, and a
+   * note without a digest renders exactly as it does today rather than showing
+   * an empty label.
+   */
+  digest?: string;
 };
 export type ChapterCommentary = Record<string, CommentaryNote[]>;
 

@@ -3,6 +3,12 @@
 import { useState } from "react";
 import type { ChapterCommentary } from "@/lib/bible/load";
 import { SaintIcon } from "./SaintIcon";
+import { GlossedText } from "./GlossedText";
+import {
+  paragraphsOf,
+  previewParagraphs,
+  readingMinutes,
+} from "@/lib/bible/readability";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /** A single collapsible commentary card.
@@ -15,13 +21,23 @@ function CommentaryCard({
  subtitle,
  iconAuthor,
  text,
+ digest,
 }: {
  title: string;
  subtitle?: string;
  iconAuthor?: string;
  text: string;
+ digest?: string;
 }) {
+ const { t } = useTranslate();
  const [open, setOpen] = useState(false);
+ const [full, setFull] = useState(false);
+
+ const paragraphs = paragraphsOf(text);
+ const minutes = readingMinutes(text);
+ const { shown, hidden } = previewParagraphs(paragraphs);
+ const paras = full ? paragraphs : shown;
+
  return (
  <div className="rounded-md border border-paper/10 bg-paper/[0.03] overflow-hidden">
  <button
@@ -41,6 +57,11 @@ function CommentaryCard({
  </p>
  )}
  </div>
+ {/* Length before the tap, not after. Someone deciding whether to open a
+     40 minute homily on a phone deserves to know it is one. */}
+ <span className="shrink-0 font-sans text-eyebrow tabular-nums text-paper/40">
+ {t("bible.minRead", { minutes })}
+ </span>
  <span
  aria-hidden
  className={
@@ -53,21 +74,38 @@ function CommentaryCard({
  </button>
  {open && (
  <div className="px-3 pb-3 pt-2 border-t border-paper/8 space-y-2.5">
- {text.split(/\n\n+/).map((para, i) => (
- <p
- key={i}
- className="font-serif text-detail leading-[1.55] text-paper/80"
- >
- {para}
+ {/* Editorial digest, when one has been written. A summary ABOUT the
+     passage, never a paraphrase wearing the Father's quotation marks.
+     Absent on most notes, and absent renders nothing at all. */}
+ {digest && (
+ <p className="font-sans text-caption leading-[1.6] text-paper/60 border-l-2 border-gold/30 pl-3">
+ {digest}
  </p>
+ )}
+ {paras.map((para, i) => (
+ <GlossedText
+ key={i}
+ text={para}
+ className="font-serif text-detail leading-[1.55] text-paper/80"
+ />
  ))}
+ {hidden > 0 && (
+ <button
+ type="button"
+ onClick={() => setFull((v) => !v)}
+ aria-expanded={full}
+ className="w-full rounded-md border border-paper/12 px-3 py-1.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/60 hover:border-paper/25 hover:text-paper/85 transition-colors"
+ >
+ {full ? t("bible.showLess") : t("bible.continueReading")}
+ </button>
+ )}
  </div>
  )}
  </div>
  );
 }
 
-type Note = { author: string; work: string; text: string };
+type Note = { author: string; work: string; text: string; digest?: string };
 
 /** Group a verse's notes by author, preserving first-appearance order.
  * Keeps each distinct commentary intact, only the author header is shared. */
@@ -105,7 +143,7 @@ function FatherGroup({ author, items }: { author: string; items: Note[] }) {
  </div>
  <div className="pl-2 ml-2 border-l border-paper/10 space-y-2">
  {items.map((it, i) => (
- <CommentaryCard key={i} title={it.work} text={it.text} />
+ <CommentaryCard key={i} title={it.work} text={it.text} digest={it.digest} />
  ))}
  </div>
  </div>
@@ -167,6 +205,7 @@ function VerseSection({
  title={g.author}
  subtitle={g.items[0].work}
  text={g.items[0].text}
+ digest={g.items[0].digest}
  />
  ) : (
  <FatherGroup key={i} author={g.author} items={g.items} />

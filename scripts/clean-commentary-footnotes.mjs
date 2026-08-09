@@ -134,6 +134,29 @@ const apparatusLike = (seg) =>
   strongMarker(seg) || isTranslit(seg) || isCruft(seg);
 const strongEvidence = (seg) => strongMarker(seg) || isTranslit(seg);
 
+// A CCEL EXPORT ARTIFACT, not apparatus. The scraped page ends with a numbered
+// "References" list of file:/// URLs pointing into the local CCEL cache. This
+// is not text of any kind and cannot occur in patristic prose, so unlike
+// everything above it can be identified positively and cut whole.
+//
+// It reached production. data/bible/commentary/john/21.json v19 carried 3,371
+// of these entries and psalms/150.json v5 carried 19,141 words of them, 76% of
+// that note, rendered to readers as St Augustine's commentary.
+//
+// The predicate is not "contains a link". A segment must PROVE itself: strip
+// every numbered file:/// entry and what remains must be negligible. Measured
+// on both known cases, the residue is exactly zero characters.
+function isLinkIndex(seg) {
+  const s = seg.trim();
+  if (!s.includes("file:///")) return false;
+  const LINK = /\d+\.\s*file:\/{3}\S+/g;
+  if ((s.match(LINK) || []).length < 3) return false;
+  return s.replace(LINK, "").trim().length <= 40;
+}
+
+/** The bare heading the scraper emits directly above that list. */
+const isReferencesHeading = (seg) => /^references[.:]?$/i.test(seg.trim());
+
 function cleanText(text) {
   const segs = text.split(/\n\n+/);
   if (segs.length < 2) return null;
@@ -156,6 +179,19 @@ function cleanText(text) {
   if (block.some((idx) => strongEvidence(segs[idx]))) {
     for (const idx of block) drop.add(idx);
   }
+
+  // (3) The trailing CCEL link index, plus the bare "References" heading that
+  //     introduces it. This is the one positional rule in the file, which every
+  //     other rule here deliberately refuses to be. It is safe only because the
+  //     segment proves itself by content: remove the numbered file:/// entries
+  //     and nothing is left. The scan still stops at the first segment that
+  //     does not prove itself, so real text is never crossed.
+  let k = segs.length - 1;
+  while (k > 0 && isLinkIndex(segs[k])) {
+    drop.add(k);
+    k--;
+  }
+  if (k > 0 && k < segs.length - 1 && isReferencesHeading(segs[k])) drop.add(k);
 
   if (drop.size === 0) return null;
 
