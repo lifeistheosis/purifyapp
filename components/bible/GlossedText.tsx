@@ -61,7 +61,10 @@ export function GlossedText({
         )}
       </p>
       {openEntry && (
-        <p className="mt-1 mb-1 rounded-md border-l-2 border-gold/40 bg-paper/[0.04] px-3 py-2 font-sans text-caption leading-[1.6] text-paper/70">
+        // A quiet panel, using the app's panel idiom (full hairline border,
+        // faint fill) rather than a coloured left edge. A thick accent tab on
+        // one side of a tinted card is a house style Purify does not have.
+        <p className="mt-1 mb-1 rounded-md border border-paper/12 bg-paper/[0.03] px-3 py-2 font-sans text-caption leading-[1.6] text-paper/70">
           <span className="font-semibold text-paper/85">{openEntry.word}</span>
           {": "}
           {openEntry.gloss}

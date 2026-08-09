@@ -77,8 +77,11 @@ function CommentaryCard({
  {/* Editorial digest, when one has been written. A summary ABOUT the
      passage, never a paraphrase wearing the Father's quotation marks.
      Absent on most notes, and absent renders nothing at all. */}
+ {/* Neutral hairline rule, the idiom this app already uses for an aside
+     beside quoted text (components/saints/WritingReader.tsx,
+     components/saints/MiraclesSection.tsx). Not a coloured accent tab. */}
  {digest && (
- <p className="font-sans text-caption leading-[1.6] text-paper/60 border-l-2 border-gold/30 pl-3">
+ <p className="border-l-2 border-paper/15 pl-4 font-sans text-caption leading-[1.6] text-paper/60">
  {digest}
  </p>
  )}
