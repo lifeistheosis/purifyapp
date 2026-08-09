@@ -496,7 +496,7 @@ function daysFromPascha(date: Date): number {
 export function readingsOn(date: Date): ReadingRef[] {
  // Movable cycle: a window of ±90 days around Pascha so the Paschal
  // calendar reaches the Sunday of All Saints (+56) on one side and the
- // pre-Triodion Sunday of Zacchaeus (−70) on the other without bleeding
+ // pre-Triodion Sunday of Zacchaeus (−77) on the other without bleeding
  // into the next/prior year's cycle.
  const offset = daysFromPascha(date);
  if (offset >= -90 && offset <= 90) {
