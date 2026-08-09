@@ -78,7 +78,7 @@ export function HomeSectionScroller() {
         type="button"
         onClick={onTap}
         aria-label={atEnd ? "Back to top" : "Next section"}
-        className="pointer-events-auto flex items-center justify-center h-11 w-11 rounded-full border border-paper/20 bg-night/85 backdrop-blur text-paper/70 shadow-lg transition-colors duration-200 hover:text-paper hover:border-gold/50 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2 motion-safe:animate-[scroller-nudge_2.4s_ease-in-out_infinite]"
+        className="pointer-events-auto flex items-center justify-center h-11 w-11 rounded-full border border-paper/20 bg-night/85 backdrop-blur text-paper/70 shadow-lg transition-colors duration-200 hover:text-paper hover:border-gold/50 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
       >
         <svg
           width={20}

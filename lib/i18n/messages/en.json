@@ -1911,5 +1911,6 @@
   "update.body": "There is a newer version in the Play Store. Installing it keeps your Purify current with the calendar, the saints, and the fixes that have landed since your build, and it is the only way the app receives them.",
   "update.versions": "You have {installed}. The current version is {latest}.",
   "update.cta": "Open the Play Store",
-  "update.later": "Later"
+  "update.later": "Later",
+  "pwa.install.modal.ios": "On iPhone, tap the Share button in Safari's toolbar, then choose Add to Home Screen. Purify opens full screen with its own icon."
 }

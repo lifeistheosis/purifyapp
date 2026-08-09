@@ -377,7 +377,7 @@ export default async function Home() {
  : "Begin where you stand, at a prayer, at the saint of the day, at a verse of the Gospel."}
  </p>
  <div className="mt-10">
- <DesktopInstallCTA variant="inverse" className="text-body">
+ <DesktopInstallCTA variant="inverse" className="text-body" offerInstall={false}>
  {isDe ? "Purify öffnen" : "Open Purify"}
  </DesktopInstallCTA>
  </div>
