@@ -1915,5 +1915,6 @@
   "search.open": "Search",
   "search.ariaLabel": "Search Purify",
   "search.placeholder": "Search saints, prayers, Scripture, councils…",
-  "search.nothingFound": "Nothing found for “{query}”."
+  "search.nothingFound": "Nothing found for “{query}”.",
+  "today.sayingEyebrow": "From the Desert Fathers"
 }
