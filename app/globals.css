@@ -558,7 +558,12 @@ div[data-hl="true"] {
 .licensed-scripture .mt2 {
  font-family: var(--font-serif);
  text-align: center;
- color: #fff;
+ /* The token, not #fff. --color-paper flips to dark ink under
+    html[data-reading-mode="parchment"], so this heading follows the palette
+    instead of staying white and vanishing on the light ground. The .lic-notes
+    block below re-inks by hand because it predates the token; this does not
+    need to. */
+ color: var(--color-paper);
  margin: 0 0 0.6em;
 }
 .licensed-scripture .mt,

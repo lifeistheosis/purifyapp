@@ -582,7 +582,9 @@ export function VerseRow({
  // matched words. No per-word glow: it stacked halos across a
  // wrapped run and bled vertically onto the next line.
  backgroundColor: "rgba(183,176,163,0.45)",
- color: "#fff",
+ // The token, not #fff: --color-paper flips to dark ink in light
+ // mode, where white on this warm grey pill is unreadable.
+ color: "var(--color-paper)",
  }
  : me
  ? { backgroundColor: "var(--hl-word)" }
@@ -729,7 +731,9 @@ export function VerseRow({
  className={cn(
  "font-[inherit] inline border-b border-dotted transition-colors duration-150 cursor-pointer text-left rounded-[3px]",
  gMatched
- ? "border-transparent text-white px-[1px]"
+ // text-paper, not text-white: the token follows the palette, so the
+ // matched word stays legible on the light ground too.
+ ? "border-transparent text-paper px-[1px]"
  : "border-paper/25 hover:border-paper/70 hover:text-paper",
  )}
  style={

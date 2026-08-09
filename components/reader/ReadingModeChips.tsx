@@ -25,28 +25,29 @@ export function ReadingModeChips() {
   const { t } = useTranslate();
   const router = useRouter();
   const { theme, setTheme } = useReaderPrefs();
-  const { allowed, locked } = useProReadingModes();
+  const { allows, locked } = useProReadingModes();
 
   return (
     <div>
+      {/* The Pro badge moved off the group heading and onto the chips that are
+          actually Pro. It sat here while light mode was gated with the rest,
+          which told a reader looking for a readable page that reading was a
+          paid feature. It is not. See FREE_THEMES in lib/reader/readingModes. */}
       <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55 mb-2">
         {t("ui.readingMode")}
-        {locked && (
-          <span className="ml-2 inline-flex items-center rounded-pill border border-gold/45 bg-gold/12 px-1.5 py-px font-sans text-[10px] font-semibold tracking-[0.6px] text-gold-pale normal-case">
-            Purify Pro
-          </span>
-        )}
       </p>
       <div className="grid grid-cols-2 gap-1.5">
         {READING_THEMES.map((t) => {
           const sw = THEME_SWATCHES[t.id];
-          const active = theme === t.id && allowed;
+          const themeAllowed = allows(t.id);
+          const active = theme === t.id && themeAllowed;
+          const showPro = locked && !themeAllowed;
           return (
             <button
               key={t.id}
               type="button"
               onClick={() => {
-                if (allowed) setTheme(t.id);
+                if (themeAllowed) setTheme(t.id);
                 // Router push, never `window.location.href`. The Android
                 // export is trailingSlash:true, so the bundled file is
                 // /pricing/index.html; a raw assignment to the bare string
@@ -56,7 +57,7 @@ export function ReadingModeChips() {
                 // the bible/multi note in scripts/native-build.mjs.
                 else if (locked) router.push("/pricing");
               }}
-              title={t.blurb}
+              title={showPro ? `${t.blurb}. Purify Pro.` : t.blurb}
               aria-pressed={active}
               className={cn(
                 "inline-flex items-center gap-2 rounded-md border px-2.5 py-2 font-sans text-caption font-medium transition-colors",
@@ -76,6 +77,14 @@ export function ReadingModeChips() {
                 />
               </span>
               {t.label}
+              {showPro && (
+                // "Purify Pro" rather than "Pro": the brand name is what the
+                // i18n ratchet allows as a literal (eslint.config.mjs, brand
+                // names never translate), and it is clearer besides.
+                <span className="ml-auto shrink-0 font-sans text-[10px] font-semibold tracking-[0.6px] text-gold-pale/80">
+                  Purify Pro
+                </span>
+              )}
             </button>
           );
         })}

@@ -39,7 +39,7 @@ export function AppThemeController() {
   // cannot consult entitlements (they are async, and it must run before
   // paint), so it optimistically applies a stored palette and this corrects
   // it a frame later if the reader is not entitled.
-  const { allowed } = useProReadingModes();
+  const { allows } = useProReadingModes();
 
   const apply = useCallback(() => {
     const el = document.documentElement;
@@ -49,10 +49,13 @@ export function AppThemeController() {
     } catch {
       /* storage blocked: keep the default palette */
     }
-    const theme = allowed ? coerceReadingTheme(raw) : "default";
+    // Per palette, not one boolean for all four. Light mode is free, so an
+    // unentitled reader keeps it here; only the Pro palettes fall back.
+    const stored = coerceReadingTheme(raw);
+    const theme = allows(stored) ? stored : "default";
     if (theme === "default") el.removeAttribute("data-reading-mode");
     else el.setAttribute("data-reading-mode", theme);
-  }, [allowed]);
+  }, [allows]);
 
   useEffect(() => {
     // The pre-paint script in app/layout.tsx has normally already set the
