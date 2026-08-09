@@ -98,7 +98,7 @@ export default async function SellerEarningsPage() {
                       <Td align="right">{m.orderCount}</Td>
                       <Td align="right">{formatPrice(m.grossCents)}</Td>
                       <Td align="right">
-                        {m.refundedCents > 0 ? `−${formatPrice(m.refundedCents)}` : "—"}
+                        {m.refundedCents > 0 ? `−${formatPrice(m.refundedCents)}` : "None"}
                       </Td>
                       <Td align="right" strong>
                         {formatPrice(m.netCents)}
