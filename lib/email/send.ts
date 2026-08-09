@@ -7,10 +7,10 @@ import "server-only";
  *
  * Env:
  *   RESEND_API_KEY  - server-only Resend key (re_...). Absent = email off.
- *   EMAIL_FROM      - From header, e.g. "Purify Shop <support@purifyapp.net>".
+ *   EMAIL_FROM      - From header, e.g. "Purify Shop <lifeistheosis@gmail.com>".
  *                     Falls back to Resend's shared test sender until a domain
  *                     is verified.
- *   EMAIL_REPLY_TO  - optional Reply-To (defaults to support@purifyapp.net).
+ *   EMAIL_REPLY_TO  - optional Reply-To (defaults to lifeistheosis@gmail.com).
  */
 
 export function emailEnabled(): boolean {
@@ -32,7 +32,7 @@ export async function sendEmail(opts: {
   }
   const from = process.env.EMAIL_FROM || "Purify Shop <onboarding@resend.dev>";
   const replyTo =
-    opts.replyTo || process.env.EMAIL_REPLY_TO || "support@purifyapp.net";
+    opts.replyTo || process.env.EMAIL_REPLY_TO || "lifeistheosis@gmail.com";
   try {
     const { Resend } = await import("resend");
     const resend = new Resend(key);

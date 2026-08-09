@@ -81,7 +81,7 @@ export default async function SellerOverviewPage() {
           <p className="mt-1.5 font-serif text-body text-paper/70 leading-[1.6]">
             Buyers can&rsquo;t see your storefront or listings while it&rsquo;s
             in &ldquo;{ctx.store.status}&rdquo;. Finish your listings, then
-            write to support@purifyapp.net to schedule the review that flips it
+            write to lifeistheosis@gmail.com to schedule the review that flips it
             live.
           </p>
         </div>

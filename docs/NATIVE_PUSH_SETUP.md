@@ -7,7 +7,7 @@
 | `CRON_SECRET` | you (random string) | Render env **and** GitHub repo secret, identical | yes |
 | `VAPID_PUBLIC_KEY` | `npx web-push generate-vapid-keys` | Render env | no |
 | `VAPID_PRIVATE_KEY` | same command, same run | Render env | **yes** |
-| `VAPID_SUBJECT` | you | Render env, `mailto:support@purifyapp.net` | no |
+| `VAPID_SUBJECT` | you | Render env, `mailto:lifeistheosis@gmail.com` | no |
 | `NEXT_PUBLIC_VAPID_KEY` | copy of `VAPID_PUBLIC_KEY` | Render env (inlined at build) | no |
 | `google-services.json` | Firebase console | `android/app/` in the repo | no (but gitignore it) |
 | `FCM_SERVICE_ACCOUNT_JSON` | Firebase console, base64'd | Render env | **yes** |
@@ -63,7 +63,7 @@ Render:
 
 - `VAPID_PUBLIC_KEY` = the public key
 - `VAPID_PRIVATE_KEY` = the private key
-- `VAPID_SUBJECT` = `mailto:support@purifyapp.net`
+- `VAPID_SUBJECT` = `mailto:lifeistheosis@gmail.com`
 - `NEXT_PUBLIC_VAPID_KEY` = the **same public key again**
 
 The duplication is deliberate: the server signs with the private key, and the

@@ -75,7 +75,7 @@ export default async function SellerLayout({
           Your seller account is currently{" "}
           {ctx.seller.status === "suspended" ? "suspended" : "closed"}. Existing
           orders remain visible to buyers; nothing new can be listed or sold.
-          Write to support@purifyapp.net if you believe this is a mistake.
+          Write to lifeistheosis@gmail.com if you believe this is a mistake.
         </p>
       </GatePanel>
     );
