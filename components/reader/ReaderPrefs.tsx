@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { useRouter } from "next/navigation";
 import { cn } from "@/lib/cn";
 import {
   READING_THEMES,
@@ -175,7 +174,7 @@ type Ctx = {
   cycleFont: () => void;
   cycleLeading: () => void;
   toggleFocus: () => void;
-  cycleTheme: () => void;
+  cycleTheme: (allows?: (t: ReadingTheme) => boolean) => void;
   sizeLabel: string;
   fontLabel: string;
   leadingLabel: string;
@@ -229,10 +228,20 @@ export function useReaderPrefs(): Ctx {
     (t: ReadingTheme) => write(READING_THEME_KEY, t),
     [],
   );
-  const cycleTheme = useCallback(() => {
-    const ids = READING_THEMES.map((t) => t.id);
+  /**
+   * Step to the next palette. Pass `allows` from useProReadingModes to skip
+   * the ones this reader is not entitled to, so an unentitled tap lands on a
+   * palette that actually applies instead of one the theme controller will
+   * silently undo a frame later.
+   */
+  const cycleTheme = useCallback((allows?: (t: ReadingTheme) => boolean) => {
+    const ids = READING_THEMES.map((t) => t.id).filter(
+      (id) => !allows || allows(id),
+    );
+    if (ids.length === 0) return;
     const cur = readPrefs().theme;
-    write(READING_THEME_KEY, ids[(ids.indexOf(cur) + 1) % ids.length]);
+    const at = ids.indexOf(cur);
+    write(READING_THEME_KEY, ids[(at + 1) % ids.length]);
   }, []);
 
   return {
@@ -532,36 +541,26 @@ export const ReaderFocusController = ReadingModeController;
 
 /**
  * Compact cycle pill for toolbars that use the pill row (the saints
- * writings reader). Cycles Standard → Candlelight → Monastery → Parchment.
- * When the Pro gate is locked it routes to /pricing instead of applying.
+ * writings reader). Cycles Dark → Light for every reader, and on through
+ * Candlelight and Monastery for a Pro one.
  */
 export function ReaderThemeButton() {
   const { t } = useTranslate();
-  const router = useRouter();
   const { theme, cycleTheme, themeLabel } = useReaderPrefs();
-  const { allowed, locked } = useProReadingModes();
+  const { allows } = useProReadingModes();
+  // Every reader has at least Dark and Light, so this button always has
+  // somewhere to go and never needs to send anyone to /pricing. The Pro
+  // upsell lives on the chips in the settings menu, where the palettes a
+  // reader cannot reach are actually shown.
   return (
     <button
       type="button"
-      onClick={() => {
-        if (allowed) cycleTheme();
-        // Router push, not `window.location.href`: see the note in
-        // ReadingModeChips. A raw string nav breaks in the Android shell.
-        else if (locked) router.push("/pricing");
-      }}
-      title={
-        allowed
-          ? `Reading mode: ${themeLabel}. Click to change.`
-          : "Reading modes are part of Purify Pro"
-      }
-      aria-label={
-        allowed
-          ? `Reading mode: ${themeLabel}. Click to change.`
-          : "Reading modes are part of Purify Pro"
-      }
+      onClick={() => cycleTheme(allows)}
+      title={`Reading mode: ${themeLabel}. Click to change.`}
+      aria-label={`Reading mode: ${themeLabel}. Click to change.`}
       className={cn(
         "inline-flex items-center gap-2 rounded-pill border px-3 py-2 font-sans text-detail font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-paper/25",
-        theme !== "default" && allowed
+        theme !== "default" && allows(theme)
           ? "border-gold/55 bg-gold/15 text-paper"
           : "border-paper/15 bg-paper/[0.04] text-paper hover:border-paper/30 hover:bg-paper/10",
       )}
@@ -570,9 +569,7 @@ export function ReaderThemeButton() {
       <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/50">
         {t("ui.mode")}
       </span>
-      <span className="font-sans text-caption text-paper/70">
-        {allowed ? themeLabel : "Pro"}
-      </span>
+      <span className="font-sans text-caption text-paper/70">{themeLabel}</span>
     </button>
   );
 }

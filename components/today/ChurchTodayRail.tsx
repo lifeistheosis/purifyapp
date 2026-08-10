@@ -8,6 +8,8 @@ import { TodaySaintCard } from "./TodaySaintCard";
 import { FastTodayCard } from "./FastTodayCard";
 import { TodayReadingsCard } from "./TodayReadingsCard";
 import { PaschaCountdownCard } from "./PaschaCountdownCard";
+import { TodaySayingCard } from "./TodaySayingCard";
+import { sayingForDay } from "@/lib/today/saying";
 
 /**
  * "The Church today": the day's saint, fast, readings, and the count to
@@ -46,7 +48,11 @@ export function ChurchTodayRail() {
     );
   }
 
-  const { headline, headlineSaint, fast, readings, pascha } = day;
+  const { today, headline, headlineSaint, fast, readings, pascha } = day;
+
+  // Only when the saint of the day has no profile to open. On a day that does
+  // resolve, the reader already has somewhere to go and the rail stays short.
+  const saying = headlineSaint ? null : sayingForDay(today);
 
   return (
     <TimelineRail>
@@ -76,6 +82,9 @@ export function ChurchTodayRail() {
             </p>
           </div>
         ),
+        ...(saying
+          ? [<TodaySayingCard key="saying" saying={saying} />]
+          : []),
         <FastTodayCard key="fast" fast={fast} />,
         <TodayReadingsCard key="readings" readings={readings} />,
         <PaschaCountdownCard

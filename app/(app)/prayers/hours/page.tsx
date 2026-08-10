@@ -3,10 +3,9 @@ import { T } from "@/components/i18n/T";
 import {
   PrayerPage,
   PrayerMasthead,
-  PrayerIndex,
-  PrayerIndexRow,
   PrayerNote,
 } from "@/components/prayers/PrayerBook";
+import { HoursIndex } from "@/components/prayers/HoursIndex";
 
 export const metadata = {
   title: "The Hours",
@@ -27,17 +26,10 @@ export default function HoursPage() {
           </p>
         }
       />
-      <PrayerIndex>
-        {hours.map((h) => (
-          <PrayerIndexRow
-            key={h.slug}
-            href={`/prayers/hours/${h.slug}`}
-            title={h.title}
-            description={h.subtitle}
-            meta={`${h.approxHour}:00`}
-          />
-        ))}
-      </PrayerIndex>
+      {/* Client child on purpose: it reads the clock after mount. This page
+          ships into the static export, so a server-rendered "now" would bake
+          the build hour into the APK. */}
+      <HoursIndex hours={hours} />
       <PrayerNote>
         <T k="prayers.hoursIndex.note" />
       </PrayerNote>

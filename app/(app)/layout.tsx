@@ -7,7 +7,6 @@ import { MobileTabBar } from "@/components/nav/MobileTabBar";
 import { ScrollToTop } from "@/components/nav/ScrollToTop";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { AmbienceController } from "@/components/ambience/AmbienceController";
-import { CommandPaletteMount } from "@/components/search/CommandPaletteMount";
 import { WebOnly, NativeOnly } from "@/components/platform/PlatformGate";
 import { ContentProvider } from "@/components/content/ContentProvider";
 
@@ -72,7 +71,6 @@ export default function AppGroupLayout({
         </NativeOnly>
       </div>
       <ScrollToTop />
-      <CommandPaletteMount />
       <AmbienceController />
       <InstallPrompt />
     </ContentProvider>

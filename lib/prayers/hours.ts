@@ -1,6 +1,13 @@
 // Hours registry + helper that returns the canonical "now" hour by
-// local clock. Used by the /prayers landing page to highlight which
-// Hour the day is closest to.
+// local clock.
+//
+// The header used to say this was "used by the /prayers landing page to
+// highlight which Hour the day is closest to". No page did. currentHourSlug
+// had zero callers from the day it was written until 2026-08-09, so the index
+// showed five identical rows and left the reader to compare a flat clock time
+// against their own watch. The caller is components/prayers/HoursIndex.tsx,
+// which reads the clock after mount because this page ships into the static
+// export.
 
 import type { Rule } from "@/components/prayers/PrayerRuleReader";
 import first from "@/data/prayers/hours/first-hour.json";

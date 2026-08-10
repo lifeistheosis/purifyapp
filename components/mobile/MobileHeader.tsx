@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { MobilePremiumButton } from "@/components/nav/MobilePremiumButton";
+import { SearchTrigger } from "@/components/search/SearchTrigger";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -47,6 +48,11 @@ export function MobileHeader({
           follow it. */}
       <div className="flex shrink-0 items-center gap-3">
         <MobilePremiumButton />
+        {/* This header owns the h1 for Bible, Discover, Prayers, Reading and
+            You, which is most of the browse surface and exactly where a
+            reader goes looking for something by name. MobileTopBar carries
+            the same trigger on the four reader routes. */}
+        <SearchTrigger className="h-9 w-9 text-paper/70" />
         {donate && (
           <Link
             href="/support"
