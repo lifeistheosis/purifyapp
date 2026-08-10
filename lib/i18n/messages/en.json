@@ -1912,5 +1912,7 @@
   "update.versions": "You have {installed}. The current version is {latest}.",
   "update.cta": "Open the Play Store",
   "update.later": "Later",
-  "pwa.install.modal.ios": "On iPhone, tap the Share button in Safari's toolbar, then choose Add to Home Screen. Purify opens full screen with its own icon."
+  "pwa.install.modal.ios": "On iPhone, tap the Share button in Safari's toolbar, then choose Add to Home Screen. Purify opens full screen with its own icon.",
+  "bible.minRead": "{minutes} min",
+  "bible.showLess": "Show less"
 }
