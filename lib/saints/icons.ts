@@ -115,10 +115,19 @@ export const AUTHOR_ICONS: Record<string, string> = {
   "St. Nicholas": "/saints/icons/nicholas-the-wonderworker.jpg",
 
   // Other Fathers cited in commentary cards but not in the registry yet.
-  "St. Cyprian of Carthage": "/saints/icons/cyprian-of-carthage.jpg",
-  "St. Cyprian": "/saints/icons/cyprian-of-carthage.jpg",
   "St. Gregory of Nyssa": "/saints/icons/gregory-of-nyssa.jpg",
-  "St. Jerome": "/saints/icons/jerome.jpg",
+  // Cyprian of Carthage and Jerome were mapped here to
+  // /saints/icons/cyprian-of-carthage.jpg and /saints/icons/jerome.jpg, and
+  // neither file has ever existed. components/bible/SaintIcon.tsx has three
+  // failure paths, so both silently rendered the initials chip, which is
+  // exactly what they render now with no mapping at all. The lines are removed
+  // rather than left dangling because lib/saints/iconRights.ts now asserts that
+  // every referenced path resolves, and a pointer to nothing is the kind of
+  // quiet wrongness that assertion exists to catch.
+  //
+  // Cyprian is a target of the icon batch: he is the headline of the August
+  // menologion with four shipped works and no icon anywhere. Restore both
+  // mappings in the same commit that adds the files.
 };
 
 export function authorIcon(author: string): string | null {
