@@ -182,7 +182,7 @@ export function InstallPrompt() {
       className="md:hidden fixed inset-x-3 z-[55]"
       style={{
         bottom:
-          "calc(var(--tab-bar-h) + env(safe-area-inset-bottom, 0px) + 12px)",
+          "calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)",
       }}
     >
       <div className="rounded-2xl border border-gold/45 bg-night/95 backdrop-blur shadow-[0_12px_36px_rgba(0,0,0,0.55)] p-4 flex items-center gap-3">

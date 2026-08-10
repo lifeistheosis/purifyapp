@@ -101,7 +101,10 @@ export function SellerOrderActions({
           "mt-4 flex items-center gap-4",
           // Sticky bottom bar on mobile, inline on desktop.
           "max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:z-30 max-md:mt-0",
-          "max-md:border-t max-md:border-white/10 max-md:bg-night/95 max-md:px-5 max-md:py-3 max-md:backdrop-blur safe-pb",
+          // No safe-pb here: scripts/native-build.mjs stashes the seller tree
+          // out of the native export, so this bar only ever renders on the
+          // web and needs the home-indicator inset directly.
+          "max-md:border-t max-md:border-white/10 max-md:bg-night/95 max-md:px-5 max-md:pt-3 max-md:pb-[max(0.75rem,env(safe-area-inset-bottom))] max-md:backdrop-blur",
         )}
       >
         {primary ? (

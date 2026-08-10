@@ -81,7 +81,7 @@ export function MobileWorkPill({
         className="md:hidden fixed inset-x-0 z-40 flex justify-center pointer-events-none"
         style={{
           bottom:
-            "calc(var(--tab-bar-h) + env(safe-area-inset-bottom, 0px) + 12px)",
+            "calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)",
         }}
       >
         <div className="pointer-events-auto inline-flex items-center gap-1 rounded-pill bg-night/95 backdrop-blur border border-white/15 shadow-raise pl-1 pr-1 py-1 max-w-[92vw]">
