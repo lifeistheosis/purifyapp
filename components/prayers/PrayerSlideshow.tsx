@@ -13,31 +13,12 @@ import { useEffect, useState } from "react";
 
 import { useReducedMotion } from "@/lib/ui/motion";
 import { cn } from "@/lib/cn";
-
-type Frame = { src: string; alt: string };
-
-// Alt text is checked against the image itself, not against the filename.
-// These four were misaligned by one position until 2026-07-25: frame 0 was
-// described as the cave prostration (it is the Agony, inscribed Ἡ ΑΓΩΝΙΑ)
-// and frame 2 as the Agony (it is the Prodigal Son).
-const FRAMES: Frame[] = [
-  {
-    src: "/saints/icons/praying2.jpg",
-    alt: "The Agony in the Garden, Christ kneeling at the rock in Gethsemane.",
-  },
-  {
-    src: "/saints/icons/praying.jpg",
-    alt: "An Orthodox monk in prostration before the icon of Christ in his cave.",
-  },
-  {
-    src: "/saints/icons/praying3.jpg",
-    alt: "The father running to receive the Prodigal Son, with the fatted calf and the music of the feast.",
-  },
-  {
-    src: "/saints/icons/icon4.jpg",
-    alt: "The father embracing the Prodigal Son, the swine and the far country behind him.",
-  },
-];
+// The frames moved to a plain data module so the icon rights test can read
+// them. A node-environment test cannot import a "use client" component, and
+// these four files sit in public/saints/icons/ belonging to no saint, so the
+// registry's completeness check has to be able to account for them. The alt
+// text and the note about the 2026-07-25 misalignment live there now.
+import { SLIDESHOW_FRAMES as FRAMES } from "@/lib/prayers/slideshowFrames";
 
 const FRAME_MS = 6000; // dwell time per frame
 const FADE_MS = 1100; // crossfade duration (kept in sync with the className)

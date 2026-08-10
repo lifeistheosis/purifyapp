@@ -3039,7 +3039,7 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "photius-the-great",
- iconUrl: "/saints/icons/photius the great.jpg",
+ iconUrl: "/saints/icons/photius-the-great.jpg",
  byname: "The Great",
  name: "St. Photius the Great",
  epithet: "Patriarch of Constantinople · Pillar of Orthodoxy · Defender of the Procession of the Spirit",
@@ -3090,7 +3090,7 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "cyril-and-methodius",
- iconUrl: "/saints/icons/cyril-&-methodius.jpg",
+ iconUrl: "/saints/icons/cyril-and-methodius.jpg",
  name: "Saints Cyril and Methodius",
  byname: "Equals-to-the-Apostles",
  epithet: "Equals-to-the-Apostles · Enlighteners of the Slavs · Teachers of the Slavonic Letters",
@@ -3506,7 +3506,7 @@ export const SAINTS: Saint[] = [
   {
     slug: "dumitru-staniloae",
     byname: "Editor of the Romanian Philokalia",
-    iconUrl: "/saints/icons/Dumitru-staniloae.jpg",
+    iconUrl: "/saints/icons/dumitru-staniloae.jpg",
     name: "St. Dumitru Stăniloae",
     epithet: "Priest and Theologian · Confessor",
     born: "November 16, 1903 (Vlădeni, Transylvania)",
@@ -3860,7 +3860,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "silouan-the-athonite",
-    iconUrl: "/saints/icons/silouan-the-athonite.png",
+    iconUrl: "/saints/icons/silouan-the-athonite.jpg",
     name: "St. Silouan the Athonite",
     epithet: "Monk of Mount Athos · He who prayed for the whole world",
     born: "1866 (Tambov province, Russia)",
@@ -3922,7 +3922,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "iakovos-of-evia",
-    iconUrl: "/saints/icons/LRPSaintIakovosTsalikisofEvialevel.jpg",
+    iconUrl: "/saints/icons/iakovos-of-evia.jpg",
     name: "St. Iakovos of Evia",
     byname: "The Elder Iakovos Tsalikis",
     epithet: "Abbot of the Monastery of St. David · Shepherd of Evia",
@@ -3964,7 +3964,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "quadratus-the-apologist",
-    iconUrl: "/saints/icons/Quadratus-Athens.jpg",
+    iconUrl: "/saints/icons/quadratus-the-apologist.jpg",
     name: "St. Quadratus of Athens",
     byname: "The Apologist",
     epithet: "The earliest of the apologists · Bishop of Athens",
