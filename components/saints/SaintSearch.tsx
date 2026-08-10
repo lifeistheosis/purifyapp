@@ -115,7 +115,11 @@ export function SaintSearch({ className }: { className?: string }) {
  const showDropdown = open && q.trim().length > 0;
 
  return (
- <div ref={containerRef} className={`relative ${className ?? ""}`}>
+ // `z-20` is belt and braces. The base `.cascade` rule no longer leaves this
+ // wrapper a permanent stacking context, but it is one for the length of the
+ // entrance animation, and the block that follows on /saints is full of saint
+ // icons. An explicit z-index sorts this above them whatever the parent does.
+ <div ref={containerRef} className={`relative z-20 ${className ?? ""}`}>
  <div className="relative">
  <Search
  aria-hidden
@@ -137,7 +141,9 @@ export function SaintSearch({ className }: { className?: string }) {
  </div>
 
  {showDropdown && (
- <div className="absolute z-50 mt-2 left-0 right-0 rounded-md border border-paper/15 bg-night shadow-lg overflow-hidden">
+ // Capped and scrollable: eight hits at full height run past the bottom of a
+ // phone and under the fixed tab bar, so the last results were unreachable.
+ <div className="absolute z-50 mt-2 left-0 right-0 rounded-md border border-paper/15 bg-night shadow-lg max-h-[min(60vh,26rem)] overflow-y-auto overscroll-contain scrollbar-thin">
  {hits.length === 0 ? (
  <p className="px-4 py-3 font-sans text-ui text-paper/55">
  {t("bible.noMatches")}

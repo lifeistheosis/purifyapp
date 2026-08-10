@@ -1443,8 +1443,20 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  from { opacity: 0; }
  to { opacity: 1; }
 }
+/* `backwards`, NOT `both`, for the reason spelled out under `.route-fade`
+   below: `both` keeps the opacity animation in effect after it finishes, so
+   every direct child stays a PERMANENT stacking context and any z-index
+   inside it is scoped to that child. Two `z-index: auto` siblings then paint
+   in DOM order no matter what, which is how the saints search dropdown
+   (z-50) ended up underneath the saint icons of the browser block that
+   follows it, reported from the Android build on 2026-08-09. `backwards`
+   fills during the stagger delay and hands the element back to its base
+   style, opacity: 1, when the animation ends: visually identical, and the
+   stacking context now lasts one animation instead of the life of the page.
+   `.route-fade` and `.cascade-rise` were already corrected; this base rule
+   was missed. */
 .cascade > * {
- animation: cascade-in var(--duration-base) var(--ease-house) both;
+ animation: cascade-in var(--duration-base) var(--ease-house) backwards;
  animation-delay: calc(var(--cascade-start, 0ms) + var(--i, 0) * var(--stagger-step));
 }
 .cascade > *:nth-child(1) { --i: 0; }
