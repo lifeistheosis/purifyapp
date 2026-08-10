@@ -7,7 +7,7 @@ Purify is a free, non-commercial Orthodox prayer / Scripture / saints / calendar
 - **Free in perpetuity.** No tier, no paywall, no marketplace. The Scripture licenses we hold bind us to keep it that way; contributions must not move toward monetization.
 - **Source-transparent.** Every text on the site is traceable to a public-domain edition (year + editor) or a licensed publisher's API. No LLM-generated saint biographies, no untraceable translations.
 - **Orthodox.** Doctrinally Orthodox; jurisdiction-neutral over time (the site leans Greek today and is moving toward neutrality). When in doubt, defer to the consensus of the Fathers, not contemporary opinion.
-- **Quiet.** No notifications, no streaks reported back to us, no growth-hack telemetry. The site doesn't ask anything of the reader after they close the tab.
+- **Quiet by default.** No growth-hack telemetry, ever. The site asks as little as possible of the reader after they close the tab. Notifications and review streaks are permitted where the reader asked for them, and only under the bar in "Reminders and streaks" below. Amended 2026-08-10; the rule was previously an outright prohibition.
 
 ## Local setup
 
@@ -75,9 +75,39 @@ When reviewing a PR, check:
 1. Does it pass CI?
 2. Does it match the ethos? (No tracking, no monetization creep, no doctrinal drift.)
 3. Are content additions sourced?
-4. Does it keep the site quiet? (No new notifications, no new modals, no new urgency.)
+4. Does it keep the site quiet? (No new modals, no new urgency. If it adds a notification or a streak, it must clear the bar in "Reminders and streaks".)
 
 If yes to all four, ship it.
+
+## Reminders and streaks
+
+Amended 2026-08-10. The ethos used to prohibit these outright. It no longer
+does, because the app now has readers who gather material and want to return to
+it. What replaces the prohibition is a bar, not a free hand. A reminder or a
+streak ships only if all of the following hold:
+
+1. **The reader asked for it.** Default off, always. Never on by an upgrade,
+   never on by an install, never on by accepting something else.
+2. **It can be turned off from the surface it appears on**, not only from a
+   settings page three levels away.
+3. **At most one reminder per reader per week**, enforced at the reader level.
+   Per-folder or per-feature toggles must not multiply: five weekly reminders
+   landing on five different days is a daily habit loop assembled out of parts
+   that each looked harmless.
+4. **No pressure mechanics.** No badge, no unread count, no "don't lose your
+   streak", no red dot. A streak may be shown when the reader looks for it. It
+   may never be used to make them look.
+5. **No personal content in the payload.** Collection names, verse text, saint
+   names, and note contents stay in the app. A push payload crosses APNs and
+   FCM in plaintext and is stored in a Postgres column. The notification says
+   that something is there; the content lives behind the lock screen.
+6. **The copy carries no urgency.** No digits, no exclamation marks, no
+   time-limited language. This is enforced by a doctrine test, not by review
+   alone.
+
+If a proposal cannot clear all six, the answer is a pull-based surface inside
+the app instead: something the reader finds when they open it, rather than
+something that reaches out to them.
 
 ## Write to us
 
