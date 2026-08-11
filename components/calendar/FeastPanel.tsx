@@ -36,10 +36,17 @@ export function FeastPanel({
   const hasIcon = !!headlineSaint;
   return (
     <div
-      className="relative rounded-[28px] overflow-hidden ring-1 ring-inset ring-paper/10 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.5)]"
+      // shadow-panel, not a literal: this was the only box-shadow on the
+      // calendar and the only one in the app that did not come from a token.
+      className="relative rounded-[28px] overflow-hidden ring-1 ring-inset ring-paper/10 shadow-panel"
       style={{
+        // Built from the night ramp instead of a hand-mixed #26262b/#1a1a1d/
+        // #101013, which shadowed night-soft and night without ever naming
+        // them, so the hero drifted out of step with the palette and stayed
+        // a dark slab under a light theme. The sheen is a variable for the
+        // same reason: pure white is wrong on parchment.
         background:
-          "radial-gradient(120% 85% at 85% 6%, rgba(255,255,255,0.08) 0%, transparent 52%), linear-gradient(165deg, #26262b 0%, #1a1a1d 55%, #101013 100%)",
+          "radial-gradient(120% 85% at 85% 6%, rgb(var(--panel-sheen) / 0.08) 0%, transparent 52%), linear-gradient(165deg, color-mix(in srgb, var(--color-night-soft) 88%, var(--color-paper)) 0%, var(--color-night-soft) 55%, var(--color-night) 100%)",
       }}
     >
       <div

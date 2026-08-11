@@ -59,7 +59,7 @@ function CalendarCellImpl({
  return (
  <div
  aria-hidden
- className="aspect-square md:min-h-[84px] border-r border-b border-gold/15 bg-paper/[0.01]"
+ className="aspect-square md:min-h-[84px] border-r border-b border-paper/8 bg-paper/[0.012]"
  />
  );
  }
@@ -90,9 +90,12 @@ function CalendarCellImpl({
  style={toneStyle}
  className={cn(
  baseClasses,
- // Today: a single thick gold outline, no tinted background.
+ // Today: one thick ring in the day's own liturgical tone, no tinted
+ // background. The ring used to be outline-gold/65, the same neutral for
+ // every day of the year, which threw away the one thing the cell already
+ // knows. --tone is set on this element just above.
  cell.isToday &&
- "lampada-glow outline outline-2 outline-offset-[-2px] outline-gold/65 z-[1]",
+ "lampada-glow outline outline-2 outline-offset-[-2px] outline-[rgb(var(--tone)/0.7)] z-[1]",
  // Selected (but not today): paper outline
  !cell.isToday &&
  isSelected &&
@@ -101,8 +104,8 @@ function CalendarCellImpl({
  !cell.isToday &&
  !isSelected &&
  (cell.hasFeast
- ? "border-gold/30 bg-gold/[0.04] hover:bg-gold/[0.09]"
- : "border-gold/15 bg-paper/[0.015] hover:bg-paper/[0.05]"),
+ ? "border-paper/14 bg-paper/[0.045] hover:bg-paper/[0.075]"
+ : "border-paper/8 bg-paper/[0.02] hover:bg-paper/[0.05]"),
  )}
  >
  <div className="flex flex-col items-center gap-0.5 md:flex-row md:items-start md:justify-between md:gap-1">
@@ -133,11 +136,12 @@ function CalendarCellImpl({
  </span>
  )}
  {cell.hasFeast && (
- // Hardcoded festal gold (#d4af37): keeps the feast marker truly gold,
- // independent of the app-wide neutralized `--color-gold` (warm grey).
+ // --color-festal, real liturgical gold, deliberately NOT --color-gold:
+ // that token is a near-white grey in this scheme and a feast mark drawn
+ // in it stops reading as gold at all.
  <Cross
  size={12}
- className="text-[#d4af37] md:mt-[1px]"
+ className="text-festal md:mt-[1px]"
  aria-label={t("calendar.feastAria")}
  />
  )}

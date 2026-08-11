@@ -16,10 +16,15 @@ export const FAST_META: Record<
   FastKind,
   { short: string; Icon: IconCmp | null; rgb: string }
 > = {
-  strict: { short: "Strict fast", Icon: Wheat, rgb: "224 86 86" },
-  "wine-oil": { short: "Wine & oil", Icon: Grapes, rgb: "214 158 78" },
-  fish: { short: "Fish allowed", Icon: Fish, rgb: "96 184 172" },
-  fast: { short: "Fast", Icon: Wheat, rgb: "212 175 110" },
-  "fast-free": { short: "Fast-free", Icon: Lampada, rgb: "40 200 140" },
-  normal: { short: "No fast", Icon: null, rgb: "183 176 163" },
+  // `rgb` points at a CSS variable rather than carrying the hue. The values
+  // live in the :root block beside --ink-rubric in app/globals.css, so the
+  // light palette can remap them; hard-coded here they stayed dark-surface
+  // colours on a parchment page. The icon and the label are unchanged and
+  // stay mandatory: colour is never the sole signal for a fast.
+  strict: { short: "Strict fast", Icon: Wheat, rgb: "var(--fast-strict)" },
+  "wine-oil": { short: "Wine & oil", Icon: Grapes, rgb: "var(--fast-wine-oil)" },
+  fish: { short: "Fish allowed", Icon: Fish, rgb: "var(--fast-fish)" },
+  fast: { short: "Fast", Icon: Wheat, rgb: "var(--fast-fast)" },
+  "fast-free": { short: "Fast-free", Icon: Lampada, rgb: "var(--fast-free)" },
+  normal: { short: "No fast", Icon: null, rgb: "var(--fast-normal)" },
 };

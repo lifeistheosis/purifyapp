@@ -313,7 +313,7 @@ export default async function CalendarPage({
  >
  {/* HERO */}
  <LocalTodaySync serverToday={serverTodayIso} />
- <section className="px-5 md:px-8 pt-10 md:pt-14 pb-10 border-b border-white/8">
+ <section className="px-5 md:px-8 pt-10 md:pt-14 pb-10 border-b border-paper/10">
  <div className="mx-auto max-w-[1280px] w-full">
  <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
  <SectionLabel>
@@ -369,7 +369,7 @@ export default async function CalendarPage({
 
  {/* TODAY'S READINGS */}
  {todayReadings.length > 0 && (
- <section className="px-5 md:px-8 py-10 md:py-12 border-b border-white/8 bg-night-soft">
+ <section className="px-5 md:px-8 py-10 md:py-12 border-b border-paper/10 bg-night-soft">
  <div className="mx-auto max-w-[1280px] w-full">
  <div className="text-center mb-7">
  <SectionLabel>
@@ -395,10 +395,17 @@ export default async function CalendarPage({
  </section>
  )}
 
- {/* GRID + DAY DETAIL. Solid-black panel edge to edge — matches the legend
-     panel (bg-black) and the dark day-detail card, so the whole grid +
-     day-detail block reads on one uninterrupted #000 surface. */}
- <section className="px-5 md:px-8 py-10 md:py-14 bg-black">
+ {/* GRID + DAY DETAIL, on one recessed surface edge to edge, so the block
+     reads as set into the page rather than stacked on it.
+
+     This was bg-black, chasing the same "one uninterrupted surface" idea and
+     getting the opposite: #000 against the page's #101013 above and below it
+     put a hard seam across the middle of the screen, and the sticky
+     translucent nav visibly changed tint as it crossed the join. The legend
+     inside it was a second black card on black, described only by an
+     8%-white outline. --color-night-deep is one step below the page on the
+     same ramp: still the darkest thing here, no seam. */}
+ <section className="px-5 md:px-8 py-10 md:py-14 bg-night-deep">
  <div className="mx-auto max-w-[1280px] w-full">
  <header className="flex items-end justify-between mb-8 gap-4 flex-wrap">
  <div className="min-w-0">
