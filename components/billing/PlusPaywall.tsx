@@ -663,7 +663,7 @@ function PlanRow({
         </span>
         <span className="text-right">
           <span className="block font-display-serif text-title text-paper tabular-nums">
-            {price ?? "—"}
+            {price ?? "Not available"}
           </span>
           <span className="block font-sans text-caption text-paper/50">
             {unit}

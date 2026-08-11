@@ -17,8 +17,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { plusEnforcedFor } from "@/lib/entitlements/entitlements";
-import { getClientEntitlements } from "@/lib/entitlements/client";
-import { isNativeClient } from "@/lib/platform/native";
+import { getClientEntitlements, clientSurface } from "@/lib/entitlements/client";
 import { isFreeTheme, type ReadingTheme } from "@/lib/reader/readingModes";
 
 export type ProReadingModesGate = {
@@ -32,10 +31,13 @@ export type ProReadingModesGate = {
 };
 
 export function useProReadingModes(): ProReadingModesGate {
-  // Enforcement flags are compile-time constants and isNativeClient is
-  // stable for the page lifetime, so this branch never changes after mount.
-  // SSR renders with isNative=false, which maps to the (off) web flag.
-  const enforced = plusEnforcedFor(isNativeClient());
+  // Enforcement flags are compile-time constants and the surface is stable
+  // for the page lifetime, so this branch never changes after mount. SSR
+  // renders as "web", which maps to the (off) web flag. The surface is
+  // three-valued, not a boolean, so iOS cannot reach Android's launch switch.
+  const enforced = plusEnforcedFor(clientSurface());
+  // Only the resolved half of the gate is state; `allows` is derived below,
+  // because whether a palette is permitted depends on the palette.
   const [pro, setPro] = useState<{ allowed: boolean; locked: boolean }>(() =>
     enforced ? { allowed: false, locked: false } : { allowed: true, locked: false },
   );

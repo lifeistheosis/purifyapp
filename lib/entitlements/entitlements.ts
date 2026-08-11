@@ -15,25 +15,55 @@
 // yet. Enforcing Plus globally would lock web users out of features they
 // have no way to buy back. So enforcement is gated by *where the request
 // comes from*:
-//   * Native (Capacitor shell, detected via the PurifyNative UA token):
-//     enforced once PLUS_ENFORCED_NATIVE flips at the Android launch.
+//   * Android (Play Billing via RevenueCat, the only place Plus sells
+//     today): enforced once PLUS_ENFORCED_ANDROID flips at the Play launch.
+//   * iOS: its own switch, PLUS_ENFORCED_IOS, because the App Store
+//     products are not purchasable yet. One shared native switch would have
+//     locked iOS readers out of features they cannot buy.
 //   * Web (ordinary browser): stays open until PLUS_ENFORCED_WEB flips,
 //     which waits for a web checkout (Stripe) to exist.
-// Both ship false; flipping a flag is the launch switch for that surface,
-// with no call-site changes. A purchase on Android still writes the
-// entitlement row, so the account is correctly Plus everywhere — the web
-// simply does not *require* Plus yet.
+// All three ship false; flipping a flag is the launch switch for that
+// surface, with no call-site changes. A purchase on Android still writes the
+// entitlement row, so the account is correctly Plus everywhere. The other
+// surfaces simply do not *require* Plus yet.
 
 function envEnabled(value: string | undefined): boolean {
   return value === "true" || value === "1";
 }
 
+/** The legacy single native switch. Kept because every launch checklist and
+ * doc names it, and all of them mean the ANDROID launch
+ * (docs/google-play/ANDROID_SUBSCRIPTION_CHECKLIST.md,
+ * docs/launch/ANDROID-LAUNCH-CHECKLIST.md). It continues to mean exactly
+ * that, and deliberately does NOT reach iOS. See PLUS_ENFORCED_IOS. */
+const LEGACY_NATIVE = envEnabled(process.env.NEXT_PUBLIC_PLUS_ENFORCED_NATIVE);
+
 /** Android launch switch. Enabled (without a code change) by setting
- * NEXT_PUBLIC_PLUS_ENFORCED_NATIVE="true" once Play Billing + the webhook
- * are verified on a real internal-testing device. Gates the native app
- * only. Defaults OFF. */
-export const PLUS_ENFORCED_NATIVE = envEnabled(
-  process.env.NEXT_PUBLIC_PLUS_ENFORCED_NATIVE,
+ * NEXT_PUBLIC_PLUS_ENFORCED_ANDROID="true" once Play Billing + the webhook
+ * are verified on a real internal-testing device. Defaults OFF. */
+export const PLUS_ENFORCED_ANDROID =
+  envEnabled(process.env.NEXT_PUBLIC_PLUS_ENFORCED_ANDROID) || LEGACY_NATIVE;
+
+/**
+ * iOS launch switch, separate from Android on purpose.
+ *
+ * The two store builds are not interchangeable: Purify Plus sells on Play
+ * today, while on the App Store its two products sit at MISSING_METADATA and
+ * are not attached to any submission. A single native switch would therefore
+ * enforce Plus in a build where nobody can buy it, which is precisely the harm
+ * PLUS_ENFORCED_WEB was created to avoid on the web.
+ *
+ * This is not hypothetical. The SAME GitHub secret,
+ * NEXT_PUBLIC_PLUS_ENFORCED_NATIVE, is passed to both
+ * .github/workflows/android-apk.yml and .github/workflows/ios-release.yml, so
+ * throwing the Android launch switch would have enforced Plus on the next iOS
+ * build as a side effect.
+ *
+ * Requires its own explicit opt-in. Defaults OFF, and should stay OFF until
+ * the iOS subscriptions are approved and purchasable.
+ */
+export const PLUS_ENFORCED_IOS = envEnabled(
+  process.env.NEXT_PUBLIC_PLUS_ENFORCED_IOS,
 );
 
 /** Web launch switch. Stays OFF until a web checkout (Stripe) exists, so
@@ -44,9 +74,32 @@ export const PLUS_ENFORCED_WEB = envEnabled(
   process.env.NEXT_PUBLIC_PLUS_ENFORCED_WEB,
 );
 
-/** Is the Plus layer enforced for the surface this request came from? */
-export function plusEnforcedFor(isNative: boolean): boolean {
-  return isNative ? PLUS_ENFORCED_NATIVE : PLUS_ENFORCED_WEB;
+/**
+ * Where a request or render is happening.
+ *
+ * "native-unknown" is a real state, not a fallback for laziness: the server
+ * sees one "PurifyNative" UA token for both shells, deliberately
+ * (lib/platform/native.ts explains why splitting the token is worse), and on
+ * the client Capacitor may not have injected itself yet.
+ */
+export type Surface = "web" | "android" | "ios" | "native-unknown";
+
+/** Is the Plus layer enforced for this surface? */
+export function plusEnforcedFor(surface: Surface): boolean {
+  switch (surface) {
+    case "web":
+      return PLUS_ENFORCED_WEB;
+    case "android":
+      return PLUS_ENFORCED_ANDROID;
+    case "ios":
+      return PLUS_ENFORCED_IOS;
+    case "native-unknown":
+      // Cannot tell which store build is asking, so enforce only when BOTH are
+      // launched. Erring open leaves a subscriber briefly ungated, which costs
+      // nothing; erring closed locks a reader out of something they have no way
+      // to buy, which is the failure this whole module is shaped to prevent.
+      return PLUS_ENFORCED_ANDROID && PLUS_ENFORCED_IOS;
+  }
 }
 
 /** Shape of a public.entitlements row (absent row = no entitlements). */

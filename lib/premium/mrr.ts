@@ -5,18 +5,19 @@
 // expiry timestamps and a source, never a billed amount or a billing
 // period (RevenueCat holds the real money and the webhook discards the
 // event body). So we approximate: every active paid subscriber is assumed
-// to be on the MONTHLY plan at the list price, and comped accounts
-// (plus_source = 'comp') contribute nothing. Pro is a superset of Plus, so
-// a Pro subscriber is counted once at the Pro price, never also as Plus.
+// to be on the MONTHLY plan at the list price, and accounts nobody paid for
+// contribute nothing: both comps (plus_source = 'comp') and redeemed gifts
+// (plus_source = 'gift'). Pro is a superset of Plus, so a Pro subscriber is
+// counted once at the Pro price, never also as Plus.
 //
 // The admin UI must always label figures derived here as "estimated".
 
 import { PLAN_PRICE_CENTS } from "./plans";
 
 export type SubscriberCounts = {
-  /** Active Plus, NOT Pro, excluding comped accounts. */
+  /** Active Plus, NOT Pro, excluding comped and gifted accounts. */
   plusOnly: number;
-  /** Active Pro, excluding comped accounts. */
+  /** Active Pro, excluding comped and gifted accounts. */
   pro: number;
 };
 
