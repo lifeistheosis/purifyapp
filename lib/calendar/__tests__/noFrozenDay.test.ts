@@ -33,13 +33,20 @@ const NATIVE_DAY_SURFACES = ["app", "components"];
 /**
  * Deliberate exceptions, each of which has to earn its place.
  *
- * /calendar is knowingly frozen in the Android export: the web corrects it
- * per request through `?today=` (components/calendar/LocalTodaySync.tsx),
- * and the owner has chosen to leave the export as it is rather than
- * rebuild the month grid on the client. The server read here is a
- * first-render fallback, not the only answer.
+ * There are none, and that is the point of leaving this here empty.
+ *
+ * /calendar held the only one. It was knowingly frozen in the native export:
+ * the day was resolved on the server, so the app showed the build day for the
+ * life of the install, and because `searchParams` are forced empty there,
+ * month navigation did not work either. The stated blocker was the verse
+ * teaser, which needed `server-only` filesystem reads. The teaser is gone,
+ * the page is a client component (components/calendar/CalendarClient.tsx),
+ * and LocalTodaySync, the web-only `?today=` correction that could never help
+ * the app, is deleted.
+ *
+ * Anything added back here needs to say what it costs a reader on a phone.
  */
-const EXEMPT = new Set(["app/(app)/calendar/page.tsx"]);
+const EXEMPT = new Set<string>([]);
 
 /** Resolving "now" rather than normalising a date handed in. */
 const RESOLVES_NOW = /(startOfDayUtc|startOfDayLocal|localDayToUtcNoon)\(\s*new Date\(\)\s*\)/;
