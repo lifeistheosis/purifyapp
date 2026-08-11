@@ -441,6 +441,9 @@ export const communityPostSchema = z
     work: z.string().max(80).optional().nullable(),
     /** Only read for `father`, and only to be checked against the work. */
     quoteText: z.string().max(2000).optional().nullable(),
+    /** Post into a parish group's thread instead of the public feed. The
+     *  route proves membership before it is honoured; this only shapes it. */
+    groupId: z.string().uuid().optional().nullable(),
   })
   .refine(
     (p) => p.kind !== "discussion" || (p.body ?? "").trim().length >= 2,

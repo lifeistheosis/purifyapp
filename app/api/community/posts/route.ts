@@ -40,12 +40,51 @@ export async function GET(req: Request) {
   }
   const admin = createAdminClient();
 
+  // `?group=<uuid>` asks for one parish group's thread instead of the public
+  // feed. Membership is proved here, with the caller's own token, before a
+  // single row is read: the group id travels in a URL and a URL is a guess
+  // away from any other group id.
+  const groupId = new URL(req.url).searchParams.get("group");
+  let scopedGroup: string | null = null;
+  if (groupId) {
+    const supabase = await createClientFromRequest(req);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return withCors(
+        NextResponse.json({ error: "Sign in." }, { status: 401 }),
+        req,
+      );
+    }
+    const { data: member } = await admin
+      .from("prayer_campaign_group_members")
+      .select("group_id")
+      .eq("group_id", groupId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (!member) {
+      // 404 and not 403: a non-member should not learn that the group exists.
+      return withCors(
+        NextResponse.json({ error: "Not found." }, { status: 404 }),
+        req,
+      );
+    }
+    scopedGroup = groupId;
+  }
+
   const blocked = await blockedAuthorIds(req, admin);
 
   let query = admin
     .from("community_posts")
     .select(POST_COLS)
     .eq("status", "visible");
+  // The public feed carries no group posts, and a group thread carries only
+  // its own. Without the `is null` half, group posts would surface in the
+  // global feed the moment the column existed.
+  query = scopedGroup
+    ? query.eq("group_id", scopedGroup)
+    : query.is("group_id", null);
   if (blocked.length > 0) {
     query = query.not("user_id", "in", `(${blocked.join(",")})`);
   }
@@ -63,11 +102,16 @@ export async function GET(req: Request) {
         headers: {
           // A filtered feed is one reader's feed. Serving it from a shared
           // cache would hand somebody else's blocklist-shaped view to the
-          // next caller, so personalised responses are never cacheable.
+          // next caller, so personalised responses are never cacheable. A
+          // group thread is always one reader's view for the same reason.
           "Cache-Control":
-            blocked.length > 0
+            blocked.length > 0 || scopedGroup
               ? "private, no-store"
               : "public, max-age=15",
+          // The body varies by who is asking, so a shared cache must not
+          // serve one reader's feed to the next. `withCors` sets Vary to
+          // "Origin" and would otherwise overwrite this.
+          Vary: "Origin, Authorization",
         },
       },
     ),
@@ -181,6 +225,26 @@ async function handlePOST(req: Request) {
   }
 
   const admin = createAdminClient();
+
+  // Posting into a parish group instead of the public feed. Membership is
+  // checked server-side: the group id came from the client, and a client is
+  // not a validator. A caller who is not in the group is refused rather than
+  // silently posted to the global feed, which would leak a message meant for
+  // a handful of people to everyone.
+  let groupId: string | null = null;
+  if (p.groupId) {
+    const { data: member } = await admin
+      .from("prayer_campaign_group_members")
+      .select("group_id")
+      .eq("group_id", p.groupId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (!member) {
+      return NextResponse.json({ error: "Not found." }, { status: 404 });
+    }
+    groupId = p.groupId;
+  }
+
   const { data: created, error } = await admin
     .from("community_posts")
     .insert({
@@ -193,6 +257,7 @@ async function handlePOST(req: Request) {
       quote_href: quote?.quoteHref ?? null,
       author_name: authorName.slice(0, 80),
       author_avatar: meta.avatar_url || null,
+      group_id: groupId,
     })
     .select("id")
     .single();

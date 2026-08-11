@@ -85,7 +85,18 @@ function panelFromHash(hash: string, campaigns: boolean): Panel {
   if (!campaigns) return "conversations";
   if (hash === CONVERSATIONS_HASH) return "conversations";
   if (hash.startsWith("#post-")) return "conversations";
+  if (hash.startsWith("#group-")) return "conversations";
   return "campaigns";
+}
+
+/** The parish group whose thread the URL is asking for, if any. */
+function groupFromHash(hash: string): string | null {
+  if (!hash.startsWith("#group-")) return null;
+  const id = hash.slice("#group-".length);
+  // A uuid and nothing else. The value is put straight into a query string,
+  // and the route refuses a non-member anyway, but a malformed id should
+  // never reach it in the first place.
+  return /^[0-9a-fA-F-]{36}$/.test(id) ? id : null;
 }
 
 export function CommunityClient() {
@@ -95,13 +106,17 @@ export function CommunityClient() {
   const [panel, setPanel] = useState<Panel>(() =>
     campaigns ? "campaigns" : "conversations",
   );
+  const [groupId, setGroupId] = useState<string | null>(null);
 
   // Read the hash after mount rather than during render: the server render
   // has no location, and reading it in the initial state would hydrate
   // mismatched whenever someone opens a #post- link.
   useEffect(() => {
-    const apply = () =>
-      setPanel(panelFromHash(window.location.hash, campaigns));
+    const apply = () => {
+      const hash = window.location.hash;
+      setPanel(panelFromHash(hash, campaigns));
+      setGroupId(groupFromHash(hash));
+    };
     apply();
     window.addEventListener("hashchange", apply);
     return () => window.removeEventListener("hashchange", apply);
@@ -109,6 +124,10 @@ export function CommunityClient() {
 
   const choose = useCallback((next: Panel) => {
     setPanel(next);
+    // Switching tabs by hand leaves any group scope behind: the pills are
+    // the global surfaces, and a group thread is only ever reached by its
+    // own link.
+    setGroupId(null);
     // replaceState, not a router push: switching a tab is not a new page in
     // the reader's history, and pushing would make Back walk the pills.
     const url =
@@ -153,7 +172,7 @@ export function CommunityClient() {
       {campaigns && panel === "campaigns" ? (
         <CampaignsClient embedded />
       ) : (
-        <ConversationsPanel />
+        <ConversationsPanel groupId={groupId} />
       )}
     </div>
   );
@@ -184,13 +203,22 @@ function Avatar({
   );
 }
 
-function ConversationsPanel() {
+function ConversationsPanel({ groupId }: { groupId: string | null }) {
   const { t } = useTranslate();
   const [me, setMe] = useState<Me>(null);
   const [authSettled, setAuthSettled] = useState(false);
   // undefined = still loading. Otherwise the discriminated result from
   // fetchCommunityPosts, so "dark", "empty" and "failed" stay distinct.
-  const [result, setResult] = useState<PostsResult | undefined>(undefined);
+  //
+  // The scope it was fetched for travels with it. Switching between the
+  // public feed and a group thread is a different feed, not a refresh, and
+  // pairing them here means a stale one is simply not shown. Clearing it in
+  // an effect instead would be a synchronous setState in an effect, which
+  // cascades a render.
+  const [fetched, setFetched] = useState<
+    { scope: string | null; value: PostsResult } | undefined
+  >(undefined);
+  const result = fetched && fetched.scope === groupId ? fetched.value : undefined;
   const [version, setVersion] = useState(0);
   const [myPostIds, setMyPostIds] = useState<Set<string>>(() => new Set());
 
@@ -223,20 +251,25 @@ function ConversationsPanel() {
   useEffect(() => {
     let alive = true;
     void (async () => {
-      const next = await fetchCommunityPosts();
+      const next = await fetchCommunityPosts(groupId);
       // A failed poll must not blank a feed the reader is already reading.
       // Only the first load is allowed to surface "error"; after that a
       // dropped request leaves the last good feed on screen and the next
-      // tick tries again.
+      // tick tries again. Scoped per feed, so a failure on the group thread
+      // cannot resurrect the public feed's last good posts.
       if (!alive) return;
-      setResult((prev) =>
-        next.state === "error" && prev?.state === "ok" ? prev : next,
+      setFetched((prev) =>
+        next.state === "error" &&
+        prev?.scope === groupId &&
+        prev.value.state === "ok"
+          ? prev
+          : { scope: groupId, value: next },
       );
     })();
     return () => {
       alive = false;
     };
-  }, [version]);
+  }, [version, groupId]);
 
   // Which rows are the reader's own. A separate authenticated call because
   // the feed is cached and public, so it deliberately carries no author id.
@@ -320,9 +353,30 @@ function ConversationsPanel() {
           {/* What came back to you, above what you might say next. Renders
               nothing when there is nothing, including before the
               notifications migration is applied. */}
-          {authSettled && me ? <NotificationsInbox /> : null}
+          {/* A group thread says whose it is, and offers the way back out.
+              Without this the reader has a feed that looks like the global
+              one but is not, and no way to tell. */}
+          {groupId ? (
+            <div className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-gold/25 bg-gold/[0.04] px-4 py-3">
+              <p className="min-w-0 font-sans text-detail text-paper/80">
+                {t("community.groupThreadHeading")}
+              </p>
+              <Link
+                href={CONVERSATIONS_HASH}
+                className="shrink-0 font-sans text-caption font-semibold text-gold-pale hover:text-paper"
+              >
+                {t("community.allConversations")}
+              </Link>
+            </div>
+          ) : null}
+          {authSettled && me && !groupId ? <NotificationsInbox /> : null}
           {authSettled && me ? (
-            <Composer me={me} onPosted={reload} onAvatarChanged={(url) => setMe((m) => (m ? { ...m, avatar: url } : m))} />
+            <Composer
+              me={me}
+              groupId={groupId}
+              onPosted={reload}
+              onAvatarChanged={(url) => setMe((m) => (m ? { ...m, avatar: url } : m))}
+            />
           ) : authSettled ? (
             <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 text-center">
               <p className="font-sans text-ui text-paper/70">
@@ -392,10 +446,14 @@ function ConversationsPanel() {
 
 function Composer({
   me,
+  groupId,
   onPosted,
   onAvatarChanged,
 }: {
   me: NonNullable<Me>;
+  /** When set, the post goes to this parish group rather than the public
+   *  feed. The route re-checks membership; this only shapes the request. */
+  groupId: string | null;
   onPosted: () => void;
   onAvatarChanged: (url: string) => void;
 }) {
@@ -427,6 +485,7 @@ function Composer({
             kind: "discussion",
             title: title.trim() || null,
             body: body.trim(),
+            groupId,
           })
         : picked
           ? await (async () => {
@@ -440,7 +499,11 @@ function Composer({
                   error: t("community.untraceableLine"),
                 };
               }
-              return createCommunityPost({ ...loc, body: body.trim() || null });
+              return createCommunityPost({
+                ...loc,
+                body: body.trim() || null,
+                groupId,
+              });
             })()
           : { ok: false, error: t("community.pickALine") };
     setBusy(false);

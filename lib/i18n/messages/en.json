@@ -1918,6 +1918,8 @@
   "community.photoFailed": "We could not update your photo.",
   "community.untraceableLine": "This line does not carry a link back to the work it came from, so we cannot publish it under that name. Open it in the reader and gather it again.",
   "community.moreInFlorilegium": "{count} more in your Florilegium",
+  "community.groupThreadHeading": "You are in your group's conversation.",
+  "community.allConversations": "All conversations",
   "community.unreadCount.one": "1 new",
   "community.unreadCount.other": "{count} new",
   "campaigns.openingSoon": "Prayer campaigns are being prepared.",
