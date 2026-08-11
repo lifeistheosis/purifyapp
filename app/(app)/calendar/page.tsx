@@ -248,10 +248,12 @@ export default async function CalendarPage({
  fast: selectedFast.kind,
  });
 
- const [todayReadings, selectedReadings] = await Promise.all([
- resolveReadings(readingsOn(todayLookup)),
- resolveReadings(readingsOn(selectedLookup)),
- ]);
+ // Only today's readings are resolved. The selected day's panel lists
+ // citations and nothing else, deliberately (see the note at its render
+ // site), so resolving it read and JSON.parse'd two whole chapter files per
+ // request to fill a `passage` field that no consumer ever looked at.
+ const todayReadings = await resolveReadings(readingsOn(todayLookup));
+ const selectedRefs = readingsOn(selectedLookup);
 
  // Locale-aware date pieces (server locale; the web is per-request
  // correct, the native export bakes English and client islands carry
@@ -453,30 +455,30 @@ export default async function CalendarPage({
  fast={selectedFast}
  commemorations={selectedCommemorations}
  readings={
- selectedReadings.length > 0 ? (
+ selectedRefs.length > 0 ? (
  /* Compact citation list, no verse teasers in the
  sticky day panel; the full verses are one tap
  away. Keeps the right column short so the left
  column doesn't leave a big empty rail. */
  <ul className="divide-y divide-paper/8 border-t border-b border-paper/10">
- {selectedReadings.map((r, i) => {
+ {selectedRefs.map((ref, i) => {
  const kindKey =
- r.ref.kind === "epistle"
+ ref.kind === "epistle"
  ? "bible.kindEpistleLong"
- : r.ref.kind === "ot"
+ : ref.kind === "ot"
  ? "bible.kindOtLong"
  : "bible.kindGospelLong";
  return (
  <li key={i}>
  <Link
- href={`/bible/${r.ref.book}/${r.ref.chapter}#v${r.ref.from}`}
+ href={`/bible/${ref.book}/${ref.chapter}#v${ref.from}`}
  className="group flex items-baseline justify-between gap-3 py-2.5"
  >
  <span className="font-sans text-eyebrow uppercase tracking-[2px] text-gold font-semibold">
  <T k={kindKey} />
  </span>
  <span className="font-display-serif text-ui text-paper group-hover:text-gold transition-colors text-right">
- {r.ref.label}
+ {ref.label}
  </span>
  </Link>
  </li>
