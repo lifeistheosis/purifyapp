@@ -7,23 +7,27 @@ import {
   daysLeft,
   INTENTIONS,
   intentionLabel,
+  isFinished,
   statusLabel,
   type CampaignIntention,
   type PrayerCampaign,
 } from "@/lib/campaigns/campaigns";
-import { fetchCampaigns } from "@/lib/campaigns/client";
+import { fetchCampaigns, type CampaignsResult } from "@/lib/campaigns/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 export function CampaignsClient({ embedded = false }: { embedded?: boolean }) {
   const { t } = useTranslate();
-  const [campaigns, setCampaigns] = useState<PrayerCampaign[] | null>(null);
+  // undefined = still loading. Otherwise the discriminated result, so a
+  // failure and an empty board stay distinct: this used to render "No
+  // campaigns here yet. Be the first to ask" at a reader whose request had
+  // 500'd or who was offline in a church.
+  const [result, setResult] = useState<CampaignsResult | undefined>(undefined);
   const [intention, setIntention] = useState<CampaignIntention | null>(null);
 
   const load = useCallback(async (filter: CampaignIntention | null) => {
-    setCampaigns(null);
-    const list = await fetchCampaigns(filter ?? undefined);
-    setCampaigns(list);
+    setResult(undefined);
+    setResult(await fetchCampaigns(filter ?? undefined));
   }, []);
 
   useEffect(() => {
@@ -31,6 +35,8 @@ export function CampaignsClient({ embedded = false }: { embedded?: boolean }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void load(intention);
   }, [intention, load]);
+
+  const campaigns = result?.state === "ok" ? result.campaigns : null;
 
   return (
     <section
@@ -93,7 +99,7 @@ export function CampaignsClient({ embedded = false }: { embedded?: boolean }) {
 
         {/* List */}
         <div className="mt-8 space-y-3">
-          {campaigns === null ? (
+          {result === undefined ? (
             // Client-fetched, so no route loading.tsx covers this. Campaign
             // cards are image-led, so the placeholder is a plate over two
             // lines rather than the generic list row.
@@ -111,7 +117,27 @@ export function CampaignsClient({ embedded = false }: { embedded?: boolean }) {
                 </div>
               ))}
             </div>
-          ) : campaigns.length === 0 ? (
+          ) : result.state === "dark" || result.state === "error" ? (
+            // Two different sentences, because they are two different facts.
+            // Saying "nobody has asked for prayer" when the request failed
+            // is a lie the app tells confidently.
+            <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
+              <p className="font-serif text-lede text-paper/80">
+                {result.state === "dark"
+                  ? t("campaigns.openingSoon")
+                  : t("campaigns.loadFailed")}
+              </p>
+              {result.state === "error" ? (
+                <button
+                  type="button"
+                  onClick={() => void load(intention)}
+                  className="mt-4 inline-flex items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
+                >
+                  {t("community.tryAgain")}
+                </button>
+              ) : null}
+            </div>
+          ) : campaigns === null || campaigns.length === 0 ? (
             <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
               <p className="font-serif text-lede text-paper/80">
                 {t("shop.noCampaignsHereYet")}
@@ -163,9 +189,16 @@ function CampaignCard({
   campaign: PrayerCampaign;
   index: number;
 }) {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const closed = statusLabel(campaign.status);
-  const left = campaign.status === "active" ? daysLeft(campaign.ends_at) : null;
+  // `daysLeft` returns 0 for ANY past date, and nothing in the system ever
+  // flips an expired campaign out of status='active' (no cron, no trigger).
+  // Reading it without isFinished is why a forty-day campaign that ended six
+  // months ago sat on the board reading "Last day" forever. isFinished
+  // existed and was tested; only the detail page called it.
+  const finished = isFinished(campaign);
+  const left =
+    campaign.status === "active" && !finished ? daysLeft(campaign.ends_at) : null;
   return (
     <Link
       href={`/campaigns/detail?id=${campaign.id}`}
@@ -197,7 +230,11 @@ function CampaignCard({
         </span>
         {left != null ? (
           <span className="rounded-pill border border-paper/15 px-2.5 py-0.5 font-sans text-eyebrow font-semibold text-paper/55">
-            {left === 0 ? "Last day" : left === 1 ? "1 day left" : `${left} days left`}
+            {left === 0 ? t("campaigns.lastDay") : tn("campaigns.daysLeft", left)}
+          </span>
+        ) : finished && campaign.status === "active" ? (
+          <span className="rounded-pill border border-paper/15 px-2.5 py-0.5 font-sans text-eyebrow font-semibold text-paper/45">
+            {t("campaigns.finished")}
           </span>
         ) : null}
         {closed ? (
