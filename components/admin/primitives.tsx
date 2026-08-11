@@ -2,6 +2,18 @@
 
 // Shared primitives used across every admin tab. Kept colocated so a
 // styling tweak in one place propagates everywhere.
+//
+// Every export below keeps the exact signature the 21 tabs already import.
+// The visual layer is rebuilt on the operator theme in app/admin/admin-theme.css;
+// no tab had to change to receive it.
+//
+// Two rules this file now holds that it did not before:
+//   1. Colour is information. The accent marks selection and primary action;
+//      the four status hues are reserved for state and always ship beside a
+//      word, never as colour alone.
+//   2. Labels are sentence case. The old panel set every label in tracked
+//      uppercase, which flattens hierarchy: when everything is a heading,
+//      the eye has nothing to skip to. Size and weight carry rank instead.
 
 import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
@@ -9,6 +21,27 @@ import { Sparkline } from "./charts";
 import { CountUp } from "./CountUp";
 import { downloadCsv, toCsv } from "@/lib/admin/csv";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
+
+// ── Skeleton ────────────────────────────────────────────────────────────────
+// Loading placeholder shaped like the thing it replaces. Additive export:
+// tabs can adopt it to drop their spinners.
+export function Skeleton({
+  w = "100%",
+  h = 12,
+  className = "",
+}: {
+  w?: string | number;
+  h?: string | number;
+  className?: string;
+}) {
+  return (
+    <span
+      aria-hidden
+      className={"adm-skeleton block " + className}
+      style={{ width: w, height: h }}
+    />
+  );
+}
 
 // ── Card ────────────────────────────────────────────────────────────────────
 export function Card({
@@ -26,32 +59,37 @@ export function Card({
 }) {
   return (
     <section
-      className={
-        "rounded-xl border p-5 " +
-        (accent
-          ? "admin-surface-gold border-gold/25 bg-gold/[0.04]"
-          : "admin-surface border-white/8 bg-night")
-      }
+      className="rounded-[var(--adm-radius)] border p-4 md:p-5"
+      style={{
+        background: accent
+          ? "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 93%)"
+          : "var(--adm-panel)",
+        borderColor: accent
+          ? "color-mix(in oklab, var(--adm-accent), transparent 70%)"
+          : "var(--adm-line)",
+      }}
     >
       {(title || action) && (
-        <div className="flex items-baseline justify-between gap-3 mb-1 flex-wrap">
+        <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
           {title && (
-            <p
-              className={
-                "font-sans text-caption font-semibold uppercase tracking-[1.2px] " +
-                (accent ? "text-gold/80" : "text-paper/45")
-              }
+            <h3
+              className="font-sans text-[13.5px] font-semibold leading-tight"
+              style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)" }}
             >
               {title}
-            </p>
+            </h3>
           )}
           {action}
         </div>
       )}
       {subtitle && (
-        <p className="font-sans text-eyebrow text-paper/40 mb-4">{subtitle}</p>
+        <p
+          className="-mt-2 mb-3 font-sans text-[12.5px] leading-snug"
+          style={{ color: "var(--adm-ink-3)" }}
+        >
+          {subtitle}
+        </p>
       )}
-      {!subtitle && (title || action) && <div className="mb-4" />}
       {children}
     </section>
   );
@@ -97,15 +135,12 @@ export function Modal({
   // screen and cut its bottom off. items-center is what centres it now.
   //
   // Portalled onto <body> so the `fixed` overlay is anchored to the viewport.
-  // The admin tab wrapper (.admin-fade-in) keeps a persistent translateY(0)
-  // after its entrance animation (animation-fill-mode: both), and any non-none
-  // transform makes that wrapper the containing block for fixed descendants —
-  // which trapped this dialog inside the tab-content box (offset below the
-  // header, as tall as the page) instead of centring it on screen. Portalling
-  // past it fixes every admin dialog, not just this one.
+  // Any ancestor with a non-none transform becomes the containing block for
+  // fixed descendants, which previously trapped this dialog inside the tab
+  // content box. Portalling past it fixes every admin dialog, not just this one.
   if (typeof document === "undefined") return null;
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-night/80 p-4 backdrop-blur-sm md:p-8">
+    <div className="adm fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm md:p-8">
       <button
         type="button"
         aria-label="Close"
@@ -113,29 +148,38 @@ export function Modal({
         className="absolute inset-0 h-full w-full cursor-default"
       />
       {/* The panel is capped to the viewport and scrolls INTERNALLY. Letting
-          it grow past the viewport pushed the header (close button and the
-          Overview/Edit toggle) off screen, so the only way back to them was
-          scrolling the overlay — reported as the dialog being unusable on a
-          laptop. */}
+          it grow past the viewport pushed the header off screen, so the only
+          way back was scrolling the overlay — reported as the dialog being
+          unusable on a laptop. */}
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
         className={
-          // max-h-full, not a dvh fraction: the overlay's own padding is
-          // already subtracted, so the panel can never exceed the space it
-          // actually has. No auto margins — items-center does the centring.
-          "admin-surface relative flex max-h-full w-full flex-col rounded-2xl border border-white/10 bg-night shadow-2xl " +
+          "adm-panel-enter relative flex max-h-full w-full flex-col rounded-xl border shadow-2xl " +
           (wide ? "max-w-[1040px]" : "max-w-[760px]")
         }
+        style={{
+          background: "var(--adm-panel)",
+          borderColor: "var(--adm-line-strong)",
+        }}
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-white/8 px-5 py-4 md:px-6">
+        <div
+          className="flex shrink-0 items-start justify-between gap-4 border-b px-5 py-3.5 md:px-6"
+          style={{ borderColor: "var(--adm-line)" }}
+        >
           <div className="min-w-0">
-            <p className="truncate font-sans text-title-sm font-semibold text-paper">
+            <p
+              className="truncate font-sans text-[15px] font-semibold"
+              style={{ color: "var(--adm-ink)" }}
+            >
               {title}
             </p>
             {subtitle ? (
-              <p className="mt-0.5 truncate font-sans text-caption text-paper/45">
+              <p
+                className="mt-0.5 truncate font-sans text-[12.5px]"
+                style={{ color: "var(--adm-ink-3)" }}
+              >
                 {subtitle}
               </p>
             ) : null}
@@ -146,9 +190,13 @@ export function Modal({
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="rounded-full border border-paper/20 px-2.5 py-1 font-sans text-caption text-paper/60 hover:border-paper/40 hover:text-paper"
+              className="rounded-md border px-2 py-1 font-sans text-[12px] transition-colors"
+              style={{
+                borderColor: "var(--adm-line-strong)",
+                color: "var(--adm-ink-2)",
+              }}
             >
-              ✕
+              Esc
             </button>
           </div>
         </div>
@@ -163,7 +211,8 @@ export function Modal({
 }
 
 // ── StatCard ────────────────────────────────────────────────────────────────
-// Just a big number + label. Optional accent makes it gold-tinted.
+// One number and what it counts. The number is the element; the label is
+// support, so the label is quiet and small and the number is not.
 export function StatCard({
   label,
   value,
@@ -177,38 +226,57 @@ export function StatCard({
 }) {
   return (
     <div
-      className={
-        "rounded-xl border p-5 " +
-        (accent
-          ? "admin-surface-gold border-gold/30 bg-gold/[0.06]"
-          : "admin-surface border-white/8 bg-night")
-      }
+      className="rounded-[var(--adm-radius)] border p-4"
+      style={{
+        background: accent
+          ? "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 93%)"
+          : "var(--adm-panel)",
+        borderColor: accent
+          ? "color-mix(in oklab, var(--adm-accent), transparent 70%)"
+          : "var(--adm-line)",
+      }}
     >
-      <p
-        className={
-          "font-sans text-caption font-semibold uppercase tracking-[1.2px] " +
-          (accent ? "text-gold/80" : "text-paper/45")
-        }
-      >
+      <p className="font-sans text-[12.5px]" style={{ color: "var(--adm-ink-3)" }}>
         {label}
       </p>
       <p
-        className={
-          "mt-2 font-sans text-heading font-bold tabular-nums leading-none " +
-          (accent ? "text-gold" : "text-paper")
-        }
+        className="mt-1.5 font-sans text-[30px] font-semibold leading-none tracking-[-0.02em]"
+        style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)" }}
       >
         <CountUp value={value} />
       </p>
       {hint && (
-        <p className="mt-1.5 font-sans text-eyebrow text-paper/45">{hint}</p>
+        <p
+          className="mt-1.5 font-sans text-[12px]"
+          style={{ color: "var(--adm-ink-3)" }}
+        >
+          {hint}
+        </p>
       )}
     </div>
   );
 }
 
+// ── Delta ───────────────────────────────────────────────────────────────────
+// Change against the prior period. Carries a word, not only a colour and an
+// arrow, so it survives colour-blindness, greyscale print, and forced colours.
+function Delta({ value, positive }: { value: number; positive: boolean }) {
+  return (
+    <span
+      className="inline-flex items-center gap-1 font-sans text-[12px] font-medium"
+      style={{ color: positive ? "var(--adm-good)" : "var(--adm-critical)" }}
+    >
+      <span aria-hidden>{positive ? "↑" : "↓"}</span>
+      {Math.abs(value)}%
+      <span style={{ color: "var(--adm-ink-3)" }}>
+        {positive ? "up on" : "down on"} prior
+      </span>
+    </span>
+  );
+}
+
 // ── KpiCard ─────────────────────────────────────────────────────────────────
-// Big number + sparkline + delta vs prior period. Used on the Overview hero row.
+// Big number + trend + delta vs prior period. Used on the Overview hero row.
 export function KpiCard({
   label,
   value,
@@ -230,59 +298,63 @@ export function KpiCard({
 }) {
   return (
     <div
-      className={
-        "rounded-xl border p-5 " +
-        (accent
-          ? "admin-surface-gold border-gold/30 bg-gold/[0.06]"
-          : "admin-surface border-white/8 bg-night")
-      }
+      className="flex flex-col rounded-[var(--adm-radius)] border p-4"
+      style={{
+        background: accent
+          ? "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 93%)"
+          : "var(--adm-panel)",
+        borderColor: accent
+          ? "color-mix(in oklab, var(--adm-accent), transparent 70%)"
+          : "var(--adm-line)",
+      }}
     >
-      <p
-        className={
-          "font-sans text-caption font-semibold uppercase tracking-[1.2px] " +
-          (accent ? "text-gold/80" : "text-paper/45")
-        }
-      >
-        {label}
-      </p>
-      {subtitle && (
-        <p className="mt-0.5 font-sans text-eyebrow text-paper/45 tabular-nums">
-          {subtitle}
-        </p>
-      )}
-      <div className="mt-2 flex items-end justify-between gap-2">
+      <div className="flex items-baseline justify-between gap-2">
         <p
-          className={
-            "font-sans text-heading font-bold tabular-nums leading-none " +
-            (accent ? "text-gold" : "text-paper")
-          }
+          className="font-sans text-[12.5px]"
+          style={{ color: "var(--adm-ink-3)" }}
+        >
+          {label}
+        </p>
+        {subtitle && (
+          <p
+            className="font-sans text-[11.5px]"
+            style={{ color: "var(--adm-ink-3)" }}
+          >
+            {subtitle}
+          </p>
+        )}
+      </div>
+
+      <div className="mt-2 flex items-end justify-between gap-3">
+        <p
+          className="font-sans text-[32px] font-semibold leading-none tracking-[-0.025em]"
+          style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)" }}
         >
           <CountUp value={value} />
         </p>
-        {trend && trend.length > 1 && (
-          <Sparkline data={trend} width={90} height={28} />
+        {/* The sparkline earns its place only when there is a shape to see.
+            Two points is a line segment, not a trend. */}
+        {trend && trend.length > 2 && (
+          <Sparkline data={trend} width={88} height={26} />
         )}
       </div>
-      {hint
-        ? <p className="mt-2 font-sans text-eyebrow text-paper/55">{hint}</p>
-        : delta && (
-            <p
-              className={
-                "mt-2 font-sans text-eyebrow tabular-nums " +
-                (delta.positive ? "text-emerald-400" : "text-rose-400")
-              }
-            >
-              {delta.positive ? "▲" : "▼"} {Math.abs(delta.value)}% vs prior
-            </p>
-          )}
+
+      <div className="mt-2 min-h-[16px]">
+        {hint ? (
+          <p className="font-sans text-[12px]" style={{ color: "var(--adm-ink-2)" }}>
+            {hint}
+          </p>
+        ) : delta ? (
+          <Delta value={delta.value} positive={delta.positive} />
+        ) : null}
+      </div>
     </div>
   );
 }
 
 // ── ChartFrame ──────────────────────────────────────────────────────────────
 // Thin wrapper for chart cards: a Card with a built-in slot for a small
-// range selector or legend hint and consistent empty-state copy. Tabs use
-// this so chart layout stays the same across the panel.
+// range selector or legend hint and consistent empty-state copy.
 export function ChartFrame({
   title,
   subtitle,
@@ -303,21 +375,22 @@ export function ChartFrame({
   accent?: boolean;
 }) {
   return (
-    <Card
-      title={title}
-      subtitle={subtitle}
-      accent={accent}
-      action={rangeSelector}
-    >
+    <Card title={title} subtitle={subtitle} accent={accent} action={rangeSelector}>
       {isEmpty ? (
-        <p className="font-sans text-detail text-paper/40 py-8 text-center">
-          {empty ?? "No data in range."}
+        <p
+          className="py-10 text-center font-sans text-[13px]"
+          style={{ color: "var(--adm-ink-3)" }}
+        >
+          {empty ?? "Nothing in this range yet. Widen the dates to see more."}
         </p>
       ) : (
         <>
           {children}
           {legendHint && (
-            <p className="mt-3 font-sans text-eyebrow text-paper/45">
+            <p
+              className="mt-3 font-sans text-[12px]"
+              style={{ color: "var(--adm-ink-3)" }}
+            >
               {legendHint}
             </p>
           )}
@@ -328,9 +401,8 @@ export function ChartFrame({
 }
 
 // ── Toolbar ─────────────────────────────────────────────────────────────────
-// Right-aligned row of small action buttons that sit beside a Card title.
 export function Toolbar({ children }: { children: ReactNode }) {
-  return <div className="inline-flex items-center gap-2">{children}</div>;
+  return <div className="inline-flex flex-wrap items-center gap-1.5">{children}</div>;
 }
 
 export function ToolbarButton({
@@ -346,15 +418,22 @@ export function ToolbarButton({
   variant?: "default" | "danger" | "primary";
   title?: string;
 }) {
-  const base =
-    "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 font-sans text-eyebrow font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
-  const variants = {
-    default:
-      "border-paper/20 bg-paper/[0.04] text-paper/75 hover:border-gold/50 hover:text-gold",
-    primary:
-      "border-gold/40 bg-gold/[0.08] text-gold hover:bg-gold/[0.14]",
-    danger:
-      "border-rose-400/40 bg-rose-400/[0.06] text-rose-300 hover:bg-rose-400/[0.12]",
+  const style: Record<string, React.CSSProperties> = {
+    default: {
+      borderColor: "var(--adm-line-strong)",
+      background: "var(--adm-panel-2)",
+      color: "var(--adm-ink-2)",
+    },
+    primary: {
+      borderColor: "transparent",
+      background: "var(--adm-accent)",
+      color: "#17130a",
+    },
+    danger: {
+      borderColor: "color-mix(in oklab, var(--adm-critical), transparent 60%)",
+      background: "color-mix(in oklab, var(--adm-critical), transparent 90%)",
+      color: "var(--adm-critical)",
+    },
   };
   return (
     <button
@@ -362,8 +441,20 @@ export function ToolbarButton({
       onClick={onClick}
       disabled={loading}
       title={title}
-      className={`${base} ${variants[variant]}`}
+      aria-busy={loading || undefined}
+      className={
+        "adm-rail-item inline-flex items-center gap-1.5 rounded-md border px-2.5 py-[5px] font-sans text-[12.5px] font-medium " +
+        "disabled:cursor-not-allowed disabled:opacity-45 hover:brightness-125"
+      }
+      style={style[variant]}
     >
+      {loading && (
+        <span
+          aria-hidden
+          className="adm-skeleton"
+          style={{ width: 10, height: 10, borderRadius: 999 }}
+        />
+      )}
       {children}
     </button>
   );
@@ -375,7 +466,7 @@ export function DataTable<T>({
   columns,
   rows,
   rowKey,
-  empty = "No data.",
+  empty = "Nothing here yet.",
   csvFilename,
 }: {
   columns: {
@@ -394,13 +485,8 @@ export function DataTable<T>({
 
   function handleCsv() {
     const headers = columns.map((c) => c.label);
-    const data = rows.map((r) =>
-      columns.map((c) => (c.csv ? c.csv(r) : "")),
-    );
-    downloadCsv(
-      csvFilename ?? "export.csv",
-      toCsv(headers, data),
-    );
+    const data = rows.map((r) => columns.map((c) => (c.csv ? c.csv(r) : "")));
+    downloadCsv(csvFilename ?? "export.csv", toCsv(headers, data));
   }
 
   function handleMarkdown() {
@@ -423,25 +509,38 @@ export function DataTable<T>({
 
   return (
     <div>
-      <div className="flex justify-end gap-2 mb-2">
-        <ToolbarButton onClick={handleCsv} title="Download as CSV">
-          CSV
-        </ToolbarButton>
-        <ToolbarButton onClick={handleMarkdown} title="Copy as markdown">
-          {copied ? "Copied" : "MD"}
-        </ToolbarButton>
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <p className="font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
+          {rows.length} {rows.length === 1 ? "row" : "rows"}
+        </p>
+        <Toolbar>
+          <ToolbarButton onClick={handleCsv} title="Download these rows as CSV">
+            CSV
+          </ToolbarButton>
+          <ToolbarButton onClick={handleMarkdown} title="Copy these rows as a markdown table">
+            {copied ? "Copied" : "Markdown"}
+          </ToolbarButton>
+        </Toolbar>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full font-sans text-detail">
-          <thead>
-            <tr className="border-b border-paper/10">
+      <div
+        className="overflow-auto rounded-lg border"
+        style={{ borderColor: "var(--adm-line)", maxHeight: "70vh" }}
+      >
+        <table className="w-full font-sans text-[13px]">
+          <thead className="adm-thead">
+            <tr>
               {columns.map((c) => (
                 <th
                   key={c.key}
+                  scope="col"
                   className={
-                    "px-3 py-2 font-semibold uppercase tracking-[1px] text-eyebrow text-paper/45 " +
+                    "border-b px-3 py-2 font-medium " +
                     (c.align === "right" ? "text-right" : "text-left")
                   }
+                  style={{
+                    borderColor: "var(--adm-line)",
+                    color: "var(--adm-ink-3)",
+                  }}
                 >
                   {c.label}
                 </th>
@@ -453,7 +552,8 @@ export function DataTable<T>({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-3 py-6 text-center text-paper/45 text-detail"
+                  className="px-3 py-10 text-center font-sans text-[13px]"
+                  style={{ color: "var(--adm-ink-3)" }}
                 >
                   {empty}
                 </td>
@@ -462,15 +562,16 @@ export function DataTable<T>({
               rows.map((r) => (
                 <tr
                   key={rowKey(r)}
-                  className="border-b border-paper/[0.06] hover:bg-paper/[0.02] transition-colors"
+                  className="adm-rail-item border-b hover:bg-white/[0.03]"
+                  style={{ borderColor: "var(--adm-line)" }}
                 >
                   {columns.map((c) => (
                     <td
                       key={c.key}
                       className={
-                        "px-3 py-2.5 text-paper/85 " +
-                        (c.align === "right" ? "text-right tabular-nums" : "")
+                        "px-3 py-2 " + (c.align === "right" ? "text-right" : "")
                       }
+                      style={{ color: "var(--adm-ink)" }}
                     >
                       {c.render(r)}
                     </td>
@@ -485,9 +586,7 @@ export function DataTable<T>({
   );
 }
 
-// ── SubTabs ───────────────────────────────────────────────────────────────
-// Pill row for switching sub-panels inside a hub tab. Same look as the
-// existing Marketplace panel switcher, extracted so the hub shells share it.
+// ── SubTabs ─────────────────────────────────────────────────────────────────
 export function SubTabs<T extends string>({
   tabs,
   active,
@@ -498,37 +597,39 @@ export function SubTabs<T extends string>({
   onChange: (t: T) => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-2">
-      {tabs.map(([id, label]) => (
-        <button
-          key={id}
-          type="button"
-          onClick={() => onChange(id)}
-          aria-pressed={active === id}
-          className={
-            "rounded-pill px-4 py-1.5 font-sans text-detail font-medium transition-colors " +
-            (active === id
-              ? "bg-gold text-night"
-              : "border border-paper/15 text-paper/65 hover:text-paper")
-          }
-        >
-          {label}
-        </button>
-      ))}
+    <div
+      className="inline-flex flex-wrap gap-0.5 rounded-lg border p-0.5"
+      style={{ borderColor: "var(--adm-line)", background: "var(--adm-panel-2)" }}
+    >
+      {tabs.map(([id, label]) => {
+        const on = active === id;
+        return (
+          <button
+            key={id}
+            type="button"
+            onClick={() => onChange(id)}
+            aria-pressed={on}
+            className="adm-rail-item rounded-[6px] px-3 py-1.5 font-sans text-[12.5px] font-medium"
+            style={
+              on
+                ? { background: "var(--adm-accent)", color: "#17130a" }
+                : { color: "var(--adm-ink-2)" }
+            }
+          >
+            {label}
+          </button>
+        );
+      })}
     </div>
   );
 }
 
 // ── Filter toolbar ──────────────────────────────────────────────────────────
-// Shared filter controls for the data tables: a search box, a chip row with
-// per-option counts, a compact labelled select, and the bar that frames them
-// with a live "matched of total" count plus a clear-all action. Shared so
-// every tab's filter bar looks and behaves identically.
 
 export function SearchInput({
   value,
   onChange,
-  placeholder = "Search…",
+  placeholder = "Search",
   className = "",
 }: {
   value: string;
@@ -542,7 +643,8 @@ export function SearchInput({
         aria-hidden="true"
         viewBox="0 0 20 20"
         fill="none"
-        className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-paper/35"
+        className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2"
+        style={{ color: "var(--adm-ink-3)" }}
       >
         <circle cx="9" cy="9" r="5.5" stroke="currentColor" strokeWidth="1.6" />
         <path
@@ -553,18 +655,24 @@ export function SearchInput({
         />
       </svg>
       <input
-        type="text"
+        type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-pill border border-paper/15 bg-night py-1.5 pl-9 pr-8 font-sans text-detail text-paper placeholder:text-paper/30 focus:border-gold/50 focus:outline-none"
+        className="w-full rounded-md border py-1.5 pl-8 pr-8 font-sans text-[13px] outline-none"
+        style={{
+          borderColor: "var(--adm-line-strong)",
+          background: "var(--adm-panel-2)",
+          color: "var(--adm-ink)",
+        }}
       />
       {value ? (
         <button
           type="button"
           aria-label="Clear search"
           onClick={() => onChange("")}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full px-1 font-sans text-caption text-paper/45 hover:text-paper"
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-1 font-sans text-[12px]"
+          style={{ color: "var(--adm-ink-3)" }}
         >
           ✕
         </button>
@@ -592,19 +700,28 @@ export function FilterChips<T extends string>({
             type="button"
             onClick={() => onChange(o.id)}
             aria-pressed={on}
-            className={
-              "inline-flex items-center gap-1.5 rounded-pill border px-3 py-1 font-sans text-caption font-medium capitalize transition-colors " +
-              (on
-                ? "border-gold bg-gold text-night"
-                : "border-paper/15 text-paper/60 hover:border-paper/35 hover:text-paper")
+            className="adm-rail-item inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 font-sans text-[12.5px] font-medium capitalize"
+            style={
+              on
+                ? {
+                    borderColor: "transparent",
+                    background: "var(--adm-accent)",
+                    color: "#17130a",
+                  }
+                : {
+                    borderColor: "var(--adm-line-strong)",
+                    color: "var(--adm-ink-2)",
+                  }
             }
           >
             {o.label}
             {o.count != null ? (
               <span
-                className={
-                  "rounded-full px-1.5 font-sans text-eyebrow font-semibold tabular-nums " +
-                  (on ? "bg-night/15" : "bg-paper/[0.07] text-paper/45")
+                className="rounded px-1 font-sans text-[11px] font-semibold"
+                style={
+                  on
+                    ? { background: "rgb(0 0 0 / 0.18)" }
+                    : { background: "var(--adm-panel-2)", color: "var(--adm-ink-3)" }
                 }
               >
                 {o.count}
@@ -630,13 +747,18 @@ export function FilterSelect({
 }) {
   return (
     <label className="inline-flex items-center gap-1.5">
-      <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/40">
+      <span className="font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
         {label}
       </span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-pill border border-paper/15 bg-night px-2.5 py-1 font-sans text-caption text-paper/80 focus:border-gold/50 focus:outline-none"
+        className="rounded-md border px-2 py-1 font-sans text-[12.5px] outline-none"
+        style={{
+          borderColor: "var(--adm-line-strong)",
+          background: "var(--adm-panel-2)",
+          color: "var(--adm-ink)",
+        }}
       >
         {options.map(([v, l]) => (
           <option key={v} value={v}>
@@ -666,15 +788,19 @@ export function FilterBar({
   const narrowed = matched !== total;
   const label = (n: number) => `${n} ${n === 1 ? noun.replace(/s$/, "") : noun}`;
   return (
-    <div className="mb-3 rounded-lg border border-white/6 bg-paper/[0.02] p-3">
+    <div
+      className="mb-3 rounded-lg border p-2.5"
+      style={{ borderColor: "var(--adm-line)", background: "var(--adm-panel)" }}
+    >
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">{children}</div>
-      <p className="mt-2 font-sans text-eyebrow tabular-nums text-paper/40">
+      <p className="mt-2 font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
         {narrowed ? `${matched} of ${label(total)} shown` : label(total)}
         {onClear ? (
           <button
             type="button"
             onClick={onClear}
-            className="ml-3 font-semibold text-gold hover:text-gold-pale"
+            className="ml-3 font-medium"
+            style={{ color: "var(--adm-accent)" }}
           >
             Clear filters
           </button>
@@ -685,6 +811,8 @@ export function FilterBar({
 }
 
 // ── Pill ────────────────────────────────────────────────────────────────────
+// Status marker. Tone names are kept for compatibility with the tabs that
+// already pass them; they now resolve to the reserved status vocabulary.
 export function Pill({
   children,
   tone = "neutral",
@@ -692,19 +820,25 @@ export function Pill({
   children: ReactNode;
   tone?: "neutral" | "gold" | "rose" | "emerald";
 }) {
-  const tones = {
-    neutral: "border-paper/20 bg-paper/[0.04] text-paper/70",
-    gold: "border-gold/40 bg-gold/[0.08] text-gold",
-    rose: "border-rose-400/40 bg-rose-400/[0.06] text-rose-300",
-    emerald: "border-emerald-400/40 bg-emerald-400/[0.06] text-emerald-300",
+  const tones: Record<string, { fg: string; bg: string }> = {
+    neutral: { fg: "var(--adm-ink-2)", bg: "var(--adm-panel-2)" },
+    gold: { fg: "var(--adm-accent)", bg: "color-mix(in oklab, var(--adm-accent), transparent 88%)" },
+    rose: { fg: "var(--adm-critical)", bg: "color-mix(in oklab, var(--adm-critical), transparent 88%)" },
+    emerald: { fg: "var(--adm-good)", bg: "color-mix(in oklab, var(--adm-good), transparent 88%)" },
   };
+  const t = tones[tone];
   return (
     <span
-      className={
-        "inline-flex items-center rounded-full border px-2 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] " +
-        tones[tone]
-      }
+      className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 font-sans text-[11.5px] font-medium"
+      style={{ color: t.fg, background: t.bg }}
     >
+      {/* A dot in the same hue, so the state reads at a glance, while the
+          word beside it carries the meaning without relying on colour. */}
+      <span
+        aria-hidden
+        className="inline-block rounded-full"
+        style={{ width: 5, height: 5, background: "currentColor" }}
+      />
       {children}
     </span>
   );
