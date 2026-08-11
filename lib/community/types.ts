@@ -31,10 +31,18 @@ export type CommunityReply = {
   created_at: string;
 };
 
-export const POST_KIND_LABELS: Record<CommunityPostKind, string> = {
-  discussion: "Discussion",
-  scripture: "Scripture",
-  father: "From the Fathers",
+/**
+ * Message keys for each post kind, not the English words.
+ *
+ * These used to be literal strings rendered straight into the feed, so the
+ * kind label stayed English in all 21 locales while everything around it
+ * translated. Keys keep the mapping here and let the caller resolve it
+ * through `useTranslate`.
+ */
+export const POST_KIND_KEYS: Record<CommunityPostKind, string> = {
+  discussion: "community.kindDiscussion",
+  scripture: "community.kindScripture",
+  father: "community.kindFather",
 };
 
 /** Short relative timestamp for feed rows ("just now", "3h", "2d"). */
