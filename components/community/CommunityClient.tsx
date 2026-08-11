@@ -925,8 +925,15 @@ function PostCard({
       ) : null}
 
       {post.quote_text ? (
-        <blockquote className="mt-3 rounded-lg border-l-2 border-gold/50 bg-night px-4 py-3">
-          <p className="font-serif text-body leading-relaxed text-paper/90">
+        // The house treatment for a verbatim quotation, matching the five
+        // other surfaces that carry one: ApologeticsReader, TopicReader,
+        // FlorilegiumDetail and FlorilegiumPickerSheet all use a 1px gold
+        // rule at 40% with no fill. This was the only one that reached for a
+        // 2px rule on a filled rounded card, which read as a callout rather
+        // than a quotation and made the same Father look different depending
+        // on which screen you met him.
+        <blockquote className="mt-3 border-l border-gold/40 pl-5">
+          <p className="font-serif italic text-body leading-[1.7] text-paper/90">
             {post.quote_text}
           </p>
           <footer className="mt-2 font-sans text-caption text-paper/55">
