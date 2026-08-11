@@ -11,6 +11,74 @@ export type ScheduleRow = {
 };
 
 /**
+ * One reader's opt-in to a daily nudge for one campaign they joined.
+ *
+ * Kept in the same module as the prayer rules so both are matched by the
+ * same clock, in the same hourly pass, against the same timezone. A second
+ * scheduler is exactly what CONTRIBUTING's bar warns against: "five weekly
+ * reminders landing on five different days is a daily habit loop assembled
+ * out of parts that each looked harmless."
+ */
+export type CampaignReminderRow = {
+  campaign_id: string;
+  remind_enabled: boolean;
+  remind_time: string | null;
+  timezone: string | null;
+};
+
+/**
+ * The campaigns due for this reader in the current local hour.
+ *
+ * Capped, and that cap is the point. A reader who joins twelve campaigns and
+ * turns a reminder on for each would otherwise receive twelve notifications
+ * in one hour, which is the multiplication the ethos forbids. One goes out;
+ * the rest wait for the app to be opened, which is the pull surface the rule
+ * asks for.
+ */
+export const MAX_CAMPAIGN_REMINDERS_PER_RUN = 1;
+
+export function dueCampaigns(
+  rows: readonly CampaignReminderRow[],
+  now: Date,
+): CampaignReminderRow[] {
+  const due: CampaignReminderRow[] = [];
+  for (const row of rows) {
+    if (!row.remind_enabled || !row.remind_time) continue;
+    const tz = row.timezone || "UTC";
+    const hh = String(nowInTz(now, tz).getUTCHours()).padStart(2, "0");
+    if (row.remind_time.slice(0, 2) !== hh) continue;
+    due.push(row);
+    if (due.length >= MAX_CAMPAIGN_REMINDERS_PER_RUN) break;
+  }
+  return due;
+}
+
+/**
+ * What a campaign reminder says.
+ *
+ * No campaign title, no subject name, and no count. A push payload crosses
+ * APNs and FCM in plaintext and is stored in a Postgres column, and
+ * CONTRIBUTING is explicit that personal content stays behind the lock
+ * screen: "the notification says that something is there; the content lives
+ * behind the lock screen." A campaign is frequently "for my mother's
+ * surgery", which is precisely the sentence that must not appear on a lock
+ * screen in a shared room.
+ *
+ * No digits and no exclamation marks either, per the same bar.
+ */
+export function campaignReminderPayload(campaignId: string): {
+  title: string;
+  body: string;
+  url: string;
+} {
+  return {
+    title: "Your prayer campaign",
+    body: "Someone is waiting on your prayers today.",
+    url: `/campaigns/detail?id=${encodeURIComponent(campaignId)}`,
+  };
+}
+
+/**
  * Whether the row is due right now, and for which rule. The cron runs hourly,
  * so we match on the local HOUR (a user's ":15" fires within that hour).
  * Returns null when neither time matches the user's current local hour.

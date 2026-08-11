@@ -7,27 +7,69 @@
 
 import { apiFetch } from "@/lib/api/client";
 import { createClient } from "@/lib/supabase/client";
+import { todayKey } from "@/lib/rhythm/dayKey";
+import type { CampaignGroup, GroupMember } from "./groups";
+import type { CampaignDay } from "./streak";
 import type {
   CampaignIntention,
   ForWhom,
   PrayerCampaign,
 } from "./campaigns";
 
+/**
+ * Failure kept apart from emptiness, the same shape and for the same reason
+ * as PostsResult in lib/community/client.ts.
+ *
+ * These used to return `[]` and `null` for a 500, a 404 and a dropped
+ * connection alike, which the board renders as "No campaigns here yet. Be
+ * the first to ask." A reader offline in a church was told the community had
+ * asked for nothing. AUDIT-2026-07-27 prescribed exactly this fix.
+ */
+export type CampaignsResult =
+  | { state: "dark" }
+  | { state: "ok"; campaigns: PrayerCampaign[] }
+  | { state: "error" };
+
+export type CampaignResult =
+  | { state: "dark" }
+  | { state: "ok"; campaign: PrayerCampaign }
+  | { state: "missing" }
+  | { state: "error" };
+
 export async function fetchCampaigns(
   intention?: CampaignIntention,
-): Promise<PrayerCampaign[]> {
-  const qs = intention ? `?intention=${intention}` : "";
-  const res = await apiFetch(`/api/campaigns${qs}`);
-  if (!res.ok) return [];
-  const json = (await res.json()) as { campaigns?: PrayerCampaign[] };
-  return json.campaigns ?? [];
+): Promise<CampaignsResult> {
+  try {
+    const qs = intention ? `?intention=${intention}` : "";
+    const res = await apiFetch(`/api/campaigns${qs}`);
+    // 404 is the flag guard in app/api/campaigns/route.ts, not a failure.
+    if (res.status === 404) return { state: "dark" };
+    if (!res.ok) return { state: "error" };
+    const json = (await res.json()) as { campaigns?: PrayerCampaign[] };
+    return { state: "ok", campaigns: json.campaigns ?? [] };
+  } catch {
+    return { state: "error" };
+  }
 }
 
-export async function fetchCampaign(id: string): Promise<PrayerCampaign | null> {
-  const res = await apiFetch(`/api/campaigns/${id}`);
-  if (!res.ok) return null;
-  const json = (await res.json()) as { campaign?: PrayerCampaign };
-  return json.campaign ?? null;
+export async function fetchCampaign(id: string): Promise<CampaignResult> {
+  try {
+    const res = await apiFetch(`/api/campaigns/${id}`);
+    if (res.status === 404) {
+      // The route answers 404 both for a dark flag and a missing row. The
+      // body distinguishes them: the flag guard sends `{ error: "Not found." }`
+      // with no campaign key either way, so treat an unparseable body as
+      // missing rather than claiming the feature is off.
+      return { state: "missing" };
+    }
+    if (!res.ok) return { state: "error" };
+    const json = (await res.json()) as { campaign?: PrayerCampaign };
+    return json.campaign
+      ? { state: "ok", campaign: json.campaign }
+      : { state: "missing" };
+  } catch {
+    return { state: "error" };
+  }
 }
 
 export type CreateCampaignInput = {
@@ -97,20 +139,180 @@ export async function uploadCampaignImage(file: File): Promise<UploadResult> {
   }
 }
 
-export type PrayResult = ApiResult & { alreadyToday?: boolean };
+export type PrayResult = ApiResult & {
+  alreadyToday?: boolean;
+  /** The day the server recorded, echoed back so the client can add it to
+   *  the local day set without a refetch. */
+  dayKey?: string;
+  totalDays?: number;
+};
 
+/**
+ * Mark this campaign prayed for the reader's own calendar day.
+ *
+ * The day key is computed HERE and sent up, because the server has no way to
+ * know what day it is where the reader is standing. This is the same key
+ * every other day-keyed surface in the app uses, so a campaign day and a
+ * prayer-rule day mean the same thing on the same device.
+ */
 export async function prayCampaign(id: string): Promise<PrayResult> {
-  const res = await apiFetch(`/api/campaigns/${id}/pray`, { method: "POST" });
-  let json: Record<string, unknown> = {};
   try {
-    json = (await res.json()) as Record<string, unknown>;
+    const res = await apiFetch(`/api/campaigns/${id}/pray`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ dayKey: todayKey() }),
+    });
+    let json: Record<string, unknown> = {};
+    try {
+      json = (await res.json()) as Record<string, unknown>;
+    } catch {
+      /* empty */
+    }
+    if (!res.ok) {
+      return {
+        ok: false,
+        error: (json.error as string) || "Couldn't record it.",
+      };
+    }
+    return {
+      ok: true,
+      alreadyToday: Boolean(json.alreadyToday),
+      dayKey: typeof json.dayKey === "string" ? json.dayKey : undefined,
+      totalDays: typeof json.totalDays === "number" ? json.totalDays : undefined,
+    };
   } catch {
-    /* empty */
+    return { ok: false, error: "Network dropped. Please try again." };
   }
-  if (!res.ok) {
-    return { ok: false, error: (json.error as string) || "Couldn't record it." };
+}
+
+/**
+ * The reader's own kept days for one campaign, read direct under RLS.
+ *
+ * prayer_campaign_days has a self-select policy, so this needs no route. An
+ * absent table (before the migration lands) reads as no days rather than an
+ * error, so the streak simply does not appear and nothing breaks.
+ */
+export async function fetchCampaignDays(
+  campaignId: string,
+): Promise<CampaignDay[]> {
+  try {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return [];
+    const { data, error } = await supabase
+      .from("prayer_campaign_days")
+      .select("day_key")
+      .eq("campaign_id", campaignId)
+      .eq("user_id", user.id)
+      .order("day_key", { ascending: false })
+      .limit(400);
+    if (error || !data) return [];
+    return data as CampaignDay[];
+  } catch {
+    return [];
   }
-  return { ok: true, alreadyToday: Boolean(json.alreadyToday) };
+}
+
+// ── Parish groups ───────────────────────────────────────────────────────────
+
+export type GroupResult = {
+  group: CampaignGroup | null;
+  members: GroupMember[];
+};
+
+/** The caller's own group for this campaign, with its roster, or null. */
+export async function fetchMyGroup(campaignId: string): Promise<GroupResult> {
+  try {
+    const res = await apiFetch(`/api/campaigns/${campaignId}/groups`);
+    if (!res.ok) return { group: null, members: [] };
+    const json = (await res.json()) as Partial<GroupResult>;
+    return {
+      group: json.group ?? null,
+      members: Array.isArray(json.members) ? json.members : [],
+    };
+  } catch {
+    return { group: null, members: [] };
+  }
+}
+
+export type CreateGroupResult = ApiResult & { inviteCode?: string };
+
+export async function createGroup(
+  campaignId: string,
+  name: string,
+): Promise<CreateGroupResult> {
+  try {
+    const res = await apiFetch(`/api/campaigns/${campaignId}/groups`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    let json: Record<string, unknown> = {};
+    try {
+      json = (await res.json()) as Record<string, unknown>;
+    } catch {
+      /* empty */
+    }
+    if (!res.ok) {
+      return {
+        ok: false,
+        error: (json.error as string) || "Couldn't start that group.",
+      };
+    }
+    return {
+      ok: true,
+      id: json.id as string | undefined,
+      inviteCode: json.inviteCode as string | undefined,
+    };
+  } catch {
+    return { ok: false, error: "Network dropped. Please try again." };
+  }
+}
+
+export async function joinGroup(inviteCode: string): Promise<ApiResult> {
+  try {
+    const res = await apiFetch("/api/campaigns/groups", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ inviteCode }),
+    });
+    return readResult(res);
+  } catch {
+    return { ok: false, error: "Network dropped. Please try again." };
+  }
+}
+
+export async function leaveGroup(groupId: string): Promise<ApiResult> {
+  try {
+    const res = await apiFetch("/api/campaigns/groups", {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ groupId }),
+    });
+    return readResult(res);
+  } catch {
+    return { ok: false, error: "Network dropped. Please try again." };
+  }
+}
+
+/** Turn this campaign's daily reminder on or off. Default is off. */
+export async function setCampaignReminder(
+  campaignId: string,
+  enabled: boolean,
+  time?: string,
+): Promise<ApiResult> {
+  try {
+    const res = await apiFetch(`/api/campaigns/${campaignId}/remind`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ enabled, time: enabled ? (time ?? "08:00") : null }),
+    });
+    return readResult(res);
+  } catch {
+    return { ok: false, error: "Network dropped. Please try again." };
+  }
 }
 
 export async function leaveCampaign(id: string): Promise<ApiResult> {
