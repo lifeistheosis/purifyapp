@@ -181,28 +181,68 @@
 /* ----------------------------------------------------------------------
  App-shell safe-area helpers. The bottom tab bar and the status-bar inset
  exist ONLY in the native app shell (Capacitor), so their padding is
- scoped to `html.is-native` (set by NativeBridge). On the web — mobile or
- desktop — there is no tab bar and a web header sits up top, so these are
- all no-ops. Pairs with the WebOnly/NativeOnly React gates.
+ scoped to `html.is-native` (set by NativeBridge). On the web there is no
+ tab bar and a web header sits up top, so nothing here should apply at all.
+ Pairs with the WebOnly/NativeOnly React gates.
+
+ "Should not apply" has to mean NO RULE, never a rule that sets zero. A
+ zero-valued rule is not neutral: it still wins over whatever the call site
+ asked for. That mistake is written up at length below, because it silently
+ stripped the padding off thirteen surfaces on mobile web for a whole
+ release. Anything added here must be scoped to `html.is-native`, or be a
+ real value on both platforms.
  ---------------------------------------------------------------------- */
+/* The tab bar exists ONLY in the native shell (MobileTabBar is NativeOnly),
+   so its height is 0 on the web. This MUST stay 0 here and be raised inside
+   `html.is-native` below, never the other way round: it was declared as a
+   flat 86px at :root, and the four floating elements that position off it
+   (MobileChapterPill, MobileVerseToolbar, MobileWorkPill, InstallPrompt, all
+   `bottom: calc(var(--tab-bar-h) + inset + 12px)`) therefore floated 98px up
+   the mobile-web viewport, anchored to a bar that is not rendered there.
+   `html.is-native .now-playing-lift` below still reads 86px: it is a
+   descendant of html.is-native, so it inherits the raised value. */
 :root {
- --tab-bar-h: 86px;
+ --tab-bar-h: 0px;
+ --now-playing-h: 0px;
 }
 
-/* Bottom clearance for scroll containers behind the native tab bar. */
-@utility safe-pb {
- padding-bottom: 0;
+/* How much room the now-playing bar claims at the bottom of the screen, so the
+   four floating reader elements can clear it. NowPlayingBar sets
+   `.has-now-playing` on <html> while it paints, the same idiom CartFab uses
+   for `.has-cart-fab` and for the same reason: two independently-mounted fixed
+   elements claiming one corner cannot be resolved by z-index, which is what the
+   note on `.now-playing-lift` below records the hard way.
+
+   56px is the card itself (a 40px transport button inside py-2). On the web it
+   also carries its own 6px bottom pad; `.now-playing-lift` zeroes that on
+   native because the tab bar underneath already clears the home indicator. */
+html.has-now-playing {
+ --now-playing-h: 62px;
 }
-/* safe-pb plus room for a floating reader pill (MobileChapterPill /
- MobileWorkPill, ~44px + 12px gap + 12px breathing room). */
-@utility safe-pb-reader {
- padding-bottom: 0;
+html.is-native.has-now-playing {
+ --now-playing-h: 56px;
 }
-/* Top clearance so content clears the native status bar (no web header
- up there in the app). */
-@utility safe-pt {
- padding-top: 0;
-}
+
+/* NOTE, and do not undo this: `safe-pb`, `safe-pb-reader` and `safe-pt` used
+   to be declared here as `@utility` blocks whose web value was a literal 0,
+   the intent being a no-op off-native. They were not a no-op. Tailwind emits
+   custom utilities near the end of the utilities layer, AFTER `.pb-*` and
+   `.py-*`, at the same (0,1,0) specificity, so on the web the later rule won
+   and every element pairing them with padding LOST it: the last verse of a
+   chapter sat flush on the viewport edge, and three fixed shop bars had their
+   buttons on the screen edge. `.md:pb-16` is emitted later still, which is why
+   only phones were affected and it went unseen.
+
+   The fix is that they are gone. The `html.is-native` rules below are
+   hand-written plain CSS, not utilities: they are unlayered, so they still
+   beat the utilities layer, and (0,2,1) beats (0,1,0) regardless. Native
+   rendering is unchanged. On the web there is now simply no rule, so the
+   author's own `pb-*` applies, which is what every call site always intended.
+
+   Do not "restore" these for symmetry, and do not try to blank the bodies
+   instead: `@utility safe-pb { }` is a hard build error, so deletion is the
+   only form this fix can take. */
+
 /* Position helper for the tab bar itself (sits above the home indicator). */
 @utility safe-bottom-pad {
  padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -215,6 +255,7 @@
    place; the real per-screen bug was fixed offsets (below-topbar / -line)
    that ignored the taller pinned bar, not the inset source. */
 html.is-native {
+ --tab-bar-h: 86px;
  --inset-top: env(safe-area-inset-top, 0px);
  --inset-bottom: env(safe-area-inset-bottom, 0px);
 }

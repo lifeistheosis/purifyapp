@@ -18,6 +18,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 import {
   pause,
@@ -43,6 +44,23 @@ export function NowPlayingBar() {
   const { src, title, artist, playing, currentTime, duration } =
     usePersistentAudio();
   const pathname = usePathname() ?? "/";
+
+  // Whether the bar actually paints. Computed here, above the early returns
+  // below, because the effect that flags it has to run on every render to
+  // obey the rules of hooks.
+  const visible = Boolean(src) && !pathname.startsWith(PLAYER_HREF);
+
+  // The floating reader elements (MobileChapterPill, MobileVerseToolbar,
+  // MobileWorkPill) sit a fixed distance above the tab bar, which is 0 on the
+  // web, so an anthem playing would bury the pill under this player. Flag the
+  // player on <html> while it paints and globals.css lifts them clear via
+  // --now-playing-h. Same shape as CartFab's .has-cart-fab.
+  useEffect(() => {
+    if (!visible) return;
+    const root = document.documentElement;
+    root.classList.add("has-now-playing");
+    return () => root.classList.remove("has-now-playing");
+  }, [visible]);
 
   // Nothing loaded: no bar. Also stand down on the anthem page itself,
   // where the full player is already on screen and a bar over it would be

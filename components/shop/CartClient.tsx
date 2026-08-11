@@ -183,7 +183,10 @@ export function CartClient() {
       {/* Summary: sticky bottom on phones (Airbnb-style commit bar), a card on md+. */}
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-night/95 px-5 py-4 backdrop-blur safe-pb",
+          // Bottom pad clears the home indicator on mobile web, where safe-pb
+          // is inert (the tab bar it accounts for is native-only). max() keeps
+          // the bar's own 16px on phones that report no inset.
+          "fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-night/95 px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur safe-pb",
           "md:static md:mt-8 md:rounded-xl md:border md:border-paper/10 md:bg-night-soft/60 md:p-6",
         )}
       >

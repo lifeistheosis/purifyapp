@@ -116,7 +116,7 @@ export function MobileVerseToolbar({
  className="absolute inset-x-0 px-4 flex flex-col items-center gap-2 pointer-events-none"
  style={{
  bottom:
- "calc(var(--tab-bar-h) + env(safe-area-inset-bottom, 0px) + 12px)",
+ "calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)",
  }}
  >
  {palette && palette.length > 0 && onColor && (
