@@ -386,6 +386,15 @@ html.has-cart-fab .back-to-top {
     to stop it never applied. `none` also disables swipe-down
     pull-to-refresh, which an installed app should not have. */
  overscroll-behavior: none;
+ /* Always reserve the scrollbar gutter, so a page that scrolls and a page
+    that does not are the same width. Every centred container in the app is
+    `mx-auto`, so without this the classic desktop scrollbar recentres the
+    whole layout by half its width the moment you navigate between a short
+    page and a long one: measured at 7.5px, enough to make the header
+    visibly jump on every navigation. Overlay scrollbars (all touch
+    browsers, and macOS by default) reserve nothing, so this is inert
+    there. */
+ scrollbar-gutter: stable;
  }
 
  @media (prefers-reduced-motion: reduce) {
