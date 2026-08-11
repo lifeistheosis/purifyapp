@@ -120,3 +120,10 @@ test-results/
 # Generated Sign in with Apple client secret (a bearer credential, 6-month life).
 # Regenerate with scripts/apple-client-secret.mjs
 .apple-client-secret.jwt
+
+# Impeccable design hook. config.json is shared and committed: it records which
+# detector findings the owner has confirmed are intentional. The cache is
+# per-machine scan state, and config.local.json holds per-developer overrides
+# including the hook consent decision. Neither belongs in the repository.
+.impeccable/hook.cache.json
+.impeccable/config.local.json
