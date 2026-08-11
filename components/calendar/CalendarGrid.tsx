@@ -9,17 +9,25 @@ import { Lampada } from "@/components/ui/icons/Lampada";
 import { CalendarCell } from "./CalendarCell";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
-function iso(d: Date): string {
-  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
-}
-
 /** Sunday-first short weekday names in the active locale (Jan 2023
- * started on a Sunday, so day 1+i gives Sun..Sat). */
+ * started on a Sunday, so day 1+i gives Sun..Sat).
+ *
+ * Cached per locale at module scope. This used to run inside the JSX on every
+ * render, and constructing an Intl.DateTimeFormat is one of the more
+ * expensive things a render body can do; the seven Date allocations beside it
+ * were the cheap part. A reader has at most a handful of locales in a
+ * session, so the map never grows. */
+const WEEKDAY_CACHE = new Map<string, string[]>();
+
 function weekdayNames(locale: string): string[] {
+  const hit = WEEKDAY_CACHE.get(locale);
+  if (hit) return hit;
   const fmt = new Intl.DateTimeFormat(locale, { weekday: "short", timeZone: "UTC" });
-  return Array.from({ length: 7 }, (_, i) =>
+  const names = Array.from({ length: 7 }, (_, i) =>
     fmt.format(new Date(Date.UTC(2023, 0, 1 + i))),
   );
+  WEEKDAY_CACHE.set(locale, names);
+  return names;
 }
 
 /**
@@ -31,13 +39,16 @@ export function CalendarGrid({
   grid,
   year,
   month,
-  selectedDay,
+  selectedIso,
   style,
 }: {
   grid: MonthCell[];
   year: number;
   month: number;
-  selectedDay: Date;
+  /** `YYYY-MM-DD`. A string, not a Date, so the selection compare is one
+   * string equality instead of three getUTC* calls per cell, and so nothing
+   * has to revive a Date on the client. */
+  selectedIso: string;
   style: "new" | "old";
 }) {
   const { locale, t } = useTranslate();
@@ -66,18 +77,14 @@ export function CalendarGrid({
       </div>
 
       <div className="grid grid-cols-7 border-l border-gold/15">
-        {cells.map((cell, i) => {
-          const isSelected =
-            cell.inMonth &&
-            cell.date.getUTCFullYear() === selectedDay.getUTCFullYear() &&
-            cell.date.getUTCMonth() === selectedDay.getUTCMonth() &&
-            cell.date.getUTCDate() === selectedDay.getUTCDate();
+        {cells.map((cell) => {
+          const isSelected = cell.inMonth && cell.iso === selectedIso;
           return (
             <CalendarCell
-              key={i}
+              key={cell.iso}
               cell={cell}
               isSelected={isSelected}
-              href={`/calendar?m=${year}-${mm}&d=${iso(cell.date)}${styleQS}`}
+              href={`/calendar?m=${year}-${mm}&d=${cell.iso}${styleQS}`}
             />
           );
         })}

@@ -46,7 +46,7 @@ export function CalendarCell({
  const tone = toneFor({ hasFeast: cell.hasFeast, fast: cell.fast });
  const meta = FAST_META[cell.fast];
  const FastIcon = meta.Icon;
- const label = cell.headline ? shortName(cell.headline.name) : "";
+ const label = cell.headlineName ? shortName(cell.headlineName) : "";
  const rgb = TONE_RGB[tone];
 
  const baseClasses =
@@ -56,6 +56,15 @@ export function CalendarCell({
  <Link
  href={href}
  scroll={false}
+ // Every tile is a distinct href, and /calendar is a static route, so the
+ // default prefetch pulls the whole route including its data for each one:
+ // roughly 47 fetches of the page payload for a screen where at most one
+ // will be tapped. Same call made twice before for the same reason, both
+ // with measurements: MobileChapterStrip (one page view fired 137 requests)
+ // and SaintCard (1,093 cards on the scroll thread). The month is already
+ // on the device, so there is no latency here to hide. The three month-nav
+ // links keep their prefetch; three is not a storm.
+ prefetch={false}
  style={{ ["--tone" as string]: rgb }}
  className={cn(
  baseClasses,

@@ -5,6 +5,7 @@ import {
  fastingStatus,
  formatLongDateDual,
  greekMonthName,
+ isoDay,
  monthGrid,
  paschaInfo,
  readingsOn,
@@ -440,7 +441,7 @@ export default async function CalendarPage({
  grid={grid}
  year={year}
  month={month}
- selectedDay={selectedDay}
+ selectedIso={isoDay(selectedDay)}
  style={style}
  />
 
