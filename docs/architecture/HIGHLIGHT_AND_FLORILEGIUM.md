@@ -269,6 +269,11 @@ action count* is wrong. Three things are genuinely different:
   `:14-20` as `highlight | bookmark | copyLink | note | gather | clearWords`. No
   share, no social card, no image generator. The only outward vector is
   `copyLink`, and it points back to `purifyapp.net`.
+  <br>*Corrected 2026-08-11:* it did not, on any device. `copyLink` was built
+  from `window.location.origin`, which inside the shell is `https://localhost`,
+  so the one outward vector emitted a dead link on both Android and iOS. Now
+  `shareLink()` from `lib/site.ts`, pinned by `lib/__tests__/shareOrigin.test.ts`
+  including a source guard over `components/` and `app/`.
 
 **Where Purify is not better:**
 

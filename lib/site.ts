@@ -92,3 +92,75 @@ export function authOrigin(): string {
   }
   return SITE_URL;
 }
+
+/**
+ * The canonical origin for any link the reader copies, shares, or hands to
+ * the system share sheet.
+ *
+ * Same failure as the confirmation-email bug that `authOrigin()` exists to
+ * prevent, one surface over. The native shell serves the bundled export from
+ * `https://localhost` (Android) or `capacitor://localhost` (iOS), so every
+ * copy-link and share action built from `window.location` handed the reader
+ * a link that resolves nowhere on any device but their own, and not even
+ * there once the app is closed. Observed on Android 2026-08-11; iOS is the
+ * same code and the same shell, so it was never platform-specific.
+ *
+ * A copied link only exists to leave the device, so unlike `authOrigin()`
+ * the local-development fallback is gated on NODE_ENV as well: a real
+ * `https://localhost` from the shell can never satisfy it, no matter how the
+ * origin string is spelled.
+ */
+export function shareOrigin(): string {
+  if (typeof window === "undefined") return SITE_URL;
+  if (process.env.NODE_ENV !== "development") return SITE_URL;
+  // The same dev-only escape hatch isNativeClient() honors
+  // (lib/platform/native.ts). With localStorage["purify:force-native"] = "1"
+  // a dev browser simulates the shell, which is the only way to walk this
+  // flow without installing an APK. Read inline rather than imported: that
+  // module is "use client" and lib/site.ts is also imported by server code
+  // (lib/seo/jsonld.ts, lib/shop/orderEmails.ts).
+  try {
+    if (window.localStorage.getItem("purify:force-native") === "1") {
+      return SITE_URL;
+    }
+  } catch {
+    // localStorage can throw in a sandboxed frame; fall through.
+  }
+  const here = window.location.origin;
+  if (here.startsWith("http://localhost") || here.startsWith("http://127.")) {
+    return here;
+  }
+  return SITE_URL;
+}
+
+/**
+ * Absolute, shareable URL for an in-app path.
+ *
+ * Accepts what the call sites already hold: a root-relative path, optionally
+ * with a hash. The native export is built with `trailingSlash: true`, so
+ * `window.location.pathname` inside the shell reads `/history/foo/` and can
+ * resolve to the on-disk `index.html`; both are normalized away so the link
+ * that leaves the device is the one purifyapp.net actually serves.
+ */
+export function shareLink(path: string): string {
+  const origin = shareOrigin();
+  let parsed: URL;
+  try {
+    parsed = new URL(path, origin);
+  } catch {
+    return origin;
+  }
+  // Only the path, query, and hash survive. An absolute URL handed in keeps
+  // its route and loses its host, so a caller passing window.location.href
+  // from inside the shell cannot smuggle `localhost` back through.
+  let route = parsed.pathname.replace(/\/index\.html$/i, "/");
+  if (route.length > 1) route = route.replace(/\/+$/, "");
+  if (!route.startsWith("/")) route = `/${route}`;
+  return new URL(`${route}${parsed.search}${parsed.hash}`, origin).toString();
+}
+
+/** The current in-app location as a shareable absolute URL. */
+export function shareCurrentLink(): string {
+  if (typeof window === "undefined") return shareOrigin();
+  return shareLink(window.location.href);
+}

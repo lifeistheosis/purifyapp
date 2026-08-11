@@ -3,10 +3,15 @@
 // A small, localized share control. Uses the native Web Share sheet where it
 // exists (most phones), and falls back to copying the page link with a brief
 // "Link copied" confirmation. The label is translated to the reader's locale.
+//
+// The link is built with shareCurrentLink(), never window.location.href: the
+// Capacitor shell serves the export from https://localhost, so the raw href
+// is a dead link the moment it leaves the device. See lib/site.ts.
 
 import { useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
+import { shareCurrentLink } from "@/lib/site";
 
 export function ShareButton({
   title,
@@ -25,7 +30,7 @@ export function ShareButton({
   const [copied, setCopied] = useState(false);
 
   async function onShare() {
-    const url = typeof window !== "undefined" ? window.location.href : "";
+    const url = typeof window !== "undefined" ? shareCurrentLink() : "";
     if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
       try {
         const resolved = titleKey ? t(titleKey) : (title ?? "");

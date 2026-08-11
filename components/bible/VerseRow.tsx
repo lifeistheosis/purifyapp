@@ -11,6 +11,7 @@ import {
 } from "@/lib/bible/highlightColors";
 import { useInterlinear } from "@/lib/bible/interlinear";
 import { useBookmarks } from "@/lib/bookmarks";
+import { shareLink } from "@/lib/site";
 import { WordPopover } from "./WordPopover";
 import {
  VerseContextMenu,
@@ -177,8 +178,11 @@ export function VerseRow({
  return `${bookName} ${chapter}:${verse.n}`;
  }
  function copyVerseLink() {
+ // shareLink(), never window.location.origin: the Capacitor shell serves
+ // the export from https://localhost, so a copied link built from the
+ // origin is dead the moment it leaves the device (lib/site.ts).
  return copyToClipboard(
- `${window.location.origin}/bible/${book}/${chapter}#v${verse.n}`,
+ shareLink(`/bible/${book}/${chapter}#v${verse.n}`),
  );
  }
  function copyVerseText() {
