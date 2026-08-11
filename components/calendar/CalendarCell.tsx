@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { memo, type CSSProperties } from "react";
 import type { MonthCell } from "@/lib/calendar/orthodox";
 import { Cross } from "@/components/ui/icons/Cross";
 import { toneFor, TONE_RGB } from "@/lib/calendar/tone";
@@ -19,12 +20,32 @@ function shortName(name: string): string {
 }
 
 /**
+ * `--tone` per liturgical register, built once at module scope.
+ *
+ * There are only as many distinct values here as there are tones, but this
+ * was an inline object literal, so it allocated a fresh style object for all
+ * 42 tiles on every render. That also defeats memo, since a new object is a
+ * new prop by identity.
+ */
+const TONE_STYLE: Record<string, CSSProperties> = Object.fromEntries(
+ Object.entries(TONE_RGB).map(([tone, rgb]) => [
+ tone,
+ Object.freeze({ ["--tone" as string]: rgb }) as CSSProperties,
+ ]),
+);
+
+/**
  * One day in the month grid, a ruled rectangular tile (not a card), in the
  * idiom of a printed wall calendar. Feast days get a rubric-red day number
  * and a small saint icon when one is indexed; ordinary days stay quiet.
  * Today is marked by a single thick gold outline, not a tinted background.
+ *
+ * Memoized. A date tap changes the outline on exactly two tiles, and without
+ * this all 42 re-render. Every prop is now a primitive except `cell`, whose
+ * identity is stable for a given month because monthGrid is cached, so the
+ * default shallow compare is enough.
  */
-export function CalendarCell({
+function CalendarCellImpl({
  cell,
  href,
  isSelected,
@@ -48,6 +69,7 @@ export function CalendarCell({
  const FastIcon = meta.Icon;
  const label = cell.headlineName ? shortName(cell.headlineName) : "";
  const rgb = TONE_RGB[tone];
+ const toneStyle = TONE_STYLE[tone];
 
  const baseClasses =
  "group relative aspect-square md:min-h-[84px] flex flex-col justify-center md:justify-start p-1.5 overflow-hidden border-r border-b transition-colors duration-150";
@@ -65,7 +87,7 @@ export function CalendarCell({
  // on the device, so there is no latency here to hide. The three month-nav
  // links keep their prefetch; three is not a storm.
  prefetch={false}
- style={{ ["--tone" as string]: rgb }}
+ style={toneStyle}
  className={cn(
  baseClasses,
  // Today: a single thick gold outline, no tinted background.
@@ -136,3 +158,5 @@ export function CalendarCell({
  </Link>
  );
 }
+
+export const CalendarCell = memo(CalendarCellImpl);

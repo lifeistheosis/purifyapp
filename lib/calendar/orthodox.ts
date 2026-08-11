@@ -147,6 +147,77 @@ export type FastingStatus = {
  * simplified reading suitable for daily orientation, your priest's
  * direction takes precedence for any individual question.
  */
+/**
+ * Every date fastingStatus needs that depends only on the year: one Pascha
+ * computation and the eighteen anchors hung off it.
+ *
+ * All of this used to run on every call, and fastingStatus is called once per
+ * grid cell, so drawing a month recomputed Pascha 42 times and allocated
+ * roughly 700 Date objects to answer 42 questions about a single year.
+ *
+ * Cached per year, which is the only input any of it varies on. Safe to share
+ * because nothing here is ever mutated: `addDays` copies before it calls
+ * setUTCDate, `inRangeInclusive` and `diffDays` only read, and `startOfDayUtc`
+ * builds a new Date. Keep it that way. If a caller ever needs to shift one of
+ * these, it must copy first.
+ */
+type PaschalAnchors = {
+ pascha: Date;
+ cleanMonday: Date;
+ holySaturday: Date;
+ palmSunday: Date;
+ annunciation: Date;
+ transfiguration: Date;
+ brightWeekEnd: Date;
+ pentecost: Date;
+ allSaintsSunday: Date;
+ apostlesFastStart: Date;
+ apostlesFastEnd: Date;
+ dormitionStart: Date;
+ dormitionEnd: Date;
+ nativityStart: Date;
+ nativityEnd: Date;
+ christmasFreeStart: Date;
+ publicanFeast: Date;
+ publicanFreeEnd: Date;
+ /** Jan 4 of the FOLLOWING year, the close of the twelve days. */
+ twelfthNightNext: Date;
+};
+
+const PASCHAL_ANCHORS = new Map<number, PaschalAnchors>();
+
+function paschalAnchors(year: number): PaschalAnchors {
+ const hit = PASCHAL_ANCHORS.get(year);
+ if (hit) return hit;
+
+ const pascha = orthodoxPascha(year);
+ const allSaintsSunday = addDays(pascha, 56);
+ const publicanFeast = addDays(pascha, -70); // approx Sunday of Publican & Pharisee
+ const anchors: PaschalAnchors = {
+ pascha,
+ cleanMonday: addDays(pascha, -48),
+ holySaturday: addDays(pascha, -1),
+ palmSunday: addDays(pascha, -7),
+ annunciation: new Date(Date.UTC(year, 2, 25, 12)), // Mar 25
+ transfiguration: new Date(Date.UTC(year, 7, 6, 12)), // Aug 6
+ brightWeekEnd: addDays(pascha, 7), // Thomas Sunday eve
+ pentecost: addDays(pascha, 49),
+ allSaintsSunday,
+ apostlesFastStart: addDays(allSaintsSunday, 1),
+ apostlesFastEnd: new Date(Date.UTC(year, 5, 28, 12)), // June 28
+ dormitionStart: new Date(Date.UTC(year, 7, 1, 12)),
+ dormitionEnd: new Date(Date.UTC(year, 7, 14, 12)),
+ nativityStart: new Date(Date.UTC(year, 10, 15, 12)),
+ nativityEnd: new Date(Date.UTC(year, 11, 24, 12)),
+ christmasFreeStart: new Date(Date.UTC(year, 11, 25, 12)),
+ publicanFeast,
+ publicanFreeEnd: addDays(publicanFeast, 7),
+ twelfthNightNext: new Date(Date.UTC(year + 1, 0, 4, 12)),
+ };
+ PASCHAL_ANCHORS.set(year, anchors);
+ return anchors;
+}
+
 export function fastingStatus(date: Date): FastingStatus {
  const d = startOfDayUtc(date);
  const year = d.getUTCFullYear();
@@ -154,30 +225,33 @@ export function fastingStatus(date: Date): FastingStatus {
  const day = d.getUTCDate();
  const dow = d.getUTCDay(); // 0 = Sunday
 
- const pascha = orthodoxPascha(year);
- const cleanMonday = addDays(pascha, -48);
- const holySaturday = addDays(pascha, -1);
- const palmSunday = addDays(pascha, -7);
- const annunciation = new Date(Date.UTC(year, 2, 25, 12)); // Mar 25
- const transfiguration = new Date(Date.UTC(year, 7, 6, 12)); // Aug 6
- const brightWeekEnd = addDays(pascha, 7); // Thomas Sunday eve
- const pentecost = addDays(pascha, 49);
- const allSaintsSunday = addDays(pascha, 56);
- const apostlesFastStart = addDays(allSaintsSunday, 1);
- const apostlesFastEnd = new Date(Date.UTC(year, 5, 28, 12)); // June 28
- const dormitionStart = new Date(Date.UTC(year, 7, 1, 12));
- const dormitionEnd = new Date(Date.UTC(year, 7, 14, 12));
- const nativityStart = new Date(Date.UTC(year, 10, 15, 12));
- const nativityEnd = new Date(Date.UTC(year, 11, 24, 12));
- const christmasFreeStart = new Date(Date.UTC(year, 11, 25, 12));
- const publicanFeast = addDays(pascha, -70); // approx Sunday of Publican & Pharisee
- const publicanFreeEnd = addDays(publicanFeast, 7);
+ const {
+ pascha,
+ cleanMonday,
+ holySaturday,
+ palmSunday,
+ annunciation,
+ transfiguration,
+ brightWeekEnd,
+ pentecost,
+ allSaintsSunday,
+ apostlesFastStart,
+ apostlesFastEnd,
+ dormitionStart,
+ dormitionEnd,
+ nativityStart,
+ nativityEnd,
+ christmasFreeStart,
+ publicanFeast,
+ publicanFreeEnd,
+ twelfthNightNext,
+ } = paschalAnchors(year);
 
  // ----- Fast-free windows -----
  if (
  (month === 0 && day <= 4) ||
  (month === 11 && day >= 25) ||
- inRangeInclusive(d, christmasFreeStart, new Date(Date.UTC(year + 1, 0, 4, 12)))
+ inRangeInclusive(d, christmasFreeStart, twelfthNightNext)
  ) {
  return {
  kind: "fast-free",
