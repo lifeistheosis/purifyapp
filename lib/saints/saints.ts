@@ -4243,6 +4243,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "maccabean-martyrs",
+    iconUrl: "/saints/icons/maccabean-martyrs.jpg",
     byname: "The Seven Holy Youths and Solomonia",
     name: "The Holy Maccabean Martyrs",
     epithet:
@@ -4475,6 +4476,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "seven-sleepers-of-ephesus",
+    iconUrl: "/saints/icons/seven-sleepers-of-ephesus.jpg",
     byname: "The Seven Youths of Ephesus",
     name: "The Seven Sleepers of Ephesus",
     epithet:
@@ -4919,6 +4921,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "job-of-pochaev",
+    iconUrl: "/saints/icons/job-of-pochaev.jpg",
     byname: "Job of Pochaev",
     name: "St. Job of Pochaev",
     epithet: "Abbot of Pochaev · Defender of Orthodoxy in Volhynia · Printer",
