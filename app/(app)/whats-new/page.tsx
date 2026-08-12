@@ -1792,7 +1792,7 @@ export default async function WhatsNewPage() {
  </p>
  <ChangelogControls />
  </div>
- <p className="font-sans text-detail text-paper/45 mb-8 leading-[1.65]">
+ <p className="font-sans text-detail text-paper/55 mb-8 leading-[1.65]">
  {isDe
  ? "Nach Jahr, dann Monat, dann Tag gruppiert. Der jüngste Tag ist voreingestellt offen; tippe ein Jahr, einen Monat oder einen Tag an, um es aufzuklappen. Innerhalb eines Tages tippe auf eine Version, um ihre vollständige Liste zu lesen."
  : "Grouped by year, then month, then day. The most recent day is open by default; tap any year, month or day to expand it. Inside a day, tap a release to read its full item list."}
@@ -1834,13 +1834,13 @@ export default async function WhatsNewPage() {
                         <span className="font-sans text-detail font-semibold text-paper/90 truncate">
                           {mo.label}
                         </span>
-                        <span className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45">
+                        <span className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/55">
                           {updateCount(mo.count, isDe)}
                         </span>
                       </span>
                       <span
                         aria-hidden
-                        className="text-paper/45 group-open/mo:rotate-180 transition-transform duration-200 text-eyebrow"
+                        className="text-paper/55 group-open/mo:rotate-180 transition-transform duration-200 text-eyebrow"
                       >
                         ▾
                       </span>
@@ -1861,13 +1861,13 @@ export default async function WhatsNewPage() {
                               >
                                 {d.label}
                               </span>
-                              <span className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45">
+                              <span className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/55">
                                 {updateCount(d.entries.length, isDe)}
                               </span>
                             </span>
                             <span
                               aria-hidden
-                              className="text-paper/45 group-open/day:rotate-180 transition-transform duration-200 text-eyebrow"
+                              className="text-paper/55 group-open/day:rotate-180 transition-transform duration-200 text-eyebrow"
                             >
                               ▾
                             </span>

@@ -59,7 +59,7 @@ function CommentaryCard({
  </div>
  {/* Length before the tap, not after. Someone deciding whether to open a
      40 minute homily on a phone deserves to know it is one. */}
- <span className="shrink-0 font-sans text-eyebrow tabular-nums text-paper/40">
+ <span className="shrink-0 font-sans text-eyebrow tabular-nums text-paper/55">
  {t("bible.minRead", { minutes })}
  </span>
  <span
