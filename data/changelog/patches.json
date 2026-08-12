@@ -2,13 +2,17 @@
   {
     "id": "v1-1",
     "version": "1.1",
-    "date": "2026-08-11",
+    "date": "2026-08-12",
     "title": "What was already built, and not reaching you",
     "intro": "Most of this release is not new work. It is things the app already had and was not handing over: light mode built and filed under premium, a search index shipping into both bundles for a dialog a phone could not open, a file of the Desert Fathers written for the empty days and never imported, and a function answering which Hour you are in with no callers. Two more of the same kind surfaced while these notes were being written: the calendar inside the app had been showing the day the build was cut, and every link a reader copied pointed at their own phone.",
     "sections": [
       {
         "heading": "Light mode is free, and you can find it",
         "body": "It was already built, filed under premium reading modes as Parchment, and gated behind Pro. It is called Light now and it is free to everyone. The gate is asked per palette rather than once for all four, because a single yes-or-no is how reading ended up behind a paywall to begin with."
+      },
+      {
+        "heading": "Premium Reading Modes belong to Plus now",
+        "body": "Candlelight and Monastery were sold under Purify Pro at $19.99 a month and gated on it. They are a Plus benefit at $4.99, and the pricing page and the gate behind it now agree on that. Nobody loses anything, because a Pro account already satisfies the Plus gate. The same line had been selling two things it should not: Parchment, which is the free Light palette under the name it used to carry, and Focus, which nothing in the app gates at all."
       },
       {
         "heading": "The Lenten lectionary was a week late, all of it",
@@ -76,7 +80,7 @@
       },
       {
         "heading": "The saints of August have their faces",
-        "body": "Thirty-eight saints in the app had no icon, and thirty-seven of them keep a feast in August, so for most of this month the day's commemoration was a pair of initials on a chip. Thirty-six have one now, and St George, who had no entry in the app at all, has both an entry and an icon. Two were refused rather than shipped: a Renaissance portrait of the wrong Sixtus, four popes and eleven centuries from the martyr the day keeps, and a narrow crop with the neighbouring saint's name still in frame. Every file was opened and read against its own inscription before it was filed, because a licence tells you nothing about who is in the picture. The whole directory was also re-encoded to the size it is actually drawn at, which took it from 18.1 MB to 4.3 MB inside both app bundles."
+        "body": "Thirty-eight saints had no icon, and thirty-seven of them keep a feast in August, so for most of this month the day's commemoration was a pair of initials on a chip. Every one of them has one now, and so does St George, who had no entry in the app at all. Each file was opened and read against its own inscription before it was filed, because a licence tells you nothing about who is in the picture. The directory was re-encoded to the size it is actually drawn at as well, 18.1 MB down to 4.3 MB inside both app bundles."
       },
       {
         "heading": "Housekeeping, and what is not yet done",
