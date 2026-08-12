@@ -27,7 +27,32 @@ const config: CapacitorConfig = {
   appName: "Purify",
   webDir: LOCAL ? "out" : "capacitor-shell",
   ...(LOCAL
-    ? { server: { androidScheme: "https" } }
+    ? {
+        // BOTH schemes are https, and iosScheme is load-bearing, not tidiness.
+        //
+        // Without it iOS takes Capacitor's default and serves the bundle from
+        // capacitor://localhost. That is not an HTTP-family origin and not a
+        // secure context, and WKWebView does not back document.cookie there.
+        // @supabase/ssr's createBrowserClient is given no `cookies` option, so
+        // it stores the session in document.cookie and nowhere else, which on
+        // iOS means the session existed only in the JS heap: it survived a
+        // soft navigation and died on every reload, hard navigation and app
+        // relaunch. Android was never affected because androidScheme has been
+        // "https" since the shell was built, which is the whole reason this
+        // reproduced on one platform only.
+        //
+        // That is half of what Apple rejected 1.0 build 12 for under 2.1(a),
+        // "The Sign in feature did not function properly". The other half is
+        // the hard navigation in components/auth/OAuthButtons.tsx.
+        //
+        // Changing the scheme changes the origin, which orphans anything the
+        // old origin had stored. That costs nothing here: iOS has never
+        // shipped, so no install exists to migrate.
+        //
+        // It also restores a secure context, which components/community/
+        // CommunityClient.tsx currently works around for crypto.randomUUID.
+        server: { androidScheme: "https", iosScheme: "https" },
+      }
     : {
         server: {
           url: "https://purifyapp.net",

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { nativeGoogleAvailable, nativeGoogleIdToken } from "@/lib/auth/nativeGoogle";
@@ -76,6 +77,7 @@ export function OAuthButtons({
   const [pending, setPending] = useState<"google" | "apple" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const isNative = useIsNative();
+  const router = useRouter();
 
   // Apple has no native sheet on Android and no working web fallback inside the
   // app, so it is offered everywhere except the Android shell, and only once the
@@ -110,9 +112,44 @@ export function OAuthButtons({
         // so, which is the 572-account hole from P0-5b, still open on Android.
         // Best-effort and never throws: the account already exists by now, so
         // failing here must not strand someone who is signed in.
-        await recordNativeSignInAcceptance(data.user?.email ?? null);
-        window.location.assign(redirectTo);
+        //
+        // NOT awaited before navigating, and that ordering is deliberate.
+        // recordNativeSignInAcceptance goes through apiFetch, which mints a
+        // bearer via getSession() behind the cross-tab lock and carries no
+        // deadline. Awaiting it put an unbounded network call between a
+        // completed sign-in and the navigation, so a slow radio left the
+        // button on "Connecting..." forever for someone who was already
+        // signed in. That is F-13's signature. It never throws, so nothing
+        // downstream depends on its result.
+        void recordNativeSignInAcceptance(data.user?.email ?? null);
+        // router.push, NOT window.location.assign. Capacitor's iOS router
+        // (Router.swift) returns `basePath + "/index.html"` for ANY path with
+        // no file extension, discarding the path, so a hard navigation to
+        // /account/profile served the ROOT index.html: the Today page. The
+        // reader signed in successfully and was returned to Today, and the
+        // reload discarded the session with it. Half of Apple's 2.1(a)
+        // rejection of 1.0 build 12. A soft push keeps the in-memory session
+        // and routes correctly, which is what SignInForm has always done.
+        router.push(redirectTo);
+        router.refresh();
         return;
+      }
+
+      // Inside the shell there is no second branch to fall to. The redirect
+      // path below needs app/api/auth/callback, and scripts/native-build.mjs
+      // stashes all of app/api out of the export, so on native it resolves to
+      // a route that is not in the bundle. Before this guard, a missing
+      // NEXT_PUBLIC_GOOGLE_IOS_CLIENT_ID at build time made
+      // nativeGoogleAvailable() false and dropped the reader straight into
+      // that dead redirect with no error shown. lib/auth/nativeGoogle.ts
+      // claims the button is hidden in that case; it is not, only Apple is
+      // gated. Fail loudly instead: a message beats a silent nowhere.
+      if (isNative) {
+        throw new Error(
+          provider === "google"
+            ? "Google sign-in is unavailable in this build. Use email and password."
+            : "Apple sign-in is unavailable in this build. Use email and password.",
+        );
       }
 
       // PKCE stores a one-time code verifier in a cookie on the origin that

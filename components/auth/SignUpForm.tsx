@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { recordAcceptance } from "@/lib/legal/recordAcceptance";
@@ -19,6 +20,7 @@ import { OAuthButtons } from "./OAuthButtons";
  * first successful sign-in path.
  */
 export function SignUpForm() {
+  const router = useRouter();
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -81,7 +83,12 @@ export function SignUpForm() {
         } catch {
           /* ignore, the middleware will trip the set-password gate if needed */
         }
-        window.location.href = "/account/profile";
+        // router.push, NOT window.location.href. Capacitor's iOS router
+        // serves basePath + "/index.html" for any extensionless path, so a
+        // hard navigation to /account/profile handed back the Today page,
+        // and the reload took the session with it. See OAuthButtons.
+        router.push("/account/profile");
+        router.refresh();
         return;
       }
       setSentTo(email.trim());
