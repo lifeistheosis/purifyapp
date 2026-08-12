@@ -1578,19 +1578,111 @@ const ENTRIES: Entry[] = [
  },
 ];
 
-// Group entries by date, preserving array order.
-function groupByDate(entries: Entry[]): { date: string; entries: Entry[] }[] {
- const out: { date: string; entries: Entry[] }[] = [];
- for (const e of entries) {
- const last = out[out.length - 1];
- if (last && last.date === e.date) last.entries.push(e);
- else out.push({ date: e.date, entries: [e] });
- }
- return out;
+// The changelog nests year > month > day > release. An entry carries only a
+// human date string, "August 11, 2026", which is also its group key, so the
+// year and month are read back out of that one field rather than stored a
+// second time. One release, one date, written once.
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+type ParsedDate = { year: number; monthIndex: number; day: number };
+
+function parseEntryDate(date: string): ParsedDate | null {
+  const m = /^([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})$/.exec(date.trim());
+  if (!m) return null;
+  const monthIndex = MONTH_NAMES.findIndex(
+    (name) => name.toLowerCase() === m[1].toLowerCase(),
+  );
+  if (monthIndex < 0) return null;
+  return { year: Number(m[3]), monthIndex, day: Number(m[2]) };
+}
+
+type DayGroup = { date: string; label: string; entries: Entry[] };
+type MonthGroup = { key: string; label: string; days: DayGroup[]; count: number };
+type YearGroup = { key: string; label: string; months: MonthGroup[]; count: number };
+
+/**
+ * Group entries into year > month > day, preserving array order at every
+ * level, exactly as the flat date grouping did. ENTRIES is newest first and
+ * stays that way; nothing here sorts, so a hand-ordered list is never
+ * silently rearranged.
+ *
+ * A date this cannot parse does not vanish. It gets its own year and month
+ * bucket labelled with the raw string and sits where the array already put
+ * it, because a release dropping off the page is a worse failure than an
+ * ugly heading.
+ */
+function groupByYearMonthDay(entries: Entry[]): YearGroup[] {
+  const years: YearGroup[] = [];
+
+  for (const e of entries) {
+    const parsed = parseEntryDate(e.date);
+    const yearKey = parsed ? String(parsed.year) : `unparsed:${e.date}`;
+    const monthKey = parsed ? `${parsed.year}-${parsed.monthIndex}` : yearKey;
+
+    let year = years[years.length - 1];
+    if (!year || year.key !== yearKey) {
+      year = {
+        key: yearKey,
+        label: parsed ? String(parsed.year) : e.date,
+        months: [],
+        count: 0,
+      };
+      years.push(year);
+    }
+
+    let month = year.months[year.months.length - 1];
+    if (!month || month.key !== monthKey) {
+      month = {
+        key: monthKey,
+        label: parsed ? MONTH_NAMES[parsed.monthIndex] : e.date,
+        days: [],
+        count: 0,
+      };
+      year.months.push(month);
+    }
+
+    let day = month.days[month.days.length - 1];
+    if (!day || day.date !== e.date) {
+      day = {
+        date: e.date,
+        // Inside "2026 > August" the year is already overhead, so the day row
+        // carries "August 11" rather than repeating the whole string.
+        label: parsed
+          ? `${MONTH_NAMES[parsed.monthIndex]} ${parsed.day}`
+          : e.date,
+        entries: [],
+      };
+      month.days.push(day);
+    }
+
+    day.entries.push(e);
+    month.count += 1;
+    year.count += 1;
+  }
+
+  return years;
+}
+
+function updateCount(n: number, isDe: boolean): string {
+  if (isDe) return `${n} ${n === 1 ? "Aktualisierung" : "Aktualisierungen"}`;
+  return `${n} ${n === 1 ? "update" : "updates"}`;
 }
 
 export default async function WhatsNewPage() {
- const groups = groupByDate(ENTRIES);
+ const years = groupByYearMonthDay(ENTRIES);
  const locale = await getServerLocale();
  const isDe = locale === "de";
  const m = getMessages(locale);
@@ -1701,47 +1793,98 @@ export default async function WhatsNewPage() {
  </div>
  <p className="font-sans text-detail text-paper/45 mb-8 leading-[1.65]">
  {isDe
- ? "Nach Datum gruppiert. Der jüngste Tag ist voreingestellt offen; tippe jeden anderen Tag an, um ihn aufzuklappen. Innerhalb eines Tages tippe auf eine Version, um ihre vollständige Liste zu lesen."
- : "Grouped by date. The most recent day is open by default; tap any other day to expand. Inside each day, tap a release to read its full item list."}
+ ? "Nach Jahr, dann Monat, dann Tag gruppiert. Der jüngste Tag ist voreingestellt offen; tippe ein Jahr, einen Monat oder einen Tag an, um es aufzuklappen. Innerhalb eines Tages tippe auf eine Version, um ihre vollständige Liste zu lesen."
+ : "Grouped by year, then month, then day. The most recent day is open by default; tap any year, month or day to expand it. Inside a day, tap a release to read its full item list."}
  </p>
 
  <div className="space-y-3">
- {groups.map((g, gi) => (
- <details
- key={g.date}
- open={gi === 0}
- className="group rounded-md border border-paper/12 bg-paper/[0.02] open:bg-paper/[0.04] transition-colors"
- >
- <summary className="cursor-pointer list-none px-5 py-4 flex items-center justify-between gap-3">
- <span className="flex items-baseline gap-3 min-w-0">
- <span className="font-sans text-ui font-semibold text-paper truncate">
- {g.date}
- </span>
- <span className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
- {g.entries.length}{" "}
- {isDe
- ? g.entries.length === 1
- ? "Aktualisierung"
- : "Aktualisierungen"
- : g.entries.length === 1
- ? "update"
- : "updates"}
- </span>
- </span>
- <span
- aria-hidden
- className="text-paper/55 group-open:rotate-180 transition-transform duration-200 text-caption"
- >
- ▾
- </span>
- </summary>
- <div className="px-5 pb-4 space-y-2">
- {g.entries.map((e) => (
- <ReleaseDetails key={e.version} entry={e} />
- ))}
- </div>
- </details>
- ))}
+          {years.map((y, yi) => (
+            <details
+              key={y.key}
+              open={yi === 0}
+              className="group/yr rounded-md border border-paper/12 bg-paper/[0.02] open:bg-paper/[0.04] transition-colors"
+            >
+              <summary className="cursor-pointer list-none px-5 py-4 flex items-center justify-between gap-3">
+                <span className="flex items-baseline gap-3 min-w-0">
+                  <span className="font-sans text-ui font-semibold text-paper truncate">
+                    {y.label}
+                  </span>
+                  <span className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
+                    {updateCount(y.count, isDe)}
+                  </span>
+                </span>
+                <span
+                  aria-hidden
+                  className="text-paper/55 group-open/yr:rotate-180 transition-transform duration-200 text-caption"
+                >
+                  ▾
+                </span>
+              </summary>
+
+              <div className="px-3 pb-4 pt-1 space-y-2">
+                {y.months.map((mo, mi) => (
+                  <details
+                    key={mo.key}
+                    open={yi === 0 && mi === 0}
+                    className="group/mo rounded-md border border-paper/10 bg-paper/[0.015] open:bg-paper/[0.03] transition-colors"
+                  >
+                    <summary className="cursor-pointer list-none px-4 py-3 flex items-center justify-between gap-3">
+                      <span className="flex items-baseline gap-3 min-w-0">
+                        <span className="font-sans text-detail font-semibold text-paper/90 truncate">
+                          {mo.label}
+                        </span>
+                        <span className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45">
+                          {updateCount(mo.count, isDe)}
+                        </span>
+                      </span>
+                      <span
+                        aria-hidden
+                        className="text-paper/45 group-open/mo:rotate-180 transition-transform duration-200 text-eyebrow"
+                      >
+                        ▾
+                      </span>
+                    </summary>
+
+                    <div className="px-3 pb-3 pt-1 space-y-2">
+                      {mo.days.map((d, di) => (
+                        <details
+                          key={d.date}
+                          open={yi === 0 && mi === 0 && di === 0}
+                          className="group/day rounded-md border border-paper/10 bg-night-soft/25 open:bg-night-soft/45 transition-colors"
+                        >
+                          <summary className="cursor-pointer list-none px-4 py-2.5 flex items-center justify-between gap-3">
+                            <span className="flex items-baseline gap-3 min-w-0">
+                              <span
+                                title={d.date}
+                                className="font-sans text-detail font-medium text-paper/85 truncate"
+                              >
+                                {d.label}
+                              </span>
+                              <span className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45">
+                                {updateCount(d.entries.length, isDe)}
+                              </span>
+                            </span>
+                            <span
+                              aria-hidden
+                              className="text-paper/45 group-open/day:rotate-180 transition-transform duration-200 text-eyebrow"
+                            >
+                              ▾
+                            </span>
+                          </summary>
+
+                          <div className="px-3 pb-3 pt-1 space-y-2">
+                            {d.entries.map((e) => (
+                              <ReleaseDetails key={e.version} entry={e} />
+                            ))}
+                          </div>
+                        </details>
+                      ))}
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </details>
+          ))}
  </div>
  </section>
  </article>
