@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { corsPreflight, withCors } from "@/lib/api/cors";
 import { communityEnabled } from "@/lib/community/flags";
+import { callerIsGroupMember } from "@/lib/community/groupAccess";
 import { notifyOfReply } from "@/lib/community/notify";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { communityReplySchema } from "@/lib/security/schemas";
@@ -25,6 +26,29 @@ export async function GET(
     return withCors(NextResponse.json({ replies: [] }), req);
   }
   const admin = createAdminClient();
+
+  // A reply carries no group of its own; the parent post decides who may
+  // read it. This handler reads with the service role, which bypasses RLS,
+  // so the audience check has to happen here or the row policy on
+  // community_post_replies never runs and a private parish thread is
+  // readable by anyone who can name the post id.
+  const { data: parent } = await admin
+    .from("community_posts")
+    .select("id, group_id, status")
+    .eq("id", id)
+    .maybeSingle();
+  if (!parent || parent.status !== "visible") {
+    return withCors(NextResponse.json({ replies: [] }), req);
+  }
+  if (
+    parent.group_id &&
+    !(await callerIsGroupMember(req, admin, parent.group_id as string))
+  ) {
+    // Empty rather than 403, and identical to a post with no replies: a
+    // non-member must not learn that the thread exists.
+    return withCors(NextResponse.json({ replies: [] }), req);
+  }
+
   const { data } = await admin
     .from("community_post_replies")
     .select(REPLY_COLS)
@@ -78,10 +102,19 @@ async function handlePOST(req: Request, id: string) {
   const admin = createAdminClient();
   const { data: post } = await admin
     .from("community_posts")
-    .select("id, reply_count, status")
+    .select("id, reply_count, status, group_id")
     .eq("id", id)
     .maybeSingle();
   if (!post || post.status !== "visible") {
+    return NextResponse.json({ error: "Not found." }, { status: 404 });
+  }
+  // Writing into a group thread needs the same membership the group's own
+  // feed needs. Without this a non-member who guessed a post id could post
+  // into a parish's private conversation, which is worse than reading it.
+  if (
+    post.group_id &&
+    !(await callerIsGroupMember(req, admin, post.group_id as string))
+  ) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
 
