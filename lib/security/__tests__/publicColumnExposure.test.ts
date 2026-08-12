@@ -66,10 +66,30 @@ describe("the revoke migration", () => {
       "shop_reviews",
       "shop_store_reviews",
     ]) {
-      expect(sql).toContain(
-        `revoke select (user_id) on public.${table} from anon, authenticated;`,
-      );
+      expect(sql).toContain(`'${table}'`);
     }
+  });
+
+  it("drops the table grant, because a column revoke alone does nothing", () => {
+    // This test used to assert the opposite, and so pinned the bug in place.
+    // A column privilege is ADDITIVE with a table privilege in Postgres, it
+    // does not subtract from one, and Supabase grants SELECT on the whole
+    // table to anon by default. So `revoke select (user_id) ...` parses,
+    // runs, succeeds, and leaves the uuid readable. Confirmed on production
+    // 2026-08-12 before the rewrite.
+    expect(sql).toMatch(/revoke select on public\.%I from anon, authenticated/);
+    expect(sql).toMatch(/grant select \(%s\) on public\.%I to anon, authenticated/);
+    expect(
+      sql,
+      "a bare column revoke is the shape that silently does nothing",
+    ).not.toMatch(/^revoke select \(user_id\)/m);
+  });
+
+  it("reads the keep-columns from the catalog rather than a typed list", () => {
+    // A hand-written keep-list is one forgotten column away from a surface
+    // that returns an empty array with a 200. See the note in the migration.
+    expect(sql).toContain("information_schema.columns");
+    expect(sql).toContain("column_name <> 'user_id'");
   });
 
   it("does NOT revoke the two columns the client still reads", () => {
@@ -81,6 +101,9 @@ describe("the revoke migration", () => {
   });
 
   it("carries its own rollback", () => {
-    expect(sql).toMatch(/grant select \(user_id\) on public\.shop_reviews/);
+    // Restoring the TABLE grant is what undoes this. Re-granting the single
+    // column would not: the column grants are already there, and it is the
+    // absence of the table grant that does the work.
+    expect(sql).toMatch(/grant select on public\.shop_reviews to anon, authenticated/);
   });
 });

@@ -1,6 +1,8 @@
 -- Stop serving the auth uuid to anonymous readers
 --
--- ⚠ NOT YET APPLIED. Stage and verify first; see the checklist at the bottom.
+-- APPLIED to production 2026-08-12, by hand in the SQL editor, after the
+-- statements below were rewritten. The original four REVOKE lines were run
+-- first and did nothing at all, silently, which is why the rewrite exists.
 --
 -- ── The hole ───────────────────────────────────────────────────────────────
 --
@@ -55,17 +57,67 @@
 -- It does not un-leak anything already scraped. Treat the historic exposure
 -- as a disclosure and decide separately whether it warrants notification.
 
-revoke select (user_id) on public.community_posts from anon, authenticated;
-revoke select (user_id) on public.community_post_replies from anon, authenticated;
-revoke select (user_id) on public.shop_reviews from anon, authenticated;
-revoke select (user_id) on public.shop_store_reviews from anon, authenticated;
+-- ── Why this is not four REVOKE lines ──────────────────────────────────────
+--
+-- It was, and they were a no-op. In Postgres a column privilege is ADDITIVE
+-- with a table privilege, it does not subtract from one. Supabase grants
+-- SELECT on the whole table to anon and authenticated by default, and that
+-- table-wide grant keeps covering every column, so
+--
+--   revoke select (user_id) on public.shop_reviews from anon, authenticated;
+--
+-- parses, runs, reports success, and leaves the uuid readable. Verified on
+-- production 2026-08-12: after running all four, an anon PostgREST call for
+-- shop_reviews?select=user_id still answered 200 with a real uuid.
+--
+-- The table-level grant has to go first, and the columns to keep are then
+-- granted back explicitly. The keep-list is read out of information_schema
+-- at apply time rather than typed here, because a hand-written list is one
+-- forgotten column away from breaking a surface, and this file already
+-- carries four tables whose shape changes.
+
+do $$
+declare
+  t text;
+  cols text;
+begin
+  foreach t in array array[
+    'community_posts','community_post_replies','shop_reviews','shop_store_reviews'
+  ] loop
+    select string_agg(quote_ident(column_name), ', ' order by ordinal_position)
+      into cols
+      from information_schema.columns
+     where table_schema = 'public'
+       and table_name = t
+       and column_name <> 'user_id';
+
+    execute format('revoke select on public.%I from anon, authenticated', t);
+    execute format('grant select (%s) on public.%I to anon, authenticated', cols, t);
+  end loop;
+end $$;
+
+-- ── The standing cost, which the first version of this file did not carry ──
+--
+-- These four tables now hold COLUMN grants, not a table grant. A column added
+-- to any of them later is NOT readable by anon or authenticated until it is
+-- granted. A migration that adds one must add, in the same file:
+--
+--   grant select (new_column) on public.<table> to anon, authenticated;
+--
+-- The failure mode if that is forgotten is quiet. app/api/shop/catalog/
+-- reviews/route.ts selects a fixed column list and, on any error other than a
+-- missing photo_urls, returns { reviews: [], reviewCount: 0, avgStars: null }
+-- with a 200. A shopper sees a product with no reviews rather than an error.
 
 -- Rollback, if a surface turns out to depend on it after all:
 --
---   grant select (user_id) on public.community_posts to anon, authenticated;
---   grant select (user_id) on public.community_post_replies to anon, authenticated;
---   grant select (user_id) on public.shop_reviews to anon, authenticated;
---   grant select (user_id) on public.shop_store_reviews to anon, authenticated;
+--   grant select on public.community_posts to anon, authenticated;
+--   grant select on public.community_post_replies to anon, authenticated;
+--   grant select on public.shop_reviews to anon, authenticated;
+--   grant select on public.shop_store_reviews to anon, authenticated;
+--
+-- Note the shape: restoring the TABLE grant is what undoes this, and it
+-- supersedes the column grants above rather than sitting alongside them.
 --
 -- ── Verification checklist, staging first, then production ─────────────────
 --
