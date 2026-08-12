@@ -4214,6 +4214,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "sixtus-of-rome",
+    iconUrl: "/saints/icons/sixtus-of-rome.jpg",
     byname: "Sixtus II",
     name: "St. Sixtus, Pope of Rome",
     epithet: "Bishop of Rome · Peacemaker · Martyr under Valerian",
@@ -4823,6 +4824,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "abraham-of-smolensk",
+    iconUrl: "/saints/icons/abraham-of-smolensk.jpg",
     byname: "Abraham the Preacher",
     name: "St. Abraham of Smolensk",
     epithet: "Priest-monk of Smolensk · Preacher · Wonderworker",

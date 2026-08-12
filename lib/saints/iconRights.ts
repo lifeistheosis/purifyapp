@@ -83,6 +83,30 @@ export type IconRights =
 
 /** Files whose rights are settled. Every row here was opened and looked at. */
 export const ICON_RIGHTS: Record<string, IconRights> = {
+  "sixtus-of-rome.jpg": {
+    status: "permission",
+    inspectedOn: "2026-08-12",
+    grantedBy: "Supplied by the owner, who confirmed full permission to use",
+    confirmedOn: "2026-08-12",
+    license: "Used with permission",
+    alt: "A Renaissance fresco of an elderly pope in profile wearing a jewelled triple tiara and a gold cope over white, a faint halo behind him, set in an architectural niche with a fluted shell.",
+    work: "Renaissance fresco of St Sixtus II, from the series of early sainted popes. Western work in Latin regalia, not Byzantine iconography.",
+    artist: "Unrecorded",
+    workDate: "15th century",
+    source: "Supplied by the owner",
+  },
+  "abraham-of-smolensk.jpg": {
+    status: "permission",
+    inspectedOn: "2026-08-12",
+    grantedBy: "Supplied by the owner, who confirmed full permission to use",
+    confirmedOn: "2026-08-12",
+    license: "Used with permission",
+    alt: "A bust of a dark-bearded monastic in a hooded schema over a green mantle, a gold halo behind him. Small in the original, so it renders softer than the rest of the set.",
+    work: "Icon of St Abraham of Smolensk",
+    artist: "Unrecorded",
+    workDate: "Unrecorded",
+    source: "Supplied by the owner",
+  },
   "saint-george.jpg": {
     status: "permission",
     inspectedOn: "2026-08-12",
