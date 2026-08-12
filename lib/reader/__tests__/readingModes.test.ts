@@ -5,8 +5,9 @@
 // Since 2026-08-09 this file also holds the promise that light mode is free.
 //
 // On 2026-07-25 Purify answered a reader publicly: an app-wide light mode was
-// going on the roadmap, it would not sit behind Pro, and "being able to read is
-// not a premium feature". The request came from elderly readers who reported
+// going on the roadmap, it would not sit behind a paywall, and "being able to
+// read is
+// a premium feature". The request came from elderly readers who reported
 // dizziness on the dark palette.
 //
 // The palette itself has worked since AppThemeController landed in the root
@@ -89,17 +90,23 @@ describe("coerceReadingTheme", () => {
 });
 
 describe("the free palettes", () => {
-  it("keeps light mode out of the Pro layer", () => {
-    expect(isFreeTheme("parchment"), "light mode must never be Pro").toBe(true);
+  it("keeps light mode out of the paid layer", () => {
+    expect(
+      isFreeTheme("parchment"),
+      "light mode must never be sold",
+    ).toBe(true);
   });
 
   it("keeps the dark default free, which it must be as the fallback", () => {
     expect(isFreeTheme("default")).toBe(true);
   });
 
-  it("keeps Candlelight and Monastery in the Pro layer", () => {
+  it("keeps Candlelight and Monastery in the paid layer", () => {
     // Not a promise to anyone, just the current split. If these move, it is a
-    // pricing decision and belongs in a commit message, not a refactor.
+    // pricing decision and belongs in a commit message, not a refactor. The
+    // tier they sit on moved from Pro to Plus on 2026-08-12; which tier is
+    // asserted in lib/premium/__tests__/plans.test.ts, not here, because this
+    // file only knows free from paid.
     expect(isFreeTheme("candlelight")).toBe(false);
     expect(isFreeTheme("monastery")).toBe(false);
   });
@@ -114,7 +121,7 @@ describe("the free palettes", () => {
     expect(FREE_THEMES.length).toBeGreaterThan(1);
   });
 
-  it("offers the free palettes before the Pro ones", () => {
+  it("offers the free palettes before the paid ones", () => {
     const ids = READING_THEMES.map((t) => t.id);
     const lastFree = Math.max(...FREE_THEMES.map((f) => ids.indexOf(f)));
     const firstPro = Math.min(

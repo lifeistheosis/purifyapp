@@ -9,7 +9,7 @@ import {
   coerceReadingTheme,
   type ReadingTheme,
 } from "@/lib/reader/readingModes";
-import { useProReadingModes } from "@/components/reader/useProReadingModes";
+import { usePlusReadingModes } from "@/components/reader/usePlusReadingModes";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export type ReaderSize = "sm" | "md" | "lg" | "xl";
@@ -229,7 +229,7 @@ export function useReaderPrefs(): Ctx {
     [],
   );
   /**
-   * Step to the next palette. Pass `allows` from useProReadingModes to skip
+   * Step to the next palette. Pass `allows` from usePlusReadingModes to skip
    * the ones this reader is not entitled to, so an unentitled tap lands on a
    * palette that actually applies instead of one the theme controller will
    * silently undo a frame later.
@@ -425,8 +425,8 @@ function FocusGlyph() {
  * variables under it). Also renders the only always-reachable way out of
  * focus: a small floating "Exit focus" control.
  *
- * Premium themes are Pro-layer features: while the surface's enforcement
- * flag is off (today) everyone gets them; once it flips, non-Pro accounts
+ * Premium themes are Plus-layer features: while the surface's enforcement
+ * flag is off (today) everyone gets them; once it flips, unentitled accounts
  * are coerced back to the default palette even if localStorage still holds
  * a premium theme id.
  */
@@ -443,7 +443,7 @@ export function ReadingModeController() {
   // put you back on the default colours. The palette is the app's palette
   // now, so leaking is the intended behaviour and the strip is gone.
   //
-  // The Pro gate is unchanged and still lives here in `effectiveTheme`: this
+  // The paid gate is unchanged and still lives here in `effectiveTheme`: this
   // release promoted the mechanism, not the entitlement.
 
   // Sync `html.reader-focus` with the `focus` preference. Uses the View
@@ -542,14 +542,14 @@ export const ReaderFocusController = ReadingModeController;
 /**
  * Compact cycle pill for toolbars that use the pill row (the saints
  * writings reader). Cycles Dark → Light for every reader, and on through
- * Candlelight and Monastery for a Pro one.
+ * Candlelight and Monastery for a Plus one.
  */
 export function ReaderThemeButton() {
   const { t } = useTranslate();
   const { theme, cycleTheme, themeLabel } = useReaderPrefs();
-  const { allows } = useProReadingModes();
+  const { allows } = usePlusReadingModes();
   // Every reader has at least Dark and Light, so this button always has
-  // somewhere to go and never needs to send anyone to /pricing. The Pro
+  // somewhere to go and never needs to send anyone to /pricing. The paid
   // upsell lives on the chips in the settings menu, where the palettes a
   // reader cannot reach are actually shown.
   return (

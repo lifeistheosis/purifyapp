@@ -7,7 +7,7 @@
 
 import { useRouter } from "next/navigation";
 import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
-import { useProReadingModes } from "@/components/reader/useProReadingModes";
+import { usePlusReadingModes } from "@/components/reader/usePlusReadingModes";
 import { READING_THEMES } from "@/lib/reader/readingModes";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -25,14 +25,17 @@ export function ReadingModeChips() {
   const { t } = useTranslate();
   const router = useRouter();
   const { theme, setTheme } = useReaderPrefs();
-  const { allows, locked } = useProReadingModes();
+  const { allows, locked } = usePlusReadingModes();
 
   return (
     <div>
-      {/* The Pro badge moved off the group heading and onto the chips that are
-          actually Pro. It sat here while light mode was gated with the rest,
+      {/* The badge moved off the group heading and onto the chips that are
+          actually paid. It sat here while light mode was gated with the rest,
           which told a reader looking for a readable page that reading was a
-          paid feature. It is not. See FREE_THEMES in lib/reader/readingModes. */}
+          paid feature. It is not. See FREE_THEMES in lib/reader/readingModes.
+          The tier named here is Plus since 2026-08-12; the palettes moved down
+          from Pro, so the badge has to move with them or it sells the wrong
+          subscription. */}
       <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55 mb-2">
         {t("ui.readingMode")}
       </p>
@@ -41,7 +44,7 @@ export function ReadingModeChips() {
           const sw = THEME_SWATCHES[t.id];
           const themeAllowed = allows(t.id);
           const active = theme === t.id && themeAllowed;
-          const showPro = locked && !themeAllowed;
+          const showPaidBadge = locked && !themeAllowed;
           return (
             <button
               key={t.id}
@@ -57,7 +60,7 @@ export function ReadingModeChips() {
                 // the bible/multi note in scripts/native-build.mjs.
                 else if (locked) router.push("/pricing");
               }}
-              title={showPro ? `${t.blurb}. Purify Pro.` : t.blurb}
+              title={showPaidBadge ? `${t.blurb}. Purify Plus.` : t.blurb}
               aria-pressed={active}
               className={cn(
                 "inline-flex items-center gap-2 rounded-md border px-2.5 py-2 font-sans text-caption font-medium transition-colors",
@@ -77,12 +80,12 @@ export function ReadingModeChips() {
                 />
               </span>
               {t.label}
-              {showPro && (
-                // "Purify Pro" rather than "Pro": the brand name is what the
+              {showPaidBadge && (
+                // "Purify Plus" rather than "Plus": the brand name is what the
                 // i18n ratchet allows as a literal (eslint.config.mjs, brand
                 // names never translate), and it is clearer besides.
                 <span className="ml-auto shrink-0 font-sans text-[10px] font-semibold tracking-[0.6px] text-gold-pale/80">
-                  Purify Pro
+                  Purify Plus
                 </span>
               )}
             </button>

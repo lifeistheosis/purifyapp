@@ -85,6 +85,11 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
   plusLede: "The premium reading and study experience.",
   plusItems: [
     {
+      id: "reading-modes",
+      title: "Premium Reading Modes",
+      sub: "Focus, Candlelight, and Monastery reading, in the Scriptures and the writings of the Fathers",
+    },
+    {
       id: "sync",
       title: "Cross-device sync",
       sub: "Your library on every device you sign in on. On Android the full app already reads offline; sync carries your own layer with you.",
@@ -116,11 +121,6 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
       id: "everything-plus",
       title: "Everything in Purify Plus",
       sub: "All of it, uncapped",
-    },
-    {
-      id: "reading-modes",
-      title: "Premium Reading Modes",
-      sub: "Focus, Candlelight, Monastery, and Parchment reading, in the Scriptures and the writings of the Fathers",
     },
     {
       id: "studio-audio",
@@ -171,6 +171,11 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
   plusLede: "Das Premium-Erlebnis fürs Lesen und Studieren.",
   plusItems: [
     {
+      id: "reading-modes",
+      title: "Premium-Lesemodi",
+      sub: "Fokus, Kerzenlicht und Kloster, in den Schriften und den Werken der Väter",
+    },
+    {
       id: "sync",
       title: "Geräteübergreifende Synchronisierung",
       sub: "Deine Bibliothek auf jedem Gerät, auf dem du dich anmeldest. Auf Android liest die ganze App bereits offline; die Synchronisierung trägt deine eigene Ebene mit dir.",
@@ -202,11 +207,6 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
       id: "everything-plus",
       title: "Alles aus Purify Plus",
       sub: "Alles, ohne Begrenzung",
-    },
-    {
-      id: "reading-modes",
-      title: "Premium-Lesemodi",
-      sub: "Fokus, Kerzenlicht, Kloster und Pergament, in den Schriften und den Werken der Väter",
     },
     {
       id: "studio-audio",

@@ -52,11 +52,31 @@ describe("the restructured ladder", () => {
     expect(ids(PREMIUM_PLAN_EN.proItems)).toContain("eikon-box");
   });
 
-  it("reading modes ship as a live Pro perk; studio audio is still coming", () => {
-    const reading = PREMIUM_PLAN_EN.proItems.find((i) => i.id === "reading-modes");
+  it("reading modes ship as a live Plus perk; studio audio is still coming", () => {
+    // Moved from Pro to Plus on 2026-08-12 by the owner's call. Asserted on
+    // both sides so a refactor cannot quietly sell the palettes twice, or put
+    // them back on the tier the runtime gate no longer checks.
+    const reading = PREMIUM_PLAN_EN.plusItems.find(
+      (i) => i.id === "reading-modes",
+    );
     const audio = PREMIUM_PLAN_EN.proItems.find((i) => i.id === "studio-audio");
     expect(reading?.soon).toBeUndefined();
+    expect(ids(PREMIUM_PLAN_EN.proItems)).not.toContain("reading-modes");
     expect(audio?.soon).toBe(true);
+  });
+
+  it("the reading-modes copy never names a free palette as paid", () => {
+    // Parchment is the free Light palette (FREE_THEMES in
+    // lib/reader/readingModes.ts) and the id survives only so a reader's
+    // existing choice is not reset. Selling it was the contradiction this
+    // change removed; the German copy carried it too.
+    for (const plan of [PREMIUM_PLAN_EN, PREMIUM_PLAN_DE]) {
+      const reading = plan.plusItems.find((i) => i.id === "reading-modes");
+      expect(reading, "reading-modes must live under Plus").toBeDefined();
+      const sub = (reading?.sub ?? "").toLowerCase();
+      expect(sub).not.toContain("parchment");
+      expect(sub).not.toContain("pergament");
+    }
   });
 
   it("the EIKON Box promises no specific item", () => {

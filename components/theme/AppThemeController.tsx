@@ -21,7 +21,7 @@
 
 import { useCallback, useEffect } from "react";
 
-import { useProReadingModes } from "@/components/reader/useProReadingModes";
+import { usePlusReadingModes } from "@/components/reader/usePlusReadingModes";
 
 import {
   READING_THEME_KEY,
@@ -32,14 +32,14 @@ import {
 const PREFS_EVENT = "purify:reader-prefs";
 
 export function AppThemeController() {
-  // The Pro gate moved here with the application itself. It used to live in
+  // The paid gate moved here with the application itself. It used to live in
   // ReaderPrefs' ReadingModeController; leaving it there while this applied
-  // the attribute would have meant a non-Pro reader with a premium id still
+  // the attribute would have meant an unentitled reader with a premium id still
   // in localStorage got the palette anyway, app-wide. The pre-paint script
   // cannot consult entitlements (they are async, and it must run before
   // paint), so it optimistically applies a stored palette and this corrects
   // it a frame later if the reader is not entitled.
-  const { allows } = useProReadingModes();
+  const { allows } = usePlusReadingModes();
 
   const apply = useCallback(() => {
     const el = document.documentElement;
@@ -50,7 +50,7 @@ export function AppThemeController() {
       /* storage blocked: keep the default palette */
     }
     // Per palette, not one boolean for all four. Light mode is free, so an
-    // unentitled reader keeps it here; only the Pro palettes fall back.
+    // unentitled reader keeps it here; only the paid palettes fall back.
     const stored = coerceReadingTheme(raw);
     const theme = allows(stored) ? stored : "default";
     if (theme === "default") el.removeAttribute("data-reading-mode");

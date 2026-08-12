@@ -1,4 +1,4 @@
-// Premium Reading Modes — the palette half of the Pro reading layer.
+// Premium Reading Modes — the palette half of the Plus reading layer.
 // Pure module (no window, no React) so it tests under the node vitest
 // environment and imports cleanly from server and client alike.
 //
@@ -32,9 +32,11 @@ export const READING_THEMES: {
  *
  * Light mode is an accessibility setting, not a premium feature. It was asked
  * for by elderly readers who reported dizziness on the dark palette, and the
- * answer given publicly on 2026-07-25 was that it would not sit behind Pro:
+ * answer given publicly on 2026-07-25 was that it would not sit behind a
+ * paywall:
  * "being able to read is not a premium feature". Candlelight and Monastery are
- * preferences rather than needs, so they stay in the Pro layer.
+ * preferences rather than needs, so they stay in the paid layer, which moved
+ * from Pro to Plus on 2026-08-12.
  *
  * If you are about to add a palette here, the test in
  * lib/reader/__tests__/readingModes.test.ts is what holds that promise in
