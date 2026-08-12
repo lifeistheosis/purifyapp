@@ -95,4 +95,4 @@ international shipping, tax calculation.
   (seed prices are placeholders).
 - Shipping rates (currently flat $0 in checkout stub) and tax handling.
 - Return window final wording (seeded at 30 days).
-- support@purifyapp.net mailbox existence.
+- lifeistheosis@gmail.com mailbox existence.

@@ -27,11 +27,19 @@ Pricing: **Monthly $9.99**, **Yearly $99**.
   future ⇒ Plus; supporter ⇒ lifetime sync. One timestamp expresses purchase,
   renewal, cancel-still-active, and expiry.
 - ✅ **Surface-scoped enforcement** (the key design choice): enforcement is
-  **native-only** via `plusEnforcedFor(isNative)`. `PLUS_ENFORCED_NATIVE` gates the
-  Android app; `PLUS_ENFORCED_WEB` stays off until a web checkout exists, so the
-  website never locks users out of features they cannot yet buy. **Both default
-  false and are env-driven** — set `NEXT_PUBLIC_PLUS_ENFORCED_NATIVE=true` to throw
-  the launch switch (no code change). `NEXT_PUBLIC_PLUS_ENFORCED_WEB` stays unset.
+  per store via `plusEnforcedFor(surface)`, where surface is `"android"`,
+  `"ios"`, `"web"` or `"native-unknown"`. `PLUS_ENFORCED_ANDROID` gates the
+  Play build; `PLUS_ENFORCED_IOS` is separate and stays off while the App
+  Store products sit at MISSING_METADATA; `PLUS_ENFORCED_WEB` stays off until
+  a web checkout exists. No surface ever locks users out of something they
+  cannot buy on their own store. **All three default false and are
+  env-driven**: set `NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=true` to throw the Play
+  launch switch (no code change).
+  The legacy `NEXT_PUBLIC_PLUS_ENFORCED_NATIVE` is still read and still means
+  Android, but prefer the explicit name: the same secret used to be passed to
+  both `android-apk.yml` and `ios-release.yml`, so it silently reached iOS.
+  `"native-unknown"` is what the server reports, since both shells send one
+  shared UA token; it enforces only when both stores are launched.
 - ✅ **Gated Plus surfaces** (native, once enforced): **Florilegium / custom
   collections** (server-gated in the florilegium pages via `getEntitlements`) and
   **cross-device sync** — bookmarks, annotations, and florilegia sync
@@ -120,9 +128,11 @@ build cannot be verified from the dev environment and must run in CI / locally.
 
 ## Launch switch (last step, after device verification) ⚙️
 
-Set **`NEXT_PUBLIC_PLUS_ENFORCED_NATIVE=true`** (Render env, no code change) once the
-purchase→entitlement→unlock loop is proven on a device, then rebuild the AAB. Web
-stays open (`NEXT_PUBLIC_PLUS_ENFORCED_WEB` stays unset until Stripe lands). Because
+Set **`NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=true`** (Render env plus the GitHub
+repo secret, no code change) once the purchase→entitlement→unlock loop is proven
+on a device, then rebuild the AAB. Web and iOS both stay open
+(`NEXT_PUBLIC_PLUS_ENFORCED_WEB` stays unset until Stripe lands,
+`NEXT_PUBLIC_PLUS_ENFORCED_IOS` until the App Store products are approved). Because
 the value is inlined at build time, the launch switch requires a rebuild, not just a
 runtime env change.
 

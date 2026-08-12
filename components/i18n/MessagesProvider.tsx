@@ -15,6 +15,10 @@ import enCatalog from "@/lib/i18n/messages/en.json";
 
 type Messages = Record<string, string>;
 
+/** Stable identity for the no-provider case, so useTranslate's memo below
+ * does not invalidate on every call against a fresh `{}`. */
+const EMPTY_MESSAGES: Messages = Object.freeze({});
+
 // The English catalog ships in the client bundle ONCE. Without this,
 // the root layout's `messages` prop serialized the full catalog into
 // every prerendered page's HTML and flight payload: ~135 KB x 2 copies
@@ -82,23 +86,34 @@ export function MessagesProvider({
  */
 export function useTranslate() {
   const ctx = useContext(MessagesContext);
-  const messages = ctx?.messages ?? {};
+  const messages = ctx?.messages ?? EMPTY_MESSAGES;
   const locale = (ctx?.locale ?? "en") as LocaleCode;
 
-  function t(key: string, replacements?: Record<string, string | number>): string {
-    return interpolate(messages[key] ?? key, replacements);
-  }
+  // Memoized on the catalog and the locale, which is the only thing either
+  // function closes over. The provider value above is already memoized, but
+  // this hook threw that away: it rebuilt `t`, `tn` and the returned object on
+  // every call, and the calendar alone calls it 42 times per grid. Fresh
+  // function identities also silently defeat any consumer that memoizes on
+  // them, so this is a correctness fix as much as an allocation one.
+  //
+  // The `{}` default had to become a module-level constant for the same
+  // reason: a fresh empty object every call is a fresh dependency every call.
+  return useMemo(() => {
+    function t(key: string, replacements?: Record<string, string | number>): string {
+      return interpolate(messages[key] ?? key, replacements);
+    }
 
-  function tn(
-    keyBase: string,
-    count: number,
-    replacements?: Record<string, string | number>,
-  ): string {
-    const value = resolvePluralKey(messages, keyBase, count, locale);
-    return interpolate(value, { ...(replacements ?? {}), count });
-  }
+    function tn(
+      keyBase: string,
+      count: number,
+      replacements?: Record<string, string | number>,
+    ): string {
+      const value = resolvePluralKey(messages, keyBase, count, locale);
+      return interpolate(value, { ...(replacements ?? {}), count });
+    }
 
-  return { locale, t, tn };
+    return { locale, t, tn };
+  }, [messages, locale]);
 }
 
 /** Client-side catalog swap. See Ctx.setLocale for when to use this. */

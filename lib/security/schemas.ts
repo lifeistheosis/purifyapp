@@ -356,6 +356,38 @@ export const campaignStatusSchema = z.object({
   status: z.enum(["answered", "memory_eternal"]),
 });
 
+/** /api/campaigns/[id]/groups POST body (start a parish group in a campaign).
+ *  The server owns the invite code, both counters and every timestamp; a
+ *  client only proposes the name. */
+export const campaignGroupCreateSchema = z.object({
+  name: z.string().min(2).max(60),
+});
+
+/** /api/campaigns/groups POST body (join by invite code).
+ *
+ *  The code is normalised client-side before it gets here, but the pattern is
+ *  enforced again because a client is not a validator. It matches the check
+ *  constraint on prayer_campaign_groups.invite_code exactly, so anything that
+ *  passes here can be looked up and anything that fails could never match a
+ *  row anyway. */
+export const campaignGroupJoinSchema = z.object({
+  inviteCode: z.string().regex(/^[A-Z0-9]{6}$/, "That code is not right."),
+});
+
+/** /api/campaigns/[id]/remind PUT body (per-campaign daily reminder).
+ *
+ *  Default off, and the reader sets their own local hour. `enabled: false`
+ *  needs no time, which is why the time is optional rather than defaulted:
+ *  turning a reminder off must never require sending one back. */
+export const campaignRemindSchema = z.object({
+  enabled: z.boolean(),
+  time: z
+    .string()
+    .regex(/^[0-2][0-9]:[0-5][0-9]$/, "Use a time like 07:00.")
+    .optional()
+    .nullable(),
+});
+
 /** /api/trapeza POST body (submit a fasting recipe). Submissions land pending
  *  and are reviewed before publishing, so the server owns status. */
 export const trapezaRecipeSubmitSchema = z.object({
@@ -409,6 +441,9 @@ export const communityPostSchema = z
     work: z.string().max(80).optional().nullable(),
     /** Only read for `father`, and only to be checked against the work. */
     quoteText: z.string().max(2000).optional().nullable(),
+    /** Post into a parish group's thread instead of the public feed. The
+     *  route proves membership before it is honoured; this only shapes it. */
+    groupId: z.string().uuid().optional().nullable(),
   })
   .refine(
     (p) => p.kind !== "discussion" || (p.body ?? "").trim().length >= 2,

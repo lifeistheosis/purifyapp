@@ -24,6 +24,21 @@
     cool cast, mid-gray elevated cards; calm and monochrome. */
  --color-night: #101013;       /* deepest base background (near-black) */
  --color-night-soft: #1d1d20;  /* elevated cards / surfaces */
+ /* One step BELOW the page, for a recessed well: a block that should read as
+    set into the surface rather than raised off it. The calendar's grid is the
+    only one today. It used `bg-black`, chasing "one uninterrupted surface",
+    which produced the opposite: #000 abutting #101013 makes a hard seam
+    mid-page, and any translucent chrome scrolling over it visibly changes
+    tint at the join. A near-black that is still on the ramp keeps the block
+    reading as one surface without leaving the palette. */
+ --color-night-deep: #0b0b0e;
+
+ /* Real liturgical gold, for feast marks only. Distinct from --color-gold
+    below, which despite its name is a near-white grey. Was hand-typed as
+    #d4af37 in two files, each with a comment explaining that it deliberately
+    escapes --color-gold; naming it means the next person does not have to
+    rediscover why, and light mode gets somewhere to remap it. */
+ --color-festal: #d4af37;
 
  /* Signature accent on dark surfaces — a light near-white gray. In a
     monochrome scheme the "accent" is simply the brightest neutral:
@@ -113,6 +128,10 @@
  --shadow-raise: 0 8px 24px rgba(0, 0, 0, 0.45);   /* pills, FABs */
  --shadow-pop: 0 8px 32px rgba(0, 0, 0, 0.5);      /* popovers, menus */
  --shadow-overlay: 0 24px 48px rgba(0, 0, 0, 0.6); /* large dropdowns */
+ /* A hero card resting on the page, not floating over it: tighter and more
+    grounded than --shadow-overlay. Was a literal on the calendar's feast
+    panel, the only box-shadow on that screen. */
+ --shadow-panel: 0 18px 40px -14px rgba(0, 0, 0, 0.5);
 
  /* ── Motion ────────────────────────────────────────────────────────────
   Every animation in the app used to hand-type its curve and its duration,
@@ -181,28 +200,68 @@
 /* ----------------------------------------------------------------------
  App-shell safe-area helpers. The bottom tab bar and the status-bar inset
  exist ONLY in the native app shell (Capacitor), so their padding is
- scoped to `html.is-native` (set by NativeBridge). On the web — mobile or
- desktop — there is no tab bar and a web header sits up top, so these are
- all no-ops. Pairs with the WebOnly/NativeOnly React gates.
+ scoped to `html.is-native` (set by NativeBridge). On the web there is no
+ tab bar and a web header sits up top, so nothing here should apply at all.
+ Pairs with the WebOnly/NativeOnly React gates.
+
+ "Should not apply" has to mean NO RULE, never a rule that sets zero. A
+ zero-valued rule is not neutral: it still wins over whatever the call site
+ asked for. That mistake is written up at length below, because it silently
+ stripped the padding off thirteen surfaces on mobile web for a whole
+ release. Anything added here must be scoped to `html.is-native`, or be a
+ real value on both platforms.
  ---------------------------------------------------------------------- */
+/* The tab bar exists ONLY in the native shell (MobileTabBar is NativeOnly),
+   so its height is 0 on the web. This MUST stay 0 here and be raised inside
+   `html.is-native` below, never the other way round: it was declared as a
+   flat 86px at :root, and the four floating elements that position off it
+   (MobileChapterPill, MobileVerseToolbar, MobileWorkPill, InstallPrompt, all
+   `bottom: calc(var(--tab-bar-h) + inset + 12px)`) therefore floated 98px up
+   the mobile-web viewport, anchored to a bar that is not rendered there.
+   `html.is-native .now-playing-lift` below still reads 86px: it is a
+   descendant of html.is-native, so it inherits the raised value. */
 :root {
- --tab-bar-h: 86px;
+ --tab-bar-h: 0px;
+ --now-playing-h: 0px;
 }
 
-/* Bottom clearance for scroll containers behind the native tab bar. */
-@utility safe-pb {
- padding-bottom: 0;
+/* How much room the now-playing bar claims at the bottom of the screen, so the
+   four floating reader elements can clear it. NowPlayingBar sets
+   `.has-now-playing` on <html> while it paints, the same idiom CartFab uses
+   for `.has-cart-fab` and for the same reason: two independently-mounted fixed
+   elements claiming one corner cannot be resolved by z-index, which is what the
+   note on `.now-playing-lift` below records the hard way.
+
+   56px is the card itself (a 40px transport button inside py-2). On the web it
+   also carries its own 6px bottom pad; `.now-playing-lift` zeroes that on
+   native because the tab bar underneath already clears the home indicator. */
+html.has-now-playing {
+ --now-playing-h: 62px;
 }
-/* safe-pb plus room for a floating reader pill (MobileChapterPill /
- MobileWorkPill, ~44px + 12px gap + 12px breathing room). */
-@utility safe-pb-reader {
- padding-bottom: 0;
+html.is-native.has-now-playing {
+ --now-playing-h: 56px;
 }
-/* Top clearance so content clears the native status bar (no web header
- up there in the app). */
-@utility safe-pt {
- padding-top: 0;
-}
+
+/* NOTE, and do not undo this: `safe-pb`, `safe-pb-reader` and `safe-pt` used
+   to be declared here as `@utility` blocks whose web value was a literal 0,
+   the intent being a no-op off-native. They were not a no-op. Tailwind emits
+   custom utilities near the end of the utilities layer, AFTER `.pb-*` and
+   `.py-*`, at the same (0,1,0) specificity, so on the web the later rule won
+   and every element pairing them with padding LOST it: the last verse of a
+   chapter sat flush on the viewport edge, and three fixed shop bars had their
+   buttons on the screen edge. `.md:pb-16` is emitted later still, which is why
+   only phones were affected and it went unseen.
+
+   The fix is that they are gone. The `html.is-native` rules below are
+   hand-written plain CSS, not utilities: they are unlayered, so they still
+   beat the utilities layer, and (0,2,1) beats (0,1,0) regardless. Native
+   rendering is unchanged. On the web there is now simply no rule, so the
+   author's own `pb-*` applies, which is what every call site always intended.
+
+   Do not "restore" these for symmetry, and do not try to blank the bodies
+   instead: `@utility safe-pb { }` is a hard build error, so deletion is the
+   only form this fix can take. */
+
 /* Position helper for the tab bar itself (sits above the home indicator). */
 @utility safe-bottom-pad {
  padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -215,6 +274,7 @@
    place; the real per-screen bug was fixed offsets (below-topbar / -line)
    that ignored the taller pinned bar, not the inset source. */
 html.is-native {
+ --tab-bar-h: 86px;
  --inset-top: env(safe-area-inset-top, 0px);
  --inset-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -345,6 +405,15 @@ html.has-cart-fab .back-to-top {
     to stop it never applied. `none` also disables swipe-down
     pull-to-refresh, which an installed app should not have. */
  overscroll-behavior: none;
+ /* Always reserve the scrollbar gutter, so a page that scrolls and a page
+    that does not are the same width. Every centred container in the app is
+    `mx-auto`, so without this the classic desktop scrollbar recentres the
+    whole layout by half its width the moment you navigate between a short
+    page and a long one: measured at 7.5px, enough to make the header
+    visibly jump on every navigation. Overlay scrollbars (all touch
+    browsers, and macOS by default) reserve nothing, so this is inert
+    there. */
+ scrollbar-gutter: stable;
  }
 
  @media (prefers-reduced-motion: reduce) {
@@ -558,7 +627,12 @@ div[data-hl="true"] {
 .licensed-scripture .mt2 {
  font-family: var(--font-serif);
  text-align: center;
- color: #fff;
+ /* The token, not #fff. --color-paper flips to dark ink under
+    html[data-reading-mode="parchment"], so this heading follows the palette
+    instead of staying white and vanishing on the light ground. The .lic-notes
+    block below re-inks by hand because it predates the token; this does not
+    need to. */
+ color: var(--color-paper);
  margin: 0 0 0.6em;
 }
 .licensed-scripture .mt,
@@ -782,28 +856,73 @@ div[data-hl="true"] {
  the monochrome scheme. The .rubric utility is the single point of
  control if a deeper red is ever wanted again. */
  --ink-rubric: 226 226 229;
+
+ /* The liturgical registers and the fasting registers, as "R G B" triplets
+    for `rgb(var(--x) / <alpha>)`.
+
+    These were hand-typed in lib/calendar/tone.ts and
+    components/calendar/fastMeta.tsx, which meant the calendar's entire colour
+    identity lived in TypeScript where no stylesheet could reach it, and in
+    particular where a light theme could not remap it. The hues are unchanged;
+    they are simply declared where the rest of the palette lives. tone.ts and
+    fastMeta.tsx now point at these.
+
+    Colour is never the sole signal for a fast: every one of these is paired
+    with a bespoke icon AND a text label at the render site. Keep it that
+    way. */
+ --tone-gold: 183 176 163;
+ --tone-crimson: 193 39 45;
+ --tone-green: 16 185 129;
+ --tone-muted: 183 176 163;
+
+ --fast-strict: 224 86 86;
+ --fast-wine-oil: 214 158 78;
+ --fast-fish: 96 184 172;
+ --fast-fast: 212 175 110;
+ --fast-free: 40 200 140;
+ --fast-normal: 183 176 163;
+
+ /* The colour the page darkens toward at its foot, and the sheen on a raised
+    card. Both were literal black and literal white, which is exactly what
+    stops working when the ground turns to parchment. */
+ --menaion-vignette: 0 0 0;
+ --panel-sheen: 255 255 255;
 }
 
 /* Page surface: a faint radial vignette so the page feels like a lit room,
  layered over a low-opacity parchment grain (an SVG noise pattern). */
 .menaion-surface {
  position: relative;
- background:
+ /* Grain, tone wash, and the vignette, as three layers of ONE background on
+    the element itself.
+
+    The grain used to be a `position: fixed; inset: 0` pseudo-element under
+    `mix-blend-mode: overlay`, and the season wash below was a second one.
+    Two full-viewport composited planes, blended, repainted for every scroll
+    frame, on the screen whose complaint was that scrolling stutters. Worse,
+    they bought nothing: `.menaion-surface > *` lifts the direct children to
+    z-index 1, and two of those children paint opaque backgrounds, so both
+    planes were completely hidden behind the readings band and the whole grid
+    block, which is most of the page. Cost on every frame, visible over the
+    hero only.
+
+    As background layers they scroll with the content, occlude correctly, and
+    cost one paint. `overlay` also had to go: against a near-black ground it
+    is close to a no-op in the shadows and only lifts where the pixel beneath
+    is already bright, so it was texturing the text rather than the field. A
+    flat low alpha does what the grain was for. */
+ background-image:
+ url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"),
  radial-gradient(
  120% 80% at 50% -10%,
- rgba(var(--tone, 183 176 163) / 0.06) 0%,
+ rgb(var(--tone, 183 176 163) / 0.06) 0%,
  transparent 55%
  ),
- radial-gradient(80% 60% at 50% 120%, rgba(0, 0, 0, 0.35) 0%, transparent 60%);
-}
-.menaion-surface::before {
- content: "";
- position: fixed;
- inset: 0;
- pointer-events: none;
- z-index: 0;
- background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
- mix-blend-mode: overlay;
+ radial-gradient(
+ 80% 60% at 50% 120%,
+ rgb(var(--menaion-vignette) / 0.35) 0%,
+ transparent 60%
+ );
 }
 .menaion-surface > * {
  position: relative;
@@ -819,9 +938,15 @@ div[data-hl="true"] {
 /* Kalendrium toggle, typographic header with a gold-underlined active
  state, used in the Old/New calendar style switcher. */
 .kalendrium-active {
- color: rgb(var(--color-paper, 248 244 234));
+ /* `var()`, not `rgb(var())`. --color-paper is a hex, so `rgb(#ffffff)` was
+    invalid and the browser dropped the whole declaration: the active toggle
+    has been inheriting its colour rather than setting it. The fallback never
+    fired either, because the variable IS defined, just not as a triplet.
+    Underline follows the accent token instead of a stale hard-typed warm
+    gold that stopped matching --color-gold when that went neutral. */
+ color: var(--color-paper);
  font-weight: 600;
- border-bottom: 2px solid rgba(183, 176, 163, 0.85);
+ border-bottom: 2px solid var(--color-gold-soft);
  padding-bottom: 2px;
 }
 
@@ -830,8 +955,14 @@ div[data-hl="true"] {
  menaion vignette with the season's liturgical color. */
 .menaion-surface[data-season]::after {
  content: "";
- position: fixed;
- inset: 0;
+ /* Absolute, not fixed. This was the second full-viewport fixed plane; see
+    the note on .menaion-surface. Anchored to the page it scrolls with the
+    content and paints once. `top: 0; height: 60vh` because the wash comes
+    from the top of the page and fades out well before the fold, so there is
+    no reason to keep a full-page layer alive for it. */
+ position: absolute;
+ inset: 0 0 auto 0;
+ height: 60vh;
  pointer-events: none;
  z-index: 0;
  background: radial-gradient(
@@ -848,17 +979,22 @@ div[data-hl="true"] {
 .lampada-glow::before {
  content: "";
  position: absolute;
- inset: -40% -40% -10% -40%;
+ /* Was inset: -40% -40% -10% -40%, bleeding well outside the tile, under
+    filter: blur(6px), on an infinite 6.5s animation. Three problems in one
+    rule: the tile it sits in has overflow-hidden, so the bleed was clipped
+    back to a hard-edged square and the halo was never a halo; a blur filter
+    forces its own compositing layer; and the animation ran forever on the
+    one screen that already had two blended full-viewport planes.
+    Inset to the tile, no filter, no animation. The tone still reads. */
+ inset: 0;
  background: radial-gradient(
- 50% 50% at 50% 45%,
- rgb(var(--tone, 183 176 163) / 0.4) 0%,
- rgb(var(--tone, 183 176 163) / 0.12) 38%,
- transparent 70%
+ 60% 60% at 50% 45%,
+ rgb(var(--tone, 183 176 163) / 0.22) 0%,
+ rgb(var(--tone, 183 176 163) / 0.08) 45%,
+ transparent 72%
  );
- filter: blur(6px);
  z-index: 0;
  pointer-events: none;
- animation: halo-breathe 6.5s ease-in-out infinite;
 }
 .lampada-glow > * {
  position: relative;
@@ -1017,39 +1153,13 @@ div[data-hl="true"] {
  }
 }
 
-@keyframes halo-breathe {
- 0%,
- 100% {
- opacity: 0.85;
- transform: scale(1);
- }
- 50% {
- opacity: 1;
- transform: scale(1.04);
- }
-}
+/* `halo-breathe` and `.cell-halo` were both removed here, along with the
+   reduced-motion rule that suppressed the first.
 
-/* A small steady halo behind today's grid number (no animation, subtle). */
-.cell-halo {
- position: relative;
-}
-.cell-halo::before {
- content: "";
- position: absolute;
- inset: 0;
- background: radial-gradient(
- 60% 55% at 50% 42%,
- rgb(var(--tone, 183 176 163) / 0.22) 0%,
- transparent 65%
- );
- pointer-events: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
- .lampada-glow::before {
- animation: none;
- }
-}
+   halo-breathe drove an infinite 6.5s pulse on today's calendar tile behind a
+   blur filter; .lampada-glow is now a static tone wash, so there is nothing
+   left to suppress and nothing left to pulse. .cell-halo was defined for the
+   same job and never referenced by anything, in any file. */
 
 /* Admin panel — gentle fade + rise when a tab section becomes active.
    The shell sets `key` on the wrapper so a tab swap remounts and replays
@@ -1218,6 +1328,47 @@ html[data-reading-mode="parchment"] {
  --color-gold-soft: #6b5316;
  --color-gold-pale: #5d4a1a;
  color-scheme: light;
+
+ /* The recessed well goes DARKER than the page on a dark theme and LIGHTER
+    is wrong here too: on parchment it should read as a shallow inset, so it
+    steps a little deeper into the paper rather than toward black. */
+ --color-night-deep: #e6dcc4;
+ --color-festal: #8a6a12;
+
+ /* The rubric is the one that matters most. At 226 226 229 with no light
+    override it is near-white, so every feast day number and every feast name
+    in the grid vanished into the page. Back to something like the cinnabar
+    the comment beside :root remembers it once being, which is what a rubric
+    is supposed to be on paper anyway. */
+ --ink-rubric: 150 40 32;
+
+ /* Vignette and sheen invert: a black wash and a white sheen are both
+    wrong on a light ground. */
+ --menaion-vignette: 120 100 60;
+ --panel-sheen: 0 0 0;
+
+ /* Liturgical and fasting registers, darkened to hold contrast on paper.
+    Same hues, same order, same meanings; only the luminance moves. */
+ --tone-gold: 122 96 42;
+ --tone-crimson: 150 40 32;
+ --tone-green: 32 110 82;
+ --tone-muted: 122 112 92;
+
+ --fast-strict: 168 40 40;
+ --fast-wine-oil: 140 92 26;
+ --fast-fish: 30 110 104;
+ --fast-fast: 150 108 40;
+ --fast-free: 22 118 82;
+ --fast-normal: 122 112 92;
+}
+
+/* The two other dark palettes only need the well, since everything else on
+   the calendar already resolves through tokens they remap. */
+html[data-reading-mode="candlelight"] {
+ --color-night-deep: #100b03;
+}
+html[data-reading-mode="monastery"] {
+ --color-night-deep: #080b11;
 }
 
 /* The Bible reader's footnote block (.lic-notes) predates the token
@@ -1443,8 +1594,20 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  from { opacity: 0; }
  to { opacity: 1; }
 }
+/* `backwards`, NOT `both`, for the reason spelled out under `.route-fade`
+   below: `both` keeps the opacity animation in effect after it finishes, so
+   every direct child stays a PERMANENT stacking context and any z-index
+   inside it is scoped to that child. Two `z-index: auto` siblings then paint
+   in DOM order no matter what, which is how the saints search dropdown
+   (z-50) ended up underneath the saint icons of the browser block that
+   follows it, reported from the Android build on 2026-08-09. `backwards`
+   fills during the stagger delay and hands the element back to its base
+   style, opacity: 1, when the animation ends: visually identical, and the
+   stacking context now lasts one animation instead of the life of the page.
+   `.route-fade` and `.cascade-rise` were already corrected; this base rule
+   was missed. */
 .cascade > * {
- animation: cascade-in var(--duration-base) var(--ease-house) both;
+ animation: cascade-in var(--duration-base) var(--ease-house) backwards;
  animation-delay: calc(var(--cascade-start, 0ms) + var(--i, 0) * var(--stagger-step));
 }
 .cascade > *:nth-child(1) { --i: 0; }

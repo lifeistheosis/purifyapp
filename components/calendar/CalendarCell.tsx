@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { memo, type CSSProperties } from "react";
 import type { MonthCell } from "@/lib/calendar/orthodox";
 import { Cross } from "@/components/ui/icons/Cross";
 import { toneFor, TONE_RGB } from "@/lib/calendar/tone";
@@ -19,12 +20,32 @@ function shortName(name: string): string {
 }
 
 /**
+ * `--tone` per liturgical register, built once at module scope.
+ *
+ * There are only as many distinct values here as there are tones, but this
+ * was an inline object literal, so it allocated a fresh style object for all
+ * 42 tiles on every render. That also defeats memo, since a new object is a
+ * new prop by identity.
+ */
+const TONE_STYLE: Record<string, CSSProperties> = Object.fromEntries(
+ Object.entries(TONE_RGB).map(([tone, rgb]) => [
+ tone,
+ Object.freeze({ ["--tone" as string]: rgb }) as CSSProperties,
+ ]),
+);
+
+/**
  * One day in the month grid, a ruled rectangular tile (not a card), in the
  * idiom of a printed wall calendar. Feast days get a rubric-red day number
  * and a small saint icon when one is indexed; ordinary days stay quiet.
  * Today is marked by a single thick gold outline, not a tinted background.
+ *
+ * Memoized. A date tap changes the outline on exactly two tiles, and without
+ * this all 42 re-render. Every prop is now a primitive except `cell`, whose
+ * identity is stable for a given month because monthGrid is cached, so the
+ * default shallow compare is enough.
  */
-export function CalendarCell({
+function CalendarCellImpl({
  cell,
  href,
  isSelected,
@@ -38,7 +59,7 @@ export function CalendarCell({
  return (
  <div
  aria-hidden
- className="aspect-square md:min-h-[84px] border-r border-b border-gold/15 bg-paper/[0.01]"
+ className="aspect-square md:min-h-[84px] border-r border-b border-paper/8 bg-paper/[0.012]"
  />
  );
  }
@@ -46,8 +67,9 @@ export function CalendarCell({
  const tone = toneFor({ hasFeast: cell.hasFeast, fast: cell.fast });
  const meta = FAST_META[cell.fast];
  const FastIcon = meta.Icon;
- const label = cell.headline ? shortName(cell.headline.name) : "";
+ const label = cell.headlineName ? shortName(cell.headlineName) : "";
  const rgb = TONE_RGB[tone];
+ const toneStyle = TONE_STYLE[tone];
 
  const baseClasses =
  "group relative aspect-square md:min-h-[84px] flex flex-col justify-center md:justify-start p-1.5 overflow-hidden border-r border-b transition-colors duration-150";
@@ -56,12 +78,24 @@ export function CalendarCell({
  <Link
  href={href}
  scroll={false}
- style={{ ["--tone" as string]: rgb }}
+ // Every tile is a distinct href, and /calendar is a static route, so the
+ // default prefetch pulls the whole route including its data for each one:
+ // roughly 47 fetches of the page payload for a screen where at most one
+ // will be tapped. Same call made twice before for the same reason, both
+ // with measurements: MobileChapterStrip (one page view fired 137 requests)
+ // and SaintCard (1,093 cards on the scroll thread). The month is already
+ // on the device, so there is no latency here to hide. The three month-nav
+ // links keep their prefetch; three is not a storm.
+ prefetch={false}
+ style={toneStyle}
  className={cn(
  baseClasses,
- // Today: a single thick gold outline, no tinted background.
+ // Today: one thick ring in the day's own liturgical tone, no tinted
+ // background. The ring used to be outline-gold/65, the same neutral for
+ // every day of the year, which threw away the one thing the cell already
+ // knows. --tone is set on this element just above.
  cell.isToday &&
- "lampada-glow outline outline-2 outline-offset-[-2px] outline-gold/65 z-[1]",
+ "lampada-glow outline outline-2 outline-offset-[-2px] outline-[rgb(var(--tone)/0.7)] z-[1]",
  // Selected (but not today): paper outline
  !cell.isToday &&
  isSelected &&
@@ -70,8 +104,8 @@ export function CalendarCell({
  !cell.isToday &&
  !isSelected &&
  (cell.hasFeast
- ? "border-gold/30 bg-gold/[0.04] hover:bg-gold/[0.09]"
- : "border-gold/15 bg-paper/[0.015] hover:bg-paper/[0.05]"),
+ ? "border-paper/14 bg-paper/[0.045] hover:bg-paper/[0.075]"
+ : "border-paper/8 bg-paper/[0.02] hover:bg-paper/[0.05]"),
  )}
  >
  <div className="flex flex-col items-center gap-0.5 md:flex-row md:items-start md:justify-between md:gap-1">
@@ -102,11 +136,12 @@ export function CalendarCell({
  </span>
  )}
  {cell.hasFeast && (
- // Hardcoded festal gold (#d4af37): keeps the feast marker truly gold,
- // independent of the app-wide neutralized `--color-gold` (warm grey).
+ // --color-festal, real liturgical gold, deliberately NOT --color-gold:
+ // that token is a near-white grey in this scheme and a feast mark drawn
+ // in it stops reading as gold at all.
  <Cross
  size={12}
- className="text-[#d4af37] md:mt-[1px]"
+ className="text-festal md:mt-[1px]"
  aria-label={t("calendar.feastAria")}
  />
  )}
@@ -127,3 +162,5 @@ export function CalendarCell({
  </Link>
  );
 }
+
+export const CalendarCell = memo(CalendarCellImpl);

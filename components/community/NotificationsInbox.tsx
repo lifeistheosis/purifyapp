@@ -10,42 +10,26 @@
 // notifications table is absent, so before the migration is applied the
 // badge simply never appears and this renders nothing. Nobody sees an
 // error for a feature that is not switched on yet.
+//
+// Both views read one module store (lib/community/inbox.ts). They used to
+// hold separate copies of the count, which is why the tab dot never lit
+// mid-session and never went out after the list was read.
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 
-import { apiFetch } from "@/lib/api/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import {
+  markInboxRead,
+  refreshInbox,
+  useInbox,
+  type CommunityNotification,
+} from "@/lib/community/inbox";
 
-export type CommunityNotification = {
-  id: string;
-  kind: "reply";
-  post_id: string;
-  reply_id: string | null;
-  actor_name: string;
-  excerpt: string | null;
-  read_at: string | null;
-  created_at: string;
-};
+export type { CommunityNotification };
 
-type Inbox = { notifications: CommunityNotification[]; unread: number };
-
-/** Shared fetch so the badge and the list cannot disagree about the count. */
-async function loadInbox(): Promise<Inbox> {
-  try {
-    const res = await apiFetch("/api/community/notifications");
-    if (!res.ok) return { notifications: [], unread: 0 };
-    const json = (await res.json()) as Partial<Inbox>;
-    return {
-      notifications: Array.isArray(json.notifications) ? json.notifications : [],
-      unread: typeof json.unread === "number" ? json.unread : 0,
-    };
-  } catch {
-    // Signed out, offline, or the table is not there yet. All the same
-    // thing to a reader: nothing to show.
-    return { notifications: [], unread: 0 };
-  }
-}
+/** How often the tab badge re-checks while the app is in the foreground. */
+const BADGE_POLL_MS = 60_000;
 
 function when(iso: string): string {
   const then = new Date(iso).getTime();
@@ -63,17 +47,45 @@ function when(iso: string): string {
   });
 }
 
-/** The unread dot for the Community tab. Renders nothing when there is nothing. */
+/**
+ * The unread dot for the Community tab. Renders nothing when there is
+ * nothing.
+ *
+ * A dot and not a number, deliberately. This sits on a tab the reader has
+ * not opened, and CONTRIBUTING's bar on reminders forbids using a count to
+ * make someone look. The number belongs inside the panel, where the reader
+ * has already chosen to be. The dot only says "there is something here".
+ */
 export function NotificationsBadge() {
-  const [unread, setUnread] = useState(0);
+  const { unread } = useInbox();
 
   useEffect(() => {
-    let cancelled = false;
-    loadInbox().then((i) => {
-      if (!cancelled) setUnread(i.unread);
-    });
+    void refreshInbox();
+    let timer: ReturnType<typeof setInterval> | null = null;
+    const start = () => {
+      if (timer === null) timer = setInterval(() => void refreshInbox(), BADGE_POLL_MS);
+    };
+    const stop = () => {
+      if (timer !== null) {
+        clearInterval(timer);
+        timer = null;
+      }
+    };
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        void refreshInbox();
+        start();
+      } else {
+        stop();
+      }
+    };
+    if (document.visibilityState === "visible") start();
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", onVisible);
     return () => {
-      cancelled = true;
+      stop();
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", onVisible);
     };
   }, []);
 
@@ -87,39 +99,46 @@ export function NotificationsBadge() {
 }
 
 export function NotificationsInbox() {
-  const { t } = useTranslate();
-  const [inbox, setInbox] = useState<Inbox | null>(null);
+  const { t, tn } = useTranslate();
+  const inbox = useInbox();
 
-  const markRead = useCallback(() => {
-    // Fire and forget: the list is already on screen and correct, and a
-    // failed mark-read only means the badge lingers until next time.
-    apiFetch("/api/community/notifications", { method: "POST" }).catch(() => {});
-  }, []);
-
+  // Load, then mark read. Marking read is optimistic inside the store, so
+  // the dot clears in the same beat the reader sees the list.
   useEffect(() => {
     let cancelled = false;
-    loadInbox().then((i) => {
-      if (cancelled) return;
-      setInbox(i);
-      if (i.unread > 0) markRead();
+    void refreshInbox().then(() => {
+      if (!cancelled) void markInboxRead();
     });
     return () => {
       cancelled = true;
     };
-  }, [markRead]);
+  }, []);
 
   // Nothing at all, including before the migration lands.
-  if (!inbox || inbox.notifications.length === 0) return null;
+  if (!inbox.loaded || inbox.notifications.length === 0) return null;
 
   return (
     <section className="mb-8">
-      <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">
-        {t("community.notifications")}
-      </h2>
+      <div className="flex items-baseline gap-2">
+        <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">
+          {t("community.notifications")}
+        </h2>
+        {/* The count lives here, on a surface the reader opened, and never
+            on the tab glyph. */}
+        {inbox.unread > 0 ? (
+          <span className="font-sans text-eyebrow font-semibold text-crimson">
+            {tn("community.unreadCount", inbox.unread)}
+          </span>
+        ) : null}
+      </div>
       <ul className="mt-3 divide-y divide-paper/8 overflow-hidden rounded-xl border border-paper/12 bg-paper/[0.02]">
         {inbox.notifications.map((n) => (
           <li key={n.id}>
             <Link
+              // The anchor this points at is rendered by PostCard, and the
+              // #post- hash also selects the Conversations panel. Both were
+              // missing, so every notification landed on the Campaigns panel
+              // with nothing to scroll to.
               href={`/community#post-${n.post_id}`}
               className="tap-press flex items-start gap-3 px-4 py-3 transition-colors hover:bg-paper/[0.04]"
             >

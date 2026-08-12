@@ -58,19 +58,36 @@ export function Navbar() {
           : "bg-transparent border-b border-transparent",
       )}
     >
-      <div className="mx-auto max-w-[1240px] h-full flex items-center justify-between gap-4 px-5 md:px-8">
+      {/* Geometry here is deliberately identical to AppNav's row: same
+          container gap, same left-cluster width, same nav gap, same
+          breakpoint. Home renders this Navbar and every other page renders
+          AppNav, so any difference between the two reads as the header
+          jumping the moment you leave home. It did: this row used gap-4 with
+          a 24px mark, AppNav uses gap-6 with a 36px back button, so the
+          wordmark and every link after it shifted 14px right on navigation.
+          If you change one of these four values, change it in both files. */}
+      <div className="mx-auto max-w-[1240px] h-full flex items-center justify-between gap-6 px-5 md:px-8">
         <Link
           href="/"
-          className="group inline-flex items-center gap-2.5 font-sans text-title-sm font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors duration-150"
+          className="group inline-flex items-center gap-3 font-sans text-title-sm font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors duration-150"
         >
-          <PurifyMark
-            size={24}
-            className="text-gold-pale transition-colors group-hover:text-paper"
-          />
+          {/* h-9 w-9 so the mark occupies exactly the slot AppNav's back
+              button does; the cross itself stays 24px, centred in it. */}
+          <span className="inline-flex h-9 w-9 items-center justify-center">
+            <PurifyMark
+              size={24}
+              className="text-gold-pale transition-colors group-hover:text-paper"
+            />
+          </span>
           Purify
         </Link>
 
-        <nav className="hidden md:flex items-center gap-9">
+        {/* gap-7 and the lg breakpoint both match AppNav. The row was gap-9
+            from md, but it carries the same seven links plus the Shop pill
+            that AppNav needs ~900px for, so between 768px and 1024px the home
+            header was fitting that row into a space AppNav had already
+            decided was too small. */}
+        <nav className="hidden lg:flex items-center gap-7">
           {navItems.map((item) => {
             if (item.key === "discover") {
               return (
@@ -119,7 +136,11 @@ export function Navbar() {
           )}
         </nav>
 
-        <div className="hidden sm:flex items-center gap-5">
+        {/* lg, not sm, and it has to move in step with the link row above and
+            the hamburger below. All three gate at the same breakpoint in
+            AppNav; splitting them here would leave a band of widths with the
+            link row hidden and no hamburger to replace it. */}
+        <div className="hidden lg:flex items-center gap-5">
           {secondary.map((item) => (
             <Link
               key={item.key}
@@ -137,7 +158,7 @@ export function Navbar() {
           type="button"
           aria-label={t("nav.menuToggle")}
           aria-expanded={open}
-          className="sm:hidden inline-flex items-center justify-center h-11 w-11 rounded-pill border border-paper/20 text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
+          className="lg:hidden inline-flex items-center justify-center h-11 w-11 rounded-pill border border-paper/20 text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <Close size={18} /> : <Menu size={20} />}
@@ -145,7 +166,7 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div className="sm:hidden absolute left-0 right-0 top-[72px] bg-night border-b border-white/8 shadow-lg">
+        <div className="lg:hidden absolute left-0 right-0 top-[72px] bg-night border-b border-white/8 shadow-lg">
           <nav className="flex flex-col px-5 py-3">
             {[
               ...navItems,

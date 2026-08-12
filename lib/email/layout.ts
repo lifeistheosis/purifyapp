@@ -12,7 +12,7 @@ export function emailLayout(opts: {
 }): string {
   const footer =
     opts.footer ??
-    "EIKON selects, inspects, and ships every icon it sells. Questions? Reply to this email or contact support@purifyapp.net.";
+    "EIKON selects, inspects, and ships every icon it sells. Questions? Reply to this email or contact lifeistheosis@gmail.com.";
   return `<!doctype html><html><body style="margin:0;background:#f5f4f2;font-family:Georgia,'Times New Roman',serif;color:#1a1720">
   <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px">
     <table width="100%" style="max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden">

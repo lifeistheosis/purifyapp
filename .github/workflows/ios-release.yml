@@ -149,7 +149,13 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
-          NEXT_PUBLIC_PLUS_ENFORCED_NATIVE: ${{ secrets.NEXT_PUBLIC_PLUS_ENFORCED_NATIVE }}
+          # iOS gets its OWN switch and deliberately NOT the shared
+          # NEXT_PUBLIC_PLUS_ENFORCED_NATIVE secret. That secret is the Android
+          # launch switch, and passing it here meant throwing the Play launch
+          # would also enforce Plus in the next iOS build, where the two
+          # subscription products sit at MISSING_METADATA and nobody can buy it
+          # back. Set this only once iOS subscriptions are approved and live.
+          NEXT_PUBLIC_PLUS_ENFORCED_IOS: ${{ secrets.NEXT_PUBLIC_PLUS_ENFORCED_IOS }}
           NEXT_PUBLIC_CAMPAIGNS_ENABLED: ${{ secrets.NEXT_PUBLIC_CAMPAIGNS_ENABLED }}
           NEXT_PUBLIC_EIKON_BOX_ENABLED: ${{ secrets.NEXT_PUBLIC_EIKON_BOX_ENABLED }}
           # NEXT_PUBLIC_VAPID_KEY and NEXT_PUBLIC_API_BIBLE_KEY are deliberately

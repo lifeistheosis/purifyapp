@@ -1,4 +1,4 @@
-// Premium Reading Modes — the palette half of the Pro reading layer.
+// Premium Reading Modes — the palette half of the Plus reading layer.
 // Pure module (no window, no React) so it tests under the node vitest
 // environment and imports cleanly from server and client alike.
 //
@@ -19,11 +19,35 @@ export const READING_THEMES: {
   label: string;
   blurb: string;
 }[] = [
-  { id: "default", label: "Standard", blurb: "The Purify night palette" },
+  { id: "default", label: "Dark", blurb: "The Purify night palette" },
+  // The id stays `parchment` so a palette already chosen on a reader's device
+  // survives the rename. Only what they are shown changes.
+  { id: "parchment", label: "Light", blurb: "Warm paper, dark ink" },
   { id: "candlelight", label: "Candlelight", blurb: "Warm amber, late-hour reading" },
   { id: "monastery", label: "Monastery", blurb: "Cool stone and quiet indigo" },
-  { id: "parchment", label: "Parchment", blurb: "Aged paper, dark ink" },
 ];
+
+/**
+ * The palettes every reader gets, entitlement or not.
+ *
+ * Light mode is an accessibility setting, not a premium feature. It was asked
+ * for by elderly readers who reported dizziness on the dark palette, and the
+ * answer given publicly on 2026-07-25 was that it would not sit behind a
+ * paywall:
+ * "being able to read is not a premium feature". Candlelight and Monastery are
+ * preferences rather than needs, so they stay in the paid layer, which moved
+ * from Pro to Plus on 2026-08-12.
+ *
+ * If you are about to add a palette here, the test in
+ * lib/reader/__tests__/readingModes.test.ts is what holds that promise in
+ * place. Move a theme out of this list and it fails, on purpose.
+ */
+export const FREE_THEMES: readonly ReadingTheme[] = ["default", "parchment"];
+
+/** Is this palette available to every reader? */
+export function isFreeTheme(theme: ReadingTheme): boolean {
+  return FREE_THEMES.includes(theme);
+}
 
 const THEME_IDS = new Set<string>(READING_THEMES.map((t) => t.id));
 

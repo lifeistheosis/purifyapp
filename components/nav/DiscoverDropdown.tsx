@@ -170,8 +170,17 @@ export function DiscoverDropdown({
   useEffect(() => clearTimers, [clearTimers]);
 
   return (
+    // `flex items-center`, not bare `relative`, and the flex matters. Every
+    // other item in the nav row is a Link that is itself a flex child, so it
+    // is blockified and its box is exactly its own 14px line box. This
+    // wrapper is a block container, so its line box carried the inherited
+    // 17px body strut instead, making it ~5px taller. `items-center` then
+    // centred two different heights and baseline-aligned the 14px label to
+    // the taller strut, so "Discover" sat visibly lower than every word
+    // beside it, on both the marketing Navbar and AppNav. Making the wrapper
+    // a flex container blockifies the Link and removes the strut entirely.
     <div
-      className="relative"
+      className="relative flex items-center"
       onMouseEnter={scheduleOpen}
       onMouseLeave={scheduleClose}
       onFocus={openNow}

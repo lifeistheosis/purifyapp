@@ -43,14 +43,44 @@ function headersFor(origin: string | null): Record<string, string> {
   return { Vary: "Origin" };
 }
 
-/** Copy the appropriate CORS headers onto a response and return it. */
+/**
+ * Copy the appropriate CORS headers onto a response and return it.
+ *
+ * `Vary` is merged rather than overwritten. It used to be `set`, which
+ * silently discarded whatever the handler had already declared: a route that
+ * varies its body by `Authorization` (any personalised feed) had that
+ * stripped and was left claiming it varied only by `Origin`. A shared cache
+ * is then free to serve one reader's view to the next, which is how a block
+ * or a private group thread starts looking broken.
+ */
 export function withCors<T extends NextResponse>(
   res: T,
   req: Request,
 ): T {
   const headers = headersFor(req.headers.get("origin"));
-  for (const [k, v] of Object.entries(headers)) res.headers.set(k, v);
+  for (const [k, v] of Object.entries(headers)) {
+    if (k !== "Vary") {
+      res.headers.set(k, v);
+      continue;
+    }
+    res.headers.set("Vary", mergeVary(res.headers.get("Vary"), v));
+  }
   return res;
+}
+
+/** Union of two Vary header values, order-stable and case-insensitive. */
+function mergeVary(existing: string | null, incoming: string): string {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const part of `${existing ?? ""},${incoming}`.split(",")) {
+    const token = part.trim();
+    if (!token) continue;
+    const key = token.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(token);
+  }
+  return out.join(", ");
 }
 
 /**

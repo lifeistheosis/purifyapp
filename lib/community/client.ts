@@ -45,10 +45,22 @@ export type PostsResult =
   | { state: "ok"; posts: CommunityPost[] }
   | { state: "error" };
 
-export async function fetchCommunityPosts(): Promise<PostsResult> {
+/**
+ * The public feed, or one parish group's thread when `groupId` is given.
+ *
+ * A group thread is not a different endpoint: same posts table, same
+ * moderation, same replies. Only the audience differs, and that is enforced
+ * by the route and by the row policy, not by this argument.
+ */
+export async function fetchCommunityPosts(
+  groupId?: string | null,
+): Promise<PostsResult> {
   try {
-    const res = await apiFetch("/api/community/posts");
+    const qs = groupId ? `?group=${encodeURIComponent(groupId)}` : "";
+    const res = await apiFetch(`/api/community/posts${qs}`);
     // 404 is the flag guard in app/api/community/posts/route.ts, not a failure.
+    // For a group it also means "not a member", which is deliberately
+    // indistinguishable from "no such group".
     if (res.status === 404) return { state: "dark" };
     if (!res.ok) return { state: "error" };
     const json = (await res.json()) as { posts?: CommunityPost[] };
@@ -77,6 +89,8 @@ export type CreatePostInput = {
   work?: string | null;
   /** Only for `father`, and only ever checked against the cited work. */
   quoteText?: string | null;
+  /** Post into a parish group's thread rather than the public feed. */
+  groupId?: string | null;
 };
 
 /** Ids of the caller's own posts and replies. See app/api/community/mine. */
@@ -136,14 +150,26 @@ export async function deleteCommunityPost(id: string): Promise<CommunityResult> 
   }
 }
 
-export async function fetchReplies(postId: string): Promise<CommunityReply[]> {
+/**
+ * Replies, with failure kept apart from emptiness.
+ *
+ * The same lie `PostsResult` was written to stop, one level down. This used
+ * to return `[]` for a 500, a 404 and a dropped connection alike, so a post
+ * whose own row says "12 replies" expanded into a silent empty box. The
+ * reader is told the thread is empty when in fact we could not reach it.
+ */
+export type RepliesResult =
+  | { state: "ok"; replies: CommunityReply[] }
+  | { state: "error" };
+
+export async function fetchReplies(postId: string): Promise<RepliesResult> {
   try {
     const res = await apiFetch(`/api/community/posts/${postId}/replies`);
-    if (!res.ok) return [];
+    if (!res.ok) return { state: "error" };
     const json = (await res.json()) as { replies?: CommunityReply[] };
-    return json.replies ?? [];
+    return { state: "ok", replies: json.replies ?? [] };
   } catch {
-    return [];
+    return { state: "error" };
   }
 }
 

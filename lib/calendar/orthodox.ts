@@ -147,6 +147,77 @@ export type FastingStatus = {
  * simplified reading suitable for daily orientation, your priest's
  * direction takes precedence for any individual question.
  */
+/**
+ * Every date fastingStatus needs that depends only on the year: one Pascha
+ * computation and the eighteen anchors hung off it.
+ *
+ * All of this used to run on every call, and fastingStatus is called once per
+ * grid cell, so drawing a month recomputed Pascha 42 times and allocated
+ * roughly 700 Date objects to answer 42 questions about a single year.
+ *
+ * Cached per year, which is the only input any of it varies on. Safe to share
+ * because nothing here is ever mutated: `addDays` copies before it calls
+ * setUTCDate, `inRangeInclusive` and `diffDays` only read, and `startOfDayUtc`
+ * builds a new Date. Keep it that way. If a caller ever needs to shift one of
+ * these, it must copy first.
+ */
+type PaschalAnchors = {
+ pascha: Date;
+ cleanMonday: Date;
+ holySaturday: Date;
+ palmSunday: Date;
+ annunciation: Date;
+ transfiguration: Date;
+ brightWeekEnd: Date;
+ pentecost: Date;
+ allSaintsSunday: Date;
+ apostlesFastStart: Date;
+ apostlesFastEnd: Date;
+ dormitionStart: Date;
+ dormitionEnd: Date;
+ nativityStart: Date;
+ nativityEnd: Date;
+ christmasFreeStart: Date;
+ publicanFeast: Date;
+ publicanFreeEnd: Date;
+ /** Jan 4 of the FOLLOWING year, the close of the twelve days. */
+ twelfthNightNext: Date;
+};
+
+const PASCHAL_ANCHORS = new Map<number, PaschalAnchors>();
+
+function paschalAnchors(year: number): PaschalAnchors {
+ const hit = PASCHAL_ANCHORS.get(year);
+ if (hit) return hit;
+
+ const pascha = orthodoxPascha(year);
+ const allSaintsSunday = addDays(pascha, 56);
+ const publicanFeast = addDays(pascha, -70); // approx Sunday of Publican & Pharisee
+ const anchors: PaschalAnchors = {
+ pascha,
+ cleanMonday: addDays(pascha, -48),
+ holySaturday: addDays(pascha, -1),
+ palmSunday: addDays(pascha, -7),
+ annunciation: new Date(Date.UTC(year, 2, 25, 12)), // Mar 25
+ transfiguration: new Date(Date.UTC(year, 7, 6, 12)), // Aug 6
+ brightWeekEnd: addDays(pascha, 7), // Thomas Sunday eve
+ pentecost: addDays(pascha, 49),
+ allSaintsSunday,
+ apostlesFastStart: addDays(allSaintsSunday, 1),
+ apostlesFastEnd: new Date(Date.UTC(year, 5, 28, 12)), // June 28
+ dormitionStart: new Date(Date.UTC(year, 7, 1, 12)),
+ dormitionEnd: new Date(Date.UTC(year, 7, 14, 12)),
+ nativityStart: new Date(Date.UTC(year, 10, 15, 12)),
+ nativityEnd: new Date(Date.UTC(year, 11, 24, 12)),
+ christmasFreeStart: new Date(Date.UTC(year, 11, 25, 12)),
+ publicanFeast,
+ publicanFreeEnd: addDays(publicanFeast, 7),
+ twelfthNightNext: new Date(Date.UTC(year + 1, 0, 4, 12)),
+ };
+ PASCHAL_ANCHORS.set(year, anchors);
+ return anchors;
+}
+
 export function fastingStatus(date: Date): FastingStatus {
  const d = startOfDayUtc(date);
  const year = d.getUTCFullYear();
@@ -154,30 +225,33 @@ export function fastingStatus(date: Date): FastingStatus {
  const day = d.getUTCDate();
  const dow = d.getUTCDay(); // 0 = Sunday
 
- const pascha = orthodoxPascha(year);
- const cleanMonday = addDays(pascha, -48);
- const holySaturday = addDays(pascha, -1);
- const palmSunday = addDays(pascha, -7);
- const annunciation = new Date(Date.UTC(year, 2, 25, 12)); // Mar 25
- const transfiguration = new Date(Date.UTC(year, 7, 6, 12)); // Aug 6
- const brightWeekEnd = addDays(pascha, 7); // Thomas Sunday eve
- const pentecost = addDays(pascha, 49);
- const allSaintsSunday = addDays(pascha, 56);
- const apostlesFastStart = addDays(allSaintsSunday, 1);
- const apostlesFastEnd = new Date(Date.UTC(year, 5, 28, 12)); // June 28
- const dormitionStart = new Date(Date.UTC(year, 7, 1, 12));
- const dormitionEnd = new Date(Date.UTC(year, 7, 14, 12));
- const nativityStart = new Date(Date.UTC(year, 10, 15, 12));
- const nativityEnd = new Date(Date.UTC(year, 11, 24, 12));
- const christmasFreeStart = new Date(Date.UTC(year, 11, 25, 12));
- const publicanFeast = addDays(pascha, -70); // approx Sunday of Publican & Pharisee
- const publicanFreeEnd = addDays(publicanFeast, 7);
+ const {
+ pascha,
+ cleanMonday,
+ holySaturday,
+ palmSunday,
+ annunciation,
+ transfiguration,
+ brightWeekEnd,
+ pentecost,
+ allSaintsSunday,
+ apostlesFastStart,
+ apostlesFastEnd,
+ dormitionStart,
+ dormitionEnd,
+ nativityStart,
+ nativityEnd,
+ christmasFreeStart,
+ publicanFeast,
+ publicanFreeEnd,
+ twelfthNightNext,
+ } = paschalAnchors(year);
 
  // ----- Fast-free windows -----
  if (
  (month === 0 && day <= 4) ||
  (month === 11 && day >= 25) ||
- inRangeInclusive(d, christmasFreeStart, new Date(Date.UTC(year + 1, 0, 4, 12)))
+ inRangeInclusive(d, christmasFreeStart, twelfthNightNext)
  ) {
  return {
  kind: "fast-free",
@@ -496,7 +570,7 @@ function daysFromPascha(date: Date): number {
 export function readingsOn(date: Date): ReadingRef[] {
  // Movable cycle: a window of ±90 days around Pascha so the Paschal
  // calendar reaches the Sunday of All Saints (+56) on one side and the
- // pre-Triodion Sunday of Zacchaeus (−70) on the other without bleeding
+ // pre-Triodion Sunday of Zacchaeus (−77) on the other without bleeding
  // into the next/prior year's cycle.
  const offset = daysFromPascha(date);
  if (offset >= -90 && offset <= 90) {
@@ -518,22 +592,45 @@ export function movableLabelOn(date: Date): string | null {
 
 // ----- Month grid -----
 
+/**
+ * One tile in the month grid, and DELIBERATELY NOTHING MORE.
+ *
+ * This type crosses the RSC boundary: `page.tsx` builds the array on the
+ * server and hands it to `CalendarGrid`, which is a client component, so
+ * every field here is serialized into the flight payload for all 42 cells.
+ *
+ * It used to carry `saints: Saint[]` and `commemorations: Commemoration[]`
+ * with each commemoration's `saint` resolved. No client component ever read
+ * either one. They cost 151,385 of the page's 201,837 characters, 75% of the
+ * payload, including 51 complete Saint records with their `shortBio`,
+ * `life[]`, `works[]` and `quotes[]`. The tile renders a day number, a fast
+ * icon, a cross and a name.
+ *
+ * So: add a field here only if a cell actually paints it, and prefer the
+ * narrowest form of it. `iso` is a string rather than a Date because a Date
+ * costs a revival per cell on the client for something used only to build an
+ * href and compare selection. The rich records still exist and are still
+ * read, on the server, by the day panel and the hero, which is where they
+ * belong. `lib/calendar/__tests__/monthGrid.shape.test.ts` locks this down.
+ */
 export type MonthCell = {
- date: Date;
+ /** `YYYY-MM-DD`, UTC. */
+ iso: string;
  day: number;
  inMonth: boolean;
  isToday: boolean;
- /** Registry saints (rich Saint records) commemorated this day. */
- saints: Saint[];
- /** Every commemoration listed for this day (feasts + saints). */
- commemorations: Commemoration[];
  /** Is at least one of the commemorations a major feast? */
  hasFeast: boolean;
- /** Headline commemoration to show in the cell (a major feast if any, else
- * the first commemoration in the JSON for the day). */
- headline?: Commemoration;
+ /** Name of the headline commemoration: a major feast if there is one, else
+ * the first listed for the day. The name only, never the record. */
+ headlineName?: string;
  fast: FastKind;
 };
+
+/** `YYYY-MM-DD` in UTC, the key the calendar routes and compares on. */
+export function isoDay(d: Date): string {
+ return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
+}
 
 /** Returns 42 cells (6 weeks × 7 days) for the given year/month, Sun first. */
 export function monthGrid(year: number, month: number, today: Date): MonthCell[] {
@@ -545,15 +642,16 @@ export function monthGrid(year: number, month: number, today: Date): MonthCell[]
  const d = addDays(gridStart, i);
  const commemorations = commemorationsOn(d);
  const feast = commemorations.find((c) => c.kind === "feast");
+ // No second feastsOn(d) here. It existed only to fill the `saints` field
+ // that MonthCell no longer carries, and commemorationsOn already calls it
+ // internally, so this loop was resolving every day's feasts twice.
  cells.push({
- date: d,
+ iso: isoDay(d),
  day: d.getUTCDate(),
  inMonth: d.getUTCMonth() === month,
  isToday: sameDay(d, today),
- saints: feastsOn(d),
- commemorations,
  hasFeast: !!feast,
- headline: feast ?? commemorations[0],
+ headlineName: (feast ?? commemorations[0])?.name,
  fast: fastingStatus(d).kind,
  });
  }

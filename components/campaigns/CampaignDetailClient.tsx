@@ -23,6 +23,8 @@ import {
 } from "@/lib/campaigns/client";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { CampaignGroup } from "@/components/campaigns/CampaignGroup";
+import { CampaignProgress } from "@/components/campaigns/CampaignProgress";
 
 type Phase = "loading" | "missing" | "ready" | "error";
 
@@ -37,6 +39,7 @@ export function CampaignDetailClient() {
   const [busy, setBusy] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const [reported, setReported] = useState(false);
+  const [remindEnabled, setRemindEnabled] = useState(false);
 
   // Load the campaign itself and show it the moment it arrives. This must NOT
   // depend on the auth call below: previously phase only flipped to "ready"
@@ -50,17 +53,16 @@ export function CampaignDetailClient() {
       setPhase("missing");
       return;
     }
-    try {
-      const c = await fetchCampaign(id);
-      if (!c) {
-        setPhase("missing");
-        return;
-      }
-      setCampaign(c);
+    const res = await fetchCampaign(id);
+    if (res.state === "ok") {
+      setCampaign(res.campaign);
       setPhase("ready");
-    } catch {
-      setPhase("error");
+      return;
     }
+    // "missing" and "error" are different sentences to a reader: one says
+    // this campaign is gone, the other says we could not reach it and there
+    // is a retry. They used to collapse into "missing".
+    setPhase(res.state === "missing" ? "missing" : "error");
   }, [id]);
 
   useEffect(() => {
@@ -85,6 +87,9 @@ export function CampaignDetailClient() {
         if (cancelled) return;
         setUserId(user?.id ?? null);
         if (user) {
+          // remind_enabled is selected separately and tolerantly: before the
+          // groups-and-streaks migration lands the column does not exist,
+          // and naming it in the main select would blank the whole page.
           const { data: row } = await supabase
             .from("prayer_campaign_prayers")
             .select("last_prayed_at")
@@ -96,6 +101,17 @@ export function CampaignDetailClient() {
             setLastPrayedAt(
               (row as { last_prayed_at: string | null }).last_prayed_at,
             );
+            const { data: remind } = await supabase
+              .from("prayer_campaign_prayers")
+              .select("remind_enabled")
+              .eq("campaign_id", id)
+              .eq("user_id", user.id)
+              .maybeSingle();
+            if (!cancelled && remind) {
+              setRemindEnabled(
+                Boolean((remind as { remind_enabled?: boolean }).remind_enabled),
+              );
+            }
           }
         }
       } catch {
@@ -308,6 +324,16 @@ export function CampaignDetailClient() {
           </p>
         </div>
 
+        {/* The reader's own record, and the people they keep it with. Both
+            render nothing until they have joined. */}
+        <CampaignProgress
+          campaignId={campaign.id}
+          joined={joined}
+          remindEnabled={remindEnabled}
+          onRemindChange={setRemindEnabled}
+        />
+        <CampaignGroup campaignId={campaign.id} joined={joined} />
+
         {/* Actions */}
         <div className="mt-6">
           {note ? (
@@ -320,7 +346,14 @@ export function CampaignDetailClient() {
             </p>
           ) : userId == null ? (
             <Link
-              href={`/signin?next=/campaigns/detail?id=${campaign.id}`}
+              // encodeURIComponent, or URLSearchParams parses the inner
+              // `?id=` as a SEPARATE query parameter and `next` arrives as
+              // bare "/campaigns/detail". Signing in then landed on the
+              // detail page with no id, which renders "This campaign could
+              // not be found." Every other dynamic next= in the repo encodes.
+              href={`/signin?next=${encodeURIComponent(
+                `/campaigns/detail?id=${campaign.id}`,
+              )}`}
               className="inline-flex w-full items-center justify-center rounded-pill bg-paper px-6 py-4 font-display-serif text-lede text-night transition-colors hover:bg-paper/90"
             >
               {t("shop.signInToPray")}

@@ -10,7 +10,7 @@
 // the caller gets OPEN_ENTITLEMENTS — so gating is a no-op until launch.
 
 import { createClient } from "@/lib/supabase/client";
-import { isNativeClient } from "@/lib/platform/native";
+import { isNativeClient, nativePlatform } from "@/lib/platform/native";
 import { isDeveloperEmail, DEV_PLUS_ENTITLEMENTS } from "@/lib/dev/developer";
 import { devPlusCookiePresent } from "@/lib/dev/options";
 import {
@@ -21,7 +21,26 @@ import {
   FREE_ENTITLEMENTS,
   type Entitlements,
   type EntitlementRow,
+  type Surface,
 } from "./entitlements";
+
+/**
+ * Which surface is this browser? The client is the only place that can tell
+ * the two store builds apart: Capacitor names the platform, while the server
+ * sees one shared "PurifyNative" UA token for both.
+ *
+ * A native shell whose Capacitor bridge has not injected itself yet reports
+ * "native-unknown", which enforces only when both stores are launched. That is
+ * the safe direction: a subscriber stays briefly ungated instead of a reader
+ * being locked out of something their store does not sell.
+ */
+export function clientSurface(): Surface {
+  if (!isNativeClient()) return "web";
+  const platform = nativePlatform();
+  if (platform === "ios") return "ios";
+  if (platform === "android") return "android";
+  return "native-unknown";
+}
 
 export async function getClientEntitlements(): Promise<Entitlements> {
   // Developer test-premium override. The cookie is only a hint (cheap
@@ -35,7 +54,7 @@ export async function getClientEntitlements(): Promise<Entitlements> {
     if (isDeveloperEmail(user?.email)) return DEV_PLUS_ENTITLEMENTS;
   }
 
-  const enforced = plusEnforcedFor(isNativeClient());
+  const enforced = plusEnforcedFor(clientSurface());
   if (!enforced) return OPEN_ENTITLEMENTS;
 
   const supabase = createClient();

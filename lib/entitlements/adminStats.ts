@@ -22,7 +22,7 @@ export type SubscriptionStats = {
   supporters: number;
   /** active Plus (incl. Pro) grouped by plus_source. */
   bySource: Record<string, number>;
-  /** Paid-only counts (comped accounts excluded) for the MRR estimate. */
+  /** Paid-only counts (comped AND gifted accounts excluded) for the MRR estimate. */
   paidCounts: SubscriberCounts;
 };
 
@@ -59,14 +59,19 @@ export async function subscriptionStats(
     activePlus += 1;
     const source = r.plus_source || "unknown";
     bySource[source] = (bySource[source] ?? 0) + 1;
-    const comped = source === "comp";
+    // Sources that grant access without anyone paying for it. "comp" is an
+    // admin grant; "gift" is written by app/api/gifts/claim/route.ts when a
+    // gift is redeemed. Only "comp" was excluded, so every redeemed gift was
+    // counted as a paying subscriber and priced at list in estimatedMrrCents.
+    // That inflates the one number used to judge whether Purify earns.
+    const unpaid = source === "comp" || source === "gift";
 
     if (pro) {
       activePro += 1;
-      if (!comped) proPaid += 1;
+      if (!unpaid) proPaid += 1;
     } else {
       plusOnly += 1;
-      if (!comped) plusOnlyPaid += 1;
+      if (!unpaid) plusOnlyPaid += 1;
     }
   }
 

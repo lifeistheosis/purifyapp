@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/Button";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import {
   consumeInstallEvent,
@@ -14,6 +13,7 @@ import {
   isSafariDesktop,
   isSafariMacAtLeast,
   isStandalone,
+  isIos,
 } from "@/lib/pwa/detectBrowser";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { isNativeClient } from "@/lib/platform/native";
@@ -22,30 +22,31 @@ import { cn } from "@/lib/cn";
 type Variant = "primary" | "secondary" | "tertiary" | "ghost" | "inverse";
 
 /**
- * Desktop "Download Purify" CTA on the marketing home. Drop-in
- * replacement for `<ComingSoonCTA variant="inverse">` — visually
- * identical (same `Button` variant, same children-as-label shape),
- * with real behaviour wired up.
+ * The hero control on the marketing home. Two things, in priority order: a
+ * plain link that opens the app, and, underneath and quieter, an offer to
+ * install it.
  *
- * State machine, derived from the shared install-prompt store
- * (`lib/pwa/installPromptStore`) plus per-browser detection:
+ * IT DID NOT USED TO BE THAT WAY, and the reason is worth keeping. The control
+ * was a single button labelled "Open Purify" whose behaviour depended on
+ * install state. For a first-time visitor `isInstalled` is false, so the button
+ * disabled itself for 1500ms and then either fired `beforeinstallprompt` or
+ * opened an explainer modal. The plain link into the product existed only in
+ * the `isInstalled` branch, which a new visitor by definition never reaches. So
+ * the button that said "Open Purify" did not open Purify, and the most
+ * motivated person on the page was met by an install dialog for software they
+ * had not yet read a word of.
  *
- *   loading     – first 1.5s while we wait for either the
- *                 `beforeinstallprompt` event or the grace period to
- *                 elapse. Button is disabled, label stays as the
- *                 caller-supplied "Open Purify" so there's no flicker.
- *   installable – the store has a captured event. Button label flips
- *                 to "Download Purify"; click consumes the event and
- *                 calls `prompt()`. The browser shows its native
- *                 install dialog.
- *   installed   – `appinstalled` fired this session OR the page is
- *                 running standalone. Button becomes a Link to
- *                 `/prayers/today`, labelled "Open Purify".
- *   unsupported – grace period elapsed without a captured event,
- *                 and we're not installed. Browser is Firefox / older
- *                 Safari / Chromium-with-suppressed-prompt / iPad in
- *                 desktop UA. Click opens the fallback modal with
- *                 browser-specific install instructions.
+ * Now the link is unconditional and the install is secondary. Install state
+ * decides only whether the second line appears:
+ *
+ *   installable – the store has a captured `beforeinstallprompt` event. The
+ *                 second line consumes it and calls `prompt()`.
+ *   unsupported – grace elapsed with no event: Firefox, older Safari, iPad in
+ *                 desktop UA, or Chromium with the prompt suppressed. The
+ *                 second line opens the fallback modal instead.
+ *   installed   – already installed, or running standalone, or inside the
+ *                 native shell. No second line at all; there is nothing to
+ *                 offer someone who already has it.
  *
  * Mobile is hidden by the surrounding `hidden md:contents` desktop
  * tree on `app/page.tsx`; this component does no `md:` gating itself.
@@ -54,16 +55,18 @@ export function DesktopInstallCTA({
   children,
   variant = "inverse",
   className,
+  offerInstall = true,
 }: {
-  /**
-   * The localized "Open Purify" label, threaded in from the page.
-   * Used as the button text in both the `loading` and `installed`
-   * states; the component looks up the "Download Purify" copy itself
-   * for the other states.
-   */
+  /** The localized "Open Purify" label, threaded in from the page. */
   children: React.ReactNode;
   variant?: Variant;
   className?: string;
+  /**
+   * Whether to show the secondary install line. The home page renders this
+   * component twice, in the hero and again at the close. Both should open the
+   * app, but one page should ask once, so the closing instance passes false.
+   */
+  offerInstall?: boolean;
 }) {
   const { t } = useTranslate();
   const { event, installed } = useInstallStore();
@@ -94,26 +97,13 @@ export function DesktopInstallCTA({
 
   const isInstalled = installed || standalone;
   const isInstallable = !isInstalled && event !== null;
-  const isLoading = !isInstalled && !isInstallable && !graceElapsed;
   const isUnsupported =
     !isInstalled && !isInstallable && graceElapsed;
 
-  // Installed: render a Link to the app. Keeps the same visual
-  // register as a button via the Button base styles.
-  if (isInstalled) {
-    return (
-      <Link
-        href="/prayers/today"
-        className={cn(
-          "font-sans text-ui leading-none font-medium whitespace-nowrap inline-flex items-center justify-center rounded-pill transition-[background-color,color,box-shadow,transform] duration-200 ease-out cursor-pointer",
-          "bg-paper text-ink px-8 py-4 hover:bg-paper/90 active:scale-[0.98]",
-          className,
-        )}
-      >
-        {children}
-      </Link>
-    );
-  }
+  // Can we usefully offer an install at all? Not while already installed or
+  // inside the native shell, and not during the grace window, when we do not
+  // yet know whether the browser will give us an event.
+  const canOfferInstall = offerInstall && (isInstallable || isUnsupported);
 
   function onClick() {
     if (isInstallable) {
@@ -136,31 +126,52 @@ export function DesktopInstallCTA({
         });
       return;
     }
-    // Loading clicks are no-ops (button is disabled). Unsupported
-    // clicks open the explainer modal.
+    // Unsupported browsers get the explainer modal.
     if (isUnsupported) setModalOpen(true);
   }
 
-  const label = isInstallable
-    ? t("pwa.install.download")
-    : children;
-
   return (
-    <>
-      <Button
-        variant={variant}
-        onClick={onClick}
-        disabled={isLoading}
-        aria-live="polite"
-        className={className}
+    <span className="inline-flex flex-col items-start gap-2">
+      {/* The primary control ALWAYS opens the app. It used to be an install
+          button that happened to be labelled "Open Purify": for a first-time
+          visitor `isInstalled` was false, so the control disabled itself for
+          1500ms and then either fired a browser install prompt or opened a
+          modal. The plain link lived only in the branch a new visitor could
+          not reach. The most motivated person on the page was turned away by
+          the control meant to welcome them. */}
+      <Link
+        href="/prayers/today"
+        className={cn(
+          "font-sans text-ui leading-none font-medium whitespace-nowrap inline-flex items-center justify-center rounded-pill transition-[background-color,color,box-shadow,transform] duration-200 ease-out cursor-pointer",
+          variant === "inverse"
+            ? "bg-paper text-ink hover:bg-paper/90"
+            : "bg-ink text-paper hover:bg-ink/90",
+          "px-8 py-4 active:scale-[0.98]",
+          className,
+        )}
       >
-        {label}
-      </Button>
+        {children}
+      </Link>
+
+      {/* Installing is a real convenience, so it stays offered, quietly and
+          second. Absent once installed, absent inside the native shell, and
+          absent during the grace window when we do not yet know whether the
+          browser will offer an event at all. */}
+      {canOfferInstall && (
+        <button
+          type="button"
+          onClick={onClick}
+          className="font-sans text-caption text-paper/55 underline decoration-paper/25 underline-offset-4 transition-colors hover:text-paper/85 hover:decoration-paper/50"
+        >
+          {t("pwa.install.download")}
+        </button>
+      )}
+
       <InstallFallbackModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
       />
-    </>
+    </span>
   );
 }
 
@@ -310,7 +321,13 @@ function pickBodyKey():
   | "pwa.install.modal.safari17"
   | "pwa.install.modal.safariOld"
   | "pwa.install.modal.ipad"
+  | "pwa.install.modal.ios"
   | "pwa.install.modal.chromiumSuppressed" {
+  // iPhone first. Without this branch an iPhone fell through to the Chromium
+  // default and was handed a modal titled "Install Purify on your computer",
+  // which is the wrong instruction on the wrong device. isIos() has existed in
+  // lib/pwa/detectBrowser.ts the whole time and was never called here.
+  if (isIos() && !isIpadDesktopUA()) return "pwa.install.modal.ios";
   if (isFirefoxDesktop()) return "pwa.install.modal.firefox";
   if (isIpadDesktopUA()) return "pwa.install.modal.ipad";
   if (isSafariDesktop()) {

@@ -195,7 +195,10 @@ export function YouMobile() {
     {
       label: "Settings",
       href: "/settings",
-      hint: "Reading, the calendar, language, notifications",
+      // Light mode leads the hint because it is the thing readers go looking
+      // for and could not find: the palette lived behind a toolbar pill inside
+      // the Bible reader, and this list is where a phone reader looks first.
+      hint: "Light mode, reading, the calendar, language, notifications",
       icon: <Glyph kind="bolt" />,
     },
     {

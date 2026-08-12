@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { resolveWebhookGrant } from "@/lib/billing/webhookGrant";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -120,25 +121,32 @@ export async function POST(req: NextRequest) {
   // codes. Pro is a superset of Plus, so plusUntil above already grants Plus
   // for a Pro purchase; pro_until is the extra bit that marks the tier.
   const isPro = (event.entitlement_ids ?? []).includes("pro");
-  const proUntil = isPro ? plusUntil : null;
 
   const admin = createAdminClient();
 
-  // upsert_entitlement overwrites is_supporter, so preserve the pre-launch
-  // supporter promise by reading the current value first (default false).
+  // upsert_entitlement overwrites every column it is handed, so read the row
+  // first and carry forward the parts this event does not speak for:
+  //   * is_supporter, the pre-launch lifetime-sync promise.
+  //   * pro_until, when the event carries no `pro` entitlement. Writing null
+  //     there used to revoke a Pro membership that nothing had cancelled, so a
+  //     comped Pro member lost the tier the moment an ordinary Plus renewal
+  //     arrived. Pro now ends only on Pro's own expiry, which reaches this
+  //     same path carrying `pro`.
   const { data: existing } = await admin
     .from("entitlements")
-    .select("is_supporter")
+    .select("is_supporter, pro_until")
     .eq("user_id", appUserId)
     .maybeSingle();
   const isSupporter = existing?.is_supporter === true;
 
+  const grant = resolveWebhookGrant({ isPro, plusUntil, existing });
+
   const { error } = await admin.rpc("upsert_entitlement", {
     p_user_id: appUserId,
     p_is_supporter: isSupporter,
-    p_plus_until: plusUntil,
+    p_plus_until: grant.plusUntil,
     p_plus_source: source,
-    p_pro_until: proUntil,
+    p_pro_until: grant.proUntil,
   });
 
   if (error) {

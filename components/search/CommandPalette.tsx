@@ -5,10 +5,15 @@
 // councils, heresies, topics, and key pages; arrows + Enter to navigate;
 // Escape (or a backdrop tap) to close.
 //
-// Desktop-only by design: the corpus is mounted but the keyboard listener
-// and trigger are gated to md+ pointers via a matchMedia check, since the
-// mobile nav model is the tab bar. The whole subtree renders nothing until
-// first opened, so it costs nothing on phones.
+// It used to be desktop only, and that was the defect. The keyboard listener
+// and the dialog itself were both gated to md+ pointers, while the corpus,
+// app/search-corpus.json, shipped into the native bundle regardless. Every
+// phone reader carried roughly 59 KB for a dialog they could not open, on the
+// platform where three disconnected per-surface searches were the only way to
+// find anything. The gates are gone and SearchTrigger opens it by event.
+//
+// The whole subtree still renders nothing until first opened, and the corpus
+// is still fetched lazily on that first open, so the cost is unchanged.
 //
 // Visual register matches ConfirmDialog: night surface, thin gold hairline,
 // display-serif group labels, sans rows.
@@ -17,7 +22,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { setOverlayOpen } from "@/lib/ui/overlay";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { GROUP_ORDER, type SearchItem, type SearchGroup } from "@/lib/search/types";
+
+/** Dispatched on window to open the palette from anywhere. */
+export const SEARCH_OPEN_EVENT = "purify:search-open";
 
 function normalize(s: string): string {
   return s
@@ -78,6 +87,7 @@ function loadCorpus(): Promise<SearchItem[]> {
 
 export function CommandPalette() {
   const router = useRouter();
+  const { t } = useTranslate();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
@@ -98,12 +108,24 @@ export function CommandPalette() {
     };
   }, [open]);
 
-  // Global Cmd/Ctrl+K toggle, desktop pointers only.
+  // Opened from anywhere: components/search/SearchTrigger dispatches this.
+  // A custom event rather than context, because the trigger and the palette
+  // are mounted in different trees (the bar is per page, the palette once in
+  // the root layout) and the palette renders null until it is opened.
   useEffect(() => {
-    const fine =
-      typeof window !== "undefined" &&
-      window.matchMedia("(min-width: 768px)").matches;
-    if (!fine) return;
+    function onOpen() {
+      setQuery("");
+      setActive(0);
+      setOpen(true);
+    }
+    window.addEventListener(SEARCH_OPEN_EVENT, onOpen);
+    return () => window.removeEventListener(SEARCH_OPEN_EVENT, onOpen);
+  }, []);
+
+  // Global Cmd/Ctrl+K toggle. No longer gated to md+ pointers: the gate was
+  // the desktop half of a pair that also hid the dialog itself, which left
+  // every phone reader paying for a corpus they could not open.
+  useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
@@ -201,17 +223,20 @@ export function CommandPalette() {
 
   return (
     <div
-      className="fixed inset-0 z-[120] hidden md:flex items-start justify-center px-4 pt-[12vh]"
+      className="fixed inset-0 z-[120] flex items-start justify-center px-4 pt-[8vh] md:pt-[12vh]"
       role="dialog"
       aria-modal="true"
-      aria-label="Search Purify"
+      aria-label={t("search.ariaLabel")}
     >
       <button
         type="button"
         aria-hidden
         tabIndex={-1}
         onClick={() => setOpen(false)}
-        className="absolute inset-0 bg-night/70 backdrop-blur-sm"
+        // Flat, no backdrop-filter. The Android WebView bleeds imagery through
+        // it and drops frames, which is why MobileTabBar and ShopSubTabs are
+        // flat too. It never mattered here while the dialog was desktop only.
+        className="absolute inset-0 bg-night/90"
       />
       <div className="relative w-full max-w-[560px] overflow-hidden rounded-card border border-gold/25 bg-night shadow-2xl">
         <div className="flex items-center gap-3 border-b border-paper/10 px-4">
@@ -226,11 +251,13 @@ export function CommandPalette() {
               setQuery(e.target.value);
               setActive(0);
             }}
-            placeholder="Search saints, prayers, Scripture, councils…"
-            aria-label="Search Purify"
+            placeholder={t("search.placeholder")}
+            aria-label={t("search.ariaLabel")}
             className="w-full bg-transparent py-4 font-sans text-body text-paper placeholder:text-paper/35 focus:outline-none"
           />
-          <kbd className="shrink-0 rounded-md border border-paper/15 px-1.5 py-0.5 font-sans text-caption text-paper/35">
+          {/* There is no escape key on a phone, so the hint is desktop only.
+              Touch dismisses by tapping the backdrop or the hardware back. */}
+          <kbd className="hidden md:inline-block shrink-0 rounded-md border border-paper/15 px-1.5 py-0.5 font-sans text-caption text-paper/35">
             esc
           </kbd>
         </div>
@@ -238,7 +265,7 @@ export function CommandPalette() {
         <div ref={listRef} className="max-h-[52vh] overflow-y-auto py-2">
           {grouped.flat.length === 0 ? (
             <p className="px-4 py-8 text-center font-serif italic text-detail text-paper/40">
-              Nothing found for &ldquo;{query.trim()}&rdquo;.
+              {t("search.nothingFound", { query: query.trim() })}
             </p>
           ) : (
             grouped.sections.map((section) => (

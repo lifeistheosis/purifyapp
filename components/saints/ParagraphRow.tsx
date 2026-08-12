@@ -12,6 +12,7 @@ import {
  type MobileVerseAction,
 } from "@/components/bible/MobileVerseToolbar";
 import { cn } from "@/lib/cn";
+import { shareLink } from "@/lib/site";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -130,8 +131,13 @@ export function ParagraphRow({
  return `${saintName}, ${workTitle}, ${sectionTitle}`;
  }
  function copyParagraphLink() {
+ // shareLink(), never window.location.origin: the Capacitor shell serves
+ // the export from https://localhost, so a copied link built from the
+ // origin is dead the moment it leaves the device (lib/site.ts).
  return copyToClipboard(
- `${window.location.origin}/saints/${saintSlug}/${workSlug}#p-${sectionN}-${paragraphIdx}`,
+ shareLink(
+ `/saints/${saintSlug}/${workSlug}#p-${sectionN}-${paragraphIdx}`,
+ ),
  );
  }
  function copyParagraphText() {

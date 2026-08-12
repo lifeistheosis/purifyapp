@@ -31,6 +31,15 @@ async function handleGET(req: Request) {
     return NextResponse.json({ error: "Sign in." }, { status: 401 });
   }
 
+  // Keyed on the user, not the IP, and applied after auth for that reason.
+  // The badge polls this once a minute while the app is in the foreground,
+  // so the budget has to clear that comfortably; an IP key would collapse
+  // every reader behind one carrier NAT into a single bucket, which is the
+  // problem app/api/campaigns/image/route.ts already documents.
+  if (await rateLimited(`community-inbox:${user.id}`, 3600, 240)) {
+    return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+  }
+
   const { data, error } = await supabase
     .from("community_notifications")
     .select(COLS)
@@ -44,7 +53,27 @@ async function handleGET(req: Request) {
   }
 
   const notifications = data ?? [];
-  const unread = notifications.filter((n) => !n.read_at).length;
+
+  // Count over the whole table, not over the fifty rows we just fetched.
+  //
+  // This used to be `notifications.filter((n) => !n.read_at).length`, which
+  // is only correct while a reader has fewer than fifty notifications. Past
+  // that, someone whose newest fifty are all read was told they had none
+  // unread while older unread rows sat behind the window. The partial index
+  // community_notifications_unread_idx was built for exactly this query and
+  // was going unused.
+  //
+  // `head: true` sends no rows back, so this costs one index scan and no
+  // payload. RLS still scopes it to the caller.
+  const { count, error: countError } = await supabase
+    .from("community_notifications")
+    .select("id", { count: "exact", head: true })
+    .is("read_at", null);
+
+  const unread = countError
+    ? notifications.filter((n) => !n.read_at).length
+    : (count ?? 0);
+
   return NextResponse.json({ notifications, unread });
 }
 

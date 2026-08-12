@@ -34,7 +34,7 @@ function billing(plan: ClientPlan): { label: string; value: string } {
   const until = plan.tier === "pro" ? plan.proUntil : plan.plusUntil;
   const comp = plan.source === "comp";
   if (plan.supporter && !until) return { label: "Access", value: "Lifetime" };
-  if (!until) return { label: "Renews", value: "—" };
+  if (!until) return { label: "Renews", value: "Not recorded" };
   const farFuture = new Date(until).getFullYear() >= 2090;
   if (comp) {
     return {
@@ -98,7 +98,7 @@ export function PlanScreen({ planCopy }: { planCopy: PremiumPlanCopy }) {
   const lede = isPro ? planCopy.proLede : planCopy.plusLede;
   const features: PlanFeature[] = isPro ? planCopy.proItems : planCopy.plusItems;
   const bill = billing(plan);
-  const source = SOURCE_LABEL[plan.source ?? "unknown"] ?? plan.source ?? "—";
+  const source = SOURCE_LABEL[plan.source ?? "unknown"] ?? plan.source ?? "Not recorded";
   const delay = (i: number) => ({ animationDelay: `${i * 90}ms` });
 
   return (

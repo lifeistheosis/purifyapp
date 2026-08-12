@@ -77,8 +77,8 @@ export default function ShopPoliciesPage() {
             <T k="shop.support" />
           </Link>{" "}
           <T k="shop.orAt" />{" "}
-          <a href="mailto:support@purifyapp.net" className={A}>
-            <T k="shop.supportPurifyappNet" />
+          <a href="mailto:lifeistheosis@gmail.com" className={A}>
+            <T k="shop.supportEmail" />
           </a>
           .
         </p>

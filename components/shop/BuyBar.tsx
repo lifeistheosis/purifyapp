@@ -98,7 +98,10 @@ export function BuyBar({
   return (
     <div
       className={cn(
-        "fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-night/95 px-5 py-3 backdrop-blur safe-pb",
+        // The bottom pad has to clear the home indicator on mobile web, where
+        // safe-pb is inert (no tab bar out here). max() so it never drops
+        // below the 12px this bar wants on a phone with no inset at all.
+        "fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-night/95 px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur safe-pb",
         "md:static md:rounded-lg md:border md:border-paper/10 md:bg-night-soft/60 md:p-6",
       )}
     >

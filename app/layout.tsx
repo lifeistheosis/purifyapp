@@ -22,6 +22,7 @@ import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
 import { UpdateBridge } from "@/components/update/UpdateBridge";
 import { NativeBridge } from "@/components/native/NativeBridge";
+import { CommandPaletteMount } from "@/components/search/CommandPaletteMount";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
 import { SITE_URL } from "@/lib/site";
 import { getServerLocale } from "@/lib/i18n/server";
@@ -254,6 +255,11 @@ export default async function RootLayout({
      Today tap, which is exactly when a reader walks away from the
      player. Renders nothing until something is loaded. */}
  <NowPlayingBar />
+ {/* And once more. This was in (app)/layout.tsx, so the palette did not
+     exist on Today, which is the app's front door and the screen a phone
+     reader returns to. Renders nothing until it is opened, and fetches
+     the corpus only on that first open. */}
+ <CommandPaletteMount />
  <FirstRunGate />
  </MessagesProvider>
  <AnalyticsTracker />

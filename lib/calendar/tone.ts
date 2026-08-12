@@ -21,11 +21,17 @@ export function toneFor(opts: { hasFeast: boolean; fast: FastKind }): Tone {
 }
 
 // Space-separated RGB triplets for use as `rgb(var(--tone) / <alpha>)`.
+//
+// These point at CSS variables rather than carrying the hues themselves. The
+// values live in the :root block beside --ink-rubric in app/globals.css, which
+// is where the rest of the palette lives and, more to the point, the only
+// place a theme can reach: hard-coded here, the calendar's whole colour
+// identity was invisible to the light palette and stayed dark on parchment.
 export const TONE_RGB: Record<Tone, string> = {
- gold: "183 176 163",
- crimson: "193 39 45",
- green: "16 185 129",
- muted: "183 176 163",
+ gold: "var(--tone-gold)",
+ crimson: "var(--tone-crimson)",
+ green: "var(--tone-green)",
+ muted: "var(--tone-muted)",
 };
 
 /** Inline style object that sets the `--tone` variable for a subtree. */

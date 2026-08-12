@@ -31,7 +31,7 @@ export function DayScroll({
 }) {
   return (
     <div
-      className="rounded-xl border border-gold/15 bg-paper/[0.025] p-6 md:p-7"
+      className="rounded-xl border border-paper/12 bg-paper/[0.03] p-6 md:p-7"
       style={toneVars(tone)}
     >
       {/* Weekday eyebrow + big date */}

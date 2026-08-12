@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
+import { shareLink } from "@/lib/site";
 
 /**
  * Client island for the quiet footer row inside the Verse of Day card.
@@ -139,14 +140,9 @@ export function VerseCardActions({
     // (the system share sheet was a sometimes-yes / sometimes-no
     // surprise depending on platform support).
     void shareText;
-    let url = shareUrl;
-    if (typeof window !== "undefined") {
-      try {
-        url = new URL(shareUrl, window.location.origin).toString();
-      } catch {
-        /* ignore — fall back to the raw shareUrl */
-      }
-    }
+    // shareLink(), not window.location.origin: inside the Capacitor shell the
+    // origin is https://localhost and the copied link is dead everywhere.
+    const url = shareLink(shareUrl);
     try {
       await navigator.clipboard.writeText(url);
       setToast(t("common.linkCopied"));
