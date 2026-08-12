@@ -28,6 +28,13 @@ create index if not exists community_posts_public_idx
   on public.community_posts (created_at desc)
   where group_id is null and status = 'visible';
 
+-- Membership is asked through public.is_campaign_group_member(), defined in
+-- 20260811_campaign_groups_and_streaks.sql, which runs first (the filenames
+-- sort that way). Inlining the EXISTS here instead would re-enter the
+-- members table's own row policy and raise
+-- "42P17 infinite recursion detected in policy", which would take down the
+-- read of every PUBLIC post as well, not just the group ones.
+
 -- Replace the blanket public-read policy.
 --
 -- Before: `status = 'visible'`, full stop. A group post inserted with that
@@ -40,12 +47,7 @@ create policy "community_posts_public_read" on public.community_posts
     status = 'visible'
     and (
       group_id is null
-      or exists (
-        select 1
-          from public.prayer_campaign_group_members m
-         where m.group_id = community_posts.group_id
-           and m.user_id = auth.uid()
-      )
+      or public.is_campaign_group_member(group_id)
     )
   );
 
@@ -65,12 +67,7 @@ create policy "community_replies_public_read"
          and p.status = 'visible'
          and (
            p.group_id is null
-           or exists (
-             select 1
-               from public.prayer_campaign_group_members m
-              where m.group_id = p.group_id
-                and m.user_id = auth.uid()
-           )
+           or public.is_campaign_group_member(p.group_id)
          )
     )
   );

@@ -98,14 +98,9 @@ create index if not exists prayer_campaign_groups_creator_idx
 
 alter table public.prayer_campaign_groups enable row level security;
 
--- Readable by anyone who can name it. The invite code is the secret, and it
--- is never returned by a listing endpoint to a non-member. There is no
--- INSERT/UPDATE/DELETE policy: the API writes with the service role.
-drop policy if exists "prayer_campaign_groups_select"
-  on public.prayer_campaign_groups;
-create policy "prayer_campaign_groups_select"
-  on public.prayer_campaign_groups
-  for select using (true);
+-- The SELECT policy is defined after the members table, because proving
+-- membership needs that table to exist. There is no INSERT/UPDATE/DELETE
+-- policy on either table: the API writes with the service role.
 
 create table if not exists public.prayer_campaign_group_members (
   group_id uuid not null
@@ -123,21 +118,73 @@ create index if not exists prayer_campaign_group_members_user_idx
 
 alter table public.prayer_campaign_group_members enable row level security;
 
--- A member may read the roster of a group they belong to. The EXISTS
--- subquery is what stops the roster being world-readable: without it, the
--- member list of every parish in the app would be one PostgREST call away.
+-- Is the caller a member of this group?
+--
+-- SECURITY DEFINER on purpose, and it is the whole reason this function
+-- exists. Row security applies to relations referenced inside a policy
+-- expression, so a policy on prayer_campaign_group_members that proves
+-- membership by selecting from prayer_campaign_group_members re-enters its
+-- own policy and Postgres aborts the query with
+-- "42P17 infinite recursion detected in policy". A definer-rights function
+-- runs the lookup outside row security and breaks that cycle.
+--
+-- `set search_path = public` is not decoration: without it a caller can put
+-- a schema of their own in front and have the function read their table
+-- instead of this one. prayer_campaign_bump_counts in this same directory
+-- shipped without it and is the reason this note is here.
+--
+-- Granted to anon as well as authenticated. anon can never be a member,
+-- because auth.uid() is null and the function returns false, but the
+-- community_posts read policy below calls this while serving PUBLIC posts to
+-- signed-out readers. SQL does not promise to short-circuit OR, so a caller
+-- without EXECUTE would see the public feed fail rather than skip the call.
+create or replace function public.is_campaign_group_member(p_group_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+      from public.prayer_campaign_group_members m
+     where m.group_id = p_group_id
+       and m.user_id = auth.uid()
+  );
+$$;
+
+revoke all on function public.is_campaign_group_member(uuid) from public;
+grant execute on function public.is_campaign_group_member(uuid)
+  to anon, authenticated;
+
+-- A group is readable only by its own members.
+--
+-- This was `using (true)`, on a table whose columns include invite_code.
+-- RLS is row-scoped, not column-scoped, so that policy handed every parish
+-- group name and every invite code to anyone holding
+-- NEXT_PUBLIC_SUPABASE_ANON_KEY, which ships inside the client bundle. The
+-- invite code is the ONLY access control on a group, so a scraped list of
+-- them was a join-any-group primitive, and the join rate limit is no defence
+-- once the codes are read off the table rather than guessed.
+--
+-- Nothing in the app regresses: every read of this table goes through the
+-- service role in an API route (app/api/campaigns/groups, and
+-- app/api/campaigns/[id]/groups), including the join-by-code lookup, which
+-- must keep working for a reader who is not yet a member.
+drop policy if exists "prayer_campaign_groups_select"
+  on public.prayer_campaign_groups;
+create policy "prayer_campaign_groups_select"
+  on public.prayer_campaign_groups
+  for select using (public.is_campaign_group_member(id));
+
+-- A member may read the roster of a group they belong to, and nobody else
+-- can: without this the member list of every parish in the app would be one
+-- PostgREST call away.
 drop policy if exists "prayer_campaign_group_members_select"
   on public.prayer_campaign_group_members;
 create policy "prayer_campaign_group_members_select"
   on public.prayer_campaign_group_members
-  for select using (
-    exists (
-      select 1
-        from public.prayer_campaign_group_members mine
-       where mine.group_id = prayer_campaign_group_members.group_id
-         and mine.user_id = auth.uid()
-    )
-  );
+  for select using (public.is_campaign_group_member(group_id));
 
 -- The day log's group reference, added after the groups table exists.
 do $$

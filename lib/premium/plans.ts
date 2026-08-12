@@ -9,9 +9,16 @@
 //
 // The ladder (Beta 2.1): Standard is the complete Orthodox foundation,
 // free forever. Plus is utility, the premium reading and study
-// experience. Pro is luxury, everything in Plus and the complete premium
-// experience (reading modes, the EIKON Box, EIKON member benefits).
+// experience (reading modes, sync, notes, collections). Pro is luxury,
+// everything in Plus plus the EIKON Box and EIKON member benefits.
 // Free EIKON shipping belongs to PRO, not Plus.
+//
+// Reading modes moved from Pro to Plus on 2026-08-12 by the owner's call.
+// Two things the copy must not claim, both fixed in that same change: it
+// named Parchment, which is the FREE Light palette under the name it used
+// to carry (lib/reader/readingModes.ts FREE_THEMES), and it named Focus,
+// which nothing gates anywhere in the codebase. What is listed here has to
+// be something a reader actually cannot have without paying.
 
 // Numeric plan prices in cents, the single source for any MATH (the
 // localized copy strings below cannot be parsed). Used by the admin
@@ -87,7 +94,7 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
     {
       id: "reading-modes",
       title: "Premium Reading Modes",
-      sub: "Focus, Candlelight, and Monastery reading, in the Scriptures and the writings of the Fathers",
+      sub: "Candlelight and Monastery reading, in the Scriptures and the writings of the Fathers",
     },
     {
       id: "sync",
@@ -173,7 +180,7 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
     {
       id: "reading-modes",
       title: "Premium-Lesemodi",
-      sub: "Fokus, Kerzenlicht und Kloster, in den Schriften und den Werken der Väter",
+      sub: "Kerzenlicht und Kloster, in den Schriften und den Werken der Väter",
     },
     {
       id: "sync",

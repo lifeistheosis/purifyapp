@@ -34,7 +34,12 @@ function headersFor(origin: string | null): Record<string, string> {
   if (origin && ALLOWED_ORIGINS.has(origin)) {
     return {
       "Access-Control-Allow-Origin": origin,
-      "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+      // PUT is here for /api/campaigns/[id]/remind, the only PUT in the app.
+      // Leaving it out cost nothing on the web, where the call is same-origin
+      // and never preflights, and broke the reminder toggle in both native
+      // shells, where every API call is cross-origin from https://localhost
+      // or capacitor://localhost and a non-simple method must be advertised.
+      "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
       "Access-Control-Allow-Headers": "authorization, content-type",
       "Access-Control-Max-Age": "86400",
       Vary: "Origin",
