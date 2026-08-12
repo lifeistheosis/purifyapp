@@ -1,0 +1,172 @@
+/* Purify admin — operator theme.
+ *
+ * Scoped to .adm so none of it leaks into the reader app, and so the admin
+ * can stop inheriting a theme built for reading Scripture at night. The
+ * reader app optimises for calm and long-form focus. This surface optimises
+ * for a person scanning forty rows for the one order that failed.
+ *
+ * Admin is web-only (scripts/android-build.mjs stashes it out of the native
+ * export), so this file never ships to the app bundle.
+ */
+
+.adm {
+  /* Surfaces. Three levels, each a real step apart, cool-neutral so the
+     amber accent and the status hues read as information against them. */
+  --adm-rail: #08090a;   /* nav rail: the second neutral layer, recedes */
+  --adm-bg: #0b0c0e;     /* content ground */
+  --adm-panel: #121317;  /* cards and panels, the only "raised" level */
+  --adm-panel-2: #171920;/* nested rows, table header, input wells */
+
+  /* Hairlines. Two weights only: one that separates, one that outlines. */
+  --adm-line: rgb(255 255 255 / 0.07);
+  --adm-line-strong: rgb(255 255 255 / 0.13);
+
+  /* Ink. All three clear 5:1 on every surface above, verified, so
+     "secondary" never means "unreadable". */
+  --adm-ink: #e8eaed;
+  --adm-ink-2: #a8adb6;
+  --adm-ink-3: #7f8691;
+
+  /* Accent. Selection and primary action only, never decoration. Amber
+     keeps the Purify signature without the near-white the reader theme
+     uses, which cannot carry state. */
+  --adm-accent: #e0b658;
+  --adm-accent-dim: #b8892c;
+
+  /* Status. Reserved vocabulary: these four never appear as a chart series
+     or a decorative tint. Each is paired with a word in the UI, never
+     shipped as colour alone. */
+  --adm-good: #4ade80;
+  --adm-warn: #fbbf24;
+  --adm-serious: #fb923c;
+  --adm-critical: #f87171;
+
+  /* Categorical series. Fixed order, never cycled. Validated for the dark
+     surface: OKLCH lightness band, chroma floor, adjacent-pair CVD
+     separation (worst adjacent deutan dE 9.0), and contrast. Reordering
+     these breaks the CVD guarantee. */
+  --adm-s1: #b8892c;
+  --adm-s2: #4a8fd4;
+  --adm-s3: #c05f55;
+  --adm-s4: #9070d8;
+  --adm-s5: #2f9e77;
+  --adm-s6: #b8722c;
+
+  /* Chart chrome. The app-wide tokens are a warm parchment tint built for
+     the reader theme; on this cool ground they read as a yellow haze over
+     the plot. Recessive neutrals instead: the grid orients the eye and
+     then gets out of the way of the data. */
+  --chart-grid: rgb(255 255 255 / 0.07);
+  --chart-axis: rgb(168 173 182 / 0.85);
+  --chart-hover: rgb(255 255 255 / 0.10);
+
+  --adm-radius: 10px;
+  --adm-ease: cubic-bezier(0.32, 0.72, 0, 1);
+
+  background: var(--adm-bg);
+  color: var(--adm-ink);
+  /* Tabular figures everywhere by default. This is a panel of numbers, and
+     digits that change width make a column jitter on every poll. */
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Motion ─────────────────────────────────────────────────────────────
+ * Every animation here reports a state change. There is no page-load
+ * choreography: an operator opens this to do a task, not to watch it
+ * arrive. Durations sit in the 120-220ms band so nothing gates input.
+ */
+
+@keyframes adm-rise {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Panel entrance on tab change. One short move, not a stagger down the
+   page: the operator already knows they changed tab. */
+.adm-panel-enter {
+  animation: adm-rise 180ms var(--adm-ease) both;
+}
+
+@keyframes adm-shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+
+/* Skeletons, not spinners. A spinner says "wait"; a skeleton says what is
+   about to appear and where, so the eye is already in position. */
+.adm-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--adm-panel-2) 25%,
+    color-mix(in oklab, var(--adm-panel-2), white 6%) 37%,
+    var(--adm-panel-2) 63%
+  );
+  background-size: 200% 100%;
+  animation: adm-shimmer 1.4s linear infinite;
+  border-radius: 5px;
+}
+
+/* A value that changed since the last poll flashes its cell once. This is
+   the one piece of motion that carries information the layout cannot. */
+@keyframes adm-flash {
+  0%   { background-color: color-mix(in oklab, var(--adm-accent), transparent 82%); }
+  100% { background-color: transparent; }
+}
+.adm-flash { animation: adm-flash 900ms var(--adm-ease); }
+
+/* Nav selection. The indicator travels rather than cutting, so the eye
+   follows where it went. */
+.adm-rail-item { transition: color 140ms var(--adm-ease), background-color 140ms var(--adm-ease); }
+
+@media (prefers-reduced-motion: reduce) {
+  .adm-panel-enter,
+  .adm-flash,
+  .adm-skeleton {
+    animation: none;
+  }
+  .adm *,
+  .adm *::before,
+  .adm *::after {
+    transition-duration: 1ms !important;
+  }
+}
+
+/* ── Focus ──────────────────────────────────────────────────────────────
+ * One focus treatment for the whole surface. Keyboard operators are the
+ * ones who move fastest here, and they were previously flying blind:
+ * several controls set focus:outline-none with nothing in its place.
+ */
+.adm :focus-visible {
+  outline: 2px solid var(--adm-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Form controls need the selector to name them: the browser's own
+   `outline: auto` on a focused <select> otherwise wins over the descendant
+   rule above, and the ring comes out white instead of the accent. Verified
+   by capturing computed style on focusin during a real Tab walk. */
+.adm input:focus-visible,
+.adm select:focus-visible,
+.adm textarea:focus-visible {
+  outline: 2px solid var(--adm-accent);
+  outline-offset: 2px;
+}
+
+/* Native form controls inherit the dark ground rather than rendering as
+   white slabs, and the calendar/select indicators stay visible. */
+.adm input,
+.adm select,
+.adm textarea {
+  color-scheme: dark;
+}
+
+/* Tables: the header sticks so a long order list keeps its column names
+   while you scroll a hundred rows. */
+.adm-thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--adm-panel);
+  backdrop-filter: blur(6px);
+}
