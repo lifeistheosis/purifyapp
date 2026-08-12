@@ -4309,6 +4309,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "herman-of-alaska",
+    iconUrl: "/saints/icons/herman-of-alaska.jpg",
     byname: "Elder of Spruce Island",
     name: "St. Herman of Alaska",
     epithet:
@@ -4342,6 +4343,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "tikhon-of-zadonsk",
+    iconUrl: "/saints/icons/tikhon-of-zadonsk.jpg",
     byname: "Tikhon of Voronezh",
     name: "St. Tikhon of Zadonsk",
     epithet: "Bishop of Voronezh · Teacher of the Russian Church · Recluse of Zadonsk",
@@ -4519,6 +4521,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "basil-the-blessed",
+    iconUrl: "/saints/icons/basil-the-blessed.jpg",
     byname: "Fool for Christ of Moscow",
     name: "St. Basil the Blessed",
     epithet: "Fool for Christ · Wonderworker of Moscow",
@@ -4661,6 +4664,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "myron-of-crete",
+    iconUrl: "/saints/icons/myron-of-crete.jpg",
     byname: "Myron the Wonderworker",
     name: "St. Myron, Bishop of Crete",
     epithet: "Farmer · Bishop of Crete · Wonderworker",
@@ -4741,6 +4745,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "myron-of-cyzicus",
+    iconUrl: "/saints/icons/myron-of-cyzicus.jpg",
     byname: "Myron the Presbyter",
     name: "St. Myron of Cyzicus",
     epithet: "Presbyter of Achaia · Martyr under Decius",
@@ -4780,6 +4785,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "andrew-stratelates",
+    iconUrl: "/saints/icons/andrew-stratelates.jpg",
     byname: "Andrew the Commander",
     name: "St. Andrew Stratelates",
     epithet: "Roman commander in Syria · Martyr with 2,593 soldiers",
@@ -4860,6 +4866,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "peter-of-moscow",
+    iconUrl: "/saints/icons/peter-of-moscow.jpg",
     byname: "Peter the Wonderworker",
     name: "St. Peter, Metropolitan of Moscow",
     epithet: "Metropolitan of All Rus · The hierarch who moved the see to Moscow",
@@ -4901,6 +4908,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "phanourios-the-newly-revealed",
+    iconUrl: "/saints/icons/phanourios-the-newly-revealed.jpg",
     byname: "Phanourios of Rhodes",
     name: "St. Phanourios the Newly-Revealed",
     epithet: "Great-martyr · Made known by his icon at Rhodes",
@@ -4984,6 +4992,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "stephen-the-protomartyr",
+    iconUrl: "/saints/icons/stephen-the-protomartyr.jpg",
     byname: "The First Martyr",
     name: "St. Stephen the Protomartyr",
     epithet: "First of the Seven Deacons · First martyr of the Church · Archdeacon",
@@ -5025,6 +5034,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "prophet-samuel",
+    iconUrl: "/saints/icons/prophet-samuel.jpg",
     byname: "Samuel the Seer",
     name: "The Prophet Samuel",
     epithet: "Last of the Judges · The prophet who anointed Saul and David",
