@@ -83,6 +83,39 @@ export type IconRights =
 
 /** Files whose rights are settled. Every row here was opened and looked at. */
 export const ICON_RIGHTS: Record<string, IconRights> = {
+  "job-of-pochaev.jpg": {
+    status: "verified",
+    inspectedOn: "2026-08-12",
+    alt: "A monastic saint in dark schema stands holding an open scroll, a gold halo behind him, with a Slavonic inscription panel below naming him Job and his birth surname Zhelezo.",
+    work: "Icon of St Job of Pochaev",
+    artist: "Unknown",
+    workDate: "19th century",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Hegumen_Job_(in_the_world_Ivan_Ivanovich_Zhelezo).jpg",
+  },
+  "seven-sleepers-of-ephesus.jpg": {
+    status: "verified",
+    inspectedOn: "2026-08-12",
+    alt: "Oval icon of seven haloed youths asleep together in a cave, with a Greek inscription across the gold ground.",
+    work: "Icon of the Seven Sleepers of Ephesus",
+    artist: "Anonymous",
+    workDate: "c. 1800",
+    source: "Wikimedia Commons, Yale University Art Gallery 1942.326",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Unknown_-_Seven_Sleepers_of_Ephesus_-_1942.326_-_Yale_University_Art_Gallery.jpg",
+  },
+  "maccabean-martyrs.jpg": {
+    status: "verified",
+    inspectedOn: "2026-08-12",
+    alt: "Embroidered icon in gold thread and pearls showing the seven Maccabee youths between their mother Solomonia and the elder Eleazar, with Christ above.",
+    work: "Embroidered icon of the Holy Maccabean Martyrs",
+    artist: "Anonymous",
+    workDate: "1525",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Saints_Maccabees.jpg",
+  },
   "praying3.jpg": {
     status: "permission",
     inspectedOn: "2026-07-25",
