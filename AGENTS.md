@@ -43,7 +43,17 @@ Web-only trees are stashed out of the export in `scripts/native-build.mjs` (`sho
 - Privileged writes flow through API routes: zod validation + rate limit + service role. RLS proves ownership for reads.
 - Checkout clickwrap (`termsAccepted: true` literal) is required by schema; do not remove it.
 - The Stripe webhook flips orders pending→paid idempotently. Known open items in this area: it does not yet verify `amount_total` (F-03), and the cancel/payment race F-01 — read `docs/audit/findings.yaml` before touching webhook or cancel code.
-- **You cannot run DDL against prod.** Write the migration file AND give the owner copy-pasteable SQL for the Supabase editor (project avbqyvjgcrucjwevwixt).
+- **Merging a migration to `main` runs DDL against prod.** A Supabase GitHub integration applies `supabase/migrations/` to project avbqyvjgcrucjwevwixt on merge. It shows in PR checks as "Supabase Preview", and it reports `skipping` on a pull request, which is the preview branch declining and NOT the file sitting inert. Verified 2026-08-12: `is_campaign_group_member` existed only in a file amended that morning and answered on production within minutes of the merge, with nobody typing any SQL. What you still cannot do is run ad-hoc SQL outside a migration file, so every schema change goes in one. But the merge is the apply. Treat opening a PR that touches `supabase/migrations/` as proposing a production schema change, and get the owner's sign-off on the SQL before the merge, not after.
+- **The folder is not uniformly applied, so never infer state from the file existing.** Also verified 2026-08-12: `20260801_community_notifications.sql` and `20260802_revoke_public_user_id.sql` have been on `main` for over a week and are still NOT applied, while everything around them by date is. The second one is a live security gap: `revoke select (user_id)` never ran, so the auth uuid is still served to anonymous readers, which is exactly the hole that file was written to close, and its own header still correctly says `NOT YET APPLIED`. Probe before you claim, in either direction:
+
+  ```
+  curl -s -o /dev/null -w "%{http_code}\n" \
+    "$NEXT_PUBLIC_SUPABASE_URL/rest/v1/<table>?select=<column>&limit=1" \
+    -H "apikey: $NEXT_PUBLIC_SUPABASE_ANON_KEY"
+  ```
+
+  404 means the relation is absent. 200 on a column a migration was supposed to revoke means the revoke has not run. Test a column revoke against a table that HAS rows, or an empty result will read as success either way.
+- Copy-pasteable SQL for the owner is still worth producing, but it is now a record of what will run on merge, not the thing that runs it.
 
 ## Editorial boundaries
 
