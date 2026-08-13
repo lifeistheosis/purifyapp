@@ -134,15 +134,45 @@ describe("recording: the native path", () => {
     ).toMatch(/recordNativeSignInAcceptance\(/);
   });
 
-  it("records BEFORE navigating away, or the write never lands", () => {
-    // window.location.assign tears the page down. A write started after it,
-    // or not awaited, is the original fire-and-forget bug in a new costume.
+  it("starts the write before navigating, and does not block on it", () => {
+    // This test used to require `await recordNativeSignInAcceptance(...)`
+    // followed by window.location.assign. Both halves were wrong, and
+    // together they are what Apple rejected 1.0 build 12 for.
+    //
+    // The hard navigation had to go: Capacitor's iOS router serves
+    // basePath + "/index.html" for any extensionless path, so assigning
+    // /account/profile handed back the Today page and the reload discarded
+    // the session with it.
+    //
+    // Once navigation is a soft router.push the page is NOT torn down, so an
+    // in-flight request survives it, and the await that the old name insisted
+    // on becomes pure downside: apiFetch mints a bearer through the cross-tab
+    // lock and carries no deadline, so awaiting it parked a reader who was
+    // already signed in on "Connecting..." indefinitely. That is F-13.
+    //
+    // What still matters is that the write is STARTED before we navigate.
     const i = src.indexOf("recordNativeSignInAcceptance(");
-    const j = src.indexOf("window.location.assign");
-    expect(i).toBeGreaterThan(-1);
-    expect(j).toBeGreaterThan(-1);
-    expect(i, "acceptance must be recorded before navigation").toBeLessThan(j);
-    expect(src).toMatch(/await recordNativeSignInAcceptance\(/);
+    const j = src.indexOf("router.push(");
+    expect(i, "the acceptance write must exist").toBeGreaterThan(-1);
+    expect(j, "navigation must be a soft push, not a hard assign").toBeGreaterThan(-1);
+    expect(i, "the write must be started before navigating").toBeLessThan(j);
+    // Started, deliberately not awaited. `void` marks that as intent rather
+    // than a forgotten await, which is what the lint rule would otherwise flag.
+    expect(src).toMatch(/void recordNativeSignInAcceptance\(/);
+  });
+
+  it("never hard-navigates out of the native sign-in branch", () => {
+    // The iOS router discards the path on any extensionless hard navigation,
+    // so window.location is never a safe way to leave this flow. Guarding the
+    // whole file rather than the branch: there is no correct use of it here.
+    // Matches a CALL or an assignment, not prose: the comment above the fix
+    // names window.location.assign to explain why it is gone, and a bare
+    // substring check fails on its own documentation. window.location.origin
+    // is untouched, since the web PKCE branch legitimately needs it.
+    expect(
+      src,
+      "window.location.assign/href sends an iOS reader to the Today page",
+    ).not.toMatch(/window\.location\.assign\s*\(|window\.location\.href\s*=/);
   });
 
   it("does not abort a sign-in that already succeeded", () => {
