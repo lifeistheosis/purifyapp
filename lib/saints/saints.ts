@@ -3674,6 +3674,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "nikolaj-velimirovic",
+    iconUrl: "/saints/icons/nikolaj-velimirovic.jpg",
     byname: "the Serbian Chrysostom",
     name: "St. Nikolaj Velimirović",
     epithet: "Bishop of Žiča and Ohrid · the New Chrysostom",
@@ -4108,6 +4109,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "cyprian-of-carthage",
+    iconUrl: "/saints/icons/cyprian-of-carthage.jpg",
     byname: "Bishop and Martyr of Carthage",
     name: "St. Cyprian of Carthage",
     epithet:
@@ -4178,6 +4180,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "lawrence-the-archdeacon",
+    iconUrl: "/saints/icons/lawrence-the-archdeacon.jpg",
     byname: "Lawrence of Rome",
     name: "St. Lawrence the Archdeacon",
     epithet: "Archdeacon of Rome · Martyr under Valerian",
@@ -4211,6 +4214,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "sixtus-of-rome",
+    iconUrl: "/saints/icons/sixtus-of-rome.jpg",
     byname: "Sixtus II",
     name: "St. Sixtus, Pope of Rome",
     epithet: "Bishop of Rome · Peacemaker · Martyr under Valerian",
@@ -4243,6 +4247,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "maccabean-martyrs",
+    iconUrl: "/saints/icons/maccabean-martyrs.jpg",
     byname: "The Seven Holy Youths and Solomonia",
     name: "The Holy Maccabean Martyrs",
     epithet:
@@ -4276,6 +4281,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "pimen-the-great",
+    iconUrl: "/saints/icons/pimen-the-great.jpg",
     byname: "Abba Poemen",
     name: "St. Pimen the Great",
     epithet: "Father of Scetis · The most quoted elder of the desert",
@@ -4308,6 +4314,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "herman-of-alaska",
+    iconUrl: "/saints/icons/herman-of-alaska.jpg",
     byname: "Elder of Spruce Island",
     name: "St. Herman of Alaska",
     epithet:
@@ -4341,6 +4348,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "tikhon-of-zadonsk",
+    iconUrl: "/saints/icons/tikhon-of-zadonsk.jpg",
     byname: "Tikhon of Voronezh",
     name: "St. Tikhon of Zadonsk",
     epithet: "Bishop of Voronezh · Teacher of the Russian Church · Recluse of Zadonsk",
@@ -4373,6 +4381,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "thaddeus-of-edessa",
+    iconUrl: "/saints/icons/thaddeus-of-edessa.jpg",
     byname: "Addai, Apostle of the Seventy",
     name: "St. Thaddeus of Edessa",
     epithet: "One of the Seventy · Apostle of Edessa and Mesopotamia",
@@ -4413,6 +4422,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "titus-of-crete",
+    iconUrl: "/saints/icons/titus-of-crete.jpg",
     byname: "Titus of the Seventy",
     name: "St. Titus, Bishop of Crete",
     epithet: "Companion of the Apostle Paul · First bishop of Gortyna · One of the Seventy",
@@ -4444,6 +4454,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "euplus-of-catania",
+    iconUrl: "/saints/icons/euplus-of-catania.jpg",
     byname: "Euplus the Deacon",
     name: "St. Euplus of Catania",
     epithet: "Deacon of Catania · Martyr under Diocletian",
@@ -4475,6 +4486,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "seven-sleepers-of-ephesus",
+    iconUrl: "/saints/icons/seven-sleepers-of-ephesus.jpg",
     byname: "The Seven Youths of Ephesus",
     name: "The Seven Sleepers of Ephesus",
     epithet:
@@ -4517,6 +4529,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "basil-the-blessed",
+    iconUrl: "/saints/icons/basil-the-blessed.jpg",
     byname: "Fool for Christ of Moscow",
     name: "St. Basil the Blessed",
     epithet: "Fool for Christ · Wonderworker of Moscow",
@@ -4538,6 +4551,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "dalmatus-of-constantinople",
+    iconUrl: "/saints/icons/dalmatus-of-constantinople.jpg",
     byname: "Isaac, Dalmatus and Faustus",
     name: "Sts. Isaac, Dalmatus and Faustus",
     epithet: "Founders of the Dalmatian monastery at Constantinople · Confessors",
@@ -4558,6 +4572,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "anthony-the-roman",
+    iconUrl: "/saints/icons/anthony-the-roman.jpg",
     byname: "Anthony of Novgorod",
     name: "St. Anthony the Roman",
     epithet: "Founder of the Nativity monastery at Novgorod",
@@ -4579,6 +4594,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "eusignius-of-antioch",
+    iconUrl: "/saints/icons/eusignius-of-antioch.jpg",
     byname: "The Soldier of a Hundred and Ten Years",
     name: "St. Eusignius of Antioch",
     epithet: "Soldier of the Roman armies · Martyr under Julian",
@@ -4599,6 +4615,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "dometius-the-persian",
+    iconUrl: "/saints/icons/dometius-the-persian.jpg",
     byname: "Dometius of Nisibis",
     name: "St. Dometius the Persian",
     epithet: "Convert from the Magi · Monk of Nisibis · Martyr under Julian",
@@ -4619,6 +4636,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "or-of-the-thebaid",
+    iconUrl: "/saints/icons/or-of-the-thebaid.jpg",
     byname: "Abba Or",
     name: "St. Or of the Thebaid",
     epithet: "Desert Father of the Thebaid · Father of a thousand monks",
@@ -4639,6 +4657,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "aemilian-of-cyzicus",
+    iconUrl: "/saints/icons/aemilian-of-cyzicus.jpg",
     byname: "Aemilian the Confessor",
     name: "St. Aemilian, Bishop of Cyzicus",
     epithet: "Bishop of Cyzicus · Confessor for the holy icons",
@@ -4659,6 +4678,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "myron-of-crete",
+    iconUrl: "/saints/icons/myron-of-crete.jpg",
     byname: "Myron the Wonderworker",
     name: "St. Myron, Bishop of Crete",
     epithet: "Farmer · Bishop of Crete · Wonderworker",
@@ -4679,6 +4699,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "theodore-and-vasily-of-the-caves",
+    iconUrl: "/saints/icons/theodore-and-vasily-of-the-caves.jpg",
     byname: "Theodore and Vasily of the Kiev Caves",
     name: "Sts. Theodore and Vasily of the Kiev Caves",
     epithet: "Monks of the Caves · Martyrs for a treasure that was not theirs",
@@ -4699,6 +4720,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "photius-and-anicetus",
+    iconUrl: "/saints/icons/photius-and-anicetus.jpg",
     byname: "Anicetus and Photius of Nicomedia",
     name: "Sts. Photius and Anicetus",
     epithet: "Martyrs of Nicomedia under Diocletian",
@@ -4719,6 +4741,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "diomedes-the-physician",
+    iconUrl: "/saints/icons/diomedes-the-physician.jpg",
     byname: "Diomedes of Tarsus",
     name: "St. Diomedes the Physician",
     epithet: "Physician of Tarsus · Unmercenary · Martyr under Diocletian",
@@ -4739,6 +4762,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "myron-of-cyzicus",
+    iconUrl: "/saints/icons/myron-of-cyzicus.jpg",
     byname: "Myron the Presbyter",
     name: "St. Myron of Cyzicus",
     epithet: "Presbyter of Achaia · Martyr under Decius",
@@ -4758,6 +4782,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "floros-and-lauros",
+    iconUrl: "/saints/icons/floros-and-lauros.jpg",
     byname: "The Stonemasons of Illyricum",
     name: "Sts. Floros and Lauros",
     epithet: "Twin brothers · Stonemasons · Martyrs of Illyricum",
@@ -4778,6 +4803,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "andrew-stratelates",
+    iconUrl: "/saints/icons/andrew-stratelates.jpg",
     byname: "Andrew the Commander",
     name: "St. Andrew Stratelates",
     epithet: "Roman commander in Syria · Martyr with 2,593 soldiers",
@@ -4798,6 +4824,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "abraham-of-smolensk",
+    iconUrl: "/saints/icons/abraham-of-smolensk.jpg",
     byname: "Abraham the Preacher",
     name: "St. Abraham of Smolensk",
     epithet: "Priest-monk of Smolensk · Preacher · Wonderworker",
@@ -4818,6 +4845,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "agathonicus-of-nicomedia",
+    iconUrl: "/saints/icons/agathonicus-of-nicomedia.jpg",
     byname: "Agathonicus and companions",
     name: "St. Agathonicus of Nicomedia",
     epithet: "Martyr under Maximian · Killed at Selymbria",
@@ -4838,6 +4866,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "lupus-of-thessaloniki",
+    iconUrl: "/saints/icons/lupus-of-thessaloniki.jpg",
     byname: "Lupus the Servant",
     name: "St. Lupus of Thessaloniki",
     epithet: "Servant of St. Demetrius · Martyr under Maximian",
@@ -4858,6 +4887,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "peter-of-moscow",
+    iconUrl: "/saints/icons/peter-of-moscow.jpg",
     byname: "Peter the Wonderworker",
     name: "St. Peter, Metropolitan of Moscow",
     epithet: "Metropolitan of All Rus · The hierarch who moved the see to Moscow",
@@ -4879,6 +4909,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "adrian-and-natalia",
+    iconUrl: "/saints/icons/adrian-and-natalia.jpg",
     byname: "Adrian and Natalia of Nicomedia",
     name: "Sts. Adrian and Natalia",
     epithet: "Officer of the imperial court and his wife · Martyrs of Nicomedia",
@@ -4899,6 +4930,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "phanourios-the-newly-revealed",
+    iconUrl: "/saints/icons/phanourios-the-newly-revealed.jpg",
     byname: "Phanourios of Rhodes",
     name: "St. Phanourios the Newly-Revealed",
     epithet: "Great-martyr · Made known by his icon at Rhodes",
@@ -4919,6 +4951,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "job-of-pochaev",
+    iconUrl: "/saints/icons/job-of-pochaev.jpg",
     byname: "Job of Pochaev",
     name: "St. Job of Pochaev",
     epithet: "Abbot of Pochaev · Defender of Orthodoxy in Volhynia · Printer",
@@ -4940,6 +4973,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "alexander-of-svir",
+    iconUrl: "/saints/icons/alexander-of-svir.jpg",
     byname: "Alexander of Svir",
     name: "St. Alexander of Svir",
     epithet: "Abbot of the Holy Trinity on the Svir · Seer of the Holy Trinity",
@@ -4961,6 +4995,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "patriarchs-alexander-john-paul",
+    iconUrl: "/saints/icons/patriarchs-alexander-john-paul.jpg",
     byname: "Three Patriarchs of Constantinople",
     name: "Sts. Alexander, John and Paul the New",
     epithet: "Patriarchs of Constantinople · Commemorated together",
@@ -4981,6 +5016,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "stephen-the-protomartyr",
+    iconUrl: "/saints/icons/stephen-the-protomartyr.jpg",
     byname: "The First Martyr",
     name: "St. Stephen the Protomartyr",
     epithet: "First of the Seven Deacons · First martyr of the Church · Archdeacon",
@@ -5002,6 +5038,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "prophet-micah",
+    iconUrl: "/saints/icons/prophet-micah.jpg",
     byname: "Micah the Morasthite",
     name: "The Prophet Micah",
     epithet: "One of the Twelve Minor Prophets · Contemporary of Isaiah",
@@ -5022,6 +5059,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "prophet-samuel",
+    iconUrl: "/saints/icons/prophet-samuel.jpg",
     byname: "Samuel the Seer",
     name: "The Prophet Samuel",
     epithet: "Last of the Judges · The prophet who anointed Saul and David",
@@ -5037,6 +5075,25 @@ export const SAINTS: Saint[] = [
       "He judged Israel from Ramah and rode a circuit of the towns, and he was the last man to hold the country together without a king. When the people demanded a king so that they might be like the other nations, he warned them exactly what a king would take from them, and then anointed the one God chose, Saul the son of Kish.",
       "When Saul spared what he had been told to destroy and made an offering of it, Samuel gave him the answer that has been quoted against religious display ever since: that to obey is better than sacrifice, and to hearken than the fat of rams. He anointed David at Bethlehem while Saul still reigned, and he died at Ramah and all Israel mourned him.",
       "The books of Kingdoms that carry his story are in this app in full in the Brenton Septuagint. His relics were translated to Constantinople in 406. The Church keeps his memory on the twentieth of August.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "saint-george",
+    iconUrl: "/saints/icons/saint-george.jpg",
+    name: "St. George the Trophy-bearer",
+    epithet: "Soldier of the Roman army · Great-martyr · Trophy-bearer",
+    born: "c. 275 (Cappadocia)",
+    reposed: "April 23, 303 (beheaded at Nicomedia)",
+    feastDays: ["April 23"],
+    pronoun: "his",
+    shortBio:
+      "An officer of the Roman army who refused to renounce Christ during the persecution under Diocletian and was beheaded at Nicomedia. He is counted among the great-martyrs and called the Trophy-bearer.",
+    life: [
+      "George was born in Cappadocia in the second half of the third century and rose to rank in the Roman army. When the persecution under Diocletian began he declared himself a Christian rather than conceal it, and was tortured and beheaded at Nicomedia on the twenty-third of April, 303.",
+      "He is venerated as a great-martyr and titled the Trophy-bearer. His relics were taken to Lydda in Palestine, where a church was raised over them, and his feast is kept on the day of his death.",
+      "In iconography he is shown as a young beardless soldier in armour, most often with a spear, and in the best known composition mounted and striking a serpent. The image filed here is the standing form: armour beneath a red cloak, an upright spear, a sword and shield at his side.",
     ],
     works: [],
   },
