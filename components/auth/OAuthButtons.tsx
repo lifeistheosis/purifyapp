@@ -97,13 +97,25 @@ export function OAuthButtons({
       const nativeAvailable =
         provider === "google" ? nativeGoogleAvailable() : nativeAppleAvailable();
       if (nativeAvailable) {
-        const token =
+        // Google returns a nonce because we now supply one; Apple deliberately
+        // sends none. Supabase requires the nonce claim and the nonce argument
+        // to agree, present together or absent together, so each provider
+        // passes exactly what its token carries. Sending Apple a nonce, or
+        // Google none, is the same error from opposite directions.
+        const { token, nonce } =
           provider === "google"
-            ? await nativeGoogleIdToken()
-            : await nativeAppleIdToken();
+            ? await nativeGoogleIdToken().then((r) => ({
+                token: r.idToken,
+                nonce: r.nonce as string | undefined,
+              }))
+            : await nativeAppleIdToken().then((t) => ({
+                token: t,
+                nonce: undefined as string | undefined,
+              }));
         const { data, error: err } = await supabase.auth.signInWithIdToken({
           provider,
           token,
+          ...(nonce ? { nonce } : {}),
         });
         if (err) throw err;
         // The web records this in /api/auth/callback, which the native path

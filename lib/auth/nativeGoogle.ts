@@ -69,12 +69,31 @@ async function ensureInit(): Promise<void> {
  * is exactly the failure we shipped once. The raw plugin error is always
  * logged for adb/chrome-inspect diagnosis.
  */
-export async function nativeGoogleIdToken(): Promise<string> {
+export async function nativeGoogleIdToken(): Promise<{
+  idToken: string;
+  nonce: string;
+}> {
   await ensureInit();
   const { SocialLogin } = await import("@capgo/capacitor-social-login");
+
+  // NONCE. Ours, deliberately, and returned to the caller.
+  //
+  // Supabase rejects a token whose nonce claim has no matching `nonce`
+  // argument: "Passed nonce in id_token should either both exists or not".
+  // Sending `options: {}` did not avoid that, it caused it. The iOS SDK mints
+  // its own nonce when none is given, Google embeds it in the id_token, and the
+  // plugin never hands it back, so there was nothing to forward and iPhone
+  // Google sign-in could not succeed. (Reported on 1.1 build 20.)
+  //
+  // Supplying one is the only way to know its value. Google returns the nonce
+  // in the token verbatim, so the same string satisfies both sides. This is the
+  // opposite choice to lib/auth/nativeApple.ts, which omits the nonce because
+  // Apple's flow assigns `request.nonce` verbatim and accepts its absence.
+  const nonce = crypto.randomUUID();
+
   let res: Awaited<ReturnType<typeof SocialLogin.login>>;
   try {
-    res = await SocialLogin.login({ provider: "google", options: {} });
+    res = await SocialLogin.login({ provider: "google", options: { nonce } });
   } catch (e) {
     const raw =
       e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
@@ -101,5 +120,5 @@ export async function nativeGoogleIdToken(): Promise<string> {
     console.error("[nativeGoogle] login returned no idToken:", JSON.stringify(res));
     throw new Error("Google did not return an ID token. Please try again.");
   }
-  return idToken;
+  return { idToken, nonce };
 }
