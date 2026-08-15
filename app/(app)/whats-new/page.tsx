@@ -26,10 +26,10 @@ type Entry = {
 const ENTRIES: Entry[] = [
  {
  version: "1.1",
- kind: "What was already built, and not reaching you",
+ kind: "Light mode for everyone, and a calendar that keeps the day",
  date: "August 12, 2026",
  blurb:
-  "Most of this release is not new work. It is things Purify already had and was not handing over: light mode built and filed behind Pro, a search that shipped inside the app behind a window that could not open, and a calendar that did not know what day it was.",
+  "Purify 1.1 opens the app up. Light mode is free for every reader, search opens on a phone and reaches the whole library, the calendar keeps the real day wherever you open it, and signing in on iPhone holds.",
  items: [
     "Sign in works on iPhone. The app was throwing your session away on every reload and sending you to the wrong page afterwards, so it looked like signing in had failed.",
     "Light mode is free. It was built months ago, named Parchment, and filed behind Pro by mistake. It is called Light now and everyone has it.",
