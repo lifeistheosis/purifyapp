@@ -78,27 +78,35 @@ suite validates a quote against its source. Owner's call, not an agent's.
 author. `works: []` is the honest shape, the same one the August Russian block
 took.
 
-**No `iconUrl`.** `iconRights.test.ts` asserts that every `iconUrl` resolves to a
-file on disk, so setting it before the files exist turns the suite red. The four
-entries render the designed placeholder from `SaintIcon` until the images land.
-These are the first four saints in the registry without an icon, so they look
-different from their neighbours on the index grid, which is the reason to close
-this out rather than leave it.
+## Icons
 
-Files needed, one per slug, in `public/saints/icons/`:
+Shipped 2026-08-15. Supplied by the owner, filed as `permission` rows in
+`lib/saints/iconRights.ts` on the pattern already set by `saint-george.jpg`.
+Every one was opened and looked at before its row was written, and the alt text
+describes the picture rather than the saint.
 
-```
-symeon-the-stylite.jpg
-symeon-of-the-wonderful-mountain.jpg
-daniel-the-stylite.jpg
-alypius-the-stylite.jpg
-```
+| File | Stored | Size |
+|---|---|---|
+| `symeon-the-stylite.jpg` | 315x420 | 43.9 KB |
+| `symeon-of-the-wonderful-mountain.jpg` | 288x384 | 23.4 KB |
+| `daniel-the-stylite.jpg` | 323x420 | 31.0 KB |
+| `alypius-the-stylite.jpg` | 313x420 | 38.2 KB |
 
-Each needs a rights-complete row in `lib/saints/iconRights.ts`. `UNVERIFIED_ICONS`
-sits at its ceiling of 107, which may only fall, so the debt map is closed and
-there is no way to add an icon except with full provenance. Per file: 200 KB or
-under, real JPEG magic bytes, and `alt` written while looking at the picture,
-over 24 characters and not beginning "Icon of".
+Four things needed fixing on the way in, and they are the ones worth repeating
+on the next batch:
+
+- `alypius` arrived as a **GIF carrying a `.jpg` name**. That is exactly the
+  failure the magic-byte assertion in `iconRights.test.ts` exists to catch. It
+  was re-encoded as a real JPEG.
+- `daniel` arrived as `daniel-the-stylite.jpg.jpg`. The doubled extension would
+  never have matched the `iconUrl`.
+- `symeon-the-stylite` was 1280x720 landscape and
+  `symeon-of-the-wonderful-mountain` was 288x640, both far from the 3:4 frame.
+  `SaintIcon` renders `object-cover object-top`, so each was pre-cropped to the
+  window the app would actually paint. Nothing important is cut in either: face,
+  halo, hands, pillar and inscription all survive.
+- All four were well above the house norm. The 149 icons already shipped average
+  28 KB at height 420, and these were 48 KB to 375 KB.
 
 ## Editorial status
 
