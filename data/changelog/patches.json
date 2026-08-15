@@ -3,9 +3,13 @@
     "id": "v1-1",
     "version": "1.1",
     "date": "2026-08-12",
-    "title": "Light mode for everyone, and a calendar that keeps the day",
-    "intro": "Purify 1.1 opens the app up. Light mode is free for every reader, search opens on a phone and reaches the whole library, the calendar keeps the real day wherever you open it, and signing in on iPhone holds.",
+    "title": "The pillar-saints arrive, and the Hours know the time",
+    "intro": "Purify 1.1 brings in the stylites, the pillar-saints who kept their whole ascetic life on top of a column, gathered under a new heading on the saints index. The Hours page now tells you which Hour you are in, days without a saint carry a saying of the Desert Fathers, and search reaches the whole library from your phone.",
     "sections": [
+      {
+        "heading": "The pillar-saints have their profiles",
+        "body": "Symeon the Stylite, Daniel, Symeon of the Wonderful Mountain and Alypius, four men who spent their lives on top of a column in full view of the world. They are gathered under a new Stylites heading on the saints index, and their days in the calendar now open to them. Where the old accounts disagree about a year, the profile says so rather than choosing."
+      },
       {
         "heading": "The home page reads straight again",
         "body": "On the home page, See today sits level with the Open Purify button again instead of below its middle. The quieter install line under the button had been pulling it down."

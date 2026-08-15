@@ -26,11 +26,12 @@ type Entry = {
 const ENTRIES: Entry[] = [
  {
  version: "1.1",
- kind: "Light mode for everyone, and a calendar that keeps the day",
+ kind: "The pillar-saints arrive, and the Hours know the time",
  date: "August 12, 2026",
  blurb:
-  "Purify 1.1 opens the app up. Light mode is free for every reader, search opens on a phone and reaches the whole library, the calendar keeps the real day wherever you open it, and signing in on iPhone holds.",
+  "Purify 1.1 brings in the stylites, the pillar-saints who kept their whole ascetic life on top of a column, gathered under a new heading on the saints index. The Hours page now tells you which Hour you are in, days without a saint carry a saying of the Desert Fathers, and search reaches the whole library from your phone.",
  items: [
+    "The pillar-saints have their profiles. Symeon the Stylite, Daniel, Symeon of the Wonderful Mountain and Alypius, four men who spent their lives on top of a column in full view of the world. They are gathered under a new Stylites heading on the saints index, and their days in the calendar now open to them.",
     "Sign in works on iPhone. The app was throwing your session away on every reload and sending you to the wrong page afterwards, so it looked like signing in had failed.",
     "Light mode is free. It was built months ago, named Parchment, and filed behind Pro by mistake. It is called Light now and everyone has it.",
     "Premium Reading Modes moved from Pro to Plus.",
