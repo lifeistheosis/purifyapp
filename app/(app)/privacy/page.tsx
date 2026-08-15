@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
@@ -16,6 +17,13 @@ export default async function PrivacyPage() {
  if (locale === "de") return <PrivacyDe />;
  const m = getMessages(locale);
  return (
+ <>
+ {/* Without a bar this page had nothing holding the status-bar strip on
+     native: it scrolled under the clock, wifi and battery. The bar carries
+     `topbar-safe`, which pads by the inset and cancels <main>'s safe-pt at
+     its own position, and that rule is already what fixed the same
+     collision on Android. It also gives the page a way back. */}
+ <MobileTopBar titleKey="privacy.eyebrow" back />
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
  <TranslationDisclaimer />
@@ -564,11 +572,19 @@ export default async function PrivacyPage() {
  </div>
  </article>
  </section>
+ </>
  );
 }
 
 function PrivacyDe() {
  return (
+ <>
+ {/* Without a bar this page had nothing holding the status-bar strip on
+     native: it scrolled under the clock, wifi and battery. The bar carries
+     `topbar-safe`, which pads by the inset and cancels <main>'s safe-pt at
+     its own position, and that rule is already what fixed the same
+     collision on Android. It also gives the page a way back. */}
+ <MobileTopBar titleKey="privacy.eyebrow" back />
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
  <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
@@ -1017,5 +1033,6 @@ function PrivacyDe() {
  </div>
  </article>
  </section>
+ </>
  );
 }
