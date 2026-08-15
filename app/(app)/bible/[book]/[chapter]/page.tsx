@@ -180,9 +180,11 @@ export default async function BibleChapterPage({
  <div data-reader-chrome className="contents">
  <BookChapterSidebar book={b!} current={chapterNum} />
  </div>
- {/* Extra mobile top padding accounts for the fixed ReadingProgressBar
- context strip (~28px) sitting under the 72px sticky navbar. */}
- <section className="flex-1 px-5 md:px-10 pt-14 md:pt-16 pb-10 md:pb-16 safe-pb-reader min-w-0">
+ {/* Mobile top padding clears the 48px top bar and the 2px progress line
+ pinned to its bottom edge. The old pt-14 also reserved a context strip
+ that no longer exists; ChapterStickyHeader is not accounted for here
+ because it only appears once the chapter title has scrolled away. */}
+ <section className="flex-1 px-5 md:px-10 pt-12 md:pt-16 pb-10 md:pb-16 safe-pb-reader min-w-0">
  <div className="mx-auto max-w-[1200px] w-full">
  {/* Row 1, always: Translation + Book at their natural width.
  On desktop the typography cluster (font + interlinear) sits to

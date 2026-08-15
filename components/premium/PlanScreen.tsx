@@ -85,7 +85,7 @@ export function PlanScreen({ planCopy }: { planCopy: PremiumPlanCopy }) {
 
   if (!plan || plan.tier === "free") {
     return (
-      <div className="flex min-h-[70vh] items-center justify-center bg-night px-6">
+      <div className="flex min-h-[70dvh] items-center justify-center bg-night px-6">
         <p className="animate-pulse font-sans text-ui text-paper/50">
           {t("ui.loadingYourPlan")}
         </p>

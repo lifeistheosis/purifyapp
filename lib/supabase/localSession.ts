@@ -2,6 +2,8 @@
 
 import type { User } from "@supabase/supabase-js";
 
+import { readNativeStore } from "./nativeStore";
+
 /**
  * Read the signed-in user straight from the persisted Supabase session —
  * synchronously, with NO network request, NO token refresh, and NO auth lock.
@@ -17,9 +19,16 @@ import type { User } from "@supabase/supabase-js";
  *
  * Storage format (@supabase/ssr): the session lives under a cookie named
  * `sb-<ref>-auth-token`, possibly split into `…-auth-token.0`, `.1`, … chunks,
- * each value optionally prefixed `base64-` then base64url-encoded JSON. The
- * native shell may use localStorage under the same key. We scan both, so we
- * don't depend on the exact project ref.
+ * each value optionally prefixed `base64-` then base64url-encoded JSON. We scan
+ * cookies and localStorage, so we don't depend on the exact project ref.
+ *
+ * The native shells are a third place. They keep the whole set under ONE
+ * localStorage key holding a `{name, value}[]` array, because WKWebView will
+ * not back document.cookie on the shell's origin (lib/supabase/nativeStore.ts).
+ * That key does not look like `sb-<ref>-auth-token`, so scanning key names
+ * alone misses it entirely: this read returned null for every signed-in native
+ * user until the store was added below, and Profile and Security silently fell
+ * back to the async getSession() path this function exists to avoid.
  *
  * Best-effort: any parse failure returns null and the caller falls back to the
  * SDK. It is a fast, hang-proof PATH, not a replacement for auth security —
@@ -60,7 +69,7 @@ function readRawSessionValue(): string | null {
     const value = decodeURIComponent(part.slice(eq + 1));
     consider(name, value);
   }
-  // localStorage (native shell / older web).
+  // localStorage (older web, and anything that wrote the cookie names as keys).
   try {
     for (let i = 0; i < localStorage.length; i++) {
       const name = localStorage.key(i);
@@ -71,6 +80,10 @@ function readRawSessionValue(): string | null {
   } catch {
     /* storage may be unavailable */
   }
+  // The native shells' single-key store. The names inside it are the ordinary
+  // sb-<ref>-auth-token[.n] ones, so they feed the same collector and the
+  // chunk-joining below needs no special case.
+  for (const c of readNativeStore()) consider(c.name, c.value);
 
   if (buckets.size === 0) return null;
   // Prefer the first bucket that yields a value; join chunks in index order.

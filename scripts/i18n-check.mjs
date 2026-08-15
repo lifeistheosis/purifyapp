@@ -236,6 +236,20 @@ if (doScan || triageDirs) {
         // ") : headline ? (" or "cond === x ? (" — code, not copy.
         if (re === TEXT_RE && /^[)\]}].*[({[]$/.test(text)) continue;
         if (re === TEXT_RE && /[({[]$/.test(text) && /[?=&|]/.test(text)) continue;
+        // The two guards above only catch a code fragment whose brackets sit
+        // at its very ends. A match can also slice through the MIDDLE of a
+        // call: `if (Math.abs(dx) > 48) step(dx < 0 ? 1 : -1)` hands this
+        // regex "48) step(dx", because the > and the < read as tag
+        // delimiters. It begins with an operand, so neither anchored guard
+        // fires. What gives it away is a closing bracket with no opening
+        // bracket before it, which balanced prose cannot produce. Copy that
+        // opens its own parenthetical, "Read more (opens a new tab)", is
+        // still flagged, because there the open comes first.
+        if (re === TEXT_RE) {
+          const close = text.search(/[)\]}]/);
+          const open = text.search(/[({[]/);
+          if (close !== -1 && (open === -1 || close < open)) continue;
+        }
         // Template-literal interiors are code.
         if (text.includes("${")) continue;
         // Comparison/boolean expressions spanning tag-like operators

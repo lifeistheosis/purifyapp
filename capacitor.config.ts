@@ -28,30 +28,30 @@ const config: CapacitorConfig = {
   webDir: LOCAL ? "out" : "capacitor-shell",
   ...(LOCAL
     ? {
-        // BOTH schemes are https, and iosScheme is load-bearing, not tidiness.
+        // NEVER set iosScheme to "https" or "http". It crashes the app on
+        // launch, on every device, before anything renders.
         //
-        // Without it iOS takes Capacitor's default and serves the bundle from
-        // capacitor://localhost. That is not an HTTP-family origin and not a
-        // secure context, and WKWebView does not back document.cookie there.
-        // @supabase/ssr's createBrowserClient is given no `cookies` option, so
-        // it stores the session in document.cookie and nowhere else, which on
-        // iOS means the session existed only in the JS heap: it survived a
-        // soft navigation and died on every reload, hard navigation and app
-        // relaunch. Android was never affected because androidScheme has been
-        // "https" since the shell was built, which is the whole reason this
-        // reproduced on one platform only.
+        // Capacitor takes the value verbatim (CAPInstanceDescriptor.swift:90,
+        // `urlScheme = scheme`, no validation) and hands it to
+        // `webConfig.setURLSchemeHandler(assetHandler, forURLScheme:)` at
+        // CAPBridgeViewController.swift:297. Apple's API raises
+        // NSInvalidArgumentException for any scheme WKWebView already handles,
+        // https among them, and an Objective-C exception is not catchable from
+        // Swift, so the process terminates. Capacitor's own typings say so:
+        // "Can't be set to schemes that the WKWebView already handles, such as
+        // http or https" (@capacitor/cli declarations.d.ts:545).
         //
-        // That is half of what Apple rejected 1.0 build 12 for under 2.1(a),
-        // "The Sign in feature did not function properly". The other half is
-        // the hard navigation in components/auth/OAuthButtons.tsx.
+        // It was set to "https" to fix the 1.0 build 12 rejection under 2.1(a),
+        // on the reasoning that capacitor://localhost is not a secure context
+        // so WKWebView will not back document.cookie, which is where
+        // @supabase/ssr keeps the session. That diagnosis was right. The remedy
+        // was not: it traded a sign-in failure for a launch crash, which is a
+        // worse rejection.
         //
-        // Changing the scheme changes the origin, which orphans anything the
-        // old origin had stored. That costs nothing here: iOS has never
-        // shipped, so no install exists to migrate.
-        //
-        // It also restores a secure context, which components/community/
-        // CommunityClient.tsx currently works around for crypto.randomUUID.
-        server: { androidScheme: "https", iosScheme: "https" },
+        // The session is now persisted in localStorage on native instead, via
+        // the cookie adapter in lib/supabase/client.ts, which is where the
+        // problem actually lives and is independent of the origin's scheme.
+        server: { androidScheme: "https" },
       }
     : {
         server: {

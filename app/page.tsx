@@ -219,19 +219,24 @@ export default async function Home() {
  >
  {t(m, "home.heroSubtitle")}
  </p>
- <div
- style={{ animationDelay: "440ms" }}
- className="hero-copy-in mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4"
- >
- <DesktopInstallCTA variant="inverse">
- {t(m, "nav.openPurify")}
- </DesktopInstallCTA>
+ {/* "See today" goes through `trailing` rather than sitting here as a
+ sibling. The CTA is a column, button over install line, so a sibling in
+ a centered row was centered against both and sat below the middle of
+ the button. Passed in, it shares a row with the button alone. */}
+ <div style={{ animationDelay: "440ms" }} className="hero-copy-in mt-10">
+ <DesktopInstallCTA
+ variant="inverse"
+ trailing={
  <Link
  href="/calendar"
  className="font-sans text-ui font-medium text-paper/80 hover:text-paper transition-colors"
  >
  {t(m, "home.seeToday")}
  </Link>
+ }
+ >
+ {t(m, "nav.openPurify")}
+ </DesktopInstallCTA>
  </div>
  </div>
  </div>

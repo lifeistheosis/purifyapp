@@ -99,7 +99,7 @@ export function EikonBoxBridge() {
             type="button"
             onClick={dismiss}
             aria-label="Dismiss"
-            className="-mt-1 -mr-1 h-7 w-7 shrink-0 rounded-pill text-paper/45 hover:text-paper"
+            className="hit-44 -mt-1 -mr-1 h-7 w-7 shrink-0 rounded-pill text-paper/45 hover:text-paper"
           >
             ×
           </button>

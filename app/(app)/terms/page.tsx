@@ -26,7 +26,7 @@ export default function TermsPage() {
           The terms, plainly.
         </h1>
         <p className="mt-6 font-serif text-body leading-[1.7] text-paper/65">
-          Effective July 31, 2026. These terms are a binding agreement
+          Effective August 14, 2026. These terms are a binding agreement
           between you and Purify (&ldquo;Purify,&rdquo; &ldquo;we,&rdquo;
           &ldquo;us&rdquo;), covering the website at purifyapp.net, the
           Purify mobile applications, and the EIKON shop. By using Purify or
@@ -179,24 +179,20 @@ export default function TermsPage() {
         </p>
         <h3 className={H3}>Purify Plus</h3>
         <p className={P}>
-          Purify Plus is an optional auto-renewing subscription. The standard
-          prices are US $4.99 per month or US $38.99 per year (local prices are
-          shown in the store before you confirm). New subscribers receive an
-          introductory opening discount of 50% off the first year; after the
-          first year the subscription renews automatically at the then-current
-          standard price, until you cancel. Plus is the premium reading and
-          study layer: it carries your library, notes, highlights, and
-          collections across every device you sign in on.
+          Purify Plus is an optional auto-renewing subscription. The prices are
+          US $4.99 per month or US $38.99 per year (local prices are shown in
+          the store before you confirm). The subscription renews automatically
+          at the then-current price, until you cancel. Plus is the premium
+          reading and study layer: it carries your library, notes, highlights,
+          and collections across every device you sign in on.
         </p>
         <h3 className={H3}>Purify Pro</h3>
         <p className={P}>
           Purify Pro is an optional auto-renewing subscription that includes
           everything in Purify Plus and adds the premium experience layer:
           premium reading modes in the app, the EIKON Box, and EIKON member
-          benefits. The standard prices are US $19.99 per month or US $199 per
-          year. New subscribers receive the same introductory 50% discount for
-          the first year, after which Pro renews at the then-current standard
-          price until you cancel.
+          benefits. The prices are US $19.99 per month or US $199 per year. Pro
+          renews automatically at the then-current price until you cancel.
         </p>
         <p className={P}>
           The EIKON Box is claimed, not sent automatically. Each month we open

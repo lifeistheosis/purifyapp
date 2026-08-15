@@ -201,7 +201,7 @@ export function WordPopover({
  type="button"
  onClick={onClose}
  aria-label={t("common.close")}
- className="absolute top-2 right-2 h-7 w-7 rounded-full text-paper/60 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui"
+ className="hit-44 absolute top-2 right-2 h-7 w-7 rounded-full text-paper/60 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui"
  >
  <Close size={13} />
  </button>

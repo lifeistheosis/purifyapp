@@ -5097,6 +5097,85 @@ export const SAINTS: Saint[] = [
     ],
     works: [],
   },
+
+  // The stylites, the pillar-saints. See docs/editorial/stylites.md for the
+  // sources behind each entry and for what is deliberately not claimed.
+  {
+    slug: "symeon-the-stylite",
+    name: "St. Symeon the Stylite",
+    epithet: "Pillar-saint · Ascetic of Syria · The Elder",
+    byname: "The First of the Pillar-Saints",
+    born: "c. 388 (Sisan, Syria)",
+    reposed: "September 2, 459 (on his pillar, near Antioch)",
+    feastDays: ["September 1"],
+    pronoun: "his",
+    shortBio:
+      "The Syrian ascetic who withdrew to the top of a pillar and stayed there some thirty-six years, teaching and judging disputes from it. He is the first of the pillar-saints, and the whole stylite way is named after him.",
+    life: [
+      "Symeon was born about the year 388 at Sisan in Syria, the son of shepherds, and entered monastic life while still young. His austerity was severe enough that the community he first joined asked him to leave it, and he went on alone, living for a time enclosed and then on a small hill, where the crowds who came to him for prayer and counsel grew until he had no stillness left.",
+      "In 423 he answered that crowd in a way nobody had answered it before: he built a pillar and lived on top of it. The first was low, a little more than nine feet high. He raised it more than once over the years, and the last stood, so far as the accounts allow us to say, over fifty feet from the ground. There was a railing at the top and no shelter. He remained there, through the heat and the winter rain of the Syrian uplands, for about thirty-six years.",
+      "It was not a retreat from people. From the pillar he preached twice a day, settled quarrels, wrote to bishops and to emperors, and received a stream of visitors from as far as Gaul and Britain, so that the pillar became one of the best known places in the Christian East. Both those who admired him and those who doubted him agreed on the strangeness of it, and the bishops of Syria tested his obedience before they accepted the manner of his life.",
+      "He died on his pillar on Friday the second of September, 459. His body was carried to Antioch, and a great church, the Qal'at Sim'an, was raised around the pillar itself, whose remains still stand. The Church keeps his memory on the first of September, the beginning of the church year, one day before the day of his death.",
+      "After him the way of the pillar was taken up by others for centuries, in Syria, in Asia Minor, at Constantinople and later in the Russian lands. Daniel the Stylite, who knew him, carried it to the capital, and Symeon of the Wonderful Mountain took his name and his manner of life near Antioch a century later.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "daniel-the-stylite",
+    name: "St. Daniel the Stylite",
+    epithet: "Pillar-saint · Ascetic of Constantinople",
+    born: "Syria (fifth century)",
+    reposed: "c. 493 (near Constantinople)",
+    feastDays: ["December 11"],
+    pronoun: "his",
+    shortBio:
+      "A Syrian who saw Symeon the Stylite on his pillar, took up the same life near Constantinople, and was consulted there by two emperors.",
+    life: [
+      "Daniel was a Syrian by birth and a monk from boyhood. He went to see Symeon the Stylite, who was then living on his pillar in the Syrian hills, and the visit settled the shape of the rest of his life.",
+      "He established himself near Constantinople and took to a pillar of his own, within reach of the capital rather than in the desert. That nearness is what distinguishes him: the pillar stood where the business of the empire passed by it, and he was visited on it by both the Emperor Leo and the Emperor Zeno, who came for his counsel and his prayers.",
+      "He is said to have kept the pillar for more than thirty years and to have come down from it only once, in a crisis of the city's affairs. He died about the year 493, and his memory is kept on the eleventh of December.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "symeon-of-the-wonderful-mountain",
+    name: "St. Symeon Stylites the Younger",
+    epithet: "Pillar-saint · Ascetic of the Wonderful Mountain",
+    byname: "Of the Wonderful Mountain",
+    born: "521 (Antioch)",
+    reposed:
+      "May 24. The year is given as 596 in some accounts and 597 in others, and the difference is not resolved here.",
+    feastDays: ["May 24"],
+    pronoun: "his",
+    shortBio:
+      "Born at Antioch and on a pillar from childhood, he spent his life on the height south-west of the city that came to be called the Wonderful Mountain. He is the younger of the two great Symeons of the pillar.",
+    life: [
+      "Symeon was born at Antioch in 521. He took to the ascetic life extraordinarily early, and the accounts place him on a pillar while still a boy, which is the detail that sets him apart even among the stylites.",
+      "He lived near Antioch, on the hill that took the name of the Wonderful Mountain, where a monastery grew up around his pillar. As with the elder Symeon, the pillar drew people rather than sealing him off from them, and he spent his life receiving those who climbed to it.",
+      "The sources do not agree on the year of his death. The older reference works give 596 in one place and the twenty-fourth of May, 597, in another, and the calendar note carried in this app reads 596. The day is not in question and his memory is kept on the twenty-fourth of May. The year is left as the sources leave it.",
+      "He is called the Younger to distinguish him from Symeon the Stylite, who lived a century before him and whose name and manner of life he took up.",
+    ],
+    works: [],
+  },
+
+  {
+    slug: "alypius-the-stylite",
+    name: "St. Alypius the Stylite",
+    epithet: "Pillar-saint · Ascetic of Paphlagonia",
+    reposed: "Seventh century (Adrianople in Paphlagonia)",
+    feastDays: ["November 26"],
+    pronoun: "his",
+    shortBio:
+      "A pillar-saint of Paphlagonia who stood upright on his pillar for fifty-three years, and when his legs would no longer hold him, spent his last fourteen years lying on his side upon it.",
+    life: [
+      "Alypius set up his pillar near Adrianople in Paphlagonia, in the north of Asia Minor, and lived on it for the rest of his life. A community gathered at the foot of it, as happened around several of the pillar-saints.",
+      "The detail the tradition keeps about him is the endurance. He stood upright on the pillar for fifty-three years. When his legs at last failed him he did not come down, and spent the remaining fourteen years of his life lying on his side there.",
+      "He is commemorated on the twenty-sixth of November. The calendar note carried in this app places his death in 640; the older reference works are less precise and say only that he belongs to the seventh century, so the year is not stated here as settled.",
+    ],
+    works: [],
+  },
 ];
 
 export function getSaint(slug: string): Saint | null {

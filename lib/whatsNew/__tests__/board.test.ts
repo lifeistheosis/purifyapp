@@ -49,10 +49,16 @@ describe("weekly board message", () => {
   });
 
   it("computes an age, so staleness is measurable", () => {
-    // Fixed clock: the age of the seed message on a known date.
-    const age = boardMessageAgeDays(new Date("2026-08-02T00:00:00Z"));
-    expect(age).not.toBeNull();
-    expect(age).toBeGreaterThanOrEqual(0);
+    // The clock is derived from the newest message, not hardcoded. It used to
+    // be a fixed 2026-08-02, chosen when the seed message was the only entry,
+    // and it went negative the first time a message newer than that date was
+    // added. Deriving it tests the arithmetic instead of the contents, so
+    // writing a weekly note can never fail this.
+    const newest = new Date(`${BOARD_MESSAGES[0].date}T00:00:00Z`);
+    expect(boardMessageAgeDays(newest)).toBe(0);
+    expect(
+      boardMessageAgeDays(new Date(newest.getTime() + 10 * 86_400_000)),
+    ).toBe(10);
   });
 
   it("WARNS when the newest message is over three weeks old", () => {
