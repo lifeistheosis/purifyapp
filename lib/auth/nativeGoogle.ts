@@ -76,24 +76,34 @@ export async function nativeGoogleIdToken(): Promise<{
   await ensureInit();
   const { SocialLogin } = await import("@capgo/capacitor-social-login");
 
-  // NONCE. Ours, deliberately, and returned to the caller.
+  // NONCE. Two forms of one value, and they are not interchangeable.
   //
-  // Supabase rejects a token whose nonce claim has no matching `nonce`
-  // argument: "Passed nonce in id_token should either both exists or not".
-  // Sending `options: {}` did not avoid that, it caused it. The iOS SDK mints
-  // its own nonce when none is given, Google embeds it in the id_token, and the
-  // plugin never hands it back, so there was nothing to forward and iPhone
-  // Google sign-in could not succeed. (Reported on 1.1 build 20.)
+  // Google is sent the SHA-256 HASH and embeds it in the id_token verbatim
+  // (GoogleProvider.swift passes payload["nonce"] straight through, no
+  // hashing). Supabase is sent the RAW value and hashes it itself before
+  // comparing against the claim, which is Apple's convention applied to every
+  // provider. So the hash goes out and the raw comes back, and both sides see
+  // the same digest.
   //
-  // Supplying one is the only way to know its value. Google returns the nonce
-  // in the token verbatim, so the same string satisfies both sides. This is the
-  // opposite choice to lib/auth/nativeApple.ts, which omits the nonce because
-  // Apple's flow assigns `request.nonce` verbatim and accepts its absence.
-  const nonce = crypto.randomUUID();
+  // Both wrong ways round were shipped and both were reported from a device:
+  //   options: {}   -> the iOS SDK minted its own nonce, the token carried a
+  //                    claim we could not know, and Supabase refused the pair:
+  //                    "Passed nonce in id_token should either both exists or
+  //                    not". (1.1 build 20)
+  //   raw to both   -> Supabase hashed ours and compared it against Google's
+  //                    unhashed claim: "Nonces mismatch".
+  //
+  // lib/auth/nativeApple.ts stays the opposite way round and sends no nonce at
+  // all, because that flow assigns request.nonce verbatim and accepts absence.
+  const rawNonce = crypto.randomUUID();
+  const hashedNonce = await sha256Hex(rawNonce);
 
   let res: Awaited<ReturnType<typeof SocialLogin.login>>;
   try {
-    res = await SocialLogin.login({ provider: "google", options: { nonce } });
+    res = await SocialLogin.login({
+      provider: "google",
+      options: { nonce: hashedNonce },
+    });
   } catch (e) {
     const raw =
       e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
@@ -120,5 +130,23 @@ export async function nativeGoogleIdToken(): Promise<{
     console.error("[nativeGoogle] login returned no idToken:", JSON.stringify(res));
     throw new Error("Google did not return an ID token. Please try again.");
   }
-  return { idToken, nonce };
+  return { idToken, nonce: rawNonce };
+}
+
+/**
+ * Hex SHA-256, the form Google embeds and Supabase recomputes.
+ *
+ * `crypto.subtle` needs a secure context. The shells qualify (Capacitor marks
+ * its scheme secure, and `crypto.randomUUID` above already works there, which
+ * is the same gate), but a build that lost that would otherwise fail with an
+ * unreadable TypeError deep in sign-in, so say what happened instead.
+ */
+async function sha256Hex(input: string): Promise<string> {
+  if (!globalThis.crypto?.subtle) {
+    throw new Error(
+      "Google sign-in needs WebCrypto, which this shell did not expose. Please report this; it is our fault, not yours.",
+    );
+  }
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
