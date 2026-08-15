@@ -17,6 +17,7 @@ export type SaintGroupId =
   | "church-fathers"
   | "hierarchs"
   | "desert-monastics"
+  | "stylites"
   | "council-fathers"
   | "martyrs"
   | "wonderworkers"
@@ -61,6 +62,12 @@ export const SAINT_GROUPS: { id: SaintGroupId; label: string; blurb: string }[] 
       id: "desert-monastics",
       label: "Desert & Monastics",
       blurb: "Ascetics, hermits, abbots, and elders of the monastic life.",
+    },
+    {
+      id: "stylites",
+      label: "Stylites",
+      blurb:
+        "The pillar-saints, who kept their ascetic life on top of a pillar in full view of the world.",
     },
     {
       id: "council-fathers",
@@ -247,6 +254,13 @@ export const SAINT_GROUP_MEMBERSHIP: Record<string, SaintGroupId[]> = {
   "job-of-pochaev": ["desert-monastics", "wonderworkers"],
   "alexander-of-svir": ["desert-monastics", "wonderworkers"],
   "patriarchs-alexander-john-paul": ["hierarchs", "council-fathers"],
+
+  // The pillar-saints (see docs/editorial/stylites.md). Also desert-monastics,
+  // because a reader filtering for the ascetic life should find them there too.
+  "symeon-the-stylite": ["stylites", "desert-monastics", "wonderworkers"],
+  "daniel-the-stylite": ["stylites", "desert-monastics"],
+  "symeon-of-the-wonderful-mountain": ["stylites", "desert-monastics"],
+  "alypius-the-stylite": ["stylites", "desert-monastics"],
 };
 
 export function groupsForSlug(slug: string): SaintGroupId[] {

@@ -1103,7 +1103,8 @@
   "05-24": [
     {
       "name": "St. Symeon the Stylite of the Wonderful Mountain",
-      "note": "+596"
+      "note": "+596",
+      "slug": "symeon-of-the-wonderful-mountain"
     },
     {
       "name": "Ven. Nicetas the Stylite of Pereyaslavl",
@@ -2193,7 +2194,8 @@
     },
     {
       "name": "St. Symeon the Stylite",
-      "note": "the first of the pillar-saints, +459"
+      "note": "the first of the pillar-saints, +459",
+      "slug": "symeon-the-stylite"
     }
   ],
   "09-02": [
@@ -3097,7 +3099,8 @@
   "11-26": [
     {
       "name": "St. Alypius the Stylite of Adrianople",
-      "note": "+640"
+      "note": "+640",
+      "slug": "alypius-the-stylite"
     },
     {
       "name": "St. Innocent, First Bishop of Irkutsk",
@@ -3255,7 +3258,8 @@
   "12-11": [
     {
       "name": "St. Daniel the Stylite",
-      "note": "Constantinople, +493"
+      "note": "Constantinople, +493",
+      "slug": "daniel-the-stylite"
     },
     {
       "name": "St. Luke the New Stylite of Chalcedon",
