@@ -10,6 +10,13 @@
 //   NPNF#-#  Nicene and Post-Nicene Fathers (Schaff, 1886-1900)
 //   ANF#     Ante-Nicene Fathers (1885-1887)
 //   LFC #    Library of the Fathers (Pusey, Oxford, 1838-1885)
+//   Catena Aurea (Oxford, Rivington, 1842)
+//            Aquinas's Golden Chain in the Oxford translation. Named in full
+//            rather than by series number: it belongs to the same Tractarian
+//            Oxford effort as LFC, but its volumes were not numbered in that
+//            series, and inventing a number here would be the kind of tidy
+//            fiction this file exists to prevent. The 1842 imprint is what
+//            makes it public domain, and the string carries that date.
 //
 // NOT public domain:
 //   FOTC #   Fathers of the Church, CUA Press, ongoing
@@ -37,7 +44,8 @@ import path from "node:path";
 const ROOT = process.cwd();
 const DIR = path.join(ROOT, "data/bible/commentary");
 
-const PUBLIC_DOMAIN = /^(NPNF\d-\d+|ANF\d+|LFC \d+)/;
+const PUBLIC_DOMAIN =
+  /^(NPNF\d-\d+|ANF\d+|LFC \d+|Catena Aurea \(Oxford, Rivington, 1842\))/;
 
 /**
  * Notes still citing a non-public-domain series, pending editorial review.
