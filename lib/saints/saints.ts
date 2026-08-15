@@ -5102,6 +5102,7 @@ export const SAINTS: Saint[] = [
   // sources behind each entry and for what is deliberately not claimed.
   {
     slug: "symeon-the-stylite",
+    iconUrl: "/saints/icons/symeon-the-stylite.jpg",
     name: "St. Symeon the Stylite",
     epithet: "Pillar-saint · Ascetic of Syria · The Elder",
     byname: "The First of the Pillar-Saints",
@@ -5123,6 +5124,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "daniel-the-stylite",
+    iconUrl: "/saints/icons/daniel-the-stylite.jpg",
     name: "St. Daniel the Stylite",
     epithet: "Pillar-saint · Ascetic of Constantinople",
     born: "Syria (fifth century)",
@@ -5141,6 +5143,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "symeon-of-the-wonderful-mountain",
+    iconUrl: "/saints/icons/symeon-of-the-wonderful-mountain.jpg",
     name: "St. Symeon Stylites the Younger",
     epithet: "Pillar-saint · Ascetic of the Wonderful Mountain",
     byname: "Of the Wonderful Mountain",
@@ -5162,6 +5165,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "alypius-the-stylite",
+    iconUrl: "/saints/icons/alypius-the-stylite.jpg",
     name: "St. Alypius the Stylite",
     epithet: "Pillar-saint · Ascetic of Paphlagonia",
     reposed: "Seventh century (Adrianople in Paphlagonia)",
