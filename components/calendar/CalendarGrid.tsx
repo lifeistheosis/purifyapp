@@ -78,10 +78,18 @@ export function CalendarGrid({
   return (
     <div>
       <div className="grid grid-cols-7 border-t border-l border-paper/12">
+        {/* These names come from Intl, not from our message files, so their
+            length is not something translation can control. At 360px a column
+            is 44.7px, and the 1.8px tracking alone adds 10.8px to a six-letter
+            name: Polish "NIEDZ." overflowed into its neighbour. The tracking is
+            an eyebrow flourish that costs more than it earns at this width, so
+            it starts at the sm breakpoint. min-w-0 lets the grid child actually
+            shrink, and truncate is the backstop for ar, ur and ne, which are
+            long on glyph width alone and take no benefit from uppercase. */}
         {weekdayNames(locale).map((d) => (
           <div
             key={d}
-            className="border-r border-b border-paper/8 py-1.5 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/70 text-center"
+            className="min-w-0 truncate border-r border-b border-paper/8 py-1.5 font-sans text-eyebrow font-semibold uppercase tracking-normal sm:tracking-[1.8px] text-gold/70 text-center"
           >
             {d}
           </div>
