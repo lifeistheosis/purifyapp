@@ -56,7 +56,6 @@ const ENTRIES: Entry[] = [
     "These notes fold into years and months, so 89 releases are no longer one flat column.",
     "The opening offer is withdrawn. Both paid tiers were advertised at half off the first year and the discount never actually applied at checkout, so the claim is gone from the pricing pages, the plan copy and the Terms rather than left standing. Nobody was charged a discounted rate that later rose; the prices shown have always been the prices charged.",
     "On the home page, See today sits level with the Open Purify button again instead of below its middle. The quieter install line under the button had been pulling it down.",
-    "Still to come: the shop's support address needs one database change applied by hand, most saint icons are recorded as unverified rather than guessed at, and prayer reminders still cannot be sent.",
  ],
  },
 {
