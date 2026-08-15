@@ -1,13 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { writeLastRead } from "@/lib/bible/lastRead";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 
 /**
- * Slim sticky progress bar at the top of a chapter, plus a mobile-only
- * context strip showing "Book Chapter · v12 of 35". Driven by scroll.
+ * Slim sticky progress bar at the top of a chapter. Driven by scroll.
  *
  * - 2px gold bar fills left→right as the user scrolls.
  * - Current-verse detection: the topmost <div id="v..."> below the
@@ -16,7 +14,8 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
  * - Persists the live in-view verse to `purify:bible:last` (debounced) so the
  * mobile "Continue reading" card can resume at the verse, not the chapter top.
  * This is the sole writer of that key (it runs `compute()` on mount, so it
- * records the chapter immediately too).
+ * records the chapter immediately too), which is why the component survives
+ * even though ChapterStickyHeader now draws the only visible bar.
  */
 export function ReadingProgressBar({
  slug,
@@ -29,9 +28,7 @@ export function ReadingProgressBar({
  chapter: number;
  totalVerses: number;
 }) {
-  const { t } = useTranslate();
  const [progress, setProgress] = useState(0);
- const [currentVerse, setCurrentVerse] = useState<number>(1);
  const tickingRef = useRef(false);
 
  useEffect(() => {
@@ -88,7 +85,6 @@ export function ReadingProgressBar({
  break;
  }
  }
- setCurrentVerse(cur);
  persist(cur);
  }
 
@@ -117,32 +113,29 @@ export function ReadingProgressBar({
  }, [slug, bookName, chapter, totalVerses]);
 
  return (
- <>
- {/* Mobile-only context strip, sits just under the 48px MobileTopBar.
-     below-topbar adds the status-bar inset on native so it clears the bar. */}
- <div className="md:hidden fixed top-12 below-topbar left-0 right-0 z-30 bg-night/90 backdrop-blur border-b border-white/8 px-4 py-1.5 pointer-events-none">
- <p className="font-sans text-eyebrow text-paper/65 leading-none flex items-center gap-1.5">
- <span className="font-semibold text-paper/85">
- {bookName} {chapter}
- </span>
- <span className="text-paper/35">·</span>
- <span className="tabular-nums">
- {t("bible.verseOf", { verse: currentVerse, total: totalVerses })}
- </span>
- </p>
- </div>
-
- {/* Progress bar, slim gold fill. On mobile it sits under the
- context strip (48px top bar + ~32px strip = top-20). On
- desktop it sits flush under the 72px AppNav. */}
+ // This component used to also render a mobile context strip reading
+ // "{book} {chapter} · v {n} of {total}". ChapterStickyHeader says the same
+ // thing, at the same coordinates, from the same parent, so the two bars
+ // stacked and the header's 85% backdrop ghosted the strip's text through it
+ // at a different size and alignment. Worse, each tracked the current verse by
+ // its own rule (largest intersection ratio here, topmost anchor there), so the
+ // two numbers on screen could disagree. The strip is gone; the header is the
+ // one bar. What stays here is the part nothing else does: the scroll effect
+ // above is the sole writer of purify:bible:last (lib/bible/lastRead.ts).
+ //
+ // Progress line, slim gold fill, pinned to the bar's bottom edge on mobile and
+ // flush under the 72px AppNav on desktop. z-50 because the sticky header is
+ // z-40 and renders after this in the parent: at equal z the header would paint
+ // over the line exactly when the reader has scrolled far enough to want it.
+ // Sheets are z-[60] and still cover it; the z-50 tab bar is at the far end of
+ // the screen.
  <div
  aria-hidden
- className="fixed left-0 right-0 z-30 top-[80px] below-topbar-line md:top-[72px]"
+ className="fixed left-0 right-0 z-50 top-12 below-topbar md:top-[72px]"
  >
  {/* Decorative, and scroll-driven: 150ms so the fill tracks the thumb
      instead of trailing it. */}
  <ProgressBar value={progress} height={2} durationMs={150} />
  </div>
- </>
  );
 }

@@ -351,16 +351,11 @@ html.is-native .sticky-safe-top {
 }
 
 /* Companions of the bar (e.g. the Bible chapter sticky header, the reader
-   context strip, the saints work progress line) hard-coded `top-12` (48px,
+   progress line, the saints work progress line) hard-coded `top-12` (48px,
    right under the 3rem bar) to sit just below it; on native the pinned bar is
    taller by the inset, so they offset by the same amount. */
 html.is-native .below-topbar {
  top: calc(3rem + var(--inset-top));
-}
-/* The reader's slim progress LINE sits below both the bar and the ~32px
-   context strip (web `top-[80px]`); on native add the inset too. */
-html.is-native .below-topbar-line {
- top: calc(80px + var(--inset-top));
 }
 
 /* The shop's floating cart button (56px, right-6 bottom-6) shares the
