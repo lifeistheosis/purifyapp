@@ -70,7 +70,7 @@ export function UserAvatarSmall() {
       <Link
         href="/account"
         aria-label={t("nav.yourAccount")}
-        className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/55 hover:border-gold transition-colors"
+        className="hit-44 flex h-10 w-10 items-center justify-center rounded-full border border-gold/55 hover:border-gold transition-colors"
         style={{
           background:
             "linear-gradient(155deg, #2a2a2f 0%, #1f1f22 50%, #18181b 100%)",
@@ -87,7 +87,7 @@ export function UserAvatarSmall() {
     <Link
       href="/signin"
       aria-label={t("nav.signIn")}
-      className="flex h-10 w-10 items-center justify-center rounded-full border border-paper/20 text-paper/70 hover:text-paper hover:border-paper/40 transition-colors"
+      className="hit-44 flex h-10 w-10 items-center justify-center rounded-full border border-paper/20 text-paper/70 hover:text-paper hover:border-paper/40 transition-colors"
     >
       <svg
         width={20}

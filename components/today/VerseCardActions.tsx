@@ -167,11 +167,15 @@ export function VerseCardActions({
   return (
     <>
       <div className="relative flex items-center justify-between pt-4 mt-4 border-t border-paper/8">
+        {/* Both controls carry padding pulled back by an equal negative
+            margin, so the touch box clears 44px while the row keeps the
+            height it had. Save had no padding at all and stood 61x22, its
+            height coming from the 22px heart alone. */}
         <button
           type="button"
           onClick={toggleFav}
           aria-pressed={fav}
-          className="flex items-center gap-2 text-paper/75 hover:text-paper transition-colors"
+          className="flex items-center gap-2 -my-3 py-3 text-paper/75 hover:text-paper transition-colors"
         >
           <HeartIcon filled={fav} />
           <span className="font-sans text-ui">{fav ? t("common.saved") : t("common.save")}</span>
@@ -180,7 +184,7 @@ export function VerseCardActions({
           type="button"
           onClick={() => setMore(true)}
           aria-label={t("today.verse.moreActions")}
-          className="flex h-9 w-9 items-center justify-center rounded-full text-paper/55 hover:text-paper hover:bg-paper/[0.06] transition-colors"
+          className="flex h-11 w-11 -my-1 items-center justify-center rounded-full text-paper/55 hover:text-paper hover:bg-paper/[0.06] transition-colors"
         >
           <MoreIcon />
         </button>

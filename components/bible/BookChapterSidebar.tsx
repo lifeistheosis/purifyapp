@@ -35,7 +35,7 @@ export function BookChapterSidebar({
               href={`/bible/${prev.slug}/1`}
               aria-label={`Previous book: ${prev.name}`}
               title={prev.name}
-              className="h-7 w-7 shrink-0 rounded-full border border-paper/15 flex items-center justify-center text-paper/55 hover:text-paper hover:border-paper/35 transition-colors"
+              className="hit-44 h-7 w-7 shrink-0 rounded-full border border-paper/15 flex items-center justify-center text-paper/55 hover:text-paper hover:border-paper/35 transition-colors"
             >
               ‹
             </Link>
@@ -50,7 +50,7 @@ export function BookChapterSidebar({
               href={`/bible/${next.slug}/1`}
               aria-label={`Next book: ${next.name}`}
               title={next.name}
-              className="h-7 w-7 shrink-0 rounded-full border border-paper/15 flex items-center justify-center text-paper/55 hover:text-paper hover:border-paper/35 transition-colors"
+              className="hit-44 h-7 w-7 shrink-0 rounded-full border border-paper/15 flex items-center justify-center text-paper/55 hover:text-paper hover:border-paper/35 transition-colors"
             >
               ›
             </Link>
