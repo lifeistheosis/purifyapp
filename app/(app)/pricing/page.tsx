@@ -133,7 +133,7 @@ export default async function PricingPage() {
       <NativeOnly>
         <ClientErrorBoundary
           fallback={
-            <div className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center">
+            <div className="flex min-h-[60dvh] flex-col items-center justify-center px-6 text-center">
               <p className="font-display-serif text-title text-paper">
                 <T k="study.purifyPlus" />
               </p>

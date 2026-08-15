@@ -386,8 +386,22 @@ function Screen({ children }: { children: React.ReactNode }) {
   // No safe-pt here: the app layout's <main> already pads past the status
   // bar, and stacking a second inset opened a dead band above the hero
   // (owner report, 2026-07-12 screenshot).
+  //
+  // min-h-full, NOT min-h-[100dvh], and it is the same mistake one level down.
+  // This renders inside <main class="flex-1 safe-pt safe-pb">, which on native
+  // already reserves the status bar at the top and the tab bar plus home
+  // indicator at the bottom. Demanding a full viewport INSIDE that padding
+  // makes the page 100dvh plus roughly 150px, so the screen always scrolls and
+  // the buy button is always below the fold, on every phone, no matter how
+  // short the copy is. That is the primary call to action on the only screen
+  // that asks anyone for money.
+  //
+  // `full` resolves against the padded content box instead, which is what
+  // "fill the screen" actually means here. Where the parent has no definite
+  // height it degrades to auto, which is harmless: the content is what sizes
+  // the page, and nothing is pushed off it.
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-night text-paper">
+    <div className="flex min-h-full flex-col bg-night text-paper">
       {children}
     </div>
   );
