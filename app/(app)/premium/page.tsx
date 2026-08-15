@@ -16,7 +16,6 @@ type PremiumChrome = {
   eyebrow: string;
   h1: string;
   lede: string;
-  offerChip: string;
   seePlus: string;
   seePro: string;
   freeHeading: string;
@@ -40,7 +39,6 @@ const CHROME_EN: PremiumChrome = {
   eyebrow: "Purify Premium",
   h1: "The whole Church, carried with you.",
   lede: "Everything at the heart of Purify is free, and it stays free. Plus and Pro add an optional layer: your reading on every device, the Church in fuller dress, and a way to keep the lamps lit.",
-  offerChip: "Opening offer · 50% off your first year",
   seePlus: "See Purify Plus",
   seePro: "See Purify Pro",
   freeHeading: "Free, and always",
@@ -64,7 +62,6 @@ const CHROME_DE: PremiumChrome = {
   eyebrow: "Purify Premium",
   h1: "Die ganze Kirche, mit dir getragen.",
   lede: "Alles im Herzen von Purify ist frei und bleibt frei. Plus und Pro fügen eine optionale Schicht hinzu: dein Lesen auf jedem Gerät, die Kirche in vollerem Gewand und ein Weg, die Lampen am Brennen zu halten.",
-  offerChip: "Eröffnungsangebot · 50% Rabatt im ersten Jahr",
   seePlus: "Purify Plus ansehen",
   seePro: "Purify Pro ansehen",
   freeHeading: "Frei, und immer",
@@ -138,9 +135,6 @@ function PremiumView({
               <ArrowDown />
             </a>
           </div>
-          <p className="mt-5 font-sans text-caption text-[#e9c86a]/80">
-            {chrome.offerChip}
-          </p>
         </div>
       </section>
 
@@ -183,9 +177,6 @@ function PremiumView({
                 {plan.plusLede}
               </p>
               <FeatureList items={plan.plusItems} soonLabel={plan.soonLabel} />
-              <p className="mt-5 font-sans text-caption text-[#e9c86a]/85">
-                {plan.openingOffer}
-              </p>
               <PlanUpgradeCta
                 tier="plus"
                 href="/pricing"
@@ -203,9 +194,6 @@ function PremiumView({
                 {plan.proLede}
               </p>
               <FeatureList items={plan.proItems} soonLabel={plan.soonLabel} />
-              <p className="mt-5 font-sans text-caption text-[#e9c86a]/85">
-                {plan.openingOffer}
-              </p>
               {/* Pro routes to the pricing page, where the Pro web checkout
                   (or the Play fallback) lives — not straight to Play. */}
               <PlanUpgradeCta

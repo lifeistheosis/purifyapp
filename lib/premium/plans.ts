@@ -47,8 +47,6 @@ export type PremiumPlanCopy = {
   freeTitle: string;
   freeItems: string[];
   freeFoot: string;
-  // The opening-drop line shown under the paid prices.
-  openingOffer: string;
   // The pill label rendered next to `soon` features.
   soonLabel: string;
   // Purify Plus.
@@ -85,8 +83,6 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
     "Prayer Campaigns, prayed together",
   ],
   freeFoot: "No ads. No tracking. No surprise locks. For anyone who needs it.",
-  openingOffer:
-    "Opening offer: 50% off your first year. It renews after at the standard price. Cancel anytime.",
   soonLabel: "Coming soon",
   plusTitle: "Purify Plus",
   plusLede: "The premium reading and study experience.",
@@ -171,8 +167,6 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
   ],
   freeFoot:
     "Keine Werbung. Keine Verfolgung. Keine überraschenden Sperren. Für jeden, der sie braucht.",
-  openingOffer:
-    "Eröffnungsangebot: 50% Rabatt im ersten Jahr. Danach Verlängerung zum Standardpreis. Jederzeit kündbar.",
   soonLabel: "Bald verfügbar",
   plusTitle: "Purify Plus",
   plusLede: "Das Premium-Erlebnis fürs Lesen und Studieren.",

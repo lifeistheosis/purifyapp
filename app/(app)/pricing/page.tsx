@@ -32,7 +32,6 @@ type PricingCopy = {
   freeItems: string[];
   freeFoot: string;
   // The opening-drop line shown under the paid prices.
-  openingOffer: string;
   // Pill label for perks marked `soon` (e.g. Studio Audio).
   soonLabel: string;
   plusTitle: string;
@@ -246,9 +245,6 @@ function PricingView({ copy }: { copy: PricingCopy }) {
               {copy.plusPriceYearly}
             </span>
           </div>
-          <p className="mt-2 font-sans text-caption text-gold-pale/80">
-            {copy.openingOffer}
-          </p>
 
           {/* The web purchase surface. Subscribes through RevenueCat Web
               Billing bound to the signed-in account, so it unlocks Plus on
@@ -309,9 +305,6 @@ function PricingView({ copy }: { copy: PricingCopy }) {
               {copy.proPriceYearly}
             </span>
           </div>
-          <p className="mt-2 font-sans text-caption text-gold-pale/80">
-            {copy.openingOffer}
-          </p>
 
           {/* Pro web checkout: subscribe on desktop through RevenueCat Web
               Billing, degrades to the Play link until the Pro web offering is
