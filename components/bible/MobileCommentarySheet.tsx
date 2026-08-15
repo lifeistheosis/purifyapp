@@ -7,6 +7,7 @@ import type { ChapterCommentary } from "@/lib/bible/load";
 import { SaintIcon } from "./SaintIcon";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
+import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 
 type Note = { author: string; work: string; text: string };
 
@@ -204,6 +205,14 @@ export function MobileCommentarySheet({
  window.addEventListener("keydown", onKey);
  return () => window.removeEventListener("keydown", onKey);
  }, [mounted, onClose]);
+
+ // Android hardware back closes the sheet rather than leaving the chapter.
+ // The sheet has no browser history of its own, so without this, back on the
+ // reader's most-opened surface throws the reader out of the chapter entirely.
+ // `mounted` rather than `verse !== null`, matching components/ui/Sheet.tsx, so
+ // the listener is live for the whole close animation and not just up to the
+ // moment the prop clears.
+ useAndroidBack(mounted, onClose);
 
  // Pointer drag. Starting the drag is only allowed when the scroll body is
  // already at the top, otherwise pulling down inside a long Father would
