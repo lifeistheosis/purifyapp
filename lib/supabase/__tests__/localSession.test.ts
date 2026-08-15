@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { readLocalSessionUser } from "../localSession";
+import { NATIVE_SESSION_KEY } from "../nativeStore";
 
 // The vitest env is node (no DOM), so stub the two storage globals the reader
 // touches: document.cookie and localStorage. Values are set per test.
@@ -70,9 +71,43 @@ describe("readLocalSessionUser", () => {
     expect(readLocalSessionUser()?.id).toBe("u3");
   });
 
-  it("reads a localStorage session (native shell)", () => {
+  it("reads a localStorage session (older web, cookie name as the key)", () => {
     stubStorage("", { [REF]: JSON.stringify(session("u4", "g@h.co")) });
     expect(readLocalSessionUser()?.id).toBe("u4");
+  });
+
+  // The native shells keep the whole set under ONE key holding a {name,value}[]
+  // array, which looks nothing like sb-<ref>-auth-token. Scanning key names
+  // alone missed it, so this read returned null for every signed-in native user
+  // and Profile/Security fell back to the async path it exists to avoid.
+  it("reads the native shell's single-key store", () => {
+    stubStorage("", {
+      [NATIVE_SESSION_KEY]: JSON.stringify([
+        { name: REF, value: base64UrlPrefixed(session("u5", "i@j.co")) },
+      ]),
+    });
+    expect(readLocalSessionUser()?.id).toBe("u5");
+  });
+
+  it("reassembles a chunked native store in index order", () => {
+    const full = base64UrlPrefixed(session("u6", "k@l.co"));
+    const mid = Math.floor(full.length / 2);
+    stubStorage("", {
+      [NATIVE_SESSION_KEY]: JSON.stringify([
+        { name: `${REF}.1`, value: full.slice(mid) },
+        { name: `${REF}.0`, value: full.slice(0, mid) },
+      ]),
+    });
+    expect(readLocalSessionUser()?.id).toBe("u6");
+  });
+
+  it("ignores a native store that is not an array of {name, value}", () => {
+    stubStorage("", { [NATIVE_SESSION_KEY]: JSON.stringify({ not: "an array" }) });
+    expect(readLocalSessionUser()).toBeNull();
+    stubStorage("", { [NATIVE_SESSION_KEY]: JSON.stringify([{ name: REF }]) });
+    expect(readLocalSessionUser()).toBeNull();
+    stubStorage("", { [NATIVE_SESSION_KEY]: "{not json" });
+    expect(readLocalSessionUser()).toBeNull();
   });
 
   it("returns null for a session with no user id (not signed in)", () => {

@@ -5,28 +5,25 @@
 import { createBrowserClient } from "@supabase/ssr";
 
 import { isNativeClient } from "@/lib/platform/native";
+import {
+  readNativeStore,
+  writeNativeStore,
+  type StoredCookie,
+} from "./nativeStore";
 import { resilientNavigatorLock } from "./resilientLock";
 
 /**
- * Where the session lives inside the native shells.
+ * The native session store, in the shape @supabase/ssr expects.
  *
- * @supabase/ssr keeps the session in `document.cookie` by default. The iOS
- * shell serves the bundle from `capacitor://localhost`, which is neither an
- * HTTP-family origin nor a secure context, and WKWebView does not back
- * document.cookie there: writes appear to succeed and the value is gone on the
- * next read. So on iOS the session existed only in the JS heap. It survived a
- * soft navigation and died on every reload, hard navigation and relaunch, which
- * is exactly what Apple saw when they rejected 1.0 build 12 under 2.1(a), "The
- * Sign in feature did not function properly".
+ * The key, the accessors and the reason the shells cannot use document.cookie
+ * live in lib/supabase/nativeStore.ts, so the synchronous reader in
+ * lib/supabase/localSession.ts can read the same store without importing this
+ * module and dragging @supabase/ssr along with it.
  *
- * The previous attempt fixed this by setting `iosScheme: "https"` to buy a
+ * The previous attempt at the same problem set `iosScheme: "https"` to buy a
  * secure context. That crashes the app on launch: WKWebView refuses a scheme
  * handler for a scheme it already handles, and the resulting ObjC exception is
  * uncatchable from Swift. See the note in capacitor.config.ts.
- *
- * localStorage IS backed on a custom-scheme origin, so the store moves there.
- * This is scheme-independent, which is the point: it cannot be undone by a
- * future change to how the shell is served.
  *
  * Native only. On the web the cookie store is load-bearing, because the server
  * reads the same cookies to resolve the session during SSR and in route
@@ -35,42 +32,14 @@ import { resilientNavigatorLock } from "./resilientLock";
  * `lib/api/cors.ts` records that "authentication rides on a Bearer token, never
  * cookies".
  */
-const NATIVE_SESSION_KEY = "purify.supabase.auth";
-
-type StoredCookie = { name: string; value: string };
-
-function readStore(): StoredCookie[] {
-  try {
-    const raw = window.localStorage.getItem(NATIVE_SESSION_KEY);
-    if (!raw) return [];
-    const parsed: unknown = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as StoredCookie[]) : [];
-  } catch {
-    // Quota, privacy mode, or a value some older build left behind in another
-    // shape. An unreadable store must mean "signed out", never a thrown error
-    // on every Supabase call.
-    return [];
-  }
-}
-
-function writeStore(cookies: StoredCookie[]): void {
-  try {
-    window.localStorage.setItem(NATIVE_SESSION_KEY, JSON.stringify(cookies));
-  } catch {
-    // Nothing useful to do. Failing to persist degrades to the old behaviour
-    // (session for this run only); throwing would break sign-in outright.
-  }
-}
-
-/** A cookie store backed by localStorage, in the shape @supabase/ssr expects. */
 const nativeCookieStore = {
   getAll(): StoredCookie[] {
-    return readStore();
+    return readNativeStore();
   },
   setAll(
     toSet: { name: string; value: string; options?: { maxAge?: number } }[],
   ): void {
-    const merged = new Map(readStore().map((c) => [c.name, c.value]));
+    const merged = new Map(readNativeStore().map((c) => [c.name, c.value]));
     for (const cookie of toSet) {
       // @supabase/ssr expresses a delete as maxAge 0, and sometimes as an
       // empty value. Treat both as a delete, or a signed-out reader keeps a
@@ -81,7 +50,7 @@ const nativeCookieStore = {
         merged.set(cookie.name, cookie.value);
       }
     }
-    writeStore([...merged].map(([name, value]) => ({ name, value })));
+    writeNativeStore([...merged].map(([name, value]) => ({ name, value })));
   },
 };
 
