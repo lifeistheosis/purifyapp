@@ -1,7 +1,12 @@
 // Book slugs that ship with patristic commentary (data/bible/commentary/<slug>).
 // Used to surface a small "Fathers" badge on the Bible index so the coverage
-// is discoverable. Keep in sync with the commentary data directory; the
-// `scripts/ingest-chrysostom-*` scripts add new books here as they are run.
+// is discoverable.
+//
+// This list is a second source of truth beside the data directory, and it has
+// already fallen behind once: the Catena Aurea shipped 2,948 notes for Mark and
+// this file did not name it, so every one of them was live and unreachable. An
+// ingest that writes data is not finished until the book appears here.
+// lib/bible/__tests__/commentaryIndex.test.ts now fails when the two disagree.
 export const COMMENTED_BOOKS: ReadonlySet<string> = new Set([
   // Old Testament (selected)
   "genesis",
@@ -10,6 +15,7 @@ export const COMMENTED_BOOKS: ReadonlySet<string> = new Set([
   "psalms",
   // Gospels + Acts
   "matthew",
+  "mark",
   "john",
   "acts",
   // Pauline epistles (Chrysostom, complete per-verse except where noted)
