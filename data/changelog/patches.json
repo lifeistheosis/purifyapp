@@ -7,6 +7,10 @@
     "intro": "Most of this release is not new work. It is things Purify already had and was not handing over: light mode built and filed behind Pro, a search that shipped inside the app behind a window that could not open, and a calendar that did not know what day it was.",
     "sections": [
       {
+        "heading": "The home page reads straight again",
+        "body": "On the home page, See today sits level with the Open Purify button again instead of below its middle. The quieter install line under the button had been pulling it down."
+      },
+      {
         "heading": "Sign in works on iPhone",
         "body": "Sign in works on iPhone. The app was throwing your session away on every reload and sending you to the wrong page afterwards, so it looked like signing in had failed."
       },

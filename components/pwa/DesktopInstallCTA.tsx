@@ -56,6 +56,7 @@ export function DesktopInstallCTA({
   variant = "inverse",
   className,
   offerInstall = true,
+  trailing,
 }: {
   /** The localized "Open Purify" label, threaded in from the page. */
   children: React.ReactNode;
@@ -67,6 +68,15 @@ export function DesktopInstallCTA({
    * app, but one page should ask once, so the closing instance passes false.
    */
   offerInstall?: boolean;
+  /**
+   * A quieter action that belongs beside the button, such as the hero's "See
+   * today". It has to be passed in rather than placed next to this component,
+   * because this component is a COLUMN: the button with the install line under
+   * it. A sibling in a centered row gets centered against that whole column,
+   * so it sat visibly below the middle of the button it was meant to sit
+   * beside. Rendered here, it shares a row with the button alone.
+   */
+  trailing?: React.ReactNode;
 }) {
   const { t } = useTranslate();
   const { event, installed } = useInstallStore();
@@ -139,19 +149,22 @@ export function DesktopInstallCTA({
           modal. The plain link lived only in the branch a new visitor could
           not reach. The most motivated person on the page was turned away by
           the control meant to welcome them. */}
-      <Link
-        href="/prayers/today"
-        className={cn(
-          "font-sans text-ui leading-none font-medium whitespace-nowrap inline-flex items-center justify-center rounded-pill transition-[background-color,color,box-shadow,transform] duration-200 ease-out cursor-pointer",
-          variant === "inverse"
-            ? "bg-paper text-ink hover:bg-paper/90"
-            : "bg-ink text-paper hover:bg-ink/90",
-          "px-8 py-4 active:scale-[0.98]",
-          className,
-        )}
-      >
-        {children}
-      </Link>
+      <span className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+        <Link
+          href="/prayers/today"
+          className={cn(
+            "font-sans text-ui leading-none font-medium whitespace-nowrap inline-flex items-center justify-center rounded-pill transition-[background-color,color,box-shadow,transform] duration-200 ease-out cursor-pointer",
+            variant === "inverse"
+              ? "bg-paper text-ink hover:bg-paper/90"
+              : "bg-ink text-paper hover:bg-ink/90",
+            "px-8 py-4 active:scale-[0.98]",
+            className,
+          )}
+        >
+          {children}
+        </Link>
+        {trailing}
+      </span>
 
       {/* Installing is a real convenience, so it stays offered, quietly and
           second. Absent once installed, absent inside the native shell, and
