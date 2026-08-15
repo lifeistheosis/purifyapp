@@ -4,87 +4,99 @@
     "version": "1.1",
     "date": "2026-08-12",
     "title": "What was already built, and not reaching you",
-    "intro": "Most of this release is not new work. It is things the app already had and was not handing over: light mode built and filed under premium, a search index shipping into both bundles for a dialog a phone could not open, a file of the Desert Fathers written for the empty days and never imported, and a function answering which Hour you are in with no callers. Two more of the same kind surfaced while these notes were being written: the calendar inside the app had been showing the day the build was cut, and every link a reader copied pointed at their own phone.",
+    "intro": "Most of this release is not new work. It is things Purify already had and was not handing over: light mode built and filed behind Pro, a search that shipped inside the app behind a window that could not open, and a calendar that did not know what day it was.",
     "sections": [
       {
-        "heading": "Light mode is free, and you can find it",
-        "body": "It was already built, filed under premium reading modes as Parchment, and gated behind Pro. It is called Light now and it is free to everyone. The gate is asked per palette rather than once for all four, because a single yes-or-no is how reading ended up behind a paywall to begin with."
+        "heading": "Sign in works on iPhone",
+        "body": "Sign in works on iPhone. The app was throwing your session away on every reload and sending you to the wrong page afterwards, so it looked like signing in had failed."
       },
       {
-        "heading": "Premium Reading Modes belong to Plus now",
-        "body": "Candlelight and Monastery were sold under Purify Pro at $19.99 a month and gated on it. They are a Plus benefit at $4.99, and the pricing page and the gate behind it now agree on that. Nobody loses anything, because a Pro account already satisfies the Plus gate. The same line had been selling two things it should not: Parchment, which is the free Light palette under the name it used to carry, and Focus, which nothing in the app gates at all."
+        "heading": "Light mode is free",
+        "body": "Light mode is free. It was built months ago, named Parchment, and filed behind Pro by mistake. It is called Light now and everyone has it."
       },
       {
-        "heading": "The Lenten lectionary was a week late, all of it",
-        "body": "Every pre-Pascha Sunday was keyed one week short, so a reader in Lent saw the previous Sunday's Epistle and Gospel the whole way from Zacchaeus to Palm Sunday. The offsets are corrected, and Great and Holy Monday through Saturday now have their own readings instead of falling through to nothing."
+        "heading": "Premium Reading Modes moved to Plus",
+        "body": "Premium Reading Modes moved from Pro to Plus."
       },
       {
-        "heading": "The calendar showed the day the build was cut",
-        "body": "On Android and iPhone the calendar opened on the day the build was cut, in that month, for the life of the install. Nothing a reader tapped moved it. It reads your own clock now. The same screen was carrying 51 saint biographies to paint 42 tiles, so the page falls from 201,837 characters to 43,435, and the grid comes off pure black."
+        "heading": "The calendar shows today",
+        "body": "The calendar shows today. On iPhone and Android it was stuck on the day the app was built, and nothing you tapped moved it."
       },
       {
-        "heading": "A copied link pointed at the phone that copied it",
-        "body": "Inside the app the address is localhost, not purifyapp.net, so every link a reader copied to share opened nothing on anyone else's phone. Four surfaces: the Verse of the Day card, the Bible verse menu, the saints paragraph menu, and the share sheet. Fifteen tests hold it, one of which fails if a new share link is ever built the old way."
+        "heading": "Lenten readings were a week late",
+        "body": "Lenten readings were a week late. Every Sunday from Zacchaeus to Palm Sunday showed the previous week's Epistle and Gospel. Holy Monday through Holy Saturday now have their own readings."
       },
       {
-        "heading": "The header stopped moving when you leave the home page",
-        "body": "Discover sat 2.67 pixels below every word beside it, and the home page header disagreed with every other page header on four measurements. All of it matches now."
+        "heading": "The calendar is easier on the eyes",
+        "body": "The calendar is easier on the eyes. It was drawn on pure black with the brightest grey in the palette for its lines. It follows the light and dark themes properly now."
       },
       {
-        "heading": "Search, on a phone",
-        "body": "Purify ships a search index of about 59 KB into both app bundles, for a dialog that could not open below 768 pixels. Both gates are gone, and there is a search control in the header of every main screen and the four readers."
+        "heading": "Search works on a phone",
+        "body": "Search works on a phone. The search index was inside the app the whole time, behind a window that could not open."
       },
       {
-        "heading": "The Fathers, made readable",
-        "body": "There are 4,479 commentary notes. Two of them ended in the scraper's index of file paths, shipped to readers as St Augustine's commentary, one of them 76 percent link dump. That spoil is gone. A preview now stops at the first paragraph break past 220 words, with the reading time shown before you tap, and the hard words are glossed."
+        "heading": "Long commentary is readable",
+        "body": "Long commentary is readable. Two notes were showing a scraper's list of links as if it were St Augustine. Long notes now preview first and tell you the reading time."
       },
       {
-        "heading": "Five days in six, the front door had nothing to read",
-        "body": "Across 2026, 305 days land on a saint with no written profile, so the front door had nothing on it to read. A public domain file of twelve sayings of the Desert Fathers, written for exactly this and never imported, appears on those days now. It is its own card with the Father named, because a quotation under a saint's name reads as that saint's words."
+        "heading": "A saying on the empty days",
+        "body": "On the days with no saint profile, a saying of the Desert Fathers appears instead of an empty page."
       },
       {
-        "heading": "Which Hour you are in",
-        "body": "The Hours page never answered the one question a reader opens it with. The function that answers it had been in the code with no callers. It is marked in a word rather than a colour, and read from your clock after the page loads."
+        "heading": "The Hours tell you which one you are in",
+        "body": "The Hours page tells you which Hour you are in."
       },
       {
-        "heading": "The entrance fade was trapping every dropdown on the page",
-        "body": "Searching the saints returned the right names and drew them underneath an icon of the Theotokos. The entrance fade was holding itself in effect after it finished, which trapped every dropdown, popover and menu on every screen that uses it. It releases now."
+        "heading": "The saints of August have their icons",
+        "body": "The saints of August have their icons."
       },
       {
-        "heading": "The button that said Open Purify did not open Purify",
-        "body": "For a first-time visitor it disabled itself and then raised an install prompt for software they had not read a word of. It opens Purify."
+        "heading": "Saints search was drawn underneath the icons",
+        "body": "Searching the saints drew the results underneath the icons, so the names were there but unreadable. The same fault affected every dropdown in the app."
       },
       {
-        "heading": "The padding meant to keep the last verse clear was removing it",
-        "body": "Three helpers were meant to do nothing on the website, and did it by setting the spacing to zero, which won against the spacing beside them. Thirteen surfaces silently lost padding they had asked for, including the last verse of every chapter. The helpers are gone. Nothing about the app changes."
+        "heading": "Open Purify opens Purify",
+        "body": "The button that said Open Purify now opens Purify."
       },
       {
-        "heading": "A Plus renewal could quietly revoke a Pro membership",
-        "body": "Any subscription event that did not itself carry Pro wrote nothing over Pro, so an ordinary Plus renewal erased it. No cancellation, no notice. An event now speaks only for the products it actually carries."
+        "heading": "The last verse sat under the reader pill",
+        "body": "On the mobile website the last verse of a chapter sat under the reader pill. The spacing meant to prevent that was removing it."
       },
       {
-        "heading": "Two numbers were reporting better than reality",
-        "body": "The shop's star rating and review count included reviews seeded by the operator. Both are computed from verified rows only now, using the same test that governs the badge. Every review is still shown. Separately, gifted subscriptions no longer count toward monthly recurring revenue."
+        "heading": "The header no longer jumps",
+        "body": "The header no longer jumps when you leave the home page."
       },
       {
-        "heading": "iPhone has its own Plus switch now",
-        "body": "One flag decided whether Plus was enforced and both store builds read it, so throwing the Play Store switch would have enforced Plus on iPhone, where the two products cannot currently be bought. The three surfaces each have their own switch now. Nothing is enforced anywhere in this build."
+        "heading": "A copied link pointed at your own phone",
+        "body": "A copied link pointed at the phone that copied it."
       },
       {
-        "heading": "The saint icons say where they came from, or say that they do not",
-        "body": "110 icons ship inside the app and 107 of them had no source, licence or attribution recorded anywhere, while every other class of image in Purify is required to carry all of it. There is a record for all 110 now. Three are settled. The other 107 state only what the files prove, and are recorded as unverified rather than guessed at."
+        "heading": "A Plus renewal could cancel Pro",
+        "body": "Renewing Plus could quietly cancel a Pro membership."
       },
       {
-        "heading": "The release notes fold into years and months",
-        "body": "This page carried 89 releases as one flat column of 43 days and never said what year any of them were in. It nests now: a year, then a month, then a day, then the release. The most recent day is still open when the page loads."
+        "heading": "Star ratings count verified purchases",
+        "body": "Shop star ratings now count verified purchases only."
       },
       {
-        "heading": "The saints of August have their faces",
-        "body": "Thirty-eight saints had no icon, and thirty-seven of them keep a feast in August, so for most of this month the day's commemoration was a pair of initials on a chip. Every one of them has one now, and so does St George, who had no entry in the app at all. Each file was opened and read against its own inscription before it was filed, because a licence tells you nothing about who is in the picture. The directory was re-encoded to the size it is actually drawn at as well, 18.1 MB down to 4.3 MB inside both app bundles."
+        "heading": "The calendar is lighter",
+        "body": "The calendar sends about a fifth of the data it used to, and asks the network three times instead of forty seven."
       },
       {
-        "heading": "Housekeeping, and what is not yet done",
-        "body": "The support address moves to lifeistheosis@gmail.com in nine places, and the shop's own stored copy with it. Four placeholder dashes a reader or a seller could see are replaced with words that say what the blank means. The test suites that read the content corpus are given the time the corpus actually needs. Campaigns and Conversations are built out considerably further in this build and are switched off in it: both switches are off, and no reader meets either surface."
+        "heading": "iPhone has its own Plus switch",
+        "body": "iPhone has its own Plus switch, so a Play Store change cannot affect it."
+      },
+      {
+        "heading": "Every saint icon records where it came from",
+        "body": "Every saint icon now carries a record of where it came from."
+      },
+      {
+        "heading": "These notes fold into years and months",
+        "body": "These notes fold into years and months, so 89 releases are no longer one flat column."
+      },
+      {
+        "heading": "Still to come",
+        "body": "Still to come: the shop's support address needs one database change applied by hand, most saint icons are recorded as unverified rather than guessed at, and prayer reminders still cannot be sent."
       }
     ]
   },

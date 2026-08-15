@@ -1,5 +1,19 @@
 [
   {
+    "week": "2026-W33",
+    "date": "2026-08-12",
+    "eyebrow": "This week at Purify",
+    "headline": "1.1 is out, and most of it was already here.",
+    "body": [
+      "Glory to Jesus Christ. This release is a strange one to write up, because most of it is not new work. It is things the app already had and was not giving you.",
+      "Light mode is the clearest case. It has worked for months. It was called Parchment, filed with the premium reading modes, and sitting behind Pro, which is the opposite of what we said in public when a reader asked for it. It is called Light now and it is free, because being able to read is not a premium feature.",
+      "The same shape repeats. The search has been inside the app the whole time, behind a window that on a phone could not open. A file of the Desert Fathers was written for the days with no saint to read about, and never used. The page that tells you which Hour you are in had the answer written down and never asked for it.",
+      "Two things were simply wrong. Every Lenten Sunday showed the previous week's readings, the whole way from Zacchaeus to Palm Sunday. And on the phones the calendar was stuck on the day the app was built, so it could not tell you what day it was, and nothing you tapped moved it. Both are fixed.",
+      "Sign in on iPhone is fixed too. That one kept the app out of the App Store, and it deserves a plainer account than it has had: the app was throwing your session away on every reload and sending you to the wrong page afterwards, so it looked like signing in had simply failed.",
+      "What is still not done: prayer reminders cannot be sent yet, most of the saint icons are recorded as unverified rather than guessed at, and the shop's support address needs one database change applied by hand. Those are named in the release notes too. We would rather tell you than let you find out."
+    ]
+  },
+  {
     "week": "2026-W31",
     "date": "2026-07-27",
     "eyebrow": "This week at Purify",
