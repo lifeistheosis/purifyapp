@@ -40,8 +40,23 @@ function num(token) {
 }
 
 /**
+ * Cut CCEL's trailing endnote index.
+ *
+ * Every volume ends with numbered lines of "file:///ccel/..." links. They are
+ * not part of the work, they are shaped exactly like numbered lemmas, and left
+ * in place they get swallowed by whatever the last section happens to be: the
+ * Harmony's final chapter arrived carrying 44,288 characters of them. Cut it
+ * before parsing rather than trusting the footnote cleaner to find it later.
+ */
+export function stripEndnoteIndex(text) {
+  const at = text.search(/^[ \t]*\d{1,5}\.\s+file:\/\//m);
+  return at === -1 ? text : text.slice(0, at);
+}
+
+/**
  * The text between two markers. `endRe` is searched only after the start, so a
  * phrase that also appears in the front matter cannot truncate the region.
+ * The endnote index is always cut, since no work ever wants it.
  */
 export function sliceRegion(text, startRe, endRe = null, { label = "region" } = {}) {
   const start = startRe.exec(text);
@@ -53,7 +68,7 @@ export function sliceRegion(text, startRe, endRe = null, { label = "region" } = 
     const end = endRe.exec(rest);
     if (end) to = from + start[0].length + end.index;
   }
-  const out = text.slice(from, to);
+  const out = stripEndnoteIndex(text.slice(from, to));
   if (out.length < 2000) {
     throw new Error(`${label}: sliced only ${out.length} characters, which cannot be a work.`);
   }
@@ -158,6 +173,26 @@ export function sectionsByChapter(region, {
   return sections;
 }
 
+/** Break one over-long paragraph on sentence ends, never mid-sentence. */
+function splitOnSentences(paragraph, maxWords) {
+  const sentences = paragraph.match(/[^.!?]+[.!?]+["')\]]*\s*/g) ?? [paragraph];
+  const out = [];
+  let buf = [];
+  let words = 0;
+  for (const s of sentences) {
+    const w = s.trim().split(/\s+/).length;
+    if (words && words + w > maxWords) {
+      out.push(buf.join("").trim());
+      buf = [];
+      words = 0;
+    }
+    buf.push(s);
+    words += w;
+  }
+  if (buf.length) out.push(buf.join("").trim());
+  return out.filter(Boolean);
+}
+
 /**
  * Cut an over-long note at paragraph boundaries the source already printed.
  *
@@ -172,7 +207,13 @@ export function splitLongNote(raw, maxWords = 3000) {
   const paragraphs = String(raw)
     .split(/\n\n+/)
     .map((p) => p.replace(/\s+/g, " ").trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    // A paragraph can be longer than the cap all by itself: Augustine's last
+    // chapter of the Harmony arrives as one unbroken block of thirteen thousand
+    // words, so there is no paragraph break to cut on. Fall back to the full
+    // stops the author himself wrote, which is still the source's own division
+    // and not an invented one.
+    .flatMap((p) => (p.split(" ").length <= maxWords ? [p] : splitOnSentences(p, maxWords)));
   if (!paragraphs.length) return [];
 
   const parts = [];

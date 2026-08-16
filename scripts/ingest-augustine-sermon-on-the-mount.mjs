@@ -56,10 +56,20 @@ const text = await getText("npnf106.txt", SRC_URL);
 // The volume prints the title several times (contents, half-title, running
 // heads). The body is the occurrence followed by "Book I." and a Chapter I.
 
+// The volume holds three works and this is the first. Its Book I is the one
+// followed by the summary line naming the fifth chapter of Matthew; the Harmony
+// further down opens with a bare "Book I." too.
+//
+// The end marker is the Harmony's own opening summary. An earlier version ended
+// on a title line that does not exist in this transcription, so the region ran
+// to the end of the volume and only parsed correctly by accident: the Sermon is
+// the sole work here that heads its sections with a bare "Chapter N.", while the
+// Harmony uses "Chapter N.--Of the ...". The chapter-count check below turns
+// that accident into something enforced.
 const region = sliceRegion(
   text,
-  /^[ \t]*Book I\.[ \t]*\r?\n[\s\S]{0,3000}?Chapter I\./m,
-  /^[ \t]*The Harmony of the Gospels[ \t]*$/m,
+  /^[ \t]*Book I\.[ \t]*\r?\n[\s\S]{0,300}?Explanation of the first part of the sermon/m,
+  /^[ \t]*The treatise opens with a short statement on the subject/m,
   { label: "Sermon on the Mount" },
 );
 
@@ -81,8 +91,10 @@ const chapters = [...region.matchAll(CHAP_RE)].map((m) => ({
   end: m.index + m[0].length,
   n: romanToInt(m[1]),
 }));
-if (chapters.length < 40) {
-  throw new Error(`Only ${chapters.length} chapters parsed; the two books hold far more.`);
+// Book I has 23 chapters and Book II has 25. Anything else means the region
+// slipped, either short of the end of the work or past it into the Harmony.
+if (chapters.length !== 48) {
+  throw new Error(`Parsed ${chapters.length} chapters; the two books hold exactly 48. The region is wrong.`);
 }
 
 const bookAt = (offset) => {

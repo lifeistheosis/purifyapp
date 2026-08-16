@@ -979,6 +979,15 @@ export const SAINTS: Saint[] = [
  "The earliest sustained commentary on the Sermon that survives, written while Augustine was still a priest at Hippo. Three chapters of Matthew read straight through as one continuous rule of Christian life, from the Beatitudes to the house built on rock.",
  topics: ["Beatitudes", "Scripture", "Prayer", "Ethics", "Exegesis"],
  },
+ {
+ slug: "harmony-of-the-gospels",
+ title: "The Harmony of the Gospels",
+ subtitle: "Four books on the agreement of the evangelists",
+ year: "c. 400",
+ blurb:
+ "Augustine answers the charge that the four evangelists contradict one another, going through the Gospels side by side and showing where each tells what the others leave out. The first sustained treatment of the question in the Church, and still the shape the argument takes.",
+ topics: ["Gospels", "Scripture", "Apologetics", "Exegesis", "Evangelists"],
+ },
  ],
  },
  {
