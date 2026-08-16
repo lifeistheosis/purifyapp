@@ -19,7 +19,33 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import { createAlignmentReport, createLemmaVerifier } from "./lemma-verify.mjs";
+
 const ROOT = process.cwd();
+
+// NPNF does not always say "Homily". Augustine's series are "Tractate" and
+// "Sermon", and several works divide into "Book". The typography is otherwise
+// identical, so the word is a parameter rather than a reason to write a bespoke
+// getRegion per volume.
+const DEFAULT_HEAD_WORD = "Homily";
+
+function escapeRe(s) {
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** The "   Homily I." line that opens a series, for any head word. */
+function firstHeadRe(word) {
+  return new RegExp(`^ {3}${escapeRe(word)} I\\.\\s*$`, "gm");
+}
+
+/**
+ * A section-header regex capturing the roman numeral, for any head word. Pass
+ * the result as `headerRe` when a volume calls its sections something other
+ * than Homily.
+ */
+export function sectionHeaderRe(word = DEFAULT_HEAD_WORD) {
+  return new RegExp(`^ {3}${escapeRe(word)} ([IVXLCDM]+)\\.(?:\\s*\\[\\d+\\])?\\s*$`, "gm");
+}
 
 const ROMAN = {
  i: 1, v: 5, x: 10, l: 50, c: 100, d: 500, m: 1000,
@@ -63,8 +89,8 @@ export async function getText(cacheName, srcUrl) {
 // " Homily I." whose following lemma matches `lemmaTokenRe`, and ends at the
 // next book's section header (`endRe`) so the last homily isn't polluted by the
 // following book's title/argument. With no `endRe`, runs to end of text.
-export function regionByLemma(text, lemmaTokenRe, endRe = null) {
- const heads = [...text.matchAll(/^ {3}Homily I\.\s*$/gm)].map((m) => m.index);
+export function regionByLemma(text, lemmaTokenRe, endRe = null, word = DEFAULT_HEAD_WORD) {
+ const heads = [...text.matchAll(firstHeadRe(word))].map((m) => m.index);
  let start = -1;
  for (const idx of heads) {
  if (lemmaTokenRe.test(text.slice(idx, idx + 220))) {
@@ -73,7 +99,7 @@ export function regionByLemma(text, lemmaTokenRe, endRe = null) {
  }
  }
  if (start < 0) {
- throw new Error(`regionByLemma: no "Homily I." with lemma ${lemmaTokenRe}`);
+ throw new Error(`regionByLemma: no "${word} I." with lemma ${lemmaTokenRe}`);
  }
  let end = text.length;
  if (endRe) {
@@ -84,14 +110,18 @@ export function regionByLemma(text, lemmaTokenRe, endRe = null) {
  return text.slice(start, end);
 }
 
-// Slice the Nth homily series out of a volume by the bare " Homily I."
-// headers (every book in a volume restarts at Homily I). `index` is 0-based
-// over those headers in document order; the region runs to the next book's
-// Homily I, or to `endMarkerRe` (default the trailing Indexes) for the last.
-export function regionBetweenHomilyI(text, index, endMarkerRe = /Indexes/) {
- const h1 = [...text.matchAll(/^ {3}Homily I\.\s*$/gm)].map((m) => m.index);
+// Slice the Nth series out of a volume by the bare " Homily I." headers (every
+// book in a volume restarts at Homily I). `index` is 0-based over those headers
+// in document order; the region runs to the next book's Homily I, or to
+// `endMarkerRe` (default the trailing Indexes) for the last.
+//
+// `word` overrides the head word for volumes that number "Sermon I.",
+// "Tractate I." or "Book I." instead. The function keeps its original name
+// because ten scripts import it.
+export function regionBetweenHomilyI(text, index, endMarkerRe = /Indexes/, word = DEFAULT_HEAD_WORD) {
+ const h1 = [...text.matchAll(firstHeadRe(word))].map((m) => m.index);
  const start = h1[index];
- if (start == null) throw new Error(`regionBetweenHomilyI: no Homily I #${index}`);
+ if (start == null) throw new Error(`regionBetweenHomilyI: no ${word} I #${index}`);
  let end;
  if (index + 1 < h1.length) {
  end = h1[index + 1];
@@ -154,7 +184,7 @@ export function toParagraphs(raw) {
 
 // Bare homily header, tolerant of a trailing footnote marker like " [1097]"
 // (some volumes attach one to the header line, e.g. Acts Homily XLIX).
-const DEFAULT_HEADER_RE = /^ {3}Homily ([IVXLCDM]+)\.(?:\s*\[\d+\])?\s*$/gm;
+const DEFAULT_HEADER_RE = sectionHeaderRe();
 
 function parseHomilies(region, headerRe = DEFAULT_HEADER_RE) {
  const re = new RegExp(headerRe.source, "gm");
@@ -213,17 +243,62 @@ function extractLemma(block, lemmaRe) {
  return { chapter: null, startVerse: null, verseLabel: null, rest: block };
 }
 
+// A paragraph-leading verse marker. Parenthetical "( Ver. N.)" citations do not
+// match, which is the point: only a marker that opens a paragraph is an anchor.
+const VER_MARKER = /^Ver\.\s*(\d+)\.?\s*/;
+
 // Split a homily's paragraphs into verse-keyed chunks using paragraph-leading
 // "Ver. N." markers (parenthetical "( Ver. N.)" citations are ignored).
 export function splitByVerse(paragraphs, startVerse) {
  const out = new Map();
  let cur = startVerse;
  for (const p of paragraphs) {
- const vm = p.match(/^Ver\.\s*(\d+)\.?\s*/);
+ const vm = p.match(VER_MARKER);
  if (vm) cur = parseInt(vm[1], 10);
  if (cur == null) continue;
  if (!out.has(cur)) out.set(cur, []);
  out.get(cur).push(p);
+ }
+ return out;
+}
+
+// The same split, with every "Ver. N." marker verified against the Scripture we
+// already ship before it is allowed to move the anchor. This is the guarantee
+// the Catena ingest is built on, applied to the NPNF path: a marker is not
+// trusted because of its shape, it is trusted because the words after it really
+// are that verse.
+//
+// A marker that does not verify does NOT become an anchor. Its paragraph stays
+// with the verse already in hand, so no text is dropped and only the position
+// stays conservative. A marker that verifies against the next chapter carries
+// the split there, which is how a homily that runs past a chapter boundary
+// without saying so is caught.
+//
+// Returns chapter -> (verse -> paragraphs[]), because a verified marker can
+// land in a chapter the lemma did not name.
+function splitByVerseVerified(paragraphs, startVerse, chapter, verifier, report) {
+ const out = new Map();
+ let curChapter = chapter;
+ let cur = startVerse;
+ for (const p of paragraphs) {
+ const vm = p.match(VER_MARKER);
+ if (vm) {
+ const n = parseInt(vm[1], 10);
+ const quoted = p.slice(vm[0].length);
+ const check = verifier.verifyAnchor(quoted, n, curChapter);
+ if (check.ok) {
+ report.pass();
+ curChapter = check.chapter;
+ cur = n;
+ } else {
+ report.fail({ chapter: curChapter, n, hit: check.score.toFixed(2), quoted: quoted.slice(0, 72) });
+ }
+ }
+ if (cur == null) continue;
+ if (!out.has(curChapter)) out.set(curChapter, new Map());
+ const byVerse = out.get(curChapter);
+ if (!byVerse.has(cur)) byVerse.set(cur, []);
+ byVerse.get(cur).push(p);
  }
  return out;
 }
@@ -255,6 +330,18 @@ export async function ingestHomilies(cfg) {
  source,
  workLabel, // (homilyN) => commentary `work` string
  verseCounts = null, // optional { chapter: maxVerse } sanity map
+ // Verify every "Ver. N." marker, and each homily's own lemma, against the
+ // Scripture in data/bible/<bookSlug>/ before trusting it as an anchor.
+ // OFF by default: sixteen scripts predate it and their committed output must
+ // not move. Turn it on per volume, deliberately, and read the review file.
+ verify = false,
+ // Declared moves for anchors our own Scripture arrangement puts elsewhere,
+ // as { "fromChapter:fromVerse": "toChapter:toVerse" }. This is for textual
+ // arrangement, not for matcher trouble: Schaff follows manuscripts that place
+ // Romans 16:25-27 at the end of chapter 14, and a note left there sits past
+ // the end of a 23-verse chapter where no reader can reach it. Every entry
+ // needs a comment at the call site saying which arrangement it reconciles.
+ verseRemap = null,
  } = cfg;
 
  const text = await getText(cacheName, srcUrl);
@@ -269,6 +356,17 @@ export async function ingestHomilies(cfg) {
  `Expected ${expectedHomilies} homilies for ${bookName}, parsed ${homilies.length}. Aborting.`,
  );
  }
+
+ // Built only when asked for, so a volume that does not verify pays nothing
+ // and reads no Scripture off disk.
+ const verifier = verify ? createLemmaVerifier(bookSlug) : null;
+ const report = verify
+ ? createAlignmentReport({
+ label: `${workTitle}: verse-marker alignment`,
+ command: `node ${path.relative(ROOT, process.argv[1] ?? "").replace(/\\/g, "/")}`,
+ source,
+ })
+ : null;
 
  const sections = [];
  const commentaryByChapter = new Map(); // chapter -> verse -> [{n, text}]
@@ -289,13 +387,56 @@ export async function ingestHomilies(cfg) {
  if (chapter == null) continue;
  lemmaHits++;
 
- const byVerse = splitByVerse(paragraphs, startVerse);
- if (!commentaryByChapter.has(chapter)) commentaryByChapter.set(chapter, new Map());
- const chMap = commentaryByChapter.get(chapter);
+ // The homily's own lemma. Nothing can be folded here, so a failure is
+ // recorded for review rather than acted on: it means the printed reference
+ // and our arrangement of the text disagree, which is a decision for a
+ // person and usually ends in a verseRemap entry.
+ if (verifier) {
+ const opening = paragraphs[0] ?? "";
+ const check = verifier.verifyAnchor(opening, startVerse, chapter);
+ if (!check.ok || check.chapter !== chapter) {
+ report.flag({
+ where: `${bookName} ${chapter}:${startVerse}`,
+ detail: check.ok
+ ? `verified against chapter ${check.chapter}, not the ${chapter} its lemma prints`
+ : `no verse matched (best score ${check.score.toFixed(2)})`,
+ homily: hom.n,
+ quoted: opening.slice(0, 90),
+ });
+ }
+ }
+
+ const chunks = verifier
+ ? splitByVerseVerified(paragraphs, startVerse, chapter, verifier, report)
+ : new Map([[chapter, splitByVerse(paragraphs, startVerse)]]);
+
+ for (const [ch, byVerse] of chunks) {
+ if (!commentaryByChapter.has(ch)) commentaryByChapter.set(ch, new Map());
+ const chMap = commentaryByChapter.get(ch);
  for (const [verse, paras] of byVerse) {
  if (!chMap.has(verse)) chMap.set(verse, []);
  chMap.get(verse).push({ n: hom.n, text: paras.join("\n\n") });
  }
+ }
+ }
+
+ // Declared arrangement moves, before anything is written or bounds-checked.
+ const moved = [];
+ for (const [from, to] of Object.entries(verseRemap ?? {})) {
+ const [fromCh, fromV] = from.split(":").map(Number);
+ const [toCh, toV] = to.split(":").map(Number);
+ if (![fromCh, fromV, toCh, toV].every(Number.isFinite)) {
+ throw new Error(`verseRemap: "${from}" -> "${to}" is not chapter:verse.`);
+ }
+ const src = commentaryByChapter.get(fromCh);
+ const entries = src?.get(fromV);
+ if (!entries) continue; // nothing landed there this run; a stale entry is not fatal
+ src.delete(fromV);
+ if (!commentaryByChapter.has(toCh)) commentaryByChapter.set(toCh, new Map());
+ const dst = commentaryByChapter.get(toCh);
+ if (!dst.has(toV)) dst.set(toV, []);
+ dst.get(toV).push(...entries);
+ moved.push(`${bookName} ${from} -> ${to} (${entries.length} note${entries.length === 1 ? "" : "s"})`);
  }
 
  // Sanity: most homilies after the preface should have found a lemma.
@@ -312,15 +453,29 @@ export async function ingestHomilies(cfg) {
  await fs.mkdir(path.dirname(workOut), { recursive: true });
  await fs.writeFile(workOut, JSON.stringify(work, null, 2) + "\n", "utf8");
 
+ // ---- Alignment stats, and the review file docs/editorial-standards.md wants ----
+ let reviewPath = null;
+ if (report) {
+ report.print({ explain: process.argv.includes("--explain") });
+ reviewPath = report.writeReview(`${saintSlug}-${workSlug}`);
+ if (report.belowFloor()) {
+ throw new Error(
+ `${bookName}: only ${(report.rate() * 100).toFixed(1)}% of "Ver. N." markers verify ` +
+ `against data/bible/${bookSlug}/. That is a broken matcher, not messy data. See ${reviewPath}.`,
+ );
+ }
+ }
+ for (const m of moved) process.stdout.write(` moved by verseRemap: ${m}\n`);
+
  // ---- Write/merge commentary (skipped in "none" mode) ----
  let chaptersWritten = 0;
  let totalNotes = 0;
- const warnings = [];
 
  if (commentaryMode === "none") {
  process.stdout.write(
  `\n${bookName}: ${homilies.length} homilies (work only, no commentary)\n` +
- ` work: ${path.relative(ROOT, workOut)} (${sections.length} sections)\n`,
+ ` work: ${path.relative(ROOT, workOut)} (${sections.length} sections)\n` +
+ (reviewPath ? ` review: ${reviewPath}\n` : ""),
  );
  return { homilies: homilies.length, chaptersWritten: 0, totalNotes: 0 };
  }
@@ -347,8 +502,17 @@ export async function ingestHomilies(cfg) {
  }
 
  for (const [verse, entries] of [...verseMap.entries()].sort((a, b) => a[0] - b[0])) {
+ // A note anchored past the end of its chapter is unreachable: no reader can
+ // open a verse our own text does not have. This used to warn, and a warning
+ // is something you scroll past, which is how Romans 14:25 shipped dark. It
+ // throws now, matching the Catena ingest. Fix the anchor or declare the
+ // arrangement in verseRemap; never widen verseCounts to silence it.
  if (verseCounts && verseCounts[chapter] && verse > verseCounts[chapter]) {
- warnings.push(`${bookName} ${chapter}:${verse} exceeds chapter length`);
+ throw new Error(
+ `${bookName} ${chapter}:${verse}: note anchored past the end of a ` +
+ `${verseCounts[chapter]}-verse chapter, where nothing can reach it. ` +
+ `Correct the anchor, or add a verseRemap entry naming the arrangement it reconciles.`,
+ );
  }
  const key = String(verse);
  if (!merged[key]) merged[key] = [];
@@ -376,8 +540,6 @@ export async function ingestHomilies(cfg) {
  ` work: ${path.relative(ROOT, workOut)} (${sections.length} sections)\n` +
  ` commentary: ${chaptersWritten} chapters, ${totalNotes} ${author} verse-notes\n`,
  );
- if (warnings.length) {
- process.stdout.write(` warnings (${warnings.length}): ${warnings.slice(0, 8).join("; ")}\n`);
- }
+ if (reviewPath) process.stdout.write(` review: ${reviewPath}\n`);
  return { homilies: homilies.length, chaptersWritten, totalNotes };
 }
