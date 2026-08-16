@@ -3816,7 +3816,26 @@ export const SAINTS: Saint[] = [
       "Through these books the desert spoke to the West for centuries. St. Benedict commended the Conferences to his monks, and the whole later tradition of Western monasticism drank from them. Cassian taught that purity of heart is the aim of all the monk's labor, and the vision of God its end, and he held firmly to the working together of grace and the will against those who would deny either.",
       "He reposed in peace at Marseilles about the year 435. The Eastern Church honors him as a Father and teacher of the ascetic life and keeps his memory on the twenty-ninth of February, the day given in the leap year to the Roman monk who belonged to both halves of the Christian world.",
     ],
-    works: [],
+    works: [
+      {
+        slug: "institutes",
+        title: "The Institutes",
+        subtitle: "The twelve books on the rules of the monasteries and the eight faults",
+        year: "c. 425",
+        blurb:
+          "What Cassian saw in Egypt, written down for the monasteries of Gaul: how the monks dressed, prayed, and kept the night office, and then the eight thoughts that make war on the soul. The book that taught the Latin West to pray as the desert prayed.",
+        topics: ["Asceticism", "Monasticism", "Prayer", "The eight thoughts"],
+      },
+      {
+        slug: "conferences",
+        title: "The Conferences",
+        subtitle: "Twenty-four conversations with the fathers of the Egyptian desert",
+        year: "c. 429",
+        blurb:
+          "Cassian sets down what the old men of Scete answered when he asked them. On the goal of the monastic life, on discretion, on unceasing prayer, on the protection of God. St. Benedict told his monks to read it aloud before Compline.",
+        topics: ["Asceticism", "Monasticism", "Prayer", "Discernment", "Desert Fathers"],
+      },
+    ],
   },
   {
     slug: "sergius-of-radonezh",
