@@ -16,6 +16,9 @@ export const COMMENTED_BOOKS: ReadonlySet<string> = new Set([
   // Gospels + Acts
   "matthew",
   "mark",
+  // St. Cyril of Alexandria, the great surviving commentary on Luke, which
+  // reaches us whole only through a Syriac version.
+  "luke",
   "john",
   "acts",
   // Pauline epistles (Chrysostom, complete per-verse except where noted)

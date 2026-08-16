@@ -1021,10 +1021,10 @@ export const SAINTS: Saint[] = [
  {
  slug: "commentary-on-luke",
  title: "Commentary on the Gospel of Luke",
- subtitle: "Selected homilies on the Annunciation, Nativity, Theophany, and Transfiguration",
+ subtitle: "The surviving sermons, translated from the Syriac",
  year: "c. 430",
  blurb:
- "Cyril's homiletic reading of Luke, preserved chiefly in Syriac — the great Christological feasts read as the unfolding of one Person from the Virgin's consent to the light of Tabor.",
+ "Cyril's homiletic reading of Luke, preserved chiefly in Syriac. One hundred and thirty-eight sermons carrying the Gospel from the Virgin's consent to the road to Emmaus, and the only patristic commentary this library holds on Luke.",
  topics: ["Exegesis", "Christology", "Feasts", "Transfiguration", "Theotokos"],
  },
  {

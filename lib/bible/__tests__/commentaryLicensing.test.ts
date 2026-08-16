@@ -17,6 +17,13 @@
 //            series, and inventing a number here would be the kind of tidy
 //            fiction this file exists to prevent. The 1842 imprint is what
 //            makes it public domain, and the string carries that date.
+//   Commentary on Luke (Oxford, Payne Smith, 1859)
+//            St. Cyril of Alexandria on Luke, translated from the Syriac by
+//            R. Payne Smith and printed at the University Press. Named in full
+//            for the same reason as the Catena: it was an Oxford imprint of the
+//            same era but not a numbered Library of the Fathers volume, so
+//            citing it as "LFC 48" would be an invented number. Public domain
+//            twice over, by the 1859 imprint and by Payne Smith's death in 1895.
 //
 // NOT public domain:
 //   FOTC #   Fathers of the Church, CUA Press, ongoing
@@ -45,7 +52,7 @@ const ROOT = process.cwd();
 const DIR = path.join(ROOT, "data/bible/commentary");
 
 const PUBLIC_DOMAIN =
-  /^(NPNF\d-\d+|ANF\d+|LFC \d+|Catena Aurea \(Oxford, Rivington, 1842\))/;
+  /^(NPNF\d-\d+|ANF\d+|LFC \d+|Catena Aurea \(Oxford, Rivington, 1842\)|Commentary on Luke \(Oxford, Payne Smith, 1859\))/;
 
 /**
  * Notes still citing a non-public-domain series, pending editorial review.
