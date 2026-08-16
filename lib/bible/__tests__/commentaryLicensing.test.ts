@@ -17,6 +17,12 @@
 //            series, and inventing a number here would be the kind of tidy
 //            fiction this file exists to prevent. The 1842 imprint is what
 //            makes it public domain, and the string carries that date.
+//   Morals on the Book of Job (Oxford, Parker, 1844)
+//            St. Gregory the Great's Moralia, in the Library of the Fathers
+//            translation. Named in full rather than "LFC N" because the series
+//            number for these volumes is not something this repository has
+//            verified, and a guessed number is exactly what this file refuses.
+//            The 1844 to 1850 imprint carries the public-domain claim.
 //   Commentary on Luke (Oxford, Payne Smith, 1859)
 //            St. Cyril of Alexandria on Luke, translated from the Syriac by
 //            R. Payne Smith and printed at the University Press. Named in full
@@ -52,7 +58,7 @@ const ROOT = process.cwd();
 const DIR = path.join(ROOT, "data/bible/commentary");
 
 const PUBLIC_DOMAIN =
-  /^(NPNF\d-\d+|ANF\d+|LFC \d+|Catena Aurea \(Oxford, Rivington, 1842\)|Commentary on Luke \(Oxford, Payne Smith, 1859\))/;
+  /^(NPNF\d-\d+|ANF\d+|LFC \d+|Catena Aurea \(Oxford, Rivington, 1842\)|Commentary on Luke \(Oxford, Payne Smith, 1859\)|Morals on the Book of Job \(Oxford, Parker, 1844\))/;
 
 /**
  * Notes still citing a non-public-domain series, pending editorial review.

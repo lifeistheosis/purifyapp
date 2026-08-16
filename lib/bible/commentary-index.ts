@@ -12,6 +12,9 @@ export const COMMENTED_BOOKS: ReadonlySet<string> = new Set([
   "genesis",
   "exodus",
   "1-samuel",
+  // St. Gregory the Great, the Moralia, which is the commentary on Job for the
+  // whole Latin Middle Ages and the only complete English one out of copyright.
+  "job",
   "psalms",
   // Gospels + Acts
   "matthew",
