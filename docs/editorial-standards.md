@@ -76,7 +76,7 @@ does not move the chapter count, which is the number to stop optimising.
 
 ### Editorial review
 1. **Psalms unmatched keying (F-06):** 170 sections; regenerate the list via the ingest script and spot-check the worst psalms. Seam psalms (9, 113-115, 146-147) were hand-verified 2026-07-11.
-2. **Author-name normalization:** commentary data contains both "St. Augustine" and "St. Augustine of Hippo" (john/1.json). Cosmetic; normalize when convenient.
+2. **RESOLVED 2026-08-16: author-name normalization.** The rail carried both "St. Augustine" and "St. Augustine of Hippo". Four notes used the second form, all of them from the Tractates on John (acts/9:4, john/1:18, john/3:16, john/14:6), against 2,989 using the first. They now read "St. Augustine". The author-count audit is the check: `node scripts/audit-author-veneration.mjs` names every distinct author, so a second spelling shows up as a separate row rather than hiding.
 
 ### Rights / legal (pre-existing, owner-owned)
 - Real product photos to replace representative supplier-derived listings; LLC + product insurance; sales-tax registration; lawyer pass on ToS. No new items found 2026-07-11.
