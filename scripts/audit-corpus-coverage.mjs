@@ -116,16 +116,56 @@ let saintsWithNothing = [];
 let saintsReadable = true;
 try {
   const src = fs.readFileSync(SAINTS_REGISTRY, "utf8");
-  // Indentation is not uniform in this file, so anchor on the key itself and
-  // take each entry's nearest preceding slug.
-  const entries = [...src.matchAll(/^[ \t]*slug:\s*"([^"]+)",[\s\S]*?^[ \t]*works:\s*(\[\]|\[)/gm)];
-  saintTotal = entries.length;
-  saintsWithNothing = entries.filter((m) => m[2] === "[]").map((m) => m[1]);
+  saintsWithNothing = [];
+
+  // Nesting has to be tracked, not guessed. Indentation in this file is not
+  // uniform (saint keys sit at one space in some entries and four in others),
+  // and a saint's own `works` array contains objects that carry a `slug` of
+  // their own. A regex pairing each slug with the next `works:` therefore reads
+  // a work's slug as if it were a saint's, and reports work names like
+  // "the-tome-of-leo" and "institutes" as saints shipping nothing. Depth is the
+  // only thing that separates them reliably.
+  let depth = 0;
+  let inString = null;
+  let saintSlug = null;
+  let saintDepth = null;
+
+  const lines = src.split("\n");
+  for (const line of lines) {
+    const before = depth;
+
+    const slug = /^[ \t]*slug:\s*"([^"]+)"/.exec(line);
+    const works = /^[ \t]*works:\s*(\[\]?)/.exec(line);
+
+    // A saint object sits one level inside the exported array. Anything deeper
+    // is one of its works.
+    if (slug && (saintDepth === null || before === saintDepth)) {
+      saintSlug = slug[1];
+      saintDepth = before;
+    }
+    if (works && saintDepth !== null && before === saintDepth) {
+      saintTotal++;
+      if (works[1] === "[]" && saintSlug) saintsWithNothing.push(saintSlug);
+    }
+
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (inString) {
+        if (ch === "\\") i++;
+        else if (ch === inString) inString = null;
+        continue;
+      }
+      if (ch === '"' || ch === "'" || ch === "`") inString = ch;
+      else if (ch === "{" || ch === "[") depth++;
+      else if (ch === "}" || ch === "]") depth--;
+    }
+  }
+
   // Count only `works:` keys that carry a value. The `Saint` type declares
   // `works: Work[];` too, and counting that made the total read 150.
   const declared = (src.match(/^[ \t]*works:\s*\[/gm) ?? []).length;
   if (saintTotal !== declared) {
-    throw new Error(`matched ${saintTotal} saints but the file declares ${declared} works arrays`);
+    throw new Error(`walked ${saintTotal} saints but the file declares ${declared} works arrays`);
   }
 } catch (err) {
   saintsReadable = false;
