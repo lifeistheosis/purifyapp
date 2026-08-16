@@ -970,6 +970,15 @@ export const SAINTS: Saint[] = [
  "Augustine's verse-by-verse reading of the Fourth Gospel, the longest Latin commentary on John from the early Church.",
  topics: ["Logos", "Incarnation", "Trinity", "Eucharist", "Scripture", "Theology"],
  },
+ {
+ slug: "sermon-on-the-mount",
+ title: "Our Lord's Sermon on the Mount",
+ subtitle: "Two books on Matthew 5 to 7",
+ year: "c. 394",
+ blurb:
+ "The earliest sustained commentary on the Sermon that survives, written while Augustine was still a priest at Hippo. Three chapters of Matthew read straight through as one continuous rule of Christian life, from the Beatitudes to the house built on rock.",
+ topics: ["Beatitudes", "Scripture", "Prayer", "Ethics", "Exegesis"],
+ },
  ],
  },
  {

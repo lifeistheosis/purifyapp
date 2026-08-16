@@ -119,7 +119,44 @@ export function createLemmaVerifier(bookSlug, scripture = loadScripture(bookSlug
     return { ok: hit >= MATCH_THRESHOLD, chapter: target, score: hit };
   }
 
-  return { bookSlug, scripture, score, verifyAnchor };
+  /**
+   * Which verse in `chapters` is this quotation, if any?
+   *
+   * For sources that print no verse marker at all. Augustine's Sermon on the
+   * Mount quotes Matthew inline and expounds it, so there is no "Ver. N." to
+   * trust and no number to check against: the quotation itself is the only
+   * evidence of where a passage belongs.
+   *
+   * The search is deliberately bounded to the chapters the caller names. A
+   * matcher free to roam a whole book will find a plausible home for almost any
+   * sentence, which is guessing with extra steps. It also requires the winner to
+   * beat the runner-up by `margin`, because a verse that matches two places
+   * equally well has not been identified, it has been picked.
+   *
+   * -> { ok, chapter, verse, score, runnerUp }
+   */
+  function findVerse(quoted, chapters, { margin = 0.15 } = {}) {
+    let best = { ok: false, chapter: null, verse: null, score: 0 };
+    let second = 0;
+    for (const chapter of chapters) {
+      const verses = scripture.get(chapter);
+      if (!verses) continue;
+      for (const verse of verses.keys()) {
+        const hit = score(quoted, chapter, verse);
+        if (hit > best.score) {
+          second = best.score;
+          best = { ok: false, chapter, verse, score: hit };
+        } else if (hit > second) {
+          second = hit;
+        }
+      }
+    }
+    best.runnerUp = second;
+    best.ok = best.score >= MATCH_THRESHOLD && best.score - second >= margin;
+    return best;
+  }
+
+  return { bookSlug, scripture, score, verifyAnchor, findVerse };
 }
 
 // ---- Alignment reporting ----------------------------------------------------

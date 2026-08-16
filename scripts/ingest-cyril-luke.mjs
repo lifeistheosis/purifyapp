@@ -36,6 +36,7 @@ import path from "node:path";
 
 import { createAlignmentReport, createLemmaVerifier } from "./lib/lemma-verify.mjs";
 import { romanToInt } from "./lib/npnf-homilies.mjs";
+import { splitLongNote } from "./lib/ccel-work.mjs";
 
 const ROOT = process.cwd();
 const CACHE = path.join(ROOT, "scripts", ".cache");
@@ -191,38 +192,6 @@ const REPORT = createAlignmentReport({
 // "2:8-18." or "1:51." opening a lemma. Bounded to plausible chapter and verse
 // numbers so page furniture cannot match.
 const ANCHOR = /(?:^|[\s"(])(\d{1,2}):(\d{1,3})(?:\s*[-–—]\s*\d{1,3})?\.?(?:\s|$)/g;
-
-// A sermon with a single lemma at its head would otherwise drop six thousand
-// words onto one verse. Nothing is invented and nothing moves: the text is cut
-// only where Payne Smith already broke a paragraph, and every part stays on the
-// same verse under the same sermon. lib/bible/__tests__/commentaryIntegrity.test.ts
-// holds a ratchet on notes over 5,000 words that may only fall, and dumping a
-// whole sermon on one verse is precisely what pushes it up.
-const MAX_NOTE_WORDS = 3000;
-
-function splitLongNote(raw) {
-  const paragraphs = raw
-    .split(/\n\n+/)
-    .map((p) => p.replace(/\s+/g, " ").trim())
-    .filter(Boolean);
-  if (!paragraphs.length) return [];
-
-  const parts = [];
-  let buf = [];
-  let words = 0;
-  for (const p of paragraphs) {
-    const w = p.split(" ").length;
-    if (words && words + w > MAX_NOTE_WORDS) {
-      parts.push(buf.join("\n\n"));
-      buf = [];
-      words = 0;
-    }
-    buf.push(p);
-    words += w;
-  }
-  if (buf.length) parts.push(buf.join("\n\n"));
-  return parts;
-}
 
 const commentary = new Map(); // chapter -> verse -> notes[]
 const sections = [];

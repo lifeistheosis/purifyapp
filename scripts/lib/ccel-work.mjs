@@ -158,6 +158,40 @@ export function sectionsByChapter(region, {
   return sections;
 }
 
+/**
+ * Cut an over-long note at paragraph boundaries the source already printed.
+ *
+ * A sermon or chapter with a single anchor would otherwise drop six thousand
+ * words onto one verse. lib/bible/__tests__/commentaryIntegrity.test.ts holds a
+ * ratchet on notes over 5,000 words that may only fall, and dumping a whole
+ * section on one verse is precisely what pushes it up. Nothing is invented and
+ * nothing moves: the text is cut only where the edition already broke a
+ * paragraph, and every part stays on the same verse under the same work.
+ */
+export function splitLongNote(raw, maxWords = 3000) {
+  const paragraphs = String(raw)
+    .split(/\n\n+/)
+    .map((p) => p.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+  if (!paragraphs.length) return [];
+
+  const parts = [];
+  let buf = [];
+  let words = 0;
+  for (const p of paragraphs) {
+    const w = p.split(" ").length;
+    if (words && words + w > maxWords) {
+      parts.push(buf.join("\n\n"));
+      buf = [];
+      words = 0;
+    }
+    buf.push(p);
+    words += w;
+  }
+  if (buf.length) parts.push(buf.join("\n\n"));
+  return parts;
+}
+
 /** "Book 2, Chapter 1. Of the Monk's Girdle." */
 export function titleFor(section, { partWord = "Book" } = {}) {
   const head = section.part
