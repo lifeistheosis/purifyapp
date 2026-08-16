@@ -26,11 +26,14 @@ type Entry = {
 const ENTRIES: Entry[] = [
  {
  version: "1.1",
- kind: "The pillar-saints arrive, and the Hours know the time",
+ kind: "Luke receives the Fathers, and the pillar-saints arrive",
  date: "August 12, 2026",
  blurb:
-  "Purify 1.1 brings in the stylites, the pillar-saints who kept their whole ascetic life on top of a column, gathered under a new heading on the saints index. The Hours page now tells you which Hour you are in, days without a saint carry a saying of the Desert Fathers, and search reaches the whole library from your phone.",
+  "Luke was the only Gospel in the library with no patristic commentary at all, and it now carries St Cyril of Alexandria across all twenty four chapters. St John Cassian, who had no writings here, arrives with both of his books. Purify 1.1 also brings in the stylites, the pillar-saints who kept their whole ascetic life on top of a column, gathered under a new heading on the saints index. The Hours page now tells you which Hour you are in, days without a saint carry a saying of the Desert Fathers, and search reaches the whole library from your phone.",
  items: [
+    "Luke has the Fathers. It was the last Gospel with no commentary at all: St John Chrysostom never wrote on it, and the Golden Chain volumes we hold are Matthew and Mark. It now carries St Cyril of Alexandria, one hundred and thirty eight sermons reaching every one of the twenty four chapters. Cyril's Greek survives only in fragments, so what you are reading was preserved whole in Syriac and translated at Oxford in 1859.",
+    "St John Cassian's own words. His profile carried his life and none of his writing. Both of his works are here now, the Institutes and the Conferences, the books through which the prayer of the Egyptian desert reached the West. Three sections are absent and say so on the page: the nineteenth century translators declined to render them, and no other public-domain English of Cassian exists to fill the gap.",
+    "A note on Romans that nobody could open. St John Chrysostom's homily on the closing doxology was filed at Romans 14:25, and our text of that chapter ends at verse 23, so it sat past the end where nothing could reach it. It now sits at Romans 16:25, where the words it quotes actually are.",
     "The pillar-saints have their profiles. Symeon the Stylite, Daniel, Symeon of the Wonderful Mountain and Alypius, four men who spent their lives on top of a column in full view of the world. They are gathered under a new Stylites heading on the saints index, and their days in the calendar now open to them.",
     "Sign in works on iPhone. The app was throwing your session away on every reload and sending you to the wrong page afterwards, so it looked like signing in had failed.",
     "Light mode is free. It was built months ago, named Parchment, and filed behind Pro by mistake. It is called Light now and everyone has it.",

@@ -3,9 +3,21 @@
     "id": "v1-1",
     "version": "1.1",
     "date": "2026-08-12",
-    "title": "The pillar-saints arrive, and the Hours know the time",
-    "intro": "Purify 1.1 brings in the stylites, the pillar-saints who kept their whole ascetic life on top of a column, gathered under a new heading on the saints index. The Hours page now tells you which Hour you are in, days without a saint carry a saying of the Desert Fathers, and search reaches the whole library from your phone.",
+    "title": "Luke receives the Fathers, and the pillar-saints arrive",
+    "intro": "Luke was the only Gospel in the library with no patristic commentary at all, and it now carries St Cyril of Alexandria across all twenty four chapters. St John Cassian, who had no writings here, arrives with both of his books. Purify 1.1 also brings in the stylites, the pillar-saints who kept their whole ascetic life on top of a column, gathered under a new heading on the saints index. The Hours page now tells you which Hour you are in, days without a saint carry a saying of the Desert Fathers, and search reaches the whole library from your phone.",
     "sections": [
+      {
+        "heading": "Luke has the Fathers",
+        "body": "Luke was the last Gospel with no commentary at all. St John Chrysostom never wrote on it, and the Golden Chain volumes we hold are Matthew and Mark. It now carries St Cyril of Alexandria, one hundred and thirty eight sermons reaching every one of the twenty four chapters. Cyril's Greek survives only in fragments, so what you are reading was preserved whole in Syriac and translated at Oxford in 1859. It is one voice rather than the crowd of Fathers that fills Matthew and Mark, and it is the voice the Church has always read Luke with."
+      },
+      {
+        "heading": "St John Cassian's own words",
+        "body": "Cassian's profile carried his life and none of his writing. Both of his works are here now, the Institutes and the Conferences, the books through which the prayer of the Egyptian desert reached the West. Three sections are absent and say so on the page: the nineteenth century translators declined to render them, and no other public-domain English of Cassian exists to fill the gap."
+      },
+      {
+        "heading": "A note on Romans that nobody could open",
+        "body": "St John Chrysostom's homily on the closing doxology of Romans was filed at Romans 14:25. Our text of that chapter ends at verse 23, so the note sat past the end of the chapter where nothing could reach it. It now sits at Romans 16:25, where the words it quotes actually are."
+      },
       {
         "heading": "The pillar-saints have their profiles",
         "body": "Symeon the Stylite, Daniel, Symeon of the Wonderful Mountain and Alypius, four men who spent their lives on top of a column in full view of the world. They are gathered under a new Stylites heading on the saints index, and their days in the calendar now open to them. Where the old accounts disagree about a year, the profile says so rather than choosing."
