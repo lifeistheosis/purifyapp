@@ -1012,10 +1012,10 @@ export const SAINTS: Saint[] = [
  {
  slug: "commentary-on-john",
  title: "Commentary on the Gospel of John",
- subtitle: "Selections from the twelve books",
+ subtitle: "The twelve books, in the Library of the Fathers translation",
  year: "c. 425",
  blurb:
- "Cyril's reading of the Fourth Gospel, ordered by the question who is Christ, given to the Church before the Nestorian crisis erupted.",
+ "Cyril's reading of the Fourth Gospel, ordered by the question who is Christ, given to the Church before the Nestorian crisis erupted. All twelve books, the fullest Greek commentary on St John that survives.",
  topics: ["Christology", "Trinity", "Logos", "Incarnation", "Theotokos", "Scripture"],
  },
  {
