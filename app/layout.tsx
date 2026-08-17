@@ -215,6 +215,13 @@ export default async function RootLayout({
  <html
  lang={localeCode}
  dir={localeRecord.dir}
+ // The pre-paint scripts below set data-reading-mode (and, under /admin,
+ // data-adm-theme) on this element before React hydrates, which is the
+ // whole point of running them early. React sees attributes on <html> that
+ // its server output did not have and warns. This is the documented escape
+ // hatch for exactly that pattern, and it reaches this element's own
+ // attributes only, never its subtree.
+ suppressHydrationWarning
  className={`${dmSans.variable} ${dmSerif.variable} ${lora.variable} ${cardo.variable} ${notoSansX.variable} ${notoSerifX.variable} ${notoSansArabic.variable} ${notoNaskh.variable} ${notoSansGeorgian.variable} ${notoSerifGeorgian.variable} ${notoSansDevanagari.variable} h-full antialiased`}
  >
  <body className="min-h-full flex flex-col">

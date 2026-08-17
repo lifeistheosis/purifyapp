@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { getAdminUser } from "@/lib/admin/access";
 import { AdminShell } from "@/components/admin/AdminShell";
-import "./admin-theme.css";
+// admin-theme.css is imported by app/admin/layout.tsx, which also sets the
+// data-adm-theme attribute the stylesheet keys its light palette on.
 
 // Always rendered fresh + never indexed; gated to admin emails.
 export const dynamic = "force-dynamic";

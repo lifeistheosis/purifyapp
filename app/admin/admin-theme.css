@@ -1,21 +1,50 @@
-/* Purify admin — operator theme.
+/* Purify admin, operator theme.
  *
  * Scoped to .adm so none of it leaks into the reader app, and so the admin
  * can stop inheriting a theme built for reading Scripture at night. The
  * reader app optimises for calm and long-form focus. This surface optimises
  * for a person scanning forty rows for the one order that failed.
  *
- * Admin is web-only (scripts/android-build.mjs stashes it out of the native
- * export), so this file never ships to the app bundle.
+ * Admin is web-only (scripts/native-build.mjs stashes app/admin out of the
+ * native export), so this file never ships to the app bundle.
+ *
+ * TWO THEMES, ONE STRUCTURE.
+ * Dark is the base block below. Light is a single override block keyed on
+ * :root[data-adm-theme="light"], and it forks the palette only. Radius,
+ * shadow, easing and the type ramp are structural and identical in both, so
+ * a component never asks which theme it is in.
+ *
+ * The attribute lives on <html>, not on the shell root, because
+ * components/admin/primitives.tsx portals the Modal to document.body. That
+ * node carries .adm but sits outside the shell, so an attribute written onto
+ * the shell div would never reach it and every modal would render dark on a
+ * light panel. app/admin/layout.tsx sets the attribute before first paint.
+ *
+ * prefers-color-scheme is consulted once, in that pre-paint script, and only
+ * when nothing is stored. Deliberately not a @media block: that would need a
+ * third override table to let an explicit dark choice beat a light OS
+ * setting, tripling the surface for no gain.
  */
 
 .adm {
-  /* Surfaces. Three levels, each a real step apart, cool-neutral so the
-     amber accent and the status hues read as information against them. */
+  /* ── Surfaces ─────────────────────────────────────────────────────────
+     Three levels, each a real step apart, cool-neutral so the accent and
+     the status hues read as information against them. */
   --adm-rail: #08090a;   /* nav rail: the second neutral layer, recedes */
   --adm-bg: #0b0c0e;     /* content ground */
   --adm-panel: #121317;  /* cards and panels, the only "raised" level */
   --adm-panel-2: #171920;/* nested rows, table header, input wells */
+
+  /* Buttons, inputs and selects. Equal to --adm-panel-2 on dark, so this
+     split costs the dark theme nothing. It exists because light wants a
+     white control on a white card with a border doing the separating,
+     which is the Polaris form treatment, while panel-2 stays the tint
+     used for table headers and wells. */
+  --adm-control: #171920;
+
+  /* One hover wash for rows and controls. Was hover:bg-white/[0.03] in
+     primitives.tsx, which is a no-op on a light ground. */
+  --adm-hover: rgb(255 255 255 / 0.035);
 
   /* Hairlines. Two weights only: one that separates, one that outlines. */
   --adm-line: rgb(255 255 255 / 0.07);
@@ -33,6 +62,13 @@
   --adm-accent: #e0b658;
   --adm-accent-dim: #b8892c;
 
+  /* Ink that sits ON the accent. Was hardcoded #17130a at three separate
+     call sites in primitives.tsx (ToolbarButton primary, SubTabs active,
+     FilterChips active), which meant near-black text on a blue button the
+     moment a light theme existed. */
+  --adm-on-accent: #17130a;
+  --adm-on-accent-wash: rgb(0 0 0 / 0.18);
+
   /* Status. Reserved vocabulary: these four never appear as a chart series
      or a decorative tint. Each is paired with a word in the UI, never
      shipped as colour alone. */
@@ -41,10 +77,35 @@
   --adm-serious: #fb923c;
   --adm-critical: #f87171;
 
-  /* Categorical series. Fixed order, never cycled. Validated for the dark
-     surface: OKLCH lightness band, chroma floor, adjacent-pair CVD
-     separation (worst adjacent deutan dE 9.0), and contrast. Reordering
-     these breaks the CVD guarantee. */
+  /* The pending-orders badge, the one count in the whole rail that means
+     "someone is waiting". A dedicated pair rather than a wash over
+     --adm-warn: on the light ground that derivation lands near 3.8:1,
+     which is not readable at 11px. Stays amber in both themes on purpose,
+     because it is the only spot of colour the rail is allowed. */
+  --adm-badge-bg: rgb(251 191 36 / 0.18);
+  --adm-badge-fg: #fbbf24;
+
+  /* Nav selection. The surface carries the state and the bar carries the
+     position. The previous treatment was an 12% accent wash behind amber
+     text, which is the "muddy khaki, low contrast" the redesign brief
+     called out: a tinted fill and a tinted label fight each other. */
+  --adm-nav-active-bg: #1c1e24;
+  --adm-nav-active-fg: #e8eaed;
+  --adm-nav-bar: #e0b658;
+
+  /* ── Categorical series ───────────────────────────────────────────────
+     Fixed order, never cycled.
+
+     Dark set: validated for the dark surface on OKLCH lightness band,
+     chroma floor, adjacent-pair CVD separation (worst adjacent deutan
+     dE 9.0), and contrast. Reordering these breaks that guarantee.
+
+     Light set: hue-matched to the dark order and contrast-checked
+     individually (every entry clears 4.9:1 on white). It has NOT been
+     machine-validated for adjacent-pair deutan separation, because no
+     script in this repo computes that; the dark figure above is a
+     one-time hand computation that cannot currently be re-run. Do not
+     read the dE 9.0 claim as covering the light set. */
   --adm-s1: #b8892c;
   --adm-s2: #4a8fd4;
   --adm-s3: #c05f55;
@@ -55,25 +116,170 @@
   /* Chart chrome. The app-wide tokens are a warm parchment tint built for
      the reader theme; on this cool ground they read as a yellow haze over
      the plot. Recessive neutrals instead: the grid orients the eye and
-     then gets out of the way of the data. */
+     then gets out of the way of the data.
+
+     --chart-empty was missed the first time. It is the BarChart track and
+     the CalendarHeatmap empty cell, and until now both were still drawing
+     the reader's warm tint inside the admin. */
   --chart-grid: rgb(255 255 255 / 0.07);
   --chart-axis: rgb(168 173 182 / 0.85);
   --chart-hover: rgb(255 255 255 / 0.10);
+  --chart-empty: rgb(255 255 255 / 0.05);
 
-  --adm-radius: 10px;
-  --adm-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  /* Skeleton highlight. Was color-mix(..., white 6%), which only lightens,
+     so on a light ground the shimmer was invisible. */
+  --adm-skeleton-hi: #22242c;
+
+  /* Modal backdrop. Was bg-black/70, too heavy over a light panel. */
+  --adm-scrim: rgb(0 0 0 / 0.7);
+
+  /* ── Structure. Identical in both themes. ─────────────────────────────
+     Four radii, because app/globals.css redefines Tailwind's named scale
+     for the reader (rounded-sm 8px, rounded-md 12px, rounded-lg 20px)
+     while leaving rounded-xl at Tailwind's 12px. The admin walked into
+     that and was rendering 10px cards beside 20px table wrappers beside
+     12px modals beside 6px sub-tabs. Reach for these, never for a named
+     Tailwind radius, exactly as the Polaris preview does. */
+  --adm-radius: 8px;      /* cards, panels, table wrappers, filter bars */
+  --adm-radius-sm: 6px;   /* controls, nav rows, chips, inputs */
+  --adm-radius-lg: 12px;  /* rail, modal panel, mobile drawer */
+  --adm-radius-pill: 999px;
+
+  /* Elevation. None on dark, where a surface step already separates a card
+     from the ground and a shadow would just smear it. Light needs it: a
+     white card on a near-white ground has nothing else to sit on. */
+  --adm-shadow-card: none;
+  --adm-shadow-pop: 0 24px 48px rgb(0 0 0 / 0.6);
+
+  --adm-ease: cubic-bezier(0.25, 1, 0.5, 1);
+
+  /* ── Reader-token shim ────────────────────────────────────────────────
+     The load-bearing six lines in this file.
+
+     The 23 tab files under components/admin/tabs/ consume no --adm-*
+     token at all. What they do carry is 300+ reader-theme utilities
+     (text-paper, bg-night, text-gold, border-paper/10). --color-paper is
+     #ffffff, so in a light admin ShopTab alone would paint 88 pieces of
+     white text onto white cards. Rebinding the five reader tokens here
+     re-colours every one of those call sites in one paint, in both
+     directions, and keeps doing so because these point at the admin
+     tokens rather than at literals.
+
+     This works because app/globals.css opens a plain @theme block, not
+     @theme inline, so Tailwind v4 emits var(--color-*) into the utilities
+     rather than inlining the values. The same mechanism already ships in
+     production as html[data-reading-mode="parchment"], which flips
+     night and paper for the reader.
+
+     It also closes a latent bug: a reader on Candlelight or Parchment was
+     dragging those html-level overrides into /admin and warm-tinting the
+     panel. .adm is the closer element, so the admin is now immune.
+
+     One deliberate change to today's dark look: --color-gold is a
+     near-white #eaeaec despite its name (see the comment beside it in
+     globals.css), so pinning it to the amber accent moves roughly 69
+     call sites from near-white to amber. That is what the token means.
+     To revert just that, set --color-gold: #eaeaec here and nowhere else. */
+  --color-paper: var(--adm-ink);
+  --color-night: var(--adm-bg);
+  --color-night-soft: var(--adm-panel-2);
+  --color-gold: var(--adm-accent);
+  --color-gold-soft: var(--adm-accent-dim);
+  --color-gold-pale: var(--adm-accent-dim);
 
   background: var(--adm-bg);
   color: var(--adm-ink);
+  /* Declared on the theme root rather than on inputs, so scrollbars and
+     the rail follow the theme too. color-scheme inherits, so the native
+     select and date indicators still get it. */
+  color-scheme: dark;
   /* Tabular figures everywhere by default. This is a panel of numbers, and
      digits that change width make a column jitter on every poll. */
   font-variant-numeric: tabular-nums;
+}
+
+/* ── Light ────────────────────────────────────────────────────────────────
+ * The Polaris palette from components/admin/preview/PurifyShopifyAdmin.tsx,
+ * with four deliberate departures where the source values fail contrast on
+ * a surface this admin actually builds. Each is noted at its token.
+ *
+ * Only chromatic tokens appear here. Anything structural stays above.
+ */
+:root[data-adm-theme="light"] .adm {
+  --adm-rail: #ffffff;
+  --adm-bg: #f6f6f7;
+  --adm-panel: #ffffff;
+  --adm-panel-2: #f1f2f4;
+  --adm-control: #ffffff;
+  --adm-hover: rgb(32 34 35 / 0.04);
+
+  --adm-line: #e1e3e5;
+  --adm-line-strong: #c9cccf;
+
+  --adm-ink: #202223;    /* 16.0:1 on white */
+  --adm-ink-2: #45494d;  /* 9.1:1 on white, 8.1:1 on panel-2 */
+  /* Departure 1. Polaris subdued is #6D7175, which is 4.6:1 on white but
+     only 4.39:1 on #f1f2f4, and panel-2 is exactly where the inactive
+     FilterChips count sits. Two steps darker clears 4.5 on every light
+     surface this theme defines. */
+  --adm-ink-3: #63676b;  /* 5.7:1 on white, 5.1:1 on panel-2 */
+
+  --adm-accent: #2c6ecb;      /* 5.0:1 on white, and white on it is 5.0:1 */
+  --adm-accent-dim: #1f5199;
+  --adm-on-accent: #ffffff;
+  --adm-on-accent-wash: rgb(255 255 255 / 0.22);
+
+  /* Departure 2. Shopify's success green #008060 is 4.93:1 on white but
+     only 4.22:1 on its own #E2F1E8 pill, and Pill builds exactly that
+     pairing. Darkened until the pill itself passes. */
+  --adm-good: #0b6e4f;    /* 6.3:1 on white */
+  --adm-warn: #916a00;    /* 4.9:1 */
+  --adm-serious: #a34e00; /* 5.8:1 */
+  --adm-critical: #8e1f0b;/* 8.9:1, and identical to the preview's own negative ink */
+
+  /* Departure 3. See the dark block: a wash over --adm-warn lands near
+     3.8:1 here, so the badge gets an explicit pair. */
+  --adm-badge-bg: #ffd79d;
+  --adm-badge-fg: #5e4200; /* 6.9:1 on the badge */
+
+  --adm-nav-active-bg: #edeeef;
+  --adm-nav-active-fg: #202223; /* 13.8:1, same as dark */
+  --adm-nav-bar: #2c6ecb;
+
+  /* Departure 4. The preview uses one data colour, #2c6ecb, because it
+     plots one series. This admin plots six. Hue-matched to the dark order
+     (bronze, blue, brick, purple, teal-green, burnt orange) so a reader
+     who knows one theme can read the other, and each darkened until it
+     clears 4.9:1 on white. */
+  --adm-s1: #8a5a00;
+  --adm-s2: #2c6ecb;
+  --adm-s3: #a63a2e;
+  --adm-s4: #6b3fa0;
+  --adm-s5: #1a7f64;
+  --adm-s6: #9a4b0f;
+
+  --chart-grid: rgb(32 34 35 / 0.08);
+  --chart-axis: #63676b;
+  --chart-hover: rgb(32 34 35 / 0.12);
+  --chart-empty: rgb(32 34 35 / 0.06);
+
+  --adm-skeleton-hi: #e8e9eb;
+  --adm-scrim: rgb(0 0 0 / 0.4);
+
+  /* The preview's CARD shadow, verbatim. */
+  --adm-shadow-card: 0 1px 3px rgb(0 0 0 / 0.05), 0 1px 2px rgb(0 0 0 / 0.02);
+  --adm-shadow-pop: 0 8px 24px rgb(0 0 0 / 0.12), 0 2px 6px rgb(0 0 0 / 0.06);
+
+  color-scheme: light;
 }
 
 /* ── Motion ─────────────────────────────────────────────────────────────
  * Every animation here reports a state change. There is no page-load
  * choreography: an operator opens this to do a task, not to watch it
  * arrive. Durations sit in the 120-220ms band so nothing gates input.
+ *
+ * The easing curve moved to Polaris's decelerate on this pass. Durations
+ * did not: changing both at once makes any regression harder to attribute.
  */
 
 @keyframes adm-rise {
@@ -98,12 +304,12 @@
   background: linear-gradient(
     90deg,
     var(--adm-panel-2) 25%,
-    color-mix(in oklab, var(--adm-panel-2), white 6%) 37%,
+    var(--adm-skeleton-hi) 37%,
     var(--adm-panel-2) 63%
   );
   background-size: 200% 100%;
   animation: adm-shimmer 1.4s linear infinite;
-  border-radius: 5px;
+  border-radius: var(--adm-radius-sm);
 }
 
 /* A value that changed since the last poll flashes its cell once. This is
@@ -115,8 +321,14 @@
 .adm-flash { animation: adm-flash 900ms var(--adm-ease); }
 
 /* Nav selection. The indicator travels rather than cutting, so the eye
-   follows where it went. */
-.adm-rail-item { transition: color 140ms var(--adm-ease), background-color 140ms var(--adm-ease); }
+   follows where it went. box-shadow is in the list because the active row's
+   left bar is an inset shadow, not an element. */
+.adm-rail-item {
+  transition:
+    color 140ms var(--adm-ease),
+    background-color 140ms var(--adm-ease),
+    box-shadow 140ms var(--adm-ease);
+}
 
 @media (prefers-reduced-motion: reduce) {
   .adm-panel-enter,
@@ -129,6 +341,21 @@
   .adm *::after {
     transition-duration: 1ms !important;
   }
+}
+
+/* ── Themed hover on inline-styled controls ─────────────────────────────
+ * ToolbarButton and friends set `background` as an inline style, and an
+ * inline style beats any class rule, so a hover:bg-* utility cannot win.
+ * The previous workaround was hover:brightness-125, which is theme-blind:
+ * it does nothing to a white button and washes out a blue primary. The
+ * component hands both states down as custom properties instead, and the
+ * cascade resolves them here where a plain selector is enough.
+ */
+.adm-control {
+  background: var(--_bg);
+}
+.adm-control:hover:not(:disabled) {
+  background: var(--_bg-hover, var(--_bg));
 }
 
 /* ── Focus ──────────────────────────────────────────────────────────────
@@ -145,20 +372,13 @@
 /* Form controls need the selector to name them: the browser's own
    `outline: auto` on a focused <select> otherwise wins over the descendant
    rule above, and the ring comes out white instead of the accent. Verified
-   by capturing computed style on focusin during a real Tab walk. */
+   by capturing computed style on focusin during a real Tab walk. Keep this
+   rule even though it looks redundant next to the one above. */
 .adm input:focus-visible,
 .adm select:focus-visible,
 .adm textarea:focus-visible {
   outline: 2px solid var(--adm-accent);
   outline-offset: 2px;
-}
-
-/* Native form controls inherit the dark ground rather than rendering as
-   white slabs, and the calendar/select indicators stay visible. */
-.adm input,
-.adm select,
-.adm textarea {
-  color-scheme: dark;
 }
 
 /* Tables: the header sticks so a long order list keeps its column names
