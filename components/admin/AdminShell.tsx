@@ -122,15 +122,18 @@ function NavItem({
         style={
           on
             ? {
-                // The surface carries the state and the bar carries the
-                // position. The old treatment was a 12% accent wash behind
-                // amber text: a tinted fill fighting a tinted label, which is
-                // why it read as muddy. Now the label is full-contrast ink
-                // (13.8:1 in both themes) and the accent does one job.
+                // The surface carries the state. The old treatment was a 12%
+                // accent wash behind amber text: a tinted fill fighting a
+                // tinted label, which is why it read as muddy. Now the label
+                // is full-contrast ink (13.8:1 in both themes).
+                //
+                // There was a 2px accent bar down the left edge here too.
+                // Removed at the owner's request: with the raised surface,
+                // the weight change and the tinted icon all saying the same
+                // thing, a fourth marker was one too many.
                 background: "var(--adm-nav-active-bg)",
                 color: "var(--adm-nav-active-fg)",
                 fontWeight: 600,
-                boxShadow: "inset 2px 0 0 0 var(--adm-nav-bar)",
               }
             : { color: "var(--adm-ink-2)" }
         }

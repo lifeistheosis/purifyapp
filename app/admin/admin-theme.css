@@ -85,10 +85,16 @@
   --adm-badge-bg: rgb(251 191 36 / 0.18);
   --adm-badge-fg: #fbbf24;
 
-  /* Nav selection. The surface carries the state and the bar carries the
-     position. The previous treatment was an 12% accent wash behind amber
-     text, which is the "muddy khaki, low contrast" the redesign brief
-     called out: a tinted fill and a tinted label fight each other. */
+  /* Nav selection. The surface carries the state. The previous treatment was
+     a 12% accent wash behind amber text, which is the "muddy khaki, low
+     contrast" the redesign brief called out: a tinted fill and a tinted
+     label fight each other.
+
+     --adm-nav-bar was a 2px accent rule down the left edge of the active
+     row. That was removed at the owner's request, so the token now tints
+     the active row's ICON only. Kept as its own token rather than folded
+     into --adm-accent because it marks position, and if the rule ever comes
+     back it comes back here. */
   --adm-nav-active-bg: #1c1e24;
   --adm-nav-active-fg: #e8eaed;
   --adm-nav-bar: #e0b658;
@@ -321,13 +327,9 @@
 .adm-flash { animation: adm-flash 900ms var(--adm-ease); }
 
 /* Nav selection. The indicator travels rather than cutting, so the eye
-   follows where it went. box-shadow is in the list because the active row's
-   left bar is an inset shadow, not an element. */
+   follows where it went. */
 .adm-rail-item {
-  transition:
-    color 140ms var(--adm-ease),
-    background-color 140ms var(--adm-ease),
-    box-shadow 140ms var(--adm-ease);
+  transition: color 140ms var(--adm-ease), background-color 140ms var(--adm-ease);
 }
 
 @media (prefers-reduced-motion: reduce) {
