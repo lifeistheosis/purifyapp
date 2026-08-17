@@ -24,34 +24,45 @@ import { useState, type CSSProperties } from "react";
 // always shipped beside a word, never reused as "series 4".
 //
 // SERIES_COLORS is CATEGORICAL: identity only. The order is fixed and must
-// not be reordered or cycled. These six were validated against the admin's
-// dark surface for the OKLCH lightness band, a chroma floor, adjacent-pair
-// colour-vision separation (worst adjacent deutan dE 9.0, above the 8.0
-// target) and contrast. The previous first series was a desaturated tan
-// that failed the chroma floor outright, and red sat next to green, which
-// is the single most common way a chart becomes unreadable to the ~8% of
-// men with deuteranomaly.
+// not be reordered or cycled. The six DARK values were validated against the
+// admin's dark surface for the OKLCH lightness band, a chroma floor,
+// adjacent-pair colour-vision separation (worst adjacent deutan dE 9.0,
+// above the 8.0 target) and contrast. The previous first series was a
+// desaturated tan that failed the chroma floor outright, and red sat next to
+// green, which is the single most common way a chart becomes unreadable to
+// the ~8% of men with deuteranomaly.
+//
+// There are now two palettes. The light values in admin-theme.css are
+// hue-matched to this order and contrast-checked individually, but they have
+// NOT been through the same adjacent-pair CVD computation, because nothing in
+// this repo can re-run it. Do not read the dE figure above as covering light.
+// No baked fallbacks. These used to read var(--adm-s1, #b8892c) and so on,
+// with the dark value as the fallback. That was a landmine the moment a light
+// theme existed: any chart rendered outside .adm, or before the stylesheet
+// resolved, would silently paint the dark palette onto a white card. Every
+// one of these tokens is defined by app/admin/admin-theme.css on .adm, which
+// is the only place charts are used.
 export const chartColors = {
-  primary: "var(--adm-s1, #b8892c)",
-  accent: "var(--adm-accent, #e0b658)",
-  info: "var(--adm-s2, #4a8fd4)",
-  positive: "var(--adm-good, #4ade80)",
-  negative: "var(--adm-critical, #f87171)",
-  warning: "var(--adm-warn, #fbbf24)",
-  lilac: "var(--adm-s4, #9070d8)",
+  primary: "var(--adm-s1)",
+  accent: "var(--adm-accent)",
+  info: "var(--adm-s2)",
+  positive: "var(--adm-good)",
+  negative: "var(--adm-critical)",
+  warning: "var(--adm-warn)",
+  lilac: "var(--adm-s4)",
 };
 
 export const SERIES_COLORS = [
-  "var(--adm-s1, #b8892c)",
-  "var(--adm-s2, #4a8fd4)",
-  "var(--adm-s3, #c05f55)",
-  "var(--adm-s4, #9070d8)",
-  "var(--adm-s5, #2f9e77)",
-  "var(--adm-s6, #b8722c)",
+  "var(--adm-s1)",
+  "var(--adm-s2)",
+  "var(--adm-s3)",
+  "var(--adm-s4)",
+  "var(--adm-s5)",
+  "var(--adm-s6)",
 ];
 
-// CSS-variable tokens — these resolve to the values defined in globals.css
-// so a single palette change there flows everywhere.
+// CSS-variable tokens. app/admin/admin-theme.css overrides all four of these
+// inside .adm, per theme; globals.css holds the reader defaults.
 const GRID = "var(--chart-grid)";
 const AXIS = "var(--chart-axis)";
 const HOVER = "var(--chart-hover)";
@@ -136,15 +147,22 @@ export function Sparkline({
             cy={height - ((data[hover] - min) / span) * height}
             r={3}
             fill={color}
-            stroke="var(--color-night)"
+            stroke="var(--adm-bg)"
             strokeWidth={1.5}
           />
         )}
       </svg>
       {interactive && hover !== null && (
         <span
-          className="absolute -top-7 px-1.5 py-0.5 rounded-md bg-night border border-paper/15 font-sans text-eyebrow text-paper whitespace-nowrap pointer-events-none tabular-nums"
+          // Tokens, not bg-night: on a light card the ground colour and the
+          // panel colour are near-identical, so the tooltip needs the raised
+          // surface and a real shadow or it reads as part of the plot.
+          className="absolute -top-7 px-1.5 py-0.5 rounded-[var(--adm-radius-sm)] border font-sans text-eyebrow whitespace-nowrap pointer-events-none tabular-nums"
           style={{
+            background: "var(--adm-panel)",
+            borderColor: "var(--adm-line-strong)",
+            color: "var(--adm-ink)",
+            boxShadow: "var(--adm-shadow-pop)",
             left: Math.max(0, Math.min(width - 60, hover * stepX - 30)),
           }}
         >
@@ -405,7 +423,7 @@ function CartesianPlot({
                   cy={yFor(v)}
                   r={3.5}
                   fill={s.color}
-                  stroke="var(--color-night)"
+                  stroke="var(--adm-bg)"
                   strokeWidth={1.5}
                 />
               );
@@ -673,7 +691,7 @@ export function Donut({
           cy={size / 2}
           r={r}
           fill="none"
-          stroke="rgba(245,235,210,0.06)"
+          stroke="var(--chart-empty)"
           strokeWidth={11}
         />
         {arcs.map((s, i) => (
@@ -708,7 +726,7 @@ export function Donut({
           x={size / 2}
           y={size / 2 + 12}
           textAnchor="middle"
-          fill="var(--color-paper)"
+          fill="var(--adm-ink)"
           fontSize={16}
           fontWeight={700}
           fontFamily="ui-sans-serif, system-ui"
@@ -862,9 +880,13 @@ export function CalendarHeatmap({
 
       {hover && (
         <div
-          className="absolute z-10 px-2 py-1 rounded-md bg-night border border-paper/15 font-sans text-eyebrow text-paper whitespace-nowrap pointer-events-none tabular-nums shadow"
+          className="absolute z-10 px-2 py-1 rounded-[var(--adm-radius-sm)] border font-sans text-eyebrow whitespace-nowrap pointer-events-none tabular-nums"
           style={
             {
+              background: "var(--adm-panel)",
+              borderColor: "var(--adm-line-strong)",
+              color: "var(--adm-ink)",
+              boxShadow: "var(--adm-shadow-pop)",
               top: hover.y - 30,
               left: hover.x - 50,
             } as CSSProperties

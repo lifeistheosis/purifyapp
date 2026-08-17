@@ -67,13 +67,17 @@ export function Card({
         borderColor: accent
           ? "color-mix(in oklab, var(--adm-accent), transparent 70%)"
           : "var(--adm-line)",
+        // None on dark, where the surface step already separates the card from
+        // the ground. Light needs it: a white card on a near-white ground has
+        // nothing else to sit on.
+        boxShadow: "var(--adm-shadow-card)",
       }}
     >
       {(title || action) && (
         <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
           {title && (
             <h3
-              className="font-sans text-[13.5px] font-semibold leading-tight"
+              className="font-sans text-[14px] font-semibold leading-tight"
               style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)" }}
             >
               {title}
@@ -140,7 +144,14 @@ export function Modal({
   // content box. Portalling past it fixes every admin dialog, not just this one.
   if (typeof document === "undefined") return null;
   return createPortal(
-    <div className="adm fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm md:p-8">
+    <div
+      className="adm fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm md:p-8"
+      // Was bg-black/70, which is far too heavy over a light panel. The
+      // portal target is document.body, which is why the light palette keys
+      // off <html> rather than off the shell root: this node carries .adm but
+      // sits outside the shell entirely.
+      style={{ background: "var(--adm-scrim)" }}
+    >
       <button
         type="button"
         aria-label="Close"
@@ -156,12 +167,13 @@ export function Modal({
         aria-modal="true"
         aria-label={title}
         className={
-          "adm-panel-enter relative flex max-h-full w-full flex-col rounded-xl border shadow-2xl " +
+          "adm-panel-enter relative flex max-h-full w-full flex-col rounded-[var(--adm-radius-lg)] border " +
           (wide ? "max-w-[1040px]" : "max-w-[760px]")
         }
         style={{
           background: "var(--adm-panel)",
           borderColor: "var(--adm-line-strong)",
+          boxShadow: "var(--adm-shadow-pop)",
         }}
       >
         <div
@@ -190,7 +202,7 @@ export function Modal({
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="rounded-md border px-2 py-1 font-sans text-[12px] transition-colors"
+              className="rounded-[var(--adm-radius-sm)] border px-2 py-1 font-sans text-[12px] transition-colors"
               style={{
                 borderColor: "var(--adm-line-strong)",
                 color: "var(--adm-ink-2)",
@@ -226,7 +238,7 @@ export function StatCard({
 }) {
   return (
     <div
-      className="rounded-[var(--adm-radius)] border p-4"
+      className="rounded-[var(--adm-radius)] border p-5"
       style={{
         background: accent
           ? "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 93%)"
@@ -234,13 +246,17 @@ export function StatCard({
         borderColor: accent
           ? "color-mix(in oklab, var(--adm-accent), transparent 70%)"
           : "var(--adm-line)",
+        boxShadow: "var(--adm-shadow-card)",
       }}
     >
-      <p className="font-sans text-[12.5px]" style={{ color: "var(--adm-ink-3)" }}>
+      <p
+        className="font-sans text-[13px] font-medium leading-5"
+        style={{ color: "var(--adm-ink-3)" }}
+      >
         {label}
       </p>
       <p
-        className="mt-1.5 font-sans text-[30px] font-semibold leading-none tracking-[-0.02em]"
+        className="mt-3 font-sans text-[28px] font-semibold leading-none tracking-[-0.02em]"
         style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)" }}
       >
         <CountUp value={value} />
@@ -298,7 +314,7 @@ export function KpiCard({
 }) {
   return (
     <div
-      className="flex flex-col rounded-[var(--adm-radius)] border p-4"
+      className="flex flex-col rounded-[var(--adm-radius)] border p-5"
       style={{
         background: accent
           ? "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 93%)"
@@ -306,11 +322,12 @@ export function KpiCard({
         borderColor: accent
           ? "color-mix(in oklab, var(--adm-accent), transparent 70%)"
           : "var(--adm-line)",
+        boxShadow: "var(--adm-shadow-card)",
       }}
     >
       <div className="flex items-baseline justify-between gap-2">
         <p
-          className="font-sans text-[12.5px]"
+          className="font-sans text-[13px] font-medium leading-5"
           style={{ color: "var(--adm-ink-3)" }}
         >
           {label}
@@ -325,9 +342,9 @@ export function KpiCard({
         )}
       </div>
 
-      <div className="mt-2 flex items-end justify-between gap-3">
+      <div className="mt-3 flex items-end justify-between gap-3">
         <p
-          className="font-sans text-[32px] font-semibold leading-none tracking-[-0.025em]"
+          className="font-sans text-[28px] font-semibold leading-none tracking-[-0.02em]"
           style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)" }}
         >
           <CountUp value={value} />
@@ -418,22 +435,30 @@ export function ToolbarButton({
   variant?: "default" | "danger" | "primary";
   title?: string;
 }) {
+  // Hover is handed down as custom properties rather than set here, because
+  // an inline `background` beats any class rule and a hover:bg-* utility
+  // could never win. The previous workaround, hover:brightness-125, is
+  // theme-blind: it does nothing to a white control and washes out a
+  // saturated primary. .adm-control in admin-theme.css resolves these.
   const style: Record<string, React.CSSProperties> = {
     default: {
       borderColor: "var(--adm-line-strong)",
-      background: "var(--adm-panel-2)",
+      "--_bg": "var(--adm-control)",
+      "--_bg-hover": "color-mix(in oklab, var(--adm-control), var(--adm-ink) 8%)",
       color: "var(--adm-ink-2)",
-    },
+    } as React.CSSProperties,
     primary: {
       borderColor: "transparent",
-      background: "var(--adm-accent)",
-      color: "#17130a",
-    },
+      "--_bg": "var(--adm-accent)",
+      "--_bg-hover": "var(--adm-accent-dim)",
+      color: "var(--adm-on-accent)",
+    } as React.CSSProperties,
     danger: {
       borderColor: "color-mix(in oklab, var(--adm-critical), transparent 60%)",
-      background: "color-mix(in oklab, var(--adm-critical), transparent 90%)",
+      "--_bg": "color-mix(in oklab, var(--adm-critical), transparent 90%)",
+      "--_bg-hover": "color-mix(in oklab, var(--adm-critical), transparent 84%)",
       color: "var(--adm-critical)",
-    },
+    } as React.CSSProperties,
   };
   return (
     <button
@@ -443,8 +468,8 @@ export function ToolbarButton({
       title={title}
       aria-busy={loading || undefined}
       className={
-        "adm-rail-item inline-flex items-center gap-1.5 rounded-md border px-2.5 py-[5px] font-sans text-[12.5px] font-medium " +
-        "disabled:cursor-not-allowed disabled:opacity-45 hover:brightness-125"
+        "adm-rail-item adm-control inline-flex items-center gap-1.5 rounded-[var(--adm-radius-sm)] border px-2.5 py-[5px] font-sans text-[12.5px] font-medium " +
+        "disabled:cursor-not-allowed disabled:opacity-45"
       }
       style={style[variant]}
     >
@@ -523,7 +548,7 @@ export function DataTable<T>({
         </Toolbar>
       </div>
       <div
-        className="overflow-auto rounded-lg border"
+        className="overflow-auto rounded-[var(--adm-radius)] border"
         style={{ borderColor: "var(--adm-line)", maxHeight: "70vh" }}
       >
         <table className="w-full font-sans text-[13px]">
@@ -562,7 +587,7 @@ export function DataTable<T>({
               rows.map((r) => (
                 <tr
                   key={rowKey(r)}
-                  className="adm-rail-item border-b hover:bg-white/[0.03]"
+                  className="adm-rail-item border-b hover:bg-[var(--adm-hover)]"
                   style={{ borderColor: "var(--adm-line)" }}
                 >
                   {columns.map((c) => (
@@ -598,7 +623,7 @@ export function SubTabs<T extends string>({
 }) {
   return (
     <div
-      className="inline-flex flex-wrap gap-0.5 rounded-lg border p-0.5"
+      className="inline-flex flex-wrap gap-0.5 rounded-[var(--adm-radius)] border p-0.5"
       style={{ borderColor: "var(--adm-line)", background: "var(--adm-panel-2)" }}
     >
       {tabs.map(([id, label]) => {
@@ -609,10 +634,10 @@ export function SubTabs<T extends string>({
             type="button"
             onClick={() => onChange(id)}
             aria-pressed={on}
-            className="adm-rail-item rounded-[6px] px-3 py-1.5 font-sans text-[12.5px] font-medium"
+            className="adm-rail-item rounded-[var(--adm-radius-sm)] px-3 py-1.5 font-sans text-[12.5px] font-medium"
             style={
               on
-                ? { background: "var(--adm-accent)", color: "#17130a" }
+                ? { background: "var(--adm-accent)", color: "var(--adm-on-accent)" }
                 : { color: "var(--adm-ink-2)" }
             }
           >
@@ -659,10 +684,10 @@ export function SearchInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-md border py-1.5 pl-8 pr-8 font-sans text-[13px] outline-none"
+        className="w-full rounded-[var(--adm-radius-sm)] border py-1.5 pl-8 pr-8 font-sans text-[13px] outline-none"
         style={{
           borderColor: "var(--adm-line-strong)",
-          background: "var(--adm-panel-2)",
+          background: "var(--adm-control)",
           color: "var(--adm-ink)",
         }}
       />
@@ -671,7 +696,7 @@ export function SearchInput({
           type="button"
           aria-label="Clear search"
           onClick={() => onChange("")}
-          className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-1 font-sans text-[12px]"
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-[var(--adm-radius-sm)] px-1 font-sans text-[12px]"
           style={{ color: "var(--adm-ink-3)" }}
         >
           ✕
@@ -700,13 +725,13 @@ export function FilterChips<T extends string>({
             type="button"
             onClick={() => onChange(o.id)}
             aria-pressed={on}
-            className="adm-rail-item inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 font-sans text-[12.5px] font-medium capitalize"
+            className="adm-rail-item inline-flex items-center gap-1.5 rounded-[var(--adm-radius-sm)] border px-2.5 py-1 font-sans text-[12.5px] font-medium capitalize"
             style={
               on
                 ? {
                     borderColor: "transparent",
                     background: "var(--adm-accent)",
-                    color: "#17130a",
+                    color: "var(--adm-on-accent)",
                   }
                 : {
                     borderColor: "var(--adm-line-strong)",
@@ -717,10 +742,10 @@ export function FilterChips<T extends string>({
             {o.label}
             {o.count != null ? (
               <span
-                className="rounded px-1 font-sans text-[11px] font-semibold"
+                className="rounded-[var(--adm-radius-pill)] px-1.5 font-sans text-[11px] font-semibold"
                 style={
                   on
-                    ? { background: "rgb(0 0 0 / 0.18)" }
+                    ? { background: "var(--adm-on-accent-wash)" }
                     : { background: "var(--adm-panel-2)", color: "var(--adm-ink-3)" }
                 }
               >
@@ -753,10 +778,10 @@ export function FilterSelect({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-md border px-2 py-1 font-sans text-[12.5px] outline-none"
+        className="rounded-[var(--adm-radius-sm)] border px-2 py-1 font-sans text-[12.5px] outline-none"
         style={{
           borderColor: "var(--adm-line-strong)",
-          background: "var(--adm-panel-2)",
+          background: "var(--adm-control)",
           color: "var(--adm-ink)",
         }}
       >
@@ -789,7 +814,7 @@ export function FilterBar({
   const label = (n: number) => `${n} ${n === 1 ? noun.replace(/s$/, "") : noun}`;
   return (
     <div
-      className="mb-3 rounded-lg border p-2.5"
+      className="mb-3 rounded-[var(--adm-radius)] border p-2.5"
       style={{ borderColor: "var(--adm-line)", background: "var(--adm-panel)" }}
     >
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">{children}</div>
@@ -822,14 +847,17 @@ export function Pill({
 }) {
   const tones: Record<string, { fg: string; bg: string }> = {
     neutral: { fg: "var(--adm-ink-2)", bg: "var(--adm-panel-2)" },
-    gold: { fg: "var(--adm-accent)", bg: "color-mix(in oklab, var(--adm-accent), transparent 88%)" },
-    rose: { fg: "var(--adm-critical)", bg: "color-mix(in oklab, var(--adm-critical), transparent 88%)" },
-    emerald: { fg: "var(--adm-good)", bg: "color-mix(in oklab, var(--adm-good), transparent 88%)" },
+    // 92%, not 88%. At a 12% tint the light-theme text lands around 4.2:1 on
+    // its own wash, which is the trap Shopify's own success green falls into.
+    // At 8% every tone clears 4.5:1 and the dark tint is still clearly a pill.
+    gold: { fg: "var(--adm-accent)", bg: "color-mix(in oklab, var(--adm-accent), transparent 92%)" },
+    rose: { fg: "var(--adm-critical)", bg: "color-mix(in oklab, var(--adm-critical), transparent 92%)" },
+    emerald: { fg: "var(--adm-good)", bg: "color-mix(in oklab, var(--adm-good), transparent 92%)" },
   };
   const t = tones[tone];
   return (
     <span
-      className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 font-sans text-[11.5px] font-medium"
+      className="inline-flex items-center gap-1 rounded-[var(--adm-radius-pill)] px-2 py-0.5 font-sans text-[11.5px] font-medium"
       style={{ color: t.fg, background: t.bg }}
     >
       {/* A dot in the same hue, so the state reads at a glance, while the
