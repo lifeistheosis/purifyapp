@@ -48,10 +48,18 @@ export function CommerceOverviewTab() {
     let alive = true;
     async function load() {
       try {
-        const d = await fetch("/api/admin/overview", { cache: "no-store" }).then(
-          (r) => r.json(),
-        );
-        if (alive) setData(d);
+        // r.ok is load-bearing, not defensive noise. Without it a 403 or 500
+        // body ({ error: "Forbidden" }) was stored as if it were an Overview,
+        // and the first read of data.recent.length threw. That TypeError
+        // escaped to the route error boundary and replaced the WHOLE admin
+        // panel with "Something went wrong", so one expired session took out
+        // every other tab too. AdminShell's own badge fetch already guards
+        // this way; this one did not.
+        const r = await fetch("/api/admin/overview", { cache: "no-store" });
+        const d = r.ok ? ((await r.json()) as Overview) : null;
+        // Keep the last good numbers on a failed poll rather than blanking a
+        // working dashboard, same posture as the rail badge.
+        if (alive && d) setData(d);
       } catch {
         /* ignore */
       }
@@ -145,7 +153,7 @@ export function CommerceOverviewTab() {
       </ChartFrame>
 
       <Card title="Recent paid orders">
-        {data && data.recent.length > 0 ? (
+        {data?.recent && data.recent.length > 0 ? (
           <ul className="divide-y divide-paper/[0.06]">
             {data.recent.map((o) => (
               <li
