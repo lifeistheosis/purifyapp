@@ -980,6 +980,15 @@ export const SAINTS: Saint[] = [
  topics: ["Beatitudes", "Scripture", "Prayer", "Ethics", "Exegesis"],
  },
  {
+ slug: "sermons-on-selected-lessons",
+ title: "Sermons on Selected Lessons of the New Testament",
+ subtitle: "Ninety-seven sermons, each on one lesson",
+ year: "c. 400-420",
+ blurb:
+ "Augustine in the pulpit rather than at the desk. Each sermon takes one lesson as it was read in church that day and works it through for the people in front of him, which is why the Lord's Prayer gets four sermons running and the rich young ruler gets one.",
+ topics: ["Preaching", "Gospels", "Prayer", "Exegesis", "Pastoral"],
+ },
+ {
  slug: "harmony-of-the-gospels",
  title: "The Harmony of the Gospels",
  subtitle: "Four books on the agreement of the evangelists",
