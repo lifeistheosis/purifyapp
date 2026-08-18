@@ -117,8 +117,21 @@ describe("against the real corpus", () => {
 
   const worst = longestNote();
 
+  // The floor used to be 50,000 words, and it passed because the longest note
+  // in the corpus was not a note: Tractate 124 on John 21:19 carried 90,758
+  // words, being itself plus the whole of the Homilies on the First Epistle of
+  // John and both books of the Soliloquies, swallowed by a region with a broken
+  // end marker. Six other notes carried the volumes' printed indexes the same
+  // way. With that removed the longest genuine note is a Chrysostom homily of
+  // about 11,000 words, which is still far longer than any preview should show
+  // and is the right thing to test the rule against.
+  //
+  // The floor exists so the suite fails loudly if the corpus ever stops
+  // containing a note long enough to be worth previewing, rather than passing
+  // vacuously on a short one. It is not a ratchet and it should not be raised to
+  // chase whatever contamination happens to be present.
   it("found the long note to test against", () => {
-    expect(wordCount(worst)).toBeGreaterThan(50_000);
+    expect(wordCount(worst)).toBeGreaterThan(8_000);
   });
 
   it("cuts the worst note in the corpus to a readable opening", () => {

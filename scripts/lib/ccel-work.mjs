@@ -49,8 +49,24 @@ function num(token) {
  * before parsing rather than trusting the footnote cleaner to find it later.
  */
 export function stripEndnoteIndex(text) {
-  const at = text.search(/^[ \t]*\d{1,5}\.\s+file:\/\//m);
-  return at === -1 ? text : text.slice(0, at);
+  let end = text.length;
+
+  // CCEL's own endnote list: numbered "file:///ccel/..." lines.
+  const notes = text.search(/^[ \t]*\d{1,5}\.\s+file:\/\//m);
+  if (notes !== -1) end = Math.min(end, notes);
+
+  // The volume's printed back matter. Whatever region a caller asks for, the
+  // last section in it otherwise swallows the alphabetical index: notes of
+  // 24,654 words shipped at Philemon 1:25 and 22,854 at Hebrews 13:24, and a
+  // reader saw "Zenas, the lawyer, 541." over St John Chrysostom's name. Only a
+  // header the edition itself prints is used as the cut, never a guess at where
+  // prose stops, because a wrong cut here deletes a Father silently.
+  const printed = text.search(
+    /^[ \t]*(?:INDEXE?S?\s+OF\s+SUBJECTS|GENERAL\s+INDEX|INDEXE?S?\s+TO\s+|Index of Scripture References|Index of Pages of the Print Edition)/im,
+  );
+  if (printed !== -1) end = Math.min(end, printed);
+
+  return end === text.length ? text : text.slice(0, end);
 }
 
 /**
