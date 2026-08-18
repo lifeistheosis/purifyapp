@@ -383,6 +383,29 @@
   outline-offset: 2px;
 }
 
+/* ── Headings ───────────────────────────────────────────────────────────
+ * app/globals.css sets Lora, the verse-of-the-day serif, on h1..h6 sitewide
+ * in an UNLAYERED rule, deliberately so it beats per-element font-sans
+ * utilities "without having to edit every heading". That is right for the
+ * reader and wrong here: it was quietly overriding the font-sans that
+ * AdminShell's page title and every Card title already ask for, so the admin
+ * rendered its headings in a liturgical serif while every label and number
+ * beside them was sans.
+ *
+ * Unlayered too, because a utility could not win against that rule either.
+ * (0,1,1) beats the (0,0,1) of a bare element selector, so this takes the
+ * admin back to sans without touching globals.css or the reader.
+ */
+.adm h1,
+.adm h2,
+.adm h3,
+.adm h4,
+.adm h5,
+.adm h6 {
+  font-family: var(--font-sans);
+  letter-spacing: normal;
+}
+
 /* Tables: the header sticks so a long order list keeps its column names
    while you scroll a hundred rows. */
 .adm-thead th {

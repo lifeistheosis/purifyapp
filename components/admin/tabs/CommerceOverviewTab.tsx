@@ -77,25 +77,31 @@ export function CommerceOverviewTab() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+        {/* Sentence case, not tracked uppercase. primitives.tsx states the
+            rule: when everything is a heading, the eye has nothing to skip
+            to. These two were the last uppercase eyebrows on the screen. */}
+        <h2
+          className="mb-3 font-sans text-[13px] font-medium"
+          style={{ color: "var(--adm-ink-3)" }}
+        >
           At a glance
-        </p>
+        </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <KpiCard
             label="Revenue · 30 days"
-            value={data ? money(data.revenue30Cents) : "—"}
+            value={data ? money(data.revenue30Cents) : "…"}
             trend={series.length > 1 ? series : undefined}
             accent
             subtitle="paid, net of refunds"
           />
           <KpiCard
             label="Revenue · today"
-            value={data ? money(data.revenueTodayCents) : "—"}
+            value={data ? money(data.revenueTodayCents) : "…"}
             subtitle="UTC day"
           />
           <KpiCard
             label="Orders · paid"
-            value={data?.ordersPaid ?? "—"}
+            value={data?.ordersPaid ?? "…"}
             hint={
               data
                 ? `${data.ordersPending} pending · ${data.ordersCancelled} cancelled`
@@ -104,31 +110,40 @@ export function CommerceOverviewTab() {
           />
           <KpiCard
             label="New users · 30d"
-            value={data?.newUsers30 ?? "—"}
+            value={data?.newUsers30 ?? "…"}
             subtitle="profiles joined"
           />
         </div>
       </div>
 
       <div>
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+        {/* Sentence case, not tracked uppercase. primitives.tsx states the
+            rule: when everything is a heading, the eye has nothing to skip
+            to. These two were the last uppercase eyebrows on the screen. */}
+        <h2
+          className="mb-3 font-sans text-[13px] font-medium"
+          style={{ color: "var(--adm-ink-3)" }}
+        >
           Subscribers
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        </h2>
+        {/* Three cards, three columns. This row inherited the four-column
+            grid from the row above, so the last cell sat empty and the three
+            cards read as a broken four. */}
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
           <KpiCard
             label="Paid Plus"
-            value={data?.paidPlus ?? "—"}
+            value={data?.paidPlus ?? "…"}
             accent
             subtitle="paying, incl. Pro"
           />
           <KpiCard
             label="Paid Pro"
-            value={data?.paidPro ?? "—"}
+            value={data?.paidPro ?? "…"}
             subtitle="members tier"
           />
           <KpiCard
             label="Comped"
-            value={data?.comped ?? "—"}
+            value={data?.comped ?? "…"}
             subtitle="complimentary"
           />
         </div>
