@@ -28,7 +28,7 @@ const EO_SAINTS = new Set([
   "St. John Chrysostom", "St. Augustine", "St. Augustine of Hippo", "St. Jerome",
   "St. Bede", "St. Gregory the Great", "St. Gregory of Nyssa",
   "St. Gregory the Theologian", "St. Basil the Great", "St. Cyril of Alexandria",
-  "St. Ambrose", "St. Hilary of Poitiers", "St. Isidore", "St. Cyprian of Carthage",
+  "St. Ambrose", "St. Hilary of Poitiers", "St. Isidore of Seville", "St. Cyprian of Carthage",
   "St. Peter Chrysologus", "St. John Cassian", "St. John of Damascus",
   "St. Maximus the Confessor", "St. Athanasius the Great", "St. Leo the Great",
   "St. Victorinus of Pettau", "Blessed Theophylact",
