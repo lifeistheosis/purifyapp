@@ -49,14 +49,22 @@ jobs:
       - name: Build
         run: npm run build
 
+      # The browser gates run on the pull request only. `push: main` is kept as
+      # the net for a local merge that skipped a PR (see AGENTS.md), but that
+      # net only needs to catch a broken tree, and lint/typecheck/unit/build
+      # above already do. Re-running Playwright and Lighthouse on the merge
+      # commit re-proves what the PR just proved, at roughly half the job's
+      # total minutes. Every change still gets one full browser pass.
       - name: Install Playwright browsers
+        if: github.event_name == 'pull_request'
         run: npx playwright install --with-deps chromium
 
       - name: Run smoke suite + axe
+        if: github.event_name == 'pull_request'
         run: npm run test:e2e
 
       - name: Upload Playwright report on failure
-        if: failure()
+        if: failure() && github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
@@ -64,6 +72,7 @@ jobs:
           retention-days: 14
 
       - name: Run Lighthouse CI
+        if: github.event_name == 'pull_request'
         run: npx lhci autorun
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}

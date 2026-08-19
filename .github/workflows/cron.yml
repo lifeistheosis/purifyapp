@@ -44,6 +44,10 @@ jobs:
   push-deliver:
     name: Deliver prayer reminders
     runs-on: ubuntu-latest
+    # One curl with its own 120s cap. Anything past this is a hung runner, not
+    # a slow delivery, and an hourly job that can hang is an hourly job that
+    # can bill for six hours at a time.
+    timeout-minutes: 10
     if: >-
       github.event_name == 'schedule' && github.event.schedule == '0 * * * *'
       || (github.event_name == 'workflow_dispatch'
@@ -74,6 +78,7 @@ jobs:
   bmc-snapshot:
     name: Snapshot donation totals
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: >-
       github.event_name == 'schedule' && github.event.schedule == '10 3 * * *'
       || (github.event_name == 'workflow_dispatch'
