@@ -98,7 +98,12 @@ function toText(html) {
     .replace(/<[^>]+>/g, "");
   for (const [ent, ch] of Object.entries(ENTITIES)) s = s.split(ent).join(ch);
   return s
-    .replace(/&#\d+;/g, "")
+    // Decode numeric references, do not delete them. This transcription sets
+    // Cyril's Greek as hex references, so deleting the decimal form and
+    // ignoring the hex form left 2,617 literal "&#x03BA;" codes on the page
+    // for the reader and silently dropped characters elsewhere.
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(Number(d)))
     .replace(/&[a-z]+;/gi, " ")
     // Payne Smith's page numbers, printed as |47 in this transcription.
     .replace(/\|\s*\d+/g, " ")

@@ -12,7 +12,7 @@ Source: St. Cyril of Alexandria, Commentary on the Gospel according to S. John. 
 
 | Measure | Count |
 |---|---|
-| Lemmas verified against the shipped text | 1105 |
+| Lemmas verified against the shipped text | 1103 |
 | Candidates rejected as ordinary prose | 0 |
 | Verified rate | 100.0% |
 | Floor before the matcher is called broken | 90% |

@@ -91,7 +91,11 @@ function toText(html, { keepItalics = false } = {}) {
     .replace(/&nbsp;/g, " ")
     .replace(/&quot;/g, '"')
     .replace(/&amp;/g, "&")
-    .replace(/&#\d+;/g, "")
+    // Decode numeric references, do not delete them. Deleting drops characters
+    // out of a verbatim text without saying so, and the hex form was not
+    // handled at all, so Cyril's Greek reached the reader as raw entity codes.
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(Number(d)))
     .replace(/&[a-z]+;/gi, " ")
     .replace(/\|\s*\d+/g, " ") // the transcription's page markers
     .replace(/\r/g, "")
