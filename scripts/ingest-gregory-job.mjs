@@ -151,6 +151,30 @@ function toText(html) {
     .trim();
 }
 
+/**
+ * Drop the Oxford editor's appended note, where the edition prints one.
+ *
+ * Book 29 ends with a rule and then "Note from §. 74 above:", under which the
+ * 1844 editor argues at length that Gregory's language on the procession of
+ * the Spirit can be read compatibly with the later Latin Church. That is a
+ * Victorian Anglican's opinion on the filioque. It is not Gregory, and it
+ * shipped as 1,094 of the 1,741 words of the note at Job 38:33, under his
+ * name, where a reader had no way to know whose voice it was.
+ *
+ * Removing it is a misattribution fix rather than a doctrinal judgement: the
+ * note claimed the words were Gregory's and they are not. The question of
+ * whether the Church reads Gregory the way that editor did is a real one, and
+ * it belongs in the clergy queue in docs/editorial-standards.md, not in a
+ * script.
+ *
+ * Marker is doubly positive, as everywhere else here: a rule AND the header
+ * the edition itself prints. Exactly one of the thirty-five books has it.
+ */
+function cutEditorNote(text) {
+  const m = text.match(/_{20,}\s*\n+\s*Note from[^\n]{0,60}above:/);
+  return m ? text.slice(0, m.index) : text;
+}
+
 // ---- Parse ------------------------------------------------------------------
 
 const VERIFIER = createLemmaVerifier("job");
@@ -176,7 +200,7 @@ for (let n = 1; n <= 35; n++) {
   const html = await bookPage(n);
   if (!html) continue;
   booksRead++;
-  const body = toText(html);
+  const body = cutEditorNote(toText(html));
   const scope = SCOPE[n] ?? [];
   if (!scope.length) continue;
 

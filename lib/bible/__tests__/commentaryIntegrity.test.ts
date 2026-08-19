@@ -103,4 +103,52 @@ describe("commentary corpus integrity", () => {
     );
     expect(offenders, offenders.join("\n  ")).toEqual([]);
   });
+
+  // Three shapes of back matter that reached production under a Father's name,
+  // found 2026-08-19. None of them was catchable by the two cleaners, because
+  // the cleaners look for footnote apparatus and these are not that: they are
+  // whole regions of a different document that a slice swallowed.
+  //
+  // Unlike the ratchet above these are hard invariants, because none of this
+  // material is patristic text at all and there is no legitimate quantity of
+  // it. The word counts are what they were before the fix.
+  describe("carries no back matter from another document", () => {
+    it("ships no title page of a following work", () => {
+      // CCEL sets a title page as an ALL-CAPS author line over lowercase title
+      // and translator lines. matthew/7 v21 carried 1,158 words of the front
+      // matter of Augustine's Harmony of the Gospels, and 1-john/5 v1 ended in
+      // the title page of his Soliloquies.
+      const offenders = NOTES.filter(
+        ({ note }) =>
+          /\n\s*(?:St\.\s+)?[A-Z]{4,}[^\n]{0,40}:\s*\n/.test(note.text ?? "") &&
+          /\n\s*translated by\s*\n/.test(note.text ?? ""),
+      ).map(({ file, verse, note }) => `${file} v${verse} (${note.author ?? "?"})`);
+      expect(offenders, offenders.join("\n  ")).toEqual([]);
+    });
+
+    it("ships no endnote reference list", () => {
+      // A rule followed by the numbered footnote definitions the body pointed
+      // at. All ten homilies on 1 John carried one, 10,857 words in total,
+      // reading as bare paragraphs like "Ps. cxix. 85." under Augustine.
+      const offenders = NOTES.filter(({ note }) => {
+        const m = (note.text ?? "").match(/_{20,}/);
+        if (!m) return false;
+        const after = (note.text ?? "").slice(m.index).replace(/_+/g, "").trim();
+        const paras = after.split(/\n\n+/).filter((p) => p.trim());
+        if (paras.length < 4) return false;
+        const short = paras.filter((p) => p.trim().split(/\s+/).length <= 40).length;
+        return short / paras.length >= 0.75;
+      }).map(({ file, verse, note }) => `${file} v${verse} (${note.author ?? "?"})`);
+      expect(offenders, offenders.join("\n  ")).toEqual([]);
+    });
+
+    it("ships no editor's appended note", () => {
+      // job/38 v33 carried 1,094 words of the 1844 Oxford editor arguing about
+      // the procession of the Spirit, under St Gregory's name.
+      const offenders = NOTES.filter(({ note }) =>
+        /Note from[^\n]{0,60}above:/.test(note.text ?? ""),
+      ).map(({ file, verse, note }) => `${file} v${verse} (${note.author ?? "?"})`);
+      expect(offenders, offenders.join("\n  ")).toEqual([]);
+    });
+  });
 });

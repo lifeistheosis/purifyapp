@@ -60,16 +60,22 @@ const text = await getText("npnf106.txt", SRC_URL);
 // followed by the summary line naming the fifth chapter of Matthew; the Harmony
 // further down opens with a bare "Book I." too.
 //
-// The end marker is the Harmony's own opening summary. An earlier version ended
-// on a title line that does not exist in this transcription, so the region ran
-// to the end of the volume and only parsed correctly by accident: the Sermon is
-// the sole work here that heads its sections with a bare "Chapter N.", while the
-// Harmony uses "Chapter N.--Of the ...". The chapter-count check below turns
-// that accident into something enforced.
+// The end marker is the title page of the next work in the volume. CCEL sets
+// those as an ALL-CAPS author line followed by a lowercase title, and the
+// Sermon's own title page sits well before this region's start, so the first
+// one after the start is the Harmony's.
+//
+// It used to end on the Harmony's opening summary line instead, which sits
+// 26,544 characters further on, AFTER the Harmony's title page and the whole
+// of its Introductory Essay. Those 26,544 characters had nowhere to go but the
+// Sermon's last section, so Matthew 7:21 shipped 1,158 words of front matter
+// for another book, in lowercase, under Augustine's name. Ending on the title
+// page is also the more honest marker: a region should end where the next work
+// begins, not somewhere inside it.
 const region = sliceRegion(
   text,
   /^[ \t]*Book I\.[ \t]*\r?\n[\s\S]{0,300}?Explanation of the first part of the sermon/m,
-  /^[ \t]*The treatise opens with a short statement on the subject/m,
+  /^[ \t]*St\. AUGUSTIN:[ \t]*$/m,
   { label: "Sermon on the Mount" },
 );
 

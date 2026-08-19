@@ -17,6 +17,7 @@ const ROOT = process.cwd();
 const CACHE = path.join(ROOT, "scripts", ".cache", "npnf107.txt");
 const SRC_URL = "https://www.ccel.org/ccel/schaff/npnf107/cache/npnf107.txt";
 const OUT_DIR = path.join(ROOT, "data", "bible", "commentary", "1-john");
+const CITATION = "NPNF1-07";
 
 const ROMAN = { I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6, VII: 7, VIII: 8, IX: 9, X: 10 };
 
@@ -31,6 +32,35 @@ async function getText() {
     await fs.writeFile(CACHE, txt, "utf8");
     return txt;
   }
+}
+
+/**
+ * Cut a homily body where its endnote list begins.
+ *
+ * CCEL prints each homily, then a long rule, then the numbered footnote
+ * definitions the body referred to. Slicing a homily from its own header to
+ * the next one therefore carries that whole apparatus along, and because
+ * cleanBody strips the [1991] anchors out of the prose, the definitions
+ * arrived looking like ordinary paragraphs: "1 John iv. 20, 21.", "Gal. v.
+ * 6.", "Ps. cxix. 85." for dozens of lines under Augustine's name.
+ *
+ * All ten homilies shipped this way, 10,822 words of it. Homily X was the
+ * worst: the marker that ends the series, "Preface to Soliloquies", sits
+ * AFTER the endnote list, after the editor's appended extracts from other
+ * works, and after the title page of the Soliloquies, so 3,879 of its 9,745
+ * words were not Augustine expounding John at all.
+ *
+ * The cut is doubly positive and never positional: a rule of twenty or more
+ * underscores AND a bracketed footnote number directly after it. Both are
+ * required, so a rule the edition prints for any other reason is left alone.
+ * Measured against this source, every homily has exactly one such boundary.
+ */
+function cutEndnotes(raw) {
+  for (const m of raw.matchAll(/_{20,}/g)) {
+    const after = raw.slice(m.index).replace(/_+/g, "").trimStart();
+    if (/^\[\d{3,5}\]/.test(after)) return raw.slice(0, m.index);
+  }
+  return raw;
 }
 
 // Collapse the CCEL hard-wrapped, 3-space-indented body into clean paragraphs.
@@ -82,11 +112,11 @@ async function main() {
     }
     const chapter = ROMAN[rm[1]];
     const verse = parseInt(rm[2], 10);
-    const text_ = cleanBody(rawBody);
+    const text_ = cleanBody(cutEndnotes(rawBody));
     const entry = {
       author: "St. Augustine",
       work: `Homilies on the First Epistle of John, Homily ${cur.roman}`,
-      citation: "NPNF1-07",
+      citation: CITATION,
       text: text_,
     };
     byChapter[chapter] = byChapter[chapter] || {};
@@ -103,6 +133,16 @@ async function main() {
       existing = JSON.parse(await fs.readFile(file, "utf8"));
     } catch {
       /* new */
+    }
+    // Replace only this work's own prior notes, keeping every other Father,
+    // the same rule ingest-cyril-luke.mjs follows. Concatenating instead meant
+    // a second run silently doubled the homilies rather than re-stating them,
+    // so the script was not safe to re-run and a fix could not be verified by
+    // running it.
+    for (const [v, notes] of Object.entries(existing)) {
+      const others = notes.filter((n) => n.citation !== CITATION);
+      if (others.length) existing[v] = others;
+      else delete existing[v];
     }
     for (const [v, entries] of Object.entries(verses)) {
       existing[v] = (existing[v] || []).concat(entries);
