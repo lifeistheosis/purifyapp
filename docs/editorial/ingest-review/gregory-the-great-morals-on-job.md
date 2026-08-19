@@ -120,7 +120,7 @@ what needs review is only whether the anchor above them is right.
  
 
   |
-| 6:19 | 0.38 | Behold, this is the joy of his way [al. �of his life�], that 
+| 6:19 | 0.38 | Behold, this is the joy of his way [al. ‘of his life’], that 
  out of th |
 | 9:12 | 0.38 | If He question on a sudden, who will answer Him?
 
@@ -374,7 +374,7 @@ what needs review is only whether the anchor above them is right.
 
  
  27. 
- �The m |
+ ‘The m |
 | 28:4 | 0.38 | [verse 3 fits better, 0.88] The stone likewise of darkness, and the shadow of 
  death, the torrent d |
 | 27:17 | 0.38 | The gold and the glass cannot equal it.
@@ -444,7 +444,7 @@ what needs review is only whether the anchor above them is right.
 | 31:15 | 0.38 | Did not He Who made 
  me in the womb make him? And did not One make us i |
 | 31:18 | 0.38 | For from my infancy 
- compassion grew up with me, and from my mother�s w |
+ compassion grew up with me, and from my mother’s w |
 | 31:27 | 0.38 | And my heart rejoiced 
  in secret.
 
@@ -516,7 +516,7 @@ what needs review is only whether the anchor above them is right.
 | 35:14 | 0.38 | Even when thou shall 
  say, He doth not consider, judge thyself before H |
 | 36:2 | 0.38 | For I have yet 
- somewhat to speak on God�s behalf.
+ somewhat to speak on God’s behalf.
 
  
  
@@ -1159,7 +1159,7 @@ what needs review is only whether the anchor above them is right.
 
  
  
- Almighty God�s mercy is said to �forget |
+ Almighty God’s mercy is said to ‘forget |
 | 24:24 | 0.25 | They are exalted for a little while, but they shall not hold on.
 
  
@@ -1635,9 +1635,9 @@ what needs review is only whether the anchor above them is right.
 
  
  23. 
- For �the  |
-| 16:19 | 0.13 | [verse 20 fits better, 0.88] Also, now, behold my witness is in heaven, and my heart�s associate
- [�c |
+ For ‘the  |
+| 16:19 | 0.13 | [verse 20 fits better, 0.88] Also, now, behold my witness is in heaven, and my heart’s associate
+ [‘c |
 | 16:20 | 0.13 | [verse 23 fits better, 0.38] My friends are full of words; but mine eye poureth out tears unto 
  God. |
 | 16:22 | 0.13 | [verse 23 fits better, 0.50] When a few years are come, then I shall go the way whence I 
@@ -1719,7 +1719,7 @@ what needs review is only whether the anchor above them is right.
 
  
  82. 
- For sin is �b |
+ For sin is ‘b |
 | 24:23 | 0.13 | God hath given unto him room for repentance, and he abuseth it in 
  prid |
 | 24:11 | 0.13 | [verse 8 fits better, 0.25] He hath compassed the waters with bounds, until the light and 

@@ -68,6 +68,38 @@ const args = process.argv.slice(2);
 
 // ---- Fetch ------------------------------------------------------------------
 
+/**
+ * Decode a fetched page using the encoding it actually declares.
+ *
+ * WHY THIS IS NOT `res.text()`. These pages are windows-1252 and say so in a
+ * meta tag in the body. They do NOT say so in the Content-Type header, which
+ * is the bare `text/html`. `res.text()` reads only the header, so it falls
+ * back to UTF-8, and every cp1252 smart quote and section sign decodes to
+ * U+FFFD. That is not a display bug that can be fixed later: the original
+ * bytes are gone the moment the string exists, and if the result is cached
+ * the loss is permanent.
+ *
+ * This shipped. 795 of 920 Job notes carried 11,125 replacement characters in
+ * production, so a reader met "by ?the seven sons? is represented" throughout
+ * the largest work in the library. Found 2026-08-19.
+ *
+ * So: take the bytes, sniff the declared charset out of the first block, and
+ * decode deliberately. A source that declares its encoding only in the body is
+ * common enough in the scanned-nineteenth-century corner of the web that this
+ * is the safe default, not a special case.
+ */
+function decodeDeclared(buf) {
+  const head = Buffer.from(buf).subarray(0, 4096).toString("latin1");
+  const m = head.match(/charset\s*=\s*["']?\s*([\w-]+)/i);
+  const label = (m?.[1] ?? "utf-8").toLowerCase();
+  try {
+    return new TextDecoder(label).decode(buf);
+  } catch {
+    console.log(`  unknown charset "${label}", falling back to windows-1252.`);
+    return new TextDecoder("windows-1252").decode(buf);
+  }
+}
+
 async function bookPage(n) {
   const name = `Book${String(n).padStart(2, "0")}`;
   const file = path.join(CACHE, `gregory-job-${name.toLowerCase()}.html`);
@@ -78,8 +110,9 @@ async function bookPage(n) {
     console.log(`  Book ${n}: ${url} -> ${res.status}, skipped.`);
     return null;
   }
-  const text = await res.text();
+  const text = decodeDeclared(await res.arrayBuffer());
   fs.mkdirSync(CACHE, { recursive: true });
+  // Cache as UTF-8 now that it is correctly decoded, so the re-read above is right.
   fs.writeFileSync(file, text, "utf8");
   return text;
 }
@@ -97,9 +130,22 @@ function toText(html) {
     .replace(/&nbsp;/g, " ")
     .replace(/&quot;/g, '"')
     .replace(/&amp;/g, "&")
-    .replace(/&#\d+;/g, "")
+    // Decode numeric references rather than deleting them. Dropping them
+    // silently removes characters from a verbatim text, which is the same
+    // class of loss as the charset bug above, just quieter.
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(Number(d)))
     .replace(/&[a-z]+;/gi, " ")
     .replace(/\r/g, "")
+    // House typography. CLAUDE.md: no em dashes, en dashes in numeric ranges
+    // are fine. The 1844 Oxford edition sets both senses with an em dash, so
+    // split them: a range keeps a dash (as an en dash), a sentence break
+    // becomes a comma, which is what scripts/sweep-em-dashes.mjs did to the
+    // rest of this corpus. Typography only; not a word is added or removed.
+    .replace(/(\d)\s*—\s*(\d)/g, "$1–$2")
+    .replace(/\s*—\s*/g, ", ")
+    .replace(/\s+([,.;:!?])/g, "$1")
+    .replace(/,\s*,/g, ",")
     .replace(/[ \t]+/g, " ")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
