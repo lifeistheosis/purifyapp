@@ -62,7 +62,36 @@ async function main() {
   }
 
   // The series ends where the Homilies on 1 John begin.
-  const seriesEnd = text.indexOf("Ten Homilies on the First Epistle of John", heads[123].idx);
+  //
+  // This used to be a case-sensitive indexOf for "Ten Homilies on the First
+  // Epistle of John", and that string is not in the volume. The title page is
+  // set in lower case and worded differently: "ten homilies / on the epistle of
+  // john / to the parthians". So indexOf returned -1, `stop > 0 ? stop :
+  // undefined` below fell through to undefined, and the last tractate ran to the
+  // end of the file. Tractate 124 shipped carrying 90,758 words: itself, then
+  // the whole of the Homilies on the First Epistle of John, then both books of
+  // the Soliloquies, all of it under one heading at John 21:19.
+  //
+  // The same lower-case title page defeated the Harmony of the Gospels ingest on
+  // this branch, which is why the match is now case-insensitive and tolerant of
+  // the line breaks between the words. It throws rather than falling through: a
+  // missing boundary must stop the run, never silently widen it.
+  const tail = text.slice(heads[123].idx);
+  const endMatch = /ten\s+homilies[\s\S]{0,80}?on\s+the\s+(?:first\s+)?epistle\s+of\s+john/i.exec(tail);
+  if (!endMatch) {
+    throw new Error(
+      "Could not find where the Homilies on 1 John begin, so the last tractate would " +
+        "swallow the rest of the volume. Aborting.",
+    );
+  }
+  // The next work's title page opens with "St. AUGUSTIN:" a little above the
+  // words matched, so back up to that when it is close by. Otherwise the last
+  // tractate ends carrying the first line of somebody else's title.
+  let endAt = endMatch.index;
+  const before = tail.slice(Math.max(0, endAt - 300), endAt);
+  const title = /St\.?\s*AUGUSTIN\s*:?[^\n]*$/i.exec(before.replace(/\s+$/, ""));
+  if (title) endAt = Math.max(0, endAt - 300) + title.index;
+  const seriesEnd = heads[123].idx + endAt;
 
   const byChapter = new Map(); // chapter -> Map(verse -> [entry])
   let prev = null; // { chapter, verse } for "on the same passage" tractates

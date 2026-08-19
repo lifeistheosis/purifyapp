@@ -16,7 +16,53 @@ The standing rules this codebase already practices, written down so they are enf
 
 - Keying is editorial, not textual: a note may sit a verse adjacent to its quote; every note must quote its lemma so misplacement is visible, never silent.
 - The Psalms ingest maps Schaff's Hebrew numbering onto the app's Brenton arrangement and lemma-snaps each section. Current measured quality: 1,560 exact / 304 snapped / **170 unmatched of 2,034 markers** (kept claimed number, clamped).
-- Rule: any future ingest must print alignment stats, and unmatched sections should be written to a review file.
+- Rule: any future ingest must print alignment stats, and unmatched sections should be written to a review file. Implemented by `createAlignmentReport` in `scripts/lib/lemma-verify.mjs`; the files land in `docs/editorial/ingest-review/`, one per ingest. Any ingest built on that library gets both for free.
+- Stronger rule where it can be met: an anchor should be **verified against the Scripture we already ship**, not matched by shape. `createLemmaVerifier` in the same file accepts a lemma only when its opening words really are the verse it claims, which makes a wrong anchor structurally impossible rather than merely unlikely. It is what recovered Matthew's missing chapter headings for 1, 11 and 15 by evidence, and what refuses a note at Matthew 3:19 in a chapter with seventeen verses. Calibrated on Mark, whose correct output is known and shipped: `node scripts/ingest-catena-aurea.mjs --book mark` must report 679 of 679 verified and leave `data/bible/commentary/mark/` byte-identical. Do not retune `MATCH_TOKENS`, `MATCH_THRESHOLD` or `MIN_VERIFIED_RATE` without re-running it.
+- A note anchored past the end of its chapter is unreachable, so both ingest paths now throw rather than warn. Where the source follows a different arrangement of the text, declare it: Schaff prints Chrysostom's Homily XXVII on "Rom. XIV. 25-27", following the manuscripts that place the doxology at the end of chapter 14, and `verseRemap` in `scripts/ingest-chrysostom-romans.mjs` moves it to the Romans 16:25 our own KJV carries. Never widen a `verseCounts` entry to silence the throw.
+- **The committed corpus is ingest output plus `scripts/clean-commentary-footnotes.mjs`, so re-running an ingest is only half the job.** Raw CCEL output carries editorial apparatus that reads as prose: manuscript notes ("Field reads *egelasate* with one or two mss."), stray "O.T." markers, orphaned reference headings. The cleaner strips them, and the shipped data has been through it. This matters because it disguises itself: re-running an untouched ingest today produces files that differ from what is committed, which looks like the source drifting under us and is not. Verified 2026-08-15 on Romans, where the whole difference was five apparatus segments in three notes. Run the cleaner dry after any ingest, read the "containing English" list, then `--apply`, and only then judge whether anything really moved. Apparatus has leaked to production twice already, in `john/21.json` and `psalms/150.json`.
+
+## The coverage ceiling, and why it is not 100%
+
+Run `node scripts/audit-corpus-coverage.mjs` for the current number. What follows
+is why that number cannot keep climbing, established 2026-08-16 so nobody spends
+another day rediscovering it.
+
+**The Old Testament is the ceiling, and the reason is a decision taken in the
+1840s.** The three translation programmes that put the Fathers into English
+before copyright expiry, the Library of the Fathers (Oxford, 1838 to 1881), the
+Ante-Nicene Fathers and the Nicene and Post-Nicene Fathers, between them
+translated the patristic commentary on exactly **two** Old Testament books:
+
+- **Job**, in Gregory the Great's Morals (LFC volumes 18, 21, 23 and 31)
+- **Psalms**, in Augustine's Expositions (LFC volumes 24, 25, 30, 32, 37 and 39)
+
+Both are already ingested. The omission was deliberate and the editors said so:
+by leaving out the voluminous patristic commentaries on the Old Testament they
+gained room for works they judged more useful. Everything else, Origen and
+Chrysostom on Genesis, Jerome and Cyril on Isaiah, Origen on Jeremiah, Ephrem on
+Genesis, first reached English in the twentieth century, in the Fathers of the
+Church and Ancient Christian Writers series, and is in copyright.
+
+So the 788 chapters sitting in books that carry nothing are not waiting on
+effort. They are waiting on translations that do not exist in the public domain,
+and mostly will not for decades. Isaiah is 66 of them, Jeremiah 52, Sirach 51,
+Ezekiel 48.
+
+**Named blocks, so they are not re-investigated:**
+
+- **Ezekiel (48 chapters).** The only complete English of Gregory the Great's
+  Homilies on Ezekiel is Theodosia Gray's, 1990, Center for Traditionalist
+  Orthodox Studies. In copyright.
+- **Genesis beyond chapter 1.** Basil's Hexaemeron (NPNF2-08, ingested) covers
+  the six days. Chrysostom's Homilies on Genesis are FOTC 74, 82 and 87;
+  Origen's are FOTC 71; Ambrose's Hexaemeron is FOTC 42. All refused.
+- **Isaiah, Jeremiah, the Minor Prophets.** No pre-1929 English patristic
+  commentary exists for any of them.
+
+**What raising coverage still can mean.** Depth rather than breadth: a book with
+one voice getting a second, or a Gospel carried by Catena fragments getting a
+Father who reads it straight through. That is real work and worth doing. It just
+does not move the chapter count, which is the number to stop optimising.
 
 ## Review queues (open)
 
@@ -30,7 +76,7 @@ The standing rules this codebase already practices, written down so they are enf
 
 ### Editorial review
 1. **Psalms unmatched keying (F-06):** 170 sections; regenerate the list via the ingest script and spot-check the worst psalms. Seam psalms (9, 113-115, 146-147) were hand-verified 2026-07-11.
-2. **Author-name normalization:** commentary data contains both "St. Augustine" and "St. Augustine of Hippo" (john/1.json). Cosmetic; normalize when convenient.
+2. **RESOLVED 2026-08-16: author-name normalization.** The rail carried both "St. Augustine" and "St. Augustine of Hippo". Four notes used the second form, all of them from the Tractates on John (acts/9:4, john/1:18, john/3:16, john/14:6), against 2,989 using the first. They now read "St. Augustine". The author-count audit is the check: `node scripts/audit-author-veneration.mjs` names every distinct author, so a second spelling shows up as a separate row rather than hiding.
 
 ### Rights / legal (pre-existing, owner-owned)
 - Real product photos to replace representative supplier-derived listings; LLC + product insurance; sales-tax registration; lawyer pass on ToS. No new items found 2026-07-11.

@@ -48,4 +48,10 @@ await ingestHomilies({
     "St. John Chrysostom, Homilies on the Epistle of St. Paul the Apostle to the Romans. From the Nicene and Post-Nicene Fathers, Series 1, Vol. 11 (ed. Philip Schaff). Public domain.",
   workLabel: (n) => `Homilies on the Epistle to the Romans, Homily ${n}`,
   verseCounts: ROMANS_VERSES,
+  // Homily XXVII expounds the closing doxology, and NPNF prints its lemma as
+  // "Rom. XIV. 25-27": Schaff follows the manuscripts that place Romans
+  // 16:25-27 at the end of chapter 14. Our shipped KJV carries it at 16:25, so
+  // a note left at 14:25 sits past the end of a 23-verse chapter and no reader
+  // can open it. Move it to where our own text puts the words it quotes.
+  verseRemap: { "14:25": "16:25" },
 });

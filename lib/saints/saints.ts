@@ -970,6 +970,33 @@ export const SAINTS: Saint[] = [
  "Augustine's verse-by-verse reading of the Fourth Gospel, the longest Latin commentary on John from the early Church.",
  topics: ["Logos", "Incarnation", "Trinity", "Eucharist", "Scripture", "Theology"],
  },
+ {
+ slug: "sermon-on-the-mount",
+ title: "Our Lord's Sermon on the Mount",
+ subtitle: "Two books on Matthew 5 to 7",
+ year: "c. 394",
+ blurb:
+ "The earliest sustained commentary on the Sermon that survives, written while Augustine was still a priest at Hippo. Three chapters of Matthew read straight through as one continuous rule of Christian life, from the Beatitudes to the house built on rock.",
+ topics: ["Beatitudes", "Scripture", "Prayer", "Ethics", "Exegesis"],
+ },
+ {
+ slug: "sermons-on-selected-lessons",
+ title: "Sermons on Selected Lessons of the New Testament",
+ subtitle: "Ninety-seven sermons, each on one lesson",
+ year: "c. 400-420",
+ blurb:
+ "Augustine in the pulpit rather than at the desk. Each sermon takes one lesson as it was read in church that day and works it through for the people in front of him, which is why the Lord's Prayer gets four sermons running and the rich young ruler gets one.",
+ topics: ["Preaching", "Gospels", "Prayer", "Exegesis", "Pastoral"],
+ },
+ {
+ slug: "harmony-of-the-gospels",
+ title: "The Harmony of the Gospels",
+ subtitle: "Four books on the agreement of the evangelists",
+ year: "c. 400",
+ blurb:
+ "Augustine answers the charge that the four evangelists contradict one another, going through the Gospels side by side and showing where each tells what the others leave out. The first sustained treatment of the question in the Church, and still the shape the argument takes.",
+ topics: ["Gospels", "Scripture", "Apologetics", "Exegesis", "Evangelists"],
+ },
  ],
  },
  {
@@ -994,10 +1021,10 @@ export const SAINTS: Saint[] = [
  {
  slug: "commentary-on-john",
  title: "Commentary on the Gospel of John",
- subtitle: "Selections from the twelve books",
+ subtitle: "The twelve books, in the Library of the Fathers translation",
  year: "c. 425",
  blurb:
- "Cyril's reading of the Fourth Gospel, ordered by the question who is Christ, given to the Church before the Nestorian crisis erupted.",
+ "Cyril's reading of the Fourth Gospel, ordered by the question who is Christ, given to the Church before the Nestorian crisis erupted. All twelve books, the fullest Greek commentary on St John that survives.",
  topics: ["Christology", "Trinity", "Logos", "Incarnation", "Theotokos", "Scripture"],
  },
  {
@@ -1021,10 +1048,10 @@ export const SAINTS: Saint[] = [
  {
  slug: "commentary-on-luke",
  title: "Commentary on the Gospel of Luke",
- subtitle: "Selected homilies on the Annunciation, Nativity, Theophany, and Transfiguration",
+ subtitle: "The surviving sermons, translated from the Syriac",
  year: "c. 430",
  blurb:
- "Cyril's homiletic reading of Luke, preserved chiefly in Syriac — the great Christological feasts read as the unfolding of one Person from the Virgin's consent to the light of Tabor.",
+ "Cyril's homiletic reading of Luke, preserved chiefly in Syriac. One hundred and thirty-eight sermons carrying the Gospel from the Virgin's consent to the road to Emmaus, and the only patristic commentary this library holds on Luke.",
  topics: ["Exegesis", "Christology", "Feasts", "Transfiguration", "Theotokos"],
  },
  {
@@ -3815,6 +3842,182 @@ export const SAINTS: Saint[] = [
       "He came at last to Gaul, to the city of Marseilles, and there about the year 415 he founded two monasteries, one for men and one for women, and gave them a rule drawn from all he had seen in the East. For these communities, and at the request of the bishops of Gaul, he wrote his two great works: the Institutes, on the outward order of the monastic life and the eight principal faults, and the Conferences, the recorded discourses of the Egyptian Fathers on the inner life of prayer and purity of heart.",
       "Through these books the desert spoke to the West for centuries. St. Benedict commended the Conferences to his monks, and the whole later tradition of Western monasticism drank from them. Cassian taught that purity of heart is the aim of all the monk's labor, and the vision of God its end, and he held firmly to the working together of grace and the will against those who would deny either.",
       "He reposed in peace at Marseilles about the year 435. The Eastern Church honors him as a Father and teacher of the ascetic life and keeps his memory on the twenty-ninth of February, the day given in the leap year to the Roman monk who belonged to both halves of the Christian world.",
+    ],
+    works: [
+      {
+        slug: "institutes",
+        title: "The Institutes",
+        subtitle: "The twelve books on the rules of the monasteries and the eight faults",
+        year: "c. 425",
+        blurb:
+          "What Cassian saw in Egypt, written down for the monasteries of Gaul: how the monks dressed, prayed, and kept the night office, and then the eight thoughts that make war on the soul. The book that taught the Latin West to pray as the desert prayed.",
+        topics: ["Asceticism", "Monasticism", "Prayer", "The eight thoughts"],
+      },
+      {
+        slug: "conferences",
+        title: "The Conferences",
+        subtitle: "Twenty-four conversations with the fathers of the Egyptian desert",
+        year: "c. 429",
+        blurb:
+          "Cassian sets down what the old men of Scete answered when he asked them. On the goal of the monastic life, on discretion, on unceasing prayer, on the protection of God. St. Benedict told his monks to read it aloud before Compline.",
+        topics: ["Asceticism", "Monasticism", "Prayer", "Discernment", "Desert Fathers"],
+      },
+    ],
+  },
+  // The Fathers the commentary rail quotes most heavily and who had no profile
+  // of their own. Between them they speak in 3,434 notes, and until now a reader
+  // could read St Gregory the Great 1,179 times without being able to learn who
+  // he was. None carries an iconUrl: no inspected, rights-cleared image of any
+  // of them exists in public/saints/icons/, and the standing rule is that no
+  // auto-sourced image ships unopened.
+  {
+    slug: "gregory-the-dialogist",
+    name: "St. Gregory the Great",
+    byname: "The Dialogist",
+    epithet: "Pope of Rome · Father of the Moralia",
+    born: "c. 540 (Rome)",
+    reposed: "12 March 604 (Rome)",
+    feastDays: ["March 12"],
+    pronoun: "his",
+    shortBio:
+      "A Roman of senatorial family who sold his inheritance to found monasteries, served as papal envoy at Constantinople, and was drawn against his will to the see of Rome. The East calls him the Dialogist, for his Dialogues on the Italian Fathers, and keeps his memory on the twelfth of March. His Moralia on Job is the commentary on that book for the whole Latin Middle Ages.",
+    life: [
+      "Gregory was born at Rome about the year 540, of a wealthy senatorial house, and rose to be prefect of the city. At the height of that office he laid it down, turned the family estates into monasteries, and made his own house on the Caelian hill into one more, where he lived as a monk.",
+      "He was sent to Constantinople as the pope's representative, and there, at the request of the brethren who had come with him, he began the work on the book of Job that became the Moralia: thirty-five books reading Job historically, allegorically and morally, delivered first as conferences to his monks.",
+      "In 590, when plague was in the city and he had tried to refuse, he was made bishop of Rome. He called himself the servant of the servants of God, a title his successors kept. He fed the poor of the city from the Church's estates, ordered its worship, sent Augustine and his companions to preach to the English, and wrote the Pastoral Rule on the care of souls, which became the handbook of bishops in both East and West.",
+      "He reposed on the twelfth of March in the year 604. The Orthodox Church honors him as Gregory the Dialogist and ascribes to him the Liturgy of the Presanctified Gifts served in Great Lent, a tradition of long standing in the East whatever the history of the rite itself.",
+    ],
+    works: [],
+  },
+  {
+    slug: "jerome-of-stridon",
+    name: "St. Jerome",
+    byname: "Jerome of Stridon",
+    epithet: "Translator of the Scriptures · Ascetic of Bethlehem",
+    born: "c. 347 (Stridon, Dalmatia)",
+    reposed: "c. 420 (Bethlehem)",
+    feastDays: ["June 15"],
+    pronoun: "his",
+    shortBio:
+      "The most learned scholar of the Latin Fathers, who left Rome for a cave beside the place of the Nativity and spent his life among the languages of Scripture. He translated the Bible into Latin from the Hebrew and the Greek, and his commentaries carried the exegesis of the Greek Fathers west.",
+    life: [
+      "Jerome was born about the year 347 at Stridon, on the border of Dalmatia, and was educated at Rome in grammar and rhetoric. After his baptism he travelled east, lived for a time as a hermit in the desert of Chalcis, and there set himself to learn Hebrew, which almost no Christian of the West then read.",
+      "At Rome he served as secretary to Pope Damasus, who set him to revising the Latin Gospels. Around him gathered a circle of noble Roman women drawn to the ascetic life, and his direction of them, and his sharp tongue against the worldliness of the city's clergy, made him enemies enough that he left Rome for good.",
+      "He settled at Bethlehem about the year 386 and remained there the rest of his life, in a monastery beside the cave of the Nativity. There he completed the translation of the Old Testament from the Hebrew, judging that the Church should have the truth of the original tongue, and wrote commentaries on the prophets, on Matthew, and on several of the epistles.",
+      "He reposed at Bethlehem about the year 420. He was a difficult man and knew it, quarrelling with Rufinus and with Augustine by letter, but no one in the Latin West equalled his knowledge of the Scriptures in their own languages. The Orthodox Church keeps his memory on the fifteenth of June.",
+    ],
+    works: [],
+  },
+  {
+    slug: "bede-the-venerable",
+    name: "St. Bede",
+    byname: "The Venerable",
+    epithet: "Monk of Jarrow · Father of English history",
+    born: "c. 673 (Northumbria)",
+    reposed: "26 May 735 (Jarrow)",
+    feastDays: ["May 27"],
+    pronoun: "his",
+    shortBio:
+      "Given to a monastery at seven years old and never leaving it, Bede turned a small house on the Northumbrian coast into a light for the whole West. He wrote commentaries on most of the Scriptures and the Ecclesiastical History of the English People, and died dictating a translation of St John's Gospel.",
+    life: [
+      "Bede was born about the year 673 on lands belonging to the monastery of Wearmouth and Jarrow, and at seven was given to the abbot to be raised. He remained in that house all his life, ordained deacon at nineteen and priest at thirty, and by his own account found his chief delight in learning, teaching and writing.",
+      "He wrote commentaries on most of the books of Scripture, drawing the Fathers together for readers who had no libraries, and it is chiefly through these that his voice reaches the commentary of the later Church. He also wrote on chronology, and the reckoning of the years from the Incarnation, which he did much to establish, is largely his doing.",
+      "His Ecclesiastical History of the English People traced the coming of the Gospel to the English from the mission St Gregory the Great had sent. He took pains over his sources, naming the men who told him what he could not himself have known, which is why the book is trusted where much else of that age is not.",
+      "He reposed on the twenty-sixth of May in the year 735, having finished dictating a translation of the Gospel of St John into English on the last evening of his life. He is the only Englishman among the Fathers whom the whole Church receives, and the title Venerable has been attached to his name since not long after his death.",
+    ],
+    works: [],
+  },
+  {
+    slug: "hilary-of-poitiers",
+    name: "St. Hilary of Poitiers",
+    byname: "The Athanasius of the West",
+    epithet: "Bishop of Poitiers · Confessor against Arianism",
+    born: "c. 310 (Poitiers, Gaul)",
+    reposed: "c. 367 (Poitiers)",
+    feastDays: ["January 14"],
+    pronoun: "his",
+    shortBio:
+      "A pagan philosopher who read his way to Christ through the Scriptures, became bishop of his own city, and was exiled to Asia Minor for refusing to condemn St Athanasius. In exile he learned the Greek theology of the Trinity and brought it back to the Latin West.",
+    life: [
+      "Hilary was born at Poitiers in Gaul about the year 310, into a pagan family of standing, and was educated in philosophy. He has left an account of how the reading of the Scriptures, and above all the opening of the Gospel of St John, brought him to faith. He was baptized as a grown man and not long after, though married and a layman, was chosen bishop of the city.",
+      "When the emperor Constantius pressed the bishops of the West to condemn St Athanasius, Hilary refused, and was banished to Phrygia about the year 356. The exile proved a gift: in the East he read the Greek Fathers in their own tongue and came to understand the Arian controversy from the inside.",
+      "There he wrote On the Trinity, twelve books setting out the consubstantiality of the Son in Latin for the first time with the full weight of the Greek argument behind it. His commentary on St Matthew, written earlier, is the oldest surviving Latin commentary on that Gospel.",
+      "He returned to Gaul and reposed at Poitiers about the year 367. For his stand and his teaching the West called him the Athanasius of the West, and the Orthodox Church keeps his memory on the fourteenth of January.",
+    ],
+    works: [],
+  },
+  {
+    slug: "ambrose-of-milan",
+    name: "St. Ambrose",
+    byname: "Ambrose of Milan",
+    epithet: "Bishop of Milan · Teacher of emperors",
+    born: "c. 339 (Trier)",
+    reposed: "4 April 397 (Milan)",
+    feastDays: ["December 7"],
+    pronoun: "his",
+    shortBio:
+      "The governor who went to keep order at a disputed episcopal election and was acclaimed bishop by the crowd, though not yet baptized. He gave the Church of Milan its hymns, stood up to emperors, and by his preaching brought St Augustine to the font.",
+    life: [
+      "Ambrose was born about the year 339 at Trier, where his father was praetorian prefect of Gaul, and was trained for public life. As governor at Milan he went to the cathedral to keep the peace between the Nicene and Arian parties during the election of a bishop, and the people, it is said at the cry of a child, acclaimed him instead. He was still only a catechumen, and was baptized, ordained and consecrated within a week.",
+      "He gave away his property, set himself to study the Scriptures and the Greek Fathers, and became one of the great preachers of the age. He is remembered for the singing of hymns and psalms in the Western Church, which he ordered when his congregation kept vigil in the basilica against the demand that it be handed to the Arians.",
+      "He would not flatter power. He refused the emperor Theodosius communion until he had done public penance for the massacre at Thessalonica, and the emperor submitted. He resisted the restoration of the altar of Victory in the Senate and the attempts of the empress Justina to take a church for the Arians.",
+      "Among those who came to hear him preach was a teacher of rhetoric from Africa named Augustine, whom he baptized at Milan in 387. Ambrose reposed on Holy Saturday, the fourth of April, in the year 397. The Orthodox Church keeps his memory on the seventh of December.",
+    ],
+    works: [],
+  },
+  {
+    slug: "victorinus-of-pettau",
+    name: "St. Victorinus of Pettau",
+    byname: "Victorinus the Martyr",
+    epithet: "Bishop and martyr · Earliest Latin commentator",
+    born: "Unknown (third century)",
+    reposed: "c. 304 (martyred under Diocletian)",
+    feastDays: ["November 2"],
+    pronoun: "his",
+    shortBio:
+      "Bishop of Pettau in Pannonia and the earliest Latin writer to comment on the Scriptures, martyred in the persecution of Diocletian. His commentary on the Apocalypse is the oldest that survives, and the only patristic commentary on that book this library carries.",
+    life: [
+      "Little is known of his life beyond what St Jerome records: that he was bishop of Pettau in Pannonia, that he knew Greek better than Latin, and that he suffered martyrdom. The year of his birth is nowhere given, and the year of his death is placed about 304, in the persecution under Diocletian.",
+      "He is the first Latin writer known to have written commentaries on the books of Scripture. Most are lost. What survives entire is his commentary on the Apocalypse, which makes him the earliest interpreter of that book whose work we can still read.",
+      "His reading is millenarian in places, expecting a literal reign of a thousand years upon the earth. He writes before the Church had settled its mind on the question, and the later tradition did not follow him there. St Jerome, who valued him, revised the commentary to remove those passages, and both forms have come down to us.",
+      "He is honored as a martyr, and his memory is kept on the second of November. He is included here because he speaks in this library, and a reader who meets him at the Apocalypse is entitled to know both what he was and where the Church did not follow him.",
+    ],
+    works: [],
+  },
+  {
+    slug: "isidore-of-seville",
+    name: "St. Isidore of Seville",
+    epithet: "Bishop of Seville · The last of the ancient Fathers",
+    born: "c. 560 (Cartagena)",
+    reposed: "4 April 636 (Seville)",
+    feastDays: ["April 4"],
+    pronoun: "his",
+    shortBio:
+      "Bishop of Seville in Visigothic Spain, who gathered what was left of ancient learning into the Etymologies and saved it for the centuries that followed. The Catena quotes him twice, and both citations are from that book and from his Sentences.",
+    life: [
+      "Isidore was born about the year 560 at Cartagena, into a family that gave Spain four saints: his brothers Leander and Fulgentius and his sister Florentina. Leander, whom he succeeded as bishop of Seville about 600, had already brought the Visigothic kings from Arianism to the Orthodox faith.",
+      "He set himself to gather the learning of the ancient world before it was lost. The Etymologies, in twenty books, ranges over grammar, medicine, law, the earth, the animals, buildings, ships and much beside, quoting the authors he had and defining what things are by where their names come from. For centuries afterwards it was the reference book of the West.",
+      "He also wrote the Sentences, three books on doctrine and the moral life drawn largely from St Augustine and St Gregory the Great, and presided at the Fourth Council of Toledo in 633, which ordered the founding of a school at every cathedral.",
+      "He reposed at Seville on the fourth of April in the year 636, having spent his last days giving away what he owned. He is often called the last of the ancient Fathers of the West, standing at the point where the classical world ends and the Middle Ages begin.",
+    ],
+    works: [],
+  },
+  {
+    slug: "peter-chrysologus",
+    name: "St. Peter Chrysologus",
+    byname: "The Golden-Worded",
+    epithet: "Bishop of Ravenna · Preacher of short sermons",
+    born: "c. 380 (Imola)",
+    reposed: "c. 450 (Imola)",
+    feastDays: ["December 4"],
+    pronoun: "his",
+    shortBio:
+      "Bishop of Ravenna when it was the seat of the Western emperors, called the Golden-Worded for his preaching. He kept his sermons deliberately short, saying that the hearers' attention was a thing to be spent carefully, and nearly two hundred of them survive.",
+    life: [
+      "Peter was born about the year 380 at Imola in Italy and was ordained deacon there. About 433 he was made bishop of Ravenna, which had become the residence of the Western emperors and so one of the chief sees of Italy.",
+      "He was above all a preacher. The surviving sermons are brief by the standards of the age, and he says himself that he cut them short so that his hearers would not tire, preferring that they carry away a little with attention than a great deal without it. For the manner of them he was given the name Chrysologus, the golden-worded, an answer in the Latin West to Chrysostom in the East.",
+      "He wrote to Eutyches, who had been condemned at Constantinople, urging him to submit to the judgement of the Church and to look to Rome; the letter survives and was read with approval at the Council of Chalcedon.",
+      "He reposed about the year 450 at Imola, the town of his birth. His memory is kept on the fourth of December.",
     ],
     works: [],
   },

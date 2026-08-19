@@ -116,18 +116,23 @@ export const AUTHOR_ICONS: Record<string, string> = {
 
   // Other Fathers cited in commentary cards but not in the registry yet.
   "St. Gregory of Nyssa": "/saints/icons/gregory-of-nyssa.jpg",
-  // Cyprian of Carthage and Jerome were mapped here to
-  // /saints/icons/cyprian-of-carthage.jpg and /saints/icons/jerome.jpg, and
-  // neither file has ever existed. components/bible/SaintIcon.tsx has three
-  // failure paths, so both silently rendered the initials chip, which is
-  // exactly what they render now with no mapping at all. The lines are removed
-  // rather than left dangling because lib/saints/iconRights.ts now asserts that
-  // every referenced path resolves, and a pointer to nothing is the kind of
-  // quiet wrongness that assertion exists to catch.
-  //
-  // Cyprian is a target of the icon batch: he is the headline of the August
-  // menologion with four shipped works and no icon anywhere. Restore both
-  // mappings in the same commit that adds the files.
+
+  // Cyprian's file now exists and carries a full rights record in
+  // lib/saints/iconRights.ts: permission from the owner, inspected 2026-08-12,
+  // alt text written. The note that used to sit here asked for exactly this,
+  // "restore the mapping in the same commit that adds the file", so it is
+  // restored. Jerome's file still does not exist and stays unmapped.
+  "St. Cyprian of Carthage": "/saints/icons/cyprian-of-carthage.jpg",
+  "St. Cyprian": "/saints/icons/cyprian-of-carthage.jpg",
+
+  // DELIBERATELY NOT MAPPED, though the files are on disk:
+  // leo-the-great.jpg and john-cassian.jpg. Both records in iconRights.ts read
+  // "No source, licence or attribution recorded ... Not yet opened and
+  // inspected." Two of the first four icons ever inspected turned out to be
+  // watermarked works by living iconographers, rendering in production, which
+  // is why that registry exists. Mapping an uninspected file would put it in
+  // front of every reader of a Leo or Cassian note. Map them in the commit that
+  // records their rights, not before.
 };
 
 export function authorIcon(author: string): string | null {

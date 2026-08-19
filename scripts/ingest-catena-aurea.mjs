@@ -28,16 +28,11 @@
 // seventeen verses. A tighter regex would only be a better guess about
 // typography, and would break on the next volume.
 //
-// So a lemma is not recognised, it is VERIFIED. We already ship the verse it
-// quotes: data/bible/<book>/<n>.json holds the KJV, and the 1842 lemma is the
-// Authorised Version with light variation. A candidate is accepted only when
-// its text actually matches the verse it claims to be. A wrong anchor becomes
-// structurally impossible, because there is nothing for it to match.
-//
-// That also settles chapter boundaries by evidence rather than inference. This
-// transcription of Matthew omits the headings for chapters 1, 11 and 15. When a
-// candidate fails against the current chapter but matches the opening of the
-// next, the boundary is proven rather than guessed from a verse-number reset.
+// So a lemma is not recognised, it is VERIFIED, against the Scripture we
+// already ship. That matcher now lives in scripts/lib/lemma-verify.mjs, which
+// carries the full argument and the calibration constants; this script is the
+// volume-specific part. Mark remains its oracle: 679 of 679 lemmas verified,
+// and data/bible/commentary/mark/ byte-identical.
 //
 // Commentary is never dropped: an unverified line folds into the preceding
 // block, so the text survives and only its position stays conservative.
@@ -48,6 +43,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
+
+import { createAlignmentReport, createLemmaVerifier } from "./lib/lemma-verify.mjs";
 
 // Verse counts (KJV) are a backstop on the verifier: a note anchored past the
 // end of its chapter proves something upstream is wrong. Once verification is
@@ -84,15 +81,6 @@ const VOLUMES = {
 const CITATION = "Catena Aurea (Oxford, Rivington, 1842)";
 const SOURCE_NOTE =
   "St. Thomas Aquinas, Catena Aurea, Oxford translation, J.G.F. and J. Rivington, London, 1842. Public domain. Attributions are those printed by the 1842 edition, including its own Pseudo- markings.";
-
-// How much of a candidate's opening has to appear in the verse it claims to be.
-// The 1842 text modernises spelling and sometimes trims the quotation, so this
-// is overlap and never equality. Calibrated against Mark, whose correct output
-// is already known and shipped.
-const MATCH_TOKENS = 8;
-const MATCH_THRESHOLD = 0.5;
-// Below this share of verified lemmas the matching is broken, not the data.
-const MIN_VERIFIED_RATE = 0.9;
 
 // The speakers the 1842 volumes actually use, mapped onto the names the rest of
 // the corpus uses. Pseudo- forms are deliberately distinct entries: they are a
@@ -209,46 +197,13 @@ async function load(id) {
   return text;
 }
 
-// ---- The verifier -----------------------------------------------------------
-
-/** Bare words, so an 1842 lemma and the shipped KJV can be compared. */
-function words(s) {
-  return s
-    .toLowerCase()
-    .replace(/\[[^\]]*\]/g, " ") // drop the transcription's [Mal 3:1] refs
-    .replace(/&[a-z]+;/g, " ")
-    .replace(/[^a-z0-9\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-/** The shipped Scripture: chapter -> (verse -> word-set). */
-function loadScripture(bookSlug) {
-  const dir = path.join("data", "bible", bookSlug);
-  const byChapter = new Map();
-  for (const f of fs.readdirSync(dir).filter((x) => x.endsWith(".json"))) {
-    const doc = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8"));
-    const verses = new Map();
-    for (const v of doc.verses ?? []) verses.set(v.n, new Set(words(v.text).split(" ")));
-    byChapter.set(doc.chapter, verses);
-  }
-  return byChapter;
-}
-
-const SCRIPTURE = loadScripture(vol.bookSlug);
-
-/** Share of the candidate's opening words that appear in that verse. */
-function score(quoted, chapter, verse) {
-  const verses = SCRIPTURE.get(chapter);
-  if (!verses) return 0;
-  const target = verses.get(verse);
-  if (!target) return 0;
-  const q = words(quoted).split(" ").filter(Boolean).slice(0, MATCH_TOKENS);
-  if (!q.length) return 0;
-  let hit = 0;
-  for (const w of q) if (target.has(w)) hit++;
-  return hit / q.length;
-}
+// The matcher, and the running tally that becomes the review file.
+const VERIFIER = createLemmaVerifier(vol.bookSlug);
+const REPORT = createAlignmentReport({
+  label: `${vol.work}: lemma alignment`,
+  command: `node scripts/ingest-catena-aurea.mjs --book ${bookArg}`,
+  source: SOURCE_NOTE,
+});
 
 let raw = await load(vol.id);
 
@@ -296,12 +251,8 @@ function paragraphs(block) {
     .filter(Boolean);
 }
 
-const unknown = new Map();
 let noteCount = 0;
 let blockCount = 0;
-let verified = 0;
-let rejected = 0;
-const rejects = [];
 const out = new Map(); // chapter -> { verse -> notes[] }
 
 for (const region of regions) {
@@ -318,18 +269,10 @@ for (const region of regions) {
       const quoted = cand[2];
       // Verify against this chapter first, then against the next: a candidate
       // that matches the next chapter is where a missing heading belongs.
-      let hit = score(quoted, chapter, n);
-      let target = chapter;
-      if (hit < MATCH_THRESHOLD) {
-        const next = score(quoted, chapter + 1, n);
-        if (next >= MATCH_THRESHOLD) {
-          hit = next;
-          target = chapter + 1;
-        }
-      }
-      if (hit >= MATCH_THRESHOLD) {
-        verified++;
-        if (target !== chapter) chapter = target;
+      const check = VERIFIER.verifyAnchor(quoted, n, chapter);
+      if (check.ok) {
+        REPORT.pass();
+        if (check.chapter !== chapter) chapter = check.chapter;
         if (state === "notes") {
           if (pending) blocks.push(pending);
           pending = null;
@@ -340,8 +283,7 @@ for (const region of regions) {
       }
       // Not the verse it claims to be: ordinary prose. Fall through so it is
       // kept as commentary rather than dropped or turned into an anchor.
-      rejected++;
-      rejects.push({ chapter, n, hit: hit.toFixed(2), quoted: quoted.slice(0, 72) });
+      REPORT.fail({ chapter, n, hit: check.score.toFixed(2), quoted: quoted.slice(0, 72) });
     }
     if (RULE.test(line)) {
       state = "notes";
@@ -359,7 +301,7 @@ for (const region of regions) {
       if (m) {
         const mapped = SPEAKERS.get(m[1]);
         if (mapped === undefined) {
-          unknown.set(m[1], (unknown.get(m[1]) ?? 0) + 1);
+          REPORT.unnamedLabel(m[1]);
           if (notes.length) notes[notes.length - 1].text += " " + p;
           continue;
         }
@@ -383,24 +325,12 @@ for (const region of regions) {
 }
 
 // ---- Prove it ---------------------------------------------------------------
-const rate = verified / (verified + rejected || 1);
-console.log(
-  `lemmas: ${verified} verified against the shipped text, ${rejected} rejected as prose ` +
-    `(${(rate * 100).toFixed(1)}% verified).`,
-);
-if (rate < MIN_VERIFIED_RATE || args.includes("--explain")) {
-  console.log("");
-  console.log("Rejected candidates (highest scoring first), to judge whether the matcher or the data is at fault:");
-  rejects
-    .slice()
-    .sort((a, b) => Number(b.hit) - Number(a.hit))
-    .slice(0, 20)
-    .forEach((r) => console.log(`  ${r.chapter}:${String(r.n).padStart(3)}  score ${r.hit}  "${r.quoted}"`));
-  console.log("");
-}
-if (rate < MIN_VERIFIED_RATE) {
+REPORT.print({ explain: args.includes("--explain") });
+// Written before the gates below, so the evidence exists when one of them fires.
+const REVIEW = REPORT.writeReview(`catena-aurea-${vol.bookSlug}`);
+if (REPORT.belowFloor()) {
   throw new Error(
-    `only ${(rate * 100).toFixed(1)}% of lemma candidates verify. That is a broken matcher, not messy data.`,
+    `only ${(REPORT.rate() * 100).toFixed(1)}% of lemma candidates verify. That is a broken matcher, not messy data.`,
   );
 }
 
@@ -417,10 +347,10 @@ for (const [ch, verses] of out) {
   }
 }
 
-if (unknown.size) {
+const unnamed = REPORT.unnamedEntries();
+if (unnamed.length) {
   console.log(`Unrecognised speaker labels (folded into the previous note, never written as authors):`);
-  [...unknown.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12)
-    .forEach(([l, n]) => console.log(`  ${String(n).padStart(4)}  ${l}`));
+  unnamed.slice(0, 12).forEach(([l, n]) => console.log(`  ${String(n).padStart(4)}  ${l}`));
 }
 
 // ---- Merge, never clobber ---------------------------------------------------
@@ -445,4 +375,5 @@ console.log(
   `${vol.bookName}: ${blockCount} blocks -> ${noteCount} notes across ${out.size} chapters. ` +
     `Other sources preserved: ${kept}.`,
 );
+console.log(`review: ${REVIEW}`);
 console.log(SOURCE_NOTE);
