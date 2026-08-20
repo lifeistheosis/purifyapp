@@ -26,6 +26,7 @@ import {
  ReaderFocusController,
 } from "@/components/reader/ReaderPrefs";
 import { allChapterParams, getBook } from "@/lib/bible/books";
+import { hasCommentary as hasBookCommentary } from "@/lib/bible/commentary-index";
 import {
  loadChapter,
  loadIntro,
@@ -149,7 +150,16 @@ export default async function BibleChapterPage({
  const commentaryVerses = Object.keys(commentary)
  .map(Number)
  .filter((n) => (commentary[String(n)]?.length ?? 0) > 0);
- const hasCommentary = commentaryVerses.length > 0;
+ // Two different questions, and conflating them is what made the rail's empty
+ // state unreachable. This chapter having notes governs the per-verse glyph
+ // and the mobile sheet, because there is nothing to open without them. The
+ // BOOK having notes governs the desktop rail, because a reader who was told
+ // on the index that this book has the Fathers deserves to be told here when
+ // a particular chapter does not. Genesis carries the badge on one chapter of
+ // fifty; the other forty-nine used to render nothing at all and look
+ // identical to a book we never touched.
+ const hasChapterCommentary = commentaryVerses.length > 0;
+ const bookHasCommentary = hasBookCommentary(book);
 
  return (
  <ReaderPrefsProvider>
@@ -278,7 +288,7 @@ export default async function BibleChapterPage({
  visible; below lg the Fathers open by tapping a marked verse number,
  which first-time readers don't discover (community, #purify-suggestions:
  "How am I able to read his commentary?"). This names the affordance. */}
- {hasCommentary && !usingLicensed && (
+ {hasChapterCommentary && !usingLicensed && (
  <p className="mb-8 lg:hidden rounded-md border border-accent/25 bg-accent/[0.06] px-4 py-3 font-sans text-detail leading-[1.55] text-paper/80">
  <span className="font-semibold text-paper"><T k="bible.readWithFathers" /></span>{" "}
  <T k="bible.commentaryHint1" />{" "}
@@ -327,7 +337,7 @@ export default async function BibleChapterPage({
  </div>
 
  {/* Desktop study rail */}
- {hasCommentary && (
+ {bookHasCommentary && (
  <aside className="hidden lg:block" data-reader-chrome>
  <div className="sticky top-[88px] max-h-[calc(100dvh-104px)] overflow-y-auto scrollbar-thin pr-2 -mr-2">
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
