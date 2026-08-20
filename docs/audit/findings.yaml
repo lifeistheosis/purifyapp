@@ -365,3 +365,47 @@ corrections:
     action: owner to supply the john-the-baptist.jpg iconographer and file the Tom Clark and Alevizakis written permissions; then backfill the 107 in slices, priority to the twentieth-century figures (dumitru-staniloae, iakovos-of-evia) whose photographs are least likely to be public domain
     safe_to_automate: partially
     review: requires-owner
+
+  - id: F-23
+    title: Job shipped 11,125 replacement characters, from one charset default at fetch time
+    area: editorial/ingest
+    severity: P2
+    confidence: confirmed
+    status: corrected-verified   # 2026-08-19. 795 of the 920 Job notes carried U+FFFD, so a reader met "by ?the seven sons? is represented" throughout the largest work in the library, and Job is one of only two Old Testament books that can ever carry public-domain patristic commentary. Cause, probed rather than inferred: lectionarycentral.com serves the Moralia pages as `Content-Type: text/html` with NO charset, while the documents declare windows-1252 in a meta tag in the head. fetch()'s res.text() reads only the header, defaults to UTF-8, and every cp1252 smart quote and section sign became U+FFFD before the parser ever saw it. The result was then cached, so the original bytes were gone and no local repair was possible. Fix: decodeDeclared() sniffs the charset out of the document and decodes deliberately; the 35 poisoned cache files were deleted and refetched. Proof: 920 notes before and after with identical keys, one author, 35 Book strings, one citation; 124 byte-identical, 795 differing in punctuation and encoding alone, and exactly two word-level changes, both being fused words (intoEgypt, confoundthem) coming apart because the same pass stopped DELETING numeric entities and started decoding them. U+FFFD 11,125 to 0.
+    evidence: scripts/ingest-gregory-job.mjs decodeDeclared(); commit "Give Gregory back his quotation marks"
+    action: done. The general rule is now in docs/editorial-standards.md: fetch() obeys the Content-Type header and never reads the document, so a source that declares its encoding only in the markup must be decoded explicitly.
+    safe_to_automate: true
+    review: none
+
+  - id: F-24
+    title: Cyril's Greek reached readers as raw entity codes; decimal entities were silently deleted
+    area: editorial/ingest
+    severity: P3
+    confidence: confirmed
+    status: corrected-verified   # 2026-08-19. 34 notes in John and Luke carried 2,617 literal strings of the form &#x03BA;&#x03BB; running for whole lines, wherever Pusey and Payne Smith set the Greek. Both ingests stripped the decimal form of a numeric reference (deleting characters out of a verbatim text without saying so) and did not handle the hex form at all. Both now decode. Conservation proved by sentence multiset: Luke 8,387 distinct sentences before and after with none lost, none gained and no anchor moved; John 40,436 both sides, the seventeen differences all being sentence boundaries falling inside newly decoded Greek. Three verses in John change note count because splitLongNote now measures real characters rather than eight-character escapes. The decode also surfaced five segments of Pusey's manuscript apparatus that had been hiding behind the escapes, which the footnote cleaner then claimed.
+    evidence: scripts/ingest-cyril-john.mjs, scripts/ingest-cyril-luke.mjs; commit "Let Cyril speak Greek"
+    action: done
+    safe_to_automate: true
+    review: none
+
+  - id: F-25
+    title: Three regions of other documents shipped inside commentary notes under a Father's name
+    area: editorial/ingest
+    severity: P2
+    confidence: confirmed
+    status: corrected-verified   # 2026-08-19. Not footnote apparatus, which is what the two cleaners look for, but whole stretches of a different document that a slice swallowed, which is why neither cleaner could reach them. (1) All ten homilies on 1 John carried their CCEL endnote list, 10,857 words; because cleanBody strips the [1991] anchors out of the prose the definitions arrived looking like paragraphs ("Gal. v. 6.", "Ps. cxix. 85."). 1-john/5 v1 was 40% not Augustine. (2) matthew/7 v21 held 1,158 words of the front matter of the Harmony of the Gospels, translator credits and Riddle's introductory essay, because the Sermon on the Mount region ended on the Harmony's opening summary, 26,544 characters past where the Harmony begins. (3) job/38 v33 held 1,094 words of the 1844 Oxford editor arguing that Gregory on the procession of the Spirit reads with the later Latin Church, under Gregory's name. Every cut is doubly positive, a rule the edition prints AND a second marker naming what follows, never positional; the footnote cleaner's own header records that positional cutting once deleted whole homilies. Each of the ten 1 John notes was verified to be a strict prefix of what it replaced. Three hard invariants added to lib/bible/__tests__/commentaryIntegrity.test.ts, each verified to catch its own defect in the pre-fix data and nothing else.
+    evidence: lib/bible/__tests__/commentaryIntegrity.test.ts "carries no back matter from another document"; commit "Take the back matter out of the Fathers' mouths, again"
+    action: done for these three. Two remainders, both out of scope and neither a misattribution: romans/4 v21 ends in a footnote tail and is the last entry on clean-commentary-indexes' flag list; matthew/14 v34 ends in an escaped tag fragment "Chapter 15&lt;.h2&gt;" whose ingest source (catena1.txt) is not cached, so fixing it means refetching and re-purging a 3,234-note book.
+    safe_to_automate: true
+    review: none
+
+  - id: F-26
+    title: The commentary rail's empty state was unreachable, so badged books went silent on chapters they do not cover
+    area: reader
+    severity: P3
+    confidence: confirmed
+    status: corrected-verified   # 2026-08-19. StudyRail has always carried "No patristic commentary for this chapter yet." on a branch that runs when a chapter has no notes, but its only call site gated the entire rail on the same condition inverted, so the copy could never render. The cause was a name: page.tsx declared a local hasCommentary meaning "this chapter has notes", shadowing the hasCommentary exported from lib/bible/commentary-index meaning "this book has notes". Both are wanted, for different things, and both now have their own name. The per-verse glyph and mobile sheet stay on the chapter question; the desktop rail moves to the book question. Genesis carries the Fathers badge on 1 chapter of 50, Exodus 1 of 40, 1 Samuel 1 of 31, and those 118 chapters used to render nothing and look identical to a book never touched. Verified against a dev server on four cases: genesis/5 empty state, genesis/1 Basil, job/38 Gregory, isaiah/1 no rail at all.
+    evidence: app/(app)/bible/[book]/[chapter]/page.tsx; commit "Tell a reader when a chapter has no Fathers"
+    action: done. Open: that copy says "yet", and per the coverage ceiling it is not "yet" for Genesis, Exodus or 1 Samuel but that no public-domain English translation exists. Rewording is a voice decision plus 21 translations.
+    safe_to_automate: partially
+    review: requires-owner
