@@ -3887,7 +3887,17 @@ export const SAINTS: Saint[] = [
       "In 590, when plague was in the city and he had tried to refuse, he was made bishop of Rome. He called himself the servant of the servants of God, a title his successors kept. He fed the poor of the city from the Church's estates, ordered its worship, sent Augustine and his companions to preach to the English, and wrote the Pastoral Rule on the care of souls, which became the handbook of bishops in both East and West.",
       "He reposed on the twelfth of March in the year 604. The Orthodox Church honors him as Gregory the Dialogist and ascribes to him the Liturgy of the Presanctified Gifts served in Great Lent, a tradition of long standing in the East whatever the history of the rite itself.",
     ],
-    works: [],
+    works: [
+      {
+        slug: "morals-on-the-book-of-job",
+        title: "Morals on the Book of Job",
+        subtitle: "The Moralia, in thirty-five books",
+        year: "c. 579 to 596",
+        blurb:
+          "Begun at Constantinople as conferences for the monks who had come with him, and finished after he was made bishop of Rome. Gregory reads Job three times over, historically, allegorically and morally, and the last of those readings is the one the whole Latin Middle Ages learned its moral theology from. The largest work in this library.",
+        topics: ["Patience", "Suffering", "Scripture", "Humility", "Providence", "The Church"],
+      },
+    ],
   },
   {
     slug: "jerome-of-stridon",

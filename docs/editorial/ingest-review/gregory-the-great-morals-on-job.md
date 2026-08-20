@@ -40,9 +40,11 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [vi]
 
- |
+ 
+ 
+
+  |
 | 3:9 | 0.38 | Let it 
  look for light, but have none; neither let it see the dawning o |
 | 3:6 | 0.38 | [verse 3 fits better, 0.50] As for 
@@ -62,11 +64,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxix]
 
  
  
- |
+
+ 
+ 55.  |
 | 3:17 | 0.38 | [verse 19 fits better, 0.50] There the 
  wicked cease from disturbance, and there the weary in streng |
 | 4:14 | 0.38 | Fear came 
@@ -100,8 +103,11 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxv]
 
+ 
+ 
+
+ 
  
   |
 | 7:16 | 0.38 | I have given over hope, I will not live any longer.
@@ -111,9 +117,12 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xxvi]
 
-  |
+ 
+ 
+
+ 
+ 4 |
 | 8:3 | 0.38 | Doth God pervert judgment? Or doth the Almighty pervert justice?
 
  
@@ -128,13 +137,13 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xiv]
 
  
  
 
  
- |
+ 21. 
+  |
 | 10:14 | 0.38 | [verse 15 fits better, 0.50] How great am I that I should answer Him, and talk with Him in my 
  words |
 | 9:15 | 0.38 | Who, though I possessed any thing righteous, yet would I not 
@@ -146,10 +155,12 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xxxi]
 
  
- |
+ 
+
+ 
+ 47 |
 | 9:28 | 0.38 | I was afraid of all my works, knowing that Thou wouldest not spare 
  me, |
 | 9:29 | 0.38 | But if even so I be wicked, why, then, have I laboured in vain?
@@ -165,14 +176,13 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xl]
 
  
  
 
  
  63. 
- For t |
+ For the hol |
 | 11:4 | 0.38 | For Thou hast said, My speech is pure, and I am clean in Thine eyes.
 
  
@@ -198,14 +208,13 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxx]
 
  
  
 
  
  42. 
- All |
+ All that a |
 | 14:13 | 0.38 | Hold your peace for a little, that I may speak whatsoever my mind 
  shal |
 | 13:28 | 0.38 | Who am as a rotten thing to be consumed, and as a garment that is 
@@ -224,7 +233,8 @@ what needs review is only whether the anchor above them is right.
  
 
  
-  |
+
+ |
 | 14:22 | 0.38 | But his flesh while he liveth shall have pain, and His soul shall 
  mour |
 | 15:15 | 0.38 | Behold, among His saints there is no one that is unchangeable; the 
@@ -238,14 +248,13 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xlviii]
 
  
  
 
  
  54. 
-  |
+ If this pr |
 | 15:35 | 0.38 | They conceive woe, and bring forth iniquity, and their womb 
  prepareth  |
 | 16:9 | 0.38 | [verse 11 fits better, 0.50] He gathered his fury against me; and threatening me he gnashed 
@@ -257,7 +266,9 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [x |
+
+ 
+ |
 | 16:12 | 0.38 | God hath shut me up with the ungodly, and turned me over into the 
  hand |
 | 16:13 | 0.38 | I, the same that was once rich, am crushed on a sudden. 
@@ -267,7 +278,10 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xiv |
+
+ 
+ 
+ |
 | 16:14 | 0.38 | [verse 11 fits better, 0.50] He hath broken me with breach upon breach. 
 
  
@@ -275,7 +289,7 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xvii] [ALLEGORIC |
+[ALLEGORICAL INTER |
 | 17:5 | 0.38 | He promiseth prey to his friends; and the eyes of his children shall 
  f |
 | 17:6 | 0.38 | He hath made me, as it were, a byword of the people, and I am an 
@@ -298,13 +312,13 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xxviii]
 
  
  
 
  
- 3 |
+ 34. 
+ For t |
 | 20:28 | 0.38 | The shoot of his house shall be disclosed, and he shall be taken 
  away  |
 | 21:4 | 0.38 | As for me, is my dispute against man, that I should not be justly 
@@ -320,7 +334,8 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [ |
+
+  |
 | 23:13 | 0.38 | But He is Himself alone, and no man can turn away His thought.
 
  
@@ -337,7 +352,9 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [x |
+
+ 
+ |
 | 24:9 | 0.38 | [verse 6 fits better, 0.50] They have done violence in preying on the fatherless, and have 
  spoiled |
 | 22:14 | 0.38 | [verse 11 fits better, 0.50] The murderer rising with the light killeth the poor and needy, and 
@@ -354,10 +371,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [ix]
 
  
- |
+ 
+
+ 
+  |
 | 27:14 | 0.38 | If his children be multiplied, it is in the sword; and his 
  grandchildr |
 | 27:18 | 0.38 | He buildeth his house as a moth.
@@ -367,14 +386,13 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xvii]
 
  
  
 
  
  27. 
- ‘The m |
+ ‘The moth buil |
 | 28:4 | 0.38 | [verse 3 fits better, 0.88] The stone likewise of darkness, and the shadow of 
  death, the torrent d |
 | 27:17 | 0.38 | The gold and the glass cannot equal it.
@@ -384,25 +402,25 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xlviii]
 
  
  
 
  
- 77. |
+ 77. 
+ Who tha |
 | 28:18 | 0.38 | Nor shall they be mentioned in comparison with her.
 
  
  
 
  
- [l]
 
  
 
  
-  |
+ 81. 
+ |
 | 29:2 | 0.38 | Who would give me that I might be as in the months past?
 
  
@@ -452,13 +470,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [viii]
 
  
  
 
  
- 18. By which |
+ 18. By which same re |
 | 31:28 | 0.38 | Which is the chiefest 
  iniquity, and denial against the Most High God.
  |
@@ -478,9 +495,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xviii]
 
-  |
+ 
+ 
+
+ 
+ 33 |
 | 33:17 | 0.38 | That He may withdraw 
  man from the things that he has done, and may del |
 | 33:20 | 0.38 | [verse 18 fits better, 0.63] His bread becomes 
@@ -496,7 +516,8 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [ |
+
+  |
 | 34:21 | 0.38 | For His eyes are over 
  the ways of men, and He considers all their step |
 | 34:30 | 0.38 | [verse 29 fits better, 0.50] Who maketh a man that 
@@ -538,7 +559,9 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [x |
+
+ 
+ |
 | 36:10 | 0.38 | [verse 9 fits better, 0.50] He will open also 
  their ear, to correct them, and will speak to them t |
 | 36:15 | 0.38 | He will deliver the 
@@ -562,12 +585,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [vi]
 
  
  
 
-  |
+ 
+ 9. H |
 | 37:2 | 0.38 | It will hear a hearing 
  in the terror of His voice, and a sound going o |
 | 37:3 | 0.38 | He himself considereth 
@@ -581,7 +604,8 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [ |
+
+  |
 | 37:9 | 0.38 | A tempest will come 
  forth from the inner parts, and cold from Arcturus |
 | 37:13 | 0.38 | Whether in one tribe, 
@@ -597,13 +621,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xlv]
 
  
  
 
  
- 74. Even if  |
+ 74. Even if we can  |
 | 38:6 | 0.38 | Whereupon are the 
  bases thereof fastened?
 
@@ -611,13 +634,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xii]
 
  
  
 
  
- 31.  |
+ 31. For the |
 | 38:9 | 0.38 | When I was making a 
  cloud the garment thereof, and was covering it wit |
 | 38:10 | 0.38 | [verse 8 fits better, 0.50] I surrounded it with 
@@ -635,13 +657,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxi]
 
  
  
 
  
- 45. For th |
+ 45. For the Lord  |
 | 38:12 | 0.38 | Hast thou commanded 
  the morning since thy birth, and hast thou shewn t |
 | 38:14 | 0.38 | The seal shall be 
@@ -656,13 +677,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [v]
 
  
  
 
  
- |
+ 8. B |
 | 38:14 | 0.38 | The seal shall be 
  restored as clay, and shall stand as a garment. 
 
@@ -677,7 +697,11 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxix |
+
+ 
+ 
+
+ |
 | 38:32 | 0.38 | Dost thou bring forth 
  the morning star at its time, and dost thou make |
 | 38:37 | 0.38 | Who will declare the 
@@ -703,10 +727,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxix]
 
  
- |
+ 
+
+ 
+ 61 |
 | 39:23 | 0.38 | Over him will rattle 
  the quiver. 
 
@@ -714,13 +740,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxx]
 
  
  
 
  
- 62. In Holy  |
+ 62. In Holy Scriptu |
 | 39:24 | 0.38 | Raging and snorting 
  he swalloweth the earth, neither believeth he that |
 | 39:20 | 0.38 | with thou rouse him 
@@ -730,14 +755,13 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxxvi]
 
  
  
 
  
  [MORAL 
- |
+ INTERPRE |
 | 39:22 | 0.38 | He mocketh at fear, 
  and yieldeth not to the sword.
 
@@ -745,11 +769,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xl]
 
  
  
- |
+
+ 
+ 80 |
 | 39:24 | 0.38 | Raging and snorting, 
  he swalloweth the earth, neither believeth he tha |
 | 39:29 | 0.38 | From thence she 
@@ -759,13 +784,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [l]
 
  
  
 
  
- 100. That is |
+ 100. That is, fro |
 | 39:30 | 0.38 | Her young ones suck 
  up blood. 
 
@@ -773,13 +797,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [lii]
 
  
  
 
  
- 104. As if it w |
+ 104. As if it were pla |
 | 39:34 | 0.38 | [verse 35 fits better, 0.50] I who have 
  spoken lightly, what can I answer? [E.V. 40, 4]
 
@@ -787,7 +810,9 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [i |
+
+ 
+ |
 | 40:7 | 0.38 | Look on all the proud, 
  and confound them, and I tread down the wicked  |
 | 40:26 | 0.38 | [verse 23 fits better, 0.50] Wilt thou fill nets 
@@ -799,13 +824,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxxviii]
 
  
  
 
  
- 67. F |
+ 67. For what doe |
 | 41:13 | 0.38 | In his neck will 
  remain strength. [E.V. 22]
 
@@ -813,13 +837,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [ii]
 
  
  
 
  
- 2.  |
+ 2. For wh |
 | 41:16 | 0.38 | [verse 14 fits better, 0.50] When he shall be 
  taken away, the angels shall fear, and being affright |
 | 42:6 | 0.38 | Wherefore I reproach 
@@ -829,13 +852,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [v]
 
  
  
 
  
- 6. For the less a p |
+ 6. For the less a person |
 | 1:10 | 0.25 | Doth Job fear God for nought? Hast not Thou made an hedge about him, and |
 | 1:20 | 0.25 | Then Job arose.
 
@@ -843,14 +865,13 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [l]
 
  
  
 
  
  80. For 
- sitting betokens one at  |
+ sitting betokens one at ease, |
 | 2:6 | 0.25 | [verse 5 fits better, 0.50] Behold, he 
  is in thine hand: but save his life.
 
@@ -858,12 +879,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxix]
 
  
  
 
- |
+ 
+ 57. F |
 | 2:11 | 0.25 | [verse 9 fits better, 0.38] For they 
  had made an appointment together to come to mourn with him an |
 | 3:7 | 0.25 | [verse 5 fits better, 0.88] Let 
@@ -873,13 +894,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xvi]
 
  
  
 
  
- |
+ 29. Th |
 | 3:22 | 0.25 | [verse 20 fits better, 0.38] Which 
  rejoice exceedingly and are glad, when they can find the grave.
  |
@@ -895,21 +915,18 @@ what needs review is only whether the anchor above them is right.
 
  
 
- [ix]
-
  
 
- 11. For our old enem |
+ 11. For our old enemy is 
+  |
 | 5:6 | 0.25 | There is nothing 
  in the earth without cause. [so Vulg.]
 
  
 
- [xi]
-
  
 
- |
+ 13. Fo |
 | 8:14 | 0.25 | [verse 15 fits better, 0.38] His own folly shall not satisfy him.
 
  
@@ -917,14 +934,13 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xliii]
 
  
  
 
  
  70. 
- F |
+ For it is  |
 | 8:20 | 0.25 | Behold, God will not cast out a perfect man, neither will He stretch 
  o |
 | 8:22 | 0.25 | They that hate thee shall be clothed with confusion.
@@ -933,10 +949,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [liii]
 
  
- |
+ 
+
+ 
+ 90 |
 | 10:8 | 0.25 | [verse 11 fits better, 0.38] If thou wilt contend with Him, thou shalt not be able to answer Him 
  on |
 | 9:6 | 0.25 | Which shaketh the earth out of her place and the pillars thereof 
@@ -954,19 +972,20 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [lv |
+
+ 
+  |
 | 11:5 | 0.25 | [verse 6 fits better, 0.50] A lamp despised in the thought of 
  the rich.
 
  
 
  
- [xxx]
 
  
 
  
- 49. Wh |
+ 49. What is d |
 | 14:7 | 0.25 | Doth God need your lie, that ye should talk deceitfully for Him?
 
  
@@ -988,8 +1007,8 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xxxvii] 
- [LITERAL  |
+
+ [LITERAL AND MORAL  |
 | 16:7 | 0.25 | [verse 4 fits better, 0.38] But what am I to do? Though I speak, my grief is not assuaged; and 
  tho |
 | 16:13 | 0.25 | [verse 11 fits better, 0.50] He hath compassed me about with His lances, He hath wounded my loins 
@@ -1009,10 +1028,12 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xlviii]
 
  
- |
+ 
+
+ 
+ 53.  |
 | 18:3 | 0.25 | Wherefore are we counted as beasts, and reputed as vile in your sight?
 
  |
@@ -1040,13 +1061,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [lvi]
 
  
  
 
  
- 7 |
+ 72. Wher |
 | 20:10 | 0.25 | [verse 11 fits better, 0.38] His children shall be wasted with poverty.
 
  
@@ -1054,13 +1074,13 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [viii]
 
  
  
 
  
- 9. |
+ 9. 
+ It is |
 | 20:25 | 0.25 | [verse 23 fits better, 0.38] He is drawn and cometh out of his sheath, yea, lightening in his 
  bitte |
 | 21:5 | 0.25 | [verse 3 fits better, 0.38] Mark me, and be astonished.
@@ -1070,14 +1090,13 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xxxvii]
 
  
  
 
  
  43. 
- i.e. Cons |
+ i.e. Consider what  |
 | 21:11 | 0.25 | Their little ones go forth like flocks, and their children revel in 
  sp |
 | 21:14 | 0.25 | Who say unto God, Depart from us.
@@ -1087,14 +1106,13 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xliv]
 
  
  
 
  
  50. 
- To sa |
+ To say this i |
 | 20:22 | 0.25 | [verse 23 fits better, 0.38] Shall any teach God knowledge? seeing that He judgeth those that 
  are h |
 | 22:11 | 0.25 | [verse 8 fits better, 0.38] And thou thoughtest [V. And thoughtest thou?] thou 
@@ -1110,14 +1128,13 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xxxiii]
 
  
  
 
  
  41. 
- For as a |
+ For as a kind of f |
 | 23:17 | 0.25 | Because I have not perished on account of the overhanging darkness; 
  ne |
 | 24:11 | 0.25 | They rest at mid-day amid the heaps of those that thirst with the 
@@ -1128,12 +1145,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [lv]
 
  
  
 
  
+ 68. 
   |
 | 24:13 | 0.25 | [verse 16 fits better, 0.38] They are rebellions against the light.
 
@@ -1141,17 +1158,20 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [lvii] 
- [LITERAL INTERP |
+
+ [LITERAL INTERPRETATION |
 | 24:19 | 0.25 | [verse 20 fits better, 0.38] Let him pass to excessive heat from the snow waters.
 
  
  
 
  
- [lxvii]
 
-  |
+ 
+ 
+
+ 
+ 81 |
 | 24:20 | 0.25 | Let mercy forget him.
 
  
@@ -1177,14 +1197,13 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xiii]
 
  
  
 
  
  18. 
- In |
+ In the cog |
 | 25:4 | 0.25 | Can a man be justified being compared with God? or can he be 
  found cle |
 | 27:20 | 0.25 | [verse 21 fits better, 0.38] Want shall take hold of him like water; a tempest shall overwhelm 
@@ -1196,14 +1215,13 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xxxvii]
 
  
  
 
  
  58. 
-  |
+ i.e. in th |
 | 29:3 | 0.25 | [verse 2 fits better, 0.63] As in the days when God preserved me; when His lamp shined upon my 
  hea |
 | 30:6 | 0.25 | [verse 3 fits better, 0.50] They 
@@ -1213,12 +1231,10 @@ what needs review is only whether the anchor above them is right.
 
  
 
- [xxvi]
-
  
 
  55. For in the 
- reckoning o |
+ reckoning of the wic |
 | 30:16 | 0.25 | But 
  now my soul in mine own self is withered, and the days of afflicti |
 | 30:17 | 0.25 | [verse 15 fits better, 0.38] In 
@@ -1228,11 +1244,9 @@ what needs review is only whether the anchor above them is right.
 
  
 
- [xxx]
-
  
 
- |
+ 60. Sin |
 | 29:21 | 0.25 | Thou art changed to cruel unto me; and in the hardness of Thy hand Thou  |
 | 31:16 | 0.25 | [verse 13 fits better, 0.38] If I have denied what 
  they wished for to the poor, or have caused the  |
@@ -1250,7 +1264,8 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [ |
+
+  |
 | 33:27 | 0.25 | [verse 25 fits better, 0.63] He will look on men, 
  and will say, I have sinned.
 
@@ -1258,10 +1273,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [viii]
 
  
-  |
+ 
+
+ 
+ 15. |
 | 33:27 | 0.25 | [verse 25 fits better, 0.63] He will look on men, 
  and will say, I have sinned, and have truly done  |
 | 34:28 | 0.25 | For he hath delivered 
@@ -1303,13 +1320,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxiv]
 
  
  
 
  
- 42 |
+ 42. Even r |
 | 34:16 | 0.25 | He will therefore 
  bring thee safely from a narrow opening into a broad |
 | 36:17 | 0.25 | But thy cause hath 
@@ -1325,13 +1341,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxx]
 
  
  
 
  
- 54. For what are al |
+ 54. For what are all the E |
 | 37:15 | 0.25 | Dost thou know when 
  God commanded the rains to shew forth the light of |
 | 38:9 | 0.25 | [verse 8 fits better, 0.50] When I was laying the 
@@ -1347,13 +1362,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxi]
 
  
  
 
  
- 40. For H |
+ 40. For He in tr |
 | 38:27 | 0.25 | [verse 26 fits better, 0.38] That it should fill 
  the pathless and desolate land.
 
@@ -1377,13 +1391,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxv]
 
  
  
 
  
- 45. By th |
+ 45. By the name  |
 | 39:21 | 0.25 | [verse 19 fits better, 0.38] He diggeth up the 
  earth with his hoof.
 
@@ -1391,13 +1404,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxvii]
 
  
  
 
  
- 53. B |
+ 53. By the ‘ho |
 | 39:21 | 0.25 | [verse 19 fits better, 0.38] He diggeth up the 
  earth with his hoof. 
 
@@ -1405,13 +1417,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxxviii]
 
  
  
 
  
- 77 |
+ 77. For to di |
 | 39:28 | 0.25 | [verse 30 fits better, 0.38] She abideth in the 
  rocks.
 
@@ -1419,13 +1430,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xlviii]
 
  
  
 
  
- 97. In Holy Scrip |
+ 97. In Holy Scripture, when |
 | 39:10 | 0.25 | Behold Behemoth, 
  which I made with thee. [E.V. 15]
 
@@ -1433,10 +1443,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xii]
 
  
-  |
+ 
+
+ 
+ 16 |
 | 40:15 | 0.25 | The mountains bring 
  him forth grass. [E.V. 20] 
 
@@ -1444,13 +1456,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [i]
 
  
  
 
  
-  |
+ 2. In |
 | 40:17 | 0.25 | The shadows cover his 
  shadow. [E.V. 22]
 
@@ -1458,13 +1469,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [iv]
 
  
  
 
  
- 10. For |
+ 10. For all t |
 | 40:20 | 0.25 | Wilt thou be able to 
  draw out Leviathan with a hook? [E.V. 41, 1]
 
@@ -1479,13 +1489,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxviii]
 
  
  
 
  
- 49. H |
+ 49. Holy Script |
 | 41:17 | 0.25 | When a sword has 
  reached him, it will not be able to remain, nor a spe |
 | 2:9 | 0.13 | [verse 10 fits better, 0.25] Dost thou 
@@ -1495,7 +1504,8 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [ |
+
+  |
 | 3:18 | 0.13 | [verse 19 fits better, 0.38] There the 
  former prisoners are alike without vexation.
 
@@ -1503,7 +1513,11 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxxiv |
+
+ 
+ 
+
+  |
 | 3:12 | 0.13 | Now a 
  hidden word was spoken to me.
 
@@ -1511,13 +1525,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxviii]
 
  
  
 
  
- 50. For |
+ 50. For the invis |
 | 6:9 | 0.13 | [verse 8 fits better, 0.50] That He That hath begun would bruise me!
 
  
@@ -1525,13 +1538,13 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xvii]
 
  
  
 
  
- 20.  |
+ 20. 
+ For ve |
 | 6:16 | 0.13 | [verse 19 fits better, 0.38] Over those that fear the frost, the snow rushes down.
 
  
@@ -1539,7 +1552,11 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xxvi]
+
+ 
+ 
+
+ 
  |
 | 6:17 | 0.13 | [verse 20 fits better, 0.38] What time they be dissipated they shall perish.
 
@@ -1548,10 +1565,12 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xxvii]
 
  
  
+
+ 
+ 33. 
  |
 | 6:18 | 0.13 | [verse 19 fits better, 0.38] The paths of their steps are involved. [V. involutae]
 
@@ -1560,7 +1579,12 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xxviii |
+
+ 
+ 
+
+ 
+ |
 | 6:20 | 0.13 | [verse 18 fits better, 0.25] They are confounded, because I have hoped.
 
  
@@ -1577,7 +1601,10 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [ii] |
+
+ 
+ 
+ |
 | 6:17 | 0.13 | His roots will be wrapped about the heap of rocks, and he will dwell 
  a |
 | 9:13 | 0.13 | God, Whose wrath none can resist, and under Whom they that bear the 
@@ -1600,14 +1627,13 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [iii]
 
  
  
 
  
  3. 
- For those a |
+ For those are ‘win |
 | 16:10 | 0.13 | [verse 9 fits better, 0.63] My wrinkles speak a testimony against me. 
 
  
@@ -1615,27 +1641,26 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [viii]
 
  
  
 
  
- 10 |
+ 10. 
+ What |
 | 16:16 | 0.13 | [verse 17 fits better, 0.38] My face is swelled with weeping. 
 
  
  
 
  
- [xx]
 
  
  
 
  
  23. 
- For ‘the  |
+ For ‘the face’  |
 | 16:19 | 0.13 | [verse 20 fits better, 0.88] Also, now, behold my witness is in heaven, and my heart’s associate
  [‘c |
 | 16:20 | 0.13 | [verse 23 fits better, 0.38] My friends are full of words; but mine eye poureth out tears unto 
@@ -1648,26 +1673,25 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [iv]
 
  
  
 
  
- 4. Heret |
+ 4. Heretics 
+  |
 | 18:11 | 0.13 | [verse 9 fits better, 0.25] Terrors shall make him afraid on every side.
 
  
  
 
  
- [xiv]
 
  
  
 
  
- 16. |
+ 16. For he |
 | 18:12 | 0.13 | [verse 13 fits better, 0.50] Let his strength be hungerbitten, and starvation invade his ribs.
 
  
@@ -1680,14 +1704,13 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xlvi]
 
  
  
 
  
  54. The wise 
- fal |
+ falling awa |
 | 20:15 | 0.13 | [verse 14 fits better, 0.50] The riches he hath swallowed down, he shall vomit up, and God shall 
  ca |
 | 22:17 | 0.13 | Which said unto God, Depart from us.
@@ -1696,14 +1719,13 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xi]
 
  
  
 
  
  16. 
- That t |
+ That this to |
 | 22:2 | 0.13 | Others remove the landmarks; they violently take away flocks, and 
  feed |
 | 22:19 | 0.13 | [verse 22 fits better, 0.25] And his sin even to hell.
@@ -1712,14 +1734,13 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [lxviii]
 
  
  
 
  
  82. 
- For sin is ‘b |
+ For sin is ‘brought eve |
 | 24:23 | 0.13 | God hath given unto him room for repentance, and he abuseth it in 
  prid |
 | 24:11 | 0.13 | [verse 8 fits better, 0.25] He hath compassed the waters with bounds, until the light and 
@@ -1731,8 +1752,9 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xxxi] 
- [MYSTICAL INTERPRE |
+
+ [MYSTICAL INTERPRETATION]
+ |
 | 26:14 | 0.13 | Lo, these things have been spoken for part of His ways; and whilst 
  we  |
 | 28:6 | 0.13 | [verse 4 fits better, 0.38] The earth from which bread arose, is overturned in its place by fire.
@@ -1743,11 +1765,10 @@ what needs review is only whether the anchor above them is right.
 
  
 
- [iv]
-
  
 
- 11. Because |
+ 11. Because in 
+ t |
 | 29:24 | 0.13 | Howbeit Thou dost not put forth thine hand for the destroying of them; a |
 | 31:30 | 0.13 | [verse 27 fits better, 0.50] Neither have I 
  suffered my mouth to sin by wishing a curse to his soul |
@@ -1762,13 +1783,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xi]
 
  
  
 
  
- 2 |
+ 28. For |
 | 34:36 | 0.13 | [verse 34 fits better, 0.25] My Father, let Job be 
  tried even to the end. 
 
@@ -1776,13 +1796,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [vi]
 
  
  
 
  
- 6 |
+ 6. Lo!  |
 | 34:37 | 0.13 | Who hath added 
  blasphemy upon his sins. 
 
@@ -1790,13 +1809,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [vii]
 
  
  
 
  
- 12. H |
+ 12. He accus |
 | 34:3 | 0.13 | [verse 4 fits better, 0.25] For thou saidst, that 
  which is right doth not please thee, or what wil |
 | 36:19 | 0.13 | [verse 17 fits better, 0.38] Lay down thy 
@@ -1808,7 +1826,8 @@ what needs review is only whether the anchor above them is right.
  
 
  
-  |
+
+ |
 | 36:19 | 0.13 | [verse 17 fits better, 0.38] Lay down thy 
  greatness without tribulation, and all the mighty in stre |
 | 36:25 | 0.13 | [verse 26 fits better, 0.25] All men see Him, 
@@ -1818,13 +1837,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [v]
 
  
  
 
  
- 8 |
+ 8. Eve |
 | 36:10 | 0.13 | [verse 12 fits better, 0.38] When God bloweth, the 
  ice congeals.
 
@@ -1832,13 +1850,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxviii]
 
  
  
 
  
- 52. Bec |
+ 52. Because, as t |
 | 36:20 | 0.13 | [verse 18 fits better, 0.25] Who will tell Him the 
  things which I say? 
 
@@ -1862,13 +1879,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [vii]
 
  
  
 
  
- 9. T |
+ 9. Thou und |
 | 39:19 | 0.13 | His bones are as 
  pipes of brass. [E.V. 18]
 
@@ -1876,13 +1892,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xxi]
 
  
  
 
  
- 40. |
+ 40. What a |
 | 41:23 | 0.13 | A path will shine 
  after him. [E.V. 32]
 
@@ -1890,13 +1905,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xviii]
 
  
  
 
  
- 33. F |
+ 33. For a ‘pat |
 | 2:18 | 0.00 | So they 
  sat down with him upon the ground seven days and seven nights. |
 | 5:21 | 0.00 | Lo this, as we 
@@ -1904,11 +1918,9 @@ what needs review is only whether the anchor above them is right.
 
  
 
- [xxxviii]
-
  
 
- 63. Ass |
+ 63. Assuredly it is |
 | 6:14 | 0.00 | [verse 13 fits better, 0.13] Whoso taketh away pity from his friend, forsaketh the fear of 
  the Lord |
 | 6:29 | 0.00 | [verse 26 fits better, 0.25] Answer, I pray you, without strife.
@@ -1934,13 +1946,13 @@ what needs review is only whether the anchor above them is right.
 
  
  
- [xxviii]
 
  
  
 
  
- 32. |
+ 32. 
+ ‘My spi |
 | 20:1 | 0.00 | [verse 2 fits better, 0.13] Therefore do my thoughts changefully succeed one another, and my mind 
   |
 | 22:2 | 0.00 | Can a man be compared unto God, even when he has perfect knowledge?
@@ -1956,13 +1968,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [ix]
 
  
  
 
  
- 14. Ev |
+ 14. Every on |
 | 36:38 | 0.00 | He declares of it to 
  His friend, that it is his possession, and that h |
 | 36:12 | 0.00 | [verse 11 fits better, 0.13] Which traverse all 
@@ -1974,10 +1985,12 @@ what needs review is only whether the anchor above them is right.
  
 
  
- [xx]
 
  
-  |
+ 
+
+ 
+ 3 |
 
 ## Lemmas needing an editor
 
@@ -1995,8 +2008,12 @@ the printed reference is right and ours is the odd one.
  
 
  
- [xxxvi]
- |
+
+ 
+ 
+
+ 
+  |
 | Job 14:28 | Book 12 | past the end of a 22-verse chapter, so it is dropped | When he has stirred himself to seek bread, he knoweth that the day 
  of darkness is ready  |
 | Job 36:38 | Book 27 | past the end of a 33-verse chapter, so it is dropped | He declares of it to 
@@ -2008,13 +2025,12 @@ the printed reference is right and ours is the odd one.
  
 
  
- [xx]
 
  
  
 
  
- 37. But this  |
+ 37. But this ought  |
 
 ## Unrecognised speaker labels
 

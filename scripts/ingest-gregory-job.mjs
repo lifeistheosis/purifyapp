@@ -38,7 +38,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { createAlignmentReport, createLemmaVerifier } from "./lib/lemma-verify.mjs";
-import { splitLongNote } from "./lib/ccel-work.mjs";
+import { splitLongNote, writeWork } from "./lib/ccel-work.mjs";
 
 const ROOT = process.cwd();
 const CACHE = path.join(ROOT, "scripts", ".cache");
@@ -72,21 +72,21 @@ const args = process.argv.slice(2);
  * Decode a fetched page using the encoding it actually declares.
  *
  * WHY THIS IS NOT `res.text()`. These pages are windows-1252 and say so in a
- * meta tag in the body. They do NOT say so in the Content-Type header, which
- * is the bare `text/html`. `res.text()` reads only the header, so it falls
- * back to UTF-8, and every cp1252 smart quote and section sign decodes to
- * U+FFFD. That is not a display bug that can be fixed later: the original
- * bytes are gone the moment the string exists, and if the result is cached
- * the loss is permanent.
+ * meta tag in the document head. They do NOT say so in the Content-Type
+ * header, which is the bare `text/html`. `res.text()` reads only that header
+ * and never looks at the markup, so it falls back to UTF-8 and every cp1252
+ * smart quote and section sign decodes to U+FFFD. That is not a display bug
+ * that can be fixed later: the original bytes are gone the moment the string
+ * exists, and if the result is cached the loss is permanent.
  *
  * This shipped. 795 of 920 Job notes carried 11,125 replacement characters in
  * production, so a reader met "by ?the seven sons? is represented" throughout
  * the largest work in the library. Found 2026-08-19.
  *
  * So: take the bytes, sniff the declared charset out of the first block, and
- * decode deliberately. A source that declares its encoding only in the body is
- * common enough in the scanned-nineteenth-century corner of the web that this
- * is the safe default, not a special case.
+ * decode deliberately. A server that omits the charset while the document
+ * declares it is common enough in the scanned-nineteenth-century corner of the
+ * web that this is the safe default, not a special case.
  */
 function decodeDeclared(buf) {
   const head = Buffer.from(buf).subarray(0, 4096).toString("latin1");
@@ -142,6 +142,23 @@ function toText(html) {
     // split them: a range keeps a dash (as an en dash), a sentence break
     // becomes a comma, which is what scripts/sweep-em-dashes.mjs did to the
     // rest of this corpus. Typography only; not a word is added or removed.
+    // The printed edition's page numbers, set as a bracketed roman numeral on
+    // a line of its own. 1,253 of them were reaching the reader mid-sentence
+    // as "[xxviii]", which is the same kind of artifact as the CCEL Page_NNN
+    // anchors the integrity test already forbids. Anchored to the whole line
+    // so bracketed references like [Job 1, 1] and [2 Sam. 7, 23] are untouched.
+    .replace(/^[ \t]*\[[ivxlcdm]{1,7}\][ \t]*$/gim, "")
+    // The same page number where it shares a line with the interpretive
+    // heading that follows it, as in "[xvi] [MORAL INTERPRETATION]". The
+    // heading is content and stays; only the page number goes.
+    .replace(/^[ \t]*\[[ivxlcdm]{1,7}\][ \t]+(?=\[)/gim, "")
+    // The same edition's footnote anchors, set as a bracketed letter inside the
+    // sentence: "made to fear by His power [c], but refusing to believe". The
+    // notes they point at are not part of what we ship, so the anchor is a
+    // reference to nothing. ingest-augustine-1-john.mjs already strips the
+    // numeric form of exactly this. Two letters at most, so bracketed
+    // references like [Job 1, 1] and [Gen. 3, 19] are untouched.
+    .replace(/[ \t]*\[[a-z]{1,2}\](?=[\s,.;:?!)])/g, "")
     .replace(/(\d)\s*—\s*(\d)/g, "$1–$2")
     .replace(/\s*—\s*/g, ", ")
     .replace(/\s+([,.;:!?])/g, "$1")
@@ -192,9 +209,42 @@ const JOB_VERSES = new Map(
 
 const VER = /(?:^|\s)Ver\.\s*(\d{1,3})\.\s*/g;
 const commentary = new Map(); // chapter -> verse -> notes[]
+const sections = []; // the same text again, as a work someone can read straight through
 const driftCounts = new Map(); // offset -> how many lemmas fit a neighbour better
 let markers = 0;
 let booksRead = 0;
+
+/**
+ * Where a Book's own text starts.
+ *
+ * Each page opens with the site's navigation and the volume's half-title
+ * before the Book itself. The rail never noticed because it slices from the
+ * first "Ver." marker onwards, but a work meant to be read straight through
+ * would open on "Home Moralia Index The Epistle Book II", so find the "BOOK
+ * N." heading the edition prints and start there.
+ */
+function bookBody(body, n) {
+  const roman = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII",
+    "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII", "XXIV",
+    "XXV", "XXVI", "XXVII", "XXVIII", "XXIX", "XXX", "XXXI", "XXXII", "XXXIII", "XXXIV", "XXXV"][n];
+  const m = body.match(new RegExp(`^[ \\t]*BOOK ${roman}\\.[ \\t]*$`, "m"));
+  return m ? body.slice(m.index + m[0].length).trim() : body.trim();
+}
+
+/** The site's own furniture, which is navigation and not Gregory. */
+const CHROME = /^(?:Home|Moralia Index|The Epistle|BOOK [IVXLCDM]+|Book [IVXLCDM]+)$/;
+
+function toParas(s) {
+  const paras = s
+    .split(/\n\s*\n+/)
+    .map((p) => p.replace(/\s+/g, " ").trim())
+    .filter((p) => p.length > 1);
+  // Each page closes with a link to the next Book, and the last with a link
+  // back to the index. Trim from the end only, so a line of Gregory's that
+  // happens to be short is never touched.
+  while (paras.length && CHROME.test(paras[paras.length - 1])) paras.pop();
+  return paras;
+}
 
 for (let n = 1; n <= 35; n++) {
   const html = await bookPage(n);
@@ -203,6 +253,15 @@ for (let n = 1; n <= 35; n++) {
   const body = cutEditorNote(toText(html));
   const scope = SCOPE[n] ?? [];
   if (!scope.length) continue;
+
+  // The reading copy. Same text the rail quotes, kept whole and in order,
+  // because the rail necessarily shows it in verse-sized pieces and the
+  // Moralia is an argument that runs.
+  const paragraphs = toParas(bookBody(body, n));
+  if (paragraphs.length) {
+    const span = scope.length > 1 ? `Job ${scope[0]} to ${scope[scope.length - 1]}` : `Job ${scope[0]}`;
+    sections.push({ n, title: `Book ${n}, on ${span}`, paragraphs });
+  }
 
   const found = [];
   VER.lastIndex = 0;
@@ -320,6 +379,22 @@ if (commentary.size < 30) {
 }
 
 // ---- Write ------------------------------------------------------------------
+
+// The work itself, so the Moralia is readable as a book and not only as 920
+// fragments beside the verses. Gregory speaks in 1,179 notes across the corpus
+// and his profile shipped no writings at all, which is the gap this closes.
+// Same parse, two artifacts, exactly as ingest-cyril-luke.mjs does for Luke.
+if (sections.length < 30) {
+  throw new Error(`only ${sections.length} of 35 Books produced readable text; the work would ship partial.`);
+}
+writeWork({
+  saintSlug: "gregory-the-dialogist",
+  workSlug: "morals-on-the-book-of-job",
+  title: "Morals on the Book of Job",
+  subtitle: "The Moralia, in thirty-five books",
+  source: SOURCE,
+  sections: sections.sort((a, b) => a.n - b.n),
+});
 
 const dir = path.join(ROOT, "data", "bible", "commentary", "job");
 fs.mkdirSync(dir, { recursive: true });
