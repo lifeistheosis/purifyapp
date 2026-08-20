@@ -3916,7 +3916,44 @@ export const SAINTS: Saint[] = [
       "He settled at Bethlehem about the year 386 and remained there the rest of his life, in a monastery beside the cave of the Nativity. There he completed the translation of the Old Testament from the Hebrew, judging that the Church should have the truth of the original tongue, and wrote commentaries on the prophets, on Matthew, and on several of the epistles.",
       "He reposed at Bethlehem about the year 420. He was a difficult man and knew it, quarrelling with Rufinus and with Augustine by letter, but no one in the Latin West equalled his knowledge of the Scriptures in their own languages. The Orthodox Church keeps his memory on the fifteenth of June.",
     ],
-    works: [],
+    works: [
+      {
+        slug: "life-of-paulus-the-first-hermit",
+        title: "The Life of Paulus the First Hermit",
+        subtitle: "Written in the Syrian desert, about 375",
+        year: "c. 375",
+        blurb:
+          "Jerome's answer to the question of who went into the desert first. He gives it to Paulus rather than to Antony, and tells of the raven that brought bread, the two lions that dug the grave, and the palm-leaf tunic Jerome says he would sooner have than the purple of kings.",
+        topics: ["Monasticism", "Desert Fathers", "Asceticism", "Providence"],
+      },
+      {
+        slug: "life-of-saint-hilarion",
+        title: "The Life of S. Hilarion",
+        subtitle: "The hermit who carried the desert into Palestine",
+        year: "c. 390",
+        blurb:
+          "Hilarion heard Antony in Egypt and took that life home to Gaza, and the solitary life in Palestine begins with him. The longest of the three Lives, and the one most crowded with the ordinary people who came looking for him.",
+        topics: ["Monasticism", "Asceticism", "Miracles", "Desert Fathers"],
+      },
+      {
+        slug: "life-of-malchus-the-captive-monk",
+        title: "The Life of Malchus, the Captive Monk",
+        subtitle: "Told to Jerome by the man himself",
+        year: "c. 391",
+        blurb:
+          "An old man Jerome met in Syria, who had left his monastery, been taken by raiders on the road, and kept his continence through slavery and a forced marriage. Jerome sets it down as he was told it, to show that virtue can be held captive and not conquered.",
+        topics: ["Chastity", "Endurance", "Monasticism", "Providence"],
+      },
+      {
+        slug: "the-perpetual-virginity-of-blessed-mary",
+        title: "The Perpetual Virginity of Blessed Mary",
+        subtitle: "Against Helvidius, about 383",
+        year: "c. 383",
+        blurb:
+          "The treatise that settled the question in the West: that the brethren of the Lord are His kinsmen, that the Mother of God remained ever-virgin, and that Joseph was her guardian and not her husband in fact. Sharp in tone, as Jerome usually is, and its conclusion is what the Church confesses.",
+        topics: ["Theotokos", "Virginity", "Scripture", "Incarnation"],
+      },
+    ],
   },
   {
     slug: "bede-the-venerable",
