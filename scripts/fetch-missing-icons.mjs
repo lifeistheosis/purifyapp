@@ -1,9 +1,28 @@
-// One-off: fetch the icons that lib/saints/saints.ts already references
-// but that are missing from public/saints/icons/. Uses Wikimedia Commons
-// MediaWiki API search → picks first single-saint candidate → downloads
-// → resizes via sharp to max 800px JPEG q85.
+// SUPERSEDED. Do not run this. Use scripts/fetch-saint-icons.mjs.
 //
-// Usage: node scripts/fetch-missing-icons.mjs
+// This is the script that created the debt. It searches Commons, takes the
+// first licence-passing hit with no check that the picture is of the right
+// person, writes it straight into public/saints/icons/ where it ships, and
+// discards the provenance it had already fetched in the same request.
+//
+// The result is on the books in lib/saints/iconRights.ts: 107 of 153 icons
+// with "No source, licence or attribution recorded", two watermarked works by
+// living iconographers found rendering in production, and St Leo the Great and
+// St John Cassian unable to appear beside their own commentary because nobody
+// can say where their images came from.
+//
+// It is kept, not deleted, because its TARGETS list below is the record of
+// which slug was fetched with which search terms, and that is the only
+// surviving clue to the origin of the files it wrote.
+//
+// The replacement stages to .icon-review/ instead of public/, keeps every
+// field Commons returns, and will not move an image into the app until
+// somebody has opened it and described what they see.
+//
+// One-off, historical: fetch the icons that lib/saints/saints.ts already
+// references but that are missing from public/saints/icons/. Uses Wikimedia
+// Commons MediaWiki API search, picks the first single-saint candidate,
+// downloads, resizes via sharp to max 800px JPEG q85.
 
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -110,6 +129,15 @@ async function fileUrl(title) {
     return null;
   }
   return info.url;
+}
+
+if (!process.argv.includes("--i-know-this-is-superseded")) {
+  console.error(
+    "scripts/fetch-missing-icons.mjs is superseded and writes unverified images\n" +
+      "straight into the shipped app. Use:\n\n" +
+      '  node scripts/fetch-saint-icons.mjs --fetch <slug> "<search terms>"\n',
+  );
+  process.exit(1);
 }
 
 (async () => {

@@ -117,6 +117,11 @@ test-results/
 .cache/
 *.log
 
+# Saint icons staged by scripts/fetch-saint-icons.mjs and not yet looked at.
+# Deliberately outside public/, so an image cannot reach a reader by being
+# downloaded: it reaches them by someone opening it and promoting it.
+.icon-review/
+
 # Generated Sign in with Apple client secret (a bearer credential, 6-month life).
 # Regenerate with scripts/apple-client-secret.mjs
 .apple-client-secret.jwt
