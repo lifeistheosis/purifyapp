@@ -12,7 +12,7 @@ export default defineConfig({
     include: ["lib/**/__tests__/**/*.test.ts"],
     // Nineteen of these suites are data-integrity checks that walk and parse
     // the content corpus synchronously. interlinearData alone reads over 1,300
-    // files and commentaryIntegrity reads 353 more. Vitest's 5000ms default
+    // files and commentaryIntegrity reads 435 more. Vitest's 5000ms default
     // does not fit that on a loaded machine, and on Windows several failed in
     // roughly two runs out of three: always pure timeouts, never a real
     // offender.

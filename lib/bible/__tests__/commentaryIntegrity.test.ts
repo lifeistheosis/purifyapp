@@ -20,10 +20,24 @@
 //   2. A RATCHET ON OVER-CAPTURE. Separate defect, same symptom: the ingest
 //      attached far more than the work a note declares. `john/21.json` v19
 //      still holds 90,758 words under the title "Tractate 124", which is a few
-//      thousand words in the source. 138 notes exceed 5,000 words. That is
+//      thousand words in the source. 131 notes exceed 5,000 words. That is
 //      real patristic text, so it is not deleted here, it is bounded: the count
 //      may fall, never rise. Lower the ceiling as the re-ingest fixes each
 //      work, and this test records the progress.
+//
+//      A long note is not by itself a defect, and the ratchet is a smell test
+//      rather than a verdict. The corpus's longest, `matthew/15.json` v21 at
+//      11,054 words, has now been checked three times and is genuine: one
+//      continuous Homily 52 of Chrysostom on Matthew, with a 250-word signed
+//      editor's footnote at the end that the cleaner declines to touch. It
+//      cannot be brought under the threshold by cleaning, only by splitting a
+//      homily across verses, which would be worse. Do not investigate it a
+//      fourth time.
+//
+//      What the ratchet could not see is the reason for the third describe
+//      block below: `matthew/7.json` v21 carried 1,158 words of another book's
+//      title page while sitting at 2,989 words, comfortably under the
+//      threshold. Size is a proxy. The markers are the real test.
 
 import { describe, expect, it } from "vitest";
 import fs from "node:fs";
@@ -60,10 +74,20 @@ const words = (s: string) => s.trim().split(/\s+/).length;
 const LONG_WORDS = 5_000;
 
 /**
- * Measured 2026-08-09, after the artifact strip. This number may only go DOWN.
- * If a change makes it rise, an ingest has over-captured again.
+ * Measured 2026-08-19, after the encoding and back-matter work. This number
+ * may only go DOWN. If a change makes it rise, an ingest has over-captured
+ * again.
+ *
+ * 138 when it was first set, 132 by the time anyone looked again, and 131 now:
+ * cutting the endnote lists out of the ten homilies on 1 John took
+ * 1-john/2.json v27 from 5,253 words to 4,772, and it was the only one of the
+ * ten close enough to the line to cross it.
+ *
+ * Set to the measured number with no headroom, deliberately. Slack is how a
+ * ratchet quietly stops ratcheting, which is what let the count sit six below
+ * the ceiling with nothing noticing.
  */
-const KNOWN_LONG_NOTES = 138;
+const KNOWN_LONG_NOTES = 131;
 
 describe("commentary corpus integrity", () => {
   it("has notes to check at all", () => {
