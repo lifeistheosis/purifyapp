@@ -5,8 +5,9 @@
 // subscription run-rate, with a monthly trend, a revenue-by-source donut,
 // and top products. A sub-tab holds the existing costs/sustainability UI.
 
-import { useEffect, useState } from "react";
-import { adminJson } from "@/lib/admin/fetchJson";
+import { useState } from "react";
+import { useLiveData } from "@/lib/admin/useLiveData";
+import { Freshness } from "../Freshness";
 import { Card, StatCard, ChartFrame, SubTabs } from "../primitives";
 import { AreaChart, BarChart, Donut, SERIES_COLORS, chartColors } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
@@ -52,17 +53,14 @@ function money(cents: number) {
 }
 
 function RevenuePanel() {
-  const [data, setData] = useState<Revenue | null>(null);
-
-  useEffect(() => {
-    let alive = true;
-    adminJson<Revenue>("/api/admin/revenue").then((d) => {
-      if (alive && d) setData(d);
-    });
-    return () => {
-      alive = false;
-    };
-  }, []);
+  // 60s, matching the server-side cache in lib/billing/revenuecatMetrics.ts.
+  // Polling faster would only re-serve the same bytes while spending against
+  // RevenueCat's 25-requests-a-minute budget, and the hook pauses entirely
+  // while the tab is hidden so an open window overnight costs nothing.
+  const { data, lastSynced, failing, refresh } = useLiveData<Revenue>(
+    "/api/admin/revenue",
+    60_000,
+  );
 
   const monthly = (data?.shop.monthly ?? []).slice().reverse(); // oldest → newest
   const donutSegments = (data?.bySource ?? [])
@@ -75,6 +73,9 @@ function RevenuePanel() {
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-end">
+        <Freshness lastSynced={lastSynced} failing={failing} onRefresh={refresh} />
+      </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard
           label="Shop net"
