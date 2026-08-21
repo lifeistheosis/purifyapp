@@ -72,7 +72,7 @@ describe("reading", () => {
     const f = vi.fn(() => new Response(JSON.stringify(OK), { status: 200 }));
     vi.stubGlobal("fetch", f);
     await getProjectMetrics();
-    const [url, init] = f.mock.calls[0] as [string, RequestInit];
+    const [url, init] = f.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toContain("/v2/projects/proj_test/metrics/overview");
     expect((init.headers as Record<string, string>).Authorization).toBe("Bearer sk_test");
   });
