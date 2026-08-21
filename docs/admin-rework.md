@@ -149,6 +149,39 @@ Each one changes the work, so read them before picking up any task.
   after Wave A, not **finished**. That is what Wave C is for, and screenshots
   of the current state should not be read as those tabs being done.
 
+## Wave C, partial, 2026-08-21
+
+Three passes landed. None of them is a task from the list above, because
+reading the panel first turned up things the list did not have.
+
+1. **A crash in one tab took the whole panel down, in sixteen files.** Wave A
+   found this in `CommerceOverviewTab` and fixed that one. It was never
+   general: every `/api/admin` route answers failure with JSON, so a 403 body
+   parsed and stored cleanly and threw on the first nested read during render,
+   where the loader's own try/catch cannot reach it. `adminJson()` in
+   `lib/admin/fetchJson.ts` is now the only way the panel reads a route, and
+   `TabBoundary` wraps the active panel from inside the shell so the next one
+   stays contained. `lib/admin/__tests__/fetchGuards.test.ts` bans the shape.
+   Worth noting for scoping: an audit named six files, the test found ten more.
+2. **Thirty six tracked-uppercase labels**, in ten files, two of them inside
+   shared class constants where a `className` search does not reach. All are
+   sentence case now and take `--adm-ink-3` directly rather than `text-paper/45`
+   through the reader-token shim.
+3. **Fifty five surfaces on the reader's radius scale**, so 20px panels sat
+   beside 8px cards. All on `--adm-radius` / `--adm-radius-sm` now, by the rule
+   that uniform padding is a surface and px/py is a control. Every rounded
+   element in the panel computes to one of four values.
+
+### Still open after Wave C
+
+- `ShopTab.tsx` (2,581 lines) and `EikonBoxTab.tsx` (902) import nothing from
+  `primitives.tsx`. Together they are 35% of all tab code, and every pass so far
+  has had to route around them. This is the largest remaining inconsistency and
+  the obvious next task.
+- Task 14, the customizable Overview, is untouched.
+- The `SupportConsole.tsx` inset highlight above is still there.
+- The three orphan tabs still await a revive-or-delete decision.
+
 ## Recommended execution order
 
 Numbered by task ID (matching the live task tracker), grouped into waves.
