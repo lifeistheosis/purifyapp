@@ -78,6 +78,13 @@ const STASH_PATHS = [
   // now ships. Do not re-stash it.
   ["app", "(app)", "language-editor"],
   ["app", "admin"],
+  // The owner dashboard. Its own tree rather than a page under /admin, because
+  // it has its own gate: revenue, projections and market strategy are the half
+  // of the admin a future moderator should not inherit. Same web-only reasons
+  // as /admin, and the same trap if it is ever moved outside this list: a
+  // force-dynamic route that reads a server session bakes a redirect into the
+  // static export instead of failing loudly.
+  ["app", "owner"],
   // The shop (EIKON marketplace) now ships in the app: its pages are client
   // components that fetch live from the /api/shop/catalog routes and read the
   // buyer's own orders/messages via the Supabase client (Shop v2, Beta 1.9).
