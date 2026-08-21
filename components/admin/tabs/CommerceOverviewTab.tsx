@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from "react";
 import { Card, KpiCard, ChartFrame } from "../primitives";
+import { OverviewWidgets } from "../OverviewWidgets";
 import { AreaChart, SERIES_COLORS } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
 
@@ -148,6 +149,11 @@ export function CommerceOverviewTab() {
           />
         </div>
       </div>
+
+      {/* Everything above this line is money and accounts. This row is the
+          rest of the panel in one number each, which is what made Overview a
+          landing screen rather than the commerce tab wearing that name. */}
+      <OverviewWidgets />
 
       <ChartFrame
         title="Net revenue · last 30 days"

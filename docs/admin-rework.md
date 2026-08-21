@@ -191,10 +191,22 @@ Measured properly: **all 23 tabs import primitives, and those two are the
 heaviest users of them**, ShopTab with 10 and EikonBoxTab with 8. There is no
 outlier tab. Whoever picks this up should not go looking for one.
 
+5. **Task 14, the customizable Overview**, landed as
+   `components/admin/OverviewWidgets.tsx`. Six compact widgets, each reading
+   the section's own existing route rather than re-deriving anything, with a
+   Customize control and the visible set in `localStorage` as the task
+   recommended. Traffic and Service health are on by default; the rest are one
+   click away, because shipping all six and calling it minimized would have
+   missed the ask. Load-once, not polled, so a summary cannot double the load
+   on routes a full tab already polls.
+
+   Two of the six read `/api/admin/health` and `/api/admin/content-health`,
+   which had no caller at all. That is a partial answer to the revive-or-delete
+   question below: those two routes now have a consumer, so deleting them would
+   be a decision rather than a tidy-up.
+
 ### Still open after Wave C
 
-- Task 14, the customizable Overview, is untouched and is now the largest
-  genuinely open item on the original list.
 - The `SupportConsole.tsx` inset highlight above is still there.
 - The three orphan tabs still await a revive-or-delete decision.
 - The remaining tab-level differences are real but small: bespoke one-off
