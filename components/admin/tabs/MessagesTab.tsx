@@ -239,7 +239,7 @@ function ShopInbox() {
                       : "border-paper/12 bg-paper/[0.03] text-paper/85")
                   }
                 >
-                  <p className="mb-0.5 font-sans text-eyebrow uppercase tracking-wide text-paper/40">
+                  <p className="mb-0.5 font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
                     {m.sender === "seller" ? "Store" : "Buyer"} ·{" "}
                     {shortDate(m.created_at)}
                   </p>

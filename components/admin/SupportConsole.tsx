@@ -310,7 +310,7 @@ export function SupportConsole({ initial }: { initial: FullTicket[] }) {
                 )}
               >
                 <div className="mb-1 flex items-center justify-between gap-3">
-                  <span className="font-sans text-eyebrow uppercase tracking-wide text-paper/40">
+                  <span className="font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
                     {m.author === "staff" ? "You" : "Customer"}
                   </span>
                   <span className="font-sans text-[10px] tabular-nums text-paper/35">

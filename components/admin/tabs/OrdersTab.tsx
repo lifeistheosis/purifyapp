@@ -293,7 +293,7 @@ export function OrdersTab() {
               <Row label="Ship to" value={addr(selected.shipping_address)} />
             </div>
             <div>
-              <p className="text-eyebrow uppercase tracking-[1.2px] text-paper/45 mb-2">
+              <p className="text-caption font-medium text-[color:var(--adm-ink-3)] mb-2">
                 Line items
               </p>
               <ul className="space-y-1.5">
@@ -331,7 +331,7 @@ export function OrdersTab() {
                 })}
               </ul>
 
-              <p className="text-eyebrow uppercase tracking-[1.2px] text-paper/45 mt-4 mb-2">
+              <p className="text-caption font-medium text-[color:var(--adm-ink-3)] mt-4 mb-2">
                 Fulfillment stage
               </p>
               <select
@@ -348,7 +348,7 @@ export function OrdersTab() {
                   </option>
                 ))}
               </select>
-              <p className="text-eyebrow uppercase tracking-[1.2px] text-paper/45 mt-4 mb-2">
+              <p className="text-caption font-medium text-[color:var(--adm-ink-3)] mt-4 mb-2">
                 Outbound tracking
               </p>
               <div className="flex gap-2">

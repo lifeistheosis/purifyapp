@@ -825,7 +825,7 @@ function Metric({
 }) {
   return (
     <div className="rounded-lg border border-white/8 bg-night-soft/40 px-3 py-2.5">
-      <p className="font-sans text-eyebrow uppercase tracking-[1px] text-paper/40">
+      <p className="font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
         {label}
       </p>
       <p
@@ -987,7 +987,7 @@ function ProductOverview({
           void bottom-right. A reading-width block sits deliberately instead. */}
       <div className="mx-auto grid max-w-[840px] gap-x-10 gap-y-5 md:grid-cols-2">
         <div>
-          <p className="mb-1 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/45">
+          <p className="mb-1 font-sans text-detail font-medium text-[color:var(--adm-ink-3)]">
             Listing
           </p>
           <Row label="Category" value={p.category.replace(/_/g, " ")} />
@@ -1018,7 +1018,7 @@ function ProductOverview({
         </div>
 
         <div>
-          <p className="mb-1 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/45">
+          <p className="mb-1 font-sans text-detail font-medium text-[color:var(--adm-ink-3)]">
             Sourcing
           </p>
           <Row
@@ -1363,7 +1363,7 @@ function ProductEditor({
       </label>
 
       <div className="mt-6 rounded-lg border border-rose-400/20 bg-rose-400/[0.03] p-4">
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-rose-300/80">
+        <p className="font-sans text-detail font-medium tracking-[1.2px] text-rose-300/80">
           Sourcing (admin-only, never public)
         </p>
         <div className="mt-3 grid gap-4 md:grid-cols-3">
@@ -2021,7 +2021,7 @@ function ReviewsPanel() {
     orderId ? <Pill tone="emerald">verified</Pill> : <Pill tone="gold">seeded</Pill>;
 
   const sectionHeading =
-    "mb-1 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/45";
+    "mb-1 font-sans text-detail font-medium text-[color:var(--adm-ink-3)]";
 
   return (
     <div className="space-y-5">

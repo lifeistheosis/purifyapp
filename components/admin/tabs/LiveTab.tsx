@@ -91,7 +91,7 @@ export function LiveTab() {
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div className="rounded-lg border border-gold/30 bg-gold/[0.06] p-5 col-span-2 md:col-span-1">
-          <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-gold/80 flex items-center gap-2">
+          <p className="font-sans text-detail font-medium tracking-[1.2px] text-gold/80 flex items-center gap-2">
             <span className="inline-block h-2 w-2 rounded-full bg-gold animate-pulse" />
             Live now
           </p>

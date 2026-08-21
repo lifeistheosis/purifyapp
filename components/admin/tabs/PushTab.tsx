@@ -135,7 +135,7 @@ export function PushTab() {
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-3">
             <label className="block">
-              <span className="mb-1 block font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45">
+              <span className="mb-1 block font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
                 Title
               </span>
               <input
@@ -147,7 +147,7 @@ export function PushTab() {
               />
             </label>
             <label className="block">
-              <span className="mb-1 block font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45">
+              <span className="mb-1 block font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
                 Body
               </span>
               <textarea
@@ -160,7 +160,7 @@ export function PushTab() {
               />
             </label>
             <label className="block">
-              <span className="mb-1 block font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45">
+              <span className="mb-1 block font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
                 Opens (deep link)
               </span>
               <input
@@ -174,7 +174,7 @@ export function PushTab() {
 
           <div className="space-y-3">
             <div>
-              <p className="mb-1 block font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45">
+              <p className="mb-1 block font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
                 Audience
               </p>
               <div className="flex flex-wrap gap-2">
@@ -198,7 +198,7 @@ export function PushTab() {
             </div>
 
             <div className="rounded-lg border border-paper/10 bg-night p-4">
-              <p className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45">
+              <p className="font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
                 Recipients
               </p>
               <p className="mt-1 font-sans text-heading font-bold tabular-nums text-gold">
@@ -223,7 +223,7 @@ export function PushTab() {
         {/* Live preview of the notification */}
         {canCompose && (
           <div className="mt-5 rounded-lg border border-paper/12 bg-night p-3">
-            <p className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/40 mb-1.5">
+            <p className="font-sans text-caption font-medium text-[color:var(--adm-ink-3)] mb-1.5">
               Preview
             </p>
             <div className="rounded-md bg-paper/[0.05] p-3">

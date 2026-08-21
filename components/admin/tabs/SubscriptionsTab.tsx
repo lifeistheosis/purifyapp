@@ -108,7 +108,7 @@ function SummaryPanel() {
       <Card title="Estimated recurring revenue">
         <div className="grid grid-cols-2 gap-4 font-sans">
           <div>
-            <p className="text-eyebrow uppercase tracking-[1.2px] text-paper/45">
+            <p className="text-caption font-medium text-[color:var(--adm-ink-3)]">
               MRR (est.)
             </p>
             <p className="mt-1 text-title font-bold tabular-nums text-paper">
@@ -116,7 +116,7 @@ function SummaryPanel() {
             </p>
           </div>
           <div>
-            <p className="text-eyebrow uppercase tracking-[1.2px] text-paper/45">
+            <p className="text-caption font-medium text-[color:var(--adm-ink-3)]">
               ARR (est.)
             </p>
             <p className="mt-1 text-title font-bold tabular-nums text-paper">
@@ -169,7 +169,7 @@ const COMP_DURATIONS: [number, string][] = [
 const compField =
   "rounded-md border border-paper/20 bg-night px-3 py-2 font-sans text-detail text-paper focus:border-gold focus:outline-none";
 const compLabel =
-  "block font-sans text-eyebrow uppercase tracking-[1px] text-paper/50";
+  "block font-sans text-caption font-medium text-[color:var(--adm-ink-3)]";
 
 /**
  * Send a claimable gift. Unlike the comp grant above, nothing is written to

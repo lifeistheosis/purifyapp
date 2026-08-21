@@ -108,14 +108,14 @@ export function ProductMediaManager({
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
                   {i === 0 ? (
-                    <span className="rounded-full border border-gold/40 bg-gold/[0.08] px-2 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-gold">
+                    <span className="rounded-full border border-gold/40 bg-gold/[0.08] px-2 py-0.5 font-sans text-caption font-medium tracking-[1px] text-gold">
                       Cover
                     </span>
                   ) : null}
                   {isSupplierImageUrl(m.media_url) ? (
                     <span
                       title="Supplier CDN image: while this is the cover, the rights gate hides the listing from shoppers."
-                      className="rounded-full border border-amber-400/40 bg-amber-400/[0.06] px-2 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-amber-300"
+                      className="rounded-full border border-amber-400/40 bg-amber-400/[0.06] px-2 py-0.5 font-sans text-caption font-medium tracking-[1px] text-amber-300"
                     >
                       Supplier image
                     </span>

@@ -502,7 +502,7 @@ function DropEditor({
   return (
     <div className="space-y-4">
       <div>
-        <label htmlFor="eb-teaser" className="mb-1 block font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/50">
+        <label htmlFor="eb-teaser" className="mb-1 block font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
           Teaser (members see this)
         </label>
         <textarea id="eb-teaser"
@@ -514,7 +514,7 @@ function DropEditor({
       </div>
 
       <div>
-        <label htmlFor="eb-image" className="mb-1 block font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/50">
+        <label htmlFor="eb-image" className="mb-1 block font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
           Image URL
         </label>
         <input id="eb-image"
@@ -526,7 +526,7 @@ function DropEditor({
       </div>
 
       <div>
-        <label htmlFor="eb-close" className="mb-1 block font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/50">
+        <label htmlFor="eb-close" className="mb-1 block font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
           Claims close
         </label>
         <input id="eb-close"
@@ -543,7 +543,7 @@ function DropEditor({
       </div>
 
       <div>
-        <label htmlFor="eb-notes" className="mb-1 block font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/50">
+        <label htmlFor="eb-notes" className="mb-1 block font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
           Sourcing notes (never leaves this screen)
         </label>
         <textarea id="eb-notes"
@@ -714,7 +714,7 @@ function CreateDropModal({
     >
       <div className="space-y-3">
         <div>
-          <label htmlFor="eb-title" className="mb-1 block font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/50">
+          <label htmlFor="eb-title" className="mb-1 block font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
             Title
           </label>
           <input id="eb-title"
@@ -725,7 +725,7 @@ function CreateDropModal({
           />
         </div>
         <div>
-          <label htmlFor="eb-period" className="mb-1 block font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/50">
+          <label htmlFor="eb-period" className="mb-1 block font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
             Month (first of)
           </label>
           <input id="eb-period"
@@ -835,13 +835,13 @@ function AnnouncePanel({ drop }: { drop: AdminDrop }) {
 
       <div className="space-y-3">
         <div>
-          <label htmlFor="eb-push-title" className="mb-1 block font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/50">
+          <label htmlFor="eb-push-title" className="mb-1 block font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
             Push title ({title.length}/80)
           </label>
           <input id="eb-push-title" className={INPUT} value={title} maxLength={80} onChange={(e) => setTitle(e.target.value)} />
         </div>
         <div>
-          <label htmlFor="eb-push-body" className="mb-1 block font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/50">
+          <label htmlFor="eb-push-body" className="mb-1 block font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
             Push body ({body.length}/300)
           </label>
           <textarea id="eb-push-body"

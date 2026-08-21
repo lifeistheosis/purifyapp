@@ -124,7 +124,7 @@ export function OverviewTab() {
       {/* Hero — lifetime cumulative. These only grow. */}
       <div>
         <div className="flex items-baseline justify-between gap-3 mb-3">
-          <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
+          <p className="font-sans text-detail font-medium text-[color:var(--adm-ink-3)]">
             Lifetime
           </p>
           {totals?.oldestSessionAt && (
@@ -161,7 +161,7 @@ export function OverviewTab() {
       {/* Trend — rolling 14d. Labeled honestly. */}
       <div>
         <div className="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
-          <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
+          <p className="font-sans text-detail font-medium text-[color:var(--adm-ink-3)]">
             Rolling 14-day window
             <RollingInfo />
           </p>
@@ -204,19 +204,19 @@ export function OverviewTab() {
       <Card title="Today so far · UTC">
         <div className="grid grid-cols-3 gap-4 font-sans">
           <div>
-            <p className="text-eyebrow uppercase tracking-[1.2px] text-paper/45">Visitors</p>
+            <p className="text-caption font-medium text-[color:var(--adm-ink-3)]">Visitors</p>
             <p className="mt-1 text-title font-bold tabular-nums text-paper">
               {stats?.today.visitors ?? "—"}
             </p>
           </div>
           <div>
-            <p className="text-eyebrow uppercase tracking-[1.2px] text-paper/45">Pageviews</p>
+            <p className="text-caption font-medium text-[color:var(--adm-ink-3)]">Pageviews</p>
             <p className="mt-1 text-title font-bold tabular-nums text-paper">
               {stats?.today.views ?? "—"}
             </p>
           </div>
           <div>
-            <p className="text-eyebrow uppercase tracking-[1.2px] text-paper/45">Signups</p>
+            <p className="text-caption font-medium text-[color:var(--adm-ink-3)]">Signups</p>
             <p className="mt-1 text-title font-bold tabular-nums text-paper">
               {stats?.today.signups ?? "—"}
             </p>

@@ -144,7 +144,7 @@ function RevenuePanel() {
       <Card title="Estimated subscription run-rate">
         <div className="grid grid-cols-2 gap-4 font-sans">
           <div>
-            <p className="text-eyebrow uppercase tracking-[1.2px] text-paper/45">
+            <p className="text-caption font-medium text-[color:var(--adm-ink-3)]">
               MRR (est.)
             </p>
             <p className="mt-1 text-title font-bold tabular-nums text-paper">
@@ -152,7 +152,7 @@ function RevenuePanel() {
             </p>
           </div>
           <div>
-            <p className="text-eyebrow uppercase tracking-[1.2px] text-paper/45">
+            <p className="text-caption font-medium text-[color:var(--adm-ink-3)]">
               ARR (est.)
             </p>
             <p className="mt-1 text-title font-bold tabular-nums text-paper">

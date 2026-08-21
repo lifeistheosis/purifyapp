@@ -900,7 +900,7 @@ export function CalendarHeatmap({
       )}
 
       {/* Legend */}
-      <div className="flex items-center gap-2 mt-2 font-sans text-eyebrow text-[color:var(--adm-ink-3)] uppercase tracking-[1px]">
+      <div className="flex items-center gap-2 mt-2 font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
         <span>Less</span>
         {[0, 0.25, 0.5, 0.75, 1].map((a, i) => (
           <span
