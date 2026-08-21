@@ -158,8 +158,14 @@ export function project(a: Assumptions, markets: Market[] = MARKETS): Projection
   // Hallow's own penetration, measured the same way: paying subscribers over
   // its practising pool. Derived from the revenue range midpoint because that
   // is all that is public, which is why COMPARABLE.confidence is "low".
+  //
+  // Divided by HALLOW's revenue per subscriber, not Purify's. Using Purify's
+  // was a real bug: it made the comparable's penetration move whenever
+  // Purify's own price slider moved, so the same competitor read 14.4% in one
+  // scenario and 8.2% in another. A fact about Hallow cannot depend on what
+  // Purify charges.
   const comparableMid = (COMPARABLE.annualRevenueLowUsd + COMPARABLE.annualRevenueHighUsd) / 2;
-  const comparableSubs = comparableMid / a.annualRevenuePerSubscriber;
+  const comparableSubs = comparableMid / COMPARABLE.annualRevenuePerSubscriberUsd;
   const comparablePenetration = comparableSubs / COMPARABLE.addressablePopulation;
   const purifyPenetration = addressable > 0 ? subscribers / addressable : 0;
 

@@ -112,6 +112,19 @@ describe("projection", () => {
     );
   });
 
+  it("does not let Purify's own pricing move the comparable's penetration", () => {
+    // A real bug, found by reading the printout: the comparable's share was
+    // computed by dividing its revenue by PURIFY's assumed price, so the same
+    // competitor read 14.4% at $40, 10.5% at $55 and 8.2% at $70. Hallow's
+    // share of its own market is a fact about Hallow.
+    const cheap = project({ ...SCENARIOS.moderate, annualRevenuePerSubscriber: 20 });
+    const dear = project({ ...SCENARIOS.moderate, annualRevenuePerSubscriber: 140 });
+    expect(cheap.penetration.comparable).toBeCloseTo(dear.penetration.comparable, 10);
+    // And Purify's own side must still respond, or the fix went too far.
+    expect(cheap.penetration.purify).toBeCloseTo(dear.penetration.purify, 10);
+    expect(cheap.totals.annualRevenueUsd).toBeLessThan(dear.totals.annualRevenueUsd);
+  });
+
   it("stays honest about how far above today's reality the scenarios sit", () => {
     // Purify has roughly a thousand installs. The US Orthodox pool alone is
     // ~600k addressable, so even the conservative 2% install rate implies

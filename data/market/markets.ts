@@ -253,6 +253,17 @@ export const COMPARABLE = {
   /** Public reporting is a range, not a figure. Both ends are carried. */
   annualRevenueLowUsd: 50_000_000,
   annualRevenueHighUsd: 70_000_000,
+  /**
+   * Hallow's OWN annual revenue per subscriber, and it has to be its own
+   * number rather than a reuse of Purify's.
+   *
+   * The first version of this model divided Hallow's revenue by whatever
+   * Purify's price slider happened to say, which meant Hallow's penetration
+   * moved every time Purify changed its own pricing: 14.4% at $40, 10.5% at
+   * $55, 8.2% at $70. Hallow's share of its market is a fact about Hallow.
+   * Nothing Purify does can move it.
+   */
+  annualRevenuePerSubscriberUsd: 70,
   /** The pool it sells into: practising US Roman Catholics. */
   addressablePopulation: 52_000_000 * 0.2,
   source: "Press reporting and disclosed funding rounds, 2024 to 2025",
