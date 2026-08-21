@@ -4,6 +4,7 @@
 // topics, plus the editorial saint-grid with inline mark-complete toggles.
 
 import { useEffect, useState, useTransition } from "react";
+import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, DataTable, Pill, ToolbarButton, Toolbar } from "../primitives";
 import { BarChart, SERIES_COLORS } from "../charts";
 
@@ -55,10 +56,9 @@ export function ContentTab() {
 
   useEffect(() => {
     let alive = true;
-    fetch("/api/admin/content", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((j) => alive && setData(j))
-      .catch(() => {});
+    adminJson<Payload>("/api/admin/content").then((j) => {
+      if (alive && j) setData(j);
+    });
     return () => {
       alive = false;
     };

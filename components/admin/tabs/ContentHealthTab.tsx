@@ -6,6 +6,7 @@
 // JSON-in-git.
 
 import { useEffect, useState } from "react";
+import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, DataTable, Pill, StatCard } from "../primitives";
 
 type SaintRow = {
@@ -42,10 +43,9 @@ export function ContentHealthTab() {
 
   useEffect(() => {
     let alive = true;
-    fetch("/api/admin/content-health", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((j) => alive && setData(j))
-      .catch(() => {});
+    adminJson<Payload>("/api/admin/content-health").then((j) => {
+      if (alive && j) setData(j);
+    });
     return () => {
       alive = false;
     };

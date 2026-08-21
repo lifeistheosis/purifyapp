@@ -3,6 +3,7 @@
 // Users tab — paginated, searchable profile list + signup chart + OAuth mix.
 
 import { useEffect, useState } from "react";
+import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, DataTable, Pill, Toolbar, ToolbarButton } from "../primitives";
 import { LineChart, Donut, SERIES_COLORS } from "../charts";
 import { CountUp } from "../CountUp";
@@ -43,18 +44,18 @@ export function UsersTab() {
     let alive = true;
     const params = new URLSearchParams({ offset: String(offset) });
     if (debouncedSearch) params.set("q", debouncedSearch);
-    fetch(`/api/admin/users?${params}`, { cache: "no-store" })
-      .then((r) => r.json())
-      .then((j) => {
-        if (!alive) return;
-        if (j && typeof j.total === "number") {
-          setData(j);
-          setError(false);
-        } else {
-          setError(true);
-        }
-      })
-      .catch(() => alive && setError(true));
+    adminJson<Payload>(`/api/admin/users?${params}`).then((j) => {
+      if (!alive) return;
+      // This tab already validated the shape before trusting it, which is why
+      // it never took the panel down. Kept, and now the response itself is
+      // checked too, so a 403 body cannot even reach the shape test.
+      if (j && typeof j.total === "number") {
+        setData(j);
+        setError(false);
+      } else {
+        setError(true);
+      }
+    });
     return () => {
       alive = false;
     };

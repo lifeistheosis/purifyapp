@@ -4,6 +4,7 @@
 // device + auth donuts, 30-day window.
 
 import { useEffect, useState } from "react";
+import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, DataTable } from "../primitives";
 import { BarChart, Donut, SERIES_COLORS } from "../charts";
 
@@ -46,10 +47,9 @@ export function AudienceTab() {
 
   useEffect(() => {
     let alive = true;
-    fetch("/api/admin/audience", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((j) => alive && setData(j))
-      .catch(() => {});
+    adminJson<Audience>("/api/admin/audience").then((j) => {
+      if (alive && j) setData(j);
+    });
     return () => {
       alive = false;
     };

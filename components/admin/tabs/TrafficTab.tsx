@@ -3,6 +3,7 @@
 // Traffic tab — full time-series with range picker and toggleable series.
 
 import { useEffect, useState } from "react";
+import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, ToolbarButton, Toolbar, DataTable } from "../primitives";
 import { LineChart, SERIES_COLORS } from "../charts";
 
@@ -20,11 +21,10 @@ export function TrafficTab() {
 
   useEffect(() => {
     let alive = true;
-    fetch(`/api/admin/traffic?range=${range}`, { cache: "no-store" })
-      .then((r) => r.json())
+    adminJson<{ points?: Point[] }>(`/api/admin/traffic?range=${range}`)
       .then((j) => {
         if (!alive) return;
-        setPoints(j.points ?? []);
+        if (j) setPoints(j.points ?? []);
         setFetchedRange(range);
       })
       .catch(() => {

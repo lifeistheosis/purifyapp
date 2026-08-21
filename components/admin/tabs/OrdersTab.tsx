@@ -6,6 +6,7 @@
 // fulfillment control the Marketplace console uses.
 
 import { useEffect, useState } from "react";
+import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, DataTable, Pill, SubTabs, ToolbarButton } from "../primitives";
 import { formatPrice } from "@/lib/shop/format";
 import { SELLER_STATUS_LABELS } from "@/lib/shop/sellerOrders";
@@ -95,10 +96,11 @@ export function OrdersTab() {
     let alive = true;
     (async () => {
       try {
-        const d = await fetch("/api/admin/shop/orders", {
-          cache: "no-store",
-        }).then((r) => r.json());
-        if (alive) {
+        const d = await adminJson<{
+          orders?: AdminOrder[];
+          supplierByProduct?: Record<string, SupplierLink>;
+        }>("/api/admin/shop/orders");
+        if (alive && d) {
           setOrders(d.orders ?? []);
           setSupplierByProduct(d.supplierByProduct ?? {});
         }

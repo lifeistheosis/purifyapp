@@ -5,6 +5,7 @@
 // Honest about what is NOT knowable: no churn/cohort history exists.
 
 import { useEffect, useState, type FormEvent } from "react";
+import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, StatCard, ChartFrame, DataTable, Pill, SubTabs } from "../primitives";
 import { Donut, SERIES_COLORS } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
@@ -37,10 +38,9 @@ function SummaryPanel() {
 
   useEffect(() => {
     let alive = true;
-    fetch("/api/admin/subscriptions", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((d) => alive && setData(d))
-      .catch(() => {});
+    adminJson<Subs>("/api/admin/subscriptions").then((d) => {
+      if (alive && d) setData(d);
+    });
     return () => {
       alive = false;
     };
@@ -313,10 +313,12 @@ function MembersPanel() {
     let alive = true;
     (async () => {
       try {
-        const d = await fetch("/api/admin/subscriptions/members", {
-          cache: "no-store",
-        }).then((r) => r.json());
-        if (!alive) return;
+        const d = await adminJson<{
+          members?: Member[];
+          enriched?: boolean;
+          revenuecat?: boolean;
+        }>("/api/admin/subscriptions/members");
+        if (!alive || !d) return;
         setMembers(d.members ?? []);
         setMeta({ enriched: !!d.enriched, revenuecat: !!d.revenuecat });
       } catch {

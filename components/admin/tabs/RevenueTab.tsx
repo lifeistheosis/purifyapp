@@ -6,6 +6,7 @@
 // and top products. A sub-tab holds the existing costs/sustainability UI.
 
 import { useEffect, useState } from "react";
+import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, StatCard, ChartFrame, SubTabs } from "../primitives";
 import { AreaChart, BarChart, Donut, SERIES_COLORS, chartColors } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
@@ -43,10 +44,9 @@ function RevenuePanel() {
 
   useEffect(() => {
     let alive = true;
-    fetch("/api/admin/revenue", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((d) => alive && setData(d))
-      .catch(() => {});
+    adminJson<Revenue>("/api/admin/revenue").then((d) => {
+      if (alive && d) setData(d);
+    });
     return () => {
       alive = false;
     };

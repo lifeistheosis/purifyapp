@@ -5,6 +5,7 @@
 // the public /support page reads.
 
 import { useEffect, useState, useTransition } from "react";
+import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, DataTable, Pill, StatCard, Toolbar, ToolbarButton } from "../primitives";
 import { BarChart } from "../charts";
 
@@ -59,10 +60,9 @@ export function SustainabilityTab() {
 
   useEffect(() => {
     let alive = true;
-    fetch("/api/admin/sustainability", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((j) => alive && setData(j))
-      .catch(() => {});
+    adminJson<Payload>("/api/admin/sustainability").then((j) => {
+      if (alive && j) setData(j);
+    });
     return () => {
       alive = false;
     };

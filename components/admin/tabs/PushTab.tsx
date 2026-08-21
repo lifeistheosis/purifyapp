@@ -7,6 +7,7 @@
 // enqueued log row and nothing actually goes out.
 
 import { useEffect, useState } from "react";
+import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, DataTable, Pill, ToolbarButton } from "../primitives";
 
 type Audience = "all" | "plus" | "pro" | "web" | "native";
@@ -56,12 +57,12 @@ export function PushTab() {
     let alive = true;
     (async () => {
       try {
-        const d = await fetch("/api/admin/push/preview", {
+        const d = await adminJson<Preview>("/api/admin/push/preview", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ audience }),
-        }).then((r) => r.json());
-        if (alive && !d.error) setPreview(d as Preview);
+        });
+        if (alive && d) setPreview(d);
       } catch {
         /* ignore */
       }
@@ -75,10 +76,8 @@ export function PushTab() {
     let alive = true;
     (async () => {
       try {
-        const d = await fetch("/api/admin/push/send", { cache: "no-store" }).then(
-          (r) => r.json(),
-        );
-        if (alive) setHistory(d.broadcasts ?? []);
+        const d = await adminJson<{ broadcasts?: Broadcast[] }>("/api/admin/push/send");
+        if (alive && d) setHistory(d.broadcasts ?? []);
       } catch {
         /* ignore */
       }

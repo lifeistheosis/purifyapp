@@ -7,6 +7,7 @@
 // The Marketplace tab keeps its own copy untouched.
 
 import { useEffect, useState } from "react";
+import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, StatCard, DataTable, Pill, SubTabs, ToolbarButton } from "../primitives";
 import { SupportConsole } from "../SupportConsole";
 import type { Ticket, TicketMessage } from "@/lib/support/ticketNumber";
@@ -47,10 +48,8 @@ function SupportInbox() {
     let alive = true;
     (async () => {
       try {
-        const d = await fetch("/api/admin/support", { cache: "no-store" }).then(
-          (r) => r.json(),
-        );
-        if (alive) setTickets((d.tickets ?? []) as FullTicket[]);
+        const d = await adminJson<{ tickets?: FullTicket[] }>("/api/admin/support");
+        if (alive) setTickets(d?.tickets ?? []);
       } catch {
         if (alive) setTickets([]);
       }
@@ -90,10 +89,10 @@ function ShopInbox() {
     let alive = true;
     (async () => {
       try {
-        const d = await fetch("/api/admin/shop/conversations", {
-          cache: "no-store",
-        }).then((r) => r.json());
-        if (alive) setConvs((d.conversations ?? []) as ShopConv[]);
+        const d = await adminJson<{ conversations?: ShopConv[] }>(
+          "/api/admin/shop/conversations",
+        );
+        if (alive && d) setConvs(d.conversations ?? []);
       } catch {
         /* ignore */
       }

@@ -31,6 +31,7 @@ import { TrafficHubTab } from "./tabs/TrafficHubTab";
 import { Toolbar, ToolbarButton } from "./primitives";
 import { AdminThemeToggle } from "./AdminThemeToggle";
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
+import { TabBoundary } from "./TabBoundary";
 
 type TabId =
   | "overview"
@@ -192,6 +193,9 @@ export function AdminShell({ adminEmail }: { adminEmail: string }) {
   const [rebuildStatus, setRebuildStatus] = useState<string | null>(null);
   const [pendingOrders, setPendingOrders] = useState<number | null>(null);
   const [navOpen, setNavOpen] = useState(false);
+  // Bumped by the tab boundary's Try again, so a recovered panel re-mounts and
+  // re-fetches instead of needing a page reload.
+  const [reloadKey, setReloadKey] = useState(0);
 
   // Sync the active tab with the URL hash (#tab=orders). Lets an admin
   // bookmark or share a deep link to a specific section.
@@ -258,6 +262,7 @@ export function AdminShell({ adminEmail }: { adminEmail: string }) {
 
   const currentMeta = TABS.find((t) => t.id === active);
   const Current = currentMeta?.component ?? CommerceOverviewTab;
+  const current = currentMeta ?? TABS[0];
 
   const nav = (
     <nav aria-label="Admin sections">
@@ -455,8 +460,14 @@ export function AdminShell({ adminEmail }: { adminEmail: string }) {
           {/* Keyed so the panel remounts on section change and its entrance
               replays. One 180ms move, not a staggered cascade: the operator
               chose this section and does not need to watch it assemble. */}
+          {/* The boundary sits here, inside the shell and around the active
+              panel only. A route-level app/admin/error.tsx would sit above the
+              rail and take the whole panel down, which is the failure this is
+              for. */}
           <div key={active} className="adm-panel-enter">
-            <Current />
+            <TabBoundary label={current.label} onRetry={() => setReloadKey((n) => n + 1)}>
+              <Current key={reloadKey} />
+            </TabBoundary>
           </div>
         </div>
       </div>

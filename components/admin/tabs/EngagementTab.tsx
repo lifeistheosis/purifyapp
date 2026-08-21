@@ -4,6 +4,7 @@
 // visitors come back. Reads /api/admin/engagement (range-aware).
 
 import { useEffect, useState } from "react";
+import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, StatCard, DataTable, ToolbarButton, Toolbar } from "../primitives";
 import { BarChart, SERIES_COLORS } from "../charts";
 
@@ -48,16 +49,14 @@ export function EngagementTab() {
 
   useEffect(() => {
     let alive = true;
-    fetch(`/api/admin/engagement?range=${range}`, { cache: "no-store" })
-      .then((r) => r.json())
-      .then((j) => {
-        if (!alive) return;
-        setData(j);
-        setFetchedRange(range);
-      })
-      .catch(() => {
-        if (alive) setFetchedRange(range);
-      });
+    adminJson<Payload>(`/api/admin/engagement?range=${range}`).then((j) => {
+      if (!alive) return;
+      // Only replace on success. A failed range change leaves the previous
+      // range's numbers up rather than blanking the panel, and fetchedRange
+      // still advances so the loading state clears either way.
+      if (j) setData(j);
+      setFetchedRange(range);
+    });
     return () => {
       alive = false;
     };

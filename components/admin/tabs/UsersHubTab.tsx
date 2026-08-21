@@ -5,6 +5,7 @@
 // (started-but-unpaid orders). Both read /api/admin/carts.
 
 import { useEffect, useState } from "react";
+import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, StatCard, DataTable, Pill, SubTabs } from "../primitives";
 import { UsersTab } from "./UsersTab";
 import { formatPrice } from "@/lib/shop/format";
@@ -57,10 +58,11 @@ function useCartsData() {
     let alive = true;
     (async () => {
       try {
-        const d = await fetch("/api/admin/carts", { cache: "no-store" }).then(
-          (r) => r.json(),
-        );
-        if (!alive) return;
+        const d = await adminJson<{
+          liveCarts?: LiveCart[];
+          abandoned?: Abandoned[];
+        }>("/api/admin/carts");
+        if (!alive || !d) return;
         setLiveCarts(d.liveCarts ?? []);
         setAbandoned(d.abandoned ?? []);
       } catch {

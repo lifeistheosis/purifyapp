@@ -16,6 +16,7 @@
 //        "is this counting accurately?" because every day is its own cell.
 
 import { useEffect, useState } from "react";
+import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, KpiCard, ChartFrame } from "../primitives";
 import { LineChart, CalendarHeatmap, SERIES_COLORS, chartColors } from "../charts";
 
@@ -85,17 +86,19 @@ export function OverviewTab() {
     let alive = true;
     async function load() {
       try {
+        // Three independent reads. One failing must not blank the other two,
+        // and none of them may store an error body: the try/catch around this
+        // cannot help, because the throw happens later during render, at
+        // stats.today.visitors.
         const [s, t, totalsRes] = await Promise.all([
-          fetch("/api/admin/stats", { cache: "no-store" }).then((r) => r.json()),
-          fetch("/api/admin/traffic?range=90d", { cache: "no-store" }).then((r) =>
-            r.json(),
-          ),
-          fetch("/api/admin/totals", { cache: "no-store" }).then((r) => r.json()),
+          adminJson<Stats>("/api/admin/stats"),
+          adminJson<{ points?: TrafficPoint[] }>("/api/admin/traffic?range=90d"),
+          adminJson<Totals>("/api/admin/totals"),
         ]);
         if (!alive) return;
-        setStats(s);
-        setTraffic(t.points ?? []);
-        setTotals(totalsRes);
+        if (s) setStats(s);
+        if (t) setTraffic(t.points ?? []);
+        if (totalsRes) setTotals(totalsRes);
       } catch {
         /* ignore */
       }
