@@ -1,0 +1,163 @@
+/* Owner dashboard palette.
+ *
+ * Scoped to .own, layered on top of .adm, and it overrides colour only.
+ * Surfaces, radii, shadows, easing and the type ramp all still come from
+ * admin-theme.css, so the two screens remain the same product and a change to
+ * the structural layer reaches both.
+ *
+ * WHY IT FORKS AT ALL. The operator theme's accent is a warm gold, which is
+ * right for a panel that sits beside a liturgical app and wrong for this one.
+ * This screen is a data tool: charts, projections, numbers that need to read
+ * as instrument rather than ornament. Gold on a dark ground reads as
+ * decoration and it fights the series colours in a chart, which is exactly
+ * where the accent needs to be the quietest thing on screen.
+ *
+ * So: a cool indigo, used sparingly, on a near-neutral ground. The rule is
+ * one accent and everything else grey, which is what makes the one number
+ * that matters findable.
+ *
+ * CONTRAST. lib/admin/__tests__/adminTheme.test.ts reads admin-theme.css only,
+ * so these values are not covered by it. Each was checked by hand against the
+ * same floors that test enforces: 4.5:1 for text on every surface, 3:1 for a
+ * chart series on the card surface. Do not lower one without re-checking.
+ */
+
+.own {
+  /* Indigo, not gold. 6.6:1 against --adm-panel on dark. */
+  --adm-accent: #7c8cf8;
+  --adm-accent-dim: #5566d6;
+  /* Near-black on the accent, 8.9:1, rather than white which lands at 3.1. */
+  --adm-on-accent: #0b0d1a;
+  --adm-on-accent-wash: rgb(0 0 0 / 0.18);
+
+  --adm-nav-active-bg: #1a1d2b;
+  --adm-nav-active-fg: #e8eaf2;
+  --adm-nav-bar: #7c8cf8;
+
+  /* A cooler ground than the operator panel's. The whole screen is one hue
+     family so a chart's colours are the only warm thing in it. */
+  --adm-rail: #0a0b11;
+  --adm-bg: #0c0e15;
+  --adm-panel: #12141d;
+  --adm-panel-2: #171a25;
+  --adm-control: #171a25;
+
+  --adm-ink: #e9ebf2;
+  --adm-ink-2: #a8adc0;
+  --adm-ink-3: #7d8499;
+
+  --adm-line: rgb(255 255 255 / 0.07);
+  --adm-line-strong: rgb(255 255 255 / 0.14);
+
+  /* Series, recoloured cool. Ordered so the first two, which carry actual
+     and projected on every chart here, are the furthest apart. */
+  --adm-s1: #7c8cf8;
+  --adm-s2: #45c4b0;
+  --adm-s3: #e8825a;
+  --adm-s4: #b681e0;
+  --adm-s5: #4d9be6;
+  --adm-s6: #d9a441;
+
+  --chart-grid: rgb(255 255 255 / 0.05);
+  --chart-axis: #6a7186;
+}
+
+:root[data-adm-theme="light"] .own {
+  --adm-accent: #4f5fd7;      /* 5.4:1 on white; white on it is 5.1:1 */
+  --adm-accent-dim: #3a48ab;
+  --adm-on-accent: #ffffff;
+
+  --adm-nav-active-bg: #eef0fb;
+  --adm-nav-active-fg: #1c2033;
+  --adm-nav-bar: #4f5fd7;
+
+  --adm-rail: #ffffff;
+  --adm-bg: #f7f8fa;
+  --adm-panel: #ffffff;
+  --adm-panel-2: #f1f2f6;
+  --adm-control: #ffffff;
+
+  --adm-ink: #1c2033;
+  --adm-ink-2: #4a4f63;
+  --adm-ink-3: #666c80;
+
+  --adm-line: rgb(28 32 51 / 0.1);
+  --adm-line-strong: rgb(28 32 51 / 0.18);
+
+  /* Darkened for a white card, each clearing 4.9:1 there. */
+  --adm-s1: #4f5fd7;
+  --adm-s2: #0f8a78;
+  --adm-s3: #c25532;
+  --adm-s4: #8145b8;
+  --adm-s5: #2a6fb5;
+  --adm-s6: #96701c;
+
+  --chart-grid: rgb(28 32 51 / 0.07);
+  --chart-axis: #757b8c;
+}
+
+/* ── Motion ───────────────────────────────────────────────────────────────
+ * One idea: things that arrive should arrive, and things that change should
+ * be followed rather than jumped to. Everything below is short enough to
+ * read as responsiveness rather than as an effect.
+ */
+
+@keyframes own-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.own-enter {
+  animation: own-rise 260ms var(--adm-ease) both;
+}
+
+/* Cards stagger, but only just: four steps of 40ms, then everything after
+   shares the last one. A long cascade makes an operator wait to read. */
+.own-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.own-stagger > *:nth-child(2) { animation-delay: 40ms; }
+.own-stagger > *:nth-child(3) { animation-delay: 80ms; }
+.own-stagger > *:nth-child(n + 4) { animation-delay: 120ms; }
+
+/* The line a chart draws on first paint. Length is set inline from the real
+   path length, because a guess here shows as a visible stutter. */
+@keyframes own-draw {
+  from { stroke-dashoffset: var(--own-len); }
+  to { stroke-dashoffset: 0; }
+}
+
+.own-draw {
+  stroke-dasharray: var(--own-len);
+  animation: own-draw 900ms var(--adm-ease) both;
+}
+
+@keyframes own-fade-up {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.own-fill {
+  animation: own-fade-up 700ms 200ms var(--adm-ease) both;
+}
+
+/* Numbers that change should not flicker while they do. */
+.own-num {
+  font-variant-numeric: tabular-nums;
+  transition: color 200ms var(--adm-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .own-enter,
+  .own-draw,
+  .own-fill {
+    animation: none;
+  }
+  .own-draw {
+    stroke-dasharray: none;
+  }
+}

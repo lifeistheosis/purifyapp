@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { NONCE_HEADER } from "@/lib/security/headers";
 import "../admin/admin-theme.css";
+import "./owner-theme.css";
 
 // The owner dashboard borrows the admin's theme layer rather than growing a
 // third palette. Two reasons: the operator switching between /admin and

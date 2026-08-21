@@ -22,9 +22,11 @@ import {
   SCENARIOS,
   project,
   localizationLift,
+  rampToProjection,
   type Assumptions,
 } from "@/lib/owner/projection";
 import { calibrate, calibrated, type Actuals } from "@/lib/owner/actuals";
+import { ProjectionChart } from "./ProjectionChart";
 
 const usd = (n: number) =>
   "$" + Math.round(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
@@ -140,6 +142,28 @@ export function OwnerDashboard({ ownerEmail }: { ownerEmail: string }) {
   );
   const p = useMemo(() => project(effective), [effective]);
 
+  // Two series on one scale: where the business is, and where the assumptions
+  // say it goes. 24 months, because a shorter window hides the shape and a
+  // longer one implies a confidence this model does not have.
+  const chart = useMemo(() => {
+    const today = cal?.actuals.paidSubscribers ?? 0;
+    const target = p.totals.subscribers;
+    const ramp = rampToProjection(today, target, 24);
+    return [
+      {
+        label: "Today, held flat",
+        points: ramp.map(() => today),
+        color: "var(--adm-s2)",
+      },
+      {
+        label: "Projected",
+        points: ramp.map((r) => r.subscribers),
+        color: "var(--adm-s1)",
+        dashed: true,
+      },
+    ];
+  }, [cal, p.totals.subscribers]);
+
   const lifts = useMemo(
     () =>
       MARKETS.filter((m) => m.localeNeeded && m.communion === "eastern-orthodox")
@@ -149,7 +173,7 @@ export function OwnerDashboard({ ownerEmail }: { ownerEmail: string }) {
   );
 
   return (
-    <div className="adm min-h-[100dvh]">
+    <div className="adm own min-h-[100dvh]">
       <div className="mx-auto w-full max-w-[1200px] px-4 py-6 md:px-6">
         <header className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
           <div>
@@ -164,11 +188,23 @@ export function OwnerDashboard({ ownerEmail }: { ownerEmail: string }) {
               {actuals ? ` · data as of ${new Date(actuals.asOf).toLocaleString()}` : ""}
             </p>
           </div>
+          {/* A real control, not a footnote link. Switching between the two
+              panels is something the operator does constantly and hunting for
+              a text link every time is the kind of friction that makes a
+              screen feel unfinished. */}
           <a
             href="/admin"
-            className="font-sans text-[12.5px] font-medium underline-offset-4 hover:underline"
-            style={{ color: "var(--adm-ink-3)" }}
+            className="adm-control inline-flex h-11 items-center gap-2 rounded-[var(--adm-radius-sm)] border px-4 font-sans text-[12.5px] font-medium"
+            style={{
+              ["--_bg" as string]: "var(--adm-control)",
+              ["--_bg-hover" as string]: "var(--adm-hover)",
+              borderColor: "var(--adm-line-strong)",
+              color: "var(--adm-ink-2)",
+            }}
           >
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
+              <path d="M12 5l-5 5 5 5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
             Operational panel
           </a>
         </header>
@@ -415,6 +451,18 @@ export function OwnerDashboard({ ownerEmail }: { ownerEmail: string }) {
                   </label>
                 </div>
               </div>
+            </Card>
+
+            <Card
+              title="Subscribers, 24 months"
+              subtitle="Solid is today held flat. Dashed is where the assumptions above lead. Drag a slider and watch the curve bend: the size of that bend is the sensitivity of the input."
+            >
+              <ProjectionChart
+                series={chart}
+                xLabel={(i, n) => (i === 0 ? "now" : `+${n - 1}mo`)}
+                yFormat={(v) => num(v)}
+                caption="Projected subscriber growth against today's figure held flat."
+              />
             </Card>
 
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4">

@@ -329,6 +329,30 @@ export function AdminShell({ adminEmail }: { adminEmail: string }) {
           {adminEmail}
         </span>
       </div>
+      {/* The owner dashboard had no way in. It was a route you had to know the
+          URL of, which is the same as not shipping it. Full width above the
+          controls because switching panels is a navigation, not a setting.
+          It 404s for anyone the owner gate refuses, so showing it to every
+          admin costs nothing and reveals nothing. */}
+      <a
+        href="/owner"
+        className="adm-control mb-1 flex h-11 items-center gap-2 rounded-[var(--adm-radius-sm)] px-2 font-sans text-[11.5px] font-medium"
+        style={
+          {
+            color: "var(--adm-ink-2)",
+            "--_bg": "transparent",
+            "--_bg-hover": "var(--adm-hover)",
+          } as React.CSSProperties
+        }
+      >
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M3 16.5V9M7.6 16.5V4.5M12.2 16.5v-5M16.8 16.5V7" />
+        </svg>
+        <span className="flex-1 text-left">Owner dashboard</span>
+        <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M8 5l5 5-5 5" />
+        </svg>
+      </a>
       <div className="flex items-center gap-1">
         <AdminThemeToggle />
         <a
