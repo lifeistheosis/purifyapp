@@ -121,7 +121,7 @@ type AppNote = {
 };
 
 const field =
-  "w-full rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/30 focus:outline-none focus:border-paper/40";
+  "w-full rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/30 focus:outline-none focus:border-paper/40";
 const labelCls = "font-sans text-caption text-paper/55";
 
 const REQUEST_STATUSES = ["new", "reviewing", "sourced", "contacted", "closed"];
@@ -456,7 +456,7 @@ function ProductsPanel() {
                   onClick={() => setEditing(p)}
                   className="group flex items-center gap-3 text-left"
                 >
-                  <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-md border border-white/8 bg-night-soft/60">
+                  <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-[var(--adm-radius-sm)] border border-white/8 bg-night-soft/60">
                     {orderedMedia(p.media)[0] ? (
                       <Image
                         src={orderedMedia(p.media)[0].media_url}
@@ -824,7 +824,7 @@ function Metric({
   hint?: string;
 }) {
   return (
-    <div className="rounded-lg border border-white/8 bg-night-soft/40 px-3 py-2.5">
+    <div className="rounded-[var(--adm-radius-sm)] border border-white/8 bg-night-soft/40 px-3 py-2.5">
       <p className="font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
         {label}
       </p>
@@ -873,7 +873,7 @@ function ProductOverview({
   return (
     <div className="space-y-5">
       {hasSupplierImage(p.media) ? (
-        <div className="rounded-lg border border-amber-400/30 bg-amber-400/[0.06] p-3">
+        <div className="rounded-[var(--adm-radius)] border border-amber-400/30 bg-amber-400/[0.06] p-3">
           <p className="font-sans text-detail font-semibold text-amber-200">
             Not shown in the public shop
           </p>
@@ -885,7 +885,7 @@ function ProductOverview({
         </div>
       ) : null}
       <div className="flex flex-col gap-4 sm:flex-row">
-        <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-xl border border-white/8 bg-night-soft/60">
+        <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-[var(--adm-radius-sm)] border border-white/8 bg-night-soft/60">
           {hero ? (
             <Image
               src={hero.media_url}
@@ -1362,7 +1362,7 @@ function ProductEditor({
         />
       </label>
 
-      <div className="mt-6 rounded-lg border border-rose-400/20 bg-rose-400/[0.03] p-4">
+      <div className="mt-6 rounded-[var(--adm-radius)] border border-rose-400/20 bg-rose-400/[0.03] p-4">
         <p className="font-sans text-detail font-medium tracking-[1.2px] text-rose-300/80">
           Sourcing (admin-only, never public)
         </p>
@@ -1448,7 +1448,7 @@ function ProductEditor({
                   ? "text-amber-300"
                   : "text-emerald-300";
           return (
-            <div className="mt-4 rounded-md border border-paper/12 bg-night/50 p-3">
+            <div className="mt-4 rounded-[var(--adm-radius)] border border-paper/12 bg-night/50 p-3">
               <p className={labelCls}>Unit economics (live)</p>
               {hasCost ? (
                 <div className="mt-2 flex flex-wrap items-baseline gap-x-6 gap-y-1 font-sans text-detail text-paper/70">
@@ -1788,7 +1788,7 @@ function ApplicationsPanel() {
           {visible.map((a) => {
             const appNotes = notes.filter((n) => n.application_id === a.id);
             return (
-              <li key={a.id} className="rounded-lg border border-paper/10 p-4">
+              <li key={a.id} className="rounded-[var(--adm-radius)] border border-paper/10 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <p className="flex flex-wrap items-center gap-2 font-medium text-paper">
@@ -2519,7 +2519,7 @@ function SeedReviewSheet({
             {photos.map((u, i) => (
               <span
                 key={`${u}-${i}`}
-                className="relative h-16 w-16 overflow-hidden rounded-lg border border-white/10 bg-night"
+                className="relative h-16 w-16 overflow-hidden rounded-[var(--adm-radius-sm)] border border-white/10 bg-night"
               >
                 <Image src={u} alt="" fill sizes="64px" unoptimized className="object-cover" />
                 <button

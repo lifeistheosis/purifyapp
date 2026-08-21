@@ -340,7 +340,7 @@ export function OrdersTab() {
                 onChange={(e) =>
                   setFulfillment(selected, e.target.value as ShopFulfillmentStatus)
                 }
-                className="w-full rounded-md border border-paper/20 bg-night px-3 py-2 font-sans text-detail text-paper focus:border-gold focus:outline-none disabled:opacity-50"
+                className="w-full rounded-[var(--adm-radius-sm)] border border-paper/20 bg-night px-3 py-2 font-sans text-detail text-paper focus:border-gold focus:outline-none disabled:opacity-50"
               >
                 {FULFILLMENT_OPTIONS.map((s) => (
                   <option key={s} value={s}>
@@ -366,7 +366,7 @@ export function OrdersTab() {
                   }
                   disabled={saving}
                   placeholder="Tracking number"
-                  className="w-full rounded-md border border-paper/20 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/30 focus:border-gold focus:outline-none disabled:opacity-50"
+                  className="w-full rounded-[var(--adm-radius-sm)] border border-paper/20 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/30 focus:border-gold focus:outline-none disabled:opacity-50"
                   aria-label="Outbound tracking number"
                 />
                 <ToolbarButton onClick={() => void saveTracking()} loading={saving}>

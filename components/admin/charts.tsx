@@ -905,7 +905,7 @@ export function CalendarHeatmap({
         {[0, 0.25, 0.5, 0.75, 1].map((a, i) => (
           <span
             key={i}
-            className="inline-block rounded-sm"
+            className="inline-block rounded-[var(--adm-radius-sm)]"
             style={{
               width: cellSize,
               height: cellSize,

@@ -158,7 +158,7 @@ export function CommunityTab() {
               return (
                 <div
                   key={rep.id}
-                  className="rounded-md border border-paper/10 bg-paper/[0.02] p-4"
+                  className="rounded-[var(--adm-radius)] border border-paper/10 bg-paper/[0.02] p-4"
                 >
                   <div className="flex flex-wrap items-center gap-2">
                     <Pill tone={isReply ? "neutral" : "gold"}>
@@ -235,7 +235,7 @@ export function CommunityTab() {
             {data.pendingRecipes.map((r) => (
               <div
                 key={r.id}
-                className="rounded-md border border-paper/10 bg-paper/[0.02] p-4"
+                className="rounded-[var(--adm-radius)] border border-paper/10 bg-paper/[0.02] p-4"
               >
                 <div className="flex items-center justify-between gap-3">
                   <p className="font-sans text-detail font-semibold text-paper">
@@ -309,7 +309,7 @@ export function CommunityTab() {
                       href={rep.campaign.image_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block w-24 shrink-0 overflow-hidden rounded-lg border border-white/10"
+                      className="block w-24 shrink-0 overflow-hidden rounded-[var(--adm-radius-sm)] border border-white/10"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -409,7 +409,7 @@ function ReportRow({
   media?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-md border border-paper/10 bg-paper/[0.02] p-4">
+    <div className="rounded-[var(--adm-radius)] border border-paper/10 bg-paper/[0.02] p-4">
       <div className="flex gap-3">
         {media}
         <div className="min-w-0 flex-1">

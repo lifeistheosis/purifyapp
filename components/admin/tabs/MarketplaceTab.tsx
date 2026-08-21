@@ -17,7 +17,7 @@ import type { ShopFulfillmentStatus } from "@/lib/shop/types";
 import { Card, DataTable, Pill, StatCard, ToolbarButton } from "../primitives";
 
 const field =
-  "w-full rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/30 focus:outline-none focus:border-paper/40";
+  "w-full rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/30 focus:outline-none focus:border-paper/40";
 const labelCls = "font-sans text-caption text-paper/55";
 
 const SELLER_TYPES = [
@@ -248,7 +248,7 @@ function StoresPanel() {
             {provisionable.map((a) => (
               <li
                 key={a.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-paper/10 px-3 py-2"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--adm-radius-sm)] border border-paper/10 px-3 py-2"
               >
                 <p className="font-sans text-detail text-paper">
                   {a.proposed_store_name}
@@ -420,7 +420,7 @@ function CreateStoreForm({ onDone }: { onDone: () => void }) {
   return (
     <form
       onSubmit={submit}
-      className="grid gap-3 rounded-md border border-gold/25 bg-gold/[0.04] p-4 sm:grid-cols-2"
+      className="grid gap-3 rounded-[var(--adm-radius)] border border-gold/25 bg-gold/[0.04] p-4 sm:grid-cols-2"
     >
       <label className="block space-y-1">
         <span className={labelCls}>Store name *</span>
@@ -1100,7 +1100,7 @@ function MessagesPanel() {
                 <li
                   key={m.id}
                   className={
-                    "max-w-[75%] rounded-lg border px-3 py-2 " +
+                    "max-w-[75%] rounded-[var(--adm-radius-sm)] border px-3 py-2 " +
                     (m.sender === "seller"
                       ? "ml-auto border-gold/25 bg-gold/[0.05]"
                       : "border-paper/10 bg-paper/[0.02]")
@@ -1312,7 +1312,7 @@ function RefundsPanel() {
         />
 
         {declining && (
-          <div className="mt-4 flex flex-wrap items-end gap-2 rounded-md border border-rose-400/30 bg-rose-400/[0.04] p-3">
+          <div className="mt-4 flex flex-wrap items-end gap-2 rounded-[var(--adm-radius)] border border-rose-400/30 bg-rose-400/[0.04] p-3">
             <label className="min-w-[260px] flex-1 space-y-1">
               <span className={labelCls}>
                 Why decline? The buyer sees this note. *

@@ -167,7 +167,7 @@ const COMP_DURATIONS: [number, string][] = [
 ];
 
 const compField =
-  "rounded-md border border-paper/20 bg-night px-3 py-2 font-sans text-detail text-paper focus:border-gold focus:outline-none";
+  "rounded-[var(--adm-radius-sm)] border border-paper/20 bg-night px-3 py-2 font-sans text-detail text-paper focus:border-gold focus:outline-none";
 const compLabel =
   "block font-sans text-caption font-medium text-[color:var(--adm-ink-3)]";
 
@@ -442,7 +442,7 @@ function MembersPanel() {
       <GiftCard />
 
       {loaded && meta && !meta.revenuecat ? (
-        <p className="rounded-md border border-amber-400/25 bg-amber-400/[0.05] px-3 py-2 font-sans text-eyebrow text-amber-200/90">
+        <p className="rounded-[var(--adm-radius-sm)] border border-amber-400/25 bg-amber-400/[0.05] px-3 py-2 font-sans text-eyebrow text-amber-200/90">
           Start dates come from the RevenueCat REST API. Set
           REVENUECAT_REST_API_KEY in the environment to show them; next-billing
           and everything else works from the database now.

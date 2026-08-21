@@ -12,7 +12,7 @@ import { CountUp } from "../CountUp";
 const WorldMap = dynamic(() => import("../WorldMap").then((m) => m.WorldMap), {
   ssr: false,
   loading: () => (
-    <div className="w-full aspect-[2/1] rounded-lg border border-paper/10 bg-night animate-pulse" />
+    <div className="w-full aspect-[2/1] rounded-[var(--adm-radius-sm)] border border-paper/10 bg-night animate-pulse" />
   ),
 });
 
@@ -90,7 +90,7 @@ export function LiveTab() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="rounded-lg border border-gold/30 bg-gold/[0.06] p-5 col-span-2 md:col-span-1">
+        <div className="rounded-[var(--adm-radius)] border border-gold/30 bg-gold/[0.06] p-5 col-span-2 md:col-span-1">
           <p className="font-sans text-detail font-medium tracking-[1.2px] text-gold/80 flex items-center gap-2">
             <span className="inline-block h-2 w-2 rounded-full bg-gold animate-pulse" />
             Live now
@@ -115,7 +115,7 @@ export function LiveTab() {
           {stats?.sessions.map((s) => (
             <li
               key={s.id}
-              className="flex items-center gap-3 rounded-md border border-paper/[0.08] bg-paper/[0.02] px-3 py-2.5"
+              className="flex items-center gap-3 rounded-[var(--adm-radius-sm)] border border-paper/[0.08] bg-paper/[0.02] px-3 py-2.5"
             >
               <span className="text-lede leading-none">{flag(s.countryCode)}</span>
               <div className="min-w-0 flex-1">

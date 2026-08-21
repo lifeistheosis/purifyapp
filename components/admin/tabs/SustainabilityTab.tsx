@@ -320,28 +320,28 @@ function ExpenseEditor({
   const [sortOrder, setSortOrder] = useState(String(initial.sort_order));
 
   return (
-    <div className="rounded-md border border-gold/30 bg-gold/[0.04] p-4 mb-4 grid grid-cols-1 md:grid-cols-12 gap-3">
+    <div className="rounded-[var(--adm-radius)] border border-gold/30 bg-gold/[0.04] p-4 mb-4 grid grid-cols-1 md:grid-cols-12 gap-3">
       <input
-        className="md:col-span-4 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper"
+        className="md:col-span-4 rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper"
         placeholder="Label"
         value={label}
         onChange={(e) => setLabel(e.target.value)}
       />
       <input
-        className="md:col-span-2 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper tabular-nums"
+        className="md:col-span-2 rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper tabular-nums"
         placeholder="USD/mo"
         value={usdValue}
         onChange={(e) => setUsdValue(e.target.value)}
         inputMode="decimal"
       />
       <input
-        className="md:col-span-2 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper"
+        className="md:col-span-2 rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper"
         placeholder="Category"
         value={category}
         onChange={(e) => setCategory(e.target.value)}
       />
       <input
-        className="md:col-span-1 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper tabular-nums"
+        className="md:col-span-1 rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper tabular-nums"
         placeholder="Sort"
         value={sortOrder}
         onChange={(e) => setSortOrder(e.target.value)}
@@ -371,7 +371,7 @@ function ExpenseEditor({
         </ToolbarButton>
       </div>
       <textarea
-        className="md:col-span-12 rounded-md border border-paper/15 bg-night px-3 py-2 font-sans text-caption text-paper/85"
+        className="md:col-span-12 rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night px-3 py-2 font-sans text-caption text-paper/85"
         placeholder="Note (shown under the label on /support)"
         value={note}
         onChange={(e) => setNote(e.target.value)}

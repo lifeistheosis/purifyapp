@@ -37,7 +37,7 @@ type Broadcast = {
 };
 
 const input =
-  "w-full rounded-md border border-paper/20 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/35 focus:border-gold focus:outline-none";
+  "w-full rounded-[var(--adm-radius-sm)] border border-paper/20 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/35 focus:border-gold focus:outline-none";
 
 export function PushTab() {
   const [title, setTitle] = useState("");
@@ -197,7 +197,7 @@ export function PushTab() {
               </div>
             </div>
 
-            <div className="rounded-lg border border-paper/10 bg-night p-4">
+            <div className="rounded-[var(--adm-radius)] border border-paper/10 bg-night p-4">
               <p className="font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
                 Recipients
               </p>
@@ -212,7 +212,7 @@ export function PushTab() {
             </div>
 
             {willDryRun && (
-              <p className="rounded-md border border-amber-400/30 bg-amber-400/[0.06] px-3 py-2 font-sans text-eyebrow text-amber-200">
+              <p className="rounded-[var(--adm-radius-sm)] border border-amber-400/30 bg-amber-400/[0.06] px-3 py-2 font-sans text-eyebrow text-amber-200">
                 No push credentials are set, so a send is logged but nothing
                 actually goes out (dry run).
               </p>
@@ -222,11 +222,11 @@ export function PushTab() {
 
         {/* Live preview of the notification */}
         {canCompose && (
-          <div className="mt-5 rounded-lg border border-paper/12 bg-night p-3">
+          <div className="mt-5 rounded-[var(--adm-radius)] border border-paper/12 bg-night p-3">
             <p className="font-sans text-caption font-medium text-[color:var(--adm-ink-3)] mb-1.5">
               Preview
             </p>
-            <div className="rounded-md bg-paper/[0.05] p-3">
+            <div className="rounded-[var(--adm-radius)] bg-paper/[0.05] p-3">
               <p className="font-sans text-detail font-semibold text-paper">
                 {title}
               </p>

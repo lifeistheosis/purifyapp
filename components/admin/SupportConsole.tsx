@@ -76,7 +76,7 @@ function StatusPicker({
       {open && (
         <ul
           role="listbox"
-          className="absolute right-0 z-20 mt-1 w-40 overflow-hidden rounded-lg border border-paper/15 bg-night-soft shadow-pop"
+          className="absolute right-0 z-20 mt-1 w-40 overflow-hidden rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night-soft shadow-pop"
         >
           {STATUSES.map((s) => (
             <li key={s}>
@@ -196,7 +196,7 @@ export function SupportConsole({ initial }: { initial: FullTicket[] }) {
 
   if (tickets.length === 0) {
     return (
-      <p className="rounded-2xl border border-paper/10 bg-night-soft/60 p-8 text-center font-sans text-detail text-paper/60">
+      <p className="rounded-[var(--adm-radius)] border border-paper/10 bg-night-soft/60 p-8 text-center font-sans text-detail text-paper/60">
         No support tickets yet. When a customer submits the contact form, it
         appears here.
       </p>
@@ -221,7 +221,7 @@ export function SupportConsole({ initial }: { initial: FullTicket[] }) {
                 onClick={() => openTicket(t.id)}
                 aria-current={active ? "true" : undefined}
                 className={cn(
-                  "w-full rounded-2xl border p-4 text-left transition-all duration-200",
+                  "w-full rounded-[var(--adm-radius)] border p-4 text-left transition-all duration-200",
                   active
                     ? "border-gold/30 bg-gold/[0.05] shadow-[0_1px_0_0_rgba(255,255,255,0.04)_inset]"
                     : "border-paper/10 bg-night-soft/40 hover:border-paper/25 hover:bg-night-soft/60",
@@ -262,7 +262,7 @@ export function SupportConsole({ initial }: { initial: FullTicket[] }) {
         <div
           key={selected.id}
           className={cn(
-            "admin-fade-in mt-4 rounded-2xl border border-paper/10 bg-night-soft/60 p-5 md:mt-0 md:p-6",
+            "admin-fade-in mt-4 rounded-[var(--adm-radius)] border border-paper/10 bg-night-soft/60 p-5 md:mt-0 md:p-6",
             mobileThreadOpen ? "block" : "hidden md:block",
           )}
         >
@@ -303,7 +303,7 @@ export function SupportConsole({ initial }: { initial: FullTicket[] }) {
                 title="Double-tap to react"
                 style={{ animationDelay: `${Math.min(i * 45, 360)}ms` }}
                 className={cn(
-                  "admin-fade-in group relative max-w-[85%] cursor-default select-none rounded-2xl px-4 py-3 font-sans text-detail leading-relaxed md:max-w-[80%]",
+                  "admin-fade-in group relative max-w-[85%] cursor-default select-none rounded-[var(--adm-radius-sm)] px-4 py-3 font-sans text-detail leading-relaxed md:max-w-[80%]",
                   m.author === "staff"
                     ? "ml-auto rounded-br-md bg-gold/[0.1] text-paper"
                     : "mr-auto rounded-bl-md border border-paper/10 bg-paper/[0.03] text-paper/85",
@@ -334,7 +334,7 @@ export function SupportConsole({ initial }: { initial: FullTicket[] }) {
               value={reply}
               onChange={(e) => setReply(e.target.value)}
               placeholder="Write a reply. It emails the customer."
-              className="w-full rounded-xl border border-paper/15 bg-paper/[0.03] px-3.5 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:border-paper/40 focus:outline-none focus:ring-1 focus:ring-paper/20"
+              className="w-full rounded-[var(--adm-radius-sm)] border border-paper/15 bg-paper/[0.03] px-3.5 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:border-paper/40 focus:outline-none focus:ring-1 focus:ring-paper/20"
             />
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <button

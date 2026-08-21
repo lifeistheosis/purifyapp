@@ -277,7 +277,7 @@ export function ContentTab() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search…"
-              className="rounded-md border border-paper/20 bg-paper/[0.04] px-2 py-1 font-sans text-caption text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/60"
+              className="rounded-[var(--adm-radius-sm)] border border-paper/20 bg-paper/[0.04] px-2 py-1 font-sans text-caption text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/60"
             />
             <ToolbarButton
               variant={filter === "all" ? "primary" : "default"}

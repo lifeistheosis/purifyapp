@@ -71,7 +71,7 @@ type AdminClaim = {
 type Panel = "drops" | "claims" | "announce";
 
 const INPUT =
-  "w-full rounded-md border border-paper/15 bg-paper/[0.04] px-3 py-2 font-sans text-detail text-paper focus:outline-none focus:ring-2 focus:ring-gold/40";
+  "w-full rounded-[var(--adm-radius-sm)] border border-paper/15 bg-paper/[0.04] px-3 py-2 font-sans text-detail text-paper focus:outline-none focus:ring-2 focus:ring-gold/40";
 
 function fmtDate(iso: string | null): string {
   if (!iso) return "—";
@@ -240,7 +240,7 @@ export function EikonBoxTab() {
       />
 
       {error && (
-        <p className="rounded-md border border-rose-400/40 bg-rose-400/[0.06] px-3 py-2 font-sans text-detail text-rose-300">
+        <p className="rounded-[var(--adm-radius-sm)] border border-rose-400/40 bg-rose-400/[0.06] px-3 py-2 font-sans text-detail text-rose-300">
           {error}
         </p>
       )}
@@ -822,12 +822,12 @@ function AnnouncePanel({ drop }: { drop: AdminDrop }) {
       accent
     >
       {drop.status !== "open" && (
-        <p className="mb-3 rounded-md border border-gold/40 bg-gold/[0.07] px-3 py-2 font-sans text-detail text-gold">
+        <p className="mb-3 rounded-[var(--adm-radius-sm)] border border-gold/40 bg-gold/[0.07] px-3 py-2 font-sans text-detail text-gold">
           This drop is {drop.status}. Open it before announcing.
         </p>
       )}
       {dryRun && (
-        <p className="mb-3 rounded-md border border-rose-400/40 bg-rose-400/[0.06] px-3 py-2 font-sans text-detail text-rose-300">
+        <p className="mb-3 rounded-[var(--adm-radius-sm)] border border-rose-400/40 bg-rose-400/[0.06] px-3 py-2 font-sans text-detail text-rose-300">
           No push credentials are configured. A send will be logged as
           &ldquo;enqueued&rdquo; and nothing will actually leave.
         </p>

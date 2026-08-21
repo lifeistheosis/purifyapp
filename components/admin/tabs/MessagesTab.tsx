@@ -233,7 +233,7 @@ function ShopInbox() {
                 <li
                   key={m.id}
                   className={
-                    "max-w-[75%] rounded-lg border px-3 py-2 font-sans text-detail " +
+                    "max-w-[75%] rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-detail " +
                     (m.sender === "seller"
                       ? "ml-auto border-gold/25 bg-gold/[0.06] text-paper"
                       : "border-paper/12 bg-paper/[0.03] text-paper/85")
