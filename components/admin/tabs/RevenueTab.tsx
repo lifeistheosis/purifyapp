@@ -30,7 +30,19 @@ type Revenue = {
     arrCents: number;
     activePlus: number;
     activePro: number;
+    /** True only when RevenueCat did not answer and the list-price maths did. */
     estimated: boolean;
+    /** The list-price figure, kept even when the real one is present. */
+    estimatedMrrCents: number;
+    source: "revenuecat" | "list-price-estimate";
+    live: {
+      activeSubscriptions: number;
+      activeTrials: number;
+      totalRevenue: number;
+      currency: string;
+      lastUpdatedAt: string | null;
+      annualArpu: number | null;
+    } | null;
   };
   bySource: { name: string; value: number }[];
 };
@@ -81,7 +93,7 @@ function RevenuePanel() {
           hint="all-time"
         />
         <StatCard
-          label="Subs MRR · est."
+          label={data && !data.subscriptions.estimated ? "Subs MRR · real" : "Subs MRR · est."}
           value={data ? money(data.subscriptions.mrrCents) : "—"}
           hint={
             data
@@ -91,11 +103,33 @@ function RevenuePanel() {
         />
       </div>
 
-      <p className="font-sans text-eyebrow text-paper/40">
-        Subscription revenue is estimated (active subscribers × list monthly
-        price); no billed amount is stored. Shop and donation figures are
-        realized.
-      </p>
+      {/* The label is the point. Until RevenueCat is wired this panel could
+          only multiply subscribers by a list price, which cannot see a
+          discount, a regional tier, an annual plan or store commission. Where
+          the real figure is available it says so, and it keeps the estimate
+          beside it so the gap between the two stays visible rather than being
+          quietly resolved. */}
+      {data && !data.subscriptions.estimated ? (
+        <p className="font-sans text-eyebrow text-paper/40">
+          Subscription revenue is real, from RevenueCat
+          {data.subscriptions.live?.lastUpdatedAt
+            ? `, as of ${new Date(data.subscriptions.live.lastUpdatedAt).toLocaleString()}`
+            : ""}
+          . List price alone would have implied{" "}
+          {money(data.subscriptions.estimatedMrrCents)}; the difference is
+          discounts, regional pricing, annual plans and store commission.
+          {data.subscriptions.live?.annualArpu != null
+            ? ` Real revenue per subscriber: ${money(Math.round(data.subscriptions.live.annualArpu * 100))} a year.`
+            : ""}
+        </p>
+      ) : (
+        <p className="font-sans text-eyebrow text-paper/40">
+          Subscription revenue is estimated (active subscribers × list monthly
+          price); no billed amount is stored. Set REVENUECAT_V2_API_KEY and
+          REVENUECAT_PROJECT_ID to replace this with billed figures. Shop and
+          donation figures are realized.
+        </p>
+      )}
 
       <ChartFrame
         title="Shop net revenue · by month"
@@ -141,7 +175,7 @@ function RevenuePanel() {
         </ChartFrame>
       </div>
 
-      <Card title="Estimated subscription run-rate">
+      <Card title={data && !data.subscriptions.estimated ? "Subscription run-rate" : "Estimated subscription run-rate"}>
         <div className="grid grid-cols-2 gap-4 font-sans">
           <div>
             <p className="text-caption font-medium text-[color:var(--adm-ink-3)]">

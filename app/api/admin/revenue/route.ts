@@ -9,6 +9,7 @@ import {
 } from "@/lib/shop/earnings";
 import { subscriptionStats } from "@/lib/entitlements/adminStats";
 import { estimatedMrrCents, estimatedArrCents } from "@/lib/premium/mrr";
+import { getProjectMetrics, realArpuAnnual } from "@/lib/billing/revenuecatMetrics";
 
 export const dynamic = "force-dynamic";
 
@@ -65,6 +66,9 @@ export async function GET() {
     : null;
 
   const mrrCents = estimatedMrrCents(subs.paidCounts);
+  // Real subscription revenue, when a v2 key with charts_metrics access is
+  // set. Null otherwise, and the estimate below carries the panel as before.
+  const live = await getProjectMetrics();
   const arrCents = estimatedArrCents(subs.paidCounts);
 
   // Revenue-by-source for the current picture: shop net (all-time here for
@@ -95,11 +99,32 @@ export async function GET() {
         monthly: donations,
       },
       subscriptions: {
-        mrrCents,
-        arrCents,
+        // Real figures where RevenueCat answers, the list-price estimate
+        // where it does not. `estimated` stops being a constant: it is now
+        // the truth about which of the two this payload is carrying, and the
+        // UI is required to say so either way.
+        mrrCents: live ? Math.round(live.mrr * 100) : mrrCents,
+        arrCents: live ? Math.round(live.arr * 100) : arrCents,
         activePlus: subs.activePlus,
         activePro: subs.activePro,
-        estimated: true,
+        estimated: !live,
+        // Kept alongside the real number rather than replaced, so a gap
+        // between what RevenueCat bills and what list price implies is
+        // visible instead of silently resolved. That gap is discounts,
+        // regional pricing, annual plans and store commission, which is
+        // exactly what the estimate could never see.
+        estimatedMrrCents: mrrCents,
+        live: live
+          ? {
+              activeSubscriptions: live.activeSubscriptions,
+              activeTrials: live.activeTrials,
+              totalRevenue: live.totalRevenue,
+              currency: live.currency,
+              lastUpdatedAt: live.lastUpdatedAt,
+              annualArpu: realArpuAnnual(live),
+            }
+          : null,
+        source: live ? ("revenuecat" as const) : ("list-price-estimate" as const),
       },
       bySource,
     },
