@@ -180,7 +180,7 @@ type Panel = "products" | "requests" | "applications" | "reviews";
 export function ShopTab() {
   const [panel, setPanel] = useState<Panel>("products");
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <SubTabs
         tabs={
           [
@@ -330,7 +330,7 @@ function ProductsPanel() {
   ).length;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
         <Metric
           label="Products"
@@ -871,7 +871,7 @@ function ProductOverview({
           : "text-emerald-300";
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {hasSupplierImage(p.media) ? (
         <div className="rounded-[var(--adm-radius)] border border-amber-400/30 bg-amber-400/[0.06] p-3">
           <p className="font-sans text-detail font-semibold text-amber-200">
@@ -2024,7 +2024,7 @@ function ReviewsPanel() {
     "mb-1 font-sans text-detail font-medium text-[color:var(--adm-ink-3)]";
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         <Metric
           label="Product reviews"

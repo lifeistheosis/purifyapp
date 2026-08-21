@@ -26,7 +26,7 @@ const TABS = [
 export function TrafficHubTab() {
   const [panel, setPanel] = useState<Panel>("overview");
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <SubTabs tabs={TABS} active={panel} onChange={setPanel} />
       {panel === "overview" && <OverviewTab />}
       {panel === "live" && <LiveTab />}

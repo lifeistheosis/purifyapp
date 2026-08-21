@@ -174,7 +174,7 @@ const TABS = [
 export function RevenueTab() {
   const [panel, setPanel] = useState<Panel>("revenue");
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <SubTabs tabs={TABS} active={panel} onChange={setPanel} />
       {panel === "revenue" ? <RevenuePanel /> : <SustainabilityTab />}
     </div>

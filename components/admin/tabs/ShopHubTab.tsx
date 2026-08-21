@@ -20,7 +20,7 @@ const TABS = [
 export function ShopHubTab() {
   const [panel, setPanel] = useState<Panel>("catalog");
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <SubTabs tabs={TABS} active={panel} onChange={setPanel} />
       {panel === "catalog" && <ShopTab />}
       {panel === "marketplace" && <MarketplaceTab />}

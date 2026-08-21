@@ -363,7 +363,7 @@ function MembersPanel() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Members" value={loaded ? members.length : "—"} accent />
         <StatCard
@@ -515,7 +515,7 @@ const TABS = [
 export function SubscriptionsTab() {
   const [panel, setPanel] = useState<Panel>("members");
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <SubTabs tabs={TABS} active={panel} onChange={setPanel} />
       {panel === "members" ? <MembersPanel /> : <SummaryPanel />}
     </div>

@@ -196,7 +196,7 @@ export function OrdersTab() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <SubTabs tabs={FILTERS} active={filter} onChange={setFilter} />
 
       <Card title={`Orders · ${rows.length}`}>

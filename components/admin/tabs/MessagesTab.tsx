@@ -66,7 +66,7 @@ function SupportInbox() {
     (t) => t.status === "open" || t.status === "pending",
   ).length;
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Tickets" value={tickets.length} />
         <StatCard label="Open / pending" value={open} accent />
@@ -136,7 +136,7 @@ function ShopInbox() {
   const opened = convs.find((c) => c.id === openId) ?? null;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Conversations" value={convs.length} />
         <StatCard
@@ -265,7 +265,7 @@ const TABS = [
 export function MessagesTab() {
   const [panel, setPanel] = useState<Panel>("support");
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <SubTabs tabs={TABS} active={panel} onChange={setPanel} />
       {panel === "support" ? <SupportInbox /> : <ShopInbox />}
     </div>

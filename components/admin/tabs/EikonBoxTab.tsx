@@ -228,7 +228,7 @@ export function EikonBoxTab() {
   }, [claims]);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <SubTabs<Panel>
         tabs={[
           ["drops", "Drops"],

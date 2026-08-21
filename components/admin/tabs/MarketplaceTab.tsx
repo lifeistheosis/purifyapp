@@ -109,7 +109,7 @@ type Panel = "stores" | "listings" | "orders" | "messages" | "refunds";
 export function MarketplaceTab() {
   const [panel, setPanel] = useState<Panel>("stores");
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="flex flex-wrap gap-2">
         {(
           [
@@ -212,7 +212,7 @@ function StoresPanel() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Stores" value={stores.length} />
         <StatCard
@@ -610,7 +610,7 @@ function ListingsPanel() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Listings" value={products.length} />
         <StatCard
@@ -776,7 +776,7 @@ function OrdersPanel() {
   );
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Orders" value={orders.length} />
         <StatCard label="Open (paid)" value={open.length} accent />
@@ -998,7 +998,7 @@ function MessagesPanel() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Conversations" value={conversations.length} />
         <StatCard
@@ -1173,7 +1173,7 @@ function RefundsPanel() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Requests" value={refunds.length} />
         <StatCard label="Awaiting decision" value={pending.length} accent />

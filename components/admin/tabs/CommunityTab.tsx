@@ -134,7 +134,7 @@ export function CommunityTab() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* First, because until now this queue had nowhere to live: the tab
           named "Community" covered campaigns and Trapeza only, so a
           reported Conversations post could be acted on only in the SQL

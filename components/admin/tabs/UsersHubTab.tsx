@@ -82,7 +82,7 @@ function useCartsData() {
 function LiveCartsPanel() {
   const { liveCarts, loaded } = useCartsData();
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Live carts" value={loaded ? liveCarts.length : "—"} accent />
         <StatCard
@@ -209,7 +209,7 @@ function LiveCartsPanel() {
 function AbandonedPanel() {
   const { abandoned, loaded } = useCartsData();
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Unpaid checkouts" value={loaded ? abandoned.length : "—"} />
         <StatCard
@@ -275,7 +275,7 @@ const TABS = [
 export function UsersHubTab() {
   const [panel, setPanel] = useState<Panel>("profiles");
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <SubTabs tabs={TABS} active={panel} onChange={setPanel} />
       {panel === "profiles" && <UsersTab />}
       {panel === "carts" && <LiveCartsPanel />}

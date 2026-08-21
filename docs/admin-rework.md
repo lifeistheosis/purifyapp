@@ -172,15 +172,34 @@ reading the panel first turned up things the list did not have.
    that uniform padding is a surface and px/py is a control. Every rounded
    element in the panel computes to one of four values.
 
+4. **Twenty four panel roots split between two rhythms**, `space-y-5` and
+   `space-y-6`, so switching tabs shifted the vertical spacing by 4px and a hub
+   at one rhythm wrapped a panel at the other. All on `space-y-6` now, which is
+   both the majority and the `gap-6` the shell already uses between the rail and
+   the content column.
+
+### Correction: "ShopTab and EikonBoxTab import no primitives" was wrong
+
+An earlier version of this section named those two files as the largest
+remaining inconsistency, on the grounds that they used none of the shared
+primitives. **That is false and the commit that said so is on main.** The
+measurement behind it used a single-line regex for `from "../primitives"`.
+ShopTab's import block spans eleven lines, and EikonBoxTab imports by the
+absolute path `@/components/admin/primitives`, so both read as zero.
+
+Measured properly: **all 23 tabs import primitives, and those two are the
+heaviest users of them**, ShopTab with 10 and EikonBoxTab with 8. There is no
+outlier tab. Whoever picks this up should not go looking for one.
+
 ### Still open after Wave C
 
-- `ShopTab.tsx` (2,581 lines) and `EikonBoxTab.tsx` (902) import nothing from
-  `primitives.tsx`. Together they are 35% of all tab code, and every pass so far
-  has had to route around them. This is the largest remaining inconsistency and
-  the obvious next task.
-- Task 14, the customizable Overview, is untouched.
+- Task 14, the customizable Overview, is untouched and is now the largest
+  genuinely open item on the original list.
 - The `SupportConsole.tsx` inset highlight above is still there.
 - The three orphan tabs still await a revive-or-delete decision.
+- The remaining tab-level differences are real but small: bespoke one-off
+  layouts inside panels rather than a structural gap. Worth an eye during other
+  work, not worth a sweep of its own.
 
 ## Recommended execution order
 
