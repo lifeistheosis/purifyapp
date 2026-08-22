@@ -1,6 +1,7 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { SUPPORT, type ExpenseLine } from "@/data/support/support";
+import { asCadence } from "@/lib/support/cadence";
 
 /**
  * The numbers behind /support, and where each one came from.
@@ -43,7 +44,9 @@ export async function getExpenses(): Promise<ExpenseData> {
     const supa = createAdminClient();
     const { data, error } = await supa
       .from("expense_lines")
-      .select("label, monthly_cents, note, active, sort_order, updated_at")
+      .select(
+        "label, monthly_cents, amount_cents, cadence, note, active, sort_order, updated_at",
+      )
       .eq("active", true)
       .order("sort_order", { ascending: true })
       .order("id", { ascending: true });
@@ -65,6 +68,15 @@ export async function getExpenses(): Promise<ExpenseData> {
       lines: data.map((r) => ({
         label: r.label as string,
         monthlyUsd: (r.monthly_cents as number) / 100,
+        // asCadence, not a cast. This client is untyped and the column is new,
+        // so a row written before the migration, or by a build that does not
+        // know the column, arrives as null. Reading that as monthly is right:
+        // it is what every row meant before the column existed.
+        cadence: asCadence(r.cadence),
+        amountUsd:
+          typeof r.amount_cents === "number"
+            ? r.amount_cents / 100
+            : (r.monthly_cents as number) / 100,
         note: (r.note as string | null) ?? undefined,
       })),
       fromFallback: false,

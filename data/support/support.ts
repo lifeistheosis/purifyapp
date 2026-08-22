@@ -3,7 +3,14 @@
 
 export type ExpenseLine = {
  label: string;
+ /** Normalized to a month. For a yearly cost this is the amortized figure,
+  *  and `amountUsd` carries the invoice. For a one time cost this is 0. */
  monthlyUsd: number;
+ /** Defaults to monthly, which is what every line here meant before the
+  *  cadence column existed. */
+ cadence?: "once" | "monthly" | "yearly";
+ /** As billed, in the cadence's own period. Defaults to monthlyUsd. */
+ amountUsd?: number;
  note?: string;
 };
 

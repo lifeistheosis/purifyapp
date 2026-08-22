@@ -22,7 +22,7 @@
 // would have put that cost on all twenty call sites to serve three. So: one
 // small sparkline for rows, one large one for the hero, sharing smoothPath.
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { smoothPath } from "./charts";
 import { Skeleton } from "./primitives";
 
@@ -38,14 +38,25 @@ export function HeroSpark({
   points,
   color = "var(--adm-accent)",
   format = (v: number) => String(Math.round(v)),
+  labels,
+  title,
   id,
 }: {
   points: number[];
   color?: string;
   format?: (v: number) => string;
+  /** One per point, same order. Shown under the value while scrubbing. */
+  labels?: string[];
+  /** What the series measures, for the accessible name. */
+  title?: string;
   /** Unique per card: two gradients sharing an id makes the second one blank. */
   id: string;
 }) {
+  const [hover, setHover] = useState<number | null>(null);
+
+  // Before the early return, because hooks cannot run conditionally. The guard
+  // below returns for a series too short to draw, and a hook declared after it
+  // would run on some renders and not others.
   if (points.length < 2) {
     return <div style={{ height: SH }} aria-hidden />;
   }
@@ -64,24 +75,67 @@ export function HeroSpark({
   const line = smoothPath(xy);
   const area = `${line} L ${SW} ${SH} L 0 ${SH} Z`;
 
-  const lastX = x(points.length - 1);
-  const lastY = y(points[points.length - 1]);
+  // The point being read. Hover when there is one, otherwise the latest, which
+  // is what this chart always showed and so is what it falls back to.
+  const idx = hover ?? points.length - 1;
+  const lastX = x(idx);
+  const lastY = y(idx === points.length - 1 ? points[points.length - 1] : points[idx]);
   // The baseline is where the series STARTED, so height above it reads as
   // the movement the delta chip states in words. A mean would be prettier
   // and would not mean anything.
   const baseY = y(points[0]);
 
+  // Pointer events rather than onMouseMove, which is what every other chart in
+  // this panel uses. A mouse fires pointermove on hover and a finger fires it
+  // while touching, so one handler covers scrubbing on both. touch-action is
+  // deliberately NOT set to none: that would win the gesture from the page and
+  // a finger dragged over the card could no longer scroll past it.
+  const at = (e: React.PointerEvent<SVGSVGElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    if (r.width <= 0) return;
+    const i = Math.round(((e.clientX - r.left) / r.width) * (points.length - 1));
+    setHover(Math.max(0, Math.min(points.length - 1, i)));
+  };
+
+  const readout = format(points[idx]);
+  const caption = labels?.[idx];
+
   return (
     <svg
       viewBox={`0 0 ${SW} ${SH}`}
-      className="block w-full overflow-visible"
+      className="adm-spark block w-full cursor-crosshair overflow-visible"
       // maxHeight matters more than it looks. SW = 280 was exactly the card
       // width under the old 1400px shell, so `height: auto` happened to
       // resolve to SH. On the full-bleed shell the card is wider and the
       // sparkline scales with it, reaching roughly 116px tall at 1920 and
       // swallowing the number it is supposed to annotate.
       style={{ height: "auto", maxHeight: SH }}
-      aria-hidden
+      onPointerMove={at}
+      onPointerDown={at}
+      onPointerLeave={() => setHover(null)}
+      onPointerCancel={() => setHover(null)}
+      // Focusable and arrow-key driven, because a read-out reachable only by
+      // hovering is a read-out a keyboard cannot reach. This was aria-hidden
+      // when it carried no information beyond the headline number; now that it
+      // reports a value per day it has to be reachable and has to say so.
+      tabIndex={0}
+      role="img"
+      aria-label={
+        `${title ? title + ": " : ""}${readout}${caption ? ", " + caption : ""}` +
+        `. ${points.length} points, use the arrow keys to read each one.`
+      }
+      onKeyDown={(e) => {
+        if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+          e.preventDefault();
+          const step = e.key === "ArrowRight" ? 1 : -1;
+          setHover((h) =>
+            Math.max(0, Math.min(points.length - 1, (h ?? points.length - 1) + step)),
+          );
+        } else if (e.key === "Escape") {
+          setHover(null);
+        }
+      }}
+      onBlur={() => setHover(null)}
       focusable="false"
     >
       <defs>
@@ -117,6 +171,19 @@ export function HeroSpark({
         className="own-draw"
       />
 
+      {/* The crosshair, only while scrubbing. Drawn before the node so the
+          node sits on top of it. */}
+      {hover !== null && (
+        <line
+          x1={lastX}
+          x2={lastX}
+          y1={SPAD - 6}
+          y2={SH - SPAD + 6}
+          stroke="var(--adm-line-strong)"
+          strokeWidth="1"
+        />
+      )}
+
       {/* Halo, then node. Two circles rather than a filter: a blur costs a
           raster pass on every frame of the draw-in for the same effect. */}
       <circle cx={lastX} cy={lastY} r="6" fill={color} opacity="0.18" />
@@ -129,27 +196,42 @@ export function HeroSpark({
         strokeWidth="2"
       />
 
-      {/* Anchored to the right edge, so a long value cannot push off-card. */}
+      {/* Anchored to the right edge, so a long value cannot push off-card.
+          It follows the scrubbed point vertically but never horizontally: a
+          badge that tracked the cursor would sit under it half the time and
+          would clip off the left edge on the first few points. */}
       <g transform={`translate(${SW}, ${Math.max(12, lastY - 14)})`}>
         <rect
           x="-58"
-          y="-11"
+          y={caption ? -15 : -11}
           width="58"
-          height="19"
+          height={caption ? 28 : 19}
           rx="6"
           fill="var(--adm-panel-2)"
           stroke="var(--adm-line-strong)"
         />
         <text
           x="-29"
-          y="2.5"
+          y={caption ? -2.5 : 2.5}
           textAnchor="middle"
           fontSize="10.5"
           fontFamily="var(--font-sans)"
-          fill="var(--adm-ink-2)"
+          fill="var(--adm-ink)"
         >
-          {format(points[points.length - 1])}
+          {readout}
         </text>
+        {caption && (
+          <text
+            x="-29"
+            y="8.5"
+            textAnchor="middle"
+            fontSize="9"
+            fontFamily="var(--font-sans)"
+            fill="var(--adm-ink-3)"
+          >
+            {caption}
+          </text>
+        )}
       </g>
     </svg>
   );
@@ -167,6 +249,7 @@ export function MetricCard({
   value,
   delta,
   points,
+  labels,
   format,
   color,
   onOpen,
@@ -188,6 +271,8 @@ export function MetricCard({
    */
   delta?: { value: number; positive: boolean; suffix?: string } | null;
   points?: number[];
+  /** One per point, same order. Shown while scrubbing the sparkline. */
+  labels?: string[];
   format?: (v: number) => string;
   color?: string;
   onOpen?: () => void;
@@ -301,7 +386,14 @@ export function MetricCard({
         {loading ? (
           <Skeleton w="100%" h={78} />
         ) : points && points.length > 1 ? (
-          <HeroSpark points={points} color={accent} format={format} id={id} />
+          <HeroSpark
+            points={points}
+            color={accent}
+            format={format}
+            labels={labels}
+            title={title}
+            id={id}
+          />
         ) : (
           <p
             className="pt-6 text-center font-sans text-[11.5px]"

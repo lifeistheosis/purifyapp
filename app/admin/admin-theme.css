@@ -762,6 +762,16 @@
     z-index: 3;
   }
 
+  /* While a row is animating to a new position it carries a transform, and a
+     transformed element is the containing block for any sticky descendant. A
+     pinned first cell inside it would stop tracking the scroller and drift.
+     The pin is suspended for the length of the animation only. lib/ui/flip.ts
+     sets and clears the attribute, with a timeout backstop so an interrupted
+     animation cannot strand it. */
+  .adm tr[data-flipping] .adm-tbl-1st {
+    position: static;
+  }
+
   .adm .adm-tbl-1st::after {
     content: "";
     position: absolute;

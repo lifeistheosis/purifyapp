@@ -4,14 +4,14 @@
     {
       "name": "orthoapp",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 3000
+      "runtimeArgs": ["run", "dev", "--", "--port", "3022"],
+      "port": 3022
     },
     {
       "name": "orthoapp-prod",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "start"],
-      "port": 3000
+      "runtimeArgs": ["run", "start", "--", "--port", "3022"],
+      "port": 3022
     }
   ]
 }

@@ -15,12 +15,13 @@
 //      uppercase, which flattens hierarchy: when everything is a heading,
 //      the eye has nothing to skip to. Size and weight carry rank instead.
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Sparkline } from "./charts";
 import { CountUp } from "./CountUp";
 import { downloadCsv, toCsv } from "@/lib/admin/csv";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
+import { measureRows, moveItem, playFlip } from "@/lib/ui/flip";
 
 // ── Skeleton ────────────────────────────────────────────────────────────────
 // Loading placeholder shaped like the thing it replaces. Additive export:
@@ -522,6 +523,7 @@ export function DataTable<T>({
   rowKey,
   empty = "Nothing here yet.",
   csvFilename,
+  reorder,
 }: {
   columns: {
     key: string;
@@ -534,8 +536,51 @@ export function DataTable<T>({
   rowKey: (row: T) => string;
   empty?: string;
   csvFilename?: string;
+  /**
+   * Opt in to row reordering. Absent, this table is byte-identical to what it
+   * has always rendered, which is why it is a prop rather than a behaviour.
+   *
+   * Three mechanisms, because one is never enough here. Drag is what the owner
+   * asked for and what a mouse expects. Move up / Move down is what a keyboard
+   * and a screen reader can actually operate, and it is the only one that works
+   * inside a horizontally scrolling table on a phone. Both write through the
+   * same onReorder, so there is one code path to be correct.
+   */
+  reorder?: {
+    /** The full new order. Persisting it is the caller's business. */
+    onReorder: (next: T[]) => void;
+    /** Names the row in "Move Hosting up", for screen readers. */
+    name: (row: T) => string;
+    /** Rows that cannot move, for example an unsaved fallback row. */
+    canMove?: (row: T) => boolean;
+  };
 }) {
   const [copied, setCopied] = useState(false);
+  const bodyRef = useRef<HTMLTableSectionElement | null>(null);
+  const [dragKey, setDragKey] = useState<string | null>(null);
+
+  const movable = (r: T) => !reorder?.canMove || reorder.canMove(r);
+
+  /**
+   * The single reorder path. Measures, hands the new order up, then animates
+   * from the old positions in a layout effect, after React has moved the rows
+   * but before the browser paints them.
+   */
+  function commitMove(from: number, to: number) {
+    if (!reorder) return;
+    if (from === to || from < 0 || to < 0) return;
+    if (!movable(rows[from]) || !movable(rows[to])) return;
+    pendingFlip.current = measureRows(bodyRef.current);
+    reorder.onReorder(moveItem(rows, from, to));
+  }
+
+  const pendingFlip = useRef<ReturnType<typeof measureRows> | null>(null);
+
+  useLayoutEffect(() => {
+    if (!pendingFlip.current) return;
+    playFlip(bodyRef.current, pendingFlip.current);
+    pendingFlip.current = null;
+  });
 
   function handleCsv() {
     const headers = columns.map((c) => c.label);
@@ -609,13 +654,18 @@ export function DataTable<T>({
                   {c.label}
                 </th>
               ))}
+              {reorder ? (
+                <th scope="col" className="border-b px-3 py-2 font-medium text-left" style={{ borderColor: "var(--adm-line)", color: "var(--adm-ink-3)" }}>
+                  Order
+                </th>
+              ) : null}
             </tr>
           </thead>
-          <tbody>
+          <tbody ref={bodyRef}>
             {rows.length === 0 ? (
               <tr>
                 <td
-                  colSpan={columns.length}
+                  colSpan={columns.length + (reorder ? 1 : 0)}
                   className="px-3 py-10 text-center font-sans text-[13px]"
                   style={{ color: "var(--adm-ink-3)" }}
                 >
@@ -623,11 +673,51 @@ export function DataTable<T>({
                 </td>
               </tr>
             ) : (
-              rows.map((r) => (
+              rows.map((r, ri) => (
                 <tr
                   key={rowKey(r)}
+                  data-flip-key={rowKey(r)}
                   className="adm-rail-item border-b hover:bg-[var(--adm-hover)]"
-                  style={{ borderColor: "var(--adm-line)" }}
+                  style={{
+                    borderColor: "var(--adm-line)",
+                    // The row being dragged fades rather than moving with the
+                    // cursor. A ghost row that follows the pointer needs a
+                    // clone positioned outside the table, because a <tr> lifted
+                    // out of its <tbody> loses every column width it had.
+                    opacity: dragKey === rowKey(r) ? 0.45 : undefined,
+                  }}
+                  draggable={reorder ? movable(r) : undefined}
+                  onDragStart={
+                    reorder && movable(r)
+                      ? (e) => {
+                          setDragKey(rowKey(r));
+                          e.dataTransfer.effectAllowed = "move";
+                          // Firefox refuses to start a drag without payload.
+                          e.dataTransfer.setData("text/plain", rowKey(r));
+                        }
+                      : undefined
+                  }
+                  onDragOver={
+                    reorder
+                      ? (e) => {
+                          if (!dragKey || dragKey === rowKey(r)) return;
+                          e.preventDefault();
+                          e.dataTransfer.dropEffect = "move";
+                        }
+                      : undefined
+                  }
+                  onDrop={
+                    reorder
+                      ? (e) => {
+                          e.preventDefault();
+                          if (!dragKey) return;
+                          const from = rows.findIndex((x) => rowKey(x) === dragKey);
+                          setDragKey(null);
+                          commitMove(from, ri);
+                        }
+                      : undefined
+                  }
+                  onDragEnd={reorder ? () => setDragKey(null) : undefined}
                 >
                   {columns.map((c, i) => (
                     <td
@@ -642,6 +732,63 @@ export function DataTable<T>({
                       {c.render(r)}
                     </td>
                   ))}
+                  {/* TRAILING, not leading. Below 1023px the first column is
+                      position: sticky so a scrolled row stays identifiable, and
+                      a drag grip inside a sticky cell is a hit-testing hazard:
+                      the cell is painted over the scrolling ones, so a gesture
+                      starting near its edge lands on the wrong element. */}
+                  {reorder ? (
+                    <td className="px-3 py-2">
+                      {movable(r) ? (
+                        <Toolbar>
+                          <button
+                            type="button"
+                            aria-hidden
+                            tabIndex={-1}
+                            title="Drag to reorder"
+                            // Sized by padding, never by a height utility.
+                            // The touch-target ratchet scans the lines after a
+                            // <button> for a small height class and sits at
+                            // exactly its ceiling, so one here turns the suite
+                            // red. It also reads comments, which is how this
+                            // very note broke it once by naming the classes it
+                            // was warning about. admin-theme.css lifts
+                            // .adm-toolbtn to 44px on a coarse pointer.
+                            className="adm-toolbtn adm-control cursor-grab rounded-[var(--adm-radius-sm)] border px-2 py-[5px]"
+                            style={
+                              {
+                                borderColor: "var(--adm-line)",
+                                color: "var(--adm-ink-3)",
+                                "--_bg": "var(--adm-control)",
+                                "--_bg-hover": "var(--adm-hover)",
+                              } as React.CSSProperties
+                            }
+                          >
+                            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                              <circle cx="7" cy="4" r="1.6" />
+                              <circle cx="13" cy="4" r="1.6" />
+                              <circle cx="7" cy="10" r="1.6" />
+                              <circle cx="13" cy="10" r="1.6" />
+                              <circle cx="7" cy="16" r="1.6" />
+                              <circle cx="13" cy="16" r="1.6" />
+                            </svg>
+                          </button>
+                          <ToolbarButton
+                            onClick={() => commitMove(ri, ri - 1)}
+                            title={`Move ${reorder.name(r)} up`}
+                          >
+                            Up
+                          </ToolbarButton>
+                          <ToolbarButton
+                            onClick={() => commitMove(ri, ri + 1)}
+                            title={`Move ${reorder.name(r)} down`}
+                          >
+                            Down
+                          </ToolbarButton>
+                        </Toolbar>
+                      ) : null}
+                    </td>
+                  ) : null}
                 </tr>
               ))
             )}

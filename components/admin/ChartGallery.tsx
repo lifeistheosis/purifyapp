@@ -57,6 +57,7 @@ export function ChartGallery() {
   const [slider, setSlider] = useState(38);
   const [period, setPeriod] = useState<PeriodId>("30d");
   const [sub, setSub] = useState<"one" | "two">("one");
+  const [tableRows, setTableRows] = useState(TABLE_ROWS);
   const a = wave(30, 0);
   const b = wave(30, 4, 26, 40);
   const c = wave(30, 9, 18, 22);
@@ -251,11 +252,15 @@ export function ChartGallery() {
             change to table layout could be typechecked and shipped without
             once being looked at. Eight columns is not a stress test, it is
             ShopTab. */}
-        <Card title="DataTable" subtitle="Eight columns, the width a phone has to cope with">
+        <Card title="DataTable" subtitle="Eight columns, reorderable, the width a phone has to cope with">
           <DataTable
-            rows={TABLE_ROWS}
+            rows={tableRows}
             rowKey={(r) => r.sku}
             csvFilename="sample.csv"
+            reorder={{
+              name: (r) => r.title,
+              onReorder: setTableRows,
+            }}
             columns={[
               { key: "sku", label: "SKU", render: (r) => r.sku, csv: (r) => r.sku },
               { key: "title", label: "Product", render: (r) => r.title, csv: (r) => r.title },

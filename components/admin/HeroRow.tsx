@@ -106,6 +106,14 @@ export function HeroRow({
 
   const w = WINDOW[period] ?? 30;
 
+  // The dates were already being fetched and then dropped on the floor: the
+  // route returns daily buckets carrying a date, and the three maps below took
+  // the numbers and discarded it. A sparkline you can scrub needs to be able to
+  // say WHICH day the number under the cursor belongs to.
+  const dates = useMemo(
+    () => (traffic.data?.points ?? []).map((p) => p.date),
+    [traffic.data],
+  );
   const visitors = useMemo(
     () => (traffic.data?.points ?? []).map((p) => p.visitors),
     [traffic.data],
@@ -118,6 +126,25 @@ export function HeroRow({
 
   const sum = (a: number[]) => a.reduce((s, n) => s + n, 0);
   const win = (a: number[]) => a.slice(-w);
+
+  // "12 Aug" reads faster than "2026-08-12" in a badge 58 units wide, and the
+  // year is never in question on a 7 or 30 day window. Parsed as UTC because
+  // the buckets are UTC dates, and constructing a local Date from "YYYY-MM-DD"
+  // would shift the label a day backwards for anyone west of Greenwich.
+  const dayLabels = useMemo(
+    () =>
+      dates.slice(-w).map((d) => {
+        const t = Date.parse(d + "T00:00:00Z");
+        return Number.isNaN(t)
+          ? d
+          : new Date(t).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+              timeZone: "UTC",
+            });
+      }),
+    [dates, w],
+  );
 
   return (
     <>
@@ -138,6 +165,7 @@ export function HeroRow({
           value={compact(sum(win(visitors)))}
           delta={deltaOver(visitors, w)}
           points={win(visitors)}
+          labels={dayLabels}
           format={compact}
           color="var(--adm-s1)"
           loading={traffic.loading}
@@ -153,6 +181,7 @@ export function HeroRow({
           value={compact(sum(win(signups)))}
           delta={deltaOver(signups, w)}
           points={win(signups)}
+          labels={dayLabels}
           format={compact}
           color="var(--adm-s2)"
           loading={traffic.loading}
