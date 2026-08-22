@@ -41,6 +41,9 @@ import { CommerceOverviewTab } from "./tabs/CommerceOverviewTab";
 import { OrdersTab } from "./tabs/OrdersTab";
 import { RevenueTab } from "./tabs/RevenueTab";
 import { SustainabilityTab } from "./tabs/SustainabilityTab";
+import { GrowthTab } from "./tabs/GrowthTab";
+import { GoalsTab } from "./tabs/GoalsTab";
+import { InsightsProvider } from "@/lib/admin/insights/store";
 import { SubscriptionsTab } from "./tabs/SubscriptionsTab";
 import { MessagesTab } from "./tabs/MessagesTab";
 import { UsersHubTab } from "./tabs/UsersHubTab";
@@ -80,7 +83,9 @@ type OpsTabId =
   | "shop"
   | "eikon-box"
   | "community"
-  | "traffic";
+  | "traffic"
+  | "growth"
+  | "goals";
 
 type TabId = OpsTabId | OwnerTabId;
 
@@ -88,7 +93,9 @@ type Tab = {
   id: TabId;
   label: string;
   eyebrow: string;
-  component?: ComponentType;
+  // Optional prop, so a tab that wants to send the operator elsewhere can,
+  // and the twenty that do not are unaffected and need no signature change.
+  component?: ComponentType<{ onOpenGoals?: () => void }>;
 };
 
 type Group = { group: string; mode: Mode; tabs: Tab[] };
@@ -135,6 +142,12 @@ const GROUPS: Group[] = [
     tabs: [
       { id: "push", label: "Push", eyebrow: "Broadcast notifications", component: PushTab },
       { id: "traffic", label: "Traffic", eyebrow: "Site analytics", component: TrafficHubTab },
+      // Reach rather than a fifth group: the note above records that four
+      // groups fit the rail and a fifth spills, and store acquisition is
+      // reach. Goals sits beside Growth because the report imported there is
+      // the only thing the goals are measured against.
+      { id: "growth", label: "Growth", eyebrow: "Imported store reports", component: GrowthTab },
+      { id: "goals", label: "Goals", eyebrow: "Targets and grades", component: GoalsTab },
     ],
   },
   {
@@ -670,6 +683,13 @@ export function AdminShell({
   const Current = current.component;
 
   return (
+    // The insights engine wraps the WHOLE shell, not the Growth tab, and that
+    // placement is the feature. A report imported on Growth is still there
+    // when the operator opens Goals, the dashboard widget reads the same
+    // grades the goals page computes, and raising a target on one page moves
+    // the grade on the other with nothing to refresh. Mounted at the tab
+    // level, every navigation would throw the state away.
+    <InsightsProvider>
     <div className="adm min-h-[100dvh]">
         {/* Rail. Sticky on desktop so navigation is always one glance away,
             even a thousand rows into an order list.
@@ -927,7 +947,10 @@ export function AdminShell({
           <div key={active} className="adm-panel-enter">
             <TabBoundary label={current.label} onRetry={() => setReloadKey((n) => n + 1)}>
               {Current ? (
-                <Current key={reloadKey} />
+                // onOpenGoals is read by GrowthTab and ignored by every other
+                // tab, which is why the type is optional on both sides rather
+                // than a new required prop on twenty-one components.
+                <Current key={reloadKey} onOpenGoals={() => select("goals")} />
               ) : (
                 <OwnerSection
                   key={reloadKey}
@@ -940,5 +963,6 @@ export function AdminShell({
         </div>
       </div>
     </div>
+    </InsightsProvider>
   );
 }
