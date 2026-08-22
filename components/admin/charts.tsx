@@ -13,7 +13,20 @@
 // Exports: Sparkline, LineChart, AreaChart, BarChart, Donut,
 //          CalendarHeatmap, SERIES_COLORS, chartColors.
 
-import { useId, useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
+
+// Layout effect on the client, plain effect on the server, where there is no
+// layout to read and useLayoutEffect only warns. The identity is chosen once
+// per environment, never per render, so the hook order is stable.
+const useIsoLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 // ── Palette ─────────────────────────────────────────────────────────────────
 // Semantic names so tabs can pick "positive" or "warning" without
@@ -89,6 +102,57 @@ function niceMax(v: number): number {
 //
 // Lived privately in components/owner/ProjectionChart.tsx until v4, when the
 // hero metric cards needed the same curve. One implementation, two callers.
+/**
+ * Reports the container's width, but only while it is narrow enough to matter.
+ *
+ * Every Cartesian chart in this file draws into a 1000-unit viewBox. That was
+ * fine while `preserveAspectRatio="none"` stretched it, and it stayed fine on a
+ * desktop where the card is ~1200px, but uniform scaling turned it into a
+ * measurable defect on a phone: into a 305px card the scale is 0.305, so
+ * `fontSize={10}` axis labels PAINT AT 3.05px and a 1.8 stroke paints at
+ * 0.55px. Measured in the browser, not estimated. The sparklines beside them
+ * paint at 11.44px because their viewBox is 280 and happens to match the card.
+ *
+ * So: below 640 the viewBox is set to the container's own width, which makes
+ * the scale exactly 1 and every declared size land at its declared value. Above
+ * it the hook returns null and the constant 1000 is used, so the desktop
+ * geometry the panel was signed off on is byte-identical.
+ *
+ * Container width, not a viewport media query, because a chart's legibility is
+ * a function of the box it is in. The same phone shows a full-bleed chart and a
+ * half-width one, and a desktop sidebar can be narrower than a phone.
+ */
+function useNarrowWidth() {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [narrow, setNarrow] = useState<number | null>(null);
+  useIsoLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const measure = () => {
+      const w = el.clientWidth;
+      setNarrow(w > 0 && w < 640 ? Math.round(w) : null);
+    };
+    // Measured HERE, synchronously, and not left to the observer. A
+    // ResizeObserver callback is delivered during the rendering steps, so
+    // first paint would land at the wrong scale and, in any environment that
+    // does not composite, never correct itself. clientWidth forces layout and
+    // reads it now; the observer below only handles LATER changes, which is
+    // what it is actually good at.
+    measure();
+    const ro =
+      typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    ro?.observe(el);
+    // Rotation, belt and braces: a resize event is a task and arrives even
+    // where observer delivery is throttled.
+    window.addEventListener("resize", measure);
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+  return [ref, narrow] as const;
+}
+
 export function smoothPath(pts: { x: number; y: number }[]): string {
   if (pts.length < 2) return pts.length === 1 ? `M ${pts[0].x} ${pts[0].y}` : "";
   let d = `M ${pts[0].x} ${pts[0].y}`;
@@ -286,8 +350,11 @@ function CartesianPlot({
 }) {
   const [hover, setHover] = useState<number | null>(null);
   const uid = useId().replace(/:/g, "");
-  const width = 1000;
-  const padL = 44;
+  const [boxRef, narrow] = useNarrowWidth();
+  const width = narrow ?? 1000;
+  // The gutter is for tick text. At scale 1 that text is 10px and needs about
+  // 30 units; at 1000 units wide it was 44 because everything shrank together.
+  const padL = narrow ? 32 : 44;
   const padR = 18;
   const padT = 14;
   const padB = 30;
@@ -330,9 +397,14 @@ function CartesianPlot({
 
   // X-axis labels: render up to 6 evenly spaced labels (first + last + 4
   // inside) so the axis reads cleanly on wide screens but isn't crowded.
+  // hover when there is one, otherwise the latest reading. See the legend.
+  const legendIdx = hover ?? count - 1;
+
   const xLabelIdxs = (() => {
     if (!labels?.length) return [] as number[];
-    const targetCount = Math.min(6, count);
+    // Four labels, not six, once the axis is only ~250 units wide: six dates
+    // at a real 10px collide, and a collided axis is worse than a sparse one.
+    const targetCount = Math.min(narrow ? 4 : 6, count);
     if (targetCount <= 1) return [0];
     const out: number[] = [];
     for (let i = 0; i < targetCount; i++) {
@@ -347,7 +419,7 @@ function CartesianPlot({
     // maxHeight stops it, which happens at about 1200px wide; past that the
     // plot is a fixed island with dead card either side. The cap makes that
     // deliberate and centred rather than accidental and left-aligned.
-    <div className="mx-auto w-full max-w-[1200px]">
+    <div ref={boxRef} className="mx-auto w-full max-w-[1200px]">
       <svg
         viewBox={`0 0 ${width} ${height}`}
         // preserveAspectRatio="none" was here. It stretched a 1000-unit
@@ -480,7 +552,14 @@ function CartesianPlot({
         )}
       </svg>
 
-      {/* Legend */}
+      {/* Legend.
+
+          At rest this falls back to the LAST point rather than showing nothing.
+          The values used to appear only while hovering, which on a touch screen
+          means never: the legend was a colour key and the numbers it was built
+          to carry were unreachable on a phone. Falling back to the most recent
+          reading is also what ProjectionChart already does, so the two charts
+          now agree. */}
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 mt-3 px-2">
         {series.map((s) => (
           <div key={s.name} className="flex items-center gap-2">
@@ -490,14 +569,14 @@ function CartesianPlot({
             />
             <span className="font-sans text-eyebrow text-[color:var(--adm-ink-2)] tabular-nums">
               {s.name}
-              {hover !== null && (
+              {legendIdx >= 0 && (
                 <>
                   {" · "}
                   <span className="text-paper font-semibold">
-                    {s.data[hover] ?? 0}
+                    {s.data[legendIdx] ?? 0}
                   </span>
-                  {labels?.[hover] && (
-                    <span className="text-[color:var(--adm-ink-3)]"> · {labels[hover]}</span>
+                  {labels?.[legendIdx] && (
+                    <span className="text-[color:var(--adm-ink-3)]"> · {labels[legendIdx]}</span>
                   )}
                 </>
               )}
@@ -615,8 +694,9 @@ function VerticalBars({
   accent: string;
   max: number;
 }) {
-  const width = 1000;
-  const padL = 44;
+  const [boxRef, narrow] = useNarrowWidth();
+  const width = narrow ?? 1000;
+  const padL = narrow ? 32 : 44;
   const padR = 14;
   const padT = 14;
   const padB = 36;
@@ -628,7 +708,7 @@ function VerticalBars({
   const grid = tickFracs.map((f) => padT + innerH * (1 - f));
 
   return (
-    <div className="w-full">
+    <div ref={boxRef} className="w-full">
       <svg
         viewBox={`0 0 ${width} ${height}`}
         // See CartesianPlot: preserveAspectRatio="none" skewed every bar's

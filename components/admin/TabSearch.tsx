@@ -73,7 +73,11 @@ export function TabSearch({
   }
 
   return (
-    <div ref={boxRef} className="relative">
+    // min-w-0 with flex-1 is the pair that matters: flex-1 alone will not
+    // shrink an input below its intrinsic size, so the row would still
+    // overflow on a 320px phone. Fixed width returns at lg, where the bar has
+    // room and a search field that grew to fill an ultrawide would look absurd.
+    <div ref={boxRef} className="relative min-w-0 flex-1 lg:flex-none">
       <div className="relative">
         <span
           aria-hidden
@@ -117,7 +121,7 @@ export function TabSearch({
               choose(hits[cursor].id);
             }
           }}
-          className="h-11 w-[190px] rounded-[var(--adm-radius-sm)] border pl-9 pr-14 font-sans text-[12.5px]"
+          className="h-11 w-full rounded-[var(--adm-radius-sm)] border pl-9 pr-3 font-sans text-[12.5px] lg:w-[190px] lg:pr-14"
           style={{
             background: "var(--adm-control)",
             borderColor: "var(--adm-line)",
@@ -128,7 +132,9 @@ export function TabSearch({
             reader announcing "command K" inside a text field is noise. */}
         <span
           aria-hidden
-          className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded-[6px] border px-1.5 py-0.5 font-sans text-[10.5px]"
+          // Hidden on a phone, which has no meta key. It was costing 44px of
+          // padding to advertise a shortcut that cannot be pressed.
+          className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded-[6px] border px-1.5 py-0.5 font-sans text-[10.5px] lg:block"
           style={{
             borderColor: "var(--adm-line)",
             background: "var(--adm-panel-2)",
@@ -143,7 +149,10 @@ export function TabSearch({
         <ul
           id={listId}
           role="listbox"
-          className="adm-panel-enter absolute right-0 z-30 mt-1.5 w-[280px] overflow-hidden rounded-[var(--adm-radius)] border p-1"
+          // min() rather than a flat 280: the field can now be narrower than
+          // its own results panel, and right-0 would push the left edge off a
+          // 320px screen.
+          className="adm-panel-enter absolute right-0 z-30 mt-1.5 w-[min(280px,calc(100vw-2rem))] overflow-hidden rounded-[var(--adm-radius)] border p-1"
           style={{
             background: "var(--adm-panel)",
             borderColor: "var(--adm-line-strong)",

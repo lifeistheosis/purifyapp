@@ -145,7 +145,19 @@ export function Modal({
   if (typeof document === "undefined") return null;
   return createPortal(
     <div
-      className="adm fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm md:p-8"
+      // h-dvh is doing real work here, not belt and braces. `inset-0` sets
+      // top AND bottom, and on iOS Safari that pair resolves against the LARGE
+      // viewport, the one with the toolbar hidden. So the overlay is taller
+      // than the screen, `max-h-full` on the panel below inherits that wrong
+      // height, and the panel's footer, which is where every Save button
+      // lives, sits underneath the browser chrome. Setting a height
+      // over-constrains the box, `bottom` is dropped, and the whole thing
+      // resolves against the small viewport instead, which is always visible.
+      //
+      // It is unreachable rather than merely awkward because line 129 calls
+      // lockBodyScroll, so the page cannot be scrolled to bring it up and the
+      // toolbar never minimises.
+      className="adm fixed inset-0 z-[100] flex h-dvh items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-sm md:p-8 md:pb-8"
       // Was bg-black/70, which is far too heavy over a light panel. The
       // portal target is document.body, which is why the light palette keys
       // off <html> rather than off the shell root: this node carries .adm but
@@ -479,7 +491,13 @@ export function ToolbarButton({
       title={title}
       aria-busy={loading || undefined}
       className={
-        "adm-rail-item adm-control inline-flex items-center gap-1.5 rounded-[var(--adm-radius-sm)] border px-2.5 py-[5px] font-sans text-[12.5px] font-medium " +
+        // adm-toolbtn exists purely so admin-theme.css can reach this one
+        // control on a touch screen. Every other .adm-control in the panel is
+        // already h-11; this one is py-[5px], which measures 31px, and it is
+        // the only sub-44 target the ratchet cannot see, because that test
+        // matches `h-1` through `h-10` classes and this button sets no height
+        // class at all.
+        "adm-toolbtn adm-rail-item adm-control inline-flex items-center gap-1.5 rounded-[var(--adm-radius-sm)] border px-2.5 py-[5px] font-sans text-[12.5px] font-medium " +
         "disabled:cursor-not-allowed disabled:opacity-45"
       }
       style={style[variant]}
@@ -559,18 +577,28 @@ export function DataTable<T>({
         </Toolbar>
       </div>
       <div
-        className="overflow-auto rounded-[var(--adm-radius)] border"
-        style={{ borderColor: "var(--adm-line)", maxHeight: "70vh" }}
+        // overscroll-x-contain, because a table 258px wider than the phone is
+        // a horizontal swipe surface sitting inside a page that treats a
+        // horizontal swipe as "go back". Measured on the sample table at
+        // 447px: 561 wide in a 303 box. Without this, swiping to reach the
+        // Vendor column leaves the panel.
+        className="overflow-auto overscroll-x-contain rounded-[var(--adm-radius)] border"
+        // dvh, to match the rail's h-dvh and the Modal overlay. With vh a table
+        // on a phone claimed 70% of the LARGE viewport, so its bottom rows sat
+        // behind the browser toolbar and the sticky header made it look like
+        // the table simply ended there.
+        style={{ borderColor: "var(--adm-line)", maxHeight: "70dvh" }}
       >
         <table className="w-full font-sans text-[13px]">
           <thead className="adm-thead">
             <tr>
-              {columns.map((c) => (
+              {columns.map((c, i) => (
                 <th
                   key={c.key}
                   scope="col"
                   className={
                     "border-b px-3 py-2 font-medium " +
+                    (i === 0 ? "adm-tbl-1st " : "") +
                     (c.align === "right" ? "text-right" : "text-left")
                   }
                   style={{
@@ -601,11 +629,13 @@ export function DataTable<T>({
                   className="adm-rail-item border-b hover:bg-[var(--adm-hover)]"
                   style={{ borderColor: "var(--adm-line)" }}
                 >
-                  {columns.map((c) => (
+                  {columns.map((c, i) => (
                     <td
                       key={c.key}
                       className={
-                        "px-3 py-2 " + (c.align === "right" ? "text-right" : "")
+                        "px-3 py-2 " +
+                        (i === 0 ? "adm-tbl-1st " : "") +
+                        (c.align === "right" ? "text-right" : "")
                       }
                       style={{ color: "var(--adm-ink)" }}
                     >
@@ -618,6 +648,17 @@ export function DataTable<T>({
           </tbody>
         </table>
       </div>
+      {/* Only past four columns, and only on a phone. A table that fits needs
+          no instructions, and an instruction that is sometimes false is worse
+          than none. */}
+      {columns.length > 4 ? (
+        <p
+          className="mt-2 font-sans text-[11.5px] lg:hidden"
+          style={{ color: "var(--adm-ink-3)" }}
+        >
+          Swipe sideways for all {columns.length} columns.
+        </p>
+      ) : null}
     </div>
   );
 }

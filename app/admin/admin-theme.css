@@ -513,6 +513,63 @@
   }
 }
 
+/* ── Mobile browser ─────────────────────────────────────────────────────
+ * The admin is web-only. scripts/native-build.mjs stashes app/admin and
+ * app/owner out of the static export, so this never runs inside the Capacitor
+ * shell and none of the html.is-native plumbing in globals.css applies. What
+ * DOES apply is an operator opening purifyapp.net/admin on a phone.
+ */
+
+/* THE NOTCH. app/layout.tsx sets viewportFit: "cover", which runs the page
+ * under the iOS notch and the home indicator. globals.css already carries
+ * .topbar-safe for the reader's mobile bar, and its comment records why: a
+ * top-0 sticky bar that does not pad itself puts its buttons in the occluded
+ * zone where they cannot be tapped, reported from the community as "top
+ * buttons untappable, zooming in fixes it".
+ *
+ * The admin's bar is the same shape and had none of this. Padding rather than
+ * .topbar-safe itself because that helper also pins height: calc(3rem + inset),
+ * which is right for the reader's fixed 48px row and wrong for a bar that
+ * wraps. Non-notch devices report 0 and this is a no-op there.
+ */
+.adm-topbar {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* The other end. Without this the last card sits under the home indicator. */
+.adm-canvas {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* iOS SAFARI ZOOMS THE WHOLE PAGE when a focused input is under 16px, and
+ * every input in this panel is 12 to 14px because it is built for density on
+ * a desktop. Tapping search on a phone zoomed the layout in and left the
+ * operator pinching back out to see what they had typed.
+ *
+ * 16px below the lg breakpoint only, so desktop density is untouched. This is
+ * the whole fix for all eighteen inputs; setting it per-component would mean
+ * eighteen edits that the next new input would not inherit.
+ */
+@media (max-width: 1023px) {
+  .adm input,
+  .adm select,
+  .adm textarea {
+    font-size: 16px;
+  }
+}
+
+/* Touch. Keyed on the pointer, not on width, because the two are not the same
+ * question: a 900px desktop window still has a mouse and wants the dense
+ * toolbar, while a tablet at 1180px has fingers and does not. 31px is a fine
+ * mouse target and a bad thumb one.
+ */
+@media (pointer: coarse) {
+  .adm .adm-toolbtn {
+    min-height: 44px;
+    padding-inline: 0.75rem;
+  }
+}
+
 /* ── Range slider ───────────────────────────────────────────────────────
  * The one control in this panel that used to be the operating system's.
  *
@@ -672,4 +729,46 @@
   z-index: 1;
   background: var(--adm-panel);
   backdrop-filter: blur(6px);
+}
+
+/* The first column pins on a phone and only on a phone.
+ *
+ * Measured on the gallery's eight-column sample at 447px: the table is 561
+ * wide inside a 303 box, so 258px, 46% of it, is off screen. Scroll right to
+ * read Vendor and every row becomes anonymous, because the column naming the
+ * row is the one that scrolled away.
+ *
+ * Scoped to a width query rather than shipped everywhere for a specific
+ * reason: an opaque sticky cell paints over the row's hover tint, and desktop
+ * is where that tint is the thing telling you which row the pointer is on.
+ * Above 1023px this whole rule is absent and the table is byte-identical to
+ * what shipped.
+ *
+ * z-index 2 clears normal cells, and 3 for the header's own first cell so the
+ * corner stays above both the sticky row of headers (z 1) and the sticky
+ * column. ::after rather than a border, because a border would move the
+ * column's width and reflow the table; and rather than a box-shadow, which
+ * bleeds over the neighbouring cell on a subpixel scroll offset.
+ */
+@media (max-width: 1023px) {
+  .adm .adm-tbl-1st {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: var(--adm-panel);
+  }
+
+  .adm .adm-thead .adm-tbl-1st {
+    z-index: 3;
+  }
+
+  .adm .adm-tbl-1st::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 1px;
+    background: var(--adm-line);
+  }
 }

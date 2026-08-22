@@ -621,6 +621,52 @@ export function AdminShell({
     </>
   );
 
+  // The action bank, named because it now has two homes. On a desktop it sits
+  // in the top bar. At 390px it does not fit there: measured, the bar wrapped
+  // to three rows and pinned 113px, 13% of the viewport, of chrome above every
+  // screen before a single number. So below lg it moves into the Sections
+  // drawer, which is already the mobile overflow surface.
+  //
+  // Two render sites, ONE of which is display:none at any width, which is what
+  // makes the duplicated aria-live safe: a live region inside a display:none
+  // subtree is not announced, so a screen reader still sees exactly one. The
+  // drawer copy also puts the status next to the button that produced it,
+  // rather than behind the open drawer in a bar the operator cannot see.
+  const actionBank = (
+    <>
+      <Toolbar>
+        <ToolbarButton onClick={() => rebuild("all")} title="Revalidate every content surface">
+          Rebuild caches
+        </ToolbarButton>
+        <ToolbarButton onClick={() => rebuild("saints")} title="Revalidate /saints and every saint page">
+          Saints
+        </ToolbarButton>
+        <ToolbarButton onClick={() => rebuild("councils")} title="Revalidate /councils">
+          Councils
+        </ToolbarButton>
+        <ToolbarButton onClick={() => rebuild("home")} title="Revalidate the home page">
+          Home
+        </ToolbarButton>
+      </Toolbar>
+      {/* Status only. The email lives in the rail footer, where it stays put.
+          min-h reserves the line so the toolbar does not shift when a rebuild
+          starts. "Rebuild failed" still never auto-clears: the harm was that it
+          HID the identity, not that it persisted, and silently hiding an error
+          is worse. */}
+      <p
+        aria-live="polite"
+        className="min-h-[16px] font-sans text-[12px]"
+        style={{
+          color: rebuildStatus?.includes("failed")
+            ? "var(--adm-critical)"
+            : "var(--adm-ink-3)",
+        }}
+      >
+        {rebuildStatus}
+      </p>
+    </>
+  );
+
   const Current = current.component;
 
   return (
@@ -687,7 +733,7 @@ export function AdminShell({
               explicitly and the bar sits at 40. Scale: content 0-10, rail 30,
               bar 40, Modal 100. */}
           <div
-            className="sticky top-0 z-40 border-b"
+            className="adm-topbar sticky top-0 z-40 border-b"
             style={{
               background: "color-mix(in oklab, var(--adm-bg), transparent 20%)",
               borderColor: "var(--adm-line)",
@@ -700,8 +746,12 @@ export function AdminShell({
                 search sits ~280px right of the content edge on a 2560 monitor,
                 which is the same detachment this refactor set out to fix,
                 relocated to a wider screen. */}
-            <div className="mx-auto flex w-full max-w-[var(--adm-content-max)] flex-wrap items-center justify-end gap-2 px-4 py-3 md:px-6">
-            <div className="mr-auto flex items-center gap-2 lg:hidden">
+            {/* no flex-wrap below lg. Wrapping is what produced the 113px
+                three-row bar; with the action bank gone the three survivors are
+                Sections, search and the bell, and search is the one that flexes
+                so the row holds down to 320px instead of breaking at 360. */}
+            <div className="mx-auto flex w-full max-w-[var(--adm-content-max)] items-center justify-end gap-2 px-4 py-3 md:px-6 lg:flex-wrap">
+            <div className="flex shrink-0 items-center gap-2 lg:hidden">
                   <button
                     type="button"
                     onClick={() => setNavOpen((v) => !v)}
@@ -774,37 +824,9 @@ export function AdminShell({
                     </span>
                   ) : null}
                 </button>
-                <Toolbar>
-                  <ToolbarButton onClick={() => rebuild("all")} title="Revalidate every content surface">
-                    Rebuild caches
-                  </ToolbarButton>
-                  <ToolbarButton onClick={() => rebuild("saints")} title="Revalidate /saints and every saint page">
-                    Saints
-                  </ToolbarButton>
-                  <ToolbarButton onClick={() => rebuild("councils")} title="Revalidate /councils">
-                    Councils
-                  </ToolbarButton>
-                  <ToolbarButton onClick={() => rebuild("home")} title="Revalidate the home page">
-                    Home
-                  </ToolbarButton>
-                </Toolbar>
-                {/* Status only. The email lives in the rail footer, where it
-                    stays put. min-h reserves the line so the toolbar does not
-                    shift when a rebuild starts. "Rebuild failed" still never
-                    auto-clears: the harm was that it HID the identity, not
-                    that it persisted, and silently hiding an error is
-                    worse. */}
-            <p
-              aria-live="polite"
-              className="min-h-[16px] font-sans text-[12px]"
-              style={{
-                color: rebuildStatus?.includes("failed")
-                  ? "var(--adm-critical)"
-                  : "var(--adm-ink-3)",
-              }}
-            >
-              {rebuildStatus}
-            </p>
+              <div className="hidden flex-wrap items-center gap-2 lg:flex">
+                {actionBank}
+              </div>
             </div>
 
             {/* The drawer belongs to the bar, not to the content.
@@ -814,17 +836,39 @@ export function AdminShell({
                 mounted a panel above the fold and the button read as dead.
                 Anything triggered from a fixed element has to open against
                 that element. */}
+            {/* Tap-anywhere-else to close. Without it the only way out is the
+                Sections button, which the open drawer has usually scrolled
+                away from. z-index sits below the bar's 40 so the trigger stays
+                clickable, and above the canvas so nothing behind it is. */}
+            {navOpen && (
+              <button
+                type="button"
+                aria-label="Close sections"
+                onClick={() => setNavOpen(false)}
+                className="fixed inset-0 z-[35] cursor-default lg:hidden"
+              />
+            )}
             {navOpen && (
               <div
-                className="mx-auto w-full max-w-[var(--adm-content-max)] px-4 pb-3 md:px-6 lg:hidden"
+                className="relative z-[36] mx-auto w-full max-w-[var(--adm-content-max)] px-4 pb-3 md:px-6 lg:hidden"
               >
                 <div
-                  className="adm-panel-enter max-h-[70dvh] overflow-y-auto rounded-[var(--adm-radius-lg)] border p-3"
+                  // overscroll-contain stops the scroll chaining out of the
+                  // drawer into the page once it hits its end. The
+                  // overscroll-behavior in globals.css is set on html/body and
+                  // does nothing for a nested scroller like this one.
+                  className="adm-panel-enter max-h-[70dvh] overflow-y-auto overscroll-contain rounded-[var(--adm-radius-lg)] border p-3"
                   style={{ background: "var(--adm-rail)", borderColor: "var(--adm-line)" }}
                 >
                   {railBody}
                   {nav}
                   {railFooter}
+                  <div
+                    className="mt-3 flex flex-wrap items-center gap-2 border-t pt-3 lg:hidden"
+                    style={{ borderColor: "var(--adm-line)" }}
+                  >
+                    {actionBank}
+                  </div>
                 </div>
               </div>
             )}
@@ -846,7 +890,7 @@ export function AdminShell({
               its entrance animation ran, which made the layering correct or
               broken depending on the reader's motion preference. */}
           <div
-            className="mx-auto w-full max-w-[var(--adm-content-max)] px-4 py-5 md:px-6"
+            className="adm-canvas mx-auto w-full max-w-[var(--adm-content-max)] px-4 py-5 md:px-6"
             style={{ isolation: "isolate" }}
           >
             <header className="mb-5">

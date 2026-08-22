@@ -28,7 +28,7 @@ import {
   chartColors,
 } from "./charts";
 import { useState } from "react";
-import { Card, KpiCard, ChartFrame, Toolbar, ToolbarButton, Pill, SubTabs } from "./primitives";
+import { Card, KpiCard, ChartFrame, Toolbar, ToolbarButton, Pill, SubTabs, DataTable } from "./primitives";
 import { MetricCard, FeatureCard, PeriodChips, type PeriodId } from "./hero";
 
 /** A smooth, repeatable wave. Same shape every render, on both sides. */
@@ -44,6 +44,14 @@ function wave(n: number, seed: number, amp = 40, base = 60): number[] {
 }
 
 const DAYS = Array.from({ length: 30 }, (_, i) => `${30 - i}d`);
+
+const TABLE_ROWS = [
+  { sku: "ICON-VLAD-A3", title: "Vladimir Icon, A3", status: "Live", price: "38.00", stock: 12, sold: 41, updated: "12 Aug", vendor: "Athos Press" },
+  { sku: "BOOK-PSALT-LG", title: "Psalter, large print", status: "Live", price: "24.00", stock: 3, sold: 128, updated: "09 Aug", vendor: "Holy Trinity" },
+  { sku: "CAND-BEES-12", title: "Beeswax candles, 12", status: "Draft", price: "16.50", stock: 0, sold: 0, updated: "02 Aug", vendor: "Convent" },
+  { sku: "ROPE-100-BLK", title: "Prayer rope, 100 knot", status: "Live", price: "22.00", stock: 47, sold: 63, updated: "18 Aug", vendor: "Athos Press" },
+  { sku: "INCE-ROSE-50", title: "Rose incense, 50g", status: "Archived", price: "11.00", stock: 0, sold: 210, updated: "21 Jul", vendor: "Convent" },
+];
 
 export function ChartGallery() {
   const [slider, setSlider] = useState(38);
@@ -237,6 +245,29 @@ export function ChartGallery() {
             secondary={{ label: "Secondary", onClick: () => {} }}
           />
         </div>
+
+        {/* A REAL table, for exactly the reason the charts are here. Every
+            route that renders a DataTable is behind an admin session, so a
+            change to table layout could be typechecked and shipped without
+            once being looked at. Eight columns is not a stress test, it is
+            ShopTab. */}
+        <Card title="DataTable" subtitle="Eight columns, the width a phone has to cope with">
+          <DataTable
+            rows={TABLE_ROWS}
+            rowKey={(r) => r.sku}
+            csvFilename="sample.csv"
+            columns={[
+              { key: "sku", label: "SKU", render: (r) => r.sku, csv: (r) => r.sku },
+              { key: "title", label: "Product", render: (r) => r.title, csv: (r) => r.title },
+              { key: "status", label: "Status", render: (r) => r.status, csv: (r) => r.status },
+              { key: "price", label: "Price", align: "right", render: (r) => `$${r.price}`, csv: (r) => r.price },
+              { key: "stock", label: "Stock", align: "right", render: (r) => r.stock, csv: (r) => r.stock },
+              { key: "sold", label: "Sold", align: "right", render: (r) => r.sold, csv: (r) => r.sold },
+              { key: "updated", label: "Updated", render: (r) => r.updated, csv: (r) => r.updated },
+              { key: "vendor", label: "Vendor", render: (r) => r.vendor, csv: (r) => r.vendor },
+            ]}
+          />
+        </Card>
 
         <Card title="Empty states" subtitle="Every chart with nothing to draw">
           <div className="grid gap-4 md:grid-cols-3">
