@@ -127,7 +127,7 @@ export function CommunityTab() {
   );
 
   if (error) {
-    return <p className="font-sans text-detail text-rose-300">{error}</p>;
+    return <p className="font-sans text-detail text-[color:var(--adm-critical)]">{error}</p>;
   }
   if (!data) {
     return <p className="font-sans text-detail text-paper/40">Loading…</p>;
@@ -180,7 +180,7 @@ export function CommunityTab() {
                     </p>
                   )}
                   {rep.reason && (
-                    <p className="mt-2 font-sans text-caption text-rose-300/80">
+                    <p className="mt-2 font-sans text-caption text-[color:color-mix(in_oklab,var(--adm-critical),transparent_20%)]">
                       Reason: {rep.reason}
                     </p>
                   )}

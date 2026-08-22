@@ -201,7 +201,7 @@ export function PushTab() {
               <p className="font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
                 Recipients
               </p>
-              <p className="mt-1 font-sans text-heading font-bold tabular-nums text-gold">
+              <p className="mt-1 font-sans text-heading font-bold tabular-nums text-[color:var(--adm-ink)]">
                 {preview ? preview.total : "—"}
               </p>
               {preview && (
@@ -212,7 +212,7 @@ export function PushTab() {
             </div>
 
             {willDryRun && (
-              <p className="rounded-[var(--adm-radius-sm)] border border-amber-400/30 bg-amber-400/[0.06] px-3 py-2 font-sans text-eyebrow text-amber-200">
+              <p className="rounded-[var(--adm-radius-sm)] border border-[color-mix(in_oklab,var(--adm-warn),transparent_70%)] bg-[color-mix(in_oklab,var(--adm-warn),transparent_94%)] px-3 py-2 font-sans text-eyebrow text-[color:var(--adm-warn)]">
                 No push credentials are set, so a send is logged but nothing
                 actually goes out (dry run).
               </p>

@@ -37,8 +37,19 @@ export async function GET() {
         .maybeSingle(),
     ]);
 
-  const goalCents =
-    currentMonthRow?.goal_cents ?? SUPPORT.monthlyGoalUsd * 100;
+  // Three values have historically claimed to be "the goal": the column
+  // default (37500), the committed constant SUPPORT.monthlyGoalUsd, and
+  // whatever row exists for this month. With no row, the public page showed
+  // the constant while the column said something else, and neither surface
+  // said which it was reporting. The flag makes the layer visible so the UI
+  // can say "set for this month" rather than implying a decision nobody made.
+  //
+  // Checked by presence, not truthiness: a goal of 0 is a real and deliberate
+  // value ("not asking this month") and `?? ` on a 0 would silently discard it.
+  const goalSetForMonth = typeof currentMonthRow?.goal_cents === "number";
+  const goalCents = goalSetForMonth
+    ? (currentMonthRow!.goal_cents as number)
+    : SUPPORT.monthlyGoalUsd * 100;
 
   const expenseRows =
     expenses && expenses.length > 0
@@ -64,6 +75,7 @@ export async function GET() {
         raisedCents: live ? Math.round(live.monthlyRaisedUsd * 100) : 0,
         supporters: live?.supporters ?? 0,
         goalCents,
+        goalSetForMonth,
         fetchedAt: live?.fetchedAt ?? null,
         live: Boolean(live),
       },

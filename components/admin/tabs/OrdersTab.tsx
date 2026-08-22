@@ -388,13 +388,13 @@ export function OrdersTab() {
                   ) : null;
                 })()
               ) : selected.fulfillment_status === "shipped" ? (
-                <p className="mt-2 font-sans text-eyebrow text-amber-300/80">
+                <p className="mt-2 font-sans text-eyebrow text-[color:color-mix(in_oklab,var(--adm-warn),transparent_20%)]">
                   Shipped without a tracking number: the buyer cannot follow the
                   parcel. Add one above.
                 </p>
               ) : null}
               {error && (
-                <p className="mt-2 font-sans text-eyebrow text-rose-300">{error}</p>
+                <p className="mt-2 font-sans text-eyebrow text-[color:var(--adm-critical)]">{error}</p>
               )}
               <p className="mt-2 font-sans text-eyebrow text-paper/40">
                 Paid orders cannot be cancelled here; use the refund pipeline.

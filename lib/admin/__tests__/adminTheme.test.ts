@@ -195,6 +195,30 @@ describe("admin theme contrast", () => {
           ).toBeGreaterThanOrEqual(GRAPHIC_MIN);
         }
       });
+
+      // Added in v4, and it should have existed earlier.
+      //
+      // The status four were untested because nothing read them as TEXT: the
+      // tab bodies carried 83 hardcoded Tailwind classes instead
+      // (text-rose-300, text-emerald-300, text-amber-200 and friends), which
+      // are theme-blind by construction. text-rose-300 is #fda4af in every
+      // theme, which is roughly 1.9:1 on a white card, so light mode had
+      // eighty-three pieces of unreadable status text and no test could see
+      // it because none of it went through a token.
+      //
+      // v4 routed all 83 onto these four. That makes them load-bearing for
+      // readability, so they get the same floor the ink does.
+      it("every status colour is readable as text on every surface", () => {
+        for (const status of ["good", "warn", "serious", "critical"]) {
+          for (const surface of ["--adm-bg", "--adm-panel", "--adm-panel-2"]) {
+            const ratio = contrast(color(tokens, `--adm-${status}`), color(tokens, surface));
+            expect(
+              Number(ratio.toFixed(2)),
+              `${theme}: --adm-${status} on ${surface}`,
+            ).toBeGreaterThanOrEqual(TEXT_MIN);
+          }
+        }
+      });
     });
   }
 });

@@ -1,13 +1,16 @@
 import { headers } from "next/headers";
 import { NONCE_HEADER } from "@/lib/security/headers";
 import "../admin/admin-theme.css";
-import "./owner-theme.css";
 
-// The owner dashboard borrows the admin's theme layer rather than growing a
-// third palette. Two reasons: the operator switching between /admin and
-// /owner should not feel like switching products, and admin-theme.css is
-// where the contrast floors are pinned under test, so anything styled off
-// those tokens inherits that guarantee for free.
+// One theme layer, not two. Until v4 this route also imported
+// ./owner-theme.css, which re-bound the accent, the grounds, the inks and
+// the series to a cool set. That file is gone: its palette IS the admin
+// palette now, and its keyframes moved into admin-theme.css.
+//
+// The old arrangement had a trap worth recording. Both sheets scoped at
+// the same specificity, so source order was the only tiebreaker, and
+// swapping these two import lines silently reverted the whole dashboard
+// to amber. Nothing tested it. One sheet cannot have that bug.
 //
 // The pre-paint script is duplicated rather than shared. It is a string
 // literal by design, so that it depends on no bundling order and runs ahead

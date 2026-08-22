@@ -116,4 +116,34 @@ export const ADMIN_TAB_ICONS: Record<string, ReactNode> = {
       <path d="M10 2.9a11 11 0 0 1 0 14.2 11 11 0 0 1 0-14.2Z" />
     </svg>
   ),
+
+  // ── Owner mode ────────────────────────────────────────────────────────
+  // Added in v4 when the owner dashboard became three tabs in this rail.
+  // Without an entry here a tab falls back to a bare circle, silently, so
+  // any new id needs its own glyph or it looks unfinished rather than broken.
+
+  // Where we are: a plumb line. What is, measured.
+  "owner-today": (
+    <svg {...S}>
+      <path d="M10 2.8v9.4" />
+      <circle cx="10" cy="14.6" r="2.6" />
+      <path d="M6.6 4.6h6.8" />
+    </svg>
+  ),
+  // Projection: a line leaving the axis and continuing past it.
+  "owner-model": (
+    <svg {...S}>
+      <path d="M3 17V3.6" />
+      <path d="M3 17h14" />
+      <path d="M5.4 13.4 8.6 9.8l2.6 2.2 3.4-4.6" />
+      <path d="M14.6 7.4h2.2v2.2" />
+    </svg>
+  ),
+  // Markets: a pin dropped on a place.
+  "owner-markets": (
+    <svg {...S}>
+      <path d="M10 17.4s5.4-4.6 5.4-8.6a5.4 5.4 0 1 0-10.8 0c0 4 5.4 8.6 5.4 8.6Z" />
+      <circle cx="10" cy="8.6" r="2.1" />
+    </svg>
+  ),
 };

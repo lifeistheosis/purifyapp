@@ -63,7 +63,7 @@ export function UsersTab() {
 
   if (error) {
     return (
-      <p className="font-sans text-detail text-rose-300/80 py-8 text-center">
+      <p className="font-sans text-detail text-[color:color-mix(in_oklab,var(--adm-critical),transparent_20%)] py-8 text-center">
         Couldn’t load users. You may not have an admin session.
       </p>
     );

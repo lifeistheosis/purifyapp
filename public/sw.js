@@ -33,6 +33,11 @@ const NEVER_CACHE = [
   "/api/",
   "/auth/",
   "/admin", // the operator console must always run the freshly deployed bundle
+  // /owner is now a redirect into /admin, but it was never on this list while
+  // it served real HTML, so the owner dashboard was service-worker cacheable
+  // for its whole life. Listed now so the redirect cannot be cached either,
+  // and so removing the redirect later does not quietly reopen the hole.
+  "/owner",
   "/_next/data/",
   ".supabase.co",
   "api.scripture.api.bible",

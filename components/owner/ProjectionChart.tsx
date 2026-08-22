@@ -25,6 +25,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+// The curve maths moved to charts.tsx in v4 so the hero metric cards
+// could use it too. Same function, one copy.
+import { smoothPath } from "@/components/admin/charts";
+
 export type Series = {
   label: string;
   points: number[];
@@ -35,25 +39,6 @@ export type Series = {
 const W = 720;
 const H = 260;
 const PAD = { top: 16, right: 16, bottom: 28, left: 52 };
-
-/** Catmull-Rom to cubic bezier. Smooth without the overshoot a naive spline gives. */
-function smoothPath(pts: { x: number; y: number }[]): string {
-  if (pts.length < 2) return "";
-  let d = `M ${pts[0].x} ${pts[0].y}`;
-  for (let i = 0; i < pts.length - 1; i++) {
-    const p0 = pts[i - 1] ?? pts[i];
-    const p1 = pts[i];
-    const p2 = pts[i + 1];
-    const p3 = pts[i + 2] ?? p2;
-    // 6 is the standard Catmull-Rom tension. Lower makes it wander.
-    const c1x = p1.x + (p2.x - p0.x) / 6;
-    const c1y = p1.y + (p2.y - p0.y) / 6;
-    const c2x = p2.x - (p3.x - p1.x) / 6;
-    const c2y = p2.y - (p3.y - p1.y) / 6;
-    d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2.x} ${p2.y}`;
-  }
-  return d;
-}
 
 function niceCeil(v: number): number {
   if (v <= 0) return 1;

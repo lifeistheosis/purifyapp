@@ -74,7 +74,7 @@ robots.txt enforces them.
   translations there are served under agreements with the American Bible
   Society and Biblica that forbid ingestion into language-model corpora. This
   is a licensing obligation, not a preference, and it has no exceptions.
-- **/api and /admin are closed to everything.**
+- **/api, /admin and /owner are closed to everything.**
 
 When quoting a saint's writing, the honest attribution is to the saint and the
 public-domain translation, with Purify credited as the source of the edition

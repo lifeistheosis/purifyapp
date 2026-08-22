@@ -115,7 +115,7 @@ export function ProductMediaManager({
                   {isSupplierImageUrl(m.media_url) ? (
                     <span
                       title="Supplier CDN image: while this is the cover, the rights gate hides the listing from shoppers."
-                      className="rounded-full border border-amber-400/40 bg-amber-400/[0.06] px-2 py-0.5 font-sans text-caption font-medium tracking-[1px] text-amber-300"
+                      className="rounded-full border border-[color-mix(in_oklab,var(--adm-warn),transparent_60%)] bg-[color-mix(in_oklab,var(--adm-warn),transparent_94%)] px-2 py-0.5 font-sans text-caption font-medium tracking-[1px] text-[color:var(--adm-warn)]"
                     >
                       Supplier image
                     </span>
@@ -146,7 +146,7 @@ export function ProductMediaManager({
                   type="button"
                   onClick={() => removeRow(i)}
                   className={
-                    "rounded-pill border border-rose-400/40 bg-rose-400/[0.06] px-3 py-1 font-sans text-eyebrow font-semibold text-rose-300 hover:bg-rose-400/[0.12]"
+                    "rounded-pill border border-[color-mix(in_oklab,var(--adm-critical),transparent_60%)] bg-[color-mix(in_oklab,var(--adm-critical),transparent_94%)] px-3 py-1 font-sans text-eyebrow font-semibold text-[color:var(--adm-critical)] hover:bg-[color-mix(in_oklab,var(--adm-critical),transparent_88%)]"
                   }
                 >
                   Remove
@@ -204,7 +204,7 @@ export function ProductMediaManager({
         />
       </div>
       {error ? (
-        <p className="font-sans text-caption text-rose-300">{error}</p>
+        <p className="font-sans text-caption text-[color:var(--adm-critical)]">{error}</p>
       ) : null}
     </div>
   );

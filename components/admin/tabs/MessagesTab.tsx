@@ -147,7 +147,7 @@ function ShopInbox() {
       </div>
 
       {status && (
-        <p role="alert" className="font-sans text-detail text-rose-300">
+        <p role="alert" className="font-sans text-detail text-[color:var(--adm-critical)]">
           {status}
         </p>
       )}

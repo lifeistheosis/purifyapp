@@ -240,7 +240,7 @@ export function EikonBoxTab() {
       />
 
       {error && (
-        <p className="rounded-[var(--adm-radius-sm)] border border-rose-400/40 bg-rose-400/[0.06] px-3 py-2 font-sans text-detail text-rose-300">
+        <p className="rounded-[var(--adm-radius-sm)] border border-[color-mix(in_oklab,var(--adm-critical),transparent_60%)] bg-[color-mix(in_oklab,var(--adm-critical),transparent_94%)] px-3 py-2 font-sans text-detail text-[color:var(--adm-critical)]">
           {error}
         </p>
       )}
@@ -663,7 +663,7 @@ function ClaimRow({
       </div>
 
       {claim.status === "shipped" && !claim.tracking && (
-        <p className="mt-2 font-sans text-caption text-rose-300">
+        <p className="mt-2 font-sans text-caption text-[color:var(--adm-critical)]">
           Marked shipped with no tracking number.
         </p>
       )}
@@ -736,7 +736,7 @@ function CreateDropModal({
           />
         </div>
         {error && (
-          <p className="font-sans text-detail text-rose-300">{error}</p>
+          <p className="font-sans text-detail text-[color:var(--adm-critical)]">{error}</p>
         )}
         <Toolbar>
           <ToolbarButton
@@ -822,12 +822,19 @@ function AnnouncePanel({ drop }: { drop: AdminDrop }) {
       accent
     >
       {drop.status !== "open" && (
-        <p className="mb-3 rounded-[var(--adm-radius-sm)] border border-gold/40 bg-gold/[0.07] px-3 py-2 font-sans text-detail text-gold">
+        <p
+          className="mb-3 rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-detail"
+          style={{
+            borderColor: "color-mix(in oklab, var(--adm-warn), transparent 60%)",
+            background: "color-mix(in oklab, var(--adm-warn), transparent 92%)",
+            color: "var(--adm-warn)",
+          }}
+        >
           This drop is {drop.status}. Open it before announcing.
         </p>
       )}
       {dryRun && (
-        <p className="mb-3 rounded-[var(--adm-radius-sm)] border border-rose-400/40 bg-rose-400/[0.06] px-3 py-2 font-sans text-detail text-rose-300">
+        <p className="mb-3 rounded-[var(--adm-radius-sm)] border border-[color-mix(in_oklab,var(--adm-critical),transparent_60%)] bg-[color-mix(in_oklab,var(--adm-critical),transparent_94%)] px-3 py-2 font-sans text-detail text-[color:var(--adm-critical)]">
           No push credentials are configured. A send will be logged as
           &ldquo;enqueued&rdquo; and nothing will actually leave.
         </p>
@@ -871,9 +878,9 @@ function AnnouncePanel({ drop }: { drop: AdminDrop }) {
           />
         )}
 
-        {error && <p className="font-sans text-detail text-rose-300">{error}</p>}
+        {error && <p className="font-sans text-detail text-[color:var(--adm-critical)]">{error}</p>}
         {result && (
-          <p className="font-sans text-detail text-emerald-300">{result}</p>
+          <p className="font-sans text-detail text-[color:var(--adm-good)]">{result}</p>
         )}
 
         <Toolbar>

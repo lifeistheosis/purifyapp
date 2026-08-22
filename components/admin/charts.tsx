@@ -79,6 +79,28 @@ function niceMax(v: number): number {
   return step * pow;
 }
 
+// ── smoothPath ──────────────────────────────────────────────────────────────
+// Catmull-Rom through the points, emitted as cubic beziers. Smooth without
+// the overshoot a naive spline gives, which matters on a metric card where an
+// invented dip below the axis would read as data.
+//
+// Lived privately in components/owner/ProjectionChart.tsx until v4, when the
+// hero metric cards needed the same curve. One implementation, two callers.
+export function smoothPath(pts: { x: number; y: number }[]): string {
+  if (pts.length < 2) return pts.length === 1 ? `M ${pts[0].x} ${pts[0].y}` : "";
+  let d = `M ${pts[0].x} ${pts[0].y}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] ?? pts[i];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[i + 2] ?? p2;
+    // 6 is the standard Catmull-Rom tension. Lower makes it wander.
+    d += ` C ${p1.x + (p2.x - p0.x) / 6} ${p1.y + (p2.y - p0.y) / 6}, ` +
+         `${p2.x - (p3.x - p1.x) / 6} ${p2.y - (p3.y - p1.y) / 6}, ${p2.x} ${p2.y}`;
+  }
+  return d;
+}
+
 function formatTick(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(n % 1_000_000 ? 1 : 0)}M`;
   if (n >= 10_000) return `${Math.round(n / 1000)}k`;

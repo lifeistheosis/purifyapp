@@ -5,13 +5,11 @@
 // subscription run-rate, with a monthly trend, a revenue-by-source donut,
 // and top products. A sub-tab holds the existing costs/sustainability UI.
 
-import { useState } from "react";
 import { useLiveData } from "@/lib/admin/useLiveData";
 import { Freshness } from "../Freshness";
-import { Card, StatCard, ChartFrame, SubTabs } from "../primitives";
+import { Card, StatCard, ChartFrame } from "../primitives";
 import { AreaChart, BarChart, Donut, SERIES_COLORS, chartColors } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
-import { SustainabilityTab } from "./SustainabilityTab";
 
 type Revenue = {
   shop: {
@@ -200,18 +198,11 @@ function RevenuePanel() {
   );
 }
 
-type Panel = "revenue" | "costs";
-const TABS = [
-  ["revenue", "Revenue"],
-  ["costs", "Costs & sustainability"],
-] as const;
-
+// Costs used to live here as a second sub-tab, which is why the owner could
+// not find the one screen in the panel that edits what Purify spends and what
+// the public /support page publishes. It is its own rail entry now. Revenue is
+// money coming in; Costs is money going out. They are not the same question and
+// they should not be behind the same click.
 export function RevenueTab() {
-  const [panel, setPanel] = useState<Panel>("revenue");
-  return (
-    <div className="space-y-6">
-      <SubTabs tabs={TABS} active={panel} onChange={setPanel} />
-      {panel === "revenue" ? <RevenuePanel /> : <SustainabilityTab />}
-    </div>
-  );
+  return <RevenuePanel />;
 }

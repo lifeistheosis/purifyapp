@@ -109,15 +109,44 @@ function Slider({
   );
 }
 
-export function OwnerDashboard({ ownerEmail }: { ownerEmail: string }) {
-  const [panel, setPanel] = useState<Panel>("today");
-  const [actuals, setActuals] = useState<Actuals | null>(null);
-  const [gateIsExplicit, setGateIsExplicit] = useState(true);
+/**
+ * Standalone at /owner until v4; now also the body of three tabs inside the
+ * admin shell.
+ *
+ * `embedded` drops the chrome the shell already provides: its own ground, its
+ * width cap, the header and the SubTabs row. `panel` then comes from the
+ * shell's nav instead of local state. Standalone rendering is unchanged, so
+ * app/owner/preview still works and the decomposition cost no behaviour.
+ *
+ * The gate banner is NOT dropped when embedded. It reports that OWNER_EMAILS
+ * is unset, which is exactly the condition under which this content is
+ * reachable by someone who should not see it, so hiding it inside the merged
+ * shell would remove the warning from the only place it now matters.
+ */
+export function OwnerDashboard({
+  ownerEmail,
+  panel: panelProp,
+  embedded = false,
+  initial,
+}: {
+  ownerEmail: string;
+  panel?: Panel;
+  embedded?: boolean;
+  /** Already-fetched /api/owner/actuals payload. When the shell gates this
+      section on that request succeeding, it has the answer in hand, and
+      re-requesting it here would double every load for nothing. */
+  initial?: { actuals: Actuals; ownerListIsExplicit: boolean } | null;
+}) {
+  const [localPanel, setLocalPanel] = useState<Panel>("today");
+  const panel = panelProp ?? localPanel;
+  const [actuals, setActuals] = useState<Actuals | null>(initial?.actuals ?? null);
+  const [gateIsExplicit, setGateIsExplicit] = useState(initial?.ownerListIsExplicit ?? true);
   const [failed, setFailed] = useState(false);
   const [a, setA] = useState<Assumptions>(SCENARIOS.moderate);
   const [useMeasuredPayRate, setUseMeasuredPayRate] = useState(false);
 
   useEffect(() => {
+    if (initial) return;
     let alive = true;
     adminJson<{ actuals: Actuals; ownerListIsExplicit: boolean }>("/api/owner/actuals").then(
       (d) => {
@@ -133,7 +162,7 @@ export function OwnerDashboard({ ownerEmail }: { ownerEmail: string }) {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [initial]);
 
   const cal = useMemo(() => (actuals ? calibrate(actuals) : null), [actuals]);
   const effective = useMemo(
@@ -172,43 +201,8 @@ export function OwnerDashboard({ ownerEmail }: { ownerEmail: string }) {
     [effective],
   );
 
-  return (
-    <div className="adm own min-h-[100dvh]">
-      <div className="mx-auto w-full max-w-[1200px] px-4 py-6 md:px-6">
-        <header className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
-          <div>
-            <h1
-              className="font-sans text-[20px] font-semibold tracking-[-0.01em]"
-              style={{ color: "var(--adm-ink)" }}
-            >
-              Owner
-            </h1>
-            <p className="mt-0.5 font-sans text-caption" style={{ color: "var(--adm-ink-3)" }}>
-              {ownerEmail}
-              {actuals ? ` · data as of ${new Date(actuals.asOf).toLocaleString()}` : ""}
-            </p>
-          </div>
-          {/* A real control, not a footnote link. Switching between the two
-              panels is something the operator does constantly and hunting for
-              a text link every time is the kind of friction that makes a
-              screen feel unfinished. */}
-          <a
-            href="/admin"
-            className="adm-control inline-flex h-11 items-center gap-2 rounded-[var(--adm-radius-sm)] border px-4 font-sans text-[12.5px] font-medium"
-            style={{
-              ["--_bg" as string]: "var(--adm-control)",
-              ["--_bg-hover" as string]: "var(--adm-hover)",
-              borderColor: "var(--adm-line-strong)",
-              color: "var(--adm-ink-2)",
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
-              <path d="M12 5l-5 5 5 5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Operational panel
-          </a>
-        </header>
-
+  const body = (
+    <>
         {!gateIsExplicit && (
           <div
             className="mb-5 rounded-[var(--adm-radius)] border p-3 font-sans text-[12.5px]"
@@ -223,20 +217,6 @@ export function OwnerDashboard({ ownerEmail }: { ownerEmail: string }) {
             exists, or revenue and strategy come with the operational panel.
           </div>
         )}
-
-        <div className="mb-5">
-          <SubTabs
-            tabs={
-              [
-                ["today", "Where we are"],
-                ["model", "Projection"],
-                ["markets", "Markets"],
-              ] as const
-            }
-            active={panel}
-            onChange={setPanel}
-          />
-        </div>
 
         {panel === "today" && (
           <div className="space-y-6">
@@ -633,6 +613,59 @@ export function OwnerDashboard({ ownerEmail }: { ownerEmail: string }) {
             </Card>
           </div>
         )}
+    </>
+  );
+
+  if (embedded) return body;
+
+  return (
+    <div className="adm min-h-[100dvh]">
+      <div className="mx-auto w-full max-w-[1200px] px-4 py-6 md:px-6">
+        <header className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
+          <div>
+            <h1
+              className="font-sans text-[20px] font-semibold tracking-[-0.01em]"
+              style={{ color: "var(--adm-ink)" }}
+            >
+              Owner
+            </h1>
+            <p className="mt-0.5 font-sans text-caption" style={{ color: "var(--adm-ink-3)" }}>
+              {ownerEmail}
+              {actuals ? ` · data as of ${new Date(actuals.asOf).toLocaleString()}` : ""}
+            </p>
+          </div>
+          <a
+            href="/admin"
+            className="adm-control inline-flex h-11 items-center gap-2 rounded-[var(--adm-radius-sm)] border px-4 font-sans text-[12.5px] font-medium"
+            style={{
+              ["--_bg" as string]: "var(--adm-control)",
+              ["--_bg-hover" as string]: "var(--adm-hover)",
+              borderColor: "var(--adm-line-strong)",
+              color: "var(--adm-ink-2)",
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
+              <path d="M12 5l-5 5 5 5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Operational panel
+          </a>
+        </header>
+
+        <div className="mb-5">
+          <SubTabs
+            tabs={
+              [
+                ["today", "Where we are"],
+                ["model", "Projection"],
+                ["markets", "Markets"],
+              ] as const
+            }
+            active={panel}
+            onChange={setLocalPanel}
+          />
+        </div>
+
+        {body}
       </div>
     </div>
   );

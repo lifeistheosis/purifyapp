@@ -28,19 +28,22 @@
 
 .adm {
   /* ── Surfaces ─────────────────────────────────────────────────────────
-     Three levels, each a real step apart, cool-neutral so the accent and
-     the status hues read as information against them. */
-  --adm-rail: #08090a;   /* nav rail: the second neutral layer, recedes */
-  --adm-bg: #0b0c0e;     /* content ground */
-  --adm-panel: #121317;  /* cards and panels, the only "raised" level */
-  --adm-panel-2: #171920;/* nested rows, table header, input wells */
+     Three levels, each a real step apart. Cool rather than neutral as of
+     v4: the whole panel is now one hue family so that a chart's series
+     colours are the only warm thing on screen. These four values came
+     from the owner dashboard, which had already forked to them for
+     exactly that reason, and are now the single set. */
+  --adm-rail: #0a0b11;   /* nav rail: the second neutral layer, recedes */
+  --adm-bg: #0c0e15;     /* content ground */
+  --adm-panel: #12141d;  /* cards and panels, the only "raised" level */
+  --adm-panel-2: #171a25;/* nested rows, table header, input wells */
 
   /* Buttons, inputs and selects. Equal to --adm-panel-2 on dark, so this
      split costs the dark theme nothing. It exists because light wants a
      white control on a white card with a border doing the separating,
      which is the Polaris form treatment, while panel-2 stays the tint
      used for table headers and wells. */
-  --adm-control: #171920;
+  --adm-control: #171a25;
 
   /* One hover wash for rows and controls. Was hover:bg-white/[0.03] in
      primitives.tsx, which is a no-op on a light ground. */
@@ -48,26 +51,42 @@
 
   /* Hairlines. Two weights only: one that separates, one that outlines. */
   --adm-line: rgb(255 255 255 / 0.07);
-  --adm-line-strong: rgb(255 255 255 / 0.13);
+  --adm-line-strong: rgb(255 255 255 / 0.14);
 
-  /* Ink. All three clear 5:1 on every surface above, verified, so
-     "secondary" never means "unreadable". */
-  --adm-ink: #e8eaed;
-  --adm-ink-2: #a8adb6;
-  --adm-ink-3: #7f8691;
+  /* Ink. All three clear 4.5:1 on every surface above, machine-checked, so
+     "secondary" never means "unreadable". Tightest pair is --adm-ink-3 on
+     --adm-panel-2 at 4.65:1. */
+  --adm-ink: #e9ebf2;
+  --adm-ink-2: #a8adc0;
+  --adm-ink-3: #7d8499;
 
-  /* Accent. Selection and primary action only, never decoration. Amber
-     keeps the Purify signature without the near-white the reader theme
-     uses, which cannot carry state. */
-  --adm-accent: #e0b658;
-  --adm-accent-dim: #b8892c;
+  /* Accent. Selection and primary action only, never decoration.
+     Indigo, not amber, as of v4.
+
+     The gold was right for a panel sitting beside a liturgical app and
+     wrong for this one. This surface is a data tool, and on a dark ground
+     gold reads as ornament while fighting the series colours in a chart,
+     which is the one place the accent has to be the quietest thing on
+     screen. The owner dashboard forked to this value first; v4 makes it
+     the only accent rather than keeping two.
+
+     6.09:1 on --adm-panel. */
+  --adm-accent: #7c8cf8;
+  --adm-accent-dim: #5566d6;
 
   /* Ink that sits ON the accent. Was hardcoded #17130a at three separate
      call sites in primitives.tsx (ToolbarButton primary, SubTabs active,
      FilterChips active), which meant near-black text on a blue button the
-     moment a light theme existed. */
-  --adm-on-accent: #17130a;
+     moment a light theme existed. Near-black here at 6.41:1, rather than
+     white which lands at 3.1 and fails. */
+  --adm-on-accent: #0b0d1a;
   --adm-on-accent-wash: rgb(0 0 0 / 0.18);
+
+  /* The feature card's gradient, and the only gradient in the panel. One
+     card per screen earns it: the thing the operator should look at first
+     when nothing is on fire. Anything else uses a flat surface. */
+  --adm-grad-from: #6b5cf6;
+  --adm-grad-to: #8f7bfa;
 
   /* Status. Reserved vocabulary: these four never appear as a chart series
      or a decorative tint. Each is paired with a word in the UI, never
@@ -78,12 +97,18 @@
   --adm-critical: #f87171;
 
   /* The pending-orders badge, the one count in the whole rail that means
-     "someone is waiting". A dedicated pair rather than a wash over
-     --adm-warn: on the light ground that derivation lands near 3.8:1,
-     which is not readable at 11px. Stays amber in both themes on purpose,
-     because it is the only spot of colour the rail is allowed. */
-  --adm-badge-bg: rgb(251 191 36 / 0.18);
-  --adm-badge-fg: #fbbf24;
+     "someone is waiting". A dedicated pair rather than a wash over the
+     accent: on the light ground that derivation lands near 3.8:1, which
+     is not readable at 11px.
+
+     Was amber in both themes, on the reasoning that it was the only spot
+     of colour the rail was allowed. v4 moves it to the accent hue, which
+     works now for a reason it did not before: the nav active state is a
+     neutral fill (--adm-nav-active-bg), so an accent-tinted badge is the
+     only chromatic thing in the rail and does not compete with selection.
+     7.59:1 over the rail on dark. */
+  --adm-badge-bg: rgb(124 140 248 / 0.20);
+  --adm-badge-fg: #a9b4fb;
 
   /* Nav selection. The surface carries the state. The previous treatment was
      a 12% accent wash behind amber text, which is the "muddy khaki, low
@@ -95,29 +120,51 @@
      the active row's ICON only. Kept as its own token rather than folded
      into --adm-accent because it marks position, and if the rule ever comes
      back it comes back here. */
-  --adm-nav-active-bg: #1c1e24;
-  --adm-nav-active-fg: #e8eaed;
-  --adm-nav-bar: #e0b658;
+  --adm-nav-active-bg: #1a1d2b;
+  --adm-nav-active-fg: #e9ebf2;
+  --adm-nav-bar: #7c8cf8;
 
   /* ── Categorical series ───────────────────────────────────────────────
-     Fixed order, never cycled.
+     Fixed order, never cycled. s1 leads because the owner charts bind it
+     to the projected line and s2 to the actual one, by position.
 
-     Dark set: validated for the dark surface on OKLCH lightness band,
-     chroma floor, adjacent-pair CVD separation (worst adjacent deutan
-     dE 9.0), and contrast. Reordering these breaks that guarantee.
+     Recoloured cool in v4 to match the accent, from the set the owner
+     dashboard had already forked to.
 
-     Light set: hue-matched to the dark order and contrast-checked
-     individually (every entry clears 4.9:1 on white). It has NOT been
-     machine-validated for adjacent-pair deutan separation, because no
-     script in this repo computes that; the dark figure above is a
-     one-time hand computation that cannot currently be re-run. Do not
-     read the dE 9.0 claim as covering the light set. */
-  --adm-s1: #b8892c;
-  --adm-s2: #4a8fd4;
-  --adm-s3: #c05f55;
-  --adm-s4: #9070d8;
-  --adm-s5: #2f9e77;
-  --adm-s6: #b8722c;
+     ON THE OLD CLAIM. This block used to record a "worst adjacent deutan
+     dE 9.0" for the dark set, annotated as a hand computation that could
+     not be re-run. scripts/check-series-cvd.mjs now computes it, and it
+     does not reproduce that number (it reads 18.4 for the same values),
+     so the two are not comparable and the old figure is not carried
+     forward. Absolute values from that script are only meaningful against
+     each other. Run it after touching anything below:
+
+       node scripts/check-series-cvd.mjs
+
+     WHAT IT ACTUALLY MEASURES, both sets, same method:
+
+                          any-pair deutan     adjacent deutan
+       old dark                   1.9                18.4
+       old light                  0.3                20.9
+       new dark                   2.8                 3.6
+       new light                  1.9                 1.9
+
+     Read the any-pair column first: adjacent separation only covers
+     series printed next to each other, while a chart plotting s1 against
+     s5 needs those two to differ. On that bar the old set was poor and
+     this one is slightly better, which is the honest summary. Old light
+     s1 and s6 were bronze and burnt orange, dE 0.3, indistinguishable.
+
+     Neither set is good. A palette that clears ~19 on any-pair exists and
+     was found, but it comes out violet, olive, mauve, mint, slate and
+     rose, which is not the register this panel is in. That trade is worth
+     revisiting deliberately rather than settling here. */
+  --adm-s1: #7c8cf8;
+  --adm-s2: #45c4b0;
+  --adm-s3: #e8825a;
+  --adm-s4: #b681e0;
+  --adm-s5: #4d9be6;
+  --adm-s6: #d9a441;
 
   /* Chart chrome. The app-wide tokens are a warm parchment tint built for
      the reader theme; on this cool ground they read as a yellow haze over
@@ -127,14 +174,14 @@
      --chart-empty was missed the first time. It is the BarChart track and
      the CalendarHeatmap empty cell, and until now both were still drawing
      the reader's warm tint inside the admin. */
-  --chart-grid: rgb(255 255 255 / 0.07);
-  --chart-axis: rgb(168 173 182 / 0.85);
+  --chart-grid: rgb(255 255 255 / 0.05);
+  --chart-axis: #6a7186;
   --chart-hover: rgb(255 255 255 / 0.10);
   --chart-empty: rgb(255 255 255 / 0.05);
 
   /* Skeleton highlight. Was color-mix(..., white 6%), which only lightens,
      so on a light ground the shimmer was invisible. */
-  --adm-skeleton-hi: #22242c;
+  --adm-skeleton-hi: #232636;
 
   /* Modal backdrop. Was bg-black/70, too heavy over a light panel. */
   --adm-scrim: rgb(0 0 0 / 0.7);
@@ -146,9 +193,9 @@
      that and was rendering 10px cards beside 20px table wrappers beside
      12px modals beside 6px sub-tabs. Reach for these, never for a named
      Tailwind radius, exactly as the Polaris preview does. */
-  --adm-radius: 8px;      /* cards, panels, table wrappers, filter bars */
-  --adm-radius-sm: 6px;   /* controls, nav rows, chips, inputs */
-  --adm-radius-lg: 12px;  /* rail, modal panel, mobile drawer */
+  --adm-radius: 12px;     /* cards, panels, table wrappers, filter bars */
+  --adm-radius-sm: 8px;   /* controls, nav rows, chips, inputs */
+  --adm-radius-lg: 16px;  /* rail, modal panel, mobile drawer */
   --adm-radius-pill: 999px;
 
   /* Elevation. None on dark, where a surface step already separates a card
@@ -181,11 +228,13 @@
      dragging those html-level overrides into /admin and warm-tinting the
      panel. .adm is the closer element, so the admin is now immune.
 
-     One deliberate change to today's dark look: --color-gold is a
-     near-white #eaeaec despite its name (see the comment beside it in
-     globals.css), so pinning it to the amber accent moves roughly 69
-     call sites from near-white to amber. That is what the token means.
-     To revert just that, set --color-gold: #eaeaec here and nowhere else. */
+     --color-gold is a near-white #eaeaec despite its name (see the
+     comment beside it in globals.css), so pinning it to the accent moves
+     roughly 69 call sites onto whatever --adm-accent currently is. That
+     is the point of the shim, and it is also why changing the accent is
+     never a local edit: v4 moved those 69 from amber to indigo in one
+     line. To exempt them, set --color-gold: #eaeaec here and nowhere
+     else. */
   --color-paper: var(--adm-ink);
   --color-night: var(--adm-bg);
   --color-night-soft: var(--adm-panel-2);
@@ -213,63 +262,69 @@
  */
 :root[data-adm-theme="light"] .adm {
   --adm-rail: #ffffff;
-  --adm-bg: #f6f6f7;
+  --adm-bg: #f7f8fa;
   --adm-panel: #ffffff;
-  --adm-panel-2: #f1f2f4;
+  --adm-panel-2: #f1f2f6;
   --adm-control: #ffffff;
-  --adm-hover: rgb(32 34 35 / 0.04);
+  --adm-hover: rgb(28 32 51 / 0.04);
 
-  --adm-line: #e1e3e5;
-  --adm-line-strong: #c9cccf;
+  --adm-line: rgb(28 32 51 / 0.1);
+  --adm-line-strong: rgb(28 32 51 / 0.18);
 
-  --adm-ink: #202223;    /* 16.0:1 on white */
-  --adm-ink-2: #45494d;  /* 9.1:1 on white, 8.1:1 on panel-2 */
+  --adm-ink: #1c2033;    /* 15.3:1 on white */
+  --adm-ink-2: #4a4f63;  /* 8.1:1 on white */
   /* Departure 1. Polaris subdued is #6D7175, which is 4.6:1 on white but
-     only 4.39:1 on #f1f2f4, and panel-2 is exactly where the inactive
-     FilterChips count sits. Two steps darker clears 4.5 on every light
-     surface this theme defines. */
-  --adm-ink-3: #63676b;  /* 5.7:1 on white, 5.1:1 on panel-2 */
+     only 4.39:1 on the panel-2 tint, and panel-2 is exactly where the
+     inactive FilterChips count sits. Darkened until it clears 4.5 on
+     every light surface this theme defines. */
+  --adm-ink-3: #666c80;  /* 5.3:1 on white, 4.67:1 on panel-2 */
 
-  --adm-accent: #2c6ecb;      /* 5.0:1 on white, and white on it is 5.0:1 */
-  --adm-accent-dim: #1f5199;
+  --adm-accent: #4f5fd7;      /* white on it is 5.32:1 */
+  --adm-accent-dim: #3a48ab;
   --adm-on-accent: #ffffff;
   --adm-on-accent-wash: rgb(255 255 255 / 0.22);
 
   /* Departure 2. Shopify's success green #008060 is 4.93:1 on white but
      only 4.22:1 on its own #E2F1E8 pill, and Pill builds exactly that
      pairing. Darkened until the pill itself passes. */
-  --adm-good: #0b6e4f;    /* 6.3:1 on white */
-  --adm-warn: #916a00;    /* 4.9:1 */
-  --adm-serious: #a34e00; /* 5.8:1 */
+  --adm-good: #0b6e4f;    /* 6.3:1 on white, 5.6:1 on panel-2 */
+  /* Was #916a00, chosen against white only, where it is 4.92:1. On
+     --adm-panel-2 the same value is 4.40:1, and panel-2 is where a warning
+     inside a table row or an input well actually sits. Nothing caught it
+     until v4 routed 83 hardcoded amber classes onto this token and the
+     status colours got a contrast test of their own. Darkened until it
+     clears 4.5 on every light surface this theme defines. */
+  --adm-warn: #8a6500;    /* 5.3:1 on white, 4.76:1 on panel-2 */
+  --adm-serious: #a34e00; /* 5.8:1 on white, 5.2:1 on panel-2 */
   --adm-critical: #8e1f0b;/* 8.9:1, and identical to the preview's own negative ink */
 
-  /* Departure 3. See the dark block: a wash over --adm-warn lands near
-     3.8:1 here, so the badge gets an explicit pair. */
-  --adm-badge-bg: #ffd79d;
-  --adm-badge-fg: #5e4200; /* 6.9:1 on the badge */
+  /* Departure 3. See the dark block: a derived wash lands near 3.8:1
+     here, so the badge gets an explicit pair. */
+  --adm-badge-bg: #dde0fa;
+  --adm-badge-fg: #2e3a9e; /* 7.28:1 on the badge */
 
-  --adm-nav-active-bg: #edeeef;
-  --adm-nav-active-fg: #202223; /* 13.8:1, same as dark */
-  --adm-nav-bar: #2c6ecb;
+  --adm-nav-active-bg: #eef0fb;
+  --adm-nav-active-fg: #1c2033; /* 14.18:1 */
+  --adm-nav-bar: #4f5fd7;
 
-  /* Departure 4. The preview uses one data colour, #2c6ecb, because it
-     plots one series. This admin plots six. Hue-matched to the dark order
-     (bronze, blue, brick, purple, teal-green, burnt orange) so a reader
-     who knows one theme can read the other, and each darkened until it
-     clears 4.9:1 on white. */
-  --adm-s1: #8a5a00;
-  --adm-s2: #2c6ecb;
-  --adm-s3: #a63a2e;
-  --adm-s4: #6b3fa0;
-  --adm-s5: #1a7f64;
-  --adm-s6: #9a4b0f;
+  /* Departure 4. The preview uses one data colour because it plots one
+     series. This admin plots six. Hue-matched to the dark order (indigo,
+     teal, coral, orchid, blue, amber) so a reader who knows one theme can
+     read the other, and each darkened until it clears 4.2:1 on white.
+     See the dark block for what this set does and does not guarantee. */
+  --adm-s1: #4f5fd7;
+  --adm-s2: #0f8a78;
+  --adm-s3: #c25532;
+  --adm-s4: #8145b8;
+  --adm-s5: #2a6fb5;
+  --adm-s6: #96701c;
 
-  --chart-grid: rgb(32 34 35 / 0.08);
-  --chart-axis: #63676b;
-  --chart-hover: rgb(32 34 35 / 0.12);
-  --chart-empty: rgb(32 34 35 / 0.06);
+  --chart-grid: rgb(28 32 51 / 0.07);
+  --chart-axis: #757b8c;
+  --chart-hover: rgb(28 32 51 / 0.12);
+  --chart-empty: rgb(28 32 51 / 0.06);
 
-  --adm-skeleton-hi: #e8e9eb;
+  --adm-skeleton-hi: #e9eaf0;
   --adm-scrim: rgb(0 0 0 / 0.4);
 
   /* The preview's CARD shadow, verbatim. */
@@ -332,11 +387,73 @@
   transition: color 140ms var(--adm-ease), background-color 140ms var(--adm-ease);
 }
 
+/* ── Chart and arrival motion (was app/owner/owner-theme.css) ───────────
+ * Moved here in v4 when the owner dashboard folded into this panel. These
+ * classes are read by components/owner/ProjectionChart.tsx, which sets
+ * --own-len inline from the real getTotalLength(); leaving them behind in
+ * a stylesheet the merged shell never imports would have made the draw-in
+ * silently dead rather than loudly broken.
+ *
+ * Names keep the own- prefix. Renaming them would touch the chart for no
+ * reason, and the prefix still says which screen the motion belongs to.
+ */
+
+@keyframes own-rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.own-enter {
+  animation: own-rise 260ms var(--adm-ease) both;
+}
+
+/* Cards stagger, but only just: four steps of 40ms, then everything after
+   shares the last one. A long cascade makes an operator wait to read. */
+.own-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.own-stagger > *:nth-child(2) { animation-delay: 40ms; }
+.own-stagger > *:nth-child(3) { animation-delay: 80ms; }
+.own-stagger > *:nth-child(n + 4) { animation-delay: 120ms; }
+
+/* The line a chart draws on first paint. Length is set inline from the real
+   path length, because a guess here shows as a visible stutter. */
+@keyframes own-draw {
+  from { stroke-dashoffset: var(--own-len); }
+  to { stroke-dashoffset: 0; }
+}
+
+.own-draw {
+  stroke-dasharray: var(--own-len);
+  animation: own-draw 900ms var(--adm-ease) both;
+}
+
+@keyframes own-fade-up {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.own-fill {
+  animation: own-fade-up 700ms 200ms var(--adm-ease) both;
+}
+
+/* Numbers that change should not flicker while they do. */
+.own-num {
+  font-variant-numeric: tabular-nums;
+  transition: color 200ms var(--adm-ease);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .adm-panel-enter,
   .adm-flash,
-  .adm-skeleton {
+  .adm-skeleton,
+  .own-enter,
+  .own-draw,
+  .own-fill {
     animation: none;
+  }
+  /* The dash array has to go too, or a reduced-motion reader gets a line
+     drawn in permanent dashes instead of a solid one. */
+  .own-draw {
+    stroke-dasharray: none;
   }
   .adm *,
   .adm *::before,

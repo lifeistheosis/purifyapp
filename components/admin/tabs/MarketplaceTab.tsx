@@ -233,7 +233,7 @@ function StoresPanel() {
       </div>
 
       {(error ?? status) && (
-        <p role="alert" className="font-sans text-detail text-rose-300">
+        <p role="alert" className="font-sans text-detail text-[color:var(--adm-critical)]">
           {error ?? status}
         </p>
       )}
@@ -453,7 +453,7 @@ function CreateStoreForm({ onDone }: { onDone: () => void }) {
         <input name="shippingOrigin" maxLength={200} placeholder="United States" className={field} />
       </label>
       {error && (
-        <p role="alert" className="font-sans text-detail text-rose-300 sm:col-span-2">
+        <p role="alert" className="font-sans text-detail text-[color:var(--adm-critical)] sm:col-span-2">
           {error}
         </p>
       )}
@@ -632,7 +632,7 @@ function ListingsPanel() {
       </div>
 
       {(error ?? status) && (
-        <p role="alert" className="font-sans text-detail text-rose-300">
+        <p role="alert" className="font-sans text-detail text-[color:var(--adm-critical)]">
           {error ?? status}
         </p>
       )}
@@ -791,7 +791,7 @@ function OrdersPanel() {
       </div>
 
       {(error ?? status) && (
-        <p role="alert" className="font-sans text-detail text-rose-300">
+        <p role="alert" className="font-sans text-detail text-[color:var(--adm-critical)]">
           {error ?? status}
         </p>
       )}
@@ -1009,7 +1009,7 @@ function MessagesPanel() {
       </div>
 
       {(error ?? status) && (
-        <p role="alert" className="font-sans text-detail text-rose-300">
+        <p role="alert" className="font-sans text-detail text-[color:var(--adm-critical)]">
           {error ?? status}
         </p>
       )}
@@ -1189,7 +1189,7 @@ function RefundsPanel() {
       </div>
 
       {(error ?? status) && (
-        <p role="alert" className="font-sans text-detail text-rose-300">
+        <p role="alert" className="font-sans text-detail text-[color:var(--adm-critical)]">
           {error ?? status}
         </p>
       )}
@@ -1312,7 +1312,7 @@ function RefundsPanel() {
         />
 
         {declining && (
-          <div className="mt-4 flex flex-wrap items-end gap-2 rounded-[var(--adm-radius)] border border-rose-400/30 bg-rose-400/[0.04] p-3">
+          <div className="mt-4 flex flex-wrap items-end gap-2 rounded-[var(--adm-radius)] border border-[color-mix(in_oklab,var(--adm-critical),transparent_70%)] bg-[color-mix(in_oklab,var(--adm-critical),transparent_96%)] p-3">
             <label className="min-w-[260px] flex-1 space-y-1">
               <span className={labelCls}>
                 Why decline? The buyer sees this note. *

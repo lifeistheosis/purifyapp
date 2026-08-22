@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SUPPORT } from "@/data/support/support";
 import { fetchBmcTotal } from "@/lib/support/buymeacoffee";
-import { getExpenseLines, getMonthlyGoalUsd } from "@/lib/support/expenses";
+import { getExpenses, getMonthlyGoal } from "@/lib/support/expenses";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { isNativeRequest } from "@/lib/platform/nativeRequest";
@@ -137,16 +137,30 @@ export default async function SupportPage() {
  );
  }
 
- const [live, expenses, monthlyGoalUsd] = await Promise.all([
+ const [live, expenseData, goal] = await Promise.all([
    fetchBmcTotal(),
-   getExpenseLines(),
-   getMonthlyGoalUsd(),
+   getExpenses(),
+   getMonthlyGoal(),
  ]);
+ const expenses = expenseData.lines;
+ const monthlyGoalUsd = goal.usd;
  const raised = live?.monthlyRaisedUsd ?? SUPPORT.monthlyRaisedUsd;
  const totalMonthlyExpense = expenses.reduce(
  (s, e) => s + e.monthlyUsd,
  0,
  );
+
+ // The date the reader sees has to be the date of the numbers beside it.
+ // On the live path that is the newest edit to a visible row; on the
+ // fallback path the committed list and the committed date belong
+ // together, and the notice below says which one is being shown.
+ const expensesAsOf = expenseData.updatedAt
+   ? expenseData.updatedAt.toLocaleDateString(isDe ? "de-DE" : "en-US", {
+       year: "numeric",
+       month: "long",
+       day: "numeric",
+     })
+   : SUPPORT.lastUpdated;
  const pct = Math.min(
  1,
  Math.max(0, raised / monthlyGoalUsd),
@@ -290,13 +304,13 @@ export default async function SupportPage() {
  {isDe ? (
  <>
  <T k="ui.jedeZeileIstEchtDie" />{" "}
- {SUPPORT.lastUpdated} <T k="ui.betragen" /> {formatUsd(totalMonthlyExpense)}<T k="ui.dasFRderzielObenIst" /> {formatUsd(monthlyGoalUsd)}{" "}
+ {expensesAsOf} <T k="ui.betragen" /> {formatUsd(totalMonthlyExpense)}<T k="ui.dasFRderzielObenIst" /> {formatUsd(monthlyGoalUsd)}{" "}
  <T k="ui.gesetztUmSpielraumFR" />
  </>
  ) : (
  <>
  <T k="ui.everyLineIsRealTotal" />{" "}
- {SUPPORT.lastUpdated} <T k="ui.is" /> {formatUsd(totalMonthlyExpense)}<T k="ui.theFundingGoalAboveIs" /> {formatUsd(monthlyGoalUsd)}
+ {expensesAsOf} <T k="ui.is" /> {formatUsd(totalMonthlyExpense)}<T k="ui.theFundingGoalAboveIs" /> {formatUsd(monthlyGoalUsd)}
  {" "}<T k="ui.toLeaveSomeMarginFor" />
  </>
  )}
@@ -331,6 +345,13 @@ export default async function SupportPage() {
  </p>
  </li>
  </ul>
+ {expenseData.fromFallback && (
+ <p className="mt-3 font-sans text-caption text-paper/55 leading-[1.55]">
+ {isDe
+ ? "Diese Zahlen stammen aus der zuletzt veröffentlichten Aufstellung, nicht aus der Live-Datenbank. Sie können veraltet sein."
+ : "These figures come from the last published list, not from the live database. They may be out of date."}
+ </p>
+ )}
  </section>
 
  {/* Free-forever note */}

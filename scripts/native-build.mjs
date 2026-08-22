@@ -78,12 +78,16 @@ const STASH_PATHS = [
   // now ships. Do not re-stash it.
   ["app", "(app)", "language-editor"],
   ["app", "admin"],
-  // The owner dashboard. Its own tree rather than a page under /admin, because
-  // it has its own gate: revenue, projections and market strategy are the half
-  // of the admin a future moderator should not inherit. Same web-only reasons
-  // as /admin, and the same trap if it is ever moved outside this list: a
-  // force-dynamic route that reads a server session bakes a redirect into the
-  // static export instead of failing loudly.
+  // The owner dashboard. As of v4 its content lives inside the admin shell as
+  // three tabs behind an Operations | Owner switch, and this tree holds a
+  // redirect to it plus the standalone preview.
+  //
+  // It must STAY on this list, and the reason is stronger now than before.
+  // app/owner/page.tsx is force-dynamic and calls redirect(). Under
+  // output:'export' that redirect is baked into the static bundle rather than
+  // failing loudly, which is the exact trap this entry has always guarded
+  // against. Removing it would ship a native app whose owner route silently
+  // bounces to a page the export does not contain.
   ["app", "owner"],
   // The shop (EIKON marketplace) now ships in the app: its pages are client
   // components that fetch live from the /api/shop/catalog routes and read the

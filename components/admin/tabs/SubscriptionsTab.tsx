@@ -284,7 +284,7 @@ function GiftCard() {
       {msg && (
         <p
           className={`mt-3 font-sans text-eyebrow ${
-            msg.ok ? "text-emerald-300" : "text-rose-300"
+            msg.ok ? "text-[color:var(--adm-good)]" : "text-[color:var(--adm-critical)]"
           }`}
         >
           {msg.text}
@@ -419,7 +419,7 @@ function MembersPanel() {
           <button
             type="submit"
             disabled={busy || !email.trim()}
-            className="rounded-pill border border-emerald-400/50 bg-emerald-500/[0.14] px-5 py-2 font-sans text-detail font-semibold text-emerald-200 transition-colors hover:bg-emerald-500/20 disabled:opacity-40"
+            className="rounded-pill border border-[color-mix(in_oklab,var(--adm-good),transparent_50%)] bg-[color-mix(in_oklab,var(--adm-good),transparent_86%)] px-5 py-2 font-sans text-detail font-semibold text-[color:var(--adm-good)] transition-colors hover:bg-[color-mix(in_oklab,var(--adm-good),transparent_80%)] disabled:opacity-40"
           >
             {busy ? "Granting…" : "Grant"}
           </button>
@@ -427,7 +427,7 @@ function MembersPanel() {
         {msg && (
           <p
             className={`mt-3 font-sans text-eyebrow ${
-              msg.ok ? "text-emerald-300" : "text-rose-300"
+              msg.ok ? "text-[color:var(--adm-good)]" : "text-[color:var(--adm-critical)]"
             }`}
           >
             {msg.text}
@@ -442,7 +442,7 @@ function MembersPanel() {
       <GiftCard />
 
       {loaded && meta && !meta.revenuecat ? (
-        <p className="rounded-[var(--adm-radius-sm)] border border-amber-400/25 bg-amber-400/[0.05] px-3 py-2 font-sans text-eyebrow text-amber-200/90">
+        <p className="rounded-[var(--adm-radius-sm)] border border-[color-mix(in_oklab,var(--adm-warn),transparent_75%)] bg-[color-mix(in_oklab,var(--adm-warn),transparent_95%)] px-3 py-2 font-sans text-eyebrow text-[color:color-mix(in_oklab,var(--adm-warn),transparent_10%)]">
           Start dates come from the RevenueCat REST API. Set
           REVENUECAT_REST_API_KEY in the environment to show them; next-billing
           and everything else works from the database now.

@@ -340,19 +340,19 @@ function ProductsPanel() {
         <Metric
           label="Live in shop"
           value={String(published)}
-          tone={published > 0 ? "text-emerald-300" : undefined}
+          tone={published > 0 ? "text-[color:var(--adm-good)]" : undefined}
           hint={hiddenByGate > 0 ? `${hiddenByGate} hidden by image rights` : undefined}
         />
         <Metric
           label="Out of stock"
           value={String(outOfStock)}
-          tone={outOfStock > 0 ? "text-amber-300" : "text-paper/40"}
+          tone={outOfStock > 0 ? "text-[color:var(--adm-warn)]" : "text-paper/40"}
         />
         <Metric label="Views" value={views.toLocaleString()} />
         <Metric
           label="Units sold"
           value={sold.toLocaleString()}
-          tone={sold > 0 ? "text-emerald-300" : undefined}
+          tone={sold > 0 ? "text-[color:var(--adm-good)]" : undefined}
         />
         <Metric
           label="Revenue"
@@ -375,7 +375,7 @@ function ProductsPanel() {
         }
       >
         {status ? (
-          <p className="mb-3 font-sans text-detail text-rose-300">{status}</p>
+          <p className="mb-3 font-sans text-detail text-[color:var(--adm-critical)]">{status}</p>
         ) : null}
         <FilterBar
           matched={visible.length}
@@ -529,10 +529,10 @@ function ProductsPanel() {
                   roi == null
                     ? "text-paper/60"
                     : roi < 0
-                      ? "text-rose-300"
+                      ? "text-[color:var(--adm-critical)]"
                       : roi < 100
-                        ? "text-amber-300"
-                        : "text-emerald-300";
+                        ? "text-[color:var(--adm-warn)]"
+                        : "text-[color:var(--adm-good)]";
                 return (
                   <span className="whitespace-nowrap font-sans text-detail">
                     <span className="text-paper/50">{money(cost)}</span>
@@ -585,7 +585,7 @@ function ProductsPanel() {
                   <span className="whitespace-nowrap font-sans text-detail tabular-nums">
                     <span className="text-paper/55">{v}</span>
                     <span className="mx-1 text-paper/25">·</span>
-                    <span className="font-semibold text-emerald-300">{b}</span>
+                    <span className="font-semibold text-[color:var(--adm-good)]">{b}</span>
                     {conv != null ? (
                       <span className="ml-1.5 text-eyebrow text-paper/40">
                         {conv}%
@@ -865,19 +865,19 @@ function ProductOverview({
     roi == null
       ? undefined
       : roi < 0
-        ? "text-rose-300"
+        ? "text-[color:var(--adm-critical)]"
         : roi < 100
-          ? "text-amber-300"
-          : "text-emerald-300";
+          ? "text-[color:var(--adm-warn)]"
+          : "text-[color:var(--adm-good)]";
 
   return (
     <div className="space-y-6">
       {hasSupplierImage(p.media) ? (
-        <div className="rounded-[var(--adm-radius)] border border-amber-400/30 bg-amber-400/[0.06] p-3">
-          <p className="font-sans text-detail font-semibold text-amber-200">
+        <div className="rounded-[var(--adm-radius)] border border-[color-mix(in_oklab,var(--adm-warn),transparent_70%)] bg-[color-mix(in_oklab,var(--adm-warn),transparent_94%)] p-3">
+          <p className="font-sans text-detail font-semibold text-[color:var(--adm-warn)]">
             Not shown in the public shop
           </p>
-          <p className="mt-0.5 font-sans text-caption text-amber-200/80">
+          <p className="mt-0.5 font-sans text-caption text-[color:color-mix(in_oklab,var(--adm-warn),transparent_20%)]">
             The primary photo is hosted on a supplier CDN, so the rights gate
             hides this listing from shoppers even while it is published.
             Upload an owned or licensed photo to make it live.
@@ -967,7 +967,7 @@ function ProductOverview({
         <Metric
           label="Units sold"
           value={String(sold)}
-          tone={sold > 0 ? "text-emerald-300" : undefined}
+          tone={sold > 0 ? "text-[color:var(--adm-good)]" : undefined}
         />
         <Metric
           label="Conversion"
@@ -1048,9 +1048,9 @@ function ProductOverview({
             label="Resale rights"
             value={
               s?.resale_rights_confirmed ? (
-                <span className="text-emerald-300">Confirmed</span>
+                <span className="text-[color:var(--adm-good)]">Confirmed</span>
               ) : (
-                <span className="text-amber-300">Not confirmed</span>
+                <span className="text-[color:var(--adm-warn)]">Not confirmed</span>
               )
             }
           />
@@ -1362,8 +1362,8 @@ function ProductEditor({
         />
       </label>
 
-      <div className="mt-6 rounded-[var(--adm-radius)] border border-rose-400/20 bg-rose-400/[0.03] p-4">
-        <p className="font-sans text-detail font-medium tracking-[1.2px] text-rose-300/80">
+      <div className="mt-6 rounded-[var(--adm-radius)] border border-[color-mix(in_oklab,var(--adm-critical),transparent_80%)] bg-[color-mix(in_oklab,var(--adm-critical),transparent_97%)] p-4">
+        <p className="font-sans text-detail font-medium tracking-[1.2px] text-[color:color-mix(in_oklab,var(--adm-critical),transparent_20%)]">
           Sourcing (admin-only, never public)
         </p>
         <div className="mt-3 grid gap-4 md:grid-cols-3">
@@ -1443,10 +1443,10 @@ function ProductEditor({
             roi == null
               ? "text-paper"
               : roi < 0
-                ? "text-rose-300"
+                ? "text-[color:var(--adm-critical)]"
                 : roi < 100
-                  ? "text-amber-300"
-                  : "text-emerald-300";
+                  ? "text-[color:var(--adm-warn)]"
+                  : "text-[color:var(--adm-good)]";
           return (
             <div className="mt-4 rounded-[var(--adm-radius)] border border-paper/12 bg-night/50 p-3">
               <p className={labelCls}>Unit economics (live)</p>
@@ -1505,7 +1505,7 @@ function ProductEditor({
         </label>
       </div>
 
-      {error ? <p className="mt-3 font-sans text-detail text-rose-300">{error}</p> : null}
+      {error ? <p className="mt-3 font-sans text-detail text-[color:var(--adm-critical)]">{error}</p> : null}
 
       <button
         type="button"
@@ -1569,7 +1569,7 @@ function RequestsPanel() {
 
   return (
     <Card title="Icon requests" subtitle="Demand collection; answer by email">
-      {error ? <p className="mb-3 font-sans text-detail text-rose-300">{error}</p> : null}
+      {error ? <p className="mb-3 font-sans text-detail text-[color:var(--adm-critical)]">{error}</p> : null}
       <FilterBar
         matched={visible.length}
         total={requests.length}
@@ -1744,7 +1744,7 @@ function ApplicationsPanel() {
       title="Merchant applications"
       subtitle="Manual review only; approval never auto-creates a store"
     >
-      {error ? <p className="mb-3 font-sans text-detail text-rose-300">{error}</p> : null}
+      {error ? <p className="mb-3 font-sans text-detail text-[color:var(--adm-critical)]">{error}</p> : null}
       <FilterBar
         matched={visible.length}
         total={apps.length}
@@ -2039,7 +2039,7 @@ function ReviewsPanel() {
         <Metric
           label="Verified"
           value={String(verified)}
-          tone={verified > 0 ? "text-emerald-300" : undefined}
+          tone={verified > 0 ? "text-[color:var(--adm-good)]" : undefined}
           hint="tied to a real order"
         />
         <Metric
@@ -2060,7 +2060,7 @@ function ReviewsPanel() {
         }
       >
         {status ? (
-          <p className="mb-3 font-sans text-detail text-rose-300">{status}</p>
+          <p className="mb-3 font-sans text-detail text-[color:var(--adm-critical)]">{status}</p>
         ) : null}
         <FilterBar
           matched={matched}
@@ -2411,7 +2411,7 @@ function SeedReviewSheet({
       onClose={onClose}
     >
       {error ? (
-        <p className="mb-3 font-sans text-detail text-rose-300">{error}</p>
+        <p className="mb-3 font-sans text-detail text-[color:var(--adm-critical)]">{error}</p>
       ) : null}
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="block">
@@ -2526,7 +2526,7 @@ function SeedReviewSheet({
                   type="button"
                   aria-label={`Remove photo ${i + 1}`}
                   onClick={() => setPhotos((p) => p.filter((_, j) => j !== i))}
-                  className="absolute right-0.5 top-0.5 rounded-full bg-night/80 px-1 font-sans text-eyebrow text-paper/80 hover:text-rose-300"
+                  className="absolute right-0.5 top-0.5 rounded-full bg-night/80 px-1 font-sans text-eyebrow text-paper/80 hover:text-[color:var(--adm-critical)]"
                 >
                   ✕
                 </button>

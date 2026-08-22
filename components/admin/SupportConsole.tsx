@@ -17,15 +17,15 @@ const HEART = "❤️";
 
 // Dot color per status, for the picker + selected pill.
 const statusDot: Record<TicketStatus, string> = {
-  open: "bg-emerald-400",
-  pending: "bg-amber-400",
-  resolved: "bg-sky-400",
+  open: "bg-[var(--adm-good)]",
+  pending: "bg-[var(--adm-warn)]",
+  resolved: "bg-[var(--adm-s2)]",
   closed: "bg-paper/40",
 };
 const statusText: Record<TicketStatus, string> = {
-  open: "text-emerald-300",
-  pending: "text-amber-300",
-  resolved: "text-sky-300",
+  open: "text-[color:var(--adm-good)]",
+  pending: "text-[color:var(--adm-warn)]",
+  resolved: "text-[color:var(--adm-s2)]",
   closed: "text-paper/50",
 };
 

@@ -4,7 +4,7 @@
 // editable expense lines. The expense rows are the source of truth that
 // the public /support page reads.
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, DataTable, Pill, StatCard, Toolbar, ToolbarButton } from "../primitives";
 import { BarChart } from "../charts";
@@ -25,6 +25,9 @@ type Payload = {
     raisedCents: number;
     supporters: number;
     goalCents: number;
+    /** False means no row exists for this month and the committed default is
+        being shown. A goal nobody set should not look like one somebody did. */
+    goalSetForMonth: boolean;
     fetchedAt: string | null;
     live: boolean;
   };
@@ -49,8 +52,27 @@ function usd(cents: number): string {
 
 export function SustainabilityTab() {
   const [data, setData] = useState<Payload | null>(null);
+  // adminJson resolves null on a 403 and on a network failure alike, so
+  // without this the tab sat on "Loading…" forever and told the operator a
+  // request was in flight that had already failed. A panel that cannot say
+  // "this did not load" is the same defect as one that says a support email
+  // was sent when it was not.
+  const [loadFailed, setLoadFailed] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null);
   const [adding, setAdding] = useState(false);
+  const [editingGoal, setEditingGoal] = useState(false);
+  const [goalDraft, setGoalDraft] = useState("");
+
+  // Opening the editor replaces the button that opened it, so without this a
+  // keyboard operator's focus falls to <body> and they have to tab back in
+  // from the top. autoFocus would do the same thing, but the lint rule against
+  // it is aimed at controls that steal focus on page load; this moves focus
+  // exactly once, in response to a click, which is the behaviour the rule
+  // wants rather than the attribute it bans.
+  const goalInputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (editingGoal) goalInputRef.current?.focus();
+  }, [editingGoal]);
   const [, startTransition] = useTransition();
 
   async function reload() {
@@ -61,7 +83,9 @@ export function SustainabilityTab() {
   useEffect(() => {
     let alive = true;
     adminJson<Payload>("/api/admin/sustainability").then((j) => {
-      if (alive && j) setData(j);
+      if (!alive) return;
+      if (j) setData(j);
+      else setLoadFailed(true);
     });
     return () => {
       alive = false;
@@ -100,12 +124,18 @@ export function SustainabilityTab() {
     if (r.ok) startTransition(() => reload());
   }
 
-  async function setGoal() {
+  /**
+   * Was a window.prompt, sitting in the header of the 12-month history card
+   * rather than next to the goal it edits, while a proper inline editor for
+   * expense lines sat eighty lines below it. A prompt cannot show the current
+   * value in context, cannot validate as you type, cannot be cancelled without
+   * guessing, and is the one control in this panel that looks like the browser
+   * rather than the product.
+   */
+  async function saveGoal(usdValue: string) {
     if (!data) return;
-    const current = data.current.goalCents / 100;
-    const next = prompt("Monthly goal (USD)?", String(current));
-    if (!next) return;
-    const cents = Math.round(Number(next) * 100);
+    const cents = Math.round(Number(usdValue) * 100);
+    // Number("") is 0 and Number("abc") is NaN, so both are caught here.
     if (!Number.isFinite(cents) || cents < 0) return;
     const r = await fetch("/api/admin/sustainability/actions", {
       method: "POST",
@@ -116,11 +146,25 @@ export function SustainabilityTab() {
         goalCents: cents,
       }),
     });
-    if (r.ok) startTransition(() => reload());
+    if (r.ok) {
+      setEditingGoal(false);
+      startTransition(() => reload());
+    }
   }
 
   if (!data) {
-    return <p className="font-sans text-detail text-paper/40 py-8 text-center">Loading…</p>;
+    return loadFailed ? (
+      <Card title="Costs could not be loaded">
+        <p className="font-sans text-detail" style={{ color: "var(--adm-ink-2)" }}>
+          <span className="font-mono">/api/admin/sustainability</span> did not
+          answer. That is a 403 if this session is not on ADMIN_EMAILS, or a
+          network failure otherwise; the request cannot tell the two apart.
+          Nothing has been changed, and the public /support page is unaffected.
+        </p>
+      </Card>
+    ) : (
+      <p className="font-sans text-detail text-paper/40 py-8 text-center">Loading…</p>
+    );
   }
 
   const pct =
@@ -128,7 +172,13 @@ export function SustainabilityTab() {
       ? Math.min(100, Math.round((data.current.raisedCents / data.current.goalCents) * 100))
       : 0;
   const shortfallCents = Math.max(0, data.current.goalCents - data.current.raisedCents);
-  const coverageRatio =
+  // DONATIONS over costs, and nothing else. Shop net and subscription
+  // revenue are not in the numerator, so this is one funding source measured
+  // against the whole cost base. It was labelled "Expense coverage" and
+  // hinted "Below operating cost", which reads as a verdict on the business
+  // and is not one: it can sit under 100% while Purify is comfortably above
+  // water on total income. Named for what it divides.
+  const donationCoverageRatio =
     data.monthlyExpenseCents > 0
       ? data.current.raisedCents / data.monthlyExpenseCents
       : 0;
@@ -144,6 +194,84 @@ export function SustainabilityTab() {
           </p>
         </Card>
       )}
+
+      {/* The budget, next to the numbers it governs, and honest about
+          whether anyone actually set it for this month. */}
+      <Card
+        title="Monthly goal"
+        subtitle={
+          data.current.goalSetForMonth
+            ? `Set for ${data.current.yearMonth}. This is what /support publishes.`
+            : "Not set for this month. /support is publishing the committed default from data/support/support.ts."
+        }
+        action={
+          editingGoal ? undefined : (
+            <Toolbar>
+              <ToolbarButton
+                variant="primary"
+                onClick={() => {
+                  setGoalDraft(String(data.current.goalCents / 100));
+                  setEditingGoal(true);
+                }}
+                title="Set this month's goal"
+              >
+                {data.current.goalSetForMonth ? "Change goal" : "Set goal"}
+              </ToolbarButton>
+            </Toolbar>
+          )
+        }
+      >
+        {editingGoal ? (
+          <div className="flex flex-wrap items-end gap-3">
+            <label className="min-w-[160px]">
+              <span
+                className="mb-1 block font-sans text-[11.5px]"
+                style={{ color: "var(--adm-ink-3)" }}
+              >
+                Goal, USD per month
+              </span>
+              <input
+                type="number"
+                min={0}
+                step="1"
+                inputMode="decimal"
+                ref={goalInputRef}
+                value={goalDraft}
+                onChange={(e) => setGoalDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") saveGoal(goalDraft);
+                  if (e.key === "Escape") setEditingGoal(false);
+                }}
+                className="h-11 w-full rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[13px] tabular-nums"
+                style={{
+                  background: "var(--adm-control)",
+                  borderColor: "var(--adm-line-strong)",
+                  color: "var(--adm-ink)",
+                }}
+              />
+            </label>
+            <Toolbar>
+              <ToolbarButton variant="primary" onClick={() => saveGoal(goalDraft)}>
+                Save
+              </ToolbarButton>
+              <ToolbarButton onClick={() => setEditingGoal(false)}>Cancel</ToolbarButton>
+            </Toolbar>
+          </div>
+        ) : (
+          <p
+            className="font-sans text-[30px] font-semibold leading-none tracking-[-0.02em] tabular-nums"
+            style={{ color: "var(--adm-ink)" }}
+          >
+            {usd(data.current.goalCents)}
+            <span
+              className="ml-2 align-middle font-sans text-[13px] font-normal"
+              style={{ color: "var(--adm-ink-3)" }}
+            >
+              against {usd(data.monthlyExpenseCents)} of costs
+            </span>
+          </p>
+        )}
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <StatCard
@@ -163,27 +291,20 @@ export function SustainabilityTab() {
           hint={`${data.expenses.filter((e) => e.active).length} active lines`}
         />
         <StatCard
-          label="Expense coverage"
-          value={`${Math.round(coverageRatio * 100)}%`}
+          label="Donations vs costs"
+          value={`${Math.round(donationCoverageRatio * 100)}%`}
           hint={
-            coverageRatio >= 1
-              ? "Above operating cost"
-              : "Below operating cost"
+            donationCoverageRatio >= 1
+              ? "Donations alone cover costs"
+              : "Donations alone do not cover costs. Shop and subscription income are not counted here."
           }
-          accent={coverageRatio < 1}
+          accent={donationCoverageRatio < 1}
         />
       </div>
 
       <Card
         title="12-month donations history"
         subtitle="From donations_monthly snapshots. Empty if the daily cron hasn’t run."
-        action={
-          <Toolbar>
-            <ToolbarButton onClick={setGoal} title="Set this month’s goal">
-              Set goal
-            </ToolbarButton>
-          </Toolbar>
-        }
       >
         {data.history.length === 0 ? (
           <p className="font-sans text-caption text-paper/45 py-4">

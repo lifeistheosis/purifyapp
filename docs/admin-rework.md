@@ -213,6 +213,164 @@ outlier tab. Whoever picks this up should not go looking for one.
   layouts inside panels rather than a structural gap. Worth an eye during other
   work, not worth a sweep of its own.
 
+## v4, 2026-08-21 — the two panels became one
+
+Driven by two pieces of feedback that turned out to be the same one: "I dont
+like switching between /owner and /admin", and "I dont like the yellow". The
+first was two routes; the second had only ever been answered inside `.own`.
+
+Base reference was a dark fintech dashboard Edgar supplied. What was taken from
+it is an information hierarchy, not a palette: a rail that carries live state
+rather than only links, a hero that answers "how are we doing" before any tab
+is opened, and one segmented control in place of navigating between products.
+
+### What landed
+
+**One accent, one palette.** `app/owner/owner-theme.css` is deleted. Its indigo
+is now the admin accent in both themes, its cooler grounds are the grounds, and
+its keyframes moved into `admin-theme.css` because `ProjectionChart` reads
+`own-draw` / `own-fill` and would have gone silently dead otherwise. Radii went
+8/6/12 to 12/8/16. This also removed two latent bugs: `Modal` portals with
+`className="adm"` only, so the first modal opened from an owner section would
+have rendered amber inside an indigo panel; and the import order at
+`app/owner/layout.tsx` was load-bearing with nothing testing it, so swapping two
+lines silently reverted the dashboard to gold.
+
+**One shell.** `AdminShell` gained `mode: "ops" | "owner"` and a segmented
+switch. `/owner` is a redirect into `/admin#tab=owner-today`. `OwnerDashboard`
+takes `embedded` and `panel` props and renders as three tab bodies.
+
+**The hero.** `MetricCard`, `FeatureCard`, `SectionHead`, `PeriodChips`,
+`HeroSpark` in `components/admin/hero.tsx`; assembly in `HeroRow.tsx`. Two
+routes feed four cards, and neither is a new poll: traffic carries visitors and
+signups together, and the shell's existing overview poll is passed down rather
+than opened twice.
+
+### Three things worth knowing before touching this again
+
+**1. Merging leaked the projection engine, and a boolean would not have fixed
+it.** `OwnerDashboard` statically imports `MARKETS`, `SCENARIOS`, `project` and
+`calibrate`. Behind its own 404 those only ever reached owners. Imported from
+`AdminShell` they reach every admin, because the bundler decided at build time
+and `isOwner` decides at render time. `OwnerSection.tsx` asks
+`/api/owner/actuals` first and only `import()`s on a 200. Verified by network
+panel, not by reading source: 403, and no chunk matching `components_owner`,
+`OwnerDashboard`, `markets` or `projection` requested.
+
+**2. The series CVD claim was not reproducible and is now measurable.** The old
+comment recorded a "worst adjacent deutan dE 9.0" as a hand computation that
+could not be re-run. `scripts/check-series-cvd.mjs` computes it now and reads
+18.4 for those same values, so the two are not comparable and the old figure was
+dropped rather than carried forward. Measuring both sets the same way also
+showed the real problem was never adjacent pairs: the shipping light set had
+`s1` bronze and `s6` burnt orange at **dE 0.3**, indistinguishable. The new set
+is 1.9. Better, still not good. A palette clearing ~19 exists and was found, but
+it comes out violet/olive/mauve/mint/slate/rose, which is not this panel's
+register. That trade is open, deliberately.
+
+**3. Eighty-three pieces of status text were theme-blind, and no test could see
+them.** The tab bodies carried hardcoded `text-rose-300`, `text-emerald-300`,
+`text-amber-200` and friends. Tailwind's palette does not follow a theme:
+`text-rose-300` is `#fda4af` everywhere, roughly 1.9:1 on a white card. All 83
+now route through `--adm-good/warn/serious/critical`, and those four gained a
+contrast test they never had. **It failed on the first run**: light
+`--adm-warn` was `#916a00`, chosen against white where it is 4.92:1, but 4.40:1
+on `--adm-panel-2`, which is exactly where a warning inside a table row sits.
+Darkened to `#8a6500`.
+
+### Still open after v4
+
+- **The per-tab layout restyle did not happen.** Every tab got the global
+  change (accent, grounds, radii, series, status colours) and none got
+  restructured into the reference's card language. `CommerceOverviewTab`,
+  `TrafficTab` and `RevenueTab` are the ones worth doing first.
+- **~430 reader-palette classes remain** (`text-paper/40`, `bg-night`,
+  `border-paper/15`, across 50+ opacity variants). They render correctly
+  because the shim in `admin-theme.css` rebinds them, so this is consistency
+  debt rather than breakage. Collapsing 12 arbitrary ink opacities into the
+  three ink tokens is the right move and is a deliberate visual change to
+  hundreds of sites, so it wants eyes on it, not a script run blind.
+- **Light mode was not visually verified in the session that built this.** The
+  browser pane available at the time never composited: `requestAnimationFrame`
+  fired zero times, and `var()`-resolved computed styles did not update on a
+  theme switch even though the custom properties themselves did. Dark mode was
+  walked across all 11 tabs with no leftover gold. Light rests on the contrast
+  tests, which are sound because they read the stylesheet directly, and on
+  nothing else. Somebody should look at it.
+- Everything listed under "Still open after Wave C" above.
+
+## v4.1, 2026-08-21 — costs, and four places the panel was lying
+
+Started as "add the ability to change the budget and the prices on the monthly
+costs". It turned out **both already existed** and had since May: `expense_lines`
+and `donations_monthly.goal_cents`, edited in `SustainabilityTab`, read by the
+public `/support` page, with `revalidatePath("/support")` on every write. The
+work was therefore repair and promotion, not construction.
+
+### First, a defect from v4
+
+The v4 colour sweep left **11 doubled closing brackets**
+(`bg-[color-mix(...,transparent_94%)]]`) across six files. Malformed Tailwind
+arbitrary values emit no rule, so those warning and error banners rendered with
+no background. The sweep regex ended in a word-boundary `\b`, which backtracked past the closing
+bracket of a `/[0.06]` opacity and left it behind; only that bracket form was
+affected. Nothing caught it: TypeScript does not parse class strings, ESLint has
+no opinion, every test passed, and the verification grep was `bg-\[[^]]*\]`,
+which stops at the first bracket and was structurally incapable of seeing a
+doubled one.
+
+`lib/ui/__tests__/arbitraryValues.test.ts` now counts brackets rather than
+matching the one shape that went wrong, and was proved against a reintroduced
+instance before being trusted.
+
+### What the panel was claiming that was not true
+
+1. **`/support` published live numbers under a hardcoded date.** The page
+   rendered `SUPPORT.lastUpdated`, the string `"May 22, 2026"`, beside figures
+   read from the database, and fell back to the committed list on any read
+   failure with nothing saying so. `lib/support/expenses.ts` now returns
+   provenance (`fromFallback`, `updatedAt`) and the page states which it is
+   showing. For a page whose argument is transparency this was the defect that
+   mattered most.
+2. **"Expense coverage" was donations-only.** `raisedCents / monthlyExpenseCents`
+   labelled as a whole-business verdict and accented red under 100%, while shop
+   and subscription income sat outside the numerator. Renamed "Donations vs
+   costs" and the hint now says what is excluded.
+3. **A failed load looked like a pending one.** `adminJson` resolves null on a
+   403 and on a network error alike, so the tab sat on "Loading…" for ever.
+   It now says the request did not answer, and that it cannot tell which.
+4. **Three values claimed to be the budget.** Column default $375, constant
+   $275, actual costs $258. The API now reports `goalSetForMonth` so the UI can
+   distinguish a goal somebody set from a default nobody chose. The goal lookup
+   also stopped treating `0` as absent, which had silently replaced a deliberate
+   "not asking this month" with the default.
+
+### Also
+
+- **Costs is a rail tab, not a sub-tab of Revenue.** The one screen that edits
+  what Purify spends and what the public page publishes was two clicks deep
+  behind a tab about income.
+- **The `window.prompt` is gone.** Replaced with an inline editor beside the
+  goal it edits rather than in the header of the 12-month history card. Focus
+  moves to the input on open, via a ref rather than `autoFocus`: the button that
+  opened the editor is replaced by it, so without that a keyboard operator's
+  focus fell to `<body>`.
+
+### Deliberately not done
+
+- **Cadence on `expense_lines`** (annual and one-off costs). Needs a migration,
+  which is production DDL, so it waits for the owner's sign-off on the SQL.
+- **Break-even and runway on the projection.** The owner asked for it and a
+  design pass argued against it convincingly: the divisor is
+  `annualRevenuePerSubscriber`, a slider spanning 10 to 150 that
+  `lib/owner/actuals.ts` documents as not observable, so break-even swings
+  roughly 15x with one drag. Drawing that as a line next to a measured series is
+  the exact confusion `OwnerDashboard`'s measured/modelled rule exists to
+  prevent. The honest substitute is a **measured** monthly surplus in dollars:
+  this month's donations plus this month's shop net against
+  `monthlyExpenseCents`, with MRR left out until `REVENUECAT_V2_API_KEY` is set.
+  Owner's call, and it is recorded here rather than silently dropped.
+
 ## Recommended execution order
 
 Numbered by task ID (matching the live task tracker), grouped into waves.

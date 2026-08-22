@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getAdminUser } from "@/lib/admin/access";
+import { getOwnerUser } from "@/lib/owner/access";
 import { AdminShell } from "@/components/admin/AdminShell";
 
 // The real AdminShell, openable locally. Same posture and same bypass as
@@ -33,8 +34,20 @@ export const metadata = {
 export default async function AdminShellPreviewPage() {
   const isDev = process.env.NODE_ENV === "development";
   const admin = await getAdminUser();
+  const owner = await getOwnerUser();
 
   if (!isDev && !admin) notFound();
 
-  return <AdminShell adminEmail={admin?.email ?? "dev@localhost"} />;
+  // isOwner is forced on in dev so the Operations | Owner switch is visible
+  // while designing, which is the whole point of this route. It reveals
+  // nothing: OwnerSection still asks /api/owner/actuals before it imports
+  // anything, and that route still answers 403 on a dev machine with no
+  // session. What renders here is the refusal state, which is a state worth
+  // being able to look at.
+  return (
+    <AdminShell
+      adminEmail={admin?.email ?? "dev@localhost"}
+      isOwner={isDev || Boolean(owner)}
+    />
+  );
 }
