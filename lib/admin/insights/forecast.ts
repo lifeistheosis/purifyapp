@@ -1,3 +1,4 @@
+import { shiftKey } from "./calendar";
 import type { Forecast, Point, Series } from "./types";
 
 /**
@@ -50,11 +51,13 @@ function fitLine(ys: number[]): { slope: number; intercept: number; r2: number }
   return { slope, intercept, r2 };
 }
 
-function addDays(day: string, n: number): string {
-  const d = new Date(`${day}T00:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + n);
-  return d.toISOString().slice(0, 10);
-}
+// Was a private addDays anchored at UTC MIDNIGHT. The rest of the repo pins
+// day arithmetic to UTC NOON on purpose, because a date at midnight can slide
+// into the neighbouring day under an offset while noon has twelve hours of
+// slack either way. lib/rhythm/dayKey.ts is the ruling on this and its header
+// already names four earlier duplicates it replaced; this was quietly a fifth.
+// shiftKey is that same frame, so the forecast's future labels and the
+// calendar's cell labels are now minted by one reckoning instead of two.
 
 export function forecastSeries(
   series: Series,
@@ -80,7 +83,7 @@ export function forecastSeries(
   for (let h = 1; h <= horizonDays; h++) {
     const raw = intercept + slope * (lastX + h);
     points.push({
-      day: addDays(lastDay, h),
+      day: shiftKey(lastDay, h),
       // Clamped at zero. None of these metrics can go negative, and a
       // projection that shows minus forty installs is not a forecast, it is a
       // straight line that ran out of road.

@@ -1,4 +1,4 @@
-import { windowValue } from "./ingest";
+import { rangeValue, windowValue } from "./ingest";
 import {
   PERIOD_DAYS,
   PERIODS,
@@ -52,6 +52,9 @@ export const STANDING_LABEL: Record<Standing, string> = {
   behind: "Behind target",
 };
 
+/** An inclusive span of day labels. */
+export type DayRange = { from: string; to: string };
+
 /**
  * One goal, measured.
  *
@@ -60,7 +63,18 @@ export const STANDING_LABEL: Record<Standing, string> = {
  * strength of a goal nothing measured, which reads as a business problem when
  * it is a data problem.
  */
-export function evaluateGoal(goal: Goal, dataset: Dataset | null): GoalResult {
+export function evaluateGoal(
+  goal: Goal,
+  dataset: Dataset | null,
+  /**
+   * Measure over these exact days instead of the goal's own trailing window.
+   *
+   * This is how a calendar selection scopes a grade: without it a "weekly"
+   * goal always means the last seven days, and there would be no way to ask
+   * "how did the week of the 16th actually do".
+   */
+  range?: DayRange | null,
+): GoalResult {
   const series = dataset?.series.find((s) => s.id === goal.seriesId) ?? null;
 
   if (!series) {
@@ -75,7 +89,9 @@ export function evaluateGoal(goal: Goal, dataset: Dataset | null): GoalResult {
     };
   }
 
-  const { value } = windowValue(series, PERIOD_DAYS[goal.period]);
+  const { value } = range
+    ? rangeValue(series, range.from, range.to)
+    : windowValue(series, PERIOD_DAYS[goal.period]);
 
   // A zero target has no ratio: everything divided by it is either undefined or
   // infinite. It is treated as met, because "I am not asking for any" is
@@ -122,9 +138,10 @@ export function gradePeriod(
   period: Period,
   goals: Goal[],
   dataset: Dataset | null,
+  range?: DayRange | null,
 ): PeriodGrade {
   const mine = goals.filter((g) => g.period === period && !g.paused);
-  const results = mine.map((g) => evaluateGoal(g, dataset));
+  const results = mine.map((g) => evaluateGoal(g, dataset, range));
 
   const scoring = results.filter((r) => !r.missing && r.ratio !== null);
   if (scoring.length === 0) {
@@ -143,11 +160,27 @@ export function gradePeriod(
   };
 }
 
-export function gradeAll(goals: Goal[], dataset: Dataset | null): Record<Period, PeriodGrade> {
+/**
+ * All three windows.
+ *
+ * A selection scopes ONLY the bucket it matches, and that restraint is
+ * deliberate. Selecting the week of the 16th re-measures the weekly grade
+ * against that specific week and leaves the daily and monthly grades on their
+ * rolling windows, because measuring a monthly target over seven days would
+ * report a healthy month as a failure. The UI relabels the scoped bucket so it
+ * never says "this week" about a week that is not this one.
+ */
+export function gradeAll(
+  goals: Goal[],
+  dataset: Dataset | null,
+  selection?: { kind: Period; range: DayRange } | null,
+): Record<Period, PeriodGrade> {
+  const rangeFor = (p: Period) =>
+    selection && selection.kind === p ? selection.range : null;
   return {
-    daily: gradePeriod("daily", goals, dataset),
-    weekly: gradePeriod("weekly", goals, dataset),
-    monthly: gradePeriod("monthly", goals, dataset),
+    daily: gradePeriod("daily", goals, dataset, rangeFor("daily")),
+    weekly: gradePeriod("weekly", goals, dataset, rangeFor("weekly")),
+    monthly: gradePeriod("monthly", goals, dataset, rangeFor("monthly")),
   };
 }
 

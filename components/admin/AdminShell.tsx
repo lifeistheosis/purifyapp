@@ -43,6 +43,7 @@ import { RevenueTab } from "./tabs/RevenueTab";
 import { SustainabilityTab } from "./tabs/SustainabilityTab";
 import { GrowthTab } from "./tabs/GrowthTab";
 import { GoalsTab } from "./tabs/GoalsTab";
+import { CalendarTab } from "./tabs/CalendarTab";
 import { InsightsProvider } from "@/lib/admin/insights/store";
 import { SubscriptionsTab } from "./tabs/SubscriptionsTab";
 import { MessagesTab } from "./tabs/MessagesTab";
@@ -85,7 +86,8 @@ type OpsTabId =
   | "community"
   | "traffic"
   | "growth"
-  | "goals";
+  | "goals"
+  | "calendar";
 
 type TabId = OpsTabId | OwnerTabId;
 
@@ -148,6 +150,7 @@ const GROUPS: Group[] = [
       // the only thing the goals are measured against.
       { id: "growth", label: "Growth", eyebrow: "Imported store reports", component: GrowthTab },
       { id: "goals", label: "Goals", eyebrow: "Targets and grades", component: GoalsTab },
+      { id: "calendar", label: "Calendar", eyebrow: "Days, weeks, and what they were worth", component: CalendarTab },
     ],
   },
   {

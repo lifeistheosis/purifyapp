@@ -172,6 +172,49 @@ export function ingestCsv(text: string, name: string, stampIso: string): IngestR
 }
 
 /**
+ * The same question as windowValue, asked of an explicit day range.
+ *
+ * windowValue takes the last N MEASURED points, which is right for "the last 30
+ * days" and wrong for "August", because a report with gaps would silently reach
+ * further back than the range asked for. This bounds by label instead, so a
+ * range covering days the report never measured reports what it actually has
+ * and says how much of the range that was.
+ *
+ * The stock and flow rule is identical, and deliberately shares its reasoning
+ * with windowValue: a level is read at its latest point inside the range, a
+ * count is summed across it.
+ */
+export function rangeValue(
+  series: Series,
+  fromDay: string,
+  toDay: string,
+): { value: number; covered: number; days: number } {
+  const inRange = series.points.filter(
+    (p) => p.value !== null && p.day >= fromDay && p.day <= toDay,
+  ) as { day: string; value: number }[];
+
+  // Inclusive count of calendar days the range spans, so "covered 12 of 31"
+  // can be said out loud rather than implied.
+  const from = new Date(`${fromDay}T12:00:00Z`).getTime();
+  const to = new Date(`${toDay}T12:00:00Z`).getTime();
+  const days =
+    Number.isFinite(from) && Number.isFinite(to) && to >= from
+      ? Math.round((to - from) / 86_400_000) + 1
+      : 0;
+
+  if (inRange.length === 0) return { value: 0, covered: 0, days };
+
+  if (series.kind === "stock") {
+    return { value: inRange[inRange.length - 1].value, covered: inRange.length, days };
+  }
+  return {
+    value: inRange.reduce((s, p) => s + p.value, 0),
+    covered: inRange.length,
+    days,
+  };
+}
+
+/**
  * The value of a series over a window ending at its last measured day.
  *
  * A FLOW is summed: impressions over seven days is the total.
