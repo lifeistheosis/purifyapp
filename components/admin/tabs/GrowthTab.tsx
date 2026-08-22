@@ -4,6 +4,7 @@ import { Card, StatCard } from "../primitives";
 import { LineChart } from "../charts";
 import { DataImport } from "../insights/DataImport";
 import { GoalsWidget } from "../insights/GoalsWidget";
+import { ApiLimitBanner } from "../insights/ApiLimits";
 import { GradeBadge, RatioMeter, StandingPill } from "../insights/GradeBadge";
 import { useInsights } from "@/lib/admin/insights/store";
 import { windowValue } from "@/lib/admin/insights/ingest";
@@ -37,6 +38,7 @@ export function GrowthTab({ onOpenGoals }: { onOpenGoals?: () => void }) {
 
   return (
     <div className="space-y-5">
+      <ApiLimitBanner />
       <DataImport />
 
       {!dataset ? (

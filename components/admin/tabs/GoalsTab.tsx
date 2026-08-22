@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Card, DataTable, Pill, Toolbar, ToolbarButton } from "../primitives";
 import { GradeBadge, RatioMeter, StandingPill } from "../insights/GradeBadge";
+import { ApiLimitBanner, ApiLimitsPanel } from "../insights/ApiLimits";
 import { useInsights } from "@/lib/admin/insights/store";
 import {
   PERIODS,
@@ -47,6 +48,9 @@ export function GoalsTab() {
 
   return (
     <div className="space-y-5">
+      {/* First thing on the page, because a licence breach outranks a KPI. */}
+      <ApiLimitBanner />
+
       <Card
         title="Overall"
         subtitle="Every active goal, weighted towards the longer window."
@@ -231,6 +235,8 @@ export function GoalsTab() {
           ]}
         />
       </Card>
+
+      <ApiLimitsPanel />
     </div>
   );
 }
