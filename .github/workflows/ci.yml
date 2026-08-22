@@ -1,8 +1,18 @@
 name: CI
 
+# NOT on push to main, deliberately.
+#
+# Render deploys purifyapp.net from main on its own and does not need this
+# workflow to have run. Leaving the push trigger on meant every deploy also
+# bought a CI run, which is billed, and which the owner has asked three times
+# not to fire. Verification happens locally before the push instead:
+# npm run typecheck, npm run test:unit, npm run lint, and the two native
+# exports when app pages changed.
+#
+# The pull_request trigger stays, so opening a PR against main is still the way
+# to get a checked merge when one is wanted. That is now an opt in rather than
+# the price of shipping.
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
