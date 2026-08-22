@@ -191,7 +191,11 @@ export function HeroRow({
         <MetricCard
           id="hero-revenue"
           icon={ICON.revenue}
-          eyebrow="Shop, donations, subs"
+          // Shop only, and it always was. /api/admin/overview builds this
+          // series from shop_orders and nothing else; donations live in monthly
+          // rows and subscription revenue has no date at all, so neither can be
+          // in a daily figure. The old eyebrow read "Shop, donations, subs".
+          eyebrow="Shop orders only"
           title="Revenue"
           label={`Net, ${Math.min(w, revenue.length || w)} days`}
           value={money(sum(win(revenue)))}

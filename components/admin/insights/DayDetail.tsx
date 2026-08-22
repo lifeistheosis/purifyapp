@@ -15,13 +15,12 @@ import type { Forecast, Goal, Series } from "@/lib/admin/insights/types";
 /**
  * One day, and what it contributed to the week and the month around it.
  *
- * FOCUS IS HANDLED HERE BECAUSE THE MODAL PRIMITIVE DOES NOT. Modal portals to
- * body, locks scroll and closes on Escape, but it has no focus trap, no
- * autofocus and no focus restore, and its DOM order starts with a full-bleed
- * backdrop close button. Opened from the seventeenth of forty-two cells and
- * then closed, a keyboard operator would land at the top of the document with
- * no idea where they had been. So this focuses its own heading on open and
- * hands focus back to the cell that opened it on close.
+ * FOCUS. Modal now traps, enters and restores on its own, so the restore this
+ * file used to do by hand is gone and returnFocusTo is simply forwarded to it.
+ * What stays here is the heading focus: Modal enters on the panel, which
+ * announces the dialog by name, and this narrows that to the date and the
+ * series being shown. Child effects run before parent ones, so this lands
+ * after Modal's entry rather than being overwritten by it.
  */
 export function DayDetail({
   dayKey,
@@ -45,13 +44,7 @@ export function DayDetail({
 
   useEffect(() => {
     headingRef.current?.focus();
-    return () => {
-      // Guarded: the cell can be unmounted by now if the month was paged while
-      // the dialog was open, and focusing a detached node throws focus to body
-      // silently rather than erroring.
-      if (returnFocusTo && document.contains(returnFocusTo)) returnFocusTo.focus();
-    };
-  }, [returnFocusTo]);
+  }, []);
 
   const goal = series ? goals.find((g) => g.seriesId === series.id && !g.paused) ?? null : null;
   const target = dailyTargetFor(goal, series, dayKey);
@@ -79,6 +72,7 @@ export function DayDetail({
       title={shortDayLabel(dayKey)}
       subtitle={series ? series.label : "No series selected"}
       onClose={onClose}
+      returnFocusTo={returnFocusTo}
       header={
         m.isFuture ? (
           <Pill tone="neutral">Predicted</Pill>

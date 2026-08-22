@@ -21,6 +21,7 @@ import { Sparkline } from "./charts";
 import { CountUp } from "./CountUp";
 import { downloadCsv, toCsv } from "@/lib/admin/csv";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
+import { focusablesIn, nextIndex } from "@/lib/ui/focusTrap";
 import { measureRows, moveItem, playFlip } from "@/lib/ui/flip";
 
 // ── Skeleton ────────────────────────────────────────────────────────────────
@@ -79,7 +80,12 @@ export function Card({
           {title && (
             <h3
               className="font-sans text-[14px] font-semibold leading-tight"
-              style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)" }}
+              // --adm-accent-line, not --adm-accent. An accent card's ground is
+              // 93% panel, so it is very nearly the ordinary panel, and the
+              // saturated accent as INK on it measured 3.38:1. The -line token
+              // is the one each theme defines as legible against its own
+              // ground, which is exactly the job a title has.
+              style={{ color: accent ? "var(--adm-accent-line)" : "var(--adm-ink)" }}
             >
               {title}
             </h3>
@@ -102,10 +108,28 @@ export function Card({
 
 // ── Modal ───────────────────────────────────────────────────────────────────
 // Centered overlay dialog. Closes on Escape, on backdrop click, and from the
-// header's X. The panel scrolls internally and the page behind it is frozen,
-// so a long form never leaves the admin scrolled somewhere unexpected when it
-// closes. The backdrop is a real <button> rather than a click-handled div so
-// it is reachable by keyboard and needs no a11y escape hatch.
+// header's Esc button. The panel scrolls internally and the page behind it is
+// frozen, so a long form never leaves the admin scrolled somewhere unexpected
+// when it closes.
+//
+// KEYBOARD. This used to set aria-modal="true" and do nothing to earn it, and
+// that combination is worse than doing neither: a reader stops announcing the
+// page behind the dialog while Tab walks straight out into it, so the operator
+// moves through controls their reader has gone silent about. Three things were
+// missing and all three are here now.
+//
+//   1. A trap. Tab and Shift+Tab cycle inside the panel.
+//   2. An entry point. Opening moves focus in, so the first keystroke acts on
+//      the dialog rather than on whatever was behind it.
+//   3. An exit point. Closing puts focus back where it came from. Opened from
+//      the seventeenth row of a table and then closed, the operator was
+//      landing at the top of the document with no idea where they had been.
+//
+// The full-bleed backdrop is still a real <button> so a click anywhere closes,
+// but it is now aria-hidden and out of tab order. It was the FIRST tab stop in
+// the dialog: a viewport-sized control announced only as "Close", ahead of the
+// title and every field. Escape and the header's Esc button are the keyboard
+// paths, and both are discoverable in a way an invisible one is not.
 export function Modal({
   title,
   subtitle,
@@ -113,6 +137,7 @@ export function Modal({
   header,
   children,
   wide,
+  returnFocusTo,
 }: {
   title: string;
   subtitle?: string;
@@ -121,18 +146,74 @@ export function Modal({
   header?: ReactNode;
   children: ReactNode;
   wide?: boolean;
+  /**
+   * Where focus goes on close. Defaults to whatever had focus when the dialog
+   * opened, which is right when it was opened by keyboard and wrong when it
+   * was opened by mouse from a control that has since unmounted. Pass this
+   * when the caller knows better, as the calendar's day cells do.
+   */
+  returnFocusTo?: HTMLElement | null;
 }) {
+  const panelRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const panel = panelRef.current;
+      if (!panel) return;
+      const stops = focusablesIn(panel);
+      // No stops at all means a dialog of pure text. Hold focus on the panel
+      // rather than letting Tab leave, so aria-modal stays honest.
+      if (stops.length === 0) {
+        e.preventDefault();
+        panel.focus();
+        return;
+      }
+      const active = document.activeElement as HTMLElement | null;
+      const from = active ? stops.indexOf(active) : -1;
+      const target = stops[nextIndex(stops.length, from, e.shiftKey)];
+      // preventDefault unconditionally, not only at the ends. Focus can sit
+      // outside the panel entirely (a control unmounted under the operator,
+      // or they clicked the backdrop), and there the browser's own next stop
+      // is somewhere in the page this dialog claims is inert.
+      e.preventDefault();
+      target?.focus();
     }
+
+    // Captured BEFORE the entry focus below moves it, and read off document
+    // rather than from a ref so it works however the dialog was opened.
+    const opener = document.activeElement as HTMLElement | null;
+
     window.addEventListener("keydown", onKey);
     lockBodyScroll();
+
+    // Only when focus is not already inside. A child that focuses something
+    // specific (DayDetail focuses its heading) mounts and runs its effect
+    // AFTER this one, so this cannot fight it, and a re-run must not steal
+    // focus back from wherever the operator has since put it.
+    const panel = panelRef.current;
+    if (panel && !panel.contains(document.activeElement)) {
+      // The panel, not its first control. Focusing the first button reads it
+      // aloud and skips the title, so the operator hears "Save" without being
+      // told what they are saving. The panel carries the accessible name.
+      panel.focus();
+    }
+
     return () => {
       window.removeEventListener("keydown", onKey);
       unlockBodyScroll();
+      // Guarded on isConnected: the opener is routinely gone by now, because
+      // the dialog's own save is what re-rendered the list it lived in.
+      // Focusing a detached node silently drops focus to <body>, which is the
+      // exact outcome this is here to prevent.
+      const home = returnFocusTo ?? opener;
+      if (home && home.isConnected && home !== document.body) home.focus();
     };
-  }, [onClose]);
+  }, [onClose, returnFocusTo]);
 
   // The OVERLAY no longer scrolls: the panel below caps itself and scrolls its
   // own body. Leaving overflow-y-auto here with an auto-margined panel split
@@ -165,9 +246,13 @@ export function Modal({
       // sits outside the shell entirely.
       style={{ background: "var(--adm-scrim)" }}
     >
+      {/* Click-to-dismiss only. tabIndex -1 and aria-hidden keep it out of the
+          trap: as a tab stop it was a viewport-sized control announced as
+          "Close" sitting ahead of the dialog's own title. */}
       <button
         type="button"
-        aria-label="Close"
+        tabIndex={-1}
+        aria-hidden="true"
         onClick={onClose}
         className="absolute inset-0 h-full w-full cursor-default"
       />
@@ -176,11 +261,15 @@ export function Modal({
           way back was scrolling the overlay — reported as the dialog being
           unusable on a laptop. */}
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label={title}
+        // Focusable programmatically, never a tab stop. This is what opening
+        // moves focus to, so the dialog announces itself by name.
+        tabIndex={-1}
         className={
-          "adm-panel-enter relative flex max-h-full w-full flex-col rounded-[var(--adm-radius-lg)] border " +
+          "adm-panel-enter relative flex max-h-full w-full flex-col rounded-[var(--adm-radius-lg)] border outline-none " +
           (wide ? "max-w-[1040px]" : "max-w-[760px]")
         }
         style={{

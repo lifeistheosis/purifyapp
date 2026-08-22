@@ -14,21 +14,41 @@ export function TrafficTab() {
   const [range, setRange] = useState<Range>("30d");
   const [points, setPoints] = useState<Point[]>([]);
   const [fetchedRange, setFetchedRange] = useState<Range | null>(null);
+  // WHICH range failed, not a boolean. A boolean needed clearing at the top of
+  // the effect, and a setState in an effect body is a cascading render (the
+  // same lint rule AdminThemeToggle was rewritten for). Keyed by range it
+  // clears itself: switching to 7d makes a stored "30d" stop matching.
+  const [failedRange, setFailedRange] = useState<Range | null>(null);
   const [show, setShow] = useState({ visitors: true, views: true, signups: true });
   // Loading is derived state: we're loading whenever the active range hasn't
   // been fetched yet. This avoids a synchronous setState() inside the effect.
   const loading = fetchedRange !== range;
+  const failed = failedRange === range;
 
   useEffect(() => {
     let alive = true;
     adminJson<{ points?: Point[] }>(`/api/admin/traffic?range=${range}`)
       .then((j) => {
         if (!alive) return;
-        if (j) setPoints(j.points ?? []);
+        // fetchedRange used to advance on failure with `points` untouched,
+        // which cleared `loading` and drew a LineChart over an empty array: a
+        // flat line along zero, indistinguishable from ninety days of nobody
+        // visiting. The traffic route is one of the few that returns a real
+        // 500, so the signal existed and was being thrown away here.
+        if (!j) {
+          setFailedRange(range);
+          setPoints([]);
+          setFetchedRange(range);
+          return;
+        }
+        setPoints(j.points ?? []);
         setFetchedRange(range);
       })
       .catch(() => {
-        if (alive) setFetchedRange(range);
+        if (!alive) return;
+        setFailedRange(range);
+        setPoints([]);
+        setFetchedRange(range);
       });
     return () => {
       alive = false;
@@ -87,7 +107,15 @@ export function TrafficTab() {
             </label>
           ))}
         </div>
-        {loading ? (
+        {failed ? (
+          <p
+            className="font-sans text-detail py-8 text-center"
+            style={{ color: "var(--adm-critical)" }}
+          >
+            The {range} series could not be read. Nothing is being drawn, because a chart of
+            no data and a chart of no visitors look the same.
+          </p>
+        ) : loading ? (
           <p className="font-sans text-detail text-paper/40 py-8 text-center">Loading…</p>
         ) : (
           <LineChart

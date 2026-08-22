@@ -213,7 +213,7 @@ export function OrdersTab() {
                 <button
                   type="button"
                   onClick={() => setSelected(o)}
-                  className="text-gold hover:underline"
+                  className="text-gold-pale hover:underline"
                 >
                   {fmtDate(o.created_at)}
                 </button>
@@ -317,7 +317,7 @@ export function OrdersTab() {
                                 ? `Reorder from supplier · SKU ${src.sku}`
                                 : "Open the supplier listing to reorder"
                             }
-                            className="shrink-0 whitespace-nowrap font-semibold text-gold hover:text-gold-pale"
+                            className="shrink-0 whitespace-nowrap font-semibold text-gold-pale hover:underline"
                           >
                             reorder ↗
                           </a>
@@ -381,7 +381,7 @@ export function OrdersTab() {
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-2 inline-flex font-sans text-eyebrow font-semibold text-gold hover:text-gold-pale"
+                      className="mt-2 inline-flex font-sans text-eyebrow font-semibold text-gold-pale hover:underline"
                     >
                       {link.carrier ? `Track via ${link.carrier}` : "Track parcel"} ↗
                     </a>

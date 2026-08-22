@@ -43,21 +43,40 @@ function shortDate(iso: string | null): string {
 
 function SupportInbox() {
   const [tickets, setTickets] = useState<FullTicket[] | null>(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
         const d = await adminJson<{ tickets?: FullTicket[] }>("/api/admin/support");
-        if (alive) setTickets(d?.tickets ?? []);
+        if (!alive) return;
+        // adminJson returns null for any non-ok response, so `d?.tickets ?? []`
+        // turned a 403 or a 500 into an empty inbox and painted two literal
+        // zeros over it. Nobody has written in and we could not ask are not
+        // the same fact, and only one of them is a reason to stop checking.
+        if (d === null) {
+          setFailed(true);
+          return;
+        }
+        setTickets(d.tickets ?? []);
       } catch {
-        if (alive) setTickets([]);
+        if (alive) setFailed(true);
       }
     })();
     return () => {
       alive = false;
     };
   }, []);
+
+  if (failed) {
+    return (
+      <p className="font-sans text-detail" style={{ color: "var(--adm-critical)" }}>
+        The support inbox could not be read. This is not an empty inbox, so nothing here is
+        saying there are no tickets. Reload, and sign in again if that does not help.
+      </p>
+    );
+  }
 
   if (!tickets) {
     return <p className="font-sans text-detail text-paper/45">Loading tickets…</p>;

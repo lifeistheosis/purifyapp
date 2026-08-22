@@ -139,6 +139,28 @@ export const ADMIN_TAB_ICONS: Record<string, ReactNode> = {
       <path d="M14.6 7.4h2.2v2.2" />
     </svg>
   ),
+  // Content: a page with lines on it.
+  content: (
+    <svg {...S}>
+      <path d="M5 2.8h7l3 3v11.4H5Z" />
+      <path d="M11.8 2.8v3.4h3.2" />
+      <path d="M7.4 10h5.2M7.4 13h5.2" />
+    </svg>
+  ),
+  // Library files: a stack, because it is an inventory rather than a document.
+  "content-health": (
+    <svg {...S}>
+      <path d="M10 2.6 17.2 6 10 9.4 2.8 6Z" />
+      <path d="M2.8 10 10 13.4 17.2 10" />
+      <path d="M2.8 14 10 17.4 17.2 14" />
+    </svg>
+  ),
+  // Services: a pulse, the shape every status page has settled on.
+  health: (
+    <svg {...S}>
+      <path d="M2.6 10h3.4l1.8-4.4 2.8 9.2 2-4.8h4.8" />
+    </svg>
+  ),
   // Markets: a pin dropped on a place.
   "owner-markets": (
     <svg {...S}>

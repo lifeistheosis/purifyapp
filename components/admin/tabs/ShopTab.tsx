@@ -368,7 +368,7 @@ function ProductsPanel() {
           <button
             type="button"
             onClick={() => setEditing("new")}
-            className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-1 font-sans text-caption font-semibold text-gold"
+            className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-1 font-sans text-caption font-semibold text-gold-pale"
           >
             New product
           </button>
@@ -472,7 +472,7 @@ function ProductsPanel() {
                     )}
                   </span>
                   <span className="min-w-0">
-                    <span className="block max-w-[280px] truncate font-medium text-paper group-hover:text-gold">
+                    <span className="block max-w-[280px] truncate font-medium text-paper group-hover:text-gold-pale">
                       {p.title}
                     </span>
                     <span className="block max-w-[280px] truncate font-sans text-eyebrow text-paper/40">
@@ -497,7 +497,7 @@ function ProductsPanel() {
                     target="_blank"
                     rel="noopener noreferrer"
                     title={s.supplier_url}
-                    className="inline-flex items-center gap-1 whitespace-nowrap font-sans text-detail text-gold hover:text-gold-pale"
+                    className="inline-flex items-center gap-1 whitespace-nowrap font-sans text-detail text-gold-pale hover:underline"
                   >
                     {supplierHost(s.supplier_url)}
                     {s.supplier_sku ? (
@@ -1030,7 +1030,7 @@ function ProductOverview({
                   target="_blank"
                   rel="noopener noreferrer"
                   title={s.supplier_url}
-                  className="text-gold hover:text-gold-pale"
+                  className="text-gold-pale hover:underline"
                 >
                   {supplierHost(s.supplier_url)} ↗
                 </a>
@@ -1401,7 +1401,7 @@ function ProductEditor({
                   href={src.supplier_url}
                   target="_blank"
                   rel="noopener noreferrer nofollow"
-                  className="ml-2 font-semibold text-gold hover:text-gold-pale"
+                  className="ml-2 font-semibold text-gold-pale hover:underline"
                 >
                   open ↗
                 </a>
@@ -1807,7 +1807,7 @@ function ApplicationsPanel() {
                         href={a.portfolio_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="font-sans text-eyebrow text-gold underline underline-offset-2"
+                        className="font-sans text-eyebrow text-gold-pale underline underline-offset-2"
                       >
                         {a.portfolio_url}
                       </a>
@@ -2045,7 +2045,7 @@ function ReviewsPanel() {
         <Metric
           label="Seeded"
           value={String(seeded)}
-          tone={seeded > 0 ? "text-gold" : undefined}
+          tone={seeded > 0 ? "text-gold-pale" : undefined}
           hint="admin-created"
         />
       </div>
@@ -2142,7 +2142,7 @@ function ReviewsPanel() {
                   key: "stars",
                   label: "Rating",
                   render: (r) => (
-                    <span className="text-gold">{starLabel(r.stars)}</span>
+                    <span className="text-gold-pale">{starLabel(r.stars)}</span>
                   ),
                   csv: (r) => r.stars,
                 },
@@ -2237,7 +2237,7 @@ function ReviewsPanel() {
                   key: "stars",
                   label: "Rating",
                   render: (r) => (
-                    <span className="text-gold">{starLabel(r.stars)}</span>
+                    <span className="text-gold-pale">{starLabel(r.stars)}</span>
                   ),
                   csv: (r) => r.stars,
                 },
@@ -2536,7 +2536,7 @@ function SeedReviewSheet({
               type="button"
               onClick={() => photoRef.current?.click()}
               disabled={uploading || photos.length >= 12}
-              className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-1.5 font-sans text-caption font-semibold text-gold disabled:opacity-50"
+              className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
             >
               {uploading ? "Uploading…" : "Add photo"}
             </button>
@@ -2571,7 +2571,7 @@ function SeedReviewSheet({
           onClick={() => void seed()}
           disabled={busy || uploading}
           title={uploading ? "Wait for the photo upload to finish" : undefined}
-          className="rounded-pill border border-gold/40 bg-gold/[0.08] px-4 py-1.5 font-sans text-caption font-semibold text-gold disabled:opacity-50"
+          className="rounded-pill border border-gold/40 bg-gold/[0.08] px-4 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
         >
           {busy ? "Saving…" : uploading ? "Photo uploading…" : "Add review"}
         </button>

@@ -26,12 +26,25 @@ export type SubscriptionStats = {
   paidCounts: SubscriberCounts;
 };
 
+/**
+ * THROWS rather than returning zeros. This is the highest-leverage swallow in
+ * the panel: three routes call it (/api/admin/overview, /revenue and
+ * /subscriptions), and a discarded error here reported 0 active Plus, 0 Pro, 0
+ * supporters, $0 MRR and $0 ARR on all three at once, at HTTP 200, which the
+ * client cannot tell from a product nobody has ever paid for.
+ *
+ * A 500 is the honest answer: fetchJson returns null on it and the tabs show
+ * their failure state instead of a figure. Zeros that mean "the database did
+ * not answer" are worse than no figure, because the operator acts on them.
+ */
 export async function subscriptionStats(
   admin: SupabaseClient,
 ): Promise<SubscriptionStats> {
-  const { data } = await admin
+  const { data, error } = await admin
     .from("entitlements")
     .select("plus_until, pro_until, plus_source, is_supporter");
+
+  if (error) throw new Error(`entitlements read failed: ${error.message}`);
 
   const rows = data ?? [];
   const now = Date.now();

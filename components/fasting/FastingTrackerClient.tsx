@@ -125,13 +125,18 @@ export function FastingTrackerClient() {
   // The last stretch of fasting days (most recent first), for the history list.
   const recent = useMemo(() => {
     const out: { key: string; date: Date; kind: FastKind; ruleId: string }[] = [];
-    const cursor = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    // Stepped on UTC dates at noon for the same reason computeStreak is: a
+    // local setDate walk can skip or repeat a day across a DST boundary, and
+    // this list and the streak must agree on which days existed. `local` is
+    // the wall-clock Date the rest of this file works in.
+    const cursor = localDayToUtcNoon(today);
     for (let i = 0; i < 60 && out.length < 16; i++) {
-      const fs = ruleFor(cursor, style);
+      const local = new Date(cursor.getUTCFullYear(), cursor.getUTCMonth(), cursor.getUTCDate());
+      const fs = ruleFor(local, style);
       if (isFastingDay(fs.kind)) {
-        out.push({ key: dayKey(cursor), date: new Date(cursor), kind: fs.kind, ruleId: fs.ruleId });
+        out.push({ key: dayKey(local), date: local, kind: fs.kind, ruleId: fs.ruleId });
       }
-      cursor.setDate(cursor.getDate() - 1);
+      cursor.setUTCDate(cursor.getUTCDate() - 1);
     }
     return out;
     // recompute only when the day rolls over

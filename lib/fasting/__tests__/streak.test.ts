@@ -105,3 +105,55 @@ describe("summarize", () => {
     expect(summarize(list)).toEqual({ kept: 2, partial: 1, broken: 1, total: 4 });
   });
 });
+
+describe("day-key frame", () => {
+  it("still reads a wall-clock Date with LOCAL getters", () => {
+    // dayKey now delegates to lib/rhythm/dayKey, which reads UTC getters off a
+    // UTC-noon-frame Date. That is correct for the frame it takes and wrong
+    // for the one THIS function's callers pass, so the conversion in between
+    // is load-bearing. Compared against the local getters directly, because
+    // comparing against the module it delegates to would prove nothing.
+    for (const d of [
+      new Date(2026, 0, 1),
+      new Date(2026, 2, 8), // US spring forward
+      new Date(2026, 10, 1), // US fall back
+      new Date(2026, 11, 31),
+    ]) {
+      const expected = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+        d.getDate(),
+      ).padStart(2, "0")}`;
+      expect(dayKey(d)).toBe(expected);
+    }
+  });
+
+  it("hands kindOf a date whose local day matches the key it looks up", () => {
+    // The walk is in the UTC-noon frame and kindOf takes a wall-clock Date, so
+    // the conversion between them is the one place an off-by-one could hide.
+    // Every day the scan visits must spell the same date both ways.
+    const seen: string[] = [];
+    // Every day marked kept, so the scan runs its full length instead of
+    // stopping at the first unmarked past day.
+    const all = new Map<string, CheckinStatus>(
+      ["2026-03-05", "2026-03-06", "2026-03-07", "2026-03-08", "2026-03-09", "2026-03-10"].map(
+        (d) => [d, "kept" as CheckinStatus],
+      ),
+    );
+    computeStreak(
+      all,
+      (d) => {
+        seen.push(dayKey(d));
+        return "fast";
+      },
+      new Date(2026, 2, 10),
+      6,
+    );
+    expect(seen).toEqual([
+      "2026-03-10",
+      "2026-03-09",
+      "2026-03-08", // US spring forward: the day must appear exactly once
+      "2026-03-07",
+      "2026-03-06",
+      "2026-03-05",
+    ]);
+  });
+});

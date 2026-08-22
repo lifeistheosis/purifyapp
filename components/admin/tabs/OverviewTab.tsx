@@ -29,10 +29,13 @@ type Stats = {
 };
 
 type Totals = {
-  lifetimeVisitors: number;
-  lifetimePageviews: number;
-  lifetimeSignups: number;
-  lifetimeBumps: number;
+  // Nullable, because /api/admin/totals now sends null for a count it could
+  // not read rather than 0. The `?? "—"` at each KpiCard below was already
+  // written for it; the type was the part that said this could not happen.
+  lifetimeVisitors: number | null;
+  lifetimePageviews: number | null;
+  lifetimeSignups: number | null;
+  lifetimeBumps: number | null;
   oldestSessionAt: string | null;
   oldestPageviewAt: string | null;
   oldestProfileAt: string | null;

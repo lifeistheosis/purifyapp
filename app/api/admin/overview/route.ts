@@ -12,6 +12,44 @@ export const dynamic = "force-dynamic";
  * traffic sparkline comes from /api/admin/traffic (the client already has
  * it). Subscriptions reuse lib/entitlements/adminStats.
  */
+/** One page of rows. Supabase caps a single request well below a busy month. */
+const PAGE = 1000;
+/** A backstop so a pathological range cannot loop for ever. 50k orders. */
+const MAX_PAGES = 50;
+
+type OrderRow = {
+  id: string;
+  total_cents: number;
+  payment_status: string;
+  email: string | null;
+  created_at: string;
+};
+
+/**
+ * Every order in the window, not the first thousand.
+ *
+ * Returns the same { data } shape the destructured Promise.all expects, so the
+ * call site reads identically to the other queries beside it.
+ */
+async function pageOrders(
+  admin: ReturnType<typeof createAdminClient>,
+  since: string,
+): Promise<{ data: OrderRow[] }> {
+  const out: OrderRow[] = [];
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const { data, error } = await admin
+      .from("shop_orders")
+      .select("id, total_cents, payment_status, email, created_at")
+      .gte("created_at", since)
+      .order("created_at", { ascending: true })
+      .range(page * PAGE, page * PAGE + PAGE - 1);
+    if (error || !data || data.length === 0) break;
+    out.push(...(data as OrderRow[]));
+    if (data.length < PAGE) break;
+  }
+  return { data: out };
+}
+
 export async function GET() {
   const adminUser = await getAdminUser();
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -40,12 +78,17 @@ export async function GET() {
     subs,
   ] = await Promise.all([
     // Orders in the last 30d for the revenue series + recent strip.
-    admin
-      .from("shop_orders")
-      .select("id, total_cents, payment_status, email, created_at")
-      .gte("created_at", since30)
-      .order("created_at", { ascending: false })
-      .limit(1000),
+    //
+    // PAGED, not capped. This was .limit(1000) newest-first, which is the worst
+    // possible truncation for a daily series: the rows dropped are the OLDEST,
+    // so the earliest days of the window quietly read zero and render as real
+    // days on which nothing sold. A cap that loses the newest rows would at
+    // least look wrong; this one looked like a bad fortnight.
+    //
+    // Ascending here so a partial read, if one ever happened, would lose the
+    // most recent days rather than the oldest, which is the failure an operator
+    // would actually notice.
+    pageOrders(admin, since30),
     orderCount(),
     orderCount("paid"),
     orderCount("pending"),

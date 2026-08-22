@@ -240,7 +240,7 @@ function FilterChip({
       className={
         "rounded-[var(--adm-radius-sm)] border px-2.5 py-1 font-sans text-eyebrow font-semibold transition-colors " +
         (active
-          ? "border-gold/40 bg-gold/[0.08] text-gold"
+          ? "border-gold/40 bg-gold/[0.08] text-gold-pale"
           : "border-paper/20 bg-paper/[0.04] text-paper/65 hover:text-paper")
       }
     >

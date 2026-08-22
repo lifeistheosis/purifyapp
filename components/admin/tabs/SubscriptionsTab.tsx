@@ -35,11 +35,21 @@ function money(cents: number) {
 
 function SummaryPanel() {
   const [data, setData] = useState<Subs | null>(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     let alive = true;
     adminJson<Subs>("/api/admin/subscriptions").then((d) => {
-      if (alive && d) setData(d);
+      if (!alive) return;
+      // Without this the panel sits on "—" for ever with nothing saying why,
+      // which reads as still loading. It now also reaches here more often on
+      // purpose: subscriptionStats throws instead of returning zeros, so an
+      // entitlements outage arrives as a 500 rather than as "Active Plus 0".
+      if (!d) {
+        setFailed(true);
+        return;
+      }
+      setData(d);
     });
     return () => {
       alive = false;
@@ -65,6 +75,12 @@ function SummaryPanel() {
 
   return (
     <div className="space-y-6">
+      {failed ? (
+        <p className="font-sans text-detail" style={{ color: "var(--adm-critical)" }}>
+          The subscription counts could not be read. The dashes below are missing figures, not
+          zero subscribers.
+        </p>
+      ) : null}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard
           label="Active Plus"

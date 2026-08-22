@@ -893,12 +893,16 @@ export function CalendarHeatmap({
   cellSize = 14,
   gap = 3,
   accent = chartColors.primary,
+  label = "Pageviews",
 }: {
   data: { date: string; value: number }[];
   weeks?: number;
   cellSize?: number;
   gap?: number;
   accent?: string;
+  /** What is being counted, for the accessible name. Defaults to the one thing
+   *  this chart was originally built for, so existing call sites are unchanged. */
+  label?: string;
 }) {
   const [hover, setHover] = useState<{
     date: string;
@@ -950,7 +954,11 @@ export function CalendarHeatmap({
         width={width + labelW}
         height={height}
         viewBox={`0 0 ${width + labelW} ${height}`}
-        aria-label="Pageviews per day, last 12 weeks"
+        // Built from the prop rather than hardcoded. This read "last 12 weeks"
+        // regardless of what was passed, so <CalendarHeatmap weeks={8} />
+        // announced the wrong span to a screen reader while showing the right
+        // one to everyone else.
+        aria-label={`${label} per day, last ${weeks} week${weeks === 1 ? "" : "s"}`}
       >
         {/* Row labels: Mon / Wed / Fri */}
         {["Mon", "Wed", "Fri"].map((lbl, i) => {

@@ -95,7 +95,12 @@
 
   /* Ink that sits ON the accent. White, at 5.70:1 on #7c3aed. */
   --adm-on-accent: #ffffff;
-  --adm-on-accent-wash: rgb(255 255 255 / 0.20);
+  /* A BLACK wash, not a white one. White text on the accent is 5.7:1;
+     lightening the accent by 20% white took the chip's own count to
+     3.97:1 at 11px, so the wash meant to separate the count from the
+     chip was what made it unreadable. Darkening separates it just as
+     clearly and moves the other way. */
+  --adm-on-accent-wash: rgb(0 0 0 / 0.22);
 
   /* Gradients. Spent in exactly two places, which is what makes them read
      as emphasis rather than decoration: the primary button and the one
@@ -295,7 +300,17 @@
   --color-night-soft: var(--adm-panel-2);
   --color-gold: var(--adm-accent);
   --color-gold-soft: var(--adm-accent-dim);
-  --color-gold-pale: var(--adm-accent-dim);
+  /* --adm-accent-line, NOT --adm-accent-dim. A token called `pale` that
+     resolves to #5b21b6 is not pale, and every `text-gold-pale` in the
+     admin is INK: on the dark ground that was 2.06:1, which is not a near
+     miss, it is unreadable. --adm-accent-line is the one accent value each
+     theme already defines as legible against its own ground (pale violet on
+     dark, deep violet on light), so this is correct in both without a
+     second override. Measured in the browser on every ground each theme
+     defines, worst case first: 6.41:1 on dark (--adm-panel-2) rising to
+     7.22:1 on the rail, and 6.31:1 on light (--adm-panel-2) rising to
+     7.10:1 on a white panel. */
+  --color-gold-pale: var(--adm-accent-line);
 
   background: var(--adm-bg);
   color: var(--adm-ink);
@@ -337,7 +352,7 @@
   --adm-accent: #6d28d9;      /* white on it is 7.10:1 */
   --adm-accent-dim: #5b21b6;
   --adm-on-accent: #ffffff;
-  --adm-on-accent-wash: rgb(255 255 255 / 0.22);
+  --adm-on-accent-wash: rgb(0 0 0 / 0.22);
 
   /* The stroke accent. On light the problem inverts: the DARK violet is
      the readable line and the pale one vanishes, so this is not simply the

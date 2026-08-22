@@ -97,6 +97,11 @@ export function TabSearch({
           aria-controls={listId}
           aria-autocomplete="list"
           aria-label="Search sections"
+          // Focus never leaves the input in a combobox, so without this the
+          // arrow keys moved a highlight a screen reader could not see. The
+          // operator heard the field and nothing else while the selection
+          // walked the list under them.
+          aria-activedescendant={open && hits[cursor] ? `${listId}-${hits[cursor].id}` : undefined}
           placeholder="Search"
           value={q}
           onChange={(e) => {
@@ -159,37 +164,51 @@ export function TabSearch({
             boxShadow: "var(--adm-shadow-pop)",
           }}
         >
+          {/* The option IS the row. This used to be a <button> inside the
+              <li role="option">, which puts an interactive element inside an
+              option: the buttons were individually tabbable, so Tab walked the
+              results while the combobox's own arrow-key cursor sat somewhere
+              else entirely, and a reader had two conflicting accounts of where
+              it was. A listbox is driven from the input; the row only needs to
+              be clickable. */}
           {hits.map((t, i) => (
-            <li key={t.id} role="option" aria-selected={i === cursor}>
-              <button
-                type="button"
-                onClick={() => choose(t.id)}
-                onPointerEnter={() => setCursor(i)}
-                className="adm-rail-item flex h-11 w-full items-center justify-between gap-3 rounded-[var(--adm-radius-sm)] px-2.5 text-left"
-                style={
-                  i === cursor
-                    ? { background: "var(--adm-nav-active-bg)", color: "var(--adm-ink)" }
-                    : { color: "var(--adm-ink-2)" }
-                }
-              >
-                <span className="min-w-0">
-                  <span className="block truncate font-sans text-[12.5px] font-medium">
-                    {t.label}
-                  </span>
-                  <span
-                    className="block truncate font-sans text-[11px]"
-                    style={{ color: "var(--adm-ink-3)" }}
-                  >
-                    {t.eyebrow}
-                  </span>
+            // An option in a listbox is not its own keyboard target. The keys
+            // are handled once, on the combobox input above, which is where
+            // focus stays and what aria-activedescendant points from. Giving
+            // the row its own handler would need it focusable, which is the
+            // nested interactive element this markup was changed to remove.
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events
+            <li
+              key={t.id}
+              id={`${listId}-${t.id}`}
+              role="option"
+              aria-selected={i === cursor}
+              onClick={() => choose(t.id)}
+              onPointerEnter={() => setCursor(i)}
+              className="adm-rail-item flex h-11 w-full cursor-pointer items-center justify-between gap-3 rounded-[var(--adm-radius-sm)] px-2.5 text-left"
+              style={
+                i === cursor
+                  ? { background: "var(--adm-nav-active-bg)", color: "var(--adm-ink)" }
+                  : { color: "var(--adm-ink-2)" }
+              }
+            >
+              <span className="min-w-0">
+                <span className="block truncate font-sans text-[12.5px] font-medium">
+                  {t.label}
                 </span>
                 <span
-                  className="shrink-0 font-sans text-[10.5px]"
+                  className="block truncate font-sans text-[11px]"
                   style={{ color: "var(--adm-ink-3)" }}
                 >
-                  {t.group}
+                  {t.eyebrow}
                 </span>
-              </button>
+              </span>
+              <span
+                className="shrink-0 font-sans text-[10.5px]"
+                style={{ color: "var(--adm-ink-3)" }}
+              >
+                {t.group}
+              </span>
             </li>
           ))}
         </ul>

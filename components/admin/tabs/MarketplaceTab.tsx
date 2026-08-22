@@ -128,7 +128,7 @@ export function MarketplaceTab() {
             className={
               "rounded-pill px-4 py-1.5 font-sans text-detail font-medium transition-colors " +
               (panel === id
-                ? "bg-gold text-night"
+                ? "bg-gold text-[color:var(--adm-on-accent)]"
                 : "border border-paper/15 text-paper/65 hover:text-paper")
             }
           >
@@ -461,7 +461,7 @@ function CreateStoreForm({ onDone }: { onDone: () => void }) {
         <button
           type="submit"
           disabled={busy}
-          className="rounded-pill bg-gold px-5 py-1.5 font-sans text-detail font-semibold text-night disabled:opacity-60"
+          className="rounded-pill bg-gold px-5 py-1.5 font-sans text-detail font-semibold text-[color:var(--adm-on-accent)] disabled:opacity-60"
         >
           {busy ? "Creating…" : "Create store (draft)"}
         </button>

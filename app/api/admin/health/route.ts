@@ -21,6 +21,7 @@ export async function GET() {
 
   const probes = await Promise.all([
     probeSupabase(),
+    probeRateLimiter(),
     probeApiBible(),
     probeBmc(),
     probeIpwhois(),
@@ -61,13 +62,57 @@ async function probeSupabase(): Promise<Probe> {
   };
 }
 
+/**
+ * The rate limiter, which is the one dependency that fails INVISIBLY.
+ *
+ * lib/security/ratelimit.ts is fail-open by design: an RPC error logs a
+ * console.warn and returns false, so the caller is treated as under budget.
+ * That is the right trade (a limiter outage must not take the site down) and
+ * it means every rate-limited write route, checkout and gift claim included,
+ * opens silently with nothing on any screen saying so. Probing it here is what
+ * turns that from invisible into a red card.
+ *
+ * Calls the RPC directly rather than through rateLimited(), because that
+ * helper swallows the error this needs to see. The key is fixed and the budget
+ * is absurd on purpose: the probe must never consume anything real and must
+ * never itself report over-budget.
+ */
+async function probeRateLimiter(): Promise<Probe> {
+  const { ms, error } = await timed(async () => {
+    const supa = createAdminClient();
+    const r = await supa.rpc("rate_limit_hit", {
+      p_key: "health:probe",
+      p_window_seconds: 60,
+      p_max: 1_000_000_000,
+    });
+    if (r.error) throw new Error(r.error.message);
+    return true;
+  });
+  return {
+    service: "Rate limiter (rate_limit_hit)",
+    status: error ? "fail" : "ok",
+    detail: error
+      ? `${error}. The limiter is FAIL-OPEN, so every rate-limited write route is currently unthrottled`
+      : "rpc answered; write routes are being throttled",
+    latencyMs: ms,
+  };
+}
+
 async function probeApiBible(): Promise<Probe> {
-  const key = process.env.API_BIBLE_KEY ?? process.env.NEXT_PUBLIC_API_BIBLE_KEY;
+  // BIBLE_API_KEY, which is what lib/bible/api-bible.ts actually reads and
+  // what .env.local.example documents. This probed API_BIBLE_KEY, which
+  // nothing sets, so the card reported "not configured" on a correctly
+  // configured server and had done since it was written.
+  //
+  // The NEXT_PUBLIC_ fallback is gone with it, and that mattered more than the
+  // typo: a fallback onto a public var is an invitation to satisfy this card
+  // by setting one, which would ship a licensed key into the client bundle.
+  const key = process.env.BIBLE_API_KEY;
   if (!key) {
     return {
       service: "API.Bible (licensed Scripture)",
       status: "skipped",
-      detail: "API_BIBLE_KEY not set",
+      detail: "BIBLE_API_KEY not set",
       latencyMs: null,
     };
   }

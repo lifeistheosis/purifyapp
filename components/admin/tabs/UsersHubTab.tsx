@@ -53,6 +53,7 @@ function useCartsData() {
   const [liveCarts, setLiveCarts] = useState<LiveCart[]>([]);
   const [abandoned, setAbandoned] = useState<Abandoned[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -62,13 +63,21 @@ function useCartsData() {
           liveCarts?: LiveCart[];
           abandoned?: Abandoned[];
         }>("/api/admin/carts");
-        if (!alive || !d) return;
+        if (!alive) return;
+        // `return` inside try still runs finally, so a failed read used to set
+        // loaded = true with both arrays still empty. That printed 0 live
+        // carts, $0 of cart value, 0 abandoned checkouts and the copy "No live
+        // carts.", five separate assertions that the shop is quiet, made
+        // because the request came back 403.
+        if (!d) {
+          setFailed(true);
+          return;
+        }
         setLiveCarts(d.liveCarts ?? []);
         setAbandoned(d.abandoned ?? []);
+        setLoaded(true);
       } catch {
-        /* ignore */
-      } finally {
-        if (alive) setLoaded(true);
+        if (alive) setFailed(true);
       }
     })();
     return () => {
@@ -76,24 +85,30 @@ function useCartsData() {
     };
   }, []);
 
-  return { liveCarts, abandoned, loaded };
+  return { liveCarts, abandoned, loaded, failed };
 }
 
 function LiveCartsPanel() {
-  const { liveCarts, loaded } = useCartsData();
+  const { liveCarts, loaded, failed } = useCartsData();
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Live carts" value={loaded ? liveCarts.length : "—"} accent />
+        <StatCard
+          label="Live carts"
+          value={failed ? "Unavailable" : loaded ? liveCarts.length : "—"}
+          accent
+        />
         <StatCard
           label="Cart value"
           value={
-            loaded
-              ? formatPrice(
-                  liveCarts.reduce((a, c) => a + c.subtotalCents, 0),
-                  "usd",
-                )
-              : "—"
+            failed
+              ? "Unavailable"
+              : loaded
+                ? formatPrice(
+                    liveCarts.reduce((a, c) => a + c.subtotalCents, 0),
+                    "usd",
+                  )
+                : "—"
           }
         />
       </div>
@@ -106,9 +121,11 @@ function LiveCartsPanel() {
           rowKey={(c) => c.key}
           csvFilename="live-carts.csv"
           empty={
-            loaded
-              ? "No live carts. (Needs the shop_carts migration applied.)"
-              : "Loading…"
+            failed
+              ? "The carts could not be read, so this is not an empty list."
+              : loaded
+                ? "No live carts. (Needs the shop_carts migration applied.)"
+                : "Loading…"
           }
           columns={[
             {

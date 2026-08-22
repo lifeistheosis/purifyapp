@@ -17,10 +17,10 @@ export async function GET() {
   const supa = createAdminClient();
 
   const [
-    { count: lifetimeVisitors },
-    { count: lifetimePageviews },
-    { count: lifetimeSignups },
-    { count: lifetimeBumps },
+    visitorsRes,
+    pageviewsRes,
+    signupsRes,
+    bumpsRes,
     { data: oldestSessionRow },
     { data: oldestPageviewRow },
     { data: oldestProfileRow },
@@ -49,23 +49,42 @@ export async function GET() {
       .maybeSingle(),
   ]);
 
+  // NULL, NOT ZERO, when a count could not be read. These are the four
+  // headline lifetime figures and the comment at the top of this file promises
+  // they never shrink, which `?? 0` broke in the one case that matters: a
+  // failed read published four zeros under a heading that says they only ever
+  // go up. The consumers already render `?? "—"`, so null reaches the screen
+  // as a dash, which is what "we could not count" looks like.
+  const failed =
+    Boolean(visitorsRes.error) ||
+    Boolean(pageviewsRes.error) ||
+    Boolean(signupsRes.error) ||
+    Boolean(bumpsRes.error);
+  const count = (r: { count: number | null; error: unknown }) =>
+    r.error ? null : r.count ?? 0;
+
   return NextResponse.json(
     {
-      lifetimeVisitors: lifetimeVisitors ?? 0,
-      lifetimePageviews: lifetimePageviews ?? 0,
-      lifetimeSignups: lifetimeSignups ?? 0,
-      lifetimeBumps: lifetimeBumps ?? 0,
+      lifetimeVisitors: count(visitorsRes),
+      lifetimePageviews: count(pageviewsRes),
+      lifetimeSignups: count(signupsRes),
+      lifetimeBumps: count(bumpsRes),
       oldestSessionAt: (oldestSessionRow?.first_seen as string | null) ?? null,
       oldestPageviewAt: (oldestPageviewRow?.ts as string | null) ?? null,
       oldestProfileAt: (oldestProfileRow?.joined_at as string | null) ?? null,
       generatedAt: new Date().toISOString(),
+      unavailable: failed,
     },
     {
       // Honor the user's "no data resets" rule by serving from a tight
       // 60-second cache. Counts in the wild grow by single digits in
       // that span; the staleness is invisible and the load on Postgres
       // is bounded.
-      headers: { "Cache-Control": "private, max-age=60" },
+      //
+      // A FAILED read is never cached. Caching one pins the dashes on screen
+      // for a minute after the database has come back, which reads as the
+      // outage continuing.
+      headers: { "Cache-Control": failed ? "no-store" : "private, max-age=60" },
     },
   );
 }

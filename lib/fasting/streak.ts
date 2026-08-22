@@ -1,4 +1,5 @@
 import { startOfDayLocal, type FastKind } from "@/lib/calendar/orthodox";
+import { keyOf, todayKey } from "@/lib/rhythm/dayKey";
 
 /**
  * The fasting tracker's pure core: types and the streak arithmetic, kept
@@ -38,12 +39,21 @@ export function isFastingDay(kind: FastKind): boolean {
   );
 }
 
-/** Local calendar-day key, "YYYY-MM-DD", in the reader's own timezone. */
+/**
+ * Local calendar-day key, "YYYY-MM-DD", in the reader's own timezone.
+ *
+ * Delegates now. lib/rhythm/dayKey.ts names this function, by path, as one of
+ * four independent local-getter derivations in the repo and says they agree
+ * only for as long as every one of them is fed a raw wall-clock Date. That is
+ * a coincidence to depend on, not a design, so this is the same arithmetic
+ * reached through the module that has the timezone tests behind it.
+ *
+ * The contract is unchanged: pass a WALL-CLOCK Date (the reader's local
+ * clock). Passing a UTC-noon-frame Date reads the wrong day past UTC+12, which
+ * is the trap the rhythm module exists to close.
+ */
 export function dayKey(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
+  return todayKey(d);
 }
 
 /**
@@ -75,10 +85,21 @@ export function computeStreak(
   maxScan = 400,
 ): number {
   let streak = 0;
-  const cursor = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  // THE WALK IS IN THE UTC-NOON FRAME, the keying is off UTC getters, and only
+  // the value handed to kindOf is converted back. Stepping a local Date with
+  // setDate is the pattern lib/rhythm/dayKey.ts warns can skip or repeat a day
+  // across a DST boundary; stepping UTC dates anchored at noon cannot, because
+  // no offset shift is large enough to move noon across a date line.
+  //
+  // kindOf still receives a wall-clock Date, because that is what its two
+  // callers already build (FastingTrackerClient converts useToday() back into
+  // one before it gets here). Changing the frame under them would move the
+  // rule by a day for readers past UTC+12, which is the same bug in reverse.
+  const cursor = startOfDayLocal(today);
   for (let i = 0; i < maxScan; i++) {
-    if (isFastingDay(kindOf(cursor))) {
-      const st = statusByDay.get(dayKey(cursor));
+    const local = new Date(cursor.getUTCFullYear(), cursor.getUTCMonth(), cursor.getUTCDate());
+    if (isFastingDay(kindOf(local))) {
+      const st = statusByDay.get(keyOf(cursor));
       if (st === "kept" || st === "partial") {
         streak++;
       } else if (st === "broken") {
@@ -88,7 +109,7 @@ export function computeStreak(
         break;
       }
     }
-    cursor.setDate(cursor.getDate() - 1);
+    cursor.setUTCDate(cursor.getUTCDate() - 1);
   }
   return streak;
 }

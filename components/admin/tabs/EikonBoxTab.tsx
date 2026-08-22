@@ -305,7 +305,7 @@ export function EikonBoxTab() {
                   <button
                     type="button"
                     onClick={() => setSelectedId(d.id)}
-                    className="font-sans text-detail font-semibold text-gold underline"
+                    className="font-sans text-detail font-semibold text-gold-pale underline"
                   >
                     {d.id === selectedId ? "Selected" : "Open"}
                   </button>
@@ -641,7 +641,7 @@ function ClaimRow({
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-sans text-detail text-gold underline"
+            className="font-sans text-detail text-gold-pale underline"
           >
             {link.carrier ?? "Track"} ↗
           </a>

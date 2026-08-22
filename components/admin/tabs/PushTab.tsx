@@ -187,7 +187,7 @@ export function PushTab() {
                     className={
                       "rounded-pill px-3 py-1.5 font-sans text-detail font-medium transition-colors " +
                       (audience === id
-                        ? "bg-gold text-night"
+                        ? "bg-gold text-[color:var(--adm-on-accent)]"
                         : "border border-paper/15 text-paper/65 hover:text-paper")
                     }
                   >

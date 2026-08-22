@@ -53,6 +53,9 @@ import { ShopHubTab } from "./tabs/ShopHubTab";
 import { EikonBoxTab } from "./tabs/EikonBoxTab";
 import { CommunityTab } from "./tabs/CommunityTab";
 import { TrafficHubTab } from "./tabs/TrafficHubTab";
+import { ContentTab } from "./tabs/ContentTab";
+import { ContentHealthTab } from "./tabs/ContentHealthTab";
+import { HealthTab } from "./tabs/HealthTab";
 import { Toolbar, ToolbarButton } from "./primitives";
 import { AdminThemeToggle } from "./AdminThemeToggle";
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
@@ -87,7 +90,10 @@ type OpsTabId =
   | "traffic"
   | "growth"
   | "goals"
-  | "calendar";
+  | "calendar"
+  | "content"
+  | "content-health"
+  | "health";
 
 type TabId = OpsTabId | OwnerTabId;
 
@@ -106,9 +112,22 @@ type Group = { group: string; mode: Mode; tabs: Tab[] };
 // the panel is either chasing money, chasing people, minding the catalog,
 // or reaching out.
 //
-// The rail budget note further down says four groups fit and a fifth spills.
+// The rail budget note further down says four groups fit and a fifth spills a
+// few pixels into the nav scroller, which scrolls, so a fifth is affordable.
 // Owner did NOT spend that slot: it is a separate mode, so its group is never
-// on screen at the same time as these four. The fifth remains free.
+// on screen at the same time as the ops groups. System spent it.
+//
+// SYSTEM EXISTS BECAUSE THREE BUILT TABS WERE REACHABLE BY NOTHING. ContentTab,
+// ContentHealthTab and HealthTab were dropped from this array in c0d7994a, a
+// commit named "commerce hub restructure Phase A"; Phase B never landed. All
+// three kept being maintained after that (the radius pass touched two of them
+// on 2026-08-21) and all three had live APIs answering with no caller, so
+// /api/admin/content had no reachable consumer at all. Re-registered rather
+// than deleted: they are the only read of the data/ tree and the only UI for
+// the dependency probes, and both are things you want when something is wrong.
+//
+// A SIXTH group wants collapsible sections, not tighter padding. See the rail
+// budget comment further down before adding one.
 const GROUPS: Group[] = [
   {
     group: "Money",
@@ -151,6 +170,17 @@ const GROUPS: Group[] = [
       { id: "growth", label: "Growth", eyebrow: "Imported store reports", component: GrowthTab },
       { id: "goals", label: "Goals", eyebrow: "Targets and grades", component: GoalsTab },
       { id: "calendar", label: "Calendar", eyebrow: "Days, weeks, and what they were worth", component: CalendarTab },
+      // Reach, not System: this is what readers actually opened, which is the
+      // same question Traffic asks with a different noun.
+      { id: "content", label: "Content", eyebrow: "What readers open, and what they bump", component: ContentTab },
+    ],
+  },
+  {
+    group: "System",
+    mode: "ops",
+    tabs: [
+      { id: "content-health", label: "Library files", eyebrow: "What the data tree actually holds", component: ContentHealthTab },
+      { id: "health", label: "Services", eyebrow: "Outbound dependency probes", component: HealthTab },
     ],
   },
   {
@@ -433,6 +463,33 @@ export function AdminShell({
   const [requested, setActive] = useState<TabId>("overview");
   const [rebuildStatus, setRebuildStatus] = useState<string | null>(null);
   const [navOpen, setNavOpen] = useState(false);
+  const navTriggerRef = useRef<HTMLButtonElement | null>(null);
+
+  // THE MOBILE DRAWER'S KEYBOARD CONTRACT, which it did not have.
+  //
+  // No Escape: the only way to dismiss it was to point at the scrim, which is
+  // a control with no visible bounds. And closing it dropped focus entirely,
+  // because every path that closes it (the scrim, Escape, and select() on a
+  // nav item) unmounts the element that was focused, which leaves focus on
+  // <body> and sends the next Tab back to the top of the document.
+  //
+  // The cleanup runs on every close, not only on Escape, which is why the
+  // focus return lives there rather than in the key handler.
+  useEffect(() => {
+    if (!navOpen) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setNavOpen(false);
+    }
+    // Copied out of the ref now, because by cleanup time the ref may point
+    // somewhere else. The trigger is the same node either way, but the rule
+    // that flags this is right in general and the copy costs nothing.
+    const trigger = navTriggerRef.current;
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      trigger?.focus();
+    };
+  }, [navOpen]);
   const [period, setPeriod] = useState<PeriodId>("30d");
   // Bumped by the tab boundary's Try again, so a recovered panel re-mounts and
   // re-fetches instead of needing a page reload.
@@ -777,8 +834,10 @@ export function AdminShell({
             <div className="flex shrink-0 items-center gap-2 lg:hidden">
                   <button
                     type="button"
+                    ref={navTriggerRef}
                     onClick={() => setNavOpen((v) => !v)}
                     aria-expanded={navOpen}
+                    aria-controls="adm-mobile-nav"
                     className="adm-control h-11 rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[12.5px]"
                     style={
                       {
@@ -873,6 +932,7 @@ export function AdminShell({
             )}
             {navOpen && (
               <div
+                id="adm-mobile-nav"
                 className="relative z-[36] mx-auto w-full max-w-[var(--adm-content-max)] px-4 pb-3 md:px-6 lg:hidden"
               >
                 <div

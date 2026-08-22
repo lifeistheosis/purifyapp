@@ -97,7 +97,7 @@ export function EngagementTab() {
         href={r.path}
         target="_blank"
         rel="noopener noreferrer"
-        className="font-mono text-caption hover:text-gold"
+        className="font-mono text-caption hover:text-gold-pale"
       >
         {r.path}
       </a>

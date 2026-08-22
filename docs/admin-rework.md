@@ -475,6 +475,122 @@ enough to reach a patch note.
 - Light mode still unverified visually, for the same reason as v4: the browser
   pane does not composite, so `var()`-resolved styles do not update on a theme
   switch. It rests on the contrast tests, which read the stylesheet directly.
+  **Closed in v6, see below.**
+
+## v6, 2026-08-22: the audit backlog
+
+Everything here came out of an audit of the panel rather than a design brief, so
+each item is a defect with a measurement behind it.
+
+### The three orphan tabs are on the rail again
+
+`ContentTab`, `ContentHealthTab` and `HealthTab` were imported by nothing since
+`c0d7994a` ("commerce hub restructure Phase A"); Phase B never landed. All three
+kept being maintained after that, and `/api/admin/content` had no reachable
+caller at all. Re-registered rather than deleted: `content` joins Reach, and a
+fifth ops group **System** takes Library files and Services. The rail budget
+note said a fifth group spills into the nav scroller, which scrolls, so it fits.
+A sixth still wants collapsible sections.
+
+### Light mode has now been looked at, and so has dark
+
+Not by eye. Screenshots are unavailable here (the browser pane does not
+composite), so this was done by walking all 18 ops tabs plus the 3 owner panels
+in both themes and computing the contrast of **every rendered text node** from
+its resolved computed style, compositing translucent layers and treating
+gradient stops as backgrounds. That is strictly more than `adminTheme.test.ts`
+can do: that test parses the stylesheet and throws on a gradient, and it cannot
+see a hardcoded colour in a component at all.
+
+21 surfaces x 2 themes. It found five real failures, all in DARK, none of which
+any existing test could reach:
+
+| Where | Measured | Cause |
+|---|---|---|
+| `text-gold-pale`, 4 call sites | **2.06:1** | the shim mapped `--color-gold-pale` to `--adm-accent-dim` (#5b21b6). A token named "pale" resolving to a deep violet, used as ink. |
+| `text-gold`, 22 call sites | **3.24:1** | `--color-gold` is the saturated accent; fine as a fill, unreadable as ink on the dark ground. |
+| `Card accent` titles | **3.38:1** | an accent card's ground is 93% panel, so the saturated accent on it is nearly ink-on-its-own-colour. |
+| `bg-gold text-night`, 3 sites | **3.38:1** | dark ink on the accent fill. The accent already names its own ink. |
+| active `FilterChip` count | **3.97:1** | `--adm-on-accent-wash` lightened the accent by 20% white, which is what made the white count unreadable. |
+
+Fixed at the tokens, not the call sites, except where a call site was using the
+wrong token: `--color-gold-pale` now resolves to `--adm-accent-line`, the value
+each theme already defines as legible against its own ground; `--adm-on-accent-wash`
+became a black wash; `Card accent` titles and the three `text-night`-on-accent
+controls moved to `--adm-accent-line` and `--adm-on-accent`. Re-measured after:
+**0 failures across all 21 surfaces in both themes.**
+
+`--adm-accent-line` measured on every ground each theme defines: 6.41:1 to
+7.22:1 on dark, 6.31:1 to 7.10:1 on light.
+
+### `/admin` has end-to-end coverage
+
+`tests/smoke/admin.spec.ts`. It cannot walk the tabs (no session is available to
+a smoke run) and says so, but it proves the property the whole panel rests on:
+every route under `app/api/admin` refuses an anonymous caller. **The route list
+is read from disk**, so a new route is covered the moment it exists. That claim
+had previously been made by grep and got the answer backwards once.
+
+### The rest
+
+- **`Modal` keyboard.** It set `aria-modal="true"` and did nothing to earn it.
+  Now traps Tab, moves focus in on open, restores it on close, and its
+  viewport-sized backdrop button is out of tab order (it was the FIRST tab stop,
+  announced only as "Close", ahead of the dialog's title). `DayDetail`'s
+  hand-rolled compensation is gone; it forwards `returnFocusTo` instead. The wrap
+  arithmetic is in `lib/ui/focusTrap.ts` with tests, because a function that
+  touches `document` cannot be tested in a node environment and one that does
+  index maths can.
+- **Two listboxes that were not.** `TabSearch` moved a cursor no screen reader
+  could follow (no `aria-activedescendant`) and nested a `<button>` inside each
+  `role="option"`. `SupportConsole`'s status picker announced
+  `aria-haspopup="listbox"` with no arrow keys, no Escape and no way for a
+  keyboard operator to close it at all. Both are now select-only comboboxes.
+- **The mobile nav drawer** had no Escape, and every path that closed it
+  unmounted the focused element and dropped focus to `<body>`.
+- **Silent zeros.** A failed read was reaching the screen as a measured figure.
+  `subscriptionStats` now throws instead of reporting 0 Plus, 0 Pro and $0 MRR
+  on three routes at once; `/api/admin/totals` sends null rather than zeroing
+  four lifetime counts that the file's own header promises never shrink, and no
+  longer caches a failure for 60s; Messages, Users, Traffic and Subscriptions
+  render a stated failure instead of an empty inbox, 0 carts, a flat zero line
+  and "Active Plus 0".
+- **The Health tab's Bible probe** read `API_BIBLE_KEY`, which nothing sets
+  (`lib/bible/api-bible.ts` reads `BIBLE_API_KEY`), so the card reported "not
+  configured" on a correctly configured server. Its `NEXT_PUBLIC_` fallback is
+  gone too: satisfying that card by setting a public var would ship a licensed
+  key into the client bundle.
+- **A rate-limiter probe** was added. `lib/security/ratelimit.ts` is fail-open by
+  design, so a limiter outage leaves ~30 write routes unthrottled with only a
+  `console.warn` anywhere. Health now says so.
+- **The hero revenue card** said "Shop, donations, subs" over a figure built from
+  `shop_orders` alone, and `/api/admin/overview` capped that read at 1,000 rows
+  newest-first, so past 1,000 orders in 30 days the OLDEST days would read zero
+  and render as real days with no sales. Relabelled, and paged.
+- **`CalendarHeatmap`** announced "last 12 weeks" whatever `weeks` it was given.
+- **`lib/fasting/streak.ts`** now walks UTC dates at noon and reaches the day key
+  through `lib/rhythm/dayKey.ts`, which names this file as one of four
+  independent local-getter derivations that agree only by coincidence.
+
+### Still open after v6
+
+- **The reader-palette debt is smaller but real.** 22 `text-gold` call sites
+  moved to `text-gold-pale`, which is a rename, not a removal. The shim still
+  carries reader semantics into the admin.
+- **The panel still cannot be tested by rendering it.** `vitest.config.ts`
+  collects `lib/**` only. The contrast sweep above was run by hand against a
+  dev server and is not a test; nothing re-runs it.
+- **`docs/audit/findings.yaml` is still structurally broken**: `F-16` through
+  `F-26`, including every P1, are indented under `corrections:` instead of
+  `findings:`, so eleven of twenty-six findings are invisible to any
+  programmatic read. Reported at `AUDIT-2026-07-27.md:274` and still there.
+- **Actor logging.** 22 mutating admin handlers, roughly 7 record who acted.
+  `subscriptions/comp` grants a paid tier with no record of who granted it.
+- **Two flaky smoke tests**, both pre-existing and both confirmed against a
+  clean tree: `mobile-shell` "the entrance shifts nothing" fails under parallel
+  workers and passes 3/3 serially (CPU contention, not a layout regression), and
+  `history` "browser back returns to the timeline" fails ~2 in 3 either way.
+- Everything under "Still open after v5" that is not struck through above.
 
 ## Recommended execution order
 

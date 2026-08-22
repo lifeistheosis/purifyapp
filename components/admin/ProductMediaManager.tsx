@@ -108,7 +108,7 @@ export function ProductMediaManager({
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
                   {i === 0 ? (
-                    <span className="rounded-full border border-gold/40 bg-gold/[0.08] px-2 py-0.5 font-sans text-caption font-medium tracking-[1px] text-gold">
+                    <span className="rounded-full border border-gold/40 bg-gold/[0.08] px-2 py-0.5 font-sans text-caption font-medium tracking-[1px] text-gold-pale">
                       Cover
                     </span>
                   ) : null}
@@ -187,7 +187,7 @@ export function ProductMediaManager({
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={busy}
-          className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-2 font-sans text-eyebrow font-semibold text-gold disabled:opacity-50"
+          className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-2 font-sans text-eyebrow font-semibold text-gold-pale disabled:opacity-50"
         >
           {busy ? "Uploading…" : "Upload image"}
         </button>

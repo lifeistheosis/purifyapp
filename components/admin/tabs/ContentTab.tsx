@@ -136,7 +136,7 @@ export function ContentTab() {
                   href={`/saints/${r.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-gold transition-colors"
+                  className="hover:text-gold-pale transition-colors"
                 >
                   {r.name}
                 </a>
@@ -248,7 +248,7 @@ export function ContentTab() {
                   href={r.path}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-mono text-caption hover:text-gold"
+                  className="font-mono text-caption hover:text-gold-pale"
                 >
                   {r.path}
                 </a>
@@ -313,7 +313,7 @@ export function ContentTab() {
                   href={`/saints/${r.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-gold"
+                  className="hover:text-gold-pale"
                 >
                   {r.name}
                 </a>
