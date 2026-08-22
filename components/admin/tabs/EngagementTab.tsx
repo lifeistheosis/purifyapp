@@ -174,7 +174,7 @@ export function EngagementTab() {
         </Card>
         <Card
           title="Sections by stickiness"
-          subtitle="Views per visitor — higher means the section is revisited within a session."
+          subtitle="Views per visitor. Higher means the section is revisited within a session."
         >
           <BarChart
             rows={[...data.sections]
@@ -190,7 +190,7 @@ export function EngagementTab() {
       {/* Most revisited pages */}
       <Card
         title="Most revisited pages"
-        subtitle="Highest views-per-visitor among pages reached by at least 5 visitors — the pages people return to."
+        subtitle="Highest views-per-visitor among pages reached by at least 5 visitors: the pages people return to."
       >
         <DataTable
           rows={data.revisited}

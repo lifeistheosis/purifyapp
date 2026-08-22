@@ -98,7 +98,7 @@ export function ContentTab() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card
           title={`Top bumped saints · ${data.totalBumps} total`}
-          subtitle="Editorial queue — most-requested first."
+          subtitle="Editorial queue, most-requested first."
           accent
         >
           <BarChart
@@ -195,7 +195,7 @@ export function ContentTab() {
                     <ToolbarButton
                       variant="danger"
                       onClick={() => toggleComplete(r.slug, null)}
-                      title="Clear override — use registry value"
+                      title="Clear override, use registry value"
                     >
                       Clear
                     </ToolbarButton>

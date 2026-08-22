@@ -374,7 +374,7 @@ function MembersPanel() {
 
       <Card
         title="Grant complimentary access"
-        subtitle="For testers and reviewers. Marked as comp — never counted as a sale."
+        subtitle="For testers and reviewers. Marked as comp, never counted as a sale."
       >
         <form
           onSubmit={grantComp}
@@ -451,7 +451,7 @@ function MembersPanel() {
 
       <Card
         title="Active subscribers"
-        subtitle="No card or financial data is shown — only who is subscribed and when it renews."
+        subtitle="No card or financial data is shown, only who is subscribed and when it renews."
       >
         <DataTable<Member>
           rows={members}

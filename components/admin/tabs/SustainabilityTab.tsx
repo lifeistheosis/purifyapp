@@ -60,6 +60,8 @@ export function SustainabilityTab() {
   const [loadFailed, setLoadFailed] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null);
   const [adding, setAdding] = useState(false);
+  const [adopting, setAdopting] = useState(false);
+  const [adoptFailed, setAdoptFailed] = useState<string[] | null>(null);
   const [editingGoal, setEditingGoal] = useState(false);
   const [goalDraft, setGoalDraft] = useState("");
 
@@ -111,6 +113,50 @@ export function SustainabilityTab() {
       setEditing(null);
       setAdding(false);
       startTransition(() => reload());
+    }
+  }
+
+  /**
+   * Write every committed fallback line into the table in one go.
+   *
+   * Sequential rather than Promise.all on purpose: the route takes one action
+   * per request and sortOrder has to land in list order, so racing them would
+   * shuffle the rows on /support. Nine requests is fine; this runs once in the
+   * life of the table.
+   */
+  async function adoptAll() {
+    if (!data || !data.expensesFromFallback || adopting) return;
+    setAdopting(true);
+    setAdoptFailed(null);
+    const failed: string[] = [];
+    try {
+      let i = 0;
+      for (const row of data.expenses) {
+        const r = await fetch("/api/admin/sustainability/actions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "expense-upsert",
+            label: row.label,
+            monthlyCents: row.monthly_cents,
+            note: row.note ?? null,
+            category: row.category ?? null,
+            active: true,
+            sortOrder: i,
+          }),
+        }).catch(() => null);
+        // A partial failure is the dangerous case, not a total one. The moment
+        // the first row lands, expensesFromFallback flips false and this button
+        // disappears, so a row that failed silently would just be missing from
+        // /support with nothing anywhere saying which. Names are collected and
+        // shown; the rest are already real rows and can be added by hand.
+        if (!r || !r.ok) failed.push(row.label);
+        i += 1;
+      }
+      if (failed.length) setAdoptFailed(failed);
+      startTransition(() => reload());
+    } finally {
+      setAdopting(false);
     }
   }
 
@@ -324,11 +370,21 @@ export function SustainabilityTab() {
         title={`Expense lines · ${data.expenses.length}`}
         subtitle={
           data.expensesFromFallback
-            ? "Falling back to data/support/support.ts — the expense_lines table is empty. Add a line to take over."
+            ? `Falling back to data/support/support.ts, because the expense_lines table is empty. /support is publishing these ${data.expenses.length} committed lines and saying so. Adopt them to take over.`
             : "Lives on /support. Edits propagate without a redeploy."
         }
         action={
           <Toolbar>
+            {data.expensesFromFallback && (
+              <ToolbarButton
+                variant="primary"
+                onClick={adoptAll}
+                loading={adopting}
+                title="Write all committed lines into the table as real rows"
+              >
+                {adopting ? "Adopting" : `Adopt all ${data.expenses.length}`}
+              </ToolbarButton>
+            )}
             <ToolbarButton
               variant="primary"
               onClick={() => {
@@ -398,6 +454,16 @@ export function SustainabilityTab() {
             {
               key: "actions",
               label: "",
+              // A fallback row used to render an inert "Fallback" pill, so the
+              // panel showed nine correct lines and let you edit none of them
+              // while "Add line" started blank. The only way to take over was
+              // to retype all nine.
+              //
+              // Editing one now writes it as a real row: saveExpense already
+              // drops a negative id, which turns the upsert into an insert. The
+              // word is "Adopt" rather than "Edit" because that is what the
+              // button does, and calling it Edit would imply the committed
+              // file is what changes.
               render: (r) =>
                 r.id > 0 ? (
                   <Toolbar>
@@ -407,11 +473,32 @@ export function SustainabilityTab() {
                     </ToolbarButton>
                   </Toolbar>
                 ) : (
-                  <Pill tone="neutral">Fallback</Pill>
+                  <Toolbar>
+                    <ToolbarButton
+                      onClick={() => setEditing(r)}
+                      title="Write this committed line into the database as a real, editable row"
+                    >
+                      Adopt
+                    </ToolbarButton>
+                  </Toolbar>
                 ),
             },
           ]}
         />
+        {adoptFailed && adoptFailed.length > 0 && (
+          <p
+            className="mb-3 rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-detail"
+            style={{
+              borderColor: "color-mix(in oklab, var(--adm-critical), transparent 60%)",
+              background: "color-mix(in oklab, var(--adm-critical), transparent 92%)",
+              color: "var(--adm-critical)",
+            }}
+          >
+            {adoptFailed.length} line{adoptFailed.length === 1 ? "" : "s"} did not
+            save: {adoptFailed.join(", ")}. Everything else is in. Add these with
+            Add line.
+          </p>
+        )}
         {editing && (
           <ExpenseEditor
             initial={editing}
