@@ -59,6 +59,24 @@ const Body = z.discriminatedUnion("action", [
     paused: z.boolean().default(false),
   }),
   z.object({ action: z.literal("goal-delete"), id: z.string().min(1).max(80) }),
+  // Seeding is a batch of goal-upserts with ids minted server side. The client
+  // sends the proposals it derived from the dataset it is looking at, so the
+  // targets shown before the click are the targets stored after it.
+  z.object({
+    action: z.literal("seed-goals"),
+    goals: z
+      .array(
+        z.object({
+          seriesId: z.string().min(1).max(200),
+          label: z.string().min(1).max(200),
+          period: z.enum(["daily", "weekly", "monthly"]),
+          target: z.number().finite().min(0),
+          paused: z.boolean().default(false),
+        }),
+      )
+      .min(1)
+      .max(120),
+  }),
   z.object({ action: z.literal("clear-dataset") }),
 ]);
 
@@ -207,6 +225,55 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Could not delete the goal.", detail: r.error.message }, { status: 500 });
       }
       return NextResponse.json({ ok: true });
+    }
+
+    case "seed-goals": {
+      const existing = await supa.from("insight_goals").select("series_id, period, target");
+      if (existing.error) {
+        return NextResponse.json(
+          { error: "Could not read existing goals. Has the migration run?", detail: existing.error.message },
+          { status: 500 },
+        );
+      }
+      const have = new Set(
+        ((existing.data ?? []) as { series_id: string; period: string; target: number }[]).map(
+          (g) => `${g.series_id}|${g.period}|${g.target}`,
+        ),
+      );
+
+      // Idempotent on (series, period, target) rather than on label, because
+      // the label is the part an operator renames. Seeding twice adds nothing;
+      // seeding after editing a target adds the original back, which is why the
+      // button is offered only when there are no goals at all.
+      const fresh = parsed.goals.filter(
+        (g) => !have.has(`${g.seriesId}|${g.period}|${g.target}`),
+      );
+      if (fresh.length === 0) {
+        return NextResponse.json({ ok: true, created: 0, skipped: parsed.goals.length });
+      }
+
+      const rows = fresh.map((g) => ({
+        id: `goal-${crypto.randomUUID()}`,
+        series_id: g.seriesId,
+        label: g.label,
+        period: g.period,
+        target: g.target,
+        paused: g.paused,
+        updated_at: new Date().toISOString(),
+      }));
+
+      const ins = await supa.from("insight_goals").insert(rows);
+      if (ins.error) {
+        return NextResponse.json(
+          { error: "Could not create the goals.", detail: ins.error.message },
+          { status: 500 },
+        );
+      }
+      return NextResponse.json({
+        ok: true,
+        created: rows.length,
+        skipped: parsed.goals.length - rows.length,
+      });
     }
 
     case "clear-dataset": {

@@ -69,8 +69,24 @@ describe("ingest", () => {
   it("reads every metric column and skips the notes", () => {
     const { dataset, errors } = ingestCsv(AUDIENCE, "audience", STAMP);
     expect(errors).toEqual([]);
-    expect(dataset!.series).toHaveLength(2);
-    expect(dataset!.series.map((s) => s.label)).toEqual(["Installed audience, total", "United States"]);
+    // Two real columns, each of which is a LEVEL and so gains a derived
+    // daily-change flow at ingest. A daily goal on a level is met for ever once
+    // crossed, so the change is the only thing a daily target can honestly
+    // measure. See lib/admin/insights/derive.ts.
+    const real = dataset!.series.filter((s) => s.kind === "stock");
+    const derived = dataset!.series.filter((s) => s.kind === "flow");
+    expect(real.map((s) => s.label)).toEqual(["Installed audience, total", "United States"]);
+    expect(derived.map((s) => s.label)).toEqual([
+      "Net new installs, total",
+      "United States, daily change",
+    ]);
+  });
+
+  it("derives the daily change from the real numbers", () => {
+    const { dataset } = ingestCsv(AUDIENCE, "audience", STAMP);
+    const netNew = dataset!.series.find((s) => s.label === "Net new installs, total")!;
+    // 937 on the 17th, 932 on the 18th.
+    expect(netNew.points[netNew.points.length - 1]).toEqual({ day: "2026-08-18", value: -5 });
   });
 
   it("dates the range in UTC", () => {

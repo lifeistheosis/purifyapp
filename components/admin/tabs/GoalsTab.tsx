@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Card, DataTable, Pill, Toolbar, ToolbarButton } from "../primitives";
 import { GradeBadge, RatioMeter, StandingPill } from "../insights/GradeBadge";
 import { ApiLimitBanner, ApiLimitsPanel } from "../insights/ApiLimits";
+import { Streaks } from "../insights/Streaks";
+import { seedGoals } from "@/lib/admin/insights/seed";
 import { useInsights } from "@/lib/admin/insights/store";
 import {
   PERIODS,
@@ -40,6 +42,37 @@ export function GoalsTab() {
 
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<Goal | null>(null);
+  const [seeding, setSeeding] = useState(false);
+
+  // Proposals, derived from the dataset on screen, so the numbers previewed
+  // before the click are the numbers stored after it.
+  const proposals = seedGoals(dataset);
+
+  async function seed() {
+    if (proposals.length === 0 || seeding) return;
+    setSeeding(true);
+    try {
+      await fetch("/api/admin/insights/actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "seed-goals",
+          goals: proposals.map((p) => ({
+            seriesId: p.seriesId,
+            label: p.label,
+            period: p.period,
+            target: p.target,
+            paused: p.paused,
+          })),
+        }),
+      }).catch(() => null);
+      // The store reloads from the server rather than trusting the response, so
+      // what appears is what was actually stored.
+      window.location.reload();
+    } finally {
+      setSeeding(false);
+    }
+  }
 
   const rows = goals.map((g) => {
     const result = grades[g.period].results.find((r) => r.goal.id === g.id) ?? null;
@@ -81,6 +114,38 @@ export function GoalsTab() {
           number has nothing left to say when something genuinely beats it.
         </p>
       </Card>
+
+      <Streaks dataset={dataset} goals={goals} />
+
+      {goals.length === 0 && proposals.length > 0 ? (
+        <Card
+          title="Start with a set derived from your own data"
+          subtitle={`${proposals.length} goals, each target placed where roughly 38% of your days since launch cleared it. Hard enough to mean something, soft enough that runs happen.`}
+          action={
+            <Toolbar>
+              <ToolbarButton variant="primary" loading={seeding} onClick={seed}>
+                {seeding ? "Creating" : "Create these goals"}
+              </ToolbarButton>
+            </Toolbar>
+          }
+        >
+          <ul className="space-y-1.5">
+            {proposals.slice(0, 8).map((p) => (
+              <li key={`${p.seriesId}-${p.period}-${p.target}`} className="font-sans text-[12px]">
+                <span style={{ color: "var(--adm-ink)" }}>
+                  {p.label}: {p.target.toLocaleString("en-US")}
+                </span>{" "}
+                <span style={{ color: "var(--adm-ink-3)" }}>{p.derivation}</span>
+              </li>
+            ))}
+            {proposals.length > 8 ? (
+              <li className="font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)" }}>
+                and {proposals.length - 8} more.
+              </li>
+            ) : null}
+          </ul>
+        </Card>
+      ) : null}
 
       <Card
         title="Goals"

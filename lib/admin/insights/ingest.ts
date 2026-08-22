@@ -1,5 +1,6 @@
 import { parseCsv, toDayKey, toNumber, type CsvTable } from "./csv";
 import { labelOf, seriesIdOf } from "./seriesId";
+import { withDerived } from "./derive";
 import type { Dataset, Point, Series, SeriesKind } from "./types";
 
 /**
@@ -129,7 +130,19 @@ export function ingestCsv(text: string, name: string, stampIso: string): IngestR
     };
   }
 
-  const allDays = series.flatMap((s) => s.points.map((p) => p.day)).sort();
+  /*
+   * Every stock gains its daily-change companion here, once, at the point of
+   * ingest, so a derived series is stored and read exactly like a real one and
+   * nothing downstream has to know the difference.
+   *
+   * It is done for a concrete reason: a daily goal on a LEVEL is met for ever
+   * once crossed, so a streak on one would be infinite and would describe
+   * nothing. The change is what varies day to day, and it is already in the
+   * file.
+   */
+  const withFlows = withDerived(series);
+
+  const allDays = withFlows.flatMap((s) => s.points.map((p) => p.day)).sort();
   const warnings = [...table.warnings];
   if (unreadableDates > 0) {
     warnings.push(
@@ -141,7 +154,7 @@ export function ingestCsv(text: string, name: string, stampIso: string): IngestR
     dataset: {
       id: seriesIdOf(name) || "dataset",
       label: name,
-      series,
+      series: withFlows,
       importedAt: stampIso,
       rowCount: table.rows.length,
       firstDay: allDays[0] ?? null,

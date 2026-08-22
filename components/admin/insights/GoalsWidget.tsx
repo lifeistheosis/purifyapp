@@ -1,6 +1,7 @@
 "use client";
 
 import { GradeBadge, RatioMeter, StandingPill } from "./GradeBadge";
+import { StreakLine } from "./Streaks";
 import { useInsights } from "@/lib/admin/insights/store";
 import { PERIODS, PERIOD_LABEL } from "@/lib/admin/insights/types";
 
@@ -64,6 +65,8 @@ export function GoalsWidget({ onOpen }: { onOpen?: () => void }) {
               ? "No active goals, so there is nothing to grade against."
               : `${active} active goal${active === 1 ? "" : "s"} against ${dataset.series.length} series.`}
       </p>
+
+      <StreakLine dataset={dataset} goals={goals} />
 
       {onOpen ? (
         <button
