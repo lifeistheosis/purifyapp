@@ -7,13 +7,16 @@ import {
   useEffect,
   useMemo,
   useReducer,
+  useState,
   type ReactNode,
 } from "react";
 import { ingestCsv } from "./ingest";
+import { adminJson } from "@/lib/admin/fetchJson";
+import { legacyIdMap } from "./seriesId";
 import { rangeOf, type Selection } from "./calendar";
 import { forecastSeries } from "./forecast";
 import { gradeAll, overallGrade } from "./grade";
-import { loadPersisted, savePersisted } from "./persist";
+import { clearPersisted, loadPersisted } from "./persist";
 import {
   PERIOD_DAYS,
   type Dataset,
@@ -21,6 +24,7 @@ import {
   type Goal,
   type Period,
   type PeriodGrade,
+  type Series,
 } from "./types";
 
 /**
@@ -57,11 +61,20 @@ import {
  * plus useReducer is the same architecture, ships with React, and is one of
  * the three options the brief allowed.
  *
- * WHAT THIS DELIBERATELY DOES NOT TOUCH. Nothing here reads or writes
- * Supabase, and importing a report flushes only the imported dataset. The
- * brief asked to "completely flush the relevant historical data stores", and
- * the relevant store is this one: the panel's real analytics, orders, and
- * expenses are server truth that a pasted file has no business deleting.
+ * WHERE THE DATA LIVES. On the server, in insight_series and insight_points,
+ * read through /api/admin/insights. It used to live in localStorage, which
+ * meant a report existed in one browser, did not follow the operator to another
+ * machine, and was REPLACED by the next import rather than extended.
+ *
+ * IMPORTS ACCUMULATE NOW. A newer Play Console export corrects and extends what
+ * is stored; it does not wipe it. The rule that makes that safe is a WHERE
+ * clause on the upsert inside merge_insight_points, not anything in this file:
+ * a point only wins if its export had seen at least as much as the stored one,
+ * so re-importing an old file cannot revert a correction.
+ *
+ * STILL DOES NOT TOUCH the panel's real analytics, orders or expenses. Those
+ * are server truth that a pasted file has no business deleting; an import
+ * writes only the insight_* tables.
  */
 
 type State = {
@@ -75,12 +88,14 @@ type State = {
   /** Bumped on every successful import, so views can animate a refresh. */
   revision: number;
   hydrated: boolean;
+  /** The read itself failed, which is not the same as there being no data. */
+  unavailable: boolean;
 };
 
 type Action =
-  | { type: "hydrate"; dataset: Dataset | null; goals: Goal[] }
+  | { type: "hydrate"; dataset: Dataset | null; goals: Goal[]; unavailable?: boolean }
   | { type: "import:start" }
-  | { type: "import:ok"; dataset: Dataset }
+  | { type: "import:done" }
   | { type: "import:fail"; error: string }
   | { type: "dataset:clear" }
   | { type: "goal:add"; goal: Goal }
@@ -97,12 +112,19 @@ const EMPTY: State = {
   lastError: null,
   revision: 0,
   hydrated: false,
+  unavailable: false,
 };
 
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "hydrate":
-      return { ...state, dataset: action.dataset, goals: action.goals, hydrated: true };
+      return {
+        ...state,
+        dataset: action.dataset,
+        goals: action.goals,
+        unavailable: Boolean(action.unavailable),
+        hydrated: true,
+      };
 
     case "import:start":
       return { ...state, importing: true, lastError: null };
@@ -119,13 +141,13 @@ export function reducer(state: State, action: Action): State {
         revision: state.revision + 1,
       };
 
-    case "import:ok":
-      // The flush and the repopulate are ONE transition, not a clear followed
-      // by a load. Two dispatches would render an empty panel between them,
-      // which reads as data loss every time a report is replaced.
+    case "import:done":
+      // The dataset itself arrives through "hydrate", dispatched by the reload
+      // that follows a successful save. This only ends the importing state and
+      // bumps the revision, so the panel replays its entrance once the real
+      // server data is already in place rather than over an empty frame.
       return {
         ...state,
-        dataset: action.dataset,
         importing: false,
         lastError: null,
         revision: state.revision + 1,
@@ -169,6 +191,10 @@ export type InsightsValue = {
   lastError: string | null;
   revision: number;
   hydrated: boolean;
+  /** The read failed. Distinct from there being nothing imported. */
+  unavailable: boolean;
+  /** A dataset still sitting in this browser from before the server store. */
+  legacyLocal: Dataset | null;
 
   /** Derived. One per series in the dataset. */
   forecasts: Record<string, Forecast>;
@@ -182,8 +208,10 @@ export type InsightsValue = {
   /** Derived. The inclusive day range of the selection, or null. */
   selectedRange: { from: string; to: string } | null;
 
-  importCsv: (text: string, name: string) => void;
-  clearDataset: () => void;
+  importCsv: (text: string, name: string) => Promise<void>;
+  clearDataset: () => Promise<void>;
+  /** Push whatever this browser still holds up to the server, once. */
+  adoptLegacyLocal: () => Promise<void>;
   addGoal: (goal: Omit<Goal, "id" | "createdAt">) => void;
   updateGoal: (id: string, patch: Partial<Omit<Goal, "id">>) => void;
   removeGoal: (id: string) => void;
@@ -199,18 +227,74 @@ const HORIZON = PERIOD_DAYS.monthly;
 export function InsightsProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, EMPTY);
 
-  // Hydrate once, on the client only. localStorage does not exist during the
-  // server render, and reading it during the first client render would produce
-  // markup that does not match what the server sent.
+  /**
+   * Whatever this browser still holds from before the server store existed.
+   *
+   * Read once, and NEVER pushed automatically. An old browser opened weeks
+   * later must not silently shove stale rows at fresher server data; the merge
+   * would reject most of it, but the operator would have no idea it happened.
+   * So this is surfaced as a button and the choice stays theirs.
+   *
+   * Read in an effect rather than during render because localStorage does not
+   * exist on the server, and touching it during the first client render would
+   * produce markup that does not match what was sent.
+   */
+  const [legacyLocal, setLegacyLocal] = useState<Dataset | null>(null);
+
+  /**
+   * Hydrate from the server.
+   *
+   * Was a synchronous localStorage read; it is now a round trip, so there is a
+   * moment before `hydrated` where nothing is known. Every consumer already
+   * checks that flag, which is why this swap did not need changes across the
+   * tabs: GoalsWidget says "Reading saved goals", and nothing renders a grade
+   * from an empty dataset, so a slow network shows "not measured" rather than
+   * an F.
+   */
   useEffect(() => {
-    const p = loadPersisted();
-    dispatch({ type: "hydrate", dataset: p.dataset, goals: p.goals });
+    let alive = true;
+    adminJson<{
+      available: boolean;
+      dataset: Dataset | null;
+      goals: Goal[];
+    }>("/api/admin/insights").then((r) => {
+      if (!alive) return;
+      if (!r) {
+        // A failed read is NOT an empty dataset. Saying so lets the UI
+        // distinguish "nothing imported" from "could not tell", and stops an
+        // outage looking like a project with no data.
+        dispatch({ type: "hydrate", dataset: null, goals: [], unavailable: true });
+        return;
+      }
+      dispatch({
+        type: "hydrate",
+        dataset: r.dataset,
+        goals: r.goals ?? [],
+        unavailable: !r.available,
+      });
+
+      // The legacy browser copy is looked for HERE, inside the response, and
+      // only when the server turned out to have nothing. Two reasons. It keeps
+      // the read out of the effect body, where a synchronous setState is a
+      // cascading render. And it is the behaviour we actually want: offering to
+      // push a stale browser copy at a server that already has data is how an
+      // old tab overwrites a colleague's import.
+      if (r.available && !r.dataset) {
+        const local = loadPersisted();
+        if (local.dataset && local.dataset.series.length > 0) {
+          setLegacyLocal(local.dataset);
+        }
+      }
+    });
+    return () => {
+      alive = false;
+    };
   }, []);
 
-  useEffect(() => {
-    if (!state.hydrated) return;
-    savePersisted({ dataset: state.dataset, goals: state.goals });
-  }, [state.dataset, state.goals, state.hydrated]);
+  // No save effect any more. Writes go through the actions route at the moment
+  // the operator acts, so there is no window where the UI shows something the
+  // server has not accepted, and no way for two tabs to race each other by both
+  // flushing their whole state on any change.
 
   // STAGE 2. Forecasts follow the dataset and nothing else.
   const forecasts = useMemo(() => {
@@ -260,41 +344,232 @@ export function InsightsProvider({ children }: { children: ReactNode }) {
    * identities plus field-level memo dependencies keep a cell click to the
    * components that actually care.
    */
-  const importCsv = useCallback((text: string, name: string) => {
-    dispatch({ type: "import:start" });
-    const { dataset, errors } = ingestCsv(text, name, new Date().toISOString());
-    if (!dataset) {
-      dispatch({ type: "import:fail", error: errors[0] ?? "That could not be read." });
+  /** Re-read the server. Every write calls this, so the UI shows what landed. */
+  const reload = useCallback(async () => {
+    const r = await adminJson<{
+      available: boolean;
+      dataset: Dataset | null;
+      goals: Goal[];
+    }>("/api/admin/insights");
+    if (!r) {
+      dispatch({ type: "hydrate", dataset: null, goals: [], unavailable: true });
       return;
     }
-    dispatch({ type: "import:ok", dataset });
-  }, []);
-
-  const clearDataset = useCallback(() => dispatch({ type: "dataset:clear" }), []);
-
-  const addGoal = useCallback((goal: Omit<Goal, "id" | "createdAt">) => {
     dispatch({
-      type: "goal:add",
-      goal: {
-        ...goal,
-        // Not Math.random. A collision would make two goals share an id and
-        // edit each other; the counter plus the clock cannot collide within
-        // one session, and ids never leave the browser.
-        id: `goal-${Date.now().toString(36)}-${(goalSeq += 1).toString(36)}`,
-        createdAt: new Date().toISOString(),
-      },
+      type: "hydrate",
+      dataset: r.dataset,
+      goals: r.goals ?? [],
+      unavailable: !r.available,
     });
   }, []);
 
-  const updateGoal = useCallback(
-    (id: string, patch: Partial<Omit<Goal, "id">>) =>
-      dispatch({ type: "goal:update", id, patch }),
-    [],
+  const importCsv = useCallback(
+    async (text: string, name: string) => {
+      dispatch({ type: "import:start" });
+
+      // Parsed on the client, exactly as before. The server is sent the parsed
+      // series rather than the raw CSV so the parser stays one implementation
+      // with one set of tests, rather than a second copy in a route.
+      const { dataset, errors } = ingestCsv(text, name, new Date().toISOString());
+      if (!dataset) {
+        dispatch({ type: "import:fail", error: errors[0] ?? "That could not be read." });
+        return;
+      }
+
+      const res = await fetch("/api/admin/insights/actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "import",
+          label: name,
+          rowCount: dataset.rowCount,
+          series: dataset.series.map((s) => ({
+            id: s.id,
+            label: s.label,
+            kind: s.kind,
+            sourceHeader: s.source,
+            points: s.points,
+          })),
+        }),
+      }).catch(() => null);
+
+      if (!res || !res.ok) {
+        // The previous data is untouched: nothing local was cleared before the
+        // round trip, so a failed import leaves what was already there rather
+        // than punishing a bad paste by emptying the panel.
+        dispatch({
+          type: "import:fail",
+          error:
+            res && res.status === 500
+              ? "That did not save. The report tables may not exist yet."
+              : "That did not save.",
+        });
+        return;
+      }
+
+      await reload();
+      dispatch({ type: "import:done" });
+    },
+    [reload],
   );
-  const removeGoal = useCallback((id: string) => dispatch({ type: "goal:remove", id }), []);
+
+  /**
+   * Push this browser's leftover dataset to the server, once.
+   *
+   * Goals ride along, and their series ids are REMAPPED on the way: they were
+   * written under the old truncate-at-80 scheme, and the same header run
+   * through the new parser gives the exact new id. Series.source holds that
+   * header, so the mapping is mechanical rather than a guess. A goal whose
+   * series is not in the local dataset keeps its id and shows as unmatched,
+   * which is honest.
+   */
+  const adoptLegacyLocal = useCallback(async () => {
+    if (!legacyLocal) return;
+    dispatch({ type: "import:start" });
+
+    const res = await fetch("/api/admin/insights/actions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "import",
+        label: legacyLocal.label || "Recovered from this browser",
+        rowCount: legacyLocal.rowCount,
+        series: legacyLocal.series.map((s: Series) => ({
+          id: s.id,
+          label: s.label,
+          kind: s.kind,
+          sourceHeader: s.source,
+          points: s.points,
+        })),
+      }),
+    }).catch(() => null);
+
+    if (!res || !res.ok) {
+      dispatch({ type: "import:fail", error: "That browser copy did not save." });
+      return;
+    }
+
+    const remap = legacyIdMap(legacyLocal.series.map((s: Series) => s.source));
+    const local = loadPersisted();
+    for (const g of local.goals) {
+      await fetch("/api/admin/insights/actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "goal-upsert",
+          id: g.id,
+          seriesId: remap.get(g.seriesId) ?? g.seriesId,
+          label: g.label,
+          period: g.period,
+          target: g.target,
+          paused: g.paused,
+        }),
+      }).catch(() => null);
+    }
+
+    // Cleared only after a confirmed save, so a failure leaves the browser copy
+    // exactly where it was rather than losing it on the way.
+    clearPersisted();
+    setLegacyLocal(null);
+    await reload();
+    dispatch({ type: "import:done" });
+  }, [legacyLocal, reload]);
+
+  const clearDataset = useCallback(async () => {
+    await fetch("/api/admin/insights/actions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "clear-dataset" }),
+    }).catch(() => null);
+    dispatch({ type: "dataset:clear" });
+    await reload();
+  }, [reload]);
+
+  /**
+   * Goal writes are optimistic, then reconciled.
+   *
+   * The local dispatch lands first so the grade moves under the operator's hand
+   * with no round trip, which is the responsiveness the panel already had. The
+   * reload that follows replaces the optimistic state with what the server
+   * actually stored, so a rejected write corrects itself rather than persisting
+   * as a comfortable lie.
+   */
+  const saveGoal = useCallback(
+    async (g: Goal) => {
+      await fetch("/api/admin/insights/actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "goal-upsert",
+          id: g.id,
+          seriesId: g.seriesId,
+          label: g.label,
+          period: g.period,
+          target: g.target,
+          paused: g.paused,
+        }),
+      }).catch(() => null);
+      await reload();
+    },
+    [reload],
+  );
+
+  const addGoal = useCallback(
+    (goal: Omit<Goal, "id" | "createdAt">) => {
+      const full: Goal = {
+        ...goal,
+        // Not Math.random. A collision would make two goals share an id and
+        // edit each other; the counter plus the clock cannot collide within
+        // one session.
+        // randomUUID, not a counter. The old scheme was a timestamp plus a
+        // module counter, and it justified itself with "ids never leave the
+        // browser". They leave the browser now: they are the primary key of
+        // insight_goals. goalSeq resets to zero on every page load, so two
+        // tabs opened in the same millisecond, or one tab reloaded, could mint
+        // the same id and silently edit each other's target.
+        id: newGoalId(),
+        createdAt: new Date().toISOString(),
+      };
+      dispatch({ type: "goal:add", goal: full });
+      void saveGoal(full);
+    },
+    [saveGoal],
+  );
+
+  const updateGoal = useCallback(
+    (id: string, patch: Partial<Omit<Goal, "id">>) => {
+      dispatch({ type: "goal:update", id, patch });
+      // Reads state.goals rather than a ref. These callbacks getting a new
+      // identity when goals change is harmless: goals change when someone edits
+      // one. The identity that had to stay stable is setSelection, because a
+      // calendar cell click fires it dozens of times a session.
+      const current = state.goals.find((g) => g.id === id);
+      if (current) void saveGoal({ ...current, ...patch });
+    },
+    [saveGoal, state.goals],
+  );
+
+  const removeGoal = useCallback(
+    (id: string) => {
+      dispatch({ type: "goal:remove", id });
+      void fetch("/api/admin/insights/actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "goal-delete", id }),
+      })
+        .catch(() => null)
+        .then(() => reload());
+    },
+    [reload],
+  );
+
   const toggleGoalPause = useCallback(
-    (id: string) => dispatch({ type: "goal:togglePause", id }),
-    [],
+    (id: string) => {
+      dispatch({ type: "goal:togglePause", id });
+      const current = state.goals.find((g) => g.id === id);
+      if (current) void saveGoal({ ...current, paused: !current.paused });
+    },
+    [saveGoal, state.goals],
   );
   const setSelection = useCallback(
     (selection: Selection | null) => dispatch({ type: "selection:set", selection }),
@@ -311,6 +586,8 @@ export function InsightsProvider({ children }: { children: ReactNode }) {
       lastError: state.lastError,
       revision: state.revision,
       hydrated: state.hydrated,
+      unavailable: state.unavailable,
+      legacyLocal,
       forecasts,
       grades,
       overall,
@@ -318,6 +595,7 @@ export function InsightsProvider({ children }: { children: ReactNode }) {
       selectedRange,
       importCsv,
       clearDataset,
+      adoptLegacyLocal,
       addGoal,
       updateGoal,
       removeGoal,
@@ -331,13 +609,16 @@ export function InsightsProvider({ children }: { children: ReactNode }) {
       state.lastError,
       state.revision,
       state.hydrated,
+      state.unavailable,
       state.selection,
+      legacyLocal,
       forecasts,
       grades,
       overall,
       selectedRange,
       importCsv,
       clearDataset,
+      adoptLegacyLocal,
       addGoal,
       updateGoal,
       removeGoal,
@@ -349,7 +630,19 @@ export function InsightsProvider({ children }: { children: ReactNode }) {
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
-let goalSeq = 0;
+/**
+ * A goal id that is unique across machines, tabs and reloads.
+ *
+ * crypto.randomUUID is available in every browser this panel supports and in
+ * Node 19 and up, which the repo already requires at 22.5. The fallback exists
+ * only for a non-secure context, where randomUUID is undefined; it is weaker
+ * and is never reached in production, which is served over https.
+ */
+function newGoalId(): string {
+  const c = globalThis.crypto;
+  if (c && typeof c.randomUUID === "function") return `goal-${c.randomUUID()}`;
+  return `goal-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e9).toString(36)}`;
+}
 
 /**
  * Read the engine.

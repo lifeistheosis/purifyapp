@@ -13,14 +13,27 @@ import { useInsights } from "@/lib/admin/insights/store";
  * is, and telling the operator to save it first only to open it again is a
  * detour. Both land in the same importCsv.
  *
- * NOTHING HERE TOUCHES THE DATABASE. An import replaces the imported dataset
- * and nothing else: the panel's real analytics, orders and expenses are server
- * truth, and a pasted file has no business deleting them. The card says so,
- * because "flush and repopulate" is alarming if you cannot see where the edge
- * of it is.
+ * IMPORTS ACCUMULATE. A report is stored on the server and a newer export
+ * extends and corrects it rather than replacing it, so pasting this month's
+ * file does not throw away last month's. A point only wins if the export it
+ * came from had seen at least as much as what is stored, which is what makes
+ * re-importing an older file harmless.
+ *
+ * It still touches only the insight_* tables. The panel's real analytics,
+ * orders and expenses are server truth that a pasted file has no business
+ * rewriting.
  */
 export function DataImport() {
-  const { importCsv, dataset, importing, lastError, clearDataset } = useInsights();
+  const {
+    importCsv,
+    dataset,
+    importing,
+    lastError,
+    clearDataset,
+    unavailable,
+    legacyLocal,
+    adoptLegacyLocal,
+  } = useInsights();
   const [text, setText] = useState("");
   const [dragging, setDragging] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
@@ -46,16 +59,21 @@ export function DataImport() {
   return (
     <Card
       title="Import a report"
-      subtitle="Paste a CSV, or drop the file. Everything on this page recalculates the moment it lands."
+      subtitle="Paste a CSV, or drop the file. It is stored, it follows you to any machine, and a newer export extends what is already there."
       action={
         dataset ? (
           <Toolbar>
             <ToolbarButton
               variant="danger"
               onClick={clearDataset}
-              title="Forget the imported report. Nothing on the server is touched."
+              // It DOES touch the server now, and saying otherwise would be the
+              // sort of quiet untruth this panel is built to avoid. Goals are
+              // spared deliberately: a target outlives the report that measured
+              // it, and deleting them here would destroy the thing the operator
+              // actually authored.
+              title="Delete every stored series and measurement. Goals are kept."
             >
-              Forget report
+              Delete stored reports
             </ToolbarButton>
           </Toolbar>
         ) : undefined
@@ -155,6 +173,44 @@ export function DataImport() {
         </div>
       </div>
 
+      {unavailable && (
+        <p
+          className="mt-4 rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-[12px]"
+          style={{
+            borderColor: "color-mix(in oklab, var(--adm-warn), transparent 60%)",
+            background: "color-mix(in oklab, var(--adm-warn), transparent 92%)",
+            color: "var(--adm-warn)",
+          }}
+        >
+          The stored reports could not be read. That is not the same as there
+          being none, so nothing below should be taken as the full picture. If
+          this is the first deploy of this feature, the tables may not exist yet.
+        </p>
+      )}
+
+      {legacyLocal && (
+        <div
+          className="mt-4 rounded-[var(--adm-radius-sm)] border px-3 py-3"
+          style={{ borderColor: "var(--adm-line-strong)", background: "var(--adm-panel-2)" }}
+        >
+          <p className="font-sans text-[12px]" style={{ color: "var(--adm-ink)" }}>
+            This browser still holds a report from before reports were stored on
+            the server: {legacyLocal.series.length} series,{" "}
+            {legacyLocal.firstDay} to {legacyLocal.lastDay}.
+          </p>
+          <p className="mt-1 font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)" }}>
+            Only offered because the server has none. Re-importing the original
+            CSV is equivalent and is the cleaner route if you still have the
+            file; this exists for a copy you cannot download again.
+          </p>
+          <div className="mt-2">
+            <ToolbarButton variant="primary" loading={importing} onClick={adoptLegacyLocal}>
+              Move it to the server
+            </ToolbarButton>
+          </div>
+        </div>
+      )}
+
       {(lastError || fileError) && (
         <p
           className="mt-4 rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-[12px]"
@@ -191,9 +247,11 @@ export function DataImport() {
             </ul>
           )}
           <p className="mt-2 font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)" }}>
-            Held in this browser only. It survives a reload, it does not follow
-            you to another machine, and importing again replaces it. Nothing on
-            the server is written or deleted by an import.
+            Stored on the server, so it is here on any machine you sign in from.
+            Importing a newer export extends and corrects this rather than
+            replacing it, and re-importing an older file changes nothing,
+            because a measurement only loses to one from an export that had seen
+            at least as much.
           </p>
         </div>
       )}

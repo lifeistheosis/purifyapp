@@ -1,4 +1,5 @@
 import { parseCsv, toDayKey, toNumber, type CsvTable } from "./csv";
+import { labelOf, seriesIdOf } from "./seriesId";
 import type { Dataset, Point, Series, SeriesKind } from "./types";
 
 /**
@@ -34,37 +35,17 @@ export function kindOf(header: string): SeriesKind {
 }
 
 /**
- * Shorten a Play Console header into something a chart legend can hold.
+ * Both of these now live in ./seriesId, parsed from the Play Console header
+ * shape rather than slugged from the whole string.
  *
- * "Installed audience (All users, Unique users, Per interval, Daily): United
- * States" is 78 characters of mostly boilerplate. The part after the colon is
- * the dimension, which is what actually distinguishes one column from the next,
- * so it wins when present.
+ * The old seriesId cut at 80 characters, and a Play Console metric prefix is 61
+ * of them, so the DIMENSION was what got truncated: "All countries / regions"
+ * was being stored as "...all-countries-regio" in real data. The dimension is
+ * the only part that tells one column from its siblings, so it was the worst
+ * possible thing to cut. Re-exported here so the twenty call sites that import
+ * from this module keep working.
  */
-export function shortLabel(header: string): string {
-  const colon = header.indexOf(":");
-  if (colon >= 0) {
-    const after = header.slice(colon + 1).trim();
-    const before = header.slice(0, colon).replace(/\s*\([^)]*\)\s*/g, " ").trim();
-    if (after && after.toLowerCase() !== "all countries / regions") {
-      return after;
-    }
-    // The "all" column is the total, and saying so is more use than repeating
-    // the metric name that every sibling column already shares.
-    if (after) return `${before}, total`;
-    return before;
-  }
-  return header.replace(/\s*\([^)]*\)\s*/g, " ").trim();
-}
-
-/** A stable id from a header, so re-importing the same report replaces it. */
-export function seriesId(header: string): string {
-  return header
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80);
-}
+export { labelOf as shortLabel, seriesIdOf as seriesId };
 
 export type IngestResult = {
   dataset: Dataset | null;
@@ -133,8 +114,8 @@ export function ingestCsv(text: string, name: string, stampIso: string): IngestR
     const sorted = [...byDay.values()].sort((a, b) => a.day.localeCompare(b.day));
 
     series.push({
-      id: seriesId(header),
-      label: shortLabel(header),
+      id: seriesIdOf(header),
+      label: labelOf(header),
       kind: kindOf(header),
       points: sorted,
       source: header,
@@ -158,7 +139,7 @@ export function ingestCsv(text: string, name: string, stampIso: string): IngestR
 
   return {
     dataset: {
-      id: seriesId(name) || "dataset",
+      id: seriesIdOf(name) || "dataset",
       label: name,
       series,
       importedAt: stampIso,
