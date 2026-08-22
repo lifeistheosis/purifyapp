@@ -625,7 +625,6 @@ export function AdminShell({
 
   return (
     <div className="adm min-h-[100dvh]">
-      <div className="mx-auto flex w-full max-w-[1400px] gap-6 px-4 py-5 md:px-6">
         {/* Rail. Sticky on desktop so navigation is always one glance away,
             even a thousand rows into an order list.
 
@@ -641,20 +640,68 @@ export function AdminShell({
             nav scroller rather than pushing anything off the rail. py-[5px] on
             the nav items is load-bearing, not taste. A sixth group wants
             collapsible sections, not tighter padding. */}
-        <aside
-          className="sticky top-5 hidden h-[calc(100dvh-40px)] w-[200px] shrink-0 flex-col rounded-[var(--adm-radius-lg)] border p-3 lg:flex"
-          style={{ background: "var(--adm-rail)", borderColor: "var(--adm-line)" }}
-        >
-          {railBody}
-          <div className="min-h-0 flex-1 overflow-y-auto">{nav}</div>
-          {railFooter}
-        </aside>
+      {/* Fixed, not sticky. Sticky kept the rail inside the old centred
+          max-w-[1400px] wrapper, which on a 1680px screen left 133px of dead
+          margin on the left and 147px on the right, floated the rail 158px in
+          from the edge, and squeezed the canvas to 1176px. Fixed anchors it to
+          the viewport and hands those 284px back to the content.
 
-        <div className="min-w-0 flex-1">
-          <header className="mb-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0 flex-1">
-                <div className="mb-2 flex items-center gap-2 lg:hidden">
+          h-dvh, not h-[calc(100dvh-40px)]: the rail is flush now, so there is
+          no inset to subtract. Only the NAV region scrolls, which is what keeps
+          the identity block pinned however many groups land. */}
+      <aside
+        className="fixed inset-y-0 left-0 z-30 hidden h-dvh w-[var(--adm-rail-w)] flex-col border-r p-3 lg:flex"
+        style={{ background: "var(--adm-rail)", borderColor: "var(--adm-line)" }}
+      >
+        {railBody}
+        <div className="min-h-0 flex-1 overflow-y-auto">{nav}</div>
+        {railFooter}
+      </aside>
+
+      {/* The canvas. pl clears the fixed rail and nothing else constrains the
+          width, so it grows with the viewport. min-w-0 is load-bearing: without
+          it a wide DataTable would push this track past the viewport instead of
+          scrolling inside its own box. */}
+      <div className="min-w-0 lg:pl-[var(--adm-rail-w)]">
+          {/* TOP BAR. Its own row, spanning the canvas, everything on one
+              centre line.
+
+              It used to share a row with the title under items-start, which put
+              four elements on four different baselines: search at y=21, the
+              eyebrow at 23, the toolbar at 29 and the title at 47. The toolbar
+              landed between the eyebrow and the title, aligned to neither,
+              which is what read as detached. Splitting the row means the bar
+              aligns to itself and the title owns the line below.
+
+              Sticky so the action bank and search stay reachable a thousand
+              rows into an order list.
+
+              ON THE Z-SCALE, because the obvious reading is wrong. TabSearch's
+              listbox is z-30 but it is nested INSIDE this bar, so that number
+              is scoped here and never competes with the bar itself. The one
+              that does compete is SupportConsole's z-20 menu: the content
+              wrapper below is only a stacking context while .adm-panel-enter
+              is animating, and prefers-reduced-motion sets that animation to
+              none, at which point the menu promotes to the root scale, ties a
+              z-20 bar and wins on DOM order. So the wrapper isolates
+              explicitly and the bar sits at 40. Scale: content 0-10, rail 30,
+              bar 40, Modal 100. */}
+          <div
+            className="sticky top-0 z-40 border-b"
+            style={{
+              background: "color-mix(in oklab, var(--adm-bg), transparent 20%)",
+              borderColor: "var(--adm-line)",
+              backdropFilter: "blur(10px)",
+            }}
+          >
+            {/* The bar's GROUND spans the canvas so the blur and the hairline
+                reach both edges, but its CONTENTS are capped and centred on the
+                same 1760 as the content below. Without the inner wrapper the
+                search sits ~280px right of the content edge on a 2560 monitor,
+                which is the same detachment this refactor set out to fix,
+                relocated to a wider screen. */}
+            <div className="mx-auto flex w-full max-w-[var(--adm-content-max)] flex-wrap items-center justify-end gap-2 px-4 py-3 md:px-6">
+            <div className="mr-auto flex items-center gap-2 lg:hidden">
                   <button
                     type="button"
                     onClick={() => setNavOpen((v) => !v)}
@@ -668,18 +715,11 @@ export function AdminShell({
                         "--_bg-hover": "color-mix(in oklab, var(--adm-control), var(--adm-ink) 8%)",
                       } as React.CSSProperties
                     }
-                  >
-                    Sections
-                  </button>
-                </div>
-                <SectionHead
-                  eyebrow={currentGroup?.group}
-                  chip={current.eyebrow}
-                  title={current.label}
-                />
-              </div>
+              >
+                Sections
+              </button>
+            </div>
 
-              <div className="flex flex-wrap items-center justify-end gap-2">
                 {/* Search and the one count that means someone is waiting.
                     Both sit left of the action bank so the row reads
                     identity, then find, then do. */}
@@ -754,31 +794,68 @@ export function AdminShell({
                     auto-clears: the harm was that it HID the identity, not
                     that it persisted, and silently hiding an error is
                     worse. */}
-                <p
-                  aria-live="polite"
-                  className="min-h-[16px] font-sans text-[12px]"
-                  style={{
-                    color: rebuildStatus?.includes("failed")
-                      ? "var(--adm-critical)"
-                      : "var(--adm-ink-3)",
-                  }}
-                >
-                  {rebuildStatus}
-                </p>
-              </div>
-            </div>
-          </header>
-
-          {navOpen && (
-            <div
-              className="adm-panel-enter mb-5 rounded-[var(--adm-radius-lg)] border p-3 lg:hidden"
-              style={{ background: "var(--adm-rail)", borderColor: "var(--adm-line)" }}
+            <p
+              aria-live="polite"
+              className="min-h-[16px] font-sans text-[12px]"
+              style={{
+                color: rebuildStatus?.includes("failed")
+                  ? "var(--adm-critical)"
+                  : "var(--adm-ink-3)",
+              }}
             >
-              {railBody}
-              {nav}
-              {railFooter}
+              {rebuildStatus}
+            </p>
             </div>
-          )}
+
+            {/* The drawer belongs to the bar, not to the content.
+
+                Sections is pinned; the drawer used to render in flow further
+                down the page, so tapping it eight hundred rows into Orders
+                mounted a panel above the fold and the button read as dead.
+                Anything triggered from a fixed element has to open against
+                that element. */}
+            {navOpen && (
+              <div
+                className="mx-auto w-full max-w-[var(--adm-content-max)] px-4 pb-3 md:px-6 lg:hidden"
+              >
+                <div
+                  className="adm-panel-enter max-h-[70dvh] overflow-y-auto rounded-[var(--adm-radius-lg)] border p-3"
+                  style={{ background: "var(--adm-rail)", borderColor: "var(--adm-line)" }}
+                >
+                  {railBody}
+                  {nav}
+                  {railFooter}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* CONTENT. The max-width lives here rather than on the shell, so the
+              rail still reaches the viewport edge while prose and tables stop
+              growing on an ultrawide monitor. 1760 binds only above roughly a
+              2000px viewport and never on a 1680 screen, where it was the old
+              1400 cap that was throwing away 280px.
+
+              Measured before choosing: the widest prose line in the panel is
+              198px, because the CARDS bound line length, not the page. So this
+              is a guard against a 2560px monitor rather than the thing keeping
+              text readable today. */}
+          {/* isolation, not a z-index. This wrapper has to be a stacking
+              context unconditionally, so that a z-20 menu inside a tab can
+              never climb out and tie the bar. It used to be one only while
+              its entrance animation ran, which made the layering correct or
+              broken depending on the reader's motion preference. */}
+          <div
+            className="mx-auto w-full max-w-[var(--adm-content-max)] px-4 py-5 md:px-6"
+            style={{ isolation: "isolate" }}
+          >
+            <header className="mb-5">
+              <SectionHead
+                eyebrow={currentGroup?.group}
+                chip={current.eyebrow}
+                title={current.label}
+              />
+            </header>
 
           {/* The hero is operations-only. Owner mode opens with its own
               measured/modelled split, and stacking a second set of headline

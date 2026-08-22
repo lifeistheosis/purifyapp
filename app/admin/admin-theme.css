@@ -226,6 +226,28 @@
      that and was rendering 10px cards beside 20px table wrappers beside
      12px modals beside 6px sub-tabs. Reach for these, never for a named
      Tailwind radius, exactly as the Polaris preview does. */
+  /* Rail width. One token because two things depend on it and they must never
+     disagree: the fixed rail's own width, and the padding-left that keeps the
+     canvas clear of it. Hard-coding both is how a shell ends up with content
+     tucked under its own sidebar.
+
+     200 to 220 in v5. The old rail sat inside a centred max-w-[1400px] wrapper
+     where every pixel of chrome came out of the content; flush to the viewport
+     it does not, and 220 leaves ~156px of label where 200 left ~136. The
+     longest label, "Subscriptions", is about 86px at 13px DM Sans, so the
+     truncate still never fires. */
+  --adm-rail-w: 220px;
+
+  /* The content measure. Two places consume it, the top bar's inner row and
+     the content column, and they must agree or the bar's action bank drifts
+     off the content edge on a wide monitor, which is the original detachment
+     moved from the vertical axis to the horizontal one.
+
+     1760 binds only above roughly a 2000px viewport. On the 1680 screen this
+     was reported from it never binds at all; there, it was the OLD 1400 cap
+     that was throwing away 280px. */
+  --adm-content-max: 1760px;
+
   --adm-radius: 14px;     /* cards, panels, table wrappers, filter bars */
   --adm-radius-sm: 10px;  /* controls, nav rows, chips, inputs */
   --adm-radius-lg: 18px;  /* rail, modal panel, mobile drawer */
@@ -394,7 +416,13 @@
 /* Panel entrance on tab change. One short move, not a stagger down the
    page: the operator already knows they changed tab. */
 .adm-panel-enter {
-  animation: adm-rise 180ms var(--adm-ease) both;
+  /* backwards, not both. `both` retains the final frame, which keeps the
+     element in a state that creates a stacking context; `backwards` only
+     applies the first frame before the animation starts. The shell no longer
+     leans on this element for isolation either way (it sets `isolation`
+     explicitly), but an animation fill mode is the wrong thing to be load
+     bearing for layering. */
+  animation: adm-rise 180ms var(--adm-ease) backwards;
 }
 
 @keyframes adm-shimmer {

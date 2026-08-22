@@ -342,7 +342,12 @@ function CartesianPlot({
   })();
 
   return (
-    <div className="w-full">
+    // Capped, because uniform scaling has a consequence the stretched version
+    // did not. `w-full h-auto` on a 1000x240 viewBox grows the drawing until
+    // maxHeight stops it, which happens at about 1200px wide; past that the
+    // plot is a fixed island with dead card either side. The cap makes that
+    // deliberate and centred rather than accidental and left-aligned.
+    <div className="mx-auto w-full max-w-[1200px]">
       <svg
         viewBox={`0 0 ${width} ${height}`}
         // preserveAspectRatio="none" was here. It stretched a 1000-unit

@@ -75,7 +75,12 @@ export function HeroSpark({
     <svg
       viewBox={`0 0 ${SW} ${SH}`}
       className="block w-full overflow-visible"
-      style={{ height: "auto" }}
+      // maxHeight matters more than it looks. SW = 280 was exactly the card
+      // width under the old 1400px shell, so `height: auto` happened to
+      // resolve to SH. On the full-bleed shell the card is wider and the
+      // sparkline scales with it, reaching roughly 116px tall at 1920 and
+      // swallowing the number it is supposed to annotate.
+      style={{ height: "auto", maxHeight: SH }}
       aria-hidden
       focusable="false"
     >
