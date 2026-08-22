@@ -94,6 +94,10 @@ function Slider({
           {format(value)}
         </span>
       </div>
+      {/* --_pct is what paints the filled half of the track on WebKit, which
+          has no ::-moz-range-progress equivalent. Computed here rather than
+          in CSS because CSS cannot read an input's value. Guarded against a
+          zero range, which would divide by zero and put the fill at NaN. */}
       <input
         id={id}
         type="range"
@@ -102,8 +106,12 @@ function Slider({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="h-11 w-full cursor-pointer"
-        style={{ accentColor: "var(--adm-accent)" }}
+        className="adm-range"
+        style={
+          {
+            "--_pct": `${max > min ? ((value - min) / (max - min)) * 100 : 0}%`,
+          } as React.CSSProperties
+        }
       />
     </div>
   );
@@ -345,112 +353,267 @@ export function OwnerDashboard({
 
         {panel === "model" && (
           <div className="space-y-6">
-            <Card
-              title="Assumptions"
-              subtitle="Everything below this card is downstream of these four numbers. Move one and watch the rest move."
-            >
-              <div className="mb-4 flex flex-wrap gap-2">
-                {(["conservative", "moderate", "aggressive"] as const).map((k) => (
-                  <button
-                    key={k}
-                    type="button"
-                    onClick={() => setA(SCENARIOS[k])}
-                    className="adm-control h-11 rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[12.5px] font-medium capitalize"
-                    style={{
-                      ["--_bg" as string]: "var(--adm-control)",
-                      ["--_bg-hover" as string]: "var(--adm-hover)",
-                      borderColor: "var(--adm-line-strong)",
-                      color: "var(--adm-ink-2)",
-                    }}
+            {/* One panel, in the shape the reference uses for its detail
+                view: what this is and when, then the number, then the
+                controls that move it, then the curve, then the breakdown.
+                It was four stacked cards, which made the assumptions read as
+                a separate screen from the result they produce. */}
+            <Card>
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="font-sans text-caption" style={{ color: "var(--adm-ink-3)" }}>
+                    {actuals
+                      ? "Measured inputs as of " + new Date(actuals.asOf).toLocaleDateString()
+                      : "Waiting on measured inputs"}
+                  </p>
+                  <h2
+                    className="mt-0.5 font-sans text-[22px] font-semibold tracking-[-0.02em]"
+                    style={{ color: "var(--adm-ink)" }}
                   >
-                    {k}
-                  </button>
-                ))}
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <Slider
-                  label="Install rate, of addressable"
-                  value={a.installRate}
-                  min={0.005}
-                  max={0.25}
-                  step={0.005}
-                  format={(v) => pct(v, 1)}
-                  onChange={(v) => setA({ ...a, installRate: v })}
-                />
-                <Slider
-                  label="Pay rate, of installs"
-                  value={effective.payRate}
-                  min={0.005}
-                  max={0.25}
-                  step={0.005}
-                  format={(v) => pct(v, 1)}
-                  onChange={(v) => {
-                    setUseMeasuredPayRate(false);
-                    setA({ ...a, payRate: v });
-                  }}
-                />
-                <Slider
-                  label="Annual revenue per subscriber"
-                  value={a.annualRevenuePerSubscriber}
-                  min={10}
-                  max={150}
-                  step={5}
-                  format={(v) => "$" + v}
-                  onChange={(v) => setA({ ...a, annualRevenuePerSubscriber: v })}
-                />
-                <div className="space-y-2 pt-1">
-                  <label className="flex items-center gap-2 font-sans text-caption" style={{ color: "var(--adm-ink-2)" }}>
-                    <input
-                      type="checkbox"
-                      checked={useMeasuredPayRate}
-                      disabled={!cal}
-                      onChange={(e) => setUseMeasuredPayRate(e.target.checked)}
-                      style={{ accentColor: "var(--adm-accent)" }}
-                    />
-                    Use the measured pay rate
-                    {cal ? ` (${pct(cal.observed.payRate)})` : ""}
-                  </label>
-                  <label className="flex items-center gap-2 font-sans text-caption" style={{ color: "var(--adm-ink-2)" }}>
-                    <input
-                      type="checkbox"
-                      checked={a.includeCatholicSpillover}
-                      onChange={(e) => setA({ ...a, includeCatholicSpillover: e.target.checked })}
-                      style={{ accentColor: "var(--adm-accent)" }}
-                    />
-                    Count US Roman Catholics as spillover
-                  </label>
-                  <label className="flex items-center gap-2 font-sans text-caption" style={{ color: "var(--adm-ink-2)" }}>
-                    <input
-                      type="checkbox"
-                      checked={a.includeOrientalOrthodox}
-                      onChange={(e) => setA({ ...a, includeOrientalOrthodox: e.target.checked })}
-                      style={{ accentColor: "var(--adm-accent)" }}
-                    />
-                    Count Oriental Orthodox (different communion)
-                  </label>
+                    Projection
+                    <Tag kind="modelled" />
+                  </h2>
+                </div>
+                {/* Scenario chips live in the header rather than above a
+                    separate card: they are the coarsest control on the panel
+                    and the reference puts its coarsest control here too. */}
+                <div className="flex flex-wrap gap-1.5">
+                  {(["conservative", "moderate", "aggressive"] as const).map((k) => {
+                    const on =
+                      a.installRate === SCENARIOS[k].installRate &&
+                      a.payRate === SCENARIOS[k].payRate &&
+                      a.annualRevenuePerSubscriber === SCENARIOS[k].annualRevenuePerSubscriber;
+                    return (
+                      <button
+                        key={k}
+                        type="button"
+                        onClick={() => {
+                          setA(SCENARIOS[k]);
+                          setUseMeasuredPayRate(false);
+                        }}
+                        aria-pressed={on}
+                        className="adm-control h-11 rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[12.5px] font-medium capitalize"
+                        style={
+                          on
+                            ? ({
+                                ["--_bg"]:
+                                  "linear-gradient(135deg, var(--adm-grad-from) 0%, var(--adm-grad-to) 100%)",
+                                ["--_bg-hover"]:
+                                  "linear-gradient(135deg, var(--adm-grad-to) 0%, var(--adm-grad-from) 100%)",
+                                borderColor: "transparent",
+                                color: "var(--adm-on-accent)",
+                              } as React.CSSProperties)
+                            : ({
+                                ["--_bg"]: "var(--adm-control)",
+                                ["--_bg-hover"]: "var(--adm-hover)",
+                                borderColor: "var(--adm-line-strong)",
+                                color: "var(--adm-ink-2)",
+                              } as React.CSSProperties)
+                        }
+                      >
+                        {k}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
-            </Card>
 
-            <Card
-              title="Subscribers, 24 months"
-              subtitle="Solid is today held flat. Dashed is where the assumptions above lead. Drag a slider and watch the curve bend: the size of that bend is the sensitivity of the input."
-            >
-              <ProjectionChart
-                series={chart}
-                xLabel={(i, n) => (i === 0 ? "now" : `+${n - 1}mo`)}
-                yFormat={(v) => num(v)}
-                caption="Projected subscriber growth against today's figure held flat."
-              />
-            </Card>
+              <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.85fr)]">
+                {/* The hero value. Oversized because it is the one number the
+                    whole panel exists to produce. Tagged modelled, and the
+                    line under it names the measured quantity it is set
+                    against, so the size cannot be mistaken for certainty. */}
+                <div>
+                  <p className="font-sans text-caption" style={{ color: "var(--adm-ink-3)" }}>
+                    Annual revenue at these assumptions
+                  </p>
+                  <p
+                    className="mt-1 font-sans text-[52px] font-bold leading-none tracking-[-0.03em] tabular-nums"
+                    style={{ color: "var(--adm-ink)" }}
+                  >
+                    {usd(p.totals.annualRevenueUsd)}
+                  </p>
+                  <p className="mt-3 font-sans text-detail" style={{ color: "var(--adm-ink-2)" }}>
+                    {num(p.totals.subscribers)} subscribers from {num(p.totals.installs)} installs,
+                    against {cal ? num(cal.actuals.paidSubscribers) : "an unknown number of"} paying
+                    today.
+                  </p>
 
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              <StatCard label="Addressable" value={num(p.totals.addressable)} hint="after reach and practice" />
-              <StatCard label="Installs" value={num(p.totals.installs)} />
-              <StatCard label="Subscribers" value={num(p.totals.subscribers)} />
-              <StatCard label="Annual revenue" value={usd(p.totals.annualRevenueUsd)} accent />
-            </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setA(SCENARIOS.moderate);
+                        setUseMeasuredPayRate(false);
+                      }}
+                      className="adm-control h-11 rounded-[var(--adm-radius-sm)] border px-4 font-sans text-[12.5px] font-medium"
+                      style={
+                        {
+                          ["--_bg"]: "var(--adm-control)",
+                          ["--_bg-hover"]: "var(--adm-hover)",
+                          borderColor: "var(--adm-line-strong)",
+                          color: "var(--adm-ink-2)",
+                        } as React.CSSProperties
+                      }
+                    >
+                      Reset to moderate
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!cal}
+                      onClick={() => setUseMeasuredPayRate((v) => !v)}
+                      aria-pressed={useMeasuredPayRate}
+                      title={
+                        cal
+                          ? "Replace the pay-rate slider with the rate actually measured"
+                          : "No measured actuals available"
+                      }
+                      className="adm-control h-11 rounded-[var(--adm-radius-sm)] border px-4 font-sans text-[12.5px] font-medium disabled:cursor-not-allowed disabled:opacity-45"
+                      style={
+                        useMeasuredPayRate
+                          ? ({
+                              ["--_bg"]: "var(--adm-control)",
+                              ["--_bg-hover"]: "var(--adm-hover)",
+                              borderColor: "var(--adm-good)",
+                              color: "var(--adm-good)",
+                            } as React.CSSProperties)
+                          : ({
+                              ["--_bg"]: "var(--adm-control)",
+                              ["--_bg-hover"]: "var(--adm-hover)",
+                              borderColor: "var(--adm-line-strong)",
+                              color: "var(--adm-ink-2)",
+                            } as React.CSSProperties)
+                      }
+                    >
+                      {useMeasuredPayRate ? "Using measured pay rate" : "Use measured pay rate"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* The control suite in a recessed well, the way the
+                    reference groups its period controls: this reads as
+                    "these are the knobs" rather than as more data. */}
+                <div
+                  className="rounded-[var(--adm-radius)] border p-4"
+                  style={{ background: "var(--adm-panel-2)", borderColor: "var(--adm-line)" }}
+                >
+                  <p
+                    className="mb-3 font-sans text-caption font-medium"
+                    style={{ color: "var(--adm-ink-2)" }}
+                  >
+                    Assumptions
+                  </p>
+                  <div className="space-y-3">
+                    <Slider
+                      label="Install rate, of addressable"
+                      value={a.installRate}
+                      min={0.005}
+                      max={0.25}
+                      step={0.005}
+                      format={(v) => pct(v, 1)}
+                      onChange={(v) => setA({ ...a, installRate: v })}
+                    />
+                    <Slider
+                      label="Pay rate, of installs"
+                      value={effective.payRate}
+                      min={0.005}
+                      max={0.25}
+                      step={0.005}
+                      format={(v) => pct(v, 1)}
+                      onChange={(v) => {
+                        setUseMeasuredPayRate(false);
+                        setA({ ...a, payRate: v });
+                      }}
+                    />
+                    <Slider
+                      label="Annual revenue per subscriber"
+                      value={a.annualRevenuePerSubscriber}
+                      min={10}
+                      max={150}
+                      step={5}
+                      format={(v) => "$" + v}
+                      onChange={(v) => setA({ ...a, annualRevenuePerSubscriber: v })}
+                    />
+                  </div>
+
+                  <div
+                    className="mt-4 space-y-2 border-t pt-3"
+                    style={{ borderColor: "var(--adm-line)" }}
+                  >
+                    <label
+                      className="flex items-center gap-2 font-sans text-caption"
+                      style={{ color: "var(--adm-ink-2)" }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={a.includeCatholicSpillover}
+                        onChange={(e) => setA({ ...a, includeCatholicSpillover: e.target.checked })}
+                        style={{ accentColor: "var(--adm-accent)" }}
+                      />
+                      Count US Catholic spillover
+                    </label>
+                    <label
+                      className="flex items-center gap-2 font-sans text-caption"
+                      style={{ color: "var(--adm-ink-2)" }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={a.includeOrientalOrthodox}
+                        onChange={(e) => setA({ ...a, includeOrientalOrthodox: e.target.checked })}
+                        style={{ accentColor: "var(--adm-accent)" }}
+                      />
+                      Count Oriental Orthodox (different communion)
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 border-t pt-5" style={{ borderColor: "var(--adm-line)" }}>
+                <p className="mb-3 font-sans text-caption" style={{ color: "var(--adm-ink-3)" }}>
+                  Solid is today held flat. Dashed is where the assumptions lead. Drag a slider and
+                  watch the curve bend: the size of that bend is the sensitivity of the input.
+                </p>
+                <ProjectionChart
+                  series={chart}
+                  xLabel={(i, n) => (i === 0 ? "now" : "+" + (n - 1) + "mo")}
+                  yFormat={(v) => num(v)}
+                  caption="Projected subscriber growth against today's figure held flat."
+                />
+              </div>
+
+              {/* The granular strip: four facets of one model, in the order
+                  the maths runs. Pool, installs, subscribers, share. */}
+              <div
+                className="mt-5 grid grid-cols-2 gap-x-6 gap-y-4 border-t pt-5 md:grid-cols-4"
+                style={{ borderColor: "var(--adm-line)" }}
+              >
+                {[
+                  { k: "Addressable", v: num(p.totals.addressable), h: "after reach and practice" },
+                  { k: "Installs", v: num(p.totals.installs), h: "of the addressable pool" },
+                  { k: "Subscribers", v: num(p.totals.subscribers), h: "of those installs" },
+                  {
+                    k: "Share vs " + COMPARABLE.name,
+                    v: p.penetration.ratio.toFixed(2) + "x",
+                    h: "of its own pool, measured the same way",
+                  },
+                ].map((m) => (
+                  <div key={m.k}>
+                    <p className="font-sans text-caption" style={{ color: "var(--adm-ink-3)" }}>
+                      {m.k}
+                    </p>
+                    <p
+                      className="mt-0.5 font-sans text-[24px] font-semibold leading-none tabular-nums"
+                      style={{ color: "var(--adm-ink)" }}
+                    >
+                      {m.v}
+                    </p>
+                    <p className="mt-1 font-sans text-eyebrow" style={{ color: "var(--adm-ink-3)" }}>
+                      {m.h}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </Card>
 
             <Card
               title={`Penetration against ${COMPARABLE.name}`}

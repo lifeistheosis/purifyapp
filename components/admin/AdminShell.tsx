@@ -57,6 +57,7 @@ import { OwnerSection } from "./OwnerSection";
 import { HeroRow } from "./HeroRow";
 import { SectionHead, type PeriodId } from "./hero";
 import { Freshness } from "./Freshness";
+import { TabSearch } from "./TabSearch";
 import { useLiveData } from "@/lib/admin/useLiveData";
 import {
   isOwnerTab,
@@ -679,6 +680,60 @@ export function AdminShell({
               </div>
 
               <div className="flex flex-wrap items-center justify-end gap-2">
+                {/* Search and the one count that means someone is waiting.
+                    Both sit left of the action bank so the row reads
+                    identity, then find, then do. */}
+                <TabSearch
+                  tabs={visibleGroups.flatMap((g) =>
+                    g.tabs.map((t) => ({
+                      id: t.id,
+                      label: t.label,
+                      eyebrow: t.eyebrow,
+                      group: g.group,
+                    })),
+                  )}
+                  onSelect={(id) => isTabId(id) && select(id)}
+                />
+                <button
+                  type="button"
+                  onClick={() => select("orders")}
+                  title={
+                    pendingOrders
+                      ? `${pendingOrders} order${pendingOrders === 1 ? "" : "s"} awaiting payment`
+                      : "Nothing is waiting"
+                  }
+                  aria-label={
+                    pendingOrders
+                      ? `${pendingOrders} orders awaiting payment`
+                      : "Nothing is waiting"
+                  }
+                  className="adm-control relative grid h-11 w-11 shrink-0 place-items-center rounded-[var(--adm-radius-sm)] border"
+                  style={
+                    {
+                      borderColor: "var(--adm-line)",
+                      color: "var(--adm-ink-2)",
+                      "--_bg": "var(--adm-control)",
+                      "--_bg-hover": "var(--adm-hover)",
+                    } as React.CSSProperties
+                  }
+                >
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M15.3 7.2a5.3 5.3 0 0 0-10.6 0c0 5-2 6.4-2 6.4h14.6s-2-1.4-2-6.4Z" />
+                    <path d="M8.3 16.2a1.9 1.9 0 0 0 3.4 0" />
+                  </svg>
+                  {pendingOrders ? (
+                    <span
+                      aria-hidden
+                      className="absolute -right-1 -top-1 grid min-w-[17px] place-items-center rounded-[var(--adm-radius-pill)] px-1 font-sans text-[10px] font-semibold tabular-nums"
+                      style={{
+                        background: "var(--adm-badge-bg)",
+                        color: "var(--adm-badge-fg)",
+                      }}
+                    >
+                      {pendingOrders}
+                    </span>
+                  ) : null}
+                </button>
                 <Toolbar>
                   <ToolbarButton onClick={() => rebuild("all")} title="Revalidate every content surface">
                     Rebuild caches

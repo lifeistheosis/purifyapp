@@ -1181,43 +1181,11 @@ div[data-hl="true"] {
  }
 }
 
-/* Admin — premium card surfaces. A faint top-lit gradient over the night base
-   plus a hairline inner highlight, so cards read as raised glass rather than
-   flat panels. Layered via background-image so it composes with the element's
-   own bg-night / bg-gold color. Pair with the existing border classes. */
-.admin-surface {
- background-image: linear-gradient(
- 180deg,
- rgba(255, 255, 255, 0.03),
- rgba(255, 255, 255, 0)
- );
- box-shadow:
- 0 1px 2px rgba(0, 0, 0, 0.28),
- inset 0 1px 0 rgba(255, 255, 255, 0.035);
-}
-.admin-surface-gold {
- background-image: linear-gradient(
- 180deg,
- rgba(255, 255, 255, 0.05),
- rgba(255, 255, 255, 0)
- );
- box-shadow:
- 0 1px 2px rgba(0, 0, 0, 0.28),
- inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-/* Admin tab bar — the active tab sits in a soft gold-tinted segment with a
-   glowing underline; inactive tabs get a quiet hover wash. */
-.admin-tab-active {
- background-image: linear-gradient(
- 180deg,
- rgba(201, 162, 39, 0.1),
- rgba(201, 162, 39, 0)
- );
-}
-.admin-tab-underline {
- box-shadow: 0 0 8px rgba(201, 162, 39, 0.55);
-}
+/* The admin's old surface and tab classes lived here: .admin-surface,
+   .admin-surface-gold, .admin-tab-active and .admin-tab-underline, the last
+   two carrying an rgba(201,162,39,...) gold wash and glow from the amber era.
+   All four were unused by v5 and are gone. The admin's surfaces are tokens in
+   app/admin/admin-theme.css now, not classes here. */
 
 /* ── Reader focus mode ───────────────────────────────────────────────
    The Bible reader's ReaderFocusController toggles `html.reader-focus`.

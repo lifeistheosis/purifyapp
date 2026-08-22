@@ -82,7 +82,13 @@ function countSmallTargets(): { total: number; byFile: Record<string, number> } 
 // The count as measured when this guard was written. IT MAY ONLY FALL.
 // Lower it in the same commit that fixes the controls, so the diff shows the
 // work. Never raise it.
-const MAX_SMALL_TARGETS = 49;
+//
+// 49 -> 46 when components/admin/preview/PurifyShopifyAdmin.tsx was deleted in
+// v5. That file was 826 lines of dead Polaris mockup behind /admin/preview,
+// imported by nothing, and it held three of the offenders. The ceiling was at
+// exactly 49 with the tree at 49, so the redesign had no room for a single
+// compact control until it went.
+const MAX_SMALL_TARGETS = 46;
 
 describe("touch targets", () => {
   const { total, byFile } = countSmallTargets();

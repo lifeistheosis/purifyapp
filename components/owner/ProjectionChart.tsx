@@ -23,7 +23,7 @@
 // SVG for the same reason: an admin panel that pulls in a charting dependency
 // pays for it on every page, and none of these shapes are hard.
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 // The curve maths moved to charts.tsx in v4 so the hero metric cards
 // could use it too. Same function, one copy.
@@ -140,7 +140,10 @@ export function ProjectionChart({
       : "";
 
   const ticks = [0, 0.25, 0.5, 0.75, 1].map((f) => f * max);
-  const gid = "own-grad";
+  // Was the module constant "own-grad", which meant two projection charts on
+  // one page shared a gradient and the second rendered with no fill. Same bug
+  // charts.tsx had with area-grad-0. useId settles both.
+  const gid = `own-grad-${useId().replace(/:/g, "")}`;
 
   return (
     <figure className="m-0">
@@ -164,28 +167,25 @@ export function ProjectionChart({
         >
           <defs>
             <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={series[0]?.color} stopOpacity="0.28" />
+              <stop offset="0%" stopColor={series[0]?.color} stopOpacity="0.2" />
               <stop offset="100%" stopColor={series[0]?.color} stopOpacity="0" />
             </linearGradient>
           </defs>
 
+          {/* Labels without lines. The grid used to run the full width at
+              every tick, which on a two-series chart is eight horizontal
+              rules competing with the two curves that carry the meaning.
+              The hover crosshair below reads an exact value on demand, so
+              the lines were doing work nothing needed. */}
           {ticks.map((t) => (
             <g key={t}>
-              <line
-                x1={PAD.left}
-                x2={W - PAD.right}
-                y1={y(t)}
-                y2={y(t)}
-                stroke="var(--chart-grid)"
-                strokeWidth="1"
-              />
               <text
                 x={PAD.left - 8}
                 y={y(t) + 4}
                 textAnchor="end"
                 fontSize="10.5"
                 fill="var(--chart-axis)"
-                fontFamily="ui-sans-serif, system-ui"
+                fontFamily="var(--font-sans)"
               >
                 {yFormat(t)}
               </text>
@@ -247,7 +247,7 @@ export function ProjectionChart({
             y={H - 8}
             fontSize="10.5"
             fill="var(--chart-axis)"
-            fontFamily="ui-sans-serif, system-ui"
+            fontFamily="var(--font-sans)"
           >
             {xLabel(0, n)}
           </text>
@@ -257,7 +257,7 @@ export function ProjectionChart({
             textAnchor="end"
             fontSize="10.5"
             fill="var(--chart-axis)"
-            fontFamily="ui-sans-serif, system-ui"
+            fontFamily="var(--font-sans)"
           >
             {xLabel(n - 1, n)}
           </text>

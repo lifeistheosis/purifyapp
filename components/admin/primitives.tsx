@@ -447,11 +447,22 @@ export function ToolbarButton({
       "--_bg-hover": "color-mix(in oklab, var(--adm-control), var(--adm-ink) 8%)",
       color: "var(--adm-ink-2)",
     } as React.CSSProperties,
+    // A gradient fill and a glow the same hue as the fill. .adm-control
+    // assigns --_bg to `background`, which takes a gradient as happily as a
+    // colour, so this needed no new mechanism.
+    //
+    // The gradient stops at --adm-grad-to and does NOT run on to
+    // --adm-grad-vivid. White on that magenta is 3.46:1, which is legal for
+    // large text and not for a 12.5px button label. The vivid stop belongs
+    // to FeatureCard, where the type is big enough to earn it.
     primary: {
       borderColor: "transparent",
-      "--_bg": "var(--adm-accent)",
-      "--_bg-hover": "var(--adm-accent-dim)",
+      "--_bg":
+        "linear-gradient(135deg, var(--adm-grad-from) 0%, var(--adm-grad-to) 100%)",
+      "--_bg-hover":
+        "linear-gradient(135deg, var(--adm-grad-to) 0%, var(--adm-grad-from) 100%)",
       color: "var(--adm-on-accent)",
+      boxShadow: "0 4px 14px color-mix(in oklab, var(--adm-accent), transparent 72%)",
     } as React.CSSProperties,
     danger: {
       borderColor: "color-mix(in oklab, var(--adm-critical), transparent 60%)",

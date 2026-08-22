@@ -81,7 +81,7 @@ export function HeroSpark({
     >
       <defs>
         <linearGradient id={`${id}-fill`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.22" />
+          <stop offset="0%" stopColor={color} stopOpacity="0.2" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
@@ -140,7 +140,7 @@ export function HeroSpark({
           y="2.5"
           textAnchor="middle"
           fontSize="10.5"
-          fontFamily="ui-sans-serif, system-ui"
+          fontFamily="var(--font-sans)"
           fill="var(--adm-ink-2)"
         >
           {format(points[points.length - 1])}
@@ -345,11 +345,23 @@ export function FeatureCard({
       // the gradient is a coloured SURFACE that does not flip with the theme.
       // That puts the contrast burden on the gradient: --adm-grad-to is
       // pinned dark enough that white clears 4.5:1 on it, and the body copy
-      // sits at 88% rather than 78% for the same reason. Lightening either
-      // end of the gradient breaks this and nothing will tell you.
+      // sits at 94% for the same reason. Lightening either end of the
+      // gradient, or raising the bloom past 20%, breaks this and no test
+      // will tell you, because adminTheme.test.ts cannot parse a gradient.
       className="flex min-w-0 flex-col rounded-[var(--adm-radius)] p-5"
       style={{
+        // Two layers. The base gradient runs from deep violet to indigo and
+        // is what every piece of text sits on. The vivid magenta is a corner
+        // BLOOM over the top, capped at 20%, never a hard stop.
+        //
+        // The difference matters and it is measured. Running the base
+        // gradient on to full #d946ef puts the body copy at 2.99:1, well
+        // under the 4.5 floor for 12.5px text, because that magenta is far
+        // lighter than it looks. Capping the bloom at 20% gives a worst-case
+        // ground of #8f3ced, where the body clears at 4.63:1. The reference
+        // does the same thing: its promo card blooms, it does not band.
         background:
+          "radial-gradient(120% 120% at 100% 0%, color-mix(in oklab, var(--adm-grad-vivid), transparent 80%) 0%, transparent 60%), " +
           "linear-gradient(155deg, var(--adm-grad-from) 0%, var(--adm-grad-to) 100%)",
       }}
     >
@@ -381,7 +393,7 @@ export function FeatureCard({
       </h2>
       <p
         className="mt-2 font-sans text-[12.5px] leading-relaxed"
-        style={{ color: "rgb(255 255 255 / 0.88)" }}
+        style={{ color: "rgb(255 255 255 / 0.94)" }}
       >
         {body}
       </p>

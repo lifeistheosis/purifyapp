@@ -371,6 +371,111 @@ instance before being trusted.
   `monthlyExpenseCents`, with MRR left out until `REVENUECAT_V2_API_KEY` is set.
   Owner's call, and it is recorded here rather than silently dropped.
 
+## v5, 2026-08-21 — the Stakent redesign
+
+A ground-up visual pass against a dark fintech reference the owner supplied.
+v4 had fixed the structure; this changed the register.
+
+### Why it looked flat, in named lines rather than adjectives
+
+| Cause | Where | Effect |
+|---|---|---|
+| `preserveAspectRatio="none"` | `charts.tsx:318`, `:608` | A 1000-unit viewBox stretched non-uniformly to container width, so every stroke thinned horizontally and every curve skewed. The single biggest cause |
+| `smoothPath` defined, never called | `charts.tsx:89` | `LineChart`, `AreaChart` and `Sparkline` drew angular polylines. The file exported the good curve maths and no chart inside it used them |
+| 11 hardcoded `ui-sans-serif, system-ui` | three chart files | Every axis label and badge was OS system font while the panel was DM Sans |
+| `const gid = "own-grad"` at module scope | `ProjectionChart.tsx` | Two projection charts on one page shared a gradient id and the second rendered with no fill. `charts.tsx` had the same bug with `area-grad-0` |
+| The slider was the browser's | `OwnerDashboard.tsx` | Only `accentColor` was set. No track, no thumb, no fill |
+
+`HeroSpark` already did everything the reference does. Most of the work was
+propagating one existing component's behaviour outward.
+
+### The palette was measured before it was written
+
+The owner's spec turned out to be **better** than what shipped: `#8A8A9E` reads
+5.47 on the card where v4's `ink-3` read 4.93. One pairing failed, white on
+`#D946EF` at 3.46, so the button gradient stops at `#7c3aed` and only the
+feature surface reaches magenta.
+
+A split the spec did not anticipate: `#7c3aed` reads 3.24 as a chart line, which
+is dim, while `#a78bfa` reads 6.79 but fails as a button ground at 3.15. Hence
+`--adm-accent` and `--adm-accent-line` as two tokens.
+
+**The first series candidate scored a deutan dE of 0.3** between its violet and
+blue lines, which is one colour to a red-green colourblind reader. Swapping the
+blue for a rose took it to 3.8. Measured with `scripts/check-series-cvd.mjs`:
+
+| | deutan | protan | tritan |
+|---|---|---|---|
+| v4 dark | 2.8 | 3.5 | 0.8 |
+| v4 light | 1.9 | 6.5 | 1.3 |
+| **v5 dark** | **3.8** | **13.0** | **2.5** |
+| **v5 light** | **6.8** | **5.9** | **1.8** |
+
+Better on every axis in both themes. Still not solved: a set clearing ~19 exists
+and comes out violet, olive, mauve, mint, slate and rose, which is not this
+panel's register.
+
+### A gradient defect caught by measuring rather than looking
+
+Running the feature card's gradient on to full `#d946ef` put its body copy at
+**2.99:1**, under the 4.5 floor, because that magenta is far lighter than it
+looks. The fix is a corner bloom capped at 20% instead of a hard band, plus body
+copy at 94% rather than 88%, giving a worst-case 4.63:1. **No test can catch
+this**: `adminTheme.test.ts` only parses plain colour tokens and throws on a
+gradient, so the numbers live in a comment beside the token.
+
+### Magic UI: technique, not packages
+
+The owner installed the Magic UI MCP. Of 82 registry items most are landing-page
+effects. `shine-border` has **zero dependencies** and its `mask-composite`
+border trick is directly useful. `magic-card` and `number-ticker` both need
+`motion`, and `magic-card` also needs `next-themes`, which fights this repo's
+own `data-adm-theme` attribute; `number-ticker` duplicates `CountUp.tsx`.
+`clsx` and `tailwind-merge` already ship, so the only real gap was `motion`.
+Nothing was installed. `lucide-react` was refused on the same grounds loudly
+enough to reach a patch note.
+
+### What landed
+
+- **Wave 0.** Deleted `PurifyShopifyAdmin.tsx` and `/admin/preview`, 826 lines
+  of dead mockup of a design system the panel had already left. It held 3 of the
+  49 touch-target offenders, and the ceiling was at exactly 49, so the redesign
+  had no room for a single compact control until it went. Ceiling now 46. Also
+  removed four dead amber-era classes from `globals.css` and three unused motion
+  classes. **`rail-pulse` was NOT dead** and survived: it belongs to the reader's
+  study rail, not the admin.
+- **Wave 1.** Four surfaces (`#0b0b0e` / `#0e0e12` / `#13131a` / `#191922`),
+  pure white primary ink, the split accent, a three-stop gradient family, the
+  new series, 14/10/18 radii. All 66 contrast gates pass, both themes.
+- **Wave 2.** Every chart curved through `smoothPath`, every gridline removed,
+  gradient fills at 0.20 → 0 with `useId()`-namespaced ids, SVG text on
+  `var(--font-sans)`, both `preserveAspectRatio="none"` gone.
+- **Wave 3.** A real range slider (dual-tone track, defined thumb, focus ring,
+  WebKit and Gecko written side by side because they share no pseudo-elements),
+  gradient primary buttons with a matched glow, and a top bar with ⌘K
+  jump-to-tab search and a pending-orders bell.
+- **New:** `app/admin/charts-preview`, a dev-only gallery rendering every real
+  chart on deterministic sample data. It exists because every `/api/admin` route
+  answers 403 without a session, so a chart redesign could otherwise be
+  typechecked, linted, tested and never once seen. Two AreaCharts sit side by
+  side in it deliberately: that is the arrangement that proves the gradient-id
+  collision is fixed.
+
+### Still open after v5
+
+- The rail's active state is a neutral fill. The spec offered an accent bar or a
+  translucent pill; the bar was removed at the owner's request in v4 and was not
+  reinstated without asking.
+- The hero analytics panel (the reference's detail-panel anatomy: last-update
+  line, oversized hero value with inline actions, control suite, metrics strip)
+  was not restructured.
+- **419 reader-palette classes across 25 files** still carry reader semantics
+  into the admin via the six-line shim. ShopTab alone has 111. Correct, but
+  indirect. `components/owner/**` has zero.
+- Light mode still unverified visually, for the same reason as v4: the browser
+  pane does not composite, so `var()`-resolved styles do not update on a theme
+  switch. It rests on the contrast tests, which read the stylesheet directly.
+
 ## Recommended execution order
 
 Numbered by task ID (matching the live task tracker), grouped into waves.

@@ -5,7 +5,7 @@
 // Visual contract:
 //   - Every chart renders in a responsive SVG (viewBox-scaled to its
 //     container's width) so the admin panel works on tablets.
-//   - Gridlines + axis text pull from CSS variables (--chart-grid,
+//   - Axis text pulls from CSS variables (
 //     --chart-axis) so a palette tweak in globals.css propagates.
 //   - Hover state lives in React; pointer events are bound to a single
 //     overlay rect so we don't pay an event handler per data point.
@@ -13,7 +13,7 @@
 // Exports: Sparkline, LineChart, AreaChart, BarChart, Donut,
 //          CalendarHeatmap, SERIES_COLORS, chartColors.
 
-import { useState, type CSSProperties } from "react";
+import { useId, useState, type CSSProperties } from "react";
 
 // ── Palette ─────────────────────────────────────────────────────────────────
 // Semantic names so tabs can pick "positive" or "warning" without
@@ -63,7 +63,10 @@ export const SERIES_COLORS = [
 
 // CSS-variable tokens. app/admin/admin-theme.css overrides all four of these
 // inside .adm, per theme; globals.css holds the reader defaults.
-const GRID = "var(--chart-grid)";
+// GRID was here, bound to --chart-grid. v5 removed every gridline in this
+// file, so nothing reads it. The token itself stays defined in
+// admin-theme.css and globals.css because the reader's own charts still use
+// it; only the admin stopped drawing them.
 const AXIS = "var(--chart-axis)";
 const HOVER = "var(--chart-hover)";
 
@@ -128,6 +131,11 @@ export function Sparkline({
   interactive?: boolean;
 }) {
   const [hover, setHover] = useState<number | null>(null);
+  // useId, not a counter or a module constant. Two Sparklines sharing a
+  // gradient id makes the second render with no fill, which is exactly the
+  // bug that shipped in CartesianPlot (area-grad-0) and ProjectionChart
+  // (own-grad) for months.
+  const uid = useId().replace(/:/g, "");
 
   if (!data.length) {
     return <svg width={width} height={height} aria-hidden="true" />;
@@ -136,9 +144,15 @@ export function Sparkline({
   const max = Math.max(...data);
   const span = max - min || 1;
   const stepX = data.length > 1 ? width / (data.length - 1) : 0;
-  const pts = data
-    .map((v, i) => `${i * stepX},${height - ((v - min) / span) * height}`)
-    .join(" ");
+  const xy = data.map((v, i) => ({
+    x: i * stepX,
+    y: height - ((v - min) / span) * height,
+  }));
+  // Curved, not angular. smoothPath has been exported from this file since
+  // v4 and no chart inside it ever called it. The two components that did,
+  // HeroSpark and ProjectionChart, are the two that never looked cheap.
+  const line = smoothPath(xy);
+  const area = `${line} L ${(data.length - 1) * stepX} ${height} L 0 ${height} Z`;
   const last = data[data.length - 1];
   const lastY = height - ((last - min) / span) * height;
 
@@ -161,7 +175,21 @@ export function Sparkline({
         onMouseMove={interactive ? onMove : undefined}
         onMouseLeave={interactive ? () => setHover(null) : undefined}
       >
-        <polyline points={pts} fill="none" stroke={color} strokeWidth={1.5} />
+        <defs>
+          <linearGradient id={`spark-${uid}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity={0.2} />
+            <stop offset="100%" stopColor={color} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <path d={area} fill={`url(#spark-${uid})`} />
+        <path
+          d={line}
+          fill="none"
+          stroke={color}
+          strokeWidth={1.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
         <circle cx={(data.length - 1) * stepX} cy={lastY} r={2.5} fill={color} />
         {interactive && hover !== null && (
           <circle
@@ -257,6 +285,7 @@ function CartesianPlot({
   mode: "line" | "area";
 }) {
   const [hover, setHover] = useState<number | null>(null);
+  const uid = useId().replace(/:/g, "");
   const width = 1000;
   const padL = 44;
   const padR = 18;
@@ -280,12 +309,7 @@ function CartesianPlot({
   const xFor = (i: number) => padL + i * stepX;
 
   const linePath = (data: number[]) =>
-    data
-      .map(
-        (v, i) =>
-          `${i === 0 ? "M" : "L"}${xFor(i).toFixed(1)},${yFor(v).toFixed(1)}`,
-      )
-      .join(" ");
+    smoothPath(data.map((v, i) => ({ x: xFor(i), y: yFor(v) })));
 
   const areaPath = (data: number[]) => {
     if (!data.length) return "";
@@ -294,7 +318,13 @@ function CartesianPlot({
     return `${line} L${xFor(data.length - 1).toFixed(1)},${baseY} L${xFor(0).toFixed(1)},${baseY} Z`;
   };
 
-  // Tick fractions top → bottom so they pair with grid Y-coords.
+  // Tick fractions top → bottom. These position the Y LABELS only; the
+  // gridlines they used to pair with are gone.
+  //
+  // Why the labels stay when the grid goes: a grid is a reading aid for
+  // tracing a point back to an axis, and the hover crosshair below does
+  // that job better and only when asked. An axis with no numbers at all is
+  // decoration, and this chart is the analytical one.
   const tickFracs = [1, 0.75, 0.5, 0.25, 0];
   const grid = tickFracs.map((f) => padT + innerH * (1 - f));
 
@@ -315,7 +345,11 @@ function CartesianPlot({
     <div className="w-full">
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        preserveAspectRatio="none"
+        // preserveAspectRatio="none" was here. It stretched a 1000-unit
+        // viewBox to whatever width the container happened to be, so a
+        // 1.8px stroke rendered thinner horizontally than vertically and
+        // every curve skewed. Uniform scaling costs nothing and is most of
+        // the reason this chart used to look cheap.
         className="w-full h-auto"
         style={{ maxHeight: height * 1.2 }}
         onMouseMove={(e) => {
@@ -337,31 +371,18 @@ function CartesianPlot({
             {series.map((s, i) => (
               <linearGradient
                 key={`g-${i}`}
-                id={`area-grad-${i}`}
+                id={`area-${uid}-${i}`}
                 x1="0"
                 y1="0"
                 x2="0"
                 y2="1"
               >
-                <stop offset="0%" stopColor={s.color} stopOpacity={0.45} />
-                <stop offset="100%" stopColor={s.color} stopOpacity={0.02} />
+                <stop offset="0%" stopColor={s.color} stopOpacity={0.2} />
+                <stop offset="100%" stopColor={s.color} stopOpacity={0} />
               </linearGradient>
             ))}
           </defs>
         )}
-
-        {/* Grid */}
-        {grid.map((y, i) => (
-          <line
-            key={i}
-            x1={padL}
-            x2={width - padR}
-            y1={y}
-            y2={y}
-            stroke={GRID}
-            strokeWidth={1}
-          />
-        ))}
 
         {/* Y labels */}
         {tickFracs.map((f, i) => (
@@ -372,7 +393,7 @@ function CartesianPlot({
             fill={AXIS}
             fontSize={10}
             textAnchor="end"
-            fontFamily="ui-sans-serif, system-ui"
+            fontFamily="var(--font-sans)"
           >
             {formatTick(f * axisMax)}
           </text>
@@ -394,7 +415,7 @@ function CartesianPlot({
                       ? "end"
                       : "middle"
                 }
-                fontFamily="ui-sans-serif, system-ui"
+                fontFamily="var(--font-sans)"
               >
                 {labels[i]}
               </text>
@@ -407,7 +428,7 @@ function CartesianPlot({
             <path
               key={`fill-${s.name}`}
               d={areaPath(s.data)}
-              fill={`url(#area-grad-${i})`}
+              fill={`url(#area-${uid}-${i})`}
               stroke="none"
             />
           ))}
@@ -605,20 +626,12 @@ function VerticalBars({
     <div className="w-full">
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        preserveAspectRatio="none"
+        // See CartesianPlot: preserveAspectRatio="none" skewed every bar's
+        // corner radius and cap. Uniform scaling instead.
         className="w-full h-auto"
         style={{ maxHeight: height * 1.4 }}
       >
-        {grid.map((y, i) => (
-          <line
-            key={i}
-            x1={padL}
-            x2={width - padR}
-            y1={y}
-            y2={y}
-            stroke={GRID}
-          />
-        ))}
+
         {tickFracs.map((f, i) => (
           <text
             key={i}
@@ -627,7 +640,7 @@ function VerticalBars({
             fill={AXIS}
             fontSize={10}
             textAnchor="end"
-            fontFamily="ui-sans-serif, system-ui"
+            fontFamily="var(--font-sans)"
           >
             {formatTick(f * max)}
           </text>
@@ -655,7 +668,7 @@ function VerticalBars({
                 fill={AXIS}
                 fontSize={10}
                 textAnchor="middle"
-                fontFamily="ui-sans-serif, system-ui"
+                fontFamily="var(--font-sans)"
               >
                 {r.label}
               </text>
@@ -739,7 +752,7 @@ export function Donut({
           textAnchor="middle"
           fill={AXIS}
           fontSize={10}
-          fontFamily="ui-sans-serif, system-ui"
+          fontFamily="var(--font-sans)"
           style={{ textTransform: "uppercase", letterSpacing: 1 }}
         >
           {centerName}
@@ -751,7 +764,7 @@ export function Donut({
           fill="var(--adm-ink)"
           fontSize={16}
           fontWeight={700}
-          fontFamily="ui-sans-serif, system-ui"
+          fontFamily="var(--font-sans)"
           className="tabular-nums"
         >
           {centerValue}
@@ -864,7 +877,7 @@ export function CalendarHeatmap({
               y={row * (cellSize + gap) + cellSize - 2}
               fill={AXIS}
               fontSize={9}
-              fontFamily="ui-sans-serif, system-ui"
+              fontFamily="var(--font-sans)"
             >
               {lbl}
             </text>
