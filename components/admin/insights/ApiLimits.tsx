@@ -28,6 +28,7 @@ import {
 export type ApiLimitsPayload = {
   monthlyCalls: number | null;
   callsInstrumented: boolean;
+  callsByDay?: { date: string; calls: number }[];
   mau: { ceiling: number | null; floor: number | null };
   monetized: boolean;
   monetization: {
@@ -195,23 +196,20 @@ export function ApiLimitsPanel() {
         </p>
       ) : null}
 
-      {!data.callsInstrumented ? (
-        <p
-          className="mt-4 rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-[11.5px]"
-          style={{
-            borderColor: "var(--adm-line)",
-            background: "var(--adm-panel-2)",
-            color: "var(--adm-ink-3)",
-          }}
-        >
-          Call volume is not counted anywhere in this codebase. Nothing
-          increments on a licensed chapter fetch, so the 150,000 ceiling cannot
-          be reported against and is shown as unmeasured rather than as zero.
-          Counting it needs a small table and one write in
-          lib/bible/api-bible.ts, which is a schema change and is being left for
-          you to approve.
-        </p>
-      ) : null}
+      <p
+        className="mt-4 rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-[11.5px]"
+        style={{
+          borderColor: "var(--adm-line)",
+          background: "var(--adm-panel-2)",
+          color: "var(--adm-ink-3)",
+        }}
+      >
+        {!data.callsInstrumented
+          ? "Call volume is not counted anywhere yet, so the 150,000 ceiling is shown as unmeasured rather than as zero."
+          : data.monthlyCalls === null
+            ? "The call counter could not be read. That is unmeasured, which is not the same as being under the limit."
+            : "Counts real requests to API.Bible, not page views. A chapter is cached for six hours, so many readers opening the same chapter is one call; the count is deduplicated on that same window."}
+      </p>
     </Card>
   );
 }

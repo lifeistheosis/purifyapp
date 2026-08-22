@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isApiConfigured } from "@/lib/bible/api-bible";
+import { readApiBibleUsage } from "@/lib/bible/apiUsage";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,6 +26,14 @@ export async function GET() {
 
   const supa = createAdminClient();
   const since = new Date(Date.now() - 30 * 86_400_000).toISOString();
+
+  // Calls are counted per UTC day, so the month-to-date figure starts at the
+  // first of the current UTC month rather than 30 days ago. The ceiling is a
+  // calendar-month one and comparing a rolling 30 days against it would be a
+  // different question wearing the same number.
+  const now = new Date();
+  const monthStart = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-01`;
+  const usage = await readApiBibleUsage(monthStart);
 
   const [sessionsRes, signedInRes, entitlementsRes, ordersRes] = await Promise.all([
     // Every session started in the window. A session is not a person: one
@@ -64,7 +73,7 @@ export async function GET() {
           .filter((v): v is string => typeof v === "string"),
       ).size;
 
-  const now = Date.now();
+  const nowMs = now.getTime();
   const ents = entitlementsRes.error ? [] : (entitlementsRes.data ?? []);
   const paidSources = ents.filter((e) => {
     const r = e as { plus_source: string | null };
@@ -72,11 +81,11 @@ export async function GET() {
   }).length;
   const activePlus = ents.filter((e) => {
     const r = e as { plus_until: string | null };
-    return r.plus_until !== null && Date.parse(r.plus_until) > now;
+    return r.plus_until !== null && Date.parse(r.plus_until) > nowMs;
   }).length;
   const activePro = ents.filter((e) => {
     const r = e as { pro_until: string | null };
-    return r.pro_until !== null && Date.parse(r.pro_until) > now;
+    return r.pro_until !== null && Date.parse(r.pro_until) > nowMs;
   }).length;
 
   const paidOrders = ordersRes.error ? 0 : ordersRes.count ?? 0;
@@ -91,12 +100,14 @@ export async function GET() {
 
   return NextResponse.json(
     {
-      // NULL, and deliberately so. Nothing in this codebase counts calls to
-      // fetchLicensedChapter, so there is no honest figure to report against
-      // the 150,000 ceiling. Reporting 0 would read as "no usage", which is
-      // false: production serves licensed chapters today.
-      monthlyCalls: null,
-      callsInstrumented: false,
+      // Real requests this UTC month, deduplicated against the six-hour fetch
+      // cache so this counts calls to API.Bible rather than readers opening a
+      // cached chapter. Null when the counter could not be read, which the
+      // panel renders as "not measured" and never as zero.
+      monthlyCalls: usage.monthToDate,
+      callsInstrumented: true,
+      /** Per-day counts, so the calendar can paint API usage like any series. */
+      callsByDay: usage.days,
 
       mau: {
         /** Upper bound. Sessions, not people. */

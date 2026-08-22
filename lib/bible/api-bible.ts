@@ -1,4 +1,5 @@
 import "server-only";
+import { recordApiBibleCall } from "./apiUsage";
 
 /**
  * API.Bible (American Bible Society) fetch layer for the LICENSED translations
@@ -99,6 +100,11 @@ export async function fetchLicensedChapter(
  next: { revalidate: 60 * 60 * 6 },
  });
  if (!res.ok) return null;
+ // Counted here, after a 2xx, so a refusal or an outage is not billed against
+ // the quota in our own books. Deduplicated inside recordApiBibleCall on the
+ // same six-hour key the fetch cache uses, so this counts real requests to
+ // API.Bible rather than readers opening a cached chapter.
+ recordApiBibleCall(bibleId, chapterId);
  const json = await res.json();
  const d = json?.data;
  if (!d?.content) return null;
