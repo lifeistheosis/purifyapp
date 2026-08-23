@@ -468,6 +468,27 @@ is what `MAX_CAMPAIGN_REMINDERS_PER_RUN` actually caps.
    One thing to note for later: a second destination on the same account posts
    to `data.whop.com` and is subscribed to 24 events. Nothing in this repo
    refers to Whop. Worth confirming it is intentional.
+
+   **THE WHOLE REVENUE PICTURE, so nobody assembles it from one rail again.**
+   Purify has earned **$24.98** in its lifetime:
+
+   | Rail | Amount | What |
+   |---|---|---|
+   | Stripe | $19.99 | Pro (Monthly), 31 July, web checkout |
+   | RevenueCat / Play Billing | $4.99 | owner's report, 2026-08-22 |
+   | EIKON shop | $0.00 | never |
+
+   The RevenueCat side does not touch Stripe, so reading the Stripe dashboard
+   alone understates revenue by a fifth and reading it as "one payment ever" is
+   true only of that rail. The database carries two active entitlements with
+   `plus_source: "google"`, which is the Play side, plus the one Stripe Pro.
+
+   Two consequences. Anything that reports what Purify earns should use the
+   measured $24.98 and not `lib/premium/mrr.ts`, which multiplies subscriber
+   counts by list price because no billed amount is stored anywhere and
+   `REVENUECAT_V2_API_KEY` is unset. And the app IS monetized, which is the
+   condition that matters for the API.Bible free licence: two paying
+   subscribers crosses it, while the call and MAU ceilings are nowhere near.
 2. **The paid_at migration** needs sign-off before the PR.
 3. ~~**Render env**~~ **RESOLVED the same day, and the list above was wrong.**
    Read from the Render and GitHub dashboards rather than inferred from
