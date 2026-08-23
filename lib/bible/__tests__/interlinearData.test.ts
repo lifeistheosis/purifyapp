@@ -58,12 +58,35 @@ function chapterFiles(root: string, slug: string): number[] {
     .filter((n) => Number.isFinite(n));
 }
 
+/**
+ * Parse once per path, not once per assertion.
+ *
+ * Six tests below walk the same two trees, 1,309 original-language files plus
+ * the english-tagged set, and each was reading and parsing every file it
+ * touched from disk. That made the suite parse the corpus several times over,
+ * and on a loaded machine the first test to be unlucky crossed vitest's 30s
+ * default and failed as a TIMEOUT rather than as a finding. It did that once
+ * in roughly every three runs, which is the failure mode that teaches people
+ * to re-run a red suite instead of reading it.
+ *
+ * Memoising is safe here in a way it usually is not: these files are fixtures
+ * on disk, nothing under test writes to them, and the whole suite is one
+ * process. If a test is ever added that MUTATES data/bible, this cache is the
+ * first thing it will break, so mutate a copy instead.
+ */
+const parsed = new Map<string, unknown>();
+function readJson<T>(file: string): T {
+  const hit = parsed.get(file);
+  if (hit !== undefined) return hit as T;
+  const value = JSON.parse(fs.readFileSync(file, "utf8")) as T;
+  parsed.set(file, value);
+  return value;
+}
+
 function englishVerseCount(slug: string, chapter: number): number | null {
   const file = path.join(ROOT, "data/bible", slug, `${chapter}.json`);
   if (!fs.existsSync(file)) return null;
-  const j = JSON.parse(fs.readFileSync(file, "utf8")) as {
-    verses: { n: number }[];
-  };
+  const j = readJson<{ verses: { n: number }[] }>(file);
   return j.verses.length;
 }
 
@@ -72,8 +95,8 @@ describe("interlinear data integrity", () => {
     const offenders: string[] = [];
     for (const slug of dirs(TAGGED)) {
       for (const n of chapterFiles(TAGGED, slug)) {
-        const j = JSON.parse(
-          fs.readFileSync(path.join(TAGGED, slug, `${n}.json`), "utf8"),
+        const j = readJson(
+          path.join(TAGGED, slug, `${n}.json`),
         ) as { book?: string };
         if (j.book && j.book !== slug) {
           offenders.push(`english-tagged/${slug}/${n}.json declares "${j.book}"`);
@@ -87,8 +110,8 @@ describe("interlinear data integrity", () => {
     const offenders: string[] = [];
     for (const slug of dirs(ORIGINAL)) {
       for (const n of chapterFiles(ORIGINAL, slug)) {
-        const j = JSON.parse(
-          fs.readFileSync(path.join(ORIGINAL, slug, `${n}.json`), "utf8"),
+        const j = readJson(
+          path.join(ORIGINAL, slug, `${n}.json`),
         ) as { book?: string };
         if (j.book && j.book !== slug) {
           offenders.push(`original/${slug}/${n}.json declares "${j.book}"`);
@@ -161,8 +184,8 @@ describe("interlinear data integrity", () => {
       for (const n of chapterFiles(TAGGED, slug)) {
         const expected = englishVerseCount(slug, n);
         if (expected == null) continue;
-        const j = JSON.parse(
-          fs.readFileSync(path.join(TAGGED, slug, `${n}.json`), "utf8"),
+        const j = readJson(
+          path.join(TAGGED, slug, `${n}.json`),
         ) as { verses: { n: number }[] };
         const max = Math.max(...j.verses.map((v) => v.n));
         if (max > expected) {
