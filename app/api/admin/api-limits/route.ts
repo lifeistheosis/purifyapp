@@ -74,7 +74,14 @@ export async function GET() {
       ).size;
 
   const nowMs = now.getTime();
-  const ents = entitlementsRes.error ? [] : (entitlementsRes.data ?? []);
+  // NOT `error ? [] : data`. An empty list is the shape of "nobody has ever
+  // paid", which is the single most reassuring answer this route can give and
+  // the one it is least entitled to invent. The two reads below already do
+  // this correctly with null; these three did not, and `monetized` is derived
+  // from them, so a database blip reported the API.Bible non-commercial
+  // condition as satisfied when it is not.
+  const entsUnavailable = Boolean(entitlementsRes.error);
+  const ents = entsUnavailable ? [] : (entitlementsRes.data ?? []);
   const paidSources = ents.filter((e) => {
     const r = e as { plus_source: string | null };
     return r.plus_source !== null && r.plus_source !== "comp";
@@ -88,11 +95,17 @@ export async function GET() {
     return r.pro_until !== null && Date.parse(r.pro_until) > nowMs;
   }).length;
 
-  const paidOrders = ordersRes.error ? 0 : ordersRes.count ?? 0;
+  const ordersUnavailable = Boolean(ordersRes.error);
+  const paidOrders = ordersUnavailable ? null : ordersRes.count ?? 0;
 
   // Monetized on evidence, not on a setting someone forgot to flip. A store
   // purchase or a paid order is money having changed hands; either is enough.
-  const monetized = paidSources > 0 || paidOrders > 0;
+  //
+  // null, not false, when either read failed. "We could not check" and "no
+  // money has changed hands" are opposite answers to a licence question, and
+  // only one of them is safe to be wrong about.
+  const monetized =
+    entsUnavailable || ordersUnavailable ? null : paidSources > 0 || (paidOrders ?? 0) > 0;
 
   const licensedConfigured = (["niv", "nkjv", "nlt"] as const).filter((t) =>
     isApiConfigured(t),

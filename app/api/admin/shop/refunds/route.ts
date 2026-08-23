@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { logActivity } from "@/lib/admin/activityLog";
 import { getAdminUser } from "@/lib/admin/access";
 import {
   approveRefundRequest,
@@ -89,6 +90,15 @@ export async function POST(req: Request) {
   if (!order) return NextResponse.json({ error: "Order not found." }, { status: 404 });
 
   const status = await approveRefundRequest(request.id, order, parsed.data.note ?? null);
+  // Logged even on the failure paths below: an attempted refund that did not
+  // happen is worth as much in the record as one that did.
+  void logActivity({
+    actorEmail: adminUser.email ?? null,
+    action: "refund.approve",
+    entityType: "refund_request",
+    entityId: request.id,
+    detail: { orderId: order.id, totalCents: order.total_cents, outcome: status },
+  });
   if (!status) {
     return NextResponse.json({ error: "Couldn't save the decision." }, { status: 500 });
   }
@@ -146,6 +156,15 @@ export async function PATCH(req: Request) {
   if (!order) return NextResponse.json({ error: "Order not found." }, { status: 404 });
 
   const ok = await markRefundProcessed(request.id, order);
+  // An unattributed claim that money moved OUTSIDE Stripe, with no external
+  // object to corroborate it, is the least verifiable write in the shop.
+  void logActivity({
+    actorEmail: adminUser.email ?? null,
+    action: "refund.mark-processed",
+    entityType: "refund_request",
+    entityId: request.id,
+    detail: { orderId: order.id, totalCents: order.total_cents, applied: ok },
+  });
   if (!ok) return NextResponse.json({ error: "Couldn't mark it processed." }, { status: 500 });
   return NextResponse.json({ ok: true, status: "processed" });
 }

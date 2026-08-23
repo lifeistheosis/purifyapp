@@ -68,12 +68,35 @@ export async function GET() {
       .limit(200),
   ]);
 
+  // Four reads, four discarded errors, and every one of them coalesced to an
+  // empty list. The moderation queue then rendered "Nothing waiting." and the
+  // Overview widget rendered "Awaiting moderation: 0". Those are the two
+  // sentences that make an operator stop looking, and a failed read is exactly
+  // when they should keep looking. CommunityTab already carries the right error
+  // copy; it was unreachable because this route never answered non-2xx.
+  const conversationReports = await conversationReportsQuery;
+  const readError =
+    pendingRecipes.error ??
+    campaignReports.error ??
+    recipeReports.error ??
+    conversationReports.error;
+  if (readError) {
+    console.error("[admin/community] moderation read failed", readError.message);
+    return NextResponse.json(
+      {
+        error:
+          "The moderation queue could not be read. This is not an empty queue, so nothing here is saying there is nothing waiting.",
+      },
+      { status: 500 },
+    );
+  }
+
   return NextResponse.json(
     {
       pendingRecipes: pendingRecipes.data ?? [],
       campaignReports: campaignReports.data ?? [],
       recipeReports: recipeReports.data ?? [],
-      conversationReports: (await conversationReportsQuery).data ?? [],
+      conversationReports: conversationReports.data ?? [],
     },
     { headers: { "Cache-Control": "no-store" } },
   );

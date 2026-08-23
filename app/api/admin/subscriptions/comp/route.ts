@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
+import { logActivity } from "@/lib/admin/activityLog";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -77,6 +78,18 @@ export async function POST(req: Request) {
   }
 
   const until = new Date(Date.now() + days * 86_400_000).toISOString();
+
+  // Read the row BEFORE overwriting it. This upsert is destructive in three
+  // ways at once: plus_until is REPLACED rather than extended, plus_source
+  // becomes "comp" so the record that this account ever PAID is gone, and
+  // pro_until is nulled on a Plus comp. entitlements has no actor column and no
+  // history, so unless the prior values are captured here they survive nowhere.
+  const { data: previous } = await admin
+    .from("entitlements")
+    .select("plus_until, pro_until, plus_source, is_supporter")
+    .eq("user_id", userId)
+    .maybeSingle();
+
   const { error } = await admin.from("entitlements").upsert(
     {
       user_id: userId,
@@ -92,6 +105,17 @@ export async function POST(req: Request) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  // Fire and forget: this cannot fail the grant. Until
+  // supabase/migrations/20260823_admin_activity_log.sql is applied the record
+  // lives in the Render deploy log, greppable as "tag":"admin-activity".
+  void logActivity({
+    actorEmail: adminUser.email ?? null,
+    action: "comp.grant",
+    entityType: "entitlement",
+    entityId: userId,
+    detail: { tier, days, until, email, previous: previous ?? null },
+  });
 
   return NextResponse.json({
     ok: true,

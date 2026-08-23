@@ -40,19 +40,32 @@ export async function GET(req: Request) {
   // claim is the promise. This just lets the owner see it.
   const ids = rows.map((r) => r.user_id);
   const lapsed = new Set<string>();
+  // An unread entitlements table must never mean "lapsed". This discarded its
+  // error, so `ents` came back null, `seen` was empty, and the fallback below
+  // added EVERY claimant to the set: one failed read painted a rose "Pro lapsed
+  // since claiming" pill on every row of a drop. That is not a zero, it is the
+  // opposite of the truth, on the screen the owner uses to decide who to post to.
+  let lapsedUnknown = false;
   if (ids.length) {
-    const { data: ents } = await admin
+    const { data: ents, error: entsError } = await admin
       .from("entitlements")
       .select("user_id, pro_until")
       .in("user_id", ids);
-    for (const e of ents ?? []) {
+    if (entsError) {
+      console.warn("[admin/eikon-box/claims] entitlements read failed", entsError.message);
+      lapsedUnknown = true;
+    }
+    for (const e of entsError ? [] : ents ?? []) {
       if (!e.pro_until || new Date(e.pro_until).getTime() <= now) {
         lapsed.add(e.user_id as string);
       }
     }
-    // A claimant with no entitlements row at all has certainly lapsed.
-    const seen = new Set((ents ?? []).map((e) => e.user_id as string));
-    for (const id of ids) if (!seen.has(id)) lapsed.add(id);
+    // A claimant with no entitlements row at all has certainly lapsed. Only
+    // meaningful when the read actually succeeded, which is why this is gated.
+    if (!lapsedUnknown) {
+      const seen = new Set((ents ?? []).map((e) => e.user_id as string));
+      for (const id of ids) if (!seen.has(id)) lapsed.add(id);
+    }
   }
 
   const claims = rows.map((r) => {
@@ -74,7 +87,9 @@ export async function GET(req: Request) {
     };
   });
 
-  return NextResponse.json({ claims });
+  // lapsedUnknown says the lapsed flags are not computed rather than false.
+  // Without it the tab renders "nobody has lapsed", which is a claim.
+  return NextResponse.json({ claims, lapsedUnknown });
 }
 
 const patchSchema = z.object({
