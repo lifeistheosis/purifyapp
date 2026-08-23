@@ -13,7 +13,10 @@ findings:
     area: commerce
     severity: P1
     confidence: high
-    status: corrected-verified   # 2026-07-11: lib/shop/webhookSettlement.ts recovery path (payment wins over cancellation); 11 unit tests incl. cancelled+completed->paid
+    status: corrected-verified
+    status_notes: >-
+      2026-07-11: lib/shop/webhookSettlement.ts recovery path (payment wins over
+      cancellation); 11 unit tests incl. cancelled+completed->paid
     evidence: lib/shop/webhookSettlement.ts + lib/shop/__tests__/webhookSettlement.test.ts (11 passing)
     action: done; residual = live Stripe delivery unexercised (unit-level verification only)
     safe_to_automate: true
@@ -24,7 +27,10 @@ findings:
     area: release
     severity: P1
     confidence: confirmed
-    status: corrected-verified   # CI run #317 on Node 24: lint/typecheck/unit/build all pass; pipeline alive again (fails later at pre-existing e2e stage, see F-15)
+    status: corrected-verified
+    status_notes: >-
+      CI run #317 on Node 24: lint/typecheck/unit/build all pass; pipeline alive
+      again (fails later at pre-existing e2e stage, see F-15)
     evidence: .github/workflows/ci.yml:30 (was "20"); lib/content/* imports node:sqlite; owner-pasted failing run log
     action: bumped to Node 24 (C-01); owner pushes; consider gating Render on CI (owner decision)
     safe_to_automate: true
@@ -35,7 +41,10 @@ findings:
     area: commerce
     severity: P2
     confidence: confirmed
-    status: corrected-verified   # 2026-07-11: amountsMatch guard, fail-closed; mismatch never marks paid; tested
+    status: corrected-verified
+    status_notes: >-
+      2026-07-11: amountsMatch guard, fail-closed; mismatch never marks paid;
+      tested
     evidence: lib/shop/webhookSettlement.ts amountsMatch + tests (case-insensitive currency, null fails closed)
     action: done
     safe_to_automate: true
@@ -57,7 +66,9 @@ findings:
     area: editorial
     severity: P2
     confidence: high
-    status: deferred-by-owner   # 2026-07-11 owner decision: skip clergy review for now; queue retained
+    status: deferred-by-owner
+    status_notes: >-
+      2026-07-11 owner decision: skip clergy review for now; queue retained
     evidence: data/bible/commentary/revelation/20.json (ANF07 recension)
     action: (deferred) editorial note on Rev 20 distinguishing early patristic opinion from Orthodox teaching
     safe_to_automate: false
@@ -79,7 +90,11 @@ findings:
     area: database/release
     severity: P1-conditional
     confidence: confirmed
-    status: resolved-verified   # 2026-07-11: service-role REST probes: shop_reviews 200 [], shop_products.units_sold 200, rpc shop_submit_review exists (403 'Sign in to review.' 28000)
+    status: resolved-verified
+    status_notes: >-
+      2026-07-11: service-role REST probes: shop_reviews 200 [],
+      shop_products.units_sold 200, rpc shop_submit_review exists (403 'Sign in to
+      review.' 28000)
     evidence: prod REST probes (table, column, RPC) + graceful API probes
     action: none; feature live pending buyer reviews
     safe_to_automate: false
@@ -101,7 +116,9 @@ findings:
     area: testing
     severity: P2
     confidence: confirmed
-    status: confirmed   # C-02 added order-partition tests; routes still uncovered
+    status: confirmed
+    status_notes: >-
+      C-02 added order-partition tests; routes still uncovered
     evidence: all 25 unit files target lib/**; none import app/api handlers
     action: mocked-Stripe webhook tests alongside F-01 fix; revive e2e via green CI
     safe_to_automate: true
@@ -112,7 +129,9 @@ findings:
     area: reliability
     severity: P3
     confidence: strong-inference
-    status: mitigated   # /account no-JS fallback shipped in 1.9.2; general case open
+    status: mitigated
+    status_notes: >-
+      /account no-JS fallback shipped in 1.9.2; general case open
     evidence: public/sw.js NetworkFirst cached-HTML fallback vs hashed chunks; /account report signature
     action: consider version-change reload prompt; low urgency
     safe_to_automate: true
@@ -123,7 +142,12 @@ findings:
     area: store
     severity: P2
     confidence: policy-verified
-    status: accepted-risk   # 2026-07-11: Play Payments policy (support.google.com/googleplay/android-developer/answer/10281818) explicitly EXCLUDES physical goods from Play Billing; alternative processors (Stripe) are the expected path. Residual: actual review acceptance of the build
+    status: accepted-risk
+    status_notes: >-
+      2026-07-11: Play Payments policy
+      (support.google.com/googleplay/android-developer/answer/10281818) explicitly
+      EXCLUDES physical goods from Play Billing; alternative processors (Stripe)
+      are the expected path. Residual: actual review acceptance of the build
     evidence: policy page fetched 2026-07-11; quoted exclusion of physical goods
     action: none beyond normal submission
     safe_to_automate: false
@@ -136,7 +160,7 @@ findings:
     confidence: confirmed
     status: accepted-risk
     evidence: PD sources cited per note (NPNF/ANF/Brenton/KJV); supplier-image gate in lib/shop/catalog.ts; open owner items pre-existing (photos, LLC, sales tax, lawyer review)
-    action: none new; 2026-07-11 owner decision: unique product photos when the physical batch arrives (skip for now)
+    action: "none new; 2026-07-11 owner decision: unique product photos when the physical batch arrives (skip for now)"
     safe_to_automate: n/a
     review: owner (photos on batch arrival)
 
@@ -145,12 +169,32 @@ findings:
     area: reliability/web
     severity: P1
     confidence: high
-    status: corrected-unverified   # 2026-07-12 SIXTH pass: owner clue "first login works, but refresh / click-out-then-in => infinite loading on Profile + Security" = the SIGNATURE of a client auth call (getUser network-validate, or getSession refreshing an aged token) STALLING on re-navigation with no timeout. Root remedy: stop asking the network at all. lib/supabase/localSession.readLocalSessionUser() reads the signed-in user straight from the persisted sb-<ref>-auth-token cookie/localStorage (chunked, base64url) — synchronous, no network, no refresh, no lock, cannot hang. The server proxy keeps that cookie fresh on every request. Wired as the FAST PATH in resolveUser (shop + native gate) and directly into ProfileTabClient + SecurityTabClient, which now RENDER FROM THE SESSION IMMEDIATELY and let the DB row (nice display name / join date / has_password) enhance after — so a slow follow-up query can never strand the tab either. Verified: 7 localSession parser unit tests + a live browser parse of a real-shaped cookie; resolveUser fast-path unit test asserts it returns signed-in WITHOUT calling getSession; 299 unit green; tsc 0; eslint clean; web build green. Not fully E2E-verifiable here (server correctly refuses account pages to a fake test session; the signed-in render path is deterministic-by-code). Residual: owner deploy + open Profile/Security after a refresh to confirm.
+    status: corrected-unverified
+    status_notes: >-
+      2026-07-12 SIXTH pass: owner clue "first login works, but refresh /
+      click-out-then-in => infinite loading on Profile + Security" = the SIGNATURE
+      of a client auth call (getUser network-validate, or getSession refreshing an
+      aged token) STALLING on re-navigation with no timeout. Root remedy: stop
+      asking the network at all. lib/supabase/localSession.readLocalSessionUser()
+      reads the signed-in user straight from the persisted sb-<ref>-auth-token
+      cookie/localStorage (chunked, base64url) — synchronous, no network, no
+      refresh, no lock, cannot hang. The server proxy keeps that cookie fresh on
+      every request. Wired as the FAST PATH in resolveUser (shop + native gate)
+      and directly into ProfileTabClient + SecurityTabClient, which now RENDER
+      FROM THE SESSION IMMEDIATELY and let the DB row (nice display name / join
+      date / has_password) enhance after — so a slow follow-up query can never
+      strand the tab either. Verified: 7 localSession parser unit tests + a live
+      browser parse of a real-shaped cookie; resolveUser fast-path unit test
+      asserts it returns signed-in WITHOUT calling getSession; 299 unit green; tsc
+      0; eslint clean; web build green. Not fully E2E-verifiable here (server
+      correctly refuses account pages to a fake test session; the signed-in render
+      path is deterministic-by-code). Residual: owner deploy + open
+      Profile/Security after a refresh to confirm.
     #
     # -- FIFTH pass (Profile/Security getSession swap), superseded by the sync read above: -- Same root cause one layer deeper: ProfileTabClient and SecurityTabClient each awaited a network getUser() on mount and, with no error branch, stranded on their loading state forever when that call hung. Fixed both to read the LOCAL session (getSession) — the server proxy already refreshed the cookie, so the signed-in identity is available with no network round-trip. Child components are safe: ProfileHero's getUser is save-only; OAuthConnectionsCard starts with an empty-identities array and renders immediately; the sync bridges return null and never block the tab. Latent same-pattern getUser() reads remain in background/display components (avatars, greetings, sync bridges) — non-blocking, tracked with F-18. Still needs the owner's signed-in re-test to close.
     #
     # -- FOURTH pass (gate fix), retained: -- Owner clarified the error appears "already signed in, on open" (NOT right after login). The lock-only fix was deployed (prod SW = purify-beta-1.9.5) and the auth endpoint is healthy (~120-250ms), so neither the lock nor endpoint was it. ROOT CAUSE: on the WEB the server proxy (proxy.ts -> lib/supabase/middleware.updateSession) ALREADY validates + refreshes the session cookie and 307-redirects signed-out users off /account/* BEFORE any page renders (verified live: cookieless GET /account/security and /account/profile both 307; /account 200; /shop/orders 200 i.e. NOT server-gated). So on the web, if AccountAuthGate is rendering at all the user is authenticated — but the gate ALSO ran a redundant CLIENT getUser() (network re-validation) whose network call raced a token refresh on open and failed -> "unresolved" -> the error card for an already-signed-in user. FIX (2 parts): (1) AccountAuthGate now trusts the server gate on the web and renders without the client re-check; it runs the client resolve ONLY on native (isNativeClient(), no server proxy there). (2) resolveUser (still the gate on native + on the non-server-gated /shop/* loaders) reads the LOCAL session (getSession) instead of network getUser(), so a valid cookie/session confirms with no network round-trip. Data stays RLS-enforced server-side. VERIFIED: server 307 gate confirmed live on prod; tsc 0; eslint clean; 291 unit (6 resolveUser tests -> getSession). Residual = owner deploy + confirm the /account walk on their signed-in session (the signed-in client path still cannot be reproduced without their account).
-    evidence: live walk 2026-07-11 signed-in browser: /shop/icons/* catalog+config APIs returned 200 (extension network log) while the page never left its skeleton; sole unsettled Promise.all member was hasActivePlusClient -> supabase.auth.getUser(); no console errors (silent lock wait). Matches the earlier '/account never loads' owner report signature. Fix evidence: lib/supabase/__tests__/resolveUser.test.ts (6 passing); typecheck/lint/unit/build:android/e2e green on the combined tree.
+    evidence: "live walk 2026-07-11 signed-in browser: /shop/icons/* catalog+config APIs returned 200 (extension network log) while the page never left its skeleton; sole unsettled Promise.all member was hasActivePlusClient -> supabase.auth.getUser(); no console errors (silent lock wait). Matches the earlier '/account never loads' owner report signature. Fix evidence: lib/supabase/__tests__/resolveUser.test.ts (6 passing); typecheck/lint/unit/build:android/e2e green on the combined tree."
     action: >
       done, in two layers. (1) 2026-07-11 general case: three-state resolveUser
       + retry states (above). (2) 2026-07-12 ROOT FIX after the deployed retry
@@ -177,7 +221,12 @@ findings:
     area: commerce
     severity: P1
     confidence: confirmed-live
-    status: corrected-verified-live   # re-walk on deployed code: Stripe back link lands on /shop/checkout/cancelled (real page), order row cancelled; residual: owner sets NEXT_PUBLIC_SITE_URL=https://purifyapp.net on Render (returns currently use the onrender fallback host)
+    status: corrected-verified-live
+    status_notes: >-
+      re-walk on deployed code: Stripe back link lands on /shop/checkout/cancelled
+      (real page), order row cancelled; residual: owner sets
+      NEXT_PUBLIC_SITE_URL=https://purifyapp.net on Render (returns currently use
+      the onrender fallback host)
     evidence: live cancel-path walk 2026-07-11 landed on https://localhost:10000/shop/checkout/cancelled?order=7085ab92... after Stripe's back link; Render proxy presents req.url as localhost:10000 (same hop documented in app/api/auth/signout). Affects SUCCESS path after real payments too (buyer strands on dead page; webhook still settles server-side).
     action: checkoutReturnOrigin() in lib/site.ts (SITE_URL except genuine local dev) + 4 unit tests; stranded walk order 7085ab92 cancelled via API and row verified cancelled/cancelled
     safe_to_automate: true
@@ -188,7 +237,11 @@ findings:
     area: testing/accessibility
     severity: P2
     confidence: confirmed
-    status: corrected-verified   # ACCEPTANCE MET: CI run #321 (28eacba) completed successfully end-to-end — lint/typecheck/unit/build/e2e+axe/Lighthouse all green, first fully green pipeline since the gate revived.
+    status: corrected-verified
+    status_notes: >-
+      ACCEPTANCE MET: CI run #321 (28eacba) completed successfully end-to-end —
+      lint/typecheck/unit/build/e2e+axe/Lighthouse all green, first fully green
+      pipeline since the gate revived.
     evidence: >
       CI #318 breakdown: 25 failed / 3 flaky / 9 skipped / 21 passed.
       (a) 24 failures: every mobile-shell test x2 projects died at browser
@@ -226,34 +279,20 @@ findings:
     safe_to_automate: partially
     review: none
 
-corrections:
-  - id: C-01
-    fixes: F-02
-    files: [.github/workflows/ci.yml]
-    verification: local suite green on Node 24 (254/254, tsc 0); CI run itself pending owner push
-    status: corrected-unverified
-  - id: C-02
-    fixes: [F-09-partial]
-    files: [lib/shop/orders.ts, lib/shop/__tests__/orders.test.ts, components/shop/OrdersClient.tsx]
-    verification: vitest 254/254 incl. 5 new; tsc 0; eslint clean
-    status: corrected-verified
-  - id: C-03
-    fixes: [F-15]
-    files: [playwright.config.ts, tests/smoke/mobile-shell.spec.ts, tests/smoke/_axe.ts, tests/smoke/history.spec.ts, tests/smoke/shop.spec.ts, lib/shop/catalog.ts, lib/shop/__tests__/catalogFailSoft.test.ts, vitest.config.ts, tests/stubs/server-only.ts]
-    verification: vitest 278/278 incl. 3 new; tsc 0; eslint 0 errors; build:android clean; local e2e green (see F-15 note); CI run pending owner push
-    status: corrected-unverified
-  - id: C-04
-    fixes: [F-13]
-    files: [lib/supabase/resolveUser.ts, lib/supabase/__tests__/resolveUser.test.ts, components/shop/OrdersClient.tsx, components/shop/OrderDetailClient.tsx, components/shop/MessagesClient.tsx, components/shop/ConversationClient.tsx, components/shop/RequestsClient.tsx, components/shop/ApplicationClient.tsx, components/account/AccountAuthGate.tsx, components/shop/MerchantApplyGate.tsx]
-    verification: vitest 278/278 incl. 6 new; tsc 0; eslint 0 errors; build:android clean; signed-out gates re-proven by the smoke suite's seller-console/account specs
-    status: corrected-verified
-
+  # F-16 through F-26 sat BELOW the `corrections:` key from the day they were
+  # written, at the same indentation as C-01..C-04, so they were elements of the
+  # corrections list and not of findings. Eleven of twenty-six findings were
+  # invisible to a programmatic read of findings[], every P1 among them.
+  # Reported at AUDIT-2026-07-27.md:274 and fixed 2026-08-22. Text untouched.
   - id: F-16
     title: Tapping Purify Plus crashes the Android app (RevenueCat plugin pair on incompatible majors)
     area: billing/native
     severity: P1
     confidence: confirmed
-    status: corrected-unverified   # code fix complete + all local gates green; native path cannot execute in a browser — verification = sandbox purchase on a device with AAB #44+ (owner)
+    status: corrected-unverified
+    status_notes: >-
+      code fix complete + all local gates green; native path cannot execute in a
+      browser — verification = sandbox purchase on a device with AAB #44+ (owner)
     evidence: >
       Owner report 2026-07-12: tapping Purify Plus closes the app. Root cause:
       8d07ed8b (2026-06-19, Customer Center) added
@@ -268,7 +307,8 @@ corrections:
       static export (native UA harness) confirms the JS path is sound: tap-through
       You -> Purify Plus renders the paywall shell with zero page errors; the
       crash is purely the native plugin collision.
-    action: pinned both plugins to the matched 13.2.0 pair (package.json exact,
+    action: >-
+      pinned both plugins to the matched 13.2.0 pair (package.json exact,
       not caret); npm tree valid; both native builds resolve hybrid-common
       18.15.1; tsc 0 against the v13 API; vitest 278/278; build:android green.
       Shipped as Beta 1.9.4 with all four version identifiers bumped. Residual
@@ -283,7 +323,10 @@ corrections:
     area: commerce/web
     severity: P1
     confidence: confirmed-live
-    status: corrected-verified-live   # reproduced on live purifyapp.net (0 cards, stuck skeleton) AND fixed + verified on local prod build (10 cards, search filters live)
+    status: corrected-verified-live
+    status_notes: >-
+      reproduced on live purifyapp.net (0 cards, stuck skeleton) AND fixed +
+      verified on local prod build (10 cards, search filters live)
     evidence: >
       Found during the EIKON redesign browser walk. Every /shop/category/*
       page sat forever on its loading skeleton: the products fetch never
@@ -333,7 +376,28 @@ corrections:
     area: reader/native
     severity: P2
     confidence: high
-    status: reopened-corrected-unverified   # REOPENED 2026-07-18: owner reported the same button freezing the screen again, so the 07-12 Back-path fix did not resolve it (or the device predates it — the AAB for Beta 2.2 had not been cut). Second pass found a SEPARATE defect the first pass missed, in the Sheet primitive rather than the Back path: every overlay saved/restored document.body.style.overflow itself, which is correct for one overlay and broken for two, and the Bible reader mounts four (settings, chapter picker, commentary, search). Interleaving any two strands overflow:hidden with nothing open (A saves "", B saves "hidden", A restores "", B restores "hidden") and the page cannot scroll until reload — which reads exactly as "the screen froze". Sheet's 220ms exit animation keeps a closing sheet mounted, so "close one, open the other" is enough to trigger it. Fixed with a counted lock in lib/ui/overlay.ts, all nine call sites converted (a single unconverted site re-breaks every other overlay), plus a guard so an unbalanced unlock at depth 0 cannot write a stale value (StrictMode double-invokes cleanups). 5 unit tests pin the semantics; the interleave was also driven live in a browser (Filters sheet + cart drawer) ending unlocked and scrollable. Original 07-12 Back fix remains in place and unverified on-device. Residual: owner installs an AAB containing BOTH fixes and confirms on-device. Do NOT close this without a device check; it has now been reported twice.
+    status: reopened-corrected-unverified
+    status_notes: >-
+      REOPENED 2026-07-18: owner reported the same button freezing the screen
+      again, so the 07-12 Back-path fix did not resolve it (or the device predates
+      it — the AAB for Beta 2.2 had not been cut). Second pass found a SEPARATE
+      defect the first pass missed, in the Sheet primitive rather than the Back
+      path: every overlay saved/restored document.body.style.overflow itself,
+      which is correct for one overlay and broken for two, and the Bible reader
+      mounts four (settings, chapter picker, commentary, search). Interleaving any
+      two strands overflow:hidden with nothing open (A saves "", B saves "hidden",
+      A restores "", B restores "hidden") and the page cannot scroll until reload
+      — which reads exactly as "the screen froze". Sheet's 220ms exit animation
+      keeps a closing sheet mounted, so "close one, open the other" is enough to
+      trigger it. Fixed with a counted lock in lib/ui/overlay.ts, all nine call
+      sites converted (a single unconverted site re-breaks every other overlay),
+      plus a guard so an unbalanced unlock at depth 0 cannot write a stale value
+      (StrictMode double-invokes cleanups). 5 unit tests pin the semantics; the
+      interleave was also driven live in a browser (Filters sheet + cart drawer)
+      ending unlocked and scrollable. Original 07-12 Back fix remains in place and
+      unverified on-device. Residual: owner installs an AAB containing BOTH fixes
+      and confirms on-device. Do NOT close this without a device check; it has now
+      been reported twice.
     safe_to_automate: partially
     review: none
 
@@ -342,7 +406,24 @@ corrections:
     area: reader/native
     severity: P2
     confidence: high
-    status: corrected-unverified   # owner report 2026-07-18 with screenshot: the Bible chapter-picker sheet cannot be scrolled far enough to reach the chapter numbers; the "CHAPTER" heading is visible but the grid sits under the native bottom tab bar. Sheet is z-[60] and MobileTabBar is z-50, so the sheet should cover it — but the screenshot shows the tab bar neither dimmed nor blurred despite the sheet's inset-0 bg-night/70 backdrop-blur-sm backdrop, which is only possible if the tab bar paints ABOVE the whole sheet, i.e. the sheet's z-index is scoped to a host stacking context rather than competing at the root. Same class of bug, and same fix, as the reader's "Exit focus" pill (components/reader/ReaderPrefs.tsx, which documents it): portal to <body>. Verified on web that the portal target is document.body with zero intervening ancestors and that the sheet's own backdrop is the topmost element at the bottom of the viewport. NOT verifiable off-device: MobileTabBar is NativeOnly, so the actual overlap only exists in the app. Residual: owner opens the chapter picker on-device and confirms the chapter grid is reachable.
+    status: corrected-unverified
+    status_notes: >-
+      owner report 2026-07-18 with screenshot: the Bible chapter-picker sheet
+      cannot be scrolled far enough to reach the chapter numbers; the "CHAPTER"
+      heading is visible but the grid sits under the native bottom tab bar. Sheet
+      is z-[60] and MobileTabBar is z-50, so the sheet should cover it — but the
+      screenshot shows the tab bar neither dimmed nor blurred despite the sheet's
+      inset-0 bg-night/70 backdrop-blur-sm backdrop, which is only possible if the
+      tab bar paints ABOVE the whole sheet, i.e. the sheet's z-index is scoped to
+      a host stacking context rather than competing at the root. Same class of
+      bug, and same fix, as the reader's "Exit focus" pill
+      (components/reader/ReaderPrefs.tsx, which documents it): portal to <body>.
+      Verified on web that the portal target is document.body with zero
+      intervening ancestors and that the sheet's own backdrop is the topmost
+      element at the bottom of the viewport. NOT verifiable off-device:
+      MobileTabBar is NativeOnly, so the actual overlap only exists in the app.
+      Residual: owner opens the chapter picker on-device and confirms the chapter
+      grid is reachable.
     safe_to_automate: partially
     review: none
 
@@ -351,7 +432,62 @@ corrections:
     area: push/native
     severity: P2
     confidence: confirmed
-    status: partially-corrected   # owner report 2026-07-18 that admin push does not work for the app. Four independent gates, all shut. (1) PRIMARY, owner action: public.device_push_tokens and public.push_subscriptions DO NOT EXIST in production — probed via PostgREST, both return 404 PGRST205 while RLS-locked tables that do exist (shop_product_sourcing, shop_suppliers, entitlements) return 200 []. Migrations 20260613_device_push_tokens.sql and 20260531_push_subscriptions.sql were never applied. It fails silently because lib/push/audience.ts destructures only `data`, discarding the error, so a missing table yields zero recipients and the broadcast logs `enqueued` with no failure. (2) FIXED: lib/push/native.ts used bare relative fetch to /api/push/device, which inside the shell resolves to https://localhost where app/api is stashed out of the export — the token never left the device. Now uses apiFetch. (3) FIXED: /api/push/device authenticated with the cookie-bound client and had no CORS, so a cross-origin bearer request would 401 and the preflight would fail. Now createClientFromRequest + corsRoute + OPTIONS; verified against a dev server with Origin: https://localhost. (4) OWNER ACTION: FCM_SERVICE_ACCOUNT_JSON is unset (not even documented in .env.local.example), so fcmConfigured() is false and every native send dry-runs. Residual, in order: apply both migrations, set the FCM key on Render, cut a new AAB (the client fix ships in the bundle), enable reminders on a device to seed a token, then broadcast. CORRECTION 2026-08-22, probed read-only with the service role: GATE (1) IS CLOSED and this record was stale. public.device_push_tokens EXISTS and holds 96 registered Android tokens, the oldest created 2026-07-20; public.push_subscriptions EXISTS and is empty (web push has no VAPID keys set). Both migrations have been applied at some point since this finding was written. The 404 PGRST205 quoted above is no longer reproducible. So the count is not four gates but one: FCM_SERVICE_ACCOUNT_JSON on Render. It is present in the local .env.local, which says nothing about production, and Render env is not readable from a checkout, so only the owner can close it. Gates (2) and (3) were already fixed and the client fix is in the bundle, which is consistent with 96 tokens having registered. Do not re-derive this from the folder: probe. The recipe is in AGENTS.md. SECOND CORRECTION, same day, from the Render and GitHub dashboards rather than from a checkout: GATE (4) IS ALSO CLOSED. FCM_SERVICE_ACCOUNT_JSON IS SET on the purifyapp Render service, one of 29 variables there. So is CRON_SECRET, in Render AND as a GitHub Actions repository secret, which is both halves of what the delivery cron needs. The Scheduled jobs workflow has 369 runs, fires hourly, and every recent run is green; the last completed 17 minutes before this was written. ALL FOUR GATES IN THIS FINDING ARE NOW CLOSED for Android. FCM is configured, the cron is delivering, and 96 device tokens are registered, so native push should already work and the 2026-07-18 owner report predates the fixes. Nobody has retested since. The remaining test is a single broadcast, which reaches 96 real people and is therefore the owner's to run, not an engineer's. WHAT IS GENUINELY UNSET, and each explains a symptom: VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY / NEXT_PUBLIC_VAPID_KEY / VAPID_SUBJECT are absent, so web push cannot work and public.push_subscriptions is empty, which is consistent rather than broken; APNS_KEY_P8 / APNS_KEY_ID / APNS_TEAM_ID / APNS_BUNDLE_ID are absent, so iOS push dry-runs; and REVENUECAT_V2_API_KEY with REVENUECAT_PROJECT_ID are absent, so admin MRR stays an estimate. REVENUECAT_REST_API_KEY, contrary to AUDIT-2026-07-27.md:152, IS set. LESSON FOR THE NEXT READER, and it cost two wrong corrections in one day: .env.local and the audit files say nothing about production. Read the Render dashboard.
+    status: partially-corrected
+    status_notes: >-
+      owner report 2026-07-18 that admin push does not work for the app. Four
+      independent gates, all shut. (1) PRIMARY, owner action:
+      public.device_push_tokens and public.push_subscriptions DO NOT EXIST in
+      production — probed via PostgREST, both return 404 PGRST205 while RLS-locked
+      tables that do exist (shop_product_sourcing, shop_suppliers, entitlements)
+      return 200 []. Migrations 20260613_device_push_tokens.sql and
+      20260531_push_subscriptions.sql were never applied. It fails silently
+      because lib/push/audience.ts destructures only `data`, discarding the error,
+      so a missing table yields zero recipients and the broadcast logs `enqueued`
+      with no failure. (2) FIXED: lib/push/native.ts used bare relative fetch to
+      /api/push/device, which inside the shell resolves to https://localhost where
+      app/api is stashed out of the export — the token never left the device. Now
+      uses apiFetch. (3) FIXED: /api/push/device authenticated with the
+      cookie-bound client and had no CORS, so a cross-origin bearer request would
+      401 and the preflight would fail. Now createClientFromRequest + corsRoute +
+      OPTIONS; verified against a dev server with Origin: https://localhost. (4)
+      OWNER ACTION: FCM_SERVICE_ACCOUNT_JSON is unset (not even documented in
+      .env.local.example), so fcmConfigured() is false and every native send
+      dry-runs. Residual, in order: apply both migrations, set the FCM key on
+      Render, cut a new AAB (the client fix ships in the bundle), enable reminders
+      on a device to seed a token, then broadcast. CORRECTION 2026-08-22, probed
+      read-only with the service role: GATE (1) IS CLOSED and this record was
+      stale. public.device_push_tokens EXISTS and holds 96 registered Android
+      tokens, the oldest created 2026-07-20; public.push_subscriptions EXISTS and
+      is empty (web push has no VAPID keys set). Both migrations have been applied
+      at some point since this finding was written. The 404 PGRST205 quoted above
+      is no longer reproducible. So the count is not four gates but one:
+      FCM_SERVICE_ACCOUNT_JSON on Render. It is present in the local .env.local,
+      which says nothing about production, and Render env is not readable from a
+      checkout, so only the owner can close it. Gates (2) and (3) were already
+      fixed and the client fix is in the bundle, which is consistent with 96
+      tokens having registered. Do not re-derive this from the folder: probe. The
+      recipe is in AGENTS.md. SECOND CORRECTION, same day, from the Render and
+      GitHub dashboards rather than from a checkout: GATE (4) IS ALSO CLOSED.
+      FCM_SERVICE_ACCOUNT_JSON IS SET on the purifyapp Render service, one of 29
+      variables there. So is CRON_SECRET, in Render AND as a GitHub Actions
+      repository secret, which is both halves of what the delivery cron needs. The
+      Scheduled jobs workflow has 369 runs, fires hourly, and every recent run is
+      green; the last completed 17 minutes before this was written. ALL FOUR GATES
+      IN THIS FINDING ARE NOW CLOSED for Android. FCM is configured, the cron is
+      delivering, and 96 device tokens are registered, so native push should
+      already work and the 2026-07-18 owner report predates the fixes. Nobody has
+      retested since. The remaining test is a single broadcast, which reaches 96
+      real people and is therefore the owner's to run, not an engineer's. WHAT IS
+      GENUINELY UNSET, and each explains a symptom: VAPID_PUBLIC_KEY /
+      VAPID_PRIVATE_KEY / NEXT_PUBLIC_VAPID_KEY / VAPID_SUBJECT are absent, so web
+      push cannot work and public.push_subscriptions is empty, which is consistent
+      rather than broken; APNS_KEY_P8 / APNS_KEY_ID / APNS_TEAM_ID /
+      APNS_BUNDLE_ID are absent, so iOS push dry-runs; and REVENUECAT_V2_API_KEY
+      with REVENUECAT_PROJECT_ID are absent, so admin MRR stays an estimate.
+      REVENUECAT_REST_API_KEY, contrary to AUDIT-2026-07-27.md:152, IS set. LESSON
+      FOR THE NEXT READER, and it cost two wrong corrections in one day:
+      .env.local and the audit files say nothing about production. Read the Render
+      dashboard.
     safe_to_automate: no
     review: none
 
@@ -360,7 +496,30 @@ corrections:
     area: licensing/media
     severity: P2
     confidence: confirmed
-    status: mitigated   # 2026-08-10: the exposure is unchanged in law but is now bounded, visible and un-growable. scripts/fetch-missing-icons.mjs populated all 110 files before it had a licence gate; it has one now, but on the wrong axis, still taking the first licence-passing search hit with no subject check and no human step. docs/licensing/icon-provenance.md documented 3 of 110, and two of the four files ever inspected turned out to be watermarked works by living iconographers found rendering in production. Contrast history media (lib/history/events.ts, enforced by events.integrity.test.ts), section media (lib/media/sections.ts, enforced by sections.test.ts, whose header names THIS directory as the reason it exists) and shop media, each of which requires work/artist/workDate/source/license/evidenceUrl. Mitigation: lib/saints/iconRights.ts records every one of the 110 in exactly one of two maps, ICON_RIGHTS (3 settled rows, all `permission`) or UNVERIFIED_ICONS (107, each stating only what the bytes prove and forbidden by test from asserting a licence). lib/saints/__tests__/iconRights.test.ts carries MAX_UNVERIFIED=107 which may only fall, plus a completeness assertion, so a new file must carry a rights-complete row: adding to the debt map breaches the ceiling. Both guards were verified to fail on a planted violation. Also fixed in the same pass: a 450 KB WebP wearing a .png extension (450,506 to 72,074 bytes as real JPEG), five filenames outside [a-z0-9.-] including one containing a space, and two AUTHOR_ICONS entries pointing at files that never existed.
+    status: mitigated
+    status_notes: >-
+      2026-08-10: the exposure is unchanged in law but is now bounded, visible and
+      un-growable. scripts/fetch-missing-icons.mjs populated all 110 files before
+      it had a licence gate; it has one now, but on the wrong axis, still taking
+      the first licence-passing search hit with no subject check and no human
+      step. docs/licensing/icon-provenance.md documented 3 of 110, and two of the
+      four files ever inspected turned out to be watermarked works by living
+      iconographers found rendering in production. Contrast history media
+      (lib/history/events.ts, enforced by events.integrity.test.ts), section media
+      (lib/media/sections.ts, enforced by sections.test.ts, whose header names
+      THIS directory as the reason it exists) and shop media, each of which
+      requires work/artist/workDate/source/license/evidenceUrl. Mitigation:
+      lib/saints/iconRights.ts records every one of the 110 in exactly one of two
+      maps, ICON_RIGHTS (3 settled rows, all `permission`) or UNVERIFIED_ICONS
+      (107, each stating only what the bytes prove and forbidden by test from
+      asserting a licence). lib/saints/__tests__/iconRights.test.ts carries
+      MAX_UNVERIFIED=107 which may only fall, plus a completeness assertion, so a
+      new file must carry a rights-complete row: adding to the debt map breaches
+      the ceiling. Both guards were verified to fail on a planted violation. Also
+      fixed in the same pass: a 450 KB WebP wearing a .png extension (450,506 to
+      72,074 bytes as real JPEG), five filenames outside [a-z0-9.-] including one
+      containing a space, and two AUTHOR_ICONS entries pointing at files that
+      never existed.
     evidence: lib/saints/iconRights.ts + lib/saints/__tests__/iconRights.test.ts (136 passing); docs/licensing/icon-provenance.md; scripts/audit-icon-rights.mjs
     action: owner to supply the john-the-baptist.jpg iconographer and file the Tom Clark and Alevizakis written permissions; then backfill the 107 in slices, priority to the twentieth-century figures (dumitru-staniloae, iakovos-of-evia) whose photographs are least likely to be public domain
     safe_to_automate: partially
@@ -371,9 +530,27 @@ corrections:
     area: editorial/ingest
     severity: P2
     confidence: confirmed
-    status: corrected-verified   # 2026-08-19. 795 of the 920 Job notes carried U+FFFD, so a reader met "by ?the seven sons? is represented" throughout the largest work in the library, and Job is one of only two Old Testament books that can ever carry public-domain patristic commentary. Cause, probed rather than inferred: lectionarycentral.com serves the Moralia pages as `Content-Type: text/html` with NO charset, while the documents declare windows-1252 in a meta tag in the head. fetch()'s res.text() reads only the header, defaults to UTF-8, and every cp1252 smart quote and section sign became U+FFFD before the parser ever saw it. The result was then cached, so the original bytes were gone and no local repair was possible. Fix: decodeDeclared() sniffs the charset out of the document and decodes deliberately; the 35 poisoned cache files were deleted and refetched. Proof: 920 notes before and after with identical keys, one author, 35 Book strings, one citation; 124 byte-identical, 795 differing in punctuation and encoding alone, and exactly two word-level changes, both being fused words (intoEgypt, confoundthem) coming apart because the same pass stopped DELETING numeric entities and started decoding them. U+FFFD 11,125 to 0.
+    status: corrected-verified
+    status_notes: >-
+      2026-08-19. 795 of the 920 Job notes carried U+FFFD, so a reader met "by
+      ?the seven sons? is represented" throughout the largest work in the library,
+      and Job is one of only two Old Testament books that can ever carry
+      public-domain patristic commentary. Cause, probed rather than inferred:
+      lectionarycentral.com serves the Moralia pages as `Content-Type: text/html`
+      with NO charset, while the documents declare windows-1252 in a meta tag in
+      the head. fetch()'s res.text() reads only the header, defaults to UTF-8, and
+      every cp1252 smart quote and section sign became U+FFFD before the parser
+      ever saw it. The result was then cached, so the original bytes were gone and
+      no local repair was possible. Fix: decodeDeclared() sniffs the charset out
+      of the document and decodes deliberately; the 35 poisoned cache files were
+      deleted and refetched. Proof: 920 notes before and after with identical
+      keys, one author, 35 Book strings, one citation; 124 byte-identical, 795
+      differing in punctuation and encoding alone, and exactly two word-level
+      changes, both being fused words (intoEgypt, confoundthem) coming apart
+      because the same pass stopped DELETING numeric entities and started decoding
+      them. U+FFFD 11,125 to 0.
     evidence: scripts/ingest-gregory-job.mjs decodeDeclared(); commit "Give Gregory back his quotation marks"
-    action: done. The general rule is now in docs/editorial-standards.md: fetch() obeys the Content-Type header and never reads the document, so a source that declares its encoding only in the markup must be decoded explicitly.
+    action: "done. The general rule is now in docs/editorial-standards.md: fetch() obeys the Content-Type header and never reads the document, so a source that declares its encoding only in the markup must be decoded explicitly."
     safe_to_automate: true
     review: none
 
@@ -382,7 +559,20 @@ corrections:
     area: editorial/ingest
     severity: P3
     confidence: confirmed
-    status: corrected-verified   # 2026-08-19. 34 notes in John and Luke carried 2,617 literal strings of the form &#x03BA;&#x03BB; running for whole lines, wherever Pusey and Payne Smith set the Greek. Both ingests stripped the decimal form of a numeric reference (deleting characters out of a verbatim text without saying so) and did not handle the hex form at all. Both now decode. Conservation proved by sentence multiset: Luke 8,387 distinct sentences before and after with none lost, none gained and no anchor moved; John 40,436 both sides, the seventeen differences all being sentence boundaries falling inside newly decoded Greek. Three verses in John change note count because splitLongNote now measures real characters rather than eight-character escapes. The decode also surfaced five segments of Pusey's manuscript apparatus that had been hiding behind the escapes, which the footnote cleaner then claimed.
+    status: corrected-verified
+    status_notes: >-
+      2026-08-19. 34 notes in John and Luke carried 2,617 literal strings of the
+      form &#x03BA;&#x03BB; running for whole lines, wherever Pusey and Payne
+      Smith set the Greek. Both ingests stripped the decimal form of a numeric
+      reference (deleting characters out of a verbatim text without saying so) and
+      did not handle the hex form at all. Both now decode. Conservation proved by
+      sentence multiset: Luke 8,387 distinct sentences before and after with none
+      lost, none gained and no anchor moved; John 40,436 both sides, the seventeen
+      differences all being sentence boundaries falling inside newly decoded
+      Greek. Three verses in John change note count because splitLongNote now
+      measures real characters rather than eight-character escapes. The decode
+      also surfaced five segments of Pusey's manuscript apparatus that had been
+      hiding behind the escapes, which the footnote cleaner then claimed.
     evidence: scripts/ingest-cyril-john.mjs, scripts/ingest-cyril-luke.mjs; commit "Let Cyril speak Greek"
     action: done
     safe_to_automate: true
@@ -393,9 +583,28 @@ corrections:
     area: editorial/ingest
     severity: P2
     confidence: confirmed
-    status: corrected-verified   # 2026-08-19. Not footnote apparatus, which is what the two cleaners look for, but whole stretches of a different document that a slice swallowed, which is why neither cleaner could reach them. (1) All ten homilies on 1 John carried their CCEL endnote list, 10,857 words; because cleanBody strips the [1991] anchors out of the prose the definitions arrived looking like paragraphs ("Gal. v. 6.", "Ps. cxix. 85."). 1-john/5 v1 was 40% not Augustine. (2) matthew/7 v21 held 1,158 words of the front matter of the Harmony of the Gospels, translator credits and Riddle's introductory essay, because the Sermon on the Mount region ended on the Harmony's opening summary, 26,544 characters past where the Harmony begins. (3) job/38 v33 held 1,094 words of the 1844 Oxford editor arguing that Gregory on the procession of the Spirit reads with the later Latin Church, under Gregory's name. Every cut is doubly positive, a rule the edition prints AND a second marker naming what follows, never positional; the footnote cleaner's own header records that positional cutting once deleted whole homilies. Each of the ten 1 John notes was verified to be a strict prefix of what it replaced. Three hard invariants added to lib/bible/__tests__/commentaryIntegrity.test.ts, each verified to catch its own defect in the pre-fix data and nothing else.
+    status: corrected-verified
+    status_notes: >-
+      2026-08-19. Not footnote apparatus, which is what the two cleaners look for,
+      but whole stretches of a different document that a slice swallowed, which is
+      why neither cleaner could reach them. (1) All ten homilies on 1 John carried
+      their CCEL endnote list, 10,857 words; because cleanBody strips the [1991]
+      anchors out of the prose the definitions arrived looking like paragraphs
+      ("Gal. v. 6.", "Ps. cxix. 85."). 1-john/5 v1 was 40% not Augustine. (2)
+      matthew/7 v21 held 1,158 words of the front matter of the Harmony of the
+      Gospels, translator credits and Riddle's introductory essay, because the
+      Sermon on the Mount region ended on the Harmony's opening summary, 26,544
+      characters past where the Harmony begins. (3) job/38 v33 held 1,094 words of
+      the 1844 Oxford editor arguing that Gregory on the procession of the Spirit
+      reads with the later Latin Church, under Gregory's name. Every cut is doubly
+      positive, a rule the edition prints AND a second marker naming what follows,
+      never positional; the footnote cleaner's own header records that positional
+      cutting once deleted whole homilies. Each of the ten 1 John notes was
+      verified to be a strict prefix of what it replaced. Three hard invariants
+      added to lib/bible/__tests__/commentaryIntegrity.test.ts, each verified to
+      catch its own defect in the pre-fix data and nothing else.
     evidence: lib/bible/__tests__/commentaryIntegrity.test.ts "carries no back matter from another document"; commit "Take the back matter out of the Fathers' mouths, again"
-    action: done for these three. Two remainders, both out of scope and neither a misattribution: romans/4 v21 ends in a footnote tail and is the last entry on clean-commentary-indexes' flag list; matthew/14 v34 ends in an escaped tag fragment "Chapter 15&lt;.h2&gt;" whose ingest source (catena1.txt) is not cached, so fixing it means refetching and re-purging a 3,234-note book.
+    action: "done for these three. Two remainders, both out of scope and neither a misattribution: romans/4 v21 ends in a footnote tail and is the last entry on clean-commentary-indexes' flag list; matthew/14 v34 ends in an escaped tag fragment \"Chapter 15&lt;.h2&gt;\" whose ingest source (catena1.txt) is not cached, so fixing it means refetching and re-purging a 3,234-note book."
     safe_to_automate: true
     review: none
 
@@ -404,8 +613,45 @@ corrections:
     area: reader
     severity: P3
     confidence: confirmed
-    status: corrected-verified   # 2026-08-19. StudyRail has always carried "No patristic commentary for this chapter yet." on a branch that runs when a chapter has no notes, but its only call site gated the entire rail on the same condition inverted, so the copy could never render. The cause was a name: page.tsx declared a local hasCommentary meaning "this chapter has notes", shadowing the hasCommentary exported from lib/bible/commentary-index meaning "this book has notes". Both are wanted, for different things, and both now have their own name. The per-verse glyph and mobile sheet stay on the chapter question; the desktop rail moves to the book question. Genesis carries the Fathers badge on 1 chapter of 50, Exodus 1 of 40, 1 Samuel 1 of 31, and those 118 chapters used to render nothing and look identical to a book never touched. Verified against a dev server on four cases: genesis/5 empty state, genesis/1 Basil, job/38 Gregory, isaiah/1 no rail at all.
+    status: corrected-verified
+    status_notes: >-
+      2026-08-19. StudyRail has always carried "No patristic commentary for this
+      chapter yet." on a branch that runs when a chapter has no notes, but its
+      only call site gated the entire rail on the same condition inverted, so the
+      copy could never render. The cause was a name: page.tsx declared a local
+      hasCommentary meaning "this chapter has notes", shadowing the hasCommentary
+      exported from lib/bible/commentary-index meaning "this book has notes". Both
+      are wanted, for different things, and both now have their own name. The
+      per-verse glyph and mobile sheet stay on the chapter question; the desktop
+      rail moves to the book question. Genesis carries the Fathers badge on 1
+      chapter of 50, Exodus 1 of 40, 1 Samuel 1 of 31, and those 118 chapters used
+      to render nothing and look identical to a book never touched. Verified
+      against a dev server on four cases: genesis/5 empty state, genesis/1 Basil,
+      job/38 Gregory, isaiah/1 no rail at all.
     evidence: app/(app)/bible/[book]/[chapter]/page.tsx; commit "Tell a reader when a chapter has no Fathers"
-    action: done. Open: that copy says "yet", and per the coverage ceiling it is not "yet" for Genesis, Exodus or 1 Samuel but that no public-domain English translation exists. Rewording is a voice decision plus 21 translations.
+    action: "done. Open: that copy says \"yet\", and per the coverage ceiling it is not \"yet\" for Genesis, Exodus or 1 Samuel but that no public-domain English translation exists. Rewording is a voice decision plus 21 translations."
     safe_to_automate: partially
     review: requires-owner
+
+
+corrections:
+  - id: C-01
+    fixes: F-02
+    files: [.github/workflows/ci.yml]
+    verification: local suite green on Node 24 (254/254, tsc 0); CI run itself pending owner push
+    status: corrected-unverified
+  - id: C-02
+    fixes: [F-09-partial]
+    files: [lib/shop/orders.ts, lib/shop/__tests__/orders.test.ts, components/shop/OrdersClient.tsx]
+    verification: vitest 254/254 incl. 5 new; tsc 0; eslint clean
+    status: corrected-verified
+  - id: C-03
+    fixes: [F-15]
+    files: [playwright.config.ts, tests/smoke/mobile-shell.spec.ts, tests/smoke/_axe.ts, tests/smoke/history.spec.ts, tests/smoke/shop.spec.ts, lib/shop/catalog.ts, lib/shop/__tests__/catalogFailSoft.test.ts, vitest.config.ts, tests/stubs/server-only.ts]
+    verification: vitest 278/278 incl. 3 new; tsc 0; eslint 0 errors; build:android clean; local e2e green (see F-15 note); CI run pending owner push
+    status: corrected-unverified
+  - id: C-04
+    fixes: [F-13]
+    files: [lib/supabase/resolveUser.ts, lib/supabase/__tests__/resolveUser.test.ts, components/shop/OrdersClient.tsx, components/shop/OrderDetailClient.tsx, components/shop/MessagesClient.tsx, components/shop/ConversationClient.tsx, components/shop/RequestsClient.tsx, components/shop/ApplicationClient.tsx, components/account/AccountAuthGate.tsx, components/shop/MerchantApplyGate.tsx]
+    verification: vitest 278/278 incl. 6 new; tsc 0; eslint 0 errors; build:android clean; signed-out gates re-proven by the smoke suite's seller-console/account specs
+    status: corrected-verified

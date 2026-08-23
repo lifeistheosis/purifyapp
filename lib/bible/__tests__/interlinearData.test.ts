@@ -90,6 +90,17 @@ function englishVerseCount(slug: string, chapter: number): number | null {
   return j.verses.length;
 }
 
+// 120s, not vitest's default 30. Memoising the reads (see readJson above) took
+// this file from 61.7s to 2.3s, and I claimed that put it out of reach of a
+// slow-machine flake. That was wrong: it timed out again at 59.6s the same day,
+// with nine agents saturating the CPU. A 1,309-file walk is IO-bound, so its
+// wall time is a fact about the machine's load rather than about the corpus,
+// and pinning it to an arbitrary 30 was always going to fail on a busy runner.
+// CI uses two workers on a shared box, so this is not a local-only concern.
+//
+// The memoisation is still what did the real work. This is the ceiling that
+// stops a green suite going red for a reason that has nothing to do with the
+// data being tested.
 describe("interlinear data integrity", () => {
   it("every english-tagged file declares the book its directory names", () => {
     const offenders: string[] = [];
@@ -210,4 +221,4 @@ describe("interlinear data integrity", () => {
     }
     expect(offenders, offenders.join("\n  ")).toEqual([]);
   });
-});
+}, 120_000);
