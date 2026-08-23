@@ -254,17 +254,21 @@ function CampaignCard({
           {campaign.note}
         </p>
       ) : null}
-      <div className="mt-3.5 flex items-center justify-between gap-3 border-t border-white/5 pt-3">
-        <p className="font-sans text-caption text-paper/55">
-          <span className="font-semibold text-gold-pale">
-            {campaign.praying_count === 1
-              ? "1 person praying"
-              : `${campaign.praying_count} praying`}
-          </span>
-          {campaign.prayer_count > 0
-            ? ` · ${campaign.prayer_count} prayers offered`
-            : ""}
-        </p>
+      {/* The participation counts are gone. This row read "n praying, n
+          prayers offered" in gold, on every card on the board.
+
+          Two separate problems, and only one of them was the counting. A
+          number beside an intention turns a board of needs into a ranked
+          list: the cause with 40 people praying reads as more worth joining
+          than the one with 2, when the one with 2 is the one that needs
+          somebody. Nobody designed that ranking; it is what a visible count
+          does on its own.
+
+          The other problem is that prayer offered on someone else's behalf
+          became a public figure attached to a named person's need.
+
+          What is left is the invitation, which is all a card ever needed. */}
+      <div className="mt-3.5 flex items-center justify-end gap-3 border-t border-white/5 pt-3">
         <span className="shrink-0 font-sans text-caption font-semibold text-paper/45">
           {t("community.join")}
         </span>

@@ -1,25 +1,33 @@
 "use client";
 
 /**
- * The reader's own progress on one campaign: their streak, the days they
- * have kept, and the daily reminder switch.
+ * The reader's own state on one campaign: whether today is marked, and the
+ * daily reminder switch.
  *
- * Shown only to someone who has joined. It is a record of what they did, not
- * a prompt to do more: there is no target, no percentage toward a goal, no
- * "don't lose your streak", and the number is never used to make anyone
- * look. CONTRIBUTING is explicit that a streak may be shown when the reader
- * looks for it and may never be used to make them look.
+ * WHAT THIS USED TO SHOW, and why it does not. Four figures lived here: a
+ * streak, a running total of days prayed, a personal best ("your longest was
+ * n"), and a fourteen-cell strip filling in behind them. The docblock argued
+ * they were a record rather than a prompt, and cited CONTRIBUTING's rule that
+ * a streak may be shown when the reader looks for it and never used to make
+ * them look.
  *
- * Today is forgiven by lib/campaigns/streak.ts, so this reads the same at
- * 6am as it did at midnight. A counter that resets every morning until the
- * app is opened is precisely the pressure that rule forbids.
+ * That argument holds for a fast or a reading. It does not hold for prayer.
+ * A personal best on a prayer rule is an invitation to compare this month's
+ * praying with last month's, and there is no version of that comparison which
+ * is not either pride or despondency. The figures are gone.
+ *
+ * WHAT REMAINS, and why it is not the same thing. "You have prayed today" is
+ * a fact about today, not a tally: it counts nothing, it accumulates nothing,
+ * and it is the same sentence on the first day as on the four hundredth. It
+ * exists so a reader who cannot remember whether they already prayed for this
+ * intention can find out without praying twice by accident.
  */
 
 import { useCallback, useEffect, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { fetchCampaignDays, setCampaignReminder } from "@/lib/campaigns/client";
-import { rhythm, summarize, type CampaignDay } from "@/lib/campaigns/streak";
+import { summarize, type CampaignDay } from "@/lib/campaigns/streak";
 import { cn } from "@/lib/cn";
 
 export function CampaignProgress({
@@ -33,7 +41,7 @@ export function CampaignProgress({
   remindEnabled: boolean;
   onRemindChange: (next: boolean) => void;
 }) {
-  const { t, tn } = useTranslate();
+  const { t } = useTranslate();
   const [days, setDays] = useState<CampaignDay[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,55 +75,21 @@ export function CampaignProgress({
 
   if (!joined) return null;
 
-  const progress = summarize(days ?? []);
-  const strip = rhythm(days ?? [], 14);
+  // One boolean out of the whole summary. `summarize` still returns the
+  // streak, the total and the longest run, because lib/campaigns/streak.ts is
+  // also read by the admin panel's own KPI records; nothing on this screen
+  // reads them any more.
+  const prayedToday = summarize(days ?? []).prayedToday;
 
   return (
     <section className="mt-6 rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
-      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        {progress.streak > 0 ? (
-          <p className="font-display-serif text-title-sm text-paper">
-            {tn("campaigns.streak", progress.streak)}
-          </p>
-        ) : null}
-        <p className="font-sans text-detail text-paper/55">
-          {tn("campaigns.totalDays", progress.totalDays)}
-        </p>
-        {progress.prayedToday ? (
-          <p className="font-sans text-detail text-gold-pale/80">
-            {t("campaigns.prayedToday")}
-          </p>
-        ) : null}
-      </div>
-
-      {/* Fourteen days, oldest on the left. A quiet record, not a chart:
-          no axis, no percentage, nothing to fill in. */}
-      <div className="mt-4 flex gap-1.5" aria-hidden>
-        {strip.map((d) => (
-          <span
-            key={d.key}
-            className={cn(
-              "h-6 flex-1 rounded-sm transition-colors",
-              d.kept ? "bg-gold/55" : "bg-paper/8",
-            )}
-          />
-        ))}
-      </div>
-      {/* The same information, for a screen reader, without fourteen spans. */}
-      <p className="sr-only">
-        {tn("campaigns.totalDays", progress.totalDays)}
-        {progress.longest > progress.streak
-          ? ` ${t("campaigns.longestWas", { count: progress.longest })}`
-          : ""}
-      </p>
-
-      {progress.longest > progress.streak && progress.longest > 2 ? (
-        <p className="mt-3 font-sans text-caption text-paper/40">
-          {t("campaigns.longestWas", { count: progress.longest })}
+      {prayedToday ? (
+        <p className="font-sans text-detail text-gold-pale/80">
+          {t("campaigns.prayedToday")}
         </p>
       ) : null}
 
-      <div className="mt-5 border-t border-paper/8 pt-4">
+      <div className={cn("border-t border-paper/8 pt-4", prayedToday && "mt-5")}>
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <p className="font-sans text-ui font-semibold text-paper">

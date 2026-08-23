@@ -3,7 +3,7 @@
 // Prayer rule reader — morning / evening / future hours + akathists.
 //
 // Per-prayer "Mark prayed" toggle (today's set is in localStorage),
-// shown as a simple "X of N prayed today" progress for the current
+// marked per prayer, with no count and no fraction shown, for the current
 // session only — no streaks, no history grid. Each prayer also carries
 // a bookmark star that writes a `kind: 'prayer'` row to localStorage
 // (and to Supabase if the user is signed in, via the existing bookmarks
@@ -26,7 +26,6 @@ import {
 } from "@/lib/prayers/bookmarks";
 import type { Prayer, PrayerVariant, Rule } from "@/lib/prayers/types";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { ProgressBar } from "@/components/ui/ProgressBar";
 
 // Re-exported for back-compat: morning/evening pages import these as types.
 export type { Prayer, PrayerVariant, Rule } from "@/lib/prayers/types";
@@ -97,8 +96,10 @@ export function PrayerRuleReader({
   );
 
   const total = rule.prayers.length;
+  // Still computed, still never rendered as a figure. `completedCount` only
+  // decides whether "reset" is available, and `allDone` only decides whether
+  // the closing line shows. Neither reaches the screen as a number.
   const completedCount = done.size;
-  const progress = total > 0 ? completedCount / total : 0;
   const allDone = completedCount === total && total > 0;
 
   function persist(next: Set<string>) {
@@ -175,12 +176,16 @@ export function PrayerRuleReader({
         </p>
       </header>
 
-      {/* Progress — today. A quiet line over a hairline, not a card. */}
-      <div className="mb-2 flex items-center justify-between gap-4">
-        <p className="font-sans text-detail text-paper/50">
-          <span className="text-paper/85 tabular-nums">{completedCount}</span>{" "}
-          {t("prayers.reader.ofPrayedToday", { total })}
-        </p>
+      {/* NO COUNT, NO FRACTION, NO BAR.
+          This row used to read "n of m prayed today" over a progress bar. A
+          completion percentage on a prayer rule is the thing Purify refuses:
+          it turns a rule into a task list with a score, and it makes an
+          unfinished rule look like a failed one. The checkmarks below still
+          mark a place, because a place is not a score. What is gone is the
+          number, the fraction and the bar that drew them.
+
+          The two controls stay and now sit alone on the right. */}
+      <div className="mb-2 flex items-center justify-end gap-4">
         <div className="flex items-center gap-3 font-sans text-caption">
           <button
             type="button"
@@ -201,12 +206,10 @@ export function PrayerRuleReader({
           </button>
         </div>
       </div>
-      {/* Decorative: the line directly above already reads "n of m prayed
-          today", so a progressbar announcing the same fraction would say it
-          twice. No label means the shared bar renders aria-hidden. */}
-      <ProgressBar value={progress} height={1} trackClassName="bg-paper/10" />
 
-      {/* Completion — a quiet doxology, no banner. */}
+      {/* The doxology stays. It is not a score: it says the rule is finished,
+          which is what the end of a rule is, and it says it once and quietly.
+          Nothing counts up to it and nothing is lost by not reaching it. */}
       {allDone && (
         <p className="mt-8 text-center font-serif italic text-detail text-gold/70">
           {t("prayers.reader.complete")}

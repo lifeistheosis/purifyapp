@@ -8,9 +8,24 @@
 // closes the page or presses "Save session" — never silently.
 //
 // Visual: a single dark surface with the prayer line at top, a SVG rope
-// circle, a knot counter, and a tiny settings affordance. No streaks, no
-// gamification — only the lifetime knots-this-year number, which never
-// shrinks.
+// circle, a knot counter, and a tiny settings affordance.
+//
+// THE HISTORICAL TALLIES ARE GONE. This footer carried three figures: this
+// session, the last seven days, and the year so far. The header here used to
+// claim "no streaks, no gamification" in the same breath as describing a
+// never-shrinking yearly total of Jesus Prayers, which is not a claim that
+// survives being read twice. A number that only goes up is a score whether or
+// not anything calls it one.
+//
+// What remains is the position on the rope itself, "n of 100, loop 2". That is
+// the instrument, not a metric: a physical komvoschini has knots precisely so
+// the hand can keep the count the mind is not holding. It resets to zero every
+// session and it measures nothing beyond the present one.
+//
+// Sessions are still recorded, still synced and still exported, because they
+// are the reader's own record and Purify does not keep data it will not hand
+// back. They are simply not aggregated into anything, and nothing displays
+// them.
 
 import {
   useCallback,
@@ -21,7 +36,6 @@ import {
 } from "react";
 import {
   appendRopeSession,
-  ropeStats,
   uuid,
   useRopeSettings,
   writeRopeSettings,
@@ -43,7 +57,6 @@ export function PrayerRope() {
   const settings = useRopeSettings();
   const [count, setCount] = useState(0);
   const [sessionStart] = useState<string>(() => new Date().toISOString());
-  const [stats, setStats] = useState({ yearKnots: 0, weekKnots: 0, yearSessions: 0 });
   const [showSettings, setShowSettings] = useState(false);
   const [bellNote, setBellNote] = useState<string | null>(null);
   // Touch devices have no space bar; gate that half of the hint on a
@@ -54,16 +67,6 @@ export function PrayerRope() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot pointer probe; window is client-only
     setCanPressSpace(window.matchMedia("(pointer: fine)").matches);
-  }, []);
-
-  // Stats live re-read from localStorage on every prayer event.
-  useEffect(() => {
-    function recompute() {
-      setStats(ropeStats());
-    }
-    recompute();
-    window.addEventListener("purify:rope", recompute);
-    return () => window.removeEventListener("purify:rope", recompute);
   }, []);
 
   // Save the in-flight session on unload so a crash doesn't lose progress.
@@ -303,15 +306,7 @@ export function PrayerRope() {
       )}
 
       <footer className="mx-auto w-full max-w-[600px] px-6 md:px-8 pb-12">
-        <div className="grid grid-cols-3 border-y border-paper/10 py-6">
-          <Stat label={t("prayers.rope.thisSession")} value={count} />
-          <Stat label={t("prayers.rope.last7Days")} value={stats.weekKnots + count} />
-          <Stat
-            label={t("prayers.rope.yearSoFar", { year: new Date().getFullYear() })}
-            value={stats.yearKnots + count}
-            accent
-          />
-        </div>
+        <div className="border-t border-paper/10" />
         <div className="mt-7 flex items-center justify-center gap-6 flex-wrap font-sans text-detail">
           <button
             type="button"
@@ -346,19 +341,6 @@ export function PrayerRope() {
         />
       )}
     </section>
-  );
-}
-
-function Stat({ label, value, accent }: { label: string; value: number; accent?: boolean }) {
-  return (
-    <div className="text-center">
-      <p className={`font-serif text-title-sm tabular-nums ${accent ? "text-gold/90" : "text-paper/90"}`}>
-        {value.toLocaleString()}
-      </p>
-      <p className="mt-1.5 font-sans text-eyebrow uppercase tracking-[2px] text-paper/40">
-        {label}
-      </p>
-    </div>
   );
 }
 

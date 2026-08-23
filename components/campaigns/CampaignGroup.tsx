@@ -46,7 +46,7 @@ export function CampaignGroup({
   campaignId: string;
   joined: boolean;
 }) {
-  const { t, tn } = useTranslate();
+  const { t } = useTranslate();
   const [group, setGroup] = useState<Group | null>(null);
   const [members, setMembers] = useState<GroupMember[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -139,10 +139,12 @@ export function CampaignGroup({
               {group.name}
             </h3>
           </div>
-          <p className="font-sans text-detail text-paper/55">
-            {tn("campaigns.groupMembers", group.member_count)} ·{" "}
-            {tn("campaigns.groupPrayers", group.prayer_count)}
-          </p>
+          {/* "n praying, n prayers together" was here. The second figure is a
+              shared prayer tally, which is the thing being removed everywhere
+              else in this release. The first went with it rather than being
+              reworded: the roster of names is rendered directly below, so the
+              count was restating what the reader can already see, and leaving
+              a lone number under a heading is how a scoreboard starts. */}
         </div>
 
         {roster.length > 0 ? (

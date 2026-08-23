@@ -302,17 +302,16 @@ export function CampaignDetailClient() {
           </p>
         ) : null}
 
-        <p className="mt-5 font-sans text-caption text-paper/45">
-          {campaign.praying_count === 1
-            ? "1 person praying"
-            : `${campaign.praying_count} praying`}
-          {campaign.prayer_count > 0
-            ? ` · ${campaign.prayer_count} prayers offered`
-            : ""}
-          {isActive && left !== null
-            ? ` · ${left === 0 ? "ends today" : left === 1 ? "1 day left" : `${left} days left`}`
-            : ""}
-        </p>
+        {/* The praying and prayers-offered counts are gone from this line;
+            see the card in CampaignsClient for why. What stays is when the
+            campaign ends, which is a fact about the campaign rather than a
+            measure of anyone's praying: a reader deciding whether to join
+            something needs to know it finishes on Friday. */}
+        {isActive && left !== null ? (
+          <p className="mt-5 font-sans text-caption text-paper/45">
+            {left === 0 ? "ends today" : left === 1 ? "1 day left" : `${left} days left`}
+          </p>
+        ) : null}
 
         {/* Suggested prayer */}
         <div className="mt-7 rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">

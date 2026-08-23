@@ -73,7 +73,18 @@ export function campaignReminderPayload(campaignId: string): {
 } {
   return {
     title: "Your prayer campaign",
-    body: "Someone is waiting on your prayers today.",
+    // WAS: "Someone is waiting on your prayers today."
+    //
+    // Two things wrong with that sentence and only one of them was obvious.
+    // It named a beneficiary, which makes not opening the app a failure
+    // toward a person rather than a day on which you did not tap something.
+    // And "today" is a deadline: it is the same construction as "expires
+    // tonight", built out of gentler words.
+    //
+    // The talanton is struck and the community comes. It does not tell the
+    // monk that the brotherhood is waiting on him. This says what it is and
+    // stops, which is the whole permitted form.
+    body: "Open it when you are ready.",
     url: `/campaigns/detail?id=${encodeURIComponent(campaignId)}`,
   };
 }

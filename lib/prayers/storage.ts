@@ -338,28 +338,16 @@ export function appendRopeSession(session: RopeSession) {
   writeJson("purify.rope.sessions", list.slice(-500), ROPE_EVENT);
 }
 
-export function ropeStats(): {
-  yearKnots: number;
-  weekKnots: number;
-  yearSessions: number;
-} {
-  const sessions = readRopeSessions();
-  const now = new Date();
-  const yearStart = new Date(now.getFullYear(), 0, 1).getTime();
-  const weekStart = now.getTime() - 7 * 86_400_000;
-  let yearKnots = 0;
-  let weekKnots = 0;
-  let yearSessions = 0;
-  for (const s of sessions) {
-    const t = new Date(s.startedAt).getTime();
-    if (t >= yearStart) {
-      yearKnots += s.knots;
-      yearSessions++;
-    }
-    if (t >= weekStart) weekKnots += s.knots;
-  }
-  return { yearKnots, weekKnots, yearSessions };
-}
+// ropeStats() used to live here: yearKnots, weekKnots, yearSessions, summed
+// out of the session log for three tiles in the rope's footer. Those tiles are
+// gone (see the header of components/prayers/PrayerRope.tsx for why), and this
+// was their only caller, so the aggregation goes with them rather than sitting
+// here as a total nobody displays.
+//
+// readRopeSessions() stays. The sessions themselves are the reader's own
+// record, they sync across devices and they belong in a data export. Not
+// aggregating them is the point; not keeping them would be a different and
+// worse decision.
 
 // ── React hook helpers ──────────────────────────────────────────────────────
 
