@@ -1,0 +1,173 @@
+-- Orders learn when the money actually landed.
+--
+-- WHY THIS EXISTS. shop_orders.created_at is `default now()`
+-- (20260704_shop_phase1.sql:364) and lib/shop/checkout.ts inserts the row
+-- WITHOUT setting it, so created_at is the Postgres clock at the moment a buyer
+-- STARTED checkout, before the Stripe session exists. The settlement webhook,
+-- paidValues() in lib/shop/webhookSettlement.ts, flips payment_status to 'paid'
+-- and stamps updated_at and nothing else. So every money figure in the admin
+-- panel is bucketed by checkout start, not by settlement.
+-- app/api/admin/revenue/daily/route.ts:38-42 documents that as a known untruth,
+-- components/admin/insights/DayDetail.tsx prints an apology for it on every day
+-- view, and an order created at 23:55 and paid after midnight has never counted
+-- toward the day it was actually paid.
+--
+-- WHAT THIS FILE DOES. Adds one nullable timestamptz. No default, no backfill,
+-- no trigger, no constraint, no index. The same shape as
+-- 20260705_shop_seller_console.sql:66-67, which added stripe_payment_intent to
+-- this same table.
+--
+-- THE TABLE, MEASURED, not guessed. Probed against production 2026-08-22 with
+-- the service role, read only:
+--
+--     status       orders   w/ payment_intent   w/ session   window
+--     cancelled        16                   0           16   2026-07-10..08-14
+--     pending          19                   0           19   2026-07-21..08-21
+--     paid              0                   0            0
+--     refunded          0                   0            0
+--
+-- 35 rows. NOT ONE ORDER HAS EVER SETTLED. Only the settlement path writes
+-- stripe_payment_intent, and no row has one, so this is not merely "none are
+-- marked paid", it is "the paid branch has never run in production".
+--
+-- Three consequences, and they are why this file is as small as it is:
+--
+--   1. THERE IS NOTHING TO BACKFILL. Not "a backfill would be dishonest",
+--      which is the usual argument. There is no row to backfill. Every design
+--      question about inferring a settlement time from updated_at or from
+--      Stripe is moot until a first order settles, and after this ships no
+--      order can settle without a real instant.
+--   2. NULL MEANS EXACTLY ONE THING TODAY: no payment happened. The ambiguous
+--      case, a paid row with no recorded instant, cannot exist, because there
+--      are no paid rows. Consumers do not need a coverage disclosure, an
+--      estimated-row counter, or a mixed-basis chart. Read payment_status.
+--   3. THE COLUMN IS COMPLETE FROM THE FIRST SETTLEMENT ONWARD. Every future
+--      paid row carries a measured instant or the write did not happen. That
+--      is a much stronger guarantee than this table could have had at any
+--      later date, and it is the reason to do this now rather than after the
+--      shop takes money.
+--
+-- LOCKING. A nullable column with no default is a catalog-only change on
+-- Postgres 11 and later: no table rewrite, no scan. The cost is not holding
+-- ACCESS EXCLUSIVE, it is ACQUIRING it: the request queues behind any in-flight
+-- transaction on shop_orders and then blocks readers and writers behind it,
+-- including the Stripe webhook. At 35 rows this is microseconds, but
+-- lock_timeout bounds it to a fail-fast retry rather than a stampede if a long
+-- transaction happens to be open. Plain SET rather than SET LOCAL on purpose:
+-- whether the Supabase integration wraps each file in a transaction is not
+-- verifiable from this repo, and SET LOCAL outside a transaction block is a
+-- warning and a no-op. Plain SET is correct under both.
+--
+-- RLS AND GRANTS: nothing to do, and shop_orders has TWO select policies, not
+-- one. shop_orders_self_select (20260704_shop_phase1.sql:375-377) is the buyer,
+-- and shop_orders_seller_select (20260705_shop_seller_console.sql:46-52) is the
+-- seller who received the order. A new column inherits both, so paid_at becomes
+-- readable by the buyer AND by that seller the moment any route selects it.
+-- Neither happens in this file. shop_orders is not one of the four tables
+-- 20260802_revoke_public_user_id.sql converted to COLUMN grants, so no
+-- `grant select (paid_at)` line is needed. Every write here is service role.
+--
+-- ONE READ PICKS THE COLUMN UP IMMEDIATELY. app/api/admin/shop/orders/route.ts
+-- is `.select("*, store:..., items:...")`, the only wildcard read of shop_orders
+-- in the repo, so paid_at enters that JSON payload the second this applies with
+-- no code change. It moves no rendered number: OrdersTab enumerates its table
+-- columns and its CSV headers by hand, and every other money read uses a
+-- hand-written column list.
+--
+-- ── Deliberately left out, each for a checked reason ───────────────────────
+--
+-- NO DEFAULT. `default now()` would stamp the migration timestamp onto all 35
+-- rows, and the revenue surfaces would publish that fabrication as fact on the
+-- next page load. It would also be doubly wrong here: those 35 rows are
+-- cancelled and pending orders that were never paid at all.
+--
+-- NO CHECK CONSTRAINT. `check (paid_at is null or payment_status in
+-- ('paid','refunded'))` was considered and deferred. It is INERT: it passes
+-- trivially on 100% of existing rows and protects no order that exists today.
+-- It would also turn a live race into a raw Postgres string in the operator's
+-- dashboard, because app/api/admin/shop/orders/route.ts returns error.message
+-- verbatim in a 500. The race it would guard is real in code and has never
+-- fired: app/api/shop/seller/orders/route.ts guards only on fulfillment_status,
+-- which the webhook never writes, so that guard can never invalidate, and the
+-- admin cancel carries only `.eq("id", orderId)` with no status guard at all.
+-- Probed for the damage that race would leave, cancelled rows carrying a
+-- payment intent: ZERO ROWS. It has never fired because nothing has ever been
+-- paid. Fix it in application code first, where it costs nothing, then add this
+-- constraint in its own file.
+--
+-- NO `check (paid_at >= created_at)`. created_at is the Postgres clock and
+-- paid_at will be Stripe's event.created. A few hundred milliseconds of
+-- ordinary skew would make the settlement UPDATE throw, and this file must
+-- never be able to refuse a write that records money arriving.
+--
+-- NO TRIGGER. Not because this database has none: 20260711_shop_reviews.sql and
+-- 20260718_shop_reviews_v2.sql both create row triggers on shop tables. Because
+-- this repo cannot test one: no pgTAP, no `supabase start`, no database
+-- integration test, and lib/shop/webhookSettlement.ts exists precisely so the
+-- money rules are unit-testable with an injected database (audit F-01, F-03).
+-- A trigger also stamps now() for ANY writer, so a hand fix in the SQL editor
+-- months after the money moved would record the day of the fix, and the revenue
+-- calendar would chart that as measured.
+--
+-- NO refunded_at AND NO cancelled_at. The refund leg already has a home in
+-- public.shop_refund_requests.processed_at. If refunded_at is ever wanted it
+-- gets its own migration and its own evidence.
+--
+-- NO INDEX. Nothing range-filters paid_at yet, and 35 rows would not use one.
+-- When a reader does filter on it, the follow-up is one line:
+--   create index if not exists shop_orders_paid_at_idx
+--     on public.shop_orders (paid_at desc) where paid_at is not null;
+--
+-- ── Ordering. This file merges ALONE. ─────────────────────────────────────
+-- AGENTS.md records that two migrations sat on main for over a week without
+-- being applied, so the gap between "merged" and "applied" is unbounded. If
+-- application code that NAMES paid_at deploys before the column exists,
+-- PostgREST answers PGRST204, the settlement returns "update-failed", the
+-- webhook route returns 500, and Stripe retries with backoff and then gives up:
+-- buyer charged, order stuck pending, no confirmation email, no units_sold
+-- bump. Merge this file by itself, confirm it applied with probe A below, and
+-- only then merge the webhook change.
+
+set lock_timeout = '3s';
+set statement_timeout = '30s';
+
+alter table public.shop_orders
+  add column if not exists paid_at timestamptz;
+
+comment on column public.shop_orders.paid_at is
+  'When Stripe reported the payment, written once by the settlement webhook inside the same guarded update that sets payment_status to paid. Null on a pending or cancelled row means no payment happened, which is every row in this table as of 2026-08-22. Null on a paid or refunded row would mean the order settled before this column existed; no such row exists, and none can be created after this migration. Read payment_status to tell those apart. Never coalesce this to created_at without disclosing that you did.';
+
+-- ── Verification ──────────────────────────────────────────────────────────
+--
+-- A. Did it apply. Run from a shell (AGENTS.md's probe recipe):
+--
+--      curl -s -o /dev/null -w "%{http_code}\n" \
+--        "$NEXT_PUBLIC_SUPABASE_URL/rest/v1/shop_orders?select=paid_at&limit=1" \
+--        -H "apikey: $NEXT_PUBLIC_SUPABASE_ANON_KEY"
+--
+--    200 means the column exists. 400 with a PGRST204 body means it does not,
+--    and the webhook change must NOT be merged yet. Before this migration the
+--    same probe returned 400, which is how the absence was confirmed.
+--
+-- B. The census, for when you want to re-check the numbers in the header:
+--
+--      select payment_status,
+--             count(*)                      as orders,
+--             count(paid_at)                as with_paid_at,
+--             count(stripe_payment_intent)  as with_payment_intent,
+--             min(created_at), max(created_at)
+--        from public.shop_orders
+--       group by 1
+--       order by 1;
+--
+--    After the webhook change ships, with_paid_at and with_payment_intent must
+--    stay equal on the 'paid' row. If they ever diverge, a settlement wrote one
+--    and not the other, which should be impossible: they are set in the same
+--    object literal in paidValues().
+--
+-- Rollback:
+--   alter table public.shop_orders drop column if exists paid_at;
+--
+-- Free today, because the column is empty on all 35 rows. After the webhook
+-- change ships, dropping it destroys every settlement instant recorded since,
+-- and Stripe's event retention is 30 days, so a late rollback is lossy.
