@@ -445,17 +445,48 @@ is what `MAX_CAMPAIGN_REMINDERS_PER_RUN` actually caps.
 
 **Open, and owner-only.**
 
-1. **Stripe.** 35 checkout sessions since 2026-07-10, 16 cancelled and 19
-   pending, **zero paid, and not one row has ever carried a
-   stripe_payment_intent**. Only the settlement path writes that column, so the
-   paid branch has never run in production. Either nobody has completed a
-   purchase in six weeks, or the webhook is not reaching Render and buyers have
-   been charged with no order. Cannot be told apart from a checkout:
-   STRIPE_SECRET_KEY is empty in .env.local. Check the Stripe dashboard.
+1. ~~**Stripe.**~~ **ANSWERED the same day, from the dashboard. No money is
+   missing.** Stripe has processed exactly ONE payment in the account's
+   lifetime: $19.99 for Pro (Monthly) on 31 July. Zero failed, zero refunded,
+   zero disputed, zero uncaptured. That single payment is the web subscription
+   behind the one active Pro entitlement in the database, and it is not a shop
+   order.
+
+   So the 35 shop checkout sessions genuinely never converted, and the zero
+   FAILED count says buyers abandoned before entering card details rather than
+   being declined. That is a conversion question, not a defect.
+
+   The path is correctly wired for the first real sale, which was the second
+   thing worth knowing: the webhook destination `charismatic-harmony` is
+   Active, points at `https://purifyapp.net/api/shop/stripe-webhook`, and
+   listens to exactly `checkout.session.completed`, which is the event
+   `settleCheckoutSession` handles. Zero deliveries and zero failures, as
+   expected when nothing has been bought. Probed from outside beforehand, the
+   endpoint answers 405 to GET and 400 "Missing signature." to an unsigned
+   POST, so it is deployed and rejecting correctly.
+
+   One thing to note for later: a second destination on the same account posts
+   to `data.whop.com` and is subscribed to 24 events. Nothing in this repo
+   refers to Whop. Worth confirming it is intentional.
 2. **The paid_at migration** needs sign-off before the PR.
-3. **Render env**, each closing a dark feature: FCM_SERVICE_ACCOUNT_JSON (see
-   the F-21 correction, 96 devices are registered and waiting), CRON_SECRET in
-   both Render and GitHub Actions secrets, NEXT_PUBLIC_COMMUNITY_ENABLED=1.
+3. ~~**Render env**~~ **RESOLVED the same day, and the list above was wrong.**
+   Read from the Render and GitHub dashboards rather than inferred from
+   `.env.local`: FCM_SERVICE_ACCOUNT_JSON, CRON_SECRET,
+   NEXT_PUBLIC_COMMUNITY_ENABLED, NEXT_PUBLIC_CAMPAIGNS_ENABLED,
+   NEXT_PUBLIC_SITE_URL, BIBLE_API_KEY with all three BIBLE_ID_* and
+   REVENUECAT_REST_API_KEY are **all set**, 29 variables in total. CRON_SECRET
+   is a GitHub Actions repository secret as well, and the Scheduled jobs
+   workflow has 369 green hourly runs. So the cron delivers and FCM is
+   configured, which with 96 registered tokens means **Android push should
+   already work**; the 2026-07-18 report that it does not predates the fixes
+   and nobody has retested. The remaining test is one broadcast to 96 real
+   people, which is the owner's to run.
+
+   Genuinely unset, each explaining a symptom rather than being a surprise:
+   the four VAPID keys (so web push cannot work, and `push_subscriptions`
+   being empty is consistent rather than broken), the four APNS keys (so iOS
+   push dry-runs), and REVENUECAT_V2_API_KEY with REVENUECAT_PROJECT_ID (so
+   admin MRR stays an estimate).
 4. **Four migrations sit on main unapplied**, probed 2026-08-22:
    `20260801_community_notifications`, `20260802_profile_preferences`,
    `20260811_campaign_groups_and_streaks`, `20260811_community_group_threads`.
