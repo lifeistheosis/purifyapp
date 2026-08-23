@@ -81,19 +81,63 @@ If yes to all four, ship it.
 
 ## Reminders and streaks
 
-Amended 2026-08-10. The ethos used to prohibit these outright. It no longer
-does, because the app now has readers who gather material and want to return to
-it. What replaces the prohibition is a bar, not a free hand. A reminder or a
-streak ships only if all of the following hold:
+Amended 2026-08-10, and again 2026-08-22. The first amendment replaced an
+outright prohibition with the bar below. The second one carved prayer back out
+of it, after four counters were removed from live surfaces and it became clear
+the bar was answering the wrong question for that one subject.
+
+There are now two rules, and which applies depends on what is being counted.
+
+### On prayer, no figures at all
+
+A prayer rule, a prayer campaign, the prayer rope and the hours carry no
+number about the reader. No streak, no total, no personal best, no completion
+percentage, no "n of m", no public count of who prayed or how often.
+
+This is narrower than "no counters" and stricter than the bar. The reasoning is
+about the subject rather than the mechanism. A figure attached to a fast or a
+reading tells you something you can act on: you can decide to read more. A
+figure attached to prayer tells you this month was worse than last month, and
+there is no third thing it can mean. Pride at a long run and despondency at a
+broken one are the only two readings available, and neither is repentance.
+
+The public counts went for a second reason that is worth writing down
+separately. "Forty praying" beside one intention and "two praying" beside
+another ranks a board of needs, and it ranks it backwards: the one with two is
+the one that needs somebody. Nobody designed that ranking. It is what a visible
+count does when you put it next to a need.
+
+Two things are permitted and the distinction matters. A **state** is not a
+tally: "you have prayed today" counts nothing, accumulates nothing and reads
+the same on the four hundredth day as on the first. A **position** is not a
+score: the live knot count on the prayer rope resets every session, and a
+komvoschini has knots precisely so the hand can hold the count the mind is not
+holding. A fourteen-day rhythm strip carrying no figure is a memory aid and
+stays; the same strip sitting under "your longest was nine" was part of a
+scoreboard and went with it.
+
+### On everything else, the bar
+
+Fasting, reading, collections and community keep the 2026-08-10 rule. A
+reminder or a streak ships only if all of the following hold:
 
 1. **The reader asked for it.** Default off, always. Never on by an upgrade,
    never on by an install, never on by accepting something else.
 2. **It can be turned off from the surface it appears on**, not only from a
    settings page three levels away.
-3. **At most one reminder per reader per week**, enforced at the reader level.
-   Per-folder or per-feature toggles must not multiply: five weekly reminders
+3. **Reminders may not multiply per feature.** Five separate weekly reminders
    landing on five different days is a daily habit loop assembled out of parts
-   that each looked harmless.
+   that each looked harmless, and each new toggle must be counted against the
+   whole rather than against its own feature.
+
+   *Reworded 2026-08-22.* This clause used to read "at most one reminder per
+   reader per week, enforced at the reader level", which the code has never
+   done and should not: a reader who sets a morning time and an evening time
+   receives fourteen notifications a week, and that is one opt-in with two
+   hours in it rather than fourteen features. The clause was written against
+   multiplication and said something broader than it meant.
+   `MAX_CAMPAIGN_REMINDERS_PER_RUN` in `lib/push/schedule.ts` is what actually
+   implements it.
 4. **No pressure mechanics.** No badge, no unread count, no "don't lose your
    streak", no red dot. A streak may be shown when the reader looks for it. It
    may never be used to make them look.
@@ -102,12 +146,39 @@ streak ships only if all of the following hold:
    FCM in plaintext and is stored in a Postgres column. The notification says
    that something is there; the content lives behind the lock screen.
 6. **The copy carries no urgency.** No digits, no exclamation marks, no
-   time-limited language. This is enforced by a doctrine test, not by review
-   alone.
+   time-limited language, no praise.
 
 If a proposal cannot clear all six, the answer is a pull-based surface inside
 the app instead: something the reader finds when they open it, rather than
 something that reaches out to them.
+
+### How clause 6 is actually enforced
+
+It is a test, and until 2026-08-22 this section claimed that when it was not
+true. The test covered one payload of five and asserted three things, while the
+admin broadcast, the only sender where a person can type freely, validated
+nothing but string length.
+
+What exists now:
+
+- `lib/push/copy.ts` holds **every** string a reader can see. The scheduled
+  payload builders take no caller text at all, which is the half of the
+  enforcement that cannot be argued around.
+- `lib/push/doctrine.ts` is a pure predicate: digits, exclamation marks in
+  three scripts, urgency phrases, pressure phrases, praise, and lock-screen
+  length.
+- `lib/push/__tests__/doctrine.test.ts` runs it over every row, and greps
+  `lib/push`, `public/sw.js` and the admin route for a `title:` or `body:`
+  literal living anywhere but the table. A new sender in a new file fails the
+  build.
+- The admin route runs the same predicate server-side and answers with the
+  clause by name, so an operator is told "no digits: contains the digit 3"
+  rather than "Invalid request."
+
+The word lists are defeatable by anyone trying to defeat them. They are not
+the threat model. The threat is a tired author at eleven at night writing
+"Only 2 days left" without thinking, and that is caught.
+
 
 ## Write to us
 

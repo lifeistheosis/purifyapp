@@ -1,6 +1,19 @@
 // Shared reminder-scheduling logic for the delivery cron. Pure functions so
 // they can be unit-tested and reused across the Web Push (push_subscriptions)
 // and native (device_push_tokens) tables.
+//
+// NO STRINGS LIVE HERE. Every word a reader can see is in lib/push/copy.ts,
+// and lib/push/__tests__/doctrine.test.ts fails the build if a title or body
+// literal reappears in this file. What stays here is the clock.
+//
+// ON CADENCE, because the number surprises people. A reader who sets both a
+// morning and an evening time receives two notifications a day, fourteen a
+// week. That is one opt-in with two hours in it, not fourteen features, and
+// CONTRIBUTING's third clause was reworded on 2026-08-22 to say so: the thing
+// that clause forbids is per-feature reminders multiplying, which is what
+// MAX_CAMPAIGN_REMINDERS_PER_RUN below actually caps.
+
+import { campaignCopy, reminderCopy } from "./copy";
 
 export type ReminderKind = "morning" | "evening";
 
@@ -54,39 +67,16 @@ export function dueCampaigns(
 }
 
 /**
- * What a campaign reminder says.
- *
- * No campaign title, no subject name, and no count. A push payload crosses
- * APNs and FCM in plaintext and is stored in a Postgres column, and
- * CONTRIBUTING is explicit that personal content stays behind the lock
- * screen: "the notification says that something is there; the content lives
- * behind the lock screen." A campaign is frequently "for my mother's
- * surgery", which is precisely the sentence that must not appear on a lock
- * screen in a shared room.
- *
- * No digits and no exclamation marks either, per the same bar.
+ * What a campaign reminder says. The words are in lib/push/copy.ts; this is
+ * the seam that hands it an id. Kept as a named export because the cron and
+ * three tests already import it under this name.
  */
 export function campaignReminderPayload(campaignId: string): {
   title: string;
   body: string;
   url: string;
 } {
-  return {
-    title: "Your prayer campaign",
-    // WAS: "Someone is waiting on your prayers today."
-    //
-    // Two things wrong with that sentence and only one of them was obvious.
-    // It named a beneficiary, which makes not opening the app a failure
-    // toward a person rather than a day on which you did not tap something.
-    // And "today" is a deadline: it is the same construction as "expires
-    // tonight", built out of gentler words.
-    //
-    // The talanton is struck and the community comes. It does not tell the
-    // monk that the brotherhood is waiting on him. This says what it is and
-    // stops, which is the whole permitted form.
-    body: "Open it when you are ready.",
-    url: `/campaigns/detail?id=${encodeURIComponent(campaignId)}`,
-  };
+  return campaignCopy(campaignId);
 }
 
 /**
@@ -111,17 +101,7 @@ export function reminderPayload(kind: ReminderKind): {
   body: string;
   url: string;
 } {
-  return kind === "morning"
-    ? {
-        title: "Morning prayer",
-        body: "Open the morning rule when you rise.",
-        url: "/prayers/morning",
-      }
-    : {
-        title: "Evening prayer",
-        body: "Open the evening rule when you lie down.",
-        url: "/prayers/evening",
-      };
+  return reminderCopy(kind);
 }
 
 /** A clock reading the wall time in an IANA timezone. */

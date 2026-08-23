@@ -5,6 +5,8 @@ import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveAudience, type Audience } from "@/lib/push/audience";
 import { broadcast, broadcastStatus } from "@/lib/push/send";
+import { checkNotificationCopy, explainViolations } from "@/lib/push/doctrine";
+import { broadcastTemplates } from "@/lib/push/copy";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,6 +20,15 @@ export const dynamic = "force-dynamic";
  * nothing actually left) — the log never claims a delivery that did not
  * happen.
  */
+//
+// THE COPY BAR APPLIES HERE TOO, and this was the one sender it did not reach.
+// Length was the only thing validated, which meant the single place in the
+// product where a person can type anything at all was the single place nothing
+// checked. It runs the same predicate as the scheduled payloads, so there is
+// one definition of what Purify may say rather than two that drift.
+//
+// Server-side on purpose. The admin UI can offer templates and warn early, but
+// a check that lives only in a component is a check that a curl request skips.
 const sendSchema = z.object({
   title: z.string().min(1).max(80),
   body: z.string().min(1).max(300),
@@ -63,6 +74,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
   const { title, body: text, url, audience, confirm } = parsed.data;
+
+  // Named clauses, not a generic refusal. An operator who is told only
+  // "Invalid request." retries with a worse string; one who is told "no
+  // digits: contains the digit 3" fixes it in one pass. This is also the
+  // only place the rule is ever explained to the person writing the words.
+  const violations = checkNotificationCopy({ title, body: text });
+  if (violations.length > 0) {
+    return NextResponse.json(
+      {
+        error: `This message does not clear the notification bar. ${explainViolations(violations)}`,
+        violations,
+        templates: broadcastTemplates(),
+      },
+      { status: 400 },
+    );
+  }
   if (!confirm) {
     return NextResponse.json({ error: "Not confirmed." }, { status: 400 });
   }

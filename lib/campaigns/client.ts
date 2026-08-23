@@ -362,7 +362,6 @@ export type MyPrayers = {
   userId: string | null;
   joined: MyJoinedCampaign[];
   created: PrayerCampaign[];
-  totalPrayerDays: number;
 };
 
 const BASE_COLS =
@@ -378,7 +377,7 @@ const missingImageColumn = (message: string | undefined) =>
   Boolean(message && /image_url/i.test(message));
 
 export async function fetchMyPrayers(): Promise<MyPrayers> {
-  const empty: MyPrayers = { userId: null, joined: [], created: [], totalPrayerDays: 0 };
+  const empty: MyPrayers = { userId: null, joined: [], created: [] };
   const supabase = createClient();
   const {
     data: { user },
@@ -421,8 +420,12 @@ export async function fetchMyPrayers(): Promise<MyPrayers> {
       prayer_days: r.prayer_days ?? 0,
     }));
 
-  const totalPrayerDays = joined.reduce((n, j) => n + j.prayer_days, 0);
+  // totalPrayerDays summed j.prayer_days across every campaign, for a tile
+  // on /campaigns/mine reading "Prayers offered". The tile is gone and this
+  // was its only consumer, so the sum goes with it rather than remaining as a
+  // lifetime total of one reader's praying that nothing displays. The
+  // per-campaign prayer_days still arrives on each row; nothing aggregates it.
   const created = (createdRes.data ?? []) as unknown as PrayerCampaign[];
 
-  return { userId: user.id, joined, created, totalPrayerDays };
+  return { userId: user.id, joined, created };
 }

@@ -52,10 +52,14 @@ export function MyPrayers() {
           </div>
         ) : (
           <>
-            {/* Summary */}
-            <div className="mt-6 grid grid-cols-3 gap-3">
+            {/* Two list lengths, not three figures. "Prayers offered" was
+                here, reading totalPrayerDays: a running lifetime tally of
+                days on which this reader prayed. It is the same figure taken
+                off the campaign card and the rope, and it was the last one
+                left. How many campaigns you have joined and started is a
+                count of things, not a measure of your praying. */}
+            <div className="mt-6 grid grid-cols-2 gap-3">
               <Stat value={data.joined.length} label={t("shop.praying")} />
-              <Stat value={data.totalPrayerDays} label={t("shop.prayersOffered")} />
               <Stat value={data.created.length} label={t("shop.started")} />
             </div>
 
