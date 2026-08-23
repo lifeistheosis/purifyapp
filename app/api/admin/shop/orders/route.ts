@@ -2,6 +2,15 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
+import {
+  canCancelPayment,
+  cancelRefusalMessage,
+  guardedOrderUpdate,
+  readOrderState,
+  staleOrderMessage,
+  type OrderStateSnapshot,
+  type OrderWriteDb,
+} from "@/lib/shop/orderWrite";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -114,26 +123,43 @@ export async function PATCH(req: Request) {
   }
 
   const admin = createAdminClient();
+  const db = admin as unknown as OrderWriteDb;
 
-  // Cancelling a PAID order is refused here too; that's a refund.
-  if (fulfillmentStatus === "cancelled") {
-    const { data: order } = await admin
-      .from("shop_orders")
-      .select("payment_status")
-      .eq("id", orderId)
-      .maybeSingle();
-    if (!order) return NextResponse.json({ error: "Order not found." }, { status: 404 });
-    if (order.payment_status === "paid") {
+  // One read of the row as it stands right now, used for two things: the
+  // cancel allow-list, and the compare-and-swap values below. Read here rather
+  // than trusting the client, because this table can sit open for minutes.
+  let before: OrderStateSnapshot | null = null;
+  if (fulfillmentStatus) {
+    const read = await readOrderState(db, orderId);
+    // A failed READ is not an absent row. 500, never 404. The old code
+    // destructured only `data`, so a transient error read as "Order not found."
+    if (!read.ok) return NextResponse.json({ error: read.message }, { status: 500 });
+    if (!read.state) {
+      return NextResponse.json({ error: "Order not found." }, { status: 404 });
+    }
+    before = read.state;
+    // Cancelling a PAID order is a refund. Cancelling a REFUNDED order erases
+    // the two columns every money surface reads, and the old check tested
+    // `=== "paid"` only, so a refunded order went straight through.
+    if (fulfillmentStatus === "cancelled" && !canCancelPayment(before.payment_status)) {
       return NextResponse.json(
-        { error: "This order is paid. Refund it instead of cancelling." },
+        { error: cancelRefusalMessage(before.payment_status) },
         { status: 409 },
       );
     }
   }
 
-  const { error } = await admin
-    .from("shop_orders")
-    .update({
+  const result = await guardedOrderUpdate(
+    db,
+    orderId,
+    // A tracking or supplier-note save touches no status column and has no
+    // competing writer, so it needs no guard. Any status change compares and
+    // swaps on both columns. The previous update carried `.eq("id", orderId)`
+    // and nothing else, so a settlement landing mid-request was overwritten.
+    before
+      ? { payment_status: before.payment_status, fulfillment_status: before.fulfillment_status }
+      : {},
+    {
       ...(fulfillmentStatus ? { fulfillment_status: fulfillmentStatus } : {}),
       ...(fulfillmentStatus === "cancelled" ? { payment_status: "cancelled" } : {}),
       ...(outboundTracking !== undefined ? { outbound_tracking: outboundTracking } : {}),
@@ -142,8 +168,22 @@ export async function PATCH(req: Request) {
         ? { supplier_order_status: supplierOrderStatus }
         : {}),
       updated_at: new Date().toISOString(),
-    })
-    .eq("id", orderId);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ ok: true });
+    },
+  );
+  if (!result.ok && result.reason === "error") {
+    return NextResponse.json({ error: result.message }, { status: 500 });
+  }
+  if (!result.ok) {
+    if (!result.found) {
+      return NextResponse.json({ error: "Order not found." }, { status: 404 });
+    }
+    console.warn(
+      `[shop] admin order update lost a race order=${orderId} found='${result.found.payment_status}/${result.found.fulfillment_status}'`,
+    );
+    return NextResponse.json(
+      { error: staleOrderMessage(result.found), found: result.found },
+      { status: 409 },
+    );
+  }
+  return NextResponse.json({ ok: true, order: result.row });
 }

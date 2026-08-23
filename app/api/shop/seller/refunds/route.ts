@@ -107,5 +107,14 @@ export async function POST(req: Request) {
   if (!status) {
     return NextResponse.json({ error: "Couldn't save the decision." }, { status: 500 });
   }
+  // A lost race is not a success. approveRefundRequest now claims the request
+  // BEFORE it spends, so the loser never reached Stripe and no money moved;
+  // reporting ok:true here would tell the decider their refund went out.
+  if (status === "already-decided") {
+    return NextResponse.json(
+      { error: "This request was already decided by someone else. Reload to see where it stands." },
+      { status: 409 },
+    );
+  }
   return NextResponse.json({ ok: true, status });
 }

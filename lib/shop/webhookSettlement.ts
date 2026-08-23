@@ -159,7 +159,21 @@ export async function settleCheckoutSession(
   // loses the race, matches zero rows, and skips the one-time effects.
   const { data: updated, error } = await db
     .from("shop_orders")
-    .update(paidValues(session))
+    .update({
+      ...paidValues(session),
+      // F-01 RESIDUAL, and it left a charged order nobody could work.
+      //
+      // All three cancel writers set BOTH status columns, while paidValues
+      // sets neither fulfillment column. So the recovery path landed on
+      // payment_status='paid' with fulfillment_status still 'cancelled', and
+      // SELLER_TRANSITIONS.cancelled is [] (lib/shop/sellerOrders.ts), a
+      // terminal state that offers nothing. The seller was shown a paid order
+      // with no action available on it, and the buyer had been charged.
+      //
+      // Only on the recovery branch: an ordinary pending -> paid settlement
+      // must not touch fulfillment at all.
+      ...(status === "cancelled" ? { fulfillment_status: "pending" } : {}),
+    })
     .eq("id", orderId)
     .eq("payment_status", status)
     .select("id, email, total_cents, currency")

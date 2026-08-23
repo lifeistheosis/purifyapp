@@ -8,6 +8,13 @@ import {
   sellerCanTransition,
   transitionNeedsTracking,
 } from "@/lib/shop/sellerOrders";
+import {
+  canCancelPayment,
+  cancelRefusalMessage,
+  guardedOrderUpdate,
+  staleOrderMessage,
+  type OrderWriteDb,
+} from "@/lib/shop/orderWrite";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -72,9 +79,13 @@ export async function PATCH(req: Request) {
       { status: 409 },
     );
   }
-  if (fulfillmentStatus === "cancelled" && order.payment_status === "paid") {
+  // An ALLOW-list. This tested only for "paid", so a REFUNDED order passed
+  // straight through and had its refund record stamped over with "cancelled".
+  // A payment_status added to the schema later is now refused by default
+  // rather than silently permitted.
+  if (fulfillmentStatus === "cancelled" && !canCancelPayment(order.payment_status)) {
     return NextResponse.json(
-      { error: "This order is paid. Refund it instead of cancelling." },
+      { error: cancelRefusalMessage(order.payment_status) },
       { status: 409 },
     );
   }
@@ -85,26 +96,49 @@ export async function PATCH(req: Request) {
     );
   }
 
-  const admin = createAdminClient();
-  const { error } = await admin
-    .from("shop_orders")
-    .update({
+  const admin = createAdminClient() as unknown as OrderWriteDb;
+  const result = await guardedOrderUpdate(
+    admin,
+    order.id,
+    // Compare and swap on BOTH status columns, and payment_status is the one
+    // that matters. The settlement webhook writes payment_status and never
+    // fulfillment_status, so the old fulfillment-only guard could never
+    // invalidate when a payment landed between the read above and this write:
+    // it matched happily and stamped "cancelled" over "paid".
+    //
+    // Forward transitions are guarded on payment_status too, which turns a
+    // currently harmless race into a 409. That is deliberate: one code path
+    // and one test beats two, and the refusal names the state it found, so
+    // the retry is a reload and a click.
+    {
+      payment_status: order.payment_status,
+      fulfillment_status: order.fulfillment_status,
+    },
+    {
       fulfillment_status: fulfillmentStatus,
       ...(tracking?.trim() ? { outbound_tracking: tracking.trim() } : {}),
-      ...(fulfillmentStatus === "cancelled"
-        ? { payment_status: "cancelled" }
-        : {}),
+      ...(fulfillmentStatus === "cancelled" ? { payment_status: "cancelled" } : {}),
       updated_at: new Date().toISOString(),
-    })
-    .eq("id", order.id)
-    // Guard against a concurrent update having moved the order already.
-    .eq("fulfillment_status", order.fulfillment_status);
-  if (error) {
-    console.warn("[shop] seller order update failed", error.message);
+    },
+  );
+  if (!result.ok && result.reason === "error") {
+    console.warn("[shop] seller order update failed", result.message);
     return NextResponse.json(
       { error: "Couldn't update the order. Please try again." },
       { status: 500 },
     );
   }
-  return NextResponse.json({ ok: true });
+  if (!result.ok) {
+    if (!result.found) {
+      return NextResponse.json({ error: "Order not found." }, { status: 404 });
+    }
+    console.warn(
+      `[shop] seller order update lost a race order=${order.id} expected='${order.payment_status}/${order.fulfillment_status}' found='${result.found.payment_status}/${result.found.fulfillment_status}'`,
+    );
+    return NextResponse.json(
+      { error: staleOrderMessage(result.found), found: result.found },
+      { status: 409 },
+    );
+  }
+  return NextResponse.json({ ok: true, order: result.row });
 }
