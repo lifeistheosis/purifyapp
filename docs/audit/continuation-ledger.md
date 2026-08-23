@@ -399,3 +399,72 @@ self-select RLS with no `avatar_url`, and avatar upload still exists only in
 the Community composer), reactions, and the feed work (threading,
 pagination, filter by kind). Notifications were the first and largest of the
 four and the rest are independent of it.
+
+## Addendum, 2026-08-22: prayer counters removed and the notification bar made real, branch `feat/owner-dashboard`
+
+Three commits. `593d32b2` prayer stops being counted, `efd2a400` the
+notification doctrine, `69c816c8` the shop_orders.paid_at migration (committed,
+NOT signed off, does nothing until merged).
+
+**Counters removed from live production surfaces.** Campaigns and Community
+were verified live (200 on /campaigns, /community, /api/community/posts), so
+these were removals rather than cancelled plans: the prayer-rule completion
+fraction and its bar, the campaign streak, total days, personal best and
+fourteen-cell strip, the public "n praying, n prayers offered" on the board,
+the detail page and the group header, the prayer rope's session, seven-day and
+year totals, and MyPrayers' "prayers offered" lifetime tally. `ropeStats()` and
+`totalPrayerDays` went with the surfaces that were their only callers.
+
+Kept, and the distinction is now written into CONTRIBUTING rather than left to
+taste: a STATE is not a tally ("you have prayed today" reads the same on the
+four hundredth day as on the first), a POSITION is not a score (the live knot
+count resets every session), and a fourteen-dot strip carrying no figure is a
+memory aid. RhythmRow therefore stays on the prayers surface while the
+near-identical campaign strip went, because the campaign one sat under "your
+longest was nine" and was part of a scoreboard.
+
+**The notification bar.** CONTRIBUTING claimed since 2026-08-10 that clause 6
+was "enforced by a doctrine test". It was not: the test covered one payload of
+five, and the admin broadcast, the only free-text sender, validated string
+length alone. Now `lib/push/copy.ts` holds every visible string,
+`lib/push/doctrine.ts` is the predicate, and `doctrine.test.ts` iterates the
+table AND greps `lib/push`, `public/sw.js` and the admin route for a `title:`
+or `body:` literal living anywhere else. The grep is the load-bearing half; the
+word lists catch a careless sentence, not a determined one.
+
+Verified rather than assumed, both directions: a planted payload reading "You
+are 3 days behind!" in `lib/push/audience.ts` failed the scan by filename, and
+eight real liturgical messages ("Great Lent begins", "The Dormition of the
+Theotokos", "Small Compline is in the prayers") all pass.
+
+**CONTRIBUTING clause 3 was false and is reworded.** It promised "at most one
+reminder per reader per week". A reader with a morning and an evening time set
+receives fourteen. That is one opt-in with two hours in it rather than fourteen
+features, and the clause was written against per-feature multiplication, which
+is what `MAX_CAMPAIGN_REMINDERS_PER_RUN` actually caps.
+
+**Open, and owner-only.**
+
+1. **Stripe.** 35 checkout sessions since 2026-07-10, 16 cancelled and 19
+   pending, **zero paid, and not one row has ever carried a
+   stripe_payment_intent**. Only the settlement path writes that column, so the
+   paid branch has never run in production. Either nobody has completed a
+   purchase in six weeks, or the webhook is not reaching Render and buyers have
+   been charged with no order. Cannot be told apart from a checkout:
+   STRIPE_SECRET_KEY is empty in .env.local. Check the Stripe dashboard.
+2. **The paid_at migration** needs sign-off before the PR.
+3. **Render env**, each closing a dark feature: FCM_SERVICE_ACCOUNT_JSON (see
+   the F-21 correction, 96 devices are registered and waiting), CRON_SECRET in
+   both Render and GitHub Actions secrets, NEXT_PUBLIC_COMMUNITY_ENABLED=1.
+4. **Four migrations sit on main unapplied**, probed 2026-08-22:
+   `20260801_community_notifications`, `20260802_profile_preferences`,
+   `20260811_campaign_groups_and_streaks`, `20260811_community_group_threads`.
+   `recipes`, `campaign_checkins` and `campaign_streaks` are absent entirely,
+   and `/api/admin/community` swallows the read error, so the recipe moderation
+   queue reads "nothing awaiting moderation" when the table does not exist.
+
+**Two smoke tests are flaky and pre-existing**, confirmed against a clean tree
+with these changes stashed: `mobile-shell` "the entrance shifts nothing" passes
+3/3 serially and fails 3/3 under parallel workers (CPU contention, not layout),
+and `history` "browser back returns to the timeline" fails about two runs in
+three either way. Neither is caused by this branch.
