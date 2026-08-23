@@ -25,21 +25,35 @@ import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = process.cwd();
-const SURFACES = ["app", "components"];
+// "lib" is scanned too. Without it useChurchDay.ts was never checked, and
+// neither was lib/prayers/season.ts, which feeds an unshifted fast into the
+// prayer suggestions. lib/calendar/orthodox.ts passes because it references
+// shiftForStyle, which is right: it is the module that defines the shift.
+const SURFACES = ["app", "components", "lib"];
 
 /**
  * Files that call the raw lookups but are NOT showing "today in the reader's
  * reckoning", so the shift would be wrong rather than missing.
  */
-const EXEMPT = new Set([
-  // The month grid renders both reckonings deliberately and does its own
-  // per-cell shifting; see components/calendar/.
-  "app/(app)/calendar/page.tsx",
+const EXEMPT = new Set<string>([
+  // Deliberately empty.
+  //
+  // "app/(app)/calendar/page.tsx" was exempted here because the month grid
+  // "does its own per-cell shifting". It did not: monthGrid passed the civil
+  // date to both lookups for all 42 cells, so an Old Calendar reader was shown
+  // New Calendar names and fasts in the grid while the panel above it was
+  // shifted correctly. The exemption was not covering a special case, it was
+  // describing behaviour that did not exist, which is the failure mode an
+  // exemption list has. monthGrid now takes a style.
 ]);
 
 /** Calling the fixed-date lookups directly, rather than via useChurchDay. */
 const RAW_LOOKUP = /\b(fastingStatus|commemorationsOn)\s*\(/;
-const HAS_SHIFT = /\bshiftForStyle\b/;
+// A CALL, not a mention. This was /\bshiftForStyle\b/, which an unused import
+// satisfies: deleting the shift from a lookup while leaving the symbol in the
+// import block kept this guard green. Found by planting exactly that
+// regression in lib/prayers/season.ts and watching the suite stay green.
+const HAS_SHIFT = /\bshiftForStyle\s*\(/;
 const VIA_HOOK = /\buseChurchDay\b/;
 
 function walk(dir: string): string[] {

@@ -15,6 +15,7 @@
 import { PrayerSectionLabel, PrayerIndex, PrayerIndexRow } from "./PrayerBook";
 import { useMounted } from "@/lib/useMounted";
 import { useToday } from "@/lib/calendar/useToday";
+import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { isFastDay, seasonFor } from "@/lib/prayers/season";
 import {
   RULES,
@@ -50,13 +51,16 @@ export function SuggestedToday({
 }) {
   const mounted = useMounted();
   const today = useToday();
+  // Above the early return: hooks must run in the same order every render,
+  // and there is a `return null` a few lines down.
+  const [style] = useCalendarStyleDefault();
 
   // Stable server render: a quiet placeholder slot is avoided entirely by
   // gating on mount. The masthead above already carries the day's context.
   if (!mounted || !today) return null;
 
   const season = seasonProp ?? seasonFor(today);
-  const isFast = isFastProp ?? isFastDay(today);
+  const isFast = isFastProp ?? isFastDay(today, style);
   const tod = timeOfDayNow(new Date());
   const chosen: RuleMeta[] = [];
   const seen = new Set<string>();

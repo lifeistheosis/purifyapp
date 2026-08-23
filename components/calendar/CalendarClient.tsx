@@ -201,7 +201,7 @@ export function CalendarClient() {
         (headline?.slug ? getSaint(headline.slug) : null) ??
         null,
       pascha: paschaInfo(day),
-      grid: monthGrid(year, month, day),
+      grid: monthGrid(year, month, day, style),
       // NOTE, carried over unchanged and worth a second pair of eyes: these
       // read from the STYLE-SHIFTED date, which is what this page has always
       // done. lib/calendar/useChurchDay.ts deliberately does the opposite,

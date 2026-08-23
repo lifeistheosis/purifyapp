@@ -19,7 +19,7 @@ import { monthGrid, type MonthCell } from "@/lib/calendar/orthodox";
  * fail loudly at the boundary rather than quietly in the payload.
  */
 describe("monthGrid keeps the client payload minimal", () => {
-  const grid = monthGrid(2026, 3, new Date(Date.UTC(2026, 3, 12, 12)));
+  const grid = monthGrid(2026, 3, new Date(Date.UTC(2026, 3, 12, 12)), "new");
 
   it("returns 42 cells", () => {
     expect(grid).toHaveLength(42);

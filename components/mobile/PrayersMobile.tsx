@@ -29,6 +29,7 @@ import {
   indexRules,
   popularRules,
 } from "@/lib/prayers/rules";
+import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { seasonFor, isFastDay } from "@/lib/prayers/season";
 import { T } from "@/components/i18n/T";
 
@@ -65,7 +66,8 @@ export function PrayersMobile() {
   const mounted = useMounted();
   const mode = mounted ? heroModeFor(new Date()) : "morning";
   const season = today ? seasonFor(today) : null;
-  const isFast = today ? isFastDay(today) : false;
+  const [style] = useCalendarStyleDefault();
+  const isFast = today ? isFastDay(today, style) : false;
 
   return (
     <MobileShell

@@ -632,15 +632,40 @@ export function isoDay(d: Date): string {
  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 }
 
-/** Returns 42 cells (6 weeks × 7 days) for the given year/month, Sun first. */
-export function monthGrid(year: number, month: number, today: Date): MonthCell[] {
+/**
+ * Returns 42 cells (6 weeks x 7 days) for the given year/month, Sun first.
+ *
+ * `style` is not optional by accident. Every cell names a commemoration and a
+ * fast, both fixed-cycle lookups that must move back 13 days for an Old
+ * Calendar reader. This function did neither: it passed the civil date to both
+ * for all 42 cells, so an Old Calendar reader opening /calendar saw the
+ * correct saint and fast in the day panel and NEW CALENDAR names and fast dots
+ * in the grid directly beneath it. Two answers, one screen, which is the drift
+ * useChurchDay was extracted to end.
+ *
+ * oneReckoning.test.ts excused this with an EXEMPT entry claiming the grid
+ * "does its own per-cell shifting". It did not. The claim is now true.
+ *
+ * `today` stays CIVIL: isToday asks which square is physically today, not
+ * which liturgical day the reader is keeping.
+ */
+export function monthGrid(
+ year: number,
+ month: number,
+ today: Date,
+ style: CalStyle,
+): MonthCell[] {
  const first = new Date(Date.UTC(year, month, 1, 12));
  const startDow = first.getUTCDay(); // 0 = Sun
  const gridStart = addDays(first, -startDow);
  const cells: MonthCell[] = [];
  for (let i = 0; i < 42; i++) {
  const d = addDays(gridStart, i);
- const commemorations = commemorationsOn(d);
+ // The cell's own lookup date, shifted per reader. `d` stays civil below
+ // for iso, day, inMonth and isToday, which are facts about the square
+ // on the page rather than about the liturgical day it carries.
+ const lookup = shiftForStyle(d, style);
+ const commemorations = commemorationsOn(lookup);
  const feast = commemorations.find((c) => c.kind === "feast");
  // No second feastsOn(d) here. It existed only to fill the `saints` field
  // that MonthCell no longer carries, and commemorationsOn already calls it
@@ -652,7 +677,7 @@ export function monthGrid(year: number, month: number, today: Date): MonthCell[]
  isToday: sameDay(d, today),
  hasFeast: !!feast,
  headlineName: (feast ?? commemorations[0])?.name,
- fast: fastingStatus(d).kind,
+ fast: fastingStatus(lookup).kind,
  });
  }
  return cells;
