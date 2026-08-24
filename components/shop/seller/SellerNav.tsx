@@ -17,6 +17,7 @@ const SECTIONS: { label: string; href: string; exact?: boolean }[] = [
   { label: "Messages", href: "/shop/seller/messages" },
   { label: "Listings", href: "/shop/seller/listings" },
   { label: "Earnings", href: "/shop/seller/earnings" },
+  { label: "Payouts", href: "/shop/seller/payouts" },
 ];
 
 function isActive(pathname: string, href: string, exact?: boolean) {

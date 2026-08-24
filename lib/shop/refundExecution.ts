@@ -1,6 +1,8 @@
 import "server-only";
 
+import { refundConnectOptions } from "./connect";
 import { checkoutEnabled } from "./flags";
+import { getOrderFee } from "./payouts";
 import {
   canFlipRefunded,
   guardedOrderUpdate,
@@ -55,10 +57,13 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * binds the store to the decision, and it stops at `approved`. Releasing the
  * money is releaseApprovedRefund(), reachable from the admin console alone.
  *
- * This is a stopgap with an end date. Once Connect lands and charges carry
- * transfer_data.destination, the refund debits the SELLER's balance and the
- * co-sign can be dropped: the seller will be spending their own money and is
- * entitled to do it unsupervised. Until then, two people.
+ * This is a stopgap with an end date, and the end date is now partly here.
+ * releaseApprovedRefund() passes reverse_transfer for a Connect charge, so a
+ * refund on an onboarded store already debits the SELLER's balance rather than
+ * Purify's. The co-sign stays until every live third-party store is onboarded,
+ * because the branch is per order: an order taken before that store connected
+ * still refunds out of Purify's balance and there is no way for a seller to
+ * tell the two apart from inside their console.
  */
 
 export type RefundOrderFacts = {
@@ -186,6 +191,14 @@ export async function releaseApprovedRefund(
   const now = new Date().toISOString();
   const amount = await requestedAmountCents(requestId, order.total_cents);
 
+  // WHOSE MONEY IS COMING BACK. Read from the frozen fee row, not from the
+  // store: a store can be re-onboarded onto a different Stripe account, and a
+  // refund must reverse to the account that was actually paid. No row means
+  // the charge had no destination, and then BOTH Connect flags must be
+  // omitted, because Stripe errors on them rather than ignoring them.
+  const fee = await getOrderFee(order.id);
+  const connectOptions = refundConnectOptions(fee?.stripe_account_id ?? null);
+
   // 2. SPEND. The idempotency key is belt to the claim's braces: even if a
   //    future change lets two callers past step 1, Stripe itself refuses the
   //    second charge for 24 hours rather than paying the buyer twice.
@@ -196,7 +209,11 @@ export async function releaseApprovedRefund(
       const { default: Stripe } = await import("stripe");
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
       const refund = await stripe.refunds.create(
-        { payment_intent: order.stripe_payment_intent, amount },
+        {
+          payment_intent: order.stripe_payment_intent,
+          amount,
+          ...connectOptions,
+        },
         { idempotencyKey: `purify:refund:${requestId}` },
       );
       stripeRefundId = refund.id;

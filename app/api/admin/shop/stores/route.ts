@@ -2,6 +2,18 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
+import { logActivity } from "@/lib/admin/activityLog";
+import {
+  canGoLive,
+  connectStatus,
+  COMMISSION_CEILING_BPS,
+  COMMISSION_FLOOR_BPS,
+} from "@/lib/shop/connect";
+import {
+  ensureStorePayoutsRow,
+  getStorePayouts,
+  setCommissionBps,
+} from "@/lib/shop/payouts";
 import {
   createSellerAndStore,
   userIdByEmail,
@@ -23,10 +35,17 @@ export async function GET() {
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const admin = createAdminClient();
-  const [sellers, stores, products] = await Promise.all([
+  const [sellers, stores, products, payouts] = await Promise.all([
     admin.from("shop_sellers").select("*").order("created_at", { ascending: true }),
     admin.from("shop_stores").select("*").order("created_at", { ascending: true }),
     admin.from("shop_products").select("id, store_id, status"),
+    // Not fatal if absent: the migration is held unsigned, and the console
+    // must still render every store while it waits.
+    admin
+      .from("shop_store_payouts")
+      .select(
+        "store_id, stripe_account_id, charges_enabled, payouts_enabled, commission_rate_bps, onboarding_started_at",
+      ),
   ]);
   if (sellers.error) {
     return NextResponse.json({ error: sellers.error.message }, { status: 500 });
@@ -45,6 +64,9 @@ export async function GET() {
     for (const p of profiles ?? []) emailById.set(p.id, p.email);
   }
 
+  const payoutsByStore = new Map<string, Record<string, unknown>>();
+  for (const p of payouts.data ?? []) payoutsByStore.set(p.store_id, p);
+
   const countsByStore = new Map<string, { total: number; published: number }>();
   for (const p of products.data ?? []) {
     const row = countsByStore.get(p.store_id) ?? { total: 0, published: 0 };
@@ -59,10 +81,25 @@ export async function GET() {
         ...s,
         email: s.user_id ? (emailById.get(s.user_id) ?? null) : null,
       })),
-      stores: (stores.data ?? []).map((st) => ({
-        ...st,
-        listings: countsByStore.get(st.id) ?? { total: 0, published: 0 },
-      })),
+      stores: (stores.data ?? []).map((st) => {
+        const p = payoutsByStore.get(st.id) as
+          | Parameters<typeof connectStatus>[0]
+          | undefined;
+        return {
+          ...st,
+          listings: countsByStore.get(st.id) ?? { total: 0, published: 0 },
+          // The commission is safe HERE and nowhere else: this route is
+          // admin-gated and served with the service role. It is deliberately
+          // not a column on shop_stores, which is world-readable for live
+          // stores. See 20260824_shop_connect.sql.
+          payouts: {
+            status: connectStatus(p),
+            commissionRateBps: p?.commission_rate_bps ?? null,
+            chargesEnabled: Boolean(p?.charges_enabled),
+            payoutsEnabled: Boolean(p?.payouts_enabled),
+          },
+        };
+      }),
     },
     { headers: { "Cache-Control": "no-store" } },
   );
@@ -147,6 +184,17 @@ const patchSchema = z.object({
       status: z.enum(["draft", "live", "paused", "closed"]),
     })
     .optional(),
+  // The one term negotiated per seller. Basis points, so 1250 is 12.5%.
+  storeCommission: z
+    .object({
+      storeId: z.string().uuid(),
+      commissionRateBps: z
+        .number()
+        .int()
+        .min(COMMISSION_FLOOR_BPS)
+        .max(COMMISSION_CEILING_BPS),
+    })
+    .optional(),
   storeFields: z
     .object({
       storeId: z.string().uuid(),
@@ -176,6 +224,7 @@ export async function PATCH(req: Request) {
     (!parsed.data.assignEmail &&
       !parsed.data.sellerStatus &&
       !parsed.data.storeStatus &&
+      !parsed.data.storeCommission &&
       !parsed.data.storeFields)
   ) {
     return NextResponse.json({ error: "Invalid update." }, { status: 400 });
@@ -228,11 +277,77 @@ export async function PATCH(req: Request) {
 
   if (parsed.data.storeStatus) {
     const { storeId, status } = parsed.data.storeStatus;
+
+    // A STORE WHOSE SELLER CANNOT BE PAID MUST NOT BE PUBLIC. Without this the
+    // failure is silent and expensive: a buyer pays for an independent
+    // seller's goods, the money settles in Purify's balance, and there is no
+    // mechanism to forward it. Opening the store is the only moment that can
+    // be prevented, because everything after it is a real customer.
+    //
+    // Purify-operated stores are exempt by seller_type, never by "has no
+    // payouts row". Reading absence as ours would let every un-onboarded
+    // stranger through the same gate.
+    if (status === "live") {
+      const { data: store } = await admin
+        .from("shop_stores")
+        .select("id, public_name, seller:shop_sellers(seller_type)")
+        .eq("id", storeId)
+        .maybeSingle();
+      if (!store) {
+        return NextResponse.json({ error: "Store not found." }, { status: 404 });
+      }
+      const seller = Array.isArray(store.seller) ? store.seller[0] : store.seller;
+      const verdict = canGoLive({
+        purifyOperated: seller?.seller_type === "purify_owned",
+        payouts: await getStorePayouts(storeId),
+      });
+      if (!verdict.ok) {
+        return NextResponse.json({ error: verdict.reason }, { status: 409 });
+      }
+    }
+
     const { error } = await admin
       .from("shop_stores")
       .update({ status, updated_at: now })
       .eq("id", storeId);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    void logActivity({
+      actorEmail: adminUser.email ?? null,
+      action: "store.status",
+      entityType: "shop_store",
+      entityId: storeId,
+      detail: { status },
+    });
+  }
+
+  if (parsed.data.storeCommission) {
+    const { storeId, commissionRateBps } = parsed.data.storeCommission;
+    // The row may not exist yet: a rate can be agreed before the seller has
+    // been anywhere near Stripe, and ensure preserves an existing rate rather
+    // than resetting it to the default on the way past.
+    const row = await ensureStorePayoutsRow(storeId);
+    if (!row) {
+      return NextResponse.json(
+        { error: "Couldn't reach the payouts table. Is 20260824_shop_connect.sql applied?" },
+        { status: 500 },
+      );
+    }
+    const ok = await setCommissionBps(storeId, commissionRateBps);
+    if (!ok) {
+      return NextResponse.json({ error: "Couldn't save the commission." }, { status: 500 });
+    }
+    // The prior value is carried because the row no longer holds it, and a
+    // renegotiated rate is exactly the kind of change somebody later disputes.
+    void logActivity({
+      actorEmail: adminUser.email ?? null,
+      action: "store.commission",
+      entityType: "shop_store",
+      entityId: storeId,
+      detail: {
+        commissionRateBps,
+        previous: { commissionRateBps: row.commission_rate_bps },
+      },
+    });
   }
 
   if (parsed.data.storeFields) {

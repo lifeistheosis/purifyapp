@@ -1,23 +1,55 @@
 import type { ShopSellerOrder } from "./types";
 
 /**
- * Earnings math for the seller console. Pure and synchronous: the
- * caller fetches the seller's orders (RLS-scoped) and this module
- * turns them into the numbers the dashboard shows. Deliberately plain
- * vocabulary — "gross", "refunded", "net" — and no projected or
- * annualized figures: the console reports what actually happened.
+ * Earnings math for the seller console. Pure and synchronous: the caller
+ * fetches the seller's orders (RLS-scoped) and this module turns them into the
+ * numbers the dashboard shows. Deliberately plain vocabulary and no projected
+ * or annualized figures: the console reports what actually happened.
+ *
+ * ── Two things this file used to get wrong ──────────────────────────────
+ *
+ * 1. netCents was documented as "what the seller actually keeps before fees"
+ *    and no fee was ever subtracted, because until Stripe Connect landed no
+ *    fee existed. The sentence described an intention. commissionCents is now
+ *    a real number read from the frozen shop_order_fees row, and it is NULL
+ *    rather than 0 when any counted order has no such row: an order charged
+ *    before Connect kept nothing from the seller, but its money is sitting in
+ *    Purify's balance awaiting a manual transfer, and printing a confident
+ *    "$0.00 in fees" beside it would be the same class of lie.
+ *
+ * 2. grossCents summed total_cents, which INCLUDES shipping, while
+ *    topProducts summed unit_price_cents * quantity, which does not. The same
+ *    page therefore disagreed with itself by exactly the shipping take, with
+ *    no label anywhere saying which figure was which. Both numbers are still
+ *    here and are now both named: grossCents is what buyers paid,
+ *    itemsGrossCents is what the goods came to, and shippingCents is the gap.
+ *    topProducts reconciles against itemsGrossCents.
  *
  * All amounts are integer cents in the order's currency (single-currency
  * catalog in this phase).
  */
 
 export type EarningsSummary = {
-  /** Paid orders' totals, including those later refunded. */
+  /** What buyers paid on counted orders: goods plus shipping. */
   grossCents: number;
+  /** The goods alone. This is the figure topProducts sums to. */
+  itemsGrossCents: number;
+  /** grossCents - itemsGrossCents. The seller's, because they ship. */
+  shippingCents: number;
   /** Totals of orders whose payment_status ended refunded. */
   refundedCents: number;
-  /** gross - refunded: what the seller actually keeps before fees. */
+  /** gross - refunded. What the sale was worth, before Purify's commission. */
   netCents: number;
+  /**
+   * Purify's commission across counted, non-refunded orders. Null when any
+   * such order has no recorded fee, because the total would be understated
+   * and there is no honest way to say by how much.
+   */
+  commissionCents: number | null;
+  /** netCents - commissionCents. Null for the same reason. */
+  payoutCents: number | null;
+  /** Counted orders carrying no fee row. Non-zero is why the two above are null. */
+  ordersWithoutFeeRecord: number;
   paidOrderCount: number;
   refundedOrderCount: number;
   unitsSold: number;
@@ -44,37 +76,75 @@ export type TopProduct = {
 
 type EarningsOrder = Pick<
   ShopSellerOrder,
-  "total_cents" | "payment_status" | "created_at" | "items"
->;
+  "id" | "total_cents" | "payment_status" | "created_at" | "items"
+> & {
+  /** Optional so callers that never selected it still typecheck. */
+  items_total_cents?: number;
+};
+
+/** What Purify took on one order, keyed by order id. Absent = never recorded. */
+export type FeeLookup = {
+  get(orderId: string): { application_fee_cents: number } | undefined;
+};
 
 function isCounted(o: EarningsOrder): boolean {
   return o.payment_status === "paid" || o.payment_status === "refunded";
 }
 
-export function earningsSummary(orders: EarningsOrder[]): EarningsSummary {
+/**
+ * The goods total for one order. Prefers the stored column and falls back to
+ * summing the lines, which is what topProducts does, so the two can never
+ * disagree even on an order whose items_total_cents was never selected.
+ */
+function itemsTotal(o: EarningsOrder): number {
+  if (typeof o.items_total_cents === "number") return o.items_total_cents;
+  return o.items.reduce((sum, i) => sum + i.unit_price_cents * i.quantity, 0);
+}
+
+export function earningsSummary(
+  orders: EarningsOrder[],
+  fees?: FeeLookup,
+): EarningsSummary {
   let gross = 0;
+  let items = 0;
   let refunded = 0;
   let paidCount = 0;
   let refundedCount = 0;
   let units = 0;
+  let commission = 0;
+  let missingFee = 0;
 
   for (const o of orders) {
     if (!isCounted(o)) continue;
     gross += o.total_cents;
+    items += itemsTotal(o);
     paidCount += 1;
     for (const item of o.items) units += item.quantity;
     if (o.payment_status === "refunded") {
       refunded += o.total_cents;
       refundedCount += 1;
+      // A refunded order returns its commission too (refundConnectOptions
+      // passes refund_application_fee), so it contributes nothing either way.
+      continue;
     }
+    const fee = fees?.get(o.id);
+    if (fee) commission += fee.application_fee_cents;
+    else missingFee += 1;
   }
 
   const keptCount = paidCount - refundedCount;
   const net = gross - refunded;
+  // Unknown, not zero. See the header.
+  const commissionKnown = fees != null && missingFee === 0;
   return {
     grossCents: gross,
+    itemsGrossCents: items,
+    shippingCents: Math.max(0, gross - items),
     refundedCents: refunded,
     netCents: net,
+    commissionCents: commissionKnown ? commission : null,
+    payoutCents: commissionKnown ? Math.max(0, net - commission) : null,
+    ordersWithoutFeeRecord: missingFee,
     paidOrderCount: paidCount,
     refundedOrderCount: refundedCount,
     unitsSold: units,

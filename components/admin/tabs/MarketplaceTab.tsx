@@ -170,6 +170,22 @@ type AdminStore = {
   status: string;
   created_at: string;
   listings: { total: number; published: number };
+  // Never on shop_stores itself: that table is world-readable for live
+  // stores, and a commission rate is an ownership split. The API assembles
+  // this from shop_store_payouts with the service role.
+  payouts: {
+    status: "none" | "onboarding" | "charges_only" | "ready";
+    commissionRateBps: number | null;
+    chargesEnabled: boolean;
+    payoutsEnabled: boolean;
+  };
+};
+
+const PAYOUT_LABEL: Record<AdminStore["payouts"]["status"], string> = {
+  none: "no account",
+  onboarding: "verifying",
+  charges_only: "can charge",
+  ready: "paying out",
 };
 
 type PendingApplication = {
@@ -344,6 +360,34 @@ function StoresPanel() {
               csv: (s) => s.listings.total,
             },
             {
+              key: "payouts",
+              label: "Payouts",
+              render: (s) => (
+                <span className="whitespace-nowrap">
+                  <Pill
+                    tone={
+                      s.payouts.status === "ready"
+                        ? "emerald"
+                        : s.payouts.status === "charges_only"
+                          ? "gold"
+                          : s.payouts.status === "onboarding"
+                            ? "gold"
+                            : "neutral"
+                    }
+                  >
+                    {PAYOUT_LABEL[s.payouts.status]}
+                  </Pill>
+                  {s.payouts.commissionRateBps != null ? (
+                    <span className="ml-2 text-paper/60">
+                      {s.payouts.commissionRateBps / 100}%
+                    </span>
+                  ) : null}
+                </span>
+              ),
+              csv: (s) =>
+                `${s.payouts.status}${s.payouts.commissionRateBps != null ? ` @${s.payouts.commissionRateBps / 100}%` : ""}`,
+            },
+            {
               key: "status",
               label: "Status",
               render: (s) => (
@@ -483,6 +527,13 @@ function ManageStoreCard({
 }) {
   const [email, setEmail] = useState(seller.email ?? "");
   const [busy, setBusy] = useState(false);
+  // Shown as a percentage because that is how it is negotiated; stored as
+  // basis points because 12.5% is not an integer.
+  const [commission, setCommission] = useState(
+    store.payouts.commissionRateBps != null
+      ? String(store.payouts.commissionRateBps / 100)
+      : "10",
+  );
 
   async function patch(body: unknown) {
     setBusy(true);
@@ -546,6 +597,61 @@ function ManageStoreCard({
           </div>
           <p className="font-sans text-eyebrow text-paper/45">
             Only live stores (and their published listings) are public.
+          </p>
+        </div>
+
+        <div className="space-y-1">
+          <p className={labelCls}>Commission</p>
+          <div className="flex gap-2">
+            <input
+              value={commission}
+              onChange={(e) => setCommission(e.target.value)}
+              inputMode="decimal"
+              placeholder="10"
+              aria-label="Commission percent"
+              className={field}
+            />
+            <ToolbarButton
+              loading={busy}
+              variant="primary"
+              onClick={() => {
+                const pct = Number(commission);
+                if (!Number.isFinite(pct)) {
+                  onError("Commission must be a number.");
+                  return;
+                }
+                // Rounded, not truncated: 12.345 typed by hand should become
+                // 1235 bps rather than silently losing the last digit.
+                patch({
+                  storeCommission: {
+                    storeId: store.id,
+                    commissionRateBps: Math.round(pct * 100),
+                  },
+                });
+              }}
+            >
+              Save
+            </ToolbarButton>
+          </div>
+          <p className="font-sans text-eyebrow text-paper/45">
+            Percent of the goods total, never of shipping. 10% minimum. Applies
+            to future orders only; past ones keep the rate they were charged.
+          </p>
+        </div>
+
+        <div className="space-y-1">
+          <p className={labelCls}>Payout setup</p>
+          <p className="font-sans text-ui text-paper">
+            {PAYOUT_LABEL[store.payouts.status]}
+          </p>
+          <p className="font-sans text-eyebrow text-paper/45">
+            {store.payouts.status === "none"
+              ? "The seller has to complete Stripe onboarding themselves, from Payouts in their console. A store cannot go live until Stripe enables charges."
+              : store.payouts.status === "onboarding"
+                ? "Started but not cleared by Stripe. Usually a day or two."
+                : store.payouts.status === "charges_only"
+                  ? "Stripe takes payments for this store; the first payout is still being verified."
+                  : "Charges and payouts both live."}
           </p>
         </div>
 

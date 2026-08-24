@@ -6,28 +6,61 @@ import {
   topProducts,
 } from "@/lib/shop/earnings";
 import { formatPrice } from "@/lib/shop/format";
+import { getOrderFees } from "@/lib/shop/payouts";
 import { getSellerContext } from "@/lib/shop/seller";
 import { listSellerOrders } from "@/lib/shop/sellerData";
 
 export const metadata: Metadata = { title: "Earnings" };
 
 /**
- * What the store actually made: gross, refunds out, net kept, and the
- * shape of it by month and by product. No projections, no annualized
- * anything — the numbers on this page all happened.
+ * What the store actually made: gross, refunds out, commission, and what is
+ * paid out. No projections, no annualized anything, and no fabricated zero:
+ * the commission card reads "Not recorded" when an order predates Stripe
+ * Connect, because that order's money is in Purify's balance awaiting a manual
+ * transfer and printing $0.00 in fees beside it would be a lie.
  */
 export default async function SellerEarningsPage() {
   const ctx = await getSellerContext();
   if (ctx.state !== "seller") return null;
 
   const orders = await listSellerOrders(ctx.seller.id);
-  const summary = earningsSummary(orders);
+  // Frozen at charge time, service role only. See lib/shop/payouts.ts.
+  const fees = await getOrderFees(orders.map((o) => o.id));
+  const summary = earningsSummary(orders, fees);
   const months = monthlyEarnings(orders);
   const top = topProducts(orders);
 
   const cards = [
-    { label: "Net kept", value: formatPrice(summary.netCents) },
-    { label: "Gross sales", value: formatPrice(summary.grossCents) },
+    {
+      label: "Paid out to you",
+      value:
+        summary.payoutCents == null
+          ? formatPrice(summary.netCents)
+          : formatPrice(summary.payoutCents),
+      sub:
+        summary.payoutCents == null
+          ? "before commission, which isn't recorded for these orders"
+          : "after commission",
+    },
+    {
+      label: "Gross sales",
+      value: formatPrice(summary.grossCents),
+      sub:
+        summary.shippingCents > 0
+          ? `${formatPrice(summary.itemsGrossCents)} goods + ${formatPrice(summary.shippingCents)} shipping`
+          : undefined,
+    },
+    {
+      label: "Commission",
+      value:
+        summary.commissionCents == null
+          ? "Not recorded"
+          : `−${formatPrice(summary.commissionCents)}`,
+      sub:
+        summary.commissionCents == null
+          ? `${summary.ordersWithoutFeeRecord} order${summary.ordersWithoutFeeRecord === 1 ? "" : "s"} predate payouts`
+          : "on the goods, never on shipping",
+    },
     {
       label: "Refunded",
       value: formatPrice(summary.refundedCents),
@@ -35,11 +68,6 @@ export default async function SellerEarningsPage() {
         summary.paidOrderCount > 0
           ? `${Math.round(summary.refundRate * 100)}% of orders`
           : undefined,
-    },
-    {
-      label: "Average order",
-      value: formatPrice(summary.averageOrderCents),
-      sub: `${summary.unitsSold} unit${summary.unitsSold === 1 ? "" : "s"} across ${summary.paidOrderCount} order${summary.paidOrderCount === 1 ? "" : "s"}`,
     },
   ];
 

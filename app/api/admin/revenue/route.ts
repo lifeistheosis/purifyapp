@@ -29,7 +29,10 @@ export async function GET() {
   const [ordersRes, donationsRes, subs] = await Promise.all([
     admin
       .from("shop_orders")
-      .select("total_cents, payment_status, created_at, items:shop_order_items(product_id, title, unit_price_cents, quantity)")
+      // id and items_total_cents feed earningsSummary: the first keys the
+      // commission lookup, the second separates goods from shipping so this
+      // route's gross figure and its top-products figure reconcile.
+      .select("id, items_total_cents, total_cents, payment_status, created_at, items:shop_order_items(product_id, title, unit_price_cents, quantity)")
       .order("created_at", { ascending: false })
       .limit(5000),
     admin
@@ -40,6 +43,8 @@ export async function GET() {
   ]);
 
   const orders = (ordersRes.data ?? []) as {
+    id: string;
+    items_total_cents: number;
     total_cents: number;
     payment_status: "pending" | "paid" | "refunded" | "cancelled";
     created_at: string;
@@ -51,6 +56,10 @@ export async function GET() {
     }[];
   }[];
 
+  // No fee map on purpose. This is the OWNER's revenue view across every
+  // store, where Purify's commission is income rather than a deduction;
+  // subtracting it here would understate what the business made. summary
+  // reports commissionCents as null, which is correct: unasked, not zero.
   const summary = earningsSummary(orders);
   const monthly = monthlyEarnings(orders);
   const top = topProducts(orders, 8);

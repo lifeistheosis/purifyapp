@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { earningsSummary } from "@/lib/shop/earnings";
 import { formatPrice } from "@/lib/shop/format";
+import { getOrderFees } from "@/lib/shop/payouts";
 import { refundIsActive } from "@/lib/shop/refunds";
 import { getSellerContext } from "@/lib/shop/seller";
 import {
@@ -34,7 +35,8 @@ export default async function SellerOverviewPage() {
     listSellerRefunds(ctx.seller.id),
   ]);
 
-  const summary = earningsSummary(orders);
+  const fees = await getOrderFees(orders.map((o) => o.id));
+  const summary = earningsSummary(orders, fees);
   const actionable = orders.filter(
     (o) => o.payment_status === "paid" && needsSellerAction(o.fulfillment_status),
   );
@@ -43,8 +45,11 @@ export default async function SellerOverviewPage() {
 
   const cards = [
     {
-      label: "Net earnings",
-      value: formatPrice(summary.netCents),
+      // payoutCents is null until every counted order carries a recorded fee.
+      // Falling back to netCents is honest here because the Earnings page
+      // labels which of the two it is showing; this card links straight to it.
+      label: summary.payoutCents == null ? "Net earnings" : "Paid out to you",
+      value: formatPrice(summary.payoutCents ?? summary.netCents),
       href: "/shop/seller/earnings",
     },
     {
