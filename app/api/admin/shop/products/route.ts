@@ -2,17 +2,28 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
+import { SHOP_CLASSIFICATIONS } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
- * Admin product management for Purify-operated stores (EIKON in
- * Phase 1). Service-role throughout; this is the ONLY surface where
- * sourcing/supplier data travels, and it never leaves admin-gated
+ * Admin product management. Service-role throughout; this is the ONLY surface
+ * where sourcing/supplier data travels, and it never leaves admin-gated
  * responses.
+ *
+ * IT USED TO BE ABLE TO WRITE TO EXACTLY ONE STORE. The create path looked up
+ * `slug = 'eikon'` by literal and attached every product to whatever came
+ * back, so an admin could not add a listing to any other store even after
+ * creating one, and a database without that exact slug answered "EIKON store
+ * row missing. Apply the shop migration first." storeId is now optional and
+ * defaults to the oldest live store, which is EIKON today by age rather than
+ * by being named here.
  */
 
 const productSchema = z.object({
   id: z.string().uuid().optional(),
+  // Which store this belongs to. Optional so the existing admin form, which
+  // does not send it, keeps working: absent means the oldest live store.
+  storeId: z.string().uuid().optional(),
   slug: z
     .string()
     .min(3)
@@ -31,16 +42,10 @@ const productSchema = z.object({
     "crosses",
     "sets",
   ]),
-  classification: z.enum([
-    "printed_mounted",
-    "standard_reproduction",
-    "laminated",
-    "wooden",
-    "hand_finished_reproduction",
-    "prayer_rope",
-    "incense",
-    "beaded",
-  ]),
+  // The THIRD hand-typed copy of this list, and it was missing `cross` and
+  // `textile`. Derived now, like the seller schema, from the same label table
+  // the forms render from. See lib/security/__tests__/listingVocabulary.test.ts.
+  classification: z.enum(SHOP_CLASSIFICATIONS),
   inventoryStatus: z.enum([
     "ready_to_ship",
     "special_order",
@@ -148,16 +153,27 @@ export async function POST(req: Request) {
 
   const admin = createAdminClient();
 
-  // Phase 1: all admin-managed products belong to EIKON.
-  const { data: store } = await admin
-    .from("shop_stores")
-    .select("id, seller_id")
-    .eq("slug", "eikon")
-    .single();
+  // The named store, or the oldest one. Ordering by created_at rather than
+  // filtering on a slug means this keeps working whatever the first store is
+  // called, and it stops being a special case the moment there are two.
+  const storeQuery = admin.from("shop_stores").select("id, seller_id");
+  const { data: store, error: storeErr } = p.storeId
+    ? await storeQuery.eq("id", p.storeId).maybeSingle()
+    : await storeQuery
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+  if (storeErr) {
+    return NextResponse.json({ error: storeErr.message }, { status: 500 });
+  }
   if (!store) {
     return NextResponse.json(
-      { error: "EIKON store row missing. Apply the shop migration first." },
-      { status: 500 },
+      {
+        error: p.storeId
+          ? "That store doesn't exist."
+          : "No stores exist yet. Create one from the Marketplace tab first.",
+      },
+      { status: p.storeId ? 404 : 409 },
     );
   }
 

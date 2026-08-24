@@ -1,7 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
+
+import { apiFetch } from "@/lib/api/client";
 
 import {
   CATEGORY_LABELS,
@@ -18,11 +20,23 @@ const labelCls = "font-sans text-caption font-semibold text-paper/60";
 type MediaRow = { url: string; alt: string };
 
 /**
- * Create/edit a listing. One long, honest form in sections — photos
- * first because the card is image-led. Prices are typed in dollars and
- * sent in cents. Save as draft is always available; Publish enforces
- * the same gates the API does (≥1 photo, live store), so the server's
- * "no" never surprises anyone.
+ * Create/edit a listing. One long, honest form in sections, photos first
+ * because the card is image-led. Prices are typed in dollars and sent in
+ * cents. Save as draft is always available; Publish enforces the same gates
+ * the API does (at least one photo, live store), so the server's "no" never
+ * surprises anyone.
+ *
+ * PHOTOS ARE UPLOADED, NOT PASTED. This section used to say "paste image URLs
+ * for now" and give the seller a text box, which could not work: next.config.ts
+ * and the CSP each allow three remote image hosts, so a photograph hosted
+ * anywhere else was blocked before it rendered. A seller had no way at all to
+ * put a picture of their own work on their own listing, which is most of what
+ * a listing is.
+ *
+ * The URL is never typed now. It only ever comes back from
+ * /api/shop/seller/media, which writes into Purify's own bucket under a
+ * per-seller prefix built on the server, and the listing schema pins the value
+ * to that host.
  */
 export function ListingForm({
   product,
@@ -103,23 +117,26 @@ export function ListingForm({
       <section className="space-y-5">
         <h2 className="font-display-serif text-title text-paper">{t("shop.photos")}</h2>
         <p className="font-sans text-detail text-paper/60">
-          {t("shop.pasteImageUrlsForNow")}
+          {t("shop.uploadYourOwnPhotos")}
         </p>
         {media.map((m, i) => (
           <div key={i} className="grid gap-3 rounded-lg border border-paper/10 bg-night-soft/40 p-4 sm:grid-cols-[1fr_1fr_auto]">
-            <label className="block space-y-1.5">
-              <span className={labelCls}>{t("shop.imageUrl")} {i === 0 ? "(cover)" : ""}</span>
-              <input
-                value={m.url}
-                onChange={(e) =>
-                  setMedia((rows) =>
-                    rows.map((r, j) => (j === i ? { ...r, url: e.target.value } : r)),
-                  )
+            <div className="space-y-1.5">
+              <span className={labelCls}>
+                {t("shop.photos")} {i === 0 ? "(cover)" : ""}
+              </span>
+              {m.url ? (
+                <div className="overflow-hidden rounded-md border border-paper/12 bg-night">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={m.url} alt="" className="max-h-[140px] w-full object-contain" />
+                </div>
+              ) : null}
+              <PhotoInput
+                onUploaded={(url) =>
+                  setMedia((rows) => rows.map((r, j) => (j === i ? { ...r, url } : r)))
                 }
-                placeholder={t("shop.https")}
-                className={field}
               />
-            </label>
+            </div>
             <label className="block space-y-1.5">
               <span className={labelCls}>{t("shop.altText")}</span>
               <input
@@ -383,5 +400,69 @@ export function ListingForm({
         ) : null}
       </div>
     </form>
+  );
+}
+
+/**
+ * One photo, uploaded. Deliberately tiny and stateless beyond its own upload:
+ * the parent owns the media list, this only ever hands back a URL that came
+ * from Purify's storage.
+ */
+function PhotoInput({ onUploaded }: { onUploaded: (url: string) => void }) {
+  const { t } = useTranslate();
+  const input = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function upload(file: File) {
+    setBusy(true);
+    setError(null);
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await apiFetch("/api/shop/seller/media", {
+        method: "POST",
+        body: form,
+      });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (res.ok && data.url) {
+        onUploaded(data.url);
+        return;
+      }
+      setError(data.error ?? t("shop.photoUploadFailed"));
+    } catch {
+      setError(t("shop.photoUploadFailed"));
+    } finally {
+      setBusy(false);
+      // Cleared so choosing the same file twice still fires a change event.
+      if (input.current) input.current.value = "";
+    }
+  }
+
+  return (
+    <>
+      <input
+        ref={input}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/avif"
+        aria-label={t("shop.choosePhoto")}
+        disabled={busy}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) void upload(file);
+        }}
+        className="block w-full font-sans text-detail text-paper/70 file:mr-3 file:min-h-[44px] file:rounded-pill file:border file:border-paper/20 file:bg-transparent file:px-4 file:font-sans file:text-ui file:font-semibold file:text-paper"
+      />
+      {busy ? (
+        <p className="font-sans text-eyebrow text-paper/50">
+          {t("shop.uploadingPhoto")}
+        </p>
+      ) : null}
+      {error ? (
+        <p role="alert" className="font-sans text-eyebrow text-crimson-soft">
+          {error}
+        </p>
+      ) : null}
+    </>
   );
 }

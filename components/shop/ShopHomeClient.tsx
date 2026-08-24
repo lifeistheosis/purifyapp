@@ -12,10 +12,23 @@ import { useAsyncData } from "@/lib/shop/useAsyncData";
 import type { ShopCategory } from "@/lib/shop/types";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
-const TRUST = [
-  "Inspected by hand",
-  "Ships from the US",
-  "30-day returns",
+/**
+ * Three claims Purify makes about the MARKETPLACE, on the marketplace's own
+ * front page. They used to be "Inspected by hand", "Ships from the US" and
+ * "30-day returns", which are EIKON's, about EIKON's pipeline, and false about
+ * every other store the moment one exists: an independent seller ships from
+ * wherever they live, and the 30-day floor is a term of a seller agreement
+ * still in draft (docs/legal/marketplace-terms-draft.md).
+ *
+ * These three are things the code actually guarantees. Every seller really is
+ * approved by hand (application, manual review, manual provision, manual
+ * go-live), checkout really is Stripe, and each store's shipping and returns
+ * policies really do live on its own page and are written by its own seller.
+ */
+const TRUST_KEYS = [
+  "shop.trustSellersReviewed",
+  "shop.trustStripeCheckout",
+  "shop.trustStorePolicies",
 ];
 
 /**
@@ -50,13 +63,13 @@ export function ShopHomeClient() {
         </p>
 
         <ul className="mx-auto mt-5 flex max-w-[560px] flex-wrap items-center justify-center gap-x-2 gap-y-2">
-          {TRUST.map((t) => (
+          {TRUST_KEYS.map((key) => (
             <li
-              key={t}
+              key={key}
               className="inline-flex items-center gap-1.5 rounded-pill border border-paper/10 bg-paper/[0.03] px-3 py-1.5 font-sans text-caption text-paper/65"
             >
               <span aria-hidden className="text-gold/60">✓</span>
-              {t}
+              {t(key)}
             </li>
           ))}
         </ul>
@@ -118,26 +131,60 @@ export function ShopHomeClient() {
             seeAllHref="/shop/category/all?inventory=ready_to_ship"
           />
 
-          {/* Founding store */}
-          {data.eikon ? (
-            <section aria-label="EIKON" className="mt-12 px-5 md:px-0">
-              <Link
-                href="/shop/eikon"
-                className="press-card block rounded-lg border border-gold/20 bg-night-soft/60 p-6 md:p-10"
-              >
-                <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/70">
-                  {t("shop.theFoundingStore")}
-                </p>
-                <p className="mt-3 font-display-serif text-heading md:text-display-sm tracking-[0.08em] text-paper">
-                  {t("shop.eikon")}
-                </p>
-                <p className="mt-4 max-w-[560px] font-serif text-body text-paper/70 leading-[1.6]">
-                  {data.eikon.description}
-                </p>
-                <p className="mt-4 font-sans text-detail font-medium text-paper/70">
-                  {t("shop.visitTheStore")}
-                </p>
-              </Link>
+          {/*
+            THE STORES. This was one card, linking to /shop/eikon by literal
+            and labelled "the founding store". A second store could be created,
+            provisioned, stocked and made live, and nothing on this site would
+            have linked to it: it was reachable only by typing its URL.
+
+            Oldest first, so EIKON keeps the front position it has by age
+            rather than by being named in the source.
+          */}
+          {/* ?? [] is not paranoia: this endpoint is served with
+            Cache-Control public max-age=30, so for half a minute after a
+            deploy a browser can still be holding the previous shape. */}
+          {(data.stores ?? []).length > 0 ? (
+            <section aria-label={t("shop.theStores")} className="mt-12 px-5 md:px-0">
+              <div className="mb-4 flex items-baseline justify-between gap-4">
+                <h2 className="font-display-serif text-title md:text-heading text-paper">
+                  {t("shop.theStores")}
+                </h2>
+                {(data.stores ?? []).length > 3 ? (
+                  <Link
+                    href="/shop/stores"
+                    className="font-sans text-detail font-medium text-paper/60 hover:text-paper"
+                  >
+                    {t("shop.allStores")}
+                  </Link>
+                ) : null}
+              </div>
+              <ul className="grid gap-4 md:grid-cols-2">
+                {(data.stores ?? []).slice(0, 4).map((s) => (
+                  <li key={s.id}>
+                    <Link
+                      href={`/shop/${s.slug}`}
+                      className="press-card block h-full rounded-lg border border-gold/20 bg-night-soft/60 p-6 md:p-8"
+                    >
+                      <p className="font-display-serif text-title tracking-[0.08em] text-paper">
+                        {s.public_name}
+                      </p>
+                      {s.tagline ? (
+                        <p className="mt-2 font-serif text-body italic text-paper/65 leading-[1.5]">
+                          {s.tagline}
+                        </p>
+                      ) : null}
+                      {s.description ? (
+                        <p className="mt-3 line-clamp-3 font-serif text-body text-paper/70 leading-[1.6]">
+                          {s.description}
+                        </p>
+                      ) : null}
+                      <p className="mt-4 font-sans text-detail font-medium text-paper/70">
+                        {t("shop.visitTheStore")}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </section>
           ) : null}
 

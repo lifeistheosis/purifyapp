@@ -201,6 +201,44 @@ export async function listPublishedProductSlugs(): Promise<string[]> {
   }
 }
 
+/**
+ * Every live store, for the shop home and the store directory.
+ *
+ * This did not exist, and its absence is why /shop hardcoded a link to
+ * /shop/eikon labelled "the founding store" and the home API called
+ * getStore("eikon") by literal. A second store could be created, provisioned,
+ * stocked and made live, and there was no page anywhere that would link to it:
+ * it was reachable only by typing its URL.
+ *
+ * listLiveStoreSlugs() below is the same query and has always existed, used
+ * for nothing but generateStaticParams. The data was there the whole time.
+ *
+ * A named column list, not `select *`: this feeds a public surface, and a
+ * wildcard picks up whatever the table grows next.
+ */
+export async function listLiveStores(): Promise<ShopStore[]> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("shop_stores")
+      .select(
+        "id, slug, public_name, tagline, description, ownership_disclosure, operational_disclosure, logo_url, banner_url, support_email, shipping_origin, shipping_policy_md, return_policy_md, status",
+      )
+      .eq("status", "live")
+      // Oldest first, so EIKON stays at the head of the shop home without
+      // anybody naming it.
+      .order("created_at", { ascending: true });
+    if (error) {
+      console.warn("[shop] listLiveStores failed", error.message);
+      return [];
+    }
+    return (data ?? []) as ShopStore[];
+  } catch (e) {
+    console.warn("[shop] listLiveStores threw", e instanceof Error ? e.message : e);
+    return [];
+  }
+}
+
 export async function listLiveStoreSlugs(): Promise<string[]> {
   try {
     const supabase = await createClient();

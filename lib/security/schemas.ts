@@ -1,7 +1,23 @@
 import { z } from "zod";
 
+import { CLASSIFICATION_LABELS } from "@/lib/shop/format";
+import type { ShopClassification } from "@/lib/shop/types";
+
 // Central registry for request-body schemas. One per route. Keeps validation
 // logic out of route handlers and reusable from tests.
+
+/**
+ * The listing vocabulary, read off the label table the FORM renders from
+ * rather than retyped beside it. Retyping is how the seller listing schema
+ * came to accept five classifications while the form offered ten.
+ *
+ * z.enum needs a non-empty tuple, hence the assertion; CLASSIFICATION_LABELS
+ * is a Record over the full union, so it can never actually be empty.
+ */
+export const SHOP_CLASSIFICATIONS = Object.keys(CLASSIFICATION_LABELS) as [
+  ShopClassification,
+  ...ShopClassification[],
+];
 
 /** /api/track POST body. */
 export const trackSchema = z.object({
@@ -277,13 +293,22 @@ export const shopListingSchema = z.object({
     "crosses",
     "sets",
   ]),
-  classification: z.enum([
-    "printed_mounted",
-    "standard_reproduction",
-    "laminated",
-    "wooden",
-    "hand_finished_reproduction",
-  ]),
+  // DERIVED, not retyped. This enum listed five values while the form rendered
+  // all ten from CLASSIFICATION_LABELS, so a seller who picked Prayer Rope,
+  // Incense, Prayer Beads, Cross & Chain or Woven Textile got a 400 with no
+  // explanation of which field was wrong.
+  //
+  // The database already accepts all ten. Probed 2026-08-24 with the service
+  // role: of 18 products in production, 7 carry `incense`, `prayer_rope` or
+  // `beaded`. So supabase/migrations/20260704_shop_phase1.sql:111-112, which
+  // still lists five, no longer describes the table it created; the CHECK was
+  // widened outside this repo. The five-value list here was the only thing
+  // actually rejecting those listings.
+  //
+  // Reading the keys off CLASSIFICATION_LABELS is what stops the three lists
+  // drifting again. lib/security/__tests__/listingVocabulary.test.ts asserts
+  // it stays that way.
+  classification: z.enum(SHOP_CLASSIFICATIONS),
   inventoryStatus: z.enum([
     "ready_to_ship",
     "special_order",

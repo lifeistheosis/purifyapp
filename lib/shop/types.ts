@@ -132,6 +132,16 @@ export type ShopHomeData = {
   featured: ShopProductFull[];
   readyToShip: ShopProductFull[];
   recent: ShopProductFull[];
+  /** Every live store, oldest first. */
+  stores: ShopStore[];
+  /**
+   * The first live store, which is EIKON today by age.
+   *
+   * Kept for ONE release. A native shell running the previous bundle reads
+   * this field, and dropping it would blank that card mid-upgrade for anyone
+   * who has not updated. `stores` is what the current client renders; delete
+   * this once the store count in the wild is what you expect.
+   */
   eikon: ShopStore | null;
 };
 

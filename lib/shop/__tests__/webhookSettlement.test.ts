@@ -202,3 +202,106 @@ describe("settleCheckoutSession", () => {
     expect(email).toHaveBeenCalledTimes(1);
   });
 });
+
+/**
+ * Stock goes down when something sells, and units_sold keeps working while the
+ * migration that makes that possible is still only merged.
+ *
+ * quantity_available was decorative: checkout refused an order that exceeded
+ * it, the console rendered it, and the only one-time paid effect
+ * (shop_increment_units_sold) bumped a counter and left stock alone. A
+ * ready-to-ship listing with one item could be sold without limit, which
+ * becomes real the first time an independent seller lists a one-off.
+ */
+describe("paid inventory effects", () => {
+  const email = vi.fn(() => Promise.resolve());
+
+  /** Records which RPCs were called, and can make any of them fail. */
+  function rpcSpyDb(
+    order: OrderRow,
+    fail: (fn: string) => { message: string; code?: string } | null,
+  ) {
+    const { db, state } = fakeDb(order);
+    const calls: string[] = [];
+    const spied: SettlementDb = {
+      from: db.from.bind(db),
+      rpc(fn: string) {
+        calls.push(fn);
+        return Promise.resolve({ error: fail(fn) });
+      },
+    };
+    return { db: spied, calls, state };
+  }
+
+  function paidPending(): OrderRow {
+    return {
+      id: "order-1",
+      payment_status: "pending",
+      total_cents: 5399,
+      currency: "usd",
+      email: "buyer@example.com",
+    };
+  }
+
+  it("calls the function that moves stock, not the counter-only one", () => {
+    // The whole point. If this ever flips back, quantity_available is
+    // decorative again and nothing else in the suite would notice.
+    const { db, calls } = rpcSpyDb(paidPending(), () => null);
+    return settleCheckoutSession(db, email, session()).then((result) => {
+      expect(result).toBe("paid");
+      expect(calls).toEqual(["shop_apply_paid_inventory"]);
+      expect(calls).not.toContain("shop_increment_units_sold");
+    });
+  });
+
+  it("falls back to the old counter when the new function is not applied yet", async () => {
+    // Merged is not applied. Calling only the new function during that window
+    // would stop units_sold working too, trading one silent bug for two.
+    const { db, calls } = rpcSpyDb(paidPending(), (fn) =>
+      fn === "shop_apply_paid_inventory"
+        ? { message: "Could not find the function", code: "PGRST202" }
+        : null,
+    );
+    const result = await settleCheckoutSession(db, email, session());
+    expect(result).toBe("paid");
+    expect(calls).toEqual([
+      "shop_apply_paid_inventory",
+      "shop_increment_units_sold",
+    ]);
+  });
+
+  it("recognises the raw Postgres undefined_function code too", async () => {
+    const { db, calls } = rpcSpyDb(paidPending(), (fn) =>
+      fn === "shop_apply_paid_inventory"
+        ? { message: "no function matches", code: "42883" }
+        : null,
+    );
+    await settleCheckoutSession(db, email, session());
+    expect(calls).toContain("shop_increment_units_sold");
+  });
+
+  it("does NOT fall back on an ordinary failure", async () => {
+    // A deadlock or a permissions error is not "the function is missing".
+    // Retrying the superseded function would double-count units_sold if the
+    // new one had in fact run.
+    const { db, calls } = rpcSpyDb(paidPending(), (fn) =>
+      fn === "shop_apply_paid_inventory"
+        ? { message: "deadlock detected", code: "40P01" }
+        : null,
+    );
+    const result = await settleCheckoutSession(db, email, session());
+    expect(result).toBe("paid");
+    expect(calls).toEqual(["shop_apply_paid_inventory"]);
+  });
+
+  it("never fails the webhook when inventory cannot be applied", async () => {
+    // Stripe retries a 500, and the money has already moved.
+    const { db } = rpcSpyDb(paidPending(), () => ({
+      message: "everything is on fire",
+      code: "XX000",
+    }));
+    await expect(settleCheckoutSession(db, email, session())).resolves.toBe(
+      "paid",
+    );
+  });
+});

@@ -68,7 +68,49 @@ export interface SettlementDb {
   rpc(
     fn: string,
     args: Record<string, unknown>,
-  ): PromiseLike<{ error: { message: string } | null }>;
+  ): PromiseLike<{ error: { message: string; code?: string } | null }>;
+}
+
+/**
+ * Bump units_sold and take the stock down, with a fallback.
+ *
+ * shop_apply_paid_inventory supersedes shop_increment_units_sold: the old
+ * function bumped a counter and left quantity_available alone, which is why a
+ * ready-to-ship listing with one item in stock could be sold an unbounded
+ * number of times.
+ *
+ * THE FALLBACK IS NOT DEFENSIVENESS, IT IS ORDERING. AGENTS.md records that
+ * merged and applied are independently true or false, and migrations have sat
+ * on main for over a week unapplied. Calling only the new function during that
+ * window would stop units_sold working as well, trading one silent bug for
+ * two. So an "undefined function" answer falls through to the old one, and
+ * anything else is logged and swallowed.
+ *
+ * 42883 is Postgres undefined_function; PGRST202 is PostgREST failing to find
+ * it in the schema cache, which is what actually comes back through supabase-js
+ * and is the more likely of the two. Both mean the same thing here.
+ */
+const NO_SUCH_FUNCTION = new Set(["42883", "PGRST202"]);
+
+async function applyPaidInventory(db: SettlementDb, orderId: string): Promise<void> {
+  const { error } = await db.rpc("shop_apply_paid_inventory", {
+    p_order_id: orderId,
+  });
+  if (!error) return;
+
+  if (!NO_SUCH_FUNCTION.has(error.code ?? "") && !/could not find|does not exist/i.test(error.message)) {
+    console.warn("[shop] paid inventory apply failed", error.message);
+    return;
+  }
+  console.warn(
+    "[shop] shop_apply_paid_inventory is absent; stock will NOT be decremented. Apply supabase/migrations/20260824_shop_inventory_on_sale.sql.",
+  );
+  const { error: legacyErr } = await db.rpc("shop_increment_units_sold", {
+    p_order_id: orderId,
+  });
+  if (legacyErr) {
+    console.warn("[shop] units_sold increment failed", legacyErr.message);
+  }
 }
 
 export type ConfirmationSender = (order: {
@@ -190,14 +232,9 @@ export async function settleCheckoutSession(
     );
   }
 
-  // One-time paid effects. Neither may fail the webhook: Stripe would
+  // One-time paid effects. None of them may fail the webhook: Stripe would
   // retry a delivered order.
-  await db
-    .rpc("shop_increment_units_sold", { p_order_id: updated.id })
-    .then(({ error: incErr }) => {
-      if (incErr)
-        console.warn("[shop] units_sold increment failed", incErr.message);
-    });
+  await applyPaidInventory(db, updated.id as string);
 
   const { data: items } = await db
     .from("shop_order_items")
