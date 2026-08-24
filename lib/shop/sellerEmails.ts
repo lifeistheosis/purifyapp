@@ -154,3 +154,44 @@ export async function sendRefundReleasedEmail(opts: {
     html: sellerLayout("A refund has been released", body),
   });
 }
+
+/**
+ * A seller says their store is ready to open. Addressed to Purify, not to the
+ * seller: this replaces the console's previous instruction to "write to
+ * lifeistheosis@gmail.com", which asked the seller to compose the email that
+ * this now composes for them, and which nothing recorded.
+ *
+ * ADMIN_EMAILS is the recipient list because it is already the definition of
+ * "who runs this shop" (lib/admin/access.ts reads the same variable), so the
+ * notification cannot drift away from the people who can act on it.
+ */
+export async function sendStoreReviewRequestEmail(store: {
+  storeName: string;
+  slug: string;
+  sellerEmail: string | null;
+  publishedListings: number;
+  note: string | null;
+}): Promise<SendResult> {
+  const to = (process.env.ADMIN_EMAILS ?? "")
+    .split(/[,;\s]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (to.length === 0) {
+    console.warn("[shop] store review request with no ADMIN_EMAILS configured");
+    return { ok: false, skipped: true };
+  }
+  const note = store.note?.trim()
+    ? `<p style="margin:0 0 16px;padding:12px 16px;background:#f7f5f2;border-radius:8px;color:#3a3540">${escapeHtml(store.note.trim())}</p>`
+    : "";
+  const body = `
+    <p style="margin:0 0 16px"><strong>${escapeHtml(store.storeName)}</strong> (/${escapeHtml(store.slug)}) is asking to be opened.</p>
+    <p style="margin:0 0 16px">${store.publishedListings} published listing${store.publishedListings === 1 ? "" : "s"}. Seller account: ${escapeHtml(store.sellerEmail ?? "not attached")}.</p>
+    ${note}
+    <p style="margin:0 0 16px">Check the storefront, then flip the store live from the marketplace console. Stripe must have enabled charges first; the console refuses otherwise.</p>
+    <p style="margin:18px 0 0">${link(`${SITE_URL}/shop/${store.slug}`, "View the storefront &rarr;")}</p>`;
+  return sendEmail({
+    to,
+    subject: `Store ready for review: ${store.storeName}`,
+    html: sellerLayout("A store is asking to open", body),
+  });
+}

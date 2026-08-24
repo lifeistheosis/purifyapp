@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { OpenStoreRequest } from "@/components/shop/seller/OpenStoreRequest";
 import { earningsSummary } from "@/lib/shop/earnings";
 import { formatPrice } from "@/lib/shop/format";
 import { getOrderFees } from "@/lib/shop/payouts";
@@ -14,7 +15,8 @@ import {
 } from "@/lib/shop/sellerData";
 import {
   needsSellerAction,
-  SELLER_STATUS_LABELS,
+  fulfillmentPathFor,
+  statusLabelsFor,
 } from "@/lib/shop/sellerOrders";
 
 export const metadata: Metadata = { title: "Overview" };
@@ -37,6 +39,13 @@ export default async function SellerOverviewPage() {
 
   const fees = await getOrderFees(orders.map((o) => o.id));
   const summary = earningsSummary(orders, fees);
+
+  // EIKON's sourcing and inspection stages describe a warehouse an independent
+  // seller has never seen; statusLabelsFor names the states for whoever is
+  // actually shipping. See lib/shop/sellerOrders.ts.
+  const statusLabels = statusLabelsFor(
+    fulfillmentPathFor(ctx.seller.seller_type),
+  );
   const actionable = orders.filter(
     (o) => o.payment_status === "paid" && needsSellerAction(o.fulfillment_status),
   );
@@ -85,10 +94,14 @@ export default async function SellerOverviewPage() {
           </p>
           <p className="mt-1.5 font-serif text-body text-paper/70 leading-[1.6]">
             Buyers can&rsquo;t see your storefront or listings while it&rsquo;s
-            in &ldquo;{ctx.store.status}&rdquo;. Finish your listings, then
-            write to lifeistheosis@gmail.com to schedule the review that flips it
-            live.
+            in &ldquo;{ctx.store.status}&rdquo;. Fill in your{" "}
+            <Link href="/shop/seller/store" className="text-gold underline-offset-4 hover:underline">
+              store page
+            </Link>
+            , add your listings, then ask us to open it.
           </p>
+          {/* Was: "write to lifeistheosis@gmail.com to schedule the review". */}
+          <OpenStoreRequest />
         </div>
       ) : null}
       {!ctx.store ? (
@@ -152,7 +165,7 @@ export default async function SellerOverviewPage() {
                       {o.items.map((i) => i.title).join(", ")}
                     </p>
                     <p className="mt-1 font-sans text-caption text-paper/60">
-                      {SELLER_STATUS_LABELS[o.fulfillment_status]} ·{" "}
+                      {statusLabels[o.fulfillment_status]} ·{" "}
                       {new Date(o.created_at).toLocaleDateString(undefined, {
                         month: "short",
                         day: "numeric",

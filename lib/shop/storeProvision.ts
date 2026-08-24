@@ -70,6 +70,19 @@ export type CreateSellerStoreInput = {
   legalName?: string | null;
   supportEmail?: string | null;
   shippingOrigin?: string | null;
+  /**
+   * What the applicant typed into "return policy" on the application form.
+   *
+   * It was collected, stored on the application row, and then never copied
+   * anywhere, so it was orphaned there forever while
+   * shop_stores.return_policy_md, which the storefront renders, stayed null on
+   * every store. Asking somebody for their returns policy and then not using
+   * it is worse than not asking.
+   *
+   * A starting point, not a final answer: the seller can rewrite it from the
+   * Store section of their console the moment they sign in.
+   */
+  returnPolicy?: string | null;
 };
 
 export type CreateSellerStoreResult =
@@ -140,6 +153,7 @@ export async function createSellerAndStore(
       ownership_disclosure: defaultDisclosure(input.sellerType, input.storeName),
       support_email: input.supportEmail ?? null,
       shipping_origin: input.shippingOrigin ?? null,
+      return_policy_md: input.returnPolicy?.trim() || null,
       status: "draft",
     })
     .select("id")

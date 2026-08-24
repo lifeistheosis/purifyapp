@@ -55,6 +55,8 @@ export async function POST(req: Request) {
     legalName: app.legal_name,
     supportEmail: app.email,
     shippingOrigin: app.shipping_origin ?? app.country,
+    // Typed on the application form and, until now, orphaned on that row.
+    returnPolicy: app.return_policy ?? null,
   });
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });

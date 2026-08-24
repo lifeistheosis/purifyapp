@@ -198,6 +198,48 @@ export const shopRefundRequestSchema = z.object({
   details: z.string().max(2000).optional().nullable(),
 });
 
+/**
+ * /api/shop/seller/store PATCH body: the store page, edited by the person
+ * whose store it is.
+ *
+ * WHAT IS NOT HERE IS THE POINT. public_name, slug and status are absent, and
+ * so are ownership_disclosure and operational_disclosure. Those five are what
+ * a buyer relies on to know WHO they are buying from and how the goods reach
+ * them, and a seller rewriting their own disclosure is the whole failure mode
+ * disclosure exists to prevent. They stay on the admin route.
+ *
+ * Images are pinned to Purify's own storage with the same refinement the
+ * campaign image uses. Without it a seller could point their banner at any
+ * server on the internet, which hotlinks unreviewed content onto a Purify page
+ * and leaks every viewer's IP to whoever is hosting it.
+ *
+ * Everything is `.optional()` and nullable so the form can send one field or
+ * all of them, and so clearing a field is expressible. The route rejects an
+ * entirely empty body rather than writing nothing and reporting success.
+ */
+export const shopSellerStoreSchema = z.object({
+  tagline: z.string().max(200).optional().nullable(),
+  description: z.string().max(4000).optional().nullable(),
+  support_email: z.string().email().max(320).optional().nullable(),
+  shipping_origin: z.string().max(200).optional().nullable(),
+  shipping_policy_md: z.string().max(8000).optional().nullable(),
+  return_policy_md: z.string().max(8000).optional().nullable(),
+  logo_url: z
+    .string()
+    .url()
+    .max(1000)
+    .refine(isSupabaseStorageUrl, "Image must be uploaded through Purify.")
+    .optional()
+    .nullable(),
+  banner_url: z
+    .string()
+    .url()
+    .max(1000)
+    .refine(isSupabaseStorageUrl, "Image must be uploaded through Purify.")
+    .optional()
+    .nullable(),
+});
+
 /** /api/shop/seller/refunds POST body (seller decision). */
 export const shopRefundDecisionSchema = z.object({
   refundId: z.string().uuid(),

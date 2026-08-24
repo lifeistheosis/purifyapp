@@ -8,7 +8,7 @@ import { formatPrice } from "@/lib/shop/format";
 import { REFUND_STATUS_LABELS } from "@/lib/shop/refunds";
 import { getSellerContext } from "@/lib/shop/seller";
 import { getSellerOrder, listSellerRefunds } from "@/lib/shop/sellerData";
-import { SELLER_STATUS_LABELS } from "@/lib/shop/sellerOrders";
+import { fulfillmentPathFor, statusLabelsFor } from "@/lib/shop/sellerOrders";
 
 export const metadata: Metadata = { title: "Order" };
 
@@ -47,7 +47,35 @@ export default async function SellerOrderPage({
   const pendingRefund = refunds.find((r) => r.status === "requested");
   const settledRefunds = refunds.filter((r) => r.status !== "requested");
 
-  const address = (order.shipping_address ?? null) as ShippingAddress | null;
+  // A CUSTOMER'S HOME ADDRESS, SHOWN TO A THIRD PARTY. Two rules.
+  //
+  // It is shown only while there is a reason to ship or to handle a return:
+  // paid, refunded, or delivered. A CANCELLED order is nobody's to look at,
+  // and a pending one has no address anyway (the Stripe webhook writes it with
+  // the payment). The old page rendered the block for every state.
+  //
+  // And the disclosure is recorded. stdout is the sink, unconditionally and
+  // first, exactly as lib/admin/activityLog.ts does it and for the same
+  // reason: Render retains it, so "who saw that buyer's address" is answerable
+  // with grep today rather than after a migration. It is deliberately NOT
+  // admin_activity_log, which is scoped to admin actions; a seller reading
+  // their own order is not an admin act and would drown that table.
+  const showAddress =
+    order.payment_status === "paid" || order.payment_status === "refunded";
+  const address = showAddress
+    ? ((order.shipping_address ?? null) as ShippingAddress | null)
+    : null;
+  if (address?.address) {
+    console.log(
+      JSON.stringify({
+        tag: "seller-address-view",
+        at: new Date().toISOString(),
+        sellerId: ctx.seller.id,
+        userId: ctx.userId,
+        orderId: order.id,
+      }),
+    );
+  }
 
   return (
     <div className="max-w-[760px] pb-16">
@@ -63,7 +91,9 @@ export default async function SellerOrderPage({
           {formatPrice(order.total_cents, order.currency)}
         </h1>
         <p className="inline-flex rounded-pill border border-paper/20 px-3 py-1 font-sans text-caption font-semibold text-paper/75">
-          {SELLER_STATUS_LABELS[order.fulfillment_status]}
+          {statusLabelsFor(fulfillmentPathFor(ctx.seller.seller_type))[
+            order.fulfillment_status
+          ]}
           {order.payment_status !== "paid" ? ` · ${order.payment_status}` : ""}
         </p>
       </div>
@@ -145,12 +175,20 @@ export default async function SellerOrderPage({
           </p>
         ) : (
           <p className="mt-3 font-serif text-body text-paper/60 leading-[1.6]">
-            No shipping address yet
             {order.payment_status === "pending"
-              ? " — it arrives with payment."
-              : "."}
+              ? "No shipping address yet. It arrives with payment."
+              : order.payment_status === "cancelled"
+                ? "This order was cancelled, so there is nothing to ship and the buyer's address is not shown."
+                : "No shipping address on this order."}
           </p>
         )}
+        {address?.address ? (
+          <p className="mt-3 font-sans text-caption text-paper/50 leading-[1.5]">
+            Use this address only to fulfil and support this order. Do not add
+            the buyer to a mailing list, contact them for marketing, or keep
+            their details beyond your own tax and accounting obligations.
+          </p>
+        ) : null}
         {order.email ? (
           <p className="mt-3 font-sans text-detail text-paper/65">
             Buyer email: <span className="text-paper">{order.email}</span>

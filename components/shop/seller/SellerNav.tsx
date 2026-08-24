@@ -13,6 +13,9 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  */
 const SECTIONS: { label: string; href: string; exact?: boolean }[] = [
   { label: "Overview", href: "/shop/seller", exact: true },
+  // Store sat missing from this list, and that one absence is why the console
+  // read as a supplier portal rather than a shop the seller runs.
+  { label: "Store", href: "/shop/seller/store" },
   { label: "Orders", href: "/shop/seller/orders" },
   { label: "Messages", href: "/shop/seller/messages" },
   { label: "Listings", href: "/shop/seller/listings" },

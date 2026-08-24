@@ -116,6 +116,14 @@ export function StoreClient({ slug }: { slug: string }) {
   const storeAvg =
     storeReviewCount > 0 ? storeRatingTotal / storeReviewCount : null;
 
+  // Derived from this store's own row, never asserted. See the note beside
+  // the list below for what used to be here.
+  const chips = [
+    store.shipping_origin ? `${t("shop.shipsFrom")} ${store.shipping_origin}` : null,
+    store.return_policy_md ? t("shop.returnsPolicy") : null,
+    store.shipping_policy_md ? t("shop.shippingPolicy") : null,
+  ].filter((c): c is string => Boolean(c));
+
   return (
     <div className="mx-auto w-full max-w-[1200px] px-5 md:px-8">
       <header className="pt-12 text-center md:pt-20">
@@ -133,14 +141,29 @@ export function StoreClient({ slug }: { slug: string }) {
           </p>
         ) : null}
 
-        <ul className="mx-auto mt-6 flex max-w-[640px] flex-wrap items-center justify-center gap-2">
-          {[
-            "Inspected by hand",
-            store.shipping_origin ? `Ships from ${store.shipping_origin}` : null,
-            "30-day returns",
-          ]
-            .filter((c): c is string => Boolean(c))
-            .map((chip) => (
+        {/*
+          EVERY CHIP IS NOW SOMETHING THIS STORE ACTUALLY SAID.
+
+          This row used to print "Inspected by hand" and "30-day returns" as
+          literals on every storefront. Both are EIKON's claims about EIKON's
+          pipeline, and Purify was making them, in Purify's voice, on a page
+          belonging to whoever else happened to be selling. The moment a second
+          store exists they are false, and the buyer has no way to tell.
+
+          EIKON's inspection claim has a correct home and already renders on
+          this page: store.operational_disclosure, in the "How it works"
+          section below. Moving it there is a data edit on the production row,
+          not a code change, and it is the owner's to make.
+
+          Returns are a link to the store's OWN policy rather than a number,
+          because the 30-day floor is a term of the seller agreement and that
+          document is still in draft (docs/legal/marketplace-terms-draft.md).
+          Nothing here should assert a return window Purify has not yet agreed
+          with anybody.
+        */}
+        {chips.length > 0 ? (
+          <ul className="mx-auto mt-6 flex max-w-[640px] flex-wrap items-center justify-center gap-2">
+            {chips.map((chip) => (
               <li
                 key={chip}
                 className="inline-flex items-center gap-1.5 rounded-pill border border-paper/12 bg-paper/[0.03] px-3 py-1.5 font-sans text-caption text-paper/70"
@@ -149,7 +172,8 @@ export function StoreClient({ slug }: { slug: string }) {
                 {chip}
               </li>
             ))}
-        </ul>
+          </ul>
+        ) : null}
         {storeReviewCount > 0 ? (
           <div className="mt-3 flex justify-center">
             <RatingStars avg={storeAvg} count={storeReviewCount} />

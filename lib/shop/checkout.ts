@@ -5,6 +5,7 @@ import { applicationFeeCents, canChargeThroughConnect } from "./connect";
 import { checkoutEnabled } from "./flags";
 import { purchasable } from "./format";
 import { getStorePayouts, recordOrderFee } from "./payouts";
+import { fulfillmentPathFor, initialFulfillmentStatus } from "./sellerOrders";
 import { TERMS_VERSION } from "@/lib/legal/version";
 import { proShipsFree } from "@/lib/entitlements/entitlements";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -59,6 +60,25 @@ export type CheckoutResult =
   | { ok: true; url: string; orderId: string }
   | { ok: false; disabled: true }
   | { ok: false; disabled?: false; reason: string };
+
+/**
+ * The seller's type, for choosing a fulfillment pipeline. Fails soft to null,
+ * which fulfillmentPathFor reads as "ships their own": the safer wrong answer,
+ * because the other one prints EIKON's warehouse stages over a stranger.
+ */
+async function sellerTypeFor(sellerId: string): Promise<string | null> {
+  try {
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from("shop_sellers")
+      .select("seller_type")
+      .eq("id", sellerId)
+      .maybeSingle();
+    return (data?.seller_type as string | undefined) ?? null;
+  } catch {
+    return null;
+  }
+}
 
 /** Flat standard shipping in cents for non-Pro buyers. */
 export function flatShippingCents(): number {
@@ -138,6 +158,12 @@ export async function createCheckout(
   // fails leaves no half-built order behind. Fails soft to null, which is the
   // pre-Connect shape.
   const payouts = await getStorePayouts(first.store_id);
+
+  // Who ships this. An independent seller has no supplier to wait on, so an
+  // order of theirs must never open on the sourcing path: EIKON's stages are
+  // real work by real people and describe nobody else's warehouse.
+  const sellerType = await sellerTypeFor(first.seller_id);
+  const path = fulfillmentPathFor(sellerType);
   const connected = canChargeThroughConnect(payouts) ? payouts : null;
   const feeCents = connected
     ? applicationFeeCents({
@@ -164,12 +190,11 @@ export async function createCheckout(
       total_cents: itemsTotal + shipping,
       currency: first.currency,
       payment_status: "pending",
-      // Any special-order line puts the whole order on the sourcing path.
-      fulfillment_status: lines.some(
-        (l) => l.product.inventory_status === "special_order",
-      )
-        ? "supplier_order_needed"
-        : "pending",
+      fulfillment_status: initialFulfillmentStatus(
+        path,
+        // Any special-order line puts an EIKON order on the sourcing path.
+        lines.some((l) => l.product.inventory_status === "special_order"),
+      ),
     })
     .select("id")
     .single();

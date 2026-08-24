@@ -7,7 +7,8 @@ import { getSellerContext } from "@/lib/shop/seller";
 import { listSellerOrders, listSellerRefunds } from "@/lib/shop/sellerData";
 import {
   needsSellerAction,
-  SELLER_STATUS_LABELS,
+  fulfillmentPathFor,
+  statusLabelsFor,
 } from "@/lib/shop/sellerOrders";
 import type { ShopSellerOrder } from "@/lib/shop/types";
 import { cn } from "@/lib/cn";
@@ -28,6 +29,13 @@ export default async function SellerOrdersPage() {
     listSellerOrders(ctx.seller.id),
     listSellerRefunds(ctx.seller.id),
   ]);
+
+  // EIKON's sourcing and inspection stages describe a warehouse an independent
+  // seller has never seen; statusLabelsFor names the states for whoever is
+  // actually shipping. See lib/shop/sellerOrders.ts.
+  const statusLabels = statusLabelsFor(
+    fulfillmentPathFor(ctx.seller.seller_type),
+  );
 
   const openRefunds = refunds.filter((r) => refundIsActive(r.status));
   const paid = orders.filter((o) => o.payment_status === "paid");
@@ -80,23 +88,27 @@ export default async function SellerOrdersPage() {
       ) : null}
 
       <OrderSection
+        statusLabels={statusLabels}
         title="Needs action"
         emptyCopy="No paid orders are waiting on you."
         orders={needsAction}
         highlight
       />
       <OrderSection
+        statusLabels={statusLabels}
         title="In motion"
         emptyCopy="Nothing is currently shipping."
         orders={inMotion}
       />
       <OrderSection
+        statusLabels={statusLabels}
         title="Awaiting payment"
         emptyCopy="No checkouts are pending payment."
         orders={awaitingPayment}
         muted
       />
       <OrderSection
+        statusLabels={statusLabels}
         title="Completed"
         emptyCopy="Delivered, refunded, and cancelled orders will collect here."
         orders={done}
@@ -110,12 +122,15 @@ function OrderSection({
   title,
   emptyCopy,
   orders,
+  statusLabels,
   highlight,
   muted,
 }: {
   title: string;
   emptyCopy: string;
   orders: ShopSellerOrder[];
+  /** Named for whoever actually ships; see lib/shop/sellerOrders.ts. */
+  statusLabels: Record<ShopSellerOrder["fulfillment_status"], string>;
   highlight?: boolean;
   muted?: boolean;
 }) {
@@ -156,7 +171,7 @@ function OrderSection({
                         highlight ? "text-gold" : "text-paper/70",
                       )}
                     >
-                      {SELLER_STATUS_LABELS[o.fulfillment_status]}
+                      {statusLabels[o.fulfillment_status]}
                     </span>
                     Placed{" "}
                     {new Date(o.created_at).toLocaleDateString(undefined, {
