@@ -11,10 +11,16 @@ const field =
   "w-full rounded-md border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
 
 /**
- * A pending refund request from the seller's side. Approve moves the
- * money (or parks the request for manual settlement — the API decides
- * and reports which); decline asks for a sentence of reasoning because
- * "no" with no why is how disputes start.
+ * A pending refund request from the seller's side.
+ *
+ * Approve DECIDES; it does not pay. Refunds currently come out of Purify's
+ * Stripe balance rather than the store's, so the API parks an approval at
+ * "approved" and an admin releases the money (see the co-sign note in
+ * lib/shop/refundExecution.ts). The button used to read "Refunding…" while it
+ * waited, which described something that was no longer happening.
+ *
+ * Decline asks for a sentence of reasoning, because "no" with no why is how
+ * disputes start.
  */
 export function RefundDecisionCard({
   refundId,
@@ -74,6 +80,10 @@ export function RefundDecisionCard({
         </p>
       ) : null}
 
+      <p className="mt-3 font-sans text-detail text-paper/55">
+        {t("shop.approvingRecordsYourDecision")}
+      </p>
+
       {declining ? (
         <label className="mt-4 block space-y-1.5">
           <span className="font-sans text-caption font-semibold text-paper/60">
@@ -104,7 +114,7 @@ export function RefundDecisionCard({
               onClick={() => decide("approved")}
               className="tap-press inline-flex min-h-[44px] items-center rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night hover:bg-paper/90 disabled:opacity-60"
             >
-              {busy === "approved" ? "Refunding…" : "Approve refund"}
+              {busy === "approved" ? "Saving…" : "Approve refund"}
             </button>
             <button
               type="button"

@@ -43,6 +43,22 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * A crash between 1 and 3 parks the request at `approved`, which is a state
  * the admin console already renders and can settle by hand. That is the
  * failure this shape is designed to have.
+ *
+ * THE THREE STEPS ARE SEPARATELY EXPORTED, AND THAT IS THE CO-SIGN. Every
+ * payment currently lands in Purify's own Stripe balance: there is no Connect
+ * account anywhere in this codebase, so a refund is Purify's cash leaving
+ * Purify's account. A seller pressing Approve used to run all three steps,
+ * which meant a stranger with a console login could move Purify's money with
+ * one click, capped only by the order total.
+ *
+ * So the seller route now calls claimRefundApproval() ONLY. It decides, it
+ * binds the store to the decision, and it stops at `approved`. Releasing the
+ * money is releaseApprovedRefund(), reachable from the admin console alone.
+ *
+ * This is a stopgap with an end date. Once Connect lands and charges carry
+ * transfer_data.destination, the refund debits the SELLER's balance and the
+ * co-sign can be dropped: the seller will be spending their own money and is
+ * entitled to do it unsupervised. Until then, two people.
  */
 
 export type RefundOrderFacts = {
@@ -106,24 +122,22 @@ async function requestedAmountCents(
 }
 
 /**
- * Approve and, when possible, execute. Returns the resulting status:
- * 'processed' when the money moved, 'approved' when it parked for
- * manual settlement, null on failure. Honors the request's own
- * amount_cents (a partial refund refunds the partial amount); the order
- * flips to refunded only when the full total moved.
+ * STEP 1 ALONE. requested -> approved, judged by rows matched, no money.
+ *
+ * This is what a seller is allowed to do: bind their store to the decision
+ * and stop. Whoever loses the race returns "already-decided" having touched
+ * nothing. Honors the request's own amount_cents, clamped to the order total,
+ * so a partial request stays partial through to release.
  */
-export async function approveRefundRequest(
+export async function claimRefundApproval(
   requestId: string,
-  order: RefundOrderFacts,
+  orderTotal: number,
   note: string | null,
-): Promise<"processed" | "approved" | "already-decided" | null> {
+): Promise<"approved" | "already-decided" | null> {
   const admin = createAdminClient();
   const now = new Date().toISOString();
-  const amount = await requestedAmountCents(requestId, order.total_cents);
+  const amount = await requestedAmountCents(requestId, orderTotal);
 
-  // 1. CLAIM, before a penny moves. Whoever loses this returns without ever
-  //    reaching Stripe, which is the whole point: the previous order of
-  //    operations refunded first and claimed afterwards.
   const { data: claimed, error: claimErr } = await admin
     .from("shop_refund_requests")
     .update({
@@ -146,6 +160,31 @@ export async function approveRefundRequest(
     console.warn(`[shop] refund already decided request=${requestId}`);
     return "already-decided";
   }
+  return "approved";
+}
+
+/**
+ * STEPS 2 AND 3. Spend, then settle, for a request already sitting at
+ * `approved`. Admin-only: this is the co-sign, and it is where Purify's own
+ * balance is actually debited.
+ *
+ * Returns 'processed' when the money moved and 'approved' when it could not
+ * (Stripe off, no payment intent, or Stripe refused), leaving the request
+ * parked for another attempt or a manual settlement.
+ *
+ * Two admins pressing Release at once is safe without a claim of its own: the
+ * idempotency key is derived from the request id, so Stripe hands the FIRST
+ * refund object to the second caller instead of creating a second refund. The
+ * settle below is still guarded on `approved`, so exactly one of them stamps
+ * the row and the other logs a lost race against money that never doubled.
+ */
+export async function releaseApprovedRefund(
+  requestId: string,
+  order: RefundOrderFacts,
+): Promise<"processed" | "approved" | null> {
+  const admin = createAdminClient();
+  const now = new Date().toISOString();
+  const amount = await requestedAmountCents(requestId, order.total_cents);
 
   // 2. SPEND. The idempotency key is belt to the claim's braces: even if a
   //    future change lets two callers past step 1, Stripe itself refuses the
@@ -197,6 +236,21 @@ export async function approveRefundRequest(
     await flipOrderRefunded(order.id, now);
   }
   return "processed";
+}
+
+/**
+ * Claim and release in one call. ADMIN SURFACES ONLY, because it spends.
+ * The seller console calls claimRefundApproval() instead and leaves the
+ * release to a second person; see the co-sign note in this file's header.
+ */
+export async function approveRefundRequest(
+  requestId: string,
+  order: RefundOrderFacts,
+  note: string | null,
+): Promise<"processed" | "approved" | "already-decided" | null> {
+  const claim = await claimRefundApproval(requestId, order.total_cents, note);
+  if (claim !== "approved") return claim;
+  return releaseApprovedRefund(requestId, order);
 }
 
 /**

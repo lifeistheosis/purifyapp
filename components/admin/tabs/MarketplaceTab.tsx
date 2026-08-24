@@ -1178,9 +1178,10 @@ function RefundsPanel() {
         <StatCard label="Requests" value={refunds.length} />
         <StatCard label="Awaiting decision" value={pending.length} accent />
         <StatCard
-          label="Approved, unsettled"
+          label="Approved, awaiting release"
           value={parked.length}
-          hint="money owed; settle then mark processed"
+          hint="a seller decided; nobody has paid yet"
+          accent
         />
         <StatCard
           label="Processed"
@@ -1196,7 +1197,7 @@ function RefundsPanel() {
 
       <Card
         title="Refund pipeline"
-        subtitle="Approve moves money when Stripe is live; otherwise it parks as approved"
+        subtitle="Sellers decide; only this page pays. Release sends the Stripe refund, Mark processed records money that moved elsewhere"
       >
         <DataTable<AdminRefund>
           csvFilename="marketplace-refunds.csv"
@@ -1293,14 +1294,35 @@ function RefundsPanel() {
                     </>
                   )}
                   {r.status === "approved" && (
-                    <ToolbarButton
-                      variant="primary"
-                      onClick={() =>
-                        act(patchJson("/api/admin/shop/refunds", { refundId: r.id }))
-                      }
-                    >
-                      Mark processed
-                    </ToolbarButton>
+                    <>
+                      <ToolbarButton
+                        variant="primary"
+                        title="Send this refund through Stripe now"
+                        onClick={() =>
+                          act(
+                            patchJson("/api/admin/shop/refunds", {
+                              refundId: r.id,
+                              action: "release",
+                            }),
+                          )
+                        }
+                      >
+                        Release refund
+                      </ToolbarButton>
+                      <ToolbarButton
+                        title="The money already moved outside Stripe; just record it"
+                        onClick={() =>
+                          act(
+                            patchJson("/api/admin/shop/refunds", {
+                              refundId: r.id,
+                              action: "mark-processed",
+                            }),
+                          )
+                        }
+                      >
+                        Mark processed
+                      </ToolbarButton>
+                    </>
                   )}
                 </div>
               ),

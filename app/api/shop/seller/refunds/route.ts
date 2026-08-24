@@ -4,7 +4,7 @@ import { rateLimited } from "@/lib/security/ratelimit";
 import { shopRefundDecisionSchema } from "@/lib/security/schemas";
 import { shopEnabled } from "@/lib/shop/flags";
 import {
-  approveRefundRequest,
+  claimRefundApproval,
   declineRefundRequest,
 } from "@/lib/shop/refundExecution";
 import { refundCanTransition } from "@/lib/shop/refunds";
@@ -12,16 +12,20 @@ import { getSellerContext } from "@/lib/shop/seller";
 import { createClient } from "@/lib/supabase/server";
 
 /**
- * Seller refund decisions. Decline records the reasoning; approve
- * moves the money when it can:
+ * Seller refund decisions. Decline records the reasoning; approve records
+ * the decision and stops there.
  *
- *  - Checkout live + payment intent on file → Stripe refund now, the
- *    request lands 'processed', and the order flips refunded in the
- *    same breath so money and status can't diverge.
- *  - Otherwise the request parks at 'approved' — an honest "we owe
- *    you" state the operator settles manually (test orders, cash-era
- *    orders, Stripe outages). The buyer sees "approved", never a fake
- *    "refunded".
+ * APPROVE DOES NOT MOVE MONEY, AND THAT IS DELIBERATE. Every payment taken
+ * so far settles into Purify's own Stripe balance, because no Connect account
+ * exists anywhere in this codebase yet. A refund is therefore Purify's cash,
+ * not the seller's, and this route is reachable by any provisioned seller.
+ * Until Connect lands and charges carry transfer_data.destination, approving
+ * here parks the request at 'approved' and an admin releases it from the
+ * marketplace console. Two people, one payout.
+ *
+ * The buyer sees "Refund approved", which is true: it is a decision, not a
+ * settlement, and the same state has always meant "decided, money not yet
+ * confirmed". Nobody is shown a refund that has not happened.
  */
 export async function POST(req: Request) {
   if (!shopEnabled()) {
@@ -95,26 +99,23 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, status: "declined" });
   }
 
-  const status = await approveRefundRequest(
+  const status = await claimRefundApproval(
     request.id,
-    {
-      id: order.id,
-      total_cents: order.total_cents,
-      stripe_payment_intent: order.stripe_payment_intent,
-    },
+    order.total_cents,
     note ?? null,
   );
   if (!status) {
     return NextResponse.json({ error: "Couldn't save the decision." }, { status: 500 });
   }
-  // A lost race is not a success. approveRefundRequest now claims the request
-  // BEFORE it spends, so the loser never reached Stripe and no money moved;
-  // reporting ok:true here would tell the decider their refund went out.
+  // A lost race is not a success: the loser changed nothing, and reporting
+  // ok:true would tell this seller their decision is the one on file.
   if (status === "already-decided") {
     return NextResponse.json(
       { error: "This request was already decided by someone else. Reload to see where it stands." },
       { status: 409 },
     );
   }
-  return NextResponse.json({ ok: true, status });
+  // `awaitingRelease` exists so the UI never says "refunded". The seller has
+  // approved; Purify has not yet paid.
+  return NextResponse.json({ ok: true, status, awaitingRelease: true });
 }

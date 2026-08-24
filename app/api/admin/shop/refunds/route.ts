@@ -3,20 +3,33 @@ import { z } from "zod";
 
 import { logActivity } from "@/lib/admin/activityLog";
 import { getAdminUser } from "@/lib/admin/access";
+import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
 import {
   approveRefundRequest,
   declineRefundRequest,
   markRefundProcessed,
+  releaseApprovedRefund,
 } from "@/lib/shop/refundExecution";
+import { sendRefundReleasedEmail } from "@/lib/shop/sellerEmails";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Owner dashboard: the whole refund pipeline across every store. The
- * owner can decide pending requests (same execution path as the seller
- * console) and, crucially, settle parked "approved" requests once the
- * money has moved outside Stripe — the one action sellers don't get.
+ * Owner dashboard: the whole refund pipeline across every store.
+ *
+ * This is the ONLY surface that can move refund money. The seller console
+ * decides a request and parks it at "approved"; releasing it debits Purify's
+ * Stripe balance, so it needs a second person. See the co-sign note at the top
+ * of lib/shop/refundExecution.ts for why, and for when it can be undone.
+ *
+ * PATCH does two different jobs and says which:
+ *   action "release"        - send the refund through Stripe now.
+ *   action "mark-processed" - the money moved elsewhere (dashboard refund,
+ *                             cheque, store credit); just stamp the row.
+ *
+ * The default is "mark-processed", which is what the key meant before the
+ * action existed. A missing action must never be read as "spend".
  */
 
 export async function GET() {
@@ -114,9 +127,14 @@ export async function POST(req: Request) {
   return NextResponse.json({ ok: true, status });
 }
 
-const processSchema = z.object({ refundId: z.string().uuid() });
+const processSchema = z.object({
+  refundId: z.string().uuid(),
+  // Defaulted, not required, so an older client that sends only a refundId
+  // keeps its old meaning instead of silently gaining the power to spend.
+  action: z.enum(["release", "mark-processed"]).default("mark-processed"),
+});
 
-/** Settle a parked 'approved' request: the money moved manually. */
+/** Release a parked 'approved' request, or record that it settled elsewhere. */
 export async function PATCH(req: Request) {
   const adminUser = await getAdminUser();
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -133,9 +151,11 @@ export async function PATCH(req: Request) {
   }
 
   const admin = createAdminClient();
+  // amount_cents is read because the claim clamped it: a partial request stays
+  // partial, and the release email must name what actually went back.
   const { data: request } = await admin
     .from("shop_refund_requests")
-    .select("id, status, order_id")
+    .select("id, status, order_id, amount_cents")
     .eq("id", parsed.data.refundId)
     .maybeSingle();
   if (!request) {
@@ -143,17 +163,63 @@ export async function PATCH(req: Request) {
   }
   if (request.status !== "approved") {
     return NextResponse.json(
-      { error: "Only approved-but-unsettled requests can be marked processed." },
+      { error: "Only approved-but-unsettled requests can be settled." },
       { status: 409 },
     );
   }
 
+  // currency and the store come along for the release email; the execution
+  // path itself needs only the first three columns.
   const { data: order } = await admin
     .from("shop_orders")
-    .select("id, total_cents, stripe_payment_intent")
+    .select(
+      "id, total_cents, currency, stripe_payment_intent, store:shop_stores(public_name, support_email)",
+    )
     .eq("id", request.order_id)
     .single();
   if (!order) return NextResponse.json({ error: "Order not found." }, { status: 404 });
+
+  if (parsed.data.action === "release") {
+    const status = await releaseApprovedRefund(request.id, order);
+    // Logged whatever happened. A release that did NOT go through is worth as
+    // much in the record as one that did, because the operator will press it
+    // again and needs to know the first press reached Stripe or did not.
+    void logActivity({
+      actorEmail: adminUser.email ?? null,
+      action: "refund.release",
+      entityType: "refund_request",
+      entityId: request.id,
+      detail: { orderId: order.id, totalCents: order.total_cents, outcome: status },
+    });
+    if (!status) {
+      return NextResponse.json({ error: "Couldn't release the refund." }, { status: 500 });
+    }
+    if (status === "approved") {
+      // Still parked. Never report this as a payout.
+      return NextResponse.json(
+        {
+          error:
+            "Stripe didn't take the refund. The request is still approved and unsettled; check the Stripe dashboard before trying again.",
+        },
+        { status: 502 },
+      );
+    }
+    // The seller console tells them this email is coming at the moment they
+    // approve, so it has to arrive: they made the decision and then had to
+    // trust somebody else to carry it out.
+    const store = Array.isArray(order.store) ? order.store[0] : order.store;
+    await sendRefundReleasedEmail({
+      email: store?.support_email ?? null,
+      storeName: store?.public_name ?? "your store",
+      amountCents:
+        typeof request.amount_cents === "number" && request.amount_cents > 0
+          ? request.amount_cents
+          : order.total_cents,
+      currency: order.currency ?? "usd",
+      orderNumber: orderConfirmationNumber(order.id),
+    });
+    return NextResponse.json({ ok: true, status });
+  }
 
   const ok = await markRefundProcessed(request.id, order);
   // An unattributed claim that money moved OUTSIDE Stripe, with no external

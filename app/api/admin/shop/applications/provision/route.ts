@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
+import { logActivity } from "@/lib/admin/activityLog";
+import { sendSellerProvisionedEmail } from "@/lib/shop/sellerEmails";
 import { createSellerAndStore } from "@/lib/shop/storeProvision";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -63,10 +65,42 @@ export async function POST(req: Request) {
     .update({ status: "store_setup", updated_at: new Date().toISOString() })
     .eq("id", app.id);
 
+  // Provisioning used to be silent. The seller row, the console access and the
+  // draft store all appeared, and the person they belonged to was told
+  // nothing, by anything, ever. This is the message that makes the funnel work
+  // end to end.
+  //
+  // Awaited so the serverless response does not cut it off, and its outcome is
+  // RETURNED rather than thrown: the store exists whatever the mail server
+  // did, and an operator who can see `emailed: false` will write by hand.
+  // A 500 here would invite them to press Provision again.
+  const sent = await sendSellerProvisionedEmail({
+    email: app.email,
+    storeName: app.proposed_store_name,
+    slug: result.slug,
+    linked: Boolean(app.user_id),
+  });
+
+  void logActivity({
+    actorEmail: adminUser.email ?? null,
+    action: "seller.provision",
+    entityType: "shop_store",
+    entityId: result.storeId,
+    detail: {
+      applicationId: app.id,
+      sellerId: result.sellerId,
+      slug: result.slug,
+      sellerEmail: app.email,
+      linkedAccount: Boolean(app.user_id),
+      emailed: sent.ok,
+    },
+  });
+
   return NextResponse.json({
     ok: true,
     sellerId: result.sellerId,
     storeId: result.storeId,
     slug: result.slug,
+    emailed: sent.ok,
   });
 }

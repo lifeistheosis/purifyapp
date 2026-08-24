@@ -4,6 +4,7 @@ import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { shopMerchantApplicationSchema } from "@/lib/security/schemas";
 import { shopEnabled } from "@/lib/shop/flags";
+import { sendApplicationReceivedEmail } from "@/lib/shop/sellerEmails";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
@@ -94,6 +95,14 @@ async function handlePOST(req: Request) {
       { status: 500 },
     );
   }
+  // Awaited, not fire-and-forget: this route runs on a serverless request and
+  // a floating promise can be cut off when the response is returned. It cannot
+  // fail the submission either way, because sendEmail never throws and its
+  // result is deliberately unused.
+  await sendApplicationReceivedEmail({
+    email: data.email,
+    proposedStoreName: data.proposedStoreName,
+  });
   return NextResponse.json({ ok: true });
 }
 
