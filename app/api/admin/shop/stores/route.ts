@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
+import { emailsByUserId } from "@/lib/admin/accountEmails";
 import { logActivity } from "@/lib/admin/activityLog";
 import {
   canGoLive,
@@ -51,18 +52,15 @@ export async function GET() {
     return NextResponse.json({ error: sellers.error.message }, { status: 500 });
   }
 
-  // Account emails via the profiles mirror, one IN query.
+  // Account emails. This used to read profiles.email, a column that does not
+  // exist, with the error discarded: emailById was ALWAYS empty, so every
+  // store rendered the "unassigned" pill even when a seller was attached.
+  // EIKON is attached to a real account and has read as unassigned the whole
+  // time. See lib/admin/accountEmails.ts.
   const userIds = (sellers.data ?? [])
     .map((s) => s.user_id)
     .filter((v): v is string => Boolean(v));
-  const emailById = new Map<string, string>();
-  if (userIds.length > 0) {
-    const { data: profiles } = await admin
-      .from("profiles")
-      .select("id, email")
-      .in("id", userIds);
-    for (const p of profiles ?? []) emailById.set(p.id, p.email);
-  }
+  const emailById = await emailsByUserId(userIds);
 
   const payoutsByStore = new Map<string, Record<string, unknown>>();
   for (const p of payouts.data ?? []) payoutsByStore.set(p.store_id, p);

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { userIdByEmail as lookupUserIdByEmail } from "@/lib/admin/accountEmails";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
@@ -52,15 +53,24 @@ export async function freeStoreSlug(base: string): Promise<string> {
   return slug;
 }
 
-/** Exact-email account lookup through the profiles mirror. */
+/**
+ * Exact-email account lookup.
+ *
+ * IT USED TO READ profiles.email, WHICH DOES NOT EXIST. The column was never
+ * created (20260518_profiles_bookmarks_annotations.sql:9) and no migration has
+ * added one. Postgres answered 42703, the error was discarded with the rest of
+ * the destructure, and this returned null for every address ever passed to it.
+ *
+ * The visible symptom: the owner dashboard's "assign a console account to this
+ * store" answered "No Purify account found for <address>" no matter whose
+ * address it was, so a store could never be attached to the person who runs
+ * it. Creating a store with an owner email silently produced a seller row with
+ * a null user_id instead.
+ *
+ * Now a thin pass-through to lib/admin/accountEmails, which asks GoTrue.
+ */
 export async function userIdByEmail(email: string): Promise<string | null> {
-  const admin = createAdminClient();
-  const { data } = await admin
-    .from("profiles")
-    .select("id")
-    .ilike("email", email.trim())
-    .maybeSingle();
-  return (data?.id as string | undefined) ?? null;
+  return lookupUserIdByEmail(email);
 }
 
 export type CreateSellerStoreInput = {
