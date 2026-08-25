@@ -82,11 +82,24 @@ export function ListingForm({
       countryOfOrigin: String(f.get("countryOfOrigin") ?? "").trim() || null,
       imageIsRepresentative: f.get("imageIsRepresentative") === "on",
       status,
-      media: media.filter((m) => m.url.trim() && m.alt.trim()),
+      // Filtered on the URL ALONE. This used to require alt text too, so a
+      // photo with an empty caption was silently dropped from the payload and
+      // the seller was told "Add at least one photo before publishing" while
+      // looking at their photograph on the screen. Alt text is still required
+      // (20260704_shop_phase1.sql:150 says accessibility is not optional); it
+      // is now refused out loud in save(), naming the problem.
+      media: media.filter((m) => m.url.trim()),
     };
   }
 
   async function save(form: HTMLFormElement, status: ListingStatus) {
+    // Said before anything is sent, because the server's answer for this is
+    // "Add at least one photo", which is the one thing that is not wrong.
+    const missingAlt = media.some((m) => m.url.trim() && !m.alt.trim());
+    if (missingAlt) {
+      setError(t("shop.altTextRequired"));
+      return;
+    }
     setBusy(status);
     setError(null);
     try {

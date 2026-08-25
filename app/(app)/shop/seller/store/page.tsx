@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import Link from "next/link";
+
 import { StoreForm } from "@/components/shop/seller/StoreForm";
 import { getSellerContext } from "@/lib/shop/seller";
 
@@ -49,6 +51,16 @@ export default async function SellerStorePage() {
         live on your storefront as soon as you save, and the storefront itself
         is only public once your store is open.
       </p>
+
+      {/* Until this existed a seller filled all of it in blind: the storefront
+          API 404s a store that is not live, for its owner too, so the first
+          person to see their shop was the admin deciding whether to open it. */}
+      <Link
+        href={`/shop/${ctx.store.slug}`}
+        className="tap-press mt-4 inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-5 font-sans text-ui font-semibold text-paper hover:border-paper/45"
+      >
+        Preview your storefront
+      </Link>
 
       <StoreForm />
     </div>

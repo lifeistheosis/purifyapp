@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { emailsByUserId } from "@/lib/admin/accountEmails";
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isHiddenOrder } from "@/lib/shop/orders";
@@ -52,19 +53,24 @@ export async function GET() {
   }[];
 
   // Attach buyer identity for signed-in carts via the profiles mirror.
+  // display_name IS on profiles; email is NOT and never has been, so the
+  // combined select failed with 42703 and this map came back empty, blanking
+  // both. Two reads now: the column that exists, and GoTrue for the address.
   const userIds = [...new Set(carts.map((c) => c.user_id).filter(Boolean))] as string[];
   const profileById = new Map<string, { email: string | null; name: string | null }>();
   if (userIds.length > 0) {
-    const { data: profiles } = await admin
-      .from("profiles")
-      .select("id, email, display_name")
-      .in("id", userIds);
+    const [{ data: profiles }, emailById] = await Promise.all([
+      admin.from("profiles").select("id, display_name").in("id", userIds),
+      emailsByUserId(userIds),
+    ]);
     for (const p of (profiles ?? []) as {
       id: string;
-      email: string | null;
       display_name: string | null;
     }[]) {
-      profileById.set(p.id, { email: p.email, name: p.display_name });
+      profileById.set(p.id, {
+        email: emailById.get(p.id) ?? null,
+        name: p.display_name,
+      });
     }
   }
 

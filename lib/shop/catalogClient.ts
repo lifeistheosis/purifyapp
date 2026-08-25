@@ -94,9 +94,19 @@ export function fetchShopProduct(slug: string): Promise<ShopProductDetail> {
   );
 }
 
-export function fetchShopStore(slug: string): Promise<ShopStoreData> {
+/**
+ * `preview` asks the API to fall back to the caller's OWN draft store when the
+ * public read 404s. It is not an authorization argument: the route resolves
+ * the seller session itself and refuses a slug that is not theirs, so passing
+ * it for somebody else's store changes nothing.
+ */
+export function fetchShopStore(
+  slug: string,
+  opts: { preview?: boolean } = {},
+): Promise<ShopStoreData> {
+  const q = opts.preview ? "?preview=1" : "";
   return getJson<ShopStoreData>(
-    `/api/shop/catalog/store/${encodeURIComponent(slug)}`,
+    `/api/shop/catalog/store/${encodeURIComponent(slug)}${q}`,
   );
 }
 

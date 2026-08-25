@@ -31,12 +31,41 @@ function createClient() {
   );
 }
 
+/**
+ * `!inner` IS THE KILL SWITCH, AND IT IS LOad-BEARING.
+ *
+ * shop_products' RLS is `status = 'published'` and says nothing about the
+ * store (20260704_shop_phase1.sql:146-147). Nothing in this file filtered on
+ * it either. So a store set back to draft, paused or closed kept every
+ * published listing in /shop, in category browse, on its product page, and
+ * BUYABLE through checkout, which re-reads through getProduct. Meanwhile the
+ * admin console told the operator "Only live stores (and their published
+ * listings) are public." Pausing a misbehaving seller did nothing at all.
+ *
+ * shop_stores' own RLS already hides a non-live store from the anon client
+ * this module uses, so the embed was returning null for exactly those rows and
+ * the information was in hand the whole time. `!inner` turns that into an
+ * INNER JOIN, so the product row itself disappears at the database for every
+ * caller of PRODUCT_SELECT at once, including checkout's re-pricing read.
+ *
+ * `status` is selected as well so the guard is checkable in code rather than
+ * resting on an assumption about how PostgREST resolves an embed. If the join
+ * semantics ever change, storeIsPublic below still catches it.
+ */
 const PRODUCT_SELECT = `
   *,
   media:shop_product_media(id, media_url, alt_text, sort_order, is_primary),
   subjects:shop_product_subjects(subject_type, subject_slug),
-  store:shop_stores(slug, public_name, ownership_disclosure)
+  store:shop_stores!inner(slug, public_name, ownership_disclosure, status)
 `;
+
+/**
+ * Belt to the inner join's braces. A listing whose store is not live is not
+ * public, whatever the query returned.
+ */
+function storeIsPublic(p: { store?: { status?: string } | null }): boolean {
+  return p.store?.status === "live";
+}
 
 function orderMedia(p: ShopProductFull): ShopProductFull {
   p.media.sort((a, b) =>
@@ -151,7 +180,11 @@ async function listProductsInner(
     console.warn("[shop] listProducts failed", error.message);
     return [];
   }
-  const visible = ((data ?? []) as unknown as ShopProductFull[])
+  // See PRODUCT_SELECT. A paused store's listings leave the shop with it.
+  const live = (data ?? []).filter((row) =>
+    storeIsPublic(row as unknown as { store?: { status?: string } | null }),
+  );
+  const visible = (live as unknown as ShopProductFull[])
     .map(orderMedia)
     .filter((p) => !hasSupplierImage(p.media));
   return visible.slice(offset, offset + want);
@@ -171,6 +204,12 @@ export async function getProduct(slug: string): Promise<ShopProductFull | null> 
     }
     if (!data) return null;
     const product = orderMedia(data as unknown as ShopProductFull);
+    // A listing whose store is not live is not for sale. This read is also
+    // checkout's re-pricing read (lib/shop/checkout.ts imports getProduct), so
+    // returning null here is what stops a paused store taking money.
+    if (!storeIsPublic(product as unknown as { store?: { status?: string } | null })) {
+      return null;
+    }
     // Don't serve a product page for a listing still on a supplier's image.
     if (hasSupplierImage(product.media)) return null;
     return product;

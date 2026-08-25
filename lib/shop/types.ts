@@ -169,6 +169,12 @@ export type ShopProductDetail = {
 export type ShopStoreData = {
   store: ShopStore;
   products: ShopProductFull[];
+  /**
+   * True when this body came from the owner's own preview rather than the
+   * public read, so the page can say the storefront is not public yet and
+   * that the drafts shown are invisible to buyers.
+   */
+  preview?: boolean;
 };
 
 /** Public shop configuration the client can't derive from server-only env:

@@ -3,7 +3,10 @@ import { z } from "zod";
 
 import { logActivity } from "@/lib/admin/activityLog";
 import { rateLimited } from "@/lib/security/ratelimit";
+import { connectStatus } from "@/lib/shop/connect";
 import { shopEnabled } from "@/lib/shop/flags";
+import { getStorePayouts } from "@/lib/shop/payouts";
+import { sellerSetupSteps } from "@/lib/shop/sellerSetup";
 import { getSellerContext } from "@/lib/shop/seller";
 import { sendStoreReviewRequestEmail } from "@/lib/shop/sellerEmails";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -73,17 +76,64 @@ export async function POST(req: Request) {
   const note = parsed.success ? (parsed.data.note ?? null) : null;
 
   const admin = createAdminClient();
-  const { count } = await admin
-    .from("shop_products")
-    .select("id", { count: "exact", head: true })
-    .eq("store_id", ctx.store.id)
-    .eq("status", "published");
+
+  // Drafts AND published. The published count alone was structurally zero for
+  // every store that can reach this route: publishing is refused until the
+  // store is live, and a live store cannot ask to be opened. So the one number
+  // the admin was handed to judge the request was always 0 by construction.
+  const [{ count: draftCount }, { count: publishedCount }] = await Promise.all([
+    admin
+      .from("shop_products")
+      .select("id", { count: "exact", head: true })
+      .eq("store_id", ctx.store.id)
+      .eq("status", "draft"),
+    admin
+      .from("shop_products")
+      .select("id", { count: "exact", head: true })
+      .eq("store_id", ctx.store.id)
+      .eq("status", "published"),
+  ]);
+
+  // THE SAME RULE THE CONSOLE DRAWS. Without it this route had no
+  // preconditions at all and answered an unqualified success, so a seller
+  // could fire it in their first minute with an empty store, burn their daily
+  // attempts, and summon a human to look at nothing. The UI hides the button
+  // until these are done; a UI-only gate is a suggestion.
+  const steps = sellerSetupSteps({
+    store: {
+      status: ctx.store.status,
+      tagline: ctx.store.tagline,
+      description: ctx.store.description,
+      shipping_origin: ctx.store.shipping_origin,
+      return_policy_md: ctx.store.return_policy_md,
+    },
+    connect: connectStatus(await getStorePayouts(ctx.store.id)),
+    purifyOperated: ctx.seller.seller_type === "purify_owned",
+    draftListings: draftCount ?? 0,
+    publishedListings: publishedCount ?? 0,
+  });
+  const openStep = steps.find((s) => s.key === "open");
+  if (openStep?.blockedBy) {
+    const REASON: Record<string, string> = {
+      store:
+        "Fill in your store page first: a tagline, a description, where you ship from, and your returns policy.",
+      payouts:
+        "Finish payout setup first. Stripe has to be able to take a payment before your store can open.",
+      listings:
+        "Add at least one listing first, saved as a draft. We cannot open an empty store.",
+    };
+    return NextResponse.json(
+      { error: REASON[openStep.blockedBy] ?? "Your store isn't ready yet." },
+      { status: 409 },
+    );
+  }
 
   const sent = await sendStoreReviewRequestEmail({
     storeName: ctx.store.public_name,
     slug: ctx.store.slug,
     sellerEmail: ctx.store.support_email ?? null,
-    publishedListings: count ?? 0,
+    draftListings: draftCount ?? 0,
+    publishedListings: publishedCount ?? 0,
     note,
   });
 
@@ -97,7 +147,8 @@ export async function POST(req: Request) {
     entityId: ctx.store.id,
     detail: {
       slug: ctx.store.slug,
-      publishedListings: count ?? 0,
+      draftListings: draftCount ?? 0,
+      publishedListings: publishedCount ?? 0,
       note,
       emailed: sent.ok,
       bySellerUserId: ctx.userId,

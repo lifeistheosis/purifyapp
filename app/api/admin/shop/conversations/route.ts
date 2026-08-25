@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 
+import { emailsByUserId } from "@/lib/admin/accountEmails";
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -41,18 +42,13 @@ export async function GET(req: NextRequest) {
     .limit(300);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // Buyer emails via the profiles mirror.
+  // Buyer emails. This read profiles.email, a column that does not exist, and
+  // threw the 42703 away, so every conversation showed a blank buyer forever.
+  // See lib/admin/accountEmails.ts.
   const buyerIds = [
     ...new Set((conversations ?? []).map((c) => c.buyer_user_id).filter(Boolean)),
-  ];
-  const emailById = new Map<string, string>();
-  if (buyerIds.length > 0) {
-    const { data: profiles } = await admin
-      .from("profiles")
-      .select("id, email")
-      .in("id", buyerIds);
-    for (const p of profiles ?? []) emailById.set(p.id, p.email);
-  }
+  ] as string[];
+  const emailById = await emailsByUserId(buyerIds);
 
   return NextResponse.json(
     {

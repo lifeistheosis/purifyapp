@@ -62,8 +62,13 @@ export function StoreClient({ slug }: { slug: string }) {
   const { data, error, loading, reload } = useAsyncData(
     () =>
       fetchShopStore(slug).catch((e: unknown) => {
-        if ((e as { status?: number }).status === 404) return null;
-        throw e;
+        // A 404 is the public answer for a store that is not live. Before
+        // giving up, ask again as the owner: a seller filling in their store
+        // page had no way to look at the result, which is the whole of the
+        // first onboarding step done blind. The route refuses a slug that is
+        // not the caller's, so this is a second question, not a bypass.
+        if ((e as { status?: number }).status !== 404) throw e;
+        return fetchShopStore(slug, { preview: true }).catch(() => null);
       }),
     [slug],
   );
@@ -126,6 +131,23 @@ export function StoreClient({ slug }: { slug: string }) {
 
   return (
     <div className="mx-auto w-full max-w-[1200px] px-5 md:px-8">
+      {/* Unmissable, because everything below it is invisible to buyers. */}
+      {data.preview ? (
+        <div className="mt-6 rounded-lg border border-gold/40 bg-gold/[0.08] px-5 py-4">
+          <p className="font-sans text-ui font-semibold text-paper">
+            {t("shop.previewBannerTitle")}
+          </p>
+          <p className="mt-1 font-serif text-body text-paper/75 leading-[1.55]">
+            {t("shop.previewBannerBody")}
+          </p>
+          <Link
+            href="/shop/seller/store"
+            className="tap-press mt-3 inline-flex min-h-[40px] items-center rounded-pill border border-gold/45 px-4 font-sans text-detail font-semibold text-gold hover:bg-gold/[0.14]"
+          >
+            {t("shop.previewBannerEdit")}
+          </Link>
+        </div>
+      ) : null}
       <header className="pt-12 text-center md:pt-20">
         <h1 className="font-display-serif text-display-sm md:text-display tracking-[0.14em] text-paper">
           {store.public_name.toUpperCase()}

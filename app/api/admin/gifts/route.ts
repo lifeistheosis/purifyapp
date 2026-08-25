@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { emailsByUserId } from "@/lib/admin/accountEmails";
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -39,17 +40,10 @@ export async function GET() {
   }[];
 
   // Attach recipient emails so the table is readable.
-  const ids = [...new Set(rows.map((r) => r.user_id))];
-  const emailById = new Map<string, string>();
-  if (ids.length > 0) {
-    const { data: profiles } = await admin
-      .from("profiles")
-      .select("id, email")
-      .in("id", ids);
-    for (const p of (profiles ?? []) as { id: string; email: string }[]) {
-      emailById.set(p.id, p.email);
-    }
-  }
+  // Read profiles.email, a column that does not exist, and discarded the
+  // 42703: every gift recipient rendered blank. See lib/admin/accountEmails.ts.
+  const ids = [...new Set(rows.map((r) => r.user_id))] as string[];
+  const emailById = await emailsByUserId(ids);
 
   return NextResponse.json(
     {

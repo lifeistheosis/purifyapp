@@ -115,7 +115,8 @@ export async function sendSellerProvisionedEmail(seller: {
     <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:13px;letter-spacing:.5px;text-transform:uppercase;color:#8a8580">Before you can open</p>
     <ol style="margin:0 0 16px;padding-left:20px">
       <li style="margin-bottom:6px">Fill in your store page: who you are, where you ship from, your shipping and returns policies.</li>
-      <li style="margin-bottom:6px">Add your first listings. Photographs you own, prices you set.</li>
+      <li style="margin-bottom:6px">Set up payouts. Stripe takes your bank details, not us, and it can take a day or two to clear. Start it early: your store cannot open until it has.</li>
+      <li style="margin-bottom:6px">Add your listings. Photographs you own, prices you set. Save them as drafts; publishing unlocks when your store opens, so they all go live together.</li>
       <li>Ask us to open the store. We check it over and make it public.</li>
     </ol>
     <p style="margin:0 0 16px">Your store is a draft until that last step, so nothing is visible to anyone but you and us. Take as long as you need.</p>
@@ -169,6 +170,13 @@ export async function sendStoreReviewRequestEmail(store: {
   storeName: string;
   slug: string;
   sellerEmail: string | null;
+  /**
+   * Drafts are the number that matters. Publishing is refused until the store
+   * is live and a live store cannot ask to be opened, so publishedListings is
+   * structurally 0 for every store that can send this email. Reporting it
+   * alone made the one signal an admin gets dead on arrival.
+   */
+  draftListings: number;
   publishedListings: number;
   note: string | null;
 }): Promise<SendResult> {
@@ -185,7 +193,7 @@ export async function sendStoreReviewRequestEmail(store: {
     : "";
   const body = `
     <p style="margin:0 0 16px"><strong>${escapeHtml(store.storeName)}</strong> (/${escapeHtml(store.slug)}) is asking to be opened.</p>
-    <p style="margin:0 0 16px">${store.publishedListings} published listing${store.publishedListings === 1 ? "" : "s"}. Seller account: ${escapeHtml(store.sellerEmail ?? "not attached")}.</p>
+    <p style="margin:0 0 16px">${store.draftListings} listing${store.draftListings === 1 ? "" : "s"} waiting to go live${store.publishedListings > 0 ? `, ${store.publishedListings} already published` : ""}. Seller account: ${escapeHtml(store.sellerEmail ?? "not attached")}.</p>
     ${note}
     <p style="margin:0 0 16px">Check the storefront, then flip the store live from the marketplace console. Stripe must have enabled charges first; the console refuses otherwise.</p>
     <p style="margin:18px 0 0">${link(`${SITE_URL}/shop/${store.slug}`, "View the storefront &rarr;")}</p>`;

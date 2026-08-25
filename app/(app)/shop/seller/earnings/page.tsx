@@ -32,7 +32,11 @@ export default async function SellerEarningsPage() {
 
   const cards = [
     {
-      label: "Paid out to you",
+      // NOT "paid out". Nothing in this codebase has ever paid a seller, and
+      // Stripe pays on its own schedule, so a figure labelled as paid would be
+      // wrong for every seller in the charges-enabled, payouts-pending state.
+      // This is what the sales come to after commission: what is owed.
+      label: "Earned",
       value:
         summary.payoutCents == null
           ? formatPrice(summary.netCents)
@@ -40,7 +44,7 @@ export default async function SellerEarningsPage() {
       sub:
         summary.payoutCents == null
           ? "before commission, which isn't recorded for these orders"
-          : "after commission",
+          : "after commission, before Stripe pays out",
     },
     {
       label: "Gross sales",
