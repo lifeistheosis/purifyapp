@@ -19,6 +19,9 @@ const labelCls = "font-sans text-caption font-semibold text-paper/60";
 
 type MediaRow = { url: string; alt: string };
 
+/** The four the API accepts. Only the first two were ever reachable. */
+type ListingStatus = "draft" | "published" | "paused" | "archived";
+
 /**
  * Create/edit a listing. One long, honest form in sections, photos first
  * because the card is image-led. Prices are typed in dollars and sent in
@@ -48,7 +51,7 @@ export function ListingForm({
   const { t } = useTranslate();
   const router = useRouter();
   const editing = !!product;
-  const [busy, setBusy] = useState<false | "draft" | "published">(false);
+  const [busy, setBusy] = useState<false | ListingStatus>(false);
   const [error, setError] = useState<string | null>(null);
   const [media, setMedia] = useState<MediaRow[]>(
     product?.media.map((m) => ({ url: m.media_url, alt: m.alt_text })) ?? [],
@@ -83,7 +86,7 @@ export function ListingForm({
     };
   }
 
-  async function save(form: HTMLFormElement, status: "draft" | "published") {
+  async function save(form: HTMLFormElement, status: ListingStatus) {
     setBusy(status);
     setError(null);
     try {
@@ -393,12 +396,51 @@ export function ListingForm({
         >
           {busy === "draft" ? "Saving…" : "Save as draft"}
         </button>
+        {/*
+          PAUSE AND ARCHIVE. shopListingSchema has accepted all four statuses
+          since it was written and the route validates them; only this form
+          never offered them, so a seller who ran out of an item, or listed
+          something by mistake, had no way to take it off the shop. There is
+          deliberately no DELETE: shop_order_items references the product, and
+          a buyer's order record must not lose the thing they bought.
+
+          Only when editing. On a new listing there is nothing to pause.
+        */}
+        {editing ? (
+          <>
+            <button
+              type="button"
+              disabled={!!busy}
+              onClick={(e) => void save(e.currentTarget.form!, "paused")}
+              className="tap-press inline-flex min-h-[48px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper disabled:opacity-60"
+            >
+              {busy === "paused" ? t("shop.pausingListing") : t("shop.pauseListing")}
+            </button>
+            <button
+              type="button"
+              disabled={!!busy}
+              onClick={(e) => {
+                const form = e.currentTarget.form!;
+                if (!window.confirm(t("shop.archiveConfirm"))) return;
+                void save(form, "archived");
+              }}
+              className="tap-press inline-flex min-h-[48px] items-center rounded-pill border border-crimson-soft/50 px-6 font-sans text-ui font-semibold text-paper disabled:opacity-60"
+            >
+              {busy === "archived" ? t("shop.archivingListing") : t("shop.archiveListing")}
+            </button>
+          </>
+        ) : null}
         {!storeLive ? (
           <p className="font-sans text-caption text-paper/55">
             {t("shop.publishingUnlocksWhenYourStore")}
           </p>
         ) : null}
       </div>
+      {editing ? (
+        <p className="font-sans text-caption text-paper/55">
+          {t("shop.pauseListingHint")}
+        </p>
+      ) : null}
     </form>
   );
 }
