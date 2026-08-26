@@ -54,6 +54,9 @@ export class AcceptanceNotRecordedError extends Error {
  * throws AcceptanceNotRecordedError otherwise. Never swallow this: a caller
  * that catches and continues has recreated the original bug.
  */
+/** Past a slow mobile round trip, short of a force-quit. */
+const TIMEOUT_MS = 12_000;
+
 export async function recordAcceptance(
   context: string,
   email: string,
@@ -64,8 +67,23 @@ export async function recordAcceptance(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ context, email }),
+      // BOUNDED, because this runs BEFORE the account is created and the
+      // caller awaits it. Without a limit a flaky connection left the sign-up
+      // button reading "Creating account…" until the browser gave up, which is
+      // a wait with no end and no way out. A reader reported it as the page
+      // freezing. Inside the native shell this is a cross-origin call to
+      // purifyapp.net, so it fails more often than a same-origin one would.
+      //
+      // Failing fast is correct rather than merely kinder: the caller
+      // deliberately ABORTS sign-up when acceptance is not recorded, so the
+      // only outcomes are "recorded" and "tell them to try again". Hanging
+      // serves neither. 12s is past a slow mobile round trip and well short of
+      // the point where somebody force-quits the app.
+      signal: AbortSignal.timeout(TIMEOUT_MS),
     });
   } catch {
+    // An abort lands here too, and AcceptanceNotRecordedError is the right
+    // answer for it: nothing was written, which is exactly what it means.
     throw new AcceptanceNotRecordedError();
   }
 
