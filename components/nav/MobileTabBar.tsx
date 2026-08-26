@@ -143,7 +143,10 @@ export function MobileTabBar() {
       ? [
           {
             key: "shop",
-            label: "Shop",
+            // Was the literal "Shop". nav.shop is translated in all 21
+            // catalogs and none of them was ever reached, so every non-English
+            // reader saw one English word in an otherwise translated bar.
+            label: t("nav.shop"),
             href: "/shop",
             Icon: Cart,
             matches: (p: string) => p === "/shop" || p.startsWith("/shop/"),

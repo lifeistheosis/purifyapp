@@ -15,6 +15,68 @@ const ALL_CODES: LocaleCode[] = [
   "fil", "tr", "ka", "hu", "id", "ne", "pl", "ur",
 ];
 
+describe("catalog values", () => {
+  /**
+   * An EMPTY string is worse than a missing key, and the merge is why.
+   *
+   * getMessages spreads English UNDER the locale ({ ...en, ...locale }), and
+   * lib/i18n/client.ts:51 does the same on the client. So a key a translator
+   * has not reached yet is simply absent, English fills it through the spread,
+   * and the reader sees a real word. A key present with "" WINS that merge,
+   * and t() cannot recover because it uses `??`, which only falls back on
+   * null and undefined. "" is neither.
+   *
+   * That shipped: es.json carried "nav.you": "", so Spanish readers had an
+   * unlabelled tab in the bottom bar, next to six labelled ones, for as long
+   * as it was there. Nothing failed, because nothing looked.
+   *
+   * Deleting the key would have been a correct fix too. Writing "" is the
+   * trap, so the trap is what gets guarded.
+   */
+  it("never contains an empty or whitespace-only value", () => {
+    const offenders: string[] = [];
+    for (const code of ALL_CODES) {
+      const messages = getMessages(code);
+      for (const [key, value] of Object.entries(messages)) {
+        if (typeof value === "string" && value.trim() === "") {
+          offenders.push(`${code}.json  ${key}`);
+        }
+      }
+    }
+    expect(
+      offenders,
+      "An empty value overrides the English fallback and renders as nothing " +
+        "at all. Either translate it or DELETE the key so English fills in:\n  " +
+        offenders.join("\n  "),
+    ).toEqual([]);
+  });
+
+  it("resolves every tab-bar label to a real word in every locale", () => {
+    // The bottom tab bar is the app's primary navigation and its labels are
+    // the shortest strings in the product, so a miss there is both the most
+    // visible and the easiest to overlook. t() returns the KEY on a miss, so
+    // a label that still looks like a key is a miss.
+    const TAB_KEYS = [
+      "nav.today",
+      "nav.bible",
+      "nav.discover",
+      "nav.prayers",
+      "nav.shop",
+      "nav.community",
+      "nav.you",
+    ];
+    const offenders: string[] = [];
+    for (const code of ALL_CODES) {
+      const messages = getMessages(code);
+      for (const key of TAB_KEYS) {
+        const value = t(messages, key);
+        if (!value || value === key) offenders.push(`${code}.json  ${key}`);
+      }
+    }
+    expect(offenders, offenders.join("\n  ")).toEqual([]);
+  });
+});
+
 describe("locale registry", () => {
   it("holds exactly the 21 Beta 2.3 locales, no duplicates", () => {
     expect(LOCALES.map((l) => l.code).sort()).toEqual([...ALL_CODES].sort());
