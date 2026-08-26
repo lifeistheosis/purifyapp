@@ -4,8 +4,11 @@ import { CommunityClient } from "@/components/community/CommunityClient";
 
 export const metadata: Metadata = {
   title: "Community | Pray and study together",
+  // Named prayer campaigns until 2026-08-26. They are withdrawn pending a
+  // rework (lib/campaigns/flags.ts), and a page description is a promise made
+  // in search results and link previews, so it cannot outlive the feature.
   description:
-    "Pray with the faithful in prayer campaigns, share gathered lines from Scripture and the Fathers, and talk together.",
+    "Share gathered lines from Scripture and the Fathers, and talk together.",
 };
 
 // Server shell only: the community renders and fetches client-side so it

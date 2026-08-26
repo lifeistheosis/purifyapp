@@ -9,7 +9,11 @@ import {
   WebSubscribeCheckout,
   type WebCheckoutCopy,
 } from "@/components/billing/WebPlusCheckout";
-import { PREMIUM_PLAN_EN, PREMIUM_PLAN_DE } from "@/lib/premium/plans";
+import {
+  PREMIUM_PLAN_EN,
+  PREMIUM_PLAN_DE,
+  getPremiumPlan,
+} from "@/lib/premium/plans";
 import {
   CurrentPlanBanner,
   TierPurchaseOrStatus,
@@ -57,6 +61,12 @@ type PricingCopy = {
 const EN: Omit<PricingCopy, "eyebrow" | "h1"> = {
   lede: "The whole spiritual treasury of Purify is free, and it stays free. There is no tier to unlock the Scriptures, the saints, the prayers, the fasting tracker, or the calendar, and there never will be.",
   ...PREMIUM_PLAN_EN,
+  // Spreading the raw plan bypasses the withdrawn-feature filter, which is
+  // exactly how this page kept selling "Prayer Campaigns, prayed together"
+  // after /campaigns started answering 404. /premium was clean because it
+  // calls getPremiumPlan(); this page did not. Confirmed in the built output
+  // on 2026-08-26. Take freeItems from the filter, not from the const.
+  freeItems: getPremiumPlan("en").freeItems,
   web: {
     // Reuse the single source rather than restating the price. These are
     // only the FALLBACK for the web checkout buttons, which normally show
@@ -88,6 +98,8 @@ const DE: PricingCopy = {
   h1: "Der Kern bleibt immer frei.",
   lede: "Der ganze geistliche Schatz von Purify ist frei und bleibt frei. Es gibt keine Stufe, um die Schriften, die Heiligen, die Gebete, den Fastentracker oder den Kalender freizuschalten, und wird es nie geben.",
   ...PREMIUM_PLAN_DE,
+  // See the EN note above.
+  freeItems: getPremiumPlan("de").freeItems,
   web: {
     monthlyLabel: PREMIUM_PLAN_DE.plusPriceMonthly,
     yearlyLabel: PREMIUM_PLAN_DE.plusPriceYearly,

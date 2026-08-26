@@ -42,6 +42,8 @@ export type PlanFeature = {
   soon?: boolean;
 };
 
+import { campaignsEnabled } from "@/lib/campaigns/flags";
+
 export type PremiumPlanCopy = {
   // Standard, the always-free tier.
   freeTitle: string;
@@ -238,6 +240,42 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
   supportFoot: "Völlig freiwillig. Einmal geben, oder gar nicht.",
 };
 
+/**
+ * The free-tier line that names Prayer Campaigns, in each locale.
+ *
+ * Kept as data rather than deleted from the arrays above, so restoring the
+ * feature restores the copy with it and the EN/DE lists stay the same length,
+ * which lib/premium/__tests__/plans.test.ts asserts.
+ */
+const CAMPAIGN_FREE_ITEM: Record<string, string> = {
+  en: "Prayer Campaigns, prayed together",
+  de: "Gebetskampagnen, gemeinsam gebetet",
+};
+
+/**
+ * The plan copy for a locale, with anything that is currently withdrawn
+ * filtered out.
+ *
+ * WHY THIS FILTER EXISTS. /premium and /pricing both render freeItems, and
+ * both were selling "Prayer Campaigns, prayed together" as part of the free
+ * foundation while /campaigns answered 404. Confirmed in the built output on
+ * 2026-08-26: the string was in the VISIBLE text of out/premium/index.html and
+ * out/pricing/index.html, not merely in a bundled chunk.
+ *
+ * Withdrawing a feature has to reach the pages that advertise it, or the
+ * product is promising something it does not have on the two pages people read
+ * before paying. The filter is driven by the same flag as the routes, so the
+ * copy and the feature can never disagree again.
+ *
+ * The changelog at /whats-new still names campaigns, and should: it is a
+ * record of what shipped on a date, not a claim about today.
+ */
 export function getPremiumPlan(locale: string): PremiumPlanCopy {
-  return locale === "de" ? PREMIUM_PLAN_DE : PREMIUM_PLAN_EN;
+  const plan = locale === "de" ? PREMIUM_PLAN_DE : PREMIUM_PLAN_EN;
+  if (campaignsEnabled()) return plan;
+  const withdrawn = CAMPAIGN_FREE_ITEM[locale === "de" ? "de" : "en"];
+  return {
+    ...plan,
+    freeItems: plan.freeItems.filter((item) => item !== withdrawn),
+  };
 }

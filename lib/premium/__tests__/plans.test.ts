@@ -4,6 +4,7 @@
 // or regain a perk (free shipping famously moved from Plus to Pro).
 
 import { describe, it, expect } from "vitest";
+import { campaignsEnabled } from "@/lib/campaigns/flags";
 import {
   PREMIUM_PLAN_EN,
   PREMIUM_PLAN_DE,
@@ -101,8 +102,56 @@ describe("the restructured ladder", () => {
 
 describe("getPremiumPlan", () => {
   it("maps locales, defaulting to EN", () => {
-    expect(getPremiumPlan("de")).toBe(PREMIUM_PLAN_DE);
-    expect(getPremiumPlan("en")).toBe(PREMIUM_PLAN_EN);
-    expect(getPremiumPlan("fr")).toBe(PREMIUM_PLAN_EN);
+    // Identity no longer holds: getPremiumPlan filters out any feature that is
+    // currently withdrawn, so it returns a derived object. Everything except
+    // freeItems must still come through untouched.
+    for (const [locale, source] of [
+      ["de", PREMIUM_PLAN_DE],
+      ["en", PREMIUM_PLAN_EN],
+      ["fr", PREMIUM_PLAN_EN],
+    ] as const) {
+      const plan = getPremiumPlan(locale);
+      expect(plan.freeTitle).toBe(source.freeTitle);
+      expect(plan.plusItems).toBe(source.plusItems);
+      expect(plan.proItems).toBe(source.proItems);
+      expect(plan.supportCta).toBe(source.supportCta);
+    }
+  });
+
+  /**
+   * /premium and /pricing both render freeItems, and both were selling
+   * "Prayer Campaigns, prayed together" as part of the free foundation while
+   * /campaigns answered 404. Confirmed in the built output on 2026-08-26: the
+   * string was in the VISIBLE text of out/premium/index.html and
+   * out/pricing/index.html, not merely in a bundled chunk.
+   *
+   * A withdrawal has to reach the pages that advertise the thing, or the
+   * product promises what it does not have on the two pages people read
+   * before paying.
+   */
+  it("the pricing copy follows the feature flag", () => {
+    const expected = campaignsEnabled() ? 1 : 0;
+    for (const [locale, needle] of [
+      ["en", "Prayer Campaigns"],
+      ["de", "Gebetskampagnen"],
+    ] as const) {
+      const shown = getPremiumPlan(locale).freeItems.filter((i) =>
+        i.includes(needle),
+      ).length;
+      expect(shown, `${locale} free tier is out of step with the flag`).toBe(
+        expected,
+      );
+    }
+  });
+
+  it("keeps the line in the source arrays so restoring is one flag", () => {
+    // Deleting it would make the restore a copy-writing job in two languages
+    // instead of flipping a boolean, and would break EN/DE length parity.
+    expect(
+      PREMIUM_PLAN_EN.freeItems.some((i) => i.includes("Prayer Campaigns")),
+    ).toBe(true);
+    expect(
+      PREMIUM_PLAN_DE.freeItems.some((i) => i.includes("Gebetskampagnen")),
+    ).toBe(true);
   });
 });

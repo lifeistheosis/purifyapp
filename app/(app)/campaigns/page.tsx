@@ -1,7 +1,6 @@
+import { notFound } from "next/navigation";
 import { CampaignsClient } from "@/components/campaigns/CampaignsClient";
-import { FeatureShell } from "@/components/feature/FeatureShell";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
-import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Prayer Campaigns",
@@ -10,15 +9,12 @@ export const metadata = {
 };
 
 export default function CampaignsPage() {
-  if (!campaignsEnabled()) {
-    return (
-      <FeatureShell
-        eyebrow={<T k="ui.together" />}
-        title={<T k="nav.discoverMenu.campaigns" />}
-        body={<T k="ui.campaignsBody" />}
-        ctaLabel={<T k="ui.seeActiveCampaigns" />}
-      />
-    );
-  }
+  // WITHDRAWN, so this is a 404 and not a page. It used to render a
+  // FeatureShell: an eyebrow, a title, a paragraph and a call to action,
+  // which is a marketing page for a feature that is not there. Anyone who
+  // guessed the URL or held an old link was invited to come back, and search
+  // engines were handed something to index. "Not visible" has to mean absent,
+  // not politely deferred. See lib/campaigns/flags.ts.
+  if (!campaignsEnabled()) notFound();
   return <CampaignsClient />;
 }
