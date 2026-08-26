@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
-import { windowStart } from "@/lib/admin/dayWindow";
+import { daysSince, windowStart } from "@/lib/admin/dayWindow";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -21,8 +21,25 @@ export async function GET(req: NextRequest) {
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const range = req.nextUrl.searchParams.get("range") ?? "30d";
-  const days = range === "7d" ? 7 : range === "90d" ? 90 : 30;
   const supa = createAdminClient();
+
+  // "all" has no fixed length: it is measured from the oldest row that
+  // exists. Resolved here rather than guessed with a large constant, because
+  // the series is a generate_series in Postgres and every day in the window
+  // is a real row whether or not anything happened on it. daysSince caps it,
+  // so one bad timestamp cannot ask for years of empty buckets.
+  let days: number;
+  if (range === "all") {
+    const { data: oldest } = await supa
+      .from("analytics_sessions")
+      .select("first_seen")
+      .order("first_seen", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    days = daysSince(oldest?.first_seen as string | undefined);
+  } else {
+    days = range === "7d" ? 7 : range === "90d" ? 90 : 30;
+  }
   // ENDS ON TODAY, and the fix is here rather than in the SQL.
   //
   // analytics_daily_buckets generates exactly p_days buckets starting at

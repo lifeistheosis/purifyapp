@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
+import { daysSince, windowStart } from "@/lib/admin/dayWindow";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -56,11 +57,28 @@ export async function GET(req: NextRequest) {
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const range = req.nextUrl.searchParams.get("range") ?? "30d";
-  const days = range === "7d" ? 7 : range === "90d" ? 90 : 30;
   const supa = createAdminClient();
-  const since = new Date(Date.now() - days * 86_400_000);
-  since.setUTCHours(0, 0, 0, 0);
-  const sinceIso = since.toISOString();
+
+  // "all" is measured from the oldest session rather than a large constant.
+  // daysSince caps it, so a single bad timestamp cannot widen the window to
+  // years.
+  let days: number;
+  if (range === "all") {
+    const { data: oldest } = await supa
+      .from("analytics_sessions")
+      .select("first_seen")
+      .order("first_seen", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    days = daysSince(oldest?.first_seen as string | undefined);
+  } else {
+    days = range === "7d" ? 7 : range === "90d" ? 90 : 30;
+  }
+
+  // windowStart, not `now - days`: the unsnapped version dropped everything
+  // that happened on the oldest day before the current time of day, quietly
+  // truncating the first bar. Same helper the other charts use.
+  const sinceIso = windowStart(days);
 
   const [{ data: pv }, { data: sess }] = await Promise.all([
     supa

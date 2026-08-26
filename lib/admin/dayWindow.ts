@@ -107,3 +107,44 @@ export function bucketByDay<T>(
 export function isPartial(key: string, now: Date = new Date()): boolean {
   return key === dayKey(now);
 }
+
+/**
+ * How many day buckets "all time" is, given the oldest record.
+ *
+ * ── Why this is not just a very large number ────────────────────────────
+ *
+ * The chart ranges stopped at 90 days, so anything older was unreachable.
+ * The lazy fix is a 3650-day option, which makes every "all time" request
+ * generate ten years of buckets, nearly all of them empty, on a dataset that
+ * begins in 2026. The series is drawn from a generate_series in Postgres
+ * (20260608_analytics_daily_buckets.sql), so those empty rows are real work
+ * and a real payload.
+ *
+ * So "all time" is measured from the oldest row the caller found, inclusive of
+ * both ends, and the answer is always at least 1.
+ *
+ * THE CAP IS NOT DECORATION. It bounds a value derived from data: a single row
+ * with a wrong timestamp, a bad import, or a clock skew on a device that wrote
+ * a date in 1970 would otherwise ask Postgres for twenty thousand buckets and
+ * hand the browser a payload to match. Two years is far past this app's whole
+ * life and still small enough to render.
+ */
+export function daysSince(
+  earliest: string | Date | null | undefined,
+  now: Date = new Date(),
+  cap = 730,
+): number {
+  if (!earliest) return 1;
+  const start = new Date(typeof earliest === "string" ? earliest : earliest.getTime());
+  if (Number.isNaN(start.getTime())) return 1;
+
+  // Both ends snapped to UTC midnight, so a record made at 23:00 yesterday and
+  // one made at 01:00 yesterday give the same answer. Comparing raw instants
+  // would make the count depend on the time of day the query ran.
+  const a = Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate());
+  const b = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  if (b < a) return 1; // a future timestamp; treat it as today rather than negative
+
+  const span = Math.floor((b - a) / DAY_MS) + 1; // inclusive of both ends
+  return Math.min(Math.max(1, span), cap);
+}

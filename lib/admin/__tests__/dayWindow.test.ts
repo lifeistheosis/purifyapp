@@ -4,6 +4,7 @@ import {
   bucketByDay,
   dayKey,
   dayKeys,
+  daysSince,
   emptyBuckets,
   isPartial,
   windowStart,
@@ -182,5 +183,47 @@ describe("dayKey", () => {
     // in UTC, so the buckets must be too or one end gains a phantom day.
     expect(dayKey(new Date("2026-08-26T23:30:00.000Z"))).toBe("2026-08-26");
     expect(dayKey("2026-08-26T00:30:00.000Z")).toBe("2026-08-26");
+  });
+});
+
+describe("daysSince, for the All time range", () => {
+  it("counts both ends, so the same day is one bucket", () => {
+    expect(daysSince("2026-08-26T01:00:00.000Z", NOW)).toBe(1);
+  });
+
+  it("ignores the time of day at either end", () => {
+    // A record at 23:00 and one at 01:00 on the same day must agree, or the
+    // chart's length would depend on when the operator opened it.
+    expect(daysSince("2026-08-20T23:59:00.000Z", NOW)).toBe(
+      daysSince("2026-08-20T00:01:00.000Z", NOW),
+    );
+    expect(daysSince("2026-08-20T23:59:00.000Z", NOW)).toBe(7);
+  });
+
+  it("spans months and years correctly", () => {
+    expect(daysSince("2026-07-28T00:00:00.000Z", NOW)).toBe(30);
+    expect(daysSince("2025-08-26T00:00:00.000Z", NOW)).toBe(366);
+  });
+
+  it("CAPS a wild timestamp instead of asking for twenty thousand buckets", () => {
+    // One bad import or a device with a 1970 clock would otherwise generate a
+    // decade of empty rows in Postgres and a payload to match.
+    expect(daysSince("1970-01-01T00:00:00.000Z", NOW)).toBe(730);
+    expect(daysSince("1970-01-01T00:00:00.000Z", NOW, 365)).toBe(365);
+  });
+
+  it("never returns zero or negative", () => {
+    expect(daysSince(null, NOW)).toBe(1);
+    expect(daysSince(undefined, NOW)).toBe(1);
+    expect(daysSince("not a date", NOW)).toBe(1);
+    // A timestamp in the future is not a negative window.
+    expect(daysSince("2027-01-01T00:00:00.000Z", NOW)).toBe(1);
+  });
+
+  it("hands dayKeys a window that still ends on today", () => {
+    const days = daysSince("2026-08-20T10:00:00.000Z", NOW);
+    const keys = dayKeys(days, NOW);
+    expect(keys[0]).toBe("2026-08-20");
+    expect(keys[keys.length - 1]).toBe("2026-08-26");
   });
 });

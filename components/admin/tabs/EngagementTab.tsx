@@ -8,7 +8,10 @@ import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, StatCard, DataTable, ToolbarButton, Toolbar } from "../primitives";
 import { BarChart, SERIES_COLORS } from "../charts";
 
-type Range = "7d" | "30d" | "90d";
+// "all" is measured server-side from the oldest record, not from a constant,
+// so the window grows with the data instead of stopping at 90 days. See
+// daysSince in lib/admin/dayWindow.ts, which also caps it.
+type Range = "7d" | "30d" | "90d" | "all";
 
 type Totals = {
   totalViews: number;
@@ -64,13 +67,13 @@ export function EngagementTab() {
 
   const rangeButtons = (
     <Toolbar>
-      {(["7d", "30d", "90d"] as const).map((r) => (
+      {(["7d", "30d", "90d", "all"] as const).map((r) => (
         <ToolbarButton
           key={r}
           variant={range === r ? "primary" : "default"}
           onClick={() => setRange(r)}
         >
-          {r}
+          {r === "all" ? "All" : r}
         </ToolbarButton>
       ))}
     </Toolbar>

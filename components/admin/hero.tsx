@@ -581,13 +581,26 @@ export function SectionHead({
   );
 }
 
-export type PeriodId = "24h" | "7d" | "30d" | "90d";
+export type PeriodId = "24h" | "7d" | "30d" | "90d" | "all";
 
+/**
+ * `days: 0` on "all" is a SENTINEL, not a duration.
+ *
+ * The window for All time is not knowable on the client: it depends on when
+ * the oldest record was written. The route resolves it with daysSince() in
+ * lib/admin/dayWindow.ts, from the earliest row it can find, capped so one
+ * bad timestamp cannot ask Postgres for a decade of empty buckets.
+ *
+ * Zero rather than Infinity or -1 because every consumer that multiplies or
+ * slices by `days` degrades to "nothing" rather than to a hang or a negative
+ * length if it ever forgets to special-case it.
+ */
 export const PERIODS: { id: PeriodId; label: string; days: number }[] = [
   { id: "24h", label: "24H", days: 1 },
   { id: "7d", label: "7D", days: 7 },
   { id: "30d", label: "30D", days: 30 },
   { id: "90d", label: "90D", days: 90 },
+  { id: "all", label: "All", days: 0 },
 ];
 
 export function PeriodChips({

@@ -8,7 +8,10 @@ import { Card, ToolbarButton, Toolbar, DataTable } from "../primitives";
 import { LineChart, SERIES_COLORS } from "../charts";
 
 type Point = { date: string; visitors: number; views: number; signups: number };
-type Range = "7d" | "30d" | "90d";
+// "all" is measured server-side from the oldest record, not from a constant,
+// so the window grows with the data instead of stopping at 90 days. See
+// daysSince in lib/admin/dayWindow.ts, which also caps it.
+type Range = "7d" | "30d" | "90d" | "all";
 
 export function TrafficTab() {
   const [range, setRange] = useState<Range>("30d");
@@ -66,7 +69,7 @@ export function TrafficTab() {
   return (
     <div className="space-y-6">
       <Card
-        title={`Traffic · ${range}`}
+        title={`Traffic · ${range === "all" ? "all time" : range}`}
         action={
           <Toolbar>
             <ToolbarButton
@@ -86,6 +89,12 @@ export function TrafficTab() {
               onClick={() => setRange("90d")}
             >
               90d
+            </ToolbarButton>
+            <ToolbarButton
+              variant={range === "all" ? "primary" : "default"}
+              onClick={() => setRange("all")}
+            >
+              All
             </ToolbarButton>
           </Toolbar>
         }
