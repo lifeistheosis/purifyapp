@@ -95,13 +95,26 @@ export function PayoutsClient() {
     setError(null);
     try {
       const res = await apiFetch("/api/shop/seller/payouts", { method: "POST" });
-      const data = (await res.json()) as { url?: string; error?: string };
+      // Read the body as TEXT first. A route that 500s returns an HTML error
+      // page, and res.json() throws on it, which sent every server failure
+      // down the same catch and out as one generic sentence. The status code
+      // was thrown away with it.
+      const body = await res.text();
+      let data: { url?: string; error?: string } = {};
+      try {
+        data = JSON.parse(body) as typeof data;
+      } catch {
+        // Not JSON. Say the status out loud rather than pretending we know.
+        setError(`${t("shop.payoutsCouldntStart")} (server error ${res.status})`);
+        return;
+      }
       if (res.ok && data.url) {
         window.location.href = data.url;
         return;
       }
-      setError(data.error ?? t("shop.payoutsCouldntStart"));
+      setError(data.error ?? `${t("shop.payoutsCouldntStart")} (${res.status})`);
     } catch {
+      // Genuinely could not reach the server.
       setError(t("shop.payoutsCouldntStart"));
     } finally {
       setBusy(false);

@@ -172,9 +172,43 @@ export async function POST() {
     });
     return NextResponse.json({ ok: true, url: link.url });
   } catch (e) {
-    console.warn("[shop] connect onboarding failed", (e as Error).message);
+    // WHY THIS IS NOT ONE GENERIC MESSAGE.
+    //
+    // The first real attempt at this failed with "Couldn't start payout
+    // setup." and that sentence was true of every possible cause: Connect not
+    // enabled on the platform, a bad key, a Stripe outage, a validation
+    // rejection. Nobody could act on it, and the only way to find out was to
+    // read the deploy log. An error that costs a log dive to interpret is a
+    // bug in the error, not just in the thing that failed.
+    //
+    // Stripe's own message is specific and usually actionable, so the known
+    // causes are named here and everything else carries the message through.
+    // This is a seller-console route behind a session, not a public surface.
+    const err = e as { message?: string; type?: string; code?: string; raw?: { message?: string } };
+    const message = err.raw?.message ?? err.message ?? "";
+    console.error(
+      `[shop] connect onboarding failed store=${ctx.store.id} type=${err.type ?? "?"} code=${err.code ?? "?"} :: ${message}`,
+    );
+
+    // The platform has never signed up for Connect. This is the one that
+    // cannot be retried away, and it is a setting on Purify's account, not
+    // anything the seller did.
+    if (/connect/i.test(message) && /sign(ed)? up|not.*(enabled|activated)|only stripe connect/i.test(message)) {
+      return NextResponse.json(
+        {
+          error:
+            "Payouts aren't switched on for Purify's Stripe account yet, so we can't create yours. Nothing is wrong on your end. We've been told and will write to you when it's ready.",
+        },
+        { status: 503 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Stripe couldn't start onboarding. Please try again shortly." },
+      {
+        error: message
+          ? `Stripe couldn't start onboarding: ${message}`
+          : "Stripe couldn't start onboarding. Please try again shortly.",
+      },
       { status: 502 },
     );
   }
