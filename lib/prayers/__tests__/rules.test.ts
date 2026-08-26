@@ -41,6 +41,53 @@ describe("Prayer rule registry", () => {
     }
   });
 
+  /**
+   * A planned row is the ONLY row that cannot explain itself by being opened.
+   *
+   * PrayerIndexRow's planned branch renders the row dimmed, non-interactive,
+   * and tagged "Planned" (components/prayers/PrayerBook.tsx), which is honest
+   * about there being nothing to read but says nothing about what is coming.
+   * All seven planned entries shipped with no description at all, so the
+   * reader met a grey line of text that did not respond to a tap and gave no
+   * reason. The description is the whole difference between "not yet" and
+   * "broken", and it is the one thing a reader cannot discover for themselves
+   * here, because there is no page behind the row to go and look at.
+   *
+   * Both languages, because the prayers hub is bilingual by construction:
+   * RuleMeta carries titleDe/descriptionDe rather than catalog keys, and
+   * app/(app)/prayers/page.tsx picks between them on isDe.
+   */
+  it("every planned rule explains what is coming, in both languages", () => {
+    const bare = RULES.filter(
+      (r) => r.planned && (!r.description?.trim() || !r.descriptionDe?.trim()),
+    ).map((r) => r.id);
+    expect(
+      bare,
+      "These planned rules render a dimmed, untappable row with an empty " +
+        "description slot, so the reader gets no reason for it. Add " +
+        "description and descriptionDe in lib/prayers/rules.ts:\n  " +
+        bare.join("\n  "),
+    ).toEqual([]);
+  });
+
+  it("a planned description does not promise a specific unsourced service", () => {
+    // The editorial rule (docs/editorial-standards.md) is that we never claim
+    // a text we have not sourced verbatim. A description is UI copy, not
+    // prayer text, but naming a specific service in it would still be a
+    // promise about content that does not exist. Describe the occasion, not
+    // the document.
+    const NAMED_SERVICES =
+      /\b(akathist|vespers|matins|orthros|compline|paraklesis|moleben|canon of|divine liturgy)\b/i;
+    const offenders = RULES.filter(
+      (r) => r.planned && NAMED_SERVICES.test(`${r.description ?? ""} ${r.descriptionDe ?? ""}`),
+    ).map((r) => r.id);
+    expect(
+      offenders,
+      "A planned entry names a specific service it has not sourced:\n  " +
+        offenders.join("\n  "),
+    ).toEqual([]);
+  });
+
   it("every reader rule resolves to a real, well-formed JSON file", () => {
     const rules = readerRules();
     expect(rules.length).toBeGreaterThan(0);
