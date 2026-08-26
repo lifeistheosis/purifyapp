@@ -7,7 +7,7 @@
 // tab is governance: who sells, what's visible, where the money and
 // the conversations stand.
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { formatPrice } from "@/lib/shop/format";
 import { REFUND_REASON_LABELS } from "@/lib/shop/refunds";
@@ -15,6 +15,7 @@ import { SELLER_STATUS_LABELS } from "@/lib/shop/sellerOrders";
 import type { ShopFulfillmentStatus } from "@/lib/shop/types";
 
 import { Card, DataTable, Pill, StatCard, ToolbarButton } from "../primitives";
+import { patchJson, shortDate, useAdminFetch } from "../adminFetch";
 
 const field =
   "w-full rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/30 focus:outline-none focus:border-paper/40";
@@ -42,65 +43,6 @@ const FULFILLMENT_STATUSES: ShopFulfillmentStatus[] = [
   "cancelled",
 ];
 
-function useAdminFetch<T>(url: string): {
-  data: T | null;
-  error: string | null;
-  reload: () => void;
-} {
-  const [data, setData] = useState<T | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [version, setVersion] = useState(0);
-  const reload = useCallback(() => setVersion((v) => v + 1), []);
-
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      try {
-        const r = await fetch(url, { cache: "no-store" });
-        if (!alive) return;
-        if (!r.ok) {
-          setError("Couldn't load (are the shop migrations applied?).");
-          return;
-        }
-        setData((await r.json()) as T);
-        setError(null);
-      } catch {
-        if (alive) setError("Couldn't load.");
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [url, version]);
-
-  return { data, error, reload };
-}
-
-async function patchJson(
-  url: string,
-  body: unknown,
-  method: "PATCH" | "POST" = "PATCH",
-): Promise<string | null> {
-  try {
-    const r = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    if (r.ok) return null;
-    const data = (await r.json().catch(() => null)) as { error?: string } | null;
-    return data?.error ?? "Update failed.";
-  } catch {
-    return "Update failed.";
-  }
-}
-
-function shortDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-  });
-}
 
 /* ── Tab shell ─────────────────────────────────────────────────────────── */
 

@@ -2342,3 +2342,74 @@ html.is-native .history-controls {
     transform: none;
   }
 }
+
+/* ── Verified badge ───────────────────────────────────────────────────────
+   The blue check beside a verified reader's name in the Community, drawn in
+   the convention everyone already reads as "verified": a scalloped disc with
+   a white tick. The silhouette is drawn here rather than copied from X or
+   Meta, whose exact marks are their trademarks and whose reuse is a listed
+   App Store rejection reason.
+
+   Two states, and the second one is desktop-only ON PURPOSE. `hover: hover`
+   means a real pointer: without it a touch device fires :hover on tap and
+   leaves the tooltip stuck open with no way to dismiss it, which is the
+   classic mobile hover bug. Phones get the badge and the breathing glow, and
+   no tooltip.
+
+   The pulse is the same shape as .new-glow above: a box-shadow that breathes
+   rather than a transform, so it never moves the text baseline it sits on. */
+@keyframes verified-glow {
+ 0%,
+ 100% {
+ box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+ }
+ 50% {
+ box-shadow: 0 0 8px 2px rgba(59, 130, 246, 0.45);
+ }
+}
+.verified-badge {
+ border-radius: 9999px;
+ animation: verified-glow 2.6s ease-in-out infinite;
+ transition:
+ transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+ box-shadow 220ms ease-out;
+}
+@media (hover: hover) and (pointer: fine) {
+ .verified-badge-wrap:hover .verified-badge {
+ /* Settles on a brighter, steady halo instead of continuing to breathe:
+    a tooltip that pulses is hard to read. */
+ animation: none;
+ transform: scale(1.18);
+ box-shadow: 0 0 12px 3px rgba(59, 130, 246, 0.65);
+ }
+ .verified-badge-wrap .verified-tip {
+ opacity: 0;
+ transform: translate(-50%, 4px);
+ transition:
+ opacity 160ms ease-out,
+ transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+ pointer-events: none;
+ }
+ .verified-badge-wrap:hover .verified-tip {
+ opacity: 1;
+ transform: translate(-50%, 0);
+ }
+}
+/* No pointer, no tooltip: it would be summoned by a tap and never dismissed. */
+@media not all and (hover: hover) {
+ .verified-badge-wrap .verified-tip {
+ display: none;
+ }
+}
+@media (prefers-reduced-motion: reduce) {
+ .verified-badge {
+ animation: none;
+ transition: none;
+ }
+ .verified-badge-wrap:hover .verified-badge {
+ transform: none;
+ }
+ .verified-badge-wrap .verified-tip {
+ transition: none;
+ }
+}

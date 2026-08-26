@@ -38,6 +38,7 @@ import {
   type ComponentType,
 } from "react";
 import { CommerceOverviewTab } from "./tabs/CommerceOverviewTab";
+import { VerificationTab } from "./tabs/VerificationTab";
 import { OrdersTab } from "./tabs/OrdersTab";
 import { RevenueTab } from "./tabs/RevenueTab";
 import { SustainabilityTab } from "./tabs/SustainabilityTab";
@@ -87,6 +88,7 @@ type OpsTabId =
   | "shop"
   | "eikon-box"
   | "community"
+  | "verification"
   | "traffic"
   | "growth"
   | "goals"
@@ -145,6 +147,7 @@ const GROUPS: Group[] = [
     mode: "ops",
     tabs: [
       { id: "users", label: "Users", eyebrow: "Profiles and carts", component: UsersHubTab },
+      { id: "verification", label: "Verification", eyebrow: "Who asked for the blue check", component: VerificationTab },
       { id: "messages", label: "Messages", eyebrow: "Support and shop", component: MessagesTab },
       { id: "community", label: "Community", eyebrow: "Campaigns and Trapeza moderation", component: CommunityTab },
     ],
