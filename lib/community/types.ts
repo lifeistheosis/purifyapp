@@ -19,6 +19,8 @@ export type CommunityPost = {
   author_name: string;
   author_avatar: string | null;
   reply_count: number;
+  like_count: number;
+  dislike_count: number;
   created_at: string;
 };
 

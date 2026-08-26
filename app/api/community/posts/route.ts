@@ -13,13 +13,50 @@ import {
   type VerifiedQuote,
 } from "@/lib/community/verifyQuote";
 
-// `user_id` is DELIBERATELY not selected. It is the Supabase auth uuid, and
-// the same value is the RevenueCat appUserID and the segment in the public
-// avatar storage path, so serving it to unauthenticated readers hands out a
-// cross-system identifier for free. Ownership is still enforced: the DELETE
-// route reads user_id server-side and compares it to the caller's token.
+// `user_id` is NOT selected, and the badge is not wired here yet.
+//
+// The first attempt resolved the verified badge by selecting the uuid, mapping
+// it to a boolean, and dropping it before the response. That is safe as
+// written, but lib/security/__tests__/publicColumnExposure.test.ts refused it,
+// and the refusal is right: the guard cannot tell "selected then stripped"
+// from "selected then leaked", and its own header warns that the next step
+// after tolerating a select is somebody re-granting the column to make it
+// work. A ratchet written after a real exposure does not get loosened to save
+// one query.
+//
+// The badge will arrive as a DENORMALISED author_verified column on
+// community_posts, maintained from user_verification the same way the
+// reaction counters are maintained from community_reactions. Then the feed
+// reads a boolean that was never a uuid and the guard stays absolute.
+//
+// like_count and dislike_count below need no identity and ship now.
 const POST_COLS =
-  "id, kind, title, body, quote_text, quote_source, quote_href, author_name, author_avatar, reply_count, created_at";
+  "id, kind, title, body, quote_text, quote_source, quote_href, author_name, author_avatar, reply_count, like_count, dislike_count, created_at";
+
+/**
+ * The row a reader actually receives: every column above except the uuid,
+ * plus the resolved badge. Written as an explicit projection rather than a
+ * delete, because a delete leaves the uuid in the object until the line that
+ * removes it, and one early return past that line is a leak.
+ */
+function publicPost(row: Record<string, unknown>): Record<string, unknown> {
+  return {
+    id: row.id,
+    kind: row.kind,
+    title: row.title,
+    body: row.body,
+    quote_text: row.quote_text,
+    quote_source: row.quote_source,
+    quote_href: row.quote_href,
+    author_name: row.author_name,
+    author_avatar: row.author_avatar,
+    reply_count: row.reply_count,
+    like_count: row.like_count ?? 0,
+    dislike_count: row.dislike_count ?? 0,
+    created_at: row.created_at,
+  };
+}
+
 
 /**
  * Latest visible community posts.
@@ -95,9 +132,13 @@ export async function GET(req: Request) {
     console.warn("[community] list failed", error.message);
     return withCors(NextResponse.json({ posts: [] }), req);
   }
+
+  const rows = (data ?? []) as unknown as Record<string, unknown>[];
+  const posts = rows.map((r) => publicPost(r));
+
   return withCors(
     NextResponse.json(
-      { posts: data ?? [] },
+      { posts },
       {
         headers: {
           // A filtered feed is one reader's feed. Serving it from a shared

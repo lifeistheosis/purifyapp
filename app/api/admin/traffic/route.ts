@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
+import { windowStart } from "@/lib/admin/dayWindow";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -22,9 +23,19 @@ export async function GET(req: NextRequest) {
   const range = req.nextUrl.searchParams.get("range") ?? "30d";
   const days = range === "7d" ? 7 : range === "90d" ? 90 : 30;
   const supa = createAdminClient();
-  const since = new Date(Date.now() - days * 86_400_000);
-  since.setUTCHours(0, 0, 0, 0);
-  const sinceIso = since.toISOString();
+  // ENDS ON TODAY, and the fix is here rather than in the SQL.
+  //
+  // analytics_daily_buckets generates exactly p_days buckets starting at
+  // p_since's date (20260608_analytics_daily_buckets.sql:35-38). This route
+  // used to pass midnight of (today - days), so the series ran today-30 ..
+  // today-1 and the current day never appeared. The loss was invisible in the
+  // response: today's rows ARE aggregated by the function, then dropped by the
+  // join against a series that has no bucket for them, so the endpoint still
+  // returned a complete-looking array of exactly `days` points.
+  //
+  // Passing the start one day later gives the same number of buckets ending on
+  // today. The function is untouched, so this needed no migration.
+  const sinceIso = windowStart(days);
 
   const { data, error } = await supa.rpc("analytics_daily_buckets", {
     p_since: sinceIso,

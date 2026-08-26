@@ -152,7 +152,7 @@ create table if not exists public.user_verification (
   claim text,
   requested_at timestamptz not null default now(),
   decided_at timestamptz,
-  -- The admin's email. A badge confers standing; the decision needs an owner.
+  -- The deciding admin email. A badge confers standing, so it needs an owner.
   decided_by text,
   note text,
   updated_at timestamptz not null default now()
