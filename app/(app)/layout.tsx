@@ -4,6 +4,7 @@ import { SyncBridge } from "@/components/profile/SyncBridge";
 import { GiftBridge } from "@/components/gifts/GiftBridge";
 import { EikonBoxBridge } from "@/components/eikonBox/EikonBoxBridge";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
+import { NativeBackBar } from "@/components/nav/NativeBackBar";
 import { ScrollToTop } from "@/components/nav/ScrollToTop";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { AmbienceController } from "@/components/ambience/AmbienceController";
@@ -58,6 +59,21 @@ export default function AppGroupLayout({
           not fade with the content and the selected tab answers a tap
           immediately. See lib/ui/routeTransition.ts. */}
       <main data-route-content className="flex-1 safe-pt safe-pb">
+        {/* The way back, on every native screen that is not a tab root and
+            does not already carry its own MobileTopBar. It lives INSIDE
+            <main>, first child, because that is the position .topbar-safe is
+            written for: it cancels this element's .safe-pt with a negative
+            margin, which only lands if the bar is inside it. NativeBackBar
+            returns null on the routes that must not have it, so this mount is
+            unconditional and the rule lives in one place.
+
+            Native only. On the web the browser's own back button already
+            does this, and a second chevron under the AppNav is noise. */}
+        <div data-app-chrome className="contents">
+          <NativeOnly>
+            <NativeBackBar />
+          </NativeOnly>
+        </div>
         {children}
       </main>
       <div data-app-chrome className="contents">

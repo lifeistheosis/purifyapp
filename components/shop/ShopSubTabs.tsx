@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { cartCount, openCartDrawer, useCart } from "@/lib/shop/cart";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { shouldShowBack } from "@/lib/nav/backBar";
 
 /**
  * Sticky buyer navigation inside the shop section on `< md`, the same
@@ -47,7 +48,17 @@ export function ShopSubTabs() {
       // on native). The old hard-coded top-12 reserved 48px for a bar that
       // exists on neither, which left a transparent band where the hero
       // scrolled under the status bar in the app.
-      className="md:hidden sticky sticky-safe-top z-20 bg-night border-b border-white/8"
+      //
+      // ...and now something DOES exist on native, on every /shop route but
+      // the tab root: NativeBackBar. `under-back-bar` is inert on the web and
+      // on /shop itself; where the bar is present it re-pins this row below it
+      // and cancels the inset painting the bar has already done. The condition
+      // is shouldShowBack(), the same call the bar renders from, so this row
+      // cannot drift out of step with it.
+      className={cn(
+        "md:hidden sticky sticky-safe-top z-20 bg-night border-b border-white/8",
+        shouldShowBack(pathname) && "under-back-bar",
+      )}
     >
       {/* Quiet text tabs; only the active one wears a pill. The cart is
           always reachable (hiding it while empty made the row jump around),

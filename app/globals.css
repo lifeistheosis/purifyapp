@@ -350,6 +350,25 @@ html.is-native .sticky-safe-top {
  margin-top: calc(-1 * var(--inset-top));
 }
 
+/* ...UNLESS NativeBackBar is above it. Every /shop route except the tab root
+   itself now carries a global back bar, and that bar is already `topbar-safe`:
+   it paints the status-bar strip and occupies the first 3rem. So the sub-tab
+   row must pin BENEATH it and stop doing its own inset painting, or the two
+   pin to the same 0 and the row disappears under the bar on scroll while
+   double-counting the inset at rest.
+
+   This overrides .sticky-safe-top by source order, not specificity: both are
+   (0,2,0), so this block must stay AFTER it in this file. Web has no such bar
+   and no rule here, so .sticky-safe-top's 72px AppNav offset still applies
+   there untouched. ShopSubTabs adds the class from shouldShowBack(), the same
+   function the bar itself renders from, so the two can never disagree about
+   which routes have one. */
+html.is-native .under-back-bar {
+ top: calc(3rem + var(--inset-top));
+ padding-top: 0;
+ margin-top: 0;
+}
+
 /* Companions of the bar (e.g. the Bible chapter sticky header, the reader
    progress line, the saints work progress line) hard-coded `top-12` (48px,
    right under the 3rem bar) to sit just below it; on native the pinned bar is
