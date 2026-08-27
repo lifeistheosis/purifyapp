@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Purify's own ground, #101013, the color-night token, with the app's
+     corner radius. Written as a literal because a widget renders in the
+     launcher's process where the app theme does not reach. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#101013" />
+    <corners android:radius="20dp" />
+</shape>

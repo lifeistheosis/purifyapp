@@ -33,6 +33,29 @@
 
         </activity>
 
+        <!-- Home screen widget: the day's commemoration and fast.
+             Ships inside this APK, so it reads the prebaked day table straight
+             from assets; no bridge and no shared container, unlike iOS.
+             exported=true because the launcher, another process, sends it the
+             APPWIDGET_UPDATE broadcast. -->
+        <receiver
+            android:name=".DayWidgetProvider"
+            android:label="@string/app_name"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <!-- The device's idea of "today" can move without the midnight
+                     alarm firing: a flight across a timezone, or the clock set
+                     by hand. Without these a reader sees yesterday's saint. -->
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/day_widget_info" />
+        </receiver>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

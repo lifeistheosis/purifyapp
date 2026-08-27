@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The home screen widget's declaration.
+
+  updatePeriodMillis is 0 ON PURPOSE. The system clamps it to 30 minutes at
+  best and wakes the app to do it, which is wasteful for content that changes
+  once a day at midnight. DayWidgetProvider schedules its own exact-ish alarm
+  for the next local midnight instead, so the widget turns over when the day
+  does rather than up to half an hour late.
+
+  resizeMode horizontal lets a reader widen it; the layout is a single column
+  of text so it reflows without a second layout.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="180dp"
+    android:minHeight="70dp"
+    android:targetCellWidth="3"
+    android:targetCellHeight="1"
+    android:updatePeriodMillis="0"
+    android:resizeMode="horizontal"
+    android:widgetCategory="home_screen"
+    android:previewLayout="@layout/day_widget"
+    android:initialLayout="@layout/day_widget" />
