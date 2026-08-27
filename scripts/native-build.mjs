@@ -350,6 +350,23 @@ function guardExportAgainstCaseCollisions(dir) {
 // only the current content set is bundled.
 fs.rmSync(path.join(ROOT, "out"), { recursive: true, force: true });
 
+// The home screen widget's day table, emitted BEFORE the export so Next copies
+// it out of public/ into out/ like any other static asset. That is what makes
+// it readable offline inside the bundle.
+//
+// It has to be prebaked: the commemoration and the fast come from
+// lib/calendar/orthodox.ts, and a WidgetKit extension is Swift while an
+// AppWidgetProvider is Kotlin. Neither can run it, and porting the paschalion
+// into two more languages is how three copies of it start to disagree. See
+// lib/widget/dayTable.ts.
+//
+// --import registers the "@/" resolver, because orthodox.ts uses path aliases
+// that plain Node does not know. See scripts/lib/alias-hooks.mjs.
+run(
+  "node --experimental-strip-types --import ./scripts/lib/register-alias.mjs " +
+    "scripts/emit-widget-data.mjs",
+);
+
 try {
   stashAll();
   run("next build", { BUILD_TARGET: PLATFORM });

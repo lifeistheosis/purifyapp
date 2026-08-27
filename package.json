@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "emit:widget-data": "node --experimental-strip-types --import ./scripts/lib/register-alias.mjs scripts/emit-widget-data.mjs",
     "build:content": "node --experimental-strip-types scripts/emit-registries.mjs && node scripts/build-content-package.mjs",
     "build:android": "node scripts/native-build.mjs --platform android",
     "build:ios": "node scripts/native-build.mjs --platform ios",
