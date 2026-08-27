@@ -175,6 +175,7 @@ export const SAINT_GROUP_MEMBERSHIP: Record<string, SaintGroupId[]> = {
 
   // Desert & monastic saints
   "anthony-the-great": ["desert-monastics"],
+  "arsenius-the-great": ["desert-monastics"],
   "mary-of-egypt": ["desert-monastics", "women"],
   "isidora-of-tabenna": ["desert-monastics", "women"],
   "paisios-the-athonite": ["desert-monastics"],

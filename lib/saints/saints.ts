@@ -238,6 +238,45 @@ export const SAINTS: Saint[] = [
  ],
  },
  {
+ slug: "arsenius-the-great",
+ byname: "Teacher of Silence",
+ name: "St. Arsenius the Great",
+ epithet: "Of Scetis · The Roman",
+ born: "c. 350 (Rome)",
+ reposed: "c. 449 (Troe, near Memphis)",
+ feastDays: ["May 8"],
+ shortBio:
+ "The Roman deacon and imperial tutor who left the palace of Theodosius for the Egyptian desert, and became the great teacher of silence: flee, be silent, pray always.",
+ life: [
+ "Arsenius was born at Rome about the year 350, of a senatorial family, and was schooled in Latin and Greek letters to the highest degree his age could give. He was ordained deacon of the Church of Rome, and his learning and his character together brought him to the notice of the Emperor Theodosius the Great, who was seeking a tutor for his sons.",
+ "About the year 383 he was called to Constantinople and given the education of the young princes Arcadius and Honorius, who would divide the empire between them. He lived at court in great honour for some eleven years, with servants and rich clothing, and was accounted among the first men of the palace. But his heart was not there, and he prayed to be shown the way of salvation. The tradition holds that he heard a voice saying, Arsenius, flee from men and thou shalt be saved.",
+ "He left the palace secretly, crossed to Alexandria, and went into the desert of Scetis, where he asked to be received among the monks. Praying again for the same guidance, he heard the word that shaped the rest of his life: Arsenius, flee, be silent, pray always, for these are the roots of sinlessness. He was given to the care of St. John the Dwarf, who tested the Roman deacon's obedience before the brethren by throwing him bread and bidding him eat it as a dog does, and Arsenius did so without a word.",
+ "In Scetis he became the pattern of stillness. He kept apart even from the other monks, spoke rarely, and answered questions with a few words or none, saying that he had often repented of speech and never of silence. His weeping was famous among the fathers, who said that he wept so continually for his sins that his eyelashes fell away. When a brother wondered that a man taught in Latin and Greek should ask an unlettered Egyptian about his thoughts, Arsenius answered that he had indeed learned the letters of the Romans and the Greeks, but did not yet know the alphabet of that peasant.",
+ "When the barbarians fell upon Scetis he withdrew with the others, going to Troe near Memphis, and afterwards to Canopus, and back again to Troe. The reckoning kept by the fathers gave him fifty-five years in the world, forty in Scetis, and the remainder in those later refuges. He reposed about the year 449, an old man of some ninety-five years, and when the brethren wept at his departure he told them that the hour was come, and asked that no honour be made of his body.",
+ "He is kept on the eighth of May, and the Church remembers him as the teacher of silence: a man who had every advantage his century could offer, and who counted the whole of it worth less than stillness before God.",
+ ],
+ quotes: [
+ {
+ text: "Arsenius, flee, be silent, pray always, for these are the roots of sinlessness.",
+ source: "The Sayings of the Desert Fathers",
+ },
+ {
+ text: "I have often repented of having spoken, but never of having been silent.",
+ source: "The Sayings of the Desert Fathers",
+ },
+ {
+ text: "I have indeed been taught Latin and Greek, but I do not know even the alphabet of this peasant.",
+ source: "The Sayings of the Desert Fathers",
+ },
+ ],
+ // No `works`. Arsenius wrote nothing that survives as a corpus; he is known
+ // almost entirely through the Apophthegmata, which is a collection about the
+ // fathers rather than a book of his. An empty list is the honest record and
+ // is what the integrity gate expects, since a listed Work must have a
+ // verbatim JSON file on disk behind it.
+ works: [],
+ },
+ {
  slug: "athanasius-the-great",
  byname: "Pillar of Orthodoxy",
  iconUrl: "/saints/icons/athanasius-the-great.jpg",

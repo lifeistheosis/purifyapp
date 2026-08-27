@@ -15,6 +15,7 @@ import { describe, expect, it } from "vitest";
 
 import { SAINT_GROUPS, SAINT_GROUP_MEMBERSHIP } from "../groups";
 import { SAINTS } from "../saints";
+import { commemorationsOn } from "@/lib/calendar/orthodox";
 
 import DAILY_SAINTS from "@/data/calendar/daily-saints.json";
 
@@ -202,5 +203,60 @@ describe("menologion cross-links", () => {
 
   it("covers all 366 fixed-date days", () => {
     expect(Object.keys(MENOLOGION).length).toBe(366);
+  });
+
+  /**
+   * The OTHER direction, which nothing checked and which is the easier
+   * mistake to make.
+   *
+   * commemorationsOn() folds registry saints into a day when their feastDay
+   * matches, and it skips the ones already present. But "already present" is
+   * decided by SLUG (lib/calendar/orthodox.ts), and most menologion entries
+   * are plain names with no slug. So adding a registry record for someone the
+   * calendar already names in prose does not replace that line, it renders a
+   * SECOND one right underneath it: the same saint twice, once as dead text
+   * and once as a link.
+   *
+   * The test above catches a slug pointing at nobody. This catches a saint
+   * being added without the slug that adopts the line already there. Adding
+   * St. Arsenius the Great is what surfaced it: the May 8 entry had named him
+   * in plain text all along.
+   *
+   * Names are compared with honorifics and punctuation stripped, because that
+   * is the whole difference between "Ven. Arsenius the Great" in the JSON and
+   * "St. Arsenius the Great" in the registry.
+   */
+  it("never lists the same saint twice on one day", () => {
+    const normalise = (name: string) =>
+      name
+        .toLowerCase()
+        .replace(/\b(st|ven|venerable|holy|righteous|blessed|our father among the saints)\b\.?/g, "")
+        .replace(/[^a-z0-9 ]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+
+    const dupes: string[] = [];
+    for (const day of Object.keys(MENOLOGION)) {
+      // Any date in a non-leap-sensitive year renders the same fixed-date
+      // list; 2027 is not a leap year, so 02-29 is checked directly instead.
+      const [mm, dd] = day.split("-").map((n) => parseInt(n, 10));
+      const date = new Date(Date.UTC(2028, mm - 1, dd));
+      const names = commemorationsOn(date).map((c) => normalise(c.name));
+      const seen = new Set<string>();
+      for (const n of names) {
+        if (!n) continue;
+        if (seen.has(n)) dupes.push(`${day}: ${n}`);
+        seen.add(n);
+      }
+    }
+    expect(
+      dupes,
+      "The same saint appears twice on these days. Almost always this is a " +
+        "registry record whose feastDay matches a menologion line that names " +
+        "them in prose with no slug, so the fold-in adds a second row instead " +
+        "of adopting the first. Add the slug to data/calendar/daily-saints.json " +
+        "on that day:\n  " +
+        dupes.join("\n  "),
+    ).toEqual([]);
   });
 });

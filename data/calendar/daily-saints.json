@@ -915,6 +915,7 @@
     },
     {
       "name": "Ven. Arsenius the Great",
+      "slug": "arsenius-the-great",
       "note": "of the Egyptian desert, +449"
     }
   ],
@@ -2431,6 +2432,7 @@
     },
     {
       "name": "St. Silouan the Athonite",
+      "slug": "silouan-the-athonite",
       "note": "of Mount Athos, +1938"
     }
   ],
@@ -2799,6 +2801,7 @@
     },
     {
       "name": "St. Job of Pochaev",
+      "slug": "job-of-pochaev",
       "note": "abbot and wonderworker, +1651"
     }
   ],
@@ -2991,10 +2994,6 @@
     {
       "name": "Confessors Gurias, Samonas, and Habibus",
       "note": "of Edessa, +ca. 322"
-    },
-    {
-      "name": "St. Paisius Velichkovsky",
-      "note": "of Neamts, restorer of hesychasm, +1794"
     }
   ],
   "11-16": [
@@ -3177,6 +3176,7 @@
     },
     {
       "name": "St. Porphyrios of Kavsokalyvia",
+      "slug": "porphyrios-of-kavsokalyvia",
       "note": "the clairvoyant elder of Athos, +1991"
     }
   ],
@@ -3280,6 +3280,7 @@
     },
     {
       "name": "St. Herman of Alaska",
+      "slug": "herman-of-alaska",
       "note": "his repose, +1837"
     },
     {
