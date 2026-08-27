@@ -237,8 +237,11 @@ describe("menologion cross-links", () => {
 
     const dupes: string[] = [];
     for (const day of Object.keys(MENOLOGION)) {
-      // Any date in a non-leap-sensitive year renders the same fixed-date
-      // list; 2027 is not a leap year, so 02-29 is checked directly instead.
+      // The menologion is fixed-date, so the year only has to be one where
+      // every key resolves to a real date. 2028 is a LEAP year, which is the
+      // whole reason it was picked: in a common year Date.UTC(y, 1, 29) rolls
+      // over to March 1 and the 02-29 entries would be silently checked
+      // against the wrong day's commemorations.
       const [mm, dd] = day.split("-").map((n) => parseInt(n, 10));
       const date = new Date(Date.UTC(2028, mm - 1, dd));
       const names = commemorationsOn(date).map((c) => normalise(c.name));
