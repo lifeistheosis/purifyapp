@@ -4,27 +4,37 @@ import { buildDayTable } from "../dayTable";
 import {
   commemorationsOn,
   fastingStatus,
-  JULIAN_OFFSET_DAYS,
+  shiftForStyle,
 } from "@/lib/calendar/orthodox";
 
 /**
  * The table a home screen widget reads.
  *
- * This is the only part of the widget stack that can be tested here. The Swift
- * and Kotlin cannot run in vitest, and a widget is a surface nobody looks at
- * closely once it works, so a wrong saint could sit on somebody's home screen
- * for weeks. What CAN be pinned is that the table says the same thing the app
- * says, and that is what these do.
+ * This is the only part of the widget stack testable here: the Swift and the
+ * Kotlin cannot run in vitest. A widget is also a surface nobody looks at
+ * closely once it works, so a wrong saint could sit on a home screen for
+ * weeks. What CAN be pinned is that the table says exactly what the app says,
+ * in both reckonings, and that is what these do.
  *
- * `now` is pinned in every case. A date helper tested against the real clock
- * passes in August and fails in Lent.
+ * Dates are pinned. A calendar helper tested against the real clock passes in
+ * August and fails in Lent.
  */
 
 const START = new Date(Date.UTC(2026, 7, 27, 12)); // 2026-08-27
-const key = (d: Date) => d.toISOString().slice(0, 10);
+const at = (k: string) => new Date(`${k}T12:00:00Z`);
+
+/** The app's own answer for a civil day, in one reckoning. */
+function appAnswer(civilKey: string, style: "new" | "old") {
+  const lookup = shiftForStyle(at(civilKey), style);
+  const c = commemorationsOn(lookup);
+  return {
+    headline: c.find((x) => x.kind === "feast") ?? c[0],
+    fast: fastingStatus(lookup),
+  };
+}
 
 describe("buildDayTable", () => {
-  it("returns exactly the days asked for, keyed by UTC date", () => {
+  it("returns exactly the days asked for, keyed by civil UTC date", () => {
     const t = buildDayTable(START, 400);
     const keys = Object.keys(t.days);
     expect(keys).toHaveLength(400);
@@ -32,80 +42,74 @@ describe("buildDayTable", () => {
     expect(keys.every((k) => /^\d{4}-\d{2}-\d{2}$/.test(k))).toBe(true);
   });
 
-  it("gives every day a headline and a fast, with no empty strings", () => {
+  it("gives every day both reckonings, with nothing blank", () => {
     // An empty headline renders as a blank widget, which reads as broken
     // rather than as a quiet day.
     const t = buildDayTable(START, 400);
-    const bad = Object.entries(t.days).filter(
-      ([, d]) => !d.saint.trim() || !d.fastLabel.trim(),
-    );
-    expect(bad.map(([k]) => k)).toEqual([]);
-  });
-
-  it("AGREES WITH THE APP about which commemoration leads", () => {
-    /**
-     * useChurchDay picks `commemorations.find(c => c.kind === "feast") ??
-     * commemorations[0]`. The widget must not disagree with the screen it sits
-     * beside. Checked across a full year rather than on one example, because
-     * the interesting case is a day whose feast is not listed first.
-     */
-    const t = buildDayTable(START, 366);
-    const disagreements: string[] = [];
-    for (const [k, day] of Object.entries(t.days)) {
-      const c = commemorationsOn(new Date(`${k}T12:00:00Z`));
-      const expected = c.find((x) => x.kind === "feast") ?? c[0];
-      if (expected && day.saint !== expected.name) {
-        disagreements.push(`${k}: table "${day.saint}" vs app "${expected.name}"`);
+    const bad: string[] = [];
+    for (const [k, e] of Object.entries(t.days)) {
+      for (const style of ["new", "old"] as const) {
+        const d = e[style];
+        if (!d?.saint?.trim() || !d?.fastLabel?.trim()) bad.push(`${k}.${style}`);
       }
     }
-    expect(disagreements, disagreements.join("\n  ")).toEqual([]);
+    expect(bad).toEqual([]);
+  });
+
+  it("AGREES WITH THE APP in both reckonings, across a year", () => {
+    /**
+     * useChurchDay picks the feast if the day has one, else the first
+     * commemoration, having first shifted the lookup date for the reader's
+     * calendar style. The widget must not disagree with the screen beside it.
+     */
+    const t = buildDayTable(START, 366);
+    const off: string[] = [];
+    for (const [k, e] of Object.entries(t.days)) {
+      for (const style of ["new", "old"] as const) {
+        const { headline, fast } = appAnswer(k, style);
+        if (headline && e[style].saint !== headline.name) {
+          off.push(`${k} ${style}: table "${e[style].saint}" vs app "${headline.name}"`);
+        }
+        if (e[style].fastLabel !== fast.label) {
+          off.push(`${k} ${style}: fast "${e[style].fastLabel}" vs app "${fast.label}"`);
+        }
+      }
+    }
+    expect(off, off.slice(0, 8).join("\n  ")).toEqual([]);
   });
 
   it("prefers a feast even when it is not the first entry", () => {
-    // The rule that actually matters, asserted directly: on any day carrying a
-    // feast, the feast leads.
     const t = buildDayTable(START, 366);
     let feastDays = 0;
-    for (const [k, day] of Object.entries(t.days)) {
-      const c = commemorationsOn(new Date(`${k}T12:00:00Z`));
-      const feast = c.find((x) => x.kind === "feast");
+    for (const [k, e] of Object.entries(t.days)) {
+      const lookup = shiftForStyle(at(k), "new");
+      const feast = commemorationsOn(lookup).find((x) => x.kind === "feast");
       if (!feast) continue;
       feastDays++;
-      expect(day.saint, `${k} should lead with its feast`).toBe(feast.name);
+      expect(e.new.saint, `${k} should lead with its feast`).toBe(feast.name);
     }
-    // If this ever hits zero the assertion above is vacuous.
+    // If this hits zero the assertion above is vacuous.
     expect(feastDays).toBeGreaterThan(10);
   });
 
-  it("carries the fast exactly as the app computes it", () => {
-    const t = buildDayTable(START, 90);
-    for (const [k, day] of Object.entries(t.days)) {
-      const f = fastingStatus(new Date(`${k}T12:00:00Z`));
-      expect(day.fastLabel, k).toBe(f.label);
-      expect(day.fastKind, k).toBe(f.kind);
-    }
+  it("THE TWO RECKONINGS ACTUALLY DIFFER, which is the whole point", () => {
+    // If old and new were identical the shift would be doing nothing and every
+    // other assertion here would still pass.
+    const t = buildDayTable(START, 60);
+    const differing = Object.values(t.days).filter((e) => e.new.saint !== e.old.saint);
+    expect(differing.length).toBeGreaterThan(40);
   });
 
-  it("ships the Julian offset rather than letting native code hardcode it", () => {
-    // The Old Calendar reader's day is found by subtracting this before
-    // indexing. Hardcoding 13 in Swift and again in Kotlin is how the two
-    // drift from the TypeScript.
-    expect(buildDayTable(START, 3).julianOffsetDays).toBe(JULIAN_OFFSET_DAYS);
-  });
-
-  it("is keyed so the Old Calendar reader lands on the right entry", () => {
-    /**
-     * shiftForStyle subtracts the offset from the LOOKUP date, so the table is
-     * keyed by lookup date and the widget subtracts the same amount. This
-     * pins that contract: an Old Calendar reader on civil day D must see what
-     * the app shows, which is the commemoration of D minus the offset.
-     */
-    const t = buildDayTable(new Date(Date.UTC(2026, 0, 1, 12)), 400);
-    const civil = new Date(Date.UTC(2026, 5, 15, 12));
-    const lookup = new Date(civil.getTime() - JULIAN_OFFSET_DAYS * 86_400_000);
-    const app = commemorationsOn(lookup);
-    const expected = app.find((c) => c.kind === "feast") ?? app[0];
-    expect(t.days[key(lookup)].saint).toBe(expected.name);
+  it("puts NO date arithmetic on the native side", () => {
+    // The Old Calendar answer is precomputed against the shifted lookup, so a
+    // widget reads today's civil date and picks a side. An earlier version
+    // shipped a julianOffsetDays field and expected Swift and Kotlin to
+    // subtract it, which oneReckoning.test.ts rightly rejected.
+    const t = buildDayTable(START, 3);
+    expect(t).not.toHaveProperty("julianOffsetDays");
+    expect(t.version).toBe(2);
+    const k = Object.keys(t.days)[0];
+    expect(t.days[k].old.saint).toBe(appAnswer(k, "old").headline?.name);
   });
 
   it("never returns zero days", () => {
