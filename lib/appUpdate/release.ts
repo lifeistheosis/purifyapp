@@ -46,7 +46,7 @@ export const CURRENT_RELEASE: ReleaseInfo = {
   // release that is still held.
   androidVersionCode: 0,
   iosBuildNumber: 0,
-  versionName: "1.2",
+  versionName: "1.3",
   androidStoreUrl:
     "https://play.google.com/store/apps/details?id=net.purifyapp.purify",
   // The real Adam ID, from the App Store Connect record created 2026-08-06

@@ -1,5 +1,42 @@
 [
   {
+    "id": "v1-3",
+    "version": "1.3",
+    "date": "2026-08-26",
+    "title": "A way back, and a saint who was only a name",
+    "intro": "A reader wrote in the app's own Community tab that on iPhone, once you tap into a section, getting back sometimes means leaving the section altogether and finding your way down again. Sometimes undersold it. Eighty nine of the app's ninety nine screens had no way back at all, and on the website the browser's own back button had been covering for it, so it never showed up as a bug. Every one of those screens has one now. The rest of this release is the same kind of thing: work that was nearly finished and did not quite reach you. Seven prayer categories that said Planned and nothing else. A tab bar carrying seven tabs. A Spanish tab with no word on it. St Arsenius the Great, kept every May 8 and named on the day, with nothing behind his name. And five saints the calendar had been quietly listing twice.",
+    "sections": [
+      {
+        "heading": "A way back, on every screen",
+        "body": "The app had a back button and it was fitted per screen, which meant it was fitted on ten of them: five pages that carried their own header, and the five account pages that inherited one. The other eighty nine had nothing. On the website that never mattered, because the browser has its own back button and quietly stood in. Inside the app there is no browser and iPhone has no hardware back, so a reader who tapped from a saint into one of his writings was stuck there and had to leave through the tab bar and walk down again. That is what was reported and that is what is fixed. The button knows where it is: it stays off the tab screens, where back means nothing, and off the ten screens that already had one, so nothing shows two. If you opened the app straight onto a page from a link, where there is genuinely nothing behind you, it takes you to Today rather than doing nothing at all."
+      },
+      {
+        "heading": "Six tabs, and the account moves to Discover",
+        "body": "The bottom bar carried seven tabs, which left each one about fifty eight pixels wide and made it the most crowded thing in the app. You has left the bar. Your account now sits in the Discover library as Settings, keeping the same gear it always wore so it reads as a move rather than a disappearance, and Discover stays lit while you are in there. Discover also lost its Featured today panel, which picked a topic and a council to show you. In the app that pick was frozen when the release was built, so the today in its name was never true there. Orthodox History was already in the Discover library and had been lighting no tab at all when you opened it. It does now."
+      },
+      {
+        "heading": "Like on Community",
+        "body": "Posts and replies can be liked. Dislike is there too and it is recorded, so moderation has the signal, but only the like total is shown. A visible dislike tally on a prayer request invites exactly the pile on it measures, and a number people have already seen cannot be taken back. Pressing what you already pressed takes it back, and pressing the other one moves you across without making you undo the first. The count moves the moment you press and the server corrects it, so a slow connection never leaves a like on screen that was never recorded."
+      },
+      {
+        "heading": "St Arsenius the Great",
+        "body": "He was kept on May 8 and named on the day, and there was no page behind the name. The Roman deacon whom Theodosius the Great chose to teach his sons, who left the palace for the desert of Scetis and became the Church's great teacher of silence: flee, be silent, pray always. He has a life now, and the sayings he is remembered by, including the one the fathers repeated most, that he had often repented of having spoken and never of having been silent. He is the one hundred and fifty eighth saint in the library. He carries no icon yet, so his page shows the same placeholder as the others still waiting for one."
+      },
+      {
+        "heading": "Five saints were listed twice",
+        "body": "Adding Arsenius turned up a fault that had nothing to do with him. The calendar names some saints in plain text and links others to their page, and when a saint had a page but the day's entry had not been linked to it, the day showed him twice: once as text you could not tap, once as a link directly underneath. It was happening to St Silouan the Athonite on September 24, St Job of Pochaev on October 28, St Porphyrios of Kavsokalyvia on December 2 and St Herman of Alaska on December 13. St Paisius Velichkovsky was a different case: he had been entered twice on November 15 with two different notes. All five days now name each saint once, and the app will refuse to build if it ever happens again."
+      },
+      {
+        "heading": "Planned prayers say what is coming",
+        "body": "Seven prayer categories are listed but not yet filled, because the text for them has to be a real public domain translation and nothing is ever invented to fill a gap. They were marked Planned and said nothing else, so tapping one did nothing and gave no reason. Each now says what it will hold: before work or study, after work, before travel, the Nativity fast, the fasts of the year, psalms for sickness and fear and sorrow, and thanksgiving. They still do not open, because there is still nothing to read. They will not describe a service that has not been sourced, and the app now refuses to build if one tries to."
+      },
+      {
+        "heading": "Tab labels in your own language",
+        "body": "Three faults in the bar at the bottom, which is the most looked at text in the app. In Spanish the You tab had no word on it at all: the label was present but empty, which beats the fallback to English that a missing label would have got. Shop was written in English for everyone, in all twenty one languages, even though the word had been translated for every one of them. And Community had only ever been translated into English, so twenty languages showed the English word. All three are fixed, and the app now refuses to build if any label in any language is blank or falls back to English."
+      }
+    ]
+  },
+  {
     "id": "v1-2",
     "version": "1.2",
     "date": "2026-08-20",
