@@ -5,6 +5,7 @@
 // lib/campaigns/client.ts.
 
 import { apiFetch } from "@/lib/api/client";
+import { parseReactionMap, type ReactionState } from "@/lib/community/reactions";
 import type { CommunityPost, CommunityReply } from "./types";
 
 export type CommunityResult = { ok: boolean; error?: string; id?: string };
@@ -94,17 +95,46 @@ export type CreatePostInput = {
 };
 
 /** Ids of the caller's own posts and replies. See app/api/community/mine. */
-export async function fetchMyCommunityIds(): Promise<{
+export type MyCommunityState = {
   postIds: string[];
   replyIds: string[];
-}> {
+  /** Post/reply id to the reaction this reader holds: 1 like, -1 dislike. */
+  reactions: {
+    posts: Record<string, ReactionState>;
+    replies: Record<string, ReactionState>;
+  };
+};
+
+const EMPTY_MINE: MyCommunityState = {
+  postIds: [],
+  replyIds: [],
+  reactions: { posts: {}, replies: {} },
+};
+
+export async function fetchMyCommunityIds(): Promise<MyCommunityState> {
   try {
     const res = await apiFetch("/api/community/mine");
-    if (!res.ok) return { postIds: [], replyIds: [] };
-    const data = (await res.json()) as { postIds?: string[]; replyIds?: string[] };
-    return { postIds: data.postIds ?? [], replyIds: data.replyIds ?? [] };
+    if (!res.ok) return EMPTY_MINE;
+    const data = (await res.json()) as {
+      postIds?: string[];
+      replyIds?: string[];
+      reactions?: {
+        posts?: Record<string, unknown>;
+        replies?: Record<string, unknown>;
+      };
+    };
+    // Narrowed rather than cast, in lib/community/reactions.ts where it is
+    // tested. This is the only place the wire shape becomes a ReactionState.
+    return {
+      postIds: data.postIds ?? [],
+      replyIds: data.replyIds ?? [],
+      reactions: {
+        posts: parseReactionMap(data.reactions?.posts),
+        replies: parseReactionMap(data.reactions?.replies),
+      },
+    };
   } catch {
-    return { postIds: [], replyIds: [] };
+    return EMPTY_MINE;
   }
 }
 

@@ -31,6 +31,8 @@ import {
   type FlorilegiumItem,
 } from "@/lib/florilegium/florilegium";
 import { resolveUser } from "@/lib/supabase/resolveUser";
+import { ReactionButtons } from "@/components/community/ReactionButtons";
+import type { ReactionState } from "@/lib/community/reactions";
 import { SkeletonList } from "@/components/ui/Skeleton";
 
 /**
@@ -221,6 +223,11 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
   const result = fetched && fetched.scope === groupId ? fetched.value : undefined;
   const [version, setVersion] = useState(0);
   const [myPostIds, setMyPostIds] = useState<Set<string>>(() => new Set());
+  // Which way this reader voted, from the same authenticated call as
+  // ownership. Not in the feed: it is per-user and the feed is cached public.
+  const [myReactions, setMyReactions] = useState<Record<string, ReactionState>>(
+    () => ({}),
+  );
 
   useEffect(() => {
     let alive = true;
@@ -277,7 +284,9 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
     let alive = true;
     void (async () => {
       const ids = await fetchMyCommunityIds();
-      if (alive) setMyPostIds(new Set(ids.postIds));
+      if (!alive) return;
+      setMyPostIds(new Set(ids.postIds));
+      setMyReactions(ids.reactions.posts);
     })();
     return () => {
       alive = false;
@@ -428,7 +437,14 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
               </div>
             ) : (
               result.posts.map((p) => (
-                <PostCard key={p.id} post={p} me={me} myPostIds={myPostIds} onChanged={reload} />
+                <PostCard
+                  key={p.id}
+                  post={p}
+                  me={me}
+                  myPostIds={myPostIds}
+                  myReaction={myReactions[p.id] ?? null}
+                  onChanged={reload}
+                />
               ))
             )}
           </div>
@@ -742,12 +758,15 @@ function PostCard({
   post,
   me,
   myPostIds,
+  myReaction,
   onChanged,
 }: {
   post: CommunityPost;
   me: Me;
   /** From GET /api/community/mine. The feed itself carries no author id. */
   myPostIds: Set<string>;
+  /** From the same call, for the same reason: per-reader, so not in the feed. */
+  myReaction: ReactionState;
   onChanged: () => void;
 }) {
   const { t, tn } = useTranslate();
@@ -954,15 +973,27 @@ function PostCard({
         </p>
       ) : null}
 
-      <button
-        type="button"
-        onClick={() => void toggleReplies()}
-        aria-expanded={open}
-        className="mt-4 font-sans text-detail font-medium text-paper/55 hover:text-paper"
-      >
-        {tn("community.replyCount", shownCount)}
-        {open ? " ▴" : " ▾"}
-      </button>
+      {/* One action row. Reactions and replies are both "what you can do with
+          this post", and stacking them put a lone like button above a lone
+          reply count with nothing tying them together. */}
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <ReactionButtons
+          postId={post.id}
+          likeCount={post.like_count}
+          dislikeCount={post.dislike_count}
+          mine={myReaction}
+          canReact={Boolean(me)}
+        />
+        <button
+          type="button"
+          onClick={() => void toggleReplies()}
+          aria-expanded={open}
+          className="font-sans text-detail font-medium text-paper/55 hover:text-paper"
+        >
+          {tn("community.replyCount", shownCount)}
+          {open ? " ▴" : " ▾"}
+        </button>
+      </div>
 
       {actionError ? (
         <p className="mt-2 font-sans text-detail text-rose-300" role="alert">

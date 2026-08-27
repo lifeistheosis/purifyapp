@@ -108,3 +108,30 @@ export function applyPress(
 export function isReaction(v: unknown): v is Reaction {
   return v === 1 || v === -1;
 }
+
+/**
+ * The id-to-reaction map a reader gets back, narrowed rather than cast.
+ *
+ * This is the seam between the wire and the button, and a cast here is how a
+ * button ends up stuck. The states are 1, -1 and ABSENT; there is no third
+ * value and no zero. A 0, a "1", or a null arriving from an older deploy or a
+ * hand-rolled request would satisfy `Record<string, ReactionState>` under a
+ * cast, reach the button as something truthy that is not a Reaction, and
+ * render as pressed with no press able to clear it, because every transition
+ * in this module compares against 1 and -1 by identity.
+ *
+ * So anything that is not exactly 1 or -1 is dropped, which lands the reader
+ * on "holding neither". That is the honest default: it is what the server will
+ * say on the next read, and an un-pressed button a reader can press beats a
+ * pressed one they cannot.
+ */
+export function parseReactionMap(
+  raw: unknown,
+): Record<string, Reaction> {
+  const out: Record<string, Reaction> = {};
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return out;
+  for (const [id, value] of Object.entries(raw as Record<string, unknown>)) {
+    if (id && isReaction(value)) out[id] = value;
+  }
+  return out;
+}
