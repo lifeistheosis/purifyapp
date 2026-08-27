@@ -364,6 +364,24 @@ export const RULES: RuleMeta[] = [
  href: "/prayers/personal",
  },
  {
+ // Reasoned Belief, in the app's own Community tab: "something that is
+ // desperately needed is [...] prayers of preparation before receiving the
+ // Eucharist AND Thanksgiving prayers after receiving the Eucharist".
+ // This is the first half. The book prints six under one heading and calls
+ // it "a selection"; the subtitle keeps that word rather than implying the
+ // set is exhaustive.
+ id: "pre-communion",
+ title: "Prayers before Communion",
+ titleDe: "Gebete vor der Kommunion",
+ description: "The six the Service Book appoints for those preparing to receive.",
+ descriptionDe: "Die sechs Gebete des Dienstbuches zur Vorbereitung auf den Empfang.",
+ category: "devotional",
+ href: "/prayers/pre-communion",
+ file: "rules/pre-communion.json",
+ estimatedMinutes: 15,
+ timeOfDay: "morning",
+ },
+ {
  id: "thanksgiving",
  title: "Thanksgiving prayers",
  titleDe: "Dankgebete",

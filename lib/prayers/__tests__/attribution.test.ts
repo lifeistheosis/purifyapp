@@ -106,6 +106,41 @@ describe("prayer attribution", () => {
     expect(thin, thin.join("\n  ")).toEqual([]);
   });
 
+  it("em dashes appear only in verbatim prayer text, never in our own voice", () => {
+    /**
+     * The no-em-dash rule governs Purify's voice, not a 1906 printer's.
+     *
+     * data/prayers/ was clean of them until the Hapgood pre-Communion ingest,
+     * which brought four: "And — O marvellous wonder! — I am not consumed",
+     * and two more setting off a clause. They are in the scan. Removing them
+     * would edit a text this repo calls verbatim, and verbatim outranks
+     * house style, which is why the saints gate reads registry prose only and
+     * lets eleven files keep theirs.
+     *
+     * So the line is drawn where it actually belongs: a prayer's `text` and
+     * `instruction` may carry whatever the edition printed. Everything we
+     * wrote ourselves, the title, subtitle and intro, may not.
+     */
+    const ours: string[] = [];
+    for (const { rel, rule } of allPrayerFiles()) {
+      for (const [field, value] of [
+        ["title", rule.title],
+        ["subtitle", rule.subtitle],
+        ["intro", rule.intro],
+      ] as const) {
+        if (typeof value === "string" && value.includes("—")) {
+          ours.push(`${rel} ${field}`);
+        }
+      }
+    }
+    expect(
+      ours,
+      "An em dash in our own copy. Commas, colons or periods instead. " +
+        "Verbatim prayer text is exempt and is not checked here:\n  " +
+        ours.join("\n  "),
+    ).toEqual([]);
+  });
+
   it("a file's own id matches the registry entry that points at it", () => {
     // The copy-paste failure: duplicate a neighbour, change the filename and
     // the registry line, forget the id inside. Nothing else in the suite looks.
