@@ -1,10 +1,7 @@
-import { loadAllTopics } from "@/lib/topics/topics";
-import { COUNCILS } from "@/lib/councils/councils";
 import { MobileShell } from "./MobileShell";
 import { MobileCard } from "./MobileCard";
 import { MobileHeader } from "./MobileHeader";
 import { MobileSectionLabel } from "./MobileSectionLabel";
-import { FeaturedToday } from "./FeaturedToday";
 import { SectionMasthead } from "./SectionMasthead";
 import { SoftTile, SoftTileGrid, type Tone } from "./SoftTiles";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
@@ -15,15 +12,10 @@ import { Calendar } from "@/components/ui/icons/Calendar";
 import { Cross } from "@/components/ui/icons/Cross";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
+import { Gear } from "@/components/ui/icons/tab/Gear";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { T } from "@/components/i18n/T";
-
-function firstSentence(s: string): string {
-  if (!s) return "";
-  const m = s.match(/^.+?[.!?](?:\s|$)/);
-  return (m ? m[0] : s).trim();
-}
 
 // Tone cycle for the library tile grid — graded neutrals, no colour.
 const LIBRARY_TONES: Tone[] = ["a", "b", "c", "d"];
@@ -36,28 +28,24 @@ const LIBRARY_TONES: Tone[] = ["a", "b", "c", "d"];
  *   2. Deep-slate hero with the saint icon + DayBadge as `aside`.
  *   3. The library — a menologion list of every library destination
  *      (saints, councils, calendar, topics, daily readings, psalter,
- *      patristic). The page's centerpiece.
- *   4. Featured today (topic + council), two parchment-tinted cards.
- *   5. Closing colophon.
+ *      patristic), and Settings. The page's centerpiece.
+ *   4. Closing colophon.
+ *
+ * "Featured today" (a topic card and a council card) used to sit between the
+ * library and the colophon and was removed. It cost a loadAllTopics() off
+ * disk on every render of this server component to summarise two cards, and
+ * the Android export froze the pick at build time anyway, so the "today" in
+ * its name was not true in the app.
+ *
+ * The Settings tile is the retired You tab. The bar was seven tabs at ~58px a
+ * cell; the account moved here rather than off the map. It keeps tab/Gear so
+ * readers meet the glyph they already knew, and MobileTabBar's Discover
+ * predicate claims /account, /saved and /settings so this tab still lights
+ * while the reader is in there.
  */
 export async function DiscoverMobile() {
   const locale = await getServerLocale();
   const m = getMessages(locale);
-
-  // Summarised here (the topic bodies are loaded off disk) but PICKED on
-  // the device, because this is a server component and the Android export
-  // renders it once at build time. See components/mobile/FeaturedToday.tsx.
-  const topics = await loadAllTopics();
-  const featuredTopics = topics.map((topic) => ({
-    slug: topic.slug,
-    title: topic.title,
-    definition: firstSentence(topic.definition),
-    citationCount: topic.citations.length,
-  }));
-  const featuredCouncils = COUNCILS.map((council) => ({
-    slug: council.slug,
-    byname: council.byname,
-  }));
 
   // The library index. Order reads like a menologion table of contents:
   // people first (saints), then the doctrinal record together (the councils,
@@ -103,6 +91,20 @@ export async function DiscoverMobile() {
       // froze at build time. The static blurb matches its siblings.
       blurb: t(m, "discover.tile.calendarBlurb"),
       Icon: Calendar,
+    },
+    {
+      // The retired You tab. Last in the list on purpose: the five above are
+      // the library and read as one sequence, and the account is not part of
+      // it. tab/Gear is the same glyph the tab wore, so this reads as a move
+      // rather than a new thing.
+      label: t(m, "nav.settings"),
+      href: "/account",
+      // Required by DiscoverEntry and unread by SoftTile, which renders no
+      // blurb (see the calendar entry above). Kept meaningful rather than a
+      // repeat of the label, so it is correct if this list is ever handed to
+      // DiscoverIndex, which does render it.
+      blurb: t(m, "nav.yourAccount"),
+      Icon: Gear,
     },
   ];
 
@@ -155,8 +157,6 @@ export async function DiscoverMobile() {
               Discover tile was retired. */}
         </SoftTileGrid>
       </div>
-
-      <FeaturedToday topics={featuredTopics} councils={featuredCouncils} />
 
       <p className="mt-10 text-center font-display-serif italic text-detail text-paper/45 leading-[1.55]">
         <T k="ui.throughThePrayersOfOur" />

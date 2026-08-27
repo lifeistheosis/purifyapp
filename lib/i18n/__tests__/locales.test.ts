@@ -51,18 +51,24 @@ describe("catalog values", () => {
     ).toEqual([]);
   });
 
-  it("resolves every tab-bar label to a real word in every locale", () => {
+  it("resolves every primary-navigation label to a real word in every locale", () => {
     // The bottom tab bar is the app's primary navigation and its labels are
     // the shortest strings in the product, so a miss there is both the most
     // visible and the easiest to overlook. t() returns the KEY on a miss, so
     // a label that still looks like a key is a miss.
     const TAB_KEYS = [
+      // The six tabs.
       "nav.today",
       "nav.bible",
       "nav.discover",
       "nav.prayers",
       "nav.shop",
       "nav.community",
+      // Not tabs, but the same job. nav.settings labels the Discover tile
+      // that replaced the retired You tab, and nav.you still titles the
+      // account surface itself and the (signed) layout's MobileTopBar. Both
+      // are the account's name to a reader, so both are held to the same bar.
+      "nav.settings",
       "nav.you",
     ];
     const offenders: string[] = [];

@@ -204,9 +204,18 @@ describe("backOutcome, the floor under router.back()", () => {
 
 describe("shouldShowBack", () => {
   it("hides on every tab root, where back is meaningless", () => {
-    for (const root of ["/", "/bible", "/discover", "/prayers", "/shop", "/community", "/account"]) {
+    for (const root of ["/", "/bible", "/discover", "/prayers", "/shop", "/community"]) {
       expect(shouldShowBack(root), `${root} is a tab root`).toBe(false);
     }
+  });
+
+  it("SHOWS on /account, which stopped being a tab root", () => {
+    // The You tab was retired and the account moved into the Discover library
+    // as Settings. It is now tapped into like any other destination, so it
+    // needs a way back. If this ever flips, the reader who taps Settings from
+    // Discover can only leave by tab, which is the reported complaint.
+    expect(shouldShowBack("/account")).toBe(true);
+    expect(shouldShowBack("/account/")).toBe(true);
   });
 
   it("shows on an ordinary inner page, which is the whole point", () => {
@@ -250,6 +259,16 @@ describe("shouldShowBack", () => {
     expect(shouldShowBack("/shop/orders")).toBe(true);
     expect(shouldShowBack("/bible")).toBe(false);
     expect(shouldShowBack("/bible/john")).toBe(true);
+  });
+
+  it("keeps hiding on the five account routes that carry their own header", () => {
+    // /account gained a back bar when it stopped being a tab root; its five
+    // (signed) children did NOT, because they still inherit a MobileTopBar
+    // from account/(signed)/layout.tsx. Losing tab-root status and having an
+    // own header are independent, and conflating them stacks two bars here.
+    for (const r of ["data", "eikon-box", "profile", "security", "sessions"]) {
+      expect(shouldShowBack(`/account/${r}`), `/account/${r}`).toBe(false);
+    }
   });
 
   it("does not throw on an empty pathname", () => {

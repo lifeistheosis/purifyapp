@@ -20,7 +20,17 @@
  * page files. Nothing in /account/profile's own page says it has a header.
  */
 
-/** Tab roots, from components/nav/MobileTabBar.tsx. */
+/**
+ * Tab roots, from components/nav/MobileTabBar.tsx.
+ *
+ * /account is NOT one any more. The You tab was retired and the account now
+ * hangs off the Discover library as Settings, so it is an ordinary inner
+ * destination and MUST get a back button: it is reached by tapping into it,
+ * and without one the reader is exactly as stranded as the report described.
+ * Note that YouMobile's own MobileHeader is not a substitute. It is not
+ * sticky and carries no chevron, unlike MobileTopBar, which is why only
+ * MobileTopBar routes are excluded below.
+ */
 const TAB_ROOTS = new Set([
   "/",
   "/bible",
@@ -28,7 +38,6 @@ const TAB_ROOTS = new Set([
   "/prayers",
   "/shop",
   "/community",
-  "/account",
 ]);
 
 /**

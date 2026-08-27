@@ -3,23 +3,26 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
-// Two kept library glyphs (Today, Community) and five bespoke tab glyphs.
+// Two kept library glyphs (Today, Community) and four bespoke tab glyphs.
 //
 // The tab set lives under icons/tab/ rather than replacing the library icons,
 // because the two have different briefs. A library icon is read alone at
-// whatever size its host gives it; a tab icon is read in a row of seven at
-// exactly 22px, where what matters is that it is optically the same weight as
-// its neighbours and has a silhouette none of them share. Codex, Octogram,
+// whatever size its host gives it; a tab icon is read in a row at exactly
+// 22px, where what matters is that it is optically the same weight as its
+// neighbours and has a silhouette none of them share. Codex, Octogram,
 // PrayerRope, Lampada and HaloedHead are all still in use elsewhere (Bible
 // index, Discover, Reading, PrayersMobile, the calendar's fast-free glyph and
 // the mobile headers' donate glyph) and are untouched by this.
+//
+// tab/Gear went with the You tab. It is NOT dead: DiscoverMobile renders it on
+// the Settings tile, so the account keeps the glyph readers already associate
+// with it and the move reads as a move rather than a disappearance.
 import { Sun } from "@/components/ui/icons/Sun";
 import { Church } from "@/components/ui/icons/Church";
 import { BookOpen } from "@/components/ui/icons/tab/BookOpen";
 import { Klimax } from "@/components/ui/icons/tab/Klimax";
 import { OrthodoxCross } from "@/components/ui/icons/tab/OrthodoxCross";
 import { Cart } from "@/components/ui/icons/tab/Cart";
-import { Gear } from "@/components/ui/icons/tab/Gear";
 import { NotificationsBadge } from "@/components/community/NotificationsInbox";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { haptic } from "@/lib/ui/motion";
@@ -32,11 +35,16 @@ import { beginRouteExit } from "@/lib/ui/routeTransition";
  * keeps the existing AppNav.
  *
  * Tabs, in the order chosen by the user:
- *   Today · Bible · Discover · Prayers · Shop · Community · You
+ *   Today · Bible · Discover · Prayers · Shop · Community
  * Shop appears only while the marketplace flag is on (it is inside the app now,
- * Beta 1.9); commerce sits after the study surfaces, before the account. So
- * this is six tabs by default and seven in the shipped APK, which sets
- * NEXT_PUBLIC_SHOP_ENABLED.
+ * Beta 1.9); commerce sits after the study surfaces. So this is five tabs by
+ * default and six in the shipped APK, which sets NEXT_PUBLIC_SHOP_ENABLED.
+ *
+ * You was the seventh, and it is gone. At seven the cell computed to ~58px
+ * and the bar was the most crowded surface in the app, while the account was
+ * already reachable from the top-right UserAvatarSmall on most surfaces. It
+ * now lives in the Discover library as Settings, and Discover's predicate
+ * below inherited its routes so nothing lost its lit tab.
  *
  * Active state is derived from `usePathname()`, with a small precedence
  * table so adjacent routes (e.g. /saints under Discover, /account under
@@ -130,7 +138,19 @@ export function MobileTabBar() {
         p === "/heresies" ||
         p.startsWith("/heresies/") ||
         p === "/calendar" ||
-        p.startsWith("/calendar/"),
+        p.startsWith("/calendar/") ||
+        p === "/history" ||
+        p.startsWith("/history/") ||
+        // Inherited from the retired You tab, which was this predicate's only
+        // claim on them. Without this /account, /saved and /settings light
+        // nothing at all, which is what makes a tab bar feel broken rather
+        // than merely shorter. /history was never claimed by anything: it is
+        // a Discover tile that lit no tab, and that was already a bug.
+        p === "/account" ||
+        p.startsWith("/account/") ||
+        p === "/saved" ||
+        p.startsWith("/saved/") ||
+        p === "/settings",
     },
     {
       key: "prayers",
@@ -163,18 +183,6 @@ export function MobileTabBar() {
         p.startsWith("/community/") ||
         p === "/campaigns" ||
         p.startsWith("/campaigns/"),
-    },
-    {
-      key: "you",
-      label: t("nav.you"),
-      href: "/account",
-      Icon: Gear,
-      matches: (p) =>
-        p === "/account" ||
-        p.startsWith("/account/") ||
-        p === "/saved" ||
-        p.startsWith("/saved/") ||
-        p === "/settings",
     },
   ];
 

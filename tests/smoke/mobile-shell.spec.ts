@@ -43,12 +43,14 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+// You is deliberately absent: the tab was retired and the account moved into
+// the Discover library as Settings. Shop and Community are flag/route
+// dependent and were never in this list.
 const TABS = [
   { label: "Today", expect: "/" },
   { label: "Bible", expect: "/bible" },
   { label: "Discover", expect: "/discover" },
   { label: "Prayers", expect: "/prayers" },
-  { label: "You", expect: "/account" },
 ];
 
 test.describe("native app shell (Capacitor UA)", () => {
