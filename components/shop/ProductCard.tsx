@@ -17,6 +17,7 @@ import {
   productRating,
   unitsSoldLabel,
 } from "@/lib/shop/format";
+import { stockUrgency } from "@/lib/shop/stock";
 import type { ShopProductFull } from "@/lib/shop/types";
 import { cn } from "@/lib/cn";
 
@@ -46,6 +47,7 @@ export function ProductCard({
   const sold = unitsSoldLabel(product.units_sold);
   const ready = product.inventory_status === "ready_to_ship";
   const soldOut = product.inventory_status === "out_of_stock";
+  const urgency = stockUrgency(product);
   const dotColor = ready
     ? "bg-emerald-400"
     : product.inventory_status === "coming_soon"
@@ -104,11 +106,19 @@ export function ProductCard({
           </div>
         )}
 
-        {/* Availability chip. */}
+        {/* Availability chip, and beside it the stock count when there is a
+            real one worth showing. stockUrgency stays silent on an unknown
+            quantity and on anything not ready to ship, so this never invents
+            scarcity. See lib/shop/stock.ts. */}
         <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-pill bg-night/70 px-2.5 py-1 font-sans text-caption font-medium text-paper backdrop-blur-sm">
           <span className={cn("h-1.5 w-1.5 rounded-full", dotColor)} />
           {INVENTORY_LABELS[product.inventory_status]}
         </span>
+        {urgency.label ? (
+          <span className="absolute bottom-3 right-3 inline-flex items-center rounded-pill bg-crimson/85 px-2.5 py-1 font-sans text-caption font-semibold text-paper backdrop-blur-sm">
+            {urgency.label}
+          </span>
+        ) : null}
 
         {/* Save heart floats above the stretched link. */}
         <FavoriteButton
