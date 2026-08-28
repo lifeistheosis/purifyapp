@@ -13,6 +13,7 @@ const FUTURE = new Date(Date.now() + 30 * 86_400_000).toISOString();
 const PAST = new Date(Date.now() - 30 * 86_400_000).toISOString();
 
 type Row = {
+  user_id: string;
   plus_until: string | null;
   pro_until: string | null;
   plus_source: string | null;
@@ -27,6 +28,7 @@ function fakeAdmin(rows: Row[]): SupabaseClient {
 }
 
 const row = (over: Partial<Row> = {}): Row => ({
+  user_id: "customer",
   plus_until: FUTURE,
   pro_until: null,
   plus_source: "google",
