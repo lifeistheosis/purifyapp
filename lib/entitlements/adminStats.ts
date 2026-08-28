@@ -10,6 +10,8 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { SubscriberCounts } from "@/lib/premium/mrr";
+import { DEVELOPER_EMAILS } from "@/lib/dev/developer";
+import { userIdByEmail } from "@/lib/admin/accountEmails";
 
 export type SubscriptionStats = {
   /** plus_until in the future (includes Pro, which is a Plus superset). */
@@ -33,7 +35,7 @@ export type SubscriptionStats = {
    * times larger than the one paying. The breakdown existed only inside
    * `bySource`, several cards further down, behind a chart.
    *
-   * These three always sum to `activePlus`.
+   * These four always sum to `activePlus`.
    */
   /** Someone is being billed for these. */
   paidPlus: number;
@@ -41,6 +43,22 @@ export type SubscriptionStats = {
   compedPlus: number;
   /** Redeemed gifts (plus_source = 'gift'). Nobody paid. */
   giftedPlus: number;
+
+  /**
+   * The owner's own subscriptions, bought through a store with the owner's own
+   * card while testing.
+   *
+   * This is NOT income and counting it as such is worse than counting a comp.
+   * A comp is money that never moved. This is money that left the owner's card,
+   * had 15% taken by the store, and came back smaller: booking $4.99 of revenue
+   * records a 75 cent loss as a gain. On 2026-08-28 one of the three paying
+   * Google Play rows was exactly this, so a third of the "paying" base and a
+   * sixth of MRR was the owner paying himself.
+   *
+   * Excluded from `paidPlus` and from `paidCounts`, so it reaches neither the
+   * headline nor the MRR estimate.
+   */
+  developerPlus: number;
 };
 
 /**
@@ -59,9 +77,28 @@ export async function subscriptionStats(
 ): Promise<SubscriptionStats> {
   const { data, error } = await admin
     .from("entitlements")
-    .select("plus_until, pro_until, plus_source, is_supporter");
+    .select("user_id, plus_until, pro_until, plus_source, is_supporter");
 
   if (error) throw new Error(`entitlements read failed: ${error.message}`);
+
+  // Resolved once, not per row. A failure here must not take the whole panel
+  // down: if the lookup cannot answer, the owner's own row falls back to being
+  // counted as paid, which is the behaviour that existed before this and is
+  // wrong in the safe direction (an overstated figure the operator can see)
+  // rather than a 500 on three tabs.
+  const developerIds = new Set(
+    (
+      await Promise.all(
+        DEVELOPER_EMAILS.map(async (email) => {
+          try {
+            return await userIdByEmail(email);
+          } catch {
+            return null;
+          }
+        }),
+      )
+    ).filter((id): id is string => !!id),
+  );
 
   const rows = data ?? [];
   const now = Date.now();
@@ -75,9 +112,11 @@ export async function subscriptionStats(
   let proPaid = 0;
   let compedPlus = 0;
   let giftedPlus = 0;
+  let developerPlus = 0;
   const bySource: Record<string, number> = {};
 
   for (const r of rows as {
+    user_id: string;
     plus_until: string | null;
     pro_until: string | null;
     plus_source: string | null;
@@ -96,9 +135,11 @@ export async function subscriptionStats(
     // gift is redeemed. Only "comp" was excluded, so every redeemed gift was
     // counted as a paying subscriber and priced at list in estimatedMrrCents.
     // That inflates the one number used to judge whether Purify earns.
-    const unpaid = source === "comp" || source === "gift";
+    const isDeveloper = developerIds.has(r.user_id);
+    const unpaid = source === "comp" || source === "gift" || isDeveloper;
     if (source === "comp") compedPlus += 1;
-    if (source === "gift") giftedPlus += 1;
+    else if (source === "gift") giftedPlus += 1;
+    else if (isDeveloper) developerPlus += 1;
 
     if (pro) {
       activePro += 1;
@@ -119,5 +160,6 @@ export async function subscriptionStats(
     paidPlus: plusOnlyPaid + proPaid,
     compedPlus,
     giftedPlus,
+    developerPlus,
   };
 }
