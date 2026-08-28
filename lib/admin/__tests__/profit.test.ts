@@ -1,0 +1,101 @@
+import { describe, expect, it } from "vitest";
+
+import { membersToBreakEven, monthlyProfit } from "../profit";
+
+/**
+ * Pinned to the real books on 2026-08-28, so the figures below are what Purify
+ * actually looked like the day this was written:
+ *
+ *   income   $19.98 shop (one paid order), $0 donations,
+ *            $29.97 subscriptions at list (2 Plus at $4.99, 1 Pro at $19.99),
+ *            all three sold through Google Play
+ *   costs    $171 a month: Developers $100, Render $30, GitHub $12,
+ *            Bible API $29. The last is marked hidden on /support, which is a
+ *            publishing choice and not a discount.
+ */
+const AUGUST = {
+  shopNetCents: 1998,
+  donationsCents: 0,
+  subsGrossCents: 2997,
+  storeFeePct: 0.15,
+  fixedCostsCents: 17100,
+  boxCostsCents: 0,
+};
+
+describe("the month as it really stands", () => {
+  const p = monthlyProfit(AUGUST);
+
+  it("takes the store's cut before calling it revenue", () => {
+    expect(p.subsNetCents).toBe(2547); // $25.47, not the $29.97 on the panel
+  });
+
+  it("loses money", () => {
+    expect(p.revenueCents).toBe(4545); // $45.45
+    expect(p.costsCents).toBe(17100); // $171.00
+    expect(p.profitCents).toBe(-12555); // -$125.55
+    expect(p.profitCents).toBeLessThan(0);
+  });
+
+  it("says how far from break even", () => {
+    expect(p.breakEvenGapCents).toBe(12555);
+    // Net per member: Pro $16.99, Plus $4.24.
+    expect(membersToBreakEven(p.breakEvenGapCents, 1699)).toBe(8);
+    expect(membersToBreakEven(p.breakEvenGapCents, 424)).toBe(30);
+  });
+
+  it("is labelled estimated, because subscription income is", () => {
+    // No billed amount is stored anywhere: the RevenueCat webhook overwrites a
+    // single row and discards the event. Any total built on it is an estimate
+    // and must not be printed as though it were measured.
+    expect(p.basis).toBe("estimated");
+  });
+});
+
+describe("the box is a real cost", () => {
+  it("moves the month when boxes are posted", () => {
+    // One Pro member, one $5.95 box at the ceiling.
+    const withBox = monthlyProfit({ ...AUGUST, boxCostsCents: 595 });
+    expect(withBox.costsCents).toBe(17695);
+    expect(withBox.profitCents).toBe(-13150);
+  });
+
+  it("shows what a year of overspending costs", () => {
+    // $9 boxes instead of the $5.95 ceiling, twelve months, one member.
+    const over = monthlyProfit({ ...AUGUST, boxCostsCents: 900 });
+    const atCeiling = monthlyProfit({ ...AUGUST, boxCostsCents: 595 });
+    const yearly = (atCeiling.profitCents - over.profitCents) * 12;
+    expect(yearly).toBe(3660); // $36.60 a year, on ONE member
+  });
+});
+
+describe("edges", () => {
+  it("reports realized when nothing is estimated", () => {
+    const p = monthlyProfit({ ...AUGUST, subsGrossCents: 0 });
+    expect(p.basis).toBe("realized");
+  });
+
+  it("has no margin to report with no revenue", () => {
+    const p = monthlyProfit({
+      shopNetCents: 0,
+      donationsCents: 0,
+      subsGrossCents: 0,
+      storeFeePct: 0.15,
+      fixedCostsCents: 17100,
+      boxCostsCents: 0,
+    });
+    expect(p.margin).toBeNull();
+    expect(p.profitCents).toBe(-17100);
+  });
+
+  it("reports no gap once the month clears", () => {
+    const p = monthlyProfit({ ...AUGUST, subsGrossCents: 30000 });
+    expect(p.profitCents).toBeGreaterThan(0);
+    expect(p.breakEvenGapCents).toBe(0);
+    expect(membersToBreakEven(p.breakEvenGapCents, 1699)).toBe(0);
+  });
+
+  it("never returns a fractional member", () => {
+    expect(membersToBreakEven(1, 1699)).toBe(1);
+    expect(membersToBreakEven(1700, 1699)).toBe(2);
+  });
+});
