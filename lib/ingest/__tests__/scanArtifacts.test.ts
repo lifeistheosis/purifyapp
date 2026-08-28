@@ -208,5 +208,12 @@ describe("the shipped corpus carries no scan artifacts", () => {
             `character: each one stands where a real mark was printed.`
         : "",
     ).toEqual([]);
-  });
+    // Reading 104 MB is the floor here and it is I/O bound, so the wall clock
+    // depends on what else the suite is doing. Standalone it is about 4
+    // seconds; sharing a machine with 140 other test files it has been seen at
+    // 68. It passed at 25s on one run and timed out at the 30s default on the
+    // next, which is a flake, not a finding. The number below is not a
+    // performance target, it is far enough above the worst observed run that a
+    // failure here means a real artifact rather than a busy disk.
+  }, 180_000);
 });
