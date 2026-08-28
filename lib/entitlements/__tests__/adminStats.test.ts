@@ -118,3 +118,76 @@ describe("subscriptionStats: who counts as paying", () => {
     );
   });
 });
+
+describe("the paid / comped / gifted split the panel leads with", () => {
+  /**
+   * Production, measured 2026-08-28: 16 accounts hold active Plus and 13 of
+   * them are comps. The panel's headline card read "Active Plus 16", which
+   * describes a subscriber base more than five times the paying one. The
+   * breakdown existed, buried in a bySource chart several cards down.
+   */
+  it("splits a realistic mix the way the panel must show it", async () => {
+    const rows = [
+      ...Array.from({ length: 13 }, () => row({ plus_source: "comp" })),
+      ...Array.from({ length: 3 }, () => row({ plus_source: "google" })),
+    ];
+    const s = await subscriptionStats(fakeAdmin(rows));
+    expect(s.activePlus).toBe(16);
+    expect(s.paidPlus).toBe(3);
+    expect(s.compedPlus).toBe(13);
+    expect(s.giftedPlus).toBe(0);
+  });
+
+  it("ALWAYS sums back to activePlus, so the three cards cannot lie", async () => {
+    // If a new unpaid source is added to the `unpaid` check without a counter
+    // here, the split silently stops adding up and the panel shows a gap.
+    const rows = [
+      row({ plus_source: "google" }),
+      row({ plus_source: "apple" }),
+      row({ plus_source: "comp" }),
+      row({ plus_source: "comp" }),
+      row({ plus_source: "gift" }),
+      row({ plus_source: "stripe", pro_until: FUTURE }),
+      row({ plus_source: "comp", pro_until: FUTURE }),
+      row({ plus_source: null }),
+    ];
+    const s = await subscriptionStats(fakeAdmin(rows));
+    expect(s.paidPlus + s.compedPlus + s.giftedPlus).toBe(s.activePlus);
+  });
+
+  it("counts a comped Pro as comped, not as paying", async () => {
+    const s = await subscriptionStats(
+      fakeAdmin([row({ plus_source: "comp", pro_until: FUTURE })]),
+    );
+    expect(s.activePro).toBe(1);
+    expect(s.paidPlus).toBe(0);
+    expect(s.compedPlus).toBe(1);
+  });
+
+  it("ignores expired comps entirely", async () => {
+    // An expired grant is not a comp the panel should report; it is nothing.
+    const s = await subscriptionStats(
+      fakeAdmin([row({ plus_source: "comp", plus_until: PAST })]),
+    );
+    expect(s.activePlus).toBe(0);
+    expect(s.compedPlus).toBe(0);
+  });
+
+  it("keeps paidPlus in step with the MRR estimate's own counts", async () => {
+    // Two numbers derived from the same rows by different code paths. If they
+    // disagree, the panel shows a subscriber count that its own revenue
+    // figure contradicts.
+    const rows = [
+      row({ plus_source: "google" }),
+      row({ plus_source: "google" }),
+      row({ plus_source: "stripe", pro_until: FUTURE }),
+      row({ plus_source: "comp" }),
+      row({ plus_source: "gift" }),
+    ];
+    const s = await subscriptionStats(fakeAdmin(rows));
+    expect(s.paidPlus).toBe(s.paidCounts.plusOnly + s.paidCounts.pro);
+    expect(estimatedMrrCents(s.paidCounts)).toBe(
+      2 * PLAN_PRICE_CENTS.plusMonthly + PLAN_PRICE_CENTS.proMonthly,
+    );
+  });
+});

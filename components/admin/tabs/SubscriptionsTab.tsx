@@ -16,6 +16,12 @@ type Subs = {
   plusOnly: number;
   supporters: number;
   bySource: Record<string, number>;
+  /** Billed. The number that answers "is anyone paying". */
+  paidPlus: number;
+  /** Admin grants. Access, not revenue. */
+  compedPlus: number;
+  /** Redeemed gifts. Also access, not revenue. */
+  giftedPlus: number;
   mrrCents: number;
   arrCents: number;
   estimated: boolean;
@@ -81,13 +87,38 @@ function SummaryPanel() {
           zero subscribers.
         </p>
       ) : null}
+      {/* PAYING LEADS, and that is the whole point of this row.
+          It used to open with "Active Plus", which on production is 16 while
+          only 3 of those accounts are billed: 13 are comps. An operator
+          reading the first card saw a subscriber base five times the real
+          one. The comp figure existed, in a bySource chart several cards
+          further down, which is not where anyone looks first.
+          Paying + Comped + Gifted always equals Active Plus; a test in
+          lib/entitlements/__tests__/adminStats.test.ts holds that. */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard
+          label="Paying"
+          value={data?.paidPlus ?? "—"}
+          accent
+          hint="billed, incl. Pro"
+        />
+        <StatCard
+          label="Comped"
+          value={data?.compedPlus ?? "—"}
+          hint="admin grants"
+        />
+        <StatCard
+          label="Gifted"
+          value={data?.giftedPlus ?? "—"}
+          hint="redeemed gifts"
+        />
         <StatCard
           label="Active Plus"
           value={data?.activePlus ?? "—"}
-          accent
-          hint="includes Pro"
+          hint="all three together"
         />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard label="Active Pro" value={data?.activePro ?? "—"} hint="members" />
         <StatCard label="Plus only" value={data?.plusOnly ?? "—"} />
         <StatCard

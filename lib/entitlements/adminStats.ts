@@ -24,6 +24,23 @@ export type SubscriptionStats = {
   bySource: Record<string, number>;
   /** Paid-only counts (comped AND gifted accounts excluded) for the MRR estimate. */
   paidCounts: SubscriberCounts;
+
+  /**
+   * The split the admin panel leads with, because `activePlus` alone misleads.
+   *
+   * On production today 16 accounts hold active Plus and 13 of them are comps,
+   * so a headline reading "Active Plus 16" describes a subscriber base four
+   * times larger than the one paying. The breakdown existed only inside
+   * `bySource`, several cards further down, behind a chart.
+   *
+   * These three always sum to `activePlus`.
+   */
+  /** Someone is being billed for these. */
+  paidPlus: number;
+  /** Granted by an admin (plus_source = 'comp'). Nobody paid. */
+  compedPlus: number;
+  /** Redeemed gifts (plus_source = 'gift'). Nobody paid. */
+  giftedPlus: number;
 };
 
 /**
@@ -56,6 +73,8 @@ export async function subscriptionStats(
   let supporters = 0;
   let plusOnlyPaid = 0;
   let proPaid = 0;
+  let compedPlus = 0;
+  let giftedPlus = 0;
   const bySource: Record<string, number> = {};
 
   for (const r of rows as {
@@ -78,6 +97,8 @@ export async function subscriptionStats(
     // counted as a paying subscriber and priced at list in estimatedMrrCents.
     // That inflates the one number used to judge whether Purify earns.
     const unpaid = source === "comp" || source === "gift";
+    if (source === "comp") compedPlus += 1;
+    if (source === "gift") giftedPlus += 1;
 
     if (pro) {
       activePro += 1;
@@ -95,5 +116,8 @@ export async function subscriptionStats(
     supporters,
     bySource,
     paidCounts: { plusOnly: plusOnlyPaid, pro: proPaid },
+    paidPlus: plusOnlyPaid + proPaid,
+    compedPlus,
+    giftedPlus,
   };
 }

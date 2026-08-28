@@ -70,6 +70,14 @@ export async function GET() {
     supporters: number;
   }[];
   const donationsTotal = donations.reduce((a, d) => a + d.total_cents, 0);
+
+  // THE PIPELINE, not just the takings. Measured on production 2026-08-28:
+  // 40 orders, 24 pending, 16 cancelled, ZERO paid. The panel reported that
+  // as "$0" and nothing else, which reads as "nobody wants it" when what it
+  // actually says is "24 people reached checkout and none of them finished".
+  // Those are opposite problems and the operator needs to tell them apart.
+  const pendingOrderCount = orders.filter((o) => o.payment_status === "pending").length;
+  const cancelledOrderCount = orders.filter((o) => o.payment_status === "cancelled").length;
   const donationsCurrent = donations.length
     ? donations[donations.length - 1]
     : null;
@@ -98,6 +106,8 @@ export async function GET() {
         averageOrderCents: summary.averageOrderCents,
         refundRate: summary.refundRate,
         paidOrderCount: summary.paidOrderCount,
+        pendingOrderCount,
+        cancelledOrderCount,
         unitsSold: summary.unitsSold,
         monthly,
         topProducts: top,
@@ -106,6 +116,13 @@ export async function GET() {
         totalCents: donationsTotal,
         current: donationsCurrent,
         monthly: donations,
+        // NOT MEASURED IS NOT ZERO. donations_monthly is a manual snapshot
+        // table and nothing writes to it automatically; on production it has
+        // no rows at all. Reporting a bare 0 tells the operator donations
+        // were received and totalled nothing, when the truth is that no
+        // figure has ever been recorded. The UI must render these
+        // differently, and this flag is how it can.
+        recorded: donations.length > 0,
       },
       subscriptions: {
         // Real figures where RevenueCat answers, the list-price estimate

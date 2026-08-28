@@ -19,11 +19,17 @@ type Revenue = {
     averageOrderCents: number;
     refundRate: number;
     paidOrderCount: number;
+    pendingOrderCount: number;
+    cancelledOrderCount: number;
     unitsSold: number;
     monthly: { month: string; netCents: number; grossCents: number }[];
     topProducts: { title: string; units: number; grossCents: number }[];
   };
-  donations: { totalCents: number };
+  donations: {
+    totalCents: number;
+    /** False when donations_monthly has no rows: unmeasured, not zero. */
+    recorded: boolean;
+  };
   subscriptions: {
     mrrCents: number;
     arrCents: number;
@@ -84,12 +90,25 @@ function RevenuePanel() {
         <StatCard
           label="Avg order"
           value={data ? money(data.shop.averageOrderCents) : "—"}
-          hint={data ? `${data.shop.paidOrderCount} paid` : undefined}
+          // The pipeline, not just the takings. On production this reads
+          // "0 paid, 24 pending, 16 cancelled": people reach checkout and
+          // none of them finish. A bare $0 looked like no demand, which is
+          // the opposite diagnosis and the opposite fix.
+          hint={
+            data
+              ? `${data.shop.paidOrderCount} paid · ${data.shop.pendingOrderCount} pending · ${data.shop.cancelledOrderCount} cancelled`
+              : undefined
+          }
         />
         <StatCard
           label="Donations"
-          value={data ? money(data.donations.totalCents) : "—"}
-          hint="all-time"
+          // NOT MEASURED IS NOT ZERO. donations_monthly is a manual snapshot
+          // table with no rows on production, so a bare $0 claimed donations
+          // came in and totalled nothing. They were never recorded at all.
+          value={
+            data ? (data.donations.recorded ? money(data.donations.totalCents) : "Not recorded") : "—"
+          }
+          hint={data && !data.donations.recorded ? "no snapshot yet" : "all-time"}
         />
         <StatCard
           label={data && !data.subscriptions.estimated ? "Subs MRR · real" : "Subs MRR · est."}
