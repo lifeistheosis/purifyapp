@@ -2,9 +2,9 @@
   {
     "id": "v1-3",
     "version": "1.3",
-    "date": "2026-08-26",
+    "date": "2026-08-28",
     "title": "A way back, and a saint who was only a name",
-    "intro": "A reader wrote in the app's own Community tab that on iPhone, once you tap into a section, getting back sometimes means leaving the section altogether and finding your way down again. Sometimes undersold it. Eighty nine of the app's ninety nine screens had no way back at all, and on the website the browser's own back button had been covering for it, so it never showed up as a bug. Every one of those screens has one now. The rest of this release is the same kind of thing: work that was nearly finished and did not quite reach you. Seven prayer categories that said Planned and nothing else. A tab bar carrying seven tabs. A Spanish tab with no word on it. St Arsenius the Great, kept every May 8 and named on the day, with nothing behind his name. And five saints the calendar had been quietly listing twice.",
+    "intro": "A reader wrote in the app's own Community tab that on iPhone, once you tap into a section, getting back sometimes means leaving the section altogether and finding your way down again. Sometimes undersold it. Eighty nine of the app's ninety nine screens had no way back at all, and on the website the browser's own back button had been covering for it, so it never showed up as a bug. Every one of those screens has one now. The rest of this release is the same kind of thing: work that was nearly finished and did not quite reach you. Seven prayer categories that said Planned and nothing else. A tab bar carrying seven tabs. A Spanish tab with no word on it. St Arsenius the Great, kept every May 8 and named on the day, with nothing behind his name. And five saints the calendar had been quietly listing twice. This release also carries the first of the Communion prayers, the day's commemoration on the Android home screen, and a sign up that can no longer hang.",
     "sections": [
       {
         "heading": "A way back, on every screen",
@@ -31,8 +31,20 @@
         "body": "Seven prayer categories are listed but not yet filled, because the text for them has to be a real public domain translation and nothing is ever invented to fill a gap. They were marked Planned and said nothing else, so tapping one did nothing and gave no reason. Each now says what it will hold: before work or study, after work, before travel, the Nativity fast, the fasts of the year, psalms for sickness and fear and sorrow, and thanksgiving. They still do not open, because there is still nothing to read. They will not describe a service that has not been sourced, and the app now refuses to build if one tries to."
       },
       {
+        "heading": "The prayers before Communion",
+        "body": "A reader asked in Community for the prayers of preparation before receiving, and for the thanksgiving afterwards. The first half is here. Hapgood's Service Book prints six prayers of preparation and all six are in the app: St Basil the Great, St John Chrysostom, Simeon Metaphrastes, Simeon the New Theologian, St John of Damascus, and the short prayer said immediately before receiving. They are her words in her order, from the 1906 edition, which is out of copyright. Nothing was smoothed or modernised, and nothing was written to fill a gap. Where the scan had broken a word across a line, it was rejoined only where that same word stands unbroken elsewhere in the volume, and the ingest stops rather than guess at one it cannot find. The thanksgiving after Communion is not here yet. It will arrive the same way or not at all."
+      },
+      {
+        "heading": "The day's commemoration on your home screen",
+        "body": "Two readers asked for a widget. On Android there is one now: the saint the Church keeps today and whether the day is a fast, on the home screen, without opening the app. It follows the calendar you have chosen, so it says what the app says rather than a second opinion. It turns over at midnight where you are, not where the build machine was, and it survives a change of time zone. It needs no connection at all, because the whole year is worked out when the release is built and carried inside the app, four hundred days of it, so a reader who never updates still gets a correct day for longer than a release cycle. There is no iPhone widget yet. That one needs a separate piece of the app which does not exist today, and it is better to say so than to let it look forgotten."
+      },
+      {
         "heading": "Tab labels in your own language",
         "body": "Three faults in the bar at the bottom, which is the most looked at text in the app. In Spanish the You tab had no word on it at all: the label was present but empty, which beats the fallback to English that a missing label would have got. Shop was written in English for everyone, in all twenty one languages, even though the word had been translated for every one of them. And Community had only ever been translated into English, so twenty languages showed the English word. All three are fixed, and the app now refuses to build if any label in any language is blank or falls back to English."
+      },
+      {
+        "heading": "Sign up stops being able to hang",
+        "body": "A reader reported the page freezing while creating an account. Before an account is made, the app records that you accepted the terms, and it waits for that to be written. Nothing bounded the wait. On a poor connection the button could read Creating account until the browser itself gave up, which is a wait with no end and no way out of it. Inside the app it is worse, because that call crosses to the website and fails more often than the same call made on the site. The wait is now capped at twelve seconds, past a slow mobile round trip and well short of the point where somebody force quits. If it does not get through you are told to try again, which was always the only other outcome: sign up is deliberately stopped when acceptance cannot be recorded, so hanging served nobody."
       }
     ]
   },
