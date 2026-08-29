@@ -43,19 +43,71 @@ function missingFor(code) {
   return Object.keys(en).filter((k) => !(k in cur));
 }
 
-function cut(code, size, namespaces) {
+/**
+ * Keys that are PRESENT but still hold the English text.
+ *
+ * These are worse than missing, because nothing reports them: the key resolves,
+ * the audit counts the locale as covering it, and the reader simply gets
+ * English. Twelve locales carry the same eleven, all of them account.* and
+ * pwa.install.*, so a Russian reader is told "Sign in to sync" in English on
+ * their own account screen.
+ *
+ * A short value is excluded because plenty are legitimately identical: "Amen",
+ * "Email", "Purify Plus", "OK". Three words or more is the point where matching
+ * English stops being a coincidence.
+ */
+function untranslatedFor(code) {
+  const en = read(enPath);
+  const cur = read(join(DIR, `${code}.json`));
+  return Object.keys(en).filter(
+    (k) =>
+      k in cur &&
+      typeof cur[k] === "string" &&
+      cur[k] === en[k] &&
+      String(en[k]).trim().split(/\s+/).length > 2,
+  );
+}
+
+function cut(code, size, namespaces, includeUntranslated = true, byteBudget = 6000) {
   const en = read(enPath);
   let keys = missingFor(code);
+  if (includeUntranslated) keys = keys.concat(untranslatedFor(code));
   if (namespaces?.length) {
     keys = keys.filter((k) => namespaces.includes(k.split(".")[0]));
   }
+  // en.json order, so a batch reads as a coherent run of one screen's strings
+  // rather than the missing ones followed by the stale ones.
+  const rank = new Map(Object.keys(en).map((k, i) => [k, i]));
+  keys.sort((a, b) => rank.get(a) - rank.get(b));
   const dir = join(WORK, code);
   if (existsSync(dir)) rmSync(dir, { recursive: true });
   mkdirSync(dir, { recursive: true });
 
+  // Sized by BYTES, not by key count.
+  //
+  // The first pilot cut Romanian at a flat 200 keys and produced batches of
+  // 4KB and 37KB from the same run, because `nav.today` is two words and
+  // `study.theSevenCouncilsOfThe` is a paragraph. The 37KB one was still going
+  // long after the 4KB one had finished. A character budget makes every batch
+  // roughly the same amount of work, which is what makes the run predictable
+  // and a retry cheap. `size` stays as a hard ceiling on key count.
+  const groups = [];
+  let cur = [];
+  let budget = 0;
+  for (const k of keys) {
+    const cost = k.length + String(en[k]).length + 8;
+    if (cur.length && (budget + cost > byteBudget || cur.length >= size)) {
+      groups.push(cur);
+      cur = [];
+      budget = 0;
+    }
+    cur.push(k);
+    budget += cost;
+  }
+  if (cur.length) groups.push(cur);
+
   let n = 0;
-  for (let i = 0; i < keys.length; i += size) {
-    const slice = keys.slice(i, i + size);
+  for (const slice of groups) {
     const payload = {};
     for (const k of slice) payload[k] = en[k];
     writeFileSync(
@@ -125,7 +177,11 @@ function merge(code) {
       continue;
     }
     for (const [k, v] of Object.entries(obj)) {
-      if (k in cur) continue; // never overwrite an existing translation
+      // A real translation is never overwritten. The one exception is a value
+      // that still holds the English text, which is not a translation at all,
+      // and is the whole reason untranslatedFor exists.
+      if (k in cur && cur[k] !== en[k]) continue;
+      if (cur[k] === v) continue;
       cur[k] = v;
       added += 1;
     }
@@ -161,10 +217,12 @@ function status() {
 const [cmd, code, ...rest] = process.argv.slice(2);
 const sizeArg = rest.indexOf("--size");
 const nsArg = rest.indexOf("--ns");
-const size = sizeArg >= 0 ? parseInt(rest[sizeArg + 1], 10) : 120;
+const size = sizeArg >= 0 ? parseInt(rest[sizeArg + 1], 10) : 200;
+const bArg = rest.indexOf("--bytes");
+const byteBudget = bArg >= 0 ? parseInt(rest[bArg + 1], 10) : 6000;
 const ns = nsArg >= 0 ? rest[nsArg + 1].split(",") : null;
 
-if (cmd === "cut") cut(code, size, ns);
+if (cmd === "cut") cut(code, size, ns, true, byteBudget);
 else if (cmd === "merge") merge(code);
 else if (cmd === "status") status();
 else {
