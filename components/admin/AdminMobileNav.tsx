@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { focusablesIn, nextIndex } from "@/lib/ui/focusTrap";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
+import { larpOn, setLarp } from "@/lib/admin/larp";
 
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
 import { cn } from "@/lib/cn";
@@ -79,6 +80,30 @@ export function AdminMobileNav({
   const activeIsPrimary = primary.some((t) => t.id === active);
 
   const hasOpened = useRef(false);
+
+  // LARP MODE, the phone's way in.
+  //
+  // On a desktop the mode is armed by typing "larp" with focus outside a text
+  // field. A phone cannot do that: the soft keyboard only opens WHEN a field is
+  // focused, and the listener deliberately ignores keystrokes from one, so the
+  // gesture is unreachable on exactly the screens the mode was built to help
+  // design. Five taps on the grab handle is the mobile equivalent: deliberate
+  // enough that nobody arrives here by accident, on a target that is decorative
+  // and does nothing else.
+  const taps = useRef({ count: 0, at: 0 });
+  function tapHandle() {
+    const now = Date.now();
+    const s = taps.current;
+    s.count = now - s.at < 800 ? s.count + 1 : 1;
+    s.at = now;
+    if (s.count >= 5) {
+      s.count = 0;
+      setLarp(!larpOn());
+      // Same reason as the keyboard path: every tab reads through adminJson, so
+      // a full reload is the honest way to get a consistent panel.
+      window.location.reload();
+    }
+  }
 
   // Escape closes, and Tab cycles INSIDE the sheet.
   //
@@ -178,11 +203,21 @@ export function AdminMobileNav({
           >
             {/* Grab handle: the affordance that says this panel came from the
                 bottom and goes back there. */}
-            <div
+            <button
+              type="button"
               aria-hidden
-              className="mx-auto mb-4 h-1 w-10 rounded-full"
-              style={{ background: "var(--adm-line)" }}
-            />
+              tabIndex={-1}
+              onClick={tapHandle}
+              // Padding, not a height class: the hairline stays 4px while the
+              // tappable box is ~40px, so the secret is findable by someone who
+              // knows it is there and invisible to everyone else.
+              className="mx-auto mb-2 block px-6 py-3"
+            >
+              <span
+                className="block h-1 w-10 rounded-full"
+                style={{ background: "var(--adm-line)" }}
+              />
+            </button>
             {groups.map((g) => (
               <div key={g.group} className="mb-5 last:mb-0">
                 <p className="mb-2 font-sans text-caption font-semibold uppercase tracking-[1.1px] text-[color:var(--adm-ink-3)]">
