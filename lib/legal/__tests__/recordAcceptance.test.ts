@@ -128,3 +128,59 @@ describe("sign-up call sites", () => {
     }
   });
 });
+
+// The bound added to stop the hang must not become a worse bug, and it has to
+// actually reach the thing that hangs.
+//
+// Two ways to get this wrong, and the first of them shipped for a moment:
+//
+//   1. AbortSignal.timeout is Safari 16 and IPHONEOS_DEPLOYMENT_TARGET is 15.0,
+//      so the bare call is a TypeError on iOS 15. Thrown inside
+//      recordAcceptance's own try, it comes back out as
+//      AcceptanceNotRecordedError and aborts the sign-up, so a fix for a hang
+//      would have stopped every account created on those devices.
+//   2. A signal on RequestInit bounds fetch and nothing before it. On native,
+//      apiFetch first awaits getSession() to mint a Bearer, and auth-js
+//      refreshes an expired session inline there with no deadline of its own. A
+//      transport-only bound leaves the reported symptom in place on exactly the
+//      platform that reported it.
+describe("the acceptance deadline", () => {
+  it("does not depend on AbortSignal.timeout, which iOS 15 does not have", async () => {
+    const mod = await withApiFetch(async () => json({ ok: true }));
+    const real = AbortSignal.timeout;
+    // @ts-expect-error deliberately removing a non-optional static
+    delete AbortSignal.timeout;
+    try {
+      await expect(mod.recordAcceptance("signup", "a@b.com")).resolves.toBeUndefined();
+    } finally {
+      AbortSignal.timeout = real;
+    }
+  });
+
+  it("bounds the WHOLE call, not just the transport", async () => {
+    // An apiFetch that never settles stands in for a getSession that never
+    // returns. A signal passed through RequestInit could not rescue this,
+    // because fetch is never reached.
+    vi.useFakeTimers();
+    try {
+      const mod = await withApiFetch(() => new Promise<Response>(() => {}));
+      const pending = mod.recordAcceptance("signup", "a@b.com");
+      const settled = expect(pending).rejects.toBeInstanceOf(mod.AcceptanceNotRecordedError);
+      await vi.advanceTimersByTimeAsync(12_001);
+      await settled;
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("clears the deadline on success, so a finished sign-up leaves no timer", async () => {
+    vi.useFakeTimers();
+    try {
+      const mod = await withApiFetch(async () => json({ ok: true }));
+      await mod.recordAcceptance("signup", "a@b.com");
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});

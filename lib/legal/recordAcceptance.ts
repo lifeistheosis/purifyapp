@@ -49,41 +49,77 @@ export class AcceptanceNotRecordedError extends Error {
   }
 }
 
+/** Past a slow mobile round trip, short of a force-quit. */
+const TIMEOUT_MS = 12_000;
+
+/**
+ * Run the acceptance POST under a deadline that covers the WHOLE call.
+ *
+ * Bounding it through RequestInit.signal alone was wrong twice over.
+ *
+ * REACH. A signal binds to fetch and to nothing before it, and on native
+ * apiFetch first awaits createClient().auth.getSession() to mint the Bearer
+ * header. auth-js refreshes an expired session inline there, over the network,
+ * with no deadline of its own, and resilientNavigatorLock caps lock
+ * ACQUISITION rather than the work inside it. So the one path this fix names as
+ * riskiest could still park on "Creating account..." forever, with the timer
+ * expiring against a fetch that had not been issued yet. OAuthButtons already
+ * carries a note on this exact shape: apiFetch mints a bearer behind the
+ * cross-tab lock and carries no deadline.
+ *
+ * SUPPORT. AbortSignal.timeout is Safari 16 and IPHONEOS_DEPLOYMENT_TARGET is
+ * 15.0, so on an iOS 15 device the bare call is a TypeError, thrown inside the
+ * try below and returned as AcceptanceNotRecordedError, which aborts sign-up. A
+ * bound added to stop a hang would have stopped every account on those devices.
+ *
+ * Owning the controller answers both at once and needs no feature detection.
+ * AbortController is Safari 11.1, comfortably under the deployment target; the
+ * race bounds the whole operation including getSession; and the abort still
+ * cancels the request rather than merely walking away from it.
+ */
+async function postAcceptance(body: string): Promise<Response> {
+  const controller =
+    typeof AbortController === "undefined" ? undefined : new AbortController();
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<never>((_resolve, reject) => {
+    timer = setTimeout(() => {
+      controller?.abort();
+      reject(new Error("acceptance deadline"));
+    }, TIMEOUT_MS);
+  });
+  try {
+    return await Promise.race([
+      apiFetch("/api/legal/accept", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+        signal: controller?.signal,
+      }),
+      deadline,
+    ]);
+  } finally {
+    // Cleared on the success path too, or every completed sign-up leaves a 12s
+    // timer holding the controller for no reason.
+    if (timer !== undefined) clearTimeout(timer);
+  }
+}
+
 /**
  * Record a clickwrap acceptance. Resolves only when the server confirms it,
  * throws AcceptanceNotRecordedError otherwise. Never swallow this: a caller
  * that catches and continues has recreated the original bug.
  */
-/** Past a slow mobile round trip, short of a force-quit. */
-const TIMEOUT_MS = 12_000;
-
 export async function recordAcceptance(
   context: string,
   email: string,
 ): Promise<void> {
   let res: Response;
   try {
-    res = await apiFetch("/api/legal/accept", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ context, email }),
-      // BOUNDED, because this runs BEFORE the account is created and the
-      // caller awaits it. Without a limit a flaky connection left the sign-up
-      // button reading "Creating account…" until the browser gave up, which is
-      // a wait with no end and no way out. A reader reported it as the page
-      // freezing. Inside the native shell this is a cross-origin call to
-      // purifyapp.net, so it fails more often than a same-origin one would.
-      //
-      // Failing fast is correct rather than merely kinder: the caller
-      // deliberately ABORTS sign-up when acceptance is not recorded, so the
-      // only outcomes are "recorded" and "tell them to try again". Hanging
-      // serves neither. 12s is past a slow mobile round trip and well short of
-      // the point where somebody force-quits the app.
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-    });
+    res = await postAcceptance(JSON.stringify({ context, email }));
   } catch {
-    // An abort lands here too, and AcceptanceNotRecordedError is the right
-    // answer for it: nothing was written, which is exactly what it means.
+    // A deadline, an abort and a dropped connection all land here, and
+    // AcceptanceNotRecordedError is the right answer to each of them: nothing
+    // was written, which is exactly what it means.
     throw new AcceptanceNotRecordedError();
   }
 
