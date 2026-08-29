@@ -239,7 +239,18 @@ export function Modal({
       // It is unreachable rather than merely awkward because line 129 calls
       // lockBodyScroll, so the page cannot be scrolled to bring it up and the
       // toolbar never minimises.
-      className="adm fixed inset-0 z-[100] flex h-dvh items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-sm md:p-8 md:pb-8"
+      // NO backdrop-blur. It was `backdrop-blur-sm` here, and on a viewport
+      // sized overlay that asks the compositor to blur EVERYTHING behind it:
+      // the product table with its per-row images, the charts, the hero
+      // sparklines. Worse, it is not paid once. Anything that repaints behind
+      // the scrim makes the blur recompute, and the admin has live panels doing
+      // exactly that, so opening a product dialog over the shop table was
+      // reported as "super laggy" and this is the cost.
+      //
+      // Nothing is lost. --adm-scrim is already rgb(0 0 0 / 0.7) in dark, which
+      // separates the dialog on its own; the blur was decoration on top of a
+      // scrim that had it covered.
+      className="adm fixed inset-0 z-[100] flex h-dvh items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] md:p-8 md:pb-8"
       // Was bg-black/70, which is far too heavy over a light panel. The
       // portal target is document.body, which is why the light palette keys
       // off <html> rather than off the shell root: this node carries .adm but

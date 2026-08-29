@@ -405,7 +405,12 @@
   --chart-empty: rgb(28 32 51 / 0.06);
 
   --adm-skeleton-hi: #e9eaf0;
-  --adm-scrim: rgb(0 0 0 / 0.4);
+  /* 0.5, up from 0.4, now that the dialog overlay no longer carries a
+     backdrop-blur (see components/admin/primitives.tsx). Light mode leaned on
+     the blur for separation more than dark did, where 0.7 already stood on its
+     own, so this buys back the contrast the blur was providing without asking
+     the compositor to re-blur the whole page every time something repaints. */
+  --adm-scrim: rgb(0 0 0 / 0.5);
 
   /* The preview's CARD shadow, verbatim. */
   --adm-shadow-card: 0 1px 3px rgb(0 0 0 / 0.05), 0 1px 2px rgb(0 0 0 / 0.02);
