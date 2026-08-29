@@ -11,9 +11,11 @@
  * looks balanced holding "3" falls apart holding "184,207", and there is no
  * way to find that out on real data until the real data arrives.
  *
- * So this inflates the reads. It is a display illusion and nothing else: no
- * request is altered on the way out, no row is written, and a reload with the
- * mode off shows the true books again.
+ * So this inflates the reads. A reload with the mode off shows the true books
+ * again. It is not enough to say it writes nothing, because a read seeds a
+ * form and the form writes: installLarpWriteGuard at the foot of this file is
+ * what actually holds the panel read only, and the note there says what it
+ * cost to learn that.
  *
  * ── Why it announces itself ─────────────────────────────────────────────
  *
@@ -51,9 +53,16 @@ const INFLATE =
  * as "18400%", `limit` and `perPage` turn a page query into a scan, `version`
  * and `code` are identity, and `days` drives axis ranges that then draw
  * nothing.
+ *
+ * `^total$` is ANCHORED, and the anchors are the point. /api/admin/users answers
+ * `{ total, offset, pageSize }`, and UsersTab computes lastPage from total and
+ * sends it straight back as an offset, so an inflated total put the pager 196,000
+ * rows past the end and the table went blank under a subtitle claiming 196,200
+ * users. A bare `total` would also swallow totalUsers and total_cents, the very
+ * headline figures this mode exists to make large, so it matches that one key.
  */
 const NEVER =
-  /(^id$|_id$|_at$|date|time|year|month|week|day|percent|pct|rate|ratio|share|version|code|limit|offset|page|size|index|order_?by|lat|lng|zoom|width|height|threshold|goal|target|price_?cents|supplier_cost)/i;
+  /(^id$|^total$|_id$|_at$|date|time|year|month|week|day|percent|pct|rate|ratio|share|version|code|limit|offset|page|size|index|order_?by|lat|lng|zoom|width|height|threshold|goal|target|price_?cents|supplier_cost)/i;
 
 /** Deterministic 0..1 from a key, so a field inflates the same way every render. */
 function hash01(s: string): number {
@@ -147,4 +156,74 @@ export function inflate<T>(value: T, keyHint = "", depth = 0, seen = new WeakSet
   }
 
   return value;
+}
+
+/**
+ * Larp mode is READ ONLY, and this is what makes that true rather than
+ * aspirational.
+ *
+ * The header above used to say "no request is altered on the way out, no row
+ * is written". The first half was true and the second was wrong, because a
+ * read seeds a form and the form writes. SustainabilityTab loads expense_lines
+ * through adminJson, ExpenseEditor prefills its amount field straight from
+ * amount_cents, and Save posts that value back. amount_cents matches both
+ * "amount" and "cents", so it inflated by 1141, sailed under the route's
+ * .max(10_000_000) guard, and the route finished with revalidatePath("/support").
+ * One click of Adopt all turned a real $258 a month of costs into a published
+ * $294,378 on the PUBLIC transparency page. The panel never showed it, because
+ * the Monthly column reads monthly_cents, which the deny list happens to protect.
+ *
+ * A longer deny list cannot fix that. It would have to guess, correctly and
+ * forever, which read-only field some future tab will put in an input. So the
+ * guard sits at the one place every write must pass, and refuses there.
+ *
+ * It fails LOUDLY rather than silently dropping the write: a demo mode that
+ * quietly swallows saves teaches the operator that saving is broken. 409 with
+ * a JSON body, which is the shape every admin route already answers in and
+ * every tab already knows how to display.
+ */
+export function installLarpWriteGuard(): () => void {
+  if (typeof window === "undefined") return () => {};
+  const w = window as typeof window & { __purifyLarpGuard?: boolean };
+  // Installed once. React 19 in dev double-invokes effects, and a guard that
+  // wrapped the wrapper would grow a new layer on every remount.
+  if (w.__purifyLarpGuard) return () => {};
+  const original = window.fetch;
+  w.__purifyLarpGuard = true;
+
+  window.fetch = function larpGuardedFetch(
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> {
+    // Checked per request, not at install time, so toggling the mode does not
+    // need the guard reinstalled and cannot leave a stale decision behind.
+    if (larpOn()) {
+      const method = (
+        init?.method ?? (input instanceof Request ? input.method : "GET")
+      ).toUpperCase();
+      const url =
+        typeof input === "string"
+          ? input
+          : input instanceof URL
+            ? input.href
+            : input.url;
+      if (method !== "GET" && method !== "HEAD" && url.includes("/api/admin")) {
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({
+              error:
+                "Larp mode is on, so the panel is read only. Turn it off before saving.",
+            }),
+            { status: 409, headers: { "content-type": "application/json" } },
+          ),
+        );
+      }
+    }
+    return original.call(window, input, init);
+  };
+
+  return () => {
+    window.fetch = original;
+    w.__purifyLarpGuard = false;
+  };
 }

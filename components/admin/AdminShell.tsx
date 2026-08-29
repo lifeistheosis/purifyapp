@@ -61,7 +61,7 @@ import { Toolbar, ToolbarButton } from "./primitives";
 import { AdminThemeToggle } from "./AdminThemeToggle";
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
 import { AdminMobileNav } from "./AdminMobileNav";
-import { larpOn, onLarpChange, setLarp } from "@/lib/admin/larp";
+import { installLarpWriteGuard, larpOn, onLarpChange, setLarp } from "@/lib/admin/larp";
 import { TabBoundary } from "./TabBoundary";
 import { OwnerSection } from "./OwnerSection";
 import { HeroRow } from "./HeroRow";
@@ -479,6 +479,10 @@ export function AdminShell({
     setLarpState(larpOn());
     return onLarpChange(setLarpState);
   }, []);
+  // Installed unconditionally and consulted per request, so it is already in
+  // place the moment the mode is switched on, including in the tab that just
+  // switched it. See the note at the foot of lib/admin/larp.ts.
+  useEffect(() => installLarpWriteGuard(), []);
   useEffect(() => {
     let buf = "";
     function onKey(e: KeyboardEvent) {
@@ -1030,8 +1034,9 @@ export function AdminShell({
                   Larp mode
                 </span>
                 <span className="font-sans text-detail text-paper/80">
-                  Every figure below is invented. Nothing here is your real
-                  revenue, users, or sales.
+                  Numbers here are inflated for design work, not your real
+                  revenue, users, or sales. A few fields stay true, so read none
+                  of them as fact. Saving is disabled while this is on.
                 </span>
                 <button
                   type="button"
@@ -1108,6 +1113,12 @@ export function AdminShell({
       onSelect={(id) => isTabId(id) && select(id)}
       footer={
         <>
+          {/* The ModeSwitch, which below lg lives nowhere else: it sits in
+              railBody, and railBody renders only in the desktop aside. Without
+              this an owner on a phone cannot reach Strategy at all, and opening
+              /admin#tab=owner-today puts them in owner mode with no control on
+              screen to leave it. */}
+          {isOwner ? <ModeSwitch mode={mode} onChange={switchMode} /> : null}
           {railFooter}
           <div className="flex flex-wrap items-center gap-2">{actionBank}</div>
         </>

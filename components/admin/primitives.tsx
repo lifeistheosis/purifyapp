@@ -18,6 +18,11 @@
 import { Fragment, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Sparkline } from "./charts";
+import { larpOn } from "@/lib/admin/larp";
+
+/** Stamped into any file larp mode produces. See handleCsv. */
+const LARP_FILE_NOTE =
+  "LARP MODE: every figure in this file is invented. Not real data.";
 import { CountUp } from "./CountUp";
 import { downloadCsv, toCsv } from "@/lib/admin/csv";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
@@ -682,9 +687,21 @@ export function DataTable<T>({
     pendingFlip.current = null;
   });
 
+  // LARP MARKER, on both exports. The banner is painted on the PAGE, and a
+  // file carries none of it. Without this, larp mode hands you a download
+  // literally named orders.csv in which a real $45 order reads $36,675, with
+  // nothing in the bytes saying so. That is precisely the artifact the header
+  // of lib/admin/larp.ts swears must never leave the machine, so the marker
+  // goes in the filename AND in the first row, because either one alone is
+  // lost the moment somebody renames the file or pastes only the rows.
   function handleCsv() {
     const headers = columns.map((c) => c.label);
     const data = rows.map((r) => columns.map((c) => (c.csv ? c.csv(r) : "")));
+    if (larpOn()) {
+      data.unshift(columns.map((_c, i) => (i === 0 ? LARP_FILE_NOTE : "")));
+      downloadCsv(`larp-invented-${csvFilename ?? "export.csv"}`, toCsv(headers, data));
+      return;
+    }
     downloadCsv(csvFilename ?? "export.csv", toCsv(headers, data));
   }
 
@@ -699,7 +716,11 @@ export function DataTable<T>({
             .join(" | ")} |`,
       )
       .join("\n");
-    const md = [head, sep, body].join("\n");
+    // Same marker as handleCsv, and for the same reason: this string is
+    // about to sit on the clipboard, ready to paste into an email or an
+    // accounting sheet, with the banner nowhere near it.
+    const plain = [head, sep, body].join("\n");
+    const md = larpOn() ? `**${LARP_FILE_NOTE}**\n\n${plain}` : plain;
     navigator.clipboard.writeText(md).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
@@ -933,7 +954,7 @@ export function DataTable<T>({
                 style={{ borderColor: "var(--adm-line)" }}
               >
                 {head ? (
-                  <div className="mb-2 font-sans text-detail text-paper">
+                  <div className="mb-2 font-sans text-detail text-paper [overflow-wrap:anywhere]">
                     {head.render(r)}
                   </div>
                 ) : null}
@@ -946,7 +967,7 @@ export function DataTable<T>({
                       >
                         {c.label}
                       </dt>
-                      <dd className="min-w-0 font-sans text-detail text-paper/85">
+                      <dd className="min-w-0 font-sans text-detail text-paper/85 [overflow-wrap:anywhere]">
                         {c.render(r)}
                       </dd>
                     </Fragment>

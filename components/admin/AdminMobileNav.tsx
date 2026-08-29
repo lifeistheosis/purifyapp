@@ -2,6 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { focusablesIn, nextIndex } from "@/lib/ui/focusTrap";
+import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
+
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
 import { cn } from "@/lib/cn";
 
@@ -75,21 +78,67 @@ export function AdminMobileNav({
   // of the four, so the bar never shows nothing selected.
   const activeIsPrimary = primary.some((t) => t.id === active);
 
+  const hasOpened = useRef(false);
+
+  // Escape closes, and Tab cycles INSIDE the sheet.
+  //
+  // The trap is not decoration. This panel claims aria-modal="true", and Modal
+  // in primitives.tsx already spells out why that claim without a trap is worse
+  // than neither: the reader goes quiet about the page while Tab walks straight
+  // out into it. DOM order puts the <nav> after the sheet, so one Tab past the
+  // last section button landed on the bottom bar, which is aria-hidden and
+  // painted under the scrim, and kept going into the topbar search and every
+  // control in the tab behind it.
   useEffect(() => {
     if (!sheetOpen) return;
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setSheetOpen(false);
+      if (e.key === "Escape") {
+        setSheetOpen(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const panel = sheetRef.current;
+      if (!panel) return;
+      const stops = focusablesIn(panel);
+      if (stops.length === 0) {
+        e.preventDefault();
+        panel.focus();
+        return;
+      }
+      const here = stops.indexOf(document.activeElement as HTMLElement);
+      e.preventDefault();
+      stops[nextIndex(stops.length, here, e.shiftKey)]?.focus();
     }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [sheetOpen]);
 
-  // Focus the sheet when it opens, and hand focus back to More when it closes.
-  // Without this a keyboard or screen-reader user opens a panel they are not
-  // in, and closes it into the top of the document.
+  // Freeze the page behind the sheet, through the same refcounted helper every
+  // other overlay here uses. In ops mode the list is 19 tabs plus five group
+  // headers plus the footer, comfortably more than the 78dvh the panel gets, so
+  // the flick that reaches its end chained out into the document and closing
+  // the sheet left the operator somewhere else in the tab they were reading.
   useEffect(() => {
-    if (sheetOpen) sheetRef.current?.focus();
-    else moreRef.current?.focus({ preventScroll: true });
+    if (!sheetOpen) return;
+    lockBodyScroll();
+    return unlockBodyScroll;
+  }, [sheetOpen]);
+
+  // Focus into the sheet on open, back to More on close.
+  //
+  // hasOpened is the entire reason this ref exists. Without it the else branch
+  // runs on the FIRST commit, when sheetOpen is already false, so every load of
+  // /admin below lg dropped focus on the last control in the document. The
+  // preventScroll that keeps it visually quiet is what made it hard to see: the
+  // only symptom was that the first Space pressed opened the sections sheet
+  // instead of scrolling the page.
+  useEffect(() => {
+    if (sheetOpen) {
+      hasOpened.current = true;
+      sheetRef.current?.focus();
+    } else if (hasOpened.current) {
+      moreRef.current?.focus({ preventScroll: true });
+    }
   }, [sheetOpen]);
 
   function go(id: string) {
@@ -101,9 +150,16 @@ export function AdminMobileNav({
     <>
       {sheetOpen ? (
         <div className="adm lg:hidden fixed inset-0 z-[60] flex flex-col justify-end">
+          {/* Tap-anywhere-to-close, and nothing else. aria-hidden and out of
+              the tab order for the reason Modal states: a viewport-sized
+              control announced only as "Close" was otherwise the first thing a
+              reader met inside the dialog, ahead of the section list. Escape
+              is the keyboard path, and unlike an invisible button it is one an
+              operator can be told about. */}
           <button
             type="button"
-            aria-label="Close menu"
+            aria-hidden
+            tabIndex={-1}
             onClick={() => setSheetOpen(false)}
             className="absolute inset-0"
             style={{ background: "var(--adm-scrim)" }}
@@ -114,7 +170,7 @@ export function AdminMobileNav({
             aria-modal="true"
             aria-label="All admin sections"
             tabIndex={-1}
-            className="relative max-h-[78dvh] overflow-y-auto rounded-t-3xl border-t px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3 outline-none"
+            className="relative max-h-[78dvh] overflow-y-auto overscroll-contain rounded-t-3xl border-t px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3 outline-none"
             style={{
               background: "var(--adm-rail)",
               borderColor: "var(--adm-line)",

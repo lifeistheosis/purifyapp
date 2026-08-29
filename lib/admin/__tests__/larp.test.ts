@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
-import { inflate } from "../larp";
+import { inflate, installLarpWriteGuard } from "../larp";
 
 /**
  * Larp mode is a demo illusion, and the thing that makes it safe is what it
@@ -112,5 +112,99 @@ describe("it cannot take the panel down", () => {
     const out = inflate({ totalUsers: NaN, visitors: Infinity });
     expect(Number.isNaN(out.totalUsers)).toBe(true);
     expect(out.visitors).toBe(Infinity);
+  });
+});
+
+describe("what larp must never touch: the pager", () => {
+  it("leaves a bare `total` alone, because UsersTab sends it back as an offset", () => {
+    // An inflated total made lastPage 196,150, so Last requested an offset
+    // 196,000 rows past the end and the table went blank under a subtitle
+    // claiming 196,200 users.
+    const out = inflate({ total: 300, offset: 0, pageSize: 50 });
+    expect(out).toEqual({ total: 300, offset: 0, pageSize: 50 });
+  });
+
+  it("still inflates the headline totals, which is the whole point", () => {
+    // The deny entry is anchored for exactly this reason.
+    const out = inflate({ totalUsers: 3, total_cents: 4500, totalOrders: 2 });
+    expect(out.totalUsers).toBeGreaterThan(3);
+    expect(out.total_cents).toBeGreaterThan(4500);
+    expect(out.totalOrders).toBeGreaterThan(2);
+  });
+});
+
+describe("larp mode is read only", () => {
+  const realWindow = (globalThis as Record<string, unknown>).window;
+
+  function fakeWindow(larpIsOn: boolean) {
+    const seen: Array<{ url: string; method: string }> = [];
+    const store = new Map<string, string>();
+    if (larpIsOn) store.set("purify:admin:larp", "1");
+    const passthrough = (input: unknown, init?: { method?: string }) => {
+      seen.push({ url: String(input), method: init?.method ?? "GET" });
+      return Promise.resolve(new Response("{}", { status: 200 }));
+    };
+    const w = {
+      localStorage: {
+        getItem: (k: string) => store.get(k) ?? null,
+        setItem: (k: string, v: string) => void store.set(k, v),
+        removeItem: (k: string) => void store.delete(k),
+      },
+      fetch: passthrough,
+    };
+    (globalThis as Record<string, unknown>).window = w;
+    return { w, seen, passthrough };
+  }
+
+  afterEach(() => {
+    (globalThis as Record<string, unknown>).window = realWindow;
+  });
+
+  it("refuses a write to /api/admin while it is on, and never lets it leave", async () => {
+    // The bug this exists for: SustainabilityTab prefills its amount field
+    // from an inflated amount_cents and posts it back, and the route ends with
+    // revalidatePath("/support"), so invented money reached a PUBLIC page.
+    const { w, seen } = fakeWindow(true);
+    const restore = installLarpWriteGuard();
+    const res = await w.fetch("/api/admin/sustainability/actions", { method: "POST" });
+    expect(res.status).toBe(409);
+    expect(seen).toHaveLength(0);
+    await expect(res.json()).resolves.toMatchObject({ error: expect.stringContaining("read only") });
+    restore();
+  });
+
+  it("still allows reads, or the panel it is meant to demo would not load", async () => {
+    const { w, seen } = fakeWindow(true);
+    const restore = installLarpWriteGuard();
+    const res = await w.fetch("/api/admin/overview");
+    expect(res.status).toBe(200);
+    expect(seen).toHaveLength(1);
+    restore();
+  });
+
+  it("does not police anything outside /api/admin", async () => {
+    const { w, seen } = fakeWindow(true);
+    const restore = installLarpWriteGuard();
+    await w.fetch("/api/shop/checkout", { method: "POST" });
+    expect(seen).toHaveLength(1);
+    restore();
+  });
+
+  it("is inert while the mode is off, which is the resting state", async () => {
+    const { w, seen } = fakeWindow(false);
+    const restore = installLarpWriteGuard();
+    await w.fetch("/api/admin/sustainability/actions", { method: "POST" });
+    expect(seen).toHaveLength(1);
+    restore();
+  });
+
+  it("puts the original fetch back, so turning the mode off really releases it", async () => {
+    const { w, passthrough, seen } = fakeWindow(true);
+    const restore = installLarpWriteGuard();
+    expect(w.fetch).not.toBe(passthrough);
+    restore();
+    expect(w.fetch).toBe(passthrough);
+    await w.fetch("/api/admin/sustainability/actions", { method: "POST" });
+    expect(seen).toHaveLength(1);
   });
 });
