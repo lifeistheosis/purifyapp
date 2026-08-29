@@ -132,3 +132,4 @@ test-results/
 # including the hook consent decision. Neither belongs in the repository.
 .impeccable/hook.cache.json
 .impeccable/config.local.json
+.i18n-work/
