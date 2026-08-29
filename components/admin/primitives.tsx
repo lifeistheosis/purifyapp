@@ -946,7 +946,13 @@ export function DataTable<T>({
           </p>
         ) : (
           rows.map((r, ri) => {
-            const [head, ...rest] = columns;
+            // THE HEADING IS THE FIRST COLUMN THAT HAS A LABEL, not simply the
+            // first column. AudienceTab's regions table leads with a decorative
+            // flag whose label is "", so "first column" titled every card with a
+            // bare emoji and demoted the region name into a field below it.
+            const headIndex = Math.max(0, columns.findIndex((c) => c.label.trim() !== ""));
+            const head = columns[headIndex];
+            const rest = columns.filter((_c, i) => i !== headIndex);
             return (
               <div
                 key={rowKey(r)}
@@ -959,19 +965,40 @@ export function DataTable<T>({
                   </div>
                 ) : null}
                 <dl className="grid grid-cols-[minmax(0,42%)_minmax(0,1fr)] gap-x-3 gap-y-1.5">
-                  {rest.map((c) => (
-                    <Fragment key={c.key}>
-                      <dt
-                        className="font-sans text-caption"
-                        style={{ color: "var(--adm-ink-3)" }}
-                      >
-                        {c.label}
-                      </dt>
-                      <dd className="min-w-0 font-sans text-detail text-paper/85 [overflow-wrap:anywhere]">
-                        {c.render(r)}
-                      </dd>
-                    </Fragment>
-                  ))}
+                  {rest.map((c) => {
+                    const value = c.render(r);
+                    // A column that renders NOTHING is not a label/value pair.
+                    // EikonBox carries four CSV-only columns declared as
+                    // `render: () => null`, which are invisible empty cells in
+                    // the table and became four empty grid rows mid-card here.
+                    if (value === null || value === undefined || value === false) return null;
+                    // A column with no LABEL is a value, not a pair. Fifteen
+                    // action columns across eleven tabs use `label: ""`, and an
+                    // empty <dt> still claimed the whole 42% label track, so the
+                    // buttons were squeezed into 161px beside 125px of nothing.
+                    // Unlabelled values take the full card width instead.
+                    const labelled = c.label.trim() !== "";
+                    return (
+                      <Fragment key={c.key}>
+                        {labelled ? (
+                          <dt
+                            className="font-sans text-caption"
+                            style={{ color: "var(--adm-ink-3)" }}
+                          >
+                            {c.label}
+                          </dt>
+                        ) : null}
+                        <dd
+                          className={
+                            "min-w-0 font-sans text-detail text-paper/85 [overflow-wrap:anywhere]" +
+                            (labelled ? "" : " col-span-2")
+                          }
+                        >
+                          {value}
+                        </dd>
+                      </Fragment>
+                    );
+                  })}
                 </dl>
                 {/* The touch reorder path, and on this side it is the ONLY one.
                     HTML5 drag-and-drop does not fire on touch at all, so the

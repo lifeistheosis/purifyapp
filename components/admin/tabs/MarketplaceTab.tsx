@@ -946,8 +946,14 @@ function OrderControls({
     else onChanged();
   }
 
+  // sm: on the min-width below. 260px was sized for a table cell and is a
+  // hard floor, so in DataTable's phone card mode it sat in a 161px value
+  // track, punched 99px through the card border, and gave the whole admin
+  // page 53px of horizontal scroll with Save sliced at the screen edge.
+  // Measured at 390px. The table branch contained it in its own
+  // overscroll-x-contain scroller; the card branch has none, by design.
   return (
-    <div className="flex min-w-[260px] flex-col gap-1.5">
+    <div className="flex flex-col gap-1.5 sm:min-w-[260px]">
       <select
         value={order.fulfillment_status}
         disabled={busy}

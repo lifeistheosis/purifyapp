@@ -41,10 +41,18 @@ export function UsersTab() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    // ABORTED, not merely ignored. `alive` discarded the response but left the
+    // request running, and the server kept working on it: at 1,344 accounts
+    // that is seven sequential GoTrue calls per superseded request. The 300ms
+    // debounce is a desktop-keyboard number, and a thumb on a 390px phone
+    // routinely runs slower than that, so each character fired its own full
+    // request and none of the earlier ones stopped. Typing "edgar" cost about
+    // thirty-five round trips. Paging impatiently did the same.
+    const ac = new AbortController();
     let alive = true;
     const params = new URLSearchParams({ offset: String(offset) });
     if (debouncedSearch) params.set("q", debouncedSearch);
-    adminJson<Payload>(`/api/admin/users?${params}`).then((j) => {
+    adminJson<Payload>(`/api/admin/users?${params}`, { signal: ac.signal }).then((j) => {
       if (!alive) return;
       // This tab already validated the shape before trusting it, which is why
       // it never took the panel down. Kept, and now the response itself is
@@ -58,6 +66,9 @@ export function UsersTab() {
     });
     return () => {
       alive = false;
+      // adminJson swallows the resulting AbortError in its own catch and
+      // answers null, which `alive` has already discarded.
+      ac.abort();
     };
   }, [offset, debouncedSearch]);
 

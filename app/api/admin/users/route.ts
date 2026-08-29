@@ -53,6 +53,82 @@ type ProfileRow = {
 /** PostgREST `in.(...)` goes in the URL, so the id list has to stay short. */
 const ID_CHUNK = 200;
 
+type AuthWalk = {
+  providerById: Map<string, Provider>;
+  emailById: Map<string, string>;
+  providerCounts: Record<Provider, number>;
+};
+
+/**
+ * The auth walk is CACHED, and this is the only reason the Users tab is
+ * usable on a phone.
+ *
+ * The walk cannot be skipped: every response carries `providers` for the donut,
+ * which is the whole population rather than a sample, so it runs even when
+ * nothing is being searched. At 1,344 accounts and perPage 200 that is seven
+ * SEQUENTIAL GoTrue admin calls, and UsersTab refetches on a 300ms debounce. A
+ * thumb typing "edgar" on a phone routinely runs slower than 300ms per
+ * character, so the debounce coalesced nothing and that search cost roughly
+ * thirty-five round trips.
+ *
+ * Module scope with a short TTL is the right shape here. This is an admin-only
+ * surface with one operator, so the hit rate while typing is effectively total,
+ * and a provider map up to 30 seconds stale cannot mislead: it feeds a donut
+ * and a per-row auth pill, never a decision and never a write. A new account in
+ * that window shows up on the next tick.
+ */
+const WALK_TTL_MS = 30_000;
+let walkCache: { at: number; value: AuthWalk } | null = null;
+
+async function authWalk(
+  supa: ReturnType<typeof createAdminClient>,
+): Promise<AuthWalk> {
+  const now = Date.now();
+  if (walkCache && now - walkCache.at < WALK_TTL_MS) return walkCache.value;
+
+  const providerById = new Map<string, Provider>();
+  const emailById = new Map<string, string>();
+  const providerCounts: Record<Provider, number> = {
+    google: 0,
+    apple: 0,
+    email: 0,
+    other: 0,
+  };
+  const PER = 200;
+  for (let page = 1; page <= 50; page++) {
+    const { data: batch, error } = await supa.auth.admin.listUsers({
+      page,
+      perPage: PER,
+    });
+    if (error) throw error;
+    const users = batch?.users ?? [];
+    for (const u of users) {
+      const provs = (u.identities ?? []).map((i) => i.provider);
+      const p: Provider = provs.includes("google")
+        ? "google"
+        : provs.includes("apple")
+          ? "apple"
+          : provs.includes("email")
+            ? "email"
+            : "other";
+      // Counted once per id. The map was always idempotent while the counter
+      // was not, so a user appearing on two pages would have inflated the
+      // donut past the row count it sits beside.
+      if (!providerById.has(u.id)) providerCounts[p] += 1;
+      providerById.set(u.id, p);
+      if (u.email) emailById.set(u.id, u.email);
+    }
+    if (users.length < PER) break; // last page reached
+  }
+
+  const value = { providerById, emailById, providerCounts };
+  // Only a COMPLETE walk is cached. A throw above leaves the previous entry
+  // alone and the caller falls back, rather than pinning a half-built map for
+  // the next thirty seconds.
+  walkCache = { at: now, value };
+  return value;
+}
+
 export async function GET(req: NextRequest) {
   const admin = await getAdminUser();
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -68,34 +144,17 @@ export async function GET(req: NextRequest) {
   // per-row Auth label, so the table and the chart can never disagree. The
   // email comes from the same pass; it used to be discarded here and then
   // looked for in a column that does not exist.
-  const providerById = new Map<string, Provider>();
-  const emailById = new Map<string, string>();
-  const providerCounts = { google: 0, apple: 0, email: 0, other: 0 };
+  let providerById = new Map<string, Provider>();
+  let emailById = new Map<string, string>();
+  let providerCounts: Record<Provider, number> = {
+    google: 0,
+    apple: 0,
+    email: 0,
+    other: 0,
+  };
   let authWalkFailed = false;
   try {
-    const PER = 200;
-    for (let page = 1; page <= 50; page++) {
-      const { data: batch, error } = await supa.auth.admin.listUsers({
-        page,
-        perPage: PER,
-      });
-      if (error) throw error;
-      const users = batch?.users ?? [];
-      for (const u of users) {
-        const provs = (u.identities ?? []).map((i) => i.provider);
-        const p: Provider = provs.includes("google")
-          ? "google"
-          : provs.includes("apple")
-            ? "apple"
-            : provs.includes("email")
-              ? "email"
-              : "other";
-        providerById.set(u.id, p);
-        providerCounts[p] += 1;
-        if (u.email) emailById.set(u.id, u.email);
-      }
-      if (users.length < PER) break; // last page reached
-    }
+    ({ providerById, emailById, providerCounts } = await authWalk(supa));
   } catch (e) {
     // The donut falls back to zeros and the table to has_password, as before.
     // But a SEARCH cannot be answered without this walk, so the flag below

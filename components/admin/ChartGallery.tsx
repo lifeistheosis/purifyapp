@@ -202,7 +202,7 @@ export function ChartGallery() {
                     {slider}%
                   </span>
                 </div>
-                {/* Same markup and the same --_pct mechanism the owner
+              {/* Same markup and the same --_pct mechanism the owner
                     dashboard's assumption sliders use. */}
                 <input
                   type="range"
@@ -247,12 +247,12 @@ export function ChartGallery() {
           />
         </div>
 
-        {/* A REAL table, for exactly the reason the charts are here. Every
+              {/* A REAL table, for exactly the reason the charts are here. Every
             route that renders a DataTable is behind an admin session, so a
             change to table layout could be typechecked and shipped without
             once being looked at. Eight columns is not a stress test, it is
             ShopTab. */}
-        <Card title="DataTable" subtitle="Eight columns, reorderable, the width a phone has to cope with">
+        <Card title="DataTable" subtitle="Ten columns, reorderable, and the three card-mode edge cases">
           <DataTable
             rows={tableRows}
             rowKey={(r) => r.sku}
@@ -269,6 +269,58 @@ export function ChartGallery() {
               { key: "stock", label: "Stock", align: "right", render: (r) => r.stock, csv: (r) => r.stock },
               { key: "sold", label: "Sold", align: "right", render: (r) => r.sold, csv: (r) => r.sold },
               { key: "updated", label: "Updated", render: (r) => r.updated, csv: (r) => r.updated },
+              { key: "vendor", label: "Vendor", render: (r) => r.vendor, csv: (r) => r.vendor },
+              // THE CARD-MODE EDGE CASES, kept here on purpose. Every other
+              // DataTable lives behind an admin session, so these two shapes
+              // shipped broken once and nothing showed it. An audit found
+              // four CSV-only columns rendering as empty rows mid-card in
+              // EikonBox, and fifteen unlabelled action columns across eleven
+              // tabs whose empty <dt> ate 42% of the card width.
+              // Renders nothing: the card must skip it entirely, not leave a gap.
+              { key: "line2", label: "", render: () => null, csv: (r) => r.vendor },
+              // No label: the card must give the value the full width, with no empty <dt>.
+              {
+                key: "actions",
+                label: "",
+                render: () => (
+                  <Toolbar>
+                    <ToolbarButton onClick={() => {}}>Edit</ToolbarButton>
+                    <ToolbarButton onClick={() => {}}>Pause</ToolbarButton>
+                    <ToolbarButton onClick={() => {}}>Delete</ToolbarButton>
+                  </Toolbar>
+                ),
+                csv: () => "",
+              },
+            ]}
+          />
+        </Card>
+
+        {/* The heading rule. AudienceTab is the only real table that exercises
+            it: its regions list leads with a decorative flag whose label is "",
+            and "first column becomes the heading" titled every card with a bare
+            emoji while demoting the region name into a field. The heading is
+            therefore the first column that HAS a label. */}
+        <Card
+          title="DataTable, decorative first column"
+          subtitle="The card heading skips an unlabelled leading column"
+        >
+          <DataTable
+            rows={tableRows.slice(0, 2)}
+            rowKey={(r) => r.sku}
+            columns={[
+              {
+                key: "dot",
+                label: "",
+                render: () => (
+                  <span
+                    aria-hidden
+                    className="inline-block h-2 w-2 rounded-full"
+                    style={{ background: "var(--adm-good)" }}
+                  />
+                ),
+                csv: () => "",
+              },
+              { key: "title", label: "Product", render: (r) => r.title, csv: (r) => r.title },
               { key: "vendor", label: "Vendor", render: (r) => r.vendor, csv: (r) => r.vendor },
             ]}
           />
