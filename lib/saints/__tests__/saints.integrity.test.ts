@@ -129,7 +129,12 @@ describe("saints writings on disk", () => {
       }
     }
     expect(offenders).toEqual([]);
-  });
+  }, 120_000);
+  // 120s, not the 30s default. This reads and JSON.parses every writing file
+  // in the saints corpus. Alone it takes under two seconds; sharing a machine
+  // with 140 other test files it has been seen to blow the default and fail a
+  // green tree, which is a flake rather than a finding. Same reason as
+  // lib/ingest/__tests__/scanArtifacts.test.ts.
 
   it("cites a source and carries sections in every writing file", () => {
     // Public-domain sourcing is binding (docs/editorial-standards.md). An

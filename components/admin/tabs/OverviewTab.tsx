@@ -15,8 +15,7 @@
 //        heatmap showing per-day pageviews — the most honest answer to
 //        "is this counting accurately?" because every day is its own cell.
 
-import { useEffect, useState } from "react";
-import { adminJson } from "@/lib/admin/fetchJson";
+import { useLiveData } from "@/lib/admin/useLiveData";
 import { Card, KpiCard, ChartFrame } from "../primitives";
 import { LineChart, CalendarHeatmap, SERIES_COLORS, chartColors } from "../charts";
 
@@ -81,38 +80,27 @@ function RollingInfo() {
 }
 
 export function OverviewTab() {
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [totals, setTotals] = useState<Totals | null>(null);
-  const [traffic, setTraffic] = useState<TrafficPoint[]>([]);
-
-  useEffect(() => {
-    let alive = true;
-    async function load() {
-      try {
-        // Three independent reads. One failing must not blank the other two,
-        // and none of them may store an error body: the try/catch around this
-        // cannot help, because the throw happens later during render, at
-        // stats.today.visitors.
-        const [s, t, totalsRes] = await Promise.all([
-          adminJson<Stats>("/api/admin/stats"),
-          adminJson<{ points?: TrafficPoint[] }>("/api/admin/traffic?range=90d"),
-          adminJson<Totals>("/api/admin/totals"),
-        ]);
-        if (!alive) return;
-        if (s) setStats(s);
-        if (t) setTraffic(t.points ?? []);
-        if (totalsRes) setTotals(totalsRes);
-      } catch {
-        /* ignore */
-      }
-    }
-    load();
-    const id = setInterval(load, 10_000);
-    return () => {
-      alive = false;
-      clearInterval(id);
-    };
-  }, []);
+  // Three independent reads, each on useLiveData rather than one hand-rolled
+  // interval over a Promise.all. Independence was already the intent here (one
+  // failing must not blank the other two) and the hook keeps that: adminJson
+  // returns null on a non-ok body, and each hook holds its own last good value
+  // instead of storing an error body that would throw later during render at
+  // stats.today.visitors.
+  //
+  // What changes is that all three stop when the tab is hidden. This panel
+  // polls three endpoints every ten seconds, and two of them are expensive:
+  // /api/admin/stats reads tens of thousands of analytics rows and
+  // /api/admin/totals runs four unfiltered exact COUNTs on the two largest
+  // tables. Unpaused, that is eighteen authenticated requests a minute against
+  // the same Render service that serves purifyapp.net to the public, all night
+  // if a window is left open.
+  const { data: stats } = useLiveData<Stats>("/api/admin/stats", 10_000);
+  const { data: totals } = useLiveData<Totals>("/api/admin/totals", 10_000);
+  const { data: trafficRes } = useLiveData<{ points?: TrafficPoint[] }>(
+    "/api/admin/traffic?range=90d",
+    10_000,
+  );
+  const traffic = trafficRes?.points ?? [];
 
   // Pull the last 30 days for the trend chart and the trailing 14 (and
   // prior 14) for the rolling KPIs.
