@@ -24,6 +24,11 @@ import {
   SubTabs,
   ToolbarButton,
 } from "../primitives";
+import {
+  findShopIssues,
+  type IntegrityProduct,
+  type IntegritySourcing,
+} from "@/lib/shop/integrity";
 
 /* ── Types (admin payload shapes, deliberately local to this tab) ─────── */
 
@@ -206,6 +211,10 @@ export function ShopTab() {
 function ProductsPanel() {
   const [products, setProducts] = useState<AdminProduct[]>([]);
   const [sourcing, setSourcing] = useState<Sourcing[]>([]);
+  // Stores were already in the response and were being thrown away. The
+  // integrity check needs them: a published listing whose store is not live is
+  // invisible to shoppers, and that is only knowable by joining the two.
+  const [stores, setStores] = useState<{ id: string; status: string }[]>([]);
   const [editing, setEditing] = useState<AdminProduct | "new" | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [version, setVersion] = useState(0);
@@ -228,10 +237,15 @@ function ProductsPanel() {
         setStatus("Couldn't load products (is the shop migration applied?).");
         return;
       }
-      const data = (await r.json()) as { products: AdminProduct[]; sourcing: Sourcing[] };
+      const data = (await r.json()) as {
+        products: AdminProduct[];
+        sourcing: Sourcing[];
+        stores?: { id: string; status: string }[];
+      };
       if (!alive) return;
       setProducts(data.products);
       setSourcing(data.sourcing);
+      setStores(data.stores ?? []);
       setStatus(null);
     }
     run();
@@ -329,8 +343,56 @@ function ProductsPanel() {
     (p) => p.inventory_status === "out_of_stock",
   ).length;
 
+  // The shop checked against itself. See lib/shop/integrity.ts for what each
+  // kind means and why markup is reported rather than judged.
+  const issues = findShopIssues({
+    products: products as unknown as IntegrityProduct[],
+    sourcing: sourcing as unknown as IntegritySourcing[],
+    stores,
+  });
+  const errorCount = issues.filter((i) => i.severity === "error").length;
+
   return (
     <div className="space-y-6">
+      {issues.length > 0 ? (
+        <div className="rounded-xl border border-[color:var(--adm-warn)]/35 bg-[color:var(--adm-warn)]/[0.07] p-4">
+          <p className="font-sans text-caption font-semibold uppercase tracking-[1.1px] text-[color:var(--adm-warn)]">
+            {errorCount > 0
+              ? `${errorCount} contradiction${errorCount === 1 ? "" : "s"} in the catalogue`
+              : "Catalogue notes"}
+          </p>
+          <ul className="mt-2 space-y-1.5">
+            {issues.map((issue) => (
+              <li
+                key={`${issue.kind}:${issue.slugs.join(",")}`}
+                className="font-sans text-caption text-paper/75"
+              >
+                <span
+                  className={
+                    issue.severity === "error"
+                      ? "text-[color:var(--adm-bad)]"
+                      : issue.severity === "warning"
+                        ? "text-[color:var(--adm-warn)]"
+                        : "text-paper/45"
+                  }
+                >
+                  ●
+                </span>{" "}
+                <span className="font-medium text-paper">
+                  {issue.slugs.join(" + ")}
+                </span>{" "}
+                {issue.detail}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2.5 font-sans text-caption text-paper/45">
+            Supplier links are not checked here. A real listing and a made-up id
+            both answer 200 behind the same bot wall, so a link sweep would call
+            every one of them dead.
+          </p>
+        </div>
+      ) : null}
+
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
         <Metric
           label="Products"
