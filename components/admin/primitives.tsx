@@ -15,7 +15,7 @@
 //      uppercase, which flattens hierarchy: when everything is a heading,
 //      the eye has nothing to skip to. Size and weight carry rank instead.
 
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Sparkline } from "./charts";
 import { CountUp } from "./CountUp";
@@ -727,7 +727,7 @@ export function DataTable<T>({
         // horizontal swipe as "go back". Measured on the sample table at
         // 447px: 561 wide in a 303 box. Without this, swiping to reach the
         // Vendor column leaves the panel.
-        className="overflow-auto overscroll-x-contain rounded-[var(--adm-radius)] border"
+        className="hidden overflow-auto overscroll-x-contain rounded-[var(--adm-radius)] border lg:block"
         // dvh, to match the rail's h-dvh and the Modal overlay. With vh a table
         // on a phone claimed 70% of the LARGE viewport, so its bottom rows sat
         // behind the browser toolbar and the sticky header made it look like
@@ -895,17 +895,95 @@ export function DataTable<T>({
           </tbody>
         </table>
       </div>
-      {/* Only past four columns, and only on a phone. A table that fits needs
-          no instructions, and an instruction that is sometimes false is worse
-          than none. */}
-      {columns.length > 4 ? (
-        <p
-          className="mt-2 font-sans text-[11.5px] lg:hidden"
-          style={{ color: "var(--adm-ink-3)" }}
-        >
-          Swipe sideways for all {columns.length} columns.
-        </p>
-      ) : null}
+      {/* THE PHONE GETS CARDS, NOT A SIDEWAYS TABLE.
+
+          What used to be here was a line reading "Swipe sideways for all N
+          columns", which is the tell: a table wide enough to need instructions
+          has already failed the screen. Reading one order meant swiping a
+          561px grid through a 303px window and holding the row in your head,
+          and the reorder controls exist partly because drag cannot work inside
+          that scroller at all.
+
+          One row becomes one card. The first column is the heading, because in
+          every table here it is the identifying one (the product, the person,
+          the order), and the rest become label and value pairs that wrap
+          instead of scrolling.
+
+          Both trees render and the breakpoint picks one. That is deliberate
+          over a JS media query: this file is used by every tab, and a hook
+          would either flash the wrong layout on first paint or force each
+          caller to become a client component that already is one for other
+          reasons. The card tree is plain divs, and these tables are tens of
+          rows, not thousands. */}
+      <div className="space-y-2 lg:hidden">
+        {rows.length === 0 ? (
+          <p
+            className="rounded-[var(--adm-radius)] border px-3 py-6 text-center font-sans text-detail"
+            style={{ borderColor: "var(--adm-line)", color: "var(--adm-ink-3)" }}
+          >
+            {empty}
+          </p>
+        ) : (
+          rows.map((r, ri) => {
+            const [head, ...rest] = columns;
+            return (
+              <div
+                key={rowKey(r)}
+                className="rounded-[var(--adm-radius)] border p-3"
+                style={{ borderColor: "var(--adm-line)" }}
+              >
+                {head ? (
+                  <div className="mb-2 font-sans text-detail text-paper">
+                    {head.render(r)}
+                  </div>
+                ) : null}
+                <dl className="grid grid-cols-[minmax(0,42%)_minmax(0,1fr)] gap-x-3 gap-y-1.5">
+                  {rest.map((c) => (
+                    <Fragment key={c.key}>
+                      <dt
+                        className="font-sans text-caption"
+                        style={{ color: "var(--adm-ink-3)" }}
+                      >
+                        {c.label}
+                      </dt>
+                      <dd className="min-w-0 font-sans text-detail text-paper/85">
+                        {c.render(r)}
+                      </dd>
+                    </Fragment>
+                  ))}
+                </dl>
+                {/* The touch reorder path, and on this side it is the ONLY one.
+                    HTML5 drag-and-drop does not fire on touch at all, so the
+                    grip is a desktop affordance and these two buttons are what
+                    a phone actually has. Leaving them in the table tree only
+                    would have made every reorderable table read-only here,
+                    which is worse than the sideways scroll this replaced. */}
+                {reorder && movable(r) ? (
+                  <div
+                    className="mt-2.5 flex justify-end border-t pt-2.5"
+                    style={{ borderColor: "var(--adm-line)" }}
+                  >
+                    <Toolbar>
+                      <ToolbarButton
+                        onClick={() => commitMove(ri, ri - 1)}
+                        title={`Move ${reorder.name(r)} up`}
+                      >
+                        Up
+                      </ToolbarButton>
+                      <ToolbarButton
+                        onClick={() => commitMove(ri, ri + 1)}
+                        title={`Move ${reorder.name(r)} down`}
+                      >
+                        Down
+                      </ToolbarButton>
+                    </Toolbar>
+                  </div>
+                ) : null}
+              </div>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 }

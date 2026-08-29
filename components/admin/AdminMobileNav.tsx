@@ -116,7 +116,7 @@ export function AdminMobileNav({
             tabIndex={-1}
             className="relative max-h-[78dvh] overflow-y-auto rounded-t-3xl border-t px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3 outline-none"
             style={{
-              background: "var(--adm-surface, #0d1017)",
+              background: "var(--adm-rail)",
               borderColor: "var(--adm-line)",
             }}
           >
@@ -181,7 +181,7 @@ export function AdminMobileNav({
         style={{
           // Opaque, with a hairline. See the note above on why this is not a
           // blurred bar.
-          background: "var(--adm-surface, #0d1017)",
+          background: "var(--adm-rail)",
           borderTop: "1px solid var(--adm-line)",
         }}
       >
