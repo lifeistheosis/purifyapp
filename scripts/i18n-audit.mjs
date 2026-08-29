@@ -167,10 +167,17 @@ function auditLocale(code, base) {
     //    because most engines emit them freely.
     if (value.includes("—")) errors.push({ kind: "em-dash", key: k });
 
-    // 6. Unresolved HTML entities. `&ndash;` in a JSON string renders literally
-    //    in a text node; it is only correct inside dangerouslySetInnerHTML.
-    const entity = value.match(/&(ndash|mdash|nbsp|amp|quot|#\d+);/);
-    if (entity) warnings.push({ kind: "html-entity", key: k, detail: entity[0] });
+    // 6. HTML entities, which is an ERROR and was briefly a warning.
+    //
+    //    <T> renders t(k) into a React text node and React escapes it, so
+    //    `&middot;` does not become a separator, it becomes the literal seven
+    //    characters. /councils shipped reading "Local Council &middot; 268" in
+    //    English, confirmed in the served HTML as `&amp;middot;` and in the
+    //    accessibility tree. Nothing in the repo passes a translated string to
+    //    dangerouslySetInnerHTML, so there is no case where an entity here is
+    //    correct. A bare & is fine and deliberately not matched.
+    const entity = value.match(/&(#?\w{2,8});/);
+    if (entity) errors.push({ kind: "html-entity", key: k, detail: entity[0] });
 
     // 7. Still English. Not an error: "Amen", "Email" and many proper nouns are
     //    legitimately identical. Counted so a pass that did nothing is visible.
