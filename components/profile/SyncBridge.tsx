@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { syncBookmarks, pushAllLocalBookmarks } from "@/lib/sync/bookmarks";
 import { syncAnnotations, pushAllLocalAnnotations } from "@/lib/sync/annotations";
 import { syncFlorilegia, pushAllLocalFlorilegia } from "@/lib/sync/florilegium";
@@ -20,27 +20,31 @@ export function SyncBridge() {
   const florilegiumTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function check() {
-      try {
-        const supabase = createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (cancelled) return;
-        signedInRef.current = !!user;
-        if (user) {
-          // Initial two-way sync on first mount of any (app) page.
-          syncBookmarks().catch(() => {});
-          syncAnnotations().catch(() => {});
-          syncFlorilegia().catch(() => {});
-        }
-      } catch {
-        signedInRef.current = false;
-      }
+    // F-13 again, and this one is on EVERY page. supabase.auth.getUser()
+    // network-validates through the cross-tab auth lock, and this component
+    // mounts in the (app) layout, so every route in the app took that lock on
+    // load. Measured on the admin panel 2026-08-28: five auth/v1/user calls per
+    // page load and two gotrue warnings twenty seconds apart reading
+    //
+    //   Lock "lock:sb-...-auth-token" was not released within 5000ms
+    //
+    // which is a five second stall the operator feels as the panel hanging.
+    // components/billing/WebPlusCheckout.tsx hit the same lock live on
+    // 2026-07-14 and moved to the local read for the same reason.
+    //
+    // Nothing here needs a network-validated identity. The result is used as a
+    // boolean to decide whether to sync, and every sync endpoint validates the
+    // caller server-side anyway, so a stale or forged local cookie buys an
+    // attacker a request that answers 401. The local read is synchronous,
+    // lock-free, and cannot hang.
+    const user = readLocalSessionUser();
+    signedInRef.current = !!user;
+    if (user) {
+      // Initial two-way sync on first mount of any (app) page.
+      syncBookmarks().catch(() => {});
+      syncAnnotations().catch(() => {});
+      syncFlorilegia().catch(() => {});
     }
-    check();
 
     function onBookmark() {
       if (!signedInRef.current) return;
@@ -69,7 +73,8 @@ export function SyncBridge() {
     window.addEventListener("purify:florilegium", onFlorilegium);
 
     return () => {
-      cancelled = true;
+      // No `cancelled` flag any more: the session read is synchronous, so
+      // there is no in-flight await for an unmount to race against.
       window.removeEventListener("purify:bookmark", onBookmark);
       window.removeEventListener("purify:annotation", onAnnotation);
       window.removeEventListener("purify:florilegium", onFlorilegium);
