@@ -60,6 +60,7 @@ import { HealthTab } from "./tabs/HealthTab";
 import { Toolbar, ToolbarButton } from "./primitives";
 import { AdminThemeToggle } from "./AdminThemeToggle";
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
+import { AdminMobileNav } from "./AdminMobileNav";
 import { TabBoundary } from "./TabBoundary";
 import { OwnerSection } from "./OwnerSection";
 import { HeroRow } from "./HeroRow";
@@ -834,7 +835,7 @@ export function AdminShell({
                 Sections, search and the bell, and search is the one that flexes
                 so the row holds down to 320px instead of breaking at 360. */}
             <div className="mx-auto flex w-full max-w-[var(--adm-content-max)] items-center justify-end gap-2 px-4 py-3 md:px-6 lg:flex-wrap">
-            <div className="flex shrink-0 items-center gap-2 lg:hidden">
+            <div className="hidden">
                   <button
                     type="button"
                     ref={navTriggerRef}
@@ -976,7 +977,7 @@ export function AdminShell({
               its entrance animation ran, which made the layering correct or
               broken depending on the reader's motion preference. */}
           <div
-            className="adm-canvas mx-auto w-full max-w-[var(--adm-content-max)] px-4 py-5 md:px-6"
+            className="adm-canvas mx-auto w-full max-w-[var(--adm-content-max)] px-4 pt-5 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:px-6 lg:pb-5"
             style={{ isolation: "isolate" }}
           >
             <header className="mb-5">
@@ -1029,6 +1030,23 @@ export function AdminShell({
         </div>
       </div>
     </div>
+    {/* Below lg the rail is gone and this is the whole navigation. It gates
+        itself with lg:hidden, and the canvas above reserves the space it
+        occupies so a fixed bar never sits on top of the last table row. */}
+    <AdminMobileNav
+      groups={visibleGroups.map((g) => ({
+        group: g.group,
+        tabs: g.tabs.map((t) => ({ id: t.id, label: t.label })),
+      }))}
+      active={active}
+      onSelect={(id) => isTabId(id) && select(id)}
+      footer={
+        <>
+          {railFooter}
+          <div className="flex flex-wrap items-center gap-2">{actionBank}</div>
+        </>
+      }
+    />
     </InsightsProvider>
   );
 }
