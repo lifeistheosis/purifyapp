@@ -24,6 +24,11 @@
 import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync, rmSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+// The SAME rules the audit enforces. This file used to have none, and rejected
+// six correct batches for adding the few/many/zero/two forms Slavic and Arabic
+// need, which the translators had been explicitly asked to add. Two copies of a
+// rule drift, and the copy that drifts is the one nobody is reading.
+import { CLDR, COUNTLESS_OK, isPluralVariant } from "./i18n-audit.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIR = join(ROOT, "lib", "i18n", "messages");
@@ -56,16 +61,32 @@ function missingFor(code) {
  * "Email", "Purify Plus", "OK". Three words or more is the point where matching
  * English stops being a coincidence.
  */
+const GERMAN_MARKERS =
+  /\b(der|die|das|und|ist|für|nicht|mit|ein|eine|wir|sie|dem|den|des|auf|von|zu|im|aus|wie|oder|auch|nach|wird|werden|kann|sind|haben|hat|sich|nur|noch|bei|wenn|dass|über|durch)\b/gi;
+
+/** True when the BASE value is itself German, so an identical de.json is right. */
+function baseIsGerman(value) {
+  const words = String(value).trim().split(/\s+/);
+  const hits = String(value).match(GERMAN_MARKERS);
+  return Boolean(hits) && words.length > 2 && hits.length / words.length > 0.1;
+}
+
 function untranslatedFor(code) {
   const en = read(enPath);
   const cur = read(join(DIR, `${code}.json`));
-  return Object.keys(en).filter(
-    (k) =>
-      k in cur &&
-      typeof cur[k] === "string" &&
-      cur[k] === en[k] &&
-      String(en[k]).trim().split(/\s+/).length > 2,
-  );
+  return Object.keys(en).filter((k) => {
+    if (!(k in cur) || typeof cur[k] !== "string") return false;
+    if (cur[k] !== en[k]) return false;
+    if (String(en[k]).trim().split(/\s+/).length <= 2) return false;
+    // German is the one locale where matching the base can be CORRECT. The
+    // About, FAQ, Support and What's New pages each branch on locale === "de"
+    // and render a hand-written German section whose strings live in en.json,
+    // so de.json holding the identical text is the translation, not a gap.
+    // Without this, 42 keys were re-cut on every pass and an agent spent a
+    // batch translating German into German.
+    if (code === "de" && baseIsGerman(en[k])) return false;
+    return true;
+  });
 }
 
 function cut(code, size, namespaces, includeUntranslated = true, byteBudget = 6000) {
@@ -126,8 +147,13 @@ function validateBatch(en, obj) {
   const problems = [];
   for (const [k, v] of Object.entries(obj)) {
     if (!(k in en)) {
-      problems.push(`unknown key ${k}`);
-      continue;
+      // A CLDR plural form English does not have is not an unknown key, it is
+      // the translation being more correct than the source: Russian needs few
+      // and many, Arabic needs all six, and en.json will never carry them.
+      if (!isPluralVariant(k, en)) {
+        problems.push(`unknown key ${k}`);
+        continue;
+      }
     }
     if (typeof v !== "string") {
       problems.push(`${k}: not a string`);
@@ -138,11 +164,22 @@ function validateBatch(en, obj) {
       continue;
     }
     if (v.includes("—")) problems.push(`${k}: em dash`);
-    const want = placeholders(en[k]);
+    // A plural variant is measured against whichever form the base does have.
+    const stem = k.slice(0, k.lastIndexOf("."));
+    const cat = k.slice(k.lastIndexOf(".") + 1);
+    const model =
+      k in en ? en[k] : (en[`${stem}.other`] ?? en[`${stem}.one`] ?? en[`${stem}.plural`]);
+    if (typeof model !== "string") continue;
+    const want = placeholders(model);
     const got = placeholders(v);
     const missing = [...want].filter((p) => !got.has(p));
     const extra = [...got].filter((p) => !want.has(p));
-    if (missing.length) problems.push(`${k}: lost ${missing.join(",")}`);
+    // {count} is legitimately absent from the low-count forms in several
+    // languages: Arabic's one-form is the bare noun and its two-form is the
+    // dual. Reinserting it there would be wrong, not safer.
+    const countlessOk =
+      CLDR.includes(cat) && COUNTLESS_OK.has(cat) && missing.every((p) => p === "{count}");
+    if (missing.length && !countlessOk) problems.push(`${k}: lost ${missing.join(",")}`);
     if (extra.length) problems.push(`${k}: invented ${extra.join(",")}`);
   }
   return problems;
@@ -190,7 +227,17 @@ function merge(code) {
   // Written back in en.json's key order, so a diff shows new strings in the
   // place they belong rather than scattered at the end.
   const ordered = {};
-  for (const k of Object.keys(en)) if (k in cur) ordered[k] = cur[k];
+  for (const k of Object.keys(en)) {
+    if (k in cur) ordered[k] = cur[k];
+    // Keep a stem's extra plural forms next to the forms English does have,
+    // rather than exiling them to the end of the file.
+    for (const c of CLDR) {
+      const v = `${k.slice(0, k.lastIndexOf("."))}.${c}`;
+      if (k.includes(".") && v !== k && v in cur && !(v in ordered) && !(v in en)) {
+        ordered[v] = cur[v];
+      }
+    }
+  }
   for (const k of Object.keys(cur)) if (!(k in ordered)) ordered[k] = cur[k];
   writeFileSync(target, JSON.stringify(ordered, null, 2) + "\n", "utf8");
 

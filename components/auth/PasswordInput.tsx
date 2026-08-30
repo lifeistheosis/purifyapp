@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Password field with show/hide toggle and an optional inline strength
@@ -29,6 +30,7 @@ export function PasswordInput({
   minLength?: number;
   id?: string;
 }) {
+  const { t } = useTranslate();
   const autoId = useId();
   const id = idProp ?? autoId;
   const [shown, setShown] = useState(false);
@@ -56,7 +58,7 @@ export function PasswordInput({
         />
         <button
           type="button"
-          aria-label={shown ? "Hide password" : "Show password"}
+          aria-label={shown ? t("common.hidePassword") : t("common.showPassword")}
           onClick={() => setShown((v) => !v)}
           className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 inline-flex items-center justify-center rounded-pill text-paper/55 hover:text-paper"
         >
@@ -69,7 +71,14 @@ export function PasswordInput({
 }
 
 function StrengthMeter({ score, value }: { score: 0 | 1 | 2 | 3 | 4; value: string }) {
-  const labels = ["", "Too short", "Weak", "Okay", "Strong"];
+  const { t } = useTranslate();
+  const labels = [
+    "",
+    t("common.passwordStrengthTooShort"),
+    t("common.passwordStrengthWeak"),
+    t("common.passwordStrengthOkay"),
+    t("common.passwordStrengthStrong"),
+  ];
   const tones = [
     "bg-paper/10",
     "bg-crimson/70",

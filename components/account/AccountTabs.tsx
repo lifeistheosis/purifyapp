@@ -14,11 +14,11 @@ import { eikonBoxEnabled } from "@/lib/eikonBox/flags";
  * URL-driven (each tab is its own route), so deep-linking and back/
  * forward all behave naturally.
  */
-const TABS = [
-  { label: "Profile", href: "/account/profile" },
-  { label: "Security", href: "/account/security" },
-  { label: "Data", href: "/account/data" },
-  { label: "Sessions", href: "/account/sessions" },
+const TABS: { labelKey: string | null; href: string }[] = [
+  { labelKey: "account.tabs.profile", href: "/account/profile" },
+  { labelKey: "account.tabs.security", href: "/account/security" },
+  { labelKey: "account.tabs.data", href: "/account/data" },
+  { labelKey: "account.tabs.sessions", href: "/account/sessions" },
 ];
 
 export function AccountTabs() {
@@ -31,7 +31,7 @@ export function AccountTabs() {
   const tier = usePremiumTier();
   const tabs =
     eikonBoxEnabled() && tier === "pro"
-      ? [...TABS, { label: "EIKON Box", href: "/account/eikon-box" }]
+      ? [...TABS, { labelKey: null, href: "/account/eikon-box" }]
       : TABS;
   return (
     <nav
@@ -39,13 +39,13 @@ export function AccountTabs() {
       className="border-b border-paper/10 mb-8"
     >
       <ul className="flex gap-1 overflow-x-auto scrollbar-thin">
-        {tabs.map((t) => {
+        {tabs.map((tab) => {
           const active =
-            pathname === t.href || pathname.startsWith(t.href + "/");
+            pathname === tab.href || pathname.startsWith(tab.href + "/");
           return (
-            <li key={t.href}>
+            <li key={tab.href}>
               <Link
-                href={t.href}
+                href={tab.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "inline-block px-4 py-2.5 font-sans text-detail font-medium transition-colors",
@@ -55,7 +55,8 @@ export function AccountTabs() {
                     : "text-paper/60 hover:text-paper border-transparent",
                 )}
               >
-                {t.label}
+                {/* "EIKON Box" is a product name and stays untranslated. */}
+                {tab.labelKey ? t(tab.labelKey) : "EIKON Box"}
               </Link>
             </li>
           );

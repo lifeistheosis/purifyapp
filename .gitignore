@@ -133,3 +133,4 @@ test-results/
 .impeccable/hook.cache.json
 .impeccable/config.local.json
 .i18n-work/
+.i18n-new/

@@ -14,14 +14,14 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * Cart shows a live count and appears only once something is in it — an
  * empty cart tab would be noise.
  */
-const TABS: { label: string; href: string; exact?: boolean }[] = [
-  { label: "Explore", href: "/shop", exact: true },
-  { label: "Cart", href: "/shop/cart" },
-  { label: "Requests", href: "/shop/requests" },
-  { label: "Orders", href: "/shop/orders" },
-  { label: "Messages", href: "/shop/messages" },
-  { label: "Saved", href: "/saved" },
-  { label: "Profile", href: "/account" },
+const TABS: { labelKey: string; href: string; exact?: boolean }[] = [
+  { labelKey: "shop.tabs.explore", href: "/shop", exact: true },
+  { labelKey: "shop.cart", href: "/shop/cart" },
+  { labelKey: "shop.tabs.requests", href: "/shop/requests" },
+  { labelKey: "shop.tabs.orders", href: "/shop/orders" },
+  { labelKey: "shop.messages", href: "/shop/messages" },
+  { labelKey: "common.saved", href: "/saved" },
+  { labelKey: "account.tabs.profile", href: "/account" },
 ];
 
 export function ShopSubTabs() {
@@ -54,15 +54,15 @@ export function ShopSubTabs() {
           its count badge bumps when something is added (badge-bump keyframe,
           keyed by count). Snap keeps mid-scroll states tidy. */}
       <ul className="flex snap-x gap-1 overflow-x-auto scrollbar-thin px-2 py-1.5">
-        {TABS.map((t) => {
-          const isCart = t.href === "/shop/cart";
+        {TABS.map((tab) => {
+          const isCart = tab.href === "/shop/cart";
           // The cart opens the slide-in drawer instead of navigating, so it is
           // never the "active route".
           const active = isCart
             ? false
-            : t.exact
-              ? pathname === t.href
-              : pathname === t.href || pathname.startsWith(t.href + "/");
+            : tab.exact
+              ? pathname === tab.href
+              : pathname === tab.href || pathname.startsWith(tab.href + "/");
           const cls = cn(
             "tap-press inline-flex min-h-[44px] items-center gap-1.5 rounded-pill px-3.5 font-sans text-detail transition-colors",
             active
@@ -71,7 +71,7 @@ export function ShopSubTabs() {
           );
           const inner = (
             <>
-              {t.label}
+              {t(tab.labelKey)}
               {isCart && count > 0 ? (
                 <span
                   key={count}
@@ -83,14 +83,14 @@ export function ShopSubTabs() {
             </>
           );
           return (
-            <li key={t.href} className="shrink-0 snap-start">
+            <li key={tab.href} className="shrink-0 snap-start">
               {isCart ? (
                 <button type="button" onClick={openCartDrawer} className={cls}>
                   {inner}
                 </button>
               ) : (
                 <Link
-                  href={t.href}
+                  href={tab.href}
                   aria-current={active ? "page" : undefined}
                   className={cls}
                 >

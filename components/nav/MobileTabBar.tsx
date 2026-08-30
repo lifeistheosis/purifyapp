@@ -143,7 +143,7 @@ export function MobileTabBar() {
       ? [
           {
             key: "shop",
-            label: "Shop",
+            label: t("nav.shop"),
             href: "/shop",
             Icon: Cart,
             matches: (p: string) => p === "/shop" || p.startsWith("/shop/"),

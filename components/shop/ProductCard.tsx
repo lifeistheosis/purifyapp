@@ -5,6 +5,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import { RatingStars } from "@/components/shop/RatingStars";
 import { Cart } from "@/components/ui/icons/Cart";
@@ -42,6 +43,7 @@ export function ProductCard({
   className?: string;
   style?: CSSProperties;
 }) {
+  const { t } = useTranslate();
   const image = product.media[0];
   const rating = productRating(product);
   const sold = unitsSoldLabel(product.units_sold);
@@ -166,7 +168,11 @@ export function ProductCard({
             <button
               type="button"
               onClick={quickAdd}
-              aria-label={added ? "Added to cart" : `Add ${product.title} to cart`}
+              aria-label={
+                added
+                  ? t("shop.addedToCart")
+                  : t("shop.addProductToCart", { title: product.title })
+              }
               className={cn(
                 "tap-press relative z-20 inline-flex h-10 w-10 items-center justify-center rounded-full border transition-colors",
                 added

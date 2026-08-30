@@ -1,9 +1,13 @@
+"use client";
+
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Star } from "@/components/ui/icons/Star";
 import { cn } from "@/lib/cn";
 
 /**
  * Read-only star rating. Renders five glyphs filled to the rounded average,
- * with an optional "4.5 (12)" tail. Presentational and server-safe.
+ * with an optional "4.5 (12)" tail. Presentational; it reads the live
+ * catalog, so it renders inside client components only.
  */
 export function RatingStars({
   avg,
@@ -16,11 +20,12 @@ export function RatingStars({
   showCount?: boolean;
   className?: string;
 }) {
+  const { t, tn } = useTranslate();
   const filled = Math.round(avg ?? 0);
   const label =
     avg != null
-      ? `Rated ${avg.toFixed(1)} out of 5 from ${count} ${count === 1 ? "review" : "reviews"}`
-      : "No reviews yet";
+      ? tn("shop.ratedOutOfFive", count, { avg: avg.toFixed(1) })
+      : t("shop.noReviewsYet");
 
   return (
     <span
@@ -39,7 +44,7 @@ export function RatingStars({
       </span>
       {showCount ? (
         <span className="font-sans text-caption text-paper/55">
-          {avg != null ? `${avg.toFixed(1)} (${count})` : "No reviews yet"}
+          {avg != null ? `${avg.toFixed(1)} (${count})` : t("shop.noReviewsYet")}
         </span>
       ) : null}
     </span>

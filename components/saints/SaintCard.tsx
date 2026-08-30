@@ -45,7 +45,7 @@ export function SaintCard({ saint }: { saint: Saint }) {
           <T k="saints.feastLabel" /> {saint.feastDays[0]}
         </span>
         <span className="font-sans text-paper/55 tabular-nums">
-          {saint.works.length} {saint.works.length === 1 ? "work" : "works"}
+          <T k="saints.workCount" count={saint.works.length} />
         </span>
         <span className="font-sans text-paper/45 group-hover:text-paper transition-colors duration-150">
           <T k="saints.read" /> →

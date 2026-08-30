@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PasswordInput } from "./PasswordInput";
 
 /**
@@ -16,6 +17,7 @@ import { PasswordInput } from "./PasswordInput";
  */
 export function SetPasswordForm() {
   const router = useRouter();
+  const { t } = useTranslate();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [pending, setPending] = useState(false);
@@ -25,11 +27,11 @@ export function SetPasswordForm() {
     e.preventDefault();
     setError(null);
     if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
+      setError(t("ui.passwordMinLength"));
       return;
     }
     if (password !== confirm) {
-      setError("Passwords don't match.");
+      setError(t("ui.passwordsDontMatch"));
       return;
     }
     setPending(true);
@@ -42,7 +44,7 @@ export function SetPasswordForm() {
       router.push("/account/profile");
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Couldn't set password.");
+      setError(e instanceof Error ? e.message : t("ui.couldntSetPassword"));
       setPending(false);
     }
   }
@@ -57,14 +59,14 @@ export function SetPasswordForm() {
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
       <PasswordInput
-        label="Choose a password"
+        label={t("ui.chooseAPassword")}
         value={password}
         onChange={setPassword}
         autoComplete="new-password"
         showStrength
       />
       <PasswordInput
-        label="Confirm password"
+        label={t("common.confirmPassword")}
         value={confirm}
         onChange={setConfirm}
         autoComplete="new-password"
@@ -77,14 +79,14 @@ export function SetPasswordForm() {
         disabled={pending}
         className="rounded-pill bg-paper text-night font-sans text-ui font-semibold py-3 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
       >
-        {pending ? "Saving…" : "Set password and continue"}
+        {pending ? t("shop.storeSaving") : t("ui.setPasswordAndContinue")}
       </button>
       <button
         type="button"
         onClick={signOut}
         className="text-center font-sans text-caption text-paper/55 hover:text-paper"
       >
-        Sign out instead
+        {t("ui.signOutInstead")}
       </button>
     </form>
   );

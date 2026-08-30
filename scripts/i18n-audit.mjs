@@ -63,10 +63,10 @@ function placeholders(value) {
  *
  * A category key is legitimate when the base has ANY form of the same key.
  */
-const CLDR = ["zero", "one", "two", "few", "many", "other"];
+export const CLDR = ["zero", "one", "two", "few", "many", "other"];
 const LEGACY = ["singular", "plural"];
 
-function isPluralVariant(key, base) {
+export function isPluralVariant(key, base) {
   const dot = key.lastIndexOf(".");
   if (dot < 0) return false;
   const cat = key.slice(dot + 1);
@@ -80,7 +80,7 @@ function isPluralVariant(key, base) {
  * the bare noun, and reinserting {count} there is wrong, not safer. So a
  * missing {count} is only an error in the forms that always carry it.
  */
-const COUNTLESS_OK = new Set(["zero", "one", "two"]);
+export const COUNTLESS_OK = new Set(["zero", "one", "two"]);
 
 function readCatalog(code) {
   const file = join(DIR, `${code}.json`);
