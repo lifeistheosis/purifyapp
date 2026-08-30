@@ -184,7 +184,7 @@ function IntentionCard({
           )}
           <p className="mt-1.5 font-sans text-caption text-paper/45">
             {kind === "living" && entry.nameday && (
-              <>{t("prayers.diptychs.namedayLabel")} {formatMmDd(entry.nameday)} · </>
+              <>{t("prayers.diptychs.namedayLabel")} {formatMmDd(entry.nameday, t)} · </>
             )}
             {kind === "departed" && entry.repose && (
               <>{t("prayers.diptychs.reposedLabel")} {entry.repose} · </>
@@ -327,12 +327,20 @@ function IntentionForm({
   );
 }
 
-function formatMmDd(mmdd: string): string {
+const MONTH_ABBR_KEYS = [
+  "common.monthAbbr.jan", "common.monthAbbr.feb", "common.monthAbbr.mar",
+  "common.monthAbbr.apr", "common.monthAbbr.may", "common.monthAbbr.jun",
+  "common.monthAbbr.jul", "common.monthAbbr.aug", "common.monthAbbr.sep",
+  "common.monthAbbr.oct", "common.monthAbbr.nov", "common.monthAbbr.dec",
+];
+
+function formatMmDd(
+  mmdd: string,
+  t: (key: string, replacements?: Record<string, string | number>) => string,
+): string {
   const [m, d] = mmdd.split("-").map((s) => parseInt(s, 10));
   if (Number.isNaN(m) || Number.isNaN(d)) return mmdd;
-  const months = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-  ];
-  return `${months[m - 1]} ${d}`;
+  const monthKey = MONTH_ABBR_KEYS[m - 1];
+  if (!monthKey) return mmdd;
+  return t("common.monthDay", { month: t(monthKey), day: d });
 }

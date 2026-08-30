@@ -6,15 +6,15 @@ import { ViewInHistory } from "@/components/history/ViewInHistory";
 import { eventsForCouncil } from "@/lib/history/events";
 import { T } from "@/components/i18n/T";
 
-const ORDINAL_NAMES = [
- "",
- "First",
- "Second",
- "Third",
- "Fourth",
- "Fifth",
- "Sixth",
- "Seventh",
+const ORDINAL_COUNCIL_KEYS = [
+ "study.ecumenicalCouncil",
+ "study.councils.firstEcumenical",
+ "study.councils.secondEcumenical",
+ "study.councils.thirdEcumenical",
+ "study.councils.fourthEcumenical",
+ "study.councils.fifthEcumenical",
+ "study.councils.sixthEcumenical",
+ "study.councils.seventhEcumenical",
 ];
 
 export function generateStaticParams() {
@@ -60,9 +60,11 @@ export default async function CouncilProfilePage({
 
  {/* Hero */}
  <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold/80">
- {c.kind === "local"
- ? "Local Council"
- : `${ORDINAL_NAMES[c.ordinal ?? 0]} Ecumenical Council`}
+ {c.kind === "local" ? (
+ <T k="study.councils.localCouncil" />
+ ) : (
+ <T k={ORDINAL_COUNCIL_KEYS[c.ordinal ?? 0]} />
+ )}
  </p>
  <h1 className="mt-3 font-display-serif text-display-sm md:text-display-lg text-paper leading-[1.05] tracking-[-0.015em]">
  {c.byname}
@@ -251,9 +253,11 @@ export default async function CouncilProfilePage({
  (c.pendingDocuments && c.pendingDocuments.length > 0)) && (
  <div className="mt-14">
  <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
- {c.documents.length > 0
- ? "Read the Council’s documents"
- : "The Council’s documents"}
+ {c.documents.length > 0 ? (
+ <T k="study.councils.readDocuments" />
+ ) : (
+ <T k="study.councils.documents" />
+ )}
  </h2>
  {c.documents.length > 0 && (
  <ul className="space-y-3">

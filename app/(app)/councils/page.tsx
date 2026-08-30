@@ -10,15 +10,15 @@ export const metadata = {
  "The seven Ecumenical Councils of the Orthodox Church, with their Definitions, Canons, and historical context.",
 };
 
-const ORDINAL_NAMES = [
- "",
- "First",
- "Second",
- "Third",
- "Fourth",
- "Fifth",
- "Sixth",
- "Seventh",
+const ORDINAL_COUNCIL_KEYS = [
+ "study.ecumenicalCouncil",
+ "study.councils.firstEcumenical",
+ "study.councils.secondEcumenical",
+ "study.councils.thirdEcumenical",
+ "study.councils.fourthEcumenical",
+ "study.councils.fifthEcumenical",
+ "study.councils.sixthEcumenical",
+ "study.councils.seventhEcumenical",
 ];
 
 export default async function CouncilsPage() {
@@ -51,7 +51,7 @@ export default async function CouncilsPage() {
  className="group block h-full rounded-md border border-paper/12 bg-paper/[0.03] hover:border-gold/45 hover:bg-gold/[0.04] transition-colors px-6 py-6"
  >
  <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/75 font-semibold">
- {ORDINAL_NAMES[c.ordinal ?? 0]} <T k="study.ecumenicalCouncil" />
+ <T k={ORDINAL_COUNCIL_KEYS[c.ordinal ?? 0]} />
  </p>
  <h2 className="mt-2 font-display-serif text-title-sm md:text-title-sm text-paper leading-tight">
  {c.byname}

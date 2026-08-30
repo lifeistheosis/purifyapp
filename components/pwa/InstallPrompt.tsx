@@ -178,7 +178,7 @@ export function InstallPrompt() {
   return (
     <div
       role="dialog"
-      aria-label="Add Purify to your home screen"
+      aria-label={t("ui.addPurifyToYourHome")}
       className="md:hidden fixed inset-x-3 z-[55]"
       style={{
         bottom:
@@ -192,8 +192,8 @@ export function InstallPrompt() {
           </p>
           <p className="mt-1 font-sans text-caption text-paper/70 leading-[1.5]">
             {iosHint
-              ? "Tap Share, then Add to Home Screen."
-              : "Install for a full-screen, offline-ready app."}
+              ? t("ui.tapShareThenAddToHome")
+              : t("ui.installForFullScreenOffline")}
           </p>
         </div>
         <div className="shrink-0 flex items-center gap-2">

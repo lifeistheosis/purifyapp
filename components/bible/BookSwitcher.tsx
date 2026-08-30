@@ -12,15 +12,15 @@ import {
   type BookCategory,
 } from "@/lib/bible/books";
 
-type Testament = { label: string; categories: BookCategory[] };
+type Testament = { labelKey: string; categories: BookCategory[] };
 
 const TESTAMENTS: Testament[] = [
-  { label: "Old Testament", categories: getOldTestamentCategories() },
-  { label: "New Testament", categories: getNewTestamentCategories() },
+  { labelKey: "bible.oldTestamentShort", categories: getOldTestamentCategories() },
+  { labelKey: "bible.newTestamentShort", categories: getNewTestamentCategories() },
 ];
 
 export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
-  const { locale, t } = useTranslate();
+  const { locale, t, tn } = useTranslate();
   const router = useRouter();
   const current = getBook(currentSlug);
   const [open, setOpen] = useState(false);
@@ -61,7 +61,7 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
   const filtered = useMemo(() => {
     if (!q) return TESTAMENTS;
     return TESTAMENTS.map((tst) => ({
-      label: tst.label,
+      labelKey: tst.labelKey,
       categories: tst.categories
         .map((c) => ({
           label: c.label,
@@ -152,18 +152,18 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
           >
             {filtered.length === 0 ? (
               <p className="px-3 py-6 text-center font-sans text-caption text-paper/45">
-                {t("bible.noBooksMatch")} “{query}”.
+                {t("bible.noBooksMatchQuery", { query })}
               </p>
             ) : (
               filtered.map((grp) => (
-                <div key={grp.label} className="mb-1 last:mb-0">
+                <div key={grp.labelKey} className="mb-1 last:mb-0">
                   <p className="px-2 pt-3 pb-1.5 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
-                    {grp.label}
+                    {t(grp.labelKey)}
                   </p>
                   {grp.categories.map((c) => (
                     <div key={c.label} className="mb-1 last:mb-0">
                       <p className="px-2 pt-1.5 pb-1 font-sans text-eyebrow uppercase tracking-[1.1px] text-paper/35">
-                        {c.label}
+                        {t(`bible.category.${c.label.toLowerCase().replace(/ /g, "-")}`)}
                       </p>
                       <ul>
                         {c.books.map((b) => {
@@ -189,7 +189,7 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
                                     isCurrent ? "text-paper/65" : "text-paper/35",
                                   )}
                                 >
-                                  {b.chapters} {t("bible.chAbbrev")}
+                                  {tn("bible.chAbbrevCount", b.chapters)}
                                 </span>
                               </button>
                             </li>

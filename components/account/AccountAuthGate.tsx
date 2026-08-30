@@ -91,7 +91,9 @@ export function AccountAuthGate({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-[40vh] items-center justify-center">
       <p className="font-sans text-caption text-paper/45">
-        {state === "out" ? "Redirecting to sign in…" : "Loading your account…"}
+        {state === "out"
+          ? t("ui.redirectingToSignIn")
+          : t("ui.loadingYourAccount")}
       </p>
     </div>
   );

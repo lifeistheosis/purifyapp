@@ -3,6 +3,7 @@
 import type { SectionVoice } from "@/lib/saints/load";
 import type { Saint } from "@/lib/saints/saints";
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Says whose words the paragraphs below are, when they are not the saint's.
@@ -31,11 +32,12 @@ export function VoiceBand({
   voiceAuthor?: string;
   saint: Saint;
 }) {
+  const { t } = useTranslate();
   if (!voice || voice === "saint") return null;
 
   const possessive = saint.pronoun === "her" ? "her" : "his";
-  const label = LABELS[voice];
-  const body = describe(voice, voiceAuthor, saint.name, possessive);
+  const label = t(LABEL_KEYS[voice]);
+  const body = describe(t, voice, voiceAuthor, saint.name, possessive);
   if (!body) return null;
 
   return (
@@ -60,14 +62,20 @@ export function VoiceBand({
   );
 }
 
-const LABELS: Record<Exclude<SectionVoice, "saint">, string> = {
-  editorial: "Summary by Purify",
-  witness: "Another hand",
-  liturgical: "The Church's hymn",
-  scripture: "Scripture",
+const LABEL_KEYS: Record<Exclude<SectionVoice, "saint">, string> = {
+  editorial: "saints.voice.editorialLabel",
+  witness: "saints.voice.witnessLabel",
+  liturgical: "saints.voice.liturgicalLabel",
+  scripture: "bible.eyebrow",
 };
 
+type Translate = (
+  key: string,
+  replacements?: Record<string, string | number>,
+) => string;
+
 function describe(
+  t: Translate,
   voice: SectionVoice,
   voiceAuthor: string | undefined,
   saintName: string,
@@ -75,15 +83,23 @@ function describe(
 ): string | null {
   switch (voice) {
     case "editorial":
-      return `Written by Purify, not ${saintName}'s words.`;
+      return t("saints.voice.editorialBody", { name: saintName });
     case "witness":
       return voiceAuthor
-        ? `Recorded by ${voiceAuthor}. Verbatim, but not ${saintName}'s words.`
-        : `Verbatim words of another hand, not ${saintName}'s.`;
+        ? t("saints.voice.witnessBodyRecorded", {
+            author: voiceAuthor,
+            name: saintName,
+          })
+        : t("saints.voice.witnessBody", { name: saintName });
     case "liturgical":
-      return `Sung by the Church about ${saintName}, not written by ${possessive === "her" ? "her" : "him"}.`;
+      return t(
+        possessive === "her"
+          ? "saints.voice.liturgicalBodyHer"
+          : "saints.voice.liturgicalBodyHis",
+        { name: saintName },
+      );
     case "scripture":
-      return "Verbatim Scripture.";
+      return t("saints.voice.scriptureBody");
     default:
       return null;
   }
