@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-// @ts-expect-error plain ESM script, no types, deliberately shared with the CLI
+// Plain ESM, no types, deliberately the SAME module the CLI runs. Two copies of
+// these rules would drift, and the copy that drifts is always the one in CI.
 import { audit } from "../../../scripts/i18n-audit.mjs";
 
 /**

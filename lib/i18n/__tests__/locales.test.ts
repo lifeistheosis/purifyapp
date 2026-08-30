@@ -65,14 +65,29 @@ describe("locale registry", () => {
 });
 
 describe("catalog loading for new locales", () => {
-  it("core keys are translated and missing keys fall back to English", () => {
+  it("translates the long tail too, not just the core chrome", () => {
+    // This used to assert the opposite for shop.purifyShop: that a long-tail
+    // key FELL BACK to English. That was true when these eight locales were
+    // around 8.7% complete, and it was pinning the gap rather than testing
+    // anything. All twenty catalogs now carry all 2,077 keys, so the
+    // assertion is inverted: the long tail is translated as well.
     const en = getMessages("en");
     for (const code of ["fil", "tr", "ka", "hu", "id", "ne", "pl", "ur"] as const) {
       const m = getMessages(code);
-      // Core chrome translated (differs from English).
       expect(t(m, "nav.today")).not.toBe(t(en, "nav.today"));
-      // Long-tail keys fall back to the English value, never the raw key.
-      expect(t(m, "shop.purifyShop")).toBe(t(en, "shop.purifyShop"));
+      expect(t(m, "shop.purifyShop")).not.toBe(t(en, "shop.purifyShop"));
     }
+  });
+
+  it("still falls back to English for a key a locale genuinely lacks", () => {
+    // The fallback mechanism is worth keeping under test even with every
+    // catalog complete, because it is what keeps the site usable the moment a
+    // new key is added to en.json and before anyone translates it. Proved with
+    // a key invented here rather than with whatever happened to be missing.
+    const en = getMessages("en");
+    const m = getMessages("pl");
+    expect(t(m, "nav.today")).not.toBe(t(en, "nav.today"));
+    // A key in no catalog at all returns itself, loudly, rather than "".
+    expect(t(m, "this.key.exists.nowhere")).toBe("this.key.exists.nowhere");
   });
 });
