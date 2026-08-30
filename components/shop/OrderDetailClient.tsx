@@ -11,7 +11,9 @@ import {
   ShopLoading,
   ShopSignInPrompt,
 } from "@/components/shop/ShopStates";
+import { useIsNative } from "@/lib/platform/native";
 import { formatPrice } from "@/lib/shop/format";
+import { productHref } from "@/lib/shop/productHref";
 import { canRequestRefund } from "@/lib/shop/refunds";
 import { buyerOrderStatus } from "@/lib/shop/status";
 import type {
@@ -88,6 +90,7 @@ async function load(id: string): Promise<Result> {
 
 export function OrderDetailClient() {
   const { t } = useTranslate();
+  const native = useIsNative();
   const id = useSearchParams().get("id") ?? "";
   const { data, error, loading, reload } = useAsyncData(() => load(id), [id]);
 
@@ -203,7 +206,7 @@ export function OrderDetailClient() {
                     {item.title}
                   </p>
                   <Link
-                    href={`/shop/icons/${item.product.slug}#reviews`}
+                    href={productHref(item.product.slug, native, "#reviews")}
                     className="tap-press shrink-0 inline-flex items-center rounded-pill border border-paper/25 px-4 py-1.5 font-sans text-detail font-semibold text-paper hover:border-paper/45"
                   >
                     {t("shop.writeAReview")}

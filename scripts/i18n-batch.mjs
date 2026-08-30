@@ -1,4 +1,13 @@
-#!/usr/bin/env node
+// No shebang, deliberately.
+//
+// These run as `node scripts/<name>.mjs`, never as executables, so the
+// shebang bought nothing. It cost something: lib/i18n/__tests__ imports this
+// module so the test and the CLI share ONE copy of the rules, and the bundler
+// strips a shebang with a pattern anchored on a line feed. In a JS regex the
+// dot does not match a carriage return, so the moment git checked these out
+// with CRLF the strip silently missed, the hash reached the parser, and the
+// whole catalogs suite failed to load with 'Invalid or unexpected token' and
+// no line number, while node itself still ran the file perfectly.
 /**
  * Cut the untranslated strings of a locale into batches, and merge them back.
  *

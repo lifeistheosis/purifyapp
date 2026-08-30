@@ -10,6 +10,7 @@ import { Plus } from "@/components/ui/icons/Plus";
 import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/cn";
 import { hasActiveProClient } from "@/lib/entitlements/client";
+import { useIsNative } from "@/lib/platform/native";
 import {
   cartSubtotalCents,
   clearCart,
@@ -20,6 +21,7 @@ import {
 import { fetchShopConfig } from "@/lib/shop/catalogClient";
 import { formatPrice } from "@/lib/shop/format";
 import { openStripe } from "@/lib/shop/openStripe";
+import { productHref } from "@/lib/shop/productHref";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -33,6 +35,7 @@ export function CartClient() {
   const { t, tn } = useTranslate();
   const router = useRouter();
   const items = useCart();
+  const native = useIsNative();
   const { data: config } = useAsyncData(fetchShopConfig, []);
   // Display-only: reflects the buyer's real Pro shipping perk. Fails open to
   // false (the server re-decides shipping at checkout either way), so a
@@ -112,7 +115,7 @@ export function CartClient() {
             className="flex gap-4 rounded-xl border border-paper/10 bg-night-soft/60 p-4"
           >
             <Link
-              href={`/shop/icons/${item.slug}`}
+              href={productHref(item.slug, native)}
               className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-paper/[0.04]"
             >
               {item.imageUrl ? (
@@ -128,7 +131,7 @@ export function CartClient() {
             <div className="min-w-0 flex-1">
               <div className="flex items-start justify-between gap-3">
                 <Link
-                  href={`/shop/icons/${item.slug}`}
+                  href={productHref(item.slug, native)}
                   className="min-w-0 truncate font-sans text-ui font-semibold text-paper hover:underline underline-offset-4"
                 >
                   {item.title}

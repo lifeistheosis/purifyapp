@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { isNativeClient } from "@/lib/platform/native";
+import { isNativeClient, useIsNative } from "@/lib/platform/native";
+import { productHref } from "@/lib/shop/productHref";
 import type { ShopProductFull } from "@/lib/shop/types";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -24,6 +25,7 @@ export function SaintIconsRail({
   saintName: string;
 }) {
   const { t } = useTranslate();
+  const native = useIsNative();
   const [products, setProducts] = useState<ShopProductFull[] | null>(null);
 
   useEffect(() => {
@@ -65,7 +67,7 @@ export function SaintIconsRail({
           return (
             <li key={p.id} className="w-[150px] shrink-0">
               <Link
-                href={`/shop/icons/${p.slug}`}
+                href={productHref(p.slug, native)}
                 className="group block overflow-hidden rounded-lg border border-paper/10 bg-night-soft/60"
               >
                 <div className="relative aspect-square bg-paper/[0.04]">

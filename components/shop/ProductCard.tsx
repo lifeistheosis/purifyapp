@@ -10,8 +10,10 @@ import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import { RatingStars } from "@/components/shop/RatingStars";
 import { Cart } from "@/components/ui/icons/Cart";
 import { Check } from "@/components/ui/icons/Check";
+import { useIsNative } from "@/lib/platform/native";
 import { addToCart } from "@/lib/shop/cart";
 import { formatPrice, productRating, unitsSoldLabel } from "@/lib/shop/format";
+import { productHref } from "@/lib/shop/productHref";
 import { stockUrgency } from "@/lib/shop/stock";
 import type { ShopInventoryStatus, ShopProductFull } from "@/lib/shop/types";
 import { cn } from "@/lib/cn";
@@ -47,6 +49,7 @@ export function ProductCard({
   style?: CSSProperties;
 }) {
   const { t, tn } = useTranslate();
+  const native = useIsNative();
   const image = product.media[0];
   const rating = productRating(product);
   const sold = unitsSoldLabel(product.units_sold);
@@ -142,7 +145,7 @@ export function ProductCard({
       {/* Stretched navigation target: covers the whole card, sits below the
           interactive controls. */}
       <Link
-        href={`/shop/icons/${product.slug}`}
+        href={productHref(product.slug, native)}
         aria-label={product.title}
         className="absolute inset-0 z-10 rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
       />

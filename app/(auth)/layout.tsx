@@ -14,7 +14,16 @@ export default function AuthLayout({
 }) {
   return (
     <div className="min-h-screen flex flex-col bg-night">
-      <header className="px-6 py-5 flex items-center justify-between">
+      <header
+        // The only top-level layout in the app with no top inset. The root
+        // layout sets viewportFit: "cover" and black-translucent, and the
+        // native shell runs edge to edge, so the Purify wordmark and the
+        // Privacy link started 20px from the TRUE top and landed under the
+        // notch. The (app) group gets its inset from .safe-pt; this group
+        // never had an equivalent. Also hits the installed iOS PWA.
+        style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 1.25rem)" }}
+        className="px-6 pb-5 flex items-center justify-between"
+      >
         <Link
           href="/"
           className="font-sans text-lede font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors"

@@ -14,6 +14,7 @@ import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 import { Minus } from "@/components/ui/icons/Minus";
 import { Plus } from "@/components/ui/icons/Plus";
 import { cn } from "@/lib/cn";
+import { useIsNative } from "@/lib/platform/native";
 import {
   cartCount,
   cartSubtotalCents,
@@ -23,11 +24,13 @@ import {
   useCart,
 } from "@/lib/shop/cart";
 import { formatPrice } from "@/lib/shop/format";
+import { productHref } from "@/lib/shop/productHref";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 export function CartDrawer() {
   const { t } = useTranslate();
   const items = useCart();
+  const native = useIsNative();
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
@@ -77,7 +80,16 @@ export function CartDrawer() {
           open ? "translate-x-0" : "translate-x-full",
         )}
       >
-        <header className="flex items-center justify-between border-b border-white/8 px-5 py-4">
+        <header
+          // The drawer is `fixed inset-y-0`, so its top edge is the TRUE viewport
+          // top: under the notch on iOS and under the status bar in the native
+          // shell, both of which run edge to edge. py-4 alone put "Your cart"
+          // in the occluded band. Inline rather than a pt-[calc(...)] utility,
+          // because app/globals.css records that custom safe-area utilities lose
+          // to .py-* on specificity and silently do nothing.
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 1rem)" }}
+          className="flex items-center justify-between border-b border-white/8 px-5 pb-4"
+        >
           <p className="font-display-serif text-title-sm text-paper">
             {t("shop.yourCart")}
             {count > 0 ? <span className="text-paper/50"> · {count}</span> : null}
@@ -114,7 +126,7 @@ export function CartDrawer() {
                   className="flex gap-3 rounded-xl border border-paper/10 bg-night-soft/60 p-3"
                 >
                   <Link
-                    href={`/shop/icons/${item.slug}`}
+                    href={productHref(item.slug, native)}
                     onClick={close}
                     className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-paper/[0.04]"
                   >
@@ -131,7 +143,7 @@ export function CartDrawer() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
                       <Link
-                        href={`/shop/icons/${item.slug}`}
+                        href={productHref(item.slug, native)}
                         onClick={close}
                         className="min-w-0 truncate font-sans text-detail font-semibold text-paper underline-offset-4 hover:underline"
                       >
