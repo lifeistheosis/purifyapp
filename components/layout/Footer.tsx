@@ -42,7 +42,7 @@ export function Footer() {
     { label: t("discover.tile.heresies"), href: "/heresies" },
     // Marketplace entry, dark until the shop flag flips. The ownership
     // disclosure rides in the footer bottom line beside it.
-    ...(shopEnabled() ? [{ label: "Shop", href: "/shop" }] : []),
+    ...(shopEnabled() ? [{ label: t("nav.shop"), href: "/shop" }] : []),
    ],
   },
   {
@@ -70,7 +70,7 @@ export function Footer() {
     { label: t("nav.about"), href: "/about" },
     { label: "Purify Plus", href: "/pricing" },
     { label: t("footer.privacy"), href: "/privacy" },
-    { label: "Terms", href: "/terms" },
+    { label: t("shop.terms"), href: "/terms" },
     { label: t("footer.faq"), href: "/faq" },
     { label: t("footer.support"), href: "/support" },
     { label: t("footer.whatsNew"), href: "/whats-new" },

@@ -54,7 +54,11 @@ export function MobileChapterSheet({
     <Sheet
       open={open}
       onClose={handleClose}
-      title={pickedBook ? pickedBook.name : "Pick a book"}
+      title={
+        pickedBook
+          ? t(`bible.books.${pickedBook.slug}`)
+          : t("bible.pickABook")
+      }
     >
       {/* OT / NT toggle */}
       <div className="mb-3 inline-flex rounded-pill border border-paper/15 bg-paper/[0.03] p-0.5 text-caption font-medium">
@@ -92,7 +96,7 @@ export function MobileChapterSheet({
                       : "text-paper/75 hover:bg-paper/[0.04] border border-transparent")
                   }
                 >
-                  {b.name}
+                  {t(`bible.books.${b.slug}`)}
                 </button>
               </li>
             );

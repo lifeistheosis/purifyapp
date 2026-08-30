@@ -47,7 +47,7 @@ export function FeaturedToday({
       <div className="space-y-3">
         {topic && (
           <MobileCard
-            eyebrow="Featured topic"
+            eyebrow={<T k="ui.featuredTopic" />}
             title={topic.title}
             href={`/topics/${topic.slug}`}
             tint="warm"
@@ -62,7 +62,7 @@ export function FeaturedToday({
         )}
         {council && (
           <MobileCard
-            eyebrow="Featured council"
+            eyebrow={<T k="ui.featuredCouncil" />}
             title={council.byname}
             href={`/councils/${council.slug}`}
             tint="gold"

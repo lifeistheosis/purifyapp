@@ -30,7 +30,7 @@ export function WriteReviewForm({
   productId: string;
   onSubmitted: () => void;
 }) {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const [stars, setStars] = useState(0);
   const [hover, setHover] = useState(0);
   const [body, setBody] = useState("");
@@ -63,7 +63,7 @@ export function WriteReviewForm({
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (stars < 1) {
-      setError("Choose a star rating.");
+      setError(t("shop.chooseAStarRating"));
       return;
     }
     setBusy(true);
@@ -79,7 +79,7 @@ export function WriteReviewForm({
       });
       onSubmitted();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't save your review.");
+      setError(err instanceof Error ? err.message : t("shop.reviewSaveFailed"));
     } finally {
       setBusy(false);
     }
@@ -87,8 +87,8 @@ export function WriteReviewForm({
 
   const shown = hover || stars;
   const postingAs = anonymous
-    ? "Anonymous · ?"
-    : `${name || "You"}${location.trim() ? ` · ${location.trim()}` : ""}`;
+    ? t("shop.postingAsAnonymous")
+    : `${name || t("nav.you")}${location.trim() ? ` · ${location.trim()}` : ""}`;
 
   return (
     <form
@@ -111,7 +111,7 @@ export function WriteReviewForm({
             key={i}
             type="button"
             aria-pressed={stars === i}
-            aria-label={`${i} ${i === 1 ? "star" : "stars"}`}
+            aria-label={tn("shop.starCount", i)}
             onClick={() => setStars(i)}
             onMouseEnter={() => setHover(i)}
             className={cn(
@@ -176,7 +176,7 @@ export function WriteReviewForm({
         disabled={busy}
         className="tap-press mt-3 inline-flex min-h-[44px] items-center rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night hover:bg-paper/90 disabled:opacity-60"
       >
-        {busy ? "Saving…" : "Post review"}
+        {busy ? t("shop.storeSaving") : t("shop.postReview")}
       </button>
     </form>
   );

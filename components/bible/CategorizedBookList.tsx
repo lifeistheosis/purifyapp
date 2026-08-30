@@ -29,7 +29,7 @@ export function CategorizedBookList({
         {categories.map((cat) => (
           <div key={cat.label}>
             <p className="mb-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/75">
-              {cat.label}
+              {t(`bible.category.${cat.label.toLowerCase().replace(/ /g, "-")}`)}
             </p>
             <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
               {cat.books.map((b) => (

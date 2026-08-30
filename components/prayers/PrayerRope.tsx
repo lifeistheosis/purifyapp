@@ -45,12 +45,39 @@ import { duckFor } from "@/lib/prayers/persistentAudioStore";
 import { haptic } from "@/lib/ui/motion";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
+/**
+ * The four rope prayers, and why the English string is still the ID.
+ *
+ * These render as the <h1> a reader actually prays, so leaving them hardcoded
+ * meant a Greek or Serbian reader counted knots in English while the SAME
+ * prayer was already shipping translated on the Today surface. That is the
+ * inconsistency being fixed.
+ *
+ * RopeSettings.line is persisted in localStorage as the literal English text
+ * (lib/prayers/storage.ts:315), so the stored value stays the ID and only the
+ * DISPLAY goes through the catalog. Keying on an id instead would silently
+ * reset the chosen prayer for everyone who has already picked one.
+ */
 const LINES = [
   "Lord Jesus Christ, Son of God, have mercy on me, a sinner.",
   "Lord Jesus Christ, have mercy on me.",
   "Most Holy Theotokos, save us.",
   "Holy God, Holy Mighty, Holy Immortal, have mercy on us.",
 ] as const;
+
+/**
+ * The first line reuses the key already translated in all twenty-one catalogs
+ * and already on screen elsewhere in the app. The other three are new, and are
+ * settled liturgical texts rather than app copy: the Trisagion and the
+ * Theotokos invocation have a received form in every Orthodox language, which
+ * is what the translators were told to use rather than a fresh rendering.
+ */
+const LINE_KEY: Record<string, string> = {
+  [LINES[0]]: "prayers.today.jesusPrayerText",
+  [LINES[1]]: "prayers.rope.lineJesusShort",
+  [LINES[2]]: "prayers.rope.lineTheotokos",
+  [LINES[3]]: "prayers.rope.lineTrisagion",
+};
 
 export function PrayerRope() {
   const { t } = useTranslate();
@@ -183,7 +210,7 @@ export function PrayerRope() {
           {t("prayers.rope.eyebrow")}
         </p>
         <h1 className="font-serif text-title-sm md:text-title leading-snug text-paper/90">
-          {settings.line}
+          {LINE_KEY[settings.line] ? t(LINE_KEY[settings.line]) : settings.line}
         </h1>
         <div aria-hidden className="mx-auto mt-6 h-px w-10 bg-gold/50" />
         <p className="mt-5 font-sans text-caption text-paper/40">
@@ -421,7 +448,7 @@ function SettingsDrawer({
                   className="mt-1 accent-[var(--color-gold)]"
                 />
                 <span className="font-serif text-ui text-paper/85 leading-snug">
-                  {l}
+                  {LINE_KEY[l] ? t(LINE_KEY[l]) : l}
                 </span>
               </label>
             ))}

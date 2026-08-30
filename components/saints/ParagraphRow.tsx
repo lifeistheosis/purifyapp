@@ -238,10 +238,16 @@ export function ParagraphRow({
  type="button"
  onClick={ann.toggleHighlight}
  aria-label={
- ann.highlighted ? "Remove highlight" : "Highlight paragraph"
+ ann.highlighted
+ ? t("bible.removeHighlight")
+ : t("saints.highlightParagraph")
  }
  aria-pressed={!!ann.highlighted}
- title={ann.highlighted ? "Remove highlight" : "Highlight paragraph"}
+ title={
+ ann.highlighted
+ ? t("bible.removeHighlight")
+ : t("saints.highlightParagraph")
+ }
  className={cn(
  "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  ann.highlighted
@@ -254,8 +260,10 @@ export function ParagraphRow({
  <button
  type="button"
  onClick={copyParagraphLink}
- aria-label={copied ? "Link copied" : "Copy paragraph link"}
- title={copied ? "Copied" : "Copy paragraph link"}
+ aria-label={
+ copied ? t("common.linkCopied") : t("saints.copyParagraphLink")
+ }
+ title={copied ? t("common.copied") : t("saints.copyParagraphLink")}
  className={cn(
  "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  copied
@@ -271,9 +279,9 @@ export function ParagraphRow({
  setDraft(ann.note ?? "");
  setEditing((v) => !v);
  }}
- aria-label={ann.note ? "Edit note" : "Add note"}
+ aria-label={ann.note ? t("bible.editNote") : t("bible.addNote")}
  aria-pressed={editing}
- title={ann.note ? "Edit note" : "Add note"}
+ title={ann.note ? t("bible.editNote") : t("bible.addNote")}
  className={cn(
  "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  ann.note
@@ -321,8 +329,8 @@ export function ParagraphRow({
  <div className="mt-2 flex items-center justify-between gap-2">
  <span className="font-sans text-eyebrow text-paper/40">
  {draft.length > 0
- ? "⌘+Enter to save · Esc to cancel"
- : "Esc to close"}
+ ? t("bible.noteSaveHint")
+ : t("bible.escToClose")}
  </span>
  <div className="flex items-center gap-2">
  {ann.note && (
@@ -365,21 +373,21 @@ export function ParagraphRow({
  groups={
  [
  [
- { label: "Copy paragraph", onClick: copyParagraphText },
- { label: "Copy as quote", onClick: copyAsQuote },
- { label: "Copy reference", onClick: copyReference },
- { label: "Copy link", onClick: copyParagraphLink },
+ { label: t("saints.copyParagraph"), onClick: copyParagraphText },
+ { label: t("bible.copyAsQuote"), onClick: copyAsQuote },
+ { label: t("bible.copyReference"), onClick: copyReference },
+ { label: t("today.verse.copyLink"), onClick: copyParagraphLink },
  ],
  [
  {
  label: ann.highlighted
- ? "Remove highlight"
- : "Highlight paragraph",
+ ? t("bible.removeHighlight")
+ : t("saints.highlightParagraph"),
  onClick: ann.toggleHighlight,
  destructive: !!ann.highlighted,
  },
  {
- label: ann.note ? "Edit note" : "Add note",
+ label: ann.note ? t("bible.editNote") : t("bible.addNote"),
  onClick: () => {
  setDraft(ann.note ?? "");
  setEditing(true);
@@ -389,8 +397,8 @@ export function ParagraphRow({
  [
  {
  label: sectionBookmarked
- ? "Remove section bookmark"
- : "Bookmark this section",
+ ? t("saints.removeSectionBookmark")
+ : t("saints.bookmarkThisSection"),
  onClick: toggleSectionBookmark,
  destructive: sectionBookmarked,
  },

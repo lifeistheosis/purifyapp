@@ -39,15 +39,15 @@ export function ChangePasswordCard({
     setError(null);
     setDone(false);
     if (next.length < 8) {
-      setError("Password must be at least 8 characters.");
+      setError(t("ui.passwordMinLength"));
       return;
     }
     if (next !== confirm) {
-      setError("Passwords don't match.");
+      setError(t("ui.passwordsDontMatch"));
       return;
     }
     if (hasPassword && next === current) {
-      setError("New password must be different from the current one.");
+      setError(t("ui.newPasswordMustDiffer"));
       return;
     }
     setPending(true);
@@ -60,7 +60,7 @@ export function ChangePasswordCard({
           password: current,
         });
         if (signInErr) {
-          throw new Error("Current password is incorrect.");
+          throw new Error(t("ui.currentPasswordIncorrect"));
         }
       }
       const { error: updErr } = await supabase.auth.updateUser({
@@ -82,8 +82,8 @@ export function ChangePasswordCard({
         e instanceof Error
           ? e.message
           : hasPassword
-            ? "Couldn't change password."
-            : "Couldn't set password.",
+            ? t("ui.couldntChangePassword")
+            : t("ui.couldntSetPassword"),
       );
     } finally {
       setPending(false);
@@ -130,7 +130,7 @@ export function ChangePasswordCard({
             disabled={pending}
             className="self-start rounded-pill bg-paper text-night font-sans text-detail font-semibold px-5 py-2.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
           >
-            {pending ? "Saving…" : "Set password"}
+            {pending ? t("shop.storeSaving") : t("reset.submit")}
           </button>
         </form>
       </section>
@@ -178,7 +178,7 @@ export function ChangePasswordCard({
           disabled={pending}
           className="self-start rounded-pill bg-paper text-night font-sans text-detail font-semibold px-5 py-2.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
         >
-          {pending ? "Saving…" : "Update password"}
+          {pending ? t("shop.storeSaving") : t("ui.updatePassword")}
         </button>
       </form>
     </section>

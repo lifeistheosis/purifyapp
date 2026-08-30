@@ -13,6 +13,7 @@
 // pass it. Only real, seeded rules are ever suggested, never a planned one.
 
 import { PrayerSectionLabel, PrayerIndex, PrayerIndexRow } from "./PrayerBook";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useMounted } from "@/lib/useMounted";
 import { useToday } from "@/lib/calendar/useToday";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
@@ -41,7 +42,7 @@ function pickable(r: RuleMeta): boolean {
 export function SuggestedToday({
   season: seasonProp,
   isFast: isFastProp,
-  label = "Suggested for today",
+  label,
   max = 3,
 }: {
   season?: Season;
@@ -49,6 +50,7 @@ export function SuggestedToday({
   label?: React.ReactNode;
   max?: number;
 }) {
+  const { t, tn } = useTranslate();
   const mounted = useMounted();
   const today = useToday();
   // Above the early return: hooks must run in the same order every render,
@@ -88,7 +90,7 @@ export function SuggestedToday({
 
   return (
     <>
-      <PrayerSectionLabel>{label}</PrayerSectionLabel>
+      <PrayerSectionLabel>{label ?? t("ui.suggestedForToday")}</PrayerSectionLabel>
       <PrayerIndex>
         {chosen.map((r) => (
           <PrayerIndexRow
@@ -96,7 +98,11 @@ export function SuggestedToday({
             href={r.href}
             title={r.title}
             description={r.description}
-            meta={r.estimatedMinutes ? `~${r.estimatedMinutes} min` : undefined}
+            meta={
+              r.estimatedMinutes
+                ? tn("prayers.approxMin", r.estimatedMinutes)
+                : undefined
+            }
           />
         ))}
       </PrayerIndex>

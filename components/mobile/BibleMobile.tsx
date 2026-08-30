@@ -9,6 +9,7 @@ import { BibleMobileContinue } from "./BibleMobileContinue";
 import { BibleSearchTrigger } from "./BibleSearchOverlay";
 import { BibleTabs } from "./BibleTabs";
 import { BibleAppointedToday } from "./BibleAppointedToday";
+import { T } from "@/components/i18n/T";
 
 /**
  * Bible mobile shell — minimal book selector.
@@ -35,7 +36,7 @@ export function BibleMobile() {
   return (
     <MobileShell
       header={<MobileHeader titleKey="nav.bible" trailing={<BibleSearchTrigger />} />}
-      eyebrow="Read"
+      eyebrow={<T k="saints.read" />}
     >
       {/* Codex Sinaiticus: the Greek uncial behind the text being read. */}
       <SectionMasthead section="bible" />

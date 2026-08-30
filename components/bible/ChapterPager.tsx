@@ -31,8 +31,8 @@ export function ChapterPager({
  const prev = prevChapter(slug, chapter);
  const next = nextChapter(slug, chapter);
  const currentBook = getBook(slug);
- const prevBookName = prev ? getBook(prev.slug)?.name : null;
- const nextBookName = next ? getBook(next.slug)?.name : null;
+ const prevBookName = prev ? t(`bible.books.${prev.slug}`) : null;
+ const nextBookName = next ? t(`bible.books.${next.slug}`) : null;
 
  const pBook = prevBook(slug);
  const nBook = nextBook(slug);
@@ -60,8 +60,10 @@ export function ChapterPager({
  </h3>
  <p className="mt-2 font-sans text-caption text-paper/55">
  {next.slug === slug
- ? "Next chapter"
- : `Next book, ${nextBookName} 1`}
+ ? t("bible.nextChapter")
+ : t("bible.nextBookFirstChapter", {
+ book: nextBookName ?? "",
+ })}
  </p>
  </div>
  <span
@@ -101,20 +103,20 @@ export function ChapterPager({
  href={`/bible/${pBook.slug}/1${vq(pBook.slug)}`}
  className="hover:text-paper transition-colors"
  >
- ⇤ {pBook.name}
+ ⇤ {t(`bible.books.${pBook.slug}`)}
  </Link>
  ) : (
  <span />
  )}
  <span className="text-paper/55">
- {currentBook?.name}
+ {currentBook ? t(`bible.books.${currentBook.slug}`) : null}
  </span>
  {nBook ? (
  <Link
  href={`/bible/${nBook.slug}/1${vq(nBook.slug)}`}
  className="hover:text-paper transition-colors"
  >
- {nBook.name} ⇥
+ {t(`bible.books.${nBook.slug}`)} ⇥
  </Link>
  ) : (
  <span />

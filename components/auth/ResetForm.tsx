@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PasswordInput } from "./PasswordInput";
 
 /**
@@ -15,6 +16,7 @@ import { PasswordInput } from "./PasswordInput";
  */
 export function ResetForm() {
   const router = useRouter();
+  const { t } = useTranslate();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [pending, setPending] = useState(false);
@@ -24,11 +26,11 @@ export function ResetForm() {
     e.preventDefault();
     setError(null);
     if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
+      setError(t("ui.passwordMinLength"));
       return;
     }
     if (password !== confirm) {
-      setError("Passwords don't match.");
+      setError(t("ui.passwordsDontMatch"));
       return;
     }
     setPending(true);
@@ -44,7 +46,7 @@ export function ResetForm() {
       router.push("/account/profile");
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Couldn't update password.");
+      setError(e instanceof Error ? e.message : t("ui.couldntSetPassword"));
       setPending(false);
     }
   }
@@ -52,14 +54,14 @@ export function ResetForm() {
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
       <PasswordInput
-        label="New password"
+        label={t("ui.newPassword")}
         value={password}
         onChange={setPassword}
         autoComplete="new-password"
         showStrength
       />
       <PasswordInput
-        label="Confirm new password"
+        label={t("ui.confirmNewPassword")}
         value={confirm}
         onChange={setConfirm}
         autoComplete="new-password"
@@ -72,7 +74,7 @@ export function ResetForm() {
         disabled={pending}
         className="rounded-pill bg-paper text-night font-sans text-ui font-semibold py-3 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
       >
-        {pending ? "Saving…" : "Set new password"}
+        {pending ? t("shop.storeSaving") : t("ui.setNewPassword")}
       </button>
     </form>
   );

@@ -19,7 +19,7 @@ export function MobileShell({
   header: ReactNode;
   /** Small uppercase caption above the timeline (e.g. "Daily Refresh").
       Optional: screens that lead with their own masthead can omit it. */
-  eyebrow?: string;
+  eyebrow?: ReactNode;
   /** Stacked cards. Use `MobileTimeline` or render plain children. */
   children: ReactNode;
 }) {

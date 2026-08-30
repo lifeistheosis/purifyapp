@@ -16,6 +16,7 @@ import {
   BUYER_ORDER_STEPS,
   buyerOrderStatus,
   buyerStepIndex,
+  type BuyerOrderStatus,
 } from "@/lib/shop/status";
 import type { ShopOrder } from "@/lib/shop/types";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
@@ -27,6 +28,19 @@ import {
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type Result = { signedIn: false } | { signedIn: true; orders: ShopOrder[] };
+
+/** Message key per buyer status. The status vocabulary itself stays English
+ * in lib/shop/status.ts; only the render site is translated. */
+const STATUS_KEY: Record<BuyerOrderStatus, string> = {
+  "Awaiting Payment": "shop.orderStatusAwaitingPayment",
+  "Order Confirmed": "shop.orderStatusOrderConfirmed",
+  "Preparing Your Order": "shop.orderStatusPreparingYourOrder",
+  "Ready to Ship": "shop.readyToShipX",
+  "Shipped": "shop.orderStatusShipped",
+  "Delivered": "shop.orderStatusDelivered",
+  "Cancelled": "shop.orderStatusCancelled",
+  "Refunded": "shop.orderStatusRefunded",
+};
 
 async function load(): Promise<Result> {
   // Auth-required page: an unresolved check (auth lock, network) must land
@@ -84,7 +98,7 @@ function UnfinishedRow({
         onClick={() => void remove()}
         className="tap-press shrink-0 rounded-pill border border-paper/20 px-4 py-1.5 font-sans text-caption font-semibold text-paper/70 hover:border-paper/40 hover:text-paper disabled:opacity-60"
       >
-        {busy ? "Removing…" : "Remove"}
+        {busy ? t("shop.removing") : t("shop.storeRemove")}
       </button>
     </li>
   );
@@ -100,7 +114,7 @@ export function OrdersClient() {
     return (
       <ShopSignInPrompt
         title={t("shop.yourOrders")}
-        body="Sign in to see orders placed with your account. Guest orders are tracked through the email receipt."
+        body={t("shop.signInToSeeOrders")}
         next="/shop/orders"
       />
     );
@@ -178,14 +192,14 @@ export function OrdersClient() {
                           )}
                           aria-current={i === step ? "step" : undefined}
                         >
-                          {s}
+                          {t(STATUS_KEY[s])}
                         </span>
                       </li>
                     ))}
                   </ol>
                 ) : (
                   <p className="mt-3 inline-flex rounded-pill border border-paper/20 px-3 py-1 font-sans text-caption font-semibold text-paper/70">
-                    {status}
+                    {t(STATUS_KEY[status])}
                   </p>
                 )}
 

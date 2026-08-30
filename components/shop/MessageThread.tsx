@@ -89,9 +89,9 @@ export function MessageThread({
         else router.refresh();
         return;
       }
-      setError(data.error ?? "Couldn't send the message.");
+      setError(data.error ?? t("shop.messageSendFailed"));
     } catch {
-      setError("Couldn't send the message.");
+      setError(t("shop.messageSendFailed"));
     } finally {
       setBusy(false);
     }
@@ -154,11 +154,11 @@ export function MessageThread({
           const reaction = reactionOf(m);
           const reacted = reaction === HEART;
           const isLastOwn = idx === lastOwnIdx;
-          const receipt = isLastOwn
+          const receipt: "read" | "delivered" | null = isLastOwn
             ? counterpartyReadMs !== null &&
               counterpartyReadMs >= new Date(m.created_at).getTime()
-              ? "Read"
-              : "Delivered"
+              ? "read"
+              : "delivered"
             : null;
           return (
             <li key={m.id} className={cn("flex items-end gap-2", mine ? "justify-end" : "justify-start")}>
@@ -189,7 +189,7 @@ export function MessageThread({
                     {m.body}
                   </p>
                   <p className="mt-1.5 text-right font-sans text-[10px] text-paper/45">
-                    {mine ? "You" : counterpartyName} ·{" "}
+                    {mine ? t("nav.you") : counterpartyName} ·{" "}
                     {new Date(m.created_at).toLocaleString(undefined, {
                       month: "short",
                       day: "numeric",
@@ -214,7 +214,11 @@ export function MessageThread({
                       type="button"
                       onClick={() => toggleReaction(m)}
                       aria-pressed={reacted}
-                      aria-label={reacted ? "Remove heart reaction" : "React with a heart"}
+                      aria-label={
+                        reacted
+                          ? t("shop.removeHeartReaction")
+                          : t("shop.reactWithAHeart")
+                      }
                       className={cn(
                         "leading-none transition-opacity focus-visible:opacity-100 group-hover:opacity-100",
                         reacted
@@ -228,9 +232,15 @@ export function MessageThread({
                   {receipt ? (
                     <span
                       className="font-sans text-[10px] font-medium tabular-nums text-paper/40"
-                      aria-label={`Message ${receipt.toLowerCase()}`}
+                      aria-label={
+                        receipt === "read"
+                          ? t("shop.messageReadAria")
+                          : t("shop.messageDeliveredAria")
+                      }
                     >
-                      {receipt}
+                      {receipt === "read"
+                        ? t("shop.receiptRead")
+                        : t("shop.receiptDelivered")}
                     </span>
                   ) : null}
                 </div>
@@ -260,17 +270,17 @@ export function MessageThread({
                 onChange={(e) => setBody(e.target.value)}
                 rows={2}
                 maxLength={4000}
-                placeholder={`Write to ${counterpartyName}…`}
+                placeholder={t("shop.writeToPlaceholder", { name: counterpartyName })}
                 className={cn(field, "resize-none rounded-2xl")}
               />
             </label>
             <button
               type="submit"
               disabled={busy || !body.trim()}
-              aria-label={busy ? "Sending" : "Send"}
+              aria-label={busy ? t("shop.sending") : t("shop.send")}
               className="tap-press inline-flex h-11 shrink-0 items-center justify-center rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night hover:bg-paper/90 disabled:opacity-60"
             >
-              {busy ? "…" : "Send"}
+              {busy ? "…" : t("shop.send")}
             </button>
           </div>
           {error ? (
