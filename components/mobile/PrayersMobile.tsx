@@ -32,6 +32,7 @@ import {
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { seasonFor, isFastDay } from "@/lib/prayers/season";
 import { T } from "@/components/i18n/T";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type HeroMode = "morning" | "midday" | "evening";
 
@@ -78,12 +79,16 @@ export function PrayersMobile() {
   const mode = mounted ? heroModeFor(new Date()) : "morning";
   const season = today ? seasonFor(today) : null;
   const [style] = useCalendarStyleDefault();
+  // The dateline follows the reader's language. formatLongDate() falls back
+  // to hardcoded English weekday and month names when it is given no locale,
+  // which is what the eyebrow was showing in all twenty of them.
+  const { t, locale } = useTranslate();
   const isFast = today ? isFastDay(today, style) : false;
 
   return (
     <MobileShell
       header={<MobileHeader titleKey="nav.prayers" trailing={<UserAvatarSmall />} />}
-      eyebrow={today ? formatLongDate(today) : " "}
+      eyebrow={today ? formatLongDate(today, locale) : " "}
     >
       {/* The Deesis: Christ with the Theotokos and the Forerunner
           interceding, which is what this surface is for. Mobile had no
@@ -174,8 +179,8 @@ export function PrayersMobile() {
                 <PrayerIndexRow
                   key={r.id}
                   href={r.href}
-                  title={r.title}
-                  description={r.description}
+                  title={t(`prayers.rule.${r.id}.title`)}
+                  description={r.description ? t(`prayers.rule.${r.id}.description`) : undefined}
                   meta={
                     r.estimatedMinutes ? (
                       <T k="prayers.approxMin" count={r.estimatedMinutes} />
@@ -200,8 +205,8 @@ export function PrayersMobile() {
                   <PrayerIndexRow
                     key={r.id}
                     href={r.href}
-                    title={r.title}
-                    description={r.description}
+                    title={t(`prayers.rule.${r.id}.title`)}
+                    description={r.description ? t(`prayers.rule.${r.id}.description`) : undefined}
                     planned={r.planned}
                     meta={
                       r.estimatedMinutes ? (

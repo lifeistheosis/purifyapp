@@ -45,8 +45,8 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
     } catch (e) {
       setDeleteError(
         e instanceof NotConfirmedError
-          ? `${e.message} Your account has not been deleted.`
-          : "Couldn't reach the server. Your account has not been deleted.",
+          ? t("ui.deleteAccountNotConfirmed", { message: e.message })
+          : t("ui.deleteAccountUnreachable"),
       );
       setDeleting(false);
     }
@@ -88,10 +88,7 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
 
         <div className="px-5 pb-5 pt-2 space-y-5">
           {signedIn && (
-            <Row
-              title={t("common.signOut")}
-              body="Sign out on this device. Your local data stays put. Your server-side data stays in your account."
-            >
+            <Row title={t("common.signOut")} body={t("ui.dangerSignOutBody")}>
               {/* /signout, not a POST to /api/auth/signout. The dedicated
                   page already handles the native case correctly with a client
                   signOut({ scope: "local" }); the form POST simply died at
@@ -108,7 +105,7 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
 
           <Row
             title={t("ui.clearLocalDataOnThis")}
-            body="Wipes every purify:* entry from localStorage. Anything synced to your account is untouched. Reload happens automatically."
+            body={t("ui.dangerClearLocalBody")}
           >
             {!confirmClear ? (
               <button
@@ -141,7 +138,7 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
           {signedIn && (
             <Row
               title={t("account.deleteAccount")}
-              body="Removes your account and every server-side row tied to it (profile, bookmarks, annotations). This cannot be undone. Local data on this device is left alone; clear that separately if you want it gone too."
+              body={t("ui.dangerDeleteAccountBody")}
               destructive
             >
               {!confirmDelete ? (
@@ -161,7 +158,9 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
                       disabled={deleting}
                       className="font-sans text-detail font-semibold bg-crimson text-paper rounded-pill px-4 py-2 hover:bg-[#a31f24] transition-colors disabled:opacity-60"
                     >
-                      {deleting ? "Deleting…" : t("ui.yesDeleteForever")}
+                      {deleting
+                        ? t("ui.deletingAccount")
+                        : t("ui.yesDeleteForever")}
                     </button>
                     <button
                       type="button"

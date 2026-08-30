@@ -95,8 +95,8 @@ export function SaintWorksBrowser({ saint }: { saint: Saint }) {
               className="font-sans text-detail font-medium text-paper/55 hover:text-paper underline underline-offset-4 decoration-paper/25 hover:decoration-paper/60 transition-colors px-1.5 py-2"
             >
               {showAll
-                ? "Show fewer"
-                : `More topics (${buckets.length - primary.length})`}
+                ? t("saints.showFewer")
+                : tn("saints.moreTopics", buckets.length - primary.length)}
             </button>
           )}
         </div>

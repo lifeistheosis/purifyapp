@@ -44,7 +44,7 @@ type AuthState =
   | {
       kind: "signed-in";
       email: string;
-      displayName: string;
+      displayName: string | null;
       joinedAt: string | null;
     };
 
@@ -79,7 +79,7 @@ export function YouMobile() {
             (user.user_metadata?.display_name as string | undefined) ??
             (user.user_metadata?.full_name as string | undefined) ??
             user.email?.split("@")[0] ??
-            "Signed in";
+            null;
           setAuth({
             kind: "signed-in",
             email: user.email ?? "",
@@ -119,7 +119,9 @@ export function YouMobile() {
   // shell with an ellipsis for a name, "Loading..." for an eyebrow and four
   // empty counters, which reads as a broken screen rather than a loading one.
   const loadingAuth = auth.kind === "loading";
-  const displayName = signedIn ? auth.displayName : t("account.localProfile");
+  const displayName = signedIn
+    ? (auth.displayName ?? t("account.signedIn"))
+    : t("account.localProfile");
   const memberSince = signedIn ? formatJoined(auth.joinedAt) : "";
   const tier = usePremiumTier();
 

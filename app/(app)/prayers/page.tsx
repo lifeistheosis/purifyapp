@@ -37,12 +37,30 @@ const CATEGORY_KEY = {
   devotional: "prayers.category.devotional",
 } as const;
 
-function titleOf(r: RuleMeta, isDe: boolean): string {
-  return isDe ? r.titleDe ?? r.title : r.title;
+/**
+ * The rule titles come from the CATALOG, not from the data file.
+ *
+ * lib/prayers/rules.ts types every rule as { title, titleDe, description,
+ * descriptionDe }, a two-language table, so these helpers used to be
+ * `isDe ? r.titleDe : r.title` and nineteen locales read the whole prayer
+ * index in English, under section headings that translated correctly.
+ *
+ * The table is deliberately left alone: it is still the source of truth for
+ * ids, hrefs, files and minutes, and the German twins stay as a reference.
+ * Only the text moves, keyed by the rule's own id.
+ *
+ * ReactNode rather than string, because <T> is how a server component reaches
+ * the live catalog, and PrayerIndexRow already takes a node.
+ */
+function titleOf(r: RuleMeta): ReactNode {
+  return <T k={`prayers.rule.${r.id}.title`} />;
 }
 
-function descriptionOf(r: RuleMeta, isDe: boolean): string | undefined {
-  return isDe ? r.descriptionDe ?? r.description : r.description;
+function descriptionOf(r: RuleMeta): ReactNode | undefined {
+  // A rule with no description must stay undefined, or the row renders the
+  // key itself as a subtitle.
+  if (!r.description) return undefined;
+  return <T k={`prayers.rule.${r.id}.description`} />;
 }
 
 /** "~8 min", as one interpolated catalog string rather than a concatenation. */
@@ -231,13 +249,7 @@ export default async function PrayersPage() {
                 filtered, grouped result list. When the input is empty the
                 children render unchanged. */}
             <div className="mt-16">
-              <PrayerSearch
-                placeholder={
-                  isDe
-                    ? "Gebete, das Seil, die Horen durchsuchen"
-                    : "Search prayers, the rope, the hours"
-                }
-              >
+              <PrayerSearch>
             {popularRules().length > 0 && (
               <div>
                 <PrayerSectionLabel>
@@ -248,8 +260,8 @@ export default async function PrayersPage() {
                     <PrayerIndexRow
                       key={r.id}
                       href={r.href}
-                      title={titleOf(r, isDe)}
-                      description={descriptionOf(r, isDe)}
+                      title={titleOf(r)}
+                      description={descriptionOf(r)}
                       meta={minutesMeta(r.estimatedMinutes)}
                     />
                   ))}
@@ -272,8 +284,8 @@ export default async function PrayersPage() {
                         <PrayerIndexRow
                           key={r.id}
                           href={r.href}
-                          title={titleOf(r, isDe)}
-                          description={descriptionOf(r, isDe)}
+                          title={titleOf(r)}
+                          description={descriptionOf(r)}
                           planned={r.planned}
                           plannedLabel={<T k="study.planned" />}
                           meta={minutesMeta(r.estimatedMinutes)}

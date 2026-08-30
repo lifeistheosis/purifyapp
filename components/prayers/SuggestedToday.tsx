@@ -92,19 +92,33 @@ export function SuggestedToday({
     <>
       <PrayerSectionLabel>{label ?? t("ui.suggestedForToday")}</PrayerSectionLabel>
       <PrayerIndex>
-        {chosen.map((r) => (
-          <PrayerIndexRow
-            key={r.id}
-            href={r.href}
-            title={r.title}
-            description={r.description}
-            meta={
-              r.estimatedMinutes
-                ? tn("prayers.approxMin", r.estimatedMinutes)
-                : undefined
-            }
-          />
-        ))}
+        {chosen.map((r) => {
+          // The rule registry carries its own per-language fields, so the
+          // catalog is consulted first and the table's English is the
+          // fallback for any id the catalog does not yet cover. `t` returns
+          // the key itself on a miss, which is how a miss is detected.
+          const titleKey = `prayers.rule.${r.id}.title`;
+          const titleText = t(titleKey);
+          const descKey = `prayers.rule.${r.id}.description`;
+          const descText = r.description ? t(descKey) : undefined;
+          return (
+            <PrayerIndexRow
+              key={r.id}
+              href={r.href}
+              title={titleText === titleKey ? r.title : titleText}
+              description={
+                descText === undefined || descText === descKey
+                  ? r.description
+                  : descText
+              }
+              meta={
+                r.estimatedMinutes
+                  ? tn("prayers.approxMin", r.estimatedMinutes)
+                  : undefined
+              }
+            />
+          );
+        })}
       </PrayerIndex>
     </>
   );

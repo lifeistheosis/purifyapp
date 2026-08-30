@@ -145,7 +145,7 @@ export function CartDrawer() {
                       <div className="inline-flex items-center rounded-pill border border-paper/15">
                         <button
                           type="button"
-                          aria-label={`Reduce quantity of ${item.title}`}
+                          aria-label={t("shop.reduceQuantityOf", { title: item.title })}
                           onClick={() => setCartQuantity(item.slug, item.quantity - 1)}
                           className="tap-press flex h-8 w-8 items-center justify-center rounded-l-pill text-paper/70 hover:text-paper"
                         >
@@ -156,7 +156,7 @@ export function CartDrawer() {
                         </span>
                         <button
                           type="button"
-                          aria-label={`Increase quantity of ${item.title}`}
+                          aria-label={t("shop.increaseQuantityOf", { title: item.title })}
                           onClick={() => setCartQuantity(item.slug, item.quantity + 1)}
                           className="tap-press flex h-8 w-8 items-center justify-center rounded-r-pill text-paper/70 hover:text-paper"
                         >

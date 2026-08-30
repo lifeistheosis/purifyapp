@@ -82,7 +82,10 @@ export function ProductGallery({
                 key={m.id}
                 type="button"
                 onClick={() => goTo(i)}
-                aria-label={`Show image ${i + 1} of ${media.length}`}
+                aria-label={t("shop.showImageOf", {
+                  n: i + 1,
+                  total: media.length,
+                })}
                 aria-current={i === idx}
                 className={cn(
                   "relative aspect-square w-16 shrink-0 overflow-hidden rounded-lg border transition-colors",
@@ -107,7 +110,10 @@ export function ProductGallery({
                 key={m.id}
                 type="button"
                 onClick={() => goTo(i)}
-                aria-label={`Image ${i + 1} of ${media.length}`}
+                aria-label={t("shop.imageOf", {
+                  n: i + 1,
+                  total: media.length,
+                })}
                 aria-current={i === idx}
                 className={cn(
                   "h-2.5 w-2.5 rounded-full border border-paper/40 transition-colors",

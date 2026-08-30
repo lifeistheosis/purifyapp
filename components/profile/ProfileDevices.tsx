@@ -5,15 +5,15 @@ import { apiFetch } from "@/lib/api/client";
 import { NotConfirmedError, expectOk } from "@/lib/api/expectOk";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
-function parseUA(ua: string): string {
-  if (!ua) return "This device";
+function parseUA(ua: string, t: (key: string) => string): string {
+  if (!ua) return t("ui.thisDevice");
   if (/iPhone|iPod/.test(ua)) return "iPhone";
   if (/iPad/.test(ua)) return "iPad";
   if (/Android/.test(ua)) return "Android";
   if (/Macintosh|Mac OS X/.test(ua)) return "Mac";
   if (/Windows/.test(ua)) return "Windows";
   if (/Linux/.test(ua)) return "Linux";
-  return "Web";
+  return t("ui.deviceWeb");
 }
 
 /**
@@ -42,13 +42,13 @@ export function ProfileDevices() {
       // "Signed out of all other devices" while every other session stayed
       // live. A security control that lies is worse than one that is missing.
       await expectOk(res);
-      setMsg("Signed out of all other devices.");
+      setMsg(t("ui.signedOutOfAllOtherDevices"));
     } catch (e) {
       setFailed(true);
       setMsg(
         e instanceof NotConfirmedError
-          ? `${e.message} Your other sessions may still be active.`
-          : "Couldn't reach the server. Your other sessions may still be active.",
+          ? t("ui.otherSessionsMayStillBeActive", { message: e.message })
+          : t("ui.couldntReachServerSessionsActive"),
       );
     } finally {
       setBusy(false);
@@ -56,7 +56,7 @@ export function ProfileDevices() {
   }
 
   const ua = typeof window !== "undefined" ? window.navigator.userAgent : "";
-  const label = parseUA(ua);
+  const label = parseUA(ua, t);
 
   return (
     <section className="mt-6">
@@ -103,7 +103,7 @@ export function ProfileDevices() {
             disabled={busy}
             className="shrink-0 font-sans text-detail font-medium rounded-pill border border-paper/25 bg-paper/[0.06] text-paper px-4 py-2 hover:bg-paper/10 hover:border-paper/45 disabled:opacity-60 transition-colors"
           >
-            {busy ? "Working…" : "Sign out others"}
+            {busy ? t("ui.working") : t("ui.signOutOthers")}
           </button>
         </div>
       </div>

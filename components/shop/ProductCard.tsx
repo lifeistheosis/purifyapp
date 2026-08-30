@@ -11,16 +11,19 @@ import { RatingStars } from "@/components/shop/RatingStars";
 import { Cart } from "@/components/ui/icons/Cart";
 import { Check } from "@/components/ui/icons/Check";
 import { addToCart } from "@/lib/shop/cart";
-import {
-  CLASSIFICATION_LABELS,
-  formatPrice,
-  INVENTORY_LABELS,
-  productRating,
-  unitsSoldLabel,
-} from "@/lib/shop/format";
+import { formatPrice, productRating, unitsSoldLabel } from "@/lib/shop/format";
 import { stockUrgency } from "@/lib/shop/stock";
-import type { ShopProductFull } from "@/lib/shop/types";
+import type { ShopInventoryStatus, ShopProductFull } from "@/lib/shop/types";
 import { cn } from "@/lib/cn";
+
+/** Catalog key for each availability status, so the chip reads in the
+ *  visitor's language rather than the table's English. */
+const INVENTORY_LABEL_KEYS: Record<ShopInventoryStatus, string> = {
+  ready_to_ship: "shop.readyToShipX",
+  special_order: "shop.specialOrder",
+  coming_soon: "shop.comingSoon",
+  out_of_stock: "shop.outOfStock",
+};
 
 /**
  * Image-first listing card. Airbnb presentation (rounded photo, save heart,
@@ -43,7 +46,7 @@ export function ProductCard({
   className?: string;
   style?: CSSProperties;
 }) {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const image = product.media[0];
   const rating = productRating(product);
   const sold = unitsSoldLabel(product.units_sold);
@@ -114,11 +117,13 @@ export function ProductCard({
             scarcity. See lib/shop/stock.ts. */}
         <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-pill bg-night/70 px-2.5 py-1 font-sans text-caption font-medium text-paper backdrop-blur-sm">
           <span className={cn("h-1.5 w-1.5 rounded-full", dotColor)} />
-          {INVENTORY_LABELS[product.inventory_status]}
+          {t(INVENTORY_LABEL_KEYS[product.inventory_status])}
         </span>
         {urgency.label ? (
           <span className="absolute bottom-3 right-3 inline-flex items-center rounded-pill bg-crimson/85 px-2.5 py-1 font-sans text-caption font-semibold text-paper backdrop-blur-sm">
-            {urgency.label}
+            {urgency.level === "last"
+              ? t("shop.lastOne")
+              : tn("shop.onlyLeft", urgency.remaining ?? 0)}
           </span>
         ) : null}
 
@@ -144,7 +149,7 @@ export function ProductCard({
 
       <div className="flex flex-1 flex-col p-3.5 md:p-4">
         <p className="font-sans text-caption font-semibold uppercase tracking-[1.1px] text-paper/50">
-          {CLASSIFICATION_LABELS[product.classification]}
+          {t(`shop.classification.${product.classification}`)}
         </p>
         <h3 className="mt-1.5 line-clamp-2 font-display-serif text-title-sm leading-snug text-paper transition-colors group-hover:text-paper/80">
           {product.title}
@@ -155,7 +160,9 @@ export function ProductCard({
             <RatingStars avg={rating.avg} count={rating.count} />
           </div>
         ) : sold ? (
-          <p className="mt-1.5 font-sans text-caption text-paper/50">{sold}</p>
+          <p className="mt-1.5 font-sans text-caption text-paper/50">
+            {tn("shop.soldCount", product.units_sold ?? 0)}
+          </p>
         ) : null}
 
         {/* Price + one-tap add sit on the baseline so every card ends the

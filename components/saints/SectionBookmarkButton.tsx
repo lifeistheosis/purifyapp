@@ -2,6 +2,7 @@
 
 import { useBookmarks } from "@/lib/bookmarks";
 import { cn } from "@/lib/cn";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * 🔖 toggle for a writing section. Used in the WritingReader section header.
@@ -23,6 +24,7 @@ export function SectionBookmarkButton({
   sectionN: number;
   sectionTitle: string;
 }) {
+  const { t } = useTranslate();
   const bookmarks = useBookmarks();
   const locator = {
     kind: "writing-section" as const,
@@ -49,9 +51,9 @@ export function SectionBookmarkButton({
     <button
       type="button"
       onClick={toggle}
-      aria-label={isOn ? "Remove section bookmark" : "Bookmark this section"}
+      aria-label={isOn ? t("saints.removeSectionBookmark") : t("saints.bookmarkThisSection")}
       aria-pressed={isOn}
-      title={isOn ? "Remove bookmark" : "Bookmark this section"}
+      title={isOn ? t("study.saved.removeBookmark") : t("saints.bookmarkThisSection")}
       className={cn(
         "h-8 w-8 rounded-full border flex items-center justify-center text-detail transition-colors duration-150 shrink-0",
         isOn

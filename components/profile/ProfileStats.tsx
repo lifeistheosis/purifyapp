@@ -20,10 +20,14 @@ export function ProfileStats() {
   const stats = useReadingStats();
 
   const readingItems = [
-    { label: "Verses highlighted", value: stats.verses },
-    { label: "Paragraphs highlighted", value: stats.paragraphs },
-    { label: "Notes written", value: stats.notes },
-    { label: "Bookmarks saved", value: stats.bookmarks },
+    { id: "verses", label: t("ui.versesHighlighted"), value: stats.verses },
+    {
+      id: "paragraphs",
+      label: t("ui.paragraphsHighlighted"),
+      value: stats.paragraphs,
+    },
+    { id: "notes", label: t("ui.notesWritten"), value: stats.notes },
+    { id: "bookmarks", label: t("ui.bookmarksSaved"), value: stats.bookmarks },
   ];
   return (
     <>
@@ -34,7 +38,7 @@ export function ProfileStats() {
         <ul className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {readingItems.map((it) => (
             <li
-              key={it.label}
+              key={it.id}
               className="rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-5"
             >
               <p className="font-sans text-heading md:text-display-sm font-bold text-gold tabular-nums leading-none">

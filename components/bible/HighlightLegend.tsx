@@ -39,7 +39,7 @@ export function HighlightLegend() {
             onClick={() => setEditing((v) => !v)}
             className="font-sans text-caption text-[#f2594e] hover:text-[#ff7a6e] transition-colors"
           >
-            {editing ? "Done" : "Edit meanings"}
+            {editing ? t("common.done") : t("bible.editMeanings")}
           </button>
         </div>
       </div>
@@ -57,7 +57,7 @@ export function HighlightLegend() {
                 type="text"
                 defaultValue={labelFor(c.id)}
                 maxLength={28}
-                aria-label={`Meaning for ${c.id} highlight`}
+                aria-label={t("bible.highlightMeaningFor", { color: c.id })}
                 onBlur={(e) => setLabel(c.id, e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") (e.target as HTMLInputElement).blur();
