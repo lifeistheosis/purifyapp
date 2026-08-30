@@ -468,7 +468,7 @@ export function VerseRow({
  <a
  href={`#rail-v${verse.n}`}
  className="hidden lg:inline-flex group/cmt items-baseline text-[#f2594e] hover:text-[#ff7a6e] transition-colors"
- aria-label={`Open commentary on verse ${verse.n}`}
+ aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
  title={t("bible.openCommentary")}
  >
  <sup className="font-sans text-eyebrow font-semibold tracking-[0.05em] group-hover/cmt:underline underline-offset-2">
@@ -490,7 +490,7 @@ export function VerseRow({
  "lg:hidden group/cmt inline-flex items-baseline text-[#f2594e] active:text-[#ff7a6e] transition-colors",
  TAP_TARGET,
  )}
- aria-label={`Open commentary on verse ${verse.n}`}
+ aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
  >
  <sup className="font-sans text-eyebrow font-semibold tracking-[0.05em]">
  {verse.n}
@@ -653,7 +653,7 @@ export function VerseRow({
  <a
  href={`#rail-v${verse.n}`}
  className="hidden lg:inline-flex text-[#f2594e] hover:text-[#ff7a6e] transition-colors"
- aria-label={`Open commentary on verse ${verse.n}`}
+ aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
  title={t("bible.openCommentary")}
  >
  <span
@@ -672,7 +672,7 @@ export function VerseRow({
  "lg:hidden inline-flex items-baseline text-[#f2594e] active:text-[#ff7a6e] transition-colors",
  TAP_TARGET,
  )}
- aria-label={`Open commentary on verse ${verse.n}`}
+ aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
  >
  <span
  aria-hidden
@@ -748,7 +748,7 @@ export function VerseRow({
  }
  : undefined
  }
- aria-label={`Look up ${tk.w}`}
+ aria-label={t("bible.lookUpWord", { word: tk.w })}
  >
  {tk.w}
  </button>
@@ -784,23 +784,23 @@ export function VerseRow({
  groups={(() => {
  const copyGroup: ContextMenuGroup = [
  {
- label: copied ? "Copied" : "Copy verse",
+ label: copied ? t("common.copied") : t("bible.copyVerse"),
  onClick: copyVerseText,
  },
- { label: "Copy as quote", onClick: copyAsQuote },
- { label: "Copy reference", onClick: copyReference },
- { label: "Copy link", onClick: copyVerseLink },
+ { label: t("bible.copyAsQuote"), onClick: copyAsQuote },
+ { label: t("bible.copyReference"), onClick: copyReference },
+ { label: t("today.verse.copyLink"), onClick: copyVerseLink },
  ];
  const annotateGroup: ContextMenuGroup = [
  {
  label: ann.highlighted
- ? "Remove highlight"
- : "Highlight verse",
+ ? t("bible.removeHighlight")
+ : t("bible.highlightVerse"),
  onClick: () => ann.toggleHighlight(),
  destructive: !!ann.highlighted,
  },
  {
- label: ann.note ? "Edit note" : "Add note",
+ label: ann.note ? t("bible.editNote") : t("bible.addNote"),
  onClick: () => {
  setDraft(ann.note ?? "");
  setEditing(true);
@@ -813,12 +813,14 @@ export function VerseRow({
  }));
  const bookmarkGroup: ContextMenuGroup = [
  {
- label: isVerseBookmarked ? "Remove bookmark" : "Bookmark verse",
+ label: isVerseBookmarked
+ ? t("study.saved.removeBookmark")
+ : t("bible.bookmarkVerse"),
  onClick: toggleVerseBookmark,
  destructive: isVerseBookmarked,
  },
  {
- label: "Gather to florilegium",
+ label: t("bible.gatherToFlorilegium"),
  onClick: () => setGatherOpen(true),
  },
  ];
@@ -831,7 +833,7 @@ export function VerseRow({
  if (hasCommentary) {
  groups.push([
  {
- label: "Open commentary",
+ label: t("bible.openCommentary"),
  onClick: () => {
  // Mobile wires the bottom sheet; the #rail anchor only
  // exists in the desktop study rail.
@@ -878,9 +880,13 @@ export function VerseRow({
  <button
  type="button"
  onClick={() => ann.toggleHighlight()}
- aria-label={ann.highlighted ? "Remove highlight" : "Highlight verse"}
+ aria-label={
+ ann.highlighted ? t("bible.removeHighlight") : t("bible.highlightVerse")
+ }
  aria-pressed={!!ann.highlighted}
- title={ann.highlighted ? "Remove highlight" : "Highlight verse"}
+ title={
+ ann.highlighted ? t("bible.removeHighlight") : t("bible.highlightVerse")
+ }
  className={
  "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150 " +
  (ann.highlighted
@@ -949,8 +955,10 @@ export function VerseRow({
  <button
  type="button"
  onClick={copyVerseLink}
- aria-label={copied ? "Verse link copied" : "Copy verse link"}
- title={copied ? "Copied" : "Copy verse link"}
+ aria-label={
+ copied ? t("bible.verseLinkCopied") : t("bible.copyVerseLink")
+ }
+ title={copied ? t("common.copied") : t("bible.copyVerseLink")}
  className={cn(
  "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  copied
@@ -964,10 +972,16 @@ export function VerseRow({
  type="button"
  onClick={toggleVerseBookmark}
  aria-label={
- isVerseBookmarked ? "Remove bookmark" : "Bookmark verse"
+ isVerseBookmarked
+ ? t("study.saved.removeBookmark")
+ : t("bible.bookmarkVerse")
  }
  aria-pressed={isVerseBookmarked}
- title={isVerseBookmarked ? "Remove bookmark" : "Bookmark verse"}
+ title={
+ isVerseBookmarked
+ ? t("study.saved.removeBookmark")
+ : t("bible.bookmarkVerse")
+ }
  className={cn(
  "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  isVerseBookmarked
@@ -983,9 +997,9 @@ export function VerseRow({
  setDraft(ann.note ?? "");
  setEditing((v) => !v);
  }}
- aria-label={ann.note ? "Edit note" : "Add note"}
+ aria-label={ann.note ? t("bible.editNote") : t("bible.addNote")}
  aria-pressed={editing}
- title={ann.note ? "Edit note" : "Add note"}
+ title={ann.note ? t("bible.editNote") : t("bible.addNote")}
  className={
  "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150 " +
  (ann.note
@@ -1032,7 +1046,7 @@ export function VerseRow({
  />
  <div className="mt-2 flex items-center justify-between gap-2">
  <span className="font-sans text-eyebrow text-paper/40">
- {draft.length > 0 ? "⌘+Enter to save · Esc to cancel" : "Esc to close"}
+ {draft.length > 0 ? t("bible.noteSaveHint") : t("bible.escToClose")}
  </span>
  <div className="flex items-center gap-2">
  {ann.note && (

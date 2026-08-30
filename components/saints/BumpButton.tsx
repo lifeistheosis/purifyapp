@@ -109,7 +109,7 @@ export function BumpButton({
   signedIn,
   complete,
 }: Props) {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const [bumped, setBumped] = useState(initialBumped);
   const [total, setTotal] = useState(initialTotal);
   const [pending, startTransition] = useTransition();
@@ -122,7 +122,7 @@ export function BumpButton({
       <div className="inline-flex items-center gap-2">
         <div
           className="inline-flex items-center gap-2.5 rounded-full border border-gold/40 bg-gold/[0.08] px-5 py-2.5 font-sans text-ui font-semibold text-gold"
-          aria-label={`${saintName}'s works are fully published`}
+          aria-label={t("saints.bump.fullyPublishedAria", { name: saintName })}
         >
           <span aria-hidden="true" className="text-body leading-none">
             ✓
@@ -143,8 +143,7 @@ export function BumpButton({
         <div className="inline-flex items-center gap-2">
           <div className="inline-flex items-center gap-3 rounded-full border border-paper/15 bg-paper/[0.03] px-4 py-2">
             <span className="font-sans text-ui text-paper/70">
-              <span className="tabular-nums font-semibold text-paper">{total}</span>{" "}
-              {total === 1 ? "reader asking" : "readers asking"}
+              {tn("saints.bump.readersAsking", total)}
             </span>
             <Link
               href={`/signin?next=${encodeURIComponent(next)}`}
@@ -189,7 +188,11 @@ export function BumpButton({
           type="button"
           onClick={toggle}
           aria-pressed={bumped}
-          aria-label={`${bumped ? "Withdraw your request for more of" : "Request more of"} ${saintName}'s writings`}
+          aria-label={
+            bumped
+              ? t("saints.bump.withdrawAria", { name: saintName })
+              : t("saints.bump.requestAria", { name: saintName })
+          }
           disabled={pending}
           className={
             "inline-flex items-center gap-2.5 rounded-full px-5 py-2.5 font-sans text-ui font-semibold transition-colors " +
@@ -202,15 +205,15 @@ export function BumpButton({
           <span aria-hidden="true" className="text-body leading-none">
             {bumped ? "▲" : "△"}
           </span>
-          <span>{bumped ? "Requested" : "Request writings"}</span>
+          <span>{bumped ? t("saints.bump.requested") : t("saints.bump.requestWritings")}</span>
           <span className="tabular-nums opacity-80">{total}</span>
         </button>
         <HelpPopover label={t("saints.bump.whatRequesting")}><RequestExplainer /></HelpPopover>
       </div>
       <p className="font-sans text-eyebrow text-paper/45 ms-1">
         {bumped
-          ? "Thank you — your request is noted."
-          : "Ask our editors to publish more of this saint's writings."}
+          ? t("saints.bump.thanksNoted")
+          : t("saints.bump.askEditors")}
       </p>
       {error && (
         <p className="font-sans text-eyebrow text-rose-400 ms-1">

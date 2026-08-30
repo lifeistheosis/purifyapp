@@ -120,8 +120,10 @@ export function ProductDetailClient({ slug }: { slug: string }) {
 
   const priceLabel = formatPrice(product.price_cents, product.currency);
   const shippingLabel = pro
-    ? "Free shipping with Purify Pro"
-    : `+ ${formatPrice(flatShippingCents, product.currency)} standard shipping · free with Purify Pro`;
+    ? t("shop.freeShippingWithPurifyPro")
+    : t("shop.standardShippingFreeWithPro", {
+        price: formatPrice(flatShippingCents, product.currency),
+      });
   const dispatchLabel = dispatchWindowLabel(
     product.dispatch_min_days,
     product.dispatch_max_days,
@@ -232,14 +234,14 @@ export function ProductDetailClient({ slug }: { slug: string }) {
               {t("shop.details")}
             </h2>
             <dl className="mt-3">
-              <Fact term="Classification" value={CLASSIFICATION_LABELS[product.classification]} />
-              <Fact term="Dimensions" value={product.dimensions} />
-              <Fact term="Materials" value={product.materials} />
-              <Fact term="Production method" value={product.production_method} />
-              <Fact term="Made by" value={product.maker_name} />
-              <Fact term="Country of origin" value={product.country_of_origin} />
-              <Fact term="Availability" value={INVENTORY_LABELS[product.inventory_status]} />
-              <Fact term="Estimated dispatch" value={dispatchLabel} />
+              <Fact term={t("shop.classificationLabel")} value={CLASSIFICATION_LABELS[product.classification]} />
+              <Fact term={t("shop.dimensions")} value={product.dimensions} />
+              <Fact term={t("shop.materials")} value={product.materials} />
+              <Fact term={t("shop.productionMethod")} value={product.production_method} />
+              <Fact term={t("shop.madeBy")} value={product.maker_name} />
+              <Fact term={t("shop.countryOfOrigin")} value={product.country_of_origin} />
+              <Fact term={t("shop.availability")} value={INVENTORY_LABELS[product.inventory_status]} />
+              <Fact term={t("shop.estimatedDispatch")} value={dispatchLabel} />
             </dl>
           </section>
 

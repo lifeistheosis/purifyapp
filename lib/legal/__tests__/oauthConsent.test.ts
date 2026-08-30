@@ -47,18 +47,43 @@ function oauthCallSites(): { file: string; props: string }[] {
 }
 
 describe("asking: the Terms notice", () => {
+  // The notice is a CATALOG KEY now, not a literal.
+  //
+  // It used to be hardcoded English, which meant a Greek or Russian reader was
+  // shown the one sentence that makes continuing count as agreeing, in a
+  // language they may not read. Conspicuous notice that the reader cannot
+  // understand is worth less than none, so translating it is a legal
+  // improvement and not merely a cosmetic one.
+  //
+  // These tests therefore check the key is wired AND that it still says what it
+  // has to say, which is stricter than matching a literal was: a literal test
+  // passes on text nobody can read.
+  const NOTICE_KEY = "signin.byContinuingYouAgreeToOur";
+
   it("lives inside OAuthButtons, so a call site cannot forget it", () => {
     const src = read(OAUTH_BUTTONS);
     expect(src).toMatch(/showTermsNotice\s*=\s*true/);
-    expect(src).toMatch(/By continuing, you agree/);
+    expect(src).toContain(NOTICE_KEY);
     expect(src).toMatch(/href="\/terms"/);
     expect(src).toMatch(/href="\/privacy"/);
+  });
+
+  it("still says the thing that makes continuing count as agreeing", () => {
+    const catalog = (code: string) =>
+      JSON.parse(read(`lib/i18n/messages/${code}.json`)) as Record<string, string>;
+    expect(catalog("en")[NOTICE_KEY]).toMatch(/By continuing, you agree/);
+    // And every locale has to carry it, or a reader gets an empty sentence
+    // above the button. catalogs.test.ts proves no value is ever empty; this
+    // pins that THIS key in particular is present everywhere.
+    for (const code of ["el", "ru", "ar", "de", "es"]) {
+      expect(catalog(code)[NOTICE_KEY], `${code} is missing the Terms notice`).toBeTruthy();
+    }
   });
 
   it("is rendered above the provider buttons, not below them", () => {
     // Notice placed after the button is not conspicuous notice.
     const src = read(OAUTH_BUTTONS);
-    const notice = src.indexOf("By continuing, you agree");
+    const notice = src.indexOf(NOTICE_KEY);
     // Matched on the class list rather than on `className="…`: the container
     // became a template literal when the Apple button started being hidden in
     // the Android shell, and the point of this test is the ORDER, not how the

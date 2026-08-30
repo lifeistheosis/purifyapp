@@ -6,6 +6,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { recordAcceptance } from "@/lib/legal/recordAcceptance";
 import { authOrigin } from "@/lib/site";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PasswordInput } from "./PasswordInput";
 import { OAuthButtons } from "./OAuthButtons";
 
@@ -21,6 +22,7 @@ import { OAuthButtons } from "./OAuthButtons";
  */
 export function SignUpForm() {
   const router = useRouter();
+  const { t } = useTranslate();
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,15 +38,15 @@ export function SignUpForm() {
     e.preventDefault();
     setError(null);
     if (!agreed) {
-      setError("Please agree to the Terms and Privacy Policy to continue.");
+      setError(t("signup.mustAgree"));
       return;
     }
     if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
+      setError(t("ui.passwordMinLength"));
       return;
     }
     if (password !== confirm) {
-      setError("Passwords don't match.");
+      setError(t("ui.passwordsDontMatch"));
       return;
     }
     setPending(true);
@@ -56,7 +58,7 @@ export function SignUpForm() {
       await recordAcceptance("signup", email.trim());
     } catch (e) {
       setError(
-        e instanceof Error ? e.message : "Couldn't record your agreement.",
+        e instanceof Error ? e.message : t("signup.acceptanceFailed"),
       );
       setPending(false);
       return;
@@ -93,7 +95,7 @@ export function SignUpForm() {
       }
       setSentTo(email.trim());
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Couldn't create account.");
+      setError(e instanceof Error ? e.message : t("signup.genericError"));
     } finally {
       setPending(false);
     }
@@ -103,12 +105,12 @@ export function SignUpForm() {
     return (
       <div className="rounded-lg border border-gold/35 bg-gold/[0.06] p-5">
         <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-2">
-          Check your inbox
+          {t("signup.checkInbox")}
         </p>
         <p className="font-serif text-body text-paper/90 leading-[1.65]">
-          We sent a confirmation link to{" "}
-          <span className="font-semibold text-paper">{sentTo}</span>. Open it
-          on any device to finish creating your account.
+          {t("ui.weSentAConfirmationLink")}{" "}
+          <span className="font-semibold text-paper">{sentTo}</span>
+          {t("ui.openItOnAnyDevice")}
         </p>
       </div>
     );
@@ -121,7 +123,8 @@ export function SignUpForm() {
           htmlFor="signup-name"
           className="font-sans text-caption font-medium text-paper/75 block mb-1.5"
         >
-          Display name <span className="text-paper/45">(optional)</span>
+          {t("common.displayName")}{" "}
+          <span className="text-paper/45">{t("ui.parenOptional")}</span>
         </label>
         <input
           id="signup-name"
@@ -139,7 +142,7 @@ export function SignUpForm() {
           htmlFor="signup-email"
           className="font-sans text-caption font-medium text-paper/75 block mb-1.5"
         >
-          Email
+          {t("common.email")}
         </label>
         <input
           id="signup-email"
@@ -149,19 +152,19 @@ export function SignUpForm() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@somewhere.com"
+          placeholder={t("ui.youSomewhereCom")}
           className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
         />
       </div>
       <PasswordInput
-        label="Password"
+        label={t("common.password")}
         value={password}
         onChange={setPassword}
         autoComplete="new-password"
         showStrength
       />
       <PasswordInput
-        label="Confirm password"
+        label={t("common.confirmPassword")}
         value={confirm}
         onChange={setConfirm}
         autoComplete="new-password"
@@ -174,19 +177,19 @@ export function SignUpForm() {
           className="mt-0.5 h-4 w-4 shrink-0 accent-gold"
         />
         <span className="font-sans text-caption leading-[1.5] text-paper/70">
-          I agree to the{" "}
+          {t("ui.iAgreeToThe")}{" "}
           <Link
             href="/terms"
             className="text-paper underline underline-offset-2"
           >
-            Terms of Service
+            {t("ui.termsOfServiceX")}
           </Link>{" "}
-          and{" "}
+          {t("ui.and")}{" "}
           <Link
             href="/privacy"
             className="text-paper underline underline-offset-2"
           >
-            Privacy Policy
+            {t("ui.privacyPolicyX")}
           </Link>
           .
         </span>
@@ -199,23 +202,23 @@ export function SignUpForm() {
         disabled={pending || !agreed}
         className="rounded-pill bg-paper text-night font-sans text-ui font-semibold py-3 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
       >
-        {pending ? "Creating account…" : "Create account"}
+        {pending ? t("signup.pending") : t("signup.submit")}
       </button>
 
       <p className="text-center font-sans text-caption text-paper/55">
-        Already have one?{" "}
+        {t("signup.alreadyHaveOnePrefix")}{" "}
         <Link
           href="/signin"
           className="text-paper hover:underline underline-offset-2"
         >
-          Sign in →
+          {t("ui.signInArrow")}
         </Link>
       </p>
 
       <div className="relative my-3">
         <span className="absolute inset-x-0 top-1/2 h-px bg-paper/12" />
         <span className="relative bg-night px-3 text-eyebrow uppercase tracking-[1.5px] text-paper/45 mx-auto inline-block left-1/2 -translate-x-1/2">
-          or
+          {t("notFound.or")}
         </span>
       </div>
 
@@ -224,7 +227,7 @@ export function SignUpForm() {
         // notice would ask for the same agreement twice on one screen.
         showTermsNotice={false}
         disabled={!agreed}
-        disabledHint="Agree to the Terms and Privacy Policy first."
+        disabledHint={t("signup.agreeFirstHint")}
       />
     </form>
   );

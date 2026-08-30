@@ -19,17 +19,14 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * border-paper/10, bg-paper/[0.03]), not a copy of any other app's card.
  */
 export function PrayNowCard() {
-  const { locale, t } = useTranslate();
+  const { t } = useTranslate();
   const rule = getRuleMeta("morning");
-  // Rule titles still carry a legacy titleDe field; the prayers surface
-  // migrates them to the catalog with the rest of the rules metadata.
-  const ruleTitle =
-    (locale === "de" ? rule?.titleDe : undefined) ??
-    rule?.title ??
-    t("today.prayNow.morningFallback");
+  // The rule metadata still carries a legacy title/titleDe pair, which only
+  // ever covered two languages. The card reads the catalog instead, so this
+  // row renders in every locale.
   const labels = {
     eyebrow: t("today.prayNow.eyebrow"),
-    ruleTitle,
+    ruleTitle: t("today.prayNow.morningFallback"),
     minutes: (n: number) => t("today.minRead", { count: n }),
     begin: t("today.prayNow.begin"),
     anthemKicker: t("today.prayNow.anthemKicker"),

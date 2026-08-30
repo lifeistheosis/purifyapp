@@ -23,7 +23,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * the component a plain, always-hydrating client component.
  */
 export function CategoryClient({ category }: { category: string }) {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const isAll = category === "all";
   const valid = isAll || category in CATEGORY_LABELS;
 
@@ -64,11 +64,11 @@ export function CategoryClient({ category }: { category: string }) {
 
   const title = isAll
     ? filters.readyOnly
-      ? "Ready to Ship"
-      : "All icons"
-    : CATEGORY_LABELS[category as ShopCategory];
+      ? t("shop.readyToShipX")
+      : t("shop.allIcons")
+    : t(`shop.category.${category}`);
 
-  const categories = Object.entries(CATEGORY_LABELS) as [ShopCategory, string][];
+  const categories = Object.keys(CATEGORY_LABELS) as ShopCategory[];
 
   return (
     <div className="mx-auto w-full max-w-[1200px] px-5 md:px-8">
@@ -78,11 +78,11 @@ export function CategoryClient({ category }: { category: string }) {
         </p>
         <div className="mt-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <h1 className="font-display-serif text-heading md:text-display-sm text-paper">
-            {valid ? title : "Category"}
+            {valid ? title : t("study.category")}
           </h1>
           {data && !loading ? (
             <p aria-live="polite" className="font-sans text-caption text-paper/50">
-              {shown.length} {shown.length === 1 ? "icon" : "icons"}
+              {tn("shop.iconCount", shown.length)}
             </p>
           ) : null}
         </div>
@@ -91,7 +91,12 @@ export function CategoryClient({ category }: { category: string }) {
       {/* Category switcher: a snap carousel with the current page selected. */}
       <nav aria-label={t("shop.browseByCategory")} className="mt-5 -mx-5 md:mx-0">
         <ul className="flex snap-x snap-mandatory gap-2 overflow-x-auto scrollbar-thin px-5 pb-1 md:px-0">
-          {[["all", "All"] as [string, string], ...categories].map(([slug, label]) => {
+          {[
+            ["all", t("common.all")] as [string, string],
+            ...categories.map(
+              (slug) => [slug, t(`shop.category.${slug}`)] as [string, string],
+            ),
+          ].map(([slug, label]) => {
             const active = slug === category;
             return (
               <li key={slug} className="shrink-0 snap-start">

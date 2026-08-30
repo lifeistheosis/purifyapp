@@ -9,12 +9,12 @@ import { T } from "@/components/i18n/T";
  * section), so the page marks those `lg:hidden` to avoid repetition.
  */
 export function SaintStudyRail({ saint }: { saint: Saint }) {
-  const facts: { label: string; value: string }[] = [];
-  if (saint.born) facts.push({ label: "Born", value: saint.born });
-  if (saint.reposed) facts.push({ label: "Reposed", value: saint.reposed });
-  if (saint.see) facts.push({ label: "See", value: saint.see });
+  const facts: { labelKey: string; value: string }[] = [];
+  if (saint.born) facts.push({ labelKey: "saints.born", value: saint.born });
+  if (saint.reposed) facts.push({ labelKey: "saints.reposed", value: saint.reposed });
+  if (saint.see) facts.push({ labelKey: "saints.see", value: saint.see });
   if (saint.feastDays?.length)
-    facts.push({ label: "Feast", value: saint.feastDays.join(" · ") });
+    facts.push({ labelKey: "saints.feastLabel", value: saint.feastDays.join(" · ") });
 
   const greatFeasts = saint.greatFeasts ?? [];
 
@@ -26,9 +26,9 @@ export function SaintStudyRail({ saint }: { saint: Saint }) {
         </p>
         <dl className="space-y-4">
           {facts.map((f) => (
-            <div key={f.label}>
+            <div key={f.labelKey}>
               <dt className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/45">
-                {f.label}
+                <T k={f.labelKey} />
               </dt>
               <dd className="mt-1 font-sans text-ui text-paper/90 leading-snug">
                 {f.value}

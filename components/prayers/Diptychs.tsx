@@ -21,17 +21,18 @@ import {
 } from "@/lib/prayers/storage";
 
 export function Diptychs() {
+  const { t } = useTranslate();
   return (
     <div className="space-y-8">
       <DiptychSection
         kind="living"
-        heading="For the living"
-        intro="Those for whom you pray daily. Add namedays so the day surfaces on /prayers/today."
+        heading={t("prayers.diptychs.livingHeading")}
+        intro={t("prayers.diptychs.livingIntro")}
       />
       <DiptychSection
         kind="departed"
-        heading="For the reposed"
-        intro="Those who have fallen asleep in the Lord. The anniversary of repose surfaces on /prayers/today."
+        heading={t("prayers.diptychs.reposedHeading")}
+        intro={t("prayers.diptychs.reposedIntro")}
       />
     </div>
   );
@@ -112,8 +113,8 @@ function DiptychSection({
         {filtered.length === 0 && !adding && (
           <li className="font-sans text-detail text-paper/40 italic py-4">
             {items.length === 0
-              ? "No entries yet."
-              : "No matches."}
+              ? t("prayers.diptychs.empty")
+              : t("bible.noMatches")}
           </li>
         )}
         {filtered.map((entry) =>
@@ -136,7 +137,11 @@ function DiptychSection({
               entry={entry}
               onEdit={() => setEditingId(entry.id)}
               onDelete={() => {
-                if (confirm(`Remove ${entry.name} from this diptych?`)) {
+                if (
+                  confirm(
+                    t("prayers.diptychs.removeConfirm", { name: entry.name }),
+                  )
+                ) {
                   deleteIntention(kind, entry.id);
                 }
               }}

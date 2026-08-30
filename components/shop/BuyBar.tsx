@@ -68,7 +68,7 @@ export function BuyBar({
 
   async function startCheckout() {
     if (!agreed) {
-      setError("Please agree to the Terms and shipping & refund policy first.");
+      setError(t("shop.agreeTermsFirst"));
       return;
     }
     setBusy(true);
@@ -85,9 +85,9 @@ export function BuyBar({
         await openStripe(data.url, () => router.push("/shop/orders"));
         return;
       }
-      setError(data.error ?? "Checkout isn't available right now.");
+      setError(data.error ?? t("shop.checkoutUnavailable"));
     } catch {
-      setError("Checkout isn't available right now.");
+      setError(t("shop.checkoutUnavailable"));
     } finally {
       setBusy(false);
     }
@@ -124,7 +124,7 @@ export function BuyBar({
               disabled={busy || !agreed}
               className="tap-press inline-flex min-h-[48px] items-center justify-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {busy ? "Opening checkout…" : "Buy now"}
+              {busy ? t("shop.openingCheckout") : t("shop.buyNow")}
             </button>
             <button
               type="button"
@@ -136,7 +136,7 @@ export function BuyBar({
                   : "border-paper/25 text-paper hover:border-paper/45",
               )}
             >
-              {added ? "Added to cart ✓" : "Add to cart"}
+              {added ? `${t("shop.addedToCart")} ✓` : t("shop.addToCart")}
             </button>
           </div>
         ) : purchasable ? (
