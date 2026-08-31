@@ -35,9 +35,9 @@ import {
  */
 export type LyricLine = { time?: number; text: string };
 
-const LOOP_OPTIONS: { value: LoopMode; label: string }[] = [
-  { value: "off", label: "Off" },
-  { value: "inf", label: "Loop" },
+const LOOP_OPTIONS: { value: LoopMode; label?: string; labelKey?: string }[] = [
+  { value: "off", labelKey: "common.off" },
+  { value: "inf", labelKey: "prayers.audio.loop" },
   { value: 3, label: "3×" },
   { value: 7, label: "7×" },
   { value: 12, label: "12×" },
@@ -118,7 +118,7 @@ export function AudioPlayer({
         <button
           type="button"
           onClick={toggle}
-          aria-label={playing ? "Pause" : "Play"}
+          aria-label={playing ? t("prayers.pause") : t("prayers.play")}
           className="shrink-0 grid h-14 w-14 place-items-center rounded-full bg-gold text-night shadow-[0_8px_20px_-6px_rgba(0,0,0,0.6)] transition-colors hover:bg-gold-soft"
         >
           {playing ? <PauseIcon /> : <PlayIcon />}
@@ -194,7 +194,7 @@ export function AudioPlayer({
                     : "text-paper/55 hover:text-paper/85"
                 }`}
               >
-                {opt.label}
+                {opt.labelKey ? t(opt.labelKey) : opt.label}
               </button>
             ))}
           </div>

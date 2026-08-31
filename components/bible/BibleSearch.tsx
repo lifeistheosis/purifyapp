@@ -25,7 +25,7 @@ import { isMultiReferenceQuery } from "@/lib/bible/parseReferences";
  */
 export function BibleSearch({
   className,
-  placeholder = "Search a verse (John 3:16, Ps 23)",
+  placeholder,
 }: {
   className?: string;
   placeholder?: string;
@@ -122,7 +122,7 @@ export function BibleSearch({
           }}
           onFocus={() => setOpen(true)}
           onKeyDown={onKey}
-          placeholder={placeholder}
+          placeholder={placeholder ?? t("bible.searchPlaceholder")}
           aria-label={t("bible.searchAria")}
           className="w-full bg-paper/[0.04] border border-paper/15 rounded-pill pl-10 pr-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/40 transition-colors duration-150"
         />
@@ -155,22 +155,42 @@ export function BibleSearch({
           ) : (
             <ul role="listbox">
               {hits.map((h, i) => {
+                const bookName = t(`bible.books.${h.book.slug}`);
                 const label =
                   h.kind === "verse"
-                    ? `${h.book.name} ${h.chapter}:${h.verse}`
+                    ? `${bookName} ${h.chapter}:${h.verse}`
                     : h.kind === "range"
-                      ? `${h.book.name} ${h.chapter}:${h.verseFrom}–${h.verseTo}`
+                      ? `${bookName} ${h.chapter}:${h.verseFrom}–${h.verseTo}`
                       : h.kind === "chapter"
-                        ? `${h.book.name} ${h.chapter}`
-                        : h.book.name;
+                        ? `${bookName} ${h.chapter}`
+                        : bookName;
                 const sub =
                   h.kind === "verse"
-                    ? `Verse ${h.verse} of chapter ${h.chapter}`
+                    ? t("bible.hitVerseSub", {
+                        verse: h.verse,
+                        chapter: h.chapter,
+                      })
                     : h.kind === "range"
-                      ? `Verses ${h.verseFrom}–${h.verseTo} of chapter ${h.chapter} · ${h.verseTo - h.verseFrom + 1} verses`
+                      ? tn(
+                          "bible.hitRangeSub",
+                          h.verseTo - h.verseFrom + 1,
+                          {
+                            from: h.verseFrom,
+                            to: h.verseTo,
+                            chapter: h.chapter,
+                          },
+                        )
                       : h.kind === "chapter"
-                        ? `Chapter ${h.chapter} of ${h.book.chapters}`
-                        : `${h.book.chapters} chapters · ${h.book.testament === "OT" ? "Old Testament" : "New Testament"}`;
+                        ? t("bible.hitChapterSub", {
+                            chapter: h.chapter,
+                            total: h.book.chapters,
+                          })
+                        : tn(
+                            h.book.testament === "OT"
+                              ? "bible.hitBookSubOt"
+                              : "bible.hitBookSubNt",
+                            h.book.chapters,
+                          );
                 const key =
                   h.kind === "verse"
                     ? `${h.book.slug}-v-${h.chapter}-${h.verse}`

@@ -129,7 +129,7 @@ export function PrayerRuleReader({
     <article className="mx-auto w-full max-w-[640px]">
       <header className="mb-12 md:mb-14">
         <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/55 mb-5">
-          {eyebrowFor(rule)}
+          {eyebrowFor(rule, t)}
         </p>
         <div className="flex items-start justify-between gap-4">
           <h1 className="font-serif text-title md:text-heading leading-[1.15] tracking-[-0.01em] text-paper">
@@ -143,9 +143,15 @@ export function PrayerRuleReader({
                 onClick={() => toggleRuleBookmark(rule.id, rule.title, ruleHref)}
                 aria-pressed={ruleBookmarked}
                 aria-label={
-                  ruleBookmarked ? "Remove rule bookmark" : "Bookmark this rule"
+                  ruleBookmarked
+                    ? t("prayers.reader.removeRuleBookmark")
+                    : t("prayers.reader.bookmarkRule")
                 }
-                title={ruleBookmarked ? "Bookmarked" : "Bookmark this rule"}
+                title={
+                  ruleBookmarked
+                    ? t("prayers.reader.bookmarked")
+                    : t("prayers.reader.bookmarkRule")
+                }
                 className={cn(
                   "shrink-0 text-title-sm transition-colors",
                   ruleBookmarked
@@ -238,15 +244,15 @@ export function PrayerRuleReader({
   );
 }
 
-function eyebrowFor(rule: Rule): string {
+function eyebrowFor(rule: Rule, t: (key: string) => string): string {
   switch (rule.kind) {
     case "akathist":
-      return "Prayer · Akathist";
+      return t("prayers.reader.eyebrowAkathist");
     case "hour":
     case "compline":
-      return "Prayer · the Hours";
+      return t("prayers.reader.eyebrowHours");
     default:
-      return "Prayer · Daily rule";
+      return t("prayers.reader.eyebrowDailyRule");
   }
 }
 
@@ -346,8 +352,16 @@ function PrayerCard({
         type="button"
         onClick={() => togglePrayerBookmark(ruleId, prayer.id, prayer.title)}
         aria-pressed={bookmarked}
-        aria-label={bookmarked ? "Remove bookmark" : "Bookmark this prayer"}
-        title={bookmarked ? "Bookmarked" : "Bookmark"}
+        aria-label={
+          bookmarked
+            ? t("study.saved.removeBookmark")
+            : t("prayers.reader.bookmarkPrayer")
+        }
+        title={
+          bookmarked
+            ? t("prayers.reader.bookmarked")
+            : t("prayers.reader.bookmark")
+        }
         className={cn(
           "absolute right-[26px] top-[19px] text-ui transition-colors",
           bookmarked ? "text-gold/90" : "text-paper/55 hover:text-paper",
@@ -421,7 +435,7 @@ function PrayerCard({
             <span aria-hidden className="text-caption">
               {isDone ? "✓" : "○"}
             </span>
-            {isDone ? "Prayed today" : "Mark prayed"}
+            {isDone ? t("shop.prayedToday") : t("prayers.reader.markPrayed")}
           </button>
         </div>
       </div>

@@ -23,9 +23,9 @@ export function MobilePremiumButton() {
   const activated = tier === "plus" || tier === "pro";
   const label =
     tier === "pro"
-      ? "Pro Activated"
+      ? t("nav.proActivated")
       : tier === "plus"
-        ? "Plus Activated"
+        ? t("nav.plusActivated")
         : t("nav.premium");
 
   return (

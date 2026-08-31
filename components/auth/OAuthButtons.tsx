@@ -8,6 +8,7 @@ import { nativeGoogleAvailable, nativeGoogleIdToken } from "@/lib/auth/nativeGoo
 import { nativeAppleAvailable, nativeAppleIdToken } from "@/lib/auth/nativeApple";
 import { recordNativeSignInAcceptance } from "@/lib/legal/recordAcceptance";
 import { useIsNative, nativePlatform } from "@/lib/platform/native";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Continue-with-Google and Sign-in-with-Apple buttons. Used by both
@@ -78,6 +79,7 @@ export function OAuthButtons({
   const [error, setError] = useState<string | null>(null);
   const isNative = useIsNative();
   const router = useRouter();
+  const { t } = useTranslate();
 
   // Apple has no native sheet on Android and no working web fallback inside the
   // app, so it is offered everywhere except the Android shell, and only once the
@@ -159,8 +161,8 @@ export function OAuthButtons({
       if (isNative) {
         throw new Error(
           provider === "google"
-            ? "Google sign-in is unavailable in this build. Use email and password."
-            : "Apple sign-in is unavailable in this build. Use email and password.",
+            ? t("signin.googleUnavailableInBuild")
+            : t("signin.appleUnavailableInBuild"),
         );
       }
 
@@ -184,7 +186,9 @@ export function OAuthButtons({
     } catch (e) {
       const label = provider === "google" ? "Google" : "Apple";
       setError(
-        e instanceof Error ? e.message : `Couldn't start ${label} sign-in.`,
+        e instanceof Error
+          ? e.message
+          : t("signin.oauthStartFailed", { provider: label }),
       );
       setPending(null);
     }
@@ -197,19 +201,19 @@ export function OAuthButtons({
           count as agreeing; the same words placed underneath would not. */}
       {showTermsNotice ? (
         <p className="mb-3 font-sans text-caption leading-[1.5] text-paper/55">
-          By continuing, you agree to our{" "}
+          {t("signin.byContinuingYouAgreeToOur")}{" "}
           <Link
             href="/terms"
             className="text-paper/80 underline decoration-paper/30 underline-offset-2 hover:decoration-paper/60"
           >
-            Terms
+            {t("shop.terms")}
           </Link>{" "}
-          and{" "}
+          {t("ui.and")}{" "}
           <Link
             href="/privacy"
             className="text-paper/80 underline decoration-paper/30 underline-offset-2 hover:decoration-paper/60"
           >
-            Privacy Policy
+            {t("ui.privacyPolicyX")}
           </Link>
           .
         </p>
@@ -225,7 +229,9 @@ export function OAuthButtons({
           className="inline-flex items-center justify-center gap-2 h-11 rounded-pill border border-paper/20 bg-paper/[0.04] hover:bg-paper/10 hover:border-paper/35 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-sans text-ui font-medium text-paper"
         >
           <GoogleGlyph />
-          {pending === "google" ? "Connecting…" : "Continue with Google"}
+          {pending === "google"
+            ? t("signin.oauthConnecting")
+            : t("signin.continueWithGoogle")}
         </button>
         {showApple ? (
           <button
@@ -236,7 +242,9 @@ export function OAuthButtons({
             className="inline-flex items-center justify-center gap-2 h-11 rounded-pill border border-paper/20 bg-paper/[0.04] hover:bg-paper/10 hover:border-paper/35 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-sans text-ui font-medium text-paper"
           >
             <AppleGlyph />
-            {pending === "apple" ? "Connecting…" : "Continue with Apple"}
+            {pending === "apple"
+              ? t("signin.oauthConnecting")
+              : t("signin.continueWithApple")}
           </button>
         ) : null}
       </div>

@@ -136,3 +136,5 @@ test-results/
 # Generated per build from the liturgical calendar; dated from the build day,
 # so committing it would churn the diff on every run. See scripts/emit-widget-data.mjs.
 public/widget-day-table.json
+.i18n-work/
+.i18n-new/

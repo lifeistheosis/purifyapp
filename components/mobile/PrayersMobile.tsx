@@ -25,13 +25,14 @@ import { ContinuePraying } from "@/components/prayers/ContinuePraying";
 import { SuggestedToday } from "@/components/prayers/SuggestedToday";
 import {
   RULE_CATEGORY_ORDER,
-  RULE_CATEGORY_LABEL,
   indexRules,
   popularRules,
+  type RuleCategory,
 } from "@/lib/prayers/rules";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { seasonFor, isFastDay } from "@/lib/prayers/season";
 import { T } from "@/components/i18n/T";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type HeroMode = "morning" | "midday" | "evening";
 
@@ -44,10 +45,21 @@ function heroModeFor(d: Date): HeroMode {
   return "evening";
 }
 
-const TIME_LINE: Record<HeroMode, string> = {
-  morning: "Stand for a few minutes before God before the day takes you.",
-  midday: "Pray it in the breath. The bringing-back is half the work.",
-  evening: "Close the day with the same quiet you opened it with.",
+/** Catalog keys, not copy: the line follows the reader's language. */
+const TIME_LINE_KEY: Record<HeroMode, string> = {
+  morning: "prayers.timeLine.morning",
+  midday: "prayers.timeLine.midday",
+  evening: "prayers.timeLine.evening",
+};
+
+/** Section labels for the index. "The Church year" already exists in the
+ *  catalog under the saints namespace, so it is reused rather than
+ *  re-translated into twenty languages. */
+const RULE_CATEGORY_KEY: Record<RuleCategory, string> = {
+  daily: "prayers.category.daily",
+  "daily-life": "prayers.category.dailyLife",
+  "church-year": "saints.theChurchYear",
+  devotional: "prayers.category.devotional",
 };
 
 /**
@@ -67,12 +79,16 @@ export function PrayersMobile() {
   const mode = mounted ? heroModeFor(new Date()) : "morning";
   const season = today ? seasonFor(today) : null;
   const [style] = useCalendarStyleDefault();
+  // The dateline follows the reader's language. formatLongDate() falls back
+  // to hardcoded English weekday and month names when it is given no locale,
+  // which is what the eyebrow was showing in all twenty of them.
+  const { t, locale } = useTranslate();
   const isFast = today ? isFastDay(today, style) : false;
 
   return (
     <MobileShell
       header={<MobileHeader titleKey="nav.prayers" trailing={<UserAvatarSmall />} />}
-      eyebrow={today ? formatLongDate(today) : " "}
+      eyebrow={today ? formatLongDate(today, locale) : " "}
     >
       {/* The Deesis: Christ with the Theotokos and the Forerunner
           interceding, which is what this surface is for. Mobile had no
@@ -95,7 +111,7 @@ export function PrayersMobile() {
         </p>
         <div aria-hidden className="mx-auto mt-6 h-px w-10 bg-gold/50" />
         <p className="mx-auto mt-6 max-w-[40ch] font-serif text-body text-paper/70 leading-[1.75]">
-          {TIME_LINE[mode]}
+          <T k={TIME_LINE_KEY[mode]} />
         </p>
       </header>
 
@@ -163,9 +179,13 @@ export function PrayersMobile() {
                 <PrayerIndexRow
                   key={r.id}
                   href={r.href}
-                  title={r.title}
-                  description={r.description}
-                  meta={r.estimatedMinutes ? `~${r.estimatedMinutes} min` : undefined}
+                  title={t(`prayers.rule.${r.id}.title`)}
+                  description={r.description ? t(`prayers.rule.${r.id}.description`) : undefined}
+                  meta={
+                    r.estimatedMinutes ? (
+                      <T k="prayers.approxMin" count={r.estimatedMinutes} />
+                    ) : undefined
+                  }
                 />
               ))}
             </PrayerIndex>
@@ -178,17 +198,21 @@ export function PrayersMobile() {
           return (
             <div key={category}>
               <PrayerSectionLabel>
-                {RULE_CATEGORY_LABEL[category].en}
+                <T k={RULE_CATEGORY_KEY[category]} />
               </PrayerSectionLabel>
               <PrayerIndex>
                 {rules.map((r) => (
                   <PrayerIndexRow
                     key={r.id}
                     href={r.href}
-                    title={r.title}
-                    description={r.description}
+                    title={t(`prayers.rule.${r.id}.title`)}
+                    description={r.description ? t(`prayers.rule.${r.id}.description`) : undefined}
                     planned={r.planned}
-                    meta={r.estimatedMinutes ? `~${r.estimatedMinutes} min` : undefined}
+                    meta={
+                      r.estimatedMinutes ? (
+                        <T k="prayers.approxMin" count={r.estimatedMinutes} />
+                      ) : undefined
+                    }
                   />
                 ))}
               </PrayerIndex>

@@ -6,6 +6,7 @@ import {
   getLesson,
 } from "@/lib/prayers/learning";
 import { getServerLocale } from "@/lib/i18n/server";
+import { T } from "@/components/i18n/T";
 
 type Params = Promise<{ lessonId: string }>;
 
@@ -28,7 +29,6 @@ export async function generateMetadata({ params }: { params: Params }) {
 export default async function LessonPage({ params }: { params: Params }) {
   const { lessonId } = await params;
   const locale = await getServerLocale();
-  const isDe = locale === "de";
   const lesson = getLesson(lessonId, locale);
   if (!lesson) notFound();
   const { prev, next } = adjacentLessons(lessonId, locale);
@@ -40,13 +40,18 @@ export default async function LessonPage({ params }: { params: Params }) {
           href="/prayers/learning"
           className="inline-flex items-center font-sans text-eyebrow uppercase tracking-[2px] text-paper/40 hover:text-paper transition-colors"
         >
-          {isDe ? "← Beten lernen" : "← Learn to pray"}
+          ← <T k="ui.learnToPray" />
         </Link>
 
         <header className="mt-8 mb-12 md:mb-14">
           <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-5">
-            {isDe ? "Lektion" : "Lesson"} {lesson.order} · {lesson.estimatedMinutes}{" "}
-            {isDe ? "Min." : "min"}
+            <T
+              k="prayers.lessonMeta"
+              replacements={{
+                order: lesson.order,
+                minutes: lesson.estimatedMinutes,
+              }}
+            />
           </p>
           <h1 className="font-serif text-title md:text-heading leading-[1.15] tracking-[-0.01em] text-paper">
             {lesson.title}
@@ -61,7 +66,7 @@ export default async function LessonPage({ params }: { params: Params }) {
         {lesson.prayer && (
           <div className="mt-12 border-l border-gold/30 pl-6">
             <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-4">
-              {isDe ? "Das Gebet" : "The prayer"}
+              <T k="footer.prayer" />
             </p>
             <div className="font-serif text-lede leading-[1.8] text-paper/90 whitespace-pre-line">
               {lesson.prayer}
@@ -72,7 +77,7 @@ export default async function LessonPage({ params }: { params: Params }) {
         {lesson.tryThis && (
           <div className="mt-12">
             <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-3">
-              {isDe ? "Versuch das" : "Try this"}
+              <T k="prayers.tryThis" />
             </p>
             <p className="font-serif italic text-body leading-[1.7] text-paper/70">
               {lesson.tryThis}
@@ -87,7 +92,7 @@ export default async function LessonPage({ params }: { params: Params }) {
               className="font-sans text-ui text-paper/70 hover:text-paper transition-colors"
             >
               <span className="block text-eyebrow uppercase tracking-[1.5px] text-paper/40">
-                {isDe ? "Vorige Lektion" : "Previous lesson"}
+                <T k="prayers.previousLesson" />
               </span>
               <span className="block mt-1">← {prev.title}</span>
             </Link>
@@ -100,7 +105,7 @@ export default async function LessonPage({ params }: { params: Params }) {
               className="font-sans text-ui text-paper/70 hover:text-paper transition-colors text-right"
             >
               <span className="block text-eyebrow uppercase tracking-[1.5px] text-paper/40">
-                {isDe ? "Nächste Lektion" : "Next lesson"}
+                <T k="prayers.nextLesson" />
               </span>
               <span className="block mt-1">{next.title} →</span>
             </Link>

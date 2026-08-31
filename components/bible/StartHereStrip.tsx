@@ -4,18 +4,18 @@ import Link from "next/link";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type Pick = {
-  name: string;
-  subtitle: string;
+  nameKey: string;
+  subtitleKey: string;
   href: string;
 };
 
 const PICKS: Pick[] = [
-  { name: "John", subtitle: "the spiritual gospel", href: "/bible/john/1" },
-  { name: "Psalms", subtitle: "the prayer book of the Church", href: "/bible/psalms/1" },
-  { name: "Genesis", subtitle: "in the beginning", href: "/bible/genesis/1" },
-  { name: "Matthew", subtitle: "the kingdom of heaven", href: "/bible/matthew/1" },
-  { name: "Romans", subtitle: "the gospel of grace", href: "/bible/romans/1" },
-  { name: "1 Cor 13", subtitle: "love is patient", href: "/bible/1-corinthians/13" },
+  { nameKey: "bible.books.john", subtitleKey: "bible.startHere.johnSubtitle", href: "/bible/john/1" },
+  { nameKey: "bible.books.psalms", subtitleKey: "bible.startHere.psalmsSubtitle", href: "/bible/psalms/1" },
+  { nameKey: "bible.books.genesis", subtitleKey: "bible.startHere.genesisSubtitle", href: "/bible/genesis/1" },
+  { nameKey: "bible.books.matthew", subtitleKey: "bible.startHere.matthewSubtitle", href: "/bible/matthew/1" },
+  { nameKey: "bible.books.romans", subtitleKey: "bible.startHere.romansSubtitle", href: "/bible/romans/1" },
+  { nameKey: "bible.startHere.firstCorinthians13", subtitleKey: "bible.startHere.firstCorinthians13Subtitle", href: "/bible/1-corinthians/13" },
 ];
 
 /**
@@ -35,15 +35,15 @@ export function StartHereStrip() {
         <div className="mt-4 grid grid-cols-3 gap-3 lg:grid-cols-6">
           {PICKS.map((p) => (
             <Link
-              key={p.name}
+              key={p.href}
               href={p.href}
               className="group rounded-lg border border-paper/10 bg-night-soft/40 px-4 py-3.5 transition-colors hover:border-gold/45 hover:bg-gold/[0.05]"
             >
               <span className="block font-display-serif text-lede text-paper leading-tight transition-colors group-hover:text-gold">
-                {p.name}
+                {t(p.nameKey)}
               </span>
               <span className="mt-1 block font-serif italic text-caption text-paper/60 leading-tight">
-                {p.subtitle}
+                {t(p.subtitleKey)}
               </span>
             </Link>
           ))}

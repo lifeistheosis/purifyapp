@@ -1,3 +1,4 @@
+import { T } from "@/components/i18n/T";
 import { Cross } from "@/components/ui/icons/Cross";
 import type { Saint } from "@/lib/saints/saints";
 
@@ -11,15 +12,15 @@ import type { Saint } from "@/lib/saints/saints";
  * the common intercessory form ("pray to God for us").
  */
 export function SaintIntercession({ saint }: { saint: Saint }) {
-  const petition = saint.featured
-    ? "Most Holy Theotokos, save us."
-    : `Holy ${saint.name}, pray to God for us.`;
-
   return (
     <div className="mt-20 flex flex-col items-center gap-5 border-t border-paper/8 pt-14 pb-4 text-center">
       <Cross size={22} aria-hidden className="text-gold/70" />
       <p className="max-w-[30ch] font-display-serif text-title-sm md:text-title text-paper/85 leading-snug">
-        {petition}
+        {saint.featured ? (
+          <T k="prayers.rope.lineTheotokos" />
+        ) : (
+          <T k="saints.intercessionPetition" replacements={{ name: saint.name }} />
+        )}
       </p>
     </div>
   );

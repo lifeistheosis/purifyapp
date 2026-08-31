@@ -10,6 +10,7 @@ import { Plus } from "@/components/ui/icons/Plus";
 import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/cn";
 import { hasActiveProClient } from "@/lib/entitlements/client";
+import { useIsNative } from "@/lib/platform/native";
 import {
   cartSubtotalCents,
   clearCart,
@@ -20,6 +21,7 @@ import {
 import { fetchShopConfig } from "@/lib/shop/catalogClient";
 import { formatPrice } from "@/lib/shop/format";
 import { openStripe } from "@/lib/shop/openStripe";
+import { productHref } from "@/lib/shop/productHref";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -30,9 +32,10 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * store, one checkout, one shipping charge.
  */
 export function CartClient() {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const router = useRouter();
   const items = useCart();
+  const native = useIsNative();
   const { data: config } = useAsyncData(fetchShopConfig, []);
   // Display-only: reflects the buyer's real Pro shipping perk. Fails open to
   // false (the server re-decides shipping at checkout either way), so a
@@ -47,7 +50,7 @@ export function CartClient() {
 
   async function checkout() {
     if (!agreed) {
-      setError("Please agree to the Terms and shipping & refund policy first.");
+      setError(t("shop.agreeTermsFirst"));
       return;
     }
     setBusy(true);
@@ -66,9 +69,9 @@ export function CartClient() {
         await openStripe(data.url, () => router.push("/shop/orders"));
         return;
       }
-      setError(data.error ?? "Checkout isn't available right now.");
+      setError(data.error ?? t("shop.checkoutUnavailable"));
     } catch {
-      setError("Checkout isn't available right now.");
+      setError(t("shop.checkoutUnavailable"));
     } finally {
       setBusy(false);
     }
@@ -112,7 +115,7 @@ export function CartClient() {
             className="flex gap-4 rounded-xl border border-paper/10 bg-night-soft/60 p-4"
           >
             <Link
-              href={`/shop/icons/${item.slug}`}
+              href={productHref(item.slug, native)}
               className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-paper/[0.04]"
             >
               {item.imageUrl ? (
@@ -128,7 +131,7 @@ export function CartClient() {
             <div className="min-w-0 flex-1">
               <div className="flex items-start justify-between gap-3">
                 <Link
-                  href={`/shop/icons/${item.slug}`}
+                  href={productHref(item.slug, native)}
                   className="min-w-0 truncate font-sans text-ui font-semibold text-paper hover:underline underline-offset-4"
                 >
                   {item.title}
@@ -141,7 +144,7 @@ export function CartClient() {
                 <div className="inline-flex items-center rounded-pill border border-paper/15">
                   <button
                     type="button"
-                    aria-label={`Reduce quantity of ${item.title}`}
+                    aria-label={t("shop.reduceQuantityOf", { title: item.title })}
                     onClick={() => setCartQuantity(item.slug, item.quantity - 1)}
                     className="tap-press flex h-9 w-9 items-center justify-center rounded-l-pill text-paper/70 hover:text-paper"
                   >
@@ -152,7 +155,7 @@ export function CartClient() {
                   </span>
                   <button
                     type="button"
-                    aria-label={`Increase quantity of ${item.title}`}
+                    aria-label={t("shop.increaseQuantityOf", { title: item.title })}
                     onClick={() => setCartQuantity(item.slug, item.quantity + 1)}
                     className="tap-press flex h-9 w-9 items-center justify-center rounded-r-pill text-paper/70 hover:text-paper"
                   >
@@ -193,7 +196,7 @@ export function CartClient() {
         <div className="mx-auto max-w-[640px] md:mx-0">
           <div className="flex items-center justify-between">
             <p className="font-sans text-ui text-paper/70">
-              {t("shop.subtotal")}{items.length} {items.length === 1 ? "item" : "items"})
+              {tn("shop.subtotalItems", items.length)}
             </p>
             <p className="font-sans text-title-sm font-semibold text-paper">
               {formatPrice(subtotal, currency)}
@@ -214,8 +217,10 @@ export function CartClient() {
             ) : (
               <p className="font-sans text-caption text-paper/70">
                 {config
-                  ? `${formatPrice(config.flatShippingCents, currency)} · once per order`
-                  : "Calculated at checkout"}
+                  ? t("shop.shippingOncePerOrder", {
+                      price: formatPrice(config.flatShippingCents, currency),
+                    })
+                  : t("shop.calculatedAtCheckout")}
               </p>
             )}
           </div>
@@ -261,10 +266,10 @@ export function CartClient() {
             className="tap-press mt-3 inline-flex min-h-[48px] w-full items-center justify-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {busy
-              ? "Opening checkout…"
+              ? t("shop.openingCheckout")
               : config && !config.checkoutEnabled
-                ? "Checkout opens soon"
-                : "Check out"}
+                ? t("shop.checkoutOpensSoonAction")
+                : t("shop.checkOut")}
           </button>
         </div>
       </div>

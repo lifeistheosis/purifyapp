@@ -15,17 +15,50 @@ import { ShopDetailSkeleton, ShopError } from "@/components/shop/ShopStates";
 import { hasActiveProClient } from "@/lib/entitlements/client";
 import { fetchShopConfig, fetchShopProduct } from "@/lib/shop/catalogClient";
 import {
-  CLASSIFICATION_LABELS,
-  dispatchWindowLabel,
   formatPrice,
-  INVENTORY_LABELS,
   productRating,
   purchasable,
   unitsSoldLabel,
 } from "@/lib/shop/format";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
-import type { ShopProductDetail } from "@/lib/shop/types";
+import type { ShopInventoryStatus, ShopProductDetail } from "@/lib/shop/types";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+
+/** Catalog key for each availability status, so the chip reads in the
+ *  visitor's language rather than the table's English. */
+const INVENTORY_LABEL_KEYS: Record<ShopInventoryStatus, string> = {
+  ready_to_ship: "shop.readyToShipX",
+  special_order: "shop.specialOrder",
+  coming_soon: "shop.comingSoon",
+  out_of_stock: "shop.outOfStock",
+};
+
+/**
+ * The dispatch window of lib/shop/format.dispatchWindowLabel, read out of the
+ * catalog instead of the table so it lands in the visitor's language. Same
+ * branching: weeks once the window reaches a fortnight, business days below
+ * that, so a long window never reads like a delivery promise.
+ */
+function dispatchWindowMessage(
+  t: (key: string, replacements?: Record<string, string | number>) => string,
+  tn: (
+    key: string,
+    count: number,
+    replacements?: Record<string, string | number>,
+  ) => string,
+  minDays: number,
+  maxDays: number,
+): string {
+  if (maxDays >= 14) {
+    const minW = Math.round(minDays / 7);
+    const maxW = Math.ceil(maxDays / 7);
+    if (minW >= 1 && minW !== maxW)
+      return t("shop.dispatchWeekRange", { min: minW, max: maxW });
+    return tn("shop.dispatchWeeks", maxW);
+  }
+  if (minDays === maxDays) return tn("shop.dispatchBusinessDays", minDays);
+  return t("shop.dispatchDayRange", { min: minDays, max: maxDays });
+}
 
 function Fact({ term, value }: { term: string; value: string | null }) {
   if (!value) return null;
@@ -52,7 +85,7 @@ type Loaded = {
  * Pro status for the shipping line.
  */
 export function ProductDetailClient({ slug }: { slug: string }) {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const { data, error, loading, reload } = useAsyncData<Loaded>(async () => {
     const [detail, config, pro] = await Promise.all([
       fetchShopProduct(slug).catch((e: unknown) => {
@@ -120,9 +153,13 @@ export function ProductDetailClient({ slug }: { slug: string }) {
 
   const priceLabel = formatPrice(product.price_cents, product.currency);
   const shippingLabel = pro
-    ? "Free shipping with Purify Pro"
-    : `+ ${formatPrice(flatShippingCents, product.currency)} standard shipping · free with Purify Pro`;
-  const dispatchLabel = dispatchWindowLabel(
+    ? t("shop.freeShippingWithPurifyPro")
+    : t("shop.standardShippingFreeWithPro", {
+        price: formatPrice(flatShippingCents, product.currency),
+      });
+  const dispatchLabel = dispatchWindowMessage(
+    t,
+    tn,
     product.dispatch_min_days,
     product.dispatch_max_days,
   );
@@ -152,10 +189,10 @@ export function ProductDetailClient({ slug }: { slug: string }) {
           <header className="mt-6">
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-pill border border-paper/20 bg-paper/[0.05] px-3 py-1 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/75">
-                {CLASSIFICATION_LABELS[product.classification]}
+                {t(`shop.classification.${product.classification}`)}
               </span>
               <span className="rounded-pill border border-paper/15 px-3 py-1 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/60">
-                {INVENTORY_LABELS[product.inventory_status]}
+                {t(INVENTORY_LABEL_KEYS[product.inventory_status])}
               </span>
             </div>
             <div className="mt-3 flex items-start justify-between gap-4">
@@ -191,7 +228,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
                 ) : null}
                 {sold ? (
                   <span className="font-sans text-caption text-paper/55">
-                    {sold}
+                    {tn("shop.soldCount", product.units_sold ?? 0)}
                   </span>
                 ) : null}
               </div>
@@ -232,14 +269,14 @@ export function ProductDetailClient({ slug }: { slug: string }) {
               {t("shop.details")}
             </h2>
             <dl className="mt-3">
-              <Fact term="Classification" value={CLASSIFICATION_LABELS[product.classification]} />
-              <Fact term="Dimensions" value={product.dimensions} />
-              <Fact term="Materials" value={product.materials} />
-              <Fact term="Production method" value={product.production_method} />
-              <Fact term="Made by" value={product.maker_name} />
-              <Fact term="Country of origin" value={product.country_of_origin} />
-              <Fact term="Availability" value={INVENTORY_LABELS[product.inventory_status]} />
-              <Fact term="Estimated dispatch" value={dispatchLabel} />
+              <Fact term={t("shop.classificationLabel")} value={t(`shop.classification.${product.classification}`)} />
+              <Fact term={t("shop.dimensions")} value={product.dimensions} />
+              <Fact term={t("shop.materials")} value={product.materials} />
+              <Fact term={t("shop.productionMethod")} value={product.production_method} />
+              <Fact term={t("shop.madeBy")} value={product.maker_name} />
+              <Fact term={t("shop.countryOfOrigin")} value={product.country_of_origin} />
+              <Fact term={t("shop.availability")} value={t(INVENTORY_LABEL_KEYS[product.inventory_status])} />
+              <Fact term={t("shop.estimatedDispatch")} value={dispatchLabel} />
             </dl>
           </section>
 
@@ -297,7 +334,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
             priceLabel={priceLabel}
             shippingLabel={shippingLabel}
             dispatchLabel={dispatchLabel}
-            inventoryLabel={INVENTORY_LABELS[product.inventory_status]}
+            inventoryLabel={t(INVENTORY_LABEL_KEYS[product.inventory_status])}
             purchasable={purchasable(product.inventory_status)}
             checkoutOn={checkoutEnabled}
             subjectForRequest={product.title}

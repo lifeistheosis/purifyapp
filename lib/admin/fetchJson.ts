@@ -25,6 +25,8 @@
  * read leaves the last good values on screen. That is the posture AdminShell's
  * rail badge already had and the reason it never took anything down.
  */
+import { inflate, larpOn } from "./larp";
+
 export async function adminJson<T>(
   url: string,
   init?: RequestInit,
@@ -32,7 +34,12 @@ export async function adminJson<T>(
   try {
     const r = await fetch(url, { cache: "no-store", ...init });
     if (!r.ok) return null;
-    return (await r.json()) as T;
+    const json = (await r.json()) as T;
+    // Larp mode inflates on the way IN, never on the way out: the request was
+    // ordinary and the server answered with the truth. One hook here reaches
+    // every tab, because every tab reads through this function. Off, which is
+    // the resting state, this is a boolean check and the same object back.
+    return larpOn() ? inflate(json) : json;
   } catch {
     // Offline, aborted, or a body that is not JSON. Same answer either way:
     // there is no data this time, and that is not a reason to break the page.

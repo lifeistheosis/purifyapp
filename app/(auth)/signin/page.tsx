@@ -20,7 +20,7 @@ export default async function SignInPage({
     next?: string;
     error?: string;
   };
-  const friendly = error ? friendlyError(error) : null;
+  const friendlyKey = error ? friendlyErrorKey(error) : null;
   return (
     <div>
       <h1 className="font-sans text-title font-bold text-paper leading-tight mb-2">
@@ -29,7 +29,7 @@ export default async function SignInPage({
       <p className="font-serif text-ui text-paper/75 mb-7">
         <T k="ui.signInToPickUp" />
       </p>
-      {friendly ? (
+      {error ? (
         <div
           role="alert"
           className="mb-5 rounded-md border border-crimson/45 bg-crimson/[0.08] px-4 py-3"
@@ -38,7 +38,7 @@ export default async function SignInPage({
             <T k="ui.signInFailed" />
           </p>
           <p className="font-sans text-detail text-paper/85 leading-[1.55]">
-            {friendly}
+            {friendlyKey ? <T k={friendlyKey} /> : error}
           </p>
         </div>
       ) : null}
@@ -47,15 +47,15 @@ export default async function SignInPage({
   );
 }
 
-function friendlyError(raw: string): string {
+function friendlyErrorKey(raw: string): string | null {
   if (/identity is already linked/i.test(raw) || /identity_already_exists/i.test(raw)) {
-    return "That Google account is already linked to a Purify account. Click \"Continue with Google\" below to sign in with it.";
+    return "ui.oauthIdentityAlreadyLinked";
   }
   if (/access[_ ]denied/i.test(raw) || /user denied/i.test(raw)) {
-    return "You declined the provider's consent prompt. Try again, or use email and password.";
+    return "ui.oauthAccessDenied";
   }
   if (/redirect_uri/i.test(raw) || /redirect uri/i.test(raw)) {
-    return "Sign-in completed but the redirect URL wasn't recognized. The site maintainer needs to add this app's callback URL to the Supabase allowlist.";
+    return "ui.oauthRedirectUriUnrecognized";
   }
-  return raw;
+  return null;
 }

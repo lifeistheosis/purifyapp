@@ -22,16 +22,16 @@ export function ProfileSettings() {
   const [calStyle, pickCalStyle] = useCalendarStyleDefault();
 
   const sizeOptions: { value: ReaderSize; label: string }[] = [
-    { value: "sm", label: "Small" },
-    { value: "md", label: "Medium" },
-    { value: "lg", label: "Large" },
-    { value: "xl", label: "Extra large" },
+    { value: "sm", label: t("settings.sizeSmall") },
+    { value: "md", label: t("settings.sizeMedium") },
+    { value: "lg", label: t("settings.sizeLarge") },
+    { value: "xl", label: t("settings.sizeExtraLarge") },
   ];
 
   const fontOptions: { value: ReaderFont; label: string }[] = [
-    { value: "serif", label: "Serif (Lora)" },
-    { value: "display", label: "Display" },
-    { value: "sans", label: "Sans" },
+    { value: "serif", label: t("settings.fontSerifLora") },
+    { value: "display", label: t("settings.fontDisplay") },
+    { value: "sans", label: t("settings.fontSans") },
   ];
 
   return (
@@ -47,14 +47,14 @@ export function ProfileSettings() {
         >
           <LanguagePicker />
         </Row>
-        <Row label={t("ui.readerFont")} description="The face of the body text in the Bible and saint readers.">
+        <Row label={t("ui.readerFont")} description={t("settings.fontHintReaders")}>
           <SegGroup
             value={font}
             options={fontOptions}
             onChange={(v) => setFont(v as ReaderFont)}
           />
         </Row>
-        <Row label={t("ui.readerSize")} description="How large the body text appears at default zoom.">
+        <Row label={t("ui.readerSize")} description={t("settings.sizeHint")}>
           <SegGroup
             value={size}
             options={sizeOptions}
@@ -63,23 +63,23 @@ export function ProfileSettings() {
         </Row>
         <Row
           label={t("ui.interlinearByDefault")}
-          description="Show the Greek alongside the English on New Testament chapters as soon as you open them."
+          description={t("settings.interlinearHintGreek")}
         >
           <Toggle
             on={interlinearOn}
             onChange={toggleInterlinear}
-            label={interlinearOn ? "On" : "Off"}
+            label={interlinearOn ? t("common.on") : t("common.off")}
           />
         </Row>
         <Row
           label={t("ui.calendarReckoning")}
-          description="The default style used by /calendar when no ?style= query is set. New (Revised Julian) for the Ecumenical Patriarchate and the majority; Old (Julian) for the Russian, Serbian, Athonite, and Jerusalem traditions."
+          description={t("settings.calendarReckoningHint")}
         >
           <SegGroup
             value={calStyle}
             options={[
-              { value: "new", label: "New" },
-              { value: "old", label: "Old (Julian)" },
+              { value: "new", label: t("calendar.styleNew") },
+              { value: "old", label: t("calendar.reckoning.old") },
             ]}
             onChange={(v) => pickCalStyle(v as CalendarStyleDefault)}
           />

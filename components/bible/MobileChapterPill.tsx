@@ -58,6 +58,7 @@ export function MobileChapterPill({
 }) {
   const { t } = useTranslate();
   const book = getBook(slug);
+  const bookName = t(`bible.books.${slug}`);
   const prev = prevChapter(slug, chapter);
   const next = nextChapter(slug, chapter);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -81,25 +82,34 @@ export function MobileChapterPill({
             target={prev}
             label={
               prev
-                ? `Previous: ${getBook(prev.slug)?.name ?? prev.slug} ${prev.chapter}`
-                : "No previous chapter"
+                ? t("bible.previousTargetAria", {
+                    book: t(`bible.books.${prev.slug}`),
+                    chapter: prev.chapter,
+                  })
+                : t("bible.noPreviousChapter")
             }
             dir="‹"
           />
           <button
             type="button"
             onClick={() => setSheetOpen(true)}
-            aria-label={`Pick a chapter, currently ${book.name} ${chapter}`}
+            aria-label={t("bible.pickChapterCurrentAria", {
+              book: bookName,
+              chapter,
+            })}
             className="px-3 h-10 inline-flex items-center font-sans text-ui font-semibold text-paper"
           >
-            {book.name} {chapter}
+            {bookName} {chapter}
           </button>
           <Arrow
             target={next}
             label={
               next
-                ? `Next: ${getBook(next.slug)?.name ?? next.slug} ${next.chapter}`
-                : "No next chapter"
+                ? t("bible.nextTargetAria", {
+                    book: t(`bible.books.${next.slug}`),
+                    chapter: next.chapter,
+                  })
+                : t("bible.noNextChapter")
             }
             dir="›"
           />

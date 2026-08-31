@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { lessonsFor } from "@/lib/prayers/learning";
 import { getServerLocale } from "@/lib/i18n/server";
+import { T } from "@/components/i18n/T";
 import {
   PrayerPage,
   PrayerMasthead,
@@ -15,18 +16,15 @@ export const metadata = {
 
 export default async function LearnToPrayPage() {
   const locale = await getServerLocale();
-  const isDe = locale === "de";
   const lessons = lessonsFor(locale);
   return (
     <PrayerPage width="reading">
       <PrayerMasthead
-        eyebrow={isDe ? "Gebet · Der Anfang" : "Prayer · Beginning"}
-        title={isDe ? "Beten lernen" : "Learn to pray"}
+        eyebrow={<T k="prayers.learningEyebrow" />}
+        title={<T k="ui.learnToPray" />}
         intro={
           <p>
-            {isDe
-              ? "Ein orthodoxer Einsteiger-Weg. Jede Lektion ist kurz, mit ein oder zwei Gebeten, die man auswendig lernt. Geh in der Reihenfolge, oder spring zu dem, was du brauchst."
-              : "An Orthodox beginner's path. Each lesson is short, with one or two prayers to learn by heart. Go in order, or jump to what you need."}
+            <T k="prayers.learningIntro" />
           </p>
         }
       />
@@ -50,7 +48,10 @@ export default async function LearnToPrayPage() {
                 </p>
               </div>
               <span className="shrink-0 font-sans text-caption text-paper/35 tabular-nums">
-                {l.estimatedMinutes} {isDe ? "Min." : "min"}
+                <T
+                  k="today.minRead"
+                  replacements={{ count: l.estimatedMinutes }}
+                />
               </span>
               <span
                 aria-hidden
@@ -64,9 +65,7 @@ export default async function LearnToPrayPage() {
       </ol>
 
       <PrayerNote>
-        {isDe
-          ? "Weitere Lektionen kommen: das Gebetsseil, deine Ikonenecke, Gebete vor den Mahlzeiten, das Beten mit den Heiligen und die Zeiten des Kirchenjahres."
-          : "More lessons coming: the Prayer Rope, your icon corner, prayers before meals, praying with the saints, and the seasons of the Church year."}
+        <T k="prayers.learningMoreComing" />
       </PrayerNote>
     </PrayerPage>
   );

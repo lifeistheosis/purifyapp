@@ -13,6 +13,7 @@
 // pass it. Only real, seeded rules are ever suggested, never a planned one.
 
 import { PrayerSectionLabel, PrayerIndex, PrayerIndexRow } from "./PrayerBook";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useMounted } from "@/lib/useMounted";
 import { useToday } from "@/lib/calendar/useToday";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
@@ -41,7 +42,7 @@ function pickable(r: RuleMeta): boolean {
 export function SuggestedToday({
   season: seasonProp,
   isFast: isFastProp,
-  label = "Suggested for today",
+  label,
   max = 3,
 }: {
   season?: Season;
@@ -49,6 +50,7 @@ export function SuggestedToday({
   label?: React.ReactNode;
   max?: number;
 }) {
+  const { t, tn } = useTranslate();
   const mounted = useMounted();
   const today = useToday();
   // Above the early return: hooks must run in the same order every render,
@@ -88,17 +90,35 @@ export function SuggestedToday({
 
   return (
     <>
-      <PrayerSectionLabel>{label}</PrayerSectionLabel>
+      <PrayerSectionLabel>{label ?? t("ui.suggestedForToday")}</PrayerSectionLabel>
       <PrayerIndex>
-        {chosen.map((r) => (
-          <PrayerIndexRow
-            key={r.id}
-            href={r.href}
-            title={r.title}
-            description={r.description}
-            meta={r.estimatedMinutes ? `~${r.estimatedMinutes} min` : undefined}
-          />
-        ))}
+        {chosen.map((r) => {
+          // The rule registry carries its own per-language fields, so the
+          // catalog is consulted first and the table's English is the
+          // fallback for any id the catalog does not yet cover. `t` returns
+          // the key itself on a miss, which is how a miss is detected.
+          const titleKey = `prayers.rule.${r.id}.title`;
+          const titleText = t(titleKey);
+          const descKey = `prayers.rule.${r.id}.description`;
+          const descText = r.description ? t(descKey) : undefined;
+          return (
+            <PrayerIndexRow
+              key={r.id}
+              href={r.href}
+              title={titleText === titleKey ? r.title : titleText}
+              description={
+                descText === undefined || descText === descKey
+                  ? r.description
+                  : descText
+              }
+              meta={
+                r.estimatedMinutes
+                  ? tn("prayers.approxMin", r.estimatedMinutes)
+                  : undefined
+              }
+            />
+          );
+        })}
       </PrayerIndex>
     </>
   );

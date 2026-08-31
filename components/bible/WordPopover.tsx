@@ -10,60 +10,74 @@ import type { StrongsEntry } from "@/lib/bible/strongs";
 // Friendly long-form labels for Robinson-Pierpont parse codes.
 // Only the most common bits, enough so a casual reader can guess what
 // the part of speech means.
-const POS_LABELS: Record<string, string> = {
- N: "noun",
- V: "verb",
- A: "adjective",
- T: "article",
- D: "demonstrative",
- P: "pronoun",
- R: "relative",
- K: "correlative",
- I: "interrogative",
- X: "indefinite",
- F: "reflexive",
- S: "possessive",
- Q: "indefinite",
- C: "reciprocal",
- ADV: "adverb",
- CONJ: "conjunction",
- COND: "conditional",
- PRT: "particle",
- PREP: "preposition",
- INJ: "interjection",
- ARAM: "Aramaic",
- HEB: "Hebrew",
+const POS_KEYS: Record<string, string> = {
+ N: "bible.parse.noun",
+ V: "bible.parse.verb",
+ A: "bible.parse.adjective",
+ T: "bible.parse.article",
+ D: "bible.parse.demonstrative",
+ P: "bible.parse.pronoun",
+ R: "bible.parse.relative",
+ K: "bible.parse.correlative",
+ I: "bible.parse.interrogative",
+ X: "bible.parse.indefinite",
+ F: "bible.parse.reflexive",
+ S: "bible.parse.possessive",
+ Q: "bible.parse.indefinite",
+ C: "bible.parse.reciprocal",
+ ADV: "bible.parse.adverb",
+ CONJ: "bible.parse.conjunction",
+ COND: "bible.parse.conditional",
+ PRT: "bible.parse.particle",
+ PREP: "bible.parse.preposition",
+ INJ: "bible.parse.interjection",
+ ARAM: "bible.parse.aramaic",
+ HEB: "bible.parse.hebrew",
 };
 
-const TENSE_LABELS: Record<string, string> = {
- P: "present",
- I: "imperfect",
- F: "future",
- A: "aorist",
- R: "perfect",
- L: "pluperfect",
- X: "future-perfect",
- "2A": "2nd aorist",
- "2P": "2nd perfect",
- "2R": "2nd perfect",
- "2X": "2nd future-perfect",
+const TENSE_KEYS: Record<string, string> = {
+ P: "bible.parse.present",
+ I: "bible.parse.imperfect",
+ F: "bible.parse.future",
+ A: "bible.parse.aorist",
+ R: "bible.parse.perfect",
+ L: "bible.parse.pluperfect",
+ X: "bible.parse.futurePerfect",
+ "2A": "bible.parse.secondAorist",
+ "2P": "bible.parse.secondPerfect",
+ "2R": "bible.parse.secondPerfect",
+ "2X": "bible.parse.secondFuturePerfect",
 };
-const VOICE_LABELS: Record<string, string> = {
- A: "active",
- M: "middle",
- P: "passive",
- D: "deponent",
- N: "middle/passive",
- X: "middle deponent",
- O: "passive deponent",
+const VOICE_KEYS: Record<string, string> = {
+ A: "bible.parse.active",
+ M: "bible.parse.middle",
+ P: "bible.parse.passive",
+ D: "bible.parse.deponent",
+ N: "bible.parse.middlePassive",
+ X: "bible.parse.middleDeponent",
+ O: "bible.parse.passiveDeponent",
 };
-const MOOD_LABELS: Record<string, string> = {
- I: "indicative",
- S: "subjunctive",
- O: "optative",
- M: "imperative",
- N: "infinitive",
- P: "participle",
+const MOOD_KEYS: Record<string, string> = {
+ I: "bible.parse.indicative",
+ S: "bible.parse.subjunctive",
+ O: "bible.parse.optative",
+ M: "bible.parse.imperative",
+ N: "bible.parse.infinitive",
+ P: "bible.parse.participle",
+};
+// Person and number ship as one key per pair, so a language that inflects
+// them together is not forced to glue two fragments in English order.
+const PERSON_NUMBER_KEYS: Record<string, string> = {
+ "1S": "bible.parse.person1Sing",
+ "1P": "bible.parse.person1Pl",
+ "2S": "bible.parse.person2Sing",
+ "2P": "bible.parse.person2Pl",
+ "3S": "bible.parse.person3Sing",
+ "3P": "bible.parse.person3Pl",
+};
+const NUMBER_KEYS: Record<string, string> = {
+ S: "bible.parse.numberSing",
+ P: "bible.parse.numberPl",
 };
 
 /**
@@ -73,57 +87,57 @@ const MOOD_LABELS: Record<string, string> = {
  * PREP -> "preposition"
  * ADV -> "adverb"
  */
-function friendlyParse(code: string): string {
+function friendlyParse(code: string, t: (key: string) => string): string {
  if (!code) return "";
  // Top-level pos abbreviations.
- if (POS_LABELS[code]) return POS_LABELS[code];
+ if (POS_KEYS[code]) return t(POS_KEYS[code]);
  const parts = code.split("-");
  const head = parts[0];
- const headLabel = POS_LABELS[head] ?? head.toLowerCase();
+ const headLabel = POS_KEYS[head] ? t(POS_KEYS[head]) : head.toLowerCase();
  const pieces: string[] = [headLabel];
 
  if (head === "V" && parts[1]) {
  // Verb: tense + voice + mood (TVM) like AAI / RPP
  const tvm = parts[1];
  // tense may be two chars (2A)
- let tense = TENSE_LABELS[tvm[0]];
+ let tense = TENSE_KEYS[tvm[0]];
  let i = 1;
- if (tvm[0] === "2" && TENSE_LABELS["2" + tvm[1]]) {
- tense = TENSE_LABELS["2" + tvm[1]];
+ if (tvm[0] === "2" && TENSE_KEYS["2" + tvm[1]]) {
+ tense = TENSE_KEYS["2" + tvm[1]];
  i = 2;
  }
- const voice = VOICE_LABELS[tvm[i]];
- const mood = MOOD_LABELS[tvm[i + 1]];
- if (tense) pieces.push(tense);
- if (voice) pieces.push(voice);
- if (mood) pieces.push(mood);
+ const voice = VOICE_KEYS[tvm[i]];
+ const mood = MOOD_KEYS[tvm[i + 1]];
+ if (tense) pieces.push(t(tense));
+ if (voice) pieces.push(t(voice));
+ if (mood) pieces.push(t(mood));
  // Person + number (3S, 1P, etc.)
  if (parts[2]) {
  const pn = parts[2];
- const person = { "1": "1st", "2": "2nd", "3": "3rd" }[pn[0]] ?? null;
- const number = { S: "sing.", P: "pl." }[pn[1]] ?? null;
- if (person && number) pieces.push(`${person} ${number}`);
- else if (number) pieces.push(number);
+ const personNumber = PERSON_NUMBER_KEYS[pn.slice(0, 2)] ?? null;
+ const number = NUMBER_KEYS[pn[1]] ?? null;
+ if (personNumber) pieces.push(t(personNumber));
+ else if (number) pieces.push(t(number));
  }
  } else if (parts[1]) {
  // Nominal: case + number + gender
  const caseGenderNumber = parts[1];
  const cases: Record<string, string> = {
- N: "nominative",
- G: "genitive",
- D: "dative",
- A: "accusative",
- V: "vocative",
+ N: "bible.parse.nominative",
+ G: "bible.parse.genitive",
+ D: "bible.parse.dative",
+ A: "bible.parse.accusative",
+ V: "bible.parse.vocative",
  };
- const numbers: Record<string, string> = { S: "sing.", P: "pl." };
+ const numbers: Record<string, string> = NUMBER_KEYS;
  const genders: Record<string, string> = {
- M: "masc.",
- F: "fem.",
- N: "neut.",
+ M: "bible.parse.masculine",
+ F: "bible.parse.feminine",
+ N: "bible.parse.neuter",
  };
- if (cases[caseGenderNumber[0]]) pieces.push(cases[caseGenderNumber[0]]);
- if (numbers[caseGenderNumber[1]]) pieces.push(numbers[caseGenderNumber[1]]);
- if (genders[caseGenderNumber[2]]) pieces.push(genders[caseGenderNumber[2]]);
+ if (cases[caseGenderNumber[0]]) pieces.push(t(cases[caseGenderNumber[0]]));
+ if (numbers[caseGenderNumber[1]]) pieces.push(t(numbers[caseGenderNumber[1]]));
+ if (genders[caseGenderNumber[2]]) pieces.push(t(genders[caseGenderNumber[2]]));
  }
  return pieces.join(" · ");
 }
@@ -193,7 +207,7 @@ export function WordPopover({
  <div
  ref={ref}
  role="dialog"
- aria-label={`Word details: ${token.w}`}
+ aria-label={t("bible.wordDetails", { word: token.w })}
  className="fixed z-50 rounded-lg border border-paper/20 bg-night-soft shadow-pop p-4"
  style={{ width: POPOVER_W, left, top }}
  >
@@ -240,7 +254,7 @@ export function WordPopover({
  {/* Parse (small, scholar-friendly) + Strong's badge */}
  <div className="mt-4 flex items-center justify-between gap-2 pt-3 border-t border-paper/10">
  <p className="font-sans text-caption text-paper/55 leading-tight">
- {token.p ? friendlyParse(token.p) : " "}
+ {token.p ? friendlyParse(token.p, t) : " "}
  </p>
  {token.s && (
  <span className="shrink-0 font-sans text-eyebrow font-semibold uppercase tracking-[1px] rounded-pill bg-paper/10 text-paper/80 px-2 py-0.5">

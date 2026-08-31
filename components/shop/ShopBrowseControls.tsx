@@ -29,7 +29,7 @@ export function ShopBrowseControls({
   filters,
   onChange,
   resultCount,
-  searchPlaceholder = "Search icons, saints, feasts…",
+  searchPlaceholder,
 }: {
   filters: BrowseFilters;
   onChange: (next: BrowseFilters) => void;
@@ -37,7 +37,7 @@ export function ShopBrowseControls({
   resultCount: number;
   searchPlaceholder?: string;
 }) {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const count = activeFilterCount(filters);
@@ -45,21 +45,21 @@ export function ShopBrowseControls({
   const facetChips: { label: string; clear: () => void }[] = [];
   if (filters.readyOnly) {
     facetChips.push({
-      label: "Ready to ship",
+      label: t("shop.readyToShip"),
       clear: () => onChange({ ...filters, readyOnly: false }),
     });
   }
   if (filters.classification) {
     facetChips.push({
-      label:
-        CLASSIFICATION_LABELS[filters.classification as ShopClassification] ??
-        filters.classification,
+      label: CLASSIFICATION_LABELS[filters.classification as ShopClassification]
+        ? t(`shop.classification.${filters.classification}`)
+        : filters.classification,
       clear: () => onChange({ ...filters, classification: null }),
     });
   }
   if (filters.priceBand) {
     facetChips.push({
-      label: PRICE_BAND_LABELS[filters.priceBand],
+      label: t(`shop.priceBand.${filters.priceBand}`),
       clear: () => onChange({ ...filters, priceBand: null }),
     });
   }
@@ -81,7 +81,7 @@ export function ShopBrowseControls({
             enterKeyHint="search"
             value={filters.q ?? ""}
             onChange={(e) => onChange({ ...filters, q: e.target.value })}
-            placeholder={searchPlaceholder}
+            placeholder={searchPlaceholder ?? t("shop.searchPlaceholder")}
             className="h-[46px] w-full rounded-pill border border-paper/15 bg-paper/[0.04] pl-11 pr-10 font-sans text-ui text-paper placeholder:text-paper/40 outline-none transition-colors focus:border-paper/40 [&::-webkit-search-cancel-button]:hidden"
           />
           {filters.q ? (
@@ -132,7 +132,7 @@ export function ShopBrowseControls({
               <button
                 type="button"
                 onClick={c.clear}
-                aria-label={`Remove filter: ${c.label}`}
+                aria-label={t("shop.removeFilterNamed", { label: c.label })}
                 className="tap-press inline-flex min-h-[34px] items-center gap-1.5 rounded-pill border border-gold/40 bg-gold/10 px-3 font-sans text-caption font-medium text-paper hover:border-gold/70"
               >
                 {c.label}
@@ -169,7 +169,7 @@ export function ShopBrowseControls({
           onClick={() => setSheetOpen(false)}
           className="tap-press mt-5 flex min-h-[48px] w-full items-center justify-center rounded-pill bg-paper font-sans text-ui font-semibold text-night"
         >
-          {t("shop.show")} {resultCount} {resultCount === 1 ? "icon" : "icons"}
+          {tn("shop.showIconCount", resultCount)}
         </button>
       </Sheet>
     </div>
@@ -186,11 +186,15 @@ function FacetEditor({
   onChange: (next: BrowseFilters) => void;
 }) {
   const { t } = useTranslate();
-  const classifications = Object.entries(CLASSIFICATION_LABELS) as [
-    ShopClassification,
-    string,
-  ][];
-  const bands = Object.entries(PRICE_BAND_LABELS) as [PriceBand, string][];
+  const classifications = (
+    Object.keys(CLASSIFICATION_LABELS) as ShopClassification[]
+  ).map(
+    (slug) =>
+      [slug, t(`shop.classification.${slug}`)] as [ShopClassification, string],
+  );
+  const bands = (Object.keys(PRICE_BAND_LABELS) as PriceBand[]).map(
+    (band) => [band, t(`shop.priceBand.${band}`)] as [PriceBand, string],
+  );
 
   return (
     <div className="space-y-5">

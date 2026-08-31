@@ -28,6 +28,21 @@ import { GROUP_ORDER, type SearchItem, type SearchGroup } from "@/lib/search/typ
 /** Dispatched on window to open the palette from anywhere. */
 export const SEARCH_OPEN_EVENT = "purify:search-open";
 
+/**
+ * Catalog key per result group. The group values themselves are stable
+ * English identifiers in the corpus, so the heading is looked up rather
+ * than printed, and the four that already exist in the nav are reused.
+ */
+const GROUP_LABEL_KEYS: Record<SearchGroup, string> = {
+  Bible: "nav.bible",
+  Saints: "nav.saints",
+  Prayers: "nav.prayers",
+  "Councils & Heresies": "search.group.councilsHeresies",
+  History: "search.group.history",
+  Topics: "nav.topics",
+  Other: "search.group.other",
+};
+
 function normalize(s: string): string {
   return s
     .toLowerCase()
@@ -258,7 +273,7 @@ export function CommandPalette() {
           {/* There is no escape key on a phone, so the hint is desktop only.
               Touch dismisses by tapping the backdrop or the hardware back. */}
           <kbd className="hidden md:inline-block shrink-0 rounded-md border border-paper/15 px-1.5 py-0.5 font-sans text-caption text-paper/35">
-            esc
+            {t("search.escKey")}
           </kbd>
         </div>
 
@@ -271,7 +286,7 @@ export function CommandPalette() {
             grouped.sections.map((section) => (
               <div key={section.group} className="mb-1">
                 <p className="px-4 pb-1 pt-3 font-sans text-eyebrow uppercase tracking-[2px] text-paper/35">
-                  {section.group}
+                  {t(GROUP_LABEL_KEYS[section.group])}
                 </p>
                 {section.items.map((item) => {
                   const idx = grouped.flat.indexOf(item);

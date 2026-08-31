@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 
-import { formatMonthDay } from "@/lib/calendar/orthodox";
 import { FAST_DOT } from "@/lib/calendar/fastDot";
 import { useChurchDay } from "@/lib/calendar/useChurchDay";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -21,7 +20,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
  * server version did not.
  */
 export function PrayersDayCard() {
-  const { t } = useTranslate();
+  const { t, tn, locale } = useTranslate();
   const day = useChurchDay();
 
   return (
@@ -40,7 +39,10 @@ export function PrayersDayCard() {
                 {day.today.getUTCDate()}
               </span>
               <span className="font-serif text-title-sm text-paper/70">
-                {formatMonthDay(day.today).split(" ")[0]}
+                {new Intl.DateTimeFormat(locale, {
+                  month: "long",
+                  timeZone: "UTC",
+                }).format(day.today)}
               </span>
             </div>
             <p className="mt-5 font-serif text-ui text-paper leading-snug">
@@ -55,13 +57,10 @@ export function PrayersDayCard() {
                 {t(`calendar.fast.${day.fast.ruleId}.label`)}
                 <span className="text-paper/25"> · </span>
                 {day.pascha.daysAway > 0
-                  ? t("calendar.daysUntilPascha").replace(
-                      "{count}",
-                      String(day.pascha.daysAway),
-                    )
+                  ? tn("calendar.daysUntilPascha", day.pascha.daysAway)
                   : day.pascha.daysAway === 0
                     ? t("prayers.paschaToday")
-                    : day.pascha.label}
+                    : t("today.paschaPassed")}
               </span>
             </p>
           </>

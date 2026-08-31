@@ -23,7 +23,7 @@ export function ChangeEmailCard({ currentEmail }: { currentEmail: string }) {
     const target = next.trim();
     if (!target) return;
     if (target === currentEmail) {
-      setError("That's the email already on file.");
+      setError(t("ui.emailAlreadyOnFile"));
       return;
     }
     setPending(true);
@@ -33,7 +33,9 @@ export function ChangeEmailCard({ currentEmail }: { currentEmail: string }) {
       if (err) throw err;
       setSent(true);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Couldn't request the change.");
+      setError(
+        e instanceof Error ? e.message : t("ui.couldntRequestEmailChange"),
+      );
     } finally {
       setPending(false);
     }
@@ -81,7 +83,7 @@ export function ChangeEmailCard({ currentEmail }: { currentEmail: string }) {
           disabled={pending}
           className="self-start rounded-pill bg-paper text-night font-sans text-detail font-semibold px-5 py-2.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
         >
-          {pending ? "Sending…" : "Send confirmation"}
+          {pending ? t("forgot.pending") : t("ui.sendConfirmation")}
         </button>
       </form>
     </section>

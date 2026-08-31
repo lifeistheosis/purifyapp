@@ -37,6 +37,33 @@ type ActionState = {
  */
 export type HighlightSwatch = { id: string; swatch: string; label: string };
 
+/** aria-label message keys per annotatable unit. The Bible reader reads
+ * "verse", the Fathers reader passes "paragraph" and bookmarks the
+ * enclosing "section". Whole sentences per noun, so inflected languages
+ * stay grammatical instead of receiving a noun spliced into a phrase. */
+const ITEM_LABEL_KEYS: Record<
+ string,
+ { actions: string; dismiss: string; highlight: string; copyLink: string }
+> = {
+ verse: {
+ actions: "bible.verseActionsFor",
+ dismiss: "bible.dismissVerseActions",
+ highlight: "bible.highlightVerse",
+ copyLink: "bible.copyVerseLink",
+ },
+ paragraph: {
+ actions: "saints.paragraphActionsFor",
+ dismiss: "saints.dismissParagraphActions",
+ highlight: "saints.highlightParagraph",
+ copyLink: "saints.copyParagraphLink",
+ },
+};
+
+const BOOKMARK_LABEL_KEYS: Record<string, string> = {
+ verse: "bible.bookmarkVerse",
+ section: "saints.bookmarkThisSection",
+};
+
 export function MobileVerseToolbar({
  reference,
  state,
@@ -69,7 +96,8 @@ export function MobileVerseToolbar({
 }) {
   const { t } = useTranslate();
  const bmNoun = bookmarkNoun ?? itemNoun;
- const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+ const itemKeys = ITEM_LABEL_KEYS[itemNoun] ?? ITEM_LABEL_KEYS.verse;
+ const bookmarkKey = BOOKMARK_LABEL_KEYS[bmNoun] ?? BOOKMARK_LABEL_KEYS.verse;
  // Close on Escape.
  useEffect(() => {
  function onKey(e: KeyboardEvent) {
@@ -100,11 +128,11 @@ export function MobileVerseToolbar({
  : "border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10";
 
  return (
- <div className="md:hidden fixed inset-0 z-[55]" role="dialog" aria-modal="false" aria-label={`${cap(itemNoun)} actions, ${reference}`}>
+ <div className="md:hidden fixed inset-0 z-[55]" role="dialog" aria-modal="false" aria-label={t(itemKeys.actions, { reference })}>
  {/* Transparent backdrop to capture outside taps. */}
  <button
  type="button"
- aria-label={`Dismiss ${itemNoun} actions`}
+ aria-label={t(itemKeys.dismiss)}
  onClick={onClose}
  className="absolute inset-0 bg-transparent"
  />
@@ -129,7 +157,7 @@ export function MobileVerseToolbar({
  onColor(c.id);
  onClose();
  }}
- aria-label={`Highlight color: ${c.label}`}
+ aria-label={t("bible.highlightColorNamed", { label: c.label })}
  aria-pressed={activeColor === c.id}
  className={
  "h-7 w-7 rounded-full border-2 transition-transform active:scale-95 " +
@@ -146,7 +174,7 @@ export function MobileVerseToolbar({
  <button
  type="button"
  onClick={() => handle("highlight")}
- aria-label={state.highlighted ? "Remove highlight" : `Highlight ${itemNoun}`}
+ aria-label={state.highlighted ? t("bible.removeHighlight") : t(itemKeys.highlight)}
  aria-pressed={state.highlighted}
  className={
  "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
@@ -171,7 +199,7 @@ export function MobileVerseToolbar({
  <button
  type="button"
  onClick={() => handle("copyLink")}
- aria-label={state.copied ? "Link copied" : `Copy ${itemNoun} link`}
+ aria-label={state.copied ? t("common.linkCopied") : t(itemKeys.copyLink)}
  className={
  "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
  (state.copied
@@ -188,7 +216,7 @@ export function MobileVerseToolbar({
  <button
  type="button"
  onClick={() => handle("bookmark")}
- aria-label={state.bookmarked ? "Remove bookmark" : `Bookmark ${bmNoun}`}
+ aria-label={state.bookmarked ? t("study.saved.removeBookmark") : t(bookmarkKey)}
  aria-pressed={state.bookmarked}
  className={
  "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
@@ -200,7 +228,7 @@ export function MobileVerseToolbar({
  <button
  type="button"
  onClick={() => handle("note")}
- aria-label={state.hasNote ? "Edit note" : "Add note"}
+ aria-label={state.hasNote ? t("bible.editNote") : t("bible.addNote")}
  aria-pressed={state.hasNote}
  className={
  "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +

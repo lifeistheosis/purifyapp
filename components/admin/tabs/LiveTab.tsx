@@ -3,7 +3,7 @@
 // Live view tab — current visitors, world map, real-time feed.
 // Polls /api/admin/stats every 5 seconds.
 
-import { useEffect, useState } from "react";
+import { useLiveData } from "@/lib/admin/useLiveData";
 import dynamic from "next/dynamic";
 import type { MapPoint } from "../WorldMap";
 import { Card, StatCard } from "../primitives";
@@ -50,31 +50,16 @@ function timeAgo(iso: string): string {
 }
 
 export function LiveTab() {
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    let alive = true;
-    async function load() {
-      try {
-        const r = await fetch("/api/admin/stats", { cache: "no-store" });
-        if (!r.ok) throw new Error();
-        const j = (await r.json()) as Stats;
-        if (alive) {
-          setStats(j);
-          setError(false);
-        }
-      } catch {
-        if (alive) setError(true);
-      }
-    }
-    load();
-    const id = setInterval(load, 5000);
-    return () => {
-      alive = false;
-      clearInterval(id);
-    };
-  }, []);
+  // The five second cadence is kept: this is the live map and it is meant to
+  // be live. What it was missing is the visibility pause. /api/admin/stats is
+  // the heaviest read in the panel (it walks up to 20,000 session rows), and a
+  // bare interval fired it twelve times a minute in a window nobody was
+  // looking at. useLiveData stops on document.hidden and reads at once on
+  // return, so the map is fresh when it is watched and silent when it is not.
+  const { data: stats, failing: error } = useLiveData<Stats>(
+    "/api/admin/stats",
+    5000,
+  );
 
   const points: MapPoint[] =
     stats?.sessions

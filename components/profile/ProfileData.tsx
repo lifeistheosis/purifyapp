@@ -19,7 +19,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * user wants the comfort of a manual prod.)
  */
 export function ProfileData({ signedIn }: { signedIn: boolean }) {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const [busy, setBusy] = useState<"idle" | "export" | "import" | "sync">(
     "idle",
   );
@@ -60,9 +60,9 @@ export function ProfileData({ signedIn }: { signedIn: boolean }) {
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-      setMsg(`Exported ${Object.keys(data.entries).length} entries.`);
+      setMsg(tn("ui.exportedEntries", Object.keys(data.entries).length));
     } catch (err) {
-      setMsg(err instanceof Error ? err.message : "Export failed.");
+      setMsg(err instanceof Error ? err.message : t("ui.exportFailed"));
     }
     setBusy("idle");
   }
@@ -78,7 +78,7 @@ export function ProfileData({ signedIn }: { signedIn: boolean }) {
         const text = String(reader.result ?? "");
         const data = JSON.parse(text);
         if (data?.kind !== "purify-export" || typeof data.entries !== "object") {
-          throw new Error("Not a Purify export file.");
+          throw new Error(t("ui.notAPurifyExportFile"));
         }
         let n = 0;
         for (const [k, v] of Object.entries<string>(data.entries)) {
@@ -89,15 +89,15 @@ export function ProfileData({ signedIn }: { signedIn: boolean }) {
         // Nudge listeners so counters and lists refresh.
         window.dispatchEvent(new CustomEvent("purify:bookmark"));
         window.dispatchEvent(new CustomEvent("purify:annotation"));
-        setMsg(`Imported ${n} entries. Reload pages to see updates.`);
+        setMsg(tn("ui.importedEntries", n));
       } catch (err) {
-        setMsg(err instanceof Error ? err.message : "Import failed.");
+        setMsg(err instanceof Error ? err.message : t("ui.importFailed"));
       }
       setBusy("idle");
       if (fileRef.current) fileRef.current.value = "";
     };
     reader.onerror = () => {
-      setMsg("Couldn't read the file.");
+      setMsg(t("ui.couldNotReadTheFile"));
       setBusy("idle");
     };
     reader.readAsText(file);
@@ -113,9 +113,9 @@ export function ProfileData({ signedIn }: { signedIn: boolean }) {
       const { syncBookmarks } = await import("@/lib/sync/bookmarks");
       const { syncAnnotations } = await import("@/lib/sync/annotations");
       await Promise.all([syncBookmarks(), syncAnnotations()]);
-      setMsg("Synced.");
+      setMsg(t("ui.synced"));
     } catch (err) {
-      setMsg(err instanceof Error ? err.message : "Sync failed.");
+      setMsg(err instanceof Error ? err.message : t("ui.syncFailed"));
     }
     setBusy("idle");
   }
@@ -135,7 +135,7 @@ export function ProfileData({ signedIn }: { signedIn: boolean }) {
           disabled={busy !== "idle"}
           className="font-sans text-detail font-medium bg-paper text-night rounded-pill px-4 py-2 hover:bg-paper/90 disabled:opacity-60 transition-colors"
         >
-          {busy === "export" ? "Exporting…" : "Export"}
+          {busy === "export" ? t("ui.exporting") : t("ui.export")}
         </button>
         <button
           type="button"
@@ -143,7 +143,7 @@ export function ProfileData({ signedIn }: { signedIn: boolean }) {
           disabled={busy !== "idle"}
           className="font-sans text-detail font-medium border border-paper/25 text-paper rounded-pill px-4 py-2 hover:bg-paper/10 disabled:opacity-60 transition-colors"
         >
-          {busy === "import" ? "Importing…" : "Import…"}
+          {busy === "import" ? t("ui.importing") : t("ui.importEllipsis")}
         </button>
         <input
           ref={fileRef}
@@ -159,7 +159,7 @@ export function ProfileData({ signedIn }: { signedIn: boolean }) {
             disabled={busy !== "idle"}
             className="font-sans text-detail font-medium border border-gold/40 text-gold rounded-pill px-4 py-2 hover:bg-gold/10 disabled:opacity-60 transition-colors"
           >
-            {busy === "sync" ? "Syncing…" : "Sync now"}
+            {busy === "sync" ? t("ui.syncing") : t("ui.syncNow")}
           </button>
         )}
         {msg && (

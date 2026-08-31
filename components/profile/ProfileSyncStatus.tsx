@@ -48,16 +48,20 @@ function subscribe(cb: () => void): () => void {
   };
 }
 
-function relativeShort(iso: string | null): string {
-  if (!iso) return "never";
+function relativeShort(
+  iso: string | null,
+  t: (key: string) => string,
+  tn: (keyBase: string, count: number) => string,
+): string {
+  if (!iso) return t("ui.syncNever");
   const then = new Date(iso).getTime();
-  if (!Number.isFinite(then)) return "never";
+  if (!Number.isFinite(then)) return t("ui.syncNever");
   const diffMs = Date.now() - then;
-  if (diffMs < 60_000) return "just now";
+  if (diffMs < 60_000) return t("ui.syncJustNow");
   const m = Math.floor(diffMs / 60_000);
-  if (m < 60) return `${m} min ago`;
+  if (m < 60) return tn("ui.syncMinutesAgo", m);
   const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
+  if (h < 24) return tn("ui.syncHoursAgo", h);
   return new Date(iso).toLocaleString(undefined, {
     month: "short",
     day: "numeric",
@@ -78,7 +82,7 @@ function relativeShort(iso: string | null): string {
  * hydrate-in-effect setState.
  */
 export function ProfileSyncStatus() {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const { last, err } = useSyncExternalStore(subscribe, readSnapshot, () => EMPTY);
   const [busy, setBusy] = useState(false);
 
@@ -110,7 +114,7 @@ export function ProfileSyncStatus() {
           <p className="font-sans text-detail text-paper">
             <span className="text-paper/55">{t("ui.lastSynced")} </span>
             <span className="font-semibold tabular-nums">
-              {relativeShort(last)}
+              {relativeShort(last, t, tn)}
             </span>
           </p>
           {err && (
@@ -130,7 +134,7 @@ export function ProfileSyncStatus() {
           disabled={busy}
           className="shrink-0 font-sans text-detail font-medium rounded-pill border border-paper/25 bg-paper/[0.06] text-paper px-4 py-2 hover:bg-paper/10 hover:border-paper/45 disabled:opacity-60 transition-colors"
         >
-          {busy ? "Syncing…" : "Sync now"}
+          {busy ? t("ui.syncing") : t("ui.syncNow")}
         </button>
       </div>
     </section>

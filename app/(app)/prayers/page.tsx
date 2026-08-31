@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { T } from "@/components/i18n/T";
 import { LESSONS } from "@/lib/prayers/learning";
@@ -17,19 +18,55 @@ import { ContinuePraying } from "@/components/prayers/ContinuePraying";
 import { SuggestedToday } from "@/components/prayers/SuggestedToday";
 import {
   RULE_CATEGORY_ORDER,
-  RULE_CATEGORY_LABEL,
   indexRules,
   popularRules,
   type RuleMeta,
 } from "@/lib/prayers/rules";
 import { getServerLocale } from "@/lib/i18n/server";
 
-function titleOf(r: RuleMeta, isDe: boolean): string {
-  return isDe ? r.titleDe ?? r.title : r.title;
+/**
+ * Catalog key for each rule category. The registry still carries a
+ * legacy { en, de } label pair, which only ever covered two languages;
+ * the section headings read the catalog instead so they render in every
+ * locale. The registry table itself is left alone.
+ */
+const CATEGORY_KEY = {
+  daily: "prayers.category.daily",
+  "daily-life": "prayers.category.dailyLife",
+  "church-year": "saints.theChurchYear",
+  devotional: "prayers.category.devotional",
+} as const;
+
+/**
+ * The rule titles come from the CATALOG, not from the data file.
+ *
+ * lib/prayers/rules.ts types every rule as { title, titleDe, description,
+ * descriptionDe }, a two-language table, so these helpers used to be
+ * `isDe ? r.titleDe : r.title` and nineteen locales read the whole prayer
+ * index in English, under section headings that translated correctly.
+ *
+ * The table is deliberately left alone: it is still the source of truth for
+ * ids, hrefs, files and minutes, and the German twins stay as a reference.
+ * Only the text moves, keyed by the rule's own id.
+ *
+ * ReactNode rather than string, because <T> is how a server component reaches
+ * the live catalog, and PrayerIndexRow already takes a node.
+ */
+function titleOf(r: RuleMeta): ReactNode {
+  return <T k={`prayers.rule.${r.id}.title`} />;
 }
 
-function descriptionOf(r: RuleMeta, isDe: boolean): string | undefined {
-  return isDe ? r.descriptionDe ?? r.description : r.description;
+function descriptionOf(r: RuleMeta): ReactNode | undefined {
+  // A rule with no description must stay undefined, or the row renders the
+  // key itself as a subtitle.
+  if (!r.description) return undefined;
+  return <T k={`prayers.rule.${r.id}.description`} />;
+}
+
+/** "~8 min", as one interpolated catalog string rather than a concatenation. */
+function minutesMeta(minutes: number | undefined): ReactNode {
+  if (!minutes) return undefined;
+  return <T k="prayers.aboutMinutes" replacements={{ minutes }} />;
 }
 
 export const metadata = {
@@ -49,48 +86,38 @@ export default async function PrayersPage() {
   // tiles on the desktop grid.
   const alsoEntries: {
     href: string;
-    title: string;
-    description: string;
-    meta?: string;
+    title: ReactNode;
+    description: ReactNode;
+    meta?: ReactNode;
   }[] = [
     {
       href: "/prayers/today",
-      title: isDe ? "Heute" : "Today",
-      description: isDe
-        ? "Fasten, Gedächtnisse und Namenstage des heutigen Tages."
-        : "Today's fast, commemorations, and namedays.",
+      title: <T k="prayers.tabs.today" />,
+      description: <T k="prayers.also.todayDesc" />,
     },
     {
       href: "/prayers/hours",
-      title: isDe ? "Die Horen" : "The Hours",
-      description: isDe
-        ? "Kurze Gebete, die den Tag heiligen."
-        : "Short prayers that sanctify the daylight.",
+      title: <T k="prayers.hours" />,
+      description: <T k="prayers.also.hoursDesc" />,
     },
     {
       href: "/prayers/akathists",
-      title: isDe ? "Die Akathiste" : "The Akathists",
-      description: isDe
-        ? "Lange Lobgesänge, im Stehen gebetet."
-        : "Long hymns of praise, prayed standing throughout.",
+      title: <T k="prayers.also.akathistsTitle" />,
+      description: <T k="prayers.also.akathistsDesc" />,
     },
     {
       href: "/prayers/rope",
-      title: isDe ? "Das Gebetsseil" : "The prayer rope",
-      description: isDe
-        ? "Zähle das Jesusgebet am Knotenseil."
-        : "Tell the Jesus Prayer on the knotted rope.",
+      title: <T k="prayers.also.ropeTitle" />,
+      description: <T k="prayers.also.ropeDesc" />,
     },
     // Anthem deliberately omitted from `alsoEntries` — it has its own
     // featured band immediately under the hero so it doesn't hide
     // behind the long category list.
     {
       href: "/prayers/learning",
-      title: isDe ? "Beten lernen" : "Learn to pray",
-      description: isDe
-        ? "Ein kurzer Einsteiger-Weg durch das Gebet."
-        : "A short, beginner's path through Orthodox prayer.",
-      meta: isDe ? `${LESSONS.length} Lektionen` : `${LESSONS.length} lessons`,
+      title: <T k="ui.learnToPray" />,
+      description: <T k="prayers.also.learningDesc" />,
+      meta: <T k="prayers.lessonCount" count={LESSONS.length} />,
     },
   ];
 
@@ -110,16 +137,12 @@ export default async function PrayersPage() {
           <div className="relative z-10 mx-auto w-full max-w-[1200px] px-8 lg:px-12 py-16 lg:py-20">
             <PrayerMasthead
               align="center"
-              eyebrow={isDe ? "Das Gebet" : "The Prayer"}
-              title={isDe ? "Betet ohne Unterlaß." : "Pray without ceasing."}
-              scripture={
-                isDe ? "1. Thessalonicher 5,17" : "1 Thessalonians 5:17"
-              }
+              eyebrow={<T k="footer.prayer" />}
+              title={<T k="ui.prayWithoutCeasing" />}
+              scripture={<T k="ui.1Thessalonians517" />}
               intro={
                 <p className="mx-auto max-w-[46ch] text-center">
-                  {isDe
-                    ? "Schlag die Seite auf, wenn du aufstehst; schlag sie auf, wenn du dich niederlegst."
-                    : "Open the page when you rise; open it when you lie down."}
+                  <T k="prayers.index.intro" />
                 </p>
               }
             >
@@ -150,7 +173,7 @@ export default async function PrayersPage() {
                     href="/prayers/learning/jesus-prayer"
                     className="font-sans text-detail font-medium text-gold/80 underline decoration-gold/30 underline-offset-4 transition-colors hover:text-paper hover:decoration-paper"
                   >
-                    {isDe ? "Lerne, es zu beten →" : "Learn how to pray it →"}
+                    <T k="ui.learnHowToPrayIt" />
                   </Link>
                 </p>
               </div>
@@ -193,15 +216,13 @@ export default async function PrayersPage() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/50">
-                    {isDe ? "Eine Hymne · für das Gebetsseil" : "A hymn · for the prayer rope"}
+                    <T k="prayers.anthem.bandKicker" />
                   </p>
                   <h2 className="mt-2 font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-paper md:text-title">
-                    {isDe ? "Die Gebetsseil-Hymne" : "The Prayer Rope Anthem"}
+                    <T k="today.prayNow.anthemTitle" />
                   </h2>
                   <p className="mt-2 font-serif italic text-detail text-paper/65 leading-[1.65] md:text-ui">
-                    {isDe
-                      ? "Gesungen Knoten für Knoten, an die Heilige Dreifaltigkeit, an Christus, an die Allheilige, an die Heiligen. Spielen, leise wiederholen, dem Text folgen."
-                      : "Sung knot by knot. To the Holy Trinity, to Christ, to the Theotokos, to all the saints. Play it, loop it, follow the lyrics."}
+                    <T k="prayers.anthem.bandBody" />
                   </p>
                 </div>
                 <span
@@ -216,14 +237,10 @@ export default async function PrayersPage() {
             {/* Discovery rails — resume + today's context, side by side. */}
             <div className="mt-6 grid gap-x-12 lg:grid-cols-2">
               <div>
-                <ContinuePraying
-                  label={isDe ? "Weiterbeten" : "Continue praying"}
-                />
+                <ContinuePraying label={<T k="ui.continuePraying" />} />
               </div>
               <div>
-                <SuggestedToday
-                  label={isDe ? "Für heute empfohlen" : "Suggested for today"}
-                />
+                <SuggestedToday label={<T k="ui.suggestedForToday" />} />
               </div>
             </div>
 
@@ -232,32 +249,20 @@ export default async function PrayersPage() {
                 filtered, grouped result list. When the input is empty the
                 children render unchanged. */}
             <div className="mt-16">
-              <PrayerSearch
-                placeholder={
-                  isDe
-                    ? "Gebete, das Seil, die Horen durchsuchen"
-                    : "Search prayers, the rope, the hours"
-                }
-              >
+              <PrayerSearch>
             {popularRules().length > 0 && (
               <div>
                 <PrayerSectionLabel>
-                  {isDe ? "Häufig gebetet" : "Popular prayer rules"}
+                  <T k="ui.popularPrayerRules" />
                 </PrayerSectionLabel>
                 <PrayerIndex>
                   {popularRules().map((r) => (
                     <PrayerIndexRow
                       key={r.id}
                       href={r.href}
-                      title={titleOf(r, isDe)}
-                      description={descriptionOf(r, isDe)}
-                      meta={
-                        r.estimatedMinutes
-                          ? isDe
-                            ? `~${r.estimatedMinutes} Min.`
-                            : `~${r.estimatedMinutes} min`
-                          : undefined
-                      }
+                      title={titleOf(r)}
+                      description={descriptionOf(r)}
+                      meta={minutesMeta(r.estimatedMinutes)}
                     />
                   ))}
                 </PrayerIndex>
@@ -269,28 +274,21 @@ export default async function PrayersPage() {
               {RULE_CATEGORY_ORDER.map((category) => {
                 const rules = indexRules(category);
                 if (rules.length === 0) return null;
-                const cat = RULE_CATEGORY_LABEL[category];
                 return (
                   <div key={category}>
                     <PrayerSectionLabel>
-                      {isDe ? cat.de : cat.en}
+                      <T k={CATEGORY_KEY[category]} />
                     </PrayerSectionLabel>
                     <PrayerIndex>
                       {rules.map((r) => (
                         <PrayerIndexRow
                           key={r.id}
                           href={r.href}
-                          title={titleOf(r, isDe)}
-                          description={descriptionOf(r, isDe)}
+                          title={titleOf(r)}
+                          description={descriptionOf(r)}
                           planned={r.planned}
-                          plannedLabel={isDe ? "Geplant" : "Planned"}
-                          meta={
-                            r.estimatedMinutes
-                              ? isDe
-                                ? `~${r.estimatedMinutes} Min.`
-                                : `~${r.estimatedMinutes} min`
-                              : undefined
-                          }
+                          plannedLabel={<T k="study.planned" />}
+                          meta={minutesMeta(r.estimatedMinutes)}
                         />
                       ))}
                     </PrayerIndex>
@@ -302,7 +300,7 @@ export default async function PrayersPage() {
             {/* Also in this book — surfaces with their own UI, as tiles. */}
             <div className="mt-16">
               <PrayerSectionLabel>
-                {isDe ? "Auch in diesem Buch" : "Also in this book"}
+                <T k="prayers.alsoInThisBook" />
               </PrayerSectionLabel>
               <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {alsoEntries.map((e) => (
@@ -332,14 +330,12 @@ export default async function PrayersPage() {
             </div>
 
             <PrayerNote>
-              {isDe
-                ? "Deine Lesezeichen, Notizen und Markierungen leben auf diesem Gerät. Melde dich an, um sie über Geräte hinweg zu behalten."
-                : "Your bookmarks, notes, and highlights live on this device. Sign in to keep them across devices."}{" "}
+              <T k="prayers.deviceNote" />{" "}
               <Link
                 href="/account"
                 className="text-paper/55 underline decoration-paper/25 underline-offset-2 hover:text-paper"
               >
-                {isDe ? "Dein Konto →" : "Your account →"}
+                <T k="prayers.yourAccountLink" />
               </Link>
             </PrayerNote>
           </div>

@@ -4,6 +4,7 @@ import { COUNCILS, getCouncil } from "@/lib/councils/councils";
 import { loadCouncilDocument } from "@/lib/councils/load";
 import { getServerLocale } from "@/lib/i18n/server";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
+import { T } from "@/components/i18n/T";
 
 export function generateStaticParams() {
  return COUNCILS.flatMap((c) =>
@@ -40,7 +41,6 @@ export default async function CouncilDocumentPage({
  const loaded = await loadCouncilDocument(slug, document, locale);
  if (!loaded) notFound();
  const { content, isLocalized } = loaded;
- const isDe = locale === "de";
 
  return (
  <section className="bg-night px-5 md:px-8 py-16 md:py-24">
@@ -48,7 +48,7 @@ export default async function CouncilDocumentPage({
  {/* Breadcrumb */}
  <p className="font-sans text-caption uppercase tracking-[1.5px] text-paper/45 mb-6">
  <Link href="/councils" className="hover:text-paper transition-colors">
- {isDe ? "Die Konzile" : "The Councils"}
+ <T k="study.councils.theCouncils" />
  </Link>
  <span className="mx-2 text-paper/30">/</span>
  <Link
@@ -81,7 +81,7 @@ export default async function CouncilDocumentPage({
  {content.sections.map((s) => (
  <section key={s.n}>
  <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/70 font-semibold mb-2">
- {isDe ? `Abschnitt ${s.n}` : `Section ${s.n}`}
+ <T k="study.councils.sectionNumber" replacements={{ n: s.n }} />
  </p>
  <h2 className="font-display-serif text-title-sm md:text-title text-paper leading-[1.2]">
  {s.title}
@@ -118,7 +118,10 @@ export default async function CouncilDocumentPage({
  href={`/councils/${c.slug}`}
  className="font-sans text-ui text-paper/65 hover:text-paper transition-colors"
  >
- {isDe ? "← Zurück zu" : "← Back to"} {c.byname}
+ <T
+ k="study.councils.backToCouncil"
+ replacements={{ name: c.byname }}
+ />
  </Link>
  </div>
  </article>

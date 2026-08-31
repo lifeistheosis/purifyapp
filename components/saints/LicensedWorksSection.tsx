@@ -8,12 +8,13 @@ import {
 import { LicensedWorkCover } from "./LicensedWorkCover";
 import { T } from "@/components/i18n/T";
 
-const ROLE_LABEL: Record<NonNullable<LicensedWork["authorRole"]>, string> = {
-  by: "By",
-  about: "About",
-  edited: "Edited by",
-  translated: "Translated by",
-};
+const ROLE_LABEL_KEY: Record<NonNullable<LicensedWork["authorRole"]>, string> =
+  {
+    by: "saints.workRoleBy",
+    about: "saints.workRoleAbout",
+    edited: "saints.workRoleEdited",
+    translated: "saints.workRoleTranslated",
+  };
 
 export function LicensedWorksSection({ works }: { works: LicensedWork[] }) {
   if (works.length === 0) return null;
@@ -53,7 +54,9 @@ export function LicensedWorksSection({ works }: { works: LicensedWork[] }) {
 function LicensedWorkCard({ work }: { work: LicensedWork }) {
   const amazonHref = buildAmazonUrl(work.amazonAsin);
   const cover = work.coverImageUrl ?? getAmazonCoverUrl(work.amazonAsin);
-  const roleLabel = work.authorRole ? ROLE_LABEL[work.authorRole] : "By";
+  const roleLabelKey = work.authorRole
+    ? ROLE_LABEL_KEY[work.authorRole]
+    : "saints.workRoleBy";
 
   return (
     <li className="rounded-lg border border-paper/10 bg-night/40 p-5 flex flex-col gap-4 hover:border-gold/40 transition-colors duration-200">
@@ -87,7 +90,7 @@ function LicensedWorkCard({ work }: { work: LicensedWork }) {
             </p>
           ) : null}
           <p className="font-sans text-detail text-paper/70">
-            {roleLabel} {work.author}
+            <T k={roleLabelKey} replacements={{ author: work.author }} />
           </p>
           <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
             {work.publisher}

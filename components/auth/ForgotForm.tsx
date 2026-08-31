@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { authOrigin } from "@/lib/site";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * Forgot-password form. Sends a Supabase reset link that lands on
@@ -11,6 +12,7 @@ import { authOrigin } from "@/lib/site";
  * password change.
  */
 export function ForgotForm() {
+  const { t } = useTranslate();
   const [email, setEmail] = useState("");
   const [pending, setPending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -34,7 +36,7 @@ export function ForgotForm() {
       if (err) throw err;
       setSent(true);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Couldn't send the email.");
+      setError(e instanceof Error ? e.message : t("forgot.sendFailed"));
       setPending(false);
     }
   }
@@ -43,12 +45,10 @@ export function ForgotForm() {
     return (
       <div className="rounded-lg border border-gold/35 bg-gold/[0.06] p-5">
         <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-2">
-          Reset link sent
+          {t("forgot.sentTitle")}
         </p>
         <p className="font-serif text-body text-paper/90 leading-[1.65]">
-          If <span className="font-semibold text-paper">{email.trim()}</span>{" "}
-          is registered with us, you&rsquo;ll get a link to set a new
-          password. The link is good for one hour.
+          {t("forgot.sentBody", { email: email.trim() })}
         </p>
       </div>
     );
@@ -61,7 +61,7 @@ export function ForgotForm() {
           htmlFor="forgot-email"
           className="font-sans text-caption font-medium text-paper/75 block mb-1.5"
         >
-          Email
+          {t("common.email")}
         </label>
         <input
           id="forgot-email"
@@ -71,7 +71,7 @@ export function ForgotForm() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@somewhere.com"
+          placeholder={t("ui.youSomewhereCom")}
           className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
         />
       </div>
@@ -83,11 +83,11 @@ export function ForgotForm() {
         disabled={pending}
         className="rounded-pill bg-paper text-night font-sans text-ui font-semibold py-3 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
       >
-        {pending ? "Sending…" : "Send reset link"}
+        {pending ? t("forgot.pending") : t("forgot.submit")}
       </button>
       <p className="text-center font-sans text-caption text-paper/55">
         <Link href="/signin" className="hover:text-paper">
-          ← Back to sign in
+          {t("ui.backToSignIn")}
         </Link>
       </p>
     </form>

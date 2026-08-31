@@ -25,9 +25,22 @@ import { Search } from "@/components/ui/icons/Search";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import {
   RULES,
-  RULE_CATEGORY_LABEL,
+  type RuleCategory,
   type RuleMeta,
 } from "@/lib/prayers/rules";
+
+type Translator = ReturnType<typeof useTranslate>;
+
+/** Result-group labels for the rule categories. "The Church year" already
+ *  exists in the catalog under the saints namespace, so it is reused rather
+ *  than re-translated into twenty languages. Same map the mobile index uses,
+ *  so a rule lands under the same heading in both places. */
+const RULE_CATEGORY_KEY: Record<RuleCategory, string> = {
+  daily: "prayers.category.daily",
+  "daily-life": "prayers.category.dailyLife",
+  "church-year": "saints.theChurchYear",
+  devotional: "prayers.category.devotional",
+};
 
 type SearchEntry = {
   /** Stable key for React. */
@@ -44,66 +57,73 @@ type SearchEntry = {
   planned?: boolean;
 };
 
-const STATIC_SURFACES: SearchEntry[] = [
-  {
-    id: "today",
-    title: "Today",
-    description: "Today's fast, commemorations, and namedays.",
-    href: "/prayers/today",
-    group: "The day",
-    aliases: ["today", "diptychs", "fast", "saint of the day"],
-  },
-  {
-    id: "rope",
-    title: "The prayer rope",
-    description: "Tell the Jesus Prayer on the knotted rope.",
-    href: "/prayers/rope",
-    group: "Devotional",
-    aliases: ["jesus prayer", "rope", "chotki", "komvoschini", "noetic prayer"],
-  },
-  {
-    id: "anthem",
-    title: "The Prayer Rope Anthem",
-    description:
-      "A hymn for the rope. Sung knot by knot in English, French, and Arabic.",
-    href: "/prayers/anthem",
-    group: "Devotional",
-    aliases: ["anthem", "chant", "hymn", "rope hymn", "francais", "arabe"],
-  },
-  {
-    id: "hours",
-    title: "The Hours",
-    description: "Short prayers that sanctify the daylight.",
-    href: "/prayers/hours",
-    group: "Liturgical",
-    aliases: ["hours", "first hour", "third hour", "sixth hour", "ninth hour"],
-  },
-  {
-    id: "akathists",
-    title: "The Akathists",
-    description: "Long hymns of praise, prayed standing throughout.",
-    href: "/prayers/akathists",
-    group: "Liturgical",
-    aliases: ["akathist", "ikos", "kontakion"],
-  },
-  {
-    id: "learning",
-    title: "Learn to pray",
-    description: "A short beginner's path through Orthodox prayer.",
-    href: "/prayers/learning",
-    group: "Learning",
-    aliases: ["learn", "beginner", "catechumen", "how to pray"],
-  },
-];
+function staticSurfaces(t: Translator["t"]): SearchEntry[] {
+  return [
+    {
+      id: "today",
+      title: t("prayers.tabs.today"),
+      description: t("prayers.search.todayDescription"),
+      href: "/prayers/today",
+      group: t("prayers.search.groupDay"),
+      aliases: ["today", "diptychs", "fast", "saint of the day"],
+    },
+    {
+      id: "rope",
+      title: t("prayers.search.ropeTitle"),
+      description: t("prayers.search.ropeDescription"),
+      href: "/prayers/rope",
+      group: t("prayers.category.devotional"),
+      aliases: ["jesus prayer", "rope", "chotki", "komvoschini", "noetic prayer"],
+    },
+    {
+      id: "anthem",
+      title: t("today.prayNow.anthemTitle"),
+      description: t("prayers.search.anthemDescription"),
+      href: "/prayers/anthem",
+      group: t("prayers.category.devotional"),
+      aliases: ["anthem", "chant", "hymn", "rope hymn", "francais", "arabe"],
+    },
+    {
+      id: "hours",
+      title: t("prayers.hours"),
+      description: t("prayers.search.hoursDescription"),
+      href: "/prayers/hours",
+      group: t("prayers.search.groupLiturgical"),
+      aliases: ["hours", "first hour", "third hour", "sixth hour", "ninth hour"],
+    },
+    {
+      id: "akathists",
+      title: t("prayers.search.akathistsTitle"),
+      description: t("prayers.search.akathistsDescription"),
+      href: "/prayers/akathists",
+      group: t("prayers.search.groupLiturgical"),
+      aliases: ["akathist", "ikos", "kontakion"],
+    },
+    {
+      id: "learning",
+      title: t("ui.learnToPray"),
+      description: t("prayers.search.learningDescription"),
+      href: "/prayers/learning",
+      group: t("prayers.search.groupLearning"),
+      aliases: ["learn", "beginner", "catechumen", "how to pray"],
+    },
+  ];
+}
 
-function ruleToEntry(r: RuleMeta): SearchEntry {
+function ruleToEntry(
+  r: RuleMeta,
+  t: Translator["t"],
+  tn: Translator["tn"],
+): SearchEntry {
   return {
     id: r.id,
     title: r.title,
     description: r.description ?? "",
-    meta: r.estimatedMinutes ? `~${r.estimatedMinutes} min` : undefined,
+    meta: r.estimatedMinutes
+      ? tn("prayers.approxMin", r.estimatedMinutes)
+      : undefined,
     href: r.href,
-    group: RULE_CATEGORY_LABEL[r.category].en,
+    group: t(RULE_CATEGORY_KEY[r.category]),
     aliases: [r.titleDe, r.descriptionDe].filter(Boolean) as string[],
     planned: r.planned,
   };
@@ -132,17 +152,20 @@ function score(entry: SearchEntry, q: string): number {
 
 export function PrayerSearch({
   children,
-  placeholder = "Search prayers, the rope, the hours",
+  placeholder,
 }: {
   children: React.ReactNode;
   placeholder?: string;
 }) {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const [q, setQ] = useState("");
 
   const corpus = useMemo<SearchEntry[]>(() => {
-    return [...STATIC_SURFACES, ...RULES.filter((r) => !r.planned).map(ruleToEntry)];
-  }, []);
+    return [
+      ...staticSurfaces(t),
+      ...RULES.filter((r) => !r.planned).map((r) => ruleToEntry(r, t, tn)),
+    ];
+  }, [t, tn]);
 
   const query = q.trim();
   const hits = useMemo(() => {
@@ -169,7 +192,7 @@ export function PrayerSearch({
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder={placeholder}
+          placeholder={placeholder ?? t("prayers.search.placeholder")}
           aria-label={t("prayers.searchPlaceholder")}
           className="w-full bg-paper/[0.04] border border-paper/15 rounded-pill pl-10 pr-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/40 transition-colors duration-150"
         />

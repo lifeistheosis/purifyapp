@@ -4,7 +4,7 @@
 // revenue (paid, net of refunds), order counts, active subscribers, new
 // users, a 30-day net-revenue trend, and a recent paid-orders strip.
 
-import { useEffect, useState } from "react";
+import { useLiveData } from "@/lib/admin/useLiveData";
 import { Card, KpiCard, ChartFrame } from "../primitives";
 import { OverviewWidgets } from "../OverviewWidgets";
 import { AreaChart, SERIES_COLORS } from "../charts";
@@ -43,35 +43,22 @@ function ago(iso: string): string {
 }
 
 export function CommerceOverviewTab() {
-  const [data, setData] = useState<Overview | null>(null);
-
-  useEffect(() => {
-    let alive = true;
-    async function load() {
-      try {
-        // r.ok is load-bearing, not defensive noise. Without it a 403 or 500
-        // body ({ error: "Forbidden" }) was stored as if it were an Overview,
-        // and the first read of data.recent.length threw. That TypeError
-        // escaped to the route error boundary and replaced the WHOLE admin
-        // panel with "Something went wrong", so one expired session took out
-        // every other tab too. AdminShell's own badge fetch already guards
-        // this way; this one did not.
-        const r = await fetch("/api/admin/overview", { cache: "no-store" });
-        const d = r.ok ? ((await r.json()) as Overview) : null;
-        // Keep the last good numbers on a failed poll rather than blanking a
-        // working dashboard, same posture as the rail badge.
-        if (alive && d) setData(d);
-      } catch {
-        /* ignore */
-      }
-    }
-    load();
-    const id = setInterval(load, 30_000);
-    return () => {
-      alive = false;
-      clearInterval(id);
-    };
-  }, []);
+  // useLiveData, not a hand-rolled setInterval. This was one of the three
+  // pollers lib/admin/useLiveData.ts names in its own header as the ones it
+  // replaces; the hook was written and adopted in AdminShell, HeroRow and
+  // RevenueTab, and these three were never migrated.
+  //
+  // The behaviour that was missing is the one that matters here: this is the
+  // DEFAULT tab, so its timer starts on every admin open, and a bare interval
+  // keeps firing in a hidden window. Left open overnight that is a service
+  // role endpoint hit ~2,900 times for zero frames rendered. useLiveData stops
+  // on document.hidden and reads immediately on return, so coming back shows
+  // fresh numbers rather than waiting out the remainder of an interval.
+  //
+  // The r.ok guard this file used to carry is not lost: adminJson returns null
+  // on a non-ok response for exactly the reason documented there, and the hook
+  // keeps the last good value rather than blanking.
+  const { data } = useLiveData<Overview>("/api/admin/overview", 30_000);
 
   const series = data?.revenueSeries ?? [];
 

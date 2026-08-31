@@ -131,9 +131,7 @@ export function OAuthConnectionsCard({
             (i) => i.provider === "google",
           );
           if (!alreadyOnThisUser) {
-            setError(
-              "That Google account is already linked to a different Purify account. Sign out and click \"Continue with Google\" on /signin to sign in with it, or try a different Google account here.",
-            );
+            setError(t("ui.googleAlreadyLinkedSignIn"));
           }
           // If it IS on this user, fall through: no error, and the
           // initial-identities render already shows Connected.
@@ -184,9 +182,7 @@ export function OAuthConnectionsCard({
     } catch (e) {
       const raw = e instanceof Error ? e.message : "";
       if (/manual linking is disabled/i.test(raw)) {
-        setError(
-          "Linking new providers from inside the app is currently off. The site maintainer needs to enable Manual Linking in Supabase Dashboard → Authentication → Settings. In the meantime you can sign out and sign in with Apple directly.",
-        );
+        setError(t("ui.manualLinkingOffApple"));
       } else if (
         /identity is already linked/i.test(raw) ||
         /identity_already_exists/i.test(raw)
@@ -194,7 +190,7 @@ export function OAuthConnectionsCard({
         await load({ forceRefresh: true });
         setError(null);
       } else {
-        setError(raw || "Couldn't connect Apple.");
+        setError(raw || t("ui.couldntConnectApple"));
       }
       setPending(null);
     }
@@ -218,9 +214,7 @@ export function OAuthConnectionsCard({
       // Supabase's stock messages are too cryptic to act on; translate
       // the two we expect to see in production into next-steps.
       if (/manual linking is disabled/i.test(raw)) {
-        setError(
-          "Linking new providers from inside the app is currently off. The site maintainer needs to enable Manual Linking in Supabase Dashboard → Authentication → Settings. In the meantime you can sign out and sign in with Google directly.",
-        );
+        setError(t("ui.manualLinkingOffGoogle"));
       } else if (
         /identity is already linked/i.test(raw) ||
         /identity_already_exists/i.test(raw)
@@ -244,12 +238,10 @@ export function OAuthConnectionsCard({
         if (linkedHere) {
           setError(null);
         } else {
-          setError(
-            "That Google account is already linked to a different Purify account. Sign out and click \"Continue with Google\" on /signin to use it, or pick another Google account.",
-          );
+          setError(t("ui.googleAlreadyLinkedPickAnother"));
         }
       } else {
-        setError(raw || "Couldn't connect Google.");
+        setError(raw || t("ui.couldntConnectGoogle"));
       }
       setPending(null);
     }
@@ -264,9 +256,7 @@ export function OAuthConnectionsCard({
     // and something is genuinely wrong and the user deserves to know.
     const watchdog = setTimeout(() => {
       setPending((p) => (p === "google" ? null : p));
-      setError(
-        "Unlink request didn't finish in time. Refresh the page; if Google still shows as Connected, try again.",
-      );
+      setError(t("ui.unlinkDidntFinishInTime"));
     }, 15000);
     try {
       const supabase = createClient();
@@ -289,7 +279,7 @@ export function OAuthConnectionsCard({
         // to the password card right above.
         setError("needs-password");
       } else {
-        setError(raw || "Couldn't disconnect Google.");
+        setError(raw || t("ui.couldntDisconnectGoogle"));
       }
     } finally {
       clearTimeout(watchdog);
@@ -329,7 +319,7 @@ export function OAuthConnectionsCard({
               {t("ui.google")}
             </p>
             <p className="font-sans text-caption text-paper/55">
-              {googleIdentity ? "Connected" : "Not connected"}
+              {googleIdentity ? t("ui.connected") : t("ui.notConnected")}
             </p>
           </div>
           {googleIdentity ? (
@@ -340,7 +330,7 @@ export function OAuthConnectionsCard({
                 disabled={pending !== null}
                 className="font-sans text-caption font-semibold rounded-pill border border-crimson/55 text-crimson-soft bg-crimson/[0.06] hover:bg-crimson/[0.15] hover:border-crimson/75 px-4 py-1.5 disabled:opacity-50 disabled:cursor-wait transition-colors"
               >
-                {pending === "google" ? "Working…" : "Unlink"}
+                {pending === "google" ? t("ui.working") : t("ui.unlink")}
               </button>
             ) : (
               <button
@@ -358,7 +348,7 @@ export function OAuthConnectionsCard({
               disabled={pending !== null}
               className="font-sans text-caption font-semibold rounded-pill bg-paper text-night px-4 py-1.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
             >
-              {pending === "google" ? "Opening…" : "Connect"}
+              {pending === "google" ? t("ui.opening") : t("ui.connect")}
             </button>
           )}
         </li>
@@ -377,7 +367,7 @@ export function OAuthConnectionsCard({
               {t("ui.apple")}
             </p>
             <p className="font-sans text-caption text-paper/55">
-              {appleIdentity ? "Connected" : "Not connected"}
+              {appleIdentity ? t("ui.connected") : t("ui.notConnected")}
             </p>
           </div>
           {APPLE_ENABLED && !appleIdentity && !isNative ? (
@@ -387,7 +377,7 @@ export function OAuthConnectionsCard({
               disabled={pending !== null}
               className="font-sans text-caption font-semibold rounded-pill bg-paper text-night px-4 py-1.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
             >
-              {pending === "apple" ? "Opening…" : "Connect"}
+              {pending === "apple" ? t("ui.opening") : t("ui.connect")}
             </button>
           ) : null}
         </li>
@@ -444,7 +434,7 @@ export function OAuthConnectionsCard({
       <ConfirmDialog
         open={confirmingUnlink}
         title={t("ui.unlinkGoogle")}
-        description="You'll still be able to sign in with your email and password. You can reconnect Google at any time from this page."
+        description={t("ui.unlinkGoogleConfirmBody")}
         confirmLabel={t("ui.unlinkGoogleX")}
         cancelLabel={t("ui.keepLinked")}
         destructive

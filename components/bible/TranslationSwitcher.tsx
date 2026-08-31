@@ -190,27 +190,29 @@ export function TranslationSwitcher({
  >
  <div className="px-4 pt-3 pb-2 border-b border-paper/10">
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
- {testament === "OT" ? "Old Testament" : "New Testament"}
+ {testament === "OT"
+ ? t("bible.oldTestamentShort")
+ : t("bible.newTestamentShort")}
  </p>
  </div>
  <ul role="listbox" className="p-2 max-h-[60vh] overflow-y-auto">
- {visible.map((t) => {
- const isCurrent = t.id === current.id;
- const selectable = isSelectable(t);
+ {visible.map((tr) => {
+ const isCurrent = tr.id === current.id;
+ const selectable = isSelectable(tr);
  const needsSetup =
- t.licensed && t.available && !configuredLicensed.includes(t.id);
+ tr.licensed && tr.available && !configuredLicensed.includes(tr.id);
  return (
- <li key={t.id}>
+ <li key={tr.id}>
  <div
  role="option"
  aria-selected={isCurrent}
  aria-disabled={!selectable}
  tabIndex={selectable ? 0 : -1}
- onClick={() => select(t)}
+ onClick={() => select(tr)}
  onKeyDown={(e) => {
  if (e.key === "Enter" || e.key === " ") {
  e.preventDefault();
- select(t);
+ select(tr);
  }
  }}
  className={cn(
@@ -225,11 +227,13 @@ export function TranslationSwitcher({
  <div className="flex items-center justify-between gap-3">
  <div className="min-w-0">
  <p className="font-sans text-detail font-medium text-paper">
- {t.fullLabel}
+ {tr.fullLabel}
  </p>
- {(needsSetup || t.note) && (
+ {(needsSetup || tr.note) && (
  <p className="mt-0.5 font-sans text-caption text-paper/50">
- {needsSetup ? "Requires setup" : t.note}
+ {needsSetup
+ ? t("bible.translationRequiresSetup")
+ : t(`bible.translationNote.${tr.id}`)}
  </p>
  )}
  </div>
@@ -244,14 +248,14 @@ export function TranslationSwitcher({
  )}
  >
  {isCurrent
- ? "Current"
+ ? t("bible.translationBadgeCurrent")
  : needsSetup
- ? "Setup"
+ ? t("bible.translationBadgeSetup")
  : selectable
- ? t.licensed
- ? "Licensed"
- : "Free"
- : "Soon"}
+ ? tr.licensed
+ ? t("bible.translationBadgeLicensed")
+ : t("bible.translationBadgeFree")
+ : t("bible.translationBadgeSoon")}
  </span>
  </div>
  </div>

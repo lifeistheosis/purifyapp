@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { T } from "@/components/i18n/T";
 import { cn } from "@/lib/cn";
 
 /**
@@ -137,7 +138,7 @@ export function PrayerIndexRow({
   description,
   meta,
   planned = false,
-  plannedLabel = "Planned",
+  plannedLabel = <T k="study.planned" />,
   headingLevel = 2,
 }: {
   href: string;

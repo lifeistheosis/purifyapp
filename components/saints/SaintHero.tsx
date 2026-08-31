@@ -2,6 +2,7 @@ import type { Saint } from "@/lib/saints/saints";
 import { SaintIcon } from "./SaintIcon";
 import { BumpButton } from "./BumpButton";
 import { Cross } from "@/components/ui/icons/Cross";
+import { T } from "@/components/i18n/T";
 
 type Props = {
   saint: Saint;
@@ -15,11 +16,11 @@ type Props = {
 };
 
 export function SaintHero({ saint, bump, compactFacts }: Props) {
-  const facts: { label: string; value: string }[] = [];
-  if (saint.born) facts.push({ label: "Born", value: saint.born });
-  if (saint.reposed) facts.push({ label: "Reposed", value: saint.reposed });
-  if (saint.see) facts.push({ label: "See", value: saint.see });
-  facts.push({ label: "Feast", value: saint.feastDays.join(" · ") });
+  const facts: { labelKey: string; value: string }[] = [];
+  if (saint.born) facts.push({ labelKey: "saints.born", value: saint.born });
+  if (saint.reposed) facts.push({ labelKey: "saints.reposed", value: saint.reposed });
+  if (saint.see) facts.push({ labelKey: "saints.see", value: saint.see });
+  facts.push({ labelKey: "saints.feastLabel", value: saint.feastDays.join(" · ") });
 
   return (
     <header className="pt-12 md:pt-16 pb-10 border-b border-paper/8">
@@ -31,7 +32,7 @@ export function SaintHero({ saint, bump, compactFacts }: Props) {
             (saint.featured ? "text-gold" : "text-paper/55")
           }
         >
-          {saint.featured ? "The Mother of God" : "Saints"}
+          {saint.featured ? <T k="saints.motherOfGod" /> : <T k="nav.saints" />}
         </p>
       </div>
       <div className="flex flex-col md:flex-row md:items-start gap-8">
@@ -75,9 +76,9 @@ export function SaintHero({ saint, bump, compactFacts }: Props) {
         }
       >
         {facts.map((f) => (
-          <div key={f.label}>
+          <div key={f.labelKey}>
             <dt className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/45">
-              {f.label}
+              <T k={f.labelKey} />
             </dt>
             <dd className="mt-1 font-sans text-ui text-paper">{f.value}</dd>
           </div>

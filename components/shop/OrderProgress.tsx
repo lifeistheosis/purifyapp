@@ -10,6 +10,19 @@ import {
 import { trackingLink } from "@/lib/shop/trackingLink";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
+/** Buyer-facing status vocabulary, wired to the catalog for display.
+ * The literals stay the data model; only the rendered label is translated. */
+const STATUS_KEY: Record<BuyerOrderStatus, string> = {
+  "Awaiting Payment": "shop.orderStatusAwaitingPayment",
+  "Order Confirmed": "shop.orderStatusOrderConfirmed",
+  "Preparing Your Order": "shop.orderStatusPreparingYourOrder",
+  "Ready to Ship": "shop.orderStatusReadyToShip",
+  Shipped: "shop.orderStatusShipped",
+  Delivered: "shop.orderStatusDelivered",
+  Cancelled: "shop.orderStatusCancelled",
+  Refunded: "shop.orderStatusRefunded",
+};
+
 /**
  * The buyer's live order tracker: the step bar, an HONEST ship estimate,
  * and a live tracking link once the parcel is with a carrier.
@@ -65,14 +78,14 @@ export function OrderProgress({
                 )}
                 aria-current={i === step ? "step" : undefined}
               >
-                {s}
+                {t(STATUS_KEY[s])}
               </span>
             </li>
           ))}
         </ol>
       ) : (
         <p className="inline-flex rounded-pill border border-paper/20 px-3 py-1 font-sans text-caption font-semibold text-paper/70">
-          {status}
+          {t(STATUS_KEY[status])}
         </p>
       )}
 

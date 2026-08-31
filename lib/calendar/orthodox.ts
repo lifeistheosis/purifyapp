@@ -710,11 +710,43 @@ export function paschaInfo(today: Date): PaschaInfo {
 
 // ----- Formatting -----
 
-export function formatLongDate(d: Date): string {
- const dow = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][
- d.getUTCDay()
- ];
- return `${dow} · ${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+/**
+ * LOCALE-AWARE, and it was not.
+ *
+ * These three built their output from module-level English arrays, so the
+ * dateline on the Prayers tab read "SATURDAY - AUGUST 30, 2026" in all
+ * twenty-one locales. components/prayers/TodayMasthead.tsx found this on one
+ * surface and worked around it locally, leaving the root cause in place for
+ * the other three callers. This is that fix, moved to the root.
+ *
+ * `locale` is optional so every existing caller keeps its exact English
+ * output, including scripts/native-build.mjs, which prebakes a year of this
+ * offline and has no locale to pass. Intl is in the standard library, so this
+ * module stays pure and synchronous with no I/O, which the widget prebake
+ * depends on.
+ *
+ * The separator is kept out of Intl on purpose: a plain
+ * `dateStyle: "full"` renders "Saturday, August 30, 2026" and the design wants
+ * the weekday set off by a middot.
+ */
+export function formatLongDate(d: Date, locale?: string): string {
+  if (locale) {
+    const weekday = new Intl.DateTimeFormat(locale, {
+      weekday: "long",
+      timeZone: "UTC",
+    }).format(d);
+    const rest = new Intl.DateTimeFormat(locale, {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      timeZone: "UTC",
+    }).format(d);
+    return `${weekday} · ${rest}`;
+  }
+  const dow = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][
+    d.getUTCDay()
+  ];
+  return `${dow} · ${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
 }
 
 /**
@@ -756,12 +788,26 @@ export function greekMonthName(month: number): string {
  return GREEK_MONTHS[month] ?? "";
 }
 
-export function formatMonthDay(d: Date): string {
- return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}`;
+export function formatMonthDay(d: Date, locale?: string): string {
+  if (locale) {
+    return new Intl.DateTimeFormat(locale, {
+      month: "long",
+      day: "numeric",
+      timeZone: "UTC",
+    }).format(d);
+  }
+  return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}`;
 }
 
-export function formatMonthYear(year: number, month: number): string {
- return `${MONTHS[month]} ${year}`;
+export function formatMonthYear(year: number, month: number, locale?: string): string {
+  if (locale) {
+    return new Intl.DateTimeFormat(locale, {
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
+    }).format(new Date(Date.UTC(year, month, 1)));
+  }
+  return `${MONTHS[month]} ${year}`;
 }
 
 // ----- Liturgical greeting for the home-page eyebrow -----

@@ -56,8 +56,8 @@ export function MobileHeader({
         {donate && (
           <Link
             href="/support"
-            aria-label="Support Purify"
-            title="Support Purify"
+            aria-label={t("nav.supportPurify")}
+            title={t("nav.supportPurify")}
             className="inline-flex h-9 w-9 items-center justify-center rounded-pill text-gold/80 hover:text-gold transition-colors"
           >
             <Lampada size={20} />

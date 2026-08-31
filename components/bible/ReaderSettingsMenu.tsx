@@ -13,23 +13,23 @@ import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 
-const SIZES: { v: ReaderSize; label: string }[] = [
-  { v: "sm", label: "Small" },
-  { v: "md", label: "Medium" },
-  { v: "lg", label: "Large" },
-  { v: "xl", label: "X-Large" },
+const SIZES: { v: ReaderSize; labelKey: string }[] = [
+  { v: "sm", labelKey: "settings.sizeSmall" },
+  { v: "md", labelKey: "settings.sizeMedium" },
+  { v: "lg", labelKey: "settings.sizeLarge" },
+  { v: "xl", labelKey: "bible.sizeXLarge" },
 ];
 
-const FONTS: { v: ReaderFont; label: string }[] = [
-  { v: "serif", label: "Serif" },
-  { v: "display", label: "Display" },
-  { v: "sans", label: "Sans" },
+const FONTS: { v: ReaderFont; labelKey: string }[] = [
+  { v: "serif", labelKey: "bible.fontSerif" },
+  { v: "display", labelKey: "settings.fontDisplay" },
+  { v: "sans", labelKey: "settings.fontSans" },
 ];
 
-const LEADINGS: { v: ReaderLeading; label: string }[] = [
-  { v: "normal", label: "Normal" },
-  { v: "relaxed", label: "Relaxed" },
-  { v: "loose", label: "Loose" },
+const LEADINGS: { v: ReaderLeading; labelKey: string }[] = [
+  { v: "normal", labelKey: "bible.leadingNormal" },
+  { v: "relaxed", labelKey: "bible.leadingRelaxed" },
+  { v: "loose", labelKey: "bible.leadingLoose" },
 ];
 
 /**
@@ -107,7 +107,11 @@ export function ReaderSettingsMenu({
                 ? "bg-gold"
                 : "bg-transparent",
             )}
-            title={interlinearOn && showInterlinear ? "Interlinear is on" : undefined}
+            title={
+              interlinearOn && showInterlinear
+                ? t("bible.interlinearIsOn")
+                : undefined
+            }
           />
         )}
       </button>
@@ -145,7 +149,7 @@ export function ReaderSettingsMenu({
                       : "border-paper/12 text-paper/65 hover:bg-paper/8 hover:text-paper",
                   )}
                 >
-                  {s.label.charAt(0)}
+                  {t(s.labelKey).charAt(0)}
                 </button>
               ))}
             </div>
@@ -169,7 +173,7 @@ export function ReaderSettingsMenu({
                       : "border-paper/12 text-paper/65 hover:bg-paper/8 hover:text-paper",
                   )}
                 >
-                  {f.label}
+                  {t(f.labelKey)}
                 </button>
               ))}
             </div>
@@ -193,7 +197,7 @@ export function ReaderSettingsMenu({
                       : "border-paper/12 text-paper/65 hover:bg-paper/8 hover:text-paper",
                   )}
                 >
-                  {l.label}
+                  {t(l.labelKey)}
                 </button>
               ))}
             </div>

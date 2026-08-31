@@ -59,7 +59,11 @@ export function MobileReaderActions({
         <button
           type="button"
           aria-pressed={isOn}
-          aria-label={isOn ? "Remove chapter bookmark" : "Bookmark this chapter"}
+          aria-label={
+            isOn
+              ? t("bible.removeChapterBookmark")
+              : t("bible.bookmarkThisChapter")
+          }
           onClick={toggleBookmark}
           className={cn(
             "h-10 w-10 inline-flex items-center justify-center rounded-pill transition-colors",

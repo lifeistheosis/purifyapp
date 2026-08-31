@@ -28,7 +28,9 @@ export function SignOutEverywhereCard() {
       router.push("/signin");
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Couldn't sign out everywhere.");
+      setError(
+        e instanceof Error ? e.message : t("ui.couldntSignOutEverywhere"),
+      );
       setPending(false);
     }
   }
@@ -47,7 +49,7 @@ export function SignOutEverywhereCard() {
         disabled={pending}
         className="rounded-pill border border-crimson/60 text-crimson-soft font-sans text-detail font-semibold px-5 py-2.5 hover:bg-crimson/15 disabled:opacity-60 disabled:cursor-wait transition-colors"
       >
-        {pending ? "Signing out…" : "Sign out everywhere"}
+        {pending ? t("ui.signingOut") : t("account.signOutEverywhere")}
       </button>
       {error ? (
         <p className="mt-3 font-sans text-detail text-crimson-soft">{error}</p>
@@ -55,7 +57,7 @@ export function SignOutEverywhereCard() {
       <ConfirmDialog
         open={confirming}
         title={t("ui.signOutOfEveryDevice")}
-        description="Every browser and device currently signed in to this account will be signed out. You'll be sent back to the sign-in page on this device."
+        description={t("ui.everyBrowserAndDevice")}
         confirmLabel={t("account.signOutEverywhere")}
         cancelLabel={t("ui.staySignedIn")}
         destructive

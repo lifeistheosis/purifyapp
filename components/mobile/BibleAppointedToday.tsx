@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { readingsOn, type ReadingRef } from "@/lib/calendar/orthodox";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useToday } from "@/lib/calendar/useToday";
 import { SoftTile, SoftTileGrid, FeatureBand } from "./SoftTiles";
 import { Book } from "@/components/ui/icons/Book";
@@ -28,16 +29,33 @@ import { Codex } from "@/components/ui/icons/Codex";
 
 const KIND_META: Record<
   string,
-  { label: string; icon: (s: number) => React.ReactNode }
+  {
+    labelKey: string;
+    subKey: string;
+    icon: (s: number) => React.ReactNode;
+  }
 > = {
-  gospel: { label: "Gospel", icon: (s) => <Book size={s} /> },
-  epistle: { label: "Epistle", icon: (s) => <Scroll size={s} /> },
-  ot: { label: "Old Testament", icon: (s) => <Codex size={s} /> },
+  gospel: {
+    labelKey: "bible.kindGospelLong",
+    subKey: "bible.appointedGospelSub",
+    icon: (s) => <Book size={s} />,
+  },
+  epistle: {
+    labelKey: "bible.kindEpistleLong",
+    subKey: "bible.appointedEpistleSub",
+    icon: (s) => <Scroll size={s} />,
+  },
+  ot: {
+    labelKey: "bible.kindOtLong",
+    subKey: "bible.appointedOtSub",
+    icon: (s) => <Codex size={s} />,
+  },
 };
 
 const href = (r: ReadingRef) => `/bible/${r.book}/${r.chapter}#v${r.from}`;
 
 export function BibleAppointedToday() {
+  const { t } = useTranslate();
   const today = useToday();
 
   const appointed = useMemo(() => {
@@ -60,10 +78,10 @@ export function BibleAppointedToday() {
       <div className="mt-3">
         <FeatureBand
           href={href(lead)}
-          eyebrow="Appointed today"
+          eyebrow={t("bible.appointedToday")}
           title={lead.label}
-          sub={`Today's ${KIND_META[lead.kind].label.toLowerCase()} reading`}
-          cta="Read"
+          sub={t(KIND_META[lead.kind].subKey)}
+          cta={t("saints.read")}
           icon={KIND_META[lead.kind].icon(18)}
         />
       </div>
@@ -74,7 +92,7 @@ export function BibleAppointedToday() {
             <SoftTile
               key={r.kind}
               href={href(r)}
-              label={KIND_META[r.kind].label}
+              label={t(KIND_META[r.kind].labelKey)}
               sub={r.label}
               icon={KIND_META[r.kind].icon(21)}
               tone={i === 0 ? "b" : "c"}

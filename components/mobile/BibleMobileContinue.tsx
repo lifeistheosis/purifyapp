@@ -24,7 +24,7 @@ export function BibleMobileContinue() {
 
   if (!last) {
     return (
-      <MobileCard eyebrow="Continue reading">
+      <MobileCard eyebrow={t("bible.continueReading")}>
         <p className="mt-2 font-sans text-detail text-paper/55 italic">
           {t("ui.openAnyChapterAndThis")}
         </p>
@@ -42,7 +42,7 @@ export function BibleMobileContinue() {
 
   return (
     <MobileCard
-      eyebrow="Continue reading"
+      eyebrow={t("bible.continueReading")}
       title={`${cap} ${last.chapter}`}
       href={href}
     >
@@ -51,10 +51,15 @@ export function BibleMobileContinue() {
       </p>
       <p className="mt-3 font-sans text-detail font-medium text-paper/75">
         {resumeVerse
-          ? `Continue at v${resumeVerse}${
-              last.totalVerses ? ` of ${last.totalVerses}` : ""
+          ? `${
+              last.totalVerses
+                ? t("bible.continueAtVerseOf", {
+                    verse: resumeVerse,
+                    total: last.totalVerses,
+                  })
+                : t("bible.continueAtVerse", { verse: resumeVerse })
             } →`
-          : "Open chapter →"}
+          : `${t("today.verse.openChapter")} →`}
       </p>
     </MobileCard>
   );

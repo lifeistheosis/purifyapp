@@ -40,10 +40,10 @@ export function DiptychPreview() {
   return (
     <ShelfRow label={t("ui.todayYouCarry")}>
       {living.map((p) => (
-        <Chip key={`l-${p.id}`} name={p.name} note="living" />
+        <Chip key={`l-${p.id}`} name={p.name} note={t("prayers.diptychs.livingLabel")} />
       ))}
       {departed.map((p) => (
-        <Chip key={`d-${p.id}`} name={p.name} note="reposed" />
+        <Chip key={`d-${p.id}`} name={p.name} note={t("prayers.diptychs.reposedLabel")} />
       ))}
       <Link
         href="/prayers/personal"

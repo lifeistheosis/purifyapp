@@ -60,6 +60,8 @@ import { HealthTab } from "./tabs/HealthTab";
 import { Toolbar, ToolbarButton } from "./primitives";
 import { AdminThemeToggle } from "./AdminThemeToggle";
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
+import { AdminMobileNav } from "./AdminMobileNav";
+import { installLarpWriteGuard, larpOn, onLarpChange, setLarp } from "@/lib/admin/larp";
 import { TabBoundary } from "./TabBoundary";
 import { OwnerSection } from "./OwnerSection";
 import { HeroRow } from "./HeroRow";
@@ -466,6 +468,41 @@ export function AdminShell({
   const [requested, setActive] = useState<TabId>("overview");
   const [rebuildStatus, setRebuildStatus] = useState<string | null>(null);
   const [navOpen, setNavOpen] = useState(false);
+
+  // LARP MODE. Type the word anywhere in the panel that is not a text field.
+  // A key sequence rather than a control, because it is a demo switch and a
+  // button for it would sit in the toolbar inviting a mis-click on a real
+  // dashboard. Typing into an input is excluded, or searching for "larp" in
+  // Users would flip the books.
+  const [larp, setLarpState] = useState(false);
+  useEffect(() => {
+    setLarpState(larpOn());
+    return onLarpChange(setLarpState);
+  }, []);
+  // Installed unconditionally and consulted per request, so it is already in
+  // place the moment the mode is switched on, including in the tab that just
+  // switched it. See the note at the foot of lib/admin/larp.ts.
+  useEffect(() => installLarpWriteGuard(), []);
+  useEffect(() => {
+    let buf = "";
+    function onKey(e: KeyboardEvent) {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      if (e.key.length !== 1) return;
+      buf = (buf + e.key.toLowerCase()).slice(-4);
+      if (buf === "larp") {
+        buf = "";
+        const next = !larpOn();
+        setLarp(next);
+        // Reload rather than refetch by hand. Every tab reads through
+        // adminJson, and the inflation happens there, so the honest way to get
+        // a consistent panel is to read everything again.
+        window.location.reload();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
   const navTriggerRef = useRef<HTMLButtonElement | null>(null);
 
   // THE MOBILE DRAWER'S KEYBOARD CONTRACT, which it did not have.
@@ -834,7 +871,7 @@ export function AdminShell({
                 Sections, search and the bell, and search is the one that flexes
                 so the row holds down to 320px instead of breaking at 360. */}
             <div className="mx-auto flex w-full max-w-[var(--adm-content-max)] items-center justify-end gap-2 px-4 py-3 md:px-6 lg:flex-wrap">
-            <div className="flex shrink-0 items-center gap-2 lg:hidden">
+            <div className="hidden">
                   <button
                     type="button"
                     ref={navTriggerRef}
@@ -976,9 +1013,44 @@ export function AdminShell({
               its entrance animation ran, which made the layering correct or
               broken depending on the reader's motion preference. */}
           <div
-            className="adm-canvas mx-auto w-full max-w-[var(--adm-content-max)] px-4 py-5 md:px-6"
+            className="adm-canvas mx-auto w-full max-w-[var(--adm-content-max)] px-4 pt-5 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:px-6 lg:pb-5"
             style={{ isolation: "isolate" }}
           >
+            {larp ? (
+              /* Amber, not red. The theme reserves four status colours and
+                 requires each to be paired with a word rather than shipped as
+                 colour alone, which "Larp mode" satisfies. Critical would say
+                 something is broken; nothing is. This is a caution that what
+                 is on screen is not the books. */
+              <div
+                role="status"
+                className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-[var(--adm-radius)] border px-3 py-2"
+                style={{
+                  borderColor: "var(--adm-warn)",
+                  background: "color-mix(in oklab, var(--adm-warn), transparent 88%)",
+                }}
+              >
+                <span className="font-sans text-caption font-semibold uppercase tracking-[1.1px] text-[color:var(--adm-warn)]">
+                  Larp mode
+                </span>
+                <span className="font-sans text-detail text-paper/80">
+                  Numbers here are inflated for design work, not your real
+                  revenue, users, or sales. A few fields stay true, so read none
+                  of them as fact. Saving is disabled while this is on.
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLarp(false);
+                    window.location.reload();
+                  }}
+                  className="ml-auto rounded-pill border px-2.5 py-1 font-sans text-caption font-semibold text-paper/85"
+                  style={{ borderColor: "var(--adm-line-strong)" }}
+                >
+                  Turn off
+                </button>
+              </div>
+            ) : null}
             <header className="mb-5">
               <SectionHead
                 eyebrow={currentGroup?.group}
@@ -1029,6 +1101,29 @@ export function AdminShell({
         </div>
       </div>
     </div>
+    {/* Below lg the rail is gone and this is the whole navigation. It gates
+        itself with lg:hidden, and the canvas above reserves the space it
+        occupies so a fixed bar never sits on top of the last table row. */}
+    <AdminMobileNav
+      groups={visibleGroups.map((g) => ({
+        group: g.group,
+        tabs: g.tabs.map((t) => ({ id: t.id, label: t.label })),
+      }))}
+      active={active}
+      onSelect={(id) => isTabId(id) && select(id)}
+      footer={
+        <>
+          {/* The ModeSwitch, which below lg lives nowhere else: it sits in
+              railBody, and railBody renders only in the desktop aside. Without
+              this an owner on a phone cannot reach Strategy at all, and opening
+              /admin#tab=owner-today puts them in owner mode with no control on
+              screen to leave it. */}
+          {isOwner ? <ModeSwitch mode={mode} onChange={switchMode} /> : null}
+          {railFooter}
+          <div className="flex flex-wrap items-center gap-2">{actionBank}</div>
+        </>
+      }
+    />
     </InsightsProvider>
   );
 }

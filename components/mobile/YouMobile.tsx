@@ -44,7 +44,7 @@ type AuthState =
   | {
       kind: "signed-in";
       email: string;
-      displayName: string;
+      displayName: string | null;
       joinedAt: string | null;
     };
 
@@ -62,7 +62,7 @@ function formatJoined(iso: string | null): string {
 }
 
 export function YouMobile() {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const [auth, setAuth] = useState<AuthState>({ kind: "loading" });
   const [intentions, setIntentions] = useState(0);
   const reading = useReadingStats();
@@ -79,7 +79,7 @@ export function YouMobile() {
             (user.user_metadata?.display_name as string | undefined) ??
             (user.user_metadata?.full_name as string | undefined) ??
             user.email?.split("@")[0] ??
-            "Signed in";
+            null;
           setAuth({
             kind: "signed-in",
             email: user.email ?? "",
@@ -119,7 +119,9 @@ export function YouMobile() {
   // shell with an ellipsis for a name, "Loading..." for an eyebrow and four
   // empty counters, which reads as a broken screen rather than a loading one.
   const loadingAuth = auth.kind === "loading";
-  const displayName = signedIn ? auth.displayName : "On this device";
+  const displayName = signedIn
+    ? (auth.displayName ?? t("account.signedIn"))
+    : t("account.localProfile");
   const memberSince = signedIn ? formatJoined(auth.joinedAt) : "";
   const tier = usePremiumTier();
 
@@ -127,16 +129,16 @@ export function YouMobile() {
 
   if (signedIn) {
     settings.push({
-      label: "Account & security",
+      label: t("settings.accountSecurity"),
       href: "/account/profile",
-      hint: "Profile, password, sessions, data export",
+      hint: t("ui.profilePasswordSessionsDataExport"),
       icon: <Glyph kind="user" />,
     });
   } else {
     settings.push({
-      label: "Sign in",
+      label: t("common.signIn"),
       href: "/signin?next=/account",
-      hint: "Sync across devices (optional)",
+      hint: t("ui.syncAcrossDevicesOptional"),
       icon: <Glyph kind="user" />,
     });
   }
@@ -144,7 +146,7 @@ export function YouMobile() {
   settings.push({
     label: "Purify Premium",
     href: "/pricing",
-    hint: "Plus and Pro: sync, collections, the members' layer",
+    hint: t("ui.plusAndProSyncCollections"),
     icon: <Glyph kind="sparkle" />,
   });
 
@@ -153,21 +155,21 @@ export function YouMobile() {
   // everyone else: an unclaimable row is worse than no row.
   if (eikonBoxEnabled() && tier === "pro") {
     settings.push({
-      label: "Claim your EIKON Box",
+      label: t("ui.claimYourEikonBox"),
       href: "/account/eikon-box",
-      hint: "This month's box, and where it ships",
+      hint: t("ui.thisMonthsBoxAndWhere"),
       icon: <Glyph kind="box" />,
     });
   }
 
   settings.push(
     {
-      label: "Diptychs",
+      label: t("prayers.personal"),
       href: "/prayers/personal",
       hint:
         intentions === 0
-          ? "The names you carry, living and reposed"
-          : `${intentions} names you carry`,
+          ? t("ui.theNamesYouCarryLiving")
+          : tn("prayers.intentionCount", intentions),
       icon: <Glyph kind="halo" />,
     },
     // These two used to exist only on the desktop dashboard's settings
@@ -176,69 +178,69 @@ export function YouMobile() {
     ...(campaignsEnabled()
       ? [
           {
-            label: "My prayers",
+            label: t("shop.myPrayers"),
             href: "/campaigns/mine",
-            hint: "Campaigns you pray with the community",
+            hint: t("ui.campaignsYouPrayWithThe"),
             icon: <Glyph kind="halo" />,
           } satisfies SettingsItem,
         ]
       : []),
     {
-      label: "Export your library",
+      label: t("settings.export"),
       href: "/account/export",
-      hint: "Download everything you have gathered",
+      hint: t("settings.exportHint"),
       icon: <Glyph kind="bolt" />,
     },
     // Was "Notifications" pointing at a tab called "Data" that held the
     // reader font, the calendar reckoning, export and delete account. The
     // notifications themselves are still there and reachable from /settings.
     {
-      label: "Settings",
+      label: t("settings.title"),
       href: "/settings",
       // Light mode leads the hint because it is the thing readers go looking
       // for and could not find: the palette lived behind a toolbar pill inside
       // the Bible reader, and this list is where a phone reader looks first.
-      hint: "Light mode, reading, the calendar, language, notifications",
+      hint: t("ui.lightModeReadingTheCalendar"),
       icon: <Glyph kind="bolt" />,
     },
     {
-      label: "Privacy",
+      label: t("footer.privacy"),
       href: "/privacy",
-      hint: "What we record and what we don't",
+      hint: t("ui.whatWeRecordAndWhat"),
       icon: <Glyph kind="lock" />,
     },
     {
-      label: "Support Purify",
+      label: t("nav.supportPurify"),
       href: "/support",
-      hint: "Help keep the work going",
+      hint: t("ui.helpKeepTheWorkGoing"),
       icon: <Glyph kind="heart" />,
     },
     {
-      label: "What's new",
+      label: t("nav.whatsNew"),
       href: "/whats-new",
-      hint: "Release notes",
+      hint: t("whatsnew.releaseNotes"),
       icon: <Glyph kind="bolt" />,
     },
     {
-      label: "About",
+      label: t("nav.about"),
       href: "/about",
-      hint: "What Purify is, and why",
+      hint: t("ui.whatPurifyIsAndWhy"),
       icon: <Glyph kind="cross" />,
     },
   );
 
   if (signedIn && isDeveloperEmail(auth.email)) {
     settings.push({
-      label: "Developer",
+      label: t("ui.developer"),
       href: "/account/developer",
-      hint: "Test premium, feature flags, themes",
+      hint: t("ui.testPremiumFeatureFlagsThemes"),
       icon: <Glyph kind="bolt" />,
     });
   }
 
   if (signedIn) {
     settings.push({
-      label: "Sign out",
+      label: t("common.signOut"),
       href: "/signout",
       destructive: true,
       icon: <Glyph kind="signout" />,
@@ -275,7 +277,7 @@ export function YouMobile() {
     <MobileShell
       header={<MobileHeader title={t("nav.you")} trailing={<UserAvatarSmall />} />}
       eyebrow={
-        signedIn ? auth.email : "Private on this device · no account needed"
+        signedIn ? auth.email : t("ui.privateOnThisDeviceNo")
       }
     >
       {/* The Ladder of Divine Ascent, which the tab bar already nods to with
@@ -286,9 +288,13 @@ export function YouMobile() {
 
       <MobileHeroCard
         tint="violet"
-        eyebrow={signedIn ? "Welcome back" : "Sign in to sync"}
+        eyebrow={
+          signedIn ? t("ui.welcomeBack") : t("account.publicAccount")
+        }
         kicker={
-          signedIn && memberSince ? `Member since ${memberSince}` : undefined
+          signedIn && memberSince
+            ? t("ui.memberSinceDate", { date: memberSince })
+            : undefined
         }
         headline={
           signedIn ? (
@@ -335,14 +341,26 @@ export function YouMobile() {
           <MobileStatGrid
             cols={2}
             stats={[
-              { label: "Verses", value: reading.verses, href: "/saved" },
               {
-                label: "Paragraphs",
+                label: t("study.saved.verses"),
+                value: reading.verses,
+                href: "/saved",
+              },
+              {
+                label: t("ui.paragraphs"),
                 value: reading.paragraphs,
                 href: "/saved",
               },
-              { label: "Notes", value: reading.notes, href: "/saved" },
-              { label: "Bookmarks", value: reading.bookmarks, href: "/saved" },
+              {
+                label: t("saints.notes"),
+                value: reading.notes,
+                href: "/saved",
+              },
+              {
+                label: t("ui.bookmarks"),
+                value: reading.bookmarks,
+                href: "/saved",
+              },
             ]}
           />
           <div className="mt-4">
@@ -357,7 +375,7 @@ export function YouMobile() {
 
       <div className="mt-7">
         <MobileSectionLabel>
-          {signedIn ? "Account" : "Settings"}
+          {signedIn ? t("nav.account") : t("settings.title")}
         </MobileSectionLabel>
         <SettingsList items={settings} />
       </div>

@@ -4,6 +4,9 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { readLocalSessionUser } from "@/lib/supabase/localSession";
+import { createClient } from "@/lib/supabase/client";
+import { apiFetch } from "@/lib/api/client";
 
 type Props = {
   slug: string;
@@ -109,11 +112,69 @@ export function BumpButton({
   signedIn,
   complete,
 }: Props) {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const [bumped, setBumped] = useState(initialBumped);
   const [total, setTotal] = useState(initialTotal);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState(false);
+
+  // signedIn ARRIVES FALSE IN THE NATIVE APP, always.
+  //
+  // The saint page computes it on the server, and lib/supabase/server.ts hands
+  // the static export a deliberately cookie-less anon client, so getUser() at
+  // build time sees nobody and `signedIn: false` is baked into the bundle. A
+  // signed-in reader on Android or iOS was therefore shown "Sign in to
+  // request" and could not bump at all. The website is unaffected: that route
+  // renders dynamically, so the server already knows.
+  //
+  // readLocalSessionUser rather than auth.getUser(): it is synchronous, does
+  // no network call and never touches the cross-tab auth lock, which is the
+  // hang recorded as F-13. It also reads the native shells' own store, which
+  // is the only place this session lives on the surface that is broken.
+  //
+  // Upgrade only. A true from the server is never overturned by a failed local
+  // read, so the web path cannot regress.
+  const [liveSignedIn, setLiveSignedIn] = useState(signedIn);
+  useEffect(() => {
+    if (signedIn) return;
+    const user = readLocalSessionUser();
+    if (!user) return;
+    setLiveSignedIn(true);
+
+    // AND SEED THE REAL STATE. initialBumped and initialTotal were computed by
+    // the same signed-out build-time render, so they are false and stale here
+    // too. Showing the button without this is worse than hiding it: a reader
+    // who had already bumped would see "Request writings", tap it, and the
+    // route would read their existing row and DELETE it. They would have
+    // withdrawn their own request by asking for it again.
+    //
+    // Both reads are the reader's own row and a public aggregate, so RLS
+    // (saint_bumps_self_select) and the anon grant on saint_bump_counts cover
+    // them without the API hop.
+    let cancelled = false;
+    const supa = createClient();
+    void (async () => {
+      const [mine, agg] = await Promise.all([
+        supa
+          .from("saint_bumps")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("saint_slug", slug)
+          .maybeSingle(),
+        supa
+          .from("saint_bump_counts")
+          .select("bumps")
+          .eq("saint_slug", slug)
+          .maybeSingle(),
+      ]);
+      if (cancelled) return;
+      if (mine.data) setBumped(true);
+      if (typeof agg.data?.bumps === "number") setTotal(agg.data.bumps);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [signedIn, slug]);
   const pathname = usePathname();
 
   // Static fully-published state — no interaction, just a help popover.
@@ -122,7 +183,7 @@ export function BumpButton({
       <div className="inline-flex items-center gap-2">
         <div
           className="inline-flex items-center gap-2.5 rounded-full border border-gold/40 bg-gold/[0.08] px-5 py-2.5 font-sans text-ui font-semibold text-gold"
-          aria-label={`${saintName}'s works are fully published`}
+          aria-label={t("saints.bump.fullyPublishedAria", { name: saintName })}
         >
           <span aria-hidden="true" className="text-body leading-none">
             ✓
@@ -136,15 +197,14 @@ export function BumpButton({
     );
   }
 
-  if (!signedIn) {
+  if (!liveSignedIn) {
     const next = pathname ?? `/saints/${slug}`;
     return (
       <div className="inline-flex flex-col items-start gap-1.5">
         <div className="inline-flex items-center gap-2">
           <div className="inline-flex items-center gap-3 rounded-full border border-paper/15 bg-paper/[0.03] px-4 py-2">
             <span className="font-sans text-ui text-paper/70">
-              <span className="tabular-nums font-semibold text-paper">{total}</span>{" "}
-              {total === 1 ? "reader asking" : "readers asking"}
+              {tn("saints.bump.readersAsking", total)}
             </span>
             <Link
               href={`/signin?next=${encodeURIComponent(next)}`}
@@ -169,7 +229,11 @@ export function BumpButton({
 
     startTransition(async () => {
       try {
-        const r = await fetch(`/api/saints/${slug}/bump`, { method: "POST" });
+        // apiFetch, not fetch. A relative URL in the native shell resolves to
+        // https://localhost, which is the bundled asset server and has no
+        // API: the call came back as the shell's own index.html. apiFetch
+        // sends it to the real site with the Bearer token attached.
+        const r = await apiFetch(`/api/saints/${slug}/bump`, { method: "POST" });
         if (!r.ok) throw new Error();
         const j = (await r.json()) as { bumped: boolean; total: number };
         setBumped(j.bumped);
@@ -189,7 +253,11 @@ export function BumpButton({
           type="button"
           onClick={toggle}
           aria-pressed={bumped}
-          aria-label={`${bumped ? "Withdraw your request for more of" : "Request more of"} ${saintName}'s writings`}
+          aria-label={
+            bumped
+              ? t("saints.bump.withdrawAria", { name: saintName })
+              : t("saints.bump.requestAria", { name: saintName })
+          }
           disabled={pending}
           className={
             "inline-flex items-center gap-2.5 rounded-full px-5 py-2.5 font-sans text-ui font-semibold transition-colors " +
@@ -202,15 +270,15 @@ export function BumpButton({
           <span aria-hidden="true" className="text-body leading-none">
             {bumped ? "▲" : "△"}
           </span>
-          <span>{bumped ? "Requested" : "Request writings"}</span>
+          <span>{bumped ? t("saints.bump.requested") : t("saints.bump.requestWritings")}</span>
           <span className="tabular-nums opacity-80">{total}</span>
         </button>
         <HelpPopover label={t("saints.bump.whatRequesting")}><RequestExplainer /></HelpPopover>
       </div>
       <p className="font-sans text-eyebrow text-paper/45 ms-1">
         {bumped
-          ? "Thank you — your request is noted."
-          : "Ask our editors to publish more of this saint's writings."}
+          ? t("saints.bump.thanksNoted")
+          : t("saints.bump.askEditors")}
       </p>
       {error && (
         <p className="font-sans text-eyebrow text-rose-400 ms-1">

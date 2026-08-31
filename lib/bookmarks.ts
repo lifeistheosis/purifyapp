@@ -2,6 +2,9 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 
+import { isNativeClient } from "@/lib/platform/native";
+import { productHref } from "@/lib/shop/productHref";
+
 /**
  * Bookmarks across both readers, Bible verses, Bible chapters, and saint
  * writing sections, kept in a single localStorage array.
@@ -176,7 +179,7 @@ export function bookmarkHref(b: Bookmark): string {
  case "history-event":
  return `/history/${b.eventSlug}`;
  case "product":
- return `/shop/icons/${b.productSlug}`;
+ return productHref(b.productSlug, isNativeClient());
  }
 }
 

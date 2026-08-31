@@ -7,9 +7,11 @@
 
 import { useEffect } from "react";
 import { Cart } from "@/components/ui/icons/Cart";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cartCount, openCartDrawer, useCart } from "@/lib/shop/cart";
 
 export function CartFab() {
+  const { t, tn } = useTranslate();
   const count = cartCount(useCart());
 
   // The app-level back-to-top button owns the same bottom-right corner, so the
@@ -26,7 +28,7 @@ export function CartFab() {
     <button
       type="button"
       onClick={openCartDrawer}
-      aria-label={count > 0 ? `Open cart, ${count} items` : "Open cart"}
+      aria-label={count > 0 ? tn("shop.openCartCount", count) : t("shop.openCart")}
       className="tap-press fixed bottom-6 right-6 z-40 hidden h-14 w-14 items-center justify-center rounded-full border border-paper/15 bg-night-soft shadow-xl transition-colors hover:border-gold/50 hover:bg-night md:flex"
     >
       <Cart size={24} className="text-paper" />

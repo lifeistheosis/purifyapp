@@ -15,9 +15,14 @@
 //      uppercase, which flattens hierarchy: when everything is a heading,
 //      the eye has nothing to skip to. Size and weight carry rank instead.
 
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Sparkline } from "./charts";
+import { larpOn } from "@/lib/admin/larp";
+
+/** Stamped into any file larp mode produces. See handleCsv. */
+const LARP_FILE_NOTE =
+  "LARP MODE: every figure in this file is invented. Not real data.";
 import { CountUp } from "./CountUp";
 import { downloadCsv, toCsv } from "@/lib/admin/csv";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
@@ -239,7 +244,18 @@ export function Modal({
       // It is unreachable rather than merely awkward because line 129 calls
       // lockBodyScroll, so the page cannot be scrolled to bring it up and the
       // toolbar never minimises.
-      className="adm fixed inset-0 z-[100] flex h-dvh items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-sm md:p-8 md:pb-8"
+      // NO backdrop-blur. It was `backdrop-blur-sm` here, and on a viewport
+      // sized overlay that asks the compositor to blur EVERYTHING behind it:
+      // the product table with its per-row images, the charts, the hero
+      // sparklines. Worse, it is not paid once. Anything that repaints behind
+      // the scrim makes the blur recompute, and the admin has live panels doing
+      // exactly that, so opening a product dialog over the shop table was
+      // reported as "super laggy" and this is the cost.
+      //
+      // Nothing is lost. --adm-scrim is already rgb(0 0 0 / 0.7) in dark, which
+      // separates the dialog on its own; the blur was decoration on top of a
+      // scrim that had it covered.
+      className="adm fixed inset-0 z-[100] flex h-dvh items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] md:p-8 md:pb-8"
       // Was bg-black/70, which is far too heavy over a light panel. The
       // portal target is document.body, which is why the light palette keys
       // off <html> rather than off the shell root: this node carries .adm but
@@ -671,9 +687,21 @@ export function DataTable<T>({
     pendingFlip.current = null;
   });
 
+  // LARP MARKER, on both exports. The banner is painted on the PAGE, and a
+  // file carries none of it. Without this, larp mode hands you a download
+  // literally named orders.csv in which a real $45 order reads $36,675, with
+  // nothing in the bytes saying so. That is precisely the artifact the header
+  // of lib/admin/larp.ts swears must never leave the machine, so the marker
+  // goes in the filename AND in the first row, because either one alone is
+  // lost the moment somebody renames the file or pastes only the rows.
   function handleCsv() {
     const headers = columns.map((c) => c.label);
     const data = rows.map((r) => columns.map((c) => (c.csv ? c.csv(r) : "")));
+    if (larpOn()) {
+      data.unshift(columns.map((_c, i) => (i === 0 ? LARP_FILE_NOTE : "")));
+      downloadCsv(`larp-invented-${csvFilename ?? "export.csv"}`, toCsv(headers, data));
+      return;
+    }
     downloadCsv(csvFilename ?? "export.csv", toCsv(headers, data));
   }
 
@@ -688,7 +716,11 @@ export function DataTable<T>({
             .join(" | ")} |`,
       )
       .join("\n");
-    const md = [head, sep, body].join("\n");
+    // Same marker as handleCsv, and for the same reason: this string is
+    // about to sit on the clipboard, ready to paste into an email or an
+    // accounting sheet, with the banner nowhere near it.
+    const plain = [head, sep, body].join("\n");
+    const md = larpOn() ? `**${LARP_FILE_NOTE}**\n\n${plain}` : plain;
     navigator.clipboard.writeText(md).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
@@ -716,7 +748,7 @@ export function DataTable<T>({
         // horizontal swipe as "go back". Measured on the sample table at
         // 447px: 561 wide in a 303 box. Without this, swiping to reach the
         // Vendor column leaves the panel.
-        className="overflow-auto overscroll-x-contain rounded-[var(--adm-radius)] border"
+        className="hidden overflow-auto overscroll-x-contain rounded-[var(--adm-radius)] border lg:block"
         // dvh, to match the rail's h-dvh and the Modal overlay. With vh a table
         // on a phone claimed 70% of the LARGE viewport, so its bottom rows sat
         // behind the browser toolbar and the sticky header made it look like
@@ -884,17 +916,122 @@ export function DataTable<T>({
           </tbody>
         </table>
       </div>
-      {/* Only past four columns, and only on a phone. A table that fits needs
-          no instructions, and an instruction that is sometimes false is worse
-          than none. */}
-      {columns.length > 4 ? (
-        <p
-          className="mt-2 font-sans text-[11.5px] lg:hidden"
-          style={{ color: "var(--adm-ink-3)" }}
-        >
-          Swipe sideways for all {columns.length} columns.
-        </p>
-      ) : null}
+      {/* THE PHONE GETS CARDS, NOT A SIDEWAYS TABLE.
+
+          What used to be here was a line reading "Swipe sideways for all N
+          columns", which is the tell: a table wide enough to need instructions
+          has already failed the screen. Reading one order meant swiping a
+          561px grid through a 303px window and holding the row in your head,
+          and the reorder controls exist partly because drag cannot work inside
+          that scroller at all.
+
+          One row becomes one card. The first column is the heading, because in
+          every table here it is the identifying one (the product, the person,
+          the order), and the rest become label and value pairs that wrap
+          instead of scrolling.
+
+          Both trees render and the breakpoint picks one. That is deliberate
+          over a JS media query: this file is used by every tab, and a hook
+          would either flash the wrong layout on first paint or force each
+          caller to become a client component that already is one for other
+          reasons. The card tree is plain divs, and these tables are tens of
+          rows, not thousands. */}
+      <div className="space-y-2 lg:hidden">
+        {rows.length === 0 ? (
+          <p
+            className="rounded-[var(--adm-radius)] border px-3 py-6 text-center font-sans text-detail"
+            style={{ borderColor: "var(--adm-line)", color: "var(--adm-ink-3)" }}
+          >
+            {empty}
+          </p>
+        ) : (
+          rows.map((r, ri) => {
+            // THE HEADING IS THE FIRST COLUMN THAT HAS A LABEL, not simply the
+            // first column. AudienceTab's regions table leads with a decorative
+            // flag whose label is "", so "first column" titled every card with a
+            // bare emoji and demoted the region name into a field below it.
+            const headIndex = Math.max(0, columns.findIndex((c) => c.label.trim() !== ""));
+            const head = columns[headIndex];
+            const rest = columns.filter((_c, i) => i !== headIndex);
+            return (
+              <div
+                key={rowKey(r)}
+                className="rounded-[var(--adm-radius)] border p-3"
+                style={{ borderColor: "var(--adm-line)" }}
+              >
+                {head ? (
+                  <div className="mb-2 font-sans text-detail text-paper [overflow-wrap:anywhere]">
+                    {head.render(r)}
+                  </div>
+                ) : null}
+                <dl className="grid grid-cols-[minmax(0,42%)_minmax(0,1fr)] gap-x-3 gap-y-1.5">
+                  {rest.map((c) => {
+                    const value = c.render(r);
+                    // A column that renders NOTHING is not a label/value pair.
+                    // EikonBox carries four CSV-only columns declared as
+                    // `render: () => null`, which are invisible empty cells in
+                    // the table and became four empty grid rows mid-card here.
+                    if (value === null || value === undefined || value === false) return null;
+                    // A column with no LABEL is a value, not a pair. Fifteen
+                    // action columns across eleven tabs use `label: ""`, and an
+                    // empty <dt> still claimed the whole 42% label track, so the
+                    // buttons were squeezed into 161px beside 125px of nothing.
+                    // Unlabelled values take the full card width instead.
+                    const labelled = c.label.trim() !== "";
+                    return (
+                      <Fragment key={c.key}>
+                        {labelled ? (
+                          <dt
+                            className="font-sans text-caption"
+                            style={{ color: "var(--adm-ink-3)" }}
+                          >
+                            {c.label}
+                          </dt>
+                        ) : null}
+                        <dd
+                          className={
+                            "min-w-0 font-sans text-detail text-paper/85 [overflow-wrap:anywhere]" +
+                            (labelled ? "" : " col-span-2")
+                          }
+                        >
+                          {value}
+                        </dd>
+                      </Fragment>
+                    );
+                  })}
+                </dl>
+                {/* The touch reorder path, and on this side it is the ONLY one.
+                    HTML5 drag-and-drop does not fire on touch at all, so the
+                    grip is a desktop affordance and these two buttons are what
+                    a phone actually has. Leaving them in the table tree only
+                    would have made every reorderable table read-only here,
+                    which is worse than the sideways scroll this replaced. */}
+                {reorder && movable(r) ? (
+                  <div
+                    className="mt-2.5 flex justify-end border-t pt-2.5"
+                    style={{ borderColor: "var(--adm-line)" }}
+                  >
+                    <Toolbar>
+                      <ToolbarButton
+                        onClick={() => commitMove(ri, ri - 1)}
+                        title={`Move ${reorder.name(r)} up`}
+                      >
+                        Up
+                      </ToolbarButton>
+                      <ToolbarButton
+                        onClick={() => commitMove(ri, ri + 1)}
+                        title={`Move ${reorder.name(r)} down`}
+                      >
+                        Down
+                      </ToolbarButton>
+                    </Toolbar>
+                  </div>
+                ) : null}
+              </div>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 }

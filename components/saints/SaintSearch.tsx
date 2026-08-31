@@ -177,7 +177,7 @@ export function SaintSearch({ className }: { className?: string }) {
  )}
  </span>
  <span className="shrink-0 rounded-pill border border-paper/15 px-2 py-0.5 text-eyebrow font-semibold uppercase tracking-[1px] text-paper/55">
- {h.type === "saint" ? "Saint" : "Work"}
+ {h.type === "saint" ? t("saints.searchTypeSaint") : t("saints.searchTypeWork")}
  </span>
  </Link>
  </li>

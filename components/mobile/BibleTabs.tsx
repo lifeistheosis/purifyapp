@@ -101,7 +101,7 @@ function CategoryBlock({ cat }: { cat: BookCategory }) {
   return (
     <section>
       <p className="font-sans text-eyebrow uppercase tracking-[1.8px] text-paper/45 mb-2 px-1">
-        {cat.label}
+        {t(`bible.category.${cat.label.toLowerCase().replace(/ /g, "-")}`)}
       </p>
       <ul className="rounded-2xl border border-paper/10 bg-paper/[0.03] overflow-hidden">
         {cat.books.map((b, i) => (
@@ -114,7 +114,7 @@ function CategoryBlock({ cat }: { cat: BookCategory }) {
               className="flex items-center justify-between gap-3 px-4 py-3 active:bg-paper/[0.04] transition-colors"
             >
               <span className="font-sans text-ui text-paper leading-tight">
-                {b.name}
+                {t(`bible.books.${b.slug}`)}
               </span>
               <span className="shrink-0 font-sans text-caption tabular-nums text-paper/45">
                 {b.chapters} {t("bible.chAbbrev")}

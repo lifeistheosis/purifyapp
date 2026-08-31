@@ -11,18 +11,18 @@ import { useMemo } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { bookmarkHref, useBookmarks, type Bookmark } from "@/lib/bookmarks";
 
-const KIND_LABEL: Record<Bookmark["kind"], string> = {
-  "bible-verse": "Verse",
-  "bible-chapter": "Chapter",
-  "writing-section": "Writing",
-  prayer: "Prayer",
-  "prayer-rule": "Prayer rule",
-  "history-event": "History",
-  product: "Icon",
+const KIND_LABEL_KEY: Record<Bookmark["kind"], string> = {
+  "bible-verse": "ui.savedKindVerse",
+  "bible-chapter": "bible.chapterLabel",
+  "writing-section": "ui.savedKindWriting",
+  prayer: "onboard.focus.prayer",
+  "prayer-rule": "ui.savedKindPrayerRule",
+  "history-event": "study.saved.history",
+  product: "ui.savedKindIcon",
 };
 
 export function SavedPreview() {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const { bookmarks } = useBookmarks();
   const total = bookmarks.length;
   const items = useMemo(
@@ -40,7 +40,7 @@ export function SavedPreview() {
           href="/saved"
           className="font-sans text-caption text-paper/65 active:text-paper transition-colors"
         >
-          {total > 0 ? `All ${total} →` : "Saved →"}
+          {total > 0 ? tn("ui.allSavedCount", total) : t("ui.savedArrow")}
         </Link>
       </div>
       {items.length === 0 ? (
@@ -56,10 +56,10 @@ export function SavedPreview() {
                 className="press-card flex items-center justify-between gap-3 rounded-md border border-paper/8 bg-paper/[0.02] px-3 py-2.5"
               >
                 <span className="font-sans text-detail text-paper truncate flex-1">
-                  {b.label ?? "Bookmark"}
+                  {b.label ?? t("prayers.reader.bookmark")}
                 </span>
                 <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.04] px-2 py-[1px] font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/65">
-                  {KIND_LABEL[b.kind] ?? b.kind}
+                  {t(KIND_LABEL_KEY[b.kind] ?? b.kind)}
                 </span>
               </Link>
             </li>

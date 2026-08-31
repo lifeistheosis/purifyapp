@@ -18,7 +18,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 
 export function AccountSettingsLinks() {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const [intentions, setIntentions] = useState(0);
   const tier = usePremiumTier();
 
@@ -41,7 +41,7 @@ export function AccountSettingsLinks() {
     {
       label: "Purify Plus",
       href: "/pricing",
-      hint: "Cross-device sync, notes & highlights, collections",
+      hint: t("ui.crossDeviceSyncNotesHighlights"),
       icon: <Glyph kind="sparkle" />,
     },
     // Mirrors the mobile "You" list: the Pro perk sits directly under the
@@ -49,70 +49,70 @@ export function AccountSettingsLinks() {
     ...(eikonBoxEnabled() && tier === "pro"
       ? [
           {
-            label: "Claim your EIKON Box",
+            label: t("ui.claimYourEikonBox"),
             href: "/account/eikon-box",
-            hint: "This month's box, and where it ships",
+            hint: t("ui.thisMonthsBoxAndWhere"),
             icon: <Glyph kind="box" />,
           } satisfies SettingsItem,
         ]
       : []),
     {
-      label: "Diptychs",
+      label: t("prayers.personal"),
       href: "/prayers/personal",
       hint:
         intentions === 0
-          ? "The names you carry, living and reposed"
-          : `${intentions} names you carry`,
+          ? t("ui.theNamesYouCarryLiving")
+          : tn("prayers.intentionCount", intentions),
       icon: <Glyph kind="halo" />,
     },
     ...(campaignsEnabled()
       ? [
           {
-            label: "My prayers",
+            label: t("shop.myPrayers"),
             href: "/campaigns/mine",
-            hint: "Campaigns you pray with the community",
+            hint: t("ui.campaignsYouPrayWithThe"),
             icon: <Glyph kind="halo" />,
           } satisfies SettingsItem,
         ]
       : []),
     {
-      label: "Export your library",
+      label: t("settings.export"),
       href: "/account/export",
-      hint: "Download everything you have gathered",
+      hint: t("settings.exportHint"),
       icon: <Glyph kind="bolt" />,
     },
     {
-      label: "Settings",
+      label: t("settings.title"),
       href: "/settings",
-      hint: "Reading, the calendar, language, notifications",
+      hint: t("ui.readingTheCalendarLanguage"),
       icon: <Glyph kind="bolt" />,
     },
     {
-      label: "Privacy",
+      label: t("footer.privacy"),
       href: "/privacy",
-      hint: "What we record and what we don't",
+      hint: t("ui.whatWeRecordAndWhat"),
       icon: <Glyph kind="lock" />,
     },
     {
-      label: "Support",
+      label: t("nav.support"),
       href: "/support",
-      hint: "Help keep the work going",
+      hint: t("ui.helpKeepTheWorkGoing"),
       icon: <Glyph kind="heart" />,
     },
     {
-      label: "What's new",
+      label: t("nav.whatsNew"),
       href: "/whats-new",
-      hint: "Release notes",
+      hint: t("whatsnew.releaseNotes"),
       icon: <Glyph kind="bolt" />,
     },
     {
-      label: "About",
+      label: t("nav.about"),
       href: "/about",
-      hint: "What Purify is, and why",
+      hint: t("ui.whatPurifyIsAndWhy"),
       icon: <Glyph kind="cross" />,
     },
     {
-      label: "Sign out",
+      label: t("common.signOut"),
       href: "/signout",
       destructive: true,
       icon: <Glyph kind="signout" />,

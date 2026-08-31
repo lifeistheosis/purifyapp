@@ -6,6 +6,8 @@ import { useSearchParams } from "next/navigation";
 
 import { apiFetch } from "@/lib/api/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { useIsNative } from "@/lib/platform/native";
+import { productHref } from "@/lib/shop/productHref";
 
 /**
  * Stripe returns here when the buyer backs out of payment. The pending
@@ -15,6 +17,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  */
 export function CheckoutCancelledClient() {
   const { t } = useTranslate();
+  const native = useIsNative();
   const params = useSearchParams();
   const order = params.get("order");
   const product = params.get("product");
@@ -54,7 +57,7 @@ export function CheckoutCancelledClient() {
       ) : null}
       <div className="mt-8 flex justify-center gap-3">
         <Link
-          href={product ? `/shop/icons/${product}` : "/shop"}
+          href={product ? productHref(product, native) : "/shop"}
           className="tap-press inline-flex min-h-[48px] items-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90"
         >
           {t("shop.backToTheIcon")}

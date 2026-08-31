@@ -43,8 +43,8 @@ export function AnthemPlayer() {
       <AudioPlayer
         key={version.code}
         src={version.src}
-        title={version.title}
-        subtitle={version.subtitle}
+        title={t(`prayers.anthem.version.${version.code}.title`)}
+        subtitle={t("prayers.anthem.playerSubtitle")}
         lyrics={version.lyrics}
         rtl={version.rtl}
       />
