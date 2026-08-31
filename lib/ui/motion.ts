@@ -18,21 +18,65 @@
 import { useCallback, useSyncExternalStore } from "react";
 
 import { isNativeClient } from "@/lib/platform/native";
+import {
+  MOTION_EVENT,
+  MOTION_KEY,
+  isMotionPreference,
+  resolveReducedMotion,
+  surfaceForPath,
+  type MotionPreference,
+} from "./motionPreference";
 
 const REDUCE_QUERY = "(prefers-reduced-motion: reduce)";
+
+/** The stored choice, or "os" when nothing has been chosen or storage is shut. */
+export function motionPreference(): MotionPreference {
+  try {
+    const v = window.localStorage.getItem(MOTION_KEY);
+    return isMotionPreference(v) ? v : "os";
+  } catch {
+    return "os";
+  }
+}
+
+export function setMotionPreference(next: MotionPreference): void {
+  try {
+    window.localStorage.setItem(MOTION_KEY, next);
+  } catch {
+    /* private mode: the choice holds for this page view only */
+  }
+  window.dispatchEvent(new CustomEvent(MOTION_EVENT));
+}
 
 /** Imperative read. Use inside event handlers and rAF loops, where a hook
  * cannot go. Returns false during SSR. */
 export function prefersReducedMotion(): boolean {
   if (typeof window === "undefined" || !window.matchMedia) return false;
-  return window.matchMedia(REDUCE_QUERY).matches;
+  return resolveReducedMotion({
+    preference: motionPreference(),
+    surface: surfaceForPath(window.location.pathname),
+    osReduce: window.matchMedia(REDUCE_QUERY).matches,
+  });
 }
 
 function subscribeReducedMotion(onChange: () => void): () => void {
   if (typeof window === "undefined" || !window.matchMedia) return () => {};
   const mq = window.matchMedia(REDUCE_QUERY);
   mq.addEventListener("change", onChange);
-  return () => mq.removeEventListener("change", onChange);
+  // The preference is a second input, and it can move from this tab (the admin
+  // toggle) or from another one (the storage event). Both have to re-resolve,
+  // or the panel keeps animating after you asked it to stop.
+  const onPref = () => onChange();
+  const onStorage = (e: StorageEvent) => {
+    if (e.key === MOTION_KEY) onChange();
+  };
+  window.addEventListener(MOTION_EVENT, onPref);
+  window.addEventListener("storage", onStorage);
+  return () => {
+    mq.removeEventListener("change", onChange);
+    window.removeEventListener(MOTION_EVENT, onPref);
+    window.removeEventListener("storage", onStorage);
+  };
 }
 
 /**
