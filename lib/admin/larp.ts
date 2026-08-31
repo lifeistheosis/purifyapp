@@ -86,6 +86,20 @@ function factorFor(key: string): number {
   return Math.round(base * (0.55 + hash01(key) * 1.4));
 }
 
+/**
+ * A plausible figure for a metric that is genuinely zero.
+ *
+ * Money is quoted in cents everywhere in this panel, so its band is three
+ * orders up from a count: roughly $10k to $60k against roughly two to twenty
+ * thousand of a thing. Both are deliberately short of absurd. The point is a
+ * dashboard that looks like a going concern, not one that looks fabricated.
+ */
+function seedFor(key: string): number {
+  const money = /cents|revenue|profit|mrr|arr|amount|balance|payout|gross|net|earn/i.test(key);
+  const base = money ? 1_800_000 : 4_800;
+  return Math.round(base * (0.55 + hash01(`${key}:seed`) * 1.9));
+}
+
 export function larpOn(): boolean {
   if (typeof window === "undefined") return false;
   try {
@@ -130,8 +144,24 @@ export function inflate<T>(value: T, keyHint = "", depth = 0, seen = new WeakSet
   if (depth > 12) return value;
 
   if (typeof value === "number") {
-    if (!Number.isFinite(value) || value === 0) return value;
+    if (!Number.isFinite(value)) return value;
     if (NEVER.test(keyHint) || !INFLATE.test(keyHint)) return value;
+    // A ZERO CANNOT BE MULTIPLIED INTO ANYTHING, and this mode exists to show
+    // the panel holding big numbers. Every metric that is genuinely zero today
+    // stayed zero on blast, which is most of them: no visitors yesterday, no
+    // orders this week, no claims ever. The dashboard it produced was half
+    // impressive and half a flat line, which is not what it is for, and it is
+    // also why the odometer could not be demonstrated on a dev machine, where
+    // the admin API answers 403 and every number is zero.
+    //
+    // Seeded from the key, so a field shows the same figure on every render
+    // and across reloads. A number that reshuffles while you look at it reads
+    // as broken rather than as large.
+    //
+    // Below the NEVER / INFLATE tests on purpose. A zero share, a zero page
+    // index and a zero id must all stay zero, and moving this line above them
+    // would invent a 4,800th page.
+    if (value === 0) return seedFor(keyHint) as unknown as T;
     const scaled = value * factorFor(keyHint);
     // Integers stay integers. A subscriber count of 1840.5 is a tell.
     return (Number.isInteger(value) ? Math.round(scaled) : scaled) as unknown as T;

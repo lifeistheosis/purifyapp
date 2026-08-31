@@ -90,8 +90,54 @@ describe("what larp must never touch", () => {
     expect(out).toEqual({ mysteryNumber: 5, label: "Overview", ok: true, nothing: null });
   });
 
-  it("leaves zero at zero", () => {
-    expect(inflate({ totalUsers: 0 }).totalUsers).toBe(0);
+  it("leaves a zero alone on a key it must never touch", () => {
+    // THIS is the zero rule that matters, and it is the reason the seed below
+    // sits after the NEVER / INFLATE tests rather than before them. A zero
+    // share, a zero page offset and a zero id are all facts. Inventing a
+    // number for them would turn a first page into a 4,800th one.
+    const out = inflate({ offset: 0, share: 0, page: 0, percent: 0 });
+    expect(out).toEqual({ offset: 0, share: 0, page: 0, percent: 0 });
+  });
+});
+
+describe("a metric that is genuinely zero", () => {
+  // This used to assert that zero stayed zero everywhere, which was a
+  // description of the arithmetic rather than a rule: nothing multiplies zero
+  // into anything. It was also the opposite of what the mode is for. Purify's
+  // honest numbers are small and MANY OF THEM ARE ZERO, so on blast the
+  // dashboard came out half impressive and half flat line. It is also why the
+  // odometer could not be demonstrated on a dev machine, where the admin API
+  // answers 403 and every figure is zero.
+
+  it("is given a plausible figure rather than staying flat", () => {
+    const out = inflate({ visitors: 0, totalUsers: 0, revenueCents: 0 });
+    expect(out.visitors).toBeGreaterThan(0);
+    expect(out.totalUsers).toBeGreaterThan(0);
+    expect(out.revenueCents).toBeGreaterThan(0);
+  });
+
+  it("keeps money an order of magnitude above a head count", () => {
+    // Money is in cents throughout this panel, so a count and an amount that
+    // seeded into the same band would read as $48 of revenue from 4,800 users.
+    const out = inflate({ visitors: 0, revenueCents: 0 });
+    expect(out.revenueCents).toBeGreaterThan(out.visitors * 50);
+  });
+
+  it("shows the same figure every render, so it does not reshuffle as you look", () => {
+    const a = inflate({ visitors: 0 }).visitors;
+    const b = inflate({ visitors: 0 }).visitors;
+    expect(a).toBe(b);
+  });
+
+  it("gives different fields different figures", () => {
+    // Seeded from the key. Three cards all reading 4,812 is the tell that
+    // makes a screenshot obviously fake.
+    const out = inflate({ visitors: 0, signups: 0, orders: 0 });
+    expect(new Set([out.visitors, out.signups, out.orders]).size).toBe(3);
+  });
+
+  it("still leaves an unrecognised key alone at zero", () => {
+    expect(inflate({ mysteryNumber: 0 }).mysteryNumber).toBe(0);
   });
 });
 
