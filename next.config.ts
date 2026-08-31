@@ -51,6 +51,27 @@ const nextConfig: NextConfig = isNative
       typescript: { ignoreBuildErrors: true },
     }
   : {
+      // BUILD MEMORY, not build speed.
+      //
+      // Render killed the 1.3 deploy with "Ran out of memory (used over 8GB)".
+      // Next spreads static generation across workers, and
+      // node_modules/next/dist/build/index.js:311-318 shows the count comes
+      // straight from this option. The default put seven workers on the box,
+      // and each carries its own Next runtime plus whatever the pages import:
+      // 1,895 static pages over a 124MB data/ tree and 5.2MB of message
+      // catalogs. Seven copies of that is the 8GB.
+      //
+      // It built fine locally and in the Android CI job, which is why it was
+      // not caught before the push: both have more headroom than the Render
+      // builder does.
+      //
+      // memoryBasedWorkersCount is the option that sounds right and is not.
+      // The same file enforces a floor of four workers under it, which can
+      // still blow the cap.
+      //
+      // Two trades build minutes for a deploy that finishes. Raise it only
+      // against a real Render build, never against a local one.
+      experimental: { cpus: 2 },
       async redirects() {
         return [
           { source: "/prayer", destination: "/prayers", permanent: true },
