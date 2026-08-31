@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, DataTable, Pill, Toolbar, ToolbarButton } from "../primitives";
 import { LineChart, Donut, SERIES_COLORS } from "../charts";
-import { CountUp } from "../CountUp";
+import { Odometer } from "../Odometer";
 
 type Provider = "google" | "apple" | "email" | "other";
 type Profile = {
@@ -102,7 +102,7 @@ export function UsersTab() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card title="Total users">
           <p className="font-sans text-display-sm font-bold tabular-nums leading-none text-paper">
-            <CountUp value={data.total} />
+            <Odometer value={data.total} />
           </p>
         </Card>
         <Card title="Sign-in methods" subtitle="Across all users.">

@@ -59,6 +59,7 @@ import { ContentHealthTab } from "./tabs/ContentHealthTab";
 import { HealthTab } from "./tabs/HealthTab";
 import { Toolbar, ToolbarButton } from "./primitives";
 import { AdminThemeToggle } from "./AdminThemeToggle";
+import { AdminSoundToggle } from "./AdminSoundToggle";
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
 import { AdminMobileNav } from "./AdminMobileNav";
 import { installLarpWriteGuard, larpOn, onLarpChange, setLarp } from "@/lib/admin/larp";
@@ -706,6 +707,7 @@ export function AdminShell({
       </div>
       <div className="flex items-center gap-1">
         <AdminThemeToggle />
+        <AdminSoundToggle />
         <a
           href="/signout"
           className="adm-control flex h-11 flex-1 items-center justify-center gap-1.5 rounded-[var(--adm-radius-sm)] font-sans text-[11.5px]"

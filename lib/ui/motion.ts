@@ -3,7 +3,7 @@
 // Motion helpers shared across the app.
 //
 // Both of these existed already, copy-pasted: the reduced-motion check in
-// four components (CountUp, EventHero, AudioPlayer, PrayerSlideshow) and
+// four components (Odometer, EventHero, AudioPlayer, PrayerSlideshow) and
 // the haptic tick in two (PrayerRope, TimelineFastScroll). Four copies of a
 // matchMedia call is four chances to forget the SSR guard or the change
 // listener, which is exactly what happened — two of the four read the query

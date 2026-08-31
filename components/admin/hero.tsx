@@ -24,6 +24,7 @@
 
 import { useState, type ReactNode } from "react";
 import { smoothPath } from "./charts";
+import { Odometer } from "./Odometer";
 import { Skeleton } from "./primitives";
 
 /* ────────────────────────────────────────────────────────────────────────
@@ -355,7 +356,11 @@ export function MetricCard({
           className="mt-0.5 font-sans text-[30px] font-semibold leading-none tracking-[-0.02em]"
           style={{ color: "var(--adm-ink)" }}
         >
-          {value}
+          {/* The hero row is the first thing read and the last thing to get
+              the odometer: it renders its own <p> rather than going through
+              StatCard, so wiring the cards alone left the four biggest numbers
+              on the dashboard swapping silently. */}
+          <Odometer value={value} />
         </p>
       )}
 

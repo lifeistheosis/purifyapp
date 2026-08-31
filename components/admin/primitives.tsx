@@ -23,7 +23,7 @@ import { larpOn } from "@/lib/admin/larp";
 /** Stamped into any file larp mode produces. See handleCsv. */
 const LARP_FILE_NOTE =
   "LARP MODE: every figure in this file is invented. Not real data.";
-import { CountUp } from "./CountUp";
+import { Odometer } from "./Odometer";
 import { downloadCsv, toCsv } from "@/lib/admin/csv";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 import { focusablesIn, nextIndex } from "@/lib/ui/focusTrap";
@@ -377,7 +377,7 @@ export function StatCard({
         className="mt-3 font-sans text-[28px] font-semibold leading-none tracking-[-0.02em]"
         style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)" }}
       >
-        <CountUp value={value} />
+        <Odometer value={value} />
       </p>
       {hint && (
         <p
@@ -465,7 +465,7 @@ export function KpiCard({
           className="font-sans text-[28px] font-semibold leading-none tracking-[-0.02em]"
           style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)" }}
         >
-          <CountUp value={value} />
+          <Odometer value={value} />
         </p>
         {/* The sparkline earns its place only when there is a shape to see.
             Two points is a line segment, not a trend. */}

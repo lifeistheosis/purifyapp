@@ -7,7 +7,7 @@ import { useLiveData } from "@/lib/admin/useLiveData";
 import dynamic from "next/dynamic";
 import type { MapPoint } from "../WorldMap";
 import { Card, StatCard } from "../primitives";
-import { CountUp } from "../CountUp";
+import { Odometer } from "../Odometer";
 
 const WorldMap = dynamic(() => import("../WorldMap").then((m) => m.WorldMap), {
   ssr: false,
@@ -81,7 +81,7 @@ export function LiveTab() {
             Live now
           </p>
           <p className="mt-2 font-sans text-display font-bold tabular-nums leading-none text-gold-pale">
-            <CountUp value={stats?.liveCount ?? "—"} />
+            <Odometer value={stats?.liveCount ?? "—"} />
           </p>
         </div>
         <StatCard label="Visitors today" value={stats?.today.visitors ?? "—"} />
