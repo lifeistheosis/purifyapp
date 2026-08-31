@@ -506,6 +506,34 @@ div[data-hl="true"] {
 .rail-section:target {
  animation: rail-pulse 1.4s ease-out;
 }
+/* The admin odometer's roll-up on mount.
+ *
+ * A CSS animation rather than a JS-driven transition, and the reason is a bug
+ * this replaces. The first attempt held the digit in React state and advanced
+ * it inside requestAnimationFrame, so the wheel had a value to move from. rAF
+ * does not fire in a hidden tab, so the state never advanced and the panel
+ * rendered 00,000 where the figure was 12,480: a wrong number on a dashboard,
+ * which is far worse than no animation.
+ *
+ * Here the element always carries its correct transform and this only animates
+ * INTO it. There is no fill-mode, so when the animation finishes, or never runs
+ * at all, the wheel rests on the right digit either way. Correctness does not
+ * depend on a frame callback.
+ *
+ * Only a `from` is given: the implicit `to` is the element's own transform,
+ * which is what makes one keyframe serve ten different digits. */
+@keyframes odo-roll-in {
+  from {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .odo-wheel {
+    animation: none !important;
+  }
+}
+
 @keyframes rail-pulse {
  0% { background-color: rgba(220, 55, 45, 0.22); }
  60% { background-color: rgba(220, 55, 45, 0.10); }

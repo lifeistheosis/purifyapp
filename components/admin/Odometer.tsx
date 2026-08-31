@@ -48,15 +48,46 @@ function Wheel({
   delayMs: number;
   animate: boolean;
 }) {
+  // EVERY WHEEL ROLLS UP FROM ZERO ON MOUNT, and the number is correct the
+  // whole time regardless of whether that roll ever happens.
+  //
+  // It used to animate only on a CHANGE, reasoning that "the first paint is not
+  // a change". True, and useless: this dashboard's figures rarely move, so a
+  // reader could open the panel every day for a week and never see it animate
+  // once. The feature was invisible in exactly the case it was built for.
+  //
+  // The first fix for that was wrong in a way worth recording. It held the
+  // digit in React state and advanced it inside requestAnimationFrame, so the
+  // wheel had somewhere to move from. rAF does not fire in a hidden tab, the
+  // state never advanced, and the panel rendered 00,000 where the figure was
+  // 12,480. A wrong number on a dashboard is far worse than a still one, and
+  // the lesson generalises: never let what is DISPLAYED depend on a frame
+  // callback firing. Timing may; truth may not.
+  //
+  // So the transform below is always the real digit, and the CSS animation
+  // (app/globals.css, @keyframes odo-roll-in) only animates INTO it. It carries
+  // no fill-mode, so a wheel whose animation is skipped, throttled or finished
+  // rests on the right digit either way.
+  //
+  // Rolling on load is the half that is wanted. The half that is not is the
+  // register sounding for money that has sat there since yesterday, and that
+  // stays gated on a real change, up in Odometer.
+
   return (
     <span
       className="relative inline-block overflow-hidden align-baseline"
       style={{ height: "1em", width: "0.62em" }}
     >
       <span
-        className="absolute left-0 top-0 flex flex-col"
+        className="odo-wheel absolute left-0 top-0 flex flex-col"
         style={{
           transform: `translateY(-${digit * 10}%)`,
+          // Mount only. Re-rendering with the same animation value does not
+          // restart it, and a later digit change is carried by the transition
+          // below instead.
+          animation: animate
+            ? `odo-roll-in 620ms cubic-bezier(0.16, 1.02, 0.3, 1) ${delayMs}ms`
+            : undefined,
           // A slight overshoot curve, so the wheel settles rather than stopping
           // dead. Real mechanical counters have exactly this bounce.
           transition: animate
