@@ -5,7 +5,10 @@ import {
   formatValue,
   hasDigits,
   isMoneyText,
-  wheelDelay,
+  REEL_ITEMS,
+  REEL_REPEATS,
+  reelDuration,
+  restIndex,
 } from "../odometer";
 
 /**
@@ -99,11 +102,40 @@ describe("formatting and stagger", () => {
     expect(formatValue(Number.POSITIVE_INFINITY)).toBe("0");
   });
 
-  it("staggers from the units wheel outward, and caps", () => {
-    expect(wheelDelay(0)).toBe(0);
-    expect(wheelDelay(1)).toBe(45);
-    // Capped, or a seven figure number is still settling long after the units
-    // wheel has stopped.
-    expect(wheelDelay(20)).toBe(260);
+  it("spins longer the further right a reel sits, and caps", () => {
+    // Reels stop LEFT TO RIGHT, the way a fruit machine does, so the last
+    // column is the one that decides. Each runs longer rather than starting
+    // later: a delay would leave a reel sitting still beside spinning ones,
+    // which reads as broken.
+    expect(reelDuration(1)).toBeGreaterThan(reelDuration(0));
+    expect(reelDuration(3)).toBeGreaterThan(reelDuration(2));
+    // Capped, or a long number would still be spinning well after the eye had
+    // given up on it.
+    expect(reelDuration(20)).toBe(reelDuration(6));
+  });
+});
+
+describe("the reel itself", () => {
+  it("carries enough copies of 0-9 to read as a spin and not a slide", () => {
+    // With one copy the furthest a wheel can travel is nine places, which is a
+    // slide. That was the odometer this replaced.
+    expect(REEL_REPEATS).toBeGreaterThanOrEqual(3);
+    expect(REEL_ITEMS).toBe(REEL_REPEATS * 10);
+  });
+
+  it("rests on the LAST copy, so the spin runs the full strip", () => {
+    // Resting in the first copy would stop the reel in the first tenth of its
+    // travel, which is the same slide by another name.
+    for (const d of [0, 4, 9]) {
+      expect(restIndex(d)).toBe((REEL_REPEATS - 1) * 10 + d);
+      expect(restIndex(d)).toBeGreaterThanOrEqual(20);
+    }
+  });
+
+  it("rests on a position that shows the right digit", () => {
+    // The whole safety property: the element's resting transform IS the
+    // answer, so a reel whose animation is throttled or skipped still reads
+    // correctly. restIndex mod 10 must be the digit.
+    for (let d = 0; d <= 9; d++) expect(restIndex(d) % 10).toBe(d);
   });
 });

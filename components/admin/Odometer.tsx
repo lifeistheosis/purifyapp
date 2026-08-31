@@ -30,10 +30,16 @@ import {
   formatValue,
   hasDigits,
   isMoneyText,
-  wheelDelay,
+  REEL_ITEMS,
+  REEL_REPEATS,
+  reelDuration,
+  restIndex,
 } from "@/lib/admin/odometer";
 
 const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
+/** Three copies of 0-9, so a reel has something to spin THROUGH. */
+const REEL = Array.from({ length: REEL_ITEMS }, (_, i) => DIGITS[i % 10]);
 
 /**
  * One wheel. Rendered even for a character that never changes, because a
@@ -41,11 +47,11 @@ const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
  */
 function Wheel({
   digit,
-  delayMs,
+  durationMs,
   animate,
 }: {
   digit: number;
-  delayMs: number;
+  durationMs: number;
   animate: boolean;
 }) {
   // EVERY WHEEL ROLLS UP FROM ZERO ON MOUNT, and the number is correct the
@@ -81,26 +87,31 @@ function Wheel({
       <span
         className="odo-wheel absolute left-0 top-0 flex flex-col"
         style={{
-          transform: `translateY(-${digit * 10}%)`,
+          transform: `translateY(-${(restIndex(digit) * 100) / REEL_ITEMS}%)`,
           // Mount only. Re-rendering with the same animation value does not
           // restart it, and a later digit change is carried by the transition
           // below instead.
+          // The spin. cubic-bezier here is a long decelerate with no
+          // overshoot: a reel that bounced at the end would look like it had
+          // slipped a tooth rather than been braked.
           animation: animate
-            ? `odo-roll-in 620ms cubic-bezier(0.16, 1.02, 0.3, 1) ${delayMs}ms`
+            ? `odo-roll-in ${durationMs}ms cubic-bezier(0.12, 0.62, 0.15, 1)`
             : undefined,
-          // A slight overshoot curve, so the wheel settles rather than stopping
-          // dead. Real mechanical counters have exactly this bounce.
+          // A LATER change, once the mount spin is over, is a short slide to
+          // the new digit rather than a second spin. Re-spinning the whole reel
+          // every time a poll moves one figure by one would be a fruit machine
+          // going off in the corner of the room all day.
           transition: animate
-            ? `transform 620ms cubic-bezier(0.16, 1.02, 0.3, 1) ${delayMs}ms`
+            ? "transform 620ms cubic-bezier(0.16, 1.02, 0.3, 1)"
             : "none",
-          height: "1000%",
+          height: `${REEL_ITEMS * 100}%`,
         }}
       >
-        {DIGITS.map((d) => (
+        {REEL.map((d, i) => (
           <span
-            key={d}
+            key={i}
             className="flex items-center justify-center tabular-nums"
-            style={{ height: "10%" }}
+            style={{ height: `${100 / REEL_ITEMS}%` }}
           >
             {d}
           </span>
@@ -175,7 +186,7 @@ export function Odometer({
             <Wheel
               key={key}
               digit={Number(col.char)}
-              delayMs={wheelDelay(col.keyFromRight)}
+              durationMs={reelDuration(col.fromLeft)}
               animate={!reduced}
             />
           );

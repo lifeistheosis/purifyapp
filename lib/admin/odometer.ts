@@ -39,6 +39,8 @@ export type Column = {
    * the card and only the new leading digit mounts.
    */
   keyFromRight: number;
+  /** Position from the LEFT, which is the order the reels stop in. */
+  fromLeft: number;
 };
 
 export function columns(text: string): Column[] {
@@ -48,17 +50,57 @@ export function columns(text: string): Column[] {
     char,
     digit: char >= "0" && char <= "9",
     keyFromRight: last - i,
+    fromLeft: i,
   }));
 }
 
 /**
- * Stagger, in milliseconds, for a wheel this far from the right.
+ * How many copies of 0-9 the strip carries.
  *
- * The units wheel moves first and each wheel to its left follows a beat later,
- * so a carry reads as travelling up the number the way it does on a mechanical
- * counter. Capped, or a seven figure number would still be settling most of a
- * second after the units wheel stopped.
+ * A reel that spins has to have something to spin THROUGH. With one copy the
+ * furthest a wheel can travel is nine places, which reads as a slide rather
+ * than a spin: that is an odometer, and it is what this was before. Three
+ * copies gives every wheel at least two full revolutions before it lands, which
+ * is where it stops looking mechanical and starts looking like a machine you
+ * would put a coin in.
+ *
+ * Three rather than more because the strip is real DOM. Ten copies would be
+ * three hundred nodes per number for motion nobody can follow past the second
+ * rotation anyway.
  */
-export function wheelDelay(keyFromRight: number): number {
-  return Math.min(keyFromRight * 45, 260);
+export const REEL_REPEATS = 3;
+
+/** Items on a strip: three copies of ten digits. */
+export const REEL_ITEMS = REEL_REPEATS * 10;
+
+/**
+ * Which item the reel comes to rest on, counted from the top of the strip.
+ *
+ * The LAST copy, so the spin travels the full length rather than stopping in
+ * the first tenth. This is also the value the element carries at rest, which is
+ * what keeps the number correct when the animation is throttled, skipped, or
+ * already over. See the note in Odometer.tsx: truth must not depend on a frame.
+ */
+export function restIndex(digit: number): number {
+  return (REEL_REPEATS - 1) * 10 + digit;
 }
+
+/**
+ * How long a reel spins before it stops, in milliseconds, by column.
+ *
+ * Reels land LEFT TO RIGHT, which is the direction a fruit machine stops in and
+ * the reason the tension builds: the last reel is the one that decides. The
+ * previous version staggered from the right, because an odometer carries from
+ * the units up. Opposite animation, opposite order.
+ *
+ * Each column runs longer than the one before it rather than starting later. A
+ * delay would leave a column sitting still while its neighbours spin, which
+ * reads as broken; a longer duration keeps every reel moving from the first
+ * frame and simply lets the right-hand ones run on.
+ */
+export function reelDuration(fromLeft: number): number {
+  return BASE_SPIN_MS + Math.min(fromLeft, 6) * 180;
+}
+
+/** The shortest a reel spins. Long enough to read as a spin, not a jump. */
+const BASE_SPIN_MS = 900;
