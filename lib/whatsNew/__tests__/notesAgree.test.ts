@@ -109,8 +109,21 @@ describe("the two release-note sources agree", () => {
     ].join(" ");
     expect(patchText).not.toMatch(/—/);
 
+    // Bounded by the NEXT entry rather than by a character count. The window
+    // used to be a flat 12,000 characters, which covered the newest entry
+    // when it was written and stopped covering it the moment 1.3 grew to
+    // thirteen items: the last two sat past the end and were checked by
+    // nothing. A guard that silently shrinks as the thing it guards grows is
+    // worse than none, because it still reads as covered.
     const entryStart = newestEntry.source.indexOf("const ENTRIES: Entry[] = [");
-    const entryText = newestEntry.source.slice(entryStart, entryStart + 12_000);
+    const next = newestEntry.source.indexOf(
+      "version:",
+      newestEntry.source.indexOf("version:", entryStart) + 1,
+    );
+    const entryText = newestEntry.source.slice(
+      entryStart,
+      next > entryStart ? next : undefined,
+    );
     expect(entryText).not.toMatch(/—/);
   });
 
