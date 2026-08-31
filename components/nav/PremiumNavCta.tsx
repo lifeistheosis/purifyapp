@@ -4,6 +4,7 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
+import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 
 /**
  * The glowing "Premium" pill in the site header, shared by the marketing
@@ -28,6 +29,7 @@ export function PremiumNavCta({
 }) {
   const { t } = useTranslate();
   const tier = usePremiumTier();
+  const upgrade = useUpgradeModal();
   const activated = tier === "plus" || tier === "pro";
   const label =
     tier === "pro"
@@ -36,11 +38,12 @@ export function PremiumNavCta({
         ? t("nav.plusActivated")
         : t("nav.premium");
 
-  return (
-    <Link
-      href={activated ? "/plan" : "/premium"}
-      onClick={onClick}
-      className={cn(
+  // One class list, two elements. A reader who is being SOLD something gets a
+  // button, because it opens a dialog; a reader who already owns it gets a link
+  // to their plan. Inside the marketing shell there is no UpgradeModalProvider
+  // above this (app/page.tsx renders Navbar outside the (app) group), so the
+  // link is kept there rather than regressing that shell to a full navigation.
+  const className = cn(
         "inline-flex items-center justify-center gap-1.5 rounded-pill border font-sans text-ui font-semibold transition-colors duration-150",
         fullWidth ? "flex w-full px-5 py-3" : "px-5 py-2.5",
         activated
@@ -51,15 +54,43 @@ export function PremiumNavCta({
                 ? "border-[#d4af37] bg-[#d4af37]/20 text-[#f4d58a]"
                 : "border-[#d4af37]/55 bg-[#d4af37]/[0.12] text-[#f0cf7a] hover:border-[#d4af37] hover:bg-[#d4af37]/20",
             ),
-      )}
-      style={{
-        boxShadow: activated
-          ? "0 0 8px 0 rgba(16,185,129,0.30)"
-          : "0 0 8px 0 rgba(212,175,55,0.32)",
-      }}
-    >
+  );
+  const style = {
+    boxShadow: activated
+      ? "0 0 8px 0 rgba(16,185,129,0.30)"
+      : "0 0 8px 0 rgba(212,175,55,0.32)",
+  };
+  const inner = (
+    <>
       {activated ? <CheckMark /> : <PremiumSparkle />}
       {label}
+    </>
+  );
+
+  if (!activated && upgrade.available) {
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          onClick?.();
+          upgrade.open("general");
+        }}
+        className={className}
+        style={style}
+      >
+        {inner}
+      </button>
+    );
+  }
+
+  return (
+    <Link
+      href={activated ? "/plan" : "/premium"}
+      onClick={onClick}
+      className={className}
+      style={style}
+    >
+      {inner}
     </Link>
   );
 }

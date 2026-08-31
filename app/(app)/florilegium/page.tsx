@@ -1,6 +1,4 @@
-import { FlorilegiaHub } from "@/components/florilegium/FlorilegiaHub";
-import { PlusGate } from "@/components/florilegium/PlusGate";
-import { getEntitlements } from "@/lib/entitlements/server";
+import { FlorilegiumGate } from "@/components/florilegium/FlorilegiumGate";
 import { T } from "@/components/i18n/T";
 
 export const metadata = {
@@ -9,9 +7,7 @@ export const metadata = {
     "Your own gatherings: collections of the verses and patristic lines that strike you, each with a note of your own. Kept on your device; synced with Purify Plus.",
 };
 
-export default async function FlorilegiumPage() {
-  const { plusFeatures } = await getEntitlements();
-
+export default function FlorilegiumPage() {
   return (
     <section className="px-5 md:px-8 py-16 md:py-24 bg-night min-h-[calc(100dvh-72px)]">
       <article className="mx-auto max-w-[760px] w-full">
@@ -25,14 +21,7 @@ export default async function FlorilegiumPage() {
           <T k="study.keepTheLinesThatStrike" />
         </p>
 
-        {plusFeatures ? (
-          <FlorilegiaHub />
-        ) : (
-          <PlusGate
-            feature="The Florilegium"
-            blurb="Gather verses and patristic lines into named collections of your own, each with your notes, kept in sync across your devices. Part of Purify Plus."
-          />
-        )}
+        <FlorilegiumGate />
       </article>
     </section>
   );

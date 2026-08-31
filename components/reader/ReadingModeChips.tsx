@@ -5,12 +5,12 @@
 // Premium Reading Modes; the Focus toggle (chrome half) stays separate
 // and composes with any palette.
 
-import { useRouter } from "next/navigation";
 import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
 import { usePlusReadingModes } from "@/components/reader/usePlusReadingModes";
 import { READING_THEMES } from "@/lib/reader/readingModes";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 
 /** Tiny page/ink swatch advertising each palette inside its chip. Hexes
  * mirror the html[data-reading-mode] blocks in app/globals.css. */
@@ -23,7 +23,7 @@ const THEME_SWATCHES: Record<string, { page: string; ink: string }> = {
 
 export function ReadingModeChips() {
   const { t } = useTranslate();
-  const router = useRouter();
+  const upgrade = useUpgradeModal();
   const { theme, setTheme } = useReaderPrefs();
   const { allows, locked } = usePlusReadingModes();
 
@@ -58,7 +58,14 @@ export function ReadingModeChips() {
                 // to the root document and dumps the reader on Today.
                 // Reported by a member on 2026-07-31. Same failure shape as
                 // the bible/multi note in scripts/native-build.mjs.
-                else if (locked) router.push("/pricing");
+                // The modal, not a navigation. Leaving the reader to sell them a
+                // palette cost them their place, and /pricing then pitched the
+                // whole tier rather than the one thing they had reached for.
+                // useUpgradeModal falls back to /pricing on its own when no
+                // provider is mounted above, and that fallback is a router push
+                // rather than a bare window.location.href for the reason the
+                // comment above records.
+                else if (locked) upgrade.open("palettes");
               }}
               title={showPaidBadge ? `${t.blurb}. Purify Plus.` : t.blurb}
               aria-pressed={active}

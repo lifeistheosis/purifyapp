@@ -23,6 +23,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { plusEnforcedFor } from "@/lib/entitlements/entitlements";
+import { onEntitlementsChanged } from "@/lib/entitlements/refresh";
 import { getClientEntitlements, clientSurface } from "@/lib/entitlements/client";
 import { isFreeTheme, type ReadingTheme } from "@/lib/reader/readingModes";
 
@@ -51,16 +52,23 @@ export function usePlusReadingModes(): PlusReadingModesGate {
   useEffect(() => {
     if (!enforced) return;
     let cancelled = false;
-    getClientEntitlements()
-      .then((e) => {
-        if (!cancelled)
-          setPaid({ allowed: e.plusFeatures, locked: !e.plusFeatures });
-      })
-      .catch(() => {
-        if (!cancelled) setPaid({ allowed: false, locked: true });
-      });
+    const resolve = () =>
+      getClientEntitlements()
+        .then((e) => {
+          if (!cancelled)
+            setPaid({ allowed: e.plusFeatures, locked: !e.plusFeatures });
+        })
+        .catch(() => {
+          if (!cancelled) setPaid({ allowed: false, locked: true });
+        });
+    void resolve();
+    // A reader who buys Plus from the upgrade modal is standing in the reader
+    // with this menu open. Without this the palette they just paid for stays
+    // locked until they navigate away and back.
+    const off = onEntitlementsChanged(() => void resolve());
     return () => {
       cancelled = true;
+      off();
     };
   }, [enforced]);
 
