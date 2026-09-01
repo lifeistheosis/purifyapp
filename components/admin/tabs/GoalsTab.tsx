@@ -13,6 +13,7 @@ import {
   type Goal,
   type Period,
 } from "@/lib/admin/insights/types";
+import { HourlyGoals } from "../HourlyGoals";
 
 /**
  * Goals management.
@@ -81,6 +82,11 @@ export function GoalsTab() {
 
   return (
     <div className="space-y-5">
+      {/* The hour you are in, above the longer ladders. It measures live
+          analytics rather than the imported report series, which has one
+          point per day and could never answer an hourly question. */}
+      <HourlyGoals />
+
       {/* First thing on the page, because a licence breach outranks a KPI. */}
       <ApiLimitBanner />
 
