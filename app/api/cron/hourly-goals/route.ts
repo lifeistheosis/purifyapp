@@ -41,6 +41,26 @@ export const dynamic = "force-dynamic";
  * progress.
  */
 
+/**
+ * The target already worked out for this hour, or null to compute it.
+ *
+ * The baseline reads four past weeks, so within one hour its answer cannot
+ * change: every sample it looks at has already happened. Caching it turns four
+ * count queries per metric per RUN into four per metric per HOUR.
+ */
+function cachedTargetFor(row: GoalRow, hourKey: string): number | null {
+  // updated_at rather than a dedicated column, which would have meant another
+  // migration for a cache. The cron stamps it whenever it writes a target, so
+  // "written during this hour" is exactly "computed for this hour".
+  //
+  // target > 0 is load-bearing, not defensive: the admin POST also touches
+  // updated_at, and it writes target 0 when a metric is first watched. Without
+  // this the placeholder zero would look like a freshly computed target and
+  // the goal would never get a real one.
+  if (row.target <= 0) return null;
+  return hourKeyUtc(new Date(row.updated_at)) === hourKey ? row.target : null;
+}
+
 /** How far past the hour a run may be and still close out the previous one. */
 const CLOSEOUT_WINDOW_MIN = 20;
 
@@ -54,6 +74,8 @@ type GoalRow = {
   quiet_from_hour: number;
   quiet_to_hour: number;
   timezone: string;
+  /** When the row last changed. Doubles as the target's freshness stamp. */
+  updated_at: string;
 };
 
 const toGoal = (r: GoalRow): HourlyGoal => ({
@@ -97,7 +119,7 @@ export async function GET(req: NextRequest) {
   const { data, error } = await supa
     .from("hourly_goals")
     .select(
-      "id, metric, target, paused, notify_on_hit, notify_on_miss, quiet_from_hour, quiet_to_hour, timezone",
+      "id, metric, target, updated_at, paused, notify_on_hit, notify_on_miss, quiet_from_hour, quiet_to_hour, timezone",
     )
     .eq("paused", false);
 
@@ -151,21 +173,28 @@ export async function GET(req: NextRequest) {
 
       // THE TARGET IS DERIVED, NOT STORED. It comes from what this weekday and
       // hour have actually done over the previous weeks, so it tracks the site
-      // as it grows and nobody maintains 168 numbers by hand. Persisted onto
-      // the row afterwards purely so the panel can show the same figure the
-      // cron judged against.
-      const auto = await computeAutoTarget(supa, g.metric, w.start);
-      if (auto.target === null) {
-        skipped.push({ metric: g.metric, reason: "no baseline yet" });
-        continue;
-      }
-      const goalForHour = { ...g, target: auto.target };
-      if (!w.ended && row.target !== auto.target) {
+      // as it grows and nobody maintains 168 numbers by hand.
+      //
+      // COMPUTED ONCE PER HOUR, NOT ONCE PER RUN. The baseline looks at four
+      // past weeks, which is four count queries per metric, and its answer
+      // cannot change within an hour: the samples it reads are all in the
+      // past. Recomputing it on a ten-minute cron did that work six times an
+      // hour for an identical result. Cached on the row, keyed by the hour it
+      // was computed for.
+      let target = cachedTargetFor(row, key);
+      if (target === null) {
+        const auto = await computeAutoTarget(supa, g.metric, w.start);
+        if (auto.target === null) {
+          skipped.push({ metric: g.metric, reason: "no baseline yet" });
+          continue;
+        }
+        target = auto.target;
         await supa
           .from("hourly_goals")
-          .update({ target: auto.target, updated_at: new Date().toISOString() })
+          .update({ target, updated_at: new Date().toISOString() })
           .eq("id", g.id);
       }
+      const goalForHour = { ...g, target };
 
       const evaluation = evaluateHourly(goalForHour, value, elapsed);
 
@@ -198,7 +227,7 @@ export async function GET(req: NextRequest) {
           hour_key: key,
           kind: decision.kind,
           value: Math.round(evaluation.value),
-          target: auto.target,
+          target,
         });
       if (claimErr) {
         // 23505 is the other run getting there first, which is the dedupe
