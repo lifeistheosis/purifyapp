@@ -33,6 +33,8 @@ type Payload = {
   settleable: number;
   recoveredCents: number;
   findings: Finding[];
+  lastWebhookAt: string | null;
+  lastWebhookResult: string | null;
   error?: string;
 };
 
@@ -102,6 +104,23 @@ export function ReconcileCard() {
 
       {data && (
         <>
+          {/* THE DIAGNOSIS, above the recovery. Recovering the money by hand
+              is worth nothing if the next sale does the same thing, and this
+              line separates the two causes: a webhook that never arrives is a
+              registration problem in the Stripe dashboard, while one that
+              arrives and fails is a code or data problem visible in the
+              Audit log. */}
+          <p
+            className="mb-2 font-sans text-detail"
+            style={{
+              color: data.lastWebhookAt ? "var(--adm-ink-2)" : "var(--adm-critical)",
+            }}
+          >
+            {data.lastWebhookAt
+              ? `Stripe last called this site on ${new Date(data.lastWebhookAt).toLocaleString()} (${data.lastWebhookResult ?? "no result recorded"}).`
+              : "Stripe has never called this site, as far as the log goes back. Check Developers, Webhooks in the Stripe dashboard: an endpoint pointing at https://purifyapp.net/api/shop/stripe-webhook, subscribed to checkout.session.completed."}
+          </p>
+
           <p className="font-sans text-detail text-paper/80">
             {data.applied ? "Settled" : "Checked"} {data.pendingChecked} pending{" "}
             {data.pendingChecked === 1 ? "order" : "orders"}.{" "}

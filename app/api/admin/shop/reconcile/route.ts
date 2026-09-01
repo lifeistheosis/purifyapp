@@ -102,6 +102,18 @@ async function run(apply: boolean) {
   }
   const pending = (data ?? []) as PendingRow[];
 
+  // WHEN DID STRIPE LAST CALL? The first question worth asking, and until the
+  // webhook started logging there was no way to answer it. "Never" means the
+  // endpoint is not registered in Stripe or points somewhere else, which is a
+  // different fix from a webhook that arrives and fails.
+  const { data: lastHook } = await supa
+    .from("admin_activity_log")
+    .select("created_at, detail")
+    .eq("action", "shop.webhook")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle<{ created_at: string; detail: Record<string, unknown> }>();
+
   const findings: Finding[] = [];
   let recoveredCents = 0;
 
@@ -167,6 +179,8 @@ async function run(apply: boolean) {
       ok: true,
       applied: apply,
       pendingChecked: pending.length,
+      lastWebhookAt: lastHook?.created_at ?? null,
+      lastWebhookResult: (lastHook?.detail?.result as string) ?? null,
       // Only the ones Stripe confirmed. This is the number that answers
       // "how much did we take that the panel could not see".
       settleable: findings.filter(

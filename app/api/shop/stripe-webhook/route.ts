@@ -8,6 +8,7 @@ import {
 } from "@/lib/shop/webhookSettlement";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notifyOwner, saleAlert } from "@/lib/admin/ownerAlert";
+import { logActivity } from "@/lib/admin/activityLog";
 
 /**
  * Stripe webhook. The signature is verified with STRIPE_WEBHOOK_SECRET; with
@@ -74,6 +75,27 @@ export async function POST(req: Request) {
       // database missed is a store that silently cannot be paid.
       return NextResponse.json({ error: "Capability update failed." }, { status: 500 });
     }
+    // EVERY DELIVERY IS RECORDED, and this is the part that was missing.
+    //
+    // Settlement ran entirely through this route with no trace of whether it
+    // ever ran. When 31 orders sat pending with money taken, nothing anywhere
+    // could answer the first question worth asking: is Stripe calling us at
+    // all? A silent webhook and a webhook that was never registered look
+    // identical from the inside.
+    //
+    // admin_activity_log rather than a new table: it already exists, it is
+    // already read by the Audit log tab, and one more action name costs
+    // nothing. Fire-and-forget, because a logging failure must never fail a
+    // webhook that Stripe would then retry.
+    void logActivity({
+      actorEmail: "stripe-webhook",
+      action: "shop.webhook",
+      entityType: "shop_orders",
+      entityId: (event.data.object as { client_reference_id?: string | null })
+        .client_reference_id ?? null,
+      detail: { eventType: event.type, result },
+    });
+
     return NextResponse.json({ received: true, result });
   }
 
@@ -112,8 +134,40 @@ export async function POST(req: Request) {
       );
     }
 
+    // EVERY DELIVERY IS RECORDED, and this is the part that was missing.
+    //
+    // Settlement ran entirely through this route with no trace of whether it
+    // ever ran. When 31 orders sat pending with money taken, nothing anywhere
+    // could answer the first question worth asking: is Stripe calling us at
+    // all? A silent webhook and a webhook that was never registered look
+    // identical from the inside.
+    //
+    // admin_activity_log rather than a new table: it already exists, it is
+    // already read by the Audit log tab, and one more action name costs
+    // nothing. Fire-and-forget, because a logging failure must never fail a
+    // webhook that Stripe would then retry.
+    void logActivity({
+      actorEmail: "stripe-webhook",
+      action: "shop.webhook",
+      entityType: "shop_orders",
+      entityId: (event.data.object as { client_reference_id?: string | null })
+        .client_reference_id ?? null,
+      detail: { eventType: event.type, result },
+    });
+
     return NextResponse.json({ received: true, result });
   }
+
+  // Deliveries this route does not act on are logged too. "Stripe called and
+  // we ignored it" and "Stripe never called" are different problems with
+  // different fixes, and without this they look the same.
+  void logActivity({
+    actorEmail: "stripe-webhook",
+    action: "shop.webhook",
+    entityType: "shop_orders",
+    entityId: null,
+    detail: { eventType: event.type, result: "unhandled-event" },
+  });
 
   return NextResponse.json({ received: true });
 }
