@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { Card, Pill, ToolbarButton } from "../primitives";
+import { MAX_PINNED } from "@/lib/community/pinning";
 
 type PendingRecipe = {
   id: string;
@@ -64,11 +65,27 @@ type ConversationReport = {
     status: string;
   } | null;
 };
+/** A post the owner can put at the top of the feed. */
+type RecentPost = {
+  id: string;
+  kind: string;
+  title: string | null;
+  body: string | null;
+  author_name: string;
+  created_at: string;
+  pinned_at: string | null;
+  /** Admin email. Behind the admin gate, and never sent to a reader. */
+  pinned_by: string | null;
+  reply_count: number;
+};
+
 type CommunityData = {
   pendingRecipes: PendingRecipe[];
   campaignReports: CampaignReport[];
   recipeReports: RecipeReport[];
   conversationReports: ConversationReport[];
+  recentPosts: RecentPost[];
+  maxPinned: number;
 };
 
 type Action =
@@ -79,12 +96,15 @@ type Action =
   | "dismiss_recipe_report"
   | "remove_community_post"
   | "remove_community_reply"
-  | "dismiss_community_report";
+  | "dismiss_community_report"
+  | "pin_community_post"
+  | "unpin_community_post";
 
 export function CommunityTab() {
   const [data, setData] = useState<CommunityData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [version, setVersion] = useState(0);
   const reload = useCallback(() => setVersion((v) => v + 1), []);
 
@@ -112,13 +132,28 @@ export function CommunityTab() {
   const act = useCallback(
     async (action: Action, id: string, reason?: string) => {
       setBusy(id + action);
+      setActionError(null);
       try {
-        await fetch("/api/admin/community", {
+        const r = await fetch("/api/admin/community", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ action, id, reason: reason ?? null }),
         });
+        // THE RESPONSE IS READ NOW. It was awaited and thrown away, so every
+        // failure reloaded the queue and looked exactly like a success: the
+        // row simply did not change and the operator was told nothing. The
+        // pin cap answers 409 with a sentence explaining itself, and that
+        // sentence would never have been seen.
+        if (!r.ok) {
+          const body = (await r.json().catch(() => null)) as {
+            error?: string;
+          } | null;
+          setActionError(body?.error ?? "That didn't go through.");
+          return;
+        }
         reload();
+      } catch {
+        setActionError("That didn't go through.");
       } finally {
         setBusy(null);
       }
@@ -133,8 +168,113 @@ export function CommunityTab() {
     return <p className="font-sans text-detail text-paper/40">Loading…</p>;
   }
 
+  const pinned = (data.recentPosts ?? []).filter((p) => p.pinned_at);
+  const unpinned = (data.recentPosts ?? []).filter((p) => !p.pinned_at);
+  const atCap = pinned.length >= (data.maxPinned ?? MAX_PINNED);
+
   return (
     <div className="space-y-6">
+      {actionError && (
+        <p
+          role="alert"
+          className="font-sans text-detail text-[color:var(--adm-critical)]"
+        >
+          {actionError}
+        </p>
+      )}
+
+      {/* ── Announcements ────────────────────────────────────────────────
+          An announcement is an ordinary post that has been pinned, not a
+          separate kind of thing. That is what lets it keep replies, reactions,
+          reporting and removal without any of them being reimplemented, and it
+          is why this card lists real posts rather than offering a compose box:
+          the owner writes in the community like everyone else, then raises it
+          here. */}
+      <Card
+        title="Announcements"
+        subtitle={`Pinned to the top of the feed for every reader. ${data.maxPinned ?? MAX_PINNED} at once, newest first`}
+        accent={pinned.length > 0}
+      >
+        {pinned.length === 0 ? (
+          <p className="font-sans text-detail text-paper/40">
+            Nothing pinned. The feed is in plain reverse-chronological order.
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {pinned.map((p) => (
+              <li
+                key={p.id}
+                className="flex flex-wrap items-start justify-between gap-2 rounded-[var(--adm-radius-sm)] border p-2.5"
+                style={{
+                  borderColor: "color-mix(in oklab, var(--adm-accent), transparent 60%)",
+                  background:
+                    "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 94%)",
+                }}
+              >
+                <div className="min-w-0 flex-1">
+                  <PostLine post={p} />
+                  <p className="mt-1 font-sans text-[11.5px] text-paper/45">
+                    Pinned {shortWhen(p.pinned_at)}
+                    {/* pinned_by is an internal address. It is shown HERE and
+                        nowhere a reader can reach, which is the whole reason
+                        the public feed projects a boolean instead of the row. */}
+                    {p.pinned_by ? ` by ${p.pinned_by}` : ""}
+                  </p>
+                </div>
+                <ToolbarButton
+                  loading={busy === p.id + "unpin_community_post"}
+                  title="Take this out of the announcement slot"
+                  onClick={() => void act("unpin_community_post", p.id)}
+                >
+                  Unpin
+                </ToolbarButton>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <p className="mb-2 mt-5 font-sans text-[12px] text-paper/45">
+          Recent posts
+        </p>
+        {unpinned.length === 0 ? (
+          <p className="font-sans text-detail text-paper/40">
+            No posts yet.
+          </p>
+        ) : (
+          <ul className="space-y-1.5">
+            {unpinned.slice(0, 12).map((p) => (
+              <li
+                key={p.id}
+                className="flex flex-wrap items-start justify-between gap-2 rounded-[var(--adm-radius-sm)] border p-2.5"
+                style={{ borderColor: "var(--adm-line)" }}
+              >
+                <div className="min-w-0 flex-1">
+                  <PostLine post={p} />
+                </div>
+                <ToolbarButton
+                  variant="primary"
+                  loading={busy === p.id + "pin_community_post"}
+                  // Disabled at the cap rather than hidden, with the reason on
+                  // the button. A control that vanishes reads as a bug; one
+                  // that explains itself reads as a rule.
+                  title={
+                    atCap
+                      ? `Unpin one first. ${data.maxPinned ?? MAX_PINNED} is the limit.`
+                      : "Put this at the top of the feed"
+                  }
+                  onClick={() => {
+                    if (atCap) return;
+                    void act("pin_community_post", p.id);
+                  }}
+                >
+                  {atCap ? "At limit" : "Pin"}
+                </ToolbarButton>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+
       {/* First, because until now this queue had nowhere to live: the tab
           named "Community" covered campaigns and Trapeza only, so a
           reported Conversations post could be acted on only in the SQL
@@ -435,4 +575,34 @@ function ReportRow({
 
 function Empty({ children }: { children: React.ReactNode }) {
   return <p className="font-sans text-detail text-paper/40">{children}</p>;
+}
+
+/** One post, identified the way a reader would recognise it. */
+function PostLine({ post }: { post: RecentPost }) {
+  const text = (post.title?.trim() || post.body?.trim() || "").replace(/\s+/g, " ");
+  return (
+    <>
+      <p className="font-sans text-detail text-paper/85">
+        {text ? (
+          text.length > 120 ? `${text.slice(0, 120)}…` : text
+        ) : (
+          <span className="text-paper/40">Untitled</span>
+        )}
+      </p>
+      <p className="mt-0.5 font-sans text-[11.5px] text-paper/45">
+        {post.author_name} · {post.kind} · {shortWhen(post.created_at)}
+        {post.reply_count > 0 ? ` · ${post.reply_count} replies` : ""}
+      </p>
+    </>
+  );
+}
+
+function shortWhen(iso: string | null): string {
+  if (!iso) return "";
+  return new Date(iso).toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }

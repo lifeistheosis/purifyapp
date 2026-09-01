@@ -31,7 +31,7 @@ import {
 //
 // like_count and dislike_count below need no identity and ship now.
 const POST_COLS =
-  "id, kind, title, body, quote_text, quote_source, quote_href, author_name, author_avatar, reply_count, like_count, dislike_count, created_at";
+  "id, kind, title, body, quote_text, quote_source, quote_href, author_name, author_avatar, reply_count, like_count, dislike_count, created_at, pinned_at";
 
 /**
  * The row a reader actually receives: every column above except the uuid,
@@ -54,6 +54,14 @@ function publicPost(row: Record<string, unknown>): Record<string, unknown> {
     like_count: row.like_count ?? 0,
     dislike_count: row.dislike_count ?? 0,
     created_at: row.created_at,
+    // The timestamp, so the client can order announcements among themselves
+    // exactly as the query below did, and a locally prepended post cannot
+    // jump above one.
+    pinned_at: (row.pinned_at as string | null) ?? null,
+    // NOT pinned_by. That column holds the deciding admin's email, and this
+    // object is served to anonymous readers. It is deliberately absent from
+    // POST_COLS as well, so it is not in `row` to be leaked by a future edit
+    // that spreads the row instead of projecting it.
   };
 }
 
@@ -126,6 +134,17 @@ export async function GET(req: Request) {
     query = query.not("user_id", "in", `(${blocked.join(",")})`);
   }
   const { data, error } = await query
+    // ANNOUNCEMENTS FIRST, newest pin highest, then the feed proper.
+    //
+    // nullsFirst: false is load-bearing. Postgres sorts NULLs FIRST by default
+    // on a descending order, so without it every unpinned post, which is
+    // almost all of them, would sort above the announcements and the feature
+    // would do the exact opposite of its name.
+    //
+    // Ordering before the limit also means a pinned post cannot fall off the
+    // end: an announcement from three months ago is still first, where a
+    // created_at sort would have dropped it past the fifty newest.
+    .order("pinned_at", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false })
     .limit(50);
   if (error) {

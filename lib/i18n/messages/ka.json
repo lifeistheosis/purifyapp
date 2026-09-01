@@ -1806,6 +1806,7 @@
   "community.houseRules": "ისაუბრეთ სიყვარულით. გაზიარებული სტრიქონები სიტყვასიტყვით არის აღებული წმინდა წერილიდან და წმინდა მამათა თხზულებებიდან Purify-ში; პირადი პოსტები ავტორის საკუთარი სიტყვებია და არა Purify-ის სწავლება.",
   "community.verifiedAccount": "დადასტურებული ანგარიში",
   "community.like": "მომწონს",
+  "community.announcement": "განცხადება",
   "community.dislike": "არ მომწონს",
   "community.signInToReact": "რეაქციისთვის შედით სისტემაში",
   "community.reactFailed": "შენახვა ვერ მოხერხდა.",

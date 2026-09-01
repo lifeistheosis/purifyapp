@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { MAX_PINNED } from "@/lib/community/pinning";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +46,7 @@ export async function GET() {
     .order("created_at", { ascending: false })
     .limit(100);
 
-  const [pendingRecipes, campaignReports, recipeReports] = await Promise.all([
+  const [pendingRecipes, campaignReports, recipeReports, recentPosts] = await Promise.all([
     admin
       .from("trapeza_recipes")
       .select(
@@ -66,6 +67,22 @@ export async function GET() {
       .select("id, reason, created_at, recipe:trapeza_recipes(id, title, status)")
       .order("created_at", { ascending: false })
       .limit(200),
+    // Posts the owner might want to announce, and the ones already announced.
+    //
+    // Same order the public feed uses, so what the panel lists top to bottom
+    // is what a reader sees top to bottom. pinned_by IS selected here, unlike
+    // in the public feed, because this response never leaves the admin gate
+    // and "who pinned that" is the question the column exists to answer.
+    admin
+      .from("community_posts")
+      .select(
+        "id, kind, title, body, author_name, created_at, pinned_at, pinned_by, reply_count",
+      )
+      .eq("status", "visible")
+      .is("group_id", null)
+      .order("pinned_at", { ascending: false, nullsFirst: false })
+      .order("created_at", { ascending: false })
+      .limit(30),
   ]);
 
   // Four reads, four discarded errors, and every one of them coalesced to an
@@ -79,6 +96,7 @@ export async function GET() {
     pendingRecipes.error ??
     campaignReports.error ??
     recipeReports.error ??
+    recentPosts.error ??
     conversationReports.error;
   if (readError) {
     console.error("[admin/community] moderation read failed", readError.message);
@@ -97,6 +115,8 @@ export async function GET() {
       campaignReports: campaignReports.data ?? [],
       recipeReports: recipeReports.data ?? [],
       conversationReports: conversationReports.data ?? [],
+      recentPosts: recentPosts.data ?? [],
+      maxPinned: MAX_PINNED,
     },
     { headers: { "Cache-Control": "no-store" } },
   );
@@ -115,6 +135,12 @@ const actionSchema = z.object({
     "remove_community_post",
     "remove_community_reply",
     "dismiss_community_report",
+    // Announcements. Pinning puts one post above every other on a shared
+    // surface, so it is a moderation action and lives behind the same gate as
+    // the rest of them rather than in the community API where a reader could
+    // reach it.
+    "pin_community_post",
+    "unpin_community_post",
   ]),
   id: z.string().uuid(),
   reason: z.string().max(300).optional().nullable(),
@@ -195,6 +221,40 @@ export async function POST(req: Request) {
     // Soft-remove, with who decided and why. The reply policy now reads
     // `status = 'visible'`, so this hides it from every reader while the
     // row survives for the next time the same account does it again.
+    case "pin_community_post": {
+      // The cap is checked here as well as in the panel, because the panel is
+      // a convenience and this is the rule. A client that posts the action
+      // directly must not be able to bury the feed under announcements.
+      const { count } = await admin
+        .from("community_posts")
+        .select("id", { count: "exact", head: true })
+        .not("pinned_at", "is", null)
+        .neq("id", id);
+      if ((count ?? 0) >= MAX_PINNED) {
+        return NextResponse.json(
+          {
+            error: `${MAX_PINNED} announcements are already pinned. Unpin one first.`,
+          },
+          { status: 409 },
+        );
+      }
+      ({ error } = await admin
+        .from("community_posts")
+        .update({ pinned_at: now, pinned_by: adminUser.email ?? "admin" })
+        // Only a visible post. Pinning a removed one would put a post nobody
+        // can open at the top of the feed.
+        .eq("id", id)
+        .eq("status", "visible"));
+      break;
+    }
+    case "unpin_community_post":
+      ({ error } = await admin
+        .from("community_posts")
+        // Both cleared. Leaving pinned_by behind would keep an admin address
+        // on a row that is no longer an announcement, for no reason.
+        .update({ pinned_at: null, pinned_by: null })
+        .eq("id", id));
+      break;
     case "remove_community_post":
       ({ error } = await admin
         .from("community_posts")

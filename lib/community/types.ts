@@ -22,6 +22,17 @@ export type CommunityPost = {
   like_count: number;
   dislike_count: number;
   created_at: string;
+  /**
+   * When the owner pinned this as an announcement, or null.
+   *
+   * A TIMESTAMP AND NOT A BOOLEAN, matching the column, so the client can put
+   * several announcements in the same order the server did without a second
+   * rule for it. See lib/community/pinning.ts.
+   *
+   * There is deliberately no `pinned_by` here. That column holds an admin
+   * email and this type describes a payload served to anonymous readers.
+   */
+  pinned_at?: string | null;
 };
 
 export type CommunityReply = {

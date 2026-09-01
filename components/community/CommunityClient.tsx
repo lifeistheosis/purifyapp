@@ -31,6 +31,8 @@ import {
   type FlorilegiumItem,
 } from "@/lib/florilegium/florilegium";
 import { resolveUser } from "@/lib/supabase/resolveUser";
+import { cn } from "@/lib/cn";
+import { sortPinnedFirst } from "@/lib/community/pinning";
 import { ReactionButtons } from "@/components/community/ReactionButtons";
 import type { ReactionState } from "@/lib/community/reactions";
 import { SkeletonList } from "@/components/ui/Skeleton";
@@ -436,7 +438,13 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                 </p>
               </div>
             ) : (
-              result.posts.map((p) => (
+              // Sorted here as well as in the query. The server already
+              // returns announcements first, so this is a guard rather than
+              // the mechanism: it costs one pass over fifty rows and means a
+              // cached response from before pinning existed, or any future
+              // path that assembles this list locally, still cannot put an
+              // ordinary post above an announcement.
+              sortPinnedFirst(result.posts).map((p) => (
                 <PostCard
                   key={p.id}
                   post={p}
@@ -881,14 +889,46 @@ function PostCard({
   // server's snapshot from the last feed load and goes stale the moment the
   // reader adds one.
   const shownCount = replies ? replies.length : post.reply_count;
+  const pinned = Boolean(post.pinned_at);
 
   return (
     <article
       id={postAnchorId(post.id)}
       // scroll-mt clears the sticky mobile top bar when a notification link
       // scrolls this row into view.
-      className="scroll-mt-24 rounded-2xl border border-paper/10 bg-paper/[0.03] p-5"
+      //
+      // A PINNED POST IS MARKED, NOT JUST MOVED. Sitting at the top of a
+      // reverse-chronological feed is ambiguous: it reads as the newest post,
+      // and a reader who came back an hour later would think nothing had been
+      // written since. The gold edge and the label say the position is
+      // deliberate.
+      className={cn(
+        "scroll-mt-24 rounded-2xl border p-5",
+        pinned
+          ? "border-gold/35 bg-gold/[0.06]"
+          : "border-paper/10 bg-paper/[0.03]",
+      )}
     >
+      {pinned && (
+        <p className="mb-3 inline-flex items-center gap-1.5 rounded-pill border border-gold/40 bg-gold/[0.10] px-2.5 py-1 font-sans text-eyebrow font-semibold text-gold">
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M12 17v5" />
+            <path d="M9 10.8V4h6v6.8l3 3.2H6l3-3.2Z" />
+          </svg>
+          {t("community.announcement")}
+        </p>
+      )}
       <div className="flex items-center gap-3">
         <Avatar name={post.author_name} url={post.author_avatar} />
         <div className="min-w-0">
