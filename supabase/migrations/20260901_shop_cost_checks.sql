@@ -1,5 +1,29 @@
 -- When a supplier cost was last VERIFIED, and what it was each time.
 --
+-- ── APPLIED BY HAND ON 2026-09-01, BEFORE THIS FILE REACHED main ───────
+--
+-- The owner ran this SQL directly, so the column and the table are already
+-- there and the merge is a no-op. Every statement is guarded with
+-- `if not exists`, so re-running changes nothing.
+--
+-- Recorded here because AGENTS.md says the migration headers are the record
+-- and that state must never be inferred from a file existing. Same convention
+-- as 20260802_revoke_public_user_id.sql and 20260901_community_pinned.sql.
+--
+-- VERIFIED, not assumed. Probed against production the same day, with controls
+-- either side so the probe itself is proven:
+--
+--   select=product_id,zzz_nope     -> 42703  column does not exist
+--   select=product_id,cost_checked_at -> []  the column exists
+--   from zzz_no_such_table         -> PGRST205 not in the schema cache
+--   from shop_cost_checks          -> []     the table exists
+--
+-- The empty arrays are RLS doing its job rather than an absence of data:
+-- neither object carries a policy, so an anonymous reader is answered with no
+-- rows rather than an error. Supplier costs are the shop's own commercial
+-- position and never reach a reader; only the service role behind
+-- getAdminUser() sees them.
+--
 -- ── Why updated_at could not do this job ────────────────────────────────
 --
 -- shop_product_sourcing already has updated_at, and it is the wrong clock. It
