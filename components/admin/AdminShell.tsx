@@ -61,6 +61,7 @@ import { Toolbar, ToolbarButton } from "./primitives";
 import { AdminThemeToggle } from "./AdminThemeToggle";
 import { AdminSoundToggle } from "./AdminSoundToggle";
 import { AdminMotionToggle } from "./AdminMotionToggle";
+import { AdminStreamerToggle } from "./AdminStreamerToggle";
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
 import { AdminMobileNav } from "./AdminMobileNav";
 import { installLarpWriteGuard, larpOn, onLarpChange, setLarp } from "@/lib/admin/larp";
@@ -689,8 +690,11 @@ export function AdminShell({
           >
             {adminEmail.slice(0, 1)}
           </span>
+          {/* The signed-in address, which is a real person's and sits in the
+              rail on every screen. title is dropped under streamer mode too, or
+              the tooltip hands back exactly what the blur is covering. */}
           <span
-            className="min-w-0 flex-1 truncate font-sans text-[11.5px]"
+            className={`adm-sensitive min-w-0 flex-1 truncate font-sans text-[11.5px]`}
             style={{ color: "var(--adm-ink-2)" }}
             title={adminEmail}
           >
@@ -713,10 +717,13 @@ export function AdminShell({
           full-width row, which is also where it belongs, since sitting it flush
           against three harmless toggles is how it gets hit by accident. */}
       <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-1">
+        {/* Four now, so a 2x2 grid rather than a row: four across a 200px rail
+            is what collided in the first place. */}
+        <div className="grid grid-cols-2 gap-1">
           <AdminThemeToggle />
           <AdminSoundToggle />
           <AdminMotionToggle />
+          <AdminStreamerToggle />
         </div>
         <a
           href="/signout"
@@ -1071,11 +1078,18 @@ export function AdminShell({
               />
             </header>
 
-          {/* The hero is operations-only. Owner mode opens with its own
+          {/* OVERVIEW ONLY, and operations only.
+              Operations only because Owner mode opens with its own
               measured/modelled split, and stacking a second set of headline
               numbers above it would put two different answers to "how are we
-              doing" on one screen. */}
-          {mode === "ops" ? (
+              doing" on one screen.
+              Overview only because it was doing exactly that everywhere else:
+              the row rode along above Traffic, Revenue, Users and the rest, so
+              a screen devoted to one metric opened with four other headline
+              figures competing with it. Traffic was the worst of them, since
+              the hero IS traffic and the reader met the same numbers twice in
+              one scroll. */}
+          {mode === "ops" && active === "overview" ? (
             <HeroRow
               period={period}
               onPeriod={setPeriod}

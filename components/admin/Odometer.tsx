@@ -25,6 +25,7 @@ import { useEffect, useRef } from "react";
 
 import { useReducedMotion } from "@/lib/ui/motion";
 import { reportChange } from "@/lib/admin/sound";
+import { SENSITIVE } from "@/lib/admin/streamer";
 import {
   columns,
   formatValue,
@@ -162,14 +163,20 @@ export function Odometer({
 
   // A value with no digits in it at all ("Not recorded", an em dash placeholder)
   // has nothing to roll. Rendered as plain text so the card still reads.
+  // Money marks ITSELF for streamer mode. Every revenue, payout and MRR figure
+  // in the panel renders through this component, so covering it here reaches
+  // all of them; marking cards by hand would be one missed card away from a
+  // real number on a stream.
+  const cls = [className, isMoney ? SENSITIVE : null].filter(Boolean).join(" ");
+
   if (!hasDigits(text)) {
-    return <span className={className}>{text}</span>;
+    return <span className={cls}>{text}</span>;
   }
 
   const cols = columns(text);
 
   return (
-    <span className={className}>
+    <span className={cls}>
       {/* The wheels are decoration. A screen reader gets the value once, as a
           word, rather than ten digits per column. */}
       <span className="sr-only">{text}</span>

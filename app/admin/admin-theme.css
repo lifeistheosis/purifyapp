@@ -323,6 +323,41 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* STREAMER MODE. See lib/admin/streamer.ts for what it covers and what it is
+ * not. One attribute on <html>, one class on anything the audience must not
+ * read, so a new card opts in by naming itself rather than by remembering to
+ * read a context.
+ *
+ * The blur is heavy on purpose. A light one leaves large figures legible after
+ * a video encoder has finished with them, and the digits here are 30px. The
+ * scale nudge stops a blur revealing the shape of the number underneath, which
+ * is enough to read $1,000 apart from $10.
+ *
+ * Hover and focus lift it, because the mode is useless if the operator cannot
+ * read their own dashboard while it is on. A viewer sees a blur; the person at
+ * the keyboard sees the figure by pointing at it. */
+[data-adm-streamer] .adm-sensitive {
+  filter: blur(9px);
+  transform: scale(1.04);
+  transition: filter 120ms ease, transform 120ms ease;
+  /* Selection would let a viewer read it out of a highlight, and a screen
+     reader on a stream would read it aloud. */
+  user-select: none;
+}
+
+[data-adm-streamer] .adm-sensitive:hover,
+[data-adm-streamer] .adm-sensitive:focus-within {
+  filter: none;
+  transform: none;
+  user-select: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-adm-streamer] .adm-sensitive {
+    transition: none;
+  }
+}
+
 /* SCROLLBARS, in the panel's own palette.
  *
  * color-scheme: dark above gets the native bar to stop being white, and that
