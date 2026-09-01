@@ -10,7 +10,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { ingestCsv } from "./ingest";
 import { adminJson } from "@/lib/admin/fetchJson";
 import { legacyIdMap } from "./seriesId";
 import { rangeOf, type Selection } from "./calendar";
@@ -208,7 +207,6 @@ export type InsightsValue = {
   /** Derived. The inclusive day range of the selection, or null. */
   selectedRange: { from: string; to: string } | null;
 
-  importCsv: (text: string, name: string) => Promise<void>;
   clearDataset: () => Promise<void>;
   /** Push whatever this browser still holds up to the server, once. */
   adoptLegacyLocal: () => Promise<void>;
@@ -363,55 +361,12 @@ export function InsightsProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const importCsv = useCallback(
-    async (text: string, name: string) => {
-      dispatch({ type: "import:start" });
-
-      // Parsed on the client, exactly as before. The server is sent the parsed
-      // series rather than the raw CSV so the parser stays one implementation
-      // with one set of tests, rather than a second copy in a route.
-      const { dataset, errors } = ingestCsv(text, name, new Date().toISOString());
-      if (!dataset) {
-        dispatch({ type: "import:fail", error: errors[0] ?? "That could not be read." });
-        return;
-      }
-
-      const res = await fetch("/api/admin/insights/actions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "import",
-          label: name,
-          rowCount: dataset.rowCount,
-          series: dataset.series.map((s) => ({
-            id: s.id,
-            label: s.label,
-            kind: s.kind,
-            sourceHeader: s.source,
-            points: s.points,
-          })),
-        }),
-      }).catch(() => null);
-
-      if (!res || !res.ok) {
-        // The previous data is untouched: nothing local was cleared before the
-        // round trip, so a failed import leaves what was already there rather
-        // than punishing a bad paste by emptying the panel.
-        dispatch({
-          type: "import:fail",
-          error:
-            res && res.status === 500
-              ? "That did not save. The report tables may not exist yet."
-              : "That did not save.",
-        });
-        return;
-      }
-
-      await reload();
-      dispatch({ type: "import:done" });
-    },
-    [reload],
-  );
+  // importCsv WAS HERE. The CSV import was removed on 2026-09-01: Play
+  // Console exports describe days that have already finished while this panel
+  // measures live analytics as they happen, so the two answered the same
+  // questions differently and the stale one looked equally authoritative.
+  // The UI and the server action went with it; leaving this would have been a
+  // method that posts to an endpoint that no longer exists.
 
   /**
    * Push this browser's leftover dataset to the server, once.
@@ -593,7 +548,6 @@ export function InsightsProvider({ children }: { children: ReactNode }) {
       overall,
       selection: state.selection,
       selectedRange,
-      importCsv,
       clearDataset,
       adoptLegacyLocal,
       addGoal,
@@ -616,7 +570,6 @@ export function InsightsProvider({ children }: { children: ReactNode }) {
       grades,
       overall,
       selectedRange,
-      importCsv,
       clearDataset,
       adoptLegacyLocal,
       addGoal,

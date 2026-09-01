@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { computeAutoTarget, measure } from "@/lib/admin/hourlyMeasure";
 import { notifyOwner } from "@/lib/admin/ownerAlert";
 import {
   evaluateHourly,
@@ -83,54 +84,6 @@ function localHourIn(timezone: string, at: Date): number {
   }
 }
 
-/** One metric's value between two instants. */
-async function measure(
-  supa: ReturnType<typeof createAdminClient>,
-  metric: HourlyMetric,
-  fromIso: string,
-  toIso: string,
-): Promise<number> {
-  if (metric === "pageviews") {
-    const { count } = await supa
-      .from("analytics_pageviews")
-      .select("id", { count: "exact", head: true })
-      .gte("ts", fromIso)
-      .lt("ts", toIso);
-    return count ?? 0;
-  }
-  if (metric === "visitors") {
-    // Sessions that STARTED in the window. Sessions merely active in it would
-    // count one long visit in every hour it spans, which is a different and
-    // much less useful number than "how many people arrived".
-    const { count } = await supa
-      .from("analytics_sessions")
-      .select("session_id", { count: "exact", head: true })
-      .gte("first_seen", fromIso)
-      .lt("first_seen", toIso);
-    return count ?? 0;
-  }
-  if (metric === "signups") {
-    const { count } = await supa
-      .from("profiles")
-      .select("id", { count: "exact", head: true })
-      .gte("created_at", fromIso)
-      .lt("created_at", toIso);
-    return count ?? 0;
-  }
-  // revenue_cents. Paid only: a pending checkout is not revenue, and counting
-  // it would announce money that may never arrive.
-  const { data } = await supa
-    .from("shop_orders")
-    .select("total_cents")
-    .eq("payment_status", "paid")
-    .gte("created_at", fromIso)
-    .lt("created_at", toIso);
-  return (data ?? []).reduce(
-    (sum, o) => sum + ((o as { total_cents: number }).total_cents ?? 0),
-    0,
-  );
-}
-
 export async function GET(req: NextRequest) {
   const secret = process.env.CRON_SECRET;
   if (!secret) {
@@ -195,7 +148,26 @@ export async function GET(req: NextRequest) {
         w.end.toISOString(),
       );
       const elapsed = w.ended ? 60 : mins;
-      const evaluation = evaluateHourly(g, value, elapsed);
+
+      // THE TARGET IS DERIVED, NOT STORED. It comes from what this weekday and
+      // hour have actually done over the previous weeks, so it tracks the site
+      // as it grows and nobody maintains 168 numbers by hand. Persisted onto
+      // the row afterwards purely so the panel can show the same figure the
+      // cron judged against.
+      const auto = await computeAutoTarget(supa, g.metric, w.start);
+      if (auto.target === null) {
+        skipped.push({ metric: g.metric, reason: "no baseline yet" });
+        continue;
+      }
+      const goalForHour = { ...g, target: auto.target };
+      if (!w.ended && row.target !== auto.target) {
+        await supa
+          .from("hourly_goals")
+          .update({ target: auto.target, updated_at: new Date().toISOString() })
+          .eq("id", g.id);
+      }
+
+      const evaluation = evaluateHourly(goalForHour, value, elapsed);
 
       const { data: already } = await supa
         .from("hourly_goal_notifications")
@@ -206,7 +178,7 @@ export async function GET(req: NextRequest) {
         (a) => a.kind,
       );
 
-      const decision = shouldNotify(g, evaluation, {
+      const decision = shouldNotify(goalForHour, evaluation, {
         localHour,
         alreadySent,
         hourEnded: w.ended,
@@ -226,7 +198,7 @@ export async function GET(req: NextRequest) {
           hour_key: key,
           kind: decision.kind,
           value: Math.round(evaluation.value),
-          target: g.target,
+          target: auto.target,
         });
       if (claimErr) {
         // 23505 is the other run getting there first, which is the dedupe

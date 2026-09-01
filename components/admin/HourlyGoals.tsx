@@ -27,7 +27,10 @@ import {
 type Goal = {
   id: string;
   metric: HourlyMetric;
-  target: number;
+  /** Derived from this hour's own history. Null until there is enough of it. */
+  target: number | null;
+  explanation: string;
+  basis: "weekday-hour" | "hour-any-day" | "none";
   paused?: boolean;
   notify_on_hit?: boolean;
   notify_on_miss?: boolean;
@@ -45,30 +48,31 @@ type Payload = {
 
 export function HourlyGoals() {
   const { data, error, reload } = useAdminFetch<Payload>("/api/admin/hourly-goals");
-  const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
 
-  const save = useCallback(
-    async (metric: HourlyMetric, target: number) => {
+  /**
+   * Watch a metric, or stop watching it.
+   *
+   * NO TARGET IS SENT. It is derived per hour from that hour's own history,
+   * which is what makes this maintenance-free: a typed number is wrong within
+   * a month, and one per hour of the week is 168 nobody will keep current.
+   */
+  const setWatched = useCallback(
+    async (metric: HourlyMetric, watched: boolean) => {
       setBusy(metric);
       setNote(null);
       try {
         const r = await fetch("/api/admin/hourly-goals", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ metric, target }),
+          body: JSON.stringify({ metric, paused: !watched, notifyOnHit: true }),
         });
         const body = (await r.json().catch(() => null)) as { error?: string } | null;
         if (!r.ok) {
           setNote(body?.error ?? "That didn't save.");
           return;
         }
-        setDrafts((d) => {
-          const n = { ...d };
-          delete n[metric];
-          return n;
-        });
         reload();
       } catch {
         setNote("That didn't save.");
@@ -87,8 +91,8 @@ export function HourlyGoals() {
       title="This hour"
       subtitle={
         data
-          ? `${data.minutesIntoHour} minutes in. Targets are per clock hour, measured from live analytics`
-          : "Targets per clock hour, measured from live analytics"
+          ? `${data.minutesIntoHour} minutes in. Targets set themselves from what this hour, on this weekday, normally does`
+          : "Targets set themselves from each hour's own history"
       }
     >
       {(error ?? note) && (
@@ -115,7 +119,6 @@ export function HourlyGoals() {
         {metrics.map((m) => {
           const g = byMetric.get(m);
           const p = g?.progress;
-          const draft = drafts[m] ?? (g ? String(g.target) : "");
           const sent = (data?.sentThisHour ?? []).filter((s) => s.goal_id === g?.id);
           const pct = p && p.target > 0 ? Math.min(100, Math.round(p.ratio * 100)) : 0;
           return (
@@ -137,7 +140,7 @@ export function HourlyGoals() {
                 </div>
               </div>
 
-              {p && p.target > 0 && (
+              {p && g?.target !== null && p.target > 0 && (
                 <>
                   <div
                     className="mt-2 h-1.5 w-full overflow-hidden rounded-full"
@@ -166,43 +169,21 @@ export function HourlyGoals() {
                 </>
               )}
 
+              {/* The number is never unexplained. A derived target that
+                  appears from nowhere is one the operator cannot argue with
+                  or trust, so the basis travels with it. */}
+              <p className="mt-1.5 font-sans text-[11px] text-paper/40">
+                {g ? g.explanation : "Not watched."}
+              </p>
+
               <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                <input
-                  type="number"
-                  min={0}
-                  step={m === "revenue_cents" ? "0.01" : "1"}
-                  inputMode="decimal"
-                  value={draft}
-                  onChange={(e) => setDrafts((d) => ({ ...d, [m]: e.target.value }))}
-                  placeholder={m === "revenue_cents" ? "target $" : "target"}
-                  className="h-8 w-[120px] rounded-[var(--adm-radius-sm)] border px-2 font-sans text-[12.5px] tabular-nums outline-none"
-                  style={{
-                    background: "var(--adm-control)",
-                    borderColor: "var(--adm-line)",
-                    color: "var(--adm-ink)",
-                  }}
-                />
                 <ToolbarButton
-                  variant="primary"
+                  variant={g && !g.paused ? "default" : "primary"}
                   loading={busy === m}
-                  onClick={() => {
-                    const n = Number(draft);
-                    if (!draft.trim() || !Number.isFinite(n) || n < 0) {
-                      setNote("Enter a number first.");
-                      return;
-                    }
-                    // Revenue is typed in dollars and stored in cents, matching
-                    // every other money field in the panel.
-                    void save(m, m === "revenue_cents" ? Math.round(n * 100) : Math.round(n));
-                  }}
+                  onClick={() => void setWatched(m, !(g && !g.paused))}
                 >
-                  {g ? "Update" : "Set"}
+                  {g && !g.paused ? "Stop watching" : "Watch"}
                 </ToolbarButton>
-                {g && (
-                  <span className="font-sans text-[11px] text-paper/35">
-                    {g.notify_on_hit ? "notifies on hit" : "silent"}
-                  </span>
-                )}
               </div>
             </li>
           );

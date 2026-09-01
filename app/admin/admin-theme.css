@@ -795,6 +795,17 @@
  * arithmetic that no test can see, which is exactly why the number is spelled
  * out above rather than left to be re-derived.
  */
+/* Height of the sticky top bar, so anything positioned under it does not have
+ * to guess. The bar is py-3 (12px twice) around a 44px control row, plus its
+ * bottom hairline: 12 + 44 + 12 + 1.
+ *
+ * A variable rather than a literal in the one component that needs it, because
+ * a literal is a number that goes stale silently the first time the bar's
+ * padding changes, and the symptom is a toast overlapping the search field. */
+.adm {
+  --adm-topbar-h: 69px;
+}
+
 .adm-canvas {
   padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
 }

@@ -61,6 +61,23 @@ export type IngestResult = {
  *                 so the result is a pure function of its inputs and a test
  *                 can assert on it
  */
+/**
+ * NO LONGER WIRED TO ANYTHING. The CSV import was removed on 2026-09-01: Play
+ * Console exports describe days that have already finished, while the panel
+ * measures live analytics as they happen, so the two answered the same
+ * questions differently and the stale one looked equally authoritative. The
+ * drop zone, the server action and the store method all went.
+ *
+ * This function stayed because it is a pure parser with its own tests, and
+ * because __tests__/engine.test.ts uses it to build the fixtures that exercise
+ * windowValue, rangeValue and kindOf, all of which are still very much in use
+ * by the grading path. Deleting it would mean rewriting working tests of
+ * surviving code by hand.
+ *
+ * So: safe to call, reachable from nothing. If a CSV import is ever wanted
+ * again, this is the parser, but read the paragraph above first about why the
+ * last one was taken out.
+ */
 export function ingestCsv(text: string, name: string, stampIso: string): IngestResult {
   const table: CsvTable = parseCsv(text);
   const errors: string[] = [];

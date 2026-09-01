@@ -232,6 +232,84 @@ export function ActivityFeed() {
         </div>
       </div>
       <ActivityBell records={records} reduced={reduced} />
+
+      {/* ── The phone ────────────────────────────────────────────────────
+          The strip above is md and up, because a 232px pill cannot sit in a
+          375px bar next to a search field. That left the bell as the only
+          trace of activity on a phone, which is the surface the owner
+          actually uses: they reported seeing notifications nowhere but the
+          bell, and that is exactly right.
+
+          So mobile gets a real toast instead of a squeezed strip. ONE at a
+          time, not three: a phone has room for one line of news, and a stack
+          of three covers the screen someone is trying to work in. It is the
+          newest, it sits under the top bar rather than over it, and it leaves
+          on the same dwell as everything else. */}
+      <MobileToast record={strip[0] ?? null} now={now} reduced={reduced} />
+    </div>
+  );
+}
+
+/**
+ * One notification, on a phone.
+ *
+ * FIXED, not in the bar's flow. The top bar is a flex row that is already full
+ * at 375px, so anything added inside it squeezes the search field. Positioned
+ * under the bar instead, spanning the width, out of everyone's way.
+ *
+ * pointer-events-none, because it covers content the operator may be reading
+ * or tapping and it has no controls of its own. The bell is where you go to
+ * interact with these; this is only for noticing.
+ */
+function MobileToast({
+  record,
+  now,
+  reduced,
+}: {
+  record: ActivityRecord | null;
+  now: number;
+  reduced: boolean;
+}) {
+  if (!record) return null;
+  const look = LOOK[record.kind];
+  const leaving = now - record.receivedAt >= dwellMs(record.kind);
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-x-0 top-[calc(var(--adm-topbar-h,69px)+8px)] z-[45] flex justify-center px-3 md:hidden"
+    >
+      <div
+        className="flex max-w-[min(94vw,420px)] items-center gap-2.5 rounded-[var(--adm-radius-pill)] border py-2 pl-2 pr-3.5"
+        style={{
+          background: "var(--adm-panel)",
+          borderColor: look.ring,
+          boxShadow: `0 10px 28px -10px color-mix(in oklab, ${look.ring}, transparent 40%)`,
+          opacity: leaving ? 0 : 1,
+          transform: reduced ? "none" : leaving ? "translateY(-10px)" : "translateY(0)",
+          transition: reduced
+            ? "none"
+            : `opacity ${EXIT_MS}ms ease, transform ${EXIT_MS}ms cubic-bezier(0.4,0,1,1)`,
+          animation: reduced
+            ? undefined
+            : "adm-activity-in 460ms cubic-bezier(0.16,1,0.3,1)",
+        }}
+      >
+        <span
+          className="grid h-7 min-w-7 place-items-center rounded-[var(--adm-radius-pill)] px-1.5 font-sans text-[13px] font-semibold tabular-nums"
+          style={{
+            background: `color-mix(in oklab, ${look.ring}, transparent 84%)`,
+            color: look.tint,
+          }}
+        >
+          {record.badge}
+        </span>
+        <span
+          className="min-w-0 truncate font-sans text-[13px] font-medium"
+          style={{ color: "var(--adm-ink)" }}
+        >
+          {record.text}
+        </span>
+      </div>
     </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import { Card, StatCard } from "../primitives";
 import { LineChart } from "../charts";
-import { DataImport } from "../insights/DataImport";
 import { GoalsWidget } from "../insights/GoalsWidget";
 import { ApiLimitBanner } from "../insights/ApiLimits";
 import { GradeBadge, RatioMeter, StandingPill } from "../insights/GradeBadge";
@@ -39,7 +38,14 @@ export function GrowthTab({ onOpenGoals }: { onOpenGoals?: () => void }) {
   return (
     <div className="space-y-5">
       <ApiLimitBanner />
-      <DataImport />
+      {/* THE CSV IMPORT WAS HERE, and it is gone deliberately.
+          Play Console exports describe days that have already finished, while
+          this panel measures live analytics as they happen. Two sources for
+          the same questions meant two answers, and the stale one looked just
+          as authoritative. Removed 2026-09-01 at the owner's instruction.
+
+          The series below are whatever was imported before that. Nothing
+          writes them any more: see the note in this tab's header. */}
 
       {!dataset ? (
         <Card title="Nothing imported yet" subtitle="Paste a report above to populate this page.">

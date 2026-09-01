@@ -4,6 +4,7 @@ import { z } from "zod";
 import { getAdminUser } from "@/lib/admin/access";
 import { logActivity } from "@/lib/admin/activityLog";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { computeAutoTarget, measure } from "@/lib/admin/hourlyMeasure";
 import {
   evaluateHourly,
   hourKeyUtc,
@@ -23,48 +24,6 @@ export const dynamic = "force-dynamic";
  */
 
 const METRICS: HourlyMetric[] = ["visitors", "pageviews", "signups", "revenue_cents"];
-
-async function measure(
-  supa: ReturnType<typeof createAdminClient>,
-  metric: HourlyMetric,
-  fromIso: string,
-  toIso: string,
-): Promise<number> {
-  if (metric === "pageviews") {
-    const { count } = await supa
-      .from("analytics_pageviews")
-      .select("id", { count: "exact", head: true })
-      .gte("ts", fromIso)
-      .lt("ts", toIso);
-    return count ?? 0;
-  }
-  if (metric === "visitors") {
-    const { count } = await supa
-      .from("analytics_sessions")
-      .select("session_id", { count: "exact", head: true })
-      .gte("first_seen", fromIso)
-      .lt("first_seen", toIso);
-    return count ?? 0;
-  }
-  if (metric === "signups") {
-    const { count } = await supa
-      .from("profiles")
-      .select("id", { count: "exact", head: true })
-      .gte("created_at", fromIso)
-      .lt("created_at", toIso);
-    return count ?? 0;
-  }
-  const { data } = await supa
-    .from("shop_orders")
-    .select("total_cents")
-    .eq("payment_status", "paid")
-    .gte("created_at", fromIso)
-    .lt("created_at", toIso);
-  return (data ?? []).reduce(
-    (s, o) => s + ((o as { total_cents: number }).total_cents ?? 0),
-    0,
-  );
-}
 
 export async function GET() {
   const adminUser = await getAdminUser();
@@ -101,15 +60,21 @@ export async function GET() {
     target: number;
   }[];
 
+  // The same derivation the cron judges against, so the panel can never show
+  // a target the notification used a different number for.
   const goals = await Promise.all(
     rows.map(async (r) => {
-      const value = await measure(
-        supa,
-        r.metric,
-        hourStart.toISOString(),
-        now.toISOString(),
-      );
-      return { ...r, progress: evaluateHourly(r, value, mins) };
+      const [value, auto] = await Promise.all([
+        measure(supa, r.metric, hourStart.toISOString(), now.toISOString()),
+        computeAutoTarget(supa, r.metric, hourStart),
+      ]);
+      return {
+        ...r,
+        target: auto.target,
+        explanation: auto.explanation,
+        basis: auto.baseline.basis,
+        progress: evaluateHourly({ target: auto.target ?? 0 }, value, mins),
+      };
     }),
   );
 
@@ -134,9 +99,15 @@ export async function GET() {
   );
 }
 
+/**
+ * NO TARGET FIELD. Targets are derived from each hour's own history in
+ * lib/admin/hourlyBaseline.ts, which is the whole point of the feature: a
+ * number typed in once is wrong within the month, and a number per hour of the
+ * week is 168 of them that nobody will maintain. This only says which metrics
+ * are watched and how loudly.
+ */
 const upsertSchema = z.object({
   metric: z.enum(["visitors", "pageviews", "signups", "revenue_cents"]),
-  target: z.number().int().min(0).max(100_000_000),
   paused: z.boolean().optional(),
   notifyOnHit: z.boolean().optional(),
   notifyOnMiss: z.boolean().optional(),
@@ -166,7 +137,10 @@ export async function POST(req: NextRequest) {
 
   const patch: Record<string, unknown> = {
     metric: p.metric,
-    target: p.target,
+    // The column is NOT NULL, so a new row needs something. The cron
+    // overwrites it with the derived value on its next pass; nothing reads
+    // this as authoritative in between.
+    target: 0,
     updated_at: new Date().toISOString(),
   };
   if (p.paused !== undefined) patch.paused = p.paused;
@@ -201,7 +175,7 @@ export async function POST(req: NextRequest) {
     action: "goals.hourly_set",
     entityType: "hourly_goals",
     entityId: p.metric,
-    detail: { target: p.target },
+    detail: { paused: p.paused ?? false },
   });
 
   return NextResponse.json({ ok: true });
