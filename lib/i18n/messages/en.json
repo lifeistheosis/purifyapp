@@ -1807,6 +1807,7 @@
   "community.verifiedAccount": "Verified Account",
   "community.like": "Like",
   "community.announcement": "Announcement",
+  "community.verified": "Verified",
   "community.dislike": "Dislike",
   "community.signInToReact": "Sign in to react",
   "community.reactFailed": "Couldn't save that.",

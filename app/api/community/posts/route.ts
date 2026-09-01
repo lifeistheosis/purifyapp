@@ -24,14 +24,18 @@ import {
 // work. A ratchet written after a real exposure does not get loosened to save
 // one query.
 //
-// The badge will arrive as a DENORMALISED author_verified column on
-// community_posts, maintained from user_verification the same way the
-// reaction counters are maintained from community_reactions. Then the feed
-// reads a boolean that was never a uuid and the guard stays absolute.
+// The badge HAS now arrived as that denormalised author_verified column on
+// community_posts, maintained from user_verification by a trigger the same way
+// the reaction counters are maintained from community_reactions
+// (20260901_community_author_verified.sql). The feed reads a boolean that was
+// never a uuid and the guard stays absolute.
 //
-// like_count and dislike_count below need no identity and ship now.
+// Recorded because the shortcut was attempted again before this landed: the
+// select-then-strip version was rewritten, publicColumnExposure refused it a
+// second time, and the refusal was right a second time. The query it saves is
+// not worth the ratchet.
 const POST_COLS =
-  "id, kind, title, body, quote_text, quote_source, quote_href, author_name, author_avatar, reply_count, like_count, dislike_count, created_at, pinned_at";
+  "id, kind, title, body, quote_text, quote_source, quote_href, author_name, author_avatar, author_verified, reply_count, like_count, dislike_count, created_at, pinned_at";
 
 /**
  * The row a reader actually receives: every column above except the uuid,
@@ -50,6 +54,8 @@ function publicPost(row: Record<string, unknown>): Record<string, unknown> {
     quote_href: row.quote_href,
     author_name: row.author_name,
     author_avatar: row.author_avatar,
+    // A boolean that was never a uuid. See the note above POST_COLS.
+    author_verified: Boolean(row.author_verified),
     reply_count: row.reply_count,
     like_count: row.like_count ?? 0,
     dislike_count: row.dislike_count ?? 0,

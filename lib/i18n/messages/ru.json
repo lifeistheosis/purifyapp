@@ -1809,6 +1809,7 @@
   "community.verifiedAccount": "Подтверждённый аккаунт",
   "community.like": "Нравится",
   "community.announcement": "Объявление",
+  "community.verified": "Подтверждён",
   "community.dislike": "Не нравится",
   "community.signInToReact": "Войдите, чтобы отреагировать",
   "community.reactFailed": "Не удалось сохранить.",

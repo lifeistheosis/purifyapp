@@ -1807,6 +1807,7 @@
   "community.verifiedAccount": "Потвърден профил",
   "community.like": "Харесване",
   "community.announcement": "Съобщение",
+  "community.verified": "Потвърден",
   "community.dislike": "Нехаресване",
   "community.signInToReact": "Влезте, за да реагирате",
   "community.reactFailed": "Това не можа да се запази.",

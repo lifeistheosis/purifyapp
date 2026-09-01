@@ -932,8 +932,9 @@ function PostCard({
       <div className="flex items-center gap-3">
         <Avatar name={post.author_name} url={post.author_avatar} />
         <div className="min-w-0">
-          <p className="truncate font-sans text-ui font-semibold text-paper">
-            {post.author_name}
+          <p className="flex items-center gap-1 font-sans text-ui font-semibold text-paper">
+            <span className="truncate">{post.author_name}</span>
+            {post.author_verified ? <VerifiedBadge /> : null}
           </p>
           <p className="font-sans text-eyebrow text-paper/45">
             {timeAgo(post.created_at)} · {t(POST_KIND_KEYS[post.kind])}
@@ -1156,5 +1157,44 @@ function PostCard({
         </div>
       ) : null}
     </article>
+  );
+}
+
+/**
+ * The verified badge.
+ *
+ * shrink-0 beside a truncating name: without it the check is the thing that
+ * gets squeezed out on a narrow screen, which is exactly backwards, since the
+ * name is already readable when truncated and a half-drawn tick is not.
+ *
+ * aria-label rather than a decorative hidden icon. Whether an account is
+ * verified is information, not ornament, and a screen reader should say so.
+ */
+function VerifiedBadge() {
+  const { t } = useTranslate();
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      className="shrink-0"
+      role="img"
+      aria-label={t("community.verified")}
+    >
+      <path
+        fill="currentColor"
+        className="text-gold"
+        d="M12 1.6l2.3 2.1 3.1-.4 1.2 2.9 2.9 1.2-.4 3.1L23.2 14l-2.1 2.3.4 3.1-2.9 1.2-1.2 2.9-3.1-.4L12 25.2 9.7 23.1l-3.1.4-1.2-2.9-2.9-1.2.4-3.1L.8 14l2.1-2.3-.4-3.1 2.9-1.2 1.2-2.9 3.1.4z"
+        transform="translate(0 -1.6) scale(1)"
+      />
+      <path
+        d="M8.2 12.4l2.6 2.6 5-5.2"
+        fill="none"
+        stroke="var(--color-night, #14121a)"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }

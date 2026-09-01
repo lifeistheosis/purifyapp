@@ -18,6 +18,17 @@ export type CommunityPost = {
   quote_href: string | null;
   author_name: string;
   author_avatar: string | null;
+  /**
+   * Whether this author holds the verified badge.
+   *
+   * A PLAIN BOOLEAN, and it has to be. The feed cannot join user_verification
+   * (service-role only) or profiles (self-select only), and it must not carry
+   * user_id to resolve one client-side: that is the exposure
+   * 20260802_revoke_public_user_id.sql closed and
+   * publicColumnExposure.test.ts now enforces. It is denormalised onto
+   * community_posts by trigger instead.
+   */
+  author_verified?: boolean;
   reply_count: number;
   like_count: number;
   dislike_count: number;
@@ -41,6 +52,17 @@ export type CommunityReply = {
   body: string;
   author_name: string;
   author_avatar: string | null;
+  /**
+   * Whether this author holds the verified badge.
+   *
+   * A PLAIN BOOLEAN, and it has to be. The feed cannot join user_verification
+   * (service-role only) or profiles (self-select only), and it must not carry
+   * user_id to resolve one client-side: that is the exposure
+   * 20260802_revoke_public_user_id.sql closed and
+   * publicColumnExposure.test.ts now enforces. It is denormalised onto
+   * community_posts by trigger instead.
+   */
+  author_verified?: boolean;
   created_at: string;
 };
 

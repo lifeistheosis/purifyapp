@@ -1807,6 +1807,7 @@
   "community.verifiedAccount": "Compte vérifié",
   "community.like": "J'aime",
   "community.announcement": "Annonce",
+  "community.verified": "Vérifié",
   "community.dislike": "Je n'aime pas",
   "community.signInToReact": "Connectez-vous pour réagir",
   "community.reactFailed": "Impossible d'enregistrer.",

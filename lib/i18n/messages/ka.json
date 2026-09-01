@@ -1807,6 +1807,7 @@
   "community.verifiedAccount": "დადასტურებული ანგარიში",
   "community.like": "მომწონს",
   "community.announcement": "განცხადება",
+  "community.verified": "დადასტურებული",
   "community.dislike": "არ მომწონს",
   "community.signInToReact": "რეაქციისთვის შედით სისტემაში",
   "community.reactFailed": "შენახვა ვერ მოხერხდა.",
