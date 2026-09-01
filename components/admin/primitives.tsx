@@ -432,7 +432,13 @@ export function KpiCard({
 }) {
   return (
     <div
-      className="flex flex-col rounded-[var(--adm-radius)] border p-5"
+      // overflow-hidden is the backstop, not the fix. The sparkline below is a
+      // fixed 88px SVG, and on a phone these sit two to a row at about 160px
+      // each: it could not shrink, so it drew straight out of the card, across
+      // the gap and over the neighbouring card's figure. Reported from the
+      // mobile panel. The layout below stops it happening; this makes sure a
+      // future child cannot do it again.
+      className="flex flex-col overflow-hidden rounded-[var(--adm-radius)] border p-5"
       style={{
         background: accent
           ? "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 93%)"
@@ -443,7 +449,10 @@ export function KpiCard({
         boxShadow: "var(--adm-shadow-card)",
       }}
     >
-      <div className="flex items-baseline justify-between gap-2">
+      {/* Stacked until there is room for a row. Side by side in a 160px card,
+          "Revenue · 30 days" and "paid, net of refunds" both wrapped to two
+          lines and interleaved into something unreadable. */}
+      <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-2">
         <p
           className="font-sans text-[13px] font-medium leading-5"
           style={{ color: "var(--adm-ink-3)" }}
@@ -452,7 +461,7 @@ export function KpiCard({
         </p>
         {subtitle && (
           <p
-            className="font-sans text-[11.5px]"
+            className="font-sans text-[11.5px] leading-4"
             style={{ color: "var(--adm-ink-3)" }}
           >
             {subtitle}
@@ -461,16 +470,24 @@ export function KpiCard({
       </div>
 
       <div className="mt-3 flex items-end justify-between gap-3">
+        {/* min-w-0 so the figure is allowed to shrink. Without it a flex item
+            refuses to go below its content width, which is what pushed the
+            sparkline out of the card rather than squeezing the number. */}
         <p
-          className="font-sans text-[28px] font-semibold leading-none tracking-[-0.02em]"
+          className="min-w-0 font-sans text-[28px] font-semibold leading-none tracking-[-0.02em]"
           style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)" }}
         >
           <Odometer value={value} />
         </p>
         {/* The sparkline earns its place only when there is a shape to see.
-            Two points is a line segment, not a trend. */}
+            Two points is a line segment, not a trend, and 88px beside a 28px
+            figure is not a trend either at phone width: hidden below sm, where
+            the card is too narrow to read a line in anyway. The number is what
+            the card is for; the shape is the bonus that goes first. */}
         {trend && trend.length > 2 && (
-          <Sparkline data={trend} width={88} height={26} />
+          <span className="hidden shrink-0 sm:block">
+            <Sparkline data={trend} width={88} height={26} />
+          </span>
         )}
       </div>
 
