@@ -50,7 +50,18 @@ export type EarningsSummary = {
   payoutCents: number | null;
   /** Counted orders carrying no fee row. Non-zero is why the two above are null. */
   ordersWithoutFeeRecord: number;
+  /**
+   * Orders that were paid AT SOME POINT, refunded ones included.
+   *
+   * This is the denominator refundRate needs, and it is NOT the number to
+   * print next to the word "paid": an order that was paid and then refunded
+   * is counted here and is not money the shop kept. The panel used this for
+   * a "N paid" hint and so counted every refund twice, once as a sale and
+   * once as a refund. Use keptOrderCount for that.
+   */
   paidOrderCount: number;
+  /** Paid and still paid. The count that matches netCents. */
+  keptOrderCount: number;
   refundedOrderCount: number;
   unitsSold: number;
   /** Net average order value across paid, non-refunded orders. */
@@ -146,6 +157,7 @@ export function earningsSummary(
     payoutCents: commissionKnown ? Math.max(0, net - commission) : null,
     ordersWithoutFeeRecord: missingFee,
     paidOrderCount: paidCount,
+    keptOrderCount: keptCount,
     refundedOrderCount: refundedCount,
     unitsSold: units,
     averageOrderCents: keptCount > 0 ? Math.round(net / keptCount) : 0,

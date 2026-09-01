@@ -637,7 +637,11 @@
  * The dash array has to go with the animation, or the line renders in
  * permanent dashes instead of drawing solid. */
 /* The activity bar's entrance. Slides in from the right edge it hangs off, so
- * a row arrives from outside the screen rather than materialising in place.
+ * a row rises into place rather than materialising in it. It used to enter
+ * sideways, from the right, back when the bar was a vertical stack hanging off
+ * the right edge. The strip is horizontal now and the horizontal axis carries
+ * a different meaning on it, which is older pills being pushed along it by
+ * adm-activity-slot below, so the arrival moves on the free axis instead.
  *
  * No prefers-reduced-motion block, for the third time in this file and the same
  * reason: the panel decides motion per surface in JS. ActivityFeed.tsx sets
@@ -646,7 +650,93 @@
 @keyframes adm-activity-in {
   from {
     opacity: 0;
-    transform: translateX(18px) scale(0.97);
+    transform: translateY(14px);
+  }
+}
+
+/* The slot an arriving pill occupies.
+ *
+ * THIS IS WHAT MOVES THE OLDER PILLS RIGHT. The strip is left-anchored, so a
+ * pill inserted at the head displaces every pill after it by its own width.
+ * Animating that new pill's negative left margin back to zero turns the
+ * displacement into a slide instead of a jump, and it needs no measurement:
+ * --adm-pill-shift is a constant the component sets, because every pill is
+ * the same width by design.
+ *
+ * Margin rather than transform, deliberately. A transform would move the new
+ * pill without moving anything else, which is the opposite of the effect: the
+ * point is that the others give way. Layout on 460ms for one small element in
+ * a bar is a cost worth paying for that.
+ *
+ * Only a `from`, no fill-mode, so a skipped run rests on the correct layout. */
+@keyframes adm-activity-slot {
+  from {
+    margin-left: calc(-1 * var(--adm-pill-shift, 0px));
+  }
+}
+
+/* The bell's unread badge, once, on arrival. */
+@keyframes adm-badge-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+/* The bell panel scrolls sideways. A default scrollbar here is a light-grey
+ * system bar sitting on a dark panel, so it gets the same scoped treatment the
+ * rail already uses. Firefox takes the two-value shorthand; WebKit needs the
+ * pseudo-elements, and both are given rather than one being assumed. */
+.adm-scroll-x {
+  scrollbar-width: thin;
+  scrollbar-color: var(--adm-line-strong) transparent;
+  /* Momentum on a trackpad, and a real gesture target on a phone. */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+.adm-scroll-x::-webkit-scrollbar {
+  height: 6px;
+}
+
+.adm-scroll-x::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.adm-scroll-x::-webkit-scrollbar-thumb {
+  background: var(--adm-line-strong);
+  border-radius: 999px;
+}
+
+/* ── The chart's y-scale zoom ───────────────────────────────────────────
+ * Toggling a series can move the axis ceiling by an order of magnitude. The
+ * plot is drawn at the NEW scale immediately, and this animation starts it at
+ * a vertical scale of --adm-zoom-k, which components/admin/charts.tsx sets to
+ * maxNew / maxOld, so the first frame reproduces the OLD picture exactly.
+ *
+ * ONLY A `from`. The implicit destination is the element's own untransformed
+ * geometry, and there is no fill-mode, so a run that is skipped, throttled or
+ * interrupted still rests on the correct scale. Same contract as
+ * @keyframes odo-roll-in: timing may depend on frames, truth may not.
+ *
+ * The pivot is the axis line, set by transform-origin in the component, not
+ * here: it depends on the chart's height, which is a prop.
+ *
+ * No prefers-reduced-motion block, for the fourth time in this file and the
+ * same reason. charts.tsx reads useReducedMotion and omits the animation
+ * itself, which is the path that can see the panel's own Motion toggle. */
+@keyframes adm-chart-zoom {
+  from {
+    transform: scaleY(var(--adm-zoom-k, 1));
+  }
+}
+
+/* The tick numbers change VALUE across a zoom, so they cross-fade rather than
+ * swapping mid-flight. Outside the scaled group: stretching text vertically
+ * would distort the glyphs. */
+@keyframes adm-chart-tick-in {
+  from {
+    opacity: 0;
   }
 }
 

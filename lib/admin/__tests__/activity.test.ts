@@ -4,8 +4,6 @@ import {
   diffActivity,
   dwellMs,
   flagFor,
-  MAX_VISIBLE,
-  trim,
   type ActivitySnapshot,
 } from "../activity";
 
@@ -131,11 +129,6 @@ describe("flags", () => {
 });
 
 describe("the bar's limits", () => {
-  it("keeps the newest and drops the rest", () => {
-    const rows = Array.from({ length: 9 }, (_, i) => i);
-    expect(trim(rows)).toEqual([5, 6, 7, 8]);
-    expect(trim(rows)).toHaveLength(MAX_VISIBLE);
-  });
 
   it("lets the rare things sit longer than the common ones", () => {
     expect(dwellMs("sale")).toBeGreaterThan(dwellMs("visitor"));

@@ -162,12 +162,8 @@ export function dwellMs(kind: ActivityKind): number {
   }
 }
 
-/** Newest first, and never more than the bar can show without becoming noise. */
-export const MAX_VISIBLE = 4;
-
-// Generic: the feed carries its own per-row state (born, leaving) on top of
-// ActivityEvent, and this only ever slices, so narrowing it to ActivityEvent
-// would strip those fields back off at the type level.
-export function trim<T>(events: T[]): T[] {
-  return events.slice(-MAX_VISIBLE);
-}
+// trim() and MAX_VISIBLE were here. The bar capped its own visible rows and
+// dropped the rest on the floor, which is the behaviour that made the whole
+// feed unusable: an event that scrolled past was gone for good. Capping is now
+// lib/admin/activityStore.ts's job, where it caps a RETAINED history rather
+// than a discarded one, and the strip takes its own slice off the top.

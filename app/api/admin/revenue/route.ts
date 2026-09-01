@@ -88,14 +88,42 @@ export async function GET() {
   const live = await getProjectMetrics();
   const arrCents = estimatedArrCents(subs.paidCounts);
 
-  // Revenue-by-source for the current picture: shop net (all-time here for
-  // a stable donut), donations all-time, and subscriptions annualized run
-  // rate. Labeled in the UI; this is a mix of realized + estimated.
+  // ── Revenue by source ───────────────────────────────────────────────────
+  //
+  // THIS DONUT USED TO COMPARE MONEY RECEIVED WITH MONEY NOT YET EARNED. Its
+  // three slices were shop net (realized, all-time), donations (realized,
+  // all-time) and "Subscriptions (est. ARR)", which is a twelve-month FORWARD
+  // PROJECTION computed from today's subscriber count times a list price.
+  //
+  // Those are not the same kind of number and they cannot share a pie. On
+  // production the effect was severe rather than academic: the shop has never
+  // taken a payment and donations have never been recorded, so both realized
+  // slices are zero, and the chart rendered as a single full circle of a
+  // projection. It read as "subscriptions are 100% of our revenue" when what
+  // it actually showed was "we have no revenue and here is a forecast".
+  //
+  // Realized only now. A source with nothing realized contributes nothing,
+  // and the estimate keeps its own place in the run-rate card lower down,
+  // where it is labelled as a run rate and not summed against cash.
+  const subsRealizedCents = live ? Math.round(live.totalRevenue * 100) : null;
   const bySource = [
     { name: "Shop (net)", value: summary.netCents },
     { name: "Donations", value: donationsTotal },
-    { name: "Subscriptions (est. ARR)", value: arrCents },
+    // Omitted, not zeroed, when RevenueCat is not configured: a zero slice
+    // would claim subscriptions earned nothing, and the truth is that nothing
+    // here can see what they earned. The UI says which case it is in.
+    ...(subsRealizedCents != null
+      ? [{ name: "Subscriptions", value: subsRealizedCents }]
+      : []),
   ];
+
+  // What the business has actually taken, across every source that can answer.
+  // Deliberately NOT a sum that silently treats an unmeasured source as zero:
+  // `complete` is false whenever a source could not report, and the UI is
+  // required to qualify the figure when it is.
+  const realizedTotalCents =
+    summary.netCents + donationsTotal + (subsRealizedCents ?? 0);
+  const realizedComplete = subsRealizedCents != null && donations.length > 0;
 
   return NextResponse.json(
     {
@@ -105,7 +133,13 @@ export async function GET() {
         refundedCents: summary.refundedCents,
         averageOrderCents: summary.averageOrderCents,
         refundRate: summary.refundRate,
+        // Both, and named for what they are. paidOrderCount includes orders
+        // that were later refunded, which is what refundRate divides by;
+        // keptOrderCount is the one that matches netCents and the one the
+        // panel prints beside the word "paid".
         paidOrderCount: summary.paidOrderCount,
+        keptOrderCount: summary.keptOrderCount,
+        refundedOrderCount: summary.refundedOrderCount,
         pendingOrderCount,
         cancelledOrderCount,
         unitsSold: summary.unitsSold,
@@ -153,6 +187,15 @@ export async function GET() {
         source: live ? ("revenuecat" as const) : ("list-price-estimate" as const),
       },
       bySource,
+      realized: {
+        totalCents: realizedTotalCents,
+        /** False when a source could not report and is missing from the sum. */
+        complete: realizedComplete,
+        shopCents: summary.netCents,
+        donationsCents: donationsTotal,
+        /** Null when RevenueCat is not configured: unmeasured, not zero. */
+        subscriptionsCents: subsRealizedCents,
+      },
     },
     { headers: { "Cache-Control": "no-store" } },
   );

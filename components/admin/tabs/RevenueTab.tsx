@@ -19,6 +19,8 @@ type Revenue = {
     averageOrderCents: number;
     refundRate: number;
     paidOrderCount: number;
+    keptOrderCount: number;
+    refundedOrderCount: number;
     pendingOrderCount: number;
     cancelledOrderCount: number;
     unitsSold: number;
@@ -50,6 +52,13 @@ type Revenue = {
     } | null;
   };
   bySource: { name: string; value: number }[];
+  realized: {
+    totalCents: number;
+    complete: boolean;
+    shopCents: number;
+    donationsCents: number;
+    subscriptionsCents: number | null;
+  };
 };
 
 function money(cents: number) {
@@ -82,9 +91,25 @@ function RevenuePanel() {
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard
+          // The figure the panel never had. Every card here reported one
+          // stream, and the estimate shouted loudest, so there was no line
+          // anywhere saying what the business has actually been paid.
+          label={data?.realized.complete ? "Realized revenue" : "Realized · partial"}
+          value={data ? money(data.realized.totalCents) : "—"}
+          accent
+          hint={
+            data
+              ? data.realized.complete
+                ? "shop + donations + subscriptions"
+                : data.realized.subscriptionsCents == null
+                  ? "shop + donations; subscriptions not connected"
+                  : "shop + subscriptions; donations never recorded"
+              : undefined
+          }
+        />
+        <StatCard
           label="Shop net"
           value={data ? money(data.shop.netCents) : "—"}
-          accent
           hint="paid minus refunds"
         />
         <StatCard
@@ -96,7 +121,10 @@ function RevenuePanel() {
           // the opposite diagnosis and the opposite fix.
           hint={
             data
-              ? `${data.shop.paidOrderCount} paid · ${data.shop.pendingOrderCount} pending · ${data.shop.cancelledOrderCount} cancelled`
+              ? // keptOrderCount, not paidOrderCount. The latter counts an
+                // order that was paid and then refunded, so a shop with one
+                // sale and one refund of it used to report "2 paid".
+                `${data.shop.keptOrderCount} paid · ${data.shop.pendingOrderCount} pending · ${data.shop.cancelledOrderCount} cancelled${data.shop.refundedOrderCount > 0 ? ` · ${data.shop.refundedOrderCount} refunded` : ""}`
               : undefined
           }
         />
@@ -169,9 +197,18 @@ function RevenuePanel() {
 
       <div className="grid gap-6 md:grid-cols-2">
         <ChartFrame
-          title="Revenue by source"
-          subtitle="Shop net + donations (realized) and subscriptions (est. annual)."
+          title="Realized revenue by source"
+          // The subtitle is load-bearing. This chart used to put a twelve-month
+          // forward ARR projection in the same circle as realized cash, which
+          // on a shop that has never taken a payment rendered as one full ring
+          // of a forecast.
+          subtitle={
+            data && data.realized.subscriptionsCents == null
+              ? "Money actually received. Subscriptions are excluded: RevenueCat is not connected, so what they earned cannot be read."
+              : "Money actually received. The subscription run-rate estimate is not in here; it is in the card below."
+          }
           isEmpty={donutSegments.length === 0}
+          empty="Nothing realized yet."
         >
           <div className="flex justify-center">
             <Donut segments={donutSegments} size={200} label="USD" />

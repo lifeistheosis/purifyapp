@@ -60,6 +60,31 @@ describe("earningsSummary", () => {
     expect(s.refundRate).toBe(0.5);
   });
 
+  it("separates orders ever paid from orders still paid", () => {
+    // The distinction the admin panel got wrong. paidOrderCount is the
+    // refundRate denominator and counts an order that was paid and then
+    // refunded; keptOrderCount is the one that matches netCents. Printing the
+    // first beside the word "paid" reported one sale and one refund of it as
+    // two sales.
+    const s = earningsSummary([
+      order(5000, "paid", "2026-07-01T00:00:00Z"),
+      order(3000, "refunded", "2026-07-02T00:00:00Z"),
+    ]);
+    expect(s.paidOrderCount).toBe(2);
+    expect(s.keptOrderCount).toBe(1);
+    expect(s.netCents).toBe(5000);
+  });
+
+  it("keptOrderCount is zero when every order was refunded", () => {
+    const s = earningsSummary([
+      order(5000, "refunded", "2026-07-01T00:00:00Z"),
+      order(3000, "refunded", "2026-07-02T00:00:00Z"),
+    ]);
+    expect(s.keptOrderCount).toBe(0);
+    expect(s.netCents).toBe(0);
+    expect(s.averageOrderCents).toBe(0);
+  });
+
   it("averages over kept orders only", () => {
     const s = earningsSummary([
       order(4000, "paid", "2026-07-01T00:00:00Z"),

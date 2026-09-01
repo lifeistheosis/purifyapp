@@ -22,6 +22,8 @@ import {
   type CSSProperties,
 } from "react";
 
+import { useReducedMotion } from "@/lib/ui/motion";
+
 // Layout effect on the client, plain effect on the server, where there is no
 // layout to read and useLayoutEffect only warns. The identity is chosen once
 // per environment, never per render, so the hook order is stable.
@@ -76,10 +78,16 @@ export const SERIES_COLORS = [
 
 // CSS-variable tokens. app/admin/admin-theme.css overrides all four of these
 // inside .adm, per theme; globals.css holds the reader defaults.
-// GRID was here, bound to --chart-grid. v5 removed every gridline in this
-// file, so nothing reads it. The token itself stays defined in
-// admin-theme.css and globals.css because the reader's own charts still use
-// it; only the admin stopped drawing them.
+//
+// GRID is back. v5 removed every gridline in this file on the argument that
+// the hover crosshair traces a point to its axis better and only when asked.
+// That is true of a POINT and false of a SHAPE: with nothing behind it the
+// plot floats, and the eye has no fixed reference to judge one peak against
+// another, or against the same chart a moment ago. It matters more now that
+// the y-scale animates, because a zoom against a blank field reads as the
+// data moving rather than the scale changing. The grid is what the zoom moves
+// against, which is why it deliberately does NOT scale with the plot.
+const GRID = "var(--chart-grid)";
 const AXIS = "var(--chart-axis)";
 const HOVER = "var(--chart-hover)";
 
@@ -350,6 +358,7 @@ function CartesianPlot({
 }) {
   const [hover, setHover] = useState<number | null>(null);
   const uid = useId().replace(/:/g, "");
+  const reduced = useReducedMotion();
   const [boxRef, narrow] = useNarrowWidth();
   const width = narrow ?? 1000;
   // The gutter is for tick text. At scale 1 that text is 10px and needs about
@@ -361,6 +370,52 @@ function CartesianPlot({
   const innerW = width - padL - padR;
   const innerH = height - padT - padB;
   const all = series.flatMap((s) => s.data);
+  // Computed BEFORE the empty-state return, because the zoom hook below must
+  // run on every render and a hook after a conditional return does not.
+  // Math.max(...[], 1) is 1, so this is safe on an empty series.
+  const axisMax = niceMax(Math.max(...all, 1));
+
+  // ── The zoom ──────────────────────────────────────────────────────────────
+  // Toggling a series off can drop the ceiling from 10k to 200, and toggling
+  // it back on raises it again. Snapping between the two is a jump cut: every
+  // curve on screen changes height at once and the eye reads it as the DATA
+  // moving, which is the one thing it must never read as.
+  //
+  // So the plot is drawn at the NEW scale, always and immediately, and a
+  // transform makes it momentarily look like the OLD one before animating
+  // that transform away. The geometry is exact rather than eyeballed. With
+  // base at the axis line, a value's distance above it is (v / max) * innerH,
+  // so the same drawing at two different maxima differs by a pure vertical
+  // scale about that base of k = maxNew / maxOld. Raising the ceiling gives
+  // k > 1: the curves start stretched to their old height and settle down,
+  // which is a zoom OUT. Lowering it gives k < 1 and the reverse.
+  //
+  // A CSS @keyframes with only a `from`, not a transition, and no fill-mode.
+  // The rest state is therefore the element's own untransformed geometry,
+  // which is the truth. Exactly as in components/admin/Odometer.tsx: an
+  // animation that is skipped, throttled, or never fires at all still leaves
+  // the correct picture on screen. A transition would have to be armed one
+  // frame after a change, and a frame callback that does not fire in a
+  // background tab would leave the plot resting at the WRONG scale.
+  // State, not a ref, and set during render on purpose. This is React's
+  // documented way to adjust state when a prop changes: the set call is
+  // detected before anything commits, so it re-renders in place rather than
+  // painting once and correcting. A ref would be the obvious tool and is the
+  // wrong one, because reading ref.current during render is exactly what
+  // react-hooks/refs forbids and what makes a component miss an update.
+  //
+  // Held rather than recomputed each render so that an unrelated re-render,
+  // hovering the plot, cannot clear k halfway through and cancel a zoom that
+  // is already playing.
+  const [zoom, setZoom] = useState<{ max: number; k: number | null }>({
+    max: axisMax,
+    k: null,
+  });
+  if (zoom.max !== axisMax) {
+    setZoom({ max: axisMax, k: axisMax / zoom.max });
+  }
+  const zoomK = reduced ? null : zoom.k;
+
   if (!all.length) {
     return (
       <p className="font-sans text-detail text-[color:var(--adm-ink-3)] py-8 text-center">
@@ -368,12 +423,16 @@ function CartesianPlot({
       </p>
     );
   }
-  const axisMax = niceMax(Math.max(...all, 1));
+
   const count = Math.max(...series.map((s) => s.data.length));
   const stepX = count > 1 ? innerW / (count - 1) : 0;
 
   const yFor = (v: number) => padT + innerH - (v / axisMax) * innerH;
-  const xFor = (i: number) => padL + i * stepX;
+  // A LONE POINT GOES IN THE MIDDLE, not hard against the axis. With count 1
+  // stepX is 0, so every index mapped to padL and the single reading sat on
+  // the y-axis looking like a rendering fault rather than a datum.
+  const xFor = (i: number) =>
+    count === 1 ? padL + innerW / 2 : padL + i * stepX;
 
   const linePath = (data: number[]) =>
     smoothPath(data.map((v, i) => ({ x: xFor(i), y: yFor(v) })));
@@ -461,10 +520,18 @@ function CartesianPlot({
           </defs>
         )}
 
-        {/* Y labels */}
+        {/* Y labels. The numbers themselves change when the scale does, so
+            they cross-fade rather than snapping to new values mid-zoom. They
+            are not inside the zoom group: scaling text vertically would
+            stretch the glyphs. */}
         {tickFracs.map((f, i) => (
           <text
-            key={i}
+            key={`${axisMax}-${i}`}
+            style={
+              zoomK != null
+                ? { animation: "adm-chart-tick-in 620ms ease-out" }
+                : undefined
+            }
             x={padL - 8}
             y={grid[i] + 3}
             fill={AXIS}
@@ -499,6 +566,61 @@ function CartesianPlot({
             ))
           : null}
 
+        {/* The grid, behind everything and OUTSIDE the zoom group.
+            It is the fixed frame the plot moves against; scaling it with the
+            data would cancel the zoom out visually and leave a chart that
+            looks identical before and after a scale change.
+
+            The baseline is drawn at the axis colour rather than the grid
+            colour: it is the zero line, which is a fact about the data, while
+            the rest are a reading aid. */}
+        <g aria-hidden>
+          {grid.map((y, i) => (
+            <line
+              key={`h-${i}`}
+              x1={padL}
+              x2={padL + innerW}
+              y1={y}
+              y2={y}
+              stroke={i === grid.length - 1 ? AXIS : GRID}
+              strokeWidth={1}
+              shapeRendering="crispEdges"
+            />
+          ))}
+          {xLabelIdxs.map((i) => (
+            <line
+              key={`v-${i}`}
+              x1={xFor(i)}
+              x2={xFor(i)}
+              y1={padT}
+              y2={padT + innerH}
+              stroke={GRID}
+              strokeWidth={1}
+              shapeRendering="crispEdges"
+            />
+          ))}
+        </g>
+
+        {/* Everything that is drawn AT the current scale, and therefore
+            everything the zoom applies to. Keyed on axisMax so a scale change
+            remounts it and the animation runs again from the top; React does
+            not restart an animation whose name did not change. */}
+        <g
+          key={`zoom-${axisMax}`}
+          style={
+            zoomK != null
+              ? ({
+                  // view-box, so the origin below is in viewBox units rather
+                  // than relative to this group's own bounding box, which
+                  // changes shape with the data and would move the pivot.
+                  transformBox: "view-box",
+                  transformOrigin: `0px ${padT + innerH}px`,
+                  ["--adm-zoom-k" as string]: String(zoomK),
+                  animation: "adm-chart-zoom 620ms cubic-bezier(0.22, 0.9, 0.24, 1)",
+                } as CSSProperties)
+              : undefined
+          }
+        >
         {/* Area fills (under the line) */}
         {mode === "area" &&
           series.map((s, i) => (
@@ -522,6 +644,30 @@ function CartesianPlot({
             strokeLinejoin="round"
           />
         ))}
+
+        {/* A SINGLE READING IS DRAWN AS A DOT, because it cannot be drawn as a
+            line. smoothPath returns a bare `M x y` for one point and a moveto
+            with no drawing command paints nothing at all, so a chart with one
+            month of data rendered its axes, its grid, its legend and no data:
+            indistinguishable from a bug, and the reason the revenue chart
+            looked broken on a shop with a single month of orders.
+
+            Not joined up to anything, and deliberately: one reading is a
+            value, not a trend, and drawing a flat line across the full width
+            would assert a period the data does not cover. */}
+        {series
+          .filter((s) => s.data.length === 1)
+          .map((s) => (
+            <circle
+              key={`dot-${s.name}`}
+              cx={xFor(0)}
+              cy={yFor(s.data[0])}
+              r={4}
+              fill={s.color}
+              stroke="var(--adm-bg)"
+              strokeWidth={1.5}
+            />
+          ))}
 
         {/* Hover marker */}
         {hover !== null && (
@@ -550,6 +696,7 @@ function CartesianPlot({
             })}
           </>
         )}
+        </g>
       </svg>
 
       {/* Legend.

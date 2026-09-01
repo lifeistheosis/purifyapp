@@ -846,6 +846,16 @@ export function AdminShell({
               </button>
             </div>
 
+                {/* Activity first, then search. The strip takes the free
+                    space in the middle of the bar and the bell lands
+                    immediately left of the search box, which is where the
+                    owner asked for it.
+
+                    Order matters here and is not cosmetic: the strip is
+                    flex-1, so it absorbs the slack. Putting it after the
+                    search would push the search off to the left edge and
+                    strand the bell in the far corner. */}
+                <ActivityFeed />
                 {/* Search and the one count that means someone is waiting.
                     Both sit left of the action bank so the row reads
                     identity, then find, then do. */}
@@ -860,14 +870,6 @@ export function AdminShell({
                   )}
                   onSelect={(id) => isTabId(id) && select(id)}
                 />
-                {/* WAS A BELL. It carried the pending-order count and, on click,
-                    jumped to Orders. Both survive without it: the count is the
-                    "Orders awaiting payment" card at the head of Overview,
-                    which is larger, says what it means, and has the button on
-                    it. A bell with a number behind it asks the operator to go
-                    and look; this tells them instead, and then gets out of the
-                    way. */}
-                <ActivityFeed />
             </div>
 
             {/* The drawer belongs to the bar, not to the content.
