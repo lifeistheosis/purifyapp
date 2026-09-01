@@ -936,7 +936,13 @@ export function AdminShell({
               its entrance animation ran, which made the layering correct or
               broken depending on the reader's motion preference. */}
           <div
-            className="adm-canvas mx-auto w-full max-w-[var(--adm-content-max)] px-4 pt-5 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:px-6 lg:pb-5"
+            // NO pb-* HERE. The bottom clearance is set by .adm-canvas in
+            // admin-theme.css, which is unlayered and therefore beats any
+            // Tailwind utility on this element no matter what it says. Two
+            // utilities used to sit here claiming to do it; they were dead,
+            // and reading them was why the panel looked like it already had
+            // 88px of clearance while computing 0.
+            className="adm-canvas mx-auto w-full max-w-[var(--adm-content-max)] px-4 pt-5 md:px-6"
             style={{ isolation: "isolate" }}
           >
             {larp ? (

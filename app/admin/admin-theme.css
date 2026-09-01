@@ -769,8 +769,42 @@
 }
 
 /* The other end. Without this the last card sits under the home indicator. */
+/* ── The bottom of every scrollable tab ─────────────────────────────────
+ *
+ * THIS RULE OWNS THE WHOLE VALUE, and it has to, because it is UNLAYERED.
+ *
+ * Nothing in this stylesheet is inside an @layer, while Tailwind v4 declares
+ * `@layer theme, base, components, utilities` and puts every utility in the
+ * last of them. Unlayered styles beat layered ones outright, whatever the
+ * specificity. So this rule silently overrode the
+ * pb-[calc(5.5rem+env(safe-area-inset-bottom))] that AdminShell put on the
+ * same element, and the panel was left with the value below: on a phone where
+ * the inset is 0, that is ZERO bottom padding.
+ *
+ * The consequence was reported as "certain sections on mobile don't let me
+ * scroll down all the way". The mobile tab bar is `fixed bottom-0` and about
+ * 74px tall (a 58px item, 8px above, at least 8px below), so the last 74px of
+ * every tab sat underneath it with nothing to scroll into. Measured in the
+ * browser: the utility alone computes to 93.5px, and adding this class takes
+ * it to 0px.
+ *
+ * 5.5rem is 88px, which clears the bar with 14px to spare. The inset is added
+ * rather than replacing it, so a device with a home indicator gets both.
+ *
+ * If the tab bar's height changes, change this with it. The two are related by
+ * arithmetic that no test can see, which is exactly why the number is spelled
+ * out above rather than left to be re-derived.
+ */
 .adm-canvas {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* The tab bar is lg:hidden, so from here the clearance is only the inset plus
+   ordinary breathing room. */
+@media (min-width: 1024px) {
+  .adm-canvas {
+    padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 /* iOS SAFARI ZOOMS THE WHOLE PAGE when a focused input is under 16px, and
