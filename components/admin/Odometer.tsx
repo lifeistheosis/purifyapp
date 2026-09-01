@@ -103,24 +103,38 @@ function Wheel({
   return (
     <span
       className="relative inline-block overflow-hidden"
-      // 1ch is the advance of "0", and with tabular figures every digit
-      // matches it, so the column tracks whatever face the panel is set in
-      // rather than the 0.62em this used to guess at. That guess was narrow
-      // in DM Sans and clipped the wider digits at large sizes.
-      //
-      // The mask is what stops a spinning reel looking sawn off. overflow
-      // hidden alone gives a hard edge, so the digit arriving at the top and
-      // the one leaving at the bottom are cut clean through mid-stroke, which
-      // reads as broken rather than as motion. Fading the last eighth at each
-      // end lets a digit arrive and leave instead, which is also what a real
-      // reel looks like behind its window.
-      //
-      // 12% rather than more: the window is one em and the digits fill most of
-      // it, so a deeper fade starts eating the resting digit, which has to stay
-      // fully legible. This is decoration on a number people read.
       style={{
         height: "1em",
-        width: "1ch",
+        // 0.66em, and the number is measured rather than chosen.
+        //
+        // DM SANS HAS NO TABULAR FIGURES. font-variant-numeric: tabular-nums
+        // is inert in it, verified in the browser: "1" is 0.348em and "0" is
+        // 0.698em, exactly twice as wide, with or without the property. So the
+        // tabular-nums on the row below buys nothing for the digits and every
+        // column has to be padded to a common width by hand.
+        //
+        // It used to be padded to 0.698em, the widest ADVANCE, which is what
+        // both 1ch and an invisible "0" sizer resolve to. That is defensible
+        // and it is what the owner reported as too spaced out: a "1" is half
+        // the width of the column it sits in, so 111,111 read as 1 1 1, 1 1 1.
+        //
+        // The floor is the widest INK, 0.643em (the "0" and the "4", measured
+        // off canvas TextMetrics), not the widest advance. The difference
+        // between them is DM Sans's generous sidebearing on round glyphs, and
+        // that is the part worth reclaiming. 0.66em clears the ink floor, so
+        // no glyph is ever clipped and no two digits ever touch, while taking
+        // 5.4% off every column.
+        //
+        // Do not go below 0.643em. overflow: hidden clips BOTH axes, so a
+        // narrower column would slice the sides off 0, 4, 8 and 9. The clip is
+        // deliberately kept rather than replaced with a mask-only version,
+        // because if mask-image ever fails to apply the fallback is a strip of
+        // thirty digits spilling down the card.
+        width: "0.66em",
+        // The mask is what stops a spinning reel looking sawn off. overflow
+        // hidden alone gives a hard edge, so the digit arriving at the top and
+        // the one leaving at the bottom are cut clean through mid-stroke,
+        // which reads as broken rather than as motion.
         WebkitMaskImage:
           "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
         maskImage:
@@ -229,9 +243,12 @@ export function Odometer({
           instead of their baselines makes it geometric and exact: every child
           is 1em tall and centred, so they line up by construction.
 
-          tabular-nums here rather than on each digit so the separators share
-          the same figure metrics, which is what keeps a comma from nudging the
-          columns after it out of step. */}
+          tabular-nums is kept but it is NOT doing any work: DM Sans ships no
+          tnum feature, so the property is inert in the font this panel
+          actually renders in. It stays because it costs nothing and becomes
+          correct the moment the face changes, and because the digit columns
+          above are hand-padded to a common width precisely BECAUSE it is
+          inert. Do not delete it and assume the columns will hold. */}
       <span
         aria-hidden
         className="inline-flex items-center"

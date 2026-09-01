@@ -27,6 +27,7 @@
 // tick run for the whole batch, with the ka-ching winning when both are due.
 
 import { CLICK_WAV_BASE64 } from "./clickSample";
+import { clickGain, clickTimes } from "./reelClicks";
 
 const KEY = "purify.sound.admin";
 
@@ -181,6 +182,23 @@ export function reportChange(money: boolean): void {
 let clickBuffer: AudioBuffer | null = null;
 let clickPending: Promise<AudioBuffer | null> | null = null;
 
+/**
+ * The decoded sample's own peak amplitude, 0..1, measured once.
+ *
+ * THIS IS WHY THE RATCHET WAS SILENT. The trimmed WAV peaks at about 0.25,
+ * roughly -12 dBFS, because it is a slice of a field recording and was never
+ * normalised. CLICK_PEAK was being multiplied straight into that, so a
+ * "peak 0.05" click actually left the mixer at 0.0063, about -44 dBFS: some
+ * 23 dB under the ka-ching beside it and far below anything audible over a
+ * room. The bug was invisible from the code because the constant looked
+ * reasonable; only the sample's own amplitude gave it away.
+ *
+ * Dividing by this makes CLICK_PEAK mean what it says, an actual output peak,
+ * and keeps it meaning that if the sample is ever replaced, which the
+ * provenance note in clickSample.ts says it may have to be.
+ */
+let clickNormalise = 1;
+
 /** Decode the inlined click once, and remember the promise so a dashboard of
  *  reels asking at the same moment decodes it once rather than five times. */
 function loadClick(c: AudioContext): Promise<AudioBuffer | null> {
@@ -192,6 +210,15 @@ function loadClick(c: AudioContext): Promise<AudioBuffer | null> {
       const bytes = new Uint8Array(bin.length);
       for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
       clickBuffer = await c.decodeAudioData(bytes.buffer);
+      const pcm = clickBuffer.getChannelData(0);
+      let peak = 0;
+      for (let i = 0; i < pcm.length; i++) {
+        const v = Math.abs(pcm[i]);
+        if (v > peak) peak = v;
+      }
+      // Guard a silent or near-silent buffer: dividing by ~0 would ask for a
+      // gain of thousands and blow the operator's ears off.
+      clickNormalise = peak > 0.01 ? peak : 1;
       return clickBuffer;
     } catch (e) {
       console.warn("[admin sound] click sample would not decode", e);
@@ -199,6 +226,43 @@ function loadClick(c: AudioContext): Promise<AudioBuffer | null> {
     }
   })();
   return clickPending;
+}
+
+/**
+ * Wait, briefly, for a context to actually be running.
+ *
+ * audio() calls resume() but resume() is ASYNCHRONOUS, so a caller inside a
+ * click handler can find state still "suspended" on the very next line even
+ * though the gesture will unlock it a moment later. Checking state alone
+ * therefore drops the first run after the operator turns sound on, which is
+ * the one run they are listening for.
+ *
+ * Bounded, because the other case is a cold page load with no gesture at all,
+ * where resume() never resolves and waiting forever would leak a pending
+ * promise per reel. 120ms is far longer than an unlock takes and far shorter
+ * than the spin it belongs to.
+ */
+async function running(c: AudioContext): Promise<boolean> {
+  // Read through a widened accessor. Comparing c.state directly narrows the
+  // type after the first check, and tsc then rejects every later comparison
+  // against "running" as having no overlap, which is true of the static type
+  // and false of the value: the whole point is that it changes underneath us.
+  const state = (): string => c.state;
+  if (state() === "running") return true;
+  void c.resume();
+  // One self-terminating poll rather than a race against a timer. A race
+  // leaves the losing side running: the polling chain would keep re-arming
+  // every 10ms forever on a context that never unlocks, once per wheel per
+  // mount, which on a board of five-digit reels is a lot of dead timers.
+  const deadline = performance.now() + 120;
+  await new Promise<void>((resolve) => {
+    const tick = () => {
+      if (state() === "running" || performance.now() >= deadline) resolve();
+      else setTimeout(tick, 10);
+    };
+    tick();
+  });
+  return state() === "running";
 }
 
 /**
@@ -224,8 +288,18 @@ export function scheduleReelClicks(
   if (!adminSoundEnabled() || offsetsMs.length === 0) return;
   const c = audio();
   if (!c) return;
-  void loadClick(c).then((buf) => {
+  void loadClick(c).then(async (buf) => {
     if (!buf || !adminSoundEnabled()) return;
+    // A SUSPENDED CONTEXT CANNOT BE SCHEDULED INTO. The reels animate on
+    // mount, which on a cold load is before any gesture, so the autoplay
+    // policy still has the context parked. currentTime does not advance while
+    // it is parked, so every offset computed below lands in the past and the
+    // guard drops the lot: a whole ratchet, scheduled and discarded.
+    //
+    // Nothing can be done about that first spin, and no browser will let it
+    // be: audio before a gesture is forbidden. Every spin after the operator
+    // touches anything is fine, which is what running() is for.
+    if (!(await running(c))) return;
     // How far into the spin we already are, in seconds.
     const elapsed = (performance.now() - startedAt) / 1000;
     const base = c.currentTime - elapsed;
@@ -237,13 +311,60 @@ export function scheduleReelClicks(
       const src = c.createBufferSource();
       const amp = c.createGain();
       src.buffer = buf;
-      amp.gain.setValueAtTime(Math.max(0.0001, gains[i] ?? 0.3) * CLICK_PEAK, at);
+      amp.gain.setValueAtTime(
+        (Math.max(0.0001, gains[i] ?? 0.3) * CLICK_PEAK) / clickNormalise,
+        at,
+      );
       src.connect(amp).connect(c.destination);
       src.start(at);
     }
   });
 }
 
-/** Peak for a single click. Thirty of these land inside a second on one reel
- *  and five reels overlap, so this sits far below the register's 0.09. */
-const CLICK_PEAK = 0.05;
+/**
+ * Output level for a click at clickGain 1.0, as a real amplitude.
+ *
+ * Normalised by clickNormalise above, so this is what actually reaches the
+ * mixer rather than a number multiplied into an unknown sample level.
+ *
+ * READ THE FACTOR OF TWO. clickGain in reelClicks.ts runs from 0.5 down to
+ * 0.16 across a spin, never 1.0, so the LOUDEST click in a run comes out at
+ * half of this: 0.07, about -23 dBFS, against the register's 0.09 at -20.9.
+ * That is the relationship wanted, since a 26ms transient reads as louder
+ * than a bell ringing for 340ms at the same peak. The quietest click at the
+ * end of a run lands near -33 dBFS.
+ *
+ * Two earlier values are worth keeping as warnings. 0.05 UNNORMALISED came
+ * out at -44 dBFS and could not be heard at all. 0.07 normalised looked right
+ * on paper but forgot the clickGain ceiling and measured -29, still 8 dB under
+ * the register. Both times the arithmetic was checked and the OUTPUT was not.
+ * If this is retuned, measure the decoded peak times the gain, do not reason
+ * about the constant alone.
+ */
+const CLICK_PEAK = 0.14;
+
+/**
+ * Play one representative ratchet, on demand.
+ *
+ * The Sound toggle plays this when it is switched on, next to the register.
+ * Until it did, the only sound on enabling was the ka-ching, so an operator
+ * could turn sound on, hear the bell, conclude sound worked, and still never
+ * once hear the reel clicks: those only fire on a spin, and the spin they
+ * would have heard is the one on page load that the autoplay policy has
+ * already eaten. That is exactly how a ratchet running 23 dB too quiet went
+ * unnoticed.
+ *
+ * Uses the real solver rather than an evenly spaced burst, so what the
+ * operator hears when they enable sound is what a spin actually sounds like.
+ */
+export function reelDemo(): void {
+  if (!adminSoundEnabled()) return;
+  // A mid-length run: enough clicks to hear the deceleration, short enough to
+  // sit under the ka-ching playing beside it.
+  const times = clickTimes(20, 1_100);
+  scheduleReelClicks(
+    times,
+    times.map((_, i) => clickGain(i, times.length)),
+    performance.now(),
+  );
+}
