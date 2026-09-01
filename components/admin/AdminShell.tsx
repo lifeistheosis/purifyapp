@@ -57,7 +57,6 @@ import { TrafficHubTab } from "./tabs/TrafficHubTab";
 import { ContentTab } from "./tabs/ContentTab";
 import { ContentHealthTab } from "./tabs/ContentHealthTab";
 import { HealthTab } from "./tabs/HealthTab";
-import { Toolbar, ToolbarButton } from "./primitives";
 import { AdminThemeToggle } from "./AdminThemeToggle";
 import { AdminSoundToggle } from "./AdminSoundToggle";
 import { AdminMotionToggle } from "./AdminMotionToggle";
@@ -469,7 +468,6 @@ export function AdminShell({
   // without an effect that calls setState, which React flags as a cascading
   // render and which AdminThemeToggle and useTween both learned the hard way.
   const [requested, setActive] = useState<TabId>("overview");
-  const [rebuildStatus, setRebuildStatus] = useState<string | null>(null);
   const [navOpen, setNavOpen] = useState(false);
 
   // LARP MODE. Type the word anywhere in the panel that is not a text field.
@@ -598,24 +596,6 @@ export function AdminShell({
     [mode, select],
   );
 
-  async function rebuild(target: "saints" | "councils" | "home" | "all") {
-    setRebuildStatus("Rebuilding");
-    try {
-      const r = await fetch("/api/admin/actions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "cache-rebuild", target }),
-      });
-      if (r.ok) {
-        setRebuildStatus(`Rebuilt ${target}`);
-        setTimeout(() => setRebuildStatus(null), 2500);
-      } else {
-        setRebuildStatus("Rebuild failed");
-      }
-    } catch {
-      setRebuildStatus("Rebuild failed");
-    }
-  }
 
   const currentMeta = TABS.find((t) => t.id === active);
   const current = currentMeta ?? TABS[0];
@@ -750,52 +730,6 @@ export function AdminShell({
     <>
       <Wordmark isOwner={isOwner} />
       {isOwner ? <ModeSwitch mode={mode} onChange={switchMode} /> : null}
-    </>
-  );
-
-  // The action bank, named because it now has two homes. On a desktop it sits
-  // in the top bar. At 390px it does not fit there: measured, the bar wrapped
-  // to three rows and pinned 113px, 13% of the viewport, of chrome above every
-  // screen before a single number. So below lg it moves into the Sections
-  // drawer, which is already the mobile overflow surface.
-  //
-  // Two render sites, ONE of which is display:none at any width, which is what
-  // makes the duplicated aria-live safe: a live region inside a display:none
-  // subtree is not announced, so a screen reader still sees exactly one. The
-  // drawer copy also puts the status next to the button that produced it,
-  // rather than behind the open drawer in a bar the operator cannot see.
-  const actionBank = (
-    <>
-      <Toolbar>
-        <ToolbarButton onClick={() => rebuild("all")} title="Revalidate every content surface">
-          Rebuild caches
-        </ToolbarButton>
-        <ToolbarButton onClick={() => rebuild("saints")} title="Revalidate /saints and every saint page">
-          Saints
-        </ToolbarButton>
-        <ToolbarButton onClick={() => rebuild("councils")} title="Revalidate /councils">
-          Councils
-        </ToolbarButton>
-        <ToolbarButton onClick={() => rebuild("home")} title="Revalidate the home page">
-          Home
-        </ToolbarButton>
-      </Toolbar>
-      {/* Status only. The email lives in the rail footer, where it stays put.
-          min-h reserves the line so the toolbar does not shift when a rebuild
-          starts. "Rebuild failed" still never auto-clears: the harm was that it
-          HID the identity, not that it persisted, and silently hiding an error
-          is worse. */}
-      <p
-        aria-live="polite"
-        className="min-h-[16px] font-sans text-[12px]"
-        style={{
-          color: rebuildStatus?.includes("failed")
-            ? "var(--adm-critical)"
-            : "var(--adm-ink-3)",
-        }}
-      >
-        {rebuildStatus}
-      </p>
     </>
   );
 
@@ -965,9 +899,6 @@ export function AdminShell({
                     </span>
                   ) : null}
                 </button>
-              <div className="hidden flex-wrap items-center gap-2 lg:flex">
-                {actionBank}
-              </div>
             </div>
 
             {/* The drawer belongs to the bar, not to the content.
@@ -1005,12 +936,6 @@ export function AdminShell({
                   {railBody}
                   {nav}
                   {railFooter}
-                  <div
-                    className="mt-3 flex flex-wrap items-center gap-2 border-t pt-3 lg:hidden"
-                    style={{ borderColor: "var(--adm-line)" }}
-                  >
-                    {actionBank}
-                  </div>
                 </div>
               </div>
             )}
@@ -1146,7 +1071,6 @@ export function AdminShell({
               screen to leave it. */}
           {isOwner ? <ModeSwitch mode={mode} onChange={switchMode} /> : null}
           {railFooter}
-          <div className="flex flex-wrap items-center gap-2">{actionBank}</div>
         </>
       }
     />
