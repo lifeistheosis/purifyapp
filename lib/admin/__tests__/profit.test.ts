@@ -99,3 +99,52 @@ describe("edges", () => {
     expect(membersToBreakEven(1700, 1699)).toBe(2);
   });
 });
+
+describe("donations are carried, never counted", () => {
+  // The owner's donation figure is typed in from memory, not measured: the BMC
+  // cron that was meant to fill donations_monthly needs CRON_SECRET and a BMC
+  // key, neither of which is set, and the owner has said the number currently
+  // there is a placeholder. A recalled number must not decide whether the
+  // month made a profit.
+  //
+  // Every case here passed BEFORE donations were removed from revenueCents,
+  // because nothing asserted where they went. That is why they are here now.
+
+  it("does not put donations into revenue", () => {
+    const without = monthlyProfit({ ...AUGUST, donationsCents: 0 });
+    const with50 = monthlyProfit({ ...AUGUST, donationsCents: 5_000 });
+    expect(with50.revenueCents).toBe(without.revenueCents);
+  });
+
+  it("does not let donations move profit, margin or the break-even gap", () => {
+    const without = monthlyProfit({ ...AUGUST, donationsCents: 0 });
+    const withLots = monthlyProfit({ ...AUGUST, donationsCents: 1_000_000 });
+    expect(withLots.profitCents).toBe(without.profitCents);
+    expect(withLots.margin).toBe(without.margin);
+    expect(withLots.breakEvenGapCents).toBe(without.breakEvenGapCents);
+  });
+
+  it("still reports the figure, so the panel can show it", () => {
+    // Excluded from the totals is not the same as thrown away. The number is
+    // worth displaying, labelled, and this is what lets the card do that.
+    expect(monthlyProfit({ ...AUGUST, donationsCents: 2_499 }).donationsCents).toBe(
+      2_499,
+    );
+  });
+
+  it("cannot rescue a loss-making month on paper", () => {
+    // The failure this prevents, stated as a scenario: costs above income, a
+    // remembered donation figure large enough to cover the gap, and a panel
+    // that would have reported a profitable month on the strength of it.
+    const loss = monthlyProfit({
+      ...AUGUST,
+      shopNetCents: 1_000,
+      subsGrossCents: 0,
+      fixedCostsCents: 50_000,
+      boxCostsCents: 0,
+      donationsCents: 500_000,
+    });
+    expect(loss.profitCents).toBeLessThan(0);
+    expect(loss.breakEvenGapCents).toBeGreaterThan(0);
+  });
+});

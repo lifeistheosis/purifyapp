@@ -7,6 +7,7 @@ import {
   type SettlementDb,
 } from "@/lib/shop/webhookSettlement";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { notifyOwner, saleAlert } from "@/lib/admin/ownerAlert";
 
 /**
  * Stripe webhook. The signature is verified with STRIPE_WEBHOOK_SECRET; with
@@ -88,6 +89,29 @@ export async function POST(req: Request) {
       // 500 so Stripe retries; the guarded update is idempotent.
       return NextResponse.json({ error: "Update failed." }, { status: 500 });
     }
+
+    // TELL THE OWNER, if this is the transition that actually took the money.
+    //
+    // "paid" is a first settlement and "recovered" is one that had been missed
+    // and has now landed. "retry-noop" is Stripe delivering the same event
+    // again, and alerting on it would buzz the owner's phone once per retry
+    // for a sale they already know about.
+    //
+    // NOT AWAITED, and that is the whole point. If this rejected inside the
+    // request, the webhook would answer non-2xx, Stripe would retry, and a
+    // failed notification would become a settlement problem. notifyOwner
+    // swallows its own errors as well; this is the second of the two guards
+    // because the cost of getting it wrong is a payment stuck in retry.
+    if (result === "paid" || result === "recovered") {
+      const session = event.data.object as {
+        amount_total?: number | null;
+        currency?: string | null;
+      };
+      void notifyOwner(
+        saleAlert(session.amount_total ?? 0, session.currency ?? "usd"),
+      );
+    }
+
     return NextResponse.json({ received: true, result });
   }
 

@@ -29,7 +29,21 @@
 export type ProfitInput = {
   /** Realized. Paid shop orders minus refunds, this month, in cents. */
   shopNetCents: number;
-  /** Realized. Donations received this month, in cents. */
+  /**
+   * OWNER-ENTERED, AND DELIBERATELY NOT PART OF revenueCents.
+   *
+   * donations_monthly is a figure the owner types in, not a measured one. The
+   * BMC cron that was meant to fill it needs CRON_SECRET and a Buy Me a Coffee
+   * key, neither of which is set, so on production the table is empty and the
+   * number in it is whatever was last entered by hand. The owner's own words:
+   * the amount currently there is a placeholder, because the real total was
+   * forgotten.
+   *
+   * A remembered-wrong figure must not move a profit line. It is carried
+   * through so the panel can DISPLAY it, clearly labelled, and it is excluded
+   * from every total. If donations are ever measured rather than recalled,
+   * add them back deliberately and change the label at the same time.
+   */
   donationsCents: number;
   /** ESTIMATED. Subscription MRR at list price, in cents. */
   subsGrossCents: number;
@@ -43,7 +57,15 @@ export type ProfitInput = {
 
 export type Profit = {
   subsNetCents: number;
-  /** Shop + donations + subscriptions, after the store's cut. */
+  /** Passed straight through for display. Never added to revenueCents. */
+  donationsCents: number;
+  /**
+   * Shop plus subscriptions, after the store's cut. NOT donations.
+   *
+   * See ProfitInput.donationsCents. It used to be in this sum, so a number
+   * the owner had guessed was silently deciding whether the month showed a
+   * profit, what the margin was, and how far off break-even the business was.
+   */
   revenueCents: number;
   /** Fixed lines plus boxes. */
   costsCents: number;
@@ -61,13 +83,15 @@ export function monthlyProfit(input: ProfitInput): Profit {
   const subsNetCents = Math.round(
     input.subsGrossCents * (1 - input.storeFeePct),
   );
-  const revenueCents =
-    input.shopNetCents + input.donationsCents + subsNetCents;
+  // donationsCents is NOT here. It is recalled, not measured, so it cannot be
+  // allowed to move profit, margin or the break-even gap.
+  const revenueCents = input.shopNetCents + subsNetCents;
   const costsCents = input.fixedCostsCents + input.boxCostsCents;
   const profitCents = revenueCents - costsCents;
 
   return {
     subsNetCents,
+    donationsCents: input.donationsCents,
     revenueCents,
     costsCents,
     profitCents,

@@ -56,3 +56,61 @@ export const CURRENT_RELEASE: ReleaseInfo = {
   // checkForUpdate returns before reading it.
   iosStoreUrl: "https://apps.apple.com/app/id6798897857",
 };
+
+/**
+ * The release record as it should actually be SERVED, env overrides applied.
+ *
+ * ── Why an override exists at all ───────────────────────────────────────
+ *
+ * androidVersionCode and iosBuildNumber are 0 in the constant above, which
+ * means nobody is prompted to update. That is the correct resting state for an
+ * unreleased branch, and it is also a state the panel can sit in forever
+ * without anybody noticing: nothing surfaces it, and the only way out was a
+ * code edit, a commit and a deploy, performed at the exact moment a store
+ * approval lands. In practice that moment is a weekday afternoon and the
+ * numbers stayed at 0.
+ *
+ * These read the number a store is actually serving, so it can be set from the
+ * host's environment the hour approval comes through, with no deploy. The
+ * release ritual in AGENTS.md is unchanged; this is another way to perform the
+ * same step, and the constant above remains the committed record.
+ *
+ * ── Why it cannot be set carelessly ─────────────────────────────────────
+ *
+ * Setting these too early is the harmful direction: every installed app is
+ * told a newer build exists and sent to a store listing that does not have it.
+ * So a value is only honoured when it parses as a positive integer, and an
+ * unparseable one falls back to the committed constant rather than to
+ * something surprising. Late is harmless, early is not.
+ *
+ * iOS additionally will not rise while iosStoreUrl is a placeholder. That rule
+ * is held by lib/appUpdate/__tests__/release.test.ts against the constant, and
+ * it is repeated here because an env var bypasses the constant entirely.
+ */
+function positiveIntFromEnv(name: string): number | null {
+  const raw = process.env[name];
+  if (!raw) return null;
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n <= 0) {
+    console.warn(`[release] ${name}=${raw} is not a positive integer, ignoring`);
+    return null;
+  }
+  return n;
+}
+
+export function servedRelease(): ReleaseInfo {
+  const android = positiveIntFromEnv("ANDROID_VERSION_CODE");
+  const ios = positiveIntFromEnv("IOS_BUILD_NUMBER");
+  const iosPlaceholder = !/id\d{6,}/.test(CURRENT_RELEASE.iosStoreUrl);
+  if (ios !== null && iosPlaceholder) {
+    console.warn(
+      "[release] IOS_BUILD_NUMBER set while iosStoreUrl is a placeholder, ignoring",
+    );
+  }
+  return {
+    ...CURRENT_RELEASE,
+    androidVersionCode: android ?? CURRENT_RELEASE.androidVersionCode,
+    iosBuildNumber:
+      ios !== null && !iosPlaceholder ? ios : CURRENT_RELEASE.iosBuildNumber,
+  };
+}

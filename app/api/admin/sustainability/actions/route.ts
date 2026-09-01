@@ -41,6 +41,26 @@ const Body = z.discriminatedUnion("action", [
     yearMonth: z.string().regex(/^\d{4}-\d{2}$/),
     goalCents: z.number().int().min(0).max(10_000_000),
   }),
+  /**
+   * The donations figure, entered by the owner.
+   *
+   * There was no way to set this. donations_monthly was writable only for its
+   * GOAL, and its total was supposed to arrive from the Buy Me a Coffee cron,
+   * which needs CRON_SECRET and a BMC key and has neither on production. So
+   * the total sat at whatever had been put there by hand, the owner could not
+   * correct it from the panel, and they have said the number currently there
+   * is a placeholder for an amount they could not remember.
+   *
+   * This is why the figure is excluded from revenue and from the P&L
+   * everywhere else in this codebase: it is recalled, not measured. Making it
+   * editable does not change that, so nothing here re-admits it to a total.
+   */
+  z.object({
+    action: z.literal("donations-set"),
+    yearMonth: z.string().regex(/^\d{4}-\d{2}$/),
+    totalCents: z.number().int().min(0).max(100_000_000),
+    supporters: z.number().int().min(0).max(1_000_000).default(0),
+  }),
 ]);
 
 export async function POST(req: NextRequest) {
@@ -104,6 +124,31 @@ export async function POST(req: NextRequest) {
     }
     case "expense-delete": {
       await supa.from("expense_lines").delete().eq("id", parsed.id);
+      revalidatePath("/support");
+      return NextResponse.json({ ok: true });
+    }
+    case "donations-set": {
+      // Upsert on year_month, which is the primary key, so re-entering a
+      // month's figure corrects it rather than adding a second row.
+      const { error } = await supa.from("donations_monthly").upsert(
+        {
+          year_month: parsed.yearMonth,
+          total_cents: parsed.totalCents,
+          supporters: parsed.supporters,
+          snapshot_date: new Date().toISOString().slice(0, 10),
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "year_month" },
+      );
+      if (error) {
+        // Reported rather than swallowed. A silent failure here leaves the
+        // owner believing they corrected a figure they did not.
+        return NextResponse.json(
+          { error: "Could not save that figure.", detail: error.message },
+          { status: 500 },
+        );
+      }
+      // /support publishes the donations total, so it has to be rebuilt.
       revalidatePath("/support");
       return NextResponse.json({ ok: true });
     }

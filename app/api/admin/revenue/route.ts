@@ -108,7 +108,15 @@ export async function GET() {
   const subsRealizedCents = live ? Math.round(live.totalRevenue * 100) : null;
   const bySource = [
     { name: "Shop (net)", value: summary.netCents },
-    { name: "Donations", value: donationsTotal },
+    // DONATIONS ARE NOT A SOURCE HERE ANY MORE. The figure in
+    // donations_monthly is typed in by the owner, not measured: the BMC cron
+    // that would fill it needs CRON_SECRET and a Buy Me a Coffee key, neither
+    // of which is set, and the owner has said the number currently stored is
+    // a placeholder standing in for an amount they could not remember.
+    //
+    // A recalled number in a chart of realized revenue is the same category
+    // error the ARR projection was, one step subtler: it looks measured. It is
+    // reported on its own, labelled, and never summed with anything.
     // Omitted, not zeroed, when RevenueCat is not configured: a zero slice
     // would claim subscriptions earned nothing, and the truth is that nothing
     // here can see what they earned. The UI says which case it is in.
@@ -121,9 +129,11 @@ export async function GET() {
   // Deliberately NOT a sum that silently treats an unmeasured source as zero:
   // `complete` is false whenever a source could not report, and the UI is
   // required to qualify the figure when it is.
-  const realizedTotalCents =
-    summary.netCents + donationsTotal + (subsRealizedCents ?? 0);
-  const realizedComplete = subsRealizedCents != null && donations.length > 0;
+  // Donations excluded, per above. `complete` no longer waits on a donations
+  // snapshot either: a self-reported figure arriving would not make this total
+  // any more complete, because it is not in it.
+  const realizedTotalCents = summary.netCents + (subsRealizedCents ?? 0);
+  const realizedComplete = subsRealizedCents != null;
 
   return NextResponse.json(
     {
@@ -147,6 +157,15 @@ export async function GET() {
         topProducts: top,
       },
       donations: {
+        /**
+         * SELF-REPORTED. Shown, never counted.
+         *
+         * `recorded` says whether a figure has ever been entered at all, which
+         * is a different question from whether it is accurate. The UI must say
+         * both: that a number exists, and that it came from the owner rather
+         * than from a payment processor.
+         */
+        selfReported: true,
         totalCents: donationsTotal,
         current: donationsCurrent,
         monthly: donations,

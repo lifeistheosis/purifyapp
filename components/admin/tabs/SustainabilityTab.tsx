@@ -116,6 +116,9 @@ export function SustainabilityTab() {
     }
   }
   const [editingGoal, setEditingGoal] = useState(false);
+  const [editingRaised, setEditingRaised] = useState(false);
+  const [raisedDraft, setRaisedDraft] = useState("");
+  const [raisedError, setRaisedError] = useState<string | null>(null);
   const [goalDraft, setGoalDraft] = useState("");
 
   // Opening the editor replaces the button that opened it, so without this a
@@ -268,6 +271,47 @@ export function SustainabilityTab() {
     }
   }
 
+  /**
+   * Correct the donations figure for this month.
+   *
+   * THIS IS THE ONLY WAY TO SET IT, and until now there was none. The total in
+   * donations_monthly was meant to arrive from the Buy Me a Coffee cron, which
+   * needs CRON_SECRET and a BMC key and has neither on production, so whatever
+   * was last written by hand simply stayed. The owner has said the number
+   * currently there is a placeholder for an amount they could not remember.
+   *
+   * Correcting it does NOT make it measured, which is why nothing downstream
+   * counts it. lib/admin/profit.ts keeps it out of revenue, margin and the
+   * break-even gap, and the revenue donut leaves it out of realized income.
+   */
+  async function saveRaised(usdValue: string) {
+    if (!data) return;
+    const cents = Math.round(Number(usdValue) * 100);
+    // Number("") is 0 and Number("abc") is NaN, so both are caught here.
+    if (!Number.isFinite(cents) || cents < 0) {
+      setRaisedError("Enter an amount in dollars, like 24.98.");
+      return;
+    }
+    setRaisedError(null);
+    const r = await fetch("/api/admin/sustainability/actions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "donations-set",
+        yearMonth: data.current.yearMonth,
+        totalCents: cents,
+        supporters: data.current.supporters ?? 0,
+      }),
+    });
+    if (!r.ok) {
+      const body = (await r.json().catch(() => null)) as { error?: string } | null;
+      setRaisedError(body?.error ?? "That didn't save.");
+      return;
+    }
+    setEditingRaised(false);
+    startTransition(() => reload());
+  }
+
   if (!data) {
     return loadFailed ? (
       <Card title="Costs could not be loaded">
@@ -385,6 +429,93 @@ export function SustainabilityTab() {
             >
               against {usd(data.monthlyExpenseCents)} of costs
             </span>
+          </p>
+        )}
+      </Card>
+
+      {/* ── Donations, and what they are ─────────────────────────────────
+          Editable, and labelled as recalled rather than measured. The subtitle
+          is not a disclaimer bolted on: this figure is deliberately excluded
+          from revenue, margin and the break-even gap everywhere else, and an
+          operator reading it needs to know that is on purpose rather than a
+          bug they should report. */}
+      <Card
+        title="Donations received"
+        subtitle="Entered by hand, not measured. Shown here and left out of revenue, profit and the break-even gap on purpose"
+        action={
+          editingRaised ? undefined : (
+            <Toolbar>
+              <ToolbarButton
+                variant="primary"
+                onClick={() => {
+                  setRaisedDraft(String(data.current.raisedCents / 100));
+                  setRaisedError(null);
+                  setEditingRaised(true);
+                }}
+                title="Correct the donations figure for this month"
+              >
+                {data.current.raisedCents > 0 ? "Correct figure" : "Enter figure"}
+              </ToolbarButton>
+            </Toolbar>
+          )
+        }
+      >
+        {editingRaised ? (
+          <div className="flex flex-wrap items-end gap-3">
+            <label className="min-w-[160px]">
+              <span
+                className="mb-1 block font-sans text-[11.5px]"
+                style={{ color: "var(--adm-ink-3)" }}
+              >
+                Donations, USD, {data.current.yearMonth}
+              </span>
+              <input
+                type="number"
+                min={0}
+                step="0.01"
+                inputMode="decimal"
+                value={raisedDraft}
+                onChange={(e) => setRaisedDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") void saveRaised(raisedDraft);
+                  if (e.key === "Escape") setEditingRaised(false);
+                }}
+                className="h-11 w-full rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[13px] tabular-nums"
+                style={{
+                  background: "var(--adm-control)",
+                  borderColor: "var(--adm-line-strong)",
+                  color: "var(--adm-ink)",
+                }}
+              />
+            </label>
+            <Toolbar>
+              <ToolbarButton variant="primary" onClick={() => void saveRaised(raisedDraft)}>
+                Save
+              </ToolbarButton>
+              <ToolbarButton onClick={() => setEditingRaised(false)}>Cancel</ToolbarButton>
+            </Toolbar>
+          </div>
+        ) : (
+          <p
+            className="font-sans text-[30px] font-semibold leading-none tracking-[-0.02em] tabular-nums"
+            style={{ color: "var(--adm-ink)" }}
+          >
+            {usd(data.current.raisedCents)}
+            <span
+              className="ml-2 align-middle font-sans text-[13px] font-normal"
+              style={{ color: "var(--adm-ink-3)" }}
+            >
+              not counted as revenue
+            </span>
+          </p>
+        )}
+        {raisedError && (
+          <p
+            role="alert"
+            className="mt-2 font-sans text-[12.5px]"
+            style={{ color: "var(--adm-critical)" }}
+          >
+            {raisedError}
           </p>
         )}
       </Card>

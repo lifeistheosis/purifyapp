@@ -57,6 +57,7 @@ import { TrafficHubTab } from "./tabs/TrafficHubTab";
 import { ContentTab } from "./tabs/ContentTab";
 import { ContentHealthTab } from "./tabs/ContentHealthTab";
 import { HealthTab } from "./tabs/HealthTab";
+import { AuditLogTab } from "./tabs/AuditLogTab";
 import { AdminThemeToggle } from "./AdminThemeToggle";
 import { AdminSoundToggle } from "./AdminSoundToggle";
 import { AdminMotionToggle } from "./AdminMotionToggle";
@@ -101,7 +102,8 @@ type OpsTabId =
   | "calendar"
   | "content"
   | "content-health"
-  | "health";
+  | "health"
+  | "audit";
 
 type TabId = OpsTabId | OwnerTabId;
 
@@ -190,6 +192,11 @@ const GROUPS: Group[] = [
     tabs: [
       { id: "content-health", label: "Library files", eyebrow: "What the data tree actually holds", component: ContentHealthTab },
       { id: "health", label: "Services", eyebrow: "Outbound dependency probes", component: HealthTab },
+      // The audit log finally has a reader. lib/admin/activityLog.ts has been
+      // recording privileged writes since 20260823 and nothing displayed them,
+      // so comps, refunds and entitlement changes were attributable in
+      // principle and unreadable in practice.
+      { id: "audit", label: "Audit log", eyebrow: "Who did what, and when", component: AuditLogTab },
     ],
   },
   {
