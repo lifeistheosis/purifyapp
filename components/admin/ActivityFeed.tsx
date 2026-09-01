@@ -77,15 +77,21 @@ const LOOK: Record<ActivityKind, { tint: string; ring: string }> = {
 /**
  * Pill geometry, in pixels, and it is FIXED on purpose.
  *
- * The arrival animation slides every older pill right by exactly the width of
- * the one that just appeared, which it does by animating the new pill's own
+ * The arrival animation slides every older card right by exactly the width of
+ * the one that just appeared, which it does by animating the new card's own
  * negative left margin back to zero. That distance has to be known before the
- * pill has been laid out, and a uniform width is what makes it knowable
+ * card has been laid out, and a uniform width is what makes it knowable
  * without measuring anything in a frame callback. It also keeps the strip
  * rhythmic instead of ragged, which is worth having on its own.
+ *
+ * 300, up from 232. The longest string this feed produces is "Someone just
+ * started reading" at 28 characters, which did not fit and was being truncated
+ * mid-word: the owner reported the notification cut off, and it was. A width
+ * is chosen from the copy rather than the copy from the width, because a
+ * notification that cannot show its own sentence is not a notification.
  */
-const PILL_W = 232;
-const PILL_GAP = 8;
+const PILL_W = 300;
+const PILL_GAP = 10;
 
 /** How many ride the strip at once. The rest are already in the bell. */
 const STRIP_MAX = 3;
@@ -279,10 +285,10 @@ function MobileToast({
       className="pointer-events-none fixed inset-x-0 top-[calc(var(--adm-topbar-h,69px)+8px)] z-[45] flex justify-center px-3 md:hidden"
     >
       <div
-        className="flex max-w-[min(94vw,420px)] items-center gap-2.5 rounded-[var(--adm-radius-pill)] border py-2 pl-2 pr-3.5"
+        className="flex max-w-[min(94vw,420px)] items-center gap-2.5 overflow-hidden rounded-[var(--adm-radius-sm)] border py-2.5 pl-0 pr-3.5"
         style={{
           background: "var(--adm-panel)",
-          borderColor: look.ring,
+          borderColor: "var(--adm-line)",
           boxShadow: `0 10px 28px -10px color-mix(in oklab, ${look.ring}, transparent 40%)`,
           opacity: leaving ? 0 : 1,
           transform: reduced ? "none" : leaving ? "translateY(-10px)" : "translateY(0)",
@@ -294,8 +300,9 @@ function MobileToast({
             : "adm-activity-in 460ms cubic-bezier(0.16,1,0.3,1)",
         }}
       >
+        <span aria-hidden className="w-[3px] shrink-0 self-stretch" style={{ background: look.ring }} />
         <span
-          className="grid h-7 min-w-7 place-items-center rounded-[var(--adm-radius-pill)] px-1.5 font-sans text-[13px] font-semibold tabular-nums"
+          className="ml-2 grid h-7 min-w-7 shrink-0 place-items-center rounded-[var(--adm-radius-sm)] px-1.5 font-sans text-[13px] font-semibold tabular-nums"
           style={{
             background: `color-mix(in oklab, ${look.ring}, transparent 84%)`,
             color: look.tint,
@@ -303,8 +310,11 @@ function MobileToast({
         >
           {record.badge}
         </span>
+        {/* The phone wraps rather than truncates. There is no fixed width to
+            fit the sentence into here, so a second line is the honest answer
+            and a cut-off word is not. */}
         <span
-          className="min-w-0 truncate font-sans text-[13px] font-medium"
+          className="min-w-0 font-sans text-[13px] font-medium leading-snug"
           style={{ color: "var(--adm-ink)" }}
         >
           {record.text}
@@ -351,13 +361,22 @@ function ActivityPill({
             }),
       }}
     >
+      {/* A RECTANGLE, not a pill. A pill reads as a tag, something that
+          labels another object; a card with square corners reads as a notice
+          in its own right, which is what this is. It also gives the sentence
+          its full width back instead of spending it on two round ends.
+
+          The colour is a left stripe rather than a full border. A ring in the
+          kind's colour around every card made four of them look like four
+          errors; a stripe carries the same information and lets the card sit
+          quietly until it is read. */}
       <div
-        className="flex items-center gap-2.5 rounded-[var(--adm-radius-pill)] border py-2 pl-2 pr-3"
+        className="flex items-stretch gap-2.5 overflow-hidden rounded-[var(--adm-radius-sm)] border py-0 pl-0 pr-3.5"
         style={{
           background: "var(--adm-panel)",
-          borderColor: look.ring,
+          borderColor: "var(--adm-line)",
           // A tinted lift rather than the flat card shadow. These are meant to
-          // be noticed from across a desk, and a pill that shares the panel's
+          // be noticed from across a desk, and a card that shares the panel's
           // own shadow reads as another piece of chrome.
           boxShadow: `0 6px 20px -8px color-mix(in oklab, ${look.ring}, transparent 55%)`,
           opacity: leaving ? 0 : 1,
@@ -370,9 +389,12 @@ function ActivityPill({
             : "adm-activity-in 460ms cubic-bezier(0.16,1,0.3,1)",
         }}
       >
+        {/* The stripe. Full height, so it reads as the card's own edge rather
+            than as a decoration sitting inside it. */}
+        <span aria-hidden className="w-[3px] shrink-0" style={{ background: look.ring }} />
         <span
           aria-hidden
-          className="grid h-7 min-w-7 place-items-center rounded-[var(--adm-radius-pill)] px-1.5 font-sans text-[13px] font-semibold tabular-nums"
+          className="my-2.5 ml-2 grid h-7 min-w-7 shrink-0 place-items-center rounded-[var(--adm-radius-sm)] px-1.5 font-sans text-[13px] font-semibold tabular-nums"
           style={{
             background: `color-mix(in oklab, ${look.ring}, transparent 84%)`,
             color: look.tint,
@@ -380,8 +402,11 @@ function ActivityPill({
         >
           {record.badge}
         </span>
+        {/* NO truncate. PILL_W is chosen to fit the longest sentence this feed
+            can produce, so a cut-off word would mean the copy has outgrown the
+            measurement, and the fix for that is the width, not an ellipsis. */}
         <span
-          className="min-w-0 flex-1 truncate font-sans text-[13px] font-medium"
+          className="min-w-0 flex-1 self-center whitespace-nowrap font-sans text-[13px] font-medium"
           style={{ color: "var(--adm-ink)" }}
         >
           {record.text}
