@@ -58,6 +58,7 @@ import { ContentTab } from "./tabs/ContentTab";
 import { ContentHealthTab } from "./tabs/ContentHealthTab";
 import { HealthTab } from "./tabs/HealthTab";
 import { AuditLogTab } from "./tabs/AuditLogTab";
+import { SourcingTab } from "./tabs/SourcingTab";
 import { AdminThemeToggle } from "./AdminThemeToggle";
 import { AdminSoundToggle } from "./AdminSoundToggle";
 import { AdminMotionToggle } from "./AdminMotionToggle";
@@ -103,6 +104,7 @@ type OpsTabId =
   | "content"
   | "content-health"
   | "health"
+  | "sourcing"
   | "audit";
 
 type TabId = OpsTabId | OwnerTabId;
@@ -166,6 +168,10 @@ const GROUPS: Group[] = [
     tabs: [
       { id: "shop", label: "Shop", eyebrow: "EIKON and marketplace", component: ShopHubTab },
       { id: "eikon-box", label: "EIKON Box", eyebrow: "Monthly drops and claims", component: EikonBoxTab },
+      // Catalog, not Money: this is about what a product COSTS us and whether
+      // the price still works, which is a catalogue decision. Revenue reports
+      // what already happened.
+      { id: "sourcing", label: "Sourcing", eyebrow: "Cost checks and price grades", component: SourcingTab },
     ],
   },
   {
