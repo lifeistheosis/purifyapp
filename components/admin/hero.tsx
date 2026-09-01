@@ -25,6 +25,7 @@
 import { useState, type ReactNode } from "react";
 import { smoothPath } from "./charts";
 import { Odometer } from "./Odometer";
+import { useReducedMotion } from "@/lib/ui/motion";
 import { Skeleton } from "./primitives";
 
 /* ────────────────────────────────────────────────────────────────────────
@@ -53,6 +54,13 @@ export function HeroSpark({
   /** Unique per card: two gradients sharing an id makes the second one blank. */
   id: string;
 }) {
+  const reduced = useReducedMotion();
+  // REPLAY ON EVERY PERIOD CHANGE. A CSS animation runs when an element
+  // mounts, and switching Today / 7D / 30D only swaps the `d` attribute on the
+  // same two paths, so the chart silently redrew without ever animating. Keyed
+  // on the series, the paths are new elements each time and the draw runs
+  // again, which is what makes the window change read as a change.
+  const seriesKey = `${points.length}:${points[0] ?? 0}:${points[points.length - 1] ?? 0}`;
   const [hover, setHover] = useState<number | null>(null);
 
   // Before the early return, because hooks cannot run conditionally. The guard
@@ -156,7 +164,12 @@ export function HeroSpark({
         strokeDasharray="3 4"
       />
 
-      <path d={area} fill={`url(#${id}-fill)`} className="own-fill" />
+      <path
+        key={`fill-${seriesKey}`}
+        d={area}
+        fill={`url(#${id}-fill)`}
+        className={reduced ? "own-static" : "own-fill"}
+      />
       <path
         d={line}
         fill="none"
@@ -166,10 +179,11 @@ export function HeroSpark({
         strokeLinejoin="round"
         // Measured, not guessed: a wrong dash length either clips the line or
         // shows it before the animation starts, and both read as a stutter.
+        key={`line-${seriesKey}`}
         ref={(el) => {
           if (el) el.style.setProperty("--own-len", String(el.getTotalLength()));
         }}
-        className="own-draw"
+        className={reduced ? "own-static" : "own-draw"}
       />
 
       {/* The crosshair, only while scrubbing. Drawn before the node so the

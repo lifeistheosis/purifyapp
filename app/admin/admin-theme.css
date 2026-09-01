@@ -608,23 +608,51 @@
   transition: color 200ms var(--adm-ease);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .adm-panel-enter,
-  .adm-skeleton,
-  .own-draw,
-  .own-fill {
-    animation: none;
+/* NO prefers-reduced-motion BLOCK HERE. There was one, and it was the third
+ * and worst instance of the same mistake.
+ *
+ * It ended with this:
+ *
+ *   .adm *, .adm *::before, .adm *::after { transition-duration: 1ms !important }
+ *
+ * which is every transition in the entire panel, killed with !important, on a
+ * media query. The owner runs an optimizer that disables graphics effects to
+ * hold frame rate; that sets MinAnimate=0, which Chrome reports as
+ * prefers-reduced-motion: reduce. So on the machine this panel is built and
+ * used on, the query always matched: no chart ever drew itself, no control
+ * ever animated on hover, and the hover transition looked like it had never
+ * been written. It was reported three separate times as "the animations are
+ * frozen" before the cause was found.
+ *
+ * The panel decides motion PER SURFACE, in JS, and deliberately animates
+ * through the OS hint: lib/ui/motionPreference.ts carries that argument, and
+ * the Motion control in the rail is how it is turned off. A media query cannot
+ * see any of that, so it must not get a vote. Same reasoning as the reel
+ * keyframe in app/globals.css and the .adm-control hover above.
+ *
+ * A reader who wants the panel still uses the Motion toggle, which reaches
+ * every consumer including the ones below through useReducedMotion(). */
+
+/* The still form of the chart line, applied by hero.tsx when motion is off.
+ * The dash array has to go with the animation, or the line renders in
+ * permanent dashes instead of drawing solid. */
+/* The activity bar's entrance. Slides in from the right edge it hangs off, so
+ * a row arrives from outside the screen rather than materialising in place.
+ *
+ * No prefers-reduced-motion block, for the third time in this file and the same
+ * reason: the panel decides motion per surface in JS. ActivityFeed.tsx sets
+ * `animation: none` itself when useReducedMotion says so, which is the path
+ * that can actually see the Motion toggle. */
+@keyframes adm-activity-in {
+  from {
+    opacity: 0;
+    transform: translateX(18px) scale(0.97);
   }
-  /* The dash array has to go too, or a reduced-motion reader gets a line
-     drawn in permanent dashes instead of a solid one. */
-  .own-draw {
-    stroke-dasharray: none;
-  }
-  .adm *,
-  .adm *::before,
-  .adm *::after {
-    transition-duration: 1ms !important;
-  }
+}
+
+.own-static {
+  stroke-dasharray: none;
+  animation: none;
 }
 
 /* ── Mobile browser ─────────────────────────────────────────────────────
@@ -784,9 +812,42 @@
  */
 .adm-control {
   background: var(--_bg);
+  /* THE HOVER HAD NO TRANSITION. It swapped background outright, so every
+   * control in the panel snapped between two colours instead of moving. It
+   * was read as the optimizer suppressing an animation; there was no
+   * animation to suppress.
+   *
+   * background-position is in the list for the gradient buttons below. A
+   * gradient cannot be interpolated by CSS, so `background` alone will never
+   * animate on the primary variant no matter what easing is declared: what
+   * moves is a wider gradient sliding under the button.
+   *
+   * No prefers-reduced-motion block, deliberately, for the reason recorded in
+   * app/globals.css beside the reel keyframe: this panel decides motion per
+   * surface in JS, and a media query cannot see that override. A 180ms colour
+   * fade on a control the operator is already pointing at is also not the kind
+   * of motion that setting exists to stop. */
+  transition:
+    background-color 180ms ease,
+    background-position 340ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
 }
 .adm-control:hover:not(:disabled) {
   background: var(--_bg-hover, var(--_bg));
+  background-position: var(--_bg-pos-hover, 0 0);
+}
+
+/* The gradient variants. A wider gradient than the button, slid on hover, so
+ * the fill travels rather than cutting to a second gradient. */
+.adm-control[data-grad="1"] {
+  background-size: 200% 100%;
+  background-position: 0 0;
+  --_bg-pos-hover: 100% 0;
+}
+.adm-control[data-grad="1"]:hover:not(:disabled) {
+  /* Same gradient, moved. Swapping to --_bg-hover here would cut. */
+  background-image: var(--_bg);
 }
 
 /* ── Focus ──────────────────────────────────────────────────────────────

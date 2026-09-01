@@ -24,7 +24,8 @@
 import { useEffect, useRef } from "react";
 
 import { useReducedMotion } from "@/lib/ui/motion";
-import { reportChange } from "@/lib/admin/sound";
+import { reportChange, scheduleReelClicks } from "@/lib/admin/sound";
+import { clickGain, clickTimes } from "@/lib/admin/reelClicks";
 import { SENSITIVE } from "@/lib/admin/streamer";
 import {
   columns,
@@ -32,6 +33,7 @@ import {
   hasDigits,
   isMoneyText,
   REEL_ITEMS,
+  restIndex as reelRestIndex,
   reelDuration,
   restIndex,
 } from "@/lib/admin/odometer";
@@ -79,6 +81,25 @@ function Wheel({
   // register sounding for money that has sat there since yesterday, and that
   // stays gated on a real change, up in Odometer.
 
+  // ONE RUN OF CLICKS PER SPIN, fired on mount beside the animation that
+  // causes them. Not on later digit changes: those are the short transition,
+  // not a spin, and a ratchet for a figure moving by one would be a fruit
+  // machine going off every time a poll landed.
+  useEffect(() => {
+    if (!animate) return;
+    const rest = restIndex(digit);
+    const times = clickTimes(rest, durationMs);
+    scheduleReelClicks(
+      times,
+      times.map((_, i) => clickGain(i, times.length)),
+      performance.now(),
+    );
+    // Mount only. digit and durationMs are stable for the life of a wheel in
+    // the same column, and re-running on a value change is the thing above
+    // that is deliberately not wanted.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <span
       className="relative inline-block overflow-hidden"
@@ -86,7 +107,25 @@ function Wheel({
       // matches it, so the column tracks whatever face the panel is set in
       // rather than the 0.62em this used to guess at. That guess was narrow
       // in DM Sans and clipped the wider digits at large sizes.
-      style={{ height: "1em", width: "1ch" }}
+      //
+      // The mask is what stops a spinning reel looking sawn off. overflow
+      // hidden alone gives a hard edge, so the digit arriving at the top and
+      // the one leaving at the bottom are cut clean through mid-stroke, which
+      // reads as broken rather than as motion. Fading the last eighth at each
+      // end lets a digit arrive and leave instead, which is also what a real
+      // reel looks like behind its window.
+      //
+      // 12% rather than more: the window is one em and the digits fill most of
+      // it, so a deeper fade starts eating the resting digit, which has to stay
+      // fully legible. This is decoration on a number people read.
+      style={{
+        height: "1em",
+        width: "1ch",
+        WebkitMaskImage:
+          "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
+        maskImage:
+          "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
+      }}
     >
       <span
         className="odo-wheel absolute left-0 top-0 flex flex-col"

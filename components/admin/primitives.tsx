@@ -592,10 +592,15 @@ export function ToolbarButton({
     // to FeatureCard, where the type is big enough to earn it.
     primary: {
       borderColor: "transparent",
+      // Three stops, not two, and the CSS stretches this to 200% of the
+      // button. Sliding it on hover walks the fill from one end to the other,
+      // which reads as the button lighting up. The old pair of two-stop
+      // gradients could only ever cut between them, because CSS does not
+      // interpolate a gradient.
       "--_bg":
-        "linear-gradient(135deg, var(--adm-grad-from) 0%, var(--adm-grad-to) 100%)",
+        "linear-gradient(135deg, var(--adm-grad-from) 0%, var(--adm-grad-to) 50%, var(--adm-grad-from) 100%)",
       "--_bg-hover":
-        "linear-gradient(135deg, var(--adm-grad-to) 0%, var(--adm-grad-from) 100%)",
+        "linear-gradient(135deg, var(--adm-grad-from) 0%, var(--adm-grad-to) 50%, var(--adm-grad-from) 100%)",
       color: "var(--adm-on-accent)",
       boxShadow: "0 4px 14px color-mix(in oklab, var(--adm-accent), transparent 72%)",
     } as React.CSSProperties,
@@ -613,6 +618,9 @@ export function ToolbarButton({
       disabled={loading}
       title={title}
       aria-busy={loading || undefined}
+      // Marks the gradient variants for admin-theme.css, which slides the fill
+      // rather than swapping it.
+      data-grad={variant === "primary" ? "1" : undefined}
       className={
         // adm-toolbtn exists purely so admin-theme.css can reach this one
         // control on a touch screen. Every other .adm-control in the panel is
@@ -620,7 +628,7 @@ export function ToolbarButton({
         // the only sub-44 target the ratchet cannot see, because that test
         // matches `h-1` through `h-10` classes and this button sets no height
         // class at all.
-        "adm-toolbtn adm-rail-item adm-control inline-flex items-center gap-1.5 rounded-[var(--adm-radius-sm)] border px-2.5 py-[5px] font-sans text-[12.5px] font-medium " +
+        "adm-toolbtn adm-rail-item adm-control inline-flex min-h-[34px] items-center gap-1.5 rounded-[var(--adm-radius-sm)] border px-2.5 font-sans text-[12.5px] font-medium " +
         "disabled:cursor-not-allowed disabled:opacity-45"
       }
       style={style[variant]}
@@ -1065,7 +1073,12 @@ export function SubTabs<T extends string>({
 }) {
   return (
     <div
-      className="inline-flex flex-wrap gap-0.5 rounded-[var(--adm-radius)] border p-0.5"
+      // 34px to match ToolbarButton beside it. The group carries a border and
+      // 2px of padding on top of its items, so matching the ITEM height to the
+      // button height left the group six pixels taller and the row visibly
+      // uneven. Declaring the outer height on both shapes is what stops that
+      // coming back the next time either padding is tuned.
+      className="inline-flex min-h-[34px] flex-wrap items-center gap-0.5 rounded-[var(--adm-radius)] border p-0.5"
       style={{ borderColor: "var(--adm-line)", background: "var(--adm-panel-2)" }}
     >
       {tabs.map(([id, label]) => {
@@ -1076,7 +1089,7 @@ export function SubTabs<T extends string>({
             type="button"
             onClick={() => onChange(id)}
             aria-pressed={on}
-            className="adm-rail-item rounded-[var(--adm-radius-sm)] px-3 py-1.5 font-sans text-[12.5px] font-medium"
+            className="adm-rail-item inline-flex min-h-[28px] items-center rounded-[var(--adm-radius-sm)] px-3 font-sans text-[12.5px] font-medium"
             style={
               on
                 ? { background: "var(--adm-accent)", color: "var(--adm-on-accent)" }

@@ -61,6 +61,7 @@ import { AdminThemeToggle } from "./AdminThemeToggle";
 import { AdminSoundToggle } from "./AdminSoundToggle";
 import { AdminMotionToggle } from "./AdminMotionToggle";
 import { AdminStreamerToggle } from "./AdminStreamerToggle";
+import { ActivityFeed } from "./ActivityFeed";
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
 import { AdminMobileNav } from "./AdminMobileNav";
 import { installLarpWriteGuard, larpOn, onLarpChange, setLarp } from "@/lib/admin/larp";
@@ -859,46 +860,14 @@ export function AdminShell({
                   )}
                   onSelect={(id) => isTabId(id) && select(id)}
                 />
-                <button
-                  type="button"
-                  onClick={() => select("orders")}
-                  title={
-                    pendingOrders
-                      ? `${pendingOrders} order${pendingOrders === 1 ? "" : "s"} awaiting payment`
-                      : "Nothing is waiting"
-                  }
-                  aria-label={
-                    pendingOrders
-                      ? `${pendingOrders} orders awaiting payment`
-                      : "Nothing is waiting"
-                  }
-                  className="adm-control relative grid h-11 w-11 shrink-0 place-items-center rounded-[var(--adm-radius-sm)] border"
-                  style={
-                    {
-                      borderColor: "var(--adm-line)",
-                      color: "var(--adm-ink-2)",
-                      "--_bg": "var(--adm-control)",
-                      "--_bg-hover": "var(--adm-hover)",
-                    } as React.CSSProperties
-                  }
-                >
-                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                    <path d="M15.3 7.2a5.3 5.3 0 0 0-10.6 0c0 5-2 6.4-2 6.4h14.6s-2-1.4-2-6.4Z" />
-                    <path d="M8.3 16.2a1.9 1.9 0 0 0 3.4 0" />
-                  </svg>
-                  {pendingOrders ? (
-                    <span
-                      aria-hidden
-                      className="absolute -right-1 -top-1 grid min-w-[17px] place-items-center rounded-[var(--adm-radius-pill)] px-1 font-sans text-[10px] font-semibold tabular-nums"
-                      style={{
-                        background: "var(--adm-badge-bg)",
-                        color: "var(--adm-badge-fg)",
-                      }}
-                    >
-                      {pendingOrders}
-                    </span>
-                  ) : null}
-                </button>
+                {/* WAS A BELL. It carried the pending-order count and, on click,
+                    jumped to Orders. Both survive without it: the count is the
+                    "Orders awaiting payment" card at the head of Overview,
+                    which is larger, says what it means, and has the button on
+                    it. A bell with a number behind it asks the operator to go
+                    and look; this tells them instead, and then gets out of the
+                    way. */}
+                <ActivityFeed />
             </div>
 
             {/* The drawer belongs to the bar, not to the content.

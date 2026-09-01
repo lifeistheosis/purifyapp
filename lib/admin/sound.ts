@@ -3,12 +3,17 @@
 // Sound for the admin panel: a register ka-ching when money moves, a soft tick
 // when any other number does.
 //
-// SYNTHESIZED, NOT SAMPLED, for the same three reasons lib/gifts/chime.ts gives
-// and one more. The ambience MP3s were pulled over provenance and the docs
-// record it; the Android bundle is already too large; and a sample cannot be
-// tuned once it is in the tree. The extra reason here is that this is the admin
-// panel, which is stashed out of the native export entirely, so an audio asset
-// shipped for it would be dead weight in every reader's download.
+// MOSTLY SYNTHESIZED. The register and the tick are oscillators, for the reasons
+// lib/gifts/chime.ts gives: the ambience MP3s were pulled over provenance, the
+// Android bundle is already too large, and a sample cannot be tuned once it is
+// in the tree.
+//
+// The reel ratchet is the one exception, and it is an exception on the owner's
+// instruction: a specific recording, asked for by name. The weight objection is
+// answered by trimming rather than by refusing, 156KB down to 1.2KB, and by
+// inlining it in a module the native bundle tree-shakes rather than dropping it
+// in public/ where it would ship to every reader. See lib/admin/clickSample.ts,
+// which also records that the provenance question is NOT settled.
 //
 // OFF BY DEFAULT, and the default matters more than usual. This panel gets
 // opened on a phone in a coffee shop and on a laptop in a room with other
@@ -20,6 +25,8 @@
 // board moved". The scheduler below collects everything that changed inside one
 // animation frame plus a short tail, then plays at most one ka-ching and one
 // tick run for the whole batch, with the ka-ching winning when both are due.
+
+import { CLICK_WAV_BASE64 } from "./clickSample";
 
 const KEY = "purify.sound.admin";
 
@@ -168,3 +175,75 @@ export function reportChange(money: boolean): void {
     else if (wasNumber) tick();
   }, 90);
 }
+
+// ── The reel ratchet ────────────────────────────────────────────────────────
+
+let clickBuffer: AudioBuffer | null = null;
+let clickPending: Promise<AudioBuffer | null> | null = null;
+
+/** Decode the inlined click once, and remember the promise so a dashboard of
+ *  reels asking at the same moment decodes it once rather than five times. */
+function loadClick(c: AudioContext): Promise<AudioBuffer | null> {
+  if (clickBuffer) return Promise.resolve(clickBuffer);
+  if (clickPending) return clickPending;
+  clickPending = (async () => {
+    try {
+      const bin = atob(CLICK_WAV_BASE64);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      clickBuffer = await c.decodeAudioData(bytes.buffer);
+      return clickBuffer;
+    } catch (e) {
+      console.warn("[admin sound] click sample would not decode", e);
+      return null;
+    }
+  })();
+  return clickPending;
+}
+
+/**
+ * Fire one click per digit as a reel spins past it.
+ *
+ * SCHEDULED, NOT TICKED. Every click is placed on the audio clock up front,
+ * at the offsets lib/admin/reelClicks.ts solved from the same cubic-bezier the
+ * CSS animation uses. WebAudio keeps its own clock in the audio thread, so the
+ * run stays aligned with the animation even while the main thread is busy
+ * rendering a poll. A setInterval or a rAF loop would drift exactly when the
+ * dashboard is doing its most work, which is when the reels are spinning.
+ *
+ * The decode is async and the spin has already started by the time it lands on
+ * a cold context, so `startedAt` anchors the schedule to when the animation
+ * actually began. Clicks already in the past are dropped rather than fired
+ * late in a burst.
+ */
+export function scheduleReelClicks(
+  offsetsMs: number[],
+  gains: number[],
+  startedAt: number,
+): void {
+  if (!adminSoundEnabled() || offsetsMs.length === 0) return;
+  const c = audio();
+  if (!c) return;
+  void loadClick(c).then((buf) => {
+    if (!buf || !adminSoundEnabled()) return;
+    // How far into the spin we already are, in seconds.
+    const elapsed = (performance.now() - startedAt) / 1000;
+    const base = c.currentTime - elapsed;
+    for (let i = 0; i < offsetsMs.length; i++) {
+      const at = base + offsetsMs[i] / 1000;
+      // Past crossings are gone. Firing them now would stack a dozen clicks on
+      // one instant, which is a clack rather than a ratchet.
+      if (at < c.currentTime) continue;
+      const src = c.createBufferSource();
+      const amp = c.createGain();
+      src.buffer = buf;
+      amp.gain.setValueAtTime(Math.max(0.0001, gains[i] ?? 0.3) * CLICK_PEAK, at);
+      src.connect(amp).connect(c.destination);
+      src.start(at);
+    }
+  });
+}
+
+/** Peak for a single click. Thirty of these land inside a second on one reel
+ *  and five reels overlap, so this sits far below the register's 0.09. */
+const CLICK_PEAK = 0.05;
