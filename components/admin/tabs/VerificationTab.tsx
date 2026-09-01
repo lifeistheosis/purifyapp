@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Card, DataTable, Pill, StatCard, ToolbarButton } from "../primitives";
+import { Card, DataTable, Pill, StatCard, ToolbarButton, Email } from "../primitives";
 import { patchJson, shortDate, useAdminFetch } from "../adminFetch";
 
 /**
@@ -44,6 +44,8 @@ export function VerificationTab() {
   );
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [note, setNote] = useState<string | null>(null);
 
   const rows = data?.requests ?? [];
   const waiting = rows.filter((r) => r.status === "requested");
@@ -62,6 +64,44 @@ export function VerificationTab() {
     setBusy(null);
     if (err) setStatus(err);
     else reload();
+  }
+
+  /**
+   * Verify, or unverify, an account that never asked.
+   *
+   * The queue is a queue of REQUESTS, so before this the only way to grant a
+   * badge was to wait for someone to apply for one. Verifying a person the
+   * admin already knows is the ordinary case and had no path at all.
+   *
+   * The email is resolved to a uuid on the server. Nothing here learns an auth
+   * id, which is deliberate: serving those to clients is the hole
+   * 20260802_revoke_public_user_id.sql closed.
+   */
+  async function decideByEmail(next: VerificationRow["status"]): Promise<void> {
+    const target = email.trim();
+    if (!target) return;
+    setBusy("by-email");
+    setStatus(null);
+    setNote(null);
+    const err = await patchJson("/api/admin/verification", {
+      email: target,
+      status: next,
+    });
+    setBusy(null);
+    if (err) {
+      setStatus(err);
+      return;
+    }
+    // Named, and it says which address, because the input is about to be
+    // cleared and "Saved." next to an empty box does not tell an admin whether
+    // they verified the person they meant to.
+    setNote(
+      next === "verified"
+        ? `Verified ${target}.`
+        : `Removed the badge from ${target}.`,
+    );
+    setEmail("");
+    reload();
   }
 
   return (
@@ -83,6 +123,70 @@ export function VerificationTab() {
       )}
 
       <Card
+        title="Verify an account directly"
+        subtitle="For someone you already know. They do not need to have asked"
+      >
+        <div className="flex flex-wrap items-end gap-2">
+          <label className="min-w-0 flex-1">
+            <span
+              className="mb-1 block font-sans text-[11.5px]"
+              style={{ color: "var(--adm-ink-3)" }}
+            >
+              Account email
+            </span>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              // Enter submits. An admin typing an address and pressing return
+              // expects it to go; making them reach for the mouse is the kind
+              // of friction that gets a screen called broken.
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && email.trim() && !busy) {
+                  e.preventDefault();
+                  void decideByEmail("verified");
+                }
+              }}
+              placeholder="someone@example.com"
+              autoComplete="off"
+              spellCheck={false}
+              className="w-full rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-[13px] outline-none"
+              style={{
+                background: "var(--adm-control)",
+                borderColor: "var(--adm-line)",
+                color: "var(--adm-ink)",
+              }}
+            />
+          </label>
+          <ToolbarButton
+            variant="primary"
+            loading={busy === "by-email"}
+            title="Grant the blue check to this address"
+            onClick={() => void decideByEmail("verified")}
+          >
+            Verify
+          </ToolbarButton>
+          <ToolbarButton
+            variant="danger"
+            loading={busy === "by-email"}
+            title="Take the badge back from this address"
+            onClick={() => void decideByEmail("declined")}
+          >
+            Unverify
+          </ToolbarButton>
+        </div>
+        {note && (
+          <p
+            role="status"
+            className="mt-2 font-sans text-[12.5px]"
+            style={{ color: "var(--adm-positive, #34d399)" }}
+          >
+            {note}
+          </p>
+        )}
+      </Card>
+
+      <Card
         title="Verification"
         subtitle="Anyone can ask. Only this page grants it, and every decision records who made it"
       >
@@ -94,7 +198,7 @@ export function VerificationTab() {
               label: "Account",
               render: (r) =>
                 r.email ? (
-                  <span className="text-paper/85">{r.email}</span>
+                  <Email value={r.email} className="text-paper/85" />
                 ) : (
                   <Pill tone="rose">no account</Pill>
                 ),

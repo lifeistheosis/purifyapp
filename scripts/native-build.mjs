@@ -54,7 +54,9 @@ const LABEL = PLATFORM === "ios" ? "iOS" : "Android";
 const ROOT = process.cwd();
 const STASH_DIR = path.join(ROOT, ".native-export-stash");
 
-// Route trees excluded from the static export and restored afterwards:
+// Trees excluded from the static export and restored afterwards. Mostly route
+// trees; public/admin-audio at the end is an asset folder, for the reason
+// given there.
 //   - app/api: 31 route handlers — can't be exported; stay remote (auth,
 //     billing, sync, content-updates, licensed Bible) and are called over HTTP.
 //   - campaigns/[id], florilegium/[id]: runtime-only ids (a campaign stub and
@@ -100,6 +102,20 @@ const STASH_PATHS = [
   // network-only like the shop it shipped with. The static /support page
   // stays in the bundle; only the contact form is web-only.
   ["app", "(app)", "support", "contact"],
+  // NOT A ROUTE. The admin panel's sound effects, and the only entry here that
+  // is an asset folder rather than a page tree.
+  //
+  // public/ is copied wholesale into the export, so anything left in it ships
+  // to every reader whether or not a single line of shipped code references
+  // it. That is the objection lib/admin/clickSample.ts answers by inlining a
+  // 1.2KB WAV as base64. It is the right answer at 1.2KB and the wrong one at
+  // 56KB: base64 inflates by a third, lands in a JS module, and cannot be
+  // cached separately or replaced without a deploy.
+  //
+  // So the register stays a real file and this line is what keeps it out of
+  // the reader's download. app/admin is stashed two entries above, so nothing
+  // in the bundle can reach it anyway.
+  ["public", "admin-audio"],
 ];
 
 function slot(i) {

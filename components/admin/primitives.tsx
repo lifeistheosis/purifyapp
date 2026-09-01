@@ -25,6 +25,7 @@ const LARP_FILE_NOTE =
   "LARP MODE: every figure in this file is invented. Not real data.";
 import { Odometer } from "./Odometer";
 import { downloadCsv, toCsv } from "@/lib/admin/csv";
+import { SENSITIVE } from "@/lib/admin/streamer";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 import { focusablesIn, nextIndex } from "@/lib/ui/focusTrap";
 import { measureRows, moveItem, playFlip } from "@/lib/ui/flip";
@@ -66,7 +67,20 @@ export function Card({
 }) {
   return (
     <section
-      className="rounded-[var(--adm-radius)] border p-4 md:p-5"
+      // ── THE PANEL'S DENSITY LIVES HERE ────────────────────────────────
+      //
+      // p-3/p-4, down from p-4/p-5, and the same reduction runs through
+      // StatCard and KpiCard below and through the type scale in all three.
+      // This was 20px of padding around a 28px figure and a 13px label, so a
+      // card carrying one number stood 96px tall and a row of four filled a
+      // laptop screen. A dashboard is read by comparing things to each other,
+      // and it can only do that for as many things as fit at once.
+      //
+      // Changed in the primitives rather than per tab, deliberately: every
+      // card in sixteen tabs is one of these three components, so the scale is
+      // consistent by construction instead of by everyone remembering it. The
+      // rail is untouched; the owner has it where they want it.
+      className="rounded-[var(--adm-radius)] border p-3 md:p-4"
       style={{
         background: accent
           ? "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 93%)"
@@ -81,10 +95,10 @@ export function Card({
       }}
     >
       {(title || action) && (
-        <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+        <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
           {title && (
             <h3
-              className="font-sans text-[14px] font-semibold leading-tight"
+              className="font-sans text-[13px] font-semibold leading-tight"
               // --adm-accent-line, not --adm-accent. An accent card's ground is
               // 93% panel, so it is very nearly the ordinary panel, and the
               // saturated accent as INK on it measured 3.38:1. The -line token
@@ -100,7 +114,7 @@ export function Card({
       )}
       {subtitle && (
         <p
-          className="-mt-2 mb-3 font-sans text-[12.5px] leading-snug"
+          className="-mt-1.5 mb-2.5 font-sans text-[12px] leading-snug"
           style={{ color: "var(--adm-ink-3)" }}
         >
           {subtitle}
@@ -356,7 +370,7 @@ export function StatCard({
 }) {
   return (
     <div
-      className="rounded-[var(--adm-radius)] border p-5"
+      className="rounded-[var(--adm-radius)] border p-3.5"
       style={{
         background: accent
           ? "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 93%)"
@@ -368,20 +382,20 @@ export function StatCard({
       }}
     >
       <p
-        className="font-sans text-[13px] font-medium leading-5"
+        className="font-sans text-[12px] font-medium leading-4"
         style={{ color: "var(--adm-ink-3)" }}
       >
         {label}
       </p>
       <p
-        className="mt-3 font-sans text-[28px] font-semibold leading-none tracking-[-0.02em]"
+        className="mt-2 font-sans text-[23px] font-semibold leading-none tracking-[-0.02em]"
         style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)" }}
       >
         <Odometer value={value} />
       </p>
       {hint && (
         <p
-          className="mt-1.5 font-sans text-[12px]"
+          className="mt-1 font-sans text-[11.5px] leading-4"
           style={{ color: "var(--adm-ink-3)" }}
         >
           {hint}
@@ -433,12 +447,13 @@ export function KpiCard({
   return (
     <div
       // overflow-hidden is the backstop, not the fix. The sparkline below is a
-      // fixed 88px SVG, and on a phone these sit two to a row at about 160px
-      // each: it could not shrink, so it drew straight out of the card, across
-      // the gap and over the neighbouring card's figure. Reported from the
-      // mobile panel. The layout below stops it happening; this makes sure a
-      // future child cannot do it again.
-      className="flex flex-col overflow-hidden rounded-[var(--adm-radius)] border p-5"
+      // fixed-width SVG (76px, and 88px when this was written), and on a phone
+      // these sit two to a row at about 160px each: it could not shrink, so it
+      // drew straight out of the card, across the gap and over the
+      // neighbouring card's figure. Reported from the mobile panel. The layout
+      // below stops it happening; this makes sure a future child cannot do it
+      // again.
+      className="flex flex-col overflow-hidden rounded-[var(--adm-radius)] border p-3.5"
       style={{
         background: accent
           ? "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 93%)"
@@ -454,14 +469,14 @@ export function KpiCard({
           lines and interleaved into something unreadable. */}
       <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-2">
         <p
-          className="font-sans text-[13px] font-medium leading-5"
+          className="font-sans text-[12px] font-medium leading-4"
           style={{ color: "var(--adm-ink-3)" }}
         >
           {label}
         </p>
         {subtitle && (
           <p
-            className="font-sans text-[11.5px] leading-4"
+            className="font-sans text-[11px] leading-4"
             style={{ color: "var(--adm-ink-3)" }}
           >
             {subtitle}
@@ -469,31 +484,31 @@ export function KpiCard({
         )}
       </div>
 
-      <div className="mt-3 flex items-end justify-between gap-3">
+      <div className="mt-2 flex items-end justify-between gap-2.5">
         {/* min-w-0 so the figure is allowed to shrink. Without it a flex item
             refuses to go below its content width, which is what pushed the
             sparkline out of the card rather than squeezing the number. */}
         <p
-          className="min-w-0 font-sans text-[28px] font-semibold leading-none tracking-[-0.02em]"
+          className="min-w-0 font-sans text-[23px] font-semibold leading-none tracking-[-0.02em]"
           style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)" }}
         >
           <Odometer value={value} />
         </p>
         {/* The sparkline earns its place only when there is a shape to see.
-            Two points is a line segment, not a trend, and 88px beside a 28px
+            Two points is a line segment, not a trend, and 76px beside a 23px
             figure is not a trend either at phone width: hidden below sm, where
             the card is too narrow to read a line in anyway. The number is what
             the card is for; the shape is the bonus that goes first. */}
         {trend && trend.length > 2 && (
           <span className="hidden shrink-0 sm:block">
-            <Sparkline data={trend} width={88} height={26} />
+            <Sparkline data={trend} width={76} height={22} />
           </span>
         )}
       </div>
 
-      <div className="mt-2 min-h-[16px]">
+      <div className="mt-1.5 min-h-[15px]">
         {hint ? (
-          <p className="font-sans text-[12px]" style={{ color: "var(--adm-ink-2)" }}>
+          <p className="font-sans text-[11.5px] leading-4" style={{ color: "var(--adm-ink-2)" }}>
             {hint}
           </p>
         ) : delta ? (
@@ -516,6 +531,7 @@ export function ChartFrame({
   empty,
   isEmpty,
   accent,
+  sensitive,
 }: {
   title?: string;
   subtitle?: string;
@@ -525,6 +541,21 @@ export function ChartFrame({
   empty?: string;
   isEmpty?: boolean;
   accent?: boolean;
+  /**
+   * The PLOT carries money, so streamer mode has to cover it.
+   *
+   * Odometer marks every money FIGURE in the panel by itself, which is why
+   * one line in one file hides all of them. A chart has no such choke point:
+   * its numbers are axis ticks and path geometry, and a revenue shape is
+   * legible on a stream even with every label blurred, because the reader can
+   * see the curve. Marked per chart because only the caller knows whether the
+   * series is money or visitors.
+   *
+   * The title and subtitle stay readable. Hiding those would leave an
+   * anonymous blurred rectangle and the operator could not tell which chart
+   * they were looking at.
+   */
+  sensitive?: boolean;
 }) {
   return (
     <Card title={title} subtitle={subtitle} accent={accent} action={rangeSelector}>
@@ -536,7 +567,7 @@ export function ChartFrame({
           {empty ?? "Nothing in this range yet. Widen the dates to see more."}
         </p>
       ) : (
-        <>
+        <div className={sensitive ? SENSITIVE : undefined}>
           {children}
           {legendHint && (
             <p
@@ -546,7 +577,7 @@ export function ChartFrame({
               {legendHint}
             </p>
           )}
-        </>
+        </div>
       )}
     </Card>
   );
@@ -1323,6 +1354,40 @@ export function Pill({
         style={{ width: 5, height: 5, background: "currentColor" }}
       />
       {children}
+    </span>
+  );
+}
+
+/**
+ * Somebody's email address, on a screen that might be on a stream.
+ *
+ * A COMPONENT RATHER THAN A CLASS ON TWELVE CARDS. lib/admin/streamer.ts opens
+ * by saying the elements that need hiding are scattered across sixteen tabs
+ * and that threading a prop to each is sixteen chances to miss one. Money
+ * solved that by marking itself inside Odometer, so every revenue figure in
+ * the panel is covered by one line in one file. Emails had no such choke
+ * point: they were rendered as bare interpolations in a dozen places, so
+ * streamer mode blurred every number on screen and left a customer's address
+ * legible beside it. This is that choke point.
+ *
+ * Anything that renders a real person's address goes through here. The name is
+ * the instruction: if you are writing {user.email} into JSX, you want <Email>.
+ */
+export function Email({
+  value,
+  fallback = "—",
+  className,
+}: {
+  value: string | null | undefined;
+  fallback?: string;
+  className?: string;
+}) {
+  // A missing address is not sensitive and must not be blurred: a blurred
+  // "Guest" reads as a hidden address that is not there.
+  if (!value) return <>{fallback}</>;
+  return (
+    <span className={[SENSITIVE, className].filter(Boolean).join(" ")}>
+      {value}
     </span>
   );
 }

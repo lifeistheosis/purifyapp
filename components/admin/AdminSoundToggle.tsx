@@ -6,6 +6,7 @@ import {
   ADMIN_SOUND_KEY,
   adminSoundEnabled,
   chaChing,
+  primeRegister,
   reelDemo,
   setAdminSoundEnabled,
 } from "@/lib/admin/sound";
@@ -77,6 +78,9 @@ export function AdminSoundToggle() {
     emit();
     // Inside the click, so the gesture unlocks the AudioContext.
     if (!next) return;
+    // Fetched here, on the gesture that switches sound on, so the first real
+    // sale plays the recording rather than the fallback bell while it loads.
+    primeRegister();
     chaChing();
     // After the register's two strikes rather than under them, so the ratchet
     // is actually auditioned instead of masked. The context is already

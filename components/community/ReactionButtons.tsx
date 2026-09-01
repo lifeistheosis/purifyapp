@@ -107,11 +107,18 @@ export function ReactionButtons({
     }
   }
 
+  // justify-center and a floor on the width, so the two pills are the same
+  // size. Only the like carries a number, so without this the dislike sat
+  // visibly narrower and the pair read as misaligned rather than as a pair.
   const base =
-    "tap-press inline-flex min-h-[36px] items-center gap-1.5 rounded-pill border px-3 font-sans text-caption font-medium transition-colors disabled:opacity-50";
+    "tap-press inline-flex h-9 min-w-[64px] items-center justify-center gap-1.5 rounded-pill border px-3 font-sans text-caption font-medium transition-colors disabled:opacity-50";
 
   return (
-    <div className="mt-3 flex items-center gap-2">
+    // NO TOP MARGIN. This sits inside the post's action row, which is already
+    // `flex items-center` and spaces itself. The mt-3 that used to be here
+    // pushed the pills 12px below the replies button beside them, so the row
+    // was centred on paper and visibly stepped on screen.
+    <div className="inline-flex items-center gap-2">
       <button
         type="button"
         onClick={() => press(1)}

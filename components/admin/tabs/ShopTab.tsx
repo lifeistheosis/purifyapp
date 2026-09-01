@@ -22,8 +22,7 @@ import {
   Pill,
   SearchInput,
   SubTabs,
-  ToolbarButton,
-} from "../primitives";
+  ToolbarButton, Email } from "../primitives";
 import {
   findShopIssues,
   type IntegrityProduct,
@@ -1861,7 +1860,7 @@ function ApplicationsPanel() {
                       </span>
                     </p>
                     <p className="font-sans text-eyebrow text-paper/50">
-                      {a.legal_name} · {a.email}
+                      {a.legal_name} · <Email value={a.email} />
                       {a.phone ? ` · ${a.phone}` : ""}
                     </p>
                     {a.portfolio_url ? (
@@ -1904,7 +1903,8 @@ function ApplicationsPanel() {
                     {appNotes.map((n) => (
                       <li key={n.id} className="font-sans text-eyebrow text-paper/55">
                         <span className="text-paper/35">
-                          {new Date(n.created_at).toLocaleDateString()} · {n.admin_email}:
+                          {new Date(n.created_at).toLocaleDateString()} ·{" "}
+                          <Email value={n.admin_email} />:
                         </span>{" "}
                         {n.note}
                       </li>

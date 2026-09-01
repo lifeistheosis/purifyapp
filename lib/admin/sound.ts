@@ -27,7 +27,7 @@
 // tick run for the whole batch, with the ka-ching winning when both are due.
 
 import { CLICK_WAV_BASE64 } from "./clickSample";
-import { clickGain, clickTimes } from "./reelClicks";
+import { clickGain, clickTimes, thinClicks } from "./reelClicks";
 
 const KEY = "purify.sound.admin";
 
@@ -74,6 +74,55 @@ function audio(): AudioContext | null {
   }
 }
 
+// ── The output bus ──────────────────────────────────────────────────────────
+//
+// EVERYTHING GOES THROUGH HERE, and the reason is the distortion the owner
+// reported on the first spin of a page load.
+//
+// A reel fires one click per digit it passes, and at the start of a spin those
+// are about 10ms apart while the sample itself is 26ms long, so roughly three
+// overlap at any instant on ONE reel. On a cold load every reel on the board
+// mounts in the same commit and starts together, so a five digit figure is
+// five of those runs stacked in phase. Fifteen near-identical transients
+// summing coherently is not fifteen times quieter than one, it is fifteen
+// times louder, and anything past 1.0 is clipped hard by the output stage.
+// Clipping a 26ms transient is exactly the sound that was described as super
+// distorted, and it was worst on the first spin because that is the one where
+// every reel is aligned.
+//
+// Lowering the per-click gain alone cannot fix this: the safe value would be
+// set by the worst case, which is the widest number the panel might ever show,
+// and every ordinary spin would then be inaudible. A limiter is the right tool
+// because it does nothing at all until the sum actually approaches the ceiling.
+//
+// The compressor is configured as a LIMITER, not as a compressor: a high ratio
+// and a fast attack so peaks are caught, with the threshold set high enough
+// that a single click passes through completely untouched.
+let bus: GainNode | null = null;
+function output(c: AudioContext): GainNode {
+  if (bus && bus.context === c) return bus;
+  const g = c.createGain();
+  g.gain.value = 0.9;
+  const limiter = c.createDynamicsCompressor();
+  // -6dBFS: a lone click peaks at -23 and a ka-ching at -21, so neither ever
+  // reaches this. Only a pile-up does, which is the only thing being caught.
+  limiter.threshold.setValueAtTime(-6, c.currentTime);
+  // A hard knee. A soft one would round the tops of ordinary sounds too and
+  // the ratchet would lose the attack that makes it read as a mechanism.
+  limiter.knee.setValueAtTime(0, c.currentTime);
+  limiter.ratio.setValueAtTime(20, c.currentTime);
+  // 1ms, because the thing being caught IS the attack. A slower one lets the
+  // first millisecond of the pile-up through unlimited, which is the part that
+  // clips.
+  limiter.attack.setValueAtTime(0.001, c.currentTime);
+  // Long enough not to pump between clicks 10ms apart, short enough to recover
+  // before the reel finishes.
+  limiter.release.setValueAtTime(0.12, c.currentTime);
+  g.connect(limiter).connect(c.destination);
+  bus = g;
+  return g;
+}
+
 /**
  * One struck partial. `at` is an offset in seconds from now.
  *
@@ -100,7 +149,7 @@ function ping(
   amp.gain.setValueAtTime(0.0001, t);
   amp.gain.exponentialRampToValueAtTime(gain, t + 0.006);
   amp.gain.exponentialRampToValueAtTime(0.0001, t + decay);
-  osc.connect(amp).connect(c.destination);
+  osc.connect(amp).connect(output(c));
   osc.start(t);
   osc.stop(t + decay + 0.02);
 }
@@ -118,6 +167,18 @@ export function chaChing(): void {
   if (!adminSoundEnabled()) return;
   const c = audio();
   if (!c) return;
+  // A REAL REGISTER IF WE HAVE ONE. The owner supplied a recording and asked
+  // for it on sales and money, so the synthesised bell below is now the
+  // fallback rather than the sound. It stays, and it is not dead code: the
+  // recording is fetched over the network, and a money figure moving while
+  // that request is in flight, or after it has failed, still has to make a
+  // noise. Falling silent on a sale would be the worse failure.
+  if (playRegister(c)) return;
+  synthChaChing(c);
+}
+
+/** The oscillator register. See chaChing: this is the fallback path now. */
+function synthChaChing(c: AudioContext): void {
   const PEAK = 0.09; // under speech level even at full device volume
   // Strike one.
   ping(c, 1_047, 0, 0.19, PEAK);
@@ -127,6 +188,94 @@ export function chaChing(): void {
   ping(c, 1_245, 0.085, 0.34, PEAK * 0.85);
   ping(c, 1_865, 0.085, 0.26, PEAK * 0.42);
   ping(c, 2_490, 0.085, 0.18, PEAK * 0.22);
+}
+
+// ── The register recording ──────────────────────────────────────────────────
+//
+// A FILE, NOT A BASE64 MODULE, and that is a deliberate departure from
+// lib/admin/clickSample.ts. Inlining is right for 1.2KB and wrong for 56KB:
+// base64 costs a third again in size, lands inside a JS chunk that cannot be
+// cached or replaced independently, and would be parsed by every admin page
+// load whether or not sound is even switched on.
+//
+// The objection inlining answers is that public/ ships wholesale to every
+// reader in the native bundle. That is answered here instead by
+// scripts/native-build.mjs, which stashes public/admin-audio out of the export
+// exactly as it stashes app/admin. Readers never download it.
+//
+// LAZY, AND ONLY ONCE SOUND IS ON. Nothing is fetched until the operator has
+// actually enabled sound, so an admin page load costs nothing extra.
+
+const REGISTER_URL = "/admin-audio/register.mp3";
+/** Peak of the loudest moment of the register, as a real output level. */
+const REGISTER_PEAK = 0.5;
+
+let registerBuffer: AudioBuffer | null = null;
+let registerNormalise = 1;
+let registerPending: Promise<AudioBuffer | null> | null = null;
+/** True once the fetch has failed, so a dead URL is not retried per sale. */
+let registerFailed = false;
+
+function loadRegister(c: AudioContext): Promise<AudioBuffer | null> {
+  if (registerBuffer) return Promise.resolve(registerBuffer);
+  if (registerPending) return registerPending;
+  registerPending = (async () => {
+    try {
+      const res = await fetch(REGISTER_URL, { cache: "force-cache" });
+      if (!res.ok) throw new Error(`register ${res.status}`);
+      const buf = await c.decodeAudioData(await res.arrayBuffer());
+      // Normalised the same way the click is, and for the same reason: a
+      // recording's own level is arbitrary, so multiplying a constant into it
+      // means the constant describes nothing. See CLICK_PEAK, where getting
+      // this wrong made the ratchet 23dB too quiet and inaudible.
+      const pcm = buf.getChannelData(0);
+      let peak = 0;
+      for (let i = 0; i < pcm.length; i++) {
+        const v = Math.abs(pcm[i]);
+        if (v > peak) peak = v;
+      }
+      registerNormalise = peak > 0.01 ? peak : 1;
+      registerBuffer = buf;
+      return buf;
+    } catch (e) {
+      console.warn("[admin sound] register would not load", e);
+      registerFailed = true;
+      return null;
+    }
+  })();
+  return registerPending;
+}
+
+/**
+ * Play the register recording if it is already decoded.
+ *
+ * Returns whether it played, SYNCHRONOUSLY, because the caller has to decide
+ * between this and the synthesised bell right now: awaiting the load would
+ * either delay the sound past the moment it belongs to or play both.
+ *
+ * The first money event after sound is switched on therefore gets the
+ * oscillator while this warms up, and every one after it gets the recording.
+ */
+function playRegister(c: AudioContext): boolean {
+  if (registerFailed) return false;
+  if (!registerBuffer) {
+    void loadRegister(c);
+    return false;
+  }
+  const src = c.createBufferSource();
+  const amp = c.createGain();
+  src.buffer = registerBuffer;
+  amp.gain.setValueAtTime(REGISTER_PEAK / registerNormalise, c.currentTime);
+  src.connect(amp).connect(output(c));
+  src.start();
+  return true;
+}
+
+/** Warm the register up so the first real sale is not the fallback bell. */
+export function primeRegister(): void {
+  if (!adminSoundEnabled()) return;
+  const c = audio();
+  if (c) void loadRegister(c);
 }
 
 /**
@@ -284,6 +433,16 @@ export function scheduleReelClicks(
   offsetsMs: number[],
   gains: number[],
   startedAt: number,
+  /**
+   * Pitch offset for this reel, in cents. Small, and it matters.
+   *
+   * Five reels playing the SAME 26ms sample at the same pitch sum into one
+   * timbre, so a board of them reads as a single buzzy source rather than five
+   * mechanisms. A few percent of detune per column is what separates them, and
+   * it is what a real machine has anyway: no two reels are built identically.
+   * Deterministic per column, so a reel sounds the same on every spin.
+   */
+  detuneCents = 0,
 ): void {
   if (!adminSoundEnabled() || offsetsMs.length === 0) return;
   const c = audio();
@@ -311,11 +470,12 @@ export function scheduleReelClicks(
       const src = c.createBufferSource();
       const amp = c.createGain();
       src.buffer = buf;
+      if (detuneCents !== 0) src.detune.setValueAtTime(detuneCents, at);
       amp.gain.setValueAtTime(
         (Math.max(0.0001, gains[i] ?? 0.3) * CLICK_PEAK) / clickNormalise,
         at,
       );
-      src.connect(amp).connect(c.destination);
+      src.connect(amp).connect(output(c));
       src.start(at);
     }
   });
@@ -329,7 +489,7 @@ export function scheduleReelClicks(
  *
  * READ THE FACTOR OF TWO. clickGain in reelClicks.ts runs from 0.5 down to
  * 0.16 across a spin, never 1.0, so the LOUDEST click in a run comes out at
- * half of this: 0.07, about -23 dBFS, against the register's 0.09 at -20.9.
+ * half of this: 0.055, about -25 dBFS, against the register's 0.09 at -20.9.
  * That is the relationship wanted, since a 26ms transient reads as louder
  * than a bell ringing for 340ms at the same peak. The quietest click at the
  * end of a run lands near -33 dBFS.
@@ -361,7 +521,7 @@ export function reelDemo(): void {
   if (!adminSoundEnabled()) return;
   // A mid-length run: enough clicks to hear the deceleration, short enough to
   // sit under the ka-ching playing beside it.
-  const times = clickTimes(20, 1_100);
+  const times = thinClicks(clickTimes(20, 1_100));
   scheduleReelClicks(
     times,
     times.map((_, i) => clickGain(i, times.length)),

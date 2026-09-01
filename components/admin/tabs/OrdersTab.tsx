@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
-import { Card, DataTable, Pill, SubTabs, ToolbarButton } from "../primitives";
+import { Card, DataTable, Pill, SubTabs, ToolbarButton, Email } from "../primitives";
 import { formatPrice } from "@/lib/shop/format";
 import { SELLER_STATUS_LABELS } from "@/lib/shop/sellerOrders";
 import { trackingLink } from "@/lib/shop/trackingLink";
@@ -223,7 +223,7 @@ export function OrdersTab() {
             {
               key: "email",
               label: "Buyer",
-              render: (o) => o.email ?? "Guest",
+              render: (o) => <Email value={o.email} fallback="Guest" />,
               csv: (o) => o.email ?? "Guest",
             },
             {
@@ -272,7 +272,7 @@ export function OrdersTab() {
         >
           <div className="grid gap-4 md:grid-cols-2 font-sans text-detail">
             <div className="space-y-2">
-              <Row label="Buyer" value={selected.email ?? "Guest"} />
+              <Row label="Buyer" value={<Email value={selected.email} fallback="Guest" />} />
               <Row label="Placed" value={fmtDate(selected.created_at)} />
               <Row
                 label="Items subtotal"
@@ -407,7 +407,9 @@ export function OrdersTab() {
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+// ReactNode, not string: the buyer row carries an <Email>, which has to be
+// an element so streamer mode can blur it.
+function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex justify-between gap-3">
       <span className="text-paper/45">{label}</span>

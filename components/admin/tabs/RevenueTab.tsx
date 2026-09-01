@@ -180,6 +180,7 @@ function RevenuePanel() {
       <ChartFrame
         title="Shop net revenue · by month"
         subtitle="Paid orders minus refunds."
+        sensitive
         isEmpty={monthly.length === 0}
         empty="No shop revenue yet."
       >
@@ -209,6 +210,7 @@ function RevenuePanel() {
           }
           isEmpty={donutSegments.length === 0}
           empty="Nothing realized yet."
+          sensitive
         >
           <div className="flex justify-center">
             <Donut segments={donutSegments} size={200} label="USD" />
@@ -218,6 +220,7 @@ function RevenuePanel() {
         <ChartFrame
           title="Top products"
           subtitle="By gross across paid orders."
+          sensitive
           isEmpty={(data?.shop.topProducts ?? []).length === 0}
         >
           <BarChart

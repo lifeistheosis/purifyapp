@@ -1,5 +1,7 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
+
 // Streamer mode. The panel stays fully usable and stops showing anything that
 // would be somebody's business but not the audience's.
 //
@@ -81,3 +83,20 @@ export function onStreamerChange(fn: (on: boolean) => void): () => void {
 
 /** Marks an element as something the audience must not read. */
 export const SENSITIVE = "adm-sensitive";
+
+/**
+ * Whether streamer mode is on, for the rare case that CSS cannot cover.
+ *
+ * The class is the mechanism and should stay the mechanism: it reaches
+ * anything on screen without a prop. What it cannot reach is a value that is
+ * not rendered as text, and the one that matters is a `title` attribute. A
+ * blurred address with title={address} hands the whole thing back in a
+ * tooltip, which is a leak that looks like a feature and was live in the rail.
+ */
+export function useStreamerOn(): boolean {
+  return useSyncExternalStore(subscribeStreamer, streamerOn, () => false);
+}
+
+function subscribeStreamer(onChange: () => void): () => void {
+  return onStreamerChange(onChange);
+}

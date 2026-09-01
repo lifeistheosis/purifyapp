@@ -988,7 +988,11 @@ function PostCard({
           type="button"
           onClick={() => void toggleReplies()}
           aria-expanded={open}
-          className="font-sans text-detail font-medium text-paper/55 hover:text-paper"
+          // h-9 to match the reaction pills exactly. items-center alone cannot
+          // line up two things of different heights when one of them is a bare
+          // text button: the optical baseline lands wherever the shorter one's
+          // box happens to put it.
+          className="inline-flex h-9 items-center font-sans text-detail font-medium text-paper/55 hover:text-paper"
         >
           {tn("community.replyCount", shownCount)}
           {open ? " ▴" : " ▾"}

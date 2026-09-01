@@ -9,6 +9,7 @@ import type {
   TicketMessage,
   TicketStatus,
 } from "@/lib/support/ticketNumber";
+import { Email } from "./primitives";
 
 type FullTicket = Ticket & { messages: TicketMessage[] };
 
@@ -312,7 +313,7 @@ export function SupportConsole({ initial }: { initial: FullTicket[] }) {
                 </p>
                 <p className="mt-0.5 truncate font-sans text-caption text-paper/50">
                   {t.name ? `${t.name} · ` : ""}
-                  {t.email}
+                  <Email value={t.email} />
                 </p>
               </button>
             </li>
@@ -348,7 +349,7 @@ export function SupportConsole({ initial }: { initial: FullTicket[] }) {
               </h3>
               <p className="mt-1 font-sans text-caption text-paper/55">
                 {selected.name ? `${selected.name} · ` : ""}
-                {selected.email}
+                <Email value={selected.email} />
               </p>
             </div>
             <StatusPicker value={selected.status} onChange={changeStatus} />

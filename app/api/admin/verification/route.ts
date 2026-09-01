@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
-import { emailsByUserId } from "@/lib/admin/accountEmails";
+import { emailsByUserId, userIdByEmail } from "@/lib/admin/accountEmails";
 import { logActivity } from "@/lib/admin/activityLog";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -67,11 +67,30 @@ export async function GET() {
   );
 }
 
-const patchSchema = z.object({
-  userId: z.string().uuid(),
-  status: z.enum(["requested", "verified", "declined"]),
-  note: z.string().max(2000).optional().nullable(),
-});
+const patchSchema = z
+  .object({
+    userId: z.string().uuid().optional(),
+    /**
+     * Verify somebody who never asked.
+     *
+     * The queue only ever held people who had REQUESTED a badge, so an admin
+     * who simply wanted to verify a known account had no way to do it: there
+     * was no row to press a button on, and nothing on the screen took an
+     * address. Granting a badge to a real person the admin already knows is
+     * the ordinary case, not the exception.
+     *
+     * Still admin-gated and still service-role. The address is resolved to a
+     * uuid here, on the server, so the client never learns an auth id it did
+     * not already have, which is the hole 20260802_revoke_public_user_id.sql
+     * closed and which this must not reopen.
+     */
+    email: z.string().trim().email().optional(),
+    status: z.enum(["requested", "verified", "declined"]),
+    note: z.string().max(2000).optional().nullable(),
+  })
+  .refine((v) => Boolean(v.userId) !== Boolean(v.email), {
+    message: "Give exactly one of userId or email.",
+  });
 
 export async function PATCH(req: Request) {
   const adminUser = await getAdminUser();
@@ -85,9 +104,23 @@ export async function PATCH(req: Request) {
   }
   const parsed = patchSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid update." }, { status: 400 });
+    return NextResponse.json(
+      { error: parsed.error.issues[0]?.message ?? "Invalid update." },
+      { status: 400 },
+    );
   }
-  const { userId, status, note } = parsed.data;
+  const { status, note } = parsed.data;
+
+  // An address that belongs to nobody is a 404 with a sentence, not a 500 and
+  // not a silently created row. The likeliest cause by far is a typo, and the
+  // admin needs to be told which of the two it was.
+  const userId = parsed.data.userId ?? (await userIdByEmail(parsed.data.email!));
+  if (!userId) {
+    return NextResponse.json(
+      { error: `No account with that email: ${parsed.data.email}` },
+      { status: 404 },
+    );
+  }
 
   const admin = createAdminClient();
   const now = new Date().toISOString();

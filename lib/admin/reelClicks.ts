@@ -85,3 +85,56 @@ export function clickGain(index: number, total: number): number {
   const through = index / (total - 1);
   return 0.5 - 0.34 * through;
 }
+
+/**
+ * The closest two clicks may land, in milliseconds.
+ *
+ * 42ms is about 24 clicks a second, just under the rate at which the ear stops
+ * hearing separate events and starts hearing a pitch.
+ */
+export const MIN_CLICK_GAP_MS = 42;
+
+/**
+ * Drop clicks that would land on top of each other.
+ *
+ * ── Why this exists ─────────────────────────────────────────────────────
+ *
+ * The solver above is faithful to the animation and that is exactly the
+ * problem. A reel crosses its first digits very fast, so clickTimes puts the
+ * opening clicks about 6ms apart: 163 a second on one reel, and 345 a second
+ * across a five digit figure whose reels all start in the same commit. The
+ * sample is 26ms long, so four copies of one identical transient are sounding
+ * at any instant, repeating at an audio rate.
+ *
+ * Repeating an identical waveform 163 times a second does not sound like 163
+ * clicks. It sounds like a 163Hz tone with a comb filter over it, which is
+ * what the owner heard and described as super distorted, and it was worst on
+ * the first spin of a page load because that is the one where every reel is
+ * aligned. It was never a level problem: rendered offline, the unlimited
+ * five-reel worst case peaks at 0.26, nowhere near clipping.
+ *
+ * So the fix is density, not gain. Below the floor the run thins out and reads
+ * as a fast mechanism; as the reel decelerates and the real gaps open past the
+ * floor, every digit gets its own click again. The ratchet slowing down is
+ * still the easing's doing, not a fake ramp.
+ *
+ * THE LAST CLICK ALWAYS SURVIVES. It is the reel hitting its stop, the one
+ * click that is doing real work, and losing it to a rounding accident would
+ * leave the spin ending on nothing.
+ */
+export function thinClicks(
+  times: number[],
+  minGapMs: number = MIN_CLICK_GAP_MS,
+): number[] {
+  if (times.length === 0) return [];
+  const out: number[] = [];
+  let last = Number.NEGATIVE_INFINITY;
+  for (const t of times) {
+    if (t - last < minGapMs) continue;
+    out.push(t);
+    last = t;
+  }
+  const final = times[times.length - 1];
+  if (out.length === 0 || out[out.length - 1] !== final) out.push(final);
+  return out;
+}

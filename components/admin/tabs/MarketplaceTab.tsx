@@ -14,7 +14,7 @@ import { REFUND_REASON_LABELS } from "@/lib/shop/refunds";
 import { SELLER_STATUS_LABELS } from "@/lib/shop/sellerOrders";
 import type { ShopFulfillmentStatus } from "@/lib/shop/types";
 
-import { Card, DataTable, Pill, StatCard, ToolbarButton } from "../primitives";
+import { Card, DataTable, Pill, StatCard, ToolbarButton, Email } from "../primitives";
 import { patchJson, shortDate, useAdminFetch } from "../adminFetch";
 
 const field =
@@ -211,7 +211,7 @@ function StoresPanel() {
                 <p className="font-sans text-detail text-paper">
                   {a.proposed_store_name}
                   <span className="ml-2 text-paper/55">
-                    {a.seller_type.replaceAll("_", " ")} · {a.email}
+                    {a.seller_type.replaceAll("_", " ")} · <Email value={a.email} />
                   </span>
                 </p>
                 <ToolbarButton
@@ -287,7 +287,7 @@ function StoresPanel() {
               render: (s) => {
                 const seller = sellerById.get(s.seller_id);
                 return seller?.email ? (
-                  <span className="text-paper/85">{seller.email}</span>
+                  <Email value={seller.email} className="text-paper/85" />
                 ) : (
                   <Pill tone="rose">unassigned</Pill>
                 );

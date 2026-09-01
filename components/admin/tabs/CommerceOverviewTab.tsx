@@ -5,7 +5,7 @@
 // users, a 30-day net-revenue trend, and a recent paid-orders strip.
 
 import { useLiveData } from "@/lib/admin/useLiveData";
-import { Card, KpiCard, ChartFrame } from "../primitives";
+import { Card, KpiCard, ChartFrame, Email } from "../primitives";
 import { OverviewWidgets } from "../OverviewWidgets";
 import { AreaChart, SERIES_COLORS } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
@@ -169,7 +169,7 @@ export function CommerceOverviewTab() {
                 className="flex items-center justify-between gap-3 py-2.5 font-sans text-detail"
               >
                 <span className="text-paper/85 truncate">
-                  {o.email ?? "Guest"}
+                  <Email value={o.email} fallback="Guest" />
                 </span>
                 <span className="flex items-center gap-3 shrink-0 tabular-nums">
                   <span className="text-paper font-semibold">

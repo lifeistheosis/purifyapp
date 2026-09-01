@@ -29,11 +29,17 @@ function installGlobals() {
 
   const gain = () => ({
     gain: {
+      value: 1,
       setValueAtTime: vi.fn(),
       exponentialRampToValueAtTime: vi.fn(),
     },
     connect: vi.fn().mockReturnValue({ connect: vi.fn() }),
   });
+
+  // An AudioParam that only has to be settable. The limiter's settings are not
+  // asserted here: what this file tests is which NOTES are played, and the
+  // limiter is a safety net on the way out that changes none of them.
+  const param = () => ({ setValueAtTime: vi.fn() });
 
   class FakeAudioContext {
     currentTime = 0;
@@ -41,6 +47,21 @@ function installGlobals() {
     destination = {};
     resume = vi.fn();
     createGain = gain;
+    // Added when the reel ratchet got an output bus. Without it every sound in
+    // the module threw on the way to the destination, which is worth noting:
+    // the four tests that broke were testing oscillator frequencies and had
+    // nothing to do with limiting. A stub is a claim about the platform, and it
+    // goes stale when the code starts using more of the platform.
+    createDynamicsCompressor() {
+      return {
+        threshold: param(),
+        knee: param(),
+        ratio: param(),
+        attack: param(),
+        release: param(),
+        connect: vi.fn().mockReturnValue({ connect: vi.fn() }),
+      };
+    }
     createOscillator() {
       const osc = {
         type: "sine" as OscillatorType,
@@ -53,6 +74,15 @@ function installGlobals() {
       return osc;
     }
   }
+
+  // The register recording is fetched over HTTP and there is no server here.
+  // Rejecting is the honest stub: it exercises the path a real admin hits when
+  // the asset 404s, where chaChing has to fall back to the synthesised bell,
+  // which is exactly what the frequency assertions below read.
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockRejectedValue(new Error("no network in tests")),
+  );
 
   vi.stubGlobal("window", {
     AudioContext: FakeAudioContext,

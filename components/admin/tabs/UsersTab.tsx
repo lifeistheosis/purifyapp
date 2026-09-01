@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
-import { Card, DataTable, Pill, Toolbar, ToolbarButton } from "../primitives";
+import { Card, DataTable, Pill, Toolbar, ToolbarButton, Email } from "../primitives";
 import { LineChart, Donut, SERIES_COLORS } from "../charts";
 import { Odometer } from "../Odometer";
 
@@ -179,7 +179,7 @@ export function UsersTab() {
             {
               key: "email",
               label: "Email",
-              render: (r) => r.email ?? "—",
+              render: (r) => <Email value={r.email} />,
               csv: (r) => r.email ?? "",
             },
             {

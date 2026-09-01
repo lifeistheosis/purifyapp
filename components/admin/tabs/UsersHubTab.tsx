@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
-import { Card, StatCard, DataTable, Pill, SubTabs } from "../primitives";
+import { Card, StatCard, DataTable, Pill, SubTabs, Email } from "../primitives";
 import { UsersTab } from "./UsersTab";
 import { formatPrice } from "@/lib/shop/format";
 
@@ -145,7 +145,7 @@ function LiveCartsPanel() {
                       traceable to a person without opening the profile. */}
                   {c.name && c.email ? (
                     <span className="block truncate font-sans text-eyebrow text-paper/45">
-                      {c.email}
+                      <Email value={c.email} />
                     </span>
                   ) : null}
                   {!c.signedIn ? (
@@ -167,7 +167,7 @@ function LiveCartsPanel() {
               label: "Email",
               render: (c) =>
                 c.email ? (
-                  <span className="font-sans text-detail text-paper/70">{c.email}</span>
+                  <Email value={c.email} className="font-sans text-detail text-paper/70" />
                 ) : (
                   <span className="text-paper/25">—</span>
                 ),

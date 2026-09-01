@@ -25,7 +25,7 @@ import { useEffect, useRef } from "react";
 
 import { useReducedMotion } from "@/lib/ui/motion";
 import { reportChange, scheduleReelClicks } from "@/lib/admin/sound";
-import { clickGain, clickTimes } from "@/lib/admin/reelClicks";
+import { clickGain, clickTimes, thinClicks } from "@/lib/admin/reelClicks";
 import { SENSITIVE } from "@/lib/admin/streamer";
 import {
   columns,
@@ -33,7 +33,6 @@ import {
   hasDigits,
   isMoneyText,
   REEL_ITEMS,
-  restIndex as reelRestIndex,
   reelDuration,
   restIndex,
 } from "@/lib/admin/odometer";
@@ -88,11 +87,20 @@ function Wheel({
   useEffect(() => {
     if (!animate) return;
     const rest = restIndex(digit);
-    const times = clickTimes(rest, durationMs);
+    // Thinned before the gains are spread across it, so the fade still runs
+    // from the first click actually played to the last, rather than from a
+    // click that was dropped.
+    const times = thinClicks(clickTimes(rest, durationMs));
+    // Detune from the reel's own duration, which reelDuration derives from the
+    // column: deterministic, different per column, same on every spin. Five
+    // reels at one pitch stack into a single timbre; a few cents apart they
+    // read as five mechanisms.
+    const column = Math.round((durationMs - 900) / 180);
     scheduleReelClicks(
       times,
       times.map((_, i) => clickGain(i, times.length)),
       performance.now(),
+      (column % 5) * 28 - 56,
     );
     // Mount only. digit and durationMs are stable for the life of a wheel in
     // the same column, and re-running on a value change is the thing above

@@ -62,6 +62,7 @@ import { AdminSoundToggle } from "./AdminSoundToggle";
 import { AdminMotionToggle } from "./AdminMotionToggle";
 import { AdminStreamerToggle } from "./AdminStreamerToggle";
 import { ActivityFeed } from "./ActivityFeed";
+import { useStreamerOn } from "@/lib/admin/streamer";
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
 import { AdminMobileNav } from "./AdminMobileNav";
 import { installLarpWriteGuard, larpOn, onLarpChange, setLarp } from "@/lib/admin/larp";
@@ -470,6 +471,9 @@ export function AdminShell({
   // render and which AdminThemeToggle and useTween both learned the hard way.
   const [requested, setActive] = useState<TabId>("overview");
   const [navOpen, setNavOpen] = useState(false);
+  // Only for the rail's title attribute, which CSS cannot blur. Everything
+  // else that hides on stream does it with .adm-sensitive.
+  const streaming = useStreamerOn();
 
   // LARP MODE. Type the word anywhere in the panel that is not a text field.
   // A key sequence rather than a control, because it is a demo switch and a
@@ -672,12 +676,16 @@ export function AdminShell({
             {adminEmail.slice(0, 1)}
           </span>
           {/* The signed-in address, which is a real person's and sits in the
-              rail on every screen. title is dropped under streamer mode too, or
-              the tooltip hands back exactly what the blur is covering. */}
+              rail on every screen. The title is dropped under streamer mode,
+              or the tooltip hands back exactly what the blur is covering.
+
+              That was already the stated intent here and was not what the code
+              did: title was set unconditionally, so hovering the blurred rail
+              printed the address in a native tooltip that no filter touches. */}
           <span
             className={`adm-sensitive min-w-0 flex-1 truncate font-sans text-[11.5px]`}
             style={{ color: "var(--adm-ink-2)" }}
-            title={adminEmail}
+            title={streaming ? undefined : adminEmail}
           >
             {adminEmail}
           </span>

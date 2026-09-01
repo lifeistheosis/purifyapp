@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { clickGain, clickTimes, REEL_EASING } from "../reelClicks";
+import { clickGain, clickTimes, REEL_EASING,
+  MIN_CLICK_GAP_MS,
+  thinClicks,
+} from "../reelClicks";
 
 /**
  * These offsets are the sound's alignment with the picture, and nothing else
@@ -81,5 +84,51 @@ describe("click gain", () => {
 
   it("handles a single click without dividing by zero", () => {
     expect(Number.isFinite(clickGain(0, 1))).toBe(true);
+  });
+});
+
+describe("thinClicks", () => {
+  it("never lets two clicks land closer than the floor", () => {
+    // The defect this exists for: the solver puts the opening clicks about 6ms
+    // apart, which is 163 a second, which the ear hears as a tone rather than
+    // as clicks. Anything at or above the floor is separable.
+    const kept = thinClicks(clickTimes(28, 1_620));
+    const gaps = kept.slice(1).map((t, i) => t - kept[i]);
+    // The last gap is exempt: the final click is always kept, see below.
+    for (const g of gaps.slice(0, -1)) {
+      expect(g).toBeGreaterThanOrEqual(MIN_CLICK_GAP_MS);
+    }
+  });
+
+  it("keeps the last click, which is the reel hitting its stop", () => {
+    const times = clickTimes(24, 900);
+    expect(thinClicks(times).at(-1)).toBe(times.at(-1));
+  });
+
+  it("keeps the final click even when the floor would swallow the whole run", () => {
+    // A degenerate spin, every click inside one floor width. Returning nothing
+    // would end the spin in silence.
+    const kept = thinClicks([1, 2, 3, 4], 1000);
+    expect(kept.at(-1)).toBe(4);
+    expect(kept.length).toBeGreaterThan(0);
+  });
+
+  it("passes an already-sparse run through untouched", () => {
+    const sparse = [0, 100, 250, 900];
+    expect(thinClicks(sparse)).toEqual(sparse);
+  });
+
+  it("returns nothing for nothing", () => {
+    expect(thinClicks([])).toEqual([]);
+  });
+
+  it("thins hard at the start and not at all at the end", () => {
+    // The shape that makes it read as a mechanism slowing down rather than as
+    // a run that was cut short.
+    const times = clickTimes(28, 1_620);
+    const kept = thinClicks(times);
+    expect(kept.length).toBeLessThan(times.length);
+    const gaps = kept.slice(1).map((t, i) => t - kept[i]);
+    expect(gaps.at(-1)!).toBeGreaterThan(gaps[0]);
   });
 });
