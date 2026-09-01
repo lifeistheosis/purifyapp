@@ -1168,6 +1168,16 @@ function ProductEditor({
   const [src, setSrc] = useState<Partial<Sourcing>>(sourcing ?? {});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /**
+   * The price box's raw text while it is being typed in.
+   *
+   * Null means "show the stored value". Without it, deriving the input's value
+   * from price_cents on every keystroke rewrites the box under the cursor: a
+   * half-typed "24." formats to "24.00" and the caret jumps, and clearing the
+   * field puts a 0 back instantly. Released on blur, so the box settles to the
+   * canonical two-decimal form once the owner leaves it.
+   */
+  const [dollarsDraft, setDollarsDraft] = useState<string | null>(null);
 
   function set<K extends keyof AdminProduct>(key: K, value: AdminProduct[K]) {
     setP((prev) => ({ ...prev, [key]: value }));
@@ -1213,14 +1223,23 @@ function ProductEditor({
   // live in the hosting Modal (ProductSheet).
   return (
     <div>
-      <div className="grid gap-4 md:grid-cols-2">
-        <label className="space-y-1">
-          <span className={labelCls}>Slug</span>
-          <input value={p.slug} onChange={(e) => set("slug", e.target.value)} className={field} />
-        </label>
+      {/* gap-3 on a phone, gap-4 from md. Worth only about 60px: measured
+          afterwards, the rows were already tight at 70px for a 44px input
+          plus its label, and the form's real bulk is the blocks BELOW this
+          grid, not the space between its rows. The Sourcing disclosure
+          further down is where the 781px came from. */}
+      <div className="grid gap-3 md:gap-4 md:grid-cols-2">
+        {/* TITLE FIRST, SLUG SECOND. The form opened on Slug, which is a URL
+            fragment nobody thinks of before they have named the thing. On a
+            phone that put a technical field in the one position guaranteed to
+            be read, and the field people actually came to fill in below it. */}
         <label className="space-y-1">
           <span className={labelCls}>Title</span>
           <input value={p.title} onChange={(e) => set("title", e.target.value)} className={field} />
+        </label>
+        <label className="space-y-1">
+          <span className={labelCls}>Slug</span>
+          <input value={p.slug} onChange={(e) => set("slug", e.target.value)} className={field} />
         </label>
         <label className="space-y-1">
           <span className={labelCls}>Subtitle</span>
@@ -1230,14 +1249,40 @@ function ProductEditor({
             className={field}
           />
         </label>
+        {/* ── Price, in dollars ────────────────────────────────────────
+            This field asked for CENTS. To list something at $24.99 the owner
+            typed 2499, and the box beside it showed 2499, so there was no
+            moment where the form displayed the price the shop would actually
+            charge. A slip of one digit is a product listed at $249.90 or
+            $2.49, and nothing on screen would have looked wrong.
+
+            Stored in cents, as it must be: money is integer cents everywhere
+            in this codebase and lib/shop/checkout.ts re-prices from the
+            database regardless. Only the input speaks dollars, and the cent
+            value it will store is echoed underneath so the conversion is
+            never something the owner has to trust. */}
         <label className="space-y-1">
-          <span className={labelCls}>Price (cents)</span>
+          <span className={labelCls}>Price (USD)</span>
           <input
             type="number"
-            value={p.price_cents}
-            onChange={(e) => set("price_cents", Number(e.target.value) || 0)}
+            min={0}
+            step="0.01"
+            inputMode="decimal"
+            value={dollarsDraft ?? (p.price_cents / 100).toFixed(2)}
+            onChange={(e) => {
+              // The raw string is kept while typing, so "24." and a cleared
+              // box do not get rewritten under the cursor. It is only parsed
+              // into cents on the way to state.
+              setDollarsDraft(e.target.value);
+              const cents = Math.round(Number(e.target.value) * 100);
+              set("price_cents", Number.isFinite(cents) && cents >= 0 ? cents : 0);
+            }}
+            onBlur={() => setDollarsDraft(null)}
             className={field}
           />
+          <span className="block font-sans text-eyebrow text-paper/40 tabular-nums">
+            stores {p.price_cents} cents
+          </span>
         </label>
         <label className="space-y-1">
           <span className={labelCls}>Category</span>
@@ -1423,10 +1468,38 @@ function ProductEditor({
         />
       </label>
 
-      <div className="mt-6 rounded-[var(--adm-radius)] border border-[color-mix(in_oklab,var(--adm-critical),transparent_80%)] bg-[color-mix(in_oklab,var(--adm-critical),transparent_97%)] p-4">
-        <p className="font-sans text-detail font-medium tracking-[1.2px] text-[color:color-mix(in_oklab,var(--adm-critical),transparent_20%)]">
+      {/* ── Sourcing, folded away ────────────────────────────────────────
+          Measured at 375px: this block is 781px, 26% of a 3002px form, and it
+          is the part you least often want. Changing a price or fixing a
+          typo in a title means scrolling past every supplier field to get
+          anywhere, and on a phone that is most of a screen of things you are
+          not editing.
+
+          OPEN WHEN IT HAS SOMETHING IN IT. A disclosure that hides data
+          already entered is worse than no disclosure: the owner would have to
+          remember the supplier fields exist to discover they are filled in.
+          So it starts open for any product that already has sourcing, and
+          closed for one that does not, which is every new listing.
+
+          <details> rather than state, deliberately. It keeps the contents in
+          the DOM, so a browser's find-in-page still reaches them, the form
+          posts the same fields either way, and nothing here needs to know
+          whether it is open. */}
+      <details
+        open={Boolean(
+          supplierName ||
+            src.supplier_sku ||
+            src.supplier_cost_cents ||
+            src.supplier_url,
+        )}
+        className="mt-6 rounded-[var(--adm-radius)] border border-[color-mix(in_oklab,var(--adm-critical),transparent_80%)] bg-[color-mix(in_oklab,var(--adm-critical),transparent_97%)] p-4"
+      >
+        <summary className="cursor-pointer font-sans text-detail font-medium tracking-[1.2px] text-[color:color-mix(in_oklab,var(--adm-critical),transparent_20%)] [&::-webkit-details-marker]:hidden">
           Sourcing (admin-only, never public)
-        </p>
+          <span className="ml-2 font-normal tracking-normal text-paper/40">
+            supplier, cost, links
+          </span>
+        </summary>
         <div className="mt-3 grid gap-4 md:grid-cols-3">
           <label className="space-y-1">
             <span className={labelCls}>Supplier name</span>
@@ -1564,18 +1637,39 @@ function ProductEditor({
             className={field}
           />
         </label>
-      </div>
+      </details>
 
       {error ? <p className="mt-3 font-sans text-detail text-[color:var(--adm-critical)]">{error}</p> : null}
 
-      <button
-        type="button"
-        onClick={() => void save()}
-        disabled={busy}
-        className="mt-5 rounded-pill bg-paper px-6 py-2.5 font-sans text-ui font-semibold text-night disabled:opacity-60"
+      {/* ── Save, always reachable ───────────────────────────────────────
+          Sticky to the bottom of the sheet's own scroll area. This button used
+          to sit at the natural end of the form, which on a phone is four and a
+          bit screens down: to save a change to the Title field the owner had
+          to scroll past every remaining field to find it, and scroll back up
+          to check what they had typed.
+
+          The background is opaque and the top border is real, because the
+          fields scrolling underneath a translucent bar read as a rendering
+          fault rather than as depth. Negative margins cancel the sheet's own
+          padding so the bar spans its full width. */}
+      <div
+        className="sticky bottom-0 -mx-4 mt-5 flex items-center gap-3 border-t px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 md:-mx-5 md:px-5"
+        style={{ background: "var(--adm-panel)", borderColor: "var(--adm-line)" }}
       >
-        {busy ? "Saving…" : "Save product"}
-      </button>
+        <button
+          type="button"
+          onClick={() => void save()}
+          disabled={busy}
+          className="rounded-pill bg-paper px-6 py-2.5 font-sans text-ui font-semibold text-night disabled:opacity-60"
+        >
+          {busy ? "Saving…" : "Save product"}
+        </button>
+        {/* The price, spelled out next to the button that commits it. The last
+            thing seen before saving is what the shop will charge. */}
+        <span className="font-sans text-detail text-paper/45 tabular-nums">
+          ${(p.price_cents / 100).toFixed(2)}
+        </span>
+      </div>
     </div>
   );
 }
