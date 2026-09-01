@@ -31,7 +31,6 @@ import {
   hasDigits,
   isMoneyText,
   REEL_ITEMS,
-  REEL_REPEATS,
   reelDuration,
   restIndex,
 } from "@/lib/admin/odometer";
@@ -81,8 +80,12 @@ function Wheel({
 
   return (
     <span
-      className="relative inline-block overflow-hidden align-baseline"
-      style={{ height: "1em", width: "0.62em" }}
+      className="relative inline-block overflow-hidden"
+      // 1ch is the advance of "0", and with tabular figures every digit
+      // matches it, so the column tracks whatever face the panel is set in
+      // rather than the 0.62em this used to guess at. That guess was narrow
+      // in DM Sans and clipped the wider digits at large sizes.
+      style={{ height: "1em", width: "1ch" }}
     >
       <span
         className="odo-wheel absolute left-0 top-0 flex flex-col"
@@ -170,14 +173,35 @@ export function Odometer({
       {/* The wheels are decoration. A screen reader gets the value once, as a
           word, rather than ten digits per column. */}
       <span className="sr-only">{text}</span>
-      <span aria-hidden className="inline-flex items-baseline">
+      {/* items-center, not items-baseline, and tabular figures on the whole
+          row.
+
+          An overflow:hidden inline-block reports its BOTTOM MARGIN EDGE as its
+          baseline, not the baseline of the text inside it. So every wheel sat
+          low against the "$" and "," beside it, by roughly the descender
+          depth, and the drop grew with the font size. Aligning the boxes
+          instead of their baselines makes it geometric and exact: every child
+          is 1em tall and centred, so they line up by construction.
+
+          tabular-nums here rather than on each digit so the separators share
+          the same figure metrics, which is what keeps a comma from nudging the
+          columns after it out of step. */}
+      <span
+        aria-hidden
+        className="inline-flex items-center"
+        style={{ fontVariantNumeric: "tabular-nums" }}
+      >
         {cols.map((col) => {
           // Keyed from the RIGHT. lib/admin/odometer.ts explains why, and
           // lib/admin/__tests__/odometer.test.ts fails if it changes.
           const key = String(col.keyFromRight);
           if (!col.digit) {
             return (
-              <span key={key} className="inline-block">
+              <span
+                key={key}
+                className="inline-flex items-center justify-center"
+                style={{ height: "1em" }}
+              >
                 {col.char}
               </span>
             );

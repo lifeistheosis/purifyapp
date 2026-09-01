@@ -612,12 +612,22 @@ export function PeriodChips({
   active,
   onChange,
   options,
+  labels,
 }: {
   active: PeriodId;
   onChange: (id: PeriodId) => void;
-  /** Subset of PERIODS. The hero passes 7D/30D because its sparklines are
-      built from daily buckets, and a 24H window is one point, not a line. */
+  /** Subset of PERIODS, in PERIODS order. */
   options?: PeriodId[];
+  /**
+   * Per-caller label overrides.
+   *
+   * The hero calls the one day window "Today" rather than "24H", and the
+   * difference is not cosmetic: its buckets are calendar days in UTC, so the
+   * shortest window is today's bucket, not a rolling twenty four hours. A
+   * surface reading a genuinely rolling series should keep "24H", which is why
+   * this overrides per caller instead of renaming PERIODS.
+   */
+  labels?: Partial<Record<PeriodId, string>>;
 }) {
   const shown = options ? PERIODS.filter((p) => options.includes(p.id)) : PERIODS;
   return (
@@ -645,7 +655,7 @@ export function PeriodChips({
                 : { background: "transparent", color: "var(--adm-ink-3)" }
             }
           >
-            {p.label}
+            {labels?.[p.id] ?? p.label}
           </button>
         );
       })}

@@ -706,13 +706,21 @@ export function AdminShell({
           onRefresh={overview.refresh}
         />
       </div>
-      <div className="flex items-center gap-1">
-        <AdminThemeToggle />
-        <AdminSoundToggle />
-        <AdminMotionToggle />
+      {/* Two rows, not one. Sound and Motion made this four controls in a rail
+          about 200px wide, and "Sign out" collided with Motion: the label broke
+          across two lines and overlapped its neighbour. Three toggles share a
+          row and share its width evenly; the destructive action gets its own
+          full-width row, which is also where it belongs, since sitting it flush
+          against three harmless toggles is how it gets hit by accident. */}
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-1">
+          <AdminThemeToggle />
+          <AdminSoundToggle />
+          <AdminMotionToggle />
+        </div>
         <a
           href="/signout"
-          className="adm-control flex h-11 flex-1 items-center justify-center gap-1.5 rounded-[var(--adm-radius-sm)] font-sans text-[11.5px]"
+          className="adm-control flex h-11 w-full items-center justify-center gap-1.5 rounded-[var(--adm-radius-sm)] font-sans text-[11.5px]"
           style={
             {
               color: "var(--adm-ink-2)",

@@ -528,11 +528,25 @@ div[data-hl="true"] {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .odo-wheel {
-    animation: none !important;
-  }
-}
+/* NO prefers-reduced-motion BLOCK HERE, deliberately, and this is the second
+ * time that has needed saying.
+ *
+ * There was one, and it read `.odo-wheel { animation: none !important }`. It
+ * looked like ordinary good manners and it broke the feature on the machine the
+ * feature was built for. The owner runs an optimizer that disables graphics
+ * effects to hold frame rate, which sets MinAnimate=0 in Windows, which Chrome
+ * reports as prefers-reduced-motion: reduce. So the query matched, !important
+ * won, and every reel froze.
+ *
+ * The admin panel deliberately animates THROUGH that hint: see
+ * lib/ui/motionPreference.ts for the argument, which is that on a dashboard the
+ * movement is the information and the operator opened it on purpose. That
+ * decision is made in JS, per surface, and the component simply omits the
+ * animation when it does not apply. A media query cannot see the override and
+ * must not get a vote.
+ *
+ * If a reduced-motion rule is ever wanted for a reel, it belongs in
+ * lib/ui/motionPreference.ts with the rest of the decision, not here. */
 
 @keyframes rail-pulse {
  0% { background-color: rgba(220, 55, 45, 0.22); }

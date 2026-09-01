@@ -24,12 +24,16 @@
 
 import { useMemo } from "react";
 import { useLiveData } from "@/lib/admin/useLiveData";
+import { HERO_LABELS, HERO_PERIODS, HERO_WINDOW } from "@/lib/admin/heroPeriods";
 import { MetricCard, FeatureCard, PeriodChips, type PeriodId } from "./hero";
 
 type TrafficPoint = { date: string; visitors: number; views: number; signups: number };
 type Traffic = { points: TrafficPoint[] };
 
-const WINDOW: Record<string, number> = { "7d": 7, "30d": 30 };
+// The chips and their windows live in lib/admin/heroPeriods.ts, where a test
+// holds them in step. `w` falls back to 30 on a miss, which is silent and wrong
+// in the worst way: the chip would read Today while the card showed a month.
+// A comment could not fail; that test can.
 
 /**
  * Mean of the last `w` points against the mean of the `w` before them.
@@ -104,7 +108,7 @@ export function HeroRow({
   // 90 days so a 30-day window has a real 30 days behind it to compare with.
   const traffic = useLiveData<Traffic>("/api/admin/traffic?range=90d", 60_000);
 
-  const w = WINDOW[period] ?? 30;
+  const w = HERO_WINDOW[period] ?? 30;
 
   // The dates were already being fetched and then dropped on the floor: the
   // route returns daily buckets carrying a date, and the three maps below took
@@ -123,6 +127,10 @@ export function HeroRow({
     [traffic.data],
   );
   const revenue = revenueSeries;
+
+  // "1 days" is the tell that a window was templated rather than written, and
+  // the one day window is not really a duration anyway: it is today's bucket.
+  const over = w === 1 ? "today" : `${w} days`;
 
   const sum = (a: number[]) => a.reduce((s, n) => s + n, 0);
   const win = (a: number[]) => a.slice(-w);
@@ -152,7 +160,18 @@ export function HeroRow({
         <p className="font-sans text-[12.5px]" style={{ color: "var(--adm-ink-3)" }}>
           Every number in this row is measured, never modelled.
         </p>
-        <PeriodChips active={period} onChange={onPeriod} options={["7d", "30d"]} />
+        {/* "Today" rather than "24H": these buckets are calendar days in UTC,
+            so the one day window is today's bucket and not a rolling day.
+            The sparkline is a single point at this width and hero.tsx:61
+            already renders an empty box below two points, so the card shows
+            the figure and its delta against yesterday with no misleading
+            flat line drawn under it. */}
+        <PeriodChips
+          active={period}
+          onChange={onPeriod}
+          options={HERO_PERIODS}
+          labels={HERO_LABELS}
+        />
       </div>
 
       <div className="mb-6 grid gap-4 lg:grid-cols-[repeat(3,minmax(0,1fr))_minmax(240px,0.85fr)]">
@@ -161,7 +180,7 @@ export function HeroRow({
           icon={ICON.visitors}
           eyebrow="Site analytics"
           title="Visitors"
-          label={`Unique visitors, ${w} days`}
+          label={`Unique visitors, ${over}`}
           value={compact(sum(win(visitors)))}
           delta={deltaOver(visitors, w)}
           points={win(visitors)}
@@ -177,7 +196,7 @@ export function HeroRow({
           icon={ICON.users}
           eyebrow="Accounts created"
           title="New users"
-          label={`Sign-ups, ${w} days`}
+          label={`Sign-ups, ${over}`}
           value={compact(sum(win(signups)))}
           delta={deltaOver(signups, w)}
           points={win(signups)}
