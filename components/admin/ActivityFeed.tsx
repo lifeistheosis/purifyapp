@@ -193,7 +193,16 @@ export function ActivityFeed() {
     .slice(0, STRIP_MAX);
 
   return (
-    <div className="flex min-w-0 flex-1 items-center gap-2">
+    // FLEXES ONLY WHERE THE STRIP EXISTS, which is md and up.
+    //
+    // This carried a bare flex-1, and TabSearch beside it carries
+    // `min-w-0 flex-1 lg:flex-none`, so below lg there were TWO flex-1
+    // siblings and the free space split evenly between them. On a phone the
+    // strip inside here is `hidden`, so half the bar was an empty box with a
+    // 44px bell pinned to its left edge and a wide gap before the search
+    // field. The bar's own comment says search is the one that flexes; this
+    // was quietly making that false.
+    <div className="flex items-center gap-2 md:min-w-0 md:flex-1">
       {/* The strip's viewport. LEFT-anchored, which is what makes older pills
           travel right as a new one arrives: the container's left edge is
           fixed, so a pill inserted at the head displaces everything after it.
@@ -371,7 +380,12 @@ function ActivityBell({
           unseen > 0 ? `Activity, ${unseen} new` : "Activity"
         }
         title="Activity"
-        className="adm-control relative flex h-9 w-9 items-center justify-center rounded-[var(--adm-radius-sm)]"
+        // 44px square, matching the search field's h-11 beside it. It was 36,
+        // which sat visibly short against the field and is under the touch
+        // target this panel holds itself to elsewhere: admin-theme.css gives
+        // .adm-toolbtn a 44px floor under `pointer: coarse` for exactly this
+        // reason, and this button is not a toolbtn so it never got it.
+        className="adm-control relative flex h-11 w-11 items-center justify-center rounded-[var(--adm-radius-sm)]"
         style={
           {
             color: unseen > 0 ? "var(--adm-accent)" : "var(--adm-ink-2)",
@@ -380,7 +394,7 @@ function ActivityBell({
           } as React.CSSProperties
         }
       >
-        <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           <path
             d="M10 3a4.6 4.6 0 0 0-4.6 4.6c0 3.2-1.1 4.3-1.6 4.9-.2.2 0 .6.3.6h11.8c.3 0 .5-.4.3-.6-.5-.6-1.6-1.7-1.6-4.9A4.6 4.6 0 0 0 10 3Z"
             stroke="currentColor"
