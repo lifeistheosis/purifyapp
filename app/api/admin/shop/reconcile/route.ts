@@ -1,0 +1,218 @@
+import { NextResponse, type NextRequest } from "next/server";
+import Stripe from "stripe";
+
+import { getAdminUser } from "@/lib/admin/access";
+import { logActivity } from "@/lib/admin/activityLog";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { sendOrderConfirmationEmail } from "@/lib/shop/orderEmails";
+import {
+  settleCheckoutSession,
+  type SettleResult,
+  type SettlementDb,
+} from "@/lib/shop/webhookSettlement";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+/**
+ * Ask Stripe which pending orders it actually took money for, and settle them.
+ *
+ * ── Why this is needed ─────────────────────────────────────────────────
+ *
+ * Measured on production 2026-09-01: 48 orders, of which 31 sat `pending` with
+ * a Stripe session attached and exactly 1 was `paid`, while Stripe's own
+ * dashboard showed roughly sixty dollars taken. Money had been collected and
+ * the order rows never learned about it.
+ *
+ * Settlement runs entirely through the webhook, so anything that stops a
+ * `checkout.session.completed` from arriving or from succeeding leaves the
+ * order pending forever: a webhook secret that was rotated, an endpoint added
+ * after the first orders, a deploy during a delivery, a 500 that exhausted
+ * Stripe's retries. The webhook has no backstop, and this is it.
+ *
+ * ── Stripe is the source of truth, and the only one consulted ──────────
+ *
+ * Nothing here decides an order was paid. It asks Stripe about that order's
+ * own checkout session and believes the answer. A reconciler that inferred
+ * payment from anything else would eventually mark an unpaid order paid, which
+ * is worse than the problem it fixes.
+ *
+ * ── It reuses the webhook's settlement, deliberately ───────────────────
+ *
+ * settleCheckoutSession carries the money rules: the amount check that refuses
+ * to settle when Stripe's total disagrees with the order, and the idempotent
+ * guarded update. A second implementation here would be a second place for
+ * those to be wrong, and this is the path that runs when the first one failed.
+ *
+ * ── GET is a dry run and POST applies ──────────────────────────────────
+ *
+ * Money moves state here. The default is to report what WOULD change.
+ */
+
+/** Bounded so one call cannot walk an unbounded history. */
+const MAX_ORDERS = 200;
+
+type PendingRow = {
+  id: string;
+  total_cents: number;
+  stripe_session_id: string | null;
+  created_at: string;
+};
+
+type Finding = {
+  orderId: string;
+  totalCents: number;
+  /** What Stripe says about the session. */
+  stripeStatus: string;
+  /** What settlement did, on POST. Absent on a dry run. */
+  result?: SettleResult;
+  note?: string;
+};
+
+async function loadPending(supa: ReturnType<typeof createAdminClient>) {
+  return supa
+    .from("shop_orders")
+    .select("id, total_cents, stripe_session_id, created_at")
+    .eq("payment_status", "pending")
+    .not("stripe_session_id", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(MAX_ORDERS);
+}
+
+async function run(apply: boolean) {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    return NextResponse.json(
+      {
+        error:
+          "STRIPE_SECRET_KEY is not set on this deployment, so Stripe cannot be asked anything.",
+      },
+      { status: 503 },
+    );
+  }
+  const stripe = new Stripe(key);
+  const supa = createAdminClient();
+
+  const { data, error } = await loadPending(supa);
+  if (error) {
+    return NextResponse.json(
+      { error: "Could not read pending orders.", detail: error.message },
+      { status: 500 },
+    );
+  }
+  const pending = (data ?? []) as PendingRow[];
+
+  const findings: Finding[] = [];
+  let recoveredCents = 0;
+
+  for (const order of pending) {
+    if (!order.stripe_session_id) continue;
+    let session: Stripe.Checkout.Session;
+    try {
+      session = await stripe.checkout.sessions.retrieve(order.stripe_session_id);
+    } catch (e) {
+      // A session Stripe has never heard of is worth reporting, not throwing:
+      // it usually means the row was created against a different Stripe
+      // account or mode, and that is a fact the operator needs.
+      findings.push({
+        orderId: order.id,
+        totalCents: order.total_cents,
+        stripeStatus: "unreadable",
+        note: e instanceof Error ? e.message : String(e),
+      });
+      continue;
+    }
+
+    const status = session.payment_status ?? "unknown";
+    // Stripe's own words. Only `paid` is money; `unpaid` is an abandoned
+    // checkout and `no_payment_required` is a zero-value session.
+    if (status !== "paid") {
+      findings.push({
+        orderId: order.id,
+        totalCents: order.total_cents,
+        stripeStatus: status,
+      });
+      continue;
+    }
+
+    if (!apply) {
+      findings.push({
+        orderId: order.id,
+        totalCents: order.total_cents,
+        stripeStatus: status,
+        note: "would be settled",
+      });
+      recoveredCents += order.total_cents;
+      continue;
+    }
+
+    const result = await settleCheckoutSession(
+      supa as unknown as SettlementDb,
+      sendOrderConfirmationEmail,
+      session as unknown as Parameters<typeof settleCheckoutSession>[2],
+    );
+    findings.push({
+      orderId: order.id,
+      totalCents: order.total_cents,
+      stripeStatus: status,
+      result,
+    });
+    if (result === "paid" || result === "recovered") {
+      recoveredCents += order.total_cents;
+    }
+  }
+
+  return NextResponse.json(
+    {
+      ok: true,
+      applied: apply,
+      pendingChecked: pending.length,
+      // Only the ones Stripe confirmed. This is the number that answers
+      // "how much did we take that the panel could not see".
+      settleable: findings.filter(
+        (f) => f.stripeStatus === "paid" && f.result !== "amount-mismatch",
+      ).length,
+      recoveredCents,
+      findings,
+      limit: MAX_ORDERS,
+      truncated: pending.length >= MAX_ORDERS,
+    },
+    { headers: { "Cache-Control": "no-store" } },
+  );
+}
+
+export async function GET() {
+  const adminUser = await getAdminUser();
+  if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  return run(false);
+}
+
+export async function POST(req: NextRequest) {
+  const adminUser = await getAdminUser();
+  if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  // An explicit confirmation in the body, because a POST to this URL from
+  // anywhere else should not move money into the books by accident.
+  let body: unknown = null;
+  try {
+    body = await req.json();
+  } catch {
+    /* no body is fine; the check below refuses it */
+  }
+  if ((body as { confirm?: boolean } | null)?.confirm !== true) {
+    return NextResponse.json(
+      { error: "Send { confirm: true } to apply. GET for a dry run." },
+      { status: 400 },
+    );
+  }
+
+  const res = await run(true);
+  void logActivity({
+    actorEmail: adminUser.email ?? null,
+    action: "shop.reconcile",
+    entityType: "shop_orders",
+    entityId: null,
+    detail: { applied: true },
+  });
+  return res;
+}

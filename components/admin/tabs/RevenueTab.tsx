@@ -10,6 +10,7 @@ import { Freshness } from "../Freshness";
 import { Card, StatCard, ChartFrame } from "../primitives";
 import { AreaChart, BarChart, Donut, SERIES_COLORS, chartColors } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
+import { ReconcileCard } from "../ReconcileCard";
 
 type Revenue = {
   shop: {
@@ -176,6 +177,10 @@ function RevenuePanel() {
           donation figures are realized.
         </p>
       )}
+
+      {/* Above the charts, because a chart of revenue that is missing money
+          Stripe already took is the wrong thing to look at first. */}
+      <ReconcileCard />
 
       <ChartFrame
         title="Shop net revenue · by month"
