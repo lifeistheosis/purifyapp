@@ -29,10 +29,13 @@ type Session = {
 };
 
 type Stats = {
-  liveCount: number;
+  /* null means the read failed, not that the number is zero. The stats
+     route binds its errors and sends null rather than coalescing to 0,
+     so a dead database reads as a dash instead of a dead site. */
+  liveCount: number | null;
   sessions: Session[];
-  today: { visitors: number; views: number; signups: number };
-  totalUsers: number;
+  today: { visitors: number | null; views: number | null; signups: number | null };
+  totalUsers: number | null;
   generatedAt: string;
 };
 

@@ -4,9 +4,9 @@
 // Active counts, a tier donut, a source donut, and an estimated run-rate.
 // Honest about what is NOT knowable: no churn/cohort history exists.
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
-import { Card, StatCard, ChartFrame, DataTable, Pill, SubTabs } from "../primitives";
+import { Card, StatCard, ChartFrame, DataTable, Email, Pill, SubTabs } from "../primitives";
 import { Donut, SERIES_COLORS } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
 
@@ -230,7 +230,11 @@ function GiftCard() {
   const [days, setDays] = useState(90);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  // ReactNode, not string. Both banners name the recipient, and a template
+  // literal gives that address no element of its own to carry the streamer
+  // mask. The banner also outlives the keystroke that made it: the field is
+  // cleared on success and the address stays on screen underneath it.
+  const [msg, setMsg] = useState<{ ok: boolean; text: ReactNode } | null>(null);
 
   async function send(e: FormEvent) {
     e.preventDefault();
@@ -251,7 +255,12 @@ function GiftCard() {
       if (res.ok && d.ok) {
         setMsg({
           ok: true,
-          text: `Gift queued for ${email.trim()}. It opens the next time they use Purify.`,
+          text: (
+            <>
+              Gift queued for <Email value={email.trim()} />. It opens the next
+              time they use Purify.
+            </>
+          ),
         });
         setEmail("");
         setMessage("");
@@ -354,7 +363,11 @@ function MembersPanel() {
   const [tier, setTier] = useState<"plus" | "pro">("plus");
   const [days, setDays] = useState(365);
   const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  // ReactNode, not string. Both banners name the recipient, and a template
+  // literal gives that address no element of its own to carry the streamer
+  // mask. The banner also outlives the keystroke that made it: the field is
+  // cleared on success and the address stays on screen underneath it.
+  const [msg, setMsg] = useState<{ ok: boolean; text: ReactNode } | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -395,9 +408,13 @@ function MembersPanel() {
       } else {
         setMsg({
           ok: true,
-          text: `Granted ${j.tier} to ${j.name ?? j.email} until ${new Date(
-            j.until,
-          ).toLocaleDateString()}.`,
+          text: (
+            <>
+              Granted {j.tier} to{" "}
+              {j.name ?? <Email value={j.email} fallback="the account" />} until{" "}
+              {new Date(j.until).toLocaleDateString()}.
+            </>
+          ),
         });
         setEmail("");
         setReloadKey((k) => k + 1);
@@ -515,7 +532,7 @@ function MembersPanel() {
             {
               key: "email",
               label: "Email",
-              render: (m) => m.email ?? "—",
+              render: (m) => <Email value={m.email} />,
               csv: (m) => m.email ?? "",
             },
             {

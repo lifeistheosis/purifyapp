@@ -810,6 +810,21 @@ export function SustainabilityTab() {
         )}
         {editing && (
           <ExpenseEditor
+            // KEYED, so switching rows remounts the editor.
+            //
+            // ExpenseEditor seeds all six of its fields from `initial` in
+            // useState initialisers, which run once per mount, and there is no
+            // resync effect. The {editing && ...} slot holds a fixed child
+            // position, so clicking Edit on a second row while the first was
+            // open re-rendered the SAME instance and every field kept row A's
+            // values. Save then spreads fresh row B and overwrites each user
+            // field with stale row A, which is what made it land on the wrong
+            // record rather than being a harmless no-op.
+            //
+            // The Adopt button takes the same path, so adopting while an edit
+            // was open inserted a new row carrying the previous row's label
+            // and amount.
+            key={editing.id}
             initial={editing}
             onSave={saveExpense}
             onCancel={() => setEditing(null)}

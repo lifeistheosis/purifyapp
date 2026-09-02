@@ -47,7 +47,15 @@ export async function GET(req: NextRequest) {
     .eq("year_month", yearMonth)
     .maybeSingle();
 
-  await supa.from("donations_monthly").upsert(
+  // THE RESULT IS CHECKED. This discarded it entirely and then returned
+  // ok:true with figures taken from the live BMC fetch rather than from
+  // anything the database acknowledged. The trap is the diagnostic loop it
+  // creates: the Sustainability tab says "No snapshots yet, run the cron", you
+  // run it, it echoes correct figures and ok:true, and you conclude the table
+  // is fine while months of donation history quietly fail to land.
+  //
+  // The sibling push-deliver cron already does this correctly.
+  const { error: upsertError } = await supa.from("donations_monthly").upsert(
     {
       year_month: yearMonth,
       total_cents: Math.round(live.monthlyRaisedUsd * 100),
@@ -58,6 +66,14 @@ export async function GET(req: NextRequest) {
     },
     { onConflict: "year_month" },
   );
+
+  if (upsertError) {
+    console.error("[cron/bmc-snapshot] snapshot write failed", upsertError.message);
+    return NextResponse.json(
+      { ok: false, reason: "snapshot write failed", detail: upsertError.message },
+      { status: 500 },
+    );
+  }
 
   return NextResponse.json({
     ok: true,

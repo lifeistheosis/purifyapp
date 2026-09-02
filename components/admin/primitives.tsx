@@ -60,7 +60,14 @@ export function Card({
   accent,
 }: {
   title?: string;
-  subtitle?: string;
+  /**
+   * ReactNode, not string, and the reason is streamer mode. Masking is a CSS
+   * class on an element, so a value baked into a template literal cannot be
+   * masked at all: the two marketplace thread headers read
+   * `Store <-> buyer_email` and put a customer's address on screen with no
+   * element of its own to carry .adm-sensitive. A node can hold an <Email>.
+   */
+  subtitle?: ReactNode;
   action?: ReactNode;
   children: ReactNode;
   accent?: boolean;
@@ -175,10 +182,22 @@ export function Modal({
 }) {
   const panelRef = useRef<HTMLDivElement | null>(null);
 
+  // The effect below is mount-only, so its two mutable inputs are read through
+  // refs. They are synced in their OWN effect rather than assigned during
+  // render, because react-hooks/refs forbids the latter, and because a
+  // separate effect re-running is harmless: it has no cleanup, so it cannot
+  // move focus. That separation is the entire point.
+  const onCloseRef = useRef(onClose);
+  const returnFocusRef = useRef(returnFocusTo);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+    returnFocusRef.current = returnFocusTo;
+  }, [onClose, returnFocusTo]);
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (e.key !== "Tab") return;
@@ -229,10 +248,26 @@ export function Modal({
       // the dialog's own save is what re-rendered the list it lived in.
       // Focusing a detached node silently drops focus to <body>, which is the
       // exact outcome this is here to prevent.
-      const home = returnFocusTo ?? opener;
+      const home = returnFocusRef.current ?? opener;
       if (home && home.isConnected && home !== document.body) home.focus();
     };
-  }, [onClose, returnFocusTo]);
+    // MOUNT ONLY, and this is a fix rather than an oversight.
+    //
+    // The list was [onClose, returnFocusTo]. React runs an effect's cleanup on
+    // every dependency change, not only on unmount, and the cleanup above
+    // returns focus to the opener. onClose is an inline arrow at every call
+    // site, so it has a new identity on each render of the parent. The shell's
+    // 60s overview poll calls setLastSynced(new Date()), which always changes
+    // state, which re-renders the shell, the tab, and the dialog's props.
+    //
+    // Net effect: an operator typing a product description had focus yanked to
+    // the Edit button behind the dialog roughly once a minute, mid-word, with
+    // no memo boundary anywhere on the path to stop it.
+    //
+    // Both mutable inputs are read through refs that are kept current on every
+    // render, so behaviour is unchanged and the effect no longer has a reason
+    // to re-run.
+  }, []);
 
   // The OVERLAY no longer scrolls: the panel below caps itself and scrolls its
   // own body. Leaving overflow-y-auto here with an auto-margined panel split
@@ -1373,6 +1408,36 @@ export function Pill({
  * Anything that renders a real person's address goes through here. The name is
  * the instruction: if you are writing {user.email} into JSX, you want <Email>.
  */
+/**
+ * Anything the audience must not read that is not an email address.
+ *
+ * Streamer mode's own header names two things it covers: money, and addresses.
+ * The money side is wired through the figure components and <Email> covers one
+ * kind of address, which left the other kind, a customer's postal address and
+ * the name it is addressed to, rendering in the clear on the EIKON claim list
+ * and the order drawer. Those are a real person's home.
+ *
+ * Same placeholder rule as <Email>, and for the same reason: a blurred "no
+ * address on file" reads as a withheld address rather than an absent one, so
+ * the mask goes on only when there is something to mask.
+ */
+export function Sensitive({
+  value,
+  fallback = "—",
+  className,
+}: {
+  value: string | null | undefined;
+  fallback?: string;
+  className?: string;
+}) {
+  if (!value) return <>{fallback}</>;
+  return (
+    <span className={[SENSITIVE, className].filter(Boolean).join(" ")}>
+      {value}
+    </span>
+  );
+}
+
 export function Email({
   value,
   fallback = "—",

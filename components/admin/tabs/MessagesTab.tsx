@@ -8,7 +8,7 @@
 
 import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
-import { Card, StatCard, DataTable, Pill, SubTabs, ToolbarButton } from "../primitives";
+import { Card, StatCard, DataTable, Email, Pill, SubTabs, ToolbarButton } from "../primitives";
 import { SupportConsole } from "../SupportConsole";
 import type { Ticket, TicketMessage } from "@/lib/support/ticketNumber";
 
@@ -191,7 +191,7 @@ function ShopInbox() {
             {
               key: "buyer",
               label: "Buyer",
-              render: (c) => c.buyer_email ?? "—",
+              render: (c) => <Email value={c.buyer_email} />,
               csv: (c) => c.buyer_email ?? "",
             },
             {
@@ -241,7 +241,12 @@ function ShopInbox() {
       {opened && (
         <Card
           title={`Thread · ${opened.subject}`}
-          subtitle={`${opened.store?.public_name ?? "Store"} ↔ ${opened.buyer_email ?? "buyer"}`}
+          subtitle={
+            <>
+              {opened.store?.public_name ?? "Store"} ↔{" "}
+              <Email value={opened.buyer_email} fallback="buyer" />
+            </>
+          }
           accent
         >
           {!messages ? (

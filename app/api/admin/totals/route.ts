@@ -76,15 +76,22 @@ export async function GET() {
       unavailable: failed,
     },
     {
-      // Honor the user's "no data resets" rule by serving from a tight
-      // 60-second cache. Counts in the wild grow by single digits in
-      // that span; the staleness is invisible and the load on Postgres
-      // is bounded.
+      // no-store, and the 60-second bound this used to claim now lives in the
+      // caller's poll interval instead.
       //
-      // A FAILED read is never cached. Caching one pins the dashes on screen
-      // for a minute after the database has come back, which reads as the
-      // outage continuing.
-      headers: { "Cache-Control": failed ? "no-store" : "private, max-age=60" },
+      // What was here was `private, max-age=60`, described as bounding the
+      // load on Postgres. It never did. Every reader of this route goes
+      // through lib/admin/fetchJson.ts, which fetches with cache: "no-store"
+      // on purpose, so the browser cache is never consulted and the header was
+      // advice nobody took: OverviewTab's 10-second poll ran four unfiltered
+      // exact COUNTs six times a minute, all the way to the database.
+      //
+      // Rather than weaken the fetch to make the header real, the interval was
+      // raised to 60s (OverviewTab.tsx), which is the same bound, honestly
+      // enforced, and visible where somebody changing the cadence will read
+      // it. Saying no-store here keeps the response's declared behaviour and
+      // its actual behaviour the same thing.
+      headers: { "Cache-Control": "no-store" },
     },
   );
 }

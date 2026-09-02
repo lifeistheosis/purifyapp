@@ -28,14 +28,24 @@
 //   itself because one poll 403'd is worse than one showing numbers from a
 //   minute ago next to a note saying so.
 //
+//   SHARES ONE TIMER PER URL. Seven of the panel's live subscriptions point at
+//   three endpoints, so most of them are duplicates of each other. All of that
+//   lives in ./liveStore, which this hook is now a thin React binding over;
+//   read that file for the deduping rules and their reasons.
+//
 // ON RATE LIMITS. RevenueCat's metrics endpoint allows 25 requests a minute
 // and lib/billing/revenuecatMetrics.ts caches for 60 seconds, so a 60s poll
 // costs at most one upstream call per minute no matter how many tabs are
 // open. Polling faster than that server cache would only re-serve the same
 // bytes, which is why 60s is the floor for anything reading a metered vendor.
 
-import { useCallback, useEffect, useState } from "react";
-import { adminJson } from "./fetchJson";
+import { useCallback, useId, useSyncExternalStore } from "react";
+import {
+  EMPTY_SNAPSHOT,
+  liveSnapshot,
+  readLive,
+  subscribeLive,
+} from "./liveStore";
 
 export type LiveData<T> = {
   data: T | null;
@@ -50,68 +60,31 @@ export type LiveData<T> = {
 };
 
 export function useLiveData<T>(url: string, intervalMs: number): LiveData<T> {
-  const [data, setData] = useState<T | null>(null);
-  const [lastSynced, setLastSynced] = useState<Date | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [failing, setFailing] = useState(false);
+  // useId, not a module counter behind useMemo. useMemo is a performance hint
+  // React is allowed to discard and recompute, which would hand this hook a
+  // second identity and orphan its interval entry in the store.
+  const id = useId();
 
-  // A nonce in state, not a ref. A ref cannot be a dependency: it does not
-  // trigger a render and the effect would not reliably see the new value, so
-  // Refresh would work only when something else happened to re-render.
-  const [nonce, setNonce] = useState(0);
-  const refresh = useCallback(() => setNonce((n) => n + 1), []);
+  const subscribe = useCallback(
+    (onChange: () => void) => subscribeLive(url, intervalMs, id, onChange),
+    [url, intervalMs, id],
+  );
 
-  useEffect(() => {
-    let alive = true;
-    let timer: ReturnType<typeof setInterval> | null = null;
+  const snap = useSyncExternalStore(
+    subscribe,
+    () => liveSnapshot(url),
+    () => EMPTY_SNAPSHOT,
+  );
 
-    const read = async () => {
-      const d = await adminJson<T>(url);
-      if (!alive) return;
-      if (d === null) {
-        setFailing(true);
-      } else {
-        setData(d);
-        setLastSynced(new Date());
-        setFailing(false);
-      }
-      setLoading(false);
-    };
+  const refresh = useCallback(() => void readLive(url), [url]);
 
-    const start = () => {
-      if (timer) return;
-      timer = setInterval(read, intervalMs);
-    };
-    const stop = () => {
-      if (!timer) return;
-      clearInterval(timer);
-      timer = null;
-    };
-
-    const onVisibility = () => {
-      if (document.hidden) {
-        stop();
-      } else {
-        // Read first, then resume the cadence. Waiting out the interval on
-        // return is what makes a "live" panel show a stale number to the one
-        // person who just came back to look at it.
-        void read();
-        start();
-      }
-    };
-
-    void read();
-    if (!document.hidden) start();
-    document.addEventListener("visibilitychange", onVisibility);
-
-    return () => {
-      alive = false;
-      stop();
-      document.removeEventListener("visibilitychange", onVisibility);
-    };
-  }, [url, intervalMs, nonce]);
-
-  return { data, lastSynced, loading, failing, refresh };
+  return {
+    data: snap.data as T | null,
+    lastSynced: snap.lastSynced,
+    loading: snap.loading,
+    failing: snap.failing,
+    refresh,
+  };
 }
 
 /** "just now", "40s ago", "3m ago". Deliberately coarse: a live panel needs the order of magnitude, not the second. */

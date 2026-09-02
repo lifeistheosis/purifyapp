@@ -90,7 +90,12 @@ async function run(apply: boolean) {
       { status: 503 },
     );
   }
-  const stripe = new Stripe(key);
+  // BOUNDED. The default client carries an 80 second timeout and 2 retries,
+  // so a single stalled session could hold this request open for 240 seconds
+  // while the operator watches a spinner. The loop is sequential and capped at
+  // 200, which is fine for a manually pressed button, but only if no one call
+  // can hang for minutes.
+  const stripe = new Stripe(key, { timeout: 10_000, maxNetworkRetries: 1 });
   const supa = createAdminClient();
 
   const { data, error } = await loadPending(supa);
@@ -106,7 +111,7 @@ async function run(apply: boolean) {
   // webhook started logging there was no way to answer it. "Never" means the
   // endpoint is not registered in Stripe or points somewhere else, which is a
   // different fix from a webhook that arrives and fails.
-  const { data: lastHook } = await supa
+  const { data: lastHook, error: hookErr } = await supa
     .from("admin_activity_log")
     .select("created_at, detail")
     .eq("action", "shop.webhook")
@@ -179,6 +184,16 @@ async function run(apply: boolean) {
       ok: true,
       applied: apply,
       pendingChecked: pending.length,
+      // AN UNREADABLE LOG IS NOT "STRIPE NEVER CALLED". The error was
+      // discarded here, so an absent table and an empty log were the same
+      // answer, and the card turned that into a red instruction to go and
+      // re-point a webhook that is working. 20260823_admin_activity_log.sql
+      // is one of the unsigned migrations, so that was the likely state.
+      //
+      // 42P01 is "relation does not exist". app/api/admin/activity-log
+      // already uses this exact test; this is the same pattern.
+      lastWebhookLogReadable: !hookErr,
+      lastWebhookLogMissing: hookErr?.code === "42P01",
       lastWebhookAt: lastHook?.created_at ?? null,
       lastWebhookResult: (lastHook?.detail?.result as string) ?? null,
       // Only the ones Stripe confirmed. This is the number that answers

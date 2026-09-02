@@ -126,7 +126,33 @@ export function readUsageLimit(
  * expressed as a ratio, because rendering "1 of 1" beside two usage bars would
  * invite reading it as a meter with room left on it.
  */
-export function readMonetization(monetized: boolean): LimitReading {
+export function readMonetization(monetized: boolean | null): LimitReading {
+  // NULL IS A THIRD ANSWER, and dropping it was the whole bug. The route sends
+  // `monetized: null` when the entitlements or shop_orders read fails, and its
+  // own comment says "'we could not check' and 'no money has changed hands'
+  // are different facts". This function took a plain boolean, so null arrived
+  // as falsy and became "ok": one failed read flipped the licence card from a
+  // red "Over the limit" to a green "Within the free tier", and dropped the
+  // banner from Goals and Growth entirely. The response is HTTP 200, so the
+  // "Could not be read" path never ran either.
+  //
+  // The banner is red for a real reason today, which is what made this
+  // dangerous rather than merely wrong.
+  //
+  // `unmeasured` already outranks `ok` in RANK below, so the overall status
+  // still degrades correctly and no call site needs to change.
+  if (monetized === null) {
+    return {
+      id: "monetization",
+      label: "Monetization",
+      used: null,
+      limit: null,
+      ratio: null,
+      status: "unmeasured",
+      detail:
+        "Whether the app is taking money could not be read, so the licence condition cannot be judged. This is not a statement that the condition holds.",
+    };
+  }
   return {
     id: "monetization",
     label: "Monetization",

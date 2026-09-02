@@ -8,7 +8,7 @@
 
 import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
-import { Card, DataTable, Pill, ToolbarButton } from "../primitives";
+import { Card, DataTable, Email, Pill, ToolbarButton } from "../primitives";
 
 type Audience = "all" | "plus" | "pro" | "web" | "native";
 const AUDIENCES: [Audience, string][] = [
@@ -310,7 +310,7 @@ export function PushTab() {
             {
               key: "by",
               label: "By",
-              render: (b) => b.created_by_email ?? "—",
+              render: (b) => <Email value={b.created_by_email} />,
               csv: (b) => b.created_by_email ?? "",
             },
           ]}

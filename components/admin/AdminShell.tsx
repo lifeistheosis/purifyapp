@@ -67,7 +67,7 @@ import { ActivityFeed } from "./ActivityFeed";
 import { useStreamerOn } from "@/lib/admin/streamer";
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
 import { AdminMobileNav } from "./AdminMobileNav";
-import { installLarpWriteGuard, larpOn, onLarpChange, setLarp } from "@/lib/admin/larp";
+import { installLarpWriteGuard, larpOn, setLarp, useLarpOn } from "@/lib/admin/larp";
 import { TabBoundary } from "./TabBoundary";
 import { OwnerSection } from "./OwnerSection";
 import { HeroRow } from "./HeroRow";
@@ -493,11 +493,7 @@ export function AdminShell({
   // button for it would sit in the toolbar inviting a mis-click on a real
   // dashboard. Typing into an input is excluded, or searching for "larp" in
   // Users would flip the books.
-  const [larp, setLarpState] = useState(false);
-  useEffect(() => {
-    setLarpState(larpOn());
-    return onLarpChange(setLarpState);
-  }, []);
+  const larp = useLarpOn();
   // Installed unconditionally and consulted per request, so it is already in
   // place the moment the mode is switched on, including in the tab that just
   // switched it. See the note at the foot of lib/admin/larp.ts.

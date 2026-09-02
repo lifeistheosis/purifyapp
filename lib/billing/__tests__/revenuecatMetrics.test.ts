@@ -77,11 +77,30 @@ describe("reading", () => {
     expect((init.headers as Record<string, string>).Authorization).toBe("Bearer sk_test");
   });
 
-  it("survives a payload with fields missing", async () => {
-    // A shape change at the vendor must not put NaN into a money column.
+  it("refuses a 200 whose body carries no recognised metric", async () => {
+    // THIS TEST USED TO ASSERT THE BUG. It required {currency:"EUR"} to come
+    // back as a complete all-zero metrics object, on the reasoning that a
+    // vendor shape change must not put NaN into a money column. Avoiding NaN
+    // was right; reaching zero was not.
+    //
+    // A non-null result means "real, billed figures", and the revenue route
+    // reads it as such: estimated:false, source:"revenuecat", and the panel
+    // prints "Subs MRR - real $0.00" with prose asserting the zero is billed
+    // truth. Null is the honest answer, and every caller already falls back
+    // to the clearly-labelled list-price estimate.
     mockFetch(() => new Response(JSON.stringify({ currency: "EUR" }), { status: 200 }));
+    expect(await getProjectMetrics()).toBeNull();
+  });
+
+  it("still maps a body carrying even one recognised metric", async () => {
+    // The guard rejects unrecognised shapes, not partial ones. A payload with
+    // a real mrr and nothing else is a vendor that dropped a field, and the
+    // zeros around it are then genuinely zero.
+    mockFetch(() =>
+      new Response(JSON.stringify({ mrr: 12.5, currency: "EUR" }), { status: 200 }),
+    );
     const m = await getProjectMetrics();
-    expect(m).toMatchObject({ mrr: 0, arr: 0, activeSubscriptions: 0, currency: "EUR" });
+    expect(m).toMatchObject({ mrr: 12.5, arr: 0, activeSubscriptions: 0, currency: "EUR" });
     expect(Number.isNaN(m!.mrr)).toBe(false);
   });
 });

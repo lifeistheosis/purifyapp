@@ -209,7 +209,6 @@ export type InsightsValue = {
 
   clearDataset: () => Promise<void>;
   /** Push whatever this browser still holds up to the server, once. */
-  adoptLegacyLocal: () => Promise<void>;
   addGoal: (goal: Omit<Goal, "id" | "createdAt">) => void;
   updateGoal: (id: string, patch: Partial<Omit<Goal, "id">>) => void;
   removeGoal: (id: string) => void;
@@ -378,57 +377,11 @@ export function InsightsProvider({ children }: { children: ReactNode }) {
    * series is not in the local dataset keeps its id and shows as unmatched,
    * which is honest.
    */
-  const adoptLegacyLocal = useCallback(async () => {
-    if (!legacyLocal) return;
-    dispatch({ type: "import:start" });
-
-    const res = await fetch("/api/admin/insights/actions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "import",
-        label: legacyLocal.label || "Recovered from this browser",
-        rowCount: legacyLocal.rowCount,
-        series: legacyLocal.series.map((s: Series) => ({
-          id: s.id,
-          label: s.label,
-          kind: s.kind,
-          sourceHeader: s.source,
-          points: s.points,
-        })),
-      }),
-    }).catch(() => null);
-
-    if (!res || !res.ok) {
-      dispatch({ type: "import:fail", error: "That browser copy did not save." });
-      return;
-    }
-
-    const remap = legacyIdMap(legacyLocal.series.map((s: Series) => s.source));
-    const local = loadPersisted();
-    for (const g of local.goals) {
-      await fetch("/api/admin/insights/actions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "goal-upsert",
-          id: g.id,
-          seriesId: remap.get(g.seriesId) ?? g.seriesId,
-          label: g.label,
-          period: g.period,
-          target: g.target,
-          paused: g.paused,
-        }),
-      }).catch(() => null);
-    }
-
-    // Cleared only after a confirmed save, so a failure leaves the browser copy
-    // exactly where it was rather than losing it on the way.
-    clearPersisted();
-    setLegacyLocal(null);
-    await reload();
-    dispatch({ type: "import:done" });
-  }, [legacyLocal, reload]);
+  // adoptLegacyLocal WAS HERE. It POSTed action:"import" to
+  // /api/admin/insights/actions, which was removed with the CSV importer on
+  // 2026-09-01, so the only thing it could still do was 400. It had no caller
+  // in any component either: the recovery path it belonged to went with the
+  // feature it was recovering into.
 
   const clearDataset = useCallback(async () => {
     await fetch("/api/admin/insights/actions", {
@@ -549,7 +502,6 @@ export function InsightsProvider({ children }: { children: ReactNode }) {
       selection: state.selection,
       selectedRange,
       clearDataset,
-      adoptLegacyLocal,
       addGoal,
       updateGoal,
       removeGoal,
@@ -571,7 +523,6 @@ export function InsightsProvider({ children }: { children: ReactNode }) {
       overall,
       selectedRange,
       clearDataset,
-      adoptLegacyLocal,
       addGoal,
       updateGoal,
       removeGoal,

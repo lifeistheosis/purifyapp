@@ -194,11 +194,16 @@ export function GoalsTab() {
             }}
           >
             A goal has to name a series, and there is no report loaded to pick
-            one from. Import a CSV on the Growth tab first.
+            one from. CSV import was removed on 2026-09-01, so no new series can be added.
           </p>
         )}
         {editing && dataset && (
           <GoalEditor
+            // Keyed for the same reason as SustainabilityTab's ExpenseEditor:
+            // the editor seeds its state from props on mount only, so editing
+            // a second goal without cancelling first would save the first
+            // goal's values onto it.
+            key={editing.id}
             initial={editing}
             seriesOptions={dataset.series.map((s) => ({ id: s.id, label: s.label }))}
             onCancel={() => setEditing(null)}

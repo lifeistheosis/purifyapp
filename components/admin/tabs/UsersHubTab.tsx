@@ -139,7 +139,7 @@ function LiveCartsPanel() {
                       (c.signedIn ? "font-semibold text-paper" : "text-paper/55")
                     }
                   >
-                    {c.name ?? c.email ?? c.who}
+                    {c.name ?? (c.email ? <Email value={c.email} /> : c.who)}
                   </span>
                   {/* Name AND email when we have both, so a cart is always
                       traceable to a person without opening the profile. */}

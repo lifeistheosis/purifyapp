@@ -20,10 +20,13 @@ import { Card, KpiCard, ChartFrame } from "../primitives";
 import { LineChart, CalendarHeatmap, SERIES_COLORS, chartColors } from "../charts";
 
 type Stats = {
-  liveCount: number;
-  today: { visitors: number; views: number; signups: number };
-  totalUsers: number;
-  totalBumps: number;
+  /* null means the read failed, not that the number is zero. The stats
+     route binds its errors and sends null rather than coalescing to 0,
+     so a dead database reads as a dash instead of a dead site. */
+  liveCount: number | null;
+  today: { visitors: number | null; views: number | null; signups: number | null };
+  totalUsers: number | null;
+  totalBumps: number | null;
   generatedAt: string;
 };
 
@@ -95,7 +98,15 @@ export function OverviewTab() {
   // the same Render service that serves purifyapp.net to the public, all night
   // if a window is left open.
   const { data: stats } = useLiveData<Stats>("/api/admin/stats", 10_000);
-  const { data: totals } = useLiveData<Totals>("/api/admin/totals", 10_000);
+  // 60s, not 10. Lifetime totals are the slowest-moving numbers on the panel
+  // and the most expensive to produce: four unfiltered exact COUNTs, no date
+  // filter, on the two largest tables. Six times a minute bought nothing a
+  // reader could see, because a lifetime count does not visibly move in ten
+  // seconds. The route sends `private, max-age=60` hoping the browser would
+  // absorb the difference, but adminJson fetches with cache: "no-store" and so
+  // never consults that cache: every one of those polls reached Postgres. The
+  // interval is now the bound the header was pretending to be.
+  const { data: totals } = useLiveData<Totals>("/api/admin/totals", 60_000);
   const { data: trafficRes } = useLiveData<{ points?: TrafficPoint[] }>(
     "/api/admin/traffic?range=90d",
     10_000,

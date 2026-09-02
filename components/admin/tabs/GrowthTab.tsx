@@ -48,14 +48,17 @@ export function GrowthTab({ onOpenGoals }: { onOpenGoals?: () => void }) {
           writes them any more: see the note in this tab's header. */}
 
       {!dataset ? (
-        <Card title="Nothing imported yet" subtitle="Paste a report above to populate this page.">
+        <Card
+          title="No report data"
+          subtitle="CSV import was removed on 2026-09-01. Nothing writes this page any more."
+        >
           <p className="font-sans text-[12.5px]" style={{ color: "var(--adm-ink-2)" }}>
-            This page reads whatever CSV you give it. It finds the date column,
-            treats every other numeric column as a series, and works out on its
-            own whether each one is a running level like an installed audience
-            or a daily count like impressions. That distinction decides every
-            total on the page: a level is read at its latest value, a count is
-            summed.
+            This page was fed by pasting a Play Console export. That was removed
+            because the exports describe days that have already finished, while
+            the rest of the panel measures live analytics as they happen, so the
+            two answered the same questions differently and the stale one looked
+            just as authoritative. Traffic and the hourly goals on Goals read
+            live data and are unaffected.
           </p>
         </Card>
       ) : (

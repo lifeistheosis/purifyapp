@@ -1,5 +1,7 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
+
 /**
  * Larp mode. Every number in the panel, on blast.
  *
@@ -140,6 +142,23 @@ export function onLarpChange(fn: (on: boolean) => void): () => void {
  * with a self-reference would otherwise hang the panel rather than show a
  * wrong number.
  */
+/**
+ * Whether larp mode is on, as a hook.
+ *
+ * The same shape as useStreamerOn in ./streamer, and here for the same reason:
+ * the value lives in localStorage plus a custom event, which is an external
+ * store, and useSyncExternalStore is how React reads one.
+ *
+ * What this replaces in AdminShell was a mount effect calling
+ * setLarpState(larpOn()), which react-hooks/set-state-in-effect rejects, and
+ * rightly: it renders once with the wrong answer and then immediately renders
+ * again with the right one. getServerSnapshot returns false so the server and
+ * the first client render agree, which is what keeps hydration quiet.
+ */
+export function useLarpOn(): boolean {
+  return useSyncExternalStore(onLarpChange, larpOn, () => false);
+}
+
 export function inflate<T>(value: T, keyHint = "", depth = 0, seen = new WeakSet<object>()): T {
   if (depth > 12) return value;
 

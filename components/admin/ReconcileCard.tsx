@@ -35,6 +35,8 @@ type Payload = {
   findings: Finding[];
   lastWebhookAt: string | null;
   lastWebhookResult: string | null;
+  lastWebhookLogReadable?: boolean;
+  lastWebhookLogMissing?: boolean;
   error?: string;
 };
 
@@ -113,12 +115,25 @@ export function ReconcileCard() {
           <p
             className="mb-2 font-sans text-detail"
             style={{
-              color: data.lastWebhookAt ? "var(--adm-ink-2)" : "var(--adm-critical)",
+              // Red is reserved for "Stripe never called", which is an
+              // actionable fault. An unreadable log is a gap in our own
+              // instrumentation, not evidence about Stripe, so it must not
+              // wear the colour that sends someone to the dashboard.
+              color:
+                data.lastWebhookLogReadable === false
+                  ? "var(--adm-warn)"
+                  : data.lastWebhookAt
+                    ? "var(--adm-ink-2)"
+                    : "var(--adm-critical)",
             }}
           >
-            {data.lastWebhookAt
-              ? `Stripe last called this site on ${new Date(data.lastWebhookAt).toLocaleString()} (${data.lastWebhookResult ?? "no result recorded"}).`
-              : "Stripe has never called this site, as far as the log goes back. Check Developers, Webhooks in the Stripe dashboard: an endpoint pointing at https://purifyapp.net/api/shop/stripe-webhook, subscribed to checkout.session.completed."}
+            {data.lastWebhookLogReadable === false
+              ? data.lastWebhookLogMissing
+                ? "The webhook log table is not on this database, so whether Stripe has called cannot be answered from here. Apply 20260823_admin_activity_log.sql, then check again."
+                : "The webhook log could not be read, so whether Stripe has called cannot be answered from here."
+              : data.lastWebhookAt
+                ? `Stripe last called this site on ${new Date(data.lastWebhookAt).toLocaleString()} (${data.lastWebhookResult ?? "no result recorded"}).`
+                : "Stripe has never called this site, as far as the log goes back. Check Developers, Webhooks in the Stripe dashboard: an endpoint pointing at https://purifyapp.net/api/shop/stripe-webhook, subscribed to checkout.session.completed."}
           </p>
 
           <p className="font-sans text-detail text-paper/80">

@@ -1,8 +1,11 @@
 // agoLabel is the part of the live feed a person actually reads, and it is
-// pure, so it gets tested directly. The hook itself needs a DOM and this
-// suite runs in node (see vitest.config.ts), so its behaviour is verified in
-// the browser instead and recorded in the commit rather than faked here with
-// a renderer that would prove less than the real thing does.
+// pure, so it gets tested directly.
+//
+// The hook itself still needs a DOM this node suite does not have, but that no
+// longer means its behaviour is untested: the polling, sharing and failure
+// rules were moved into lib/admin/liveStore.ts precisely so they could be
+// driven here, and liveStore.test.ts does that. What is left in the hook is
+// the useSyncExternalStore binding, which is verified in the browser.
 
 import { describe, expect, it } from "vitest";
 import { agoLabel } from "../useLiveData";

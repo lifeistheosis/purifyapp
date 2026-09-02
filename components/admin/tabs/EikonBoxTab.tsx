@@ -4,8 +4,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Card,
   DataTable,
+  Email,
   Modal,
   Pill,
+  Sensitive,
   StatCard,
   SubTabs,
   Toolbar,
@@ -391,19 +393,19 @@ export function EikonBoxTab() {
               {
                 key: "name",
                 label: "Name",
-                render: (c) => c.address?.name ?? "—",
+                render: (c) => <Sensitive value={c.address?.name} />,
                 csv: (c) => c.address?.name ?? "",
               },
               {
                 key: "email",
                 label: "Email",
-                render: (c) => c.email ?? "—",
+                render: (c) => <Email value={c.email} />,
                 csv: (c) => c.email ?? "",
               },
               {
                 key: "line1",
                 label: "Address",
-                render: (c) => c.addressLine || "—",
+                render: (c) => <Sensitive value={c.addressLine} />,
                 csv: (c) => c.address?.address.line1 ?? "",
               },
               { key: "line2", label: "", render: () => null, csv: (c) => c.address?.address.line2 ?? "" },
@@ -609,14 +611,15 @@ function ClaimRow({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-sans text-detail font-semibold text-paper">
-            {claim.address?.name ?? "—"}{" "}
+            <Sensitive value={claim.address?.name} />{" "}
             {claim.lapsed && <Pill tone="rose">Pro lapsed since claiming</Pill>}
           </p>
           <p className="mt-0.5 font-sans text-caption text-paper/60">
-            {claim.addressLine || "No address on file"}
+            <Sensitive value={claim.addressLine} fallback="No address on file" />
           </p>
           <p className="mt-0.5 font-sans text-caption text-paper/40">
-            {claim.email ?? "no email"} · claimed {fmtDate(claim.claimedAt)} ·
+            <Email value={claim.email} fallback="no email" /> · claimed{" "}
+            {fmtDate(claim.claimedAt)} ·
             Pro until {fmtDate(claim.proUntilAtClaim)}
           </p>
         </div>

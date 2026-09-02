@@ -21,14 +21,26 @@ export async function GET() {
   dayStart.setUTCHours(0, 0, 0, 0);
   const todayIso = dayStart.toISOString();
 
-  // Live sessions (with coarse geo) + their most recent page.
-  const { data: liveRows } = await supa
+  // ERRORS ARE BOUND, NOT DROPPED. supabase-js RESOLVES on a PostgREST
+  // failure rather than rejecting, so `const { data } = await ...` yields
+  // undefined and every `?? 0` below turned an unreadable table into a
+  // confident zero, at HTTP 200. useLiveData only sets `failing` on a non-ok
+  // response, so LiveTab rendered "Live now 0", an empty map and "No one on
+  // the site right now" beside a green "updated 2s ago" stamp. There was no
+  // dash, no amber dot and no log line: a working site read as a dead one and
+  // nothing could contradict it.
+  //
+  // This is the same mechanism as the profiles.created_at bug fixed in
+  // 3c899c25. Nulls below mean "could not read"; a genuinely empty table
+  // still returns count 0 and still prints 0.
+  const { data: liveRows, error: liveErr } = await supa
     .from("analytics_sessions")
     .select("session_id, city, region, country, country_code, lat, lng, last_seen")
     .gt("last_seen", liveSince)
     .order("last_seen", { ascending: false })
     .limit(500);
 
+  if (liveErr) console.warn("[admin/stats] live sessions read failed", liveErr.message);
   const live = liveRows ?? [];
   const ids = live.map((r) => r.session_id);
   const latestPath = new Map<string, string>();
@@ -57,7 +69,12 @@ export async function GET() {
   }));
 
   // Today's totals.
-  const [{ count: todayVisitors }, { count: todayViews }, { count: signupsToday }, { count: totalUsers }] =
+  const [
+    { count: todayVisitors, error: visErr },
+    { count: todayViews, error: viewErr },
+    { count: signupsToday, error: signErr },
+    { count: totalUsers, error: usersErr },
+  ] =
     await Promise.all([
       supa.from("analytics_sessions").select("*", { count: "exact", head: true }).gte("first_seen", todayIso),
       supa.from("analytics_pageviews").select("*", { count: "exact", head: true }).gte("ts", todayIso),
@@ -65,75 +82,30 @@ export async function GET() {
       supa.from("profiles").select("*", { count: "exact", head: true }),
     ]);
 
-  // Top pages today (aggregate client-capped sample).
-  const { data: pagesToday } = await supa
-    .from("analytics_pageviews")
-    .select("path")
-    .gte("ts", todayIso)
-    .limit(5000);
-  const pageTally = new Map<string, number>();
-  for (const r of pagesToday ?? []) pageTally.set(r.path, (pageTally.get(r.path) ?? 0) + 1);
-  const topPages = [...pageTally.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 8)
-    .map(([path, count]) => ({ path, count }));
+  const countErr = visErr ?? viewErr ?? signErr ?? usersErr;
+  if (countErr) console.warn("[admin/stats] a count read failed", countErr.message);
 
-  // Top countries today.
-  const { data: sessToday } = await supa
-    .from("analytics_sessions")
-    .select("country, country_code")
-    .gte("first_seen", todayIso)
-    .limit(5000);
-  const countryTally = new Map<string, { name: string; code: string | null; count: number }>();
-  for (const r of sessToday ?? []) {
-    const name = r.country ?? "Unknown";
-    const e = countryTally.get(name) ?? { name, code: r.country_code ?? null, count: 0 };
-    e.count += 1;
-    countryTally.set(name, e);
-  }
-  const topCountries = [...countryTally.values()].sort((a, b) => b.count - a.count).slice(0, 8);
-
-  // 30-day rollups for the language-prioritization view.
-  // A wider window than "today" makes the signal stable enough to
-  // decide which UI translations to invest in.
-  const monthStart = new Date(now - 30 * 24 * 60 * 60 * 1000).toISOString();
-  const { data: sessMonth } = await supa
-    .from("analytics_sessions")
-    .select("country, country_code, region, accept_language")
-    .gte("first_seen", monthStart)
-    .limit(20000);
-
-  // Top regions (state / province), keyed by "Country · Region" so
-  // California and Bavaria don't collide.
-  const regionTally = new Map<
-    string,
-    { country: string; region: string; code: string | null; count: number }
-  >();
-  for (const r of sessMonth ?? []) {
-    if (!r.region) continue;
-    const country = r.country ?? "Unknown";
-    const key = `${country}|${r.region}`;
-    const e =
-      regionTally.get(key) ??
-      { country, region: r.region, code: r.country_code ?? null, count: 0 };
-    e.count += 1;
-    regionTally.set(key, e);
-  }
-  const topRegions = [...regionTally.values()]
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 10);
-
-  // Top declared browser languages (primary tag only, "es", "ru", etc.).
-  const languageTally = new Map<string, number>();
-  for (const r of sessMonth ?? []) {
-    const code = r.accept_language;
-    if (!code) continue;
-    languageTally.set(code, (languageTally.get(code) ?? 0) + 1);
-  }
-  const topLanguages = [...languageTally.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 12)
-    .map(([code, count]) => ({ code, count }));
+  // TOP PAGES / COUNTRIES / REGIONS / LANGUAGES WERE COMPUTED HERE, and are
+  // gone because nothing has ever read them.
+  //
+  // Three unaggregated selects ran per request, the largest pulling up to
+  // 20,000 session rows across 30 days, all reduced in Node to top-8/10/12
+  // lists. This route is polled by LiveTab every 5s and by ActivityFeed every
+  // 20s, so that work ran about 15 times a minute, uncached, on the same
+  // process that serves purifyapp.net to the public.
+  //
+  // Verified before deleting rather than taken on an auditor's word: the four
+  // response keys have no reader among this route's three consumers
+  // (ActivityFeed, LiveTab, OverviewTab). `topPages` does appear elsewhere in
+  // the panel, which is what makes a plain grep misleading: ContentTab and
+  // EngagementTab each read a topPages of their OWN, built by
+  // /api/admin/content and /api/admin/engagement. Same name, different route,
+  // untouched by this.
+  //
+  // If the language or country view is ever wanted back, build it as a SQL
+  // aggregate on its own low-cadence route the way
+  // supabase/migrations/20260608_analytics_daily_buckets.sql did, rather than
+  // shipping raw rows to Node on a 5 second timer.
 
   // Top bumped saints — the editorial leaderboard the v6.5 bump system
   // feeds. Reads the public aggregate view so RLS doesn't matter; resolves
@@ -161,20 +133,19 @@ export async function GET() {
 
   return NextResponse.json(
     {
-      liveCount: sessions.length,
+      // null when the read failed, so the panel shows a dash instead of a
+      // zero it cannot stand behind. Every consumer already renders nullish
+      // as an em dash, which is why this needed no client change.
+      liveCount: liveErr ? null : sessions.length,
       sessions,
       today: {
-        visitors: todayVisitors ?? 0,
-        views: todayViews ?? 0,
-        signups: signupsToday ?? 0,
+        visitors: todayVisitors ?? null,
+        views: todayViews ?? null,
+        signups: signupsToday ?? null,
       },
-      totalUsers: totalUsers ?? 0,
-      topPages,
-      topCountries,
-      topRegions,
-      topLanguages,
+      totalUsers: totalUsers ?? null,
       topBumps,
-      totalBumps: totalBumps ?? 0,
+      totalBumps: totalBumps ?? null,
       generatedAt: new Date().toISOString(),
     },
     { headers: { "Cache-Control": "no-store" } },

@@ -30,7 +30,13 @@ export type ApiLimitsPayload = {
   callsInstrumented: boolean;
   callsByDay?: { date: string; calls: number }[];
   mau: { ceiling: number | null; floor: number | null };
-  monetized: boolean;
+  /**
+   * null means the check itself failed, and the type has to say so. It was
+   * `boolean`, which is why TypeScript never caught readMonetization coercing
+   * a failed read into a confident "within the free tier": the type was
+   * lying about the wire shape the route actually sends.
+   */
+  monetized: boolean | null;
   monetization: {
     paidEntitlements: number;
     activePlus: number;

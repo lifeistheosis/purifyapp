@@ -28,6 +28,7 @@ import {
   type IntegrityProduct,
   type IntegritySourcing,
 } from "@/lib/shop/integrity";
+import { gradePrice, unitEconomics } from "@/lib/shop/pricing";
 
 /* ── Types (admin payload shapes, deliberately local to this tab) ─────── */
 
@@ -330,7 +331,12 @@ function ProductsPanel() {
     sold += p.units_sold ?? 0;
     revenue += (p.units_sold ?? 0) * p.price_cents;
     const cost = sourcingOf(p.id)?.supplier_cost_cents;
-    if (cost != null) profit += (p.units_sold ?? 0) * (p.price_cents - cost);
+    // Contribution, not price minus cost. Same reason as the per-product
+    // figures below: the processing fee is real money and is regressive, so
+    // omitting it overstates every small item.
+    if (cost != null) {
+      profit += (p.units_sold ?? 0) * unitEconomics(p.price_cents, cost).contributionCents;
+    }
   }
   // "Published" counts what the STOREFRONT shows (status published AND past
   // the image-rights gate); the gap is surfaced as its own number.
@@ -415,10 +421,21 @@ function ProductsPanel() {
           value={sold.toLocaleString()}
           tone={sold > 0 ? "text-[color:var(--adm-good)]" : undefined}
         />
+        {/* NOT "Revenue". This is units_sold multiplied by the price the
+            product carries RIGHT NOW, and units_sold is a monotonic counter
+            that refunds never decrement. Raise a price from this tab's own
+            editor and the figure rises with no sale having happened, while
+            the Revenue tab keeps reporting the real number because it sums
+            shop_order_items.unit_price_cents, a genuine sale-time snapshot.
+            Two tabs of one panel would disagree the moment a price moved.
+
+            Renamed rather than recomputed, so there is exactly one place in
+            the panel that claims to state booked revenue, and it is the one
+            reading the orders. */}
         <Metric
-          label="Revenue"
+          label="Sold at today's price"
           value={money(revenue)}
-          hint={profit > 0 ? `${money(profit)} profit` : undefined}
+          hint={profit > 0 ? `${money(profit)} contribution` : undefined}
         />
       </div>
 
@@ -916,18 +933,31 @@ function ProductOverview({
   onToggleStatus: (p: AdminProduct) => void;
 }) {
   const cost = s?.supplier_cost_cents ?? null;
-  const profit = cost != null ? p.price_cents - cost : null;
-  const roi = cost != null && cost > 0 ? ((p.price_cents - cost) / cost) * 100 : null;
+  // AFTER THE PROCESSING FEE. This computed price minus cost, which on a small
+  // item is not profit at all: card processing is 2.9% plus a flat 30c, so a
+  // $3.00 item costing $2.80 showed "$0.20, ROI 7%" and was painted warn,
+  // while lib/shop/pricing.ts on the very same supplier cost returns a fee of
+  // 39c, a contribution of MINUS 19c, and grades it "Loses money".
+  //
+  // Two tabs of one panel disagreeing about whether an item makes money is bad
+  // enough; the tone ladder grading the loss as a warning is what let it keep
+  // selling. SourcingTab was the only importer of the pricing module.
+  const econ = unitEconomics(p.price_cents, cost);
+  const grade = gradePrice(econ);
+  const profit = econ.costKnown ? econ.contributionCents : null;
+  const roi = cost != null && cost > 0 ? (econ.contributionCents / cost) * 100 : null;
   const views = p.view_count ?? 0;
   const sold = p.units_sold ?? 0;
   const conv = views > 0 ? (sold / views) * 100 : null;
   const hero = orderedMedia(p.media)[0] ?? null;
+  // Driven off the graded band rather than a raw ROI threshold, so a unit that
+  // loses money paints critical instead of warn.
   const roiTone =
-    roi == null
+    !econ.costKnown
       ? undefined
-      : roi < 0
+      : grade.band === "loss"
         ? "text-[color:var(--adm-critical)]"
-        : roi < 100
+        : grade.band === "thin"
           ? "text-[color:var(--adm-warn)]"
           : "text-[color:var(--adm-good)]";
 
@@ -1036,10 +1066,12 @@ function ProductOverview({
           tone={conv == null ? "text-paper/30" : undefined}
           hint={views > 0 ? `${sold} of ${views}` : "no views yet"}
         />
+        {/* See the strip above: today's price times a counter that never
+            goes down, which is not revenue. */}
         <Metric
-          label="Revenue"
+          label="Sold at today's price"
           value={money(sold * p.price_cents)}
-          hint={profit != null ? `profit ${money(sold * profit)}` : undefined}
+          hint={profit != null ? `contribution ${money(sold * profit)}` : undefined}
         />
       </div>
 
@@ -1789,7 +1821,7 @@ function RequestsPanel() {
           {
             key: "email",
             label: "Contact",
-            render: (r) => r.email ?? "(account)",
+            render: (r) => <Email value={r.email} fallback="(account)" />,
             csv: (r) => r.email ?? "",
           },
           {

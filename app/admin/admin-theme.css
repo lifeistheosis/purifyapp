@@ -323,6 +323,46 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* ── LOW-ALPHA PAPER TEXT, ROUTED ONTO THE TESTED MUTED INK ─────────────
+ *
+ * The shim above rebinds --color-paper to --adm-ink so every `text-paper`
+ * utility re-colours per theme. What it could not do is follow Tailwind's
+ * OPACITY MODIFIER: `text-paper/40` composites 40% of that ink over whatever
+ * is behind it, and nothing was checking the result.
+ *
+ * On light the ink is #16161c on white, so the break-even alpha for 4.5:1 is
+ * 0.585. Everything at /55 and below fails, measured:
+ *
+ *   /55  4.00:1     /50  3.42:1     /45  2.95:1     /40  2.55:1
+ *
+ * all at 11 to 12px, where 4.5:1 is the floor rather than the 3:1 concession
+ * for large text. Dark is not exempt either: text-paper/40 on --adm-panel-2
+ * is 3.81:1. 142 occurrences across components/admin.
+ *
+ * WHY THE PANEL'S OWN TEST MISSED IT. lib/admin/__tests__/adminTheme.test.ts
+ * ships a real alpha-aware compositor and enforces 4.5:1, but it enumerates
+ * the ink TOKENS and never an opacity modifier, so the guard stepped exactly
+ * around this class. That is a gap in coverage, not in intent.
+ *
+ * The fix routes them onto --adm-ink-3, which each theme already defines as
+ * its legible muted ink (#63636f light at 5.7:1 on white, #8a8a9e dark) and
+ * which the test already covers. 0,2,0 specificity beats Tailwind's 0,1,0.
+ *
+ * /60 and above are left alone: /60 is already 4.73:1 and the whole point of
+ * the modifier is a visible hierarchy, which survives as long as the bottom
+ * of it stays readable. */
+.adm :is(
+  .text-paper\/25,
+  .text-paper\/30,
+  .text-paper\/35,
+  .text-paper\/40,
+  .text-paper\/45,
+  .text-paper\/50,
+  .text-paper\/55
+) {
+  color: var(--adm-ink-3);
+}
+
 /* STREAMER MODE. See lib/admin/streamer.ts for what it covers and what it is
  * not. One attribute on <html>, one class on anything the audience must not
  * read, so a new card opts in by naming itself rather than by remembering to

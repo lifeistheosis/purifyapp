@@ -34,8 +34,17 @@ type OrderRow = {
 async function pageOrders(
   admin: ReturnType<typeof createAdminClient>,
   since: string,
-): Promise<{ data: OrderRow[] }> {
+): Promise<{ data: OrderRow[]; failed: boolean }> {
   const out: OrderRow[] = [];
+  // FAILURE IS REPORTED, NOT MERGED INTO "EMPTY". The break below treated a
+  // PostgREST error on page 0 exactly like an empty table, so the route went
+  // on to publish $0 revenue and a flat 30-day sparkline at HTTP 200, under a
+  // banner that reads "Every number in this row is measured, never modelled."
+  //
+  // A whole-database failure already takes this route to a 500, because
+  // subscriptionStats() throws by design in the same Promise.all. What was
+  // left uncovered is a shop_orders-specific failure, where zero is a claim
+  // rather than a measurement.
   for (let page = 0; page < MAX_PAGES; page++) {
     const { data, error } = await admin
       .from("shop_orders")
@@ -43,11 +52,15 @@ async function pageOrders(
       .gte("created_at", since)
       .order("created_at", { ascending: true })
       .range(page * PAGE, page * PAGE + PAGE - 1);
-    if (error || !data || data.length === 0) break;
+    if (error) {
+      console.warn("[admin/overview] shop_orders read failed", error.message);
+      return { data: out, failed: true };
+    }
+    if (!data || data.length === 0) break;
     out.push(...(data as OrderRow[]));
     if (data.length < PAGE) break;
   }
-  return { data: out };
+  return { data: out, failed: false };
 }
 
 export async function GET() {
@@ -148,9 +161,14 @@ export async function GET() {
 
   return NextResponse.json(
     {
-      revenueTodayCents,
-      revenue30Cents,
-      revenueSeries: series,
+      // null, not 0, when shop_orders could not be read. Every consumer of
+      // these already renders an em dash for a nullish revenue, so a failed
+      // read now shows as "not measured" instead of as a day with no sales.
+      revenueTodayCents: recentOrdersRes.failed ? null : revenueTodayCents,
+      revenue30Cents: recentOrdersRes.failed ? null : revenue30Cents,
+      revenueSeries: recentOrdersRes.failed ? [] : series,
+      /** True when the order read failed and the money fields are unmeasured. */
+      ordersDegraded: recentOrdersRes.failed,
       ordersTotal: counts.count ?? 0,
       ordersPaid: paidCount.count ?? 0,
       ordersPending: pendingCount.count ?? 0,

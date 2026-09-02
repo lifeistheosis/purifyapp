@@ -90,6 +90,28 @@ export async function getProjectMetrics(): Promise<ProjectMetrics | null> {
     );
     if (res.ok) {
       const j = (await res.json()) as Record<string, unknown>;
+      // A 2xx IS NOT A SHAPE. num() returns 0 for anything non-finite, so an
+      // envelope this parser does not recognise, a renamed field or a v2
+      // schema change produced a complete, non-null, all-zero metrics object.
+      // Downstream that sets estimated:false and source:"revenuecat", so the
+      // panel printed "Subs MRR - real $0.00" and the prose "Subscription
+      // revenue is real, from RevenueCat" over a number that came from
+      // nothing. Zeros asserted as billed truth are worse than a labelled
+      // estimate, which is exactly what every caller falls back to.
+      const hasNumber = (k: string) =>
+        typeof j[k] === "number" && Number.isFinite(j[k] as number);
+      const recognised =
+        hasNumber("mrr") ||
+        hasNumber("arr") ||
+        hasNumber("total_revenue") ||
+        hasNumber("active_subscriptions");
+      if (!recognised) {
+        console.warn(
+          "[revenuecat] metrics/overview answered 200 with an unrecognised shape; treating as unavailable",
+        );
+        cache = { at: Date.now(), value: null };
+        return null;
+      }
       value = {
         mrr: num(j.mrr),
         arr: num(j.arr),

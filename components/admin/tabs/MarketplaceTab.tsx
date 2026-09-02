@@ -876,7 +876,7 @@ function OrdersPanel() {
             {
               key: "buyer",
               label: "Buyer",
-              render: (o) => o.email ?? "",
+              render: (o) => <Email value={o.email} fallback="" />,
               csv: (o) => o.email ?? "",
             },
             {
@@ -1090,7 +1090,7 @@ function MessagesPanel() {
             {
               key: "buyer",
               label: "Buyer",
-              render: (c) => c.buyer_email ?? "",
+              render: (c) => <Email value={c.buyer_email} fallback="" />,
               csv: (c) => c.buyer_email ?? "",
             },
             {
@@ -1143,7 +1143,12 @@ function MessagesPanel() {
       {opened && (
         <Card
           title={`Thread · ${opened.subject}`}
-          subtitle={`${opened.store?.public_name ?? "Store"} ↔ ${opened.buyer_email ?? "buyer"}`}
+          subtitle={
+            <>
+              {opened.store?.public_name ?? "Store"} ↔{" "}
+              <Email value={opened.buyer_email} fallback="buyer" />
+            </>
+          }
           accent
         >
           {!messages ? (
@@ -1281,7 +1286,7 @@ function RefundsPanel() {
             {
               key: "buyer",
               label: "Buyer",
-              render: (r) => r.order?.email ?? "",
+              render: (r) => <Email value={r.order?.email} fallback="" />,
               csv: (r) => r.order?.email ?? "",
             },
             {

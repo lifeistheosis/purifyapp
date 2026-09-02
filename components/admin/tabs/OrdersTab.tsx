@@ -7,7 +7,15 @@
 
 import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
-import { Card, DataTable, Pill, SubTabs, ToolbarButton, Email } from "../primitives";
+import {
+  Card,
+  DataTable,
+  Email,
+  Pill,
+  Sensitive,
+  SubTabs,
+  ToolbarButton,
+} from "../primitives";
 import { formatPrice } from "@/lib/shop/format";
 import { SELLER_STATUS_LABELS } from "@/lib/shop/sellerOrders";
 import { trackingLink } from "@/lib/shop/trackingLink";
@@ -179,8 +187,10 @@ export function OrdersTab() {
       ? orders
       : orders.filter((o) => o.payment_status === filter);
 
-  const addr = (a: unknown): string => {
-    if (!a || typeof a !== "object") return "—";
+  // Returns null rather than a dash for "nothing on file", so <Sensitive>
+  // can tell an absent address from a real one and blur only the real one.
+  const addrOrNull = (a: unknown): string | null => {
+    if (!a || typeof a !== "object") return null;
     const o = a as Record<string, unknown>;
     const name = o.name as string | undefined;
     const line = (o.address as Record<string, unknown> | undefined) ?? o;
@@ -192,7 +202,7 @@ export function OrdersTab() {
       line.postal_code,
       line.country,
     ].filter(Boolean);
-    return [name, parts.join(", ")].filter(Boolean).join(" · ") || "—";
+    return [name, parts.join(", ")].filter(Boolean).join(" · ") || null;
   };
 
   return (
@@ -290,7 +300,15 @@ export function OrdersTab() {
                 label="Total"
                 value={money(selected.total_cents, selected.currency)}
               />
-              <Row label="Ship to" value={addr(selected.shipping_address)} />
+              {/* A customer's home address, so it wears the streamer mask.
+                  addrOrNull()
+                  returns an em dash when there is nothing on file, and that
+                  placeholder must stay legible, which is why the value goes
+                  through <Sensitive> rather than a bare span. */}
+              <Row
+                label="Ship to"
+                value={<Sensitive value={addrOrNull(selected.shipping_address)} />}
+              />
             </div>
             <div>
               <p className="text-caption font-medium text-[color:var(--adm-ink-3)] mb-2">

@@ -53,12 +53,15 @@ import {
  */
 
 type Stats = {
-  liveCount: number;
+  /* null means the read failed, not that the number is zero. The stats
+     route binds its errors and sends null rather than coalescing to 0,
+     so a dead database reads as a dash instead of a dead site. */
+  liveCount: number | null;
   sessions: { countryCode: string | null }[];
-  today: { visitors: number; views: number; signups: number };
+  today: { visitors: number | null; views: number | null; signups: number | null };
 };
 type Overview = {
-  revenueTodayCents: number;
+  revenueTodayCents: number | null;
   paidPlus: number;
   paidPro: number;
 };
@@ -69,7 +72,17 @@ type Traffic = { points: { visitors: number }[] };
 const LOOK: Record<ActivityKind, { tint: string; ring: string }> = {
   visitor: { tint: "var(--adm-ink-2)", ring: "var(--adm-line-strong)" },
   signup: { tint: "var(--adm-accent)", ring: "var(--adm-accent)" },
-  sale: { tint: "var(--adm-positive, #34d399)", ring: "var(--adm-positive, #34d399)" },
+  // --adm-good, not --adm-positive. The latter was never defined anywhere:
+  // three consumers, zero definitions, so every one of them fell through to
+  // the #34d399 literal. That renders at 1.9:1 on the light theme's white
+  // card, and this token is used as a TEXT colour for the sale badge, so an
+  // incoming order's amount was effectively invisible on the phone toast and
+  // in the bell history. The dark theme was fine, which is why nobody saw it.
+  //
+  // The reserved status vocabulary is good/warn/serious/critical
+  // (admin-theme.css:126). --adm-good is #10b981 dark and #047857 light,
+  // 5.9:1 on white, and is already covered by the contrast test.
+  sale: { tint: "var(--adm-good)", ring: "var(--adm-good)" },
   subscriber: { tint: "var(--adm-warn)", ring: "var(--adm-warn)" },
   milestone: { tint: "var(--adm-accent)", ring: "var(--adm-accent)" },
 };
@@ -157,16 +170,45 @@ export function ActivityFeed() {
 
   // Derive events whenever a poll lands, and hand them to the store. The store
   // dedupes by id, so an effect that runs twice cannot double an event.
+  //
+  // A DEGRADED POLL IS NEVER DIFFED. The stats route now sends null for a read
+  // it could not perform, and this effect used to coalesce that to 0 and diff
+  // against it. The recovery poll then read as a burst of arrivals: a visitor
+  // pill per country and "N new accounts" for the whole day's signups, each
+  // one stamped and kept for 24 hours in the bell, on a component whose own
+  // header promises nothing is invented.
+  //
+  // Two shapes of the same problem are caught below. An explicit null is a
+  // read that failed. A within-day counter that has gone BACKWARDS is a read
+  // that lied, or the UTC midnight rollover, and neither is an event. In both
+  // cases the snapshot is replaced without being diffed, so the next poll
+  // compares like with like and one cycle of silence is the whole cost.
   useEffect(() => {
     if (!stats.data || !overview.data) return;
+
+    const todayVisitors = stats.data.today?.visitors;
+    const todaySignups = stats.data.today?.signups;
+    const revenueToday = overview.data.revenueTodayCents;
+    // Revenue counts as degraded too. The overview route now sends null when
+    // the shop_orders read failed, and without this the recovery poll would
+    // see revenue jump from a coalesced 0 to the whole day's takings and fire
+    // "An order came in" badged with all of it.
+    const degraded =
+      todayVisitors === null ||
+      todayVisitors === undefined ||
+      todaySignups === null ||
+      todaySignups === undefined ||
+      revenueToday === null ||
+      revenueToday === undefined;
+
     const pts = traffic.data?.points ?? [];
     const snap: ActivitySnapshot = {
-      todayVisitors: stats.data.today?.visitors ?? 0,
-      todaySignups: stats.data.today?.signups ?? 0,
+      todayVisitors: todayVisitors ?? 0,
+      todaySignups: todaySignups ?? 0,
       // The last complete bucket. points is oldest-first and the last entry is
       // today, so yesterday is the one before it.
       yesterdayVisitors: pts.length > 1 ? (pts[pts.length - 2]?.visitors ?? 0) : 0,
-      revenueTodayCents: overview.data.revenueTodayCents ?? 0,
+      revenueTodayCents: revenueToday ?? 0,
       paidPlus: overview.data.paidPlus ?? 0,
       paidPro: overview.data.paidPro ?? 0,
       countries: (stats.data.sessions ?? [])
@@ -174,6 +216,17 @@ export function ActivityFeed() {
         .filter((c): c is string => Boolean(c))
         .map((c) => c.toLowerCase()),
     };
+    // Backwards is impossible for a within-day counter that is working.
+    const went_back =
+      prevSnap.current !== null &&
+      (snap.todayVisitors < prevSnap.current.todayVisitors ||
+        snap.todaySignups < prevSnap.current.todaySignups);
+
+    if (degraded || went_back) {
+      prevSnap.current = degraded ? prevSnap.current : snap;
+      return;
+    }
+
     seq.current += 1;
     const fresh = diffActivity(prevSnap.current, snap, seq.current);
     prevSnap.current = snap;
@@ -541,7 +594,30 @@ function ActivityBell({
           <div
             role="dialog"
             aria-label="Activity"
-            className="absolute right-0 top-[calc(100%+8px)] z-[46] w-[min(92vw,560px)] rounded-[var(--adm-radius)] border p-3"
+            /* FIXED ON A PHONE, ANCHORED ON A DESKTOP.
+             *
+             * `absolute right-0` positions against the bell's own 44px
+             * wrapper. On a desktop the bell sits near the right of the bar so
+             * that lands correctly. Below lg, TabSearch is flex-1 and absorbs
+             * every spare pixel, which pins the bell to the bar's LEFT edge:
+             * a 560px panel hung from a 44px box at x=16 put roughly 285px of
+             * itself off the left of a 375px screen. The header, the Clear
+             * button and every card but a sliver were unreachable, and the
+             * bell read as a button that does nothing.
+             *
+             * Below lg it is a fixed sheet inset from both edges instead, so
+             * it cannot depend on where the bell ended up. From lg the
+             * original anchored behaviour returns unchanged.
+             *
+             * THE BREAKPOINT IS lg BECAUSE TabSearch's IS. This first shipped
+             * switching at md, which left the described bug live across the
+             * whole 768 to 1023 band: TabSearch is `flex-1 lg:flex-none`
+             * (TabSearch.tsx:80), so at 800px wide it still eats the bar, the
+             * bell still sits far from the right edge, and a 560px panel hung
+             * off its right edge still ran off the left of the screen. Any
+             * change here has to move with that class, not with an eyeballed
+             * guess at where a bar stops being crowded. */
+            className="fixed inset-x-3 top-[calc(var(--adm-topbar-h,69px)+8px)] z-[46] w-auto rounded-[var(--adm-radius)] border p-3 lg:absolute lg:inset-x-auto lg:right-0 lg:top-[calc(100%+8px)] lg:w-[min(92vw,560px)]"
             style={{
               background: "var(--adm-panel)",
               borderColor: "var(--adm-line)",
