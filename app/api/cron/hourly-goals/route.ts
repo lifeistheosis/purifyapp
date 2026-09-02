@@ -189,10 +189,24 @@ export async function GET(req: NextRequest) {
           continue;
         }
         target = auto.target;
-        await supa
-          .from("hourly_goals")
-          .update({ target, updated_at: new Date().toISOString() })
-          .eq("id", g.id);
+        // ONLY THE CURRENT HOUR IS CACHED, and this guard is the whole point.
+        //
+        // Each run handles two windows: the hour in progress, and, near the
+        // boundary, the hour that just finished. Writing the target from the
+        // CLOSED window stamped updated_at with the current hour while storing
+        // the previous hour's number, so cachedTargetFor then handed that stale
+        // target back as the current hour's for the rest of the hour. An 02:00
+        // target of 3 would be used to judge an 09:00 peak, and the goal would
+        // read as hit every time.
+        //
+        // The closed hour still gets its own correct target for the miss
+        // decision below; it just never becomes the cache.
+        if (!w.ended) {
+          await supa
+            .from("hourly_goals")
+            .update({ target, updated_at: new Date().toISOString() })
+            .eq("id", g.id);
+        }
       }
       const goalForHour = { ...g, target };
 

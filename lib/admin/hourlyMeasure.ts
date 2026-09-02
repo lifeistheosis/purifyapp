@@ -58,11 +58,24 @@ export async function measure(
     return count ?? 0;
   }
   if (metric === "signups") {
+    // joined_at, NOT created_at. public.profiles has no created_at column at
+    // all: it is id, display_name, joined_at, updated_at, has_password,
+    // preferred_language, focus, depth. PostgREST answers 42703 for the
+    // missing column, the destructured `count` comes back undefined, and
+    // `?? 0` turned that into a confident zero. So the signups goal measured
+    // nothing, reported 0 every hour, and could never fire.
+    //
+    // Verified against production 2026-09-01: selecting created_at returns
+    // "column profiles.created_at does not exist" with a hint naming
+    // updated_at, while the control column answers the same way.
+    //
+    // The `?? 0` stays, because a genuinely empty hour is 0 and that is the
+    // common case. What is fixed is asking for a column that exists.
     const { count } = await supa
       .from("profiles")
       .select("id", { count: "exact", head: true })
-      .gte("created_at", fromIso)
-      .lt("created_at", toIso);
+      .gte("joined_at", fromIso)
+      .lt("joined_at", toIso);
     return count ?? 0;
   }
   // revenue_cents. Paid only: a pending checkout is not revenue, and counting
