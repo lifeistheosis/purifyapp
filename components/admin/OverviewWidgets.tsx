@@ -22,7 +22,7 @@
 // two that answer "is it up and is anyone here", and the rest are one click
 // away.
 
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
 import { StatCard } from "./primitives";
 
@@ -46,7 +46,10 @@ export const WIDGETS: Widget[] = [
     id: "traffic",
     label: "Visitors · 30 days",
     url: "/api/admin/traffic?range=30d",
-    defaultOn: true,
+    // Off by default: the hero card directly above this row already shows
+    // the same visitors figure at 30px with a sparkline, so a second copy at
+    // 23px two rows down was the same fact at a second weight.
+    defaultOn: false,
     read: (d) => {
       const pts = arr((d as { points?: unknown }).points) as { visitors?: number }[];
       if (!pts.length) return null;
@@ -54,29 +57,12 @@ export const WIDGETS: Widget[] = [
       return { value: total.toLocaleString(), hint: `${pts.length} days counted` };
     },
   },
-  {
-    id: "health",
-    label: "Service health",
-    url: "/api/admin/health",
-    defaultOn: true,
-    read: (d) => {
-      // Revives a route that had no caller at all. The probe runs on load,
-      // which is exactly how HealthTab already works: nothing is persisted,
-      // so there is no last-known status to read instead.
-      const probes = arr((d as { probes?: unknown }).probes) as {
-        status?: string;
-        service?: string;
-      }[];
-      if (!probes.length) return null;
-      const bad = probes.filter((p) => p.status !== "ok");
-      return {
-        value: bad.length ? `${bad.length} failing` : "All OK",
-        hint: bad.length
-          ? bad.map((p) => p.service ?? "?").join(", ")
-          : `${probes.length} dependencies`,
-      };
-    },
-  },
+  // No "Service health" widget any more. It fired all six probes, one of
+  // them a licensed API.Bible call, on every mount of the default tab, and
+  // then counted a SKIPPED probe (an unset optional key) as "failing". The
+  // attention strip above every tab now owns that question, polls the cheap
+  // half and reads the metered half once, and only speaks when a probe
+  // actually fails. See lib/admin/attention.ts.
   {
     id: "community",
     label: "Awaiting moderation",
@@ -101,7 +87,10 @@ export const WIDGETS: Widget[] = [
     id: "carts",
     label: "Live carts",
     url: "/api/admin/carts",
-    defaultOn: false,
+    // On by default now that the health widget is gone, so the row is never
+    // empty out of the box. Carts is the one number here that is about
+    // right now rather than the last 30 days.
+    defaultOn: true,
     read: (d) => {
       const o = d as Record<string, unknown>;
       return {
@@ -241,7 +230,17 @@ function WidgetCard({ widget }: { widget: Widget }) {
   );
 }
 
-export function OverviewWidgets() {
+export function OverviewWidgets({
+  leading,
+}: {
+  /**
+   * Cards the section always starts with, ahead of whatever is switched on.
+   * Overview passes its two built-ins (orders paid, paid subscribers) here so
+   * the "rest of the panel" row and the money figures share one grid and one
+   * weight, instead of two rows of cards saying the same size differently.
+   */
+  leading?: ReactNode;
+}) {
   const visible = useSyncExternalStore(subscribe, readIds, () => DEFAULT_IDS);
   const [open, setOpen] = useState(false);
 
@@ -299,12 +298,13 @@ export function OverviewWidgets() {
         </div>
       )}
 
-      {shown.length === 0 ? (
+      {shown.length === 0 && !leading ? (
         <p className="font-sans text-[12.5px]" style={{ color: "var(--adm-ink-3)" }}>
           Nothing selected. Choose what belongs here with Customize.
         </p>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {leading}
           {shown.map((w) => (
             <WidgetCard key={w.id} widget={w} />
           ))}

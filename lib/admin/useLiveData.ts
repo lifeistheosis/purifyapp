@@ -55,6 +55,8 @@ export type LiveData<T> = {
   loading: boolean;
   /** The last read failed. Any `data` alongside this is the previous good value. */
   failing: boolean;
+  /** Consecutive failed reads, 0 after any success. See liveStore.ts. */
+  misses: number;
   /** Force a read now, e.g. from a Refresh control. */
   refresh: () => void;
 };
@@ -83,6 +85,7 @@ export function useLiveData<T>(url: string, intervalMs: number): LiveData<T> {
     lastSynced: snap.lastSynced,
     loading: snap.loading,
     failing: snap.failing,
+    misses: snap.misses,
     refresh,
   };
 }

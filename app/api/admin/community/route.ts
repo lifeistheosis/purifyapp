@@ -28,11 +28,41 @@ function storagePathFromPublicUrl(url: string, bucket: string): string | null {
   return decodeURIComponent(path);
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   const adminUser = await getAdminUser();
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const admin = createAdminClient();
+
+  // ?summary=1: the queue as four HEAD counts, for the attention strip. Same
+  // filters as the four lists below, so the number here is the number the
+  // tab shows, minus the tab's 200-row cap. The full route runs five selects
+  // with joins and was load-once from its tab; the strip asks every ten
+  // minutes and needs two numbers. Any failed count is a 500: this route's
+  // own comment below says why an unread queue must never read as empty.
+  if (new URL(req.url).searchParams.get("summary") === "1") {
+    const head = (table: string) => admin.from(table).select("id", { count: "exact", head: true });
+    const [recipes, campaignReports, recipeReports, conversationReports] = await Promise.all([
+      head("trapeza_recipes").eq("status", "pending"),
+      head("prayer_campaign_reports"),
+      head("trapeza_recipe_reports"),
+      head("community_reports").eq("status", "open"),
+    ]);
+    const err =
+      recipes.error ?? campaignReports.error ?? recipeReports.error ?? conversationReports.error;
+    if (err) {
+      console.error("[admin/community] moderation count failed", err.message);
+      return NextResponse.json({ error: "The moderation queue could not be counted." }, { status: 500 });
+    }
+    return NextResponse.json(
+      {
+        recipes: recipes.count ?? 0,
+        reports:
+          (campaignReports.count ?? 0) + (recipeReports.count ?? 0) + (conversationReports.count ?? 0),
+      },
+      { headers: { "Cache-Control": "no-store" } },
+    );
+  }
 
   // Conversations reports. These had NO admin surface at all: the tab named
   // "Community" covered only campaigns and Trapeza, so a reported post or

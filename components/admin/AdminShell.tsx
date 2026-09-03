@@ -64,13 +64,16 @@ import { AdminSoundToggle } from "./AdminSoundToggle";
 import { AdminMotionToggle } from "./AdminMotionToggle";
 import { AdminStreamerToggle } from "./AdminStreamerToggle";
 import { ActivityFeed } from "./ActivityFeed";
-import { useStreamerOn } from "@/lib/admin/streamer";
+import { SENSITIVE, useStreamerOn } from "@/lib/admin/streamer";
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
 import { AdminMobileNav } from "./AdminMobileNav";
 import { installLarpWriteGuard, larpOn, setLarp, useLarpOn } from "@/lib/admin/larp";
 import { TabBoundary } from "./TabBoundary";
 import { OwnerSection } from "./OwnerSection";
 import { HeroRow } from "./HeroRow";
+import { AttentionStrip } from "./AttentionStrip";
+import { useAttention } from "@/lib/admin/useAttention";
+import { attentionTabs, badgeFor } from "@/lib/admin/attention";
 import { SectionHead, type PeriodId } from "./hero";
 import { Freshness } from "./Freshness";
 import { TabSearch } from "./TabSearch";
@@ -248,7 +251,13 @@ function NavItem({
 }: {
   t: Tab;
   on: boolean;
-  badge: number | null;
+  /**
+   * A count of people waiting behind this tab, or null. From badgeFor in
+   * lib/admin/attention.ts, which returns null for zero AND for a source
+   * that did not answer: a badge is a claim that somebody is waiting, and a
+   * failed read cannot make it.
+   */
+  badge: { count: number; title: string } | null;
   onSelect: (id: TabId) => void;
 }) {
   return (
@@ -284,9 +293,9 @@ function NavItem({
           <span
             className="shrink-0 rounded-[var(--adm-radius-pill)] px-1.5 py-px font-sans text-[11px] font-semibold"
             style={{ background: "var(--adm-badge-bg)", color: "var(--adm-badge-fg)" }}
-            title={`${badge} order${badge === 1 ? "" : "s"} awaiting payment`}
+            title={badge.title}
           >
-            {badge}
+            {badge.count}
           </span>
         ) : null}
       </button>
@@ -362,20 +371,29 @@ function RailLive({
   revenueTodayCents,
   paidSubs,
   loading,
+  lit,
   onOpen,
 }: {
   pending: number | null;
   revenueTodayCents: number | null;
   paidSubs: number | null;
   loading: boolean;
+  /** Tabs an attention item points at. The dot follows this, not the count. */
+  lit: Set<string>;
   onOpen: (id: TabId) => void;
 }) {
-  const rows: { id: TabId; label: string; value: string; alert?: boolean }[] = [
+  const rows: { id: TabId; label: string; value: string; alert?: boolean; sensitive?: boolean }[] = [
     {
       id: "orders",
       label: "Awaiting payment",
-      value: loading ? "—" : String(pending ?? 0),
-      alert: (pending ?? 0) > 0,
+      // A dash for null, never 0. `pending ?? 0` printed "0" whenever the
+      // poll had failed, which is a claim and not a count.
+      value: loading || pending === null ? "—" : String(pending),
+      // Lit when an attention item points at Orders, not when pending > 0.
+      // Pending above zero was the exact signal that failed on 2026-09-01:
+      // thirty-one unsettled orders wore the same dot as one person
+      // mid-checkout, for weeks.
+      alert: lit.has("orders"),
     },
     {
       id: "revenue",
@@ -384,11 +402,15 @@ function RailLive({
         loading || revenueTodayCents === null
           ? "—"
           : `$${(revenueTodayCents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`,
+      alert: lit.has("revenue"),
+      // A dollar figure in a plain span. Every card routes money through
+      // Odometer, which masks it under streamer mode; this row did not.
+      sensitive: true,
     },
     {
       id: "subscriptions",
       label: "Paid subscribers",
-      value: loading ? "—" : String(paidSubs ?? 0),
+      value: loading || paidSubs === null ? "—" : String(paidSubs),
     },
   ];
 
@@ -413,7 +435,7 @@ function RailLive({
               />
               <span className="min-w-0 flex-1 truncate font-sans text-[12px]">{r.label}</span>
               <span
-                className="shrink-0 font-sans text-[12px] font-semibold tabular-nums"
+                className={`shrink-0 font-sans text-[12px] font-semibold tabular-nums${r.sensitive ? ` ${SENSITIVE}` : ""}`}
                 style={{ color: r.alert ? "var(--adm-ink)" : "var(--adm-ink-2)" }}
               >
                 {r.value}
@@ -461,9 +483,13 @@ function Wordmark({ isOwner }: { isOwner: boolean }) {
 }
 
 type OverviewPayload = {
-  ordersPending: number;
-  revenueTodayCents: number;
+  /** null when the count could not be taken. Rendered as a dash, never as 0. */
+  ordersPending: number | null;
+  /** null when shop_orders could not be read. */
+  revenueTodayCents: number | null;
   revenueSeries: number[];
+  /** True when the money fields above are unmeasured rather than zero. */
+  ordersDegraded: boolean;
   paidPlus: number;
   paidPro: number;
 };
@@ -557,6 +583,13 @@ export function AdminShell({
   const overview = useLiveData<OverviewPayload>("/api/admin/overview", 60_000);
   const pendingOrders = overview.data?.ordersPending ?? null;
 
+  // "Is anything wrong", derived once for the whole shell. The strip above
+  // every tab, the Waiting-on-you card on Overview and the rail badges all
+  // read this one summary, so they cannot disagree. It subscribes to the same
+  // overview URL as the line above; liveStore dedupes that into one timer.
+  const attention = useAttention();
+  const litTabs = attentionTabs(attention.summary);
+
   // A deep link to #tab=owner-model on an account the owner gate refuses
   // resolves to Overview rather than to a section the rail does not offer.
   // The hash writer below then rewrites the URL to match, so the address bar
@@ -643,7 +676,7 @@ export function AdminShell({
                 key={t.id}
                 t={t}
                 on={t.id === active}
-                badge={t.id === "orders" && pendingOrders ? pendingOrders : null}
+                badge={badgeFor(attention.summary, t.id)}
                 onSelect={select}
               />
             ))}
@@ -659,6 +692,7 @@ export function AdminShell({
             overview.data ? overview.data.paidPlus + overview.data.paidPro : null
           }
           loading={overview.loading}
+          lit={litTabs}
           onOpen={select}
         />
       ) : null}
@@ -989,6 +1023,18 @@ export function AdminShell({
                 </button>
               </div>
             ) : null}
+            {/* "Is anything wrong", on every tab, both modes. In flow rather
+                than sticky so --adm-topbar-h and its two consumers are
+                untouched, and outside the keyed wrapper below so it does not
+                remount and replay on every section change. It is the only
+                status colour on the page, and only while there is something
+                to say. */}
+            <AttentionStrip
+              summary={attention.summary}
+              isOverview={mode === "ops" && active === "overview"}
+              onOpenTab={(id) => isTabId(id) && select(id)}
+              onRetry={attention.refresh}
+            />
             <header className="mb-5">
               <SectionHead
                 eyebrow={currentGroup?.group}
@@ -1013,8 +1059,15 @@ export function AdminShell({
               period={period}
               onPeriod={setPeriod}
               onOpenTab={(id) => isTabId(id) && select(id)}
-              pendingOrders={pendingOrders}
+              summary={attention.summary}
+              onRetry={attention.refresh}
               revenueSeries={overview.data?.revenueSeries ?? []}
+              revenueTodayCents={overview.data?.revenueTodayCents ?? null}
+              // Measured means the route answered AND its orders read was
+              // sound. "Not degraded" alone was standing in for this, and a
+              // route that never answered is not degraded, so the hero
+              // printed $0 over an empty series it had never been given.
+              revenueMeasured={overview.data !== null && !overview.data.ordersDegraded}
               revenueLoading={overview.loading}
             />
           ) : null}

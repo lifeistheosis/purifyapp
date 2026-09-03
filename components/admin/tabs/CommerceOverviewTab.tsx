@@ -1,24 +1,46 @@
 "use client";
 
-// Commerce Overview — the money-and-accounts landing screen. Realized shop
-// revenue (paid, net of refunds), order counts, active subscribers, new
-// users, a 30-day net-revenue trend, and a recent paid-orders strip.
+// Overview, below the hero: the rest of the panel in one number each, the
+// recent paid orders, and the 30-day revenue chart.
+//
+// WHAT LEFT THIS FILE, AND WHY. It used to open with seven KpiCards in two
+// headed rows ("At a glance", "Subscribers"), two of them accented, above the
+// widgets. Every one of those figures was already on screen at a heavier
+// weight: the hero directly above carries revenue, visitors and new users at
+// 30px with a sparkline, and the rail carries revenue today and paid
+// subscribers. So the eye met the same fact three times at three sizes and
+// nothing stood out. Now the hero is the only 30px, this row is the only
+// 23px, and there is no accent below the hero at all: accent means selection
+// or a primary action in primitives.tsx, and a number is neither.
+//
+// The two figures the hero does not carry (orders paid, paid subscribers)
+// lead the "Elsewhere" row through OverviewWidgets' `leading` slot, at the
+// same weight as the widgets beside them.
+//
+// TWO CHART TREES. Above lg the chart is open, as before. Below lg it is
+// folded in a Disclosure under the orders list, because on a phone a
+// 30-day area chart is the last thing the first screen needs. Both render
+// and the breakpoint picks one; DataTable set that precedent.
 
 import { useLiveData } from "@/lib/admin/useLiveData";
-import { Card, KpiCard, ChartFrame, Email } from "../primitives";
+import { Card, ChartFrame, Disclosure, Email, KpiCard } from "../primitives";
 import { OverviewWidgets } from "../OverviewWidgets";
 import { AreaChart, SERIES_COLORS } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
+import { SENSITIVE } from "@/lib/admin/streamer";
 
 type Overview = {
-  revenueTodayCents: number;
-  revenue30Cents: number;
+  /** null when shop_orders could not be read. */
+  revenueTodayCents: number | null;
+  revenue30Cents: number | null;
   revenueSeries: number[];
-  ordersTotal: number;
-  ordersPaid: number;
-  ordersPending: number;
-  ordersCancelled: number;
-  newUsers30: number;
+  ordersDegraded: boolean;
+  /** null when the count could not be taken. */
+  ordersTotal: number | null;
+  ordersPaid: number | null;
+  ordersPending: number | null;
+  ordersCancelled: number | null;
+  newUsers30: number | null;
   paidPlus: number;
   paidPro: number;
   comped: number;
@@ -30,9 +52,15 @@ type Overview = {
   }[];
 };
 
+const DASH = "—";
+
 function money(cents: number): string {
   return formatPrice(cents, "usd");
 }
+
+/** A count, or the dash for one that could not be taken. Never a zero it cannot stand behind. */
+const count = (v: number | null | undefined): string | number =>
+  v === null || v === undefined ? DASH : v;
 
 function ago(iso: string): string {
   const d = Date.now() - new Date(iso).getTime();
@@ -43,122 +71,68 @@ function ago(iso: string): string {
 }
 
 export function CommerceOverviewTab() {
-  // useLiveData, not a hand-rolled setInterval. This was one of the three
-  // pollers lib/admin/useLiveData.ts names in its own header as the ones it
-  // replaces; the hook was written and adopted in AdminShell, HeroRow and
-  // RevenueTab, and these three were never migrated.
-  //
-  // The behaviour that was missing is the one that matters here: this is the
-  // DEFAULT tab, so its timer starts on every admin open, and a bare interval
-  // keeps firing in a hidden window. Left open overnight that is a service
-  // role endpoint hit ~2,900 times for zero frames rendered. useLiveData stops
-  // on document.hidden and reads immediately on return, so coming back shows
-  // fresh numbers rather than waiting out the remainder of an interval.
-  //
-  // The r.ok guard this file used to carry is not lost: adminJson returns null
-  // on a non-ok response for exactly the reason documented there, and the hook
-  // keeps the last good value rather than blanking.
-  const { data } = useLiveData<Overview>("/api/admin/overview", 30_000);
+  // useLiveData, not a hand-rolled setInterval. This is the DEFAULT tab, so
+  // its timer starts on every admin open, and a bare interval keeps firing
+  // in a hidden window. The hook stops on document.hidden and reads at once
+  // on return. The shell and the attention hook subscribe to this same URL;
+  // liveStore collapses all three into one timer.
+  const { data, loading } = useLiveData<Overview>("/api/admin/overview", 30_000);
+  // Three placeholders, three facts: a count while it loads is "…", a count
+  // the route never delivered is a dash, and a count that arrived is itself.
+  // "…" for ever on a failed read looked like a panel still thinking.
+  const pending = !data && loading;
 
   const series = data?.revenueSeries ?? [];
+  const degraded = data?.ordersDegraded ?? false;
+
+  const chart = (
+    <AreaChart
+      labels={series.map((_, i) => `${30 - i}d`)}
+      series={[
+        {
+          name: "Net revenue",
+          color: SERIES_COLORS[0],
+          data: series.map((c) => Math.round(c / 100)),
+        },
+      ]}
+    />
+  );
+  // Unmeasured is not empty. A route that never answered has no series, a
+  // degraded read sends an empty one, and "No revenue in the last 30 days"
+  // would be a claim about a table that was not read in either case.
+  const unread = !data;
+  const chartEmpty = unread || degraded || series.every((v) => v === 0);
+  const chartEmptyCopy = unread
+    ? pending
+      ? "…"
+      : "The orders could not be read, so this chart is unmeasured."
+    : degraded
+      ? "The orders table did not answer, so this chart is unmeasured."
+      : "No revenue in the last 30 days.";
 
   return (
     <div className="space-y-6">
-      <div>
-        {/* Sentence case, not tracked uppercase. primitives.tsx states the
-            rule: when everything is a heading, the eye has nothing to skip
-            to. These two were the last uppercase eyebrows on the screen. */}
-        <h2
-          className="mb-3 font-sans text-[13px] font-medium"
-          style={{ color: "var(--adm-ink-3)" }}
-        >
-          At a glance
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <KpiCard
-            label="Revenue · 30 days"
-            value={data ? money(data.revenue30Cents) : "…"}
-            trend={series.length > 1 ? series : undefined}
-            accent
-            subtitle="paid, net of refunds"
-          />
-          <KpiCard
-            label="Revenue · today"
-            value={data ? money(data.revenueTodayCents) : "…"}
-            subtitle="UTC day"
-          />
-          <KpiCard
-            label="Orders · paid"
-            value={data?.ordersPaid ?? "…"}
-            hint={
-              data
-                ? `${data.ordersPending} pending · ${data.ordersCancelled} cancelled`
-                : undefined
-            }
-          />
-          <KpiCard
-            label="New users · 30d"
-            value={data?.newUsers30 ?? "…"}
-            subtitle="profiles joined"
-          />
-        </div>
-      </div>
-
-      <div>
-        {/* Sentence case, not tracked uppercase. primitives.tsx states the
-            rule: when everything is a heading, the eye has nothing to skip
-            to. These two were the last uppercase eyebrows on the screen. */}
-        <h2
-          className="mb-3 font-sans text-[13px] font-medium"
-          style={{ color: "var(--adm-ink-3)" }}
-        >
-          Subscribers
-        </h2>
-        {/* Three cards, three columns. This row inherited the four-column
-            grid from the row above, so the last cell sat empty and the three
-            cards read as a broken four. */}
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-          <KpiCard
-            label="Paid Plus"
-            value={data?.paidPlus ?? "…"}
-            accent
-            subtitle="paying, incl. Pro"
-          />
-          <KpiCard
-            label="Paid Pro"
-            value={data?.paidPro ?? "…"}
-            subtitle="members tier"
-          />
-          <KpiCard
-            label="Comped"
-            value={data?.comped ?? "…"}
-            subtitle="complimentary"
-          />
-        </div>
-      </div>
-
-      {/* Everything above this line is money and accounts. This row is the
-          rest of the panel in one number each, which is what made Overview a
-          landing screen rather than the commerce tab wearing that name. */}
-      <OverviewWidgets />
-
-      <ChartFrame
-        title="Net revenue · last 30 days"
-        subtitle="Paid orders minus refunds, by UTC day."
-        isEmpty={series.every((v) => v === 0)}
-        empty="No revenue in the last 30 days."
-      >
-        <AreaChart
-          labels={series.map((_, i) => `${30 - i}d`)}
-          series={[
-            {
-              name: "Net revenue",
-              color: SERIES_COLORS[0],
-              data: series.map((c) => Math.round(c / 100)),
-            },
-          ]}
-        />
-      </ChartFrame>
+      <OverviewWidgets
+        leading={
+          <>
+            <KpiCard
+              label="Orders paid"
+              value={data ? count(data.ordersPaid) : pending ? "…" : DASH}
+              hint={
+                data
+                  ? `${count(data.ordersPending)} pending, ${count(data.ordersCancelled)} cancelled`
+                  : undefined
+              }
+            />
+            <KpiCard
+              label="Paid subscribers"
+              subtitle="Plus, incl. Pro"
+              value={data ? data.paidPlus : pending ? "…" : DASH}
+              hint={data ? `${data.paidPro} Pro, ${data.comped} comped` : undefined}
+            />
+          </>
+        }
+      />
 
       <Card title="Recent paid orders">
         {data?.recent && data.recent.length > 0 ? (
@@ -172,20 +146,52 @@ export function CommerceOverviewTab() {
                   <Email value={o.email} fallback="Guest" />
                 </span>
                 <span className="flex items-center gap-3 shrink-0 tabular-nums">
-                  <span className="text-paper font-semibold">
+                  {/* Under the streamer mask, like every other money figure
+                      on this screen. These eight were bare spans, so a stream
+                      showed real order totals while the cards around them
+                      blurred. */}
+                  <span className={`text-paper font-semibold ${SENSITIVE}`}>
                     {money(o.totalCents)}
                   </span>
-                  <span className="text-paper/40">{ago(o.createdAt)}</span>
+                  <span className="text-paper/45">{ago(o.createdAt)}</span>
                 </span>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="font-sans text-detail text-paper/40 py-6 text-center">
-            No paid orders yet.
+          <p className="font-sans text-detail text-paper/45">
+            {data
+              ? degraded
+                ? "The orders table did not answer."
+                : "No paid orders yet."
+              : pending
+                ? "…"
+                : "The orders could not be read."}
           </p>
         )}
       </Card>
+
+      <div className="hidden lg:block">
+        <ChartFrame
+          title="Net revenue, last 30 days"
+          subtitle="Paid orders minus refunds, by UTC day."
+          isEmpty={chartEmpty}
+          empty={chartEmptyCopy}
+        >
+          {chart}
+        </ChartFrame>
+      </div>
+      <div className="lg:hidden">
+        <Disclosure title="Net revenue by day, last 30 days" hint="Paid orders minus refunds, by UTC day">
+          {chartEmpty ? (
+            <p className="py-6 text-center font-sans text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
+              {chartEmptyCopy}
+            </p>
+          ) : (
+            chart
+          )}
+        </Disclosure>
+      </div>
     </div>
   );
 }

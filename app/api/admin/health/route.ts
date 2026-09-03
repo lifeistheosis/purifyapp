@@ -12,21 +12,31 @@ type Probe = {
   latencyMs: number | null;
 };
 
-// On-demand probes for the outbound services Purify depends on. Pure
-// liveness check — nothing persisted. The Render row is optional and
-// only runs when RENDER_API_KEY is set.
-export async function GET() {
+// On-demand probes for the services Purify depends on. Pure liveness check,
+// nothing persisted. The Render row is optional and only runs when
+// RENDER_API_KEY is set.
+//
+// ?scope=internal | outbound | (absent = all). The split exists because the
+// two halves cost different things and are wanted at different rates. The
+// attention strip (lib/admin/useAttention.ts) polls INTERNAL every five
+// minutes: two RPCs against our own database, and the rate limiter probe is
+// the one dependency that fails invisibly, so it is worth re-asking. OUTBOUND
+// carries a live call to API.Bible, which is a licensed, metered API, so the
+// strip reads it once per shell mount and again only on an explicit Retry.
+// Polling it through the store would also re-read it on every tab focus,
+// which is a licence cost nobody asked for. HealthTab asks for everything,
+// as it always did.
+export async function GET(req: Request) {
   const admin = await getAdminUser();
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const probes = await Promise.all([
-    probeSupabase(),
-    probeRateLimiter(),
-    probeApiBible(),
-    probeBmc(),
-    probeIpwhois(),
-    probeRender(),
-  ]);
+  const scope = new URL(req.url).searchParams.get("scope");
+  const internal = [probeSupabase, probeRateLimiter];
+  const outbound = [probeApiBible, probeBmc, probeIpwhois, probeRender];
+  const list =
+    scope === "internal" ? internal : scope === "outbound" ? outbound : [...internal, ...outbound];
+
+  const probes = await Promise.all(list.map((probe) => probe()));
 
   return NextResponse.json(
     {

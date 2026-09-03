@@ -194,6 +194,7 @@ describe("readLive", () => {
       lastSynced: null,
       loading: true,
       failing: false,
+      misses: 0,
     });
     expect(liveTimerCount()).toBe(0);
   });
@@ -231,5 +232,52 @@ describe("a failing endpoint", () => {
     await vi.advanceTimersByTimeAsync(30_000);
     expect(adminJson).toHaveBeenCalledTimes(3);
     off();
+  });
+});
+
+describe("misses", () => {
+  it("counts consecutive failures and resets on the first success", async () => {
+    adminJson.mockResolvedValueOnce(null);
+    await readLive("/u");
+    expect(liveSnapshot("/u").misses).toBe(1);
+    adminJson.mockResolvedValueOnce(null);
+    await readLive("/u");
+    expect(liveSnapshot("/u").misses).toBe(2);
+
+    // One good read forgives everything before it. The strip's "panel is
+    // blind" fault keys on two in a row, so a single dropped poll never fires
+    // it and a recovered one clears it at once.
+    await readLive("/u");
+    expect(liveSnapshot("/u").misses).toBe(0);
+    expect(liveSnapshot("/u").failing).toBe(false);
+  });
+});
+
+describe("returning to the tab", () => {
+  // node has no document, so this drives the same rule the handler applies:
+  // a fresh source is left alone and a stale one is re-read, by the
+  // subscribe path that shares it.
+  it("re-reads only a source older than its own interval", async () => {
+    const offA = subscribeLive("/fast", 10_000, "a", () => {});
+    const offB = subscribeLive("/slow", 1_800_000, "b", () => {});
+    await flush();
+    // Leave, which stops both timers. A running 10-second timer would keep
+    // /fast permanently fresh and prove nothing about the rule.
+    offA();
+    offB();
+
+    // Five minutes later, come back. The 10-second source is stale by its own
+    // interval; the 30-minute one is not.
+    await vi.advanceTimersByTimeAsync(5 * 60_000);
+    adminJson.mockClear();
+    const offA2 = subscribeLive("/fast", 10_000, "a2", () => {});
+    const offB2 = subscribeLive("/slow", 1_800_000, "b2", () => {});
+    await flush();
+
+    const urls = adminJson.mock.calls.map((c) => c[0]);
+    expect(urls).toContain("/fast");
+    expect(urls).not.toContain("/slow");
+    offA2();
+    offB2();
   });
 });

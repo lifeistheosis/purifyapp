@@ -1408,6 +1408,74 @@ export function Pill({
  * Anything that renders a real person's address goes through here. The name is
  * the instruction: if you are writing {user.email} into JSX, you want <Email>.
  */
+// ── Disclosure ──────────────────────────────────────────────────────────────
+// A section that starts folded. Native details/summary, so it works with no
+// JS, is keyboard-operable for free, and remembers nothing: a phone opening
+// Overview should see the same first screen every time, which is the short
+// one. The summary row is a Card header in shape, 44px tall so it is a real
+// target, with a caret that turns rather than swaps.
+//
+// Used where a phone is given the desktop's tier-4 material folded rather than
+// hidden: the 30-day figures and the revenue chart on Overview. Desktop renders
+// the same content open and un-wrapped; DataTable set the both-trees-render
+// precedent and the reason for it.
+export function Disclosure({
+  title,
+  hint,
+  defaultOpen = false,
+  className,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  defaultOpen?: boolean;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <details
+      open={defaultOpen}
+      className={["group rounded-[var(--adm-radius)] border", className].filter(Boolean).join(" ")}
+      style={{
+        background: "var(--adm-panel)",
+        borderColor: "var(--adm-line)",
+        boxShadow: "var(--adm-shadow-card)",
+      }}
+    >
+      <summary className="flex min-h-11 cursor-pointer list-none items-center gap-3 px-3 py-2 md:px-4 [&::-webkit-details-marker]:hidden">
+        <span className="min-w-0 flex-1">
+          <span className="block font-sans text-[13px] font-semibold leading-tight" style={{ color: "var(--adm-ink)" }}>
+            {title}
+          </span>
+          {hint ? (
+            <span className="block font-sans text-[12px] leading-snug" style={{ color: "var(--adm-ink-3)" }}>
+              {hint}
+            </span>
+          ) : null}
+        </span>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+          className="shrink-0 transition-transform duration-200 group-open:rotate-180"
+          style={{ color: "var(--adm-ink-3)" }}
+        >
+          <path d="M5 8l5 5 5-5" />
+        </svg>
+      </summary>
+      <div className="border-t p-3 md:p-4" style={{ borderColor: "var(--adm-line)" }}>
+        {children}
+      </div>
+    </details>
+  );
+}
+
 /**
  * Anything the audience must not read that is not an email address.
  *

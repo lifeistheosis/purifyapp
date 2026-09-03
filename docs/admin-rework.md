@@ -592,6 +592,109 @@ had previously been made by grep and got the answer backwards once.
   `history` "browser back returns to the timeline" fails ~2 in 3 either way.
 - Everything under "Still open after v5" that is not struck through above.
 
+## v7, 2026-09-02: the panel learns to say when something is wrong
+
+Driven by one failure. On 2026-09-01 thirty-one paid orders had sat unsettled
+for weeks and the panel had said nothing, because none of its four attention
+surfaces held a CONDITION: the activity feed is news and fades, the rail is
+numbers, the hero's feature card was one hardcoded action, and the Service
+health widget was a probe that fired on mount and was never re-read. Thirty-one
+unsettled orders wore the same dot as one person mid-checkout.
+
+### What landed
+
+**One derivation, three readers.** `lib/admin/attention.ts` folds readings the
+shell already polls into a ranked list of findings, pure and tested in node
+with the 2026-09-01 numbers replayed. `AttentionStrip` above every tab, the
+Waiting-on-you card on Overview, and the rail badges all render from that one
+summary, so they cannot disagree. Faults (broken or unmeasured) earn the only
+status colour on the page and only while there is something to say. Queues
+(people waiting) never tint the strip; they feed the card and the badges.
+
+**The stale-orders rule.** `/api/admin/overview` now computes, from the page it
+already holds plus two index-covered limit-1 reads of `admin_activity_log`:
+pending orders older than Stripe's 24h session lifetime, the subset placed
+since the last reconcile, when Stripe last called, and when a reconcile last
+ran. "Unpaid over a day and Stripe silent since" is serious; "Stripe alive,
+probably abandoned" is a warning; "the log cannot be read" is serious and
+names the migration. Applying a reconcile is what clears it, and
+`ReconcileCard` gained a "Mark checked" for a dry run that found nothing to
+settle, which previously had no way to be acknowledged. Until the log
+migration is applied the card also stamps localStorage, per browser.
+
+**Sources and cost.** Overview at 60s (already polled), health `?scope=internal`
+at 5 min (two RPCs, the fail-open rate limiter among them), support,
+verification and community at 10 min, API.Bible usage at 30 min, all through
+`liveStore` so a hidden tab pauses them. Health `?scope=outbound` carries a
+licensed API.Bible call and is read once per page load, never on tab focus.
+Reconcile is never polled: one Stripe call per pending order.
+
+**What an adversarial review changed before it shipped.** Five reviewers,
+each finding cross-checked. The reconcile log row that clears the stale-orders
+finding was written by POST unconditionally, after a 503 (no Stripe key) and a
+500 (orders unreadable) as much as after a real run, and a run in which every
+session was unreadable still offered "Mark checked": a failed press could clear
+a money finding. The row is now written inside the run, only when it applied
+and read every session, and the response carries `checked` and `unreadable`;
+the card refuses to stamp or offer "Mark checked" otherwise and says in words
+how many sessions Stripe could not read. The strip's support and community
+polls shipped full payloads (200 tickets with message bodies; five joined
+selects) to derive counts, and api-limits selected two whole tables; each route
+gained a counts-only branch (`?summary=1`, `?scope=limits`). HealthTab
+subscribed to a third health URL and so spent a second licensed API.Bible call
+on open; it now composes the strip's two reads. The Waiting-on-you card could
+say "Nothing is waiting" while a queue source was still loading; the summary
+now lists what is loading and the card waits. The strip's live region carried
+a ticking clock and would have re-announced once a minute; the clock is meta
+now. A null pending count rejected the whole overview slice; null is a
+documented value. Absent stale fields read as zero stale; they read as
+unmeasured. Singular verbs at count one, "no webhook on record" rather than
+"Stripe silent" on a log younger than the orders, the rail's revenue row and
+the recent-orders amounts under the streamer mask, and "Net, today" instead of
+"Net, 1 days".
+
+One finding is the owner's: the reconcile read in the overview route is not
+index-covered (entity_id is unpinned on the entity index), which is fine at
+this volume and would want `create index if not exists
+admin_activity_log_action_idx on public.admin_activity_log (action, created_at
+desc);` in a migration when it is not.
+
+**Not measured is not zero, three more times.** RailLive printed `0` for a
+failed pending count and a failed subscriber count; HeroRow printed `$0` for a
+degraded revenue series; the hero visitors and new users cards printed `0`
+when traffic had not answered. All dashes now, and the overview route sends
+null rather than `?? 0` for a HEAD count that errored.
+
+**Overview reads in tiers.** Seven KpiCards in two headed rows became two,
+leading the "Elsewhere" widget row through a new `leading` slot; the accent
+left every card below the hero; the health widget is gone (the strip owns
+that question); traffic is off by default (the hero carries it) and carts is
+on. The chart is open above lg and folded in a new `Disclosure` primitive
+below it.
+
+**The phone gets a today view without a 21st tab.** Below lg the three
+MetricCards yield to four Today tiles (visitors, new users, revenue, reading
+now, all from polls already running) with yesterday beside them, and the
+30-day figures fold under a Disclosure. One render tree; the breakpoint picks.
+
+### Verified
+
+`/admin/shell-preview`, where every route answers 403, at 375, 800 and 1200:
+the strip opens in "Cannot tell" with a "Not answering" chip per source, and
+after the second failed overview poll escalates to "Critical: Panel cannot
+read its own data" with Retry beside the six remaining chips, which is the
+honest reading of a panel none of whose routes answer. No clear line anywhere,
+the card in "Cannot tell what is waiting", every tile and rail row a dash. Any
+zero on that screen is a defect.
+
+### Deliberately not done
+
+No cron liveness (needs a migration). No hourly goals in the strip (a slow hour
+is not a fault). No sourcing queue (a chore, not a person). No snooze or
+dismiss. No bell integration. No mobile-bar dot (colour alone). No
+expire-pending path for abandoned checkouts, which is F-01 territory: the
+reconcile gate keeps the finding honest without it.
+
 ## Recommended execution order
 
 Numbered by task ID (matching the live task tracker), grouped into waves.

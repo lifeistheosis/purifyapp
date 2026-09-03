@@ -31,6 +31,13 @@ export type Snapshot = {
   loading: boolean;
   /** The last read failed. Any `data` alongside this is the previous good value. */
   failing: boolean;
+  /**
+   * Consecutive failed reads, reset to 0 by a success. `failing` says the
+   * last read did not answer; this says how long that has been true, which
+   * is what lets the attention strip tell one dropped poll from a panel that
+   * has gone blind.
+   */
+  misses: number;
 };
 
 export const EMPTY_SNAPSHOT: Snapshot = {
@@ -38,6 +45,7 @@ export const EMPTY_SNAPSHOT: Snapshot = {
   lastSynced: null,
   loading: true,
   failing: false,
+  misses: 0,
 };
 
 type Entry = {
@@ -108,9 +116,9 @@ export function readLive(url: string): Promise<void> {
       // Keep the last good value. A dashboard that empties itself because one
       // poll 403'd is worse than one showing numbers from a minute ago next to
       // a note saying so.
-      publish(e, { failing: true, loading: false });
+      publish(e, { failing: true, loading: false, misses: e.snapshot.misses + 1 });
     } else {
-      publish(e, { data: d, lastSynced: new Date(), failing: false, loading: false });
+      publish(e, { data: d, lastSynced: new Date(), failing: false, loading: false, misses: 0 });
     }
   })().finally(() => {
     e.inFlight = null;
@@ -146,7 +154,17 @@ export function bindVisibility(): void {
   document.addEventListener("visibilitychange", () => {
     for (const [url, e] of entries) {
       if (e.intervals.size === 0) continue;
-      if (!document.hidden) void readLive(url);
+      // Re-read on return only what has gone STALE by its own interval. A tab
+      // focused five seconds after it was left used to re-fetch every live
+      // URL, including the ones polled every thirty minutes, so an alt-tab
+      // cost the same as a cold load. Measured in the shell preview: eleven
+      // requests per focus. The 20-second sources still refresh at once,
+      // which is the behaviour this handler exists for.
+      if (!document.hidden) {
+        const shortest = Math.min(...e.intervals.values());
+        const age = e.lastAttempt ? Date.now() - e.lastAttempt : Infinity;
+        if (age >= shortest) void readLive(url);
+      }
       retime(url);
     }
   });

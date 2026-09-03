@@ -79,7 +79,7 @@ async function loadPending(supa: ReturnType<typeof createAdminClient>) {
     .limit(MAX_ORDERS);
 }
 
-async function run(apply: boolean) {
+async function run(apply: boolean, actorEmail: string | null) {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) {
     return NextResponse.json(
@@ -179,11 +179,39 @@ async function run(apply: boolean) {
     }
   }
 
+  // CHECKED means every pending order was actually asked about. A run in
+  // which Stripe could not read a session (wrong key, wrong mode, a rotated
+  // secret) has verified nothing about those orders, so it must not count as
+  // the reconcile that clears the attention strip's stale-orders finding.
+  //
+  // The log row below IS that clearing signal: app/api/admin/overview reads
+  // the newest shop.reconcile row as "the last time somebody asked Stripe",
+  // and lib/admin/attentionOrders.ts treats every stale order older than it
+  // as checked. It used to be written by POST unconditionally, after a 503
+  // (no key) and a 500 (orders unreadable) as much as after a real run, so a
+  // failed press cleared a money finding. Written here, inside the run, only
+  // when the run applied and read every session.
+  const unreadable = findings.filter((f) => f.stripeStatus === "unreadable").length;
+  const checked = unreadable === 0;
+  if (apply && checked) {
+    void logActivity({
+      actorEmail,
+      action: "shop.reconcile",
+      entityType: "shop_orders",
+      entityId: null,
+      detail: { applied: true, pendingChecked: pending.length, unreadable },
+    });
+  }
+
   return NextResponse.json(
     {
       ok: true,
       applied: apply,
       pendingChecked: pending.length,
+      /** Sessions Stripe could not read. Above zero, this run is not a check. */
+      unreadable,
+      /** True when every pending order was read. Only then does Apply clear the strip. */
+      checked,
       // AN UNREADABLE LOG IS NOT "STRIPE NEVER CALLED". The error was
       // discarded here, so an absent table and an empty log were the same
       // answer, and the card turned that into a red instruction to go and
@@ -213,7 +241,7 @@ async function run(apply: boolean) {
 export async function GET() {
   const adminUser = await getAdminUser();
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  return run(false);
+  return run(false, adminUser.email ?? null);
 }
 
 export async function POST(req: NextRequest) {
@@ -235,13 +263,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const res = await run(true);
-  void logActivity({
-    actorEmail: adminUser.email ?? null,
-    action: "shop.reconcile",
-    entityType: "shop_orders",
-    entityId: null,
-    detail: { applied: true },
-  });
-  return res;
+  // The shop.reconcile log row is written inside run(), and only for a run
+  // that applied and read every session. See the note there.
+  return run(true, adminUser.email ?? null);
 }

@@ -20,7 +20,7 @@ export const dynamic = "force-dynamic";
  * gap, because the number it invents is always the reassuring one.
  */
 
-export async function GET() {
+export async function GET(req: Request) {
   const admin = await getAdminUser();
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
@@ -34,6 +34,26 @@ export async function GET() {
   const now = new Date();
   const monthStart = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-01`;
   const usage = await readApiBibleUsage(monthStart);
+
+  // ?scope=limits: the two ceilings the attention strip reads (calls this
+  // month, sessions this month), and nothing else. The full route below also
+  // selects every entitlements row and every signed-in session id over 30
+  // days to answer the monetization question, which the strip never asks: it
+  // is permanently answered on a shop that sells, and would be wallpaper.
+  if (new URL(req.url).searchParams.get("scope") === "limits") {
+    const sessionsOnly = await supa
+      .from("analytics_sessions")
+      .select("session_id", { count: "exact", head: true })
+      .gte("first_seen", since);
+    return NextResponse.json(
+      {
+        monthlyCalls: usage.monthToDate,
+        callsInstrumented: true,
+        mau: { ceiling: sessionsOnly.error ? null : (sessionsOnly.count ?? 0), floor: null },
+      },
+      { headers: { "Cache-Control": "no-store" } },
+    );
+  }
 
   const [sessionsRes, signedInRes, entitlementsRes, ordersRes] = await Promise.all([
     // Every session started in the window. A session is not a person: one

@@ -271,6 +271,8 @@ export function MetricCard({
   openLabel,
   loading = false,
   id,
+  className,
+  emptyLabel,
 }: {
   icon?: ReactNode;
   eyebrow: string;
@@ -294,12 +296,22 @@ export function MetricCard({
   openLabel?: string;
   loading?: boolean;
   id: string;
+  /**
+   * Replaces the card's DISPLAY, not its layout. The default is `flex`; a
+   * caller that wants the card only above a breakpoint passes
+   * `hidden lg:flex`. Kept as a whole-class swap rather than appended,
+   * because `flex` and `hidden` both set display and which one wins would
+   * then depend on stylesheet order rather than on what was written here.
+   */
+  className?: string;
+  /** Replaces "No history yet" when the series is absent for a reason worth naming. */
+  emptyLabel?: string;
 }) {
   const accent = color ?? "var(--adm-accent)";
 
   return (
     <div
-      className="flex min-w-0 flex-col rounded-[var(--adm-radius)] border p-4"
+      className={["min-w-0 flex-col rounded-[var(--adm-radius)] border p-4", className ?? "flex"].join(" ")}
       style={{
         background: "var(--adm-panel)",
         borderColor: "var(--adm-line)",
@@ -418,7 +430,7 @@ export function MetricCard({
             className="pt-6 text-center font-sans text-[11.5px]"
             style={{ color: "var(--adm-ink-3)" }}
           >
-            No history yet
+            {emptyLabel ?? "No history yet"}
           </p>
         )}
       </div>
@@ -446,12 +458,20 @@ export function FeatureCard({
   badge,
   title,
   body,
+  rows,
   primary,
   secondary,
 }: {
   badge?: string;
   title: string;
   body: string;
+  /**
+   * The queues behind the headline, one line each: "3 awaiting payment",
+   * "1 open ticket". The card still has one job, whatever is on top; these
+   * are the rest of the answer to "what is waiting on me", in the order the
+   * derivation ranks them, so nothing has to be opened to learn the count.
+   */
+  rows?: { label: string; onClick: () => void }[];
   primary?: { label: string; onClick: () => void };
   secondary?: { label: string; onClick: () => void };
 }) {
@@ -513,6 +533,32 @@ export function FeatureCard({
       >
         {body}
       </p>
+
+      {rows && rows.length > 0 ? (
+        <ul className="mt-4 flex flex-col gap-1.5">
+          {rows.map((r) => (
+            <li key={r.label}>
+              <button
+                type="button"
+                onClick={r.onClick}
+                className="adm-control flex h-11 w-full items-center justify-between rounded-[var(--adm-radius-sm)] px-3 font-sans text-[12.5px] font-medium"
+                style={
+                  {
+                    color: "#ffffff",
+                    "--_bg": "rgb(255 255 255 / 0.16)",
+                    "--_bg-hover": "rgb(255 255 255 / 0.24)",
+                  } as React.CSSProperties
+                }
+              >
+                <span className="min-w-0 truncate">{r.label}</span>
+                <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M7 13L13 7M8 7h5v5" />
+                </svg>
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
 
       <div className="mt-auto flex flex-col gap-2 pt-5">
         {primary ? (

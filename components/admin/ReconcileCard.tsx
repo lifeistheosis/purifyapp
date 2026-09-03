@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 
+import { markLocalReconcile } from "@/lib/admin/useAttention";
 import { Card, Pill, ToolbarButton } from "./primitives";
 
 /**
@@ -37,6 +38,10 @@ type Payload = {
   lastWebhookResult: string | null;
   lastWebhookLogReadable?: boolean;
   lastWebhookLogMissing?: boolean;
+  /** Sessions Stripe could not read. Above zero, the run verified nothing about them. */
+  unreadable?: number;
+  /** True when every pending order was read. Only then does Apply count as a check. */
+  checked?: boolean;
   error?: string;
 };
 
@@ -62,6 +67,15 @@ export function ReconcileCard() {
         return;
       }
       setData(body);
+      // A CHECKED Apply is a reconcile, whether or not it settled anything:
+      // Stripe was asked about every pending order and answered for each. The
+      // route logs the same fact to admin_activity_log; this stamp is the
+      // fallback for a database without that table yet, and it is what lets
+      // the attention strip's stale-orders finding clear in this browser.
+      // An Apply that could not read some sessions is not a check and must
+      // not clear anything, which is why this keys on `checked`, not on the
+      // request having succeeded.
+      if (apply && body?.checked) markLocalReconcile();
     } catch {
       setError("That didn't run.");
     } finally {
@@ -89,6 +103,22 @@ export function ReconcileCard() {
               Settle {data.settleable}
             </ToolbarButton>
           )}
+          {/* A dry run that found nothing to settle is still an answer from
+              Stripe, and the attention strip's stale-orders finding clears
+              only when a reconcile has RUN, not when one has settled
+              something. Without this button an abandoned-checkouts warning
+              had no way to be acknowledged: Settle was never offered because
+              there was nothing to settle. Applying here writes nothing to the
+              orders and records that Stripe was asked. */}
+          {data &&
+            data.settleable === 0 &&
+            data.pendingChecked > 0 &&
+            !data.applied &&
+            data.checked !== false && (
+              <ToolbarButton loading={busy === "apply"} onClick={() => void call(true)}>
+                Mark checked
+              </ToolbarButton>
+            )}
         </div>
       }
     >
@@ -144,6 +174,16 @@ export function ReconcileCard() {
                 Stripe confirms {data.settleable} of them paid,{" "}
                 {usd(data.recoveredCents)}
                 {data.applied ? " now in the books." : " not yet in the books."}
+              </span>
+            ) : (data.unreadable ?? 0) > 0 ? (
+              // Sessions Stripe could not read are not sessions Stripe
+              // confirmed unpaid. Saying the books were right on a run that
+              // read nothing was the exact false reassurance the strip
+              // exists to prevent.
+              <span style={{ color: "var(--adm-warn)" }}>
+                Warning: {data.unreadable} of {data.pendingChecked} sessions could not be read from
+                Stripe, so this run does not count as a check. Check the Stripe key on this
+                deployment.
               </span>
             ) : (
               "Stripe confirms none of them were paid, so the books are already right."
