@@ -147,6 +147,15 @@ export const ADMIN_TAB_ICONS: Record<string, ReactNode> = {
       <path d="M7.4 10h5.2M7.4 13h5.2" />
     </svg>
   ),
+  // Patch notes: a page with a pen mark across it, because it is a document
+  // that is edited here rather than one that is only read.
+  "patch-notes": (
+    <svg {...S}>
+      <path d="M5 2.8h7l3 3v11.4H5Z" />
+      <path d="M11.8 2.8v3.4h3.2" />
+      <path d="M7.4 13.6l4.6-4.6 1.6 1.6-4.6 4.6H7.4Z" />
+    </svg>
+  ),
   // Library files: a stack, because it is an inventory rather than a document.
   "content-health": (
     <svg {...S}>

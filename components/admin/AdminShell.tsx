@@ -55,6 +55,7 @@ import { EikonBoxTab } from "./tabs/EikonBoxTab";
 import { CommunityTab } from "./tabs/CommunityTab";
 import { TrafficHubTab } from "./tabs/TrafficHubTab";
 import { ContentTab } from "./tabs/ContentTab";
+import { PatchNotesTab } from "./tabs/PatchNotesTab";
 import { ContentHealthTab } from "./tabs/ContentHealthTab";
 import { HealthTab } from "./tabs/HealthTab";
 import { AuditLogTab } from "./tabs/AuditLogTab";
@@ -105,6 +106,7 @@ type OpsTabId =
   | "goals"
   | "calendar"
   | "content"
+  | "patch-notes"
   | "content-health"
   | "health"
   | "sourcing"
@@ -193,6 +195,10 @@ const GROUPS: Group[] = [
       // Reach, not System: this is what readers actually opened, which is the
       // same question Traffic asks with a different noun.
       { id: "content", label: "Content", eyebrow: "What readers open, and what they bump", component: ContentTab },
+      // Reach, because /whats-new is the one page that speaks to every reader
+      // at once. Edits land without a deploy; the queue holds the agent's
+      // proposed edits until the owner accepts them.
+      { id: "patch-notes", label: "Patch notes", eyebrow: "What /whats-new publishes, and what Claude proposes", component: PatchNotesTab },
     ],
   },
   {
