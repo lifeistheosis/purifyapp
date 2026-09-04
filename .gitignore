@@ -138,3 +138,5 @@ test-results/
 public/widget-day-table.json
 .i18n-work/
 .i18n-new/
+# scripts/grandfather-plus.mjs writes its review CSV here (user ids, never emails).
+.grandfather/

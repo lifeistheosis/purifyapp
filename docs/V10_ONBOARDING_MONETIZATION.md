@@ -20,4 +20,13 @@ register — without the video's countdowns or fake urgency:
   from letting users invest in a few quiz answers first; our personalize step
   already does this, so the v10 paywall should follow it, not precede it.
 
-No code now. This is a pointer for the v10 monetization work.
+Implemented, 2026-08 to 2026-09. The upgrade sheet is
+`components/billing/UpgradeModal.tsx` (five feature-specific pitches, the price
+read from the store, nothing on a timer), the reveal is
+`components/florilegium/FlorilegiumGate.tsx`, the locked toggle in
+`components/history/HistoryTimelinePage.tsx` and the palette chips, the account
+page's sync line is `components/profile/ProfileSyncStatus.tsx`, the copy is the
+`plus.*` keys in every catalog, and the grandfather backfill is
+`scripts/grandfather-plus.mjs`. The launch switches are documented in
+`lib/entitlements/entitlements.ts`; flipping them and running the backfill are
+the owner's. The notes below are the reasoning that shaped it.

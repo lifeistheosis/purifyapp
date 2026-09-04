@@ -56,6 +56,18 @@ describe("subscriptionStats: who counts as paying", () => {
     expect(s.paidCounts).toEqual({ plusOnly: 0, pro: 0 });
   });
 
+  // The paywall launch. scripts/grandfather-plus.mjs writes plus_source =
+  // 'legacy' for every reader who already used the Plus layer, so the panel
+  // must show them as kept, never as sold.
+  it("does not count a grandfathered account as paying, and reports it on its own", async () => {
+    const s = await subscriptionStats(fakeAdmin([row({ plus_source: "legacy" }), row({ user_id: "payer" })]));
+    expect(s.activePlus).toBe(2);
+    expect(s.legacyPlus).toBe(1);
+    expect(s.paidPlus).toBe(1);
+    expect(s.paidCounts).toEqual({ plusOnly: 1, pro: 0 });
+    expect(s.paidPlus + s.compedPlus + s.giftedPlus + s.legacyPlus + s.developerPlus).toBe(s.activePlus);
+  });
+
   it("does not count a gifted Pro as paying either", async () => {
     const s = await subscriptionStats(
       fakeAdmin([row({ pro_until: FUTURE, plus_source: "gift" })]),

@@ -35,7 +35,7 @@ export type SubscriptionStats = {
    * times larger than the one paying. The breakdown existed only inside
    * `bySource`, several cards further down, behind a chart.
    *
-   * These four always sum to `activePlus`.
+   * These five always sum to `activePlus`.
    */
   /** Someone is being billed for these. */
   paidPlus: number;
@@ -43,6 +43,14 @@ export type SubscriptionStats = {
   compedPlus: number;
   /** Redeemed gifts (plus_source = 'gift'). Nobody paid. */
   giftedPlus: number;
+  /**
+   * Grandfathered at the paywall launch (plus_source = 'legacy'), by
+   * scripts/grandfather-plus.mjs: readers who already had collections, notes
+   * or bookmarks when enforcement flipped, kept whole because the terms
+   * promise paid features never paywall what was free. Nobody paid, and
+   * nobody will be billed; the row's expiry is 2099.
+   */
+  legacyPlus: number;
 
   /**
    * The owner's own subscriptions, bought through a store with the owner's own
@@ -112,6 +120,7 @@ export async function subscriptionStats(
   let proPaid = 0;
   let compedPlus = 0;
   let giftedPlus = 0;
+  let legacyPlus = 0;
   let developerPlus = 0;
   const bySource: Record<string, number> = {};
 
@@ -136,9 +145,13 @@ export async function subscriptionStats(
     // counted as a paying subscriber and priced at list in estimatedMrrCents.
     // That inflates the one number used to judge whether Purify earns.
     const isDeveloper = developerIds.has(r.user_id);
-    const unpaid = source === "comp" || source === "gift" || isDeveloper;
+    // plus_source vocabulary: 'apple' | 'google' | 'stripe' pay; 'comp' is an
+    // admin grant, 'gift' a redeemed gift, 'legacy' a grandfathered account
+    // from the paywall launch. Only the first three are income.
+    const unpaid = source === "comp" || source === "gift" || source === "legacy" || isDeveloper;
     if (source === "comp") compedPlus += 1;
     else if (source === "gift") giftedPlus += 1;
+    else if (source === "legacy") legacyPlus += 1;
     else if (isDeveloper) developerPlus += 1;
 
     if (pro) {
@@ -160,6 +173,7 @@ export async function subscriptionStats(
     paidPlus: plusOnlyPaid + proPaid,
     compedPlus,
     giftedPlus,
+    legacyPlus,
     developerPlus,
   };
 }
