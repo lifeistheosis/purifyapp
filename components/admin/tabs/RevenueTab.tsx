@@ -11,6 +11,7 @@ import { Card, StatCard, ChartFrame } from "../primitives";
 import { AreaChart, BarChart, Donut, SERIES_COLORS, chartColors } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
 import { ReconcileCard } from "../ReconcileCard";
+import { StripeLedgerCard } from "../StripeLedgerCard";
 
 type Revenue = {
   shop: {
@@ -258,6 +259,11 @@ function RevenuePanel() {
           </div>
         </div>
       </Card>
+
+      {/* Everything Stripe has. Until 2026-09-05 nothing in the panel read
+          Stripe, so the movements above came from one webhook event and a
+          typed-in figure while the ledger itself was invisible. */}
+      <StripeLedgerCard />
     </div>
   );
 }
