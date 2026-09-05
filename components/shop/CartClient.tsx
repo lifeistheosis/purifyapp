@@ -60,7 +60,11 @@ export function CartClient() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: items.map((i) => ({ productSlug: i.slug, quantity: i.quantity })),
+          items: items.map((i) => ({
+            productSlug: i.slug,
+            quantity: i.quantity,
+            ...(i.blessing ? { blessing: true } : {}),
+          })),
           termsAccepted: true,
         }),
       });
@@ -140,6 +144,11 @@ export function CartClient() {
                   {formatPrice(item.priceCents * item.quantity, item.currency)}
                 </p>
               </div>
+              {item.blessing ? (
+                <p className="mt-1 font-sans text-caption text-gold">
+                  {t("shop.blessing.requested")}
+                </p>
+              ) : null}
               <div className="mt-3 flex items-center justify-between gap-3">
                 <div className="inline-flex items-center rounded-pill border border-paper/15">
                   <button

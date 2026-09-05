@@ -2,6 +2,13 @@ import { NextResponse } from "next/server";
 
 import { rateLimited } from "@/lib/security/ratelimit";
 import { shopEnabled } from "@/lib/shop/flags";
+import {
+  IMAGE_ACCEPTED_TYPES,
+  IMAGE_MAX_BYTES,
+  ImageDecodeError,
+  normaliseImage,
+  thumbPath,
+} from "@/lib/shop/imageNormalise";
 import { getSellerContext } from "@/lib/shop/seller";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -16,27 +23,23 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * listing, which is most of what a listing is.
  *
  * A deliberate near-copy of app/api/admin/shop/media/route.ts rather than a
- * shared helper: the two differ in exactly the two things that matter (who may
+ * shared route: the two differ in exactly the two things that matter (who may
  * call it, and where the file lands), and a shared function with an `isAdmin`
  * flag is how an authorization check ends up on the wrong side of a branch.
- * The rules that must not drift, the accepted types and the size cap, are
- * small enough to read side by side.
+ * What IS shared is the pixels: lib/shop/imageNormalise.ts re-encodes every
+ * upload (EXIF rotate, 1600px, JPEG q82, 400px thumbnail) for both routes,
+ * so the accepted types and the size cap cannot drift either.
  *
  * PATHS ARE NAMESPACED BY SELLER and built entirely on the server. Nothing
  * here trusts a client-supplied path, so one seller cannot write into
  * another's prefix or overwrite a file they do not own. Names are unique
  * because overwriting a path fights browser and CDN caches, and a swapped
  * photograph has to show up immediately.
+ *
+ * Returns { ok, url, thumbUrl }.
  */
 
 const BUCKET = "shop-media";
-const MAX_BYTES = 8 * 1024 * 1024;
-const TYPES: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/avif": "avif",
-};
 
 export async function POST(req: Request) {
   if (!shopEnabled()) {
@@ -70,18 +73,28 @@ export async function POST(req: Request) {
   if (!(file instanceof File)) {
     return NextResponse.json({ error: "Missing file." }, { status: 400 });
   }
-  const ext = TYPES[file.type];
-  if (!ext) {
+  if (!IMAGE_ACCEPTED_TYPES.includes(file.type)) {
     return NextResponse.json(
-      { error: "Use a JPEG, PNG, WebP, or AVIF image." },
+      { error: "Use a JPEG, PNG, WebP, AVIF or HEIC image." },
       { status: 400 },
     );
   }
-  if (file.size === 0 || file.size > MAX_BYTES) {
+  if (file.size === 0 || file.size > IMAGE_MAX_BYTES) {
     return NextResponse.json(
-      { error: "Image must be between 1 byte and 8 MB." },
+      { error: "Image must be between 1 byte and 25 MB." },
       { status: 400 },
     );
+  }
+
+  let normalised;
+  try {
+    normalised = await normaliseImage(new Uint8Array(await file.arrayBuffer()));
+  } catch (e) {
+    if (e instanceof ImageDecodeError) {
+      console.warn("[shop] seller media decode failed", file.type, e.message);
+      return NextResponse.json({ error: e.message }, { status: 415 });
+    }
+    throw e;
   }
 
   const admin = createAdminClient();
@@ -89,8 +102,8 @@ export async function POST(req: Request) {
   // Ensure the bucket exists; "already exists" is the steady state.
   const { error: bucketError } = await admin.storage.createBucket(BUCKET, {
     public: true,
-    fileSizeLimit: MAX_BYTES,
-    allowedMimeTypes: Object.keys(TYPES),
+    fileSizeLimit: IMAGE_MAX_BYTES,
+    allowedMimeTypes: ["image/jpeg", "image/png", "image/webp", "image/avif"],
   });
   if (bucketError && !/already exists/i.test(bucketError.message)) {
     return NextResponse.json({ error: bucketError.message }, { status: 500 });
@@ -105,16 +118,23 @@ export async function POST(req: Request) {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "")
       .slice(0, 60) || "image";
-  const path = `sellers/${ctx.seller.id}/${Date.now()}-${base}.${ext}`;
+  const path = `sellers/${ctx.seller.id}/${Date.now()}-${base}.jpg`;
+  const thumb = thumbPath(path);
 
-  const bytes = await file.arrayBuffer();
   const { error: uploadError } = await admin.storage
     .from(BUCKET)
-    .upload(path, bytes, { contentType: file.type, upsert: false });
+    .upload(path, normalised.full, { contentType: "image/jpeg", upsert: false });
   if (uploadError) {
     return NextResponse.json({ error: uploadError.message }, { status: 500 });
   }
+  const { error: thumbError } = await admin.storage
+    .from(BUCKET)
+    .upload(thumb, normalised.thumb, { contentType: "image/jpeg", upsert: false });
+  if (thumbError) {
+    return NextResponse.json({ error: thumbError.message }, { status: 500 });
+  }
 
   const { data } = admin.storage.from(BUCKET).getPublicUrl(path);
-  return NextResponse.json({ ok: true, url: data.publicUrl });
+  const { data: thumbData } = admin.storage.from(BUCKET).getPublicUrl(thumb);
+  return NextResponse.json({ ok: true, url: data.publicUrl, thumbUrl: thumbData.publicUrl });
 }

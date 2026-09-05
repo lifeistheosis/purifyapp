@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { corsPreflight, withCors } from "@/lib/api/cors";
 import { eventBySlug } from "@/lib/history/events";
 import { getSaint } from "@/lib/saints/saints";
+import { blessingOffered, getBlessingConfig } from "@/lib/shop/blessing";
 import { getProduct, getStore, relatedProducts } from "@/lib/shop/catalog";
 import { shopEnabled } from "@/lib/shop/flags";
 import type {
@@ -58,10 +59,22 @@ export async function GET(
       req,
     );
   }
-  const [related, store] = await Promise.all([
+  const [related, store, blessingConfig] = await Promise.all([
     relatedProducts(product),
     getStore(product.store.slug),
+    getBlessingConfig(),
   ]);
+  // Null unless the product carries the flag AND the owner has enabled the
+  // config; the page has one thing to check. The config's own policy hides a
+  // disabled row from this anon read, so absent, disabled and unapplied all
+  // arrive here the same way.
+  const blessing = blessingOffered(product, blessingConfig)
+    ? {
+        parishName: blessingConfig.parishName,
+        copyMd: blessingConfig.copyMd,
+        handlingCents: blessingConfig.handlingCents,
+      }
+    : null;
   const chips = product.subjects.map(subjectChip);
 
   const saintSubject = product.subjects.find((s) => s.subject_type === "saint");
@@ -83,6 +96,7 @@ export async function GET(
         saint,
         storeShippingMd: store?.shipping_policy_md ?? null,
         storeReturnMd: store?.return_policy_md ?? null,
+        blessing,
       },
       { headers: { "Cache-Control": "public, max-age=30, stale-while-revalidate=300" } },
     ),

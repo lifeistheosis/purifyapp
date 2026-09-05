@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { apiFetch } from "@/lib/api/client";
+import { BlessingNote } from "@/components/shop/BlessingNote";
 import { BuyBar } from "@/components/shop/BuyBar";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import { PolicyText } from "@/components/shop/PolicyText";
@@ -86,6 +87,9 @@ type Loaded = {
  */
 export function ProductDetailClient({ slug }: { slug: string }) {
   const { t, tn } = useTranslate();
+  // The buyer's answer to the blessing offer, if the page carries one. Goes
+  // with the line into the cart or straight into a buy-now.
+  const [blessing, setBlessing] = useState(false);
   const { data, error, loading, reload } = useAsyncData<Loaded>(async () => {
     const [detail, config, pro] = await Promise.all([
       fetchShopProduct(slug).catch((e: unknown) => {
@@ -264,6 +268,15 @@ export function ProductDetailClient({ slug }: { slug: string }) {
             </section>
           ) : null}
 
+          {detail.blessing ? (
+            <BlessingNote
+              offer={detail.blessing}
+              checked={blessing}
+              onChange={setBlessing}
+              currency={product.currency}
+            />
+          ) : null}
+
           <section aria-label={t("shop.details")} className="mt-8 rounded-lg border border-paper/10 bg-night-soft/60 p-5">
             <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
               {t("shop.details")}
@@ -338,6 +351,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
             purchasable={purchasable(product.inventory_status)}
             checkoutOn={checkoutEnabled}
             subjectForRequest={product.title}
+            blessing={detail.blessing ? blessing : undefined}
           />
         </aside>
       </div>

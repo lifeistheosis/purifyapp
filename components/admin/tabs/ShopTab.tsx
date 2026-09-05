@@ -7,9 +7,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
+import { SHOP_CLASSIFICATIONS } from "@/lib/security/schemas";
 import { invalidateShopCatalog } from "@/lib/shop/catalogClient";
 import { hasSupplierImage, orderedMedia } from "@/lib/shop/imageRights";
+import { productHref } from "@/lib/shop/productHref";
 import { ProductMediaManager } from "../ProductMediaManager";
 
 import {
@@ -36,6 +39,7 @@ type MediaRow = {
   id?: string;
   media_url: string;
   alt_text: string;
+  thumb_url?: string | null;
   // Carried by the admin select; the rights gate needs them to find the
   // primary image the storefront would show.
   sort_order?: number | null;
@@ -439,17 +443,22 @@ function ProductsPanel() {
         />
       </div>
 
+      {/* ADDING AND EDITING MOVED TO /admin/shop (docs/plans/v1.4/shop-simple.md).
+          The nine-field form lives at /admin/shop/new and /admin/shop/[id];
+          this table keeps the sourcing, margin and engagement columns the
+          two-minute path does not need, and its rows link across. The
+          ProductSheet below is left in place but nothing sets `editing` to a
+          product any more, so it cannot open. */}
       <Card
         title="EIKON products"
-        subtitle="Publish, pause, and keep availability honest"
+        subtitle="Sourcing, margins and engagement. Add and edit products at /admin/shop."
         action={
-          <button
-            type="button"
-            onClick={() => setEditing("new")}
+          <Link
+            href="/admin/shop"
             className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-1 font-sans text-caption font-semibold text-gold-pale"
           >
-            New product
-          </button>
+            Manage products
+          </Link>
         }
       >
         {status ? (
@@ -529,9 +538,8 @@ function ProductsPanel() {
               key: "title",
               label: "Product",
               render: (p) => (
-                <button
-                  type="button"
-                  onClick={() => setEditing(p)}
+                <Link
+                  href={`/admin/shop/${p.id}`}
                   className="group flex items-center gap-3 text-left"
                 >
                   <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-[var(--adm-radius-sm)] border border-white/8 bg-night-soft/60">
@@ -557,7 +565,7 @@ function ProductsPanel() {
                       {p.slug} · {pretty(p.category)}
                     </span>
                   </span>
-                </button>
+                </Link>
               ),
               csv: (p) => p.title,
             },
@@ -713,6 +721,10 @@ function ProductsPanel() {
         />
       </Card>
 
+      {/* Unreachable since the /admin/shop pages: `editing` starts null and
+          only the sheet's own close and save handlers write it. Kept so the
+          overview and the old editor are one revert away if the pages ever
+          need to be pulled. */}
       {editing ? (
         <ProductSheet
           product={editing === "new" ? null : editing}
@@ -758,7 +770,11 @@ function toPayload(p: AdminProduct, s: Sourcing | null | undefined) {
     countryOfOrigin: p.country_of_origin,
     imageIsRepresentative: p.image_is_representative,
     status: p.status,
-    media: p.media.map((m) => ({ mediaUrl: m.media_url, altText: m.alt_text })),
+    media: p.media.map((m) => ({
+      mediaUrl: m.media_url,
+      altText: m.alt_text,
+      thumbUrl: m.thumb_url ?? null,
+    })),
     subjects: p.subjects.map((x) => ({
       subjectType: x.subject_type,
       subjectSlug: x.subject_slug,
@@ -1026,7 +1042,7 @@ function ProductOverview({
               {p.status === "published" ? "Pause" : "Publish"}
             </button>
             <a
-              href={`/shop/${p.slug}`}
+              href={productHref(p.slug, false)}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-pill border border-paper/20 px-4 py-1.5 font-sans text-detail text-paper/75 hover:text-paper"
@@ -1192,6 +1208,7 @@ function ProductEditor({
           media: orderedMedia(product.media).map((m) => ({
             media_url: m.media_url,
             alt_text: m.alt_text,
+            thumb_url: m.thumb_url ?? null,
           })),
         }
       : EMPTY_PRODUCT,
@@ -1333,13 +1350,7 @@ function ProductEditor({
             onChange={(e) => set("classification", e.target.value)}
             className={field}
           >
-            {[
-              "printed_mounted",
-              "standard_reproduction",
-              "laminated",
-              "wooden",
-              "hand_finished_reproduction",
-            ].map((c) => (
+            {SHOP_CLASSIFICATIONS.map((c) => (
               <option key={c} value={c}>
                 {c.replace(/_/g, " ")}
               </option>

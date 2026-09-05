@@ -339,7 +339,8 @@ export default async function PrivacyPage() {
  <li>
  <strong>Order &amp; shipping details</strong>, the items you buy,
  totals, status, and the name, email, and shipping address you enter
- at checkout, stored in our Supabase database, visible only to you and
+ at checkout, and whether you asked for an item to be blessed before
+ it ships, stored in our Supabase database, visible only to you and
  us, so we can fulfill and support your order.
  </li>
  <li>

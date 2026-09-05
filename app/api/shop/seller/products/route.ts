@@ -5,6 +5,7 @@ import { rateLimited } from "@/lib/security/ratelimit";
 import { shopListingSchema } from "@/lib/security/schemas";
 import { shopEnabled } from "@/lib/shop/flags";
 import { getSellerContext } from "@/lib/shop/seller";
+import { slugify, uniqueSlug, type SlugLookup } from "@/lib/shop/slug";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -15,16 +16,6 @@ import { createClient } from "@/lib/supabase/server";
  * body, never merged blind. Publishing has two honesty gates: at least
  * one image (with alt text), and a live store.
  */
-
-function slugify(title: string): string {
-  return title
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80);
-}
 
 type ListingData = z.infer<typeof shopListingSchema>;
 
@@ -143,19 +134,9 @@ export async function POST(req: Request) {
 
   const admin = createAdminClient();
 
-  // Unique slug: title, then title-2, title-3… capped so a hostile
-  // title can't spin the loop.
-  const base = slugify(parsed.data.title) || "icon";
-  let slug = base;
-  for (let attempt = 2; attempt <= 20; attempt++) {
-    const { data: taken } = await admin
-      .from("shop_products")
-      .select("id")
-      .eq("slug", slug)
-      .maybeSingle();
-    if (!taken) break;
-    slug = `${base}-${attempt}`;
-  }
+  // Unique slug: title, then title-2, title-3. lib/shop/slug.ts owns the
+  // loop now, shared with the admin route, and refuses the reserved "detail".
+  const slug = await uniqueSlug(admin as unknown as SlugLookup, slugify(parsed.data.title));
 
   const { data: product, error } = await admin
     .from("shop_products")

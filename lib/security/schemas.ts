@@ -154,6 +154,9 @@ const shopCheckoutItem = z.object({
     .max(120)
     .regex(/^[a-z0-9-]+$/, "slug format"),
   quantity: z.number().int().min(1).max(10).default(1),
+  // A request, not a price. lib/shop/checkout.ts decides whether the product
+  // and the global config allow it and what, if anything, handling costs.
+  blessing: z.boolean().optional().default(false),
 });
 
 export const shopCheckoutSchema = z.union([
