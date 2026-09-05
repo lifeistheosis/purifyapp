@@ -118,6 +118,14 @@ export default async function PrivacyPage() {
  saved on the device.
  </p>
  <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ If you post in the community while a Purify Plus or Pro
+ subscription is active, a small cross beside your name tells other
+ readers which of the two you hold. It is derived from your
+ subscription, goes away when the subscription ends, and can be
+ hidden at any time from /account with &ldquo;Show my supporter
+ mark.&rdquo;
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
  Nothing in either path is sold, shared, or used to train models.
  The analytics described below are separate from both: they record
  page views in aggregate, without your account identity, whether you
@@ -677,6 +685,14 @@ function PrivacyDe() {
  Lesezeichen bei der ersten Anmeldung in dein Konto geschoben.
  Gebets-Strähnen, Lese-Einstellungen und Kalenderstil bleiben nur
  auf diesem Gerät; sie haben noch keine Servertabelle.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ Wenn du in der Gemeinschaft schreibst, während ein Purify-Plus-
+ oder Pro-Abonnement läuft, zeigt ein kleines Kreuz neben deinem
+ Namen anderen Lesern, welches der beiden du hältst. Es wird aus
+ deinem Abonnement abgeleitet, verschwindet mit dessen Ende und
+ lässt sich jederzeit unter /account mit &bdquo;Mein
+ Unterstützer-Zeichen zeigen&ldquo; ausblenden.
  </p>
  <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
  Nichts auf beiden Wegen wird verkauft, geteilt oder zum Training

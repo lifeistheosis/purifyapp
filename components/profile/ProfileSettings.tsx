@@ -6,6 +6,7 @@ import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault"
 import type { CalendarStyleDefault } from "@/lib/calendar/styleDefault";
 import { LanguagePicker } from "@/components/i18n/LanguagePicker";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { useShowSupporterMark } from "@/lib/profile/useShowSupporterMark";
 
 /**
  * Reading preferences that live in localStorage and persist across visits.
@@ -20,6 +21,10 @@ export function ProfileSettings() {
   const { on: interlinearOn, toggle: toggleInterlinear } = useInterlinear();
 
   const [calStyle, pickCalStyle] = useCalendarStyleDefault();
+  // The one preference here that reaches other readers: it decides whether
+  // the community shows a mark beside this account's name while a Plus or
+  // Pro subscription runs. Default on, kept on profiles.show_supporter_mark.
+  const [showMark, toggleShowMark] = useShowSupporterMark();
 
   const sizeOptions: { value: ReaderSize; label: string }[] = [
     { value: "sm", label: t("settings.sizeSmall") },
@@ -82,6 +87,16 @@ export function ProfileSettings() {
               { value: "old", label: t("calendar.reckoning.old") },
             ]}
             onChange={(v) => pickCalStyle(v as CalendarStyleDefault)}
+          />
+        </Row>
+        <Row
+          label={t("settings.showSupporterMark")}
+          description={t("settings.showSupporterMarkHint")}
+        >
+          <Toggle
+            on={showMark}
+            onChange={toggleShowMark}
+            label={showMark ? t("common.on") : t("common.off")}
           />
         </Row>
       </div>
