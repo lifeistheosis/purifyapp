@@ -60,7 +60,7 @@ export function MobileNextChapterFab({
     <Link
       href={`/bible/${next.slug}/${next.chapter}`}
       aria-label={`Go to ${nextBookName} ${next.chapter}`}
-      className={`md:hidden fixed bottom-5 right-5 z-40 rounded-pill bg-gold text-night font-sans font-semibold text-ui px-4 h-[44px] inline-flex items-center gap-1.5 shadow-raise transition-all duration-200 ${
+      className={`md:hidden native-md-inline-flex fixed bottom-5 right-5 z-40 rounded-pill bg-gold text-night font-sans font-semibold text-ui px-4 h-[44px] inline-flex items-center gap-1.5 shadow-raise transition-all duration-200 ${
         visible
           ? "opacity-100 translate-y-0 pointer-events-auto"
           : "opacity-0 translate-y-3 pointer-events-none"

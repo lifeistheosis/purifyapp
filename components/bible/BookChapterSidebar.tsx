@@ -17,7 +17,7 @@ export function BookChapterSidebar({
   const next = nextBook(book.slug);
 
   return (
-    <aside className="hidden md:block w-[240px] shrink-0 border-r border-white/8 self-stretch">
+    <aside className="hidden md:block native-md-hidden w-[240px] shrink-0 border-r border-white/8 self-stretch">
       <div className="sticky top-[72px] px-5 py-8 max-h-[calc(100dvh-72px)] overflow-y-auto scrollbar-thin">
         <Link
           href="/bible"

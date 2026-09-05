@@ -68,7 +68,7 @@ export function MobileChapterPill({
     <>
       <div
         aria-label={t("bible.chapterSwitcher")}
-        className="md:hidden fixed inset-x-0 z-40 flex justify-center pointer-events-none"
+        className="md:hidden native-md-flex fixed inset-x-0 z-40 flex justify-center pointer-events-none"
         // Sit clear of the tab bar, the now-playing bar when one is up, AND the
         // iOS home indicator, plus a 12px gap. Both vars are 0 when the thing
         // they measure is not on screen, so this is one formula for every case.

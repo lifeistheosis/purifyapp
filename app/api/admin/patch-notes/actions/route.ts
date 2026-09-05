@@ -9,6 +9,9 @@ import { displayDateToIso } from "@/lib/whatsNew/dates";
 import { PATCH_NOTE_COLUMNS, type PatchNoteRow } from "@/lib/whatsNew/notes";
 import { PatchNoteInput, emDashField } from "@/lib/whatsNew/patchNoteShape";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
+import { BOARD_MESSAGES } from "@/lib/whatsNew/board";
+import { BOARD_COLUMNS, type BoardRow } from "@/lib/whatsNew/boardLive";
+import { BoardInput, boardEmDashField } from "@/lib/whatsNew/boardShape";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -47,6 +50,12 @@ const Body = z.discriminatedUnion("action", [
   // be reviewed by the owner too. Optional; the editor saves directly.
   z.object({ action: z.literal("revision-propose"), noteId: Id.nullable(), summary: z.string().trim().min(1).max(400) })
     .merge(z.object({ after: PatchNoteInput })),
+  // The weekly board message above the notes. Same shapes, its own table.
+  z.object({ action: z.literal("board-upsert"), id: Id.optional() }).merge(BoardInput),
+  z.object({ action: z.literal("board-publish"), id: Id }),
+  z.object({ action: z.literal("board-unpublish"), id: Id }),
+  z.object({ action: z.literal("board-delete"), id: Id }),
+  z.object({ action: z.literal("board-adopt-all") }),
 ]);
 
 const absent = isTableAbsent;
@@ -380,6 +389,136 @@ export async function POST(req: NextRequest) {
         detail: { version: parsed.after.version },
       });
       return NextResponse.json({ ok: true, id: data?.id ?? null });
+    }
+    case "board-upsert": {
+      const { action: _a, id, ...input } = parsed;
+      void _a;
+      const bad = boardEmDashField(input);
+      if (bad) {
+        return NextResponse.json(
+          { error: `The ${bad} carries an em dash. The board may not.` },
+          { status: 400 },
+        );
+      }
+      const row = {
+        week: input.week,
+        date: input.date,
+        eyebrow: input.eyebrow,
+        headline: input.headline,
+        body: input.body,
+        updated_at: now,
+        updated_by_email: email,
+      };
+      let prior: BoardRow | null = null;
+      if (id) {
+        const { data } = await supa.from("board_messages").select(BOARD_COLUMNS).eq("id", id).maybeSingle();
+        prior = (data as BoardRow | null) ?? null;
+      }
+      const q = id
+        ? supa.from("board_messages").update(row).eq("id", id)
+        : supa.from("board_messages").insert({ ...row, status: "draft" });
+      const { data, error } = await q.select(BOARD_COLUMNS).maybeSingle();
+      if (absent(error)) return notApplied();
+      if (error) return failed("Could not save the board message.", error.message);
+      void logActivity({
+        actorEmail: admin.email ?? null,
+        action: id ? "board_message.update" : "board_message.create",
+        entityType: "board_message",
+        entityId: (data?.id as string | undefined) ?? null,
+        detail: { week: input.week, previous: prior },
+      });
+      revalidatePath("/whats-new");
+      return NextResponse.json({ ok: true, board: data });
+    }
+
+    case "board-publish":
+    case "board-unpublish": {
+      const publish = parsed.action === "board-publish";
+      const { error } = await supa
+        .from("board_messages")
+        .update({
+          status: publish ? "published" : "draft",
+          published_at: publish ? now : null,
+          updated_at: now,
+          updated_by_email: email,
+        })
+        .eq("id", parsed.id);
+      if (absent(error)) return notApplied();
+      if (error) return failed("Could not change the board message status.", error.message);
+      void logActivity({
+        actorEmail: admin.email ?? null,
+        action: publish ? "board_message.publish" : "board_message.unpublish",
+        entityType: "board_message",
+        entityId: parsed.id,
+      });
+      revalidatePath("/whats-new");
+      return NextResponse.json({ ok: true });
+    }
+
+    case "board-delete": {
+      const { data: prior, error: readErr } = await supa
+        .from("board_messages")
+        .select(BOARD_COLUMNS)
+        .eq("id", parsed.id)
+        .maybeSingle();
+      if (absent(readErr)) return notApplied();
+      const { error } = await supa.from("board_messages").delete().eq("id", parsed.id);
+      if (error) return failed("Could not delete the board message.", error.message);
+      void logActivity({
+        actorEmail: admin.email ?? null,
+        action: "board_message.delete",
+        entityType: "board_message",
+        entityId: parsed.id,
+        detail: { previous: prior },
+      });
+      revalidatePath("/whats-new");
+      return NextResponse.json({ ok: true });
+    }
+
+    case "board-adopt-all": {
+      let inserted = 0;
+      let skipped = 0;
+      const errors: string[] = [];
+      for (const m of BOARD_MESSAGES) {
+        const { data: existing, error: readErr } = await supa
+          .from("board_messages")
+          .select("id")
+          .eq("week", m.week)
+          .maybeSingle();
+        if (absent(readErr)) return notApplied();
+        if (existing) {
+          skipped++;
+          continue;
+        }
+        const { error } = await supa.from("board_messages").insert({
+          week: m.week,
+          date: m.date,
+          eyebrow: m.eyebrow,
+          headline: m.headline,
+          body: m.body,
+          status: "published",
+          published_at: now,
+          updated_at: now,
+          updated_by_email: email,
+        });
+        if (error) errors.push(`${m.week}: ${error.message}`);
+        else inserted++;
+      }
+      void logActivity({
+        actorEmail: admin.email ?? null,
+        action: "board_message.adopt_all",
+        entityType: "board_message",
+        entityId: null,
+        detail: { inserted, skipped, errors },
+      });
+      revalidatePath("/whats-new");
+      if (errors.length > 0) {
+        return NextResponse.json(
+          { error: `${errors.length} of ${BOARD_MESSAGES.length} messages did not adopt`, detail: errors, inserted, skipped },
+          { status: 500 },
+        );
+      }
+      return NextResponse.json({ ok: true, inserted, skipped });
     }
   }
 }

@@ -56,7 +56,7 @@ export function ShopSubTabs() {
       // is shouldShowBack(), the same call the bar renders from, so this row
       // cannot drift out of step with it.
       className={cn(
-        "md:hidden sticky sticky-safe-top z-20 bg-night border-b border-white/8",
+        "md:hidden native-md-block sticky sticky-safe-top z-20 bg-night border-b border-white/8",
         shouldShowBack(pathname) && "under-back-bar",
       )}
     >

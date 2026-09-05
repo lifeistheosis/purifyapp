@@ -31,7 +31,7 @@ export default defineConfig({
  // The mobile suite runs only in its own project below; without this
  // ignore it ran twice (CI #318 showed both [chromium] and
  // [mobile-shell] rows for every mobile-shell test).
- testIgnore: /mobile-shell\.spec\.ts/,
+ testIgnore: /(mobile-shell|tablet-shell)\.spec\.ts/,
  },
  // Mobile shell project: the iPhone 14 Pro viewport is wide enough to
  // exercise the < md breakpoint where the tab bar takes over from the
@@ -42,6 +42,14 @@ export default defineConfig({
  name: "mobile-shell",
  testMatch: /mobile-shell\.spec\.ts/,
  use: { ...devices["iPhone 14 Pro"], browserName: "chromium" },
+ },
+ // Tablet shell project: an iPad in landscape crosses the md breakpoint
+ // inside the native shell, which the phone project never does. Same
+ // chromium pin, same reason.
+ {
+ name: "tablet-shell",
+ testMatch: /tablet-shell\.spec\.ts/,
+ use: { ...devices["iPad (gen 7) landscape"], browserName: "chromium" },
  },
  ],
  webServer: {

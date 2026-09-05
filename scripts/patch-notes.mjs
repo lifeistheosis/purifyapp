@@ -26,6 +26,7 @@
 //       read the note, read their `after`, and answer with propose --parent.
 //
 //   node scripts/patch-notes.mjs pull [--apply]
+//       Also writes the published board_messages into data/changelog/board.json.
 //       Writes the PUBLISHED rows back into data/changelog/entries.json,
 //       newest first, in the page's display date format. Run this before a
 //       native build and as step 1 of the release ritual, because the static
@@ -251,15 +252,51 @@ if (cmd === "pull") {
   console.log(`  removed: ${removed.join(", ") || "none"}`);
   console.log(`  changed: ${changed.join(", ") || "none"}`);
   if (added.length + removed.length + changed.length === 0) {
+    // No done() here: the board block below still has to run.
     console.log("entries.json already matches.");
-    done();
-  }
-  if (!APPLY) {
+  } else if (!APPLY) {
     console.log("Dry run. Add --apply to write entries.json.");
-    done();
+  } else {
+    await fs.writeFile(target, JSON.stringify(next, null, 2) + "\n");
+    console.log(`Wrote ${target}. Run npm run test:unit; notesAgree checks it against patches.json.`);
   }
-  await fs.writeFile(target, JSON.stringify(next, null, 2) + "\n");
-  console.log(`Wrote ${target}. Run npm run test:unit; notesAgree checks it against patches.json.`);
+}
+
+if (cmd === "pull") {
+  // The board, same rules. A missing table is not a failure here: the notes
+  // may have moved to the database before the board did.
+  const { data, error } = await admin
+    .from("board_messages")
+    .select("week, date, eyebrow, headline, body")
+    .eq("status", "published")
+    .order("date", { ascending: false });
+  if (absent(error)) {
+    console.log("board_messages is not applied; board.json left alone.");
+  } else if (error) {
+    fail(`board read failed: ${error.message}`);
+  } else if (!data || data.length === 0) {
+    console.log("board_messages has no published rows; board.json left alone.");
+  } else {
+    const target = path.join(ROOT, "data/changelog/board.json");
+    const current = JSON.parse(await fs.readFile(target, "utf8"));
+    const next = data.map((r) => ({
+      week: r.week,
+      date: r.date,
+      eyebrow: r.eyebrow ?? "",
+      headline: r.headline ?? "",
+      body: Array.isArray(r.body) ? r.body.map(String) : [],
+    }));
+    const bad = next.find((e) => /—/.test(JSON.stringify(e)));
+    if (bad) fail(`board ${bad.week} carries an em dash; fix it in /admin before pulling`);
+    if (JSON.stringify(current) === JSON.stringify(next)) {
+      console.log("board.json already matches.");
+    } else if (!APPLY) {
+      console.log(`board.json would change: ${current.length} -> ${next.length} messages. Add --apply.`);
+    } else {
+      await fs.writeFile(target, JSON.stringify(next, null, 2) + "\n");
+      console.log(`Wrote ${target}.`);
+    }
+  }
 }
 } catch (e) {
   if (!(e instanceof Quit)) throw e;

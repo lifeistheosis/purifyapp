@@ -29,7 +29,7 @@ buttons, and stays fully open, until web billing exists.
 - ~~Purify Plus + IAP~~ — **shipped in Android v1** (see top of file). iOS StoreKit (same RevenueCat integration) and **web checkout (Stripe)** remain deferred; web enforcement (`PLUS_ENFORCED_WEB`) flips only once web billing exists.
 - Push notifications.
 - Universal/deep links (apple-app-site-association, assetlinks.json).
-- iPad layout + screenshots.
+- iPad screenshots. (The layout shipped in 1.4: the native shell keeps its own chrome above 768px.)
 - valley.mp3 CDN hosting.
 - All v9.9 content work: Catena Aurea ingest, 5 new Topics, 3 new Heresies, Theophylact, language editorial pipeline.
 - Discover/nav redesigns beyond what shipped in v9.8.

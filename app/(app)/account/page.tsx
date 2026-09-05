@@ -43,7 +43,7 @@ export default async function AccountPage() {
   return (
     <>
     <YouMobile />
-    <section className={`${SECTION} bg-night min-h-[calc(100dvh-72px)] hidden md:block`}>
+    <section className={`${SECTION} bg-night min-h-[calc(100dvh-72px)] hidden md:block native-md-hidden`}>
       <article className="mx-auto max-w-[1080px] w-full">
         <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
           {t(m, "account.eyebrow")}

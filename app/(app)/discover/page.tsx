@@ -65,7 +65,7 @@ export default async function DiscoverPage() {
   return (
     <>
       <DiscoverMobile />
-      <div className="hidden md:contents">
+      <div className="hidden md:contents native-md-hidden">
         <section className="relative bg-night min-h-[calc(100dvh-72px)] md:px-8 md:py-16">
           {/* A quiet gold wash behind the masthead, the one bit of warmth on
               an otherwise monochrome page. */}

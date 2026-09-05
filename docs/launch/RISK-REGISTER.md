@@ -30,5 +30,5 @@ Severity: P0 = submission blocker · P1 = launch-critical · P2 = polish · P3 =
   reverses the earlier "no IAP in v1" plan — see
   `docs/google-play/ANDROID_SUBSCRIPTION_CHECKLIST.md`.) Push code is ready (delivery
   optional). No deep links (AASA/assetlinks are not review requirements).
-- iPad unsupported (TARGETED_DEVICE_FAMILY=1). Portrait-only both platforms.
+- iPad supported from 1.4 (TARGETED_DEVICE_FAMILY=1,2, full screen, all orientations on iPad). iPhone and Android stay portrait-only.
 - iOS offline depends on WKAppBoundDomains test; fallback online-only is acceptable for v1.

@@ -252,7 +252,10 @@ export default async function BibleChapterPage({
 
  <RestoreTranslation testament={b!.testament} />
 
- <div className="reader-grid lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
+ {/* 280px at lg, 320 at xl. At exactly 1024 (iPad landscape, small
+     laptops) the old 320 + gap-10 beside the 240px chapter sidebar left the
+     verse column about 344px wide, narrower than on a phone. */}
+ <div className="reader-grid lg:grid lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-8 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-10">
  {/* Reader column */}
  <div className="min-w-0 mx-auto w-full max-w-[680px]">
  <header id="chapter-title" className="mb-6">

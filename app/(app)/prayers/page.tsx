@@ -124,7 +124,7 @@ export default async function PrayersPage() {
   return (
     <>
       <PrayersMobile />
-      <div className="hidden md:block">
+      <div className="hidden md:block native-md-hidden">
         <section className="relative isolate overflow-hidden bg-night min-h-screen">
           <div
             className="pointer-events-none absolute inset-x-0 top-0 h-[460px]"

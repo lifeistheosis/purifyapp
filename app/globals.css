@@ -1,5 +1,31 @@
 @import "tailwindcss";
 
+/*
+ * native-md-*: the native shell above the md breakpoint.
+ *
+ * WHY. The app's phone/desktop fork is the md breakpoint: MobileTabBar,
+ * MobileTopBar, every Sheet and every Mobile* reader control are md:hidden,
+ * and the desktop twins are hidden md:*. That fork assumed the native shell
+ * never reaches 768px, which was true while TARGETED_DEVICE_FAMILY was 1.
+ * On an iPad, or an Android tablet in portrait, it left a screen with no
+ * navigation at all. These classes keep the app's own shell on a tablet,
+ * centred and widened, instead of handing the website's layouts a header
+ * they do not have: native-md-flex on the phone chrome, native-md-hidden on
+ * the desktop twins. NativeBridge adds html.is-native.
+ *
+ * Plain rules, not a @custom-variant. A `native:` variant compiled in
+ * isolation and never reached the served bundle through the Next pipeline;
+ * these sit outside Tailwind's layers, so they beat the layered md:hidden
+ * beside them whatever the cascade order.
+ */
+@media (min-width: 768px) {
+  html.is-native .native-md-flex { display: flex; }
+  html.is-native .native-md-block { display: block; }
+  html.is-native .native-md-grid { display: grid; }
+  html.is-native .native-md-inline-flex { display: inline-flex; }
+  html.is-native .native-md-hidden { display: none; }
+}
+
 @theme {
  /* Hybrid brand. Two committed surface palettes:
  - DARK "sacred" surfaces (home/marketing, Bible reader, prayers, calendar):

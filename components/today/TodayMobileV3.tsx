@@ -37,7 +37,7 @@ export function TodayMobileV3() {
           `.route-fade` ancestor (app/page.tsx sits outside the (app) group),
           so this cascade correctly starts at zero rather than waiting on a
           route fade that never runs. */}
-      <div className="cascade cascade-tight cascade-rise px-5 pt-3 pb-8">
+      <div className="cascade cascade-tight cascade-rise px-5 pt-3 pb-8 md:mx-auto md:w-full md:max-w-[760px] lg:max-w-[880px]">
         <GreetingHeader />
 
         <FirstStepsNudge />

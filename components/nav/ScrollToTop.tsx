@@ -46,7 +46,7 @@ export function ScrollToTop() {
 
 function cnVisible(scrolled: boolean): string {
   const base =
-    "back-to-top hidden md:inline-flex fixed right-7 bottom-7 z-40 items-center justify-center h-11 w-11 rounded-full border border-paper/20 bg-night/85 backdrop-blur text-paper/70 shadow-lg transition-opacity duration-200 hover:text-paper hover:border-gold/50 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2";
+    "back-to-top hidden md:inline-flex native-md-hidden fixed right-7 bottom-7 z-40 items-center justify-center h-11 w-11 rounded-full border border-paper/20 bg-night/85 backdrop-blur text-paper/70 shadow-lg transition-opacity duration-200 hover:text-paper hover:border-gold/50 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2";
   return scrolled
     ? `${base} opacity-100 pointer-events-auto`
     : `${base} opacity-0 pointer-events-none`;

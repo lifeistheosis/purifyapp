@@ -196,7 +196,9 @@ export function MobileTabBar() {
       // in the side gutters fall through to content; only the floating bar
       // itself is interactive.
       className={cn(
-        "md:hidden fixed inset-x-0 bottom-0 z-50 px-3 safe-bottom-pad pointer-events-none",
+        // native-md-block, so a tablet keeps the bar. The pill stays max-w-md and
+        // centred rather than stretching; see the native-md-* rules in globals.css.
+        "md:hidden native-md-block fixed inset-x-0 bottom-0 z-50 px-3 safe-bottom-pad pointer-events-none",
         // Faded rather than unmounted: the sheet slides up over 200ms, and a
         // bar that blinks out instantly is visible in the gap before the sheet
         // covers it. Matching durations makes the handoff read as one motion.

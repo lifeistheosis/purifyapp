@@ -63,7 +63,7 @@ export default async function ReadingPage() {
  return (
  <>
  <ReadingMobile popular={POPULAR} paths={PATHS} fallback={DEFAULT_NEXT} />
- <div className="hidden md:contents">
+ <div className="hidden md:contents native-md-hidden">
  <section className="bg-night min-h-[calc(100dvh-72px)] md:px-8 md:py-16">
  <article className="mx-auto max-w-[820px] w-full px-5 pt-6 pb-10 md:pt-0 md:pb-0">
  <header className="text-center mb-8 md:mb-12">

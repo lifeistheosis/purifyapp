@@ -34,13 +34,13 @@ import { BACK_FALLBACK_MS, backOutcome, shouldShowBack } from "@/lib/nav/backBar
  *
  * ── No md: variant, deliberately ────────────────────────────────────────
  *
- * MobileTopBar is `md:hidden`, so on a wide viewport it disappears and AppNav
- * takes over. This bar has no such escape hatch and does not need one: the
- * native shell is phone-only in both stores (TARGETED_DEVICE_FAMILY = "1" in
- * project.pbxproj, android:screenOrientation="portrait" in the manifest), so
- * `md` is never reached inside it. If a tablet target is ever added, this and
- * the exclusions both need a responsive answer, because at `md` the bars this
- * defers to are not on screen at all and every exclusion becomes a dead spot.
+ * MobileTopBar is `md:hidden native-md-flex`: on the website a wide viewport
+ * hands over to AppNav, and inside the native shell the bar stays at every
+ * width. This bar therefore needs no md: variant of its own. It used to say
+ * the shell was phone-only; since 1.4 TARGETED_DEVICE_FAMILY is "1,2" and an
+ * iPad reaches `md`, which is exactly why the bars this defers to now survive
+ * it (the native-md-* rules in globals.css). The exclusions below stay valid
+ * because the bars they name are on screen.
  *
  * ── router.back(), with a floor that actually holds ─────────────────────
  *

@@ -22,8 +22,8 @@ export default function BiblePage() {
       {/* Mobile shell, md:hidden inside, so this collapses to nothing on desktop. */}
       <BibleMobile />
 
-      {/* Desktop, hidden on mobile. */}
-      <div className="hidden md:block">
+      {/* Desktop, hidden on mobile and in the native shell at any width. */}
+      <div className="hidden md:block native-md-hidden">
         {/* Masthead: the same editorial register as Discover and Theology. */}
         <section className="bg-night px-5 pt-14 md:px-8 md:pt-20 pb-10 md:pb-12">
           <div className="mx-auto w-full max-w-[860px] text-center">

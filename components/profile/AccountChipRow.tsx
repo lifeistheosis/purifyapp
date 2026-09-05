@@ -25,7 +25,7 @@ const CHIPS: { label: string; href: string; Icon: typeof Cross; tint: string }[]
 
 export function AccountChipRow() {
   return (
-    <ul className="md:hidden grid grid-cols-3 gap-2 mb-6">
+    <ul className="md:hidden native-md-grid grid grid-cols-3 gap-2 mb-6">
       {CHIPS.map(({ label, href, Icon, tint }) => (
         <li key={href}>
           <Link

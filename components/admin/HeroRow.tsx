@@ -227,7 +227,12 @@ export function HeroRow({
         />
       </div>
 
-      <div className="mb-6 grid gap-4 lg:grid-cols-[repeat(3,minmax(0,1fr))_minmax(240px,0.85fr)]">
+      {/* items-start: a grid row stretches every card to the tallest, and the
+          attention card on the right runs to 600px when it has findings and
+          buttons to show. Stretched, the three stat cards carried their
+          sparkline in the middle of 400px of nothing (seen on production
+          2026-09-04). Each card now sizes to its own content. */}
+      <div className="mb-6 grid gap-4 lg:grid-cols-[repeat(3,minmax(0,1fr))_minmax(240px,0.85fr)] lg:items-start">
         <TodayTiles
           className="col-span-full lg:hidden"
           stats={stats}

@@ -78,7 +78,7 @@ export function MobileWorkPill({
     <>
       <div
         aria-label={t("saints.sectionSwitcher")}
-        className="md:hidden fixed inset-x-0 z-40 flex justify-center pointer-events-none"
+        className="md:hidden native-md-flex fixed inset-x-0 z-40 flex justify-center pointer-events-none"
         style={{
           bottom:
             "calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)",

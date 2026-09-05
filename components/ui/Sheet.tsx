@@ -123,7 +123,10 @@ export function Sheet({
   return createPortal(
     <div
       className={
-        (desktop ? "" : "md:hidden ") + "fixed inset-0 z-[60]"
+        // native-md-block: inside the native shell a sheet is the only picker
+        // there is, at every width. Without it a tablet lost the chapter grid,
+        // the reader actions, the TOC and the update prompt above 768px.
+        (desktop ? "" : "md:hidden native-md-block ") + "fixed inset-0 z-[60]"
       }
       role="dialog"
       aria-modal="true"

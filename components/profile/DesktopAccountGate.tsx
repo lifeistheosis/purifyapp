@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { isNativeClient } from "@/lib/platform/native";
 
 /**
  * Signed-in `/account` serves the native mobile shell (YouMobile) on
@@ -21,13 +22,15 @@ export function DesktopAccountGate() {
   const router = useRouter();
 
   useEffect(() => {
-    if (window.matchMedia("(min-width: 768px)").matches) {
+    // A wide NATIVE viewport (an iPad) keeps the mobile account screen; the
+    // desktop dashboard it would bounce to has no header in the shell.
+    if (!isNativeClient() && window.matchMedia("(min-width: 768px)").matches) {
       router.replace("/account/profile");
     }
   }, [router]);
 
   return (
-    <section className="hidden md:block px-8 py-24 bg-night min-h-[calc(100dvh-72px)]">
+    <section className="hidden md:block native-md-hidden px-8 py-24 bg-night min-h-[calc(100dvh-72px)]">
       <div className="mx-auto max-w-[820px] w-full">
         <div aria-hidden className="animate-pulse">
           <div className="h-32 rounded-lg border border-paper/10 bg-paper/[0.03]" />

@@ -22,6 +22,7 @@ import { emDashField, type PatchNoteInput } from "@/lib/whatsNew/patchNoteShape"
 import type { PatchNoteRow } from "@/lib/whatsNew/notes";
 import type { PatchNotesPayload, RevisionRow } from "@/app/api/admin/patch-notes/route";
 import { Card, DataTable, Email, Modal, Pill, Toolbar, ToolbarButton } from "../primitives";
+import { BoardMessageCard } from "./BoardMessageCard";
 
 type Draft = PatchNoteInput & { id?: string };
 
@@ -186,6 +187,16 @@ export function PatchNotesTab() {
           </p>
         </Card>
       )}
+
+      {/* The message above the notes, first, because it is the first thing a
+          reader meets on /whats-new. */}
+      <BoardMessageCard
+        rows={data.board}
+        fromFallback={data.boardFromFallback}
+        tableAbsent={data.boardTableAbsent}
+        busy={busy}
+        post={post}
+      />
 
       {data.revisions.length > 0 && (
         <Card

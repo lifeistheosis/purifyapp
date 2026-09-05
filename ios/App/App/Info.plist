@@ -75,6 +75,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- Full screen on iPad: no Split View or Stage Manager, so the shell only
+	     ever sees the widths the tablet layout was checked at. Lift this once
+	     narrow multitasking widths have been walked. -->
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
 </dict>

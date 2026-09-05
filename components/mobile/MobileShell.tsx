@@ -24,7 +24,7 @@ export function MobileShell({
   children: ReactNode;
 }) {
   return (
-    <div className="flex flex-col bg-night md:hidden">
+    <div className="flex flex-col bg-night md:hidden native-md-flex">
       {header}
       {/* The entrance for Bible, Discover, Prayers, Reading and You, in one
           place. `cascade` staggers the direct children in reading order,
@@ -34,7 +34,7 @@ export function MobileShell({
           this tree (BibleSearchOverlay) renders in the header slot above,
           outside this wrapper. Do not add `cascade-rise` to a reader route,
           whose pills, toolbar and sheets are fixed and not portaled. */}
-      <div className="cascade cascade-tight cascade-rise px-5 pt-6 pb-10">
+      <div className="cascade cascade-tight cascade-rise px-5 pt-6 pb-10 md:mx-auto md:w-full md:max-w-[760px] lg:max-w-[880px]">
         {eyebrow && (
           <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-4">
             {eyebrow}

@@ -33,7 +33,7 @@ export function MobileChapterStrip({
  if (book.chapters <= 1) return null;
 
  return (
- <div className="md:hidden mb-5 -mx-5">
+ <div className="md:hidden native-md-block mb-5 -mx-5">
  <div
  ref={containerRef}
  className="flex gap-1.5 overflow-x-auto snap-x px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
