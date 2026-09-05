@@ -32,6 +32,7 @@ import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
 import { SettingsGlyph as Glyph } from "./SettingsGlyph";
 import { readIntentions } from "@/lib/prayers/storage";
 import { useReadingStats } from "@/lib/profile/useReadingStats";
+import { useCompletionCount } from "@/lib/catechism/useCompletionCount";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
@@ -124,6 +125,7 @@ export function YouMobile() {
     : t("account.localProfile");
   const memberSince = signedIn ? formatJoined(auth.joinedAt) : "";
   const tier = usePremiumTier();
+  const catechisms = useCompletionCount();
 
   const settings: SettingsItem[] = [];
 
@@ -371,6 +373,14 @@ export function YouMobile() {
         <div className="mt-5">
           <SavedPreview />
         </div>
+      )}
+
+      {/* One quiet line, and only once there is something to say. No streak,
+          no "today", no count of what was not done. */}
+      {catechisms > 0 && (
+        <p className="mt-4 font-serif text-detail text-paper/60">
+          {tn("catechism.accountCount", catechisms)}
+        </p>
       )}
 
       <div className="mt-7">

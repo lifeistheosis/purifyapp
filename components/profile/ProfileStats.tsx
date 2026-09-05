@@ -2,6 +2,7 @@
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useReadingStats } from "@/lib/profile/useReadingStats";
+import { useCompletionCount } from "@/lib/catechism/useCompletionCount";
 
 /**
  * Live counters drawn from localStorage, shared with the You tab through
@@ -16,8 +17,9 @@ import { useReadingStats } from "@/lib/profile/useReadingStats";
  * the day.
  */
 export function ProfileStats() {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const stats = useReadingStats();
+  const catechisms = useCompletionCount();
 
   const readingItems = [
     { id: "verses", label: t("ui.versesHighlighted"), value: stats.verses },
@@ -50,6 +52,12 @@ export function ProfileStats() {
             </li>
           ))}
         </ul>
+        {/* One quiet line, only once there is something to say. */}
+        {catechisms > 0 && (
+          <p className="mt-4 font-serif text-detail text-paper/60">
+            {tn("catechism.accountCount", catechisms)}
+          </p>
+        )}
       </section>
     </>
   );

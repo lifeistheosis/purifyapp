@@ -38,7 +38,14 @@ type CalChoice = "new" | "old";
 
 const FOCUS_OPTIONS: Focus[] = ["scripture", "prayer", "saints", "calendar"];
 
-export function OnboardingFlow({ onDone }: { onDone: () => void }) {
+export function OnboardingFlow({
+  onDone,
+  catechismAvailable = false,
+}: {
+  onDone: () => void;
+  /** One optional line on the last step, shown only while the bank has questions. */
+  catechismAvailable?: boolean;
+}) {
   const { t } = useTranslate();
   const [step, setStep] = useState(0);
   const [cal, setCal] = useState<CalChoice>("new");
@@ -226,6 +233,18 @@ export function OnboardingFlow({ onDone }: { onDone: () => void }) {
             body={t("onboard.account.body")}
           >
             <AccountStep onDone={onDone} notNowLabel={t("onboard.account.notNow")} />
+            {catechismAvailable && (
+              <p className="mt-6 text-center font-serif text-caption leading-[1.5] text-paper/55">
+                {t("catechism.onboardLine")}{" "}
+                <Link
+                  href="/catechism"
+                  onClick={finish}
+                  className="text-paper/80 underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
+                >
+                  {t("catechism.onboardLink")}
+                </Link>
+              </p>
+            )}
           </Step>
         )}
       </div>

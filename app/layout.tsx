@@ -24,6 +24,7 @@ import { UpdateBridge } from "@/components/update/UpdateBridge";
 import { NativeBridge } from "@/components/native/NativeBridge";
 import { CommandPaletteMount } from "@/components/search/CommandPaletteMount";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
+import { bankHasQuestions } from "@/lib/catechism/bank";
 import { SITE_URL } from "@/lib/site";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages } from "@/lib/i18n";
@@ -267,7 +268,7 @@ export default async function RootLayout({
      reader returns to. Renders nothing until it is opened, and fetches
      the corpus only on that first open. */}
  <CommandPaletteMount />
- <FirstRunGate />
+ <FirstRunGate catechismAvailable={bankHasQuestions()} />
  </MessagesProvider>
  <AnalyticsTracker />
  <NativeBridge />

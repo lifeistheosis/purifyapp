@@ -92,12 +92,17 @@ export type ClientQuestion = {
 
 /**
  * The date-keyed window a page bakes: one entry per civil date, each holding
- * the five ids for both reckonings, plus every question those ids name, once.
+ * the five for both reckonings, plus every question those entries name, once.
  * Keys are "YYYY-MM-DD" in the UTC frame the calendar lookups use.
+ *
+ * Sets are INDICES into `questions`, not ids: the export carries 400 days of
+ * this in every copy of the page, and ten uuids a day is 150KB where ten
+ * small integers is 12KB.
  */
 export type DailyWindow = {
-  days: Record<string, Record<Reckoning, string[]>>;
-  questions: Record<string, ClientQuestion>;
+  questions: ClientQuestion[];
+  /** date -> [new, old], each a list of indices into `questions`. */
+  days: Record<string, [number[], number[]]>;
 };
 
 /** What a reader gave for one question. */

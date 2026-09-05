@@ -80,7 +80,7 @@ export function toClientQuestion(q: Question, registries: Registries): ClientQue
 /** The window the page ships: WINDOW_DAYS from yesterday, both reckonings. */
 export async function getDailyWindow(now: Date = new Date()): Promise<DailyWindow> {
   const bank = loadBank();
-  if (bank.length === 0) return { days: {}, questions: {} };
+  if (bank.length === 0) return { days: {}, questions: [] };
   const registries = await bankRegistries();
   return buildDailyWindow(bank, windowKeys(windowStart(now), WINDOW_DAYS), (q) =>
     toClientQuestion(q, registries),
