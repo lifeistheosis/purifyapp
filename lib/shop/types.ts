@@ -78,6 +78,8 @@ export type ShopProductMedia = {
   alt_text: string;
   sort_order: number;
   is_primary: boolean;
+  /** 400px copy made by the media route. Absent until 20260905_shop_simple. */
+  thumb_url?: string | null;
 };
 
 export type ShopProductSubject = {
@@ -110,6 +112,10 @@ export type ShopProduct = {
   image_is_representative: boolean;
   status: "draft" | "published" | "paused" | "archived";
   created_at: string;
+  /** The product may be blessed before dispatch. Absent until 20260905_shop_simple. */
+  blessing_available?: boolean;
+  /** Soft delete. Never non-null on a public read once the migration is in. */
+  deleted_at?: string | null;
 };
 
 /** Product joined with its media, subjects, and selling store. */
@@ -156,6 +162,18 @@ export type ShopSaintCard = {
   shortBio: string;
 } | null;
 
+/**
+ * What the product page needs to offer a blessing: the parish, the owner's
+ * copy and the handling charge from the one global config. Present only when
+ * the product carries blessing_available AND the config is enabled; null
+ * otherwise, so the page has one thing to check.
+ */
+export type ShopBlessingOffer = {
+  parishName: string;
+  copyMd: string;
+  handlingCents: number;
+};
+
 export type ShopProductDetail = {
   product: ShopProductFull;
   related: ShopProductFull[];
@@ -164,6 +182,8 @@ export type ShopProductDetail = {
   // The selling store's policies, for the product page's shipping/returns block.
   storeShippingMd: string | null;
   storeReturnMd: string | null;
+  /** Optional so a native shell on the previous bundle reads it as absent. */
+  blessing?: ShopBlessingOffer | null;
 };
 
 export type ShopStoreData = {
