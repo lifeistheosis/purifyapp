@@ -534,3 +534,33 @@ export const communityPostSchema = z
 export const communityReplySchema = z.object({
   body: z.string().min(1).max(2000),
 });
+
+/** /api/catechism/stats POST body: the anonymous path's aggregate bump.
+ *  Two id lists and nothing else; no session, no reader, no date. The route
+ *  checks every id against the bank and drops what it does not know. */
+export const catechismStatsSchema = z.object({
+  question_ids: z.array(z.string().uuid()).min(1).max(5),
+  correct_ids: z.array(z.string().uuid()).max(5),
+});
+
+/**
+ * /api/track/event POST body. A closed list of event names, each with its
+ * own closed props shape, so an identifier cannot ride in as a "prop". Add
+ * an event by adding a member here and a line to /privacy.
+ */
+export const trackEventSchema = z.discriminatedUnion("name", [
+  z.object({
+    name: z.literal("catechism_started"),
+    props: z.object({ reckoning: z.enum(["new", "old"]).optional() }).strict().optional(),
+  }),
+  z.object({
+    name: z.literal("catechism_completed"),
+    props: z
+      .object({
+        score: z.number().int().min(0).max(5),
+        total: z.number().int().min(1).max(5).optional(),
+        reckoning: z.enum(["new", "old"]).optional(),
+      })
+      .strict(),
+  }),
+]);

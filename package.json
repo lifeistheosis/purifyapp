@@ -23,7 +23,8 @@
     "discord:all": "node scripts/discord-scan.mjs all",
     "discord:audit": "node scripts/discord-scan.mjs all --all-history",
     "discord:act": "node scripts/discord-act.mjs scripts/discord-actions.json",
-    "i18n:check": "node scripts/i18n-check.mjs --scan"
+    "i18n:check": "node scripts/i18n-check.mjs --scan",
+    "quiz:import": "node --experimental-strip-types --import ./scripts/lib/register-alias.mjs scripts/quiz-import.ts"
   },
   "dependencies": {
     "@capacitor-community/safe-area": "^8.0.1",

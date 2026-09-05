@@ -56,6 +56,7 @@ import { CommunityTab } from "./tabs/CommunityTab";
 import { TrafficHubTab } from "./tabs/TrafficHubTab";
 import { ContentTab } from "./tabs/ContentTab";
 import { PatchNotesTab } from "./tabs/PatchNotesTab";
+import { CatechismTab } from "./tabs/CatechismTab";
 import { ContentHealthTab } from "./tabs/ContentHealthTab";
 import { HealthTab } from "./tabs/HealthTab";
 import { AuditLogTab } from "./tabs/AuditLogTab";
@@ -107,6 +108,7 @@ type OpsTabId =
   | "calendar"
   | "content"
   | "patch-notes"
+  | "catechism"
   | "content-health"
   | "health"
   | "sourcing"
@@ -199,6 +201,9 @@ const GROUPS: Group[] = [
       // at once. Edits land without a deploy; the queue holds the agent's
       // proposed edits until the owner accepts them.
       { id: "patch-notes", label: "Patch notes", eyebrow: "What /whats-new publishes, and what Claude proposes", component: PatchNotesTab },
+      // Reach, beside Patch notes: five questions a day that every reader
+      // sees. The bank is a committed file; this tab is the read, counts only.
+      { id: "catechism", label: "Catechism", eyebrow: "Today's five, and how each question lands", component: CatechismTab },
     ],
   },
   {

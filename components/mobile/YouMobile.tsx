@@ -33,6 +33,7 @@ import { SettingsGlyph as Glyph } from "./SettingsGlyph";
 import { readIntentions } from "@/lib/prayers/storage";
 import { useReadingStats } from "@/lib/profile/useReadingStats";
 import { useShowSupporterMark } from "@/lib/profile/useShowSupporterMark";
+import { useCompletionCount } from "@/lib/catechism/useCompletionCount";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
@@ -129,6 +130,7 @@ export function YouMobile() {
   // is offered only to a signed-in reader; the same toggle sits on the
   // desktop dashboard's Data tab.
   const [showMark, toggleShowMark] = useShowSupporterMark();
+  const catechisms = useCompletionCount();
 
   const settings: SettingsItem[] = [];
 
@@ -376,6 +378,14 @@ export function YouMobile() {
         <div className="mt-5">
           <SavedPreview />
         </div>
+      )}
+
+      {/* One quiet line, and only once there is something to say. No streak,
+          no "today", no count of what was not done. */}
+      {catechisms > 0 && (
+        <p className="mt-4 font-serif text-detail text-paper/60">
+          {tn("catechism.accountCount", catechisms)}
+        </p>
       )}
 
       <div className="mt-7">
