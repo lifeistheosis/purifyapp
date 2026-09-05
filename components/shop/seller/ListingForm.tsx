@@ -10,6 +10,7 @@ import {
   CLASSIFICATION_LABELS,
   INVENTORY_LABELS,
 } from "@/lib/shop/format";
+import { IMAGE_ACCEPT_ATTR } from "@/lib/shop/imageNormalise";
 import type { SellerProduct } from "@/lib/shop/sellerData";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -499,7 +500,7 @@ function PhotoInput({ onUploaded }: { onUploaded: (url: string) => void }) {
       <input
         ref={input}
         type="file"
-        accept="image/jpeg,image/png,image/webp,image/avif"
+        accept={IMAGE_ACCEPT_ATTR}
         aria-label={t("shop.choosePhoto")}
         disabled={busy}
         onChange={(e) => {
