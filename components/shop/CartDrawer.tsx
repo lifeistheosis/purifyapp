@@ -153,6 +153,11 @@ export function CartDrawer() {
                         {formatPrice(item.priceCents * item.quantity, item.currency)}
                       </p>
                     </div>
+                    {item.blessing ? (
+                      <p className="mt-0.5 font-sans text-caption text-gold">
+                        {t("shop.blessing.requested")}
+                      </p>
+                    ) : null}
                     <div className="mt-2 flex items-center justify-between gap-2">
                       <div className="inline-flex items-center rounded-pill border border-paper/15">
                         <button
