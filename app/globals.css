@@ -1421,6 +1421,49 @@ html[data-reading-mode="monastery"] {
  --color-night-deep: #080b11;
 }
 
+/* ── Collection palettes (Study Collections, v1.4) ────────────────────
+   One block per collection theme, named by `theme_id` in
+   data/catechism/collections.json and registered with `collection: true`
+   in lib/reader/readingModes.ts. Same mechanism as the three above: the
+   block re-maps the @theme tokens and every utility, every icon drawn in
+   currentColor, and the body itself re-colour in the one 350ms body
+   transition declared at the top of this section. There is no separate
+   icon set: the glyphs already resolve through --color-gold and
+   --color-paper, so the block IS the icon recolour.
+
+   Brand family only: gold, deep navy, cream, rubric red, and restrained
+   variants of those. Body text (paper on night) holds above 12:1 in both;
+   gold on night holds above 8:1; the rubric red on the Cappadocian ground
+   holds 5.2:1, above AA for the feast names and day numbers it colours.
+
+   Adding one: copy a block, keep the six --color-* tokens and the well,
+   check the contrast pairs above, then follow the list in
+   lib/reader/readingModes.ts. */
+
+/* Councils: deep navy and gold, cream ink. */
+html[data-reading-mode="councils"] {
+ --color-night: #0a1020;
+ --color-night-soft: #141c31;
+ --color-night-deep: #060a16;
+ --color-paper: #efe7d3;
+ --color-gold: #d8b25c;
+ --color-gold-soft: #b99640;
+ --color-gold-pale: #eddcaa;
+}
+
+/* Cappadocian: a warm dusk ground, cream ink, and the rubric red of an
+   icon for the calendar's feast names and numbers. */
+html[data-reading-mode="cappadocian"] {
+ --color-night: #160f12;
+ --color-night-soft: #221820;
+ --color-night-deep: #0f090c;
+ --color-paper: #f1e6d2;
+ --color-gold: #cfa65a;
+ --color-gold-soft: #ad8a42;
+ --color-gold-pale: #e9d6a6;
+ --ink-rubric: 214 78 62;
+}
+
 /* The Bible reader's footnote block (.lic-notes) predates the token
    ramp and hard-codes white rgba() text; on the light parchment page
    those lines would vanish. Re-ink them, same alphas, dark ink. */
