@@ -54,7 +54,9 @@ const PAGE = 1000;
 // Minimal .env.local loader (no dotenv dependency in this repo).
 try {
   const env = await fs.readFile(path.join(ROOT, ".env.local"), "utf8");
-  for (const line of env.split("\n")) {
+  // \r?\n: on Windows .env.local is CRLF and `.` never matches \r, so a \n
+  // split left every key unset (found 2026-09-04 through patch-notes.mjs).
+  for (const line of env.split(/\r?\n/)) {
     const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
     if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();
   }
