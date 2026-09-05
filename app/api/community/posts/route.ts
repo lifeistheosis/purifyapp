@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { corsPreflight, corsRoute, withCors } from "@/lib/api/cors";
+import { AUTHOR_MARK_COLS, deriveAuthorMark } from "@/lib/community/authorMark";
 import { communityEnabled } from "@/lib/community/flags";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { communityPostSchema } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { createClientFromRequest } from "@/lib/supabase/server";
 import {
   isRefusal,
@@ -34,8 +36,16 @@ import {
 // select-then-strip version was rewritten, publicColumnExposure refused it a
 // second time, and the refusal was right a second time. The query it saves is
 // not worth the ratchet.
-const POST_COLS =
+//
+// The supporter mark arrived the same way (20260905_community_author_mark.sql):
+// two denormalised timestamps, author_plus_until and author_pro_until, that
+// publicPost() compares to the clock and collapses to author_mark. The
+// timestamps are selected and never emitted. POST_COLS_BEFORE_MARK is the
+// list without them, read instead when the migration has not been applied,
+// so the feed keeps working and simply shows no mark.
+const POST_COLS_BEFORE_MARK =
   "id, kind, title, body, quote_text, quote_source, quote_href, author_name, author_avatar, author_verified, reply_count, like_count, dislike_count, created_at, pinned_at";
+const POST_COLS = `${POST_COLS_BEFORE_MARK}, ${AUTHOR_MARK_COLS}`;
 
 /**
  * The row a reader actually receives: every column above except the uuid,
@@ -43,7 +53,10 @@ const POST_COLS =
  * delete, because a delete leaves the uuid in the object until the line that
  * removes it, and one early return past that line is a leak.
  */
-function publicPost(row: Record<string, unknown>): Record<string, unknown> {
+function publicPost(
+  row: Record<string, unknown>,
+  now: number = Date.now(),
+): Record<string, unknown> {
   return {
     id: row.id,
     kind: row.kind,
@@ -56,6 +69,11 @@ function publicPost(row: Record<string, unknown>): Record<string, unknown> {
     author_avatar: row.author_avatar,
     // A boolean that was never a uuid. See the note above POST_COLS.
     author_verified: Boolean(row.author_verified),
+    // 'plus' | 'pro' | null, resolved here against the clock. Never the two
+    // timestamps it is derived from. A subscription's end date is a fact
+    // about a person, and this object is served to anonymous readers from a
+    // shared cache. Only the tier leaves, and only while it is live.
+    author_mark: deriveAuthorMark(row, now),
     reply_count: row.reply_count,
     like_count: row.like_count ?? 0,
     dislike_count: row.dislike_count ?? 0,
@@ -126,40 +144,49 @@ export async function GET(req: Request) {
 
   const blocked = await blockedAuthorIds(req, admin);
 
-  let query = admin
-    .from("community_posts")
-    .select(POST_COLS)
-    .eq("status", "visible");
-  // The public feed carries no group posts, and a group thread carries only
-  // its own. Without the `is null` half, group posts would surface in the
-  // global feed the moment the column existed.
-  query = scopedGroup
-    ? query.eq("group_id", scopedGroup)
-    : query.is("group_id", null);
-  if (blocked.length > 0) {
-    query = query.not("user_id", "in", `(${blocked.join(",")})`);
+  const listPosts = (cols: string) => {
+    let query = admin.from("community_posts").select(cols).eq("status", "visible");
+    // The public feed carries no group posts, and a group thread carries only
+    // its own. Without the `is null` half, group posts would surface in the
+    // global feed the moment the column existed.
+    query = scopedGroup
+      ? query.eq("group_id", scopedGroup)
+      : query.is("group_id", null);
+    if (blocked.length > 0) {
+      query = query.not("user_id", "in", `(${blocked.join(",")})`);
+    }
+    return (
+      query
+        // ANNOUNCEMENTS FIRST, newest pin highest, then the feed proper.
+        //
+        // nullsFirst: false is load-bearing. Postgres sorts NULLs FIRST by
+        // default on a descending order, so without it every unpinned post,
+        // which is almost all of them, would sort above the announcements and
+        // the feature would do the exact opposite of its name.
+        //
+        // Ordering before the limit also means a pinned post cannot fall off
+        // the end: an announcement from three months ago is still first,
+        // where a created_at sort would have dropped it past the fifty newest.
+        .order("pinned_at", { ascending: false, nullsFirst: false })
+        .order("created_at", { ascending: false })
+        .limit(50)
+    );
+  };
+
+  let { data, error } = await listPosts(POST_COLS);
+  if (error && isColumnAbsent(error)) {
+    // 20260905_community_author_mark.sql not applied yet. Read the list the
+    // table does have; publicPost() then derives no mark, which is the truth.
+    ({ data, error } = await listPosts(POST_COLS_BEFORE_MARK));
   }
-  const { data, error } = await query
-    // ANNOUNCEMENTS FIRST, newest pin highest, then the feed proper.
-    //
-    // nullsFirst: false is load-bearing. Postgres sorts NULLs FIRST by default
-    // on a descending order, so without it every unpinned post, which is
-    // almost all of them, would sort above the announcements and the feature
-    // would do the exact opposite of its name.
-    //
-    // Ordering before the limit also means a pinned post cannot fall off the
-    // end: an announcement from three months ago is still first, where a
-    // created_at sort would have dropped it past the fifty newest.
-    .order("pinned_at", { ascending: false, nullsFirst: false })
-    .order("created_at", { ascending: false })
-    .limit(50);
   if (error) {
     console.warn("[community] list failed", error.message);
     return withCors(NextResponse.json({ posts: [] }), req);
   }
 
+  const now = Date.now();
   const rows = (data ?? []) as unknown as Record<string, unknown>[];
-  const posts = rows.map((r) => publicPost(r));
+  const posts = rows.map((r) => publicPost(r, now));
 
   return withCors(
     NextResponse.json(

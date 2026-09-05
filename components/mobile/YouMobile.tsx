@@ -32,6 +32,7 @@ import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
 import { SettingsGlyph as Glyph } from "./SettingsGlyph";
 import { readIntentions } from "@/lib/prayers/storage";
 import { useReadingStats } from "@/lib/profile/useReadingStats";
+import { useShowSupporterMark } from "@/lib/profile/useShowSupporterMark";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
@@ -124,6 +125,10 @@ export function YouMobile() {
     : t("account.localProfile");
   const memberSince = signedIn ? formatJoined(auth.joinedAt) : "";
   const tier = usePremiumTier();
+  // The community supporter mark's opt-out. Lives on the account row, so it
+  // is offered only to a signed-in reader; the same toggle sits on the
+  // desktop dashboard's Data tab.
+  const [showMark, toggleShowMark] = useShowSupporterMark();
 
   const settings: SettingsItem[] = [];
 
@@ -378,6 +383,38 @@ export function YouMobile() {
           {signedIn ? t("nav.account") : t("settings.title")}
         </MobileSectionLabel>
         <SettingsList items={settings} />
+        {signedIn ? (
+          <div className="mt-3 flex items-center justify-between gap-4 rounded-2xl border border-paper/10 bg-paper/[0.03] px-4 py-3.5">
+            <div className="min-w-0">
+              <p className="font-sans text-ui leading-tight text-paper">
+                {t("settings.showSupporterMark")}
+              </p>
+              <p className="mt-0.5 font-sans text-caption leading-tight text-paper/55">
+                {t("settings.showSupporterMarkHint")}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={toggleShowMark}
+              aria-pressed={showMark}
+              className={
+                "inline-flex h-[36px] shrink-0 items-center gap-2 rounded-pill border px-4 font-sans text-detail font-medium transition-colors " +
+                (showMark
+                  ? "border-gold bg-gold text-night"
+                  : "border-paper/15 bg-paper/[0.04] text-paper/85")
+              }
+            >
+              <span
+                aria-hidden
+                className={
+                  "inline-block h-2 w-2 rounded-full " +
+                  (showMark ? "bg-night" : "bg-paper/30")
+                }
+              />
+              {showMark ? t("common.on") : t("common.off")}
+            </button>
+          </div>
+        ) : null}
       </div>
     </MobileShell>
   );
