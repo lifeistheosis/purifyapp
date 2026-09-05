@@ -16,7 +16,7 @@ export function CatechismCard() {
   return (
     <Link
       href="/catechism"
-      className="mt-4 block rounded-2xl border border-paper/10 bg-paper/[0.03] px-5 py-4 transition-colors hover:border-paper/25 hover:bg-paper/[0.05]"
+      className="mt-4 block rounded-2xl border border-paper/10 bg-paper/[0.03] px-5 py-4 transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none hover:border-paper/25 hover:bg-paper/[0.05]"
     >
       <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold/80">
         <T k="catechism.card.eyebrow" />

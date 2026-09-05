@@ -24,7 +24,7 @@ const text = (max: number) =>
     // The editorial rule from docs/editorial-standards.md: never an em dash
     // in anything a reader sees. Enforced at import so it cannot reach the
     // page at all.
-    .refine((s) => !s.includes("—"), "contains an em dash");
+    .refine((s) => !s.includes("\u2014"), "contains an em dash");
 
 export const calendarAnchorSchema = z
   .object({

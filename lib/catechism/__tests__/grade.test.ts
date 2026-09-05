@@ -55,7 +55,7 @@ describe("question schema", () => {
     expect(parseQuestion({ ...base, type: "multiple_choice", options: ["a", "b", "c", "d", "e"], answer: 0 }).ok).toBe(false);
     expect(parseQuestion({ ...base, type: "true_false", answer: "true" }).ok).toBe(false);
     expect(parseQuestion({ ...base, type: "fill_word", answer: [] }).ok).toBe(false);
-    expect(parseQuestion({ ...base, type: "true_false", answer: true, prompt: "A — prompt" }).ok).toBe(false);
+    expect(parseQuestion({ ...base, type: "true_false", answer: true, prompt: "A \u2014 prompt" }).ok).toBe(false);
     expect(parseQuestion({ ...base, type: "true_false", answer: true, source_ref: "https://x" }).ok).toBe(false);
     expect(parseQuestion({ ...base, type: "true_false", answer: true, extra: 1 }).ok).toBe(false);
   });

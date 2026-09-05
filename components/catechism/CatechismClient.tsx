@@ -103,7 +103,7 @@ export function CatechismClient({ window }: { window: DailyWindow }) {
           today ? (
             <Empty />
           ) : (
-            <div className="mt-8 flex flex-col gap-3" aria-busy="true" aria-label={t("catechism.loading")}>
+            <div role="status" className="mt-8 flex flex-col gap-3" aria-label={t("catechism.loading")}>
               <Skeleton className="h-6 w-3/4" />
               <Skeleton className="h-12 w-full" rounded="rounded-2xl" weight="faint" />
               <Skeleton className="h-12 w-full" rounded="rounded-2xl" weight="faint" />
