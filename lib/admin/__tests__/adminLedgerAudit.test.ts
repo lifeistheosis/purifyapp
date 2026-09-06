@@ -118,9 +118,6 @@ describe("admin ledger audit", () => {
   it("no gradient in admin CSS or components", () => {
     const offenders: string[] = [];
     for (const f of FILES) {
-      // The reel odometer masks its wheel with a gradient. It is replaced by
-      // a CountUp wrapper in the ledger pass; this line goes with it.
-      if (/Odometer.tsx$/.test(f)) continue;
       const src = code(readFileSync(f, "utf8"));
       for (const m of src.matchAll(/\b(?:linear|radial|conic)-gradient\(|\bbg-gradient-to-/g)) {
         offenders.push(`${relative(ROOT, f)}: ${m[0]}`);

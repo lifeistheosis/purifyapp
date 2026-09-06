@@ -87,30 +87,18 @@ export function Card({
       // card in sixteen tabs is one of these three components, so the scale is
       // consistent by construction instead of by everyone remembering it. The
       // rail is untouched; the owner has it where they want it.
+      // A white card on a hairline, and nothing else. `accent` used to tint
+      // the ground and the border; the Ledger has no coloured card grounds,
+      // so it now only colours the title.
       className="rounded-[var(--adm-radius)] border p-3 md:p-4"
-      style={{
-        background: accent
-          ? "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 93%)"
-          : "var(--adm-panel)",
-        borderColor: accent
-          ? "color-mix(in oklab, var(--adm-accent), transparent 70%)"
-          : "var(--adm-line)",
-        // None on dark, where the surface step already separates the card from
-        // the ground. Light needs it: a white card on a near-white ground has
-        // nothing else to sit on.
-      }}
+      style={{ background: "var(--adm-card)", borderColor: "var(--adm-line)" }}
     >
       {(title || action) && (
         <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
           {title && (
             <h3
-              className="font-sans text-[13px] font-semibold leading-tight"
-              // --adm-accent-line, not --adm-accent. An accent card's ground is
-              // 93% panel, so it is very nearly the ordinary panel, and the
-              // saturated accent as INK on it measured 3.38:1. The -line token
-              // is the one each theme defines as legible against its own
-              // ground, which is exactly the job a title has.
-              style={{ color: accent ? "var(--adm-accent-line)" : "var(--adm-ink)" }}
+              className="adm-heading"
+              style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)" }}
             >
               {title}
             </h3>
@@ -404,14 +392,7 @@ export function StatCard({
   return (
     <div
       className="rounded-[var(--adm-radius)] border p-3.5"
-      style={{
-        background: accent
-          ? "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 93%)"
-          : "var(--adm-panel)",
-        borderColor: accent
-          ? "color-mix(in oklab, var(--adm-accent), transparent 70%)"
-          : "var(--adm-line)",
-      }}
+      style={{ background: "var(--adm-card)", borderColor: "var(--adm-line)" }}
     >
       <p
         className="font-sans text-[12px] font-medium leading-4"
@@ -420,8 +401,8 @@ export function StatCard({
         {label}
       </p>
       <p
-        className="mt-2 font-sans text-[23px] font-semibold leading-none tracking-[-0.02em]"
-        style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)" }}
+        className="mt-2 font-sans text-[28px] font-medium leading-none tracking-[-0.01em]"
+        style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)", fontVariantNumeric: "tabular-nums" }}
       >
         <Odometer value={value} />
       </p>
@@ -446,7 +427,7 @@ function Delta({ value, positive }: { value: number; positive: boolean }) {
       className="inline-flex items-center gap-1 font-sans text-[12px] font-medium"
       style={{ color: positive ? "var(--adm-up)" : "var(--adm-critical)" }}
     >
-      <span aria-hidden>{positive ? "↑" : "↓"}</span>
+      {positive ? "+" : "−"}
       {Math.abs(value)}%
       <span style={{ color: "var(--adm-ink-3)" }}>
         {positive ? "up on" : "down on"} prior
@@ -486,14 +467,7 @@ export function KpiCard({
       // below stops it happening; this makes sure a future child cannot do it
       // again.
       className="flex flex-col overflow-hidden rounded-[var(--adm-radius)] border p-3.5"
-      style={{
-        background: accent
-          ? "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 93%)"
-          : "var(--adm-panel)",
-        borderColor: accent
-          ? "color-mix(in oklab, var(--adm-accent), transparent 70%)"
-          : "var(--adm-line)",
-      }}
+      style={{ background: "var(--adm-card)", borderColor: "var(--adm-line)" }}
     >
       {/* Stacked until there is room for a row. Side by side in a 160px card,
           "Revenue · 30 days" and "paid, net of refunds" both wrapped to two
@@ -520,8 +494,8 @@ export function KpiCard({
             refuses to go below its content width, which is what pushed the
             sparkline out of the card rather than squeezing the number. */}
         <p
-          className="min-w-0 font-sans text-[23px] font-semibold leading-none tracking-[-0.02em]"
-          style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)" }}
+          className="min-w-0 font-sans text-[28px] font-medium leading-none tracking-[-0.01em]"
+          style={{ color: accent ? "var(--adm-accent)" : "var(--adm-ink)", fontVariantNumeric: "tabular-nums" }}
         >
           <Odometer value={value} />
         </p>
@@ -827,7 +801,7 @@ export function DataTable<T>({
         // the table simply ended there.
         style={{ borderColor: "var(--adm-line)", maxHeight: "70dvh" }}
       >
-        <table className="w-full font-sans text-[13px]">
+        <table className="w-full font-sans text-[13px]" style={{ fontVariantNumeric: "tabular-nums" }}>
           <thead className="adm-thead">
             <tr>
               {columns.map((c, i) => (
@@ -835,20 +809,21 @@ export function DataTable<T>({
                   key={c.key}
                   scope="col"
                   className={
-                    "border-b px-3 py-2 font-medium " +
+                    "h-11 border-b px-3 text-[12px] font-medium " +
                     (i === 0 ? "adm-tbl-1st " : "") +
                     (c.align === "right" ? "text-right" : "text-left")
                   }
                   style={{
                     borderColor: "var(--adm-line)",
-                    color: "var(--adm-ink-3)",
+                    color: "var(--adm-ink-2)",
+                    background: "var(--adm-panel-2)",
                   }}
                 >
                   {c.label}
                 </th>
               ))}
               {reorder ? (
-                <th scope="col" className="border-b px-3 py-2 font-medium text-left" style={{ borderColor: "var(--adm-line)", color: "var(--adm-ink-3)" }}>
+                <th scope="col" className="h-11 border-b px-3 text-[12px] font-medium text-left" style={{ borderColor: "var(--adm-line)", color: "var(--adm-ink-2)", background: "var(--adm-panel-2)" }}>
                   Order
                 </th>
               ) : null}
@@ -870,7 +845,7 @@ export function DataTable<T>({
                 <tr
                   key={rowKey(r)}
                   data-flip-key={rowKey(r)}
-                  className="adm-rail-item border-b hover:bg-[var(--adm-hover)]"
+                  className="adm-rail-item h-11 border-b hover:bg-[var(--adm-hover)]"
                   style={{
                     borderColor: "var(--adm-line)",
                     // The row being dragged fades rather than moving with the
@@ -916,9 +891,9 @@ export function DataTable<T>({
                     <td
                       key={c.key}
                       className={
-                        "px-3 py-2 " +
+                        "px-3 py-1.5 align-middle " +
                         (i === 0 ? "adm-tbl-1st " : "") +
-                        (c.align === "right" ? "text-right" : "")
+                        (c.align === "right" ? "text-right tabular-nums" : "")
                       }
                       style={{ color: "var(--adm-ink)" }}
                     >
@@ -1345,22 +1320,26 @@ export function Pill({
   tone = "neutral",
 }: {
   children: ReactNode;
-  tone?: "neutral" | "gold" | "rose" | "emerald";
+  /**
+   * "up" and "down" are the Ledger names; "emerald" and "rose" are the
+   * old ones and map onto them, so the forty call sites keep compiling.
+   * Neither is a fill any more: a pill is a hairline outline in its tone.
+   */
+  tone?: "neutral" | "gold" | "rose" | "emerald" | "up" | "down";
 }) {
-  const tones: Record<string, { fg: string; bg: string }> = {
-    neutral: { fg: "var(--adm-ink-2)", bg: "var(--adm-panel-2)" },
-    // 92%, not 88%. At a 12% tint the light-theme text lands around 4.2:1 on
-    // its own wash, which is the trap Shopify's own success green falls into.
-    // At 8% every tone clears 4.5:1 and the dark tint is still clearly a pill.
-    gold: { fg: "var(--adm-accent)", bg: "color-mix(in oklab, var(--adm-accent), transparent 92%)" },
-    rose: { fg: "var(--adm-critical)", bg: "color-mix(in oklab, var(--adm-critical), transparent 92%)" },
-    emerald: { fg: "var(--adm-up)", bg: "color-mix(in oklab, var(--adm-up), transparent 92%)" },
+  const tones: Record<string, { fg: string; line: string }> = {
+    neutral: { fg: "var(--adm-ink-2)", line: "var(--adm-line-strong)" },
+    gold: { fg: "var(--adm-accent)", line: "var(--adm-accent)" },
+    rose: { fg: "var(--adm-down)", line: "var(--adm-down)" },
+    down: { fg: "var(--adm-down)", line: "var(--adm-down)" },
+    emerald: { fg: "var(--adm-up)", line: "var(--adm-up)" },
+    up: { fg: "var(--adm-up)", line: "var(--adm-up)" },
   };
   const t = tones[tone];
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-[var(--adm-radius-pill)] px-2 py-0.5 font-sans text-[11.5px] font-medium"
-      style={{ color: t.fg, background: t.bg }}
+      className="inline-flex items-center gap-1 rounded-[var(--adm-radius-pill)] border px-2 py-0.5 font-sans text-[11.5px] font-medium"
+      style={{ color: t.fg, borderColor: t.line, background: "transparent" }}
     >
       {/* A dot in the same hue, so the state reads at a glance, while the
           word beside it carries the meaning without relying on colour. */}
