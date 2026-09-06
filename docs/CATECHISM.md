@@ -313,3 +313,24 @@ sharing.
   unlock, streak, level, premium, VIP, elite). None appears in a catechism
   string. Two pre-existing uses elsewhere (`nav.premium`, the fasting
   "streak" strings) are recorded in `docs/plans/v1.4/README.md`.
+
+### Study Collections
+
+- C1, free: collections, progress, practice and the "Completed:" line are
+  free and need no account. Only applying a collection palette is a Purify
+  Plus tool, and a palette is cosmetic. Under the `PLUS_ENFORCED_*` flags as
+  they ship (all off) even that is open, like Candlelight and Monastery.
+- C2, data: `collection_progress` is a self-only row (question ids and a
+  timestamp), deleted with the account; `user_theme` is a self-select row
+  written only by the service role. Nothing new on the anonymous path: a
+  signed-out reader keeps the set on the device and sends nothing.
+- C3, calm: progress is a set that only grows. No decay, no expiry, no
+  reset, no renew prompt, no timer in practice, no share, no push. The
+  completion is one line on the collections page and one on `/account`.
+- C4, one change: config, loader, device store, sync, route, theme write,
+  pages, cards, account line, migration, import script, strings, doc and
+  tests in one branch.
+- C5, words: "collection" and "marks of study" throughout. The twenty-five
+  `catechism.collections.*` strings and the plan item were read against the
+  banned list (reward, earn, unlock, streak, level, premium, VIP, elite);
+  none appears. No badge outside `/account`, no sharing prompt.
