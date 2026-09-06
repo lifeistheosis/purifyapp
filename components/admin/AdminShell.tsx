@@ -72,11 +72,11 @@ import { AdminMobileNav } from "./AdminMobileNav";
 import { installLarpWriteGuard, larpOn, setLarp, useLarpOn } from "@/lib/admin/larp";
 import { TabBoundary } from "./TabBoundary";
 import { OwnerSection } from "./OwnerSection";
-import { HeroRow } from "./HeroRow";
+import { Summary } from "./Summary";
 import { AttentionStrip } from "./AttentionStrip";
 import { useAttention } from "@/lib/admin/useAttention";
 import { attentionTabs, badgeFor } from "@/lib/admin/attention";
-import { SectionHead, type PeriodId } from "./hero";
+import { SectionHead } from "./hero";
 import { Freshness } from "./Freshness";
 import { TabSearch } from "./TabSearch";
 import { useLiveData } from "@/lib/admin/useLiveData";
@@ -580,7 +580,6 @@ export function AdminShell({
       trigger?.focus();
     };
   }, [navOpen]);
-  const [period, setPeriod] = useState<PeriodId>("30d");
   // Bumped by the tab boundary's Try again, so a recovered panel re-mounts and
   // re-fetches instead of needing a page reload.
   const [reloadKey, setReloadKey] = useState(0);
@@ -1063,9 +1062,7 @@ export function AdminShell({
               the hero IS traffic and the reader met the same numbers twice in
               one scroll. */}
           {mode === "ops" && active === "overview" ? (
-            <HeroRow
-              period={period}
-              onPeriod={setPeriod}
+            <Summary
               onOpenTab={(id) => isTabId(id) && select(id)}
               summary={attention.summary}
               onRetry={attention.refresh}
@@ -1077,6 +1074,11 @@ export function AdminShell({
               // printed $0 over an empty series it had never been given.
               revenueMeasured={overview.data !== null && !overview.data.ordersDegraded}
               revenueLoading={overview.loading}
+              paidSubscribers={overview.data?.paidPlus ?? null}
+              pendingOrders={pendingOrders}
+              overviewSynced={overview.lastSynced}
+              overviewFailing={overview.failing}
+              onRefreshOverview={overview.refresh}
             />
           ) : null}
 

@@ -29,12 +29,18 @@ export function StatList({
   error,
   empty = "Nothing to list yet.",
   emptyHref,
+  onPin,
+  pinned,
 }: {
   rows: StatRow[];
   loading?: boolean;
   error?: string;
   empty?: string;
   emptyHref?: { href: string; label: string };
+  /** Adds a pin control at the end of each row. */
+  onPin?: (id: string) => void;
+  /** Ids already pinned, drawn in the gold. */
+  pinned?: readonly string[];
 }) {
   if (loading) {
     return (
@@ -100,13 +106,29 @@ export function StatList({
             </span>
           </>
         );
+        const isPinned = pinned?.includes(r.id) ?? false;
+        const pin = onPin ? (
+          <button
+            type="button"
+            onClick={() => onPin(r.id)}
+            aria-pressed={isPinned}
+            aria-label={isPinned ? `Unpin ${r.label}` : `Pin ${r.label}`}
+            title={isPinned ? "Unpin from Summary" : "Pin to Summary"}
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-[var(--adm-radius-sm)]"
+            style={{ color: isPinned ? "var(--adm-up)" : "var(--adm-ink-3)" }}
+          >
+            <svg width="12" height="12" viewBox="0 0 20 20" fill={isPinned ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M12.5 2.5 17.5 7.5 13.8 9.3 12 15l-3.5-3.5L4 16l4.5-4.5L5 8l5.7-1.8z" />
+            </svg>
+          </button>
+        ) : null;
         return (
-          <li key={r.id} style={{ borderColor: "var(--adm-line)" }}>
+          <li key={r.id} className={pin ? "flex items-center gap-1" : undefined} style={{ borderColor: "var(--adm-line)" }}>
             {r.onClick ? (
               <button
                 type="button"
                 onClick={r.onClick}
-                className="adm-control flex h-11 w-full items-center gap-3 rounded-[var(--adm-radius-sm)] px-1 text-left"
+                className="adm-control flex h-11 min-w-0 flex-1 items-center gap-3 rounded-[var(--adm-radius-sm)] px-1 text-left"
                 style={
                   {
                     "--_bg": "transparent",
@@ -117,8 +139,9 @@ export function StatList({
                 {body}
               </button>
             ) : (
-              <div className="flex h-11 items-center gap-3 px-1">{body}</div>
+              <div className="flex h-11 min-w-0 flex-1 items-center gap-3 px-1">{body}</div>
             )}
+            {pin}
           </li>
         );
       })}
