@@ -15,7 +15,9 @@
 //   --apply   write data/catechism/questions.json. DRY RUN without it.
 //   --mirror  also upsert the rows into quiz_questions with the service role
 //             from .env.local, so the admin tab can name each question beside
-//             its counters. The file stays canonical; the table is a copy.
+//             its counters, and the committed data/catechism/collections.json
+//             into collections the same way. The files stay canonical; the
+//             tables are copies.
 //
 // Runs under plain Node with type stripping and the "@/" alias hook, the same
 // way scripts/emit-widget-data.mjs does, so the checks here are the app's own
@@ -24,6 +26,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { parseCollections, type Collection } from "@/lib/catechism/collections";
 import { parseQuestion } from "@/lib/catechism/schema";
 import { resolveSourceRef, parseSourceRef, type Registries } from "@/lib/catechism/sourceRef";
 import { ANCHOR_MIN_BANK, type Question } from "@/lib/catechism/types";
@@ -32,6 +35,7 @@ import { getSaint } from "@/lib/saints/saints";
 
 const ROOT = process.cwd();
 const OUT = path.join(ROOT, "data", "catechism", "questions.json");
+const COLLECTIONS = path.join(ROOT, "data", "catechism", "collections.json");
 const TOPICS_DIR = path.join(ROOT, "data", "topics");
 const SAINTS_DIR = path.join(ROOT, "data", "saints");
 
@@ -151,7 +155,29 @@ function validate(rows: unknown[]): { questions: Question[]; problems: Problem[]
   return { questions, problems };
 }
 
-function report(questions: Question[]) {
+/**
+ * The committed collections, refused whole on the first problem, the rule
+ * the bank gets. Read from the file rather than loadCollections() so a bad
+ * row is an error here and not a dropped-with-a-warning row later.
+ */
+function loadCommittedCollections(): Collection[] {
+  if (!fs.existsSync(COLLECTIONS)) return [];
+  let raw: unknown;
+  try {
+    raw = JSON.parse(fs.readFileSync(COLLECTIONS, "utf8"));
+  } catch (e) {
+    fail(`${path.relative(ROOT, COLLECTIONS)} is not valid JSON: ${(e as Error).message}`);
+  }
+  const r = parseCollections(raw);
+  if (!r.ok) {
+    console.error(`${r.errors.length} problem(s) in ${path.relative(ROOT, COLLECTIONS)}:`);
+    for (const e of r.errors) console.error(`  ${e}`);
+    fail("Nothing written.");
+  }
+  return r.collections;
+}
+
+function report(questions: Question[], collections: Collection[]) {
   const byType = new Map<string, number>();
   const byTag = new Map<string, number>();
   let anchored = 0;
@@ -168,6 +194,13 @@ function report(questions: Question[]) {
     console.log(
       `  NOTE: under ${ANCHOR_MIN_BANK} questions the anchor slot is skipped so the seven-day no-repeat rule can hold.`,
     );
+  }
+  if (collections.length) {
+    console.log(`${collections.length} collection(s)`);
+    for (const c of collections) {
+      const n = questions.filter((q) => q.tags.includes(c.tag) && !q.retired_at).length;
+      console.log(`  ${c.slug} (tag ${c.tag}): ${n} question(s)${n === 0 ? ", none yet" : ""}`);
+    }
   }
 }
 
@@ -187,7 +220,7 @@ function loadEnv() {
   }
 }
 
-async function mirror(questions: Question[]) {
+async function mirror(questions: Question[], collections: Collection[]) {
   loadEnv();
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -230,6 +263,20 @@ async function mirror(questions: Question[]) {
     }
   }
   console.log(`  mirrored ${rows.length} rows into quiz_questions`);
+
+  if (collections.length) {
+    const { error: cErr } = await admin.from("collections").upsert(
+      collections.map((c) => ({ ...c, updated_at: new Date().toISOString() })),
+      { onConflict: "slug" },
+    );
+    if (cErr) {
+      if (cErr.code === "42P01" || cErr.code === "PGRST205") {
+        fail("collections is not there: supabase/migrations/20260905_collections.sql has not been applied.");
+      }
+      fail(`collections upsert failed: ${cErr.message}`);
+    }
+    console.log(`  mirrored ${collections.length} rows into collections`);
+  }
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────
@@ -254,7 +301,8 @@ try {
     fail("Nothing written.");
   }
 
-  report(questions);
+  const collections = loadCommittedCollections();
+  report(questions, collections);
 
   if (!APPLY) {
     console.log(`\nDry run. Add --apply to write ${path.relative(ROOT, OUT)}.`);
@@ -262,7 +310,7 @@ try {
     fs.mkdirSync(path.dirname(OUT), { recursive: true });
     fs.writeFileSync(OUT, JSON.stringify(questions, null, 2) + "\n");
     console.log(`\nWrote ${path.relative(ROOT, OUT)} (${questions.length} questions).`);
-    if (MIRROR) await mirror(questions);
+    if (MIRROR) await mirror(questions, collections);
   }
 } catch (e) {
   if (!(e instanceof Quit)) {

@@ -1,12 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import { progressFor, type CollectionIndexEntry } from "@/lib/catechism/collections";
 import type { AttemptAnswer, ClientQuestion } from "@/lib/catechism/types";
 import { useCollectionProgress } from "@/lib/catechism/useCollectionProgress";
+
+/** A stable empty index, so the memo below does not re-run for a page that passes none. */
+const NO_COLLECTIONS: CollectionIndexEntry[] = [];
 
 /**
  * The end of the day's five: one mark per question settling in, one line
@@ -25,7 +29,7 @@ export function CompletionScreen({
   answers,
   score,
   total,
-  collections = [],
+  collections = NO_COLLECTIONS,
 }: {
   questions: ClientQuestion[];
   answers: AttemptAnswer[];
@@ -35,8 +39,12 @@ export function CompletionScreen({
 }) {
   const { t } = useTranslate();
   const byId = new Map(answers.map((a) => [a.question_id, a]));
-  const shown = new Set(questions.map((q) => q.id));
-  const touched = collections.filter((c) => c.question_ids.some((id) => shown.has(id)));
+  // Memoised: CollectionLines hands this to a hook that re-reads the store
+  // whenever the list changes identity.
+  const touched = useMemo(() => {
+    const shown = new Set(questions.map((q) => q.id));
+    return collections.filter((c) => c.question_ids.some((id) => shown.has(id)));
+  }, [collections, questions]);
 
   return (
     <div>
@@ -105,7 +113,7 @@ export function CompletionScreen({
             href="/catechism/collections"
             className="inline-block font-sans text-caption text-paper/55 hover:text-paper transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none"
           >
-            {t("catechism.collections.link")}
+            {t("catechism.collections.title")}
           </Link>
         )}
       </div>

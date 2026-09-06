@@ -50,6 +50,9 @@ import { trackCatechism } from "./events";
 
 const SECTION = "px-5 md:px-8 py-12 md:py-20";
 
+/** A stable empty index, so a page that passes none does not re-key the run. */
+const NO_COLLECTIONS: CollectionIndexEntry[] = [];
+
 type Stage =
   | { kind: "answering"; index: number; answers: AttemptAnswer[]; given: Answer | null }
   | { kind: "done"; attempt: LocalAttempt };
@@ -78,7 +81,7 @@ function keyFor(window: DailyWindow, today: string): string | null {
 
 export function CatechismClient({
   window,
-  collections = [],
+  collections = NO_COLLECTIONS,
 }: {
   window: DailyWindow;
   /** Each collection with its published question ids (lib/catechism/collections.ts). */

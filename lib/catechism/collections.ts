@@ -14,14 +14,16 @@
 //
 // Pure apart from the JSON import, so this ships in the client bundle (the
 // You tab names completed collections from it), runs under plain Node in
-// scripts/quiz-import.ts, and imports cleanly from the routes.
+// scripts/quiz-import.ts, and imports cleanly from the routes. It does not
+// import select.ts on purpose: that module pulls node:crypto and the whole
+// church calendar, neither of which belongs in a client bundle, and its
+// relative imports do not resolve under the script alias hook.
 
 import { z } from "zod";
 
 import raw from "@/data/catechism/collections.json";
 import { isCollectionTheme } from "@/lib/reader/readingModes";
 
-import { isEligible } from "./select";
 import type { Question } from "./types";
 
 export type Collection = {
@@ -134,13 +136,20 @@ function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+/** The same rule as select.ts isEligible: published by `today`, not retired. */
+function isPublished(q: Question, today: string): boolean {
+  if (q.retired_at) return false;
+  if (q.published_at && q.published_at.slice(0, 10) > today) return false;
+  return true;
+}
+
 /** The currently published questions carrying `tag`, in bank order. */
 export function tagQuestions(
   bank: readonly Question[],
   tag: string,
   today: string = todayIso(),
 ): Question[] {
-  return bank.filter((q) => q.tags.includes(tag) && isEligible(q, today));
+  return bank.filter((q) => q.tags.includes(tag) && isPublished(q, today));
 }
 
 export type Progress = {
