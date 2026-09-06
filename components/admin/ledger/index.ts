@@ -3,6 +3,7 @@
 // renders every one of these in every state.
 export { CountUp } from "./CountUp";
 export { KpiTile, type KpiTileProps } from "./KpiTile";
+export { MetricToggle } from "./MetricToggle";
 export { PeriodBar, type PeriodId } from "./PeriodBar";
 export { Rail, type RailGroup, type RailTab } from "./Rail";
 export { Sparkline } from "./Sparkline";

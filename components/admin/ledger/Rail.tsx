@@ -32,7 +32,7 @@ export function Rail({
   active,
   onSelect,
   workspace = "Production",
-  role,
+  roleLabel,
   top,
   live,
   footer,
@@ -43,7 +43,7 @@ export function Rail({
   onSelect: (id: string) => void;
   workspace?: string;
   /** "Admin" or "Owner": which gate this session cleared. */
-  role?: string;
+  roleLabel?: string;
   top?: ReactNode;
   live?: ReactNode;
   footer?: ReactNode;
@@ -51,7 +51,7 @@ export function Rail({
 }) {
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <Wordmark workspace={workspace} role={role} />
+      <Wordmark workspace={workspace} roleLabel={roleLabel} />
       {top}
       <div className="min-h-0 flex-1 overflow-y-auto">
         <nav aria-label="Admin sections">
@@ -80,19 +80,19 @@ export function Rail({
   );
 }
 
-function Wordmark({ workspace, role }: { workspace: string; role?: string }) {
+function Wordmark({ workspace, roleLabel }: { workspace: string; roleLabel?: string }) {
   return (
     <div className="mb-3 px-2 pt-1">
       <div className="flex items-baseline justify-between gap-2">
         <span className="adm-serif text-[19px] leading-none" style={{ color: "var(--adm-ink)" }}>
           Purify
         </span>
-        {role ? (
+        {roleLabel ? (
           <span
             className="rounded-[var(--adm-radius-pill)] border px-1.5 py-px font-sans text-[10px] font-medium uppercase tracking-wide"
             style={{ borderColor: "var(--adm-line-strong)", color: "var(--adm-ink-3)" }}
           >
-            {role}
+            {roleLabel}
           </span>
         ) : null}
       </div>
