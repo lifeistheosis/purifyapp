@@ -30,9 +30,10 @@ export const READING_THEMES: {
   /**
    * A palette paired with a study collection (lib/catechism/collections.ts).
    * Same gate as the other paid palettes; the difference is where it is
-   * offered. ReadingModeChips lists a collection palette only while it is the
-   * active one or its collection is complete, so the grid does not advertise
-   * palettes a reader has no path to yet.
+   * offered: from its collection on /catechism/collections once that is
+   * complete (components/catechism/ThemeRow.tsx). ReadingModeChips lists a
+   * collection palette only while it is the active one, so the grid does not
+   * advertise palettes a reader has no path to yet.
    */
   collection?: true;
 }[] = [
