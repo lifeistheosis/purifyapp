@@ -240,6 +240,32 @@ export async function fetchLedger(
   return { configured: true, error: null, rows, summary: summarise(rows), fetchedAt };
 }
 
+/**
+ * The ledger, cached a minute per range in module memory.
+ *
+ * Both the ledger route and the revenue route read it, on the same 60s
+ * cadence the tab polls at; re-walking every balance transaction on each
+ * poll would spend Stripe's rate limit on identical bytes. A failed read is
+ * not cached, so the next poll tries again. The order map is only needed
+ * for matching; a caller that wants totals alone passes an empty map, and
+ * the cache key carries whether matching was asked for so the two never
+ * serve each other a half-matched ledger.
+ */
+const TTL_MS = 60_000;
+const cache = new Map<string, { at: number; body: Ledger }>();
+
+export async function cachedLedger(
+  range: string,
+  orderByIntent: ReadonlyMap<string, string>,
+): Promise<Ledger> {
+  const key = `${range}:${orderByIntent.size > 0 ? "matched" : "bare"}`;
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < TTL_MS) return hit.body;
+  const body = await fetchLedger({ from: rangeFrom(range), orderByIntent });
+  if (!body.error) cache.set(key, { at: Date.now(), body });
+  return body;
+}
+
 /** The tab's range vocabulary to a unix `from`. `all` and unknown mean none. */
 export function rangeFrom(range: string, now: Date = new Date()): number | undefined {
   const day = 86_400;

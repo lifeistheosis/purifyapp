@@ -10,6 +10,7 @@ import {
 import { subscriptionStats } from "@/lib/entitlements/adminStats";
 import { estimatedMrrCents, estimatedArrCents } from "@/lib/premium/mrr";
 import { getProjectMetrics, realArpuAnnual } from "@/lib/billing/revenuecatMetrics";
+import { cachedLedger } from "@/lib/billing/stripeLedger";
 
 export const dynamic = "force-dynamic";
 
@@ -132,8 +133,25 @@ export async function GET() {
   // Donations excluded, per above. `complete` no longer waits on a donations
   // snapshot either: a self-reported figure arriving would not make this total
   // any more complete, because it is not in it.
-  const realizedTotalCents = summary.netCents + (subsRealizedCents ?? 0);
-  const realizedComplete = subsRealizedCents != null;
+  //
+  // STRIPE WHEN REVENUECAT IS NOT CONNECTED. Without the RevenueCat key the
+  // headline read $0 while Stripe had paid out $56.72 (owner, 2026-09-06).
+  // Stripe's ledger is what the business was actually paid, so when
+  // RevenueCat cannot answer, the realized figure is what Stripe paid out:
+  // charges net of refunds and fees, landed in the bank. Shop orders are
+  // Stripe charges too, so the payout figure already contains them and
+  // shop net is NOT added on top. Totals only, no order matching here.
+  const stripe = live ? null : await cachedLedger("all", new Map());
+  const stripePaidOutCents =
+    stripe && stripe.configured && !stripe.error ? stripe.summary.payoutsCents : null;
+  const realizedTotalCents =
+    stripePaidOutCents != null
+      ? stripePaidOutCents
+      : summary.netCents + (subsRealizedCents ?? 0);
+  const realizedComplete = subsRealizedCents != null || stripePaidOutCents != null;
+  if (stripePaidOutCents != null) {
+    bySource.push({ name: "Stripe, paid out", value: stripePaidOutCents });
+  }
 
   return NextResponse.json(
     {
@@ -214,6 +232,9 @@ export async function GET() {
         donationsCents: donationsTotal,
         /** Null when RevenueCat is not configured: unmeasured, not zero. */
         subscriptionsCents: subsRealizedCents,
+        /** What Stripe has paid out, all time. Null when Stripe is not configured or RevenueCat answered instead. */
+        stripePaidOutCents,
+        source: subsRealizedCents != null ? "revenuecat" : stripePaidOutCents != null ? "stripe" : "partial",
       },
     },
     { headers: { "Cache-Control": "no-store" } },

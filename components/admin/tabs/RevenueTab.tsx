@@ -60,6 +60,8 @@ type Revenue = {
     shopCents: number;
     donationsCents: number;
     subscriptionsCents: number | null;
+    stripePaidOutCents: number | null;
+    source: "revenuecat" | "stripe" | "partial";
   };
 };
 
@@ -101,11 +103,11 @@ function RevenuePanel() {
           accent
           hint={
             data
-              ? data.realized.complete
-                ? "shop + donations + subscriptions"
-                : data.realized.subscriptionsCents == null
-                  ? "shop + donations; subscriptions not connected"
-                  : "shop + subscriptions; donations never recorded"
+              ? data.realized.source === "stripe"
+                ? "paid out by Stripe, all time"
+                : data.realized.complete
+                  ? "shop + subscriptions"
+                  : "shop only; Stripe and RevenueCat not connected"
               : undefined
           }
         />
