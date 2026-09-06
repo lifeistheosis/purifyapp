@@ -19,7 +19,7 @@ export function TrafficTab() {
   const [fetchedRange, setFetchedRange] = useState<Range | null>(null);
   // WHICH range failed, not a boolean. A boolean needed clearing at the top of
   // the effect, and a setState in an effect body is a cascading render (the
-  // same lint rule AdminThemeToggle was rewritten for). Keyed by range it
+  // same lint rule the old theme toggle was rewritten for). Keyed by range it
   // clears itself: switching to 7d makes a stored "30d" stop matching.
   const [failedRange, setFailedRange] = useState<Range | null>(null);
   const [show, setShow] = useState({ visitors: true, views: true, signups: true });

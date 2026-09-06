@@ -61,8 +61,6 @@ import { ContentHealthTab } from "./tabs/ContentHealthTab";
 import { HealthTab } from "./tabs/HealthTab";
 import { AuditLogTab } from "./tabs/AuditLogTab";
 import { SourcingTab } from "./tabs/SourcingTab";
-import { AdminThemeToggle } from "./AdminThemeToggle";
-import { AdminSoundToggle } from "./AdminSoundToggle";
 import { AdminMotionToggle } from "./AdminMotionToggle";
 import { AdminStreamerToggle } from "./AdminStreamerToggle";
 import { ActivityFeed } from "./ActivityFeed";
@@ -400,7 +398,7 @@ export function AdminShell({
   // for; `active` is what this account may actually see. Deriving the second
   // from the first during render is what keeps a non-owner off an owner tab
   // without an effect that calls setState, which React flags as a cascading
-  // render and which AdminThemeToggle and useTween both learned the hard way.
+  // render and which the old theme toggle and useTween both learned the hard way.
   const [requested, setActive] = useState<TabId>("overview");
   // Only for the rail's title attribute, which CSS cannot blur. Everything
   // else that hides on stream does it with .adm-sensitive.
@@ -590,11 +588,10 @@ export function AdminShell({
           full-width row, which is also where it belongs, since sitting it flush
           against three harmless toggles is how it gets hit by accident. */}
       <div className="flex flex-col gap-1">
-        {/* Four now, so a 2x2 grid rather than a row: four across a 200px rail
-            is what collided in the first place. */}
+        {/* Two now. Theme and Sound went with the dark palette and the
+            register; Reduced motion stays as the override, Streamer as the
+            operator tool it is. */}
         <div className="grid grid-cols-2 gap-1">
-          <AdminThemeToggle />
-          <AdminSoundToggle />
           <AdminMotionToggle />
           <AdminStreamerToggle />
         </div>
