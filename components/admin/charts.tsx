@@ -169,17 +169,59 @@ function useNarrowWidth() {
   return [ref, narrow] as const;
 }
 
+//
+// MONOTONE, NOT CATMULL-ROM, since 2026-09-06. Catmull-Rom is smooth but it is
+// not shape-preserving: a flat zero baseline with one $19 day in it curled
+// BELOW the axis on either side of the spike, and the daily revenue chart
+// showed dips to about minus two dollars on days nothing happened. The owner
+// read them as refunds. Fritsch-Carlson monotone cubic interpolation limits
+// each tangent so the curve between two points never leaves the range of
+// those two points: a run of zeros stays exactly on zero, a spike rises and
+// falls without ringing, and nothing the data does not say is drawn.
 export function smoothPath(pts: { x: number; y: number }[]): string {
   if (pts.length < 2) return pts.length === 1 ? `M ${pts[0].x} ${pts[0].y}` : "";
+  const n = pts.length;
+  // Secant slopes between neighbours. A repeated x (two points on top of each
+  // other) would divide by zero; treat that interval as flat.
+  const dx: number[] = [];
+  const m: number[] = [];
+  for (let i = 0; i < n - 1; i++) {
+    const h = pts[i + 1].x - pts[i].x;
+    dx.push(h);
+    m.push(h !== 0 ? (pts[i + 1].y - pts[i].y) / h : 0);
+  }
+  // Tangents: zero wherever the slope changes sign or an interval is flat, so
+  // every local extreme in the data is a real extreme of the curve.
+  const t: number[] = new Array(n).fill(0);
+  t[0] = m[0];
+  t[n - 1] = m[n - 2];
+  for (let i = 1; i < n - 1; i++) {
+    t[i] = m[i - 1] * m[i] <= 0 ? 0 : (m[i - 1] + m[i]) / 2;
+  }
+  // Fritsch-Carlson limiter: keep each tangent inside the circle of radius 3
+  // around the secant so the segment cannot overshoot.
+  for (let i = 0; i < n - 1; i++) {
+    if (m[i] === 0) {
+      t[i] = 0;
+      t[i + 1] = 0;
+      continue;
+    }
+    const a = t[i] / m[i];
+    const b = t[i + 1] / m[i];
+    const s = a * a + b * b;
+    if (s > 9) {
+      const k = 3 / Math.sqrt(s);
+      t[i] = k * a * m[i];
+      t[i + 1] = k * b * m[i];
+    }
+  }
   let d = `M ${pts[0].x} ${pts[0].y}`;
-  for (let i = 0; i < pts.length - 1; i++) {
-    const p0 = pts[i - 1] ?? pts[i];
+  for (let i = 0; i < n - 1; i++) {
     const p1 = pts[i];
     const p2 = pts[i + 1];
-    const p3 = pts[i + 2] ?? p2;
-    // 6 is the standard Catmull-Rom tension. Lower makes it wander.
-    d += ` C ${p1.x + (p2.x - p0.x) / 6} ${p1.y + (p2.y - p0.y) / 6}, ` +
-         `${p2.x - (p3.x - p1.x) / 6} ${p2.y - (p3.y - p1.y) / 6}, ${p2.x} ${p2.y}`;
+    const h = dx[i];
+    d += ` C ${p1.x + h / 3} ${p1.y + (t[i] * h) / 3}, ` +
+         `${p2.x - h / 3} ${p2.y - (t[i + 1] * h) / 3}, ${p2.x} ${p2.y}`;
   }
   return d;
 }
