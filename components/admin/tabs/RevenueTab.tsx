@@ -2,13 +2,13 @@
 
 // Revenue — unified money view. Shop revenue (net of refunds, reusing the
 // pure earnings aggregators server-side), donations, and an ESTIMATED
-// subscription run-rate, with a monthly trend, a revenue-by-source donut,
+// subscription run-rate, with a monthly trend, a revenue-by-source list,
 // and top products. A sub-tab holds the existing costs/sustainability UI.
 
 import { useLiveData } from "@/lib/admin/useLiveData";
 import { Freshness } from "../Freshness";
 import { Card, StatCard, ChartFrame } from "../primitives";
-import { AreaChart, BarChart, Donut, SERIES_COLORS, chartColors } from "../charts";
+import { BarChart, LineChart, SegmentList, SERIES_COLORS, chartColors } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
 import { ReconcileCard } from "../ReconcileCard";
 import { StripeLedgerCard } from "../StripeLedgerCard";
@@ -190,7 +190,7 @@ function RevenuePanel() {
         isEmpty={monthly.length === 0}
         empty="No shop revenue yet."
       >
-        <AreaChart
+        <LineChart
           labels={monthly.map((m) => m.month.slice(2))}
           series={[
             {
@@ -218,9 +218,7 @@ function RevenuePanel() {
           empty="Nothing realized yet."
           sensitive
         >
-          <div className="flex justify-center">
-            <Donut segments={donutSegments} size={200} label="USD" />
-          </div>
+          <SegmentList segments={donutSegments} label="USD realized" format={(v) => `$${v.toLocaleString("en-US")}`} />
         </ChartFrame>
 
         <ChartFrame

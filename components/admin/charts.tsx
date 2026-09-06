@@ -10,12 +10,19 @@
 //   - Hover state lives in React; pointer events are bound to a single
 //     overlay rect so we don't pay an event handler per data point.
 //
-// Exports: Sparkline, LineChart, AreaChart, BarChart, Donut,
-//          CalendarHeatmap, SERIES_COLORS, chartColors.
+// Exports: Sparkline, LineChart, AreaChart (a LineChart now), BarChart,
+//          SegmentList (what the Donut became), CalendarHeatmap,
+//          SERIES_COLORS, chartColors.
+//
+// THE LEDGER RULES, since 2026-09-05. A chart is at most two lines: the
+// first in ink at --adm-chart-line, the second in muted ink, dashed. No area
+// fill, no gradient, no dot at the end or under the cursor; the cursor is a
+// hairline. A chart asked to draw three or more series draws them as small
+// multiples, one line per plot, so every series is still on screen and no
+// plot ever carries a third line. Donut and pie are gone: a share is a list.
 
 import {
   useEffect,
-  useId,
   useLayoutEffect,
   useRef,
   useState,
@@ -23,6 +30,7 @@ import {
 } from "react";
 
 import { useReducedMotion } from "@/lib/ui/motion";
+import { StatList } from "./ledger/StatList";
 
 // Layout effect on the client, plain effect on the server, where there is no
 // layout to read and useLayoutEffect only warns. The identity is chosen once
@@ -61,7 +69,7 @@ export const chartColors = {
   primary: "var(--adm-s1)",
   accent: "var(--adm-accent)",
   info: "var(--adm-s2)",
-  positive: "var(--adm-good)",
+  positive: "var(--adm-up)",
   negative: "var(--adm-critical)",
   warning: "var(--adm-warn)",
   lilac: "var(--adm-s4)",
@@ -192,22 +200,18 @@ export function Sparkline({
   labels,
   width = 120,
   height = 32,
-  color = chartColors.primary,
+  color = "var(--adm-ink)",
   interactive = false,
 }: {
   data: number[];
   labels?: string[];
   width?: number;
   height?: number;
+  /** A token. The ledger draws in ink; the second of two lines in muted ink. */
   color?: string;
   interactive?: boolean;
 }) {
   const [hover, setHover] = useState<number | null>(null);
-  // useId, not a counter or a module constant. Two Sparklines sharing a
-  // gradient id makes the second render with no fill, which is exactly the
-  // bug that shipped in CartesianPlot (area-grad-0) and ProjectionChart
-  // (own-grad) for months.
-  const uid = useId().replace(/:/g, "");
 
   if (!data.length) {
     return <svg width={width} height={height} aria-hidden="true" />;
@@ -220,13 +224,7 @@ export function Sparkline({
     x: i * stepX,
     y: height - ((v - min) / span) * height,
   }));
-  // Curved, not angular. smoothPath has been exported from this file since
-  // v4 and no chart inside it ever called it. The two components that did,
-  // HeroSpark and ProjectionChart, are the two that never looked cheap.
   const line = smoothPath(xy);
-  const area = `${line} L ${(data.length - 1) * stepX} ${height} L 0 ${height} Z`;
-  const last = data[data.length - 1];
-  const lastY = height - ((last - min) / span) * height;
 
   const onMove = (e: React.MouseEvent<SVGSVGElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -247,44 +245,33 @@ export function Sparkline({
         onMouseMove={interactive ? onMove : undefined}
         onMouseLeave={interactive ? () => setHover(null) : undefined}
       >
-        <defs>
-          <linearGradient id={`spark-${uid}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={color} stopOpacity={0.2} />
-            <stop offset="100%" stopColor={color} stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <path d={area} fill={`url(#spark-${uid})`} />
         <path
           d={line}
           fill="none"
           stroke={color}
-          strokeWidth={1.5}
-          strokeLinecap="round"
+          strokeLinecap="butt"
           strokeLinejoin="round"
+          style={{ strokeWidth: "var(--adm-chart-line)" }}
         />
-        <circle cx={(data.length - 1) * stepX} cy={lastY} r={2.5} fill={color} />
         {interactive && hover !== null && (
-          <circle
-            cx={hover * stepX}
-            cy={height - ((data[hover] - min) / span) * height}
-            r={3}
-            fill={color}
-            stroke="var(--adm-bg)"
-            strokeWidth={1.5}
+          <line
+            x1={hover * stepX}
+            x2={hover * stepX}
+            y1={0}
+            y2={height}
+            stroke={HOVER}
+            strokeWidth={1}
           />
         )}
       </svg>
       {interactive && hover !== null && (
         <span
-          // Tokens, not bg-night: on a light card the ground colour and the
-          // panel colour are near-identical, so the tooltip needs the raised
-          // surface and a real shadow or it reads as part of the plot.
+          // Ink on cream, on a hairline.
           className="absolute -top-7 px-1.5 py-0.5 rounded-[var(--adm-radius-sm)] border font-sans text-eyebrow whitespace-nowrap pointer-events-none tabular-nums"
           style={{
-            background: "var(--adm-panel)",
-            borderColor: "var(--adm-line-strong)",
+            background: "var(--adm-panel-2)",
+            borderColor: "var(--adm-line)",
             color: "var(--adm-ink)",
-            boxShadow: "var(--adm-shadow-pop)",
             left: Math.max(0, Math.min(width - 60, hover * stepX - 30)),
           }}
         >
@@ -312,52 +299,44 @@ export function LineChart({
   labels?: string[];
   height?: number;
 }) {
-  return (
-    <CartesianPlot
-      series={series}
-      labels={labels}
-      height={height}
-      mode="line"
-    />
-  );
+  // Three or more series are small multiples: one plot per series, stacked,
+  // each at a share of the height with a floor so a line still has room to
+  // be a line. Every series stays on screen; no plot carries a third line.
+  if (series.length > 2) {
+    const each = Math.max(120, Math.round(height / series.length));
+    return (
+      <div className="flex flex-col gap-3">
+        {series.map((s) => (
+          <div key={s.name}>
+            <p className="mb-1 px-2 font-sans text-[12px]" style={{ color: "var(--adm-ink-2)" }}>
+              {s.name}
+            </p>
+            <CartesianPlot series={[s]} labels={labels} height={each} />
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return <CartesianPlot series={series} labels={labels} height={height} />;
 }
 
 // ── AreaChart ───────────────────────────────────────────────────────────────
-// LineChart with a soft gradient under each series — meant for cumulative /
-// growth views where the area below the line carries meaning. Shares the
-// CartesianPlot helper so axis logic doesn't duplicate.
-export function AreaChart({
-  series,
-  labels,
-  height = 240,
-}: {
-  series: Series[];
-  labels?: string[];
-  height?: number;
-}) {
-  return (
-    <CartesianPlot
-      series={series}
-      labels={labels}
-      height={height}
-      mode="area"
-    />
-  );
+// Kept as a name so the tabs that call it keep compiling. It is a LineChart:
+// the area fill and its gradient are gone with the Ledger.
+export function AreaChart(props: { series: Series[]; labels?: string[]; height?: number }) {
+  return <LineChart {...props} />;
 }
 
 function CartesianPlot({
   series,
   labels,
   height,
-  mode,
 }: {
   series: Series[];
   labels?: string[];
   height: number;
-  mode: "line" | "area";
 }) {
   const [hover, setHover] = useState<number | null>(null);
-  const uid = useId().replace(/:/g, "");
   const reduced = useReducedMotion();
   const [boxRef, narrow] = useNarrowWidth();
   const width = narrow ?? 1000;
@@ -437,13 +416,6 @@ function CartesianPlot({
   const linePath = (data: number[]) =>
     smoothPath(data.map((v, i) => ({ x: xFor(i), y: yFor(v) })));
 
-  const areaPath = (data: number[]) => {
-    if (!data.length) return "";
-    const line = linePath(data);
-    const baseY = padT + innerH;
-    return `${line} L${xFor(data.length - 1).toFixed(1)},${baseY} L${xFor(0).toFixed(1)},${baseY} Z`;
-  };
-
   // Tick fractions top → bottom. These position the Y LABELS only; the
   // gridlines they used to pair with are gone.
   //
@@ -451,7 +423,7 @@ function CartesianPlot({
   // tracing a point back to an axis, and the hover crosshair below does
   // that job better and only when asked. An axis with no numbers at all is
   // decoration, and this chart is the analytical one.
-  const tickFracs = [1, 0.75, 0.5, 0.25, 0];
+  const tickFracs = [1, 0.5, 0];
   const grid = tickFracs.map((f) => padT + innerH * (1 - f));
 
   // X-axis labels: render up to 6 evenly spaced labels (first + last + 4
@@ -501,24 +473,6 @@ function CartesianPlot({
         }}
         onMouseLeave={() => setHover(null)}
       >
-        {/* Gradient defs for area fill */}
-        {mode === "area" && (
-          <defs>
-            {series.map((s, i) => (
-              <linearGradient
-                key={`g-${i}`}
-                id={`area-${uid}-${i}`}
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop offset="0%" stopColor={s.color} stopOpacity={0.2} />
-                <stop offset="100%" stopColor={s.color} stopOpacity={0} />
-              </linearGradient>
-            ))}
-          </defs>
-        )}
 
         {/* Y labels. The numbers themselves change when the scale does, so
             they cross-fade rather than snapping to new values mid-zoom. They
@@ -587,18 +541,6 @@ function CartesianPlot({
               shapeRendering="crispEdges"
             />
           ))}
-          {xLabelIdxs.map((i) => (
-            <line
-              key={`v-${i}`}
-              x1={xFor(i)}
-              x2={xFor(i)}
-              y1={padT}
-              y2={padT + innerH}
-              stroke={GRID}
-              strokeWidth={1}
-              shapeRendering="crispEdges"
-            />
-          ))}
         </g>
 
         {/* Everything that is drawn AT the current scale, and therefore
@@ -621,27 +563,19 @@ function CartesianPlot({
               : undefined
           }
         >
-        {/* Area fills (under the line) */}
-        {mode === "area" &&
-          series.map((s, i) => (
-            <path
-              key={`fill-${s.name}`}
-              d={areaPath(s.data)}
-              fill={`url(#area-${uid}-${i})`}
-              stroke="none"
-            />
-          ))}
-
-        {/* Series paths */}
-        {series.map((s) => (
+        {/* Series paths. The first is the ink line; the second, when there
+            is one, is the compare: muted, 1px, dashed. s.color is ignored on
+            purpose: a chart has two tones and the series index picks. */}
+        {series.map((s, i) => (
           <path
             key={s.name}
             d={linePath(s.data)}
-            stroke={s.color}
-            strokeWidth={1.8}
+            stroke={i === 0 ? "var(--adm-ink)" : "var(--adm-ink-2)"}
+            strokeDasharray={i === 0 ? undefined : "4 4"}
             fill="none"
-            strokeLinecap="round"
+            strokeLinecap="butt"
             strokeLinejoin="round"
+            style={{ strokeWidth: i === 0 ? "var(--adm-chart-line)" : 1 }}
           />
         ))}
 
@@ -657,44 +591,28 @@ function CartesianPlot({
             would assert a period the data does not cover. */}
         {series
           .filter((s) => s.data.length === 1)
-          .map((s) => (
-            <circle
-              key={`dot-${s.name}`}
-              cx={xFor(0)}
-              cy={yFor(s.data[0])}
-              r={4}
-              fill={s.color}
-              stroke="var(--adm-bg)"
-              strokeWidth={1.5}
+          .map((s, i) => (
+            <line
+              key={`tick-${s.name}`}
+              x1={xFor(0) - 6}
+              x2={xFor(0) + 6}
+              y1={yFor(s.data[0])}
+              y2={yFor(s.data[0])}
+              stroke={i === 0 ? "var(--adm-ink)" : "var(--adm-ink-2)"}
+              strokeWidth={2}
             />
           ))}
 
         {/* Hover marker */}
         {hover !== null && (
-          <>
-            <line
-              x1={xFor(hover)}
-              x2={xFor(hover)}
-              y1={padT}
-              y2={padT + innerH}
-              stroke={HOVER}
-              strokeWidth={1}
-            />
-            {series.map((s) => {
-              const v = s.data[hover] ?? 0;
-              return (
-                <circle
-                  key={s.name}
-                  cx={xFor(hover)}
-                  cy={yFor(v)}
-                  r={3.5}
-                  fill={s.color}
-                  stroke="var(--adm-bg)"
-                  strokeWidth={1.5}
-                />
-              );
-            })}
-          </>
+          <line
+            x1={xFor(hover)}
+            x2={xFor(hover)}
+            y1={padT}
+            y2={padT + innerH}
+            stroke={HOVER}
+            strokeWidth={1}
+          />
         )}
         </g>
       </svg>
@@ -708,12 +626,11 @@ function CartesianPlot({
           reading is also what ProjectionChart already does, so the two charts
           now agree. */}
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 mt-3 px-2">
-        {series.map((s) => (
+        {series.map((s, i) => (
           <div key={s.name} className="flex items-center gap-2">
-            <span
-              className="inline-block h-[3px] w-4 rounded-full"
-              style={{ background: s.color }}
-            />
+            <svg width="16" height="4" aria-hidden>
+              <line x1="0" x2="16" y1="2" y2="2" stroke={i === 0 ? "var(--adm-ink)" : "var(--adm-ink-2)"} strokeWidth={i === 0 ? 1.5 : 1} strokeDasharray={i === 0 ? undefined : "3 3"} />
+            </svg>
             <span className="font-sans text-eyebrow text-[color:var(--adm-ink-2)] tabular-nums">
               {s.name}
               {legendIdx >= 0 && (
@@ -912,120 +829,35 @@ function VerticalBars({
   );
 }
 
-// ── Donut ───────────────────────────────────────────────────────────────────
-// Single-ring donut for ratios. Hover lifts a segment and the center
-// updates to show the segment name + value.
-export function Donut({
+// ── SegmentList ─────────────────────────────────────────────────────────────
+// What the Donut became. A share of a whole is a list of rows: the name,
+// the value, and its share, in the ink, on hairlines. The prop shape is the
+// Donut's so the seven call sites changed by name only. `color` is accepted
+// and ignored: the rows have no hue.
+export function SegmentList({
   segments,
-  size = 160,
   label,
+  format = (v) => v.toLocaleString("en-US"),
 }: {
-  segments: { name: string; value: number; color: string }[];
-  size?: number;
+  segments: { name: string; value: number; color?: string }[];
+  /** What the total is a total of, e.g. "sessions". */
   label?: string;
+  format?: (v: number) => string;
 }) {
-  const [hover, setHover] = useState<number | null>(null);
-  const total = segments.reduce((a, s) => a + s.value, 0) || 1;
-  const r = size / 2 - 10;
-  const c = 2 * Math.PI * r;
-  const arcs = segments.map((s, i) => {
-    const cumPrior = segments
-      .slice(0, i)
-      .reduce((a, x) => a + x.value / total, 0);
-    return {
-      ...s,
-      offset: cumPrior * c,
-      dash: `${(s.value / total) * c} ${c}`,
-    };
-  });
-
-  const centerName = hover !== null ? segments[hover].name : (label ?? "Total");
-  const centerValue =
-    hover !== null
-      ? `${segments[hover].value.toLocaleString()} · ${Math.round((segments[hover].value / total) * 100)}%`
-      : total.toLocaleString();
-
+  const total = segments.reduce((a, s) => a + s.value, 0);
+  const rows = segments.map((s) => ({
+    id: s.name,
+    label: s.name,
+    value: total > 0 ? `${format(s.value)} · ${Math.round((s.value / total) * 100)}%` : format(s.value),
+  }));
   return (
-    <div className="flex items-center gap-5 flex-wrap">
-      <svg
-        width={size}
-        height={size}
-        viewBox={`0 0 ${size} ${size}`}
-        className="shrink-0"
-      >
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          fill="none"
-          stroke="var(--chart-empty)"
-          strokeWidth={11}
-        />
-        {arcs.map((s, i) => (
-          <circle
-            key={s.name}
-            cx={size / 2}
-            cy={size / 2}
-            r={r}
-            fill="none"
-            stroke={s.color}
-            strokeWidth={hover === i ? 14 : 11}
-            strokeDasharray={s.dash}
-            strokeDashoffset={-s.offset}
-            transform={`rotate(-90 ${size / 2} ${size / 2})`}
-            onMouseEnter={() => setHover(i)}
-            onMouseLeave={() => setHover((h) => (h === i ? null : h))}
-            style={{ transition: "stroke-width 120ms ease" }}
-          />
-        ))}
-        <text
-          x={size / 2}
-          y={size / 2 - 4}
-          textAnchor="middle"
-          fill={AXIS}
-          fontSize={10}
-          fontFamily="var(--font-sans)"
-          style={{ textTransform: "uppercase", letterSpacing: 1 }}
-        >
-          {centerName}
-        </text>
-        <text
-          x={size / 2}
-          y={size / 2 + 12}
-          textAnchor="middle"
-          fill="var(--adm-ink)"
-          fontSize={16}
-          fontWeight={700}
-          fontFamily="var(--font-sans)"
-          className="tabular-nums"
-        >
-          {centerValue}
-        </text>
-      </svg>
-      <ul className="space-y-1.5">
-        {segments.map((s, i) => (
-          <li
-            key={s.name}
-            className={
-              "flex items-center gap-2 cursor-default transition-opacity " +
-              (hover === null || hover === i ? "opacity-100" : "opacity-50")
-            }
-            onMouseEnter={() => setHover(i)}
-            onMouseLeave={() => setHover(null)}
-          >
-            <span
-              className="inline-block h-2 w-2 rounded-full"
-              style={{ background: s.color }}
-            />
-            <span className="font-sans text-caption text-[color:var(--adm-ink)]">
-              {s.name}{" "}
-              <span className="text-[color:var(--adm-ink-3)] tabular-nums">
-                {Math.round((s.value / total) * 100)}%
-              </span>
-            </span>
-          </li>
-        ))}
-      </ul>
+    <div>
+      <StatList rows={rows} empty="Nothing to share out yet." />
+      {label ? (
+        <p className="mt-2 px-1 font-sans text-[12px]" style={{ color: "var(--adm-ink-3)", fontVariantNumeric: "tabular-nums" }}>
+          {format(total)} {label}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -1161,7 +993,6 @@ export function CalendarHeatmap({
               background: "var(--adm-panel)",
               borderColor: "var(--adm-line-strong)",
               color: "var(--adm-ink)",
-              boxShadow: "var(--adm-shadow-pop)",
               top: hover.y - 30,
               left: hover.x - 50,
             } as CSSProperties

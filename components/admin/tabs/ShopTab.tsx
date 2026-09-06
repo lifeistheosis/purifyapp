@@ -411,7 +411,7 @@ function ProductsPanel() {
         <Metric
           label="Live in shop"
           value={String(published)}
-          tone={published > 0 ? "text-[color:var(--adm-good)]" : undefined}
+          tone={published > 0 ? "text-[color:var(--adm-up)]" : undefined}
           hint={hiddenByGate > 0 ? `${hiddenByGate} hidden by image rights` : undefined}
         />
         <Metric
@@ -423,7 +423,7 @@ function ProductsPanel() {
         <Metric
           label="Units sold"
           value={sold.toLocaleString()}
-          tone={sold > 0 ? "text-[color:var(--adm-good)]" : undefined}
+          tone={sold > 0 ? "text-[color:var(--adm-up)]" : undefined}
         />
         {/* NOT "Revenue". This is units_sold multiplied by the price the
             product carries RIGHT NOW, and units_sold is a monotonic counter
@@ -455,7 +455,7 @@ function ProductsPanel() {
         action={
           <Link
             href="/admin/shop"
-            className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-1 font-sans text-caption font-semibold text-gold-pale"
+            className="rounded-pill border border-gold/40 px-3 py-1 font-sans text-caption font-semibold text-gold-pale"
           >
             Manage products
           </Link>
@@ -618,7 +618,7 @@ function ProductsPanel() {
                       ? "text-[color:var(--adm-critical)]"
                       : roi < 100
                         ? "text-[color:var(--adm-warn)]"
-                        : "text-[color:var(--adm-good)]";
+                        : "text-[color:var(--adm-up)]";
                 return (
                   <span className="whitespace-nowrap font-sans text-detail">
                     <span className="text-paper/50">{money(cost)}</span>
@@ -671,7 +671,7 @@ function ProductsPanel() {
                   <span className="whitespace-nowrap font-sans text-detail tabular-nums">
                     <span className="text-paper/55">{v}</span>
                     <span className="mx-1 text-paper/25">·</span>
-                    <span className="font-semibold text-[color:var(--adm-good)]">{b}</span>
+                    <span className="font-semibold text-[color:var(--adm-up)]">{b}</span>
                     {conv != null ? (
                       <span className="ml-1.5 text-eyebrow text-paper/40">
                         {conv}%
@@ -975,12 +975,12 @@ function ProductOverview({
         ? "text-[color:var(--adm-critical)]"
         : grade.band === "thin"
           ? "text-[color:var(--adm-warn)]"
-          : "text-[color:var(--adm-good)]";
+          : "text-[color:var(--adm-up)]";
 
   return (
     <div className="space-y-6">
       {hasSupplierImage(p.media) ? (
-        <div className="rounded-[var(--adm-radius)] border border-[color-mix(in_oklab,var(--adm-warn),transparent_70%)] bg-[color-mix(in_oklab,var(--adm-warn),transparent_94%)] p-3">
+        <div className="rounded-[var(--adm-radius)] border border-[color-mix(in_oklab,var(--adm-warn),transparent_70%)] p-3">
           <p className="font-sans text-detail font-semibold text-[color:var(--adm-warn)]">
             Not shown in the public shop
           </p>
@@ -1074,7 +1074,7 @@ function ProductOverview({
         <Metric
           label="Units sold"
           value={String(sold)}
-          tone={sold > 0 ? "text-[color:var(--adm-good)]" : undefined}
+          tone={sold > 0 ? "text-[color:var(--adm-up)]" : undefined}
         />
         <Metric
           label="Conversion"
@@ -1157,7 +1157,7 @@ function ProductOverview({
             label="Resale rights"
             value={
               s?.resale_rights_confirmed ? (
-                <span className="text-[color:var(--adm-good)]">Confirmed</span>
+                <span className="text-[color:var(--adm-up)]">Confirmed</span>
               ) : (
                 <span className="text-[color:var(--adm-warn)]">Not confirmed</span>
               )
@@ -1535,7 +1535,7 @@ function ProductEditor({
             src.supplier_cost_cents ||
             src.supplier_url,
         )}
-        className="mt-6 rounded-[var(--adm-radius)] border border-[color-mix(in_oklab,var(--adm-critical),transparent_80%)] bg-[color-mix(in_oklab,var(--adm-critical),transparent_97%)] p-4"
+        className="mt-6 rounded-[var(--adm-radius)] border border-[color-mix(in_oklab,var(--adm-critical),transparent_80%)] p-4"
       >
         <summary className="cursor-pointer font-sans text-detail font-medium tracking-[1.2px] text-[color:color-mix(in_oklab,var(--adm-critical),transparent_20%)] [&::-webkit-details-marker]:hidden">
           Sourcing (admin-only, never public)
@@ -1623,7 +1623,7 @@ function ProductEditor({
                 ? "text-[color:var(--adm-critical)]"
                 : roi < 100
                   ? "text-[color:var(--adm-warn)]"
-                  : "text-[color:var(--adm-good)]";
+                  : "text-[color:var(--adm-up)]";
           return (
             <div className="mt-4 rounded-[var(--adm-radius)] border border-paper/12 bg-night/50 p-3">
               <p className={labelCls}>Unit economics (live)</p>
@@ -2238,7 +2238,7 @@ function ReviewsPanel() {
         <Metric
           label="Verified"
           value={String(verified)}
-          tone={verified > 0 ? "text-[color:var(--adm-good)]" : undefined}
+          tone={verified > 0 ? "text-[color:var(--adm-up)]" : undefined}
           hint="tied to a real order"
         />
         <Metric
@@ -2735,7 +2735,7 @@ function SeedReviewSheet({
               type="button"
               onClick={() => photoRef.current?.click()}
               disabled={uploading || photos.length >= 12}
-              className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
+              className="rounded-pill border border-gold/40 px-3 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
             >
               {uploading ? "Uploading…" : "Add photo"}
             </button>
@@ -2770,7 +2770,7 @@ function SeedReviewSheet({
           onClick={() => void seed()}
           disabled={busy || uploading}
           title={uploading ? "Wait for the photo upload to finish" : undefined}
-          className="rounded-pill border border-gold/40 bg-gold/[0.08] px-4 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
+          className="rounded-pill border border-gold/40 px-4 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
         >
           {busy ? "Saving…" : uploading ? "Photo uploading…" : "Add review"}
         </button>

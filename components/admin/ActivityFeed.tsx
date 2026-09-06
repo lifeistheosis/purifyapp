@@ -72,17 +72,12 @@ type Traffic = { points: { visitors: number }[] };
 const LOOK: Record<ActivityKind, { tint: string; ring: string }> = {
   visitor: { tint: "var(--adm-ink-2)", ring: "var(--adm-line-strong)" },
   signup: { tint: "var(--adm-accent)", ring: "var(--adm-accent)" },
-  // --adm-good, not --adm-positive. The latter was never defined anywhere:
-  // three consumers, zero definitions, so every one of them fell through to
-  // the #34d399 literal. That renders at 1.9:1 on the light theme's white
-  // card, and this token is used as a TEXT colour for the sale badge, so an
-  // incoming order's amount was effectively invisible on the phone toast and
-  // in the bell history. The dark theme was fine, which is why nobody saw it.
-  //
-  // The reserved status vocabulary is good/warn/serious/critical
-  // (admin-theme.css:126). --adm-good is #10b981 dark and #047857 light,
-  // 5.9:1 on white, and is already covered by the contrast test.
-  sale: { tint: "var(--adm-good)", ring: "var(--adm-good)" },
+  // --adm-up, the Ledger gold: a sale is the one positive event in this
+  // feed, and positive is gold everywhere in the admin. It used to be
+  // --adm-good (green) after a spell as an undefined --adm-positive that
+  // fell through to a #34d399 literal at 1.9:1 on a white card. The gold is
+  // 5.05:1 on white and covered by the contrast test.
+  sale: { tint: "var(--adm-up)", ring: "var(--adm-up)" },
   subscriber: { tint: "var(--adm-warn)", ring: "var(--adm-warn)" },
   milestone: { tint: "var(--adm-accent)", ring: "var(--adm-accent)" },
 };
@@ -341,9 +336,7 @@ function MobileToast({
         className="flex max-w-[min(94vw,420px)] items-center gap-2.5 overflow-hidden rounded-[var(--adm-radius-sm)] border py-2.5 pl-0 pr-3.5"
         style={{
           background: "var(--adm-panel)",
-          borderColor: "var(--adm-line)",
-          boxShadow: `0 10px 28px -10px color-mix(in oklab, ${look.ring}, transparent 40%)`,
-          opacity: leaving ? 0 : 1,
+          borderColor: "var(--adm-line)",          opacity: leaving ? 0 : 1,
           transform: reduced ? "none" : leaving ? "translateY(-10px)" : "translateY(0)",
           transition: reduced
             ? "none"
@@ -427,12 +420,7 @@ function ActivityPill({
         className="flex items-stretch gap-2.5 overflow-hidden rounded-[var(--adm-radius-sm)] border py-0 pl-0 pr-3.5"
         style={{
           background: "var(--adm-panel)",
-          borderColor: "var(--adm-line)",
-          // A tinted lift rather than the flat card shadow. These are meant to
-          // be noticed from across a desk, and a card that shares the panel's
-          // own shadow reads as another piece of chrome.
-          boxShadow: `0 6px 20px -8px color-mix(in oklab, ${look.ring}, transparent 55%)`,
-          opacity: leaving ? 0 : 1,
+          borderColor: "var(--adm-line)",          opacity: leaving ? 0 : 1,
           transform: reduced ? "none" : leaving ? "translateY(-8px)" : "translateY(0)",
           transition: reduced
             ? "none"
@@ -620,9 +608,7 @@ function ActivityBell({
             className="fixed inset-x-3 top-[calc(var(--adm-topbar-h,69px)+8px)] z-[46] w-auto rounded-[var(--adm-radius)] border p-3 lg:absolute lg:inset-x-auto lg:right-0 lg:top-[calc(100%+8px)] lg:w-[min(92vw,560px)]"
             style={{
               background: "var(--adm-panel)",
-              borderColor: "var(--adm-line)",
-              boxShadow: "var(--adm-shadow-card)",
-              animation: reduced
+              borderColor: "var(--adm-line)",              animation: reduced
                 ? undefined
                 : "adm-activity-in 260ms cubic-bezier(0.16,1,0.3,1)",
             }}

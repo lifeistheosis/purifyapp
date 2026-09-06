@@ -54,7 +54,7 @@ function useTween(target: number[][], ms: number, enabled: boolean): number[][] 
   // Null means "not mid-animation", and the target is rendered directly. That
   // is what keeps the disabled and shape-changed paths from calling setState
   // synchronously inside the effect, which React flags as a cascading render
-  // and which AdminThemeToggle already learned the hard way.
+  // and which the old theme toggle already learned the hard way.
   const [frame, setFrame] = useState<number[][] | null>(null);
   const from = useRef(target);
   const raf = useRef<number | null>(null);

@@ -198,14 +198,14 @@ export function ProductMediaManager({
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
                   {i === 0 ? (
-                    <span className="rounded-full border border-gold/40 bg-gold/[0.08] px-2 py-0.5 font-sans text-caption font-medium tracking-[1px] text-gold-pale">
+                    <span className="rounded-full border border-gold/40 px-2 py-0.5 font-sans text-caption font-medium tracking-[1px] text-gold-pale">
                       Cover
                     </span>
                   ) : null}
                   {isSupplierImageUrl(m.media_url) ? (
                     <span
                       title="Supplier CDN image: while this is the cover, the rights gate hides the listing from shoppers."
-                      className="rounded-full border border-[color-mix(in_oklab,var(--adm-warn),transparent_60%)] bg-[color-mix(in_oklab,var(--adm-warn),transparent_94%)] px-2 py-0.5 font-sans text-caption font-medium tracking-[1px] text-[color:var(--adm-warn)]"
+                      className="rounded-full border border-[color-mix(in_oklab,var(--adm-warn),transparent_60%)] px-2 py-0.5 font-sans text-caption font-medium tracking-[1px] text-[color:var(--adm-warn)]"
                     >
                       Supplier image
                     </span>
@@ -246,7 +246,7 @@ export function ProductMediaManager({
                 <button
                   type="button"
                   onClick={() => removeRow(i)}
-                  className="inline-flex min-h-[44px] items-center justify-center rounded-pill border border-[color-mix(in_oklab,var(--adm-critical),transparent_60%)] bg-[color-mix(in_oklab,var(--adm-critical),transparent_94%)] px-3 font-sans text-eyebrow font-semibold text-[color:var(--adm-critical)] hover:bg-[color-mix(in_oklab,var(--adm-critical),transparent_88%)]"
+                  className="inline-flex min-h-[44px] items-center justify-center rounded-pill border border-[color-mix(in_oklab,var(--adm-critical),transparent_60%)] px-3 font-sans text-eyebrow font-semibold text-[color:var(--adm-critical)]"
                 >
                   Remove
                 </button>
@@ -261,7 +261,7 @@ export function ProductMediaManager({
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={busy !== null || full}
-          className="inline-flex min-h-[44px] items-center rounded-pill border border-gold/40 bg-gold/[0.08] px-4 font-sans text-eyebrow font-semibold text-gold-pale disabled:opacity-50"
+          className="inline-flex min-h-[44px] items-center rounded-pill border border-gold/40 px-4 font-sans text-eyebrow font-semibold text-gold-pale disabled:opacity-50"
         >
           {busy ?? (rows.length === 0 ? "Add photos" : "Add more photos")}
         </button>

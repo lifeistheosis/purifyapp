@@ -212,7 +212,7 @@ export function PushTab() {
             </div>
 
             {willDryRun && (
-              <p className="rounded-[var(--adm-radius-sm)] border border-[color-mix(in_oklab,var(--adm-warn),transparent_70%)] bg-[color-mix(in_oklab,var(--adm-warn),transparent_94%)] px-3 py-2 font-sans text-eyebrow text-[color:var(--adm-warn)]">
+              <p className="rounded-[var(--adm-radius-sm)] border border-[color-mix(in_oklab,var(--adm-warn),transparent_70%)] px-3 py-2 font-sans text-eyebrow text-[color:var(--adm-warn)]">
                 No push credentials are set, so a send is logged but nothing
                 actually goes out (dry run).
               </p>

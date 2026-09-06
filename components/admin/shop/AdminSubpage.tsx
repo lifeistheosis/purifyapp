@@ -5,11 +5,10 @@ import type { ReactNode } from "react";
  * The frame for an admin page that lives at its own URL rather than as a
  * tab inside AdminShell: /admin/shop and its two form pages.
  *
- * `.adm` is what makes the admin theme apply. app/admin/layout.tsx sets the
- * data-adm-theme attribute and imports the stylesheet, but every token in
- * admin-theme.css is scoped under .adm, which AdminShell puts on its own
- * root. A page outside the shell has to put it there itself or it renders
- * in the reader's palette with white text on white cards in light mode.
+ * `.adm` is what makes the admin theme apply outside the shell.
+ * app/admin/layout.tsx sets data-surface="admin" on the tree and imports
+ * the stylesheet; the class is kept on this root too so the scoped rules
+ * (scrollbars, focus, headings) reach a page that is not AdminShell.
  *
  * Phone first. The content column is capped at 720px because these pages
  * are a form and a list, and a form wider than that is a form with fields

@@ -95,7 +95,7 @@ export function ProductList() {
               <li
                 key={p.id}
                 className="flex items-center gap-3 rounded-[var(--adm-radius)] border p-2.5 md:p-3"
-                style={{ borderColor: "var(--adm-line)", background: "var(--adm-panel)", boxShadow: "var(--adm-shadow-card)" }}
+                style={{ borderColor: "var(--adm-line)", background: "var(--adm-panel)" }}
               >
                 <Link
                   href={`/admin/shop/${p.id}`}

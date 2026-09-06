@@ -211,8 +211,8 @@ export default async function RootLayout({
  <html
  lang={localeCode}
  dir={localeRecord.dir}
- // The pre-paint scripts below set data-reading-mode (and, under /admin,
- // data-adm-theme) on this element before React hydrates, which is the
+ // The pre-paint script below sets data-reading-mode on this element
+ // before React hydrates, which is the
  // whole point of running them early. React sees attributes on <html> that
  // its server output did not have and warns. This is the documented escape
  // hatch for exactly that pattern, and it reaches this element's own
