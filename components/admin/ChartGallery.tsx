@@ -315,7 +315,7 @@ export function ChartGallery() {
                   <span
                     aria-hidden
                     className="inline-block h-2 w-2 rounded-full"
-                    style={{ background: "var(--adm-good)" }}
+                    style={{ background: "var(--adm-up)" }}
                   />
                 ),
                 csv: () => "",

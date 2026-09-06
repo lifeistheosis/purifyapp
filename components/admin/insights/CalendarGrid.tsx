@@ -163,7 +163,8 @@ function DayTile({
         opacity: dim ? 0.45 : 1,
         // Two rings would fight; selection wins because it is the thing the
         // operator just did.
-        boxShadow: selected ? "0 0 0 1px var(--adm-accent) inset" : undefined,
+        outline: selected ? "1px solid var(--adm-accent)" : undefined,
+        outlineOffset: "-1px",
       }}
     >
       <span className="flex w-full items-center justify-between gap-1">

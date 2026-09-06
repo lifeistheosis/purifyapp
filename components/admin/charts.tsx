@@ -61,7 +61,7 @@ export const chartColors = {
   primary: "var(--adm-s1)",
   accent: "var(--adm-accent)",
   info: "var(--adm-s2)",
-  positive: "var(--adm-good)",
+  positive: "var(--adm-up)",
   negative: "var(--adm-critical)",
   warning: "var(--adm-warn)",
   lilac: "var(--adm-s4)",
@@ -284,7 +284,6 @@ export function Sparkline({
             background: "var(--adm-panel)",
             borderColor: "var(--adm-line-strong)",
             color: "var(--adm-ink)",
-            boxShadow: "var(--adm-shadow-pop)",
             left: Math.max(0, Math.min(width - 60, hover * stepX - 30)),
           }}
         >
@@ -1161,7 +1160,6 @@ export function CalendarHeatmap({
               background: "var(--adm-panel)",
               borderColor: "var(--adm-line-strong)",
               color: "var(--adm-ink)",
-              boxShadow: "var(--adm-shadow-pop)",
               top: hover.y - 30,
               left: hover.x - 50,
             } as CSSProperties

@@ -99,7 +99,7 @@ export function AttentionStrip({
         <span
           aria-hidden
           className="inline-block h-1.5 w-1.5 shrink-0 rounded-[var(--adm-radius-pill)]"
-          style={{ background: "var(--adm-good)" }}
+          style={{ background: "var(--adm-up)" }}
         />
         {/* The live region is the sentence, not the clock beside it: a
             ticking "checked 4m ago" inside role=status re-announced the line

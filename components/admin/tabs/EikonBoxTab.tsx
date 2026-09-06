@@ -883,7 +883,7 @@ function AnnouncePanel({ drop }: { drop: AdminDrop }) {
 
         {error && <p className="font-sans text-detail text-[color:var(--adm-critical)]">{error}</p>}
         {result && (
-          <p className="font-sans text-detail text-[color:var(--adm-good)]">{result}</p>
+          <p className="font-sans text-detail text-[color:var(--adm-up)]">{result}</p>
         )}
 
         <Toolbar>

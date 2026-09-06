@@ -48,7 +48,7 @@ export type ApiLimitsPayload = {
 };
 
 const TONE: Record<LimitStatus, string> = {
-  ok: "var(--adm-good)",
+  ok: "var(--adm-up)",
   unmeasured: "var(--adm-ink-3)",
   approaching: "var(--adm-warn)",
   urgent: "var(--adm-warn)",

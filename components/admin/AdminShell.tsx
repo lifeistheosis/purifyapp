@@ -355,9 +355,7 @@ function ModeSwitch({
                 ? {
                     background: "var(--adm-panel)",
                     color: "var(--adm-ink)",
-                    fontWeight: 600,
-                    boxShadow: "var(--adm-shadow-card)",
-                  }
+                    fontWeight: 600,                  }
                 : { background: "transparent", color: "var(--adm-ink-3)" }
             }
           >
@@ -871,13 +869,12 @@ export function AdminShell({
           <div
             className="adm-topbar sticky top-0 z-40 border-b"
             style={{
-              background: "color-mix(in oklab, var(--adm-bg), transparent 20%)",
+              background: "var(--adm-bg)",
               borderColor: "var(--adm-line)",
-              backdropFilter: "blur(10px)",
             }}
           >
-            {/* The bar's GROUND spans the canvas so the blur and the hairline
-                reach both edges, but its CONTENTS are capped and centred on the
+            {/* The bar's GROUND spans the canvas so the hairline
+                reaches both edges, but its CONTENTS are capped and centred on the
                 same 1760 as the content below. Without the inner wrapper the
                 search sits ~280px right of the content edge on a 2560 monitor,
                 which is the same detachment this refactor set out to fix,

@@ -179,10 +179,9 @@ export function VerificationTab() {
           <p
             role="status"
             className="mt-2 font-sans text-[12.5px]"
-            // --adm-good: --adm-positive is undefined and its #34d399
-            // fallback is 1.92:1 on this white card, which made the ONLY
-            // confirmation that a verify write succeeded invisible.
-            style={{ color: "var(--adm-good)" }}
+            // --adm-up: the one confirmation that a verify write succeeded,
+            // in the positive gold so it is visible on the white card.
+            style={{ color: "var(--adm-up)" }}
           >
             {note}
           </p>

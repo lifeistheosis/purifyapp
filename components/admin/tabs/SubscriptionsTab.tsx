@@ -346,7 +346,7 @@ function GiftCard() {
       {msg && (
         <p
           className={`mt-3 font-sans text-eyebrow ${
-            msg.ok ? "text-[color:var(--adm-good)]" : "text-[color:var(--adm-critical)]"
+            msg.ok ? "text-[color:var(--adm-up)]" : "text-[color:var(--adm-critical)]"
           }`}
         >
           {msg.text}
@@ -489,7 +489,7 @@ function MembersPanel() {
           <button
             type="submit"
             disabled={busy || !email.trim()}
-            className="rounded-pill border border-[color-mix(in_oklab,var(--adm-good),transparent_50%)] bg-[color-mix(in_oklab,var(--adm-good),transparent_86%)] px-5 py-2 font-sans text-detail font-semibold text-[color:var(--adm-good)] transition-colors hover:bg-[color-mix(in_oklab,var(--adm-good),transparent_80%)] disabled:opacity-40"
+            className="rounded-pill border border-[color-mix(in_oklab,var(--adm-up),transparent_50%)] bg-[color-mix(in_oklab,var(--adm-up),transparent_86%)] px-5 py-2 font-sans text-detail font-semibold text-[color:var(--adm-up)] transition-colors hover:bg-[color-mix(in_oklab,var(--adm-up),transparent_80%)] disabled:opacity-40"
           >
             {busy ? "Granting…" : "Grant"}
           </button>
@@ -497,7 +497,7 @@ function MembersPanel() {
         {msg && (
           <p
             className={`mt-3 font-sans text-eyebrow ${
-              msg.ok ? "text-[color:var(--adm-good)]" : "text-[color:var(--adm-critical)]"
+              msg.ok ? "text-[color:var(--adm-up)]" : "text-[color:var(--adm-critical)]"
             }`}
           >
             {msg.text}

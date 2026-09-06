@@ -3,7 +3,7 @@ import { getAdminUser } from "@/lib/admin/access";
 import { getOwnerUser } from "@/lib/owner/access";
 import { AdminShell } from "@/components/admin/AdminShell";
 // admin-theme.css is imported by app/admin/layout.tsx, which also sets the
-// data-adm-theme attribute the stylesheet keys its light palette on.
+// data-surface="admin" attribute the stylesheet keys its tokens on.
 
 // Always rendered fresh + never indexed; gated to admin emails.
 export const dynamic = "force-dynamic";

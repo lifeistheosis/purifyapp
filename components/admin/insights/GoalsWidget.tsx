@@ -22,9 +22,7 @@ export function GoalsWidget({ onOpen }: { onOpen?: () => void }) {
       className="flex min-w-0 flex-col rounded-[var(--adm-radius)] border p-4"
       style={{
         background: "var(--adm-panel)",
-        borderColor: "var(--adm-line)",
-        boxShadow: "var(--adm-shadow-card)",
-      }}
+        borderColor: "var(--adm-line)",      }}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

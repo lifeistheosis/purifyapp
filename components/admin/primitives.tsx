@@ -98,7 +98,6 @@ export function Card({
         // None on dark, where the surface step already separates the card from
         // the ground. Light needs it: a white card on a near-white ground has
         // nothing else to sit on.
-        boxShadow: "var(--adm-shadow-card)",
       }}
     >
       {(title || action) && (
@@ -340,7 +339,6 @@ export function Modal({
         style={{
           background: "var(--adm-panel)",
           borderColor: "var(--adm-line-strong)",
-          boxShadow: "var(--adm-shadow-pop)",
         }}
       >
         <div
@@ -413,7 +411,6 @@ export function StatCard({
         borderColor: accent
           ? "color-mix(in oklab, var(--adm-accent), transparent 70%)"
           : "var(--adm-line)",
-        boxShadow: "var(--adm-shadow-card)",
       }}
     >
       <p
@@ -447,7 +444,7 @@ function Delta({ value, positive }: { value: number; positive: boolean }) {
   return (
     <span
       className="inline-flex items-center gap-1 font-sans text-[12px] font-medium"
-      style={{ color: positive ? "var(--adm-good)" : "var(--adm-critical)" }}
+      style={{ color: positive ? "var(--adm-up)" : "var(--adm-critical)" }}
     >
       <span aria-hidden>{positive ? "↑" : "↓"}</span>
       {Math.abs(value)}%
@@ -496,7 +493,6 @@ export function KpiCard({
         borderColor: accent
           ? "color-mix(in oklab, var(--adm-accent), transparent 70%)"
           : "var(--adm-line)",
-        boxShadow: "var(--adm-shadow-card)",
       }}
     >
       {/* Stacked until there is room for a row. Side by side in a 160px card,
@@ -648,27 +644,15 @@ export function ToolbarButton({
       "--_bg-hover": "color-mix(in oklab, var(--adm-control), var(--adm-ink) 8%)",
       color: "var(--adm-ink-2)",
     } as React.CSSProperties,
-    // A gradient fill and a glow the same hue as the fill. .adm-control
-    // assigns --_bg to `background`, which takes a gradient as happily as a
-    // colour, so this needed no new mechanism.
-    //
-    // The gradient stops at --adm-grad-to and does NOT run on to
-    // --adm-grad-vivid. White on that magenta is 3.46:1, which is legal for
-    // large text and not for a 12.5px button label. The vivid stop belongs
-    // to FeatureCard, where the type is big enough to earn it.
+    // The one filled control in the panel: flat gold, a step darker on
+    // hover. There used to be a three-stop gradient here that the CSS slid
+    // on hover, plus a glow the same hue; the Ledger allows neither, and a
+    // flat fill needs no mechanism beyond .adm-control.
     primary: {
       borderColor: "transparent",
-      // Three stops, not two, and the CSS stretches this to 200% of the
-      // button. Sliding it on hover walks the fill from one end to the other,
-      // which reads as the button lighting up. The old pair of two-stop
-      // gradients could only ever cut between them, because CSS does not
-      // interpolate a gradient.
-      "--_bg":
-        "linear-gradient(135deg, var(--adm-grad-from) 0%, var(--adm-grad-to) 50%, var(--adm-grad-from) 100%)",
-      "--_bg-hover":
-        "linear-gradient(135deg, var(--adm-grad-from) 0%, var(--adm-grad-to) 50%, var(--adm-grad-from) 100%)",
+      "--_bg": "var(--adm-accent)",
+      "--_bg-hover": "var(--adm-accent-dim)",
       color: "var(--adm-on-accent)",
-      boxShadow: "0 4px 14px color-mix(in oklab, var(--adm-accent), transparent 72%)",
     } as React.CSSProperties,
     danger: {
       borderColor: "color-mix(in oklab, var(--adm-critical), transparent 60%)",
@@ -684,9 +668,6 @@ export function ToolbarButton({
       disabled={loading}
       title={title}
       aria-busy={loading || undefined}
-      // Marks the gradient variants for admin-theme.css, which slides the fill
-      // rather than swapping it.
-      data-grad={variant === "primary" ? "1" : undefined}
       className={
         // adm-toolbtn exists purely so admin-theme.css can reach this one
         // control on a touch screen. Every other .adm-control in the panel is
@@ -1373,7 +1354,7 @@ export function Pill({
     // At 8% every tone clears 4.5:1 and the dark tint is still clearly a pill.
     gold: { fg: "var(--adm-accent)", bg: "color-mix(in oklab, var(--adm-accent), transparent 92%)" },
     rose: { fg: "var(--adm-critical)", bg: "color-mix(in oklab, var(--adm-critical), transparent 92%)" },
-    emerald: { fg: "var(--adm-good)", bg: "color-mix(in oklab, var(--adm-good), transparent 92%)" },
+    emerald: { fg: "var(--adm-up)", bg: "color-mix(in oklab, var(--adm-up), transparent 92%)" },
   };
   const t = tones[tone];
   return (
@@ -1439,7 +1420,6 @@ export function Disclosure({
       style={{
         background: "var(--adm-panel)",
         borderColor: "var(--adm-line)",
-        boxShadow: "var(--adm-shadow-card)",
       }}
     >
       <summary className="flex min-h-11 cursor-pointer list-none items-center gap-3 px-3 py-2 md:px-4 [&::-webkit-details-marker]:hidden">

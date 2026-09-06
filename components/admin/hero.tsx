@@ -315,7 +315,6 @@ export function MetricCard({
       style={{
         background: "var(--adm-panel)",
         borderColor: "var(--adm-line)",
-        boxShadow: "var(--adm-shadow-card)",
       }}
     >
       <div className="flex items-start gap-2.5">
@@ -398,13 +397,13 @@ export function MetricCard({
           <span
             aria-hidden
             className="grid h-3.5 w-3.5 place-items-center"
-            style={{ color: delta.positive ? "var(--adm-good)" : "var(--adm-critical)" }}
+            style={{ color: delta.positive ? "var(--adm-up)" : "var(--adm-critical)" }}
           >
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               {delta.positive ? <path d="M5 8V2M2.2 4.8 5 2l2.8 2.8" /> : <path d="M5 2v6M2.2 5.2 5 8l2.8-2.8" />}
             </svg>
           </span>
-          <span style={{ color: delta.positive ? "var(--adm-good)" : "var(--adm-critical)" }}>
+          <span style={{ color: delta.positive ? "var(--adm-up)" : "var(--adm-critical)" }}>
             {delta.positive ? "+" : ""}
             {delta.value.toFixed(2)}
             {delta.suffix ?? "%"}
@@ -443,16 +442,14 @@ export function MetricCard({
    ──────────────────────────────────────────────────────────────────────── */
 
 /**
- * The one card on the screen allowed a gradient.
+ * The "what is waiting on me" card.
  *
- * It earns it by being the only one: a panel where three things glow has
- * nothing that stands out. What goes here is whatever the operator should
- * deal with next, which is why the copy is passed in rather than fixed.
- *
- * The gradient is identical in both themes on purpose. It is a coloured
- * surface, not a tinted one, so it reads as a deliberate object on a light
- * ground exactly as it does on a dark one, and the ink on it stays white in
- * both rather than flipping halfway down the panel.
+ * It used to be the one card on the screen allowed a gradient. The Ledger
+ * removed gradients and coloured card grounds outright, so this is a white
+ * card on a hairline like every other, and it earns its place by content:
+ * what goes here is whatever the operator should deal with next, which is
+ * why the copy is passed in rather than fixed. The primary action is the
+ * only filled control, in the gold.
  */
 export function FeatureCard({
   badge,
@@ -477,34 +474,13 @@ export function FeatureCard({
 }) {
   return (
     <div
-      // Ink on this card is hardcoded white rather than tokenised, because
-      // the gradient is a coloured SURFACE that does not flip with the theme.
-      // That puts the contrast burden on the gradient: --adm-grad-to is
-      // pinned dark enough that white clears 4.5:1 on it, and the body copy
-      // sits at 94% for the same reason. Lightening either end of the
-      // gradient, or raising the bloom past 20%, breaks this and no test
-      // will tell you, because adminTheme.test.ts cannot parse a gradient.
-      className="flex min-w-0 flex-col rounded-[var(--adm-radius)] p-5"
-      style={{
-        // Two layers. The base gradient runs from deep violet to indigo and
-        // is what every piece of text sits on. The vivid magenta is a corner
-        // BLOOM over the top, capped at 20%, never a hard stop.
-        //
-        // The difference matters and it is measured. Running the base
-        // gradient on to full #d946ef puts the body copy at 2.99:1, well
-        // under the 4.5 floor for 12.5px text, because that magenta is far
-        // lighter than it looks. Capping the bloom at 20% gives a worst-case
-        // ground of #8f3ced, where the body clears at 4.63:1. The reference
-        // does the same thing: its promo card blooms, it does not band.
-        background:
-          "radial-gradient(120% 120% at 100% 0%, color-mix(in oklab, var(--adm-grad-vivid), transparent 80%) 0%, transparent 60%), " +
-          "linear-gradient(155deg, var(--adm-grad-from) 0%, var(--adm-grad-to) 100%)",
-      }}
+      className="flex min-w-0 flex-col rounded-[var(--adm-radius)] border p-5"
+      style={{ background: "var(--adm-panel)", borderColor: "var(--adm-line)" }}
     >
       <div className="flex items-start justify-between gap-2">
         <span
-          className="grid h-7 w-7 place-items-center rounded-[var(--adm-radius-sm)]"
-          style={{ background: "rgb(255 255 255 / 0.16)", color: "#ffffff" }}
+          className="grid h-7 w-7 place-items-center rounded-[var(--adm-radius-sm)] border"
+          style={{ borderColor: "var(--adm-line)", color: "var(--adm-ink-2)" }}
           aria-hidden
         >
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round">
@@ -513,8 +489,8 @@ export function FeatureCard({
         </span>
         {badge ? (
           <span
-            className="rounded-[var(--adm-radius-pill)] px-2 py-0.5 font-sans text-[11px] font-medium"
-            style={{ background: "rgb(255 255 255 / 0.18)", color: "#ffffff" }}
+            className="rounded-[var(--adm-radius-pill)] border px-2 py-0.5 font-sans text-[11px] font-medium"
+            style={{ borderColor: "var(--adm-line-strong)", color: "var(--adm-ink-2)" }}
           >
             {badge}
           </span>
@@ -522,31 +498,31 @@ export function FeatureCard({
       </div>
 
       <h2
-        className="mt-5 font-sans text-[19px] font-semibold leading-tight tracking-[-0.01em]"
-        style={{ color: "#ffffff" }}
+        className="adm-heading mt-5 font-sans leading-tight"
+        style={{ color: "var(--adm-ink)" }}
       >
         {title}
       </h2>
       <p
         className="mt-2 font-sans text-[12.5px] leading-relaxed"
-        style={{ color: "rgb(255 255 255 / 0.94)" }}
+        style={{ color: "var(--adm-ink-2)" }}
       >
         {body}
       </p>
 
       {rows && rows.length > 0 ? (
-        <ul className="mt-4 flex flex-col gap-1.5">
+        <ul className="mt-4 flex flex-col divide-y" style={{ borderColor: "var(--adm-line)" }}>
           {rows.map((r) => (
-            <li key={r.label}>
+            <li key={r.label} style={{ borderColor: "var(--adm-line)" }}>
               <button
                 type="button"
                 onClick={r.onClick}
-                className="adm-control flex h-11 w-full items-center justify-between rounded-[var(--adm-radius-sm)] px-3 font-sans text-[12.5px] font-medium"
+                className="adm-control flex h-11 w-full items-center justify-between rounded-[var(--adm-radius-sm)] px-1 font-sans text-[12.5px] font-medium"
                 style={
                   {
-                    color: "#ffffff",
-                    "--_bg": "rgb(255 255 255 / 0.16)",
-                    "--_bg-hover": "rgb(255 255 255 / 0.24)",
+                    color: "var(--adm-ink)",
+                    "--_bg": "transparent",
+                    "--_bg-hover": "var(--adm-hover)",
                   } as React.CSSProperties
                 }
               >
@@ -568,9 +544,9 @@ export function FeatureCard({
             className="adm-control flex h-11 w-full items-center justify-center rounded-[var(--adm-radius-sm)] font-sans text-[12.5px] font-medium"
             style={
               {
-                color: "#1a1636",
-                "--_bg": "rgb(255 255 255 / 0.92)",
-                "--_bg-hover": "#ffffff",
+                color: "var(--adm-on-accent)",
+                "--_bg": "var(--adm-accent)",
+                "--_bg-hover": "var(--adm-accent-dim)",
               } as React.CSSProperties
             }
           >
@@ -584,10 +560,10 @@ export function FeatureCard({
             className="adm-control flex h-11 w-full items-center justify-center rounded-[var(--adm-radius-sm)] border font-sans text-[12.5px] font-medium"
             style={
               {
-                borderColor: "rgb(255 255 255 / 0.28)",
-                color: "#ffffff",
+                borderColor: "var(--adm-line-strong)",
+                color: "var(--adm-ink)",
                 "--_bg": "transparent",
-                "--_bg-hover": "rgb(255 255 255 / 0.12)",
+                "--_bg-hover": "var(--adm-hover)",
               } as React.CSSProperties
             }
           >

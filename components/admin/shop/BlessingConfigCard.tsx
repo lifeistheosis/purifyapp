@@ -123,7 +123,7 @@ export function BlessingConfigCard() {
             <span
               aria-hidden
               className="relative inline-block h-6 w-11 shrink-0 rounded-full transition-colors"
-              style={{ background: enabled ? "var(--adm-good)" : "var(--adm-line-strong)" }}
+              style={{ background: enabled ? "var(--adm-up)" : "var(--adm-line-strong)" }}
             >
               <span
                 className="absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform"
@@ -185,7 +185,7 @@ export function BlessingConfigCard() {
             <p
               role={note.tone === "critical" ? "alert" : "status"}
               className="font-sans text-[13px]"
-              style={{ color: note.tone === "critical" ? "var(--adm-critical)" : "var(--adm-good)" }}
+              style={{ color: note.tone === "critical" ? "var(--adm-critical)" : "var(--adm-up)" }}
             >
               {note.text}
             </p>

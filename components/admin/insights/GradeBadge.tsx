@@ -17,7 +17,7 @@ import type { GradeLetter, Standing } from "@/lib/admin/insights/types";
  * greyscale print.
  */
 const TONE: Record<Standing, string> = {
-  ahead: "var(--adm-good)",
+  ahead: "var(--adm-up)",
   onTrack: "var(--adm-accent-line)",
   behind: "var(--adm-critical)",
 };
