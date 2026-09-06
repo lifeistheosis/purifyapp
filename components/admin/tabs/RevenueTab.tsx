@@ -61,6 +61,7 @@ type Revenue = {
     donationsCents: number;
     subscriptionsCents: number | null;
     stripePaidOutCents: number | null;
+    stripeMonthly: { month: string; netCents: number; grossCents: number }[] | null;
     source: "revenuecat" | "stripe" | "partial";
   };
 };
@@ -79,7 +80,12 @@ function RevenuePanel() {
     60_000,
   );
 
-  const monthly = (data?.shop.monthly ?? []).slice().reverse(); // oldest → newest
+  // Stripe's ledger by month when Stripe is the realized source (it already
+  // arrives oldest first); the shop's own ledger otherwise.
+  const fromStripe = data?.realized.source === "stripe" && data.realized.stripeMonthly != null;
+  const monthly = fromStripe
+    ? (data?.realized.stripeMonthly ?? [])
+    : (data?.shop.monthly ?? []).slice().reverse(); // oldest → newest
   const donutSegments = (data?.bySource ?? [])
     .filter((s) => s.value > 0)
     .map((s, i) => ({
@@ -186,11 +192,11 @@ function RevenuePanel() {
       <ReconcileCard />
 
       <ChartFrame
-        title="Shop net revenue · by month"
-        subtitle="Paid orders minus refunds."
+        title={fromStripe ? "Revenue · by month" : "Shop net revenue · by month"}
+        subtitle={fromStripe ? "From Stripe's ledger: charges net of fees, minus refunds." : "Paid orders minus refunds."}
         sensitive
         isEmpty={monthly.length === 0}
-        empty="No shop revenue yet."
+        empty={fromStripe ? "Stripe has recorded no charges yet." : "No shop revenue yet."}
       >
         <LineChart
           labels={monthly.map((m) => m.month.slice(2))}

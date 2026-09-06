@@ -10,7 +10,7 @@ import {
 import { subscriptionStats } from "@/lib/entitlements/adminStats";
 import { estimatedMrrCents, estimatedArrCents } from "@/lib/premium/mrr";
 import { getProjectMetrics, realArpuAnnual } from "@/lib/billing/revenuecatMetrics";
-import { cachedLedger } from "@/lib/billing/stripeLedger";
+import { cachedLedger, monthlyNet } from "@/lib/billing/stripeLedger";
 
 export const dynamic = "force-dynamic";
 
@@ -144,6 +144,9 @@ export async function GET() {
   const stripe = live ? null : await cachedLedger("all", new Map());
   const stripePaidOutCents =
     stripe && stripe.configured && !stripe.error ? stripe.summary.payoutsCents : null;
+  // The monthly chart from the same ledger, so the trend and the headline
+  // come from one source. Null when Stripe is not the source.
+  const stripeMonthly = stripePaidOutCents != null && stripe ? monthlyNet(stripe.rows) : null;
   const realizedTotalCents =
     stripePaidOutCents != null
       ? stripePaidOutCents
@@ -234,6 +237,8 @@ export async function GET() {
         subscriptionsCents: subsRealizedCents,
         /** What Stripe has paid out, all time. Null when Stripe is not configured or RevenueCat answered instead. */
         stripePaidOutCents,
+        /** Net by month from Stripe's ledger, oldest first. Null unless Stripe is the source. */
+        stripeMonthly,
         source: subsRealizedCents != null ? "revenuecat" : stripePaidOutCents != null ? "stripe" : "partial",
       },
     },

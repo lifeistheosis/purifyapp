@@ -187,6 +187,29 @@ export function summarise(rows: LedgerRow[]): LedgerSummary {
 }
 
 /**
+ * Net money by calendar month: charges and payments net of Stripe's fee,
+ * minus refunds, in the order the months occurred. Payouts, fees on their
+ * own rows, adjustments and transfers are movements of money already
+ * counted, so they are left out. The Revenue tab draws this when Stripe is
+ * the realized source.
+ */
+export function monthlyNet(rows: LedgerRow[]): { month: string; netCents: number; grossCents: number }[] {
+  const byMonth = new Map<string, { netCents: number; grossCents: number }>();
+  for (const r of rows) {
+    const counts = r.type === "charge" || r.type === "payment" || r.match === "refund";
+    if (!counts) continue;
+    const month = r.created.slice(0, 7);
+    const b = byMonth.get(month) ?? { netCents: 0, grossCents: 0 };
+    b.netCents += r.net;
+    b.grossCents += r.amount;
+    byMonth.set(month, b);
+  }
+  return [...byMonth.entries()]
+    .sort((a, b) => (a[0] < b[0] ? -1 : 1))
+    .map(([month, v]) => ({ month, ...v }));
+}
+
+/**
  * The whole ledger, oldest to newest reversed for display (newest first).
  * `from` and `to` are unix seconds; omit both for everything.
  */
