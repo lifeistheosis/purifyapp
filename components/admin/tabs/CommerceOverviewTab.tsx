@@ -25,7 +25,7 @@
 import { useLiveData } from "@/lib/admin/useLiveData";
 import { Card, ChartFrame, Disclosure, Email, KpiCard } from "../primitives";
 import { OverviewWidgets } from "../OverviewWidgets";
-import { AreaChart, SERIES_COLORS } from "../charts";
+import { LineChart, SERIES_COLORS } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
 import { SENSITIVE } from "@/lib/admin/streamer";
 
@@ -86,7 +86,7 @@ export function CommerceOverviewTab() {
   const degraded = data?.ordersDegraded ?? false;
 
   const chart = (
-    <AreaChart
+    <LineChart
       labels={series.map((_, i) => `${30 - i}d`)}
       series={[
         {

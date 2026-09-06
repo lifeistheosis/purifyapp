@@ -369,7 +369,7 @@ export function SupportConsole({ initial }: { initial: FullTicket[] }) {
                 className={cn(
                   "admin-fade-in group relative max-w-[85%] cursor-default select-none rounded-[var(--adm-radius-sm)] px-4 py-3 font-sans text-detail leading-relaxed md:max-w-[80%]",
                   m.author === "staff"
-                    ? "ml-auto rounded-br-md bg-gold/[0.1] text-paper"
+                    ? "ml-auto rounded-br-md text-paper"
                     : "mr-auto rounded-bl-md border border-paper/10 bg-paper/[0.03] text-paper/85",
                 )}
               >

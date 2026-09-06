@@ -7,7 +7,7 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, StatCard, ChartFrame, DataTable, Email, Pill, SubTabs } from "../primitives";
-import { Donut, SERIES_COLORS } from "../charts";
+import { SegmentList, SERIES_COLORS } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
 
 type Subs = {
@@ -141,9 +141,7 @@ function SummaryPanel() {
           isEmpty={tierSegments.length === 0}
           empty="No active subscribers."
         >
-          <div className="flex justify-center">
-            <Donut segments={tierSegments} size={200} label="Subs" />
-          </div>
+          <SegmentList segments={tierSegments} label="subscribers" />
         </ChartFrame>
 
         <ChartFrame
@@ -152,9 +150,7 @@ function SummaryPanel() {
           isEmpty={sourceSegments.length === 0}
           empty="No active subscribers."
         >
-          <div className="flex justify-center">
-            <Donut segments={sourceSegments} size={200} label="Source" />
-          </div>
+          <SegmentList segments={sourceSegments} label="subscribers" />
         </ChartFrame>
       </div>
 
@@ -328,7 +324,7 @@ function GiftCard() {
         <button
           type="submit"
           disabled={busy || !email.trim()}
-          className="rounded-pill border border-gold/45 bg-gold/[0.10] px-5 py-2 font-sans text-detail font-semibold text-gold-pale transition-colors hover:bg-gold/20 disabled:opacity-40"
+          className="rounded-pill border border-gold/45 px-5 py-2 font-sans text-detail font-semibold text-gold-pale transition-colors disabled:opacity-40"
         >
           {busy ? "Sending…" : "Send gift"}
         </button>
@@ -489,7 +485,7 @@ function MembersPanel() {
           <button
             type="submit"
             disabled={busy || !email.trim()}
-            className="rounded-pill border border-[color-mix(in_oklab,var(--adm-up),transparent_50%)] bg-[color-mix(in_oklab,var(--adm-up),transparent_86%)] px-5 py-2 font-sans text-detail font-semibold text-[color:var(--adm-up)] transition-colors hover:bg-[color-mix(in_oklab,var(--adm-up),transparent_80%)] disabled:opacity-40"
+            className="rounded-pill border border-[color-mix(in_oklab,var(--adm-up),transparent_50%)] px-5 py-2 font-sans text-detail font-semibold text-[color:var(--adm-up)] transition-colors disabled:opacity-40"
           >
             {busy ? "Granting…" : "Grant"}
           </button>
@@ -512,7 +508,7 @@ function MembersPanel() {
       <GiftCard />
 
       {loaded && meta && !meta.revenuecat ? (
-        <p className="rounded-[var(--adm-radius-sm)] border border-[color-mix(in_oklab,var(--adm-warn),transparent_75%)] bg-[color-mix(in_oklab,var(--adm-warn),transparent_95%)] px-3 py-2 font-sans text-eyebrow text-[color:color-mix(in_oklab,var(--adm-warn),transparent_10%)]">
+        <p className="rounded-[var(--adm-radius-sm)] border border-[color-mix(in_oklab,var(--adm-warn),transparent_75%)] px-3 py-2 font-sans text-eyebrow text-[color:color-mix(in_oklab,var(--adm-warn),transparent_10%)]">
           Start dates come from the RevenueCat REST API. Set
           REVENUECAT_REST_API_KEY in the environment to show them; next-billing
           and everything else works from the database now.
