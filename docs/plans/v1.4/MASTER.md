@@ -113,3 +113,22 @@ store builds).
 - Community moderation, conduct rules, reporting: separate spec, not sent.
 - Variants, discounts, regional pricing, Stripe Tax code beyond one flag.
 - Renaming the fasting "streak" copy.
+
+## Status, end of 2026-09-05
+
+Built and merged into `release/v1.4` (f21f1e7c), nothing pushed:
+steps 6, 7, 8 to 14 (shop, minus the owner's real product), 16 to 25
+(catechism, collections, supporter mark, all with empty banks and config),
+26 to 29 (admin Ledger restyle), 31 (paywall translations cherry-picked).
+Typecheck clean, 2328 unit tests green.
+
+Unverified in a browser: every admin screen after the restyle (needs a
+signed-in session; open http://localhost:3022/admin on the dev server) and
+the native export gate. /catechism and /catechism/collections render their
+empty states.
+
+Still the owner's: steps 1 to 5 (env keys, ASKs, question bank, collections,
+badge labels, store check), sign-off on four migrations
+(20260905_shop_simple, 20260905_catechism, 20260905_collections,
+20260905_community_author_mark), step 15 (a real product from a phone), and
+the 🚀 drop, step 30.
