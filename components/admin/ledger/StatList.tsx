@@ -101,7 +101,7 @@ export function StatList({
                 className={"font-sans text-[15px] font-medium" + (r.sensitive ? ` ${SENSITIVE}` : "")}
                 style={{ color: has ? "var(--adm-ink)" : "var(--adm-ink-3)", fontVariantNumeric: "tabular-nums" }}
               >
-                {has ? <CountUp value={r.value as string | number} /> : "—"}
+                {has ? <CountUp value={r.value as string | number} /> : "n/a"}
               </span>
             </span>
           </>

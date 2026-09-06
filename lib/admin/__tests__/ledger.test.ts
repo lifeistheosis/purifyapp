@@ -84,7 +84,7 @@ describe("count up", () => {
 
   it("returns null for text with no number in it", () => {
     expect(splitNumeric("Not recorded")).toBeNull();
-    expect(splitNumeric("—")).toBeNull();
+    expect(splitNumeric("n/a")).toBeNull();
   });
 
   it("rebuilds the string at an intermediate value with the same shape", () => {
