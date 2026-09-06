@@ -181,18 +181,120 @@ marked, and per-question shown, correct and rate, lowest rate first. Counts
 only; no row of `quiz_attempts` leaves the route. A table that is not there
 says so; a count that could not be read says "unmeasured", never 0.
 
-## Adding a collection later
+## Study Collections
 
-Study Collections (`docs/plans/v1.4/collections.md`) are not built here, and
-this is the shape they plug into:
+A collection is a tag with a name. Route: `/catechism/collections`, one
+practice page per collection at `/catechism/collections/{slug}`. Built
+2026-09-05 on `feat/collections` for v1.4; plan in
+`docs/plans/v1.4/collections.md`.
 
-- a collection is a tag with a name. `tags` on every question is the join.
-- progress is the set of question ids answered rightly. Every attempt,
-  local or server, already carries `answers[].question_id` and
-  `answers[].correct`, so a union over attempts is the progress with no new
-  write on the quiz side.
-- `CATECHISM_EVENT` fires in-tab on every attempt written; a collection hook
-  can subscribe to it the way `useCompletionCount` does.
+The owner defines collections in `data/catechism/collections.json`, reviewed
+and committed like the bank, and it ships EMPTY until the owner's list is
+in. While it is empty the collections page shows a quiet empty state, the
+practice route renders the same, and nothing on `/account` mentions a
+collection. Nothing in the code invents one.
+
+### One collection
+
+```json
+{
+  "slug": "the-seven-councils",
+  "name": "The Seven Councils",
+  "description": "DESCRIPTION: one or two sentences on what the questions cover, no em dashes.",
+  "tag": "councils",
+  "theme_id": "councils",
+  "sort_order": 1
+}
+```
+
+That is a format example, not a collection. The file is a JSON array of
+these.
+
+| Field | Required | What it is |
+|---|---|---|
+| `slug` | yes | The URL segment. Lowercase words joined by hyphens, fixed for the life of the collection: progress rows key on it. |
+| `name` | yes | What the reader sees. Up to 80 characters. |
+| `description` | yes | One or two sentences under the name. Up to 400 characters. |
+| `tag` | yes | The study tag on the questions, exactly as it appears in their `tags`. Every published question carrying it belongs to the collection. |
+| `theme_id` | yes | The palette paired with the collection: an id in `READING_THEMES` (`lib/reader/readingModes.ts`) flagged `collection: true`, with a token block in `app/globals.css`. `councils` and `cappadocian` exist today. |
+| `sort_order` | yes | Position in the list. Ties break on slug. |
+
+No field may contain an em dash. `parseCollections` in
+`lib/catechism/collections.ts` refuses the whole file on the first problem,
+the bank test runs it against the committed file, and `scripts/quiz-import.ts
+--mirror` copies the rows into the `collections` table beside the bank.
+
+### Progress
+
+Progress is a set, not a number: the ids of the collection's questions a
+reader has answered rightly, in a daily catechism or in practice. Every
+correct answer advances every collection whose tag the question carries. The
+set is unioned on every write and never shrinks; there is no code path that
+removes an id, and no expiry, decay or reset.
+
+Completion is "every currently published question carrying the tag is in the
+set", recomputed on every read. The moment that first becomes true a
+`completed_at` is written, on the device and, signed in, on the reader's
+`collection_progress` row, and it is never cleared afterwards, so a bank that
+grows later cannot revoke a completion already made. The page then shows the
+collection at "N of M marks of study" again while the mark stands.
+
+Where the set lives:
+
+- on the device, `purify:catechism:collections` (`lib/catechism/progressLocal.ts`),
+  signed in or not;
+- signed in, `POST /api/catechism/progress` after every correct answer
+  (`lib/catechism/progress.ts`). The server keeps only ids that are bank
+  questions carrying the tag, unions them into the reader's own row under RLS,
+  and answers with the state. An absent table is a 503 and the device copy
+  stands;
+- on sign-in, `lib/catechism/progressSync.ts` pulls the account's rows and
+  fills what the device lacks, then pushes what the device holds. Neither side
+  ever shrinks.
+
+### Practice
+
+`/catechism/collections/{slug}` is the collection's questions, untimed, free,
+graded the same way, advancing the same set. Questions not yet in the set come
+first. It exists because five a day cannot finish a collection in a human
+timescale.
+
+### The palette
+
+Each collection pairs with one palette, a token block under
+`html[data-reading-mode="<theme_id>"]` like Candlelight and Monastery.
+Completing a collection shows the palette on the collections page. Applying
+it is a Purify Plus tool: the client asks `PUT /api/account/theme`, the route
+derives the entitlement server-side with `deriveEntitlements` under the
+surface's `PLUS_ENFORCED_*` flag (`lib/reader/themeWrite.ts`), writes
+`user_theme` with the service role, and only then does the client set the
+palette. A reader who is not entitled sees one plain sentence saying the
+palette is a Purify Plus tool, and a link to `/plan`. No padlock, no
+countdown, no modal.
+
+Adding a palette: a token block in `app/globals.css`, the id in the
+`ReadingTheme` union and an entry with `collection: true` in
+`lib/reader/readingModes.ts`, the id in `lib/reader/prepaint.ts`, a swatch in
+`components/reader/ReadingModeChips.tsx`. The tests hold each of those
+against the others.
+
+### Tables
+
+`supabase/migrations/20260905_collections.sql`, NOT SIGNED OFF until the
+owner reads it. Every reader tolerates the tables being absent.
+
+| Table | Holds | Access |
+|---|---|---|
+| `collections` | a mirror of `collections.json` | select all, service role writes |
+| `collection_progress` | per reader per collection: `correct_question_ids`, `completed_at` | `_self_all` |
+| `user_theme` | the palette a reader applied, after the entitlement check | self select, service role writes |
+
+### On /account
+
+"Completed: The Seven Councils", one quiet line per completed collection,
+beside "You have completed N catechisms", for everyone. That is the only
+place a completion is shown outside the collections page. No badges, no
+sharing.
 
 ## Integrity note
 
@@ -211,3 +313,24 @@ this is the shape they plug into:
   unlock, streak, level, premium, VIP, elite). None appears in a catechism
   string. Two pre-existing uses elsewhere (`nav.premium`, the fasting
   "streak" strings) are recorded in `docs/plans/v1.4/README.md`.
+
+### Study Collections
+
+- C1, free: collections, progress, practice and the "Completed:" line are
+  free and need no account. Only applying a collection palette is a Purify
+  Plus tool, and a palette is cosmetic. Under the `PLUS_ENFORCED_*` flags as
+  they ship (all off) even that is open, like Candlelight and Monastery.
+- C2, data: `collection_progress` is a self-only row (question ids and a
+  timestamp), deleted with the account; `user_theme` is a self-select row
+  written only by the service role. Nothing new on the anonymous path: a
+  signed-out reader keeps the set on the device and sends nothing.
+- C3, calm: progress is a set that only grows. No decay, no expiry, no
+  reset, no renew prompt, no timer in practice, no share, no push. The
+  completion is one line on the collections page and one on `/account`.
+- C4, one change: config, loader, device store, sync, route, theme write,
+  pages, cards, account line, migration, import script, strings, doc and
+  tests in one branch.
+- C5, words: "collection" and "marks of study" throughout. The twenty-five
+  `catechism.collections.*` strings and the plan item were read against the
+  banned list (reward, earn, unlock, streak, level, premium, VIP, elite);
+  none appears. No badge outside `/account`, no sharing prompt.

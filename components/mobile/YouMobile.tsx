@@ -33,6 +33,7 @@ import { SettingsGlyph as Glyph } from "./SettingsGlyph";
 import { readIntentions } from "@/lib/prayers/storage";
 import { useReadingStats } from "@/lib/profile/useReadingStats";
 import { useShowSupporterMark } from "@/lib/profile/useShowSupporterMark";
+import { useCompletedCollections } from "@/lib/catechism/useCollectionProgress";
 import { useCompletionCount } from "@/lib/catechism/useCompletionCount";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
@@ -131,6 +132,7 @@ export function YouMobile() {
   // desktop dashboard's Data tab.
   const [showMark, toggleShowMark] = useShowSupporterMark();
   const catechisms = useCompletionCount();
+  const completed = useCompletedCollections();
 
   const settings: SettingsItem[] = [];
 
@@ -386,6 +388,19 @@ export function YouMobile() {
         <p className="mt-4 font-serif text-detail text-paper/60">
           {tn("catechism.accountCount", catechisms)}
         </p>
+      )}
+      {/* And the collections seen through, one line each, for everyone. The
+          only place a completion is shown outside the collections page. */}
+      {completed.length > 0 && (
+        <ul className={catechisms > 0 ? "mt-1 flex flex-col gap-0.5" : "mt-4 flex flex-col gap-0.5"}>
+          {completed.map((c) => (
+            <li key={c.slug} className="font-serif text-detail text-paper/60">
+              <Link href="/catechism/collections" className="hover:text-paper transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none">
+                {t("catechism.collections.completedLine", { name: c.name })}
+              </Link>
+            </li>
+          ))}
+        </ul>
       )}
 
       <div className="mt-7">

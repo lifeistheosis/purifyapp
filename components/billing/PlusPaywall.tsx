@@ -521,6 +521,7 @@ const INCLUDED_ICONS: Record<string, React.ReactNode> = {
   "immersive-history": <HourglassIcon />,
   "everything-plus": <LayersIcon />,
   "reading-modes": <CandleIcon />,
+  "collection-palettes": <CandleIcon />,
   "studio-audio": <AudioIcon />,
   "eikon-box": <GiftIcon />,
   "eikon-benefits": <TagIcon />,
