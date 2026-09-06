@@ -1,5 +1,6 @@
 import { CatechismClient } from "@/components/catechism/CatechismClient";
-import { getDailyWindow } from "@/lib/catechism/bank";
+import { getDailyWindow, loadBank } from "@/lib/catechism/bank";
+import { collectionIndex, loadCollections } from "@/lib/catechism/collections";
 
 export const metadata = {
   title: "Today's Catechism",
@@ -25,5 +26,9 @@ export const revalidate = 3600;
  */
 export default async function CatechismPage() {
   const window = await getDailyWindow();
-  return <CatechismClient window={window} />;
+  // The collections and their published question ids, so a correct answer
+  // can advance a collection on the device with no server. Empty while
+  // data/catechism/collections.json is.
+  const collections = collectionIndex(loadCollections(), loadBank());
+  return <CatechismClient window={window} collections={collections} />;
 }

@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { apiFetch } from "@/lib/api/client";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { useToday } from "@/lib/calendar/useToday";
+import type { CollectionIndexEntry } from "@/lib/catechism/collections";
 import { isoFromDate } from "@/lib/catechism/dates";
 import { isCorrect } from "@/lib/catechism/grade";
 import {
@@ -17,6 +18,8 @@ import {
   type LocalAttempt,
 } from "@/lib/catechism/local";
 import type { Answer, AttemptAnswer, ClientQuestion, DailyWindow, Reckoning } from "@/lib/catechism/types";
+import { recordCorrectAnswers } from "@/lib/catechism/progressLocal";
+import { postCollectionProgress } from "@/lib/catechism/progressSync";
 import { questionsFor } from "@/lib/catechism/window";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
 
@@ -73,7 +76,14 @@ function keyFor(window: DailyWindow, today: string): string | null {
   return before.length ? before[before.length - 1] : keys[0];
 }
 
-export function CatechismClient({ window }: { window: DailyWindow }) {
+export function CatechismClient({
+  window,
+  collections = [],
+}: {
+  window: DailyWindow;
+  /** Each collection with its published question ids (lib/catechism/collections.ts). */
+  collections?: CollectionIndexEntry[];
+}) {
   const { t, locale } = useTranslate();
   const today = useToday();
   const [reckoning] = useCalendarStyleDefault();
@@ -112,7 +122,13 @@ export function CatechismClient({ window }: { window: DailyWindow }) {
         ) : questions.length === 0 ? (
           <Empty />
         ) : (
-          <Run key={`${key}:${reckoning}`} date={key} reckoning={reckoning} questions={questions} />
+          <Run
+            key={`${key}:${reckoning}`}
+            date={key}
+            reckoning={reckoning}
+            questions={questions}
+            collections={collections}
+          />
         )}
       </article>
     </section>
@@ -136,10 +152,12 @@ function Run({
   date,
   reckoning,
   questions,
+  collections,
 }: {
   date: string;
   reckoning: Reckoning;
   questions: ClientQuestion[];
+  collections: CollectionIndexEntry[];
 }) {
   const { t } = useTranslate();
   const total = questions.length;
@@ -173,10 +191,18 @@ function Run({
       };
       writeAttempt(attempt);
       setStage({ kind: "done", attempt });
+
+      // Every collection whose tag a rightly answered question carries
+      // advances, on the device first. The set only ever grows.
+      const gained = recordCorrectAnswers(
+        collections,
+        answers.filter((a) => a.correct).map((a) => a.question_id),
+      );
       trackCatechism({ name: "catechism_completed", props: { score, total, reckoning } });
 
       const signedIn = !!readLocalSessionUser();
       if (signedIn) {
+        postCollectionProgress(gained.map((g) => ({ slug: g.slug, question_ids: g.ids })));
         void apiFetch("/api/catechism/attempt", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -205,7 +231,7 @@ function Run({
         }).catch(() => {});
       }
     },
-    [date, reckoning, total],
+    [date, reckoning, total, collections],
   );
 
   if (stage.kind === "done") {
@@ -216,6 +242,7 @@ function Run({
           answers={stage.attempt.answers}
           score={stage.attempt.score}
           total={stage.attempt.total || total}
+          collections={collections}
         />
       </div>
     );

@@ -4,7 +4,9 @@ import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
+import { progressFor, type CollectionIndexEntry } from "@/lib/catechism/collections";
 import type { AttemptAnswer, ClientQuestion } from "@/lib/catechism/types";
+import { useCollectionProgress } from "@/lib/catechism/useCollectionProgress";
 
 /**
  * The end of the day's five: one mark per question settling in, one line
@@ -13,20 +15,28 @@ import type { AttemptAnswer, ClientQuestion } from "@/lib/catechism/types";
  *
  * The marks use `.onboard-mark-in` at 70ms steps (the welcome mark's own
  * entrance); reduced motion shows them at rest.
+ *
+ * When a collection was touched by one of the five, one quiet line per
+ * collection follows the count: where it stands, or that it is complete.
+ * `.rise-in`, the panel's own entrance; nothing else moves.
  */
 export function CompletionScreen({
   questions,
   answers,
   score,
   total,
+  collections = [],
 }: {
   questions: ClientQuestion[];
   answers: AttemptAnswer[];
   score: number;
   total: number;
+  collections?: CollectionIndexEntry[];
 }) {
   const { t } = useTranslate();
   const byId = new Map(answers.map((a) => [a.question_id, a]));
+  const shown = new Set(questions.map((q) => q.id));
+  const touched = collections.filter((c) => c.question_ids.some((id) => shown.has(id)));
 
   return (
     <div>
@@ -61,6 +71,8 @@ export function CompletionScreen({
         {t("catechism.score", { score, total })}
       </p>
 
+      {touched.length > 0 && <CollectionLines collections={touched} />}
+
       <p className="mt-8 font-sans text-eyebrow uppercase tracking-[2px] text-paper/55">
         {t("catechism.readSources")}
       </p>
@@ -81,12 +93,44 @@ export function CompletionScreen({
         ))}
       </ol>
 
-      <Link
-        href="/"
-        className="mt-8 inline-block font-sans text-caption text-paper/55 hover:text-paper transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none"
-      >
-        {t("catechism.backToToday")}
-      </Link>
+      <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
+        <Link
+          href="/"
+          className="inline-block font-sans text-caption text-paper/55 hover:text-paper transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none"
+        >
+          {t("catechism.backToToday")}
+        </Link>
+        {collections.length > 0 && (
+          <Link
+            href="/catechism/collections"
+            className="inline-block font-sans text-caption text-paper/55 hover:text-paper transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none"
+          >
+            {t("catechism.collections.link")}
+          </Link>
+        )}
+      </div>
     </div>
+  );
+}
+
+/** Where each touched collection stands after this attempt. */
+function CollectionLines({ collections }: { collections: CollectionIndexEntry[] }) {
+  const { t, tn } = useTranslate();
+  const progress = useCollectionProgress(collections);
+  return (
+    <ul className="rise-in mt-4 flex flex-col gap-1" aria-label={t("catechism.collections.title")}>
+      {collections.map((c) => {
+        const p = progress[c.slug];
+        const state = progressFor(p?.ids ?? [], c.question_ids);
+        const complete = !!p?.completed_at || state.complete;
+        return (
+          <li key={c.slug} className="font-serif text-detail text-paper/60">
+            {complete
+              ? t("catechism.collections.completedLine", { name: c.name })
+              : tn("catechism.collections.progressLine", state.total, { name: c.name, done: state.done })}
+          </li>
+        );
+      })}
+    </ul>
   );
 }
