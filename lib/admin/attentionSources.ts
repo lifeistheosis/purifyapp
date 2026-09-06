@@ -40,6 +40,9 @@ export function readOverviewSlice(d: unknown): OverviewAlertFields | null {
     ordersPendingStale: stale ?? 0,
     ordersPendingUnchecked: unchecked ?? 0,
     pendingNewestStaleAt: strOrNull(d.pendingNewestStaleAt),
+    // Null, not 0, when absent: an older payload or an unconfigured Stripe
+    // must not read as "Stripe charged nothing".
+    pendingStripeCharged: typeof d.pendingStripeCharged === "number" ? d.pendingStripeCharged : null,
     lastWebhookAt: strOrNull(d.lastWebhookAt),
     lastWebhookLogReadable: d.lastWebhookLogReadable === true,
     lastWebhookLogMissing: d.lastWebhookLogMissing === true,

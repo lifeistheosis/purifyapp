@@ -41,6 +41,7 @@ describe("readOverviewSlice", () => {
       lastWebhookLogReadable: false,
       lastWebhookLogMissing: true,
       lastReconcileAt: null,
+      pendingStripeCharged: null,
     });
   });
 

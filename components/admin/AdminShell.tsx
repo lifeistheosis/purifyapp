@@ -494,6 +494,8 @@ type OverviewPayload = {
   /** null when shop_orders could not be read. */
   revenueTodayCents: number | null;
   revenueSeries: number[];
+  /** Which ledger the revenue fields came from. Absent on older payloads. */
+  revenueSource?: "stripe" | "shop";
   /** True when the money fields above are unmeasured rather than zero. */
   ordersDegraded: boolean;
   paidPlus: number;
@@ -1075,6 +1077,7 @@ export function AdminShell({
               // printed $0 over an empty series it had never been given.
               revenueMeasured={overview.data !== null && !overview.data.ordersDegraded}
               revenueLoading={overview.loading}
+              revenueSource={overview.data?.revenueSource ?? "shop"}
             />
           ) : null}
 

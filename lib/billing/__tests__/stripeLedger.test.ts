@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type Stripe from "stripe";
 
-import { monthlyNet, rangeFrom, summarise, toRow } from "@/lib/billing/stripeLedger";
+import { dailyNet, monthlyNet, rangeFrom, summarise, toRow } from "@/lib/billing/stripeLedger";
 
 // Loosely typed on purpose: the SDK's Charge type follows the newest API
 // version, where `invoice` is no longer on the charge, and the mapper has
@@ -104,6 +104,27 @@ describe("monthlyNet", () => {
     expect(m[0].netCents).toBe(908);
     expect(m[1].netCents).toBe(1135 - 499);
     expect(m[1].grossCents).toBe(1200 - 499);
+  });
+});
+
+describe("dailyNet", () => {
+  it("places each movement on its UTC day, oldest first, and ignores payouts", () => {
+    const now = new Date("2026-09-06T12:00:00Z");
+    const day = 86_400;
+    const at = (daysAgo: number) => Math.floor(now.getTime() / 1000) - daysAgo * day;
+    const rows = [
+      toRow(bt({ id: "a", created: at(0), amount: 499, fee: 45, net: 454 }), orders),
+      toRow(bt({ id: "b", created: at(2), amount: 1200, fee: 65, net: 1135 }), orders),
+      toRow(bt({ id: "c", created: at(2), type: "refund", amount: -200, fee: 0, net: -200, source: { object: "refund", charge: { id: "ch" } } }), orders),
+      toRow(bt({ id: "d", created: at(1), type: "payout", amount: -900, fee: 0, net: -900 }), orders),
+      toRow(bt({ id: "e", created: at(40), amount: 999, fee: 50, net: 949 }), orders),
+    ];
+    const s = dailyNet(rows, 7, now);
+    expect(s).toHaveLength(7);
+    expect(s[6]).toBe(454);
+    expect(s[5]).toBe(0);
+    expect(s[4]).toBe(935);
+    expect(s.reduce((a, b) => a + b, 0)).toBe(454 + 935);
   });
 });
 

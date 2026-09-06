@@ -125,6 +125,7 @@ export function HeroRow({
   revenueTodayCents,
   revenueMeasured,
   revenueLoading,
+  revenueSource = "shop",
 }: {
   period: PeriodId;
   onPeriod: (p: PeriodId) => void;
@@ -142,6 +143,8 @@ export function HeroRow({
    */
   revenueMeasured: boolean;
   revenueLoading: boolean;
+  /** "stripe" when the overview route read Stripe's ledger; "shop" when only shop_orders answered. */
+  revenueSource?: "stripe" | "shop";
 }) {
   // 90 days so a 30-day window has a real 30 days behind it to compare with.
   const traffic = useLiveData<Traffic>("/api/admin/traffic?range=90d", 60_000);
@@ -287,7 +290,7 @@ export function HeroRow({
           // series from shop_orders and nothing else; donations live in monthly
           // rows and subscription revenue has no date at all, so neither can be
           // in a daily figure. The old eyebrow read "Shop, donations, subs".
-          eyebrow="Shop orders only"
+          eyebrow={revenueSource === "stripe" ? "Stripe, net of fees" : "Shop orders only"}
           title="Revenue"
           label={`Net, ${over}`}
           // A dash when the orders table did not answer. The route sends an
