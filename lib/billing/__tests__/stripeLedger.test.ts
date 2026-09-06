@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type Stripe from "stripe";
 
-import { rangeFrom, summarise, toRow } from "@/lib/billing/stripeLedger";
+import { monthlyNet, rangeFrom, summarise, toRow } from "@/lib/billing/stripeLedger";
 
 // Loosely typed on purpose: the SDK's Charge type follows the newest API
 // version, where `invoice` is no longer on the charge, and the mapper has
@@ -87,6 +87,23 @@ describe("summarise", () => {
     expect(s.unmatchedCount).toBe(1);
     expect(s.netCents).toBe(454 + 1135 + 261 - 499 - 1000);
     expect(s.byType.charge.count).toBe(3);
+  });
+});
+
+describe("monthlyNet", () => {
+  it("buckets charges net of fees minus refunds by month, and skips payouts", () => {
+    const rows = [
+      toRow(bt({ id: "a", created: 1_751_400_000, amount: 499, fee: 45, net: 454 }), orders), // 2025-07
+      toRow(bt({ id: "b", created: 1_751_500_000, amount: 499, fee: 45, net: 454 }), orders), // 2025-07
+      toRow(bt({ id: "c", created: 1_754_100_000, amount: 1200, fee: 65, net: 1135 }), orders), // 2025-08
+      toRow(bt({ id: "d", created: 1_754_200_000, type: "refund", amount: -499, fee: 0, net: -499, source: { object: "refund", charge: { id: "ch" } } }), orders),
+      toRow(bt({ id: "e", created: 1_754_300_000, type: "payout", amount: -2000, fee: 0, net: -2000 }), orders),
+    ];
+    const m = monthlyNet(rows);
+    expect(m.map((x) => x.month)).toEqual(["2025-07", "2025-08"]);
+    expect(m[0].netCents).toBe(908);
+    expect(m[1].netCents).toBe(1135 - 499);
+    expect(m[1].grossCents).toBe(1200 - 499);
   });
 });
 
