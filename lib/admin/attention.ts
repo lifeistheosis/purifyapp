@@ -146,6 +146,13 @@ export type OverviewAlertFields = {
   lastWebhookLogReadable: boolean;
   lastWebhookLogMissing: boolean;
   lastReconcileAt: string | null;
+  /**
+   * Stale pending orders that Stripe's own ledger shows a charge for. Null
+   * when Stripe is not configured or the payload predates the field; then
+   * the webhook heuristic below decides. Zero means Stripe took nothing for
+   * any of them: abandoned checkouts, a queue and not a fault.
+   */
+  pendingStripeCharged?: number | null;
 };
 
 export type ProbeSlice = {
@@ -309,6 +316,41 @@ function ordersFinding(o: OverviewAlertFields, localReconcileAt: string | null):
   const reconcile = { tab: "revenue", label: "Reconcile in Revenue" };
   const openOrders = { tab: "orders", label: "Open Orders" };
 
+  // STRIPE'S OWN ANSWER BEATS THE WEBHOOK HEURISTIC. When the route could
+  // read Stripe's ledger, a stale pending order either has a charge there
+  // or it does not. None charged: these are people who opened Checkout and
+  // left, a queue to tidy, not money missing (owner, 2026-09-06, 34 of
+  // them). Some charged: the books really did miss money, and that is the
+  // only case that earns Serious here.
+  const charged = o.pendingStripeCharged;
+  if (typeof charged === "number") {
+    if (charged === 0) {
+      return queue(
+        "overview",
+        "abandoned",
+        n,
+        plural(n, "abandoned checkout", "abandoned checkouts"),
+        "Checkouts opened and never paid",
+        n === 1
+          ? "1 checkout was opened more than a day ago and never paid. Stripe shows no charge for it, so nobody was billed. Reconcile marks it cancelled."
+          : `${n} checkouts were opened more than a day ago and never paid. Stripe shows no charge for any of them, so nobody was billed. Reconcile marks them cancelled.`,
+        reconcile,
+        openOrders,
+      );
+    }
+    const c = charged;
+    return fault(
+      "overview",
+      "stale-charged",
+      "serious",
+      `Stripe charged ${plural(c, "order", "orders")} the books show unpaid`,
+      "Stripe took money the books never recorded",
+      `${c} of the ${orders} unpaid over a day ${c === 1 ? "has" : "have"} a charge in Stripe's ledger and no paid record here. Reconcile settles what Stripe confirms. Applying it is what clears this.`,
+      reconcile,
+      { also: openOrders, count: c },
+    );
+  }
+
   if (webhook === "unreadable") {
     const why = o.lastWebhookLogMissing
       ? "admin_activity_log is not on this database (migration 20260823_admin_activity_log.sql)"
@@ -460,7 +502,9 @@ export function deriveAttention(i: AttentionInputs): AttentionSummary {
       if (!o.staleMeasured || o.ordersPending === null) unmeasured.push(unmeasuredItem("overview"));
       if (o.staleMeasured) {
         const stale = ordersFinding(o, i.localReconcileAt);
-        if (stale) faults.push(stale);
+        // Abandoned checkouts with Stripe's word for it are a queue, not a
+        // fault; everything else the rule returns is a fault.
+        if (stale) (stale.cls === "queue" ? queues : faults).push(stale);
       }
       if (o.ordersPending !== null && o.ordersPending > 0) {
         const n = o.ordersPending;

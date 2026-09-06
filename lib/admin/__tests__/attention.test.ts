@@ -247,6 +247,38 @@ describe("the stale-orders rule", () => {
     expect(headline(s, NOW).text).toBe("1 thing needs attention");
   });
 
+  it("is a queue of abandoned checkouts, not a fault, when Stripe's ledger shows no charge for any of them", () => {
+    // 2026-09-06: 34 pending orders, every one a checkout opened and left.
+    // With Stripe answering, the webhook heuristic no longer decides.
+    const i = calm();
+    i.overview = ok(stale({ lastWebhookAt: null, pendingStripeCharged: 0 }));
+    const s = deriveAttention(i);
+    expect(s.faults).toHaveLength(0);
+    const q = s.queues.find((x) => x.id === "overview:abandoned");
+    expect(q?.count).toBe(31);
+    expect(q?.label).toBe("31 abandoned checkouts");
+    expect(q?.body).toContain("nobody was billed");
+  });
+
+  it("is serious, and counts only the charged ones, when Stripe's ledger shows charges the books missed", () => {
+    const i = calm();
+    i.overview = ok(stale({ lastWebhookAt: null, pendingStripeCharged: 2 }));
+    const s = deriveAttention(i);
+    expect(s.faults).toHaveLength(1);
+    const f = s.faults[0];
+    expect(f.level).toBe("serious");
+    expect(f.id).toBe("overview:stale-charged");
+    expect(f.count).toBe(2);
+    expect(f.label).toBe("Stripe charged 2 orders the books show unpaid");
+  });
+
+  it("falls back to the webhook heuristic when Stripe did not answer", () => {
+    const i = calm();
+    i.overview = ok(stale({ lastWebhookAt: null, pendingStripeCharged: null }));
+    const f = deriveAttention(i).faults[0];
+    expect(f.id).toBe("overview:stale-silent");
+  });
+
   it("is serious when the log is readable and holds no webhook at all, and says no record rather than silent", () => {
     // On the day the log migration lands the log is empty whatever Stripe has
     // been doing, so an empty log must not be stated as Stripe going quiet.

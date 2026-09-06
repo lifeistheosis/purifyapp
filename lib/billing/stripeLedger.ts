@@ -41,6 +41,8 @@ export type LedgerRow = {
   ref: string | null;
   /** Customer email when Stripe carried one. Masked by the panel's streamer mode. */
   email: string | null;
+  /** The payment intent behind a charge or refund, so the books can be checked against Stripe. */
+  intent: string | null;
 };
 
 export type LedgerSummary = {
@@ -148,7 +150,17 @@ export function toRow(
     match,
     ref,
     email,
+    intent,
   };
+}
+
+/** Every payment intent Stripe actually charged (or refunded) in these rows. */
+export function chargedIntents(rows: LedgerRow[]): Set<string> {
+  const out = new Set<string>();
+  for (const r of rows) {
+    if (r.intent && (r.type === "charge" || r.type === "payment")) out.add(r.intent);
+  }
+  return out;
 }
 
 export function summarise(rows: LedgerRow[]): LedgerSummary {
@@ -207,6 +219,25 @@ export function monthlyNet(rows: LedgerRow[]): { month: string; netCents: number
   return [...byMonth.entries()]
     .sort((a, b) => (a[0] < b[0] ? -1 : 1))
     .map(([month, v]) => ({ month, ...v }));
+}
+
+/**
+ * Net money per UTC day for the trailing `days` days, oldest first, the
+ * shape the Overview hero's sparkline expects. Same rows count as in
+ * monthlyNet: charges net of fee, refunds negative, nothing else.
+ */
+export function dailyNet(rows: LedgerRow[], days: number, now: Date = new Date()): number[] {
+  const dayMs = 86_400_000;
+  const todayStart = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const out = new Array<number>(days).fill(0);
+  for (const r of rows) {
+    const counts = r.type === "charge" || r.type === "payment" || r.match === "refund";
+    if (!counts) continue;
+    const t = Date.parse(r.created);
+    const idx = days - 1 - Math.floor((todayStart - Date.UTC(new Date(t).getUTCFullYear(), new Date(t).getUTCMonth(), new Date(t).getUTCDate())) / dayMs);
+    if (idx >= 0 && idx < days) out[idx] += r.net;
+  }
+  return out;
 }
 
 /**

@@ -4,6 +4,7 @@ import { getAdminUser } from "@/lib/admin/access";
 import { staleCounts } from "@/lib/admin/attentionOrders";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { subscriptionStats } from "@/lib/entitlements/adminStats";
+import { cachedLedger, chargedIntents, dailyNet } from "@/lib/billing/stripeLedger";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ type OrderRow = {
   payment_status: string;
   email: string | null;
   created_at: string;
+  stripe_payment_intent?: string | null;
 };
 
 /**
@@ -49,7 +51,7 @@ async function pageOrders(
   for (let page = 0; page < MAX_PAGES; page++) {
     const { data, error } = await admin
       .from("shop_orders")
-      .select("id, total_cents, payment_status, email, created_at")
+      .select("id, total_cents, payment_status, email, created_at, stripe_payment_intent")
       .gte("created_at", since)
       .order("created_at", { ascending: true })
       .range(page * PAGE, page * PAGE + PAGE - 1);
@@ -168,6 +170,7 @@ export async function GET() {
     payment_status: "pending" | "paid" | "refunded" | "cancelled";
     email: string | null;
     created_at: string;
+    stripe_payment_intent?: string | null;
   }[];
 
   // The webhook log, read honestly. An error here is "cannot tell", never
@@ -203,12 +206,46 @@ export async function GET() {
     series.push(dayNet);
   }
 
-  const revenue30Cents = orders30
+  let revenue30Cents = orders30
     .filter((o) => isRevenue(o.payment_status))
     .reduce((a, o) => a + net(o), 0);
-  const revenueTodayCents = orders30
+  let revenueTodayCents = orders30
     .filter((o) => isRevenue(o.payment_status) && o.created_at >= startOfTodayUtc)
     .reduce((a, o) => a + net(o), 0);
+
+  // STRIPE WHEN IT ANSWERS. The hero read shop orders only, so it showed
+  // $20 for the month while Stripe had paid out $56.72 (owner, 2026-09-06):
+  // subscriptions billed through Stripe never reach shop_orders. When the
+  // Stripe key is set, the series, the month and today come from Stripe's
+  // own ledger (charges net of fees, minus refunds), which already contains
+  // the shop's Stripe charges, so nothing is counted twice. The eyebrow on
+  // the card says which source it is reading.
+  let revenueSource: "stripe" | "shop" = "shop";
+  // Stale pending orders that Stripe ACTUALLY charged. The 34 "unpaid over
+  // a day" orders on 2026-09-06 were people who opened Checkout and never
+  // paid; the panel called them Serious because it never asked Stripe.
+  // With the ledger in hand it can: a pending order whose payment intent
+  // has no charge in Stripe is abandoned, not money the books missed.
+  // Null when Stripe is not configured, so the rule falls back to the
+  // webhook heuristic rather than reading "nothing charged".
+  let pendingStripeCharged: number | null = null;
+  const ledger = await cachedLedger("30d", new Map());
+  if (ledger.configured && !ledger.error) {
+    const charged = chargedIntents(ledger.rows);
+    const staleCutoff = now.getTime() - 86_400_000;
+    pendingStripeCharged = orders30.filter(
+      (o) =>
+        o.payment_status === "pending" &&
+        Date.parse(o.created_at) <= staleCutoff &&
+        o.stripe_payment_intent != null &&
+        charged.has(o.stripe_payment_intent),
+    ).length;
+    const stripeSeries = dailyNet(ledger.rows, 30, now);
+    series.splice(0, series.length, ...stripeSeries);
+    revenue30Cents = stripeSeries.reduce((a, b) => a + b, 0);
+    revenueTodayCents = stripeSeries[stripeSeries.length - 1] ?? 0;
+    revenueSource = "stripe";
+  }
 
   const recent = orders30
     .filter((o) => o.payment_status === "paid")
@@ -234,6 +271,8 @@ export async function GET() {
       revenueTodayCents: recentOrdersRes.failed ? null : revenueTodayCents,
       revenue30Cents: recentOrdersRes.failed ? null : revenue30Cents,
       revenueSeries: recentOrdersRes.failed ? [] : series,
+      /** Which ledger the three revenue fields came from. */
+      revenueSource,
       /** True when the order read failed and the money fields are unmeasured. */
       ordersDegraded: recentOrdersRes.failed,
       // null, not 0, when a HEAD count errored. PostgREST answers an error
@@ -255,6 +294,8 @@ export async function GET() {
       // read: the client reads null as "staleness not measured" and shows a
       // chip, where 0 would have read as "nothing stale" and cleared it.
       ordersPendingStale: stale ? stale.stale : null,
+      /** Stale pending orders Stripe actually charged, from its ledger. Null when Stripe is not configured. */
+      pendingStripeCharged,
       ordersPendingUnchecked: stale ? stale.unchecked : null,
       pendingNewestStaleAt: stale?.newestStaleAt ?? null,
       lastWebhookAt,
