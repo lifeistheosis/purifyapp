@@ -156,14 +156,6 @@ export const ADMIN_TAB_ICONS: Record<string, ReactNode> = {
       <path d="M7.4 13.6l4.6-4.6 1.6 1.6-4.6 4.6H7.4Z" />
     </svg>
   ),
-  // Catechism: a question mark in a ring, the day's five as one glyph.
-  catechism: (
-    <svg {...S}>
-      <circle cx="10" cy="10" r="6.8" />
-      <path d="M7.9 8.3a2.1 2.1 0 1 1 3 1.9c-.6.3-.9.7-.9 1.3v.3" />
-      <path d="M10 14h.01" />
-    </svg>
-  ),
   // Library files: a stack, because it is an inventory rather than a document.
   "content-health": (
     <svg {...S}>

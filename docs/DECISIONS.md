@@ -40,16 +40,6 @@ owner; the default the plan assumes is stated.
 - Existing tab ids and URLs are kept; only the rail grouping changes.
 - ASK: add Inter as a self-hosted font for numerics, or use DM Sans with tabular figures? Default: DM Sans, it is already loaded and the difference is small.
 - ASK: default pinned KPI set. Proposed: Paid subscribers, MRR, Visitors 30d, New users 30d, Catechism completions today (empty until Feature A ships), Shop revenue 90d.
-- Built 2026-09-05, the calls made on the way:
-  - The rail starts at md (768), not lg, so the five-item bar stops exactly where the rail begins. Between 768 and 1023 the canvas is narrower than before; the spec asked for the bar below 768 and nothing else.
-  - "Shop revenue 90d" is the sum of the last three calendar months from the revenue route's monthly ledger, the closest window the tree keeps; the tile's (i) says so. A true 90-day daily series would need a route change, which the spec forbids.
-  - MRR has no daily history anywhere in the tree. The MRR side of the Summary chart shows the run rate and an honest empty plot with a link to Subscriptions, rather than drawing the shop series under an MRR label.
-  - "DAU" is daily unique visitors from the traffic route, the closest daily count that exists.
-  - A chart asked for three or more series draws small multiples, one ink line per plot, so every series stays on screen and the two-line rule holds.
-  - The Getting started five: set goals, send a push, publish a patch note, check the shop, run the probes. Each row opens its tab.
-  - The DataTable keeps its phone card mode at lg; only navigation moved to md.
-  - Tabs the spec names that do not exist (Funnels, Retention, Parish codes, Catechism stats) are not added: an empty tab is a promise the panel cannot keep.
-  - Missing values in the new components read "n/a", not a dash glyph, so no em dash lands in admin copy.
 
 ### Shop: simple product management
 - No form library: the codebase has zod and hand-built forms, nothing else. Client validation is a small per-field check mirroring the zod schema.

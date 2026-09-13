@@ -14,13 +14,7 @@ import { OnboardingFlow } from "./OnboardingFlow";
  * the next time they reach home. Returns nothing for returning users (see
  * the prior-use heuristic in `lib/onboarding/state.ts`).
  */
-export function FirstRunGate({
-  catechismAvailable = false,
-}: {
-  /** Whether the question bank holds anything; decided by the root layout
-   *  on the server, so the overlay never advertises an empty page. */
-  catechismAvailable?: boolean;
-}) {
+export function FirstRunGate() {
   const pathname = usePathname();
   const [show, setShow] = useState(false);
 
@@ -33,5 +27,5 @@ export function FirstRunGate({
   /* eslint-enable react-hooks/set-state-in-effect */
 
   if (!show) return null;
-  return <OnboardingFlow onDone={() => setShow(false)} catechismAvailable={catechismAvailable} />;
+  return <OnboardingFlow onDone={() => setShow(false)} />;
 }

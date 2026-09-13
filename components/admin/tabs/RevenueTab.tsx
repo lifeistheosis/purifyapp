@@ -2,13 +2,13 @@
 
 // Revenue — unified money view. Shop revenue (net of refunds, reusing the
 // pure earnings aggregators server-side), donations, and an ESTIMATED
-// subscription run-rate, with a monthly trend, a revenue-by-source list,
+// subscription run-rate, with a monthly trend, a revenue-by-source donut,
 // and top products. A sub-tab holds the existing costs/sustainability UI.
 
 import { useLiveData } from "@/lib/admin/useLiveData";
 import { Freshness } from "../Freshness";
-import { Card, StatCard, ChartFrame, Sensitive } from "../primitives";
-import { BarChart, LineChart, SegmentList, SERIES_COLORS, chartColors } from "../charts";
+import { Card, StatCard, ChartFrame } from "../primitives";
+import { AreaChart, BarChart, Donut, SERIES_COLORS, chartColors } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
 import { ReconcileCard } from "../ReconcileCard";
 import { StripeLedgerCard } from "../StripeLedgerCard";
@@ -172,18 +172,11 @@ function RevenuePanel() {
             ? `, as of ${new Date(data.subscriptions.live.lastUpdatedAt).toLocaleString()}`
             : ""}
           . List price alone would have implied{" "}
-          {/* Money inside a sentence never reaches the Odometer, so it cannot
-              mask itself by its currency mark the way every card figure does.
-              Wrapped by hand, or streamer mode shows both amounts in plain
-              text under a panel that says it is hiding money. */}
-          <Sensitive value={money(data.subscriptions.estimatedMrrCents)} />; the difference is
+          {money(data.subscriptions.estimatedMrrCents)}; the difference is
           discounts, regional pricing, annual plans and store commission.
-          {data.subscriptions.live?.annualArpu != null ? (
-            <>
-              {" "}Real revenue per subscriber:{" "}
-              <Sensitive value={money(Math.round(data.subscriptions.live.annualArpu * 100))} /> a year.
-            </>
-          ) : null}
+          {data.subscriptions.live?.annualArpu != null
+            ? ` Real revenue per subscriber: ${money(Math.round(data.subscriptions.live.annualArpu * 100))} a year.`
+            : ""}
         </p>
       ) : (
         <p className="font-sans text-eyebrow text-paper/40">
@@ -205,7 +198,7 @@ function RevenuePanel() {
         isEmpty={monthly.length === 0}
         empty={fromStripe ? "Stripe has recorded no charges yet." : "No shop revenue yet."}
       >
-        <LineChart
+        <AreaChart
           labels={monthly.map((m) => m.month.slice(2))}
           series={[
             {
@@ -233,7 +226,9 @@ function RevenuePanel() {
           empty="Nothing realized yet."
           sensitive
         >
-          <SegmentList segments={donutSegments} label="USD realized" format={(v) => `$${v.toLocaleString("en-US")}`} />
+          <div className="flex justify-center">
+            <Donut segments={donutSegments} size={200} label="USD" />
+          </div>
         </ChartFrame>
 
         <ChartFrame

@@ -54,25 +54,10 @@ function createClient() {
  */
 const PRODUCT_SELECT = `
   *,
-  media:shop_product_media(*),
+  media:shop_product_media(id, media_url, alt_text, sort_order, is_primary),
   subjects:shop_product_subjects(subject_type, subject_slug),
   store:shop_stores!inner(slug, public_name, ownership_disclosure, status)
 `;
-
-/**
- * Soft delete, checked in code as well as by the policy.
- *
- * 20260905_shop_simple.sql adds `deleted_at` and puts `deleted_at is null` in
- * the public select policies, so once it is applied the anon client never
- * sees a deleted row at all. Until it is applied the column does not exist,
- * a `.is("deleted_at", null)` filter would 400 every catalogue read, and the
- * shop would be empty. So the filter is on the row after `select *`: absent
- * column, absent field, product shown; present and set, product gone. The
- * media embed is `*` for the same reason (thumb_url).
- */
-function notDeleted(p: { deleted_at?: string | null }): boolean {
-  return p.deleted_at == null;
-}
 
 /**
  * Belt to the inner join's braces. A listing whose store is not live is not
@@ -196,10 +181,8 @@ async function listProductsInner(
     return [];
   }
   // See PRODUCT_SELECT. A paused store's listings leave the shop with it.
-  const live = (data ?? []).filter(
-    (row) =>
-      storeIsPublic(row as unknown as { store?: { status?: string } | null }) &&
-      notDeleted(row as unknown as { deleted_at?: string | null }),
+  const live = (data ?? []).filter((row) =>
+    storeIsPublic(row as unknown as { store?: { status?: string } | null }),
   );
   const visible = (live as unknown as ShopProductFull[])
     .map(orderMedia)
@@ -220,9 +203,6 @@ export async function getProduct(slug: string): Promise<ShopProductFull | null> 
       return null;
     }
     if (!data) return null;
-    // A deleted listing is not for sale, whether or not the policy has
-    // caught up with the column yet.
-    if (!notDeleted(data as unknown as { deleted_at?: string | null })) return null;
     const product = orderMedia(data as unknown as ShopProductFull);
     // A listing whose store is not live is not for sale. This read is also
     // checkout's re-pricing read (lib/shop/checkout.ts imports getProduct), so
@@ -249,16 +229,12 @@ export async function getProduct(slug: string): Promise<ShopProductFull | null> 
 export async function listPublishedProductSlugs(): Promise<string[]> {
   try {
     const supabase = await createClient();
-    // `*` rather than `slug`: a deleted product must not get a static shell,
-    // and naming deleted_at before its migration would 400 the whole read.
     const { data, error } = await supabase
       .from("shop_products")
-      .select("*")
+      .select("slug")
       .eq("status", "published");
     if (error) return [];
-    return (data ?? [])
-      .filter((r) => notDeleted(r as { deleted_at?: string | null }))
-      .map((r) => r.slug as string);
+    return (data ?? []).map((r) => r.slug as string);
   } catch {
     return [];
   }

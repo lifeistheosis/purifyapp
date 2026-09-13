@@ -19,9 +19,6 @@ export type CartItem = {
   imageUrl?: string;
   imageAlt?: string;
   quantity: number;
-  /** The buyer asked for this item to be blessed before dispatch. A request
-   *  only: the server decides whether the product still offers it. */
-  blessing?: boolean;
 };
 
 function read(): CartItem[] {
@@ -54,8 +51,6 @@ export function addToCart(item: Omit<CartItem, "quantity">, quantity = 1) {
   const existing = items.find((i) => i.slug === item.slug);
   if (existing) {
     existing.quantity = Math.min(existing.quantity + quantity, MAX_QTY);
-    // The latest choice on the product page wins for the whole line.
-    if (item.blessing !== undefined) existing.blessing = item.blessing;
   } else {
     items.push({ ...item, quantity: Math.min(quantity, MAX_QTY) });
   }

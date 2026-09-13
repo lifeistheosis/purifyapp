@@ -33,7 +33,6 @@ export function BuyBar({
   purchasable,
   checkoutOn,
   subjectForRequest,
-  blessing,
 }: {
   productSlug: string;
   /** Cart line data (display only; the server re-prices at checkout). */
@@ -50,8 +49,6 @@ export function BuyBar({
   purchasable: boolean;
   checkoutOn: boolean;
   subjectForRequest: string;
-  /** The buyer asked for a blessing (undefined when the page offers none). */
-  blessing?: boolean;
 }) {
   const { t } = useTranslate();
   const router = useRouter();
@@ -63,7 +60,7 @@ export function BuyBar({
   const [agreed, setAgreed] = useState(false);
 
   function handleAddToCart() {
-    addToCart({ slug: productSlug, title, priceCents, currency, imageUrl, imageAlt, blessing });
+    addToCart({ slug: productSlug, title, priceCents, currency, imageUrl, imageAlt });
     setAdded(true);
     openCartDrawer();
     setTimeout(() => setAdded(false), 1800);
@@ -80,12 +77,7 @@ export function BuyBar({
       const res = await apiFetch("/api/shop/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productSlug,
-          quantity: 1,
-          termsAccepted: true,
-          ...(blessing ? { blessing: true } : {}),
-        }),
+        body: JSON.stringify({ productSlug, quantity: 1, termsAccepted: true }),
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (res.ok && data.url) {

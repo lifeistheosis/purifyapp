@@ -142,10 +142,9 @@ const ratio = (a, b) => {
 };
 
 const css = readFileSync(CSS, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
-// One theme since the Ledger pass: the token block opens on
-// [data-surface="admin"] and the six series live there.
 const THEMES = [
-  ["ledger", '[data-surface="admin"],', '[data-surface="admin"],'],
+  ["dark", ".adm {", ".adm {"],
+  ["light", ':root[data-adm-theme="light"] .adm {', ':root[data-adm-theme="light"] .adm {'],
 ];
 
 let worstAny = Infinity;

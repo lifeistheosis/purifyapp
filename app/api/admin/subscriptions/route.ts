@@ -38,7 +38,6 @@ export async function GET() {
       paidPlus: subs.paidPlus,
       compedPlus: subs.compedPlus,
       giftedPlus: subs.giftedPlus,
-      legacyPlus: subs.legacyPlus,
       supporters: subs.supporters,
       bySource: subs.bySource,
       mrrCents: estimatedMrrCents(subs.paidCounts),

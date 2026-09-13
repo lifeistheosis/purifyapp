@@ -1,6 +1,5 @@
 import "server-only";
 
-import { BLESSING_HANDLING_TITLE, blessingOffered, getBlessingConfig } from "./blessing";
 import { getProduct } from "./catalog";
 import { applicationFeeCents, canChargeThroughConnect } from "./connect";
 import { checkoutEnabled } from "./flags";
@@ -53,24 +52,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
  *
  * With no Stripe key configured every path returns the disabled result;
  * nothing throws, nothing 500s.
- *
- * ── Blessings ───────────────────────────────────────────────────────────
- *
- * A line may carry `blessing: true`. It is a REQUEST, a boolean and nothing
- * more: whether the product offers one and what handling costs both come from
- * lib/shop/blessing.ts on the server, never from the client. A request on a
- * product that does not offer it, or while the config is disabled, is
- * dropped silently rather than refused, because the cart may have been
- * filled before the owner switched it off. What survives becomes metadata
- * on the Stripe session and, when the config carries a handling charge, one
- * extra line item and one extra shop_order_items row, once per order.
  */
 
-export type CheckoutItemInput = {
-  productSlug: string;
-  quantity: number;
-  blessing?: boolean;
-};
+export type CheckoutItemInput = { productSlug: string; quantity: number };
 
 export type CheckoutResult =
   | { ok: true; url: string; orderId: string }
@@ -134,12 +118,7 @@ export async function createCheckout(
 
   // Re-resolve every line from the database; reject the whole checkout on
   // the first problem so the buyer fixes the cart instead of part-paying.
-  const lines: {
-    product: NonNullable<Awaited<ReturnType<typeof getProduct>>>;
-    quantity: number;
-    blessing: boolean;
-  }[] = [];
-  const blessingConfig = await getBlessingConfig();
+  const lines: { product: NonNullable<Awaited<ReturnType<typeof getProduct>>>; quantity: number }[] = [];
   for (const input of itemInputs) {
     const product = await getProduct(input.productSlug);
     if (!product || product.status !== "published") {
@@ -155,11 +134,7 @@ export async function createCheckout(
     ) {
       return { ok: false, reason: `Not enough stock of "${product.title}".` };
     }
-    lines.push({
-      product,
-      quantity: input.quantity,
-      blessing: input.blessing === true && blessingOffered(product, blessingConfig),
-    });
+    lines.push({ product, quantity: input.quantity });
   }
 
   // One store, one currency per order (EIKON is the only store today; the
@@ -172,13 +147,10 @@ export async function createCheckout(
     return { ok: false, reason: "Please check out one currency at a time." };
   }
 
-  // The blessing, if any line asked and is allowed one: named in the
-  // metadata, and charged for handling once per order when the config says so.
-  const blessed = lines.filter((l) => l.blessing);
-  const handlingCents = blessed.length > 0 ? blessingConfig.handlingCents : 0;
-
-  const itemsTotal =
-    lines.reduce((sum, l) => sum + l.product.price_cents * l.quantity, 0) + handlingCents;
+  const itemsTotal = lines.reduce(
+    (sum, l) => sum + l.product.price_cents * l.quantity,
+    0,
+  );
   const proShipping = await hasProShipping(user.id);
   const shipping = proShipping ? 0 : flatShippingCents();
 
@@ -232,28 +204,15 @@ export async function createCheckout(
   }
   const orderId = order.id as string;
 
-  await admin.from("shop_order_items").insert([
-    ...lines.map((l) => ({
+  await admin.from("shop_order_items").insert(
+    lines.map((l) => ({
       order_id: orderId,
       product_id: l.product.id,
       title: l.product.title,
       unit_price_cents: l.product.price_cents,
       quantity: l.quantity,
     })),
-    // No product behind it, so the stock decrement (which joins on
-    // product_id) never sees it, and the order email lists it as a line.
-    ...(handlingCents > 0
-      ? [
-          {
-            order_id: orderId,
-            product_id: null,
-            title: BLESSING_HANDLING_TITLE,
-            unit_price_cents: handlingCents,
-            quantity: 1,
-          },
-        ]
-      : []),
-  ]);
+  );
 
   // Record the checkout clickwrap (the API refused the request unless the
   // buyer ticked the box). Best-effort: a failed audit row never blocks a
@@ -280,35 +239,21 @@ export async function createCheckout(
       mode: "payment",
       client_reference_id: orderId,
       customer_email: user.email ?? undefined,
-      line_items: [
-        ...lines.map((l) => {
-          const image = l.product.media[0]?.media_url;
-          return {
-            quantity: l.quantity,
-            price_data: {
-              currency: l.product.currency,
-              unit_amount: l.product.price_cents,
-              product_data: {
-                name: l.blessing ? `${l.product.title} (blessing requested)` : l.product.title,
-                description: l.product.subtitle ?? undefined,
-                images: image && image.startsWith("http") ? [image] : undefined,
-              },
+      line_items: lines.map((l) => {
+        const image = l.product.media[0]?.media_url;
+        return {
+          quantity: l.quantity,
+          price_data: {
+            currency: l.product.currency,
+            unit_amount: l.product.price_cents,
+            product_data: {
+              name: l.product.title,
+              description: l.product.subtitle ?? undefined,
+              images: image && image.startsWith("http") ? [image] : undefined,
             },
-          };
-        }),
-        ...(handlingCents > 0
-          ? [
-              {
-                quantity: 1,
-                price_data: {
-                  currency: first.currency,
-                  unit_amount: handlingCents,
-                  product_data: { name: BLESSING_HANDLING_TITLE },
-                },
-              },
-            ]
-          : []),
-      ],
+          },
+        };
+      }),
       shipping_address_collection: { allowed_countries: ["US"] },
       shipping_options: [
         {
@@ -342,17 +287,7 @@ export async function createCheckout(
         lines.length === 1
           ? `${origin}/shop/checkout/cancelled?order=${orderId}&product=${first.slug}`
           : `${origin}/shop/checkout/cancelled?order=${orderId}&from=cart`,
-      metadata: {
-        order_id: orderId,
-        product_slug: first.slug,
-        ...(blessed.length > 0
-          ? {
-              blessing: "1",
-              blessing_slugs: blessed.map((l) => l.product.slug).join(",").slice(0, 500),
-              blessing_parish: blessingConfig.parishName.slice(0, 200),
-            }
-          : {}),
-      },
+      metadata: { order_id: orderId, product_slug: first.slug },
     });
     if (!session.url) {
       return { ok: false, reason: "Couldn't start checkout. Please try again." };

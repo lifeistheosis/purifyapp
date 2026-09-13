@@ -1,10 +1,7 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { pushAllLocalBookmarks, pullServerBookmarks } from "@/lib/sync/bookmarks";
-import { getClientEntitlements } from "@/lib/entitlements/client";
-import { onEntitlementsChanged } from "@/lib/entitlements/refresh";
-import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import {
   pushAllLocalAnnotations,
   pullServerAnnotations,
@@ -88,28 +85,6 @@ export function ProfileSyncStatus() {
   const { t, tn } = useTranslate();
   const { last, err } = useSyncExternalStore(subscribe, readSnapshot, () => EMPTY);
   const [busy, setBusy] = useState(false);
-  const upgrade = useUpgradeModal();
-
-  // Whether this account may sync at all. Once Plus is enforced, lib/sync/*
-  // returns early for a free account and says nothing, so this widget used
-  // to show "Last synced: never" and a Sync now button that silently did
-  // nothing: the one place the reader could learn why was silent. Resolved
-  // at runtime, the FlorilegiumGate pattern, and re-asked after a purchase.
-  // Erring open while it resolves, so a subscriber never sees the pitch flash.
-  const [syncAllowed, setSyncAllowed] = useState(true);
-  useEffect(() => {
-    let alive = true;
-    const resolve = () =>
-      getClientEntitlements().then((e) => {
-        if (alive) setSyncAllowed(e.sync);
-      });
-    void resolve();
-    const off = onEntitlementsChanged(() => void resolve());
-    return () => {
-      alive = false;
-      off();
-    };
-  }, []);
 
   async function syncNow() {
     setBusy(true);
@@ -127,34 +102,6 @@ export function ProfileSyncStatus() {
     } finally {
       setBusy(false);
     }
-  }
-
-  if (!syncAllowed) {
-    return (
-      <section className="mt-6">
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-          {t("ui.crossDeviceSync")}
-        </p>
-        <div className="rounded-md border border-gold/30 bg-gold/[0.04] px-5 py-4">
-          <p className="font-sans text-detail font-semibold text-paper leading-snug">
-            {t("plus.sync.title")}
-          </p>
-          <p className="mt-1.5 font-sans text-caption text-paper/70 leading-[1.55]">
-            {t("plus.sync.body")}
-          </p>
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={() => upgrade.open("sync")}
-              className="font-sans text-detail font-semibold rounded-pill px-4 py-2 bg-gold text-night hover:bg-gold-soft transition-colors"
-            >
-              {t("plus.start")}
-            </button>
-            <span className="font-sans text-caption text-paper/50">{t("plus.sync.keep")}</span>
-          </div>
-        </div>
-      </section>
-    );
   }
 
   return (

@@ -7,6 +7,7 @@ import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 import { larpOn, setLarp } from "@/lib/admin/larp";
 
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
+import { cn } from "@/lib/cn";
 
 /**
  * The admin's navigation below `lg`.
@@ -26,8 +27,8 @@ import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
  *
  * ── Matching the app, not inventing a second grammar ────────────────────
  *
- * md, matching the rail: the desktop rail is `hidden md:flex`, so the bar
- * stops exactly where the rail starts and no width is left with neither.
+ * lg, NOT md: the desktop rail is `hidden lg:flex`, so a bar that stopped at
+ * md would leave 768 to 1023 with no navigation at all.
  *
  * Purify already has a bottom bar in components/nav/MobileTabBar.tsx. This
  * borrows its geometry deliberately: the same 58px target, the same
@@ -43,14 +44,11 @@ export type MobileNavTab = { id: string; label: string };
 export type MobileNavGroup = { group: string; tabs: MobileNavTab[] };
 
 /**
- * The four that earn a permanent slot, one per group the spec names for the
- * bar: Summary, Growth, Revenue, Content. Everything else is one tap away
- * behind More, still in its groups.
+ * The four that earn a permanent slot. Everything else is reachable in one
+ * more tap, which is the correct trade for a destination nobody opens while
+ * standing in a queue.
  */
-const PRIMARY = ["overview", "traffic", "revenue", "content"] as const;
-
-/** What the bar calls a tab when the tab's own label is not the group's. */
-const BAR_LABEL: Record<string, string> = { traffic: "Growth" };
+const PRIMARY = ["overview", "orders", "messages", "shop"] as const;
 
 export function AdminMobileNav({
   groups,
@@ -176,7 +174,7 @@ export function AdminMobileNav({
   return (
     <>
       {sheetOpen ? (
-        <div className="adm md:hidden fixed inset-0 z-[60] flex flex-col justify-end">
+        <div className="adm lg:hidden fixed inset-0 z-[60] flex flex-col justify-end">
           {/* Tap-anywhere-to-close, and nothing else. aria-hidden and out of
               the tab order for the reason Modal states: a viewport-sized
               control announced only as "Close" was otherwise the first thing a
@@ -222,7 +220,7 @@ export function AdminMobileNav({
             </button>
             {groups.map((g) => (
               <div key={g.group} className="mb-5 last:mb-0">
-                <p className="mb-2 font-sans text-[11.5px] font-medium" style={{ color: "var(--adm-ink-3)" }}>
+                <p className="mb-2 font-sans text-caption font-semibold uppercase tracking-[1.1px] text-[color:var(--adm-ink-3)]">
                   {g.group}
                 </p>
                 <div className="grid grid-cols-2 gap-2">
@@ -234,16 +232,14 @@ export function AdminMobileNav({
                         type="button"
                         onClick={() => go(t.id)}
                         aria-current={on ? "page" : undefined}
-                        // Hairline in the tone. The active one is gold text on a
-                        // gold hairline, never a fill.
-                        className="flex min-h-[52px] items-center gap-2.5 rounded-[var(--adm-radius)] border px-3 py-2.5 text-left font-sans text-detail transition-colors"
-                        style={{
-                          borderColor: on ? "var(--adm-up)" : "var(--adm-line)",
-                          color: on ? "var(--adm-up)" : "var(--adm-ink-2)",
-                          background: "var(--adm-card)",
-                        }}
+                        className={cn(
+                          "flex min-h-[52px] items-center gap-2.5 rounded-2xl border px-3 py-2.5 text-left font-sans text-detail transition-colors",
+                          on
+                            ? "border-gold/45 bg-gold/[0.10] text-gold-pale"
+                            : "border-paper/10 bg-paper/[0.03] text-paper/80 active:bg-paper/[0.07]",
+                        )}
                       >
-                        <span className="shrink-0">
+                        <span className="shrink-0 opacity-80">
                           {ADMIN_TAB_ICONS[t.id] ?? ADMIN_TAB_ICON_FALLBACK}
                         </span>
                         <span className="min-w-0 truncate">{t.label}</span>
@@ -272,7 +268,7 @@ export function AdminMobileNav({
         // navigation ambiguity for a screen reader even when only one is painted.
         aria-label="Admin sections, primary"
         aria-hidden={sheetOpen || undefined}
-        className="adm md:hidden fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2"
+        className="adm lg:hidden fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2"
         style={{
           // Opaque, with a hairline. See the note above on why this is not a
           // blurred bar.
@@ -289,12 +285,16 @@ export function AdminMobileNav({
                   type="button"
                   onClick={() => go(t.id)}
                   aria-current={on ? "page" : undefined}
-                  className="flex h-[58px] w-full flex-col items-center justify-center gap-1 rounded-[var(--adm-radius)] px-1 transition-colors"
-                  style={{ color: on ? "var(--adm-up)" : "var(--adm-ink-2)" }}
+                  className={cn(
+                    "flex h-[58px] w-full flex-col items-center justify-center gap-1 rounded-2xl px-1 transition-colors",
+                    on ? "text-gold-pale" : "text-paper/55 active:text-paper/80",
+                  )}
                 >
-                  <span>{ADMIN_TAB_ICONS[t.id] ?? ADMIN_TAB_ICON_FALLBACK}</span>
+                  <span className={on ? "opacity-100" : "opacity-70"}>
+                    {ADMIN_TAB_ICONS[t.id] ?? ADMIN_TAB_ICON_FALLBACK}
+                  </span>
                   <span className="w-full truncate text-center font-sans text-eyebrow font-medium">
-                    {t.id === "overview" ? "Summary" : (BAR_LABEL[t.id] ?? t.label)}
+                    {t.label}
                   </span>
                 </button>
               </li>
@@ -307,8 +307,12 @@ export function AdminMobileNav({
               onClick={() => setSheetOpen(true)}
               aria-haspopup="dialog"
               aria-expanded={sheetOpen}
-              className="flex h-[58px] w-full flex-col items-center justify-center gap-1 rounded-[var(--adm-radius)] px-1 transition-colors"
-              style={{ color: activeIsPrimary ? "var(--adm-ink-2)" : "var(--adm-up)" }}
+              className={cn(
+                "flex h-[58px] w-full flex-col items-center justify-center gap-1 rounded-2xl px-1 transition-colors",
+                activeIsPrimary
+                  ? "text-paper/55 active:text-paper/80"
+                  : "text-gold-pale",
+              )}
             >
               <span aria-hidden className="flex h-[18px] items-end gap-[3px]">
                 <i className="h-1 w-1 rounded-full bg-current" />

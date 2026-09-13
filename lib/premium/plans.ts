@@ -95,11 +95,6 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
       sub: "Candlelight and Monastery reading, in the Scriptures and the writings of the Fathers",
     },
     {
-      id: "collection-palettes",
-      title: "Collection palettes",
-      sub: "A palette paired with each study collection you complete, applied across the whole app",
-    },
-    {
       id: "sync",
       title: "Cross-device sync",
       sub: "Your library on every device you sign in on. On Android the full app already reads offline; sync carries your own layer with you.",
@@ -182,11 +177,6 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
       id: "reading-modes",
       title: "Premium-Lesemodi",
       sub: "Kerzenlicht und Kloster, in den Schriften und den Werken der Väter",
-    },
-    {
-      id: "collection-palettes",
-      title: "Sammlungspaletten",
-      sub: "Eine Palette zu jeder Studiensammlung, die du abschließt, in der ganzen App angewandt",
     },
     {
       id: "sync",

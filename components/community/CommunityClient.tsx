@@ -34,7 +34,6 @@ import { resolveUser } from "@/lib/supabase/resolveUser";
 import { cn } from "@/lib/cn";
 import { sortPinnedFirst } from "@/lib/community/pinning";
 import { ReactionButtons } from "@/components/community/ReactionButtons";
-import { SupporterMark } from "@/components/community/SupporterMark";
 import type { ReactionState } from "@/lib/community/reactions";
 import { SkeletonList } from "@/components/ui/Skeleton";
 
@@ -936,8 +935,6 @@ function PostCard({
           <p className="flex items-center gap-1 font-sans text-ui font-semibold text-paper">
             <span className="truncate">{post.author_name}</span>
             {post.author_verified ? <VerifiedBadge /> : null}
-            {/* After the tick when both: standing first, support second. */}
-            <SupporterMark tier={post.author_mark} />
           </p>
           <p className="font-sans text-eyebrow text-paper/45">
             {timeAgo(post.created_at)} · {t(POST_KIND_KEYS[post.kind])}
@@ -1073,10 +1070,9 @@ function PostCard({
               <div key={r.id} className="flex items-start gap-2.5">
                 <Avatar name={r.author_name} url={r.author_avatar} size={28} />
                 <div className="min-w-0">
-                  <p className="flex flex-wrap items-center gap-1 font-sans text-caption text-paper/50">
-                    <span className="font-semibold text-paper/80">{r.author_name}</span>
-                    <SupporterMark tier={r.author_mark} size={14} />
-                    <span>· {timeAgo(r.created_at)}</span>
+                  <p className="font-sans text-caption text-paper/50">
+                    <span className="font-semibold text-paper/80">{r.author_name}</span>{" "}
+                    · {timeAgo(r.created_at)}
                   </p>
                   <p className="whitespace-pre-wrap font-sans text-detail leading-relaxed text-paper/80">
                     {r.body}

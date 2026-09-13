@@ -1,21 +1,16 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  checkedToday,
+  STALE_AFTER_DAYS,
   daysSince,
-  localDayKey,
   queueAsChecklist,
   rankRecheck,
   recheckQueue,
   type RecheckItem,
 } from "../recheck";
 
-// Midnight UTC on 1 September is 20:00 on 31 August in New York (EDT, UTC-4).
-// That gap is deliberate: it is exactly where a UTC day and the operator's day
-// disagree, so every day-boundary test below sits across it.
 const NOW = Date.parse("2026-09-01T00:00:00Z");
 const daysAgo = (n: number) => new Date(NOW - n * 86_400_000).toISOString();
-const hoursAgo = (n: number) => new Date(NOW - n * 3_600_000).toISOString();
 
 const item = (over: Partial<RecheckItem> = {}): RecheckItem => ({
   productId: "p1",
@@ -107,77 +102,23 @@ describe("rankRecheck", () => {
     expect(r.band).toBe("unknown");
   });
 
-  it("calls a check made earlier today fresh", () => {
-    expect(rankRecheck(item({ checkedAt: hoursAgo(2) }), NOW).reason).toBe("fresh");
+  it("calls a recent healthy check fresh", () => {
+    expect(rankRecheck(item({ checkedAt: daysAgo(3) }), NOW).reason).toBe("fresh");
   });
 
-  it("makes yesterday's check due again today", () => {
-    // The owner's instruction, 2026-09-13: the check shows up every day, not
-    // once per product. Under the old 90 day window this was "fresh".
-    expect(rankRecheck(item({ checkedAt: daysAgo(1) }), NOW).reason).toBe("due");
-    expect(rankRecheck(item({ checkedAt: daysAgo(3) }), NOW).reason).toBe("due");
-  });
-
-  it("turns due exactly at the operator's midnight, not UTC's", () => {
-    // 00:01 and 23:59 New York time, either side of the start of 31 August.
-    expect(rankRecheck(item({ checkedAt: "2026-08-31T04:01:00Z" }), NOW).reason).toBe("fresh");
-    expect(rankRecheck(item({ checkedAt: "2026-08-31T03:59:00Z" }), NOW).reason).toBe("due");
-  });
-
-  it("does not let an evening check skip the next morning's list", () => {
-    // 19:30 on 31 August in New York is 23:30 UTC, and NOW is already 1
-    // September in UTC. Counted in UTC this product would be due tonight and
-    // then fresh all of tomorrow; counted in the operator's day it is simply
-    // done for today.
-    const evening = item({ checkedAt: "2026-08-31T23:30:00Z" });
-    expect(rankRecheck(evening, NOW).reason).toBe("fresh");
-    expect(rankRecheck(evening, NOW, undefined, "UTC").reason).toBe("due");
-  });
-
-  it("clears a thin seller for the day once it has been checked", () => {
-    const thin = { priceCents: 5_000, costCents: 4_000, unitsSold: 20 };
-    expect(rankRecheck(item({ ...thin, checkedAt: hoursAgo(1) }), NOW).reason).toBe("fresh");
-    expect(rankRecheck(item({ ...thin, checkedAt: daysAgo(1) }), NOW).reason).toBe("thin-and-selling");
-  });
-});
-
-describe("the operator's day", () => {
-  it("reads the calendar in the given zone", () => {
-    const instant = Date.parse("2026-09-01T03:30:00Z");
-    expect(localDayKey(instant, "America/New_York")).toBe("2026-08-31");
-    expect(localDayKey(instant, "UTC")).toBe("2026-09-01");
-  });
-
-  it("counts a future timestamp from a skewed clock as today", () => {
-    expect(checkedToday(new Date(NOW + 86_400_000).toISOString(), NOW)).toBe(true);
-  });
-
-  it("does not count never, or garbage, as today", () => {
-    expect(checkedToday(null, NOW)).toBe(false);
-    expect(checkedToday("not-a-date", NOW)).toBe(false);
+  it("turns stale exactly at the threshold", () => {
+    expect(rankRecheck(item({ checkedAt: daysAgo(STALE_AFTER_DAYS - 1) }), NOW).reason).toBe("fresh");
+    expect(rankRecheck(item({ checkedAt: daysAgo(STALE_AFTER_DAYS) }), NOW).reason).toBe("stale");
   });
 });
 
 describe("recheckQueue", () => {
-  it("leaves out what has already been checked today", () => {
+  it("leaves out what does not need checking", () => {
     const rows = recheckQueue(
-      [item({ productId: "fresh", checkedAt: hoursAgo(1) }), item({ productId: "old", checkedAt: daysAgo(200) })],
+      [item({ productId: "fresh", checkedAt: daysAgo(2) }), item({ productId: "old", checkedAt: daysAgo(200) })],
       NOW,
     );
     expect(rows.map((r) => r.productId)).toEqual(["old"]);
-  });
-
-  it("brings every product back the next day", () => {
-    // The failure the owner reported: tick a product once and it never
-    // reappears. Everything checked yesterday is on today's list.
-    const rows = recheckQueue(
-      [
-        item({ productId: "a", checkedAt: daysAgo(1) }),
-        item({ productId: "b", checkedAt: hoursAgo(21) }),
-      ],
-      NOW,
-    );
-    expect(rows.map((r) => r.productId).sort()).toEqual(["a", "b"]);
   });
 
   it("keeps a loss-maker even when it was checked this morning", () => {
@@ -190,18 +131,18 @@ describe("recheckQueue", () => {
     expect(rows.map((r) => r.productId)).toEqual(["losing"]);
   });
 
-  it("ranks loss above thin above merely due, at equal volume", () => {
+  it("ranks loss above thin above merely stale, at equal volume", () => {
     // The band ordering, isolated by holding volume constant so the volume
     // weight cannot confound it.
     const rows = recheckQueue(
       [
-        item({ productId: "due", checkedAt: daysAgo(120), unitsSold: 5 }),
+        item({ productId: "stale", checkedAt: daysAgo(120), unitsSold: 5 }),
         item({ productId: "losing", priceCents: 500, costCents: 600, checkedAt: daysAgo(120), unitsSold: 5 }),
         item({ productId: "thin", priceCents: 5_000, costCents: 4_000, checkedAt: daysAgo(120), unitsSold: 5 }),
       ],
       NOW,
     );
-    expect(rows.map((r) => r.productId)).toEqual(["losing", "thin", "due"]);
+    expect(rows.map((r) => r.productId)).toEqual(["losing", "thin", "stale"]);
   });
 
   it("lets volume lift a thin seller above a loss-maker nobody buys", () => {
@@ -242,9 +183,8 @@ describe("recheckQueue", () => {
   });
 
   it("can include everything when asked", () => {
-    const doneToday = [item({ checkedAt: hoursAgo(1) })];
-    expect(recheckQueue(doneToday, NOW)).toHaveLength(0);
-    expect(recheckQueue(doneToday, NOW, { includeFresh: true })).toHaveLength(1);
+    const rows = recheckQueue([item({ checkedAt: daysAgo(1) })], NOW, { includeFresh: true });
+    expect(rows).toHaveLength(1);
   });
 
   it("handles an empty catalogue", () => {

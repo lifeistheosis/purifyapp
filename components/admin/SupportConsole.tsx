@@ -18,13 +18,13 @@ const HEART = "❤️";
 
 // Dot color per status, for the picker + selected pill.
 const statusDot: Record<TicketStatus, string> = {
-  open: "bg-[var(--adm-up)]",
+  open: "bg-[var(--adm-good)]",
   pending: "bg-[var(--adm-warn)]",
   resolved: "bg-[var(--adm-s2)]",
   closed: "bg-paper/40",
 };
 const statusText: Record<TicketStatus, string> = {
-  open: "text-[color:var(--adm-up)]",
+  open: "text-[color:var(--adm-good)]",
   pending: "text-[color:var(--adm-warn)]",
   resolved: "text-[color:var(--adm-s2)]",
   closed: "text-paper/50",
@@ -287,7 +287,7 @@ export function SupportConsole({ initial }: { initial: FullTicket[] }) {
                 className={cn(
                   "w-full rounded-[var(--adm-radius)] border p-4 text-left transition-all duration-200",
                   active
-                    ? "border-gold bg-transparent"
+                    ? "border-gold/30 bg-gold/[0.05] shadow-[0_1px_0_0_rgba(255,255,255,0.04)_inset]"
                     : "border-paper/10 bg-night-soft/40 hover:border-paper/25 hover:bg-night-soft/60",
                 )}
               >
@@ -369,7 +369,7 @@ export function SupportConsole({ initial }: { initial: FullTicket[] }) {
                 className={cn(
                   "admin-fade-in group relative max-w-[85%] cursor-default select-none rounded-[var(--adm-radius-sm)] px-4 py-3 font-sans text-detail leading-relaxed md:max-w-[80%]",
                   m.author === "staff"
-                    ? "ml-auto rounded-br-md text-paper"
+                    ? "ml-auto rounded-br-md bg-gold/[0.1] text-paper"
                     : "mr-auto rounded-bl-md border border-paper/10 bg-paper/[0.03] text-paper/85",
                 )}
               >

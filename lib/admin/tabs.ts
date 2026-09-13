@@ -36,7 +36,7 @@ export const modeOf = (id: string): AdminMode => (isOwnerTab(id) ? "owner" : "op
  * An owner tab requested by an account the owner gate refuses resolves to
  * Overview. Derived during render rather than corrected in an effect: an
  * effect that calls setState on a value it also depends on is a cascading
- * render, which is the lint rule the old theme toggle and the projection chart's
+ * render, which is the lint rule AdminThemeToggle and the projection chart's
  * tween both had to be rewritten for.
  */
 export function resolveTab(requested: string, isOwner: boolean): string {

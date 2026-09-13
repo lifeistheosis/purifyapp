@@ -147,19 +147,6 @@ const QUESTIONS: QA[] = [
  ),
  },
  {
- q: "What is Today's Catechism?",
- a: (
- <>
- <p>
- <T k="faq.catechism.a1" />
- </p>
- <p>
- <T k="faq.catechism.a2" />
- </p>
- </>
- ),
- },
- {
  q: "Do you collect any of my data?",
  a: (
  <>

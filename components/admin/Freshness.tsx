@@ -34,7 +34,7 @@ export function Freshness({
     return () => clearInterval(id);
   }, []);
 
-  const tone = failing ? "var(--adm-warn)" : lastSynced ? "var(--adm-up)" : "var(--adm-ink-3)";
+  const tone = failing ? "var(--adm-warn)" : lastSynced ? "var(--adm-good)" : "var(--adm-ink-3)";
 
   return (
     <span className="inline-flex items-center gap-2 font-sans text-[12px]">

@@ -34,7 +34,7 @@ function headersFor(origin: string | null): Record<string, string> {
   if (origin && ALLOWED_ORIGINS.has(origin)) {
     return {
       "Access-Control-Allow-Origin": origin,
-      // PUT is here for /api/campaigns/[id]/remind and /api/account/theme.
+      // PUT is here for /api/campaigns/[id]/remind, the only PUT in the app.
       // Leaving it out cost nothing on the web, where the call is same-origin
       // and never preflights, and broke the reminder toggle in both native
       // shells, where every API call is cross-origin from https://localhost

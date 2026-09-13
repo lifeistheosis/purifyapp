@@ -5,7 +5,6 @@ import { PrayNowCard } from "./PrayNowCard";
 import { ChurchTodayRail } from "./ChurchTodayRail";
 import { GreetingHeader } from "./GreetingHeader";
 import { FirstStepsNudge } from "@/components/onboarding/FirstStepsNudge";
-import { CatechismCard } from "@/components/catechism/CatechismCard";
 import { T } from "@/components/i18n/T";
 
 /**
@@ -58,11 +57,6 @@ export function TodayMobileV3() {
         <div className="mt-4">
           <PrayNowCard />
         </div>
-
-        {/* Today's Catechism: one line, and only while the bank holds
-            questions. The card decides that itself and renders nothing
-            otherwise, so an empty bank leaves no gap here. */}
-        <CatechismCard />
 
         {/* The "Explore" grid stood here: four tiles to /prayers, /bible,
             /saints and /calendar. Two were the same href as a tab 200px

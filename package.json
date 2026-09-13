@@ -23,8 +23,7 @@
     "discord:all": "node scripts/discord-scan.mjs all",
     "discord:audit": "node scripts/discord-scan.mjs all --all-history",
     "discord:act": "node scripts/discord-act.mjs scripts/discord-actions.json",
-    "i18n:check": "node scripts/i18n-check.mjs --scan",
-    "quiz:import": "node --experimental-strip-types --import ./scripts/lib/register-alias.mjs scripts/quiz-import.ts"
+    "i18n:check": "node scripts/i18n-check.mjs --scan"
   },
   "dependencies": {
     "@capacitor-community/safe-area": "^8.0.1",
@@ -56,7 +55,6 @@
     "react-dom": "19.2.4",
     "react-simple-maps": "^3.0.0",
     "resend": "^6.17.1",
-    "sharp": "^0.34.5",
     "stripe": "^22.3.0",
     "tailwind-merge": "^3.6.0",
     "web-push": "^3.6.7",
@@ -82,6 +80,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "eslint-plugin-jsx-a11y": "^6.10.2",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.7"

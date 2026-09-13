@@ -5,7 +5,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Card, Pill, StatCard, ToolbarButton } from "../primitives";
 import { useAdminFetch } from "../adminFetch";
 import { gradePrice, priceForMargin, unitEconomics, type PriceBand } from "@/lib/shop/pricing";
-import { type RankedRecheck } from "@/lib/shop/recheck";
+import { STALE_AFTER_DAYS, type RankedRecheck } from "@/lib/shop/recheck";
 
 /**
  * The sourcing worklist: what to go and price-check, and what it is worth.
@@ -48,22 +48,11 @@ const REASON_TEXT: Record<RankedRecheck["reason"], string> = {
   "loss-making": "Losing money",
   "never-checked": "Never checked",
   "thin-and-selling": "Thin, and selling",
-  due: "Due today",
-  fresh: "Checked today",
+  stale: "Stale",
+  fresh: "Fresh",
 };
 
 const usd = (c: number) => `$${(c / 100).toFixed(2)}`;
-
-/**
- * How long ago the last check was. Hours under a day, because with a daily
- * cadence almost everything on the list was checked less than a day ago, and
- * "0d ago" on all of it says nothing.
- */
-function checkedAgo(ageDays: number): string {
-  if (Math.round(ageDays) >= 3650) return "never checked";
-  if (ageDays < 1) return `checked ${Math.max(1, Math.round(ageDays * 24))}h ago`;
-  return `checked ${Math.round(ageDays)}d ago`;
-}
 
 export function SourcingTab() {
   const [showAll, setShowAll] = useState(false);
@@ -119,7 +108,7 @@ export function SourcingTab() {
   const copyChecklist = useCallback(() => {
     const lines = queue.map((r) => {
       const cost = r.costCents === null ? "cost unknown" : `cost ${usd(r.costCents)}`;
-      return `- ${r.title}: ${usd(r.priceCents)}, ${cost}, ${REASON_TEXT[r.reason]}, ${r.supplierUrl ?? "NO SUPPLIER URL"}`;
+      return `- ${r.title} — ${usd(r.priceCents)}, ${cost}, ${REASON_TEXT[r.reason]} — ${r.supplierUrl ?? "NO SUPPLIER URL"}`;
     });
     void navigator.clipboard
       ?.writeText(lines.join("\n") || "Nothing to recheck.")
@@ -136,7 +125,7 @@ export function SourcingTab() {
         <StatCard
           label="Products tracked"
           value={data?.totalProducts ?? "—"}
-          hint="each is due again every day"
+          hint={`stale after ${STALE_AFTER_DAYS} days`}
         />
         <StatCard
           label="Losing money"
@@ -177,7 +166,7 @@ export function SourcingTab() {
         {queue.length === 0 ? (
           <p className="font-sans text-detail text-paper/40">
             {data
-              ? "Nothing left today. Every sourced product has been checked today and none is losing money. The list refills at midnight Eastern."
+              ? "Nothing due. Every sourced product has been checked recently and none is losing money."
               : "Loading…"}
           </p>
         ) : (
@@ -202,7 +191,7 @@ export function SourcingTab() {
                         {r.costCents !== null ? ` · cost ${usd(r.costCents)}` : " · cost unknown"}
                         {` · fee ${usd(econ.feeCents)}`}
                         {r.unitsSold > 0 ? ` · ${r.unitsSold} sold` : ""}
-                        {` · ${checkedAgo(r.ageDays)}`}
+                        {` · ${Math.round(r.ageDays) >= 3650 ? "never checked" : `${Math.round(r.ageDays)}d ago`}`}
                       </p>
                     </div>
                     <div className="flex shrink-0 flex-wrap items-center gap-1.5">

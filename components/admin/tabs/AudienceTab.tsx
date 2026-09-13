@@ -6,7 +6,7 @@
 import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, DataTable } from "../primitives";
-import { BarChart, SegmentList, SERIES_COLORS } from "../charts";
+import { BarChart, Donut, SERIES_COLORS } from "../charts";
 
 type Audience = {
   windowDays: number;
@@ -63,7 +63,7 @@ export function AudienceTab() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card title="Signed-in vs anonymous">
-          <SegmentList
+          <Donut
             segments={[
               {
                 name: "Signed in",
@@ -76,26 +76,26 @@ export function AudienceTab() {
                 color: SERIES_COLORS[1],
               },
             ]}
-            label="sessions"
+            label={`${data.total} sess.`}
           />
         </Card>
         <Card title="Device mix">
-          <SegmentList
+          <Donut
             segments={[
               { name: "Mobile", value: data.devices.mobile, color: SERIES_COLORS[2] },
               { name: "Desktop", value: data.devices.desktop, color: SERIES_COLORS[4] },
             ]}
-            label="sessions, 30 days"
+            label="30d"
           />
         </Card>
         <Card title="Browser families">
-          <SegmentList
+          <Donut
             segments={data.browsers.map((b, i) => ({
               name: b.name,
               value: b.count,
               color: SERIES_COLORS[i % SERIES_COLORS.length],
             }))}
-            label="sessions, 30 days"
+            label="30d"
           />
         </Card>
       </div>

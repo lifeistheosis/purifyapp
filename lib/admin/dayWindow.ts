@@ -103,41 +103,6 @@ export function bucketByDay<T>(
   return [...buckets.entries()].map(([date, count]) => ({ date, count }));
 }
 
-/**
- * Which day a chart ends on.
- *
- * "now" is the default this file argues for above: the last bucket is today,
- * partial, because at 3pm the operator wants to know what has happened by 3pm.
- *
- * "complete" ends on YESTERDAY instead, so every bucket in the window is a
- * finished day. Added 2026-09-13 at the owner's request as a toggle on the
- * Traffic tab, for the other question a dashboard gets asked: how did the day
- * go, once it is over. A partial today sitting at the end of a line reads as a
- * collapse to anyone who forgets it is partial, and comparing a finished week
- * with the previous one is only fair when neither contains a half day.
- *
- * Still UTC, for the reason the header gives. "Yesterday" closes at midnight
- * UTC, which is the evening before in the United States.
- */
-export type LatestDay = "now" | "complete";
-
-/** Anything that is not exactly "complete" is "now", so a bad value degrades to the default. */
-export function parseLatestDay(raw: string | null | undefined): LatestDay {
-  return raw === "complete" ? "complete" : "now";
-}
-
-/**
- * The instant a window ends on. `now` itself, or the last millisecond of
- * yesterday UTC, which is what makes dayKey(end) yesterday and lets windowStart
- * and daysSince build a window of finished days with no other change.
- */
-export function windowEnd(latest: LatestDay, now: Date = new Date()): Date {
-  if (latest === "now") return now;
-  const midnight = new Date(now.getTime());
-  midnight.setUTCHours(0, 0, 0, 0);
-  return new Date(midnight.getTime() - 1);
-}
-
 /** True for the current, still-running day: the last key dayKeys returns. */
 export function isPartial(key: string, now: Date = new Date()): boolean {
   return key === dayKey(now);

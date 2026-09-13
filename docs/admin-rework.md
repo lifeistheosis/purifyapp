@@ -1,15 +1,5 @@
 # Admin rework — handoff to Opus 5
 
-> **Superseded, 2026-09-05.** The visual system this document describes,
-> the dark operator console with a light fork behind a toggle, the casino
-> reel, the register, the gradient card and the six-slot series palette, was
-> replaced by the Ledger: light only, one gold accent and one red, hairlines
-> and ink lines, no green. The current reference is `docs/ADMIN-STYLE.md`,
-> the plan is `docs/plans/v1.4/admin-ledger.md`, and the calls are in
-> `docs/DECISIONS.md` under "Admin panel Ledger". The data work below
-> (the routes, the guards, the attention derivation, the tab set) still
-> stands; the styling notes do not.
-
 Written 2026-08-17, while Purify's iOS 1.0 build 12 sits in App Review. This is
 a prompt-only planning document: nothing in this file has been implemented.
 Every task below was scoped by reading the actual code (file paths, existing

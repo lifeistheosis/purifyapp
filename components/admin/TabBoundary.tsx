@@ -53,7 +53,9 @@ export class TabBoundary extends Component<Props, State> {
         className="rounded-[var(--adm-radius)] border p-5 md:p-6"
         style={{
           background: "var(--adm-panel)",
-          borderColor: "color-mix(in oklab, var(--adm-critical), transparent 60%)",        }}
+          borderColor: "color-mix(in oklab, var(--adm-critical), transparent 60%)",
+          boxShadow: "var(--adm-shadow-card)",
+        }}
       >
         <h3
           className="font-sans text-[14px] font-semibold leading-tight"

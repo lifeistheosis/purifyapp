@@ -38,7 +38,7 @@ type Panel = "today" | "model" | "markets";
 /** A label that says which kind of number sits next to it. */
 function Tag({ kind }: { kind: "measured" | "modelled" | "unavailable" }) {
   const map = {
-    measured: { text: "Measured", fg: "var(--adm-up)" },
+    measured: { text: "Measured", fg: "var(--adm-good)" },
     modelled: { text: "Modelled", fg: "var(--adm-warn)" },
     unavailable: { text: "Not measurable yet", fg: "var(--adm-ink-3)" },
   } as const;
@@ -474,8 +474,8 @@ export function OwnerDashboard({
                           ? ({
                               ["--_bg"]: "var(--adm-control)",
                               ["--_bg-hover"]: "var(--adm-hover)",
-                              borderColor: "var(--adm-up)",
-                              color: "var(--adm-up)",
+                              borderColor: "var(--adm-good)",
+                              color: "var(--adm-good)",
                             } as React.CSSProperties)
                           : ({
                               ["--_bg"]: "var(--adm-control)",
@@ -643,7 +643,7 @@ export function OwnerDashboard({
                   <p
                     className="font-mono text-[24px] font-semibold tabular-nums"
                     style={{
-                      color: p.penetration.ratio >= 1 ? "var(--adm-up)" : "var(--adm-warn)",
+                      color: p.penetration.ratio >= 1 ? "var(--adm-good)" : "var(--adm-warn)",
                     }}
                   >
                     {p.penetration.ratio.toFixed(2)}x
@@ -760,7 +760,7 @@ export function OwnerDashboard({
                           style={{
                             color:
                               m.confidence === "high"
-                                ? "var(--adm-up)"
+                                ? "var(--adm-good)"
                                 : m.confidence === "medium"
                                   ? "var(--adm-warn)"
                                   : "var(--adm-critical)",

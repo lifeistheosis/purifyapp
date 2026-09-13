@@ -50,13 +50,7 @@ async function handlePOST(req: Request) {
   const items =
     "items" in parsed.data
       ? parsed.data.items
-      : [
-          {
-            productSlug: parsed.data.productSlug,
-            quantity: parsed.data.quantity,
-            blessing: parsed.data.blessing,
-          },
-        ];
+      : [{ productSlug: parsed.data.productSlug, quantity: parsed.data.quantity }];
 
   // NOT the raw request origin: behind Render's proxy that is
   // http://localhost:10000, which strands buyers after Stripe returns.

@@ -72,7 +72,6 @@ const PRIOR_USE_PREFIXES: readonly string[] = [
   "purify_local_account", // claimed a local account
   "purify:local-account",
   "purify:whatsNewSeen", // saw a prior release's notes
-  "purify:catechism", // completed a day's catechism
 ];
 
 /**

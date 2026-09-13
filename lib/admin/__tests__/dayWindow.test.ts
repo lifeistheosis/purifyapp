@@ -7,8 +7,6 @@ import {
   daysSince,
   emptyBuckets,
   isPartial,
-  parseLatestDay,
-  windowEnd,
   windowStart,
 } from "../dayWindow";
 
@@ -227,50 +225,5 @@ describe("daysSince, for the All time range", () => {
     const keys = dayKeys(days, NOW);
     expect(keys[0]).toBe("2026-08-20");
     expect(keys[keys.length - 1]).toBe("2026-08-26");
-  });
-});
-
-describe("the latest-day toggle", () => {
-  it("defaults to now, and only an exact 'complete' changes it", () => {
-    expect(parseLatestDay(null)).toBe("now");
-    expect(parseLatestDay("now")).toBe("now");
-    expect(parseLatestDay("COMPLETE")).toBe("now");
-    expect(parseLatestDay("yesterday")).toBe("now");
-    expect(parseLatestDay("complete")).toBe("complete");
-  });
-
-  it("'now' leaves the window ending on the running day", () => {
-    const end = windowEnd("now", NOW);
-    expect(end.getTime()).toBe(NOW.getTime());
-    expect(dayKeys(30, end).at(-1)).toBe("2026-08-26");
-  });
-
-  it("'complete' ends on yesterday, with the same number of buckets", () => {
-    const end = windowEnd("complete", NOW);
-    expect(end.toISOString()).toBe("2026-08-25T23:59:59.999Z");
-    const keys = dayKeys(30, end);
-    expect(keys).toHaveLength(30);
-    expect(keys.at(-1)).toBe("2026-08-25");
-    expect(keys).not.toContain("2026-08-26");
-    expect(isPartial(keys.at(-1)!, NOW)).toBe(false);
-  });
-
-  it("'complete' moves the start back a day too, so no finished day is lost", () => {
-    // The RPC generates p_days buckets from p_since's date. Shifting only the
-    // end would shorten the window; shifting both keeps thirty whole days.
-    expect(windowStart(30, windowEnd("now", NOW))).toBe("2026-07-28T00:00:00.000Z");
-    expect(windowStart(30, windowEnd("complete", NOW))).toBe("2026-07-27T00:00:00.000Z");
-  });
-
-  it("holds exactly at midnight UTC, the moment yesterday closes", () => {
-    const justAfter = new Date("2026-08-26T00:00:00.000Z");
-    expect(dayKey(windowEnd("complete", justAfter))).toBe("2026-08-25");
-    expect(dayKey(windowEnd("now", justAfter))).toBe("2026-08-26");
-  });
-
-  it("measures 'all time' through yesterday when complete", () => {
-    const end = windowEnd("complete", NOW);
-    expect(daysSince("2026-08-20T10:00:00.000Z", end)).toBe(6);
-    expect(daysSince("2026-08-20T10:00:00.000Z", NOW)).toBe(7);
   });
 });

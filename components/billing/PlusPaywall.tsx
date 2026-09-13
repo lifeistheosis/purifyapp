@@ -33,8 +33,7 @@ import { presentCustomerCenter } from "@/lib/billing/revenuecatUi";
 import { createClient } from "@/lib/supabase/client";
 import { useIsNative } from "@/lib/platform/native";
 import { PurifyBadge } from "@/components/ui/PurifyBadge";
-import { getPremiumPlan } from "@/lib/premium/plans";
-import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { PREMIUM_PLAN_EN } from "@/lib/premium/plans";
 
 type Phase = "loading" | "signed-out" | "unavailable" | "ready" | "subscribed";
 type Tier = "plus" | "pro";
@@ -505,14 +504,10 @@ function TierSwitch({
  * The tier's "What's included" card, shared by the signed-out and ready
  * phases so the promise never drifts between them. The rows come straight
  * from lib/premium/plans.ts (the single copy source shared with /pricing
- * and /premium) and maps feature ids to icons, so the paywall can no longer
- * drift from the ladder by hand. Perks marked `soon` (Studio Audio) carry the
- * coming-soon pill; every unmarked row is a REAL, live entitlement.
- *
- * Through getPremiumPlan(locale), not PREMIUM_PLAN_EN. The direct import
- * bypassed both the locale switch and the withdrawn-feature filter, which is
- * how this card advertised a feature that answered 404 in production on
- * 2026-08-26 while /pricing beside it had already stopped.
+ * and /premium) — this card renders PREMIUM_PLAN_EN and maps feature ids
+ * to icons, so the paywall can no longer drift from the ladder by hand.
+ * Perks marked `soon` (Studio Audio) carry the coming-soon pill; every
+ * unmarked row is a REAL, live entitlement.
  */
 const INCLUDED_ICONS: Record<string, React.ReactNode> = {
   sync: <SyncIcon />,
@@ -521,16 +516,14 @@ const INCLUDED_ICONS: Record<string, React.ReactNode> = {
   "immersive-history": <HourglassIcon />,
   "everything-plus": <LayersIcon />,
   "reading-modes": <CandleIcon />,
-  "collection-palettes": <CandleIcon />,
   "studio-audio": <AudioIcon />,
   "eikon-box": <GiftIcon />,
   "eikon-benefits": <TagIcon />,
 };
 
 function IncludedCard({ tier, delay }: { tier: Tier; delay: string }) {
-  const { locale } = useTranslate();
-  const plan = getPremiumPlan(locale);
-  const items = tier === "pro" ? plan.proItems : plan.plusItems;
+  const items =
+    tier === "pro" ? PREMIUM_PLAN_EN.proItems : PREMIUM_PLAN_EN.plusItems;
   return (
     <div className="paywall-in mt-7 px-5" style={{ animationDelay: delay }}>
       <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
@@ -544,14 +537,14 @@ function IncludedCard({ tier, delay }: { tier: Tier; delay: string }) {
               icon={INCLUDED_ICONS[item.id] ?? <LayersIcon />}
               title={item.title}
               sub={item.sub}
-              soon={item.soon ? plan.soonLabel : undefined}
+              soon={item.soon ? PREMIUM_PLAN_EN.soonLabel : undefined}
             />
           ))}
         </ul>
       </div>
       {tier === "pro" ? (
         <p className="mt-4 text-center font-sans text-caption leading-relaxed text-paper/40">
-          {plan.proNote}
+          {PREMIUM_PLAN_EN.proNote}
         </p>
       ) : (
         <>
