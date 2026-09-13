@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
 
 import { useReducedMotion } from "@/lib/ui/motion";
 import { SENSITIVE } from "@/lib/admin/streamer";
@@ -17,12 +17,16 @@ import { CountUp } from "./CountUp";
 import { useWidth } from "./useWidth";
 
 /**
- * The one chart shape the ledger has.
+ * The Summary's chart card.
  *
- * A title, the current value, its delta, and one ink line. Optionally a
- * compare series in muted ink, dashed. Two or three y ticks on the left,
- * first and last labels underneath. Hover is a hairline vertical cursor and
- * a small ink-on-cream tooltip. Nothing fills, nothing glows, no dots.
+ * A title, the current value, its delta, and one accent line over a soft
+ * fill. Optionally a compare series in muted ink, dashed. Two or three y ticks
+ * on the left, first and last labels underneath. Hover is a hairline vertical
+ * cursor and a small tooltip.
+ *
+ * Restyled 2026-09-13 to the panel's restored themes and card. v1.4 drew it
+ * as a plain ink line on a flat hairline card with no fill; the layout and
+ * the behaviour are unchanged.
  *
  * 220px tall on desktop, 160 on a phone (the md: class pair). The width is
  * measured so the line is drawn in pixels and its dash length is exact.
@@ -75,11 +79,16 @@ export function TrendChart({
   return (
     <div
       className="flex min-w-0 flex-col rounded-[var(--adm-radius)] border p-4"
-      style={{ background: "var(--adm-card)", borderColor: "var(--adm-line)" }}
+      // The panel's own card, restored 2026-09-13 with the two themes: the
+      // panel ground with the theme's card shadow, which is none on dark and
+      // real on light. v1.4 drew this flat, on a hairline only.
+      style={{ background: "var(--adm-panel)", borderColor: "var(--adm-line)", boxShadow: "var(--adm-shadow-card)" }}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="adm-heading truncate">{title}</h3>
+          <h3 className="truncate font-sans text-[13px] font-semibold leading-tight" style={{ color: "var(--adm-ink)" }}>
+            {title}
+          </h3>
           <div className="mt-1.5 flex items-baseline gap-2">
             {loading ? (
               <span aria-hidden className="adm-skeleton block" style={{ width: 96, height: 24 }} />
@@ -87,7 +96,7 @@ export function TrendChart({
               <>
                 <span
                   className={
-                    "font-sans text-[24px] font-medium leading-none tracking-[-0.01em]" +
+                    "font-sans text-[24px] font-semibold leading-none tracking-[-0.02em]" +
                     (sensitive ? ` ${SENSITIVE}` : "")
                   }
                   style={{ color: "var(--adm-ink)" }}
@@ -95,7 +104,10 @@ export function TrendChart({
                   <CountUp value={value as string | number} />
                 </span>
                 {delta ? (
-                  <span className="font-sans text-[12px]" style={{ color: deltaColor(tone) }}>
+                  <span
+                    className={"font-sans text-[12px]" + (sensitive ? ` ${SENSITIVE}` : "")}
+                    style={{ color: deltaColor(tone) }}
+                  >
                     {deltaText(delta)}
                   </span>
                 ) : null}
@@ -169,6 +181,8 @@ function Plot({
   setHover: (i: number | null) => void;
   reduced: boolean;
 }) {
+  // url(#id) cannot take the colons React puts in its ids.
+  const fillId = `trend-fill-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   // The plot's height is the box's, read through a CSS-driven pair. The
   // SVG fills the box; the geometry is computed for the same two heights
   // the classes set, chosen by the same breakpoint the classes use.
@@ -240,24 +254,40 @@ function Plot({
         ) : null}
 
         <g transform={`translate(${Y_GUTTER} 0)`}>
+          {/* The accent line over a soft fill, the way the panel's charts
+              drew before v1.4 put them in plain ink. */}
+          <defs>
+            <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--adm-accent-line)" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="var(--adm-accent-line)" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {main.length > 1 ? (
+            <path
+              d={`${mainD} L ${main[main.length - 1].x} ${plotH} L ${main[0].x} ${plotH} Z`}
+              fill={`url(#${fillId})`}
+              stroke="none"
+            />
+          ) : null}
           {cmp ? (
             <path
               d={polyline(cmp)}
               fill="none"
-              stroke="var(--adm-ink-2)"
+              stroke="var(--adm-ink-3)"
               strokeDasharray="3 3"
               className="adm-draw-static"
-              style={{ strokeWidth: 1 }}
+              style={{ strokeWidth: 1.25 }}
             />
           ) : null}
           <path
             d={mainD}
             fill="none"
-            stroke="var(--adm-ink)"
+            stroke="var(--adm-accent-line)"
             strokeLinejoin="round"
+            strokeLinecap="round"
             className={reduced ? "adm-draw-static" : "adm-draw"}
             style={{
-              strokeWidth: "var(--adm-chart-line)",
+              strokeWidth: 2,
               ["--adm-len" as string]: `${Math.ceil(mainLen)}`,
             }}
           />
@@ -284,6 +314,7 @@ function Plot({
             borderColor: "var(--adm-line)",
             color: "var(--adm-ink)",
             fontVariantNumeric: "tabular-nums",
+            boxShadow: "var(--adm-shadow-pop)",
           }}
         >
           {labels?.[hi] ? (

@@ -238,8 +238,8 @@ export function AdminMobileNav({
                         // gold hairline, never a fill.
                         className="flex min-h-[52px] items-center gap-2.5 rounded-[var(--adm-radius)] border px-3 py-2.5 text-left font-sans text-detail transition-colors"
                         style={{
-                          borderColor: on ? "var(--adm-up)" : "var(--adm-line)",
-                          color: on ? "var(--adm-up)" : "var(--adm-ink-2)",
+                          borderColor: on ? "var(--adm-accent-line)" : "var(--adm-line)",
+                          color: on ? "var(--adm-accent-line)" : "var(--adm-ink-2)",
                           background: "var(--adm-card)",
                         }}
                       >
@@ -290,7 +290,7 @@ export function AdminMobileNav({
                   onClick={() => go(t.id)}
                   aria-current={on ? "page" : undefined}
                   className="flex h-[58px] w-full flex-col items-center justify-center gap-1 rounded-[var(--adm-radius)] px-1 transition-colors"
-                  style={{ color: on ? "var(--adm-up)" : "var(--adm-ink-2)" }}
+                  style={{ color: on ? "var(--adm-accent-line)" : "var(--adm-ink-2)" }}
                 >
                   <span>{ADMIN_TAB_ICONS[t.id] ?? ADMIN_TAB_ICON_FALLBACK}</span>
                   <span className="w-full truncate text-center font-sans text-eyebrow font-medium">
@@ -308,7 +308,7 @@ export function AdminMobileNav({
               aria-haspopup="dialog"
               aria-expanded={sheetOpen}
               className="flex h-[58px] w-full flex-col items-center justify-center gap-1 rounded-[var(--adm-radius)] px-1 transition-colors"
-              style={{ color: activeIsPrimary ? "var(--adm-ink-2)" : "var(--adm-up)" }}
+              style={{ color: activeIsPrimary ? "var(--adm-ink-2)" : "var(--adm-accent-line)" }}
             >
               <span aria-hidden className="flex h-[18px] items-end gap-[3px]">
                 <i className="h-1 w-1 rounded-full bg-current" />

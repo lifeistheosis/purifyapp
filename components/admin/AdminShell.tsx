@@ -60,6 +60,7 @@ import { ContentHealthTab } from "./tabs/ContentHealthTab";
 import { HealthTab } from "./tabs/HealthTab";
 import { AuditLogTab } from "./tabs/AuditLogTab";
 import { SourcingTab } from "./tabs/SourcingTab";
+import { AdminThemeToggle } from "./AdminThemeToggle";
 import { AdminMotionToggle } from "./AdminMotionToggle";
 import { AdminStreamerToggle } from "./AdminStreamerToggle";
 import { ActivityFeed } from "./ActivityFeed";
@@ -602,10 +603,11 @@ export function AdminShell({
           full-width row, which is also where it belongs, since sitting it flush
           against three harmless toggles is how it gets hit by accident. */}
       <div className="flex flex-col gap-1">
-        {/* Two now. Theme and Sound went with the dark palette and the
-            register; Reduced motion stays as the override, Streamer as the
-            operator tool it is. */}
-        <div className="grid grid-cols-2 gap-1">
+        {/* Theme is back, restored with the dark and light palettes on
+            2026-09-13. Sound is not: the register went with v1.4 and was not
+            part of that restore. */}
+        <div className="grid grid-cols-3 gap-1">
+          <AdminThemeToggle />
           <AdminMotionToggle />
           <AdminStreamerToggle />
         </div>

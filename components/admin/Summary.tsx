@@ -100,6 +100,8 @@ type TileSpec = {
   empty?: string;
   emptyHref?: { href: string; label: string };
   caption?: string;
+  /** How a trend point reads in the tile's sparkline readout. Money trends are cents. */
+  trendFormat?: (v: number) => string;
   tab?: string;
 };
 
@@ -225,6 +227,7 @@ export function Summary({
         delta: shop90 !== null && shopPrev > 0 ? { value: ((shop90 - shopPrev) / shopPrev) * 100 } : undefined,
         caption: "vs prior 3 months",
         trend: monthly.length > 1 ? monthly.slice(-6).map((m) => m.netCents) : undefined,
+        trendFormat: money,
         sensitive: true,
         loading: revenue.loading && !revenue.data,
         error: !revenue.loading && revenue.failing && !revenue.data ? "Revenue did not answer." : undefined,
@@ -237,6 +240,7 @@ export function Summary({
         info: "Net of refunds, shop orders only, last 30 UTC days.",
         value: revenueMeasured ? money(sum(revenueSeries.slice(-30))) : null,
         trend: revenueMeasured ? revenueSeries.slice(-30) : undefined,
+        trendFormat: money,
         sensitive: true,
         loading: revenueLoading && !revenueMeasured,
         empty: "Not measured.",
@@ -352,6 +356,7 @@ export function Summary({
             empty={t.empty}
             emptyHref={t.emptyHref}
             caption={t.caption}
+            trendFormat={t.trendFormat ?? compact}
             pinned
             onPin={() => togglePin(t.id)}
           />

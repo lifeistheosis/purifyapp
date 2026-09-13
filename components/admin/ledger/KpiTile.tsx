@@ -4,17 +4,19 @@ import { useId, useState, type ReactNode } from "react";
 
 import { SENSITIVE } from "@/lib/admin/streamer";
 import { deltaColor, deltaText, deltaTone, type DeltaSpec } from "@/lib/admin/ledger/delta";
+import { HeroSpark } from "../hero";
 import { CountUp } from "./CountUp";
-import { Sparkline } from "./Sparkline";
-import { useWidth } from "./useWidth";
 
 /**
  * One number, with its name, its change, and its shape.
  *
- * Label 12px muted; value 30px tabular in the ink; delta 12px coloured by
- * direction only; a 36px sparkline under it. The tile is a white card on a
- * hairline and nothing else. Pinned tiles show a small gold mark; the pin
- * control appears on hover (and on focus, so a keyboard reaches it).
+ * RESTYLED 2026-09-13 to the panel's own card, the one MetricCard draws on
+ * the hero row: the panel ground with the theme's card shadow, the 30px
+ * semibold figure, the change with its arrow, and the tall accent sparkline
+ * with its fill and readout. v1.4 drew this as the Ledger tile, a flat white
+ * card on a hairline with a 36px ink line, and the owner kept the v1.4 layout
+ * but not that card. What the tile DOES is unchanged: the pin, the info
+ * sentence, the four states and the streamer masking.
  *
  * Four states, decided by the caller: loading (skeletons), error (one red
  * sentence), empty (one muted sentence and an optional link), populated.
@@ -27,6 +29,12 @@ export type KpiTileProps = {
   value?: string | number | null;
   delta?: DeltaSpec;
   trend?: number[];
+  /**
+   * How a trend point reads in the sparkline's readout. The trends arrive in
+   * whatever unit the source keeps, cents for money, so a money tile must
+   * pass this or the readout prints 4520 where it means $45.
+   */
+  trendFormat?: (v: number) => string;
   /** Money masks itself under streamer mode. */
   sensitive?: boolean;
   loading?: boolean;
@@ -49,6 +57,7 @@ export function KpiTile({
   value,
   delta,
   trend,
+  trendFormat,
   sensitive,
   loading,
   error,
@@ -59,20 +68,28 @@ export function KpiTile({
   caption,
   action,
 }: KpiTileProps) {
-  const [boxRef, width] = useWidth<HTMLDivElement>();
   const [infoOpen, setInfoOpen] = useState(false);
   const infoId = useId();
+  // The sparkline's gradient is referenced as url(#id), and React's ids carry
+  // characters a url() fragment cannot, so only the safe ones are kept.
+  const sparkId = `kpi-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const hasValue = value !== null && value !== undefined && value !== "";
   const tone = delta ? deltaTone(delta) : "flat";
 
   return (
     <div
       className="group relative flex min-w-0 flex-col rounded-[var(--adm-radius)] border p-4"
-      style={{ background: "var(--adm-card)", borderColor: "var(--adm-line)" }}
+      style={{
+        background: "var(--adm-panel)",
+        borderColor: "var(--adm-line)",
+        // None on dark, where the surface step separates the card; a real
+        // shadow on light, where a white card on near-white needs one.
+        boxShadow: "var(--adm-shadow-card)",
+      }}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-1.5">
-          <p className="truncate font-sans text-[12.5px] leading-4" style={{ color: "var(--adm-ink-2)" }}>
+          <p className="truncate font-sans text-[13px] font-medium leading-4" style={{ color: "var(--adm-ink)" }}>
             {label}
           </p>
           {info ? (
@@ -99,6 +116,7 @@ export function KpiTile({
                     background: "var(--adm-panel-2)",
                     borderColor: "var(--adm-line)",
                     color: "var(--adm-ink)",
+                    boxShadow: "var(--adm-shadow-pop)",
                   }}
                 >
                   {info}
@@ -120,23 +138,23 @@ export function KpiTile({
                 "grid h-6 w-6 place-items-center rounded-[var(--adm-radius-sm)] transition-opacity " +
                 (pinned ? "opacity-100" : "opacity-0 focus-visible:opacity-100 group-hover:opacity-100")
               }
-              style={{ color: pinned ? "var(--adm-up)" : "var(--adm-ink-3)" }}
+              style={{ color: pinned ? "var(--adm-accent-line)" : "var(--adm-ink-3)" }}
             >
               <PinGlyph filled={!!pinned} />
             </button>
           ) : pinned ? (
-            <span className="grid h-6 w-6 place-items-center" style={{ color: "var(--adm-up)" }} aria-label="Pinned">
+            <span className="grid h-6 w-6 place-items-center" style={{ color: "var(--adm-accent-line)" }} aria-label="Pinned">
               <PinGlyph filled />
             </span>
           ) : null}
         </div>
       </div>
 
-      <div className="mt-2 min-h-[36px]">
+      <div className="mt-3 min-h-[30px]">
         {loading ? (
           <span aria-hidden className="adm-skeleton block" style={{ width: "58%", height: 30 }} />
         ) : error ? (
-          <p className="font-sans text-[12.5px] leading-snug" style={{ color: "var(--adm-down)" }}>
+          <p className="font-sans text-[12.5px] leading-snug" style={{ color: "var(--adm-critical)" }}>
             {error}
           </p>
         ) : !hasValue ? (
@@ -154,7 +172,7 @@ export function KpiTile({
         ) : (
           <p
             className={
-              "font-sans text-[30px] font-medium leading-none tracking-[-0.01em]" +
+              "font-sans text-[30px] font-semibold leading-none tracking-[-0.02em]" +
               (sensitive ? ` ${SENSITIVE}` : "")
             }
             style={{ color: "var(--adm-ink)" }}
@@ -164,7 +182,7 @@ export function KpiTile({
         )}
       </div>
 
-      <div className="mt-1.5 flex min-h-[16px] items-baseline gap-1.5">
+      <div className="mt-2 flex min-h-[16px] items-center gap-1.5">
         {loading ? (
           <span aria-hidden className="adm-skeleton block" style={{ width: 64, height: 10 }} />
         ) : delta && hasValue && !error ? (
@@ -172,11 +190,19 @@ export function KpiTile({
             {/* The delta masks with the value. "+300%" on a revenue tile is
                 the revenue story told without the number, which is what the
                 mode exists to keep off a stream. The caption beside it only
-                names the comparison, so it stays readable. */}
+                names the comparison, so it stays readable.
+
+                Direction gets a colour AND an arrow, as it does on the hero
+                cards, so the sign never rests on colour alone. */}
             <span
-              className={"font-sans text-[12px] leading-4" + (sensitive ? ` ${SENSITIVE}` : "")}
+              className={"flex items-center gap-1 font-sans text-[12px] leading-4" + (sensitive ? ` ${SENSITIVE}` : "")}
               style={{ color: deltaColor(tone) }}
             >
+              {tone !== "flat" ? (
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  {tone === "up" ? <path d="M5 8V2M2.2 4.8 5 2l2.8 2.8" /> : <path d="M5 2v6M2.2 5.2 5 8l2.8-2.8" />}
+                </svg>
+              ) : null}
               {deltaText(delta)}
             </span>
             {caption ? (
@@ -188,17 +214,19 @@ export function KpiTile({
         ) : null}
       </div>
 
-      {/* THE SPARKLINE WAS THE LEAK. Only the value carried .adm-sensitive, so
-          streamer mode blurred the revenue figure and then drew its shape in
-          full underneath: every spike a sale, every flat stretch a quiet week,
-          readable at any bitrate. A chart of money is money. The class goes on
-          the box rather than the svg so the width measurement on boxRef is
-          untouched. */}
-      <div ref={boxRef} className={"mt-3 h-9 w-full" + (sensitive ? ` ${SENSITIVE}` : "")}>
+      {/* A chart of money is money, so the whole box masks, readout included.
+          Hover lifts it, like every other mask. */}
+      <div className={"mt-3 min-h-[78px]" + (sensitive ? ` ${SENSITIVE}` : "")}>
         {loading ? (
-          <span aria-hidden className="adm-skeleton block h-full w-full" />
+          <span aria-hidden className="adm-skeleton block w-full" style={{ height: 78 }} />
         ) : trend && trend.length > 1 && hasValue && !error ? (
-          <Sparkline data={trend} width={width} height={36} />
+          <HeroSpark
+            points={trend}
+            color="var(--adm-accent-line)"
+            format={trendFormat}
+            title={label}
+            id={sparkId}
+          />
         ) : null}
       </div>
     </div>

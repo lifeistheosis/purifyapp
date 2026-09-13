@@ -39,7 +39,7 @@ export function StatList({
   emptyHref?: { href: string; label: string };
   /** Adds a pin control at the end of each row. */
   onPin?: (id: string) => void;
-  /** Ids already pinned, drawn in the gold. */
+  /** Ids already pinned, drawn in the accent. */
   pinned?: readonly string[];
 }) {
   if (loading) {
@@ -91,7 +91,7 @@ export function StatList({
                 the figure. */}
             {r.trend && r.trend.length > 1 ? (
               <span className={"hidden shrink-0 sm:block" + (r.sensitive ? ` ${SENSITIVE}` : "")}>
-                <Sparkline data={r.trend} width={64} height={24} />
+                <Sparkline data={r.trend} width={64} height={24} color="var(--adm-accent-line)" />
               </span>
             ) : null}
             <span className="flex shrink-0 items-baseline gap-2">
@@ -121,7 +121,7 @@ export function StatList({
             aria-label={isPinned ? `Unpin ${r.label}` : `Pin ${r.label}`}
             title={isPinned ? "Unpin from Summary" : "Pin to Summary"}
             className="grid h-8 w-8 shrink-0 place-items-center rounded-[var(--adm-radius-sm)]"
-            style={{ color: isPinned ? "var(--adm-up)" : "var(--adm-ink-3)" }}
+            style={{ color: isPinned ? "var(--adm-accent-line)" : "var(--adm-ink-3)" }}
           >
             <svg width="12" height="12" viewBox="0 0 20 20" fill={isPinned ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d="M12.5 2.5 17.5 7.5 13.8 9.3 12 15l-3.5-3.5L4 16l4.5-4.5L5 8l5.7-1.8z" />

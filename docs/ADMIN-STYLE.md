@@ -1,5 +1,31 @@
 # Admin style: the Ledger
 
+> **SUPERSEDED IN PART, 2026-09-13.** On seeing the Ledger live, the owner kept
+> its layout and rejected its palette and its cards: "i liked the design not
+> the ui card and theme change". So on release/v1.4:
+>
+> **No longer true.** The one-accent rule, the light-only cream palette, the
+> removal of the Theme toggle, "no green", "no shadow", "no gradient", the
+> flat Ledger tile and chart card, and the gold 2px rail bar. The panel is back
+> on the two themes it had before v1.4, dark and light, keyed on
+> `data-adm-theme` and switched from the rail. Cards, buttons, pills and
+> skeletons use the pre-v1.4 styles from `components/admin/primitives.tsx`.
+> `lib/admin/__tests__/adminLedgerAudit.test.ts` enforced the retired
+> must-nots and is deleted; `adminTheme.test.ts` is back to testing both
+> palettes.
+>
+> **Still true.** The rail groups and the Summary layout, the ledger
+> components as COMPONENTS (KpiTile, StatList, TrendChart, Sparkline, PeriodBar,
+> Rail), the 232px rail and 1440px content measure, the draw-once motion
+> budgets, section heading sizes, and table pinning. KpiTile and TrendChart now
+> draw the panel's own card and accent line. The v1.4 token names
+> (`--adm-card`, `--adm-up`, `--adm-down`, `--adm-canvas` and the rest) still
+> resolve, as aliases of the restored tokens, so nothing that uses them needs
+> an edit.
+>
+> The sections below describe the Ledger as it was specified and are kept as
+> the record. Read them as history where they conflict with this note.
+
 The visual system for `/admin`, `/admin/shop` and `/owner`, since 2026-09-05.
 Owner spec "Purify, Admin Panel Style: Ledger"; plan in
 `docs/plans/v1.4/admin-ledger.md`; calls in `docs/DECISIONS.md` under

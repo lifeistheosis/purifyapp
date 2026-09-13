@@ -25,7 +25,7 @@ export function MetricToggle<T extends string>({
             onClick={() => onChange(o.id)}
             className="h-8 px-3 font-sans text-[12.5px]"
             style={{
-              color: on ? "var(--adm-up)" : "var(--adm-ink-2)",
+              color: on ? "var(--adm-accent-line)" : "var(--adm-ink-2)",
               fontWeight: on ? 500 : 400,
               borderLeft: i === 0 ? undefined : "1px solid var(--adm-line)",
             }}

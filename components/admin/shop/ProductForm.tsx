@@ -391,7 +391,7 @@ function Switch({
       <span
         aria-hidden
         className="relative inline-block h-6 w-11 shrink-0 rounded-full transition-colors"
-        style={{ background: checked ? "var(--adm-up)" : "var(--adm-line-strong)" }}
+        style={{ background: checked ? "var(--adm-accent)" : "var(--adm-line-strong)" }}
       >
         <span
           className="absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform"

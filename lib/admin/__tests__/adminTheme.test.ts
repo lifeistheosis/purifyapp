@@ -1,20 +1,20 @@
 // A source-reading guard, in the idiom of lib/ui/__tests__/touchTargets.test.ts
 // and lib/saints/__tests__/iconRights.test.ts.
 //
-// app/admin/admin-theme.css makes contrast claims in its comments ("5.14:1
-// on white, 4.72:1 on the cream"). Until this file existed, "verified" meant
-// someone did the arithmetic once by hand and wrote it down. This parses the
-// stylesheet and does the arithmetic on every run, so the next nudge to a
-// token cannot quietly break the claim.
+// app/admin/admin-theme.css carries two palettes now, and its comments make
+// contrast claims ("all three clear 5:1 on every surface above, verified").
+// Until this file existed, "verified" meant someone did the arithmetic once by
+// hand and wrote it down. Nothing re-ran it, so the next nudge to a token
+// could quietly break the claim and nobody would know.
 //
-// ONE PALETTE. The Ledger pass removed the dark block and the light fork,
-// so this reads a single token block on [data-surface="admin"] and asserts
-// that the old fork is gone: no :root[data-adm-theme] selector, and
-// color-scheme forced to light so an OS dark mode cannot pull the reader's
-// tokens in through a native control.
+// This parses the stylesheet and does the arithmetic. It is the only automated
+// check the theme can have: vitest here is a node environment with no DOM and
+// no layout, so nothing can measure a rendered pixel.
 //
-// What it cannot do: judge a rendered pixel. vitest here is a node
-// environment with no DOM and no layout.
+// What it cannot do: judge whether two adjacent SERIES colours stay apart under
+// deuteranopia. That needs a CVD simulation this repo does not have, which is
+// exactly why the light palette's comment refuses to claim the dark set's
+// "worst adjacent deutan dE 9.0" figure.
 
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
@@ -88,8 +88,9 @@ function contrast(fg: Rgb, bg: Rgb): number {
 }
 
 // Comments are stripped before any brace matching. The stylesheet explains
-// itself at length, and prose will happily contain a brace that ends the
-// block early and silently drops half the palette from this check.
+// itself at length, and prose about things like hover:bg-white/[0.03] or a
+// nested selector will happily contain a brace that ends the block early and
+// silently drops half the palette from this check.
 const BARE = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
 
 /** Pull the declarations out of one rule block, found by its selector text. */
@@ -107,127 +108,117 @@ function block(selector: string): Record<string, string> {
   return out;
 }
 
-const ROOT = '[data-surface="admin"]';
-const tokens = block(ROOT);
+const darkTokens = block(".adm {");
+const lightTokens = { ...darkTokens, ...block(':root[data-adm-theme="light"] .adm {') };
 
-/** Resolve one level of var() so an alias like --adm-good can be checked. */
-function color(name: string): Rgb {
-  let raw = tokens[name];
+function color(tokens: Record<string, string>, name: string): Rgb {
+  const raw = tokens[name];
   if (raw === undefined) throw new Error(`missing token ${name}`);
-  const alias = /^var\((--[a-z0-9-]+)\)$/i.exec(raw);
-  if (alias) raw = tokens[alias[1]] ?? raw;
   const parsed = parseColor(raw);
   if (!parsed) throw new Error(`token ${name} is not a plain colour: ${raw}`);
   return parsed;
 }
 
+const THEMES: [string, Record<string, string>][] = [
+  ["dark", darkTokens],
+  ["light", lightTokens],
+];
+
 // WCAG 1.4.3 for text, 1.4.11 for graphical objects.
 const TEXT_MIN = 4.5;
 const GRAPHIC_MIN = 3;
 
-const SURFACES = ["--adm-bg", "--adm-panel", "--adm-panel-2", "--adm-rail", "--adm-canvas", "--adm-card"];
+const SURFACES = ["--adm-bg", "--adm-panel", "--adm-panel-2", "--adm-rail"];
 const INKS = ["--adm-ink", "--adm-ink-2", "--adm-ink-3"];
 
-describe("admin theme, one light palette", () => {
-  it("defines the Ledger tokens on the admin root", () => {
-    expect(Object.keys(tokens).length).toBeGreaterThan(30);
-    for (const name of [
-      "--adm-canvas",
-      "--adm-card",
-      "--adm-line",
-      "--adm-ink",
-      "--adm-ink-2",
-      "--adm-ink-3",
-      "--adm-up",
-      "--adm-down",
-      "--adm-chart-line",
-      "--adm-count-ms",
-      "--adm-draw-ms",
+describe("admin theme contrast", () => {
+  it("defines both palettes", () => {
+    expect(Object.keys(darkTokens).length).toBeGreaterThan(20);
+    // The light block forks colour only. If it ever redefines structure, the
+    // "one structure, two palettes" split has quietly broken.
+    const lightOnly = block(':root[data-adm-theme="light"] .adm {');
+    for (const structural of [
       "--adm-radius",
       "--adm-radius-sm",
+      "--adm-radius-lg",
+      "--adm-radius-pill",
+      "--adm-ease",
     ]) {
-      expect(tokens[name], name).toBeDefined();
+      expect(lightOnly[structural]).toBeUndefined();
     }
   });
 
-  it("carries the spec's fixed colours", () => {
-    expect(tokens["--adm-canvas"].toLowerCase()).toBe("#f7f5f1");
-    expect(tokens["--adm-card"].toLowerCase()).toBe("#ffffff");
-    expect(tokens["--adm-line"].toLowerCase()).toBe("#e6e2da");
-    expect(tokens["--adm-ink"].toLowerCase()).toBe("#1b1a17");
-    expect(tokens["--adm-ink-2"].toLowerCase()).toBe("#6b675f");
-    expect(tokens["--adm-up"].toLowerCase()).toBe("#8a6a1c");
-    expect(tokens["--adm-down"].toLowerCase()).toBe("#a63d2f");
-    // The accent IS the gold; the two names must never drift apart.
-    expect(tokens["--adm-accent"].toLowerCase()).toBe(tokens["--adm-up"].toLowerCase());
-    expect(tokens["--adm-critical"].toLowerCase()).toBe(tokens["--adm-down"].toLowerCase());
-  });
+  for (const [theme, tokens] of THEMES) {
+    describe(theme, () => {
+      it("every ink clears 4.5:1 on every surface", () => {
+        for (const ink of INKS) {
+          for (const surface of SURFACES) {
+            const ratio = contrast(color(tokens, ink), color(tokens, surface));
+            expect(
+              Number(ratio.toFixed(2)),
+              `${theme}: ${ink} on ${surface}`,
+            ).toBeGreaterThanOrEqual(TEXT_MIN);
+          }
+        }
+      });
 
-  it("has no dark fork and forces color-scheme light", () => {
-    expect(BARE).not.toContain("data-adm-theme");
-    expect(BARE).not.toMatch(/color-scheme\s*:\s*dark/);
-    // The declaration has to be inside the root block, not merely somewhere.
-    const at = BARE.indexOf(ROOT);
-    const open = BARE.indexOf("{", at);
-    const close = BARE.indexOf("}", open);
-    expect(BARE.slice(open, close)).toMatch(/color-scheme\s*:\s*light/);
-  });
+      it("ink on the accent, and on the nav and badge pairs, clears 4.5:1", () => {
+        const pairs: [string, string][] = [
+          ["--adm-on-accent", "--adm-accent"],
+          ["--adm-nav-active-fg", "--adm-nav-active-bg"],
+        ];
+        for (const [fg, bg] of pairs) {
+          const ratio = contrast(color(tokens, fg), color(tokens, bg));
+          expect(
+            Number(ratio.toFixed(2)),
+            `${theme}: ${fg} on ${bg}`,
+          ).toBeGreaterThanOrEqual(TEXT_MIN);
+        }
 
-  it("retires --adm-good to an alias of --adm-up", () => {
-    expect(tokens["--adm-good"]).toBe("var(--adm-up)");
-  });
+        // The badge wash is translucent on dark, so it has to be flattened
+        // onto the rail it actually sits on before the ratio means anything.
+        const badgeBg = color(tokens, "--adm-badge-bg");
+        const flattened = badgeBg.a < 1 ? over(badgeBg, color(tokens, "--adm-rail")) : badgeBg;
+        const badgeRatio = contrast(color(tokens, "--adm-badge-fg"), flattened);
+        expect(
+          Number(badgeRatio.toFixed(2)),
+          `${theme}: --adm-badge-fg on --adm-badge-bg over the rail`,
+        ).toBeGreaterThanOrEqual(TEXT_MIN);
+      });
 
-  it("sets both shadow tokens to none", () => {
-    expect(tokens["--adm-shadow-card"]).toBe("none");
-    expect(tokens["--adm-shadow-pop"]).toBe("none");
-  });
+      it("every categorical series clears 3:1 on the card surface", () => {
+        for (const n of [1, 2, 3, 4, 5, 6]) {
+          const ratio = contrast(color(tokens, `--adm-s${n}`), color(tokens, "--adm-panel"));
+          expect(
+            Number(ratio.toFixed(2)),
+            `${theme}: --adm-s${n} on --adm-panel`,
+          ).toBeGreaterThanOrEqual(GRAPHIC_MIN);
+        }
+      });
 
-  it("every ink clears 4.5:1 on every surface", () => {
-    for (const ink of INKS) {
-      for (const surface of SURFACES) {
-        const ratio = contrast(color(ink), color(surface));
-        expect(Number(ratio.toFixed(2)), `${ink} on ${surface}`).toBeGreaterThanOrEqual(TEXT_MIN);
-      }
-    }
-  });
-
-  it("the two accents are readable as text on every surface", () => {
-    for (const accent of ["--adm-up", "--adm-down", "--adm-warn", "--adm-serious", "--adm-critical", "--adm-good"]) {
-      for (const surface of SURFACES) {
-        const ratio = contrast(color(accent), color(surface));
-        expect(Number(ratio.toFixed(2)), `${accent} on ${surface}`).toBeGreaterThanOrEqual(TEXT_MIN);
-      }
-    }
-  });
-
-  it("ink on the accent, and the nav and badge pairs, clear 4.5:1", () => {
-    const pairs: [string, string][] = [
-      ["--adm-on-accent", "--adm-accent"],
-      ["--adm-nav-active-fg", "--adm-nav-active-bg"],
-      ["--adm-nav-active-fg", "--adm-rail"],
-    ];
-    for (const [fg, bg] of pairs) {
-      const ratio = contrast(color(fg), color(bg));
-      expect(Number(ratio.toFixed(2)), `${fg} on ${bg}`).toBeGreaterThanOrEqual(TEXT_MIN);
-    }
-
-    const badgeBg = color("--adm-badge-bg");
-    const flattened = badgeBg.a < 1 ? over(badgeBg, color("--adm-rail")) : badgeBg;
-    const badgeRatio = contrast(color("--adm-badge-fg"), flattened);
-    expect(Number(badgeRatio.toFixed(2)), "--adm-badge-fg on --adm-badge-bg").toBeGreaterThanOrEqual(TEXT_MIN);
-  });
-
-  it("every series slot clears 3:1 on the card surface", () => {
-    for (const n of [1, 2, 3, 4, 5, 6]) {
-      const ratio = contrast(color(`--adm-s${n}`), color("--adm-panel"));
-      expect(Number(ratio.toFixed(2)), `--adm-s${n} on --adm-panel`).toBeGreaterThanOrEqual(GRAPHIC_MIN);
-    }
-  });
-
-  it("the chart line and the hairline are the spec's weights", () => {
-    expect(tokens["--adm-chart-line"]).toBe("1.25px");
-    expect(tokens["--adm-line-w"]).toBe("1px");
-    expect(tokens["--adm-count-ms"]).toBe("400ms");
-    expect(tokens["--adm-draw-ms"]).toBe("500ms");
-  });
+      // Added in v4, and it should have existed earlier.
+      //
+      // The status four were untested because nothing read them as TEXT: the
+      // tab bodies carried 83 hardcoded Tailwind classes instead
+      // (text-rose-300, text-emerald-300, text-amber-200 and friends), which
+      // are theme-blind by construction. text-rose-300 is #fda4af in every
+      // theme, which is roughly 1.9:1 on a white card, so light mode had
+      // eighty-three pieces of unreadable status text and no test could see
+      // it because none of it went through a token.
+      //
+      // v4 routed all 83 onto these four. That makes them load-bearing for
+      // readability, so they get the same floor the ink does.
+      it("every status colour is readable as text on every surface", () => {
+        for (const status of ["good", "warn", "serious", "critical"]) {
+          for (const surface of ["--adm-bg", "--adm-panel", "--adm-panel-2"]) {
+            const ratio = contrast(color(tokens, `--adm-${status}`), color(tokens, surface));
+            expect(
+              Number(ratio.toFixed(2)),
+              `${theme}: --adm-${status} on ${surface}`,
+            ).toBeGreaterThanOrEqual(TEXT_MIN);
+          }
+        }
+      });
+    });
+  }
 });

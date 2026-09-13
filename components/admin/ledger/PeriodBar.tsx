@@ -61,7 +61,7 @@ export function PeriodBar({
                 onClick={() => onPeriod(p.id)}
                 className="h-8 px-3 font-sans text-[12.5px]"
                 style={{
-                  color: on ? "var(--adm-up)" : "var(--adm-ink-2)",
+                  color: on ? "var(--adm-accent-line)" : "var(--adm-ink-2)",
                   fontWeight: on ? 500 : 400,
                   borderLeft: i === 0 ? undefined : "1px solid var(--adm-line)",
                   background: "transparent",
@@ -96,8 +96,8 @@ export function PeriodBar({
             onClick={() => onCompare(!compare)}
             className="inline-flex h-8 items-center gap-1.5 rounded-[var(--adm-radius-sm)] border px-2.5 font-sans text-[12.5px] md:h-8"
             style={{
-              borderColor: compare ? "var(--adm-up)" : "var(--adm-line-strong)",
-              color: compare ? "var(--adm-up)" : "var(--adm-ink-2)",
+              borderColor: compare ? "var(--adm-accent-line)" : "var(--adm-line-strong)",
+              color: compare ? "var(--adm-accent-line)" : "var(--adm-ink-2)",
             }}
           >
             <svg width="14" height="8" viewBox="0 0 14 8" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" aria-hidden>

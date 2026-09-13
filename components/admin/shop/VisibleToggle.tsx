@@ -74,7 +74,7 @@ export function VisibleToggle({
         aria-hidden
         className="relative inline-block h-6 w-11 rounded-full transition-colors"
         style={{
-          background: on ? "var(--adm-up)" : "var(--adm-line-strong)",
+          background: on ? "var(--adm-accent)" : "var(--adm-line-strong)",
         }}
       >
         <span
