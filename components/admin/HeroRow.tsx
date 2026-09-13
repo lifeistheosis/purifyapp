@@ -301,6 +301,7 @@ export function HeroRow({
           points={revenueMeasured ? win(revenue) : undefined}
           format={money}
           color="var(--adm-s5)"
+          sensitive
           loading={revenueLoading}
           emptyLabel={revenueMeasured ? undefined : "Not measured"}
           onOpen={() => onOpenTab("revenue")}

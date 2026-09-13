@@ -6,6 +6,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
+import { SENSITIVE } from "@/lib/admin/streamer";
 import { Card, DataTable, Pill, StatCard, Toolbar, ToolbarButton } from "../primitives";
 import { BarChart } from "../charts";
 import {
@@ -570,12 +571,16 @@ export function SustainabilityTab() {
             No snapshots yet. Run <span className="font-mono">/api/cron/bmc-snapshot</span> or wait for the daily job.
           </p>
         ) : (
-          <BarChart
-            rows={data.history.map((h) => ({
-              label: h.year_month.slice(2),
-              value: Math.round(h.total_cents / 100),
-            }))}
-          />
+          // Masked under streamer mode with the revenue charts: the bars are
+          // dollars received, month by month. The card title stays readable.
+          <div className={SENSITIVE}>
+            <BarChart
+              rows={data.history.map((h) => ({
+                label: h.year_month.slice(2),
+                value: Math.round(h.total_cents / 100),
+              }))}
+            />
+          </div>
         )}
       </Card>
 

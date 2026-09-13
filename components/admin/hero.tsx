@@ -26,6 +26,7 @@ import { useState, type ReactNode } from "react";
 import { smoothPath } from "./charts";
 import { Odometer } from "./Odometer";
 import { useReducedMotion } from "@/lib/ui/motion";
+import { SENSITIVE } from "@/lib/admin/streamer";
 import { Skeleton } from "./primitives";
 
 /* ────────────────────────────────────────────────────────────────────────
@@ -273,6 +274,7 @@ export function MetricCard({
   id,
   className,
   emptyLabel,
+  sensitive = false,
 }: {
   icon?: ReactNode;
   eyebrow: string;
@@ -306,6 +308,14 @@ export function MetricCard({
   className?: string;
   /** Replaces "No history yet" when the series is absent for a reason worth naming. */
   emptyLabel?: string;
+  /**
+   * Masks the change and the sparkline under streamer mode, not only the
+   * figure. Added 2026-09-13 after the owner saw the Revenue card on a stream:
+   * the value blurred, because Odometer masks anything with a currency mark,
+   * but the line underneath drew every sale in the window and its readout
+   * badge printed the amount under the cursor. A chart of money is money.
+   */
+  sensitive?: boolean;
 }) {
   const accent = color ?? "var(--adm-accent)";
 
@@ -391,7 +401,11 @@ export function MetricCard({
       )}
 
       {delta ? (
-        <p className="mt-2 flex items-center gap-1.5 font-sans text-[12px]">
+        <p
+          className={
+            "mt-2 flex items-center gap-1.5 font-sans text-[12px]" + (sensitive ? ` ${SENSITIVE}` : "")
+          }
+        >
           {/* Direction gets a colour AND an arrow. Colour alone would make
               the sign invisible to a reader who cannot separate the two
               hues, which is the same rule the status vocabulary follows. */}
@@ -413,7 +427,9 @@ export function MetricCard({
         </p>
       ) : null}
 
-      <div className="mt-3 min-h-[78px]">
+      {/* The class sits on the box, so the readout badge inside HeroSpark is
+          masked with the line. Hover lifts it, like every other mask. */}
+      <div className={"mt-3 min-h-[78px]" + (sensitive ? ` ${SENSITIVE}` : "")}>
         {loading ? (
           <Skeleton w="100%" h={78} />
         ) : points && points.length > 1 ? (
