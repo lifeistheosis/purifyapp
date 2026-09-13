@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type DragEvent } from "react";
 import Image from "next/image";
 
-import { IMAGE_ACCEPT_ATTR } from "@/lib/shop/imageNormalise";
+import { IMAGE_ACCEPT_ATTR } from "@/lib/shop/imageAccept";
 import { isSupplierImageUrl } from "@/lib/shop/imageRights";
 
 export type ProductMediaRow = {

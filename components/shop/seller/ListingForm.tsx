@@ -10,7 +10,7 @@ import {
   CLASSIFICATION_LABELS,
   INVENTORY_LABELS,
 } from "@/lib/shop/format";
-import { IMAGE_ACCEPT_ATTR } from "@/lib/shop/imageNormalise";
+import { IMAGE_ACCEPT_ATTR } from "@/lib/shop/imageAccept";
 import type { SellerProduct } from "@/lib/shop/sellerData";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 

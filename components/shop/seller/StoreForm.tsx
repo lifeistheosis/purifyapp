@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { apiFetch } from "@/lib/api/client";
-import { IMAGE_ACCEPT_ATTR } from "@/lib/shop/imageNormalise";
+import { IMAGE_ACCEPT_ATTR } from "@/lib/shop/imageAccept";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const field =

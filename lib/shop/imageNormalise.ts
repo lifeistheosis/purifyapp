@@ -26,23 +26,11 @@ export const IMAGE_MAX_EDGE = 1600;
 export const IMAGE_THUMB_EDGE = 400;
 export const IMAGE_JPEG_QUALITY = 82;
 
-/**
- * Accepted upload MIME types. HEIC and HEIF are accepted at the door and
- * decoded by sharp where the bundled libvips can; where it cannot, the
- * decode error surfaces as ImageDecodeError and the route answers 415 with
- * a plain sentence. See docs/SHOP.md.
- */
-export const IMAGE_ACCEPTED_TYPES: readonly string[] = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/avif",
-  "image/heic",
-  "image/heif",
-];
-
-/** The `accept` attribute for a file input that feeds either media route. */
-export const IMAGE_ACCEPT_ATTR = IMAGE_ACCEPTED_TYPES.join(",");
+// Defined in ./imageAccept, which imports nothing, and re-exported here so the
+// media routes and the import script keep reading them from this module.
+// Client components must import them from ./imageAccept instead: importing
+// anything from this file ships sharp to the browser. See that file's header.
+export { IMAGE_ACCEPTED_TYPES, IMAGE_ACCEPT_ATTR } from "./imageAccept";
 
 export type NormalisedImage = {
   /** The full-size JPEG, at most 1600px on its longer edge. */
