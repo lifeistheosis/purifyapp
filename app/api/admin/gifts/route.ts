@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { emailsByUserId } from "@/lib/admin/accountEmails";
+import { emailsByUserId, userIdByEmail } from "@/lib/admin/accountEmails";
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -67,14 +67,19 @@ export async function POST(req: Request) {
   const admin = createAdminClient();
   const target = parsed.email.trim().toLowerCase();
 
-  // Resolve the account by email through the profiles mirror.
-  const { data: profile } = await admin
-    .from("profiles")
-    .select("id, email")
-    .ilike("email", target)
-    .maybeSingle();
+  // Resolve the account through auth, which is where emails live.
+  //
+  // THIS USED TO READ profiles.email, and profiles has no email column. The
+  // GET handler above already carried the note about that 42703; the POST
+  // handler never got the same fix. PostgREST answered every lookup with an
+  // error, the error was not read, `data` was null, and every gift fell
+  // through to "No Purify account uses that email", including gifts to
+  // accounts that plainly existed. The comp route worked for the same address
+  // because it asks auth directly. userIdByEmail is the tested helper the
+  // stores, verification and owner-alert routes already use.
+  const userId = await userIdByEmail(target);
 
-  if (!profile) {
+  if (!userId) {
     return NextResponse.json(
       {
         error:
@@ -85,7 +90,7 @@ export async function POST(req: Request) {
   }
 
   const { error } = await admin.from("gifts").insert({
-    user_id: (profile as { id: string }).id,
+    user_id: userId,
     tier: parsed.tier,
     days: parsed.days,
     message: parsed.message?.trim() || null,
@@ -98,7 +103,7 @@ export async function POST(req: Request) {
 
   return NextResponse.json({
     ok: true,
-    email: (profile as { email: string }).email,
+    email: target,
     tier: parsed.tier,
     days: parsed.days,
   });
