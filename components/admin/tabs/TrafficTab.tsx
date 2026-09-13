@@ -4,6 +4,7 @@
 
 import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
+import { useLatestDay } from "@/lib/admin/latestDayPreference";
 import { Card, ToolbarButton, Toolbar, DataTable } from "../primitives";
 import { LineChart, SERIES_COLORS } from "../charts";
 
@@ -15,48 +16,56 @@ type Range = "7d" | "30d" | "90d" | "all";
 
 export function TrafficTab() {
   const [range, setRange] = useState<Range>("30d");
+  // Set from the Traffic hub's "Latest day" toggle, so At a glance and this
+  // panel always agree about which day the charts end on.
+  const latest = useLatestDay();
+  // One key for everything that changes the request. Range alone used to be
+  // the key; with the toggle, the same range can mean two different windows,
+  // and a stored "30d" result must not satisfy a request for 30 finished days.
+  const requestKey = `${range}:${latest}`;
   const [points, setPoints] = useState<Point[]>([]);
-  const [fetchedRange, setFetchedRange] = useState<Range | null>(null);
-  // WHICH range failed, not a boolean. A boolean needed clearing at the top of
-  // the effect, and a setState in an effect body is a cascading render (the
-  // same lint rule AdminThemeToggle was rewritten for). Keyed by range it
-  // clears itself: switching to 7d makes a stored "30d" stop matching.
-  const [failedRange, setFailedRange] = useState<Range | null>(null);
+  const [fetchedKey, setFetchedKey] = useState<string | null>(null);
+  // WHICH request failed, not a boolean. A boolean needed clearing at the top
+  // of the effect, and a setState in an effect body is a cascading render (the
+  // same lint rule AdminThemeToggle was rewritten for). Keyed by request it
+  // clears itself: switching to 7d makes a stored "30d:now" stop matching.
+  const [failedKey, setFailedKey] = useState<string | null>(null);
   const [show, setShow] = useState({ visitors: true, views: true, signups: true });
-  // Loading is derived state: we're loading whenever the active range hasn't
+  // Loading is derived state: we're loading whenever the active request hasn't
   // been fetched yet. This avoids a synchronous setState() inside the effect.
-  const loading = fetchedRange !== range;
-  const failed = failedRange === range;
+  const loading = fetchedKey !== requestKey;
+  const failed = failedKey === requestKey;
 
   useEffect(() => {
     let alive = true;
-    adminJson<{ points?: Point[] }>(`/api/admin/traffic?range=${range}`)
+    const key = `${range}:${latest}`;
+    adminJson<{ points?: Point[] }>(`/api/admin/traffic?range=${range}&latest=${latest}`)
       .then((j) => {
         if (!alive) return;
-        // fetchedRange used to advance on failure with `points` untouched,
+        // fetchedKey used to advance on failure with `points` untouched,
         // which cleared `loading` and drew a LineChart over an empty array: a
         // flat line along zero, indistinguishable from ninety days of nobody
         // visiting. The traffic route is one of the few that returns a real
         // 500, so the signal existed and was being thrown away here.
         if (!j) {
-          setFailedRange(range);
+          setFailedKey(key);
           setPoints([]);
-          setFetchedRange(range);
+          setFetchedKey(key);
           return;
         }
         setPoints(j.points ?? []);
-        setFetchedRange(range);
+        setFetchedKey(key);
       })
       .catch(() => {
         if (!alive) return;
-        setFailedRange(range);
+        setFailedKey(key);
         setPoints([]);
-        setFetchedRange(range);
+        setFetchedKey(key);
       });
     return () => {
       alive = false;
     };
-  }, [range]);
+  }, [range, latest]);
 
   const series = [
     { key: "visitors" as const, name: "Visitors", color: SERIES_COLORS[0] },
@@ -70,6 +79,11 @@ export function TrafficTab() {
     <div className="space-y-6">
       <Card
         title={`Traffic · ${range === "all" ? "all time" : range}`}
+        subtitle={
+          latest === "complete"
+            ? "Through last night. Every day shown is finished; days close at midnight UTC."
+            : "Up to now. The last day is still running, so it sits low until it closes."
+        }
         action={
           <Toolbar>
             <ToolbarButton

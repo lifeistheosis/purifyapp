@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
-import { daysSince, windowStart } from "@/lib/admin/dayWindow";
+import { dayKey, daysSince, parseLatestDay, windowEnd, windowStart } from "@/lib/admin/dayWindow";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -8,7 +8,10 @@ export const dynamic = "force-dynamic";
 
 // Daily counts of visitors, pageviews, and signups over a window. Used by
 // the Traffic tab's line chart and the Overview hero sparklines.
-// Range: 7d | 30d | 90d (default 30d).
+// Range: 7d | 30d | 90d | all (default 30d).
+// Latest: now | complete (default now). "now" ends on today, still running;
+// "complete" ends on yesterday, so every bucket is a finished day. See
+// windowEnd in lib/admin/dayWindow.ts.
 //
 // v9.7: now uses the `analytics_daily_buckets` SQL function for
 // aggregation. The previous implementation fetched up to ~250k rows
@@ -21,6 +24,12 @@ export async function GET(req: NextRequest) {
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const range = req.nextUrl.searchParams.get("range") ?? "30d";
+  const latest = parseLatestDay(req.nextUrl.searchParams.get("latest"));
+  // Every window below is measured back from this instant. For "complete" it
+  // is the last millisecond of yesterday, which is the whole of the change:
+  // the RPC's result is driven by its generated day series (a left join from
+  // `days`), so a series that ends yesterday drops today's rows on its own.
+  const end = windowEnd(latest);
   const supa = createAdminClient();
 
   // "all" has no fixed length: it is measured from the oldest row that
@@ -36,7 +45,7 @@ export async function GET(req: NextRequest) {
       .order("first_seen", { ascending: true })
       .limit(1)
       .maybeSingle();
-    days = daysSince(oldest?.first_seen as string | undefined);
+    days = daysSince(oldest?.first_seen as string | undefined, end);
   } else {
     days = range === "7d" ? 7 : range === "90d" ? 90 : 30;
   }
@@ -52,7 +61,8 @@ export async function GET(req: NextRequest) {
   //
   // Passing the start one day later gives the same number of buckets ending on
   // today. The function is untouched, so this needed no migration.
-  const sinceIso = windowStart(days);
+  const sinceIso = windowStart(days, end);
+  const through = dayKey(end);
 
   const { data, error } = await supa.rpc("analytics_daily_buckets", {
     p_since: sinceIso,
@@ -68,6 +78,8 @@ export async function GET(req: NextRequest) {
       {
         range,
         days,
+        latest,
+        through,
         points: [],
         error: error.message ?? "aggregation failed",
         generatedAt: new Date().toISOString(),
@@ -89,7 +101,7 @@ export async function GET(req: NextRequest) {
   }));
 
   return NextResponse.json(
-    { range, days, points, generatedAt: new Date().toISOString() },
+    { range, days, latest, through, points, generatedAt: new Date().toISOString() },
     { headers: { "Cache-Control": "no-store" } },
   );
 }
