@@ -42,7 +42,6 @@ import { VerificationTab } from "./tabs/VerificationTab";
 import { OrdersTab } from "./tabs/OrdersTab";
 import { RevenueTab } from "./tabs/RevenueTab";
 import { SustainabilityTab } from "./tabs/SustainabilityTab";
-import { GrowthTab } from "./tabs/GrowthTab";
 import { GoalsTab } from "./tabs/GoalsTab";
 import { CalendarTab } from "./tabs/CalendarTab";
 import { InsightsProvider } from "@/lib/admin/insights/store";
@@ -101,7 +100,6 @@ type OpsTabId =
   | "community"
   | "verification"
   | "traffic"
-  | "growth"
   | "goals"
   | "calendar"
   | "content"
@@ -118,9 +116,7 @@ type Tab = {
   id: TabId;
   label: string;
   eyebrow: string;
-  // Optional prop, so a tab that wants to send the operator elsewhere can,
-  // and the twenty that do not are unaffected and need no signature change.
-  component?: ComponentType<{ onOpenGoals?: () => void }>;
+  component?: ComponentType;
 };
 
 type Group = { group: string; mode: Mode; tabs: Tab[] };
@@ -151,8 +147,12 @@ const GROUPS: Group[] = [
     mode: "ops",
     tabs: [
       { id: "traffic", label: "Traffic", eyebrow: "Site analytics", component: TrafficHubTab },
-      { id: "growth", label: "Growth", eyebrow: "Imported store reports", component: GrowthTab },
-      { id: "goals", label: "Goals", eyebrow: "Targets and grades", component: GoalsTab },
+      // The Growth tab ("Imported store reports") was removed on 2026-09-13.
+      // Everything on it was drawn from a Play Console CSV whose import had
+      // already been retired on 2026-09-01, so it only ever showed a report
+      // that stopped on 2026-08-28. #tab=growth still lands, on Traffic: see
+      // RETIRED_TABS below.
+      { id: "goals", label: "Goals", eyebrow: "Live hourly targets", component: GoalsTab },
       { id: "calendar", label: "Calendar", eyebrow: "Days, weeks, and what they were worth", component: CalendarTab },
     ],
   },
@@ -217,6 +217,20 @@ const TABS: Tab[] = GROUPS.flatMap((g) => g.tabs);
 
 function isTabId(s: string | null): s is TabId {
   return Boolean(s && TABS.some((t) => t.id === s));
+}
+
+// Tabs that no longer exist, and where their bookmarks should land instead.
+// Without this a #tab= link to a removed tab silently opens Summary, which
+// reads as the panel ignoring the link.
+const RETIRED_TABS: Record<string, TabId> = {
+  growth: "traffic",
+};
+
+/** A tab id from a URL, following a retired id to its replacement. */
+function resolveHashTab(s: string | null): TabId | null {
+  if (isTabId(s)) return s;
+  const moved = s ? RETIRED_TABS[s] : undefined;
+  return moved ?? null;
 }
 
 // One check that the two lists agree. GROUPS is the rail's copy and
@@ -474,8 +488,8 @@ export function AdminShell({
   useEffect(() => {
     function readHash() {
       const h = window.location.hash.replace(/^#/, "");
-      const m = new URLSearchParams(h).get("tab");
-      if (isTabId(m)) setActive(m);
+      const m = resolveHashTab(new URLSearchParams(h).get("tab"));
+      if (m) setActive(m);
     }
     readHash();
     bootstrapped.current = true;
@@ -864,10 +878,7 @@ export function AdminShell({
           <div key={active} className="adm-panel-enter">
             <TabBoundary label={current.label} onRetry={() => setReloadKey((n) => n + 1)}>
               {Current ? (
-                // onOpenGoals is read by GrowthTab and ignored by every other
-                // tab, which is why the type is optional on both sides rather
-                // than a new required prop on twenty-one components.
-                <Current key={reloadKey} onOpenGoals={() => select("goals")} />
+                <Current key={reloadKey} />
               ) : (
                 <OwnerSection
                   key={reloadKey}

@@ -101,7 +101,10 @@ export const STARTED_EVENT = "purify:admin:gettingStarted";
  * names the tab where the thing gets done.
  */
 export const STARTED_ITEMS: readonly { id: string; label: string; tab: string }[] = [
-  { id: "goals", label: "Set this month's goals", tab: "goals" },
+  // Label changed 2026-09-13: the monthly goals were CSV-graded and came off
+  // the Goals tab with the Growth tab. The id stays "goals" so a checklist
+  // item someone already ticked stays ticked.
+  { id: "goals", label: "Set your hourly goals", tab: "goals" },
   { id: "push", label: "Send a push notification", tab: "push" },
   { id: "patch-notes", label: "Publish a patch note", tab: "patch-notes" },
   { id: "shop", label: "Check the shop catalogue", tab: "shop" },
