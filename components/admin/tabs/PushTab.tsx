@@ -110,15 +110,24 @@ export function PushTab() {
       if (!res.ok) {
         setNote(j.error ?? "Send failed.");
       } else {
+        // The server's warning names the platform, the device count and the
+        // exact variables missing (lib/push/deliveryGaps.ts). This used to be
+        // one fixed sentence that said secrets were missing without saying
+        // which, so it could not be acted on.
+        const warning = typeof j.warning === "string" ? j.warning : "";
         setNote(
           j.status === "sent"
-            ? `Sent to ${j.recipients} recipient(s).`
+            ? `Sent to ${j.recipients} recipient(s).${warning ? ` ${warning}` : ""}`
             : j.status === "enqueued"
-              ? `Nothing was delivered: no push secrets are set, so every transport dry-ran. ${j.recipients} device(s) would have received it.`
+              ? warning || `Nothing was delivered. ${j.recipients} device(s) would have received it.`
               : `Attempted ${j.recipients}; all deliveries failed.`,
         );
-        setTitle("");
-        setBody("");
+        // Keep the draft when nothing left the server. Clearing it made the
+        // operator retype the announcement after fixing the keys.
+        if (j.status !== "enqueued") {
+          setTitle("");
+          setBody("");
+        }
         setReloadKey((k) => k + 1);
       }
     } catch {

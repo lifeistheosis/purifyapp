@@ -487,7 +487,29 @@ findings:
       REVENUECAT_REST_API_KEY, contrary to AUDIT-2026-07-27.md:152, IS set. LESSON
       FOR THE NEXT READER, and it cost two wrong corrections in one day:
       .env.local and the audit files say nothing about production. Read the Render
-      dashboard.
+      dashboard. 2026-09-13, owner report: an admin announcement to
+      266 devices returned "Nothing was delivered: no push secrets are set, so
+      every transport dry-ran." THAT SENTENCE WAS NOT EVIDENCE OF MISSING SECRETS.
+      components/admin/tabs/PushTab.tsx printed it for every `enqueued` status,
+      and broadcastStatus returns `enqueued` whenever nothing was sent or failed,
+      which includes FCM configured with every targeted token on iOS (APNs unset,
+      so each is skipped rather than sent). A second silent case sat beside it:
+      Firebase set and Apple unset logs `sent` while every iPhone is skipped, with
+      no warning at all. So the report has two readings the old message could not
+      separate. If the audience held any Android tokens, `enqueued` means FCM is
+      no longer usable on Render (unset since 2026-08-22, or set but unreadable),
+      because a working FCM would have produced `sent` or `failed`. If it held
+      only iPhones, FCM may still be fine. Probe before assuming either. Fixed in
+      code: lib/push/deliveryGaps.ts, used by
+      app/api/admin/push/send/route.ts, reports per transport the device count and
+      the variable NAMES still unset, or that a set value could not be read, and
+      warns on the partial case too; PushTab now shows that sentence and keeps the
+      draft when nothing left. Unit tested in lib/push/__tests__/deliveryGaps.test.ts.
+      Ships to main on branch hotfix/admin-2026-09-13, and is also on release/v1.4.
+      Residual, owner only: send one broadcast after the hotfix deploys and read
+      which transport it names. Setting APNS_KEY_P8 / APNS_KEY_ID / APNS_TEAM_ID /
+      APNS_BUNDLE_ID reaches iPhones; the VAPID set reaches web. Secrets are a stop
+      condition, so none were touched.
     safe_to_automate: no
     review: none
 
