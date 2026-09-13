@@ -5,7 +5,7 @@
 import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, DataTable, Pill, Toolbar, ToolbarButton, Email } from "../primitives";
-import { LineChart, Donut, SERIES_COLORS } from "../charts";
+import { LineChart, SegmentList, SERIES_COLORS } from "../charts";
 import { Odometer } from "../Odometer";
 
 type Provider = "google" | "apple" | "email" | "other";
@@ -106,14 +106,14 @@ export function UsersTab() {
           </p>
         </Card>
         <Card title="Sign-in methods" subtitle="Across all users.">
-          <Donut
+          <SegmentList
             segments={[
               { name: "Email", value: data.providers.email, color: SERIES_COLORS[0] },
               { name: "Google", value: data.providers.google, color: SERIES_COLORS[1] },
               { name: "Apple", value: data.providers.apple, color: SERIES_COLORS[2] },
               { name: "Other", value: data.providers.other, color: SERIES_COLORS[4] },
             ]}
-            size={120}
+           
           />
         </Card>
         <Card title="Signups · last 30 days">

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { apiFetch } from "@/lib/api/client";
+import { IMAGE_ACCEPT_ATTR } from "@/lib/shop/imageAccept";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const field =
@@ -324,7 +325,7 @@ function ImageField({
       <input
         ref={input}
         type="file"
-        accept="image/jpeg,image/png,image/webp,image/avif"
+        accept={IMAGE_ACCEPT_ATTR}
         aria-label={label}
         disabled={busy}
         onChange={(e) => {

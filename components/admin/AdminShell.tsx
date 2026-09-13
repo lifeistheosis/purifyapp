@@ -42,7 +42,6 @@ import { VerificationTab } from "./tabs/VerificationTab";
 import { OrdersTab } from "./tabs/OrdersTab";
 import { RevenueTab } from "./tabs/RevenueTab";
 import { SustainabilityTab } from "./tabs/SustainabilityTab";
-import { GrowthTab } from "./tabs/GrowthTab";
 import { GoalsTab } from "./tabs/GoalsTab";
 import { CalendarTab } from "./tabs/CalendarTab";
 import { InsightsProvider } from "@/lib/admin/insights/store";
@@ -56,26 +55,25 @@ import { CommunityTab } from "./tabs/CommunityTab";
 import { TrafficHubTab } from "./tabs/TrafficHubTab";
 import { ContentTab } from "./tabs/ContentTab";
 import { PatchNotesTab } from "./tabs/PatchNotesTab";
+import { CatechismTab } from "./tabs/CatechismTab";
 import { ContentHealthTab } from "./tabs/ContentHealthTab";
 import { HealthTab } from "./tabs/HealthTab";
 import { AuditLogTab } from "./tabs/AuditLogTab";
 import { SourcingTab } from "./tabs/SourcingTab";
-import { AdminThemeToggle } from "./AdminThemeToggle";
-import { AdminSoundToggle } from "./AdminSoundToggle";
 import { AdminMotionToggle } from "./AdminMotionToggle";
 import { AdminStreamerToggle } from "./AdminStreamerToggle";
 import { ActivityFeed } from "./ActivityFeed";
 import { SENSITIVE, useStreamerOn } from "@/lib/admin/streamer";
-import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
+import { Rail } from "./ledger/Rail";
 import { AdminMobileNav } from "./AdminMobileNav";
 import { installLarpWriteGuard, larpOn, setLarp, useLarpOn } from "@/lib/admin/larp";
 import { TabBoundary } from "./TabBoundary";
 import { OwnerSection } from "./OwnerSection";
-import { HeroRow } from "./HeroRow";
+import { Summary } from "./Summary";
 import { AttentionStrip } from "./AttentionStrip";
 import { useAttention } from "@/lib/admin/useAttention";
 import { attentionTabs, badgeFor } from "@/lib/admin/attention";
-import { SectionHead, type PeriodId } from "./hero";
+import { SectionHead } from "./hero";
 import { Freshness } from "./Freshness";
 import { TabSearch } from "./TabSearch";
 import { useLiveData } from "@/lib/admin/useLiveData";
@@ -102,11 +100,11 @@ type OpsTabId =
   | "community"
   | "verification"
   | "traffic"
-  | "growth"
   | "goals"
   | "calendar"
   | "content"
   | "patch-notes"
+  | "catechism"
   | "content-health"
   | "health"
   | "sourcing"
@@ -118,99 +116,87 @@ type Tab = {
   id: TabId;
   label: string;
   eyebrow: string;
-  // Optional prop, so a tab that wants to send the operator elsewhere can,
-  // and the twenty that do not are unaffected and need no signature change.
-  component?: ComponentType<{ onOpenGoals?: () => void }>;
+  component?: ComponentType;
 };
 
 type Group = { group: string; mode: Mode; tabs: Tab[] };
 
-// Grouped by the job, not by the team that built it. An operator opening
-// the panel is either chasing money, chasing people, minding the catalog,
-// or reaching out.
-//
-// The rail budget note further down says four groups fit and a fifth spills a
-// few pixels into the nav scroller, which scrolls, so a fifth is affordable.
-// Owner did NOT spend that slot: it is a separate mode, so its group is never
-// on screen at the same time as the ops groups. System spent it.
+// The six groups of the Ledger spec: Overview, Growth, Revenue, Content,
+// Community, System. Every tab keeps its id and its #tab= URL; only the
+// group it sits under changed, so every bookmark still lands. Tabs the spec
+// names that do not exist in the tree (Funnels, Retention, Parish codes,
+// Catechism stats) are not added: an empty tab is a promise the panel
+// cannot keep.
 //
 // SYSTEM EXISTS BECAUSE THREE BUILT TABS WERE REACHABLE BY NOTHING. ContentTab,
 // ContentHealthTab and HealthTab were dropped from this array in c0d7994a, a
 // commit named "commerce hub restructure Phase A"; Phase B never landed. All
-// three kept being maintained after that (the radius pass touched two of them
-// on 2026-08-21) and all three had live APIs answering with no caller, so
-// /api/admin/content had no reachable consumer at all. Re-registered rather
-// than deleted: they are the only read of the data/ tree and the only UI for
-// the dependency probes, and both are things you want when something is wrong.
-//
-// A SIXTH group wants collapsible sections, not tighter padding. See the rail
-// budget comment further down before adding one.
+// three kept being maintained after that and all three had live APIs
+// answering with no caller. Re-registered rather than deleted, and Library
+// files now sits under Content where it belongs.
 const GROUPS: Group[] = [
   {
-    group: "Money",
+    group: "Overview",
     mode: "ops",
     tabs: [
-      { id: "overview", label: "Overview", eyebrow: "Money at a glance", component: CommerceOverviewTab },
-      { id: "orders", label: "Orders", eyebrow: "Every order", component: OrdersTab },
+      { id: "overview", label: "Summary", eyebrow: "The pinned numbers, one chart, what is waiting", component: CommerceOverviewTab },
+    ],
+  },
+  {
+    group: "Growth",
+    mode: "ops",
+    tabs: [
+      { id: "traffic", label: "Traffic", eyebrow: "Site analytics", component: TrafficHubTab },
+      // The Growth tab ("Imported store reports") was removed on 2026-09-13.
+      // Everything on it was drawn from a Play Console CSV whose import had
+      // already been retired on 2026-09-01, so it only ever showed a report
+      // that stopped on 2026-08-28. #tab=growth still lands, on Traffic: see
+      // RETIRED_TABS below.
+      { id: "goals", label: "Goals", eyebrow: "Live hourly targets", component: GoalsTab },
+      { id: "calendar", label: "Calendar", eyebrow: "Days, weeks, and what they were worth", component: CalendarTab },
+    ],
+  },
+  {
+    group: "Revenue",
+    mode: "ops",
+    tabs: [
       { id: "revenue", label: "Revenue", eyebrow: "Shop, donations, subs", component: RevenueTab },
-      { id: "costs", label: "Costs", eyebrow: "What we spend, and what /support publishes", component: SustainabilityTab },
+      { id: "orders", label: "Orders", eyebrow: "Every order", component: OrdersTab },
       { id: "subscriptions", label: "Subscriptions", eyebrow: "Plus and Pro", component: SubscriptionsTab },
+      { id: "costs", label: "Costs", eyebrow: "What we spend, and what /support publishes", component: SustainabilityTab },
     ],
   },
   {
-    group: "People",
+    group: "Content",
     mode: "ops",
     tabs: [
-      { id: "users", label: "Users", eyebrow: "Profiles and carts", component: UsersHubTab },
-      { id: "verification", label: "Verification", eyebrow: "Who asked for the blue check", component: VerificationTab },
-      { id: "messages", label: "Messages", eyebrow: "Support and shop", component: MessagesTab },
-      { id: "community", label: "Community", eyebrow: "Campaigns and Trapeza moderation", component: CommunityTab },
-    ],
-  },
-  {
-    group: "Catalog",
-    mode: "ops",
-    tabs: [
+      { id: "content", label: "Content", eyebrow: "What readers open, and what they bump", component: ContentTab },
+      { id: "patch-notes", label: "Patch notes", eyebrow: "What /whats-new publishes, and what Claude proposes", component: PatchNotesTab },
+      { id: "catechism", label: "Catechism", eyebrow: "Today's five, and how each question lands", component: CatechismTab },
+      { id: "content-health", label: "Library files", eyebrow: "What the data tree actually holds", component: ContentHealthTab },
       { id: "shop", label: "Shop", eyebrow: "EIKON and marketplace", component: ShopHubTab },
       { id: "eikon-box", label: "EIKON Box", eyebrow: "Monthly drops and claims", component: EikonBoxTab },
-      // Catalog, not Money: this is about what a product COSTS us and whether
-      // the price still works, which is a catalogue decision. Revenue reports
-      // what already happened.
       { id: "sourcing", label: "Sourcing", eyebrow: "Cost checks and price grades", component: SourcingTab },
     ],
   },
   {
-    group: "Reach",
+    group: "Community",
     mode: "ops",
     tabs: [
+      { id: "community", label: "Community", eyebrow: "Campaigns and Trapeza moderation", component: CommunityTab },
+      { id: "verification", label: "Verification", eyebrow: "Who asked for the blue check", component: VerificationTab },
+      { id: "messages", label: "Messages", eyebrow: "Support and shop", component: MessagesTab },
+      { id: "users", label: "Users", eyebrow: "Profiles and carts", component: UsersHubTab },
       { id: "push", label: "Push", eyebrow: "Broadcast notifications", component: PushTab },
-      { id: "traffic", label: "Traffic", eyebrow: "Site analytics", component: TrafficHubTab },
-      // Reach rather than a fifth group: the note above records that four
-      // groups fit the rail and a fifth spills, and store acquisition is
-      // reach. Goals sits beside Growth because the report imported there is
-      // the only thing the goals are measured against.
-      { id: "growth", label: "Growth", eyebrow: "Imported store reports", component: GrowthTab },
-      { id: "goals", label: "Goals", eyebrow: "Targets and grades", component: GoalsTab },
-      { id: "calendar", label: "Calendar", eyebrow: "Days, weeks, and what they were worth", component: CalendarTab },
-      // Reach, not System: this is what readers actually opened, which is the
-      // same question Traffic asks with a different noun.
-      { id: "content", label: "Content", eyebrow: "What readers open, and what they bump", component: ContentTab },
-      // Reach, because /whats-new is the one page that speaks to every reader
-      // at once. Edits land without a deploy; the queue holds the agent's
-      // proposed edits until the owner accepts them.
-      { id: "patch-notes", label: "Patch notes", eyebrow: "What /whats-new publishes, and what Claude proposes", component: PatchNotesTab },
     ],
   },
   {
     group: "System",
     mode: "ops",
     tabs: [
-      { id: "content-health", label: "Library files", eyebrow: "What the data tree actually holds", component: ContentHealthTab },
       { id: "health", label: "Services", eyebrow: "Outbound dependency probes", component: HealthTab },
       // The audit log finally has a reader. lib/admin/activityLog.ts has been
-      // recording privileged writes since 20260823 and nothing displayed them,
-      // so comps, refunds and entitlement changes were attributable in
-      // principle and unreadable in practice.
+      // recording privileged writes since 20260823 and nothing displayed them.
       { id: "audit", label: "Audit log", eyebrow: "Who did what, and when", component: AuditLogTab },
     ],
   },
@@ -233,6 +219,20 @@ function isTabId(s: string | null): s is TabId {
   return Boolean(s && TABS.some((t) => t.id === s));
 }
 
+// Tabs that no longer exist, and where their bookmarks should land instead.
+// Without this a #tab= link to a removed tab silently opens Summary, which
+// reads as the panel ignoring the link.
+const RETIRED_TABS: Record<string, TabId> = {
+  growth: "traffic",
+};
+
+/** A tab id from a URL, following a retired id to its replacement. */
+function resolveHashTab(s: string | null): TabId | null {
+  if (isTabId(s)) return s;
+  const moved = s ? RETIRED_TABS[s] : undefined;
+  return moved ?? null;
+}
+
 // One check that the two lists agree. GROUPS is the rail's copy and
 // lib/admin/tabs.ts is the permission layer's; if a fourth owner tab is added
 // to one and not the other, the mismatch surfaces here at import time rather
@@ -242,71 +242,6 @@ if (
   GROUPS.filter((g) => g.mode === "owner").flatMap((g) => g.tabs).some((t) => !isOwnerTab(t.id))
 ) {
   throw new Error("An owner-mode tab is missing from OWNER_TAB_IDS in lib/admin/tabs.ts");
-}
-
-// Module scope, deliberately. This used to be declared inside AdminShell's
-// body, which made it a NEW component type on every render: React unmounted
-// and remounted all eleven buttons whenever pendingOrders resolved or navOpen
-// flipped, and a keyboard operator lost focus mid-tab-walk when the badge
-// fetch landed.
-function NavItem({
-  t,
-  on,
-  badge,
-  onSelect,
-}: {
-  t: Tab;
-  on: boolean;
-  /**
-   * A count of people waiting behind this tab, or null. From badgeFor in
-   * lib/admin/attention.ts, which returns null for zero AND for a source
-   * that did not answer: a badge is a claim that somebody is waiting, and a
-   * failed read cannot make it.
-   */
-  badge: { count: number; title: string } | null;
-  onSelect: (id: TabId) => void;
-}) {
-  return (
-    <li>
-      <button
-        type="button"
-        onClick={() => onSelect(t.id)}
-        aria-current={on ? "page" : undefined}
-        title={t.eyebrow}
-        className="adm-rail-item flex w-full items-center gap-2 rounded-[var(--adm-radius-sm)] px-2 py-[5px] text-left font-sans text-[13px]"
-        style={
-          on
-            ? {
-                // The surface carries the state. The old treatment was a 12%
-                // accent wash behind accented text: a tinted fill fighting a
-                // tinted label, which is why it read as muddy. Now the label
-                // is full-contrast ink (14.05:1 in both themes).
-                background: "var(--adm-nav-active-bg)",
-                color: "var(--adm-nav-active-fg)",
-                fontWeight: 600,
-              }
-            : { color: "var(--adm-ink-2)" }
-        }
-      >
-        <span
-          className="grid shrink-0 place-items-center"
-          style={{ color: on ? "var(--adm-nav-bar)" : "var(--adm-ink-3)" }}
-        >
-          {ADMIN_TAB_ICONS[t.id] ?? ADMIN_TAB_ICON_FALLBACK}
-        </span>
-        <span className="min-w-0 flex-1 truncate">{t.label}</span>
-        {badge ? (
-          <span
-            className="shrink-0 rounded-[var(--adm-radius-pill)] px-1.5 py-px font-sans text-[11px] font-semibold"
-            style={{ background: "var(--adm-badge-bg)", color: "var(--adm-badge-fg)" }}
-            title={badge.title}
-          >
-            {badge.count}
-          </span>
-        ) : null}
-      </button>
-    </li>
-  );
 }
 
 /**
@@ -350,9 +285,7 @@ function ModeSwitch({
                 ? {
                     background: "var(--adm-panel)",
                     color: "var(--adm-ink)",
-                    fontWeight: 600,
-                    boxShadow: "var(--adm-shadow-card)",
-                  }
+                    fontWeight: 600,                  }
                 : { background: "transparent", color: "var(--adm-ink-3)" }
             }
           >
@@ -454,48 +387,12 @@ function RailLive({
   );
 }
 
-// A neutral mark, not an accented one. The rail is allowed exactly two spots
-// of colour, the active row and the orders badge, and a branded tile would be
-// a third competing for the same eye.
-function Wordmark({ isOwner }: { isOwner: boolean }) {
-  return (
-    <div className="mb-3 flex items-center gap-2 px-1">
-      <span
-        className="grid h-6 w-6 shrink-0 place-items-center rounded-[var(--adm-radius-sm)]"
-        style={{ background: "var(--adm-panel-2)", color: "var(--adm-ink-2)" }}
-        aria-hidden
-      >
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round">
-          <path d="M8 2.2v11.6M5.9 4.4h4.2M4.2 7.1h7.6M6.1 10.6l3.8-1.1" />
-        </svg>
-      </span>
-      <span className="min-w-0 flex-1 truncate font-sans text-[13px] font-semibold" style={{ color: "var(--adm-ink)" }}>
-        Purify
-      </span>
-      {/* The role, not a plan tier. It says which of the two gates this
-          session cleared, which is the one fact about the account that
-          changes what is on screen. */}
-      <span
-        className="shrink-0 rounded-[var(--adm-radius-pill)] px-1.5 py-px font-sans text-[10px] font-semibold uppercase tracking-wide"
-        style={{
-          background: isOwner ? "var(--adm-badge-bg)" : "var(--adm-panel-2)",
-          color: isOwner ? "var(--adm-badge-fg)" : "var(--adm-ink-3)",
-        }}
-      >
-        {isOwner ? "Owner" : "Admin"}
-      </span>
-    </div>
-  );
-}
-
 type OverviewPayload = {
   /** null when the count could not be taken. Rendered as a dash, never as 0. */
   ordersPending: number | null;
   /** null when shop_orders could not be read. */
   revenueTodayCents: number | null;
   revenueSeries: number[];
-  /** Which ledger the revenue fields came from. Absent on older payloads. */
-  revenueSource?: "stripe" | "shop";
   /** True when the money fields above are unmeasured rather than zero. */
   ordersDegraded: boolean;
   paidPlus: number;
@@ -515,9 +412,8 @@ export function AdminShell({
   // for; `active` is what this account may actually see. Deriving the second
   // from the first during render is what keeps a non-owner off an owner tab
   // without an effect that calls setState, which React flags as a cascading
-  // render and which AdminThemeToggle and useTween both learned the hard way.
+  // render and which the old theme toggle and useTween both learned the hard way.
   const [requested, setActive] = useState<TabId>("overview");
-  const [navOpen, setNavOpen] = useState(false);
   // Only for the rail's title attribute, which CSS cannot blur. Everything
   // else that hides on stream does it with .adm-sensitive.
   const streaming = useStreamerOn();
@@ -552,34 +448,6 @@ export function AdminShell({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
-  const navTriggerRef = useRef<HTMLButtonElement | null>(null);
-
-  // THE MOBILE DRAWER'S KEYBOARD CONTRACT, which it did not have.
-  //
-  // No Escape: the only way to dismiss it was to point at the scrim, which is
-  // a control with no visible bounds. And closing it dropped focus entirely,
-  // because every path that closes it (the scrim, Escape, and select() on a
-  // nav item) unmounts the element that was focused, which leaves focus on
-  // <body> and sends the next Tab back to the top of the document.
-  //
-  // The cleanup runs on every close, not only on Escape, which is why the
-  // focus return lives there rather than in the key handler.
-  useEffect(() => {
-    if (!navOpen) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setNavOpen(false);
-    }
-    // Copied out of the ref now, because by cleanup time the ref may point
-    // somewhere else. The trigger is the same node either way, but the rule
-    // that flags this is right in general and the copy costs nothing.
-    const trigger = navTriggerRef.current;
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      trigger?.focus();
-    };
-  }, [navOpen]);
-  const [period, setPeriod] = useState<PeriodId>("30d");
   // Bumped by the tab boundary's Try again, so a recovered panel re-mounts and
   // re-fetches instead of needing a page reload.
   const [reloadKey, setReloadKey] = useState(0);
@@ -620,8 +488,8 @@ export function AdminShell({
   useEffect(() => {
     function readHash() {
       const h = window.location.hash.replace(/^#/, "");
-      const m = new URLSearchParams(h).get("tab");
-      if (isTabId(m)) setActive(m);
+      const m = resolveHashTab(new URLSearchParams(h).get("tab"));
+      if (m) setActive(m);
     }
     readHash();
     bootstrapped.current = true;
@@ -639,7 +507,6 @@ export function AdminShell({
 
   const select = useCallback((id: TabId) => {
     setActive(id);
-    setNavOpen(false);
   }, []);
 
   const switchMode = useCallback(
@@ -661,51 +528,29 @@ export function AdminShell({
     [mode, isOwner],
   );
 
-  const nav = (
-    <nav aria-label="Admin sections">
-      {visibleGroups.map((g, i) => (
-        // A real hairline between groups, not whitespace. Group boundaries
-        // used to exist only as vertical gaps, which is the density problem
-        // this rail was built to fix, one layer down.
-        <div
-          key={g.group}
-          className={i === 0 ? "" : "mt-2 border-t pt-2"}
-          style={i === 0 ? undefined : { borderColor: "var(--adm-line)" }}
-        >
-          {/* Sentence case. primitives.tsx bans tracked uppercase labels
-              ("when everything is a heading, the eye has nothing to skip
-              to"), and the rail should not contradict the panel below it. */}
-          <p className="mb-1 px-2 font-sans text-[11.5px] font-medium" style={{ color: "var(--adm-ink-3)" }}>
-            {g.group}
-          </p>
-          <ul className="space-y-px">
-            {g.tabs.map((t) => (
-              <NavItem
-                key={t.id}
-                t={t}
-                on={t.id === active}
-                badge={badgeFor(attention.summary, t.id)}
-                onSelect={select}
-              />
-            ))}
-          </ul>
-        </div>
-      ))}
+  const railGroups = visibleGroups.map((g) => ({
+    group: g.group,
+    tabs: g.tabs.map((t) => ({
+      id: t.id,
+      label: t.label,
+      eyebrow: t.eyebrow,
+      badge: badgeFor(attention.summary, t.id),
+    })),
+  }));
 
-      {mode === "ops" ? (
-        <RailLive
-          pending={pendingOrders}
-          revenueTodayCents={overview.data?.revenueTodayCents ?? null}
-          paidSubs={
-            overview.data ? overview.data.paidPlus + overview.data.paidPro : null
-          }
-          loading={overview.loading}
-          lit={litTabs}
-          onOpen={select}
-        />
-      ) : null}
-    </nav>
-  );
+  const railLive =
+    mode === "ops" ? (
+      <RailLive
+        pending={pendingOrders}
+        revenueTodayCents={overview.data?.revenueTodayCents ?? null}
+        paidSubs={
+          overview.data ? overview.data.paidPlus + overview.data.paidPro : null
+        }
+        loading={overview.loading}
+        lit={litTabs}
+        onOpen={select}
+      />
+    ) : null;
 
   // Identity, freshness, theme, and the way out.
   //
@@ -757,11 +602,10 @@ export function AdminShell({
           full-width row, which is also where it belongs, since sitting it flush
           against three harmless toggles is how it gets hit by accident. */}
       <div className="flex flex-col gap-1">
-        {/* Four now, so a 2x2 grid rather than a row: four across a 200px rail
-            is what collided in the first place. */}
+        {/* Two now. Theme and Sound went with the dark palette and the
+            register; Reduced motion stays as the override, Streamer as the
+            operator tool it is. */}
         <div className="grid grid-cols-2 gap-1">
-          <AdminThemeToggle />
-          <AdminSoundToggle />
           <AdminMotionToggle />
           <AdminStreamerToggle />
         </div>
@@ -784,13 +628,6 @@ export function AdminShell({
         </a>
       </div>
     </div>
-  );
-
-  const railBody = (
-    <>
-      <Wordmark isOwner={isOwner} />
-      {isOwner ? <ModeSwitch mode={mode} onChange={switchMode} /> : null}
-    </>
   );
 
   const Current = current.component;
@@ -829,19 +666,25 @@ export function AdminShell({
           no inset to subtract. Only the NAV region scrolls, which is what keeps
           the identity block pinned however many groups land. */}
       <aside
-        className="fixed inset-y-0 left-0 z-30 hidden h-dvh w-[var(--adm-rail-w)] flex-col border-r p-3 lg:flex"
+        className="fixed inset-y-0 left-0 z-30 hidden h-dvh w-[var(--adm-rail-w)] flex-col border-r p-3 md:flex"
         style={{ background: "var(--adm-rail)", borderColor: "var(--adm-line)" }}
       >
-        {railBody}
-        <div className="min-h-0 flex-1 overflow-y-auto">{nav}</div>
-        {railFooter}
+        <Rail
+          groups={railGroups}
+          active={active}
+          onSelect={(id) => isTabId(id) && select(id)}
+          roleLabel={isOwner ? "Owner" : "Admin"}
+          top={isOwner ? <ModeSwitch mode={mode} onChange={switchMode} /> : null}
+          live={railLive}
+          footer={railFooter}
+        />
       </aside>
 
       {/* The canvas. pl clears the fixed rail and nothing else constrains the
           width, so it grows with the viewport. min-w-0 is load-bearing: without
           it a wide DataTable would push this track past the viewport instead of
           scrolling inside its own box. */}
-      <div className="min-w-0 lg:pl-[var(--adm-rail-w)]">
+      <div className="min-w-0 md:pl-[var(--adm-rail-w)]">
           {/* TOP BAR. Its own row, spanning the canvas, everything on one
               centre line.
 
@@ -868,42 +711,21 @@ export function AdminShell({
           <div
             className="adm-topbar sticky top-0 z-40 border-b"
             style={{
-              background: "color-mix(in oklab, var(--adm-bg), transparent 20%)",
+              background: "var(--adm-bg)",
               borderColor: "var(--adm-line)",
-              backdropFilter: "blur(10px)",
             }}
           >
-            {/* The bar's GROUND spans the canvas so the blur and the hairline
-                reach both edges, but its CONTENTS are capped and centred on the
+            {/* The bar's GROUND spans the canvas so the hairline
+                reaches both edges, but its CONTENTS are capped and centred on the
                 same 1760 as the content below. Without the inner wrapper the
                 search sits ~280px right of the content edge on a 2560 monitor,
                 which is the same detachment this refactor set out to fix,
                 relocated to a wider screen. */}
             {/* no flex-wrap below lg. Wrapping is what produced the 113px
-                three-row bar; with the action bank gone the three survivors are
-                Sections, search and the bell, and search is the one that flexes
-                so the row holds down to 320px instead of breaking at 360. */}
+                three-row bar; the two survivors are the bell and search, and
+                search is the one that flexes so the row holds down to 320px
+                instead of breaking at 360. */}
             <div className="mx-auto flex w-full max-w-[var(--adm-content-max)] items-center justify-end gap-2 px-4 py-3 md:px-6 lg:flex-wrap">
-            <div className="hidden">
-                  <button
-                    type="button"
-                    ref={navTriggerRef}
-                    onClick={() => setNavOpen((v) => !v)}
-                    aria-expanded={navOpen}
-                    aria-controls="adm-mobile-nav"
-                    className="adm-control h-11 rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[12.5px]"
-                    style={
-                      {
-                        borderColor: "var(--adm-line-strong)",
-                        color: "var(--adm-ink-2)",
-                        "--_bg": "var(--adm-control)",
-                        "--_bg-hover": "color-mix(in oklab, var(--adm-control), var(--adm-ink) 8%)",
-                      } as React.CSSProperties
-                    }
-              >
-                Sections
-              </button>
-            </div>
 
                 {/* Activity first, then search. The strip takes the free
                     space in the middle of the bar and the bell lands
@@ -931,44 +753,6 @@ export function AdminShell({
                 />
             </div>
 
-            {/* The drawer belongs to the bar, not to the content.
-
-                Sections is pinned; the drawer used to render in flow further
-                down the page, so tapping it eight hundred rows into Orders
-                mounted a panel above the fold and the button read as dead.
-                Anything triggered from a fixed element has to open against
-                that element. */}
-            {/* Tap-anywhere-else to close. Without it the only way out is the
-                Sections button, which the open drawer has usually scrolled
-                away from. z-index sits below the bar's 40 so the trigger stays
-                clickable, and above the canvas so nothing behind it is. */}
-            {navOpen && (
-              <button
-                type="button"
-                aria-label="Close sections"
-                onClick={() => setNavOpen(false)}
-                className="fixed inset-0 z-[35] cursor-default lg:hidden"
-              />
-            )}
-            {navOpen && (
-              <div
-                id="adm-mobile-nav"
-                className="relative z-[36] mx-auto w-full max-w-[var(--adm-content-max)] px-4 pb-3 md:px-6 lg:hidden"
-              >
-                <div
-                  // overscroll-contain stops the scroll chaining out of the
-                  // drawer into the page once it hits its end. The
-                  // overscroll-behavior in globals.css is set on html/body and
-                  // does nothing for a nested scroller like this one.
-                  className="adm-panel-enter max-h-[70dvh] overflow-y-auto overscroll-contain rounded-[var(--adm-radius-lg)] border p-3"
-                  style={{ background: "var(--adm-rail)", borderColor: "var(--adm-line)" }}
-                >
-                  {railBody}
-                  {nav}
-                  {railFooter}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* CONTENT. The max-width lives here rather than on the shell, so the
@@ -1063,9 +847,7 @@ export function AdminShell({
               the hero IS traffic and the reader met the same numbers twice in
               one scroll. */}
           {mode === "ops" && active === "overview" ? (
-            <HeroRow
-              period={period}
-              onPeriod={setPeriod}
+            <Summary
               onOpenTab={(id) => isTabId(id) && select(id)}
               summary={attention.summary}
               onRetry={attention.refresh}
@@ -1077,7 +859,11 @@ export function AdminShell({
               // printed $0 over an empty series it had never been given.
               revenueMeasured={overview.data !== null && !overview.data.ordersDegraded}
               revenueLoading={overview.loading}
-              revenueSource={overview.data?.revenueSource ?? "shop"}
+              paidSubscribers={overview.data?.paidPlus ?? null}
+              pendingOrders={pendingOrders}
+              overviewSynced={overview.lastSynced}
+              overviewFailing={overview.failing}
+              onRefreshOverview={overview.refresh}
             />
           ) : null}
 
@@ -1092,10 +878,7 @@ export function AdminShell({
           <div key={active} className="adm-panel-enter">
             <TabBoundary label={current.label} onRetry={() => setReloadKey((n) => n + 1)}>
               {Current ? (
-                // onOpenGoals is read by GrowthTab and ignored by every other
-                // tab, which is why the type is optional on both sides rather
-                // than a new required prop on twenty-one components.
-                <Current key={reloadKey} onOpenGoals={() => select("goals")} />
+                <Current key={reloadKey} />
               ) : (
                 <OwnerSection
                   key={reloadKey}
@@ -1108,8 +891,8 @@ export function AdminShell({
         </div>
       </div>
     </div>
-    {/* Below lg the rail is gone and this is the whole navigation. It gates
-        itself with lg:hidden, and the canvas above reserves the space it
+    {/* Below md the rail is gone and this is the whole navigation. It gates
+        itself with md:hidden, and the canvas above reserves the space it
         occupies so a fixed bar never sits on top of the last table row. */}
     <AdminMobileNav
       groups={visibleGroups.map((g) => ({
@@ -1120,8 +903,8 @@ export function AdminShell({
       onSelect={(id) => isTabId(id) && select(id)}
       footer={
         <>
-          {/* The ModeSwitch, which below lg lives nowhere else: it sits in
-              railBody, and railBody renders only in the desktop aside. Without
+          {/* The ModeSwitch, which below md lives nowhere else: it sits in
+              the Rail, and the Rail renders only in the desktop aside. Without
               this an owner on a phone cannot reach Strategy at all, and opening
               /admin#tab=owner-today puts them in owner mode with no control on
               screen to leave it. */}

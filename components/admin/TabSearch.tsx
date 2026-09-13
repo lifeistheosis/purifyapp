@@ -160,9 +160,7 @@ export function TabSearch({
           className="adm-panel-enter absolute right-0 z-30 mt-1.5 w-[min(280px,calc(100vw-2rem))] overflow-hidden rounded-[var(--adm-radius)] border p-1"
           style={{
             background: "var(--adm-panel)",
-            borderColor: "var(--adm-line-strong)",
-            boxShadow: "var(--adm-shadow-pop)",
-          }}
+            borderColor: "var(--adm-line-strong)",          }}
         >
           {/* The option IS the row. This used to be a <button> inside the
               <li role="option">, which puts an interactive element inside an

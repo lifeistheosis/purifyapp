@@ -18,10 +18,9 @@
 // also make "did that curve change?" unanswerable between reloads.
 
 import {
-  AreaChart,
   BarChart,
   CalendarHeatmap,
-  Donut,
+  SegmentList,
   LineChart,
   Sparkline,
   SERIES_COLORS,
@@ -76,7 +75,7 @@ export function ChartGallery() {
             Chart gallery
           </h1>
           <p className="mt-1 font-sans text-[13px]" style={{ color: "var(--adm-ink-2)" }}>
-            Every chart the admin ships, on sample data. Two AreaCharts sit side
+            Every chart the admin ships, on sample data. Two LineCharts sit side
             by side below on purpose: that is the arrangement that used to prove
             the gradient-id collision, where the second one rendered with no fill.
           </p>
@@ -115,14 +114,14 @@ export function ChartGallery() {
         </div>
 
         <div className="mb-6 grid gap-4 md:grid-cols-2">
-          <ChartFrame title="AreaChart" subtitle="One series, gradient to transparent">
-            <AreaChart
+          <ChartFrame title="LineChart, one series" subtitle="Ink, 1.25px, no fill">
+            <LineChart
               series={[{ name: "Net", color: SERIES_COLORS[0], data: a }]}
               labels={DAYS}
             />
           </ChartFrame>
-          <ChartFrame title="AreaChart, second instance" subtitle="Must also have a fill">
-            <AreaChart
+          <ChartFrame title="LineChart, second instance" subtitle="Same rules, no fill">
+            <LineChart
               series={[{ name: "Net", color: SERIES_COLORS[2], data: b }]}
               labels={DAYS}
             />
@@ -130,7 +129,7 @@ export function ChartGallery() {
         </div>
 
         <div className="mb-6">
-          <ChartFrame title="LineChart" subtitle="Three series, smoothed, no gridlines">
+          <ChartFrame title="LineChart, three series" subtitle="Small multiples: one line per plot, never a third line">
             <LineChart
               series={[
                 { name: "Visitors", color: SERIES_COLORS[0], data: a },
@@ -155,8 +154,8 @@ export function ChartGallery() {
               ]}
             />
           </Card>
-          <Card title="Donut" subtitle="Six segments, the full series ramp">
-            <Donut
+          <Card title="SegmentList" subtitle="What the donut became: a share is a list">
+            <SegmentList
               label="Sample"
               segments={SERIES_COLORS.map((color, i) => ({
                 name: `Series ${i + 1}`,
@@ -315,7 +314,7 @@ export function ChartGallery() {
                   <span
                     aria-hidden
                     className="inline-block h-2 w-2 rounded-full"
-                    style={{ background: "var(--adm-good)" }}
+                    style={{ background: "var(--adm-up)" }}
                   />
                 ),
                 csv: () => "",

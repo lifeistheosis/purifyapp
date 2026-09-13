@@ -118,6 +118,14 @@ export default async function PrivacyPage() {
  saved on the device.
  </p>
  <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ If you post in the community while a Purify Plus or Pro
+ subscription is active, a small cross beside your name tells other
+ readers which of the two you hold. It is derived from your
+ subscription, goes away when the subscription ends, and can be
+ hidden at any time from /account with &ldquo;Show my supporter
+ mark.&rdquo;
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
  Nothing in either path is sold, shared, or used to train models.
  The analytics described below are separate from both: they record
  page views in aggregate, without your account identity, whether you
@@ -240,6 +248,19 @@ export default async function PrivacyPage() {
  browser. A small admin page lets us see the live counts; it is
  the only reader.
  </p>
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ Today&rsquo;s Catechism adds two aggregate tables, and neither
+ holds a person. <code>quiz_question_stats</code> keeps, per
+ question, how many times it was shown and how many times it was
+ answered rightly, across everyone, signed in or not.{" "}
+ <code>analytics_events</code> keeps a row per catechism started
+ or completed, with the score and the calendar reckoning and
+ nothing else: no session id, no account, no device. If you are
+ signed in, your own completed days are kept in{" "}
+ <code>quiz_attempts</code> under your account, readable only by
+ you, and deleted with it. If you are not, they stay on your
+ device and only the two counters above leave it.
+ </p>
 
  {/* Retention */}
  <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
@@ -331,7 +352,8 @@ export default async function PrivacyPage() {
  <li>
  <strong>Order &amp; shipping details</strong>, the items you buy,
  totals, status, and the name, email, and shipping address you enter
- at checkout, stored in our Supabase database, visible only to you and
+ at checkout, and whether you asked for an item to be blessed before
+ it ships, stored in our Supabase database, visible only to you and
  us, so we can fulfill and support your order.
  </li>
  <li>
@@ -679,6 +701,14 @@ function PrivacyDe() {
  auf diesem Gerät; sie haben noch keine Servertabelle.
  </p>
  <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ Wenn du in der Gemeinschaft schreibst, während ein Purify-Plus-
+ oder Pro-Abonnement läuft, zeigt ein kleines Kreuz neben deinem
+ Namen anderen Lesern, welches der beiden du hältst. Es wird aus
+ deinem Abonnement abgeleitet, verschwindet mit dessen Ende und
+ lässt sich jederzeit unter /account mit &bdquo;Mein
+ Unterstützer-Zeichen zeigen&ldquo; ausblenden.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
  Nichts auf beiden Wegen wird verkauft, geteilt oder zum Training
  von Modellen gebraucht. Die unten beschriebene Analytik ist von
  beiden getrennt: sie zeichnet Seitenaufrufe in Summe auf, ohne
@@ -805,6 +835,20 @@ function PrivacyDe() {
  was die Analytik betrifft, wird dem Browser ausgesetzt. Eine
  kleine Admin-Seite läßt uns die Live-Zahlen sehen; sie ist die
  einzige Leserin.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ Die Tageskatechese fügt zwei Tabellen mit Summen hinzu, und keine
+ von beiden enthält eine Person. <code>quiz_question_stats</code>{" "}
+ hält je Frage fest, wie oft sie gezeigt und wie oft sie richtig
+ beantwortet wurde, über alle hinweg, angemeldet oder nicht.{" "}
+ <code>analytics_events</code> hält eine Zeile je begonnener oder
+ abgeschlossener Katechese, mit dem Ergebnis und der
+ Kalenderrechnung und sonst nichts: keine Sitzungs-Kennung, kein
+ Konto, kein Gerät. Wer angemeldet ist, dessen eigene
+ abgeschlossene Tage liegen in <code>quiz_attempts</code> unter dem
+ Konto, nur für ihn lesbar, und werden mit ihm gelöscht. Wer es
+ nicht ist, dessen Tage bleiben auf dem Gerät, und nur die beiden
+ Zähler oben verlassen es.
  </p>
 
  <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">

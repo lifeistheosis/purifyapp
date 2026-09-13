@@ -132,7 +132,7 @@ export const WIDGETS: Widget[] = [
 const DEFAULT_IDS = WIDGETS.filter((w) => w.defaultOn).map((w) => w.id);
 
 /**
- * localStorage as an external store, the same shape AdminThemeToggle uses and
+ * localStorage as an external store, the same shape the streamer toggle uses and
  * for the same reason its comment gives: reading it in an effect and calling
  * setState hydrates mismatched (the server cannot know what is stored) and
  * trips react-hooks/set-state-in-effect.

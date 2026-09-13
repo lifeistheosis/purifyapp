@@ -1,10 +1,10 @@
 # Contributing to Purify
 
-Purify is a free, non-commercial Orthodox prayer / Scripture / saints / calendar site. The work is shipped slowly and shipped honestly. If that's what you want to be part of, here is how.
+Purify is an Orthodox prayer / Scripture / saints / calendar site whose spiritual core is free, with an optional paid layer, Purify Plus, that pays for the servers and the work. The work is shipped slowly and shipped honestly. If that's what you want to be part of, here is how.
 
 ## Ethos
 
-- **Free in perpetuity.** No tier, no paywall, no marketplace. The Scripture licenses we hold bind us to keep it that way; contributions must not move toward monetization.
+- **The spiritual core is free in perpetuity.** The Scriptures, the prayers, the saints, the calendar and every local reader tool are free, need no account, and stay free. Purify Plus is an optional layer on top of that (cross-device sync, the Florilegium, the premium reading palettes, Immersive History) and it never buys back what was given: a change that moves something free behind the wall is a regression, and readers who used a feature before it was gated are grandfathered (`scripts/grandfather-plus.mjs`). Amended 2026-09-02; the rule previously read "no tier, no paywall, no marketplace", which had been untrue since Plus began selling on Google Play. One consequence is still open and is the owner's: the API.Bible licence for NIV, NKJV and NLT is non-commercial, and the admin panel reports it breached the moment money is taken. See `docs/admin-rework.md`.
 - **Source-transparent.** Every text on the site is traceable to a public-domain edition (year + editor) or a licensed publisher's API. No LLM-generated saint biographies, no untraceable translations.
 - **Orthodox.** Doctrinally Orthodox; jurisdiction-neutral over time (the site leans Greek today and is moving toward neutrality). When in doubt, defer to the consensus of the Fathers, not contemporary opinion.
 - **Quiet by default.** No growth-hack telemetry, ever. The site asks as little as possible of the reader after they close the tab. Notifications and review streaks are permitted where the reader asked for them, and only under the bar in "Reminders and streaks" below. Amended 2026-08-10; the rule was previously an outright prohibition.
@@ -73,9 +73,9 @@ This is the strictest area of the project. The rule is simple: **everything trac
 When reviewing a PR, check:
 
 1. Does it pass CI?
-2. Does it match the ethos? (No tracking, no monetization creep, no doctrinal drift.)
+2. Does it match the ethos? (No tracking, no monetization creep into the free core, no doctrinal drift.)
 3. Are content additions sourced?
-4. Does it keep the site quiet? (No new modals, no new urgency. If it adds a notification or a streak, it must clear the bar in "Reminders and streaks".)
+4. Does it keep the site quiet? (No modal that interrupts reading, no manufactured urgency: nothing that fires on a timer, a page load or a scroll depth, no countdowns, no invented numbers. A sheet that opens only because the reader tapped something locked, or the Premium button, is a response, not an interruption; that is the bar `components/billing/UpgradeModal.tsx` sets. If it adds a notification or a streak, it must clear the bar in "Reminders and streaks".)
 
 If yes to all four, ship it.
 

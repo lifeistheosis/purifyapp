@@ -151,10 +151,9 @@ export function HourlyGoals() {
                       style={{
                         width: `${pct}%`,
                         background: p.hit
-                          // --adm-good: --adm-positive is undefined, and the
-                          // #34d399 fallback is 1.85:1 on the light theme
-                          // against a 3:1 floor for non-text UI.
-                          ? "var(--adm-good)"
+                          // --adm-up: hit is the positive state, and
+                          // positive is the gold. Never green.
+                          ? "var(--adm-up)"
                           : p.behind
                             ? "var(--adm-warn)"
                             : "var(--adm-accent)",

@@ -7,7 +7,7 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, StatCard, ChartFrame, DataTable, Email, Pill, SubTabs } from "../primitives";
-import { Donut, SERIES_COLORS } from "../charts";
+import { SegmentList, SERIES_COLORS } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
 
 type Subs = {
@@ -20,6 +20,7 @@ type Subs = {
   paidPlus: number;
   /** Admin grants. Access, not revenue. */
   compedPlus: number;
+  legacyPlus: number;
   /** Redeemed gifts. Also access, not revenue. */
   giftedPlus: number;
   mrrCents: number;
@@ -93,9 +94,9 @@ function SummaryPanel() {
           reading the first card saw a subscriber base five times the real
           one. The comp figure existed, in a bySource chart several cards
           further down, which is not where anyone looks first.
-          Paying + Comped + Gifted always equals Active Plus; a test in
-          lib/entitlements/__tests__/adminStats.test.ts holds that. */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          Paying + Comped + Gifted + Grandfathered always equals Active Plus;
+          a test in lib/entitlements/__tests__/adminStats.test.ts holds that. */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <StatCard
           label="Paying"
           value={data?.paidPlus ?? "—"}
@@ -113,9 +114,14 @@ function SummaryPanel() {
           hint="redeemed gifts"
         />
         <StatCard
+          label="Grandfathered"
+          value={data?.legacyPlus ?? "—"}
+          hint="kept at the paywall launch"
+        />
+        <StatCard
           label="Active Plus"
           value={data?.activePlus ?? "—"}
-          hint="all three together"
+          hint="all four together"
         />
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -135,9 +141,7 @@ function SummaryPanel() {
           isEmpty={tierSegments.length === 0}
           empty="No active subscribers."
         >
-          <div className="flex justify-center">
-            <Donut segments={tierSegments} size={200} label="Subs" />
-          </div>
+          <SegmentList segments={tierSegments} label="subscribers" />
         </ChartFrame>
 
         <ChartFrame
@@ -146,9 +150,7 @@ function SummaryPanel() {
           isEmpty={sourceSegments.length === 0}
           empty="No active subscribers."
         >
-          <div className="flex justify-center">
-            <Donut segments={sourceSegments} size={200} label="Source" />
-          </div>
+          <SegmentList segments={sourceSegments} label="subscribers" />
         </ChartFrame>
       </div>
 
@@ -322,7 +324,7 @@ function GiftCard() {
         <button
           type="submit"
           disabled={busy || !email.trim()}
-          className="rounded-pill border border-gold/45 bg-gold/[0.10] px-5 py-2 font-sans text-detail font-semibold text-gold-pale transition-colors hover:bg-gold/20 disabled:opacity-40"
+          className="rounded-pill border border-gold/45 px-5 py-2 font-sans text-detail font-semibold text-gold-pale transition-colors disabled:opacity-40"
         >
           {busy ? "Sending…" : "Send gift"}
         </button>
@@ -340,7 +342,7 @@ function GiftCard() {
       {msg && (
         <p
           className={`mt-3 font-sans text-eyebrow ${
-            msg.ok ? "text-[color:var(--adm-good)]" : "text-[color:var(--adm-critical)]"
+            msg.ok ? "text-[color:var(--adm-up)]" : "text-[color:var(--adm-critical)]"
           }`}
         >
           {msg.text}
@@ -483,7 +485,7 @@ function MembersPanel() {
           <button
             type="submit"
             disabled={busy || !email.trim()}
-            className="rounded-pill border border-[color-mix(in_oklab,var(--adm-good),transparent_50%)] bg-[color-mix(in_oklab,var(--adm-good),transparent_86%)] px-5 py-2 font-sans text-detail font-semibold text-[color:var(--adm-good)] transition-colors hover:bg-[color-mix(in_oklab,var(--adm-good),transparent_80%)] disabled:opacity-40"
+            className="rounded-pill border border-[color-mix(in_oklab,var(--adm-up),transparent_50%)] px-5 py-2 font-sans text-detail font-semibold text-[color:var(--adm-up)] transition-colors disabled:opacity-40"
           >
             {busy ? "Granting…" : "Grant"}
           </button>
@@ -491,7 +493,7 @@ function MembersPanel() {
         {msg && (
           <p
             className={`mt-3 font-sans text-eyebrow ${
-              msg.ok ? "text-[color:var(--adm-good)]" : "text-[color:var(--adm-critical)]"
+              msg.ok ? "text-[color:var(--adm-up)]" : "text-[color:var(--adm-critical)]"
             }`}
           >
             {msg.text}
@@ -506,7 +508,7 @@ function MembersPanel() {
       <GiftCard />
 
       {loaded && meta && !meta.revenuecat ? (
-        <p className="rounded-[var(--adm-radius-sm)] border border-[color-mix(in_oklab,var(--adm-warn),transparent_75%)] bg-[color-mix(in_oklab,var(--adm-warn),transparent_95%)] px-3 py-2 font-sans text-eyebrow text-[color:color-mix(in_oklab,var(--adm-warn),transparent_10%)]">
+        <p className="rounded-[var(--adm-radius-sm)] border border-[color-mix(in_oklab,var(--adm-warn),transparent_75%)] px-3 py-2 font-sans text-eyebrow text-[color:color-mix(in_oklab,var(--adm-warn),transparent_10%)]">
           Start dates come from the RevenueCat REST API. Set
           REVENUECAT_REST_API_KEY in the environment to show them; next-billing
           and everything else works from the database now.

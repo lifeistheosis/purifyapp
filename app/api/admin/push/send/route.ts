@@ -4,7 +4,10 @@ import { z } from "zod";
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveAudience, type Audience } from "@/lib/push/audience";
-import { broadcast, broadcastStatus } from "@/lib/push/send";
+import { broadcast, broadcastStatus, webPushConfigured } from "@/lib/push/send";
+import { apnsConfigured } from "@/lib/push/providers/apns";
+import { fcmConfigured } from "@/lib/push/providers/fcm";
+import { deliveryGaps, describeGaps, missingPushEnv } from "@/lib/push/deliveryGaps";
 import { checkNotificationCopy, explainViolations } from "@/lib/push/doctrine";
 import { broadcastTemplates } from "@/lib/push/copy";
 
@@ -17,7 +20,7 @@ export const dynamic = "force-dynamic";
  * that pairs with the UI confirm step. Status is honest: `sent` when at
  * least one real delivery succeeded, `failed` when every real attempt
  * failed, and `enqueued` when every transport dry-ran (no secrets set, so
- * nothing actually left) — the log never claims a delivery that did not
+ * nothing actually left). The log never claims a delivery that did not
  * happen.
  */
 //
@@ -137,12 +140,30 @@ export async function POST(req: Request) {
   );
 
   const status = broadcastStatus(result);
-  // `enqueued` means every transport dry-ran: the payload never left the
-  // server. Say so in the response so the admin UI cannot read it as success.
+
+  // Which transports could not carry this broadcast, and what each lacks.
+  // Presence of variable NAMES only; no value is read into the response.
+  //
+  // The warning used to fire only on `enqueued`, and say only that "no push
+  // credentials are configured". That hid two things: which of the three
+  // transports needed which keys, and the partial case where Firebase is set
+  // and Apple is not, which logs as `sent` while every iPhone is skipped.
+  const gaps = deliveryGaps(
+    {
+      web: resolved.webSubs.length,
+      android: resolved.tokens.filter((t) => t.platform === "android").length,
+      ios: resolved.tokens.filter((t) => t.platform === "ios").length,
+    },
+    { web: webPushConfigured(), android: fcmConfigured(), ios: apnsConfigured() },
+    missingPushEnv(process.env),
+  );
+  const gapText = describeGaps(gaps);
   const warning =
     status === "enqueued"
-      ? "Nothing was actually delivered: no push credentials are configured, so every transport dry-ran."
-      : undefined;
+      ? `Nothing was delivered. ${gapText || "Every transport dry-ran."}`
+      : gaps.length > 0
+        ? `Some devices were skipped. ${gapText}`
+        : undefined;
 
   await admin.from("push_broadcasts").insert({
     title,
@@ -159,6 +180,7 @@ export async function POST(req: Request) {
     status,
     recipients: resolved.total,
     ...(warning ? { warning } : {}),
+    gaps,
     result,
   });
 }

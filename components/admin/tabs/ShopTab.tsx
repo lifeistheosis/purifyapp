@@ -7,9 +7,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
+import { SHOP_CLASSIFICATIONS } from "@/lib/security/schemas";
 import { invalidateShopCatalog } from "@/lib/shop/catalogClient";
 import { hasSupplierImage, orderedMedia } from "@/lib/shop/imageRights";
+import { productHref } from "@/lib/shop/productHref";
 import { ProductMediaManager } from "../ProductMediaManager";
 
 import {
@@ -36,6 +39,7 @@ type MediaRow = {
   id?: string;
   media_url: string;
   alt_text: string;
+  thumb_url?: string | null;
   // Carried by the admin select; the rights gate needs them to find the
   // primary image the storefront would show.
   sort_order?: number | null;
@@ -407,7 +411,7 @@ function ProductsPanel() {
         <Metric
           label="Live in shop"
           value={String(published)}
-          tone={published > 0 ? "text-[color:var(--adm-good)]" : undefined}
+          tone={published > 0 ? "text-[color:var(--adm-up)]" : undefined}
           hint={hiddenByGate > 0 ? `${hiddenByGate} hidden by image rights` : undefined}
         />
         <Metric
@@ -419,7 +423,7 @@ function ProductsPanel() {
         <Metric
           label="Units sold"
           value={sold.toLocaleString()}
-          tone={sold > 0 ? "text-[color:var(--adm-good)]" : undefined}
+          tone={sold > 0 ? "text-[color:var(--adm-up)]" : undefined}
         />
         {/* NOT "Revenue". This is units_sold multiplied by the price the
             product carries RIGHT NOW, and units_sold is a monotonic counter
@@ -439,17 +443,22 @@ function ProductsPanel() {
         />
       </div>
 
+      {/* ADDING AND EDITING MOVED TO /admin/shop (docs/plans/v1.4/shop-simple.md).
+          The nine-field form lives at /admin/shop/new and /admin/shop/[id];
+          this table keeps the sourcing, margin and engagement columns the
+          two-minute path does not need, and its rows link across. The
+          ProductSheet below is left in place but nothing sets `editing` to a
+          product any more, so it cannot open. */}
       <Card
         title="EIKON products"
-        subtitle="Publish, pause, and keep availability honest"
+        subtitle="Sourcing, margins and engagement. Add and edit products at /admin/shop."
         action={
-          <button
-            type="button"
-            onClick={() => setEditing("new")}
-            className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-1 font-sans text-caption font-semibold text-gold-pale"
+          <Link
+            href="/admin/shop"
+            className="rounded-pill border border-gold/40 px-3 py-1 font-sans text-caption font-semibold text-gold-pale"
           >
-            New product
-          </button>
+            Manage products
+          </Link>
         }
       >
         {status ? (
@@ -529,9 +538,8 @@ function ProductsPanel() {
               key: "title",
               label: "Product",
               render: (p) => (
-                <button
-                  type="button"
-                  onClick={() => setEditing(p)}
+                <Link
+                  href={`/admin/shop/${p.id}`}
                   className="group flex items-center gap-3 text-left"
                 >
                   <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-[var(--adm-radius-sm)] border border-white/8 bg-night-soft/60">
@@ -557,7 +565,7 @@ function ProductsPanel() {
                       {p.slug} · {pretty(p.category)}
                     </span>
                   </span>
-                </button>
+                </Link>
               ),
               csv: (p) => p.title,
             },
@@ -610,7 +618,7 @@ function ProductsPanel() {
                       ? "text-[color:var(--adm-critical)]"
                       : roi < 100
                         ? "text-[color:var(--adm-warn)]"
-                        : "text-[color:var(--adm-good)]";
+                        : "text-[color:var(--adm-up)]";
                 return (
                   <span className="whitespace-nowrap font-sans text-detail">
                     <span className="text-paper/50">{money(cost)}</span>
@@ -663,7 +671,7 @@ function ProductsPanel() {
                   <span className="whitespace-nowrap font-sans text-detail tabular-nums">
                     <span className="text-paper/55">{v}</span>
                     <span className="mx-1 text-paper/25">·</span>
-                    <span className="font-semibold text-[color:var(--adm-good)]">{b}</span>
+                    <span className="font-semibold text-[color:var(--adm-up)]">{b}</span>
                     {conv != null ? (
                       <span className="ml-1.5 text-eyebrow text-paper/40">
                         {conv}%
@@ -713,6 +721,10 @@ function ProductsPanel() {
         />
       </Card>
 
+      {/* Unreachable since the /admin/shop pages: `editing` starts null and
+          only the sheet's own close and save handlers write it. Kept so the
+          overview and the old editor are one revert away if the pages ever
+          need to be pulled. */}
       {editing ? (
         <ProductSheet
           product={editing === "new" ? null : editing}
@@ -758,7 +770,11 @@ function toPayload(p: AdminProduct, s: Sourcing | null | undefined) {
     countryOfOrigin: p.country_of_origin,
     imageIsRepresentative: p.image_is_representative,
     status: p.status,
-    media: p.media.map((m) => ({ mediaUrl: m.media_url, altText: m.alt_text })),
+    media: p.media.map((m) => ({
+      mediaUrl: m.media_url,
+      altText: m.alt_text,
+      thumbUrl: m.thumb_url ?? null,
+    })),
     subjects: p.subjects.map((x) => ({
       subjectType: x.subject_type,
       subjectSlug: x.subject_slug,
@@ -959,12 +975,12 @@ function ProductOverview({
         ? "text-[color:var(--adm-critical)]"
         : grade.band === "thin"
           ? "text-[color:var(--adm-warn)]"
-          : "text-[color:var(--adm-good)]";
+          : "text-[color:var(--adm-up)]";
 
   return (
     <div className="space-y-6">
       {hasSupplierImage(p.media) ? (
-        <div className="rounded-[var(--adm-radius)] border border-[color-mix(in_oklab,var(--adm-warn),transparent_70%)] bg-[color-mix(in_oklab,var(--adm-warn),transparent_94%)] p-3">
+        <div className="rounded-[var(--adm-radius)] border border-[color-mix(in_oklab,var(--adm-warn),transparent_70%)] p-3">
           <p className="font-sans text-detail font-semibold text-[color:var(--adm-warn)]">
             Not shown in the public shop
           </p>
@@ -1026,7 +1042,7 @@ function ProductOverview({
               {p.status === "published" ? "Pause" : "Publish"}
             </button>
             <a
-              href={`/shop/${p.slug}`}
+              href={productHref(p.slug, false)}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-pill border border-paper/20 px-4 py-1.5 font-sans text-detail text-paper/75 hover:text-paper"
@@ -1058,7 +1074,7 @@ function ProductOverview({
         <Metric
           label="Units sold"
           value={String(sold)}
-          tone={sold > 0 ? "text-[color:var(--adm-good)]" : undefined}
+          tone={sold > 0 ? "text-[color:var(--adm-up)]" : undefined}
         />
         <Metric
           label="Conversion"
@@ -1141,7 +1157,7 @@ function ProductOverview({
             label="Resale rights"
             value={
               s?.resale_rights_confirmed ? (
-                <span className="text-[color:var(--adm-good)]">Confirmed</span>
+                <span className="text-[color:var(--adm-up)]">Confirmed</span>
               ) : (
                 <span className="text-[color:var(--adm-warn)]">Not confirmed</span>
               )
@@ -1192,6 +1208,7 @@ function ProductEditor({
           media: orderedMedia(product.media).map((m) => ({
             media_url: m.media_url,
             alt_text: m.alt_text,
+            thumb_url: m.thumb_url ?? null,
           })),
         }
       : EMPTY_PRODUCT,
@@ -1333,13 +1350,7 @@ function ProductEditor({
             onChange={(e) => set("classification", e.target.value)}
             className={field}
           >
-            {[
-              "printed_mounted",
-              "standard_reproduction",
-              "laminated",
-              "wooden",
-              "hand_finished_reproduction",
-            ].map((c) => (
+            {SHOP_CLASSIFICATIONS.map((c) => (
               <option key={c} value={c}>
                 {c.replace(/_/g, " ")}
               </option>
@@ -1524,7 +1535,7 @@ function ProductEditor({
             src.supplier_cost_cents ||
             src.supplier_url,
         )}
-        className="mt-6 rounded-[var(--adm-radius)] border border-[color-mix(in_oklab,var(--adm-critical),transparent_80%)] bg-[color-mix(in_oklab,var(--adm-critical),transparent_97%)] p-4"
+        className="mt-6 rounded-[var(--adm-radius)] border border-[color-mix(in_oklab,var(--adm-critical),transparent_80%)] p-4"
       >
         <summary className="cursor-pointer font-sans text-detail font-medium tracking-[1.2px] text-[color:color-mix(in_oklab,var(--adm-critical),transparent_20%)] [&::-webkit-details-marker]:hidden">
           Sourcing (admin-only, never public)
@@ -1612,7 +1623,7 @@ function ProductEditor({
                 ? "text-[color:var(--adm-critical)]"
                 : roi < 100
                   ? "text-[color:var(--adm-warn)]"
-                  : "text-[color:var(--adm-good)]";
+                  : "text-[color:var(--adm-up)]";
           return (
             <div className="mt-4 rounded-[var(--adm-radius)] border border-paper/12 bg-night/50 p-3">
               <p className={labelCls}>Unit economics (live)</p>
@@ -2227,7 +2238,7 @@ function ReviewsPanel() {
         <Metric
           label="Verified"
           value={String(verified)}
-          tone={verified > 0 ? "text-[color:var(--adm-good)]" : undefined}
+          tone={verified > 0 ? "text-[color:var(--adm-up)]" : undefined}
           hint="tied to a real order"
         />
         <Metric
@@ -2724,7 +2735,7 @@ function SeedReviewSheet({
               type="button"
               onClick={() => photoRef.current?.click()}
               disabled={uploading || photos.length >= 12}
-              className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
+              className="rounded-pill border border-gold/40 px-3 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
             >
               {uploading ? "Uploading…" : "Add photo"}
             </button>
@@ -2759,7 +2770,7 @@ function SeedReviewSheet({
           onClick={() => void seed()}
           disabled={busy || uploading}
           title={uploading ? "Wait for the photo upload to finish" : undefined}
-          className="rounded-pill border border-gold/40 bg-gold/[0.08] px-4 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
+          className="rounded-pill border border-gold/40 px-4 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
         >
           {busy ? "Saving…" : uploading ? "Photo uploading…" : "Add review"}
         </button>

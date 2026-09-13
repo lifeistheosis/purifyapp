@@ -597,7 +597,7 @@ function FieldDiff({
       <span className="font-sans text-[11.5px] uppercase tracking-[0.06em] pt-2" style={{ color: "var(--adm-ink-3)" }}>
         {label}
         {gone && <span className="ml-1 normal-case tracking-normal" style={{ color: "var(--adm-critical)" }}>removed</span>}
-        {isNew && <span className="ml-1 normal-case tracking-normal" style={{ color: "var(--adm-good)" }}>new</span>}
+        {isNew && <span className="ml-1 normal-case tracking-normal" style={{ color: "var(--adm-up)" }}>new</span>}
       </span>
       <div className={cell} style={cellStyle} aria-label={`${label}, before`}>
         {isNew ? (
@@ -634,10 +634,10 @@ function FieldDiff({
                 style={
                   o.kind === "add"
                     ? {
-                        color: "var(--adm-good)",
+                        color: "var(--adm-up)",
                         textDecoration: "underline",
                         textDecorationThickness: "1.5px",
-                        background: "color-mix(in oklab, var(--adm-good), transparent 88%)",
+                        background: "color-mix(in oklab, var(--adm-up), transparent 88%)",
                       }
                     : undefined
                 }

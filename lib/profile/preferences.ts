@@ -28,23 +28,44 @@
 // lib/prayers/sync.ts uses for intentions, for the same reason.
 
 import { readDepth, readFocus, writeDepth, writeFocus, type Depth, type Focus } from "@/lib/onboarding/state";
+import { readShowSupporterMark, writeShowSupporterMark } from "@/lib/profile/supporterMark";
 import { createClient } from "@/lib/supabase/client";
+import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 
 /**
  * The allowlist. A column in `profiles` is synced if and only if it is named
  * here together with its local reader and writer. Adding a column to the
  * table without adding it here is how the calendar pair became dead schema.
+ *
+ * show_supporter_mark (20260905_community_author_mark.sql) is the opt-out
+ * for the community supporter mark, read and written by
+ * lib/profile/supporterMark.ts. Unlike the other two it has a server-side
+ * effect, a trigger that clears the mark from the feed, which is why the
+ * toggle pushes at once rather than waiting for the next sign-in.
  */
-const PROFILE_PREFS = ["focus", "depth"] as const;
+const PROFILE_PREFS = ["focus", "depth", "show_supporter_mark"] as const;
+
+/**
+ * The columns that existed before the newest migration. When the select
+ * fails with an unknown column, the pull reads these instead, so a
+ * migration that has not been applied yet costs the new preference and not
+ * the old ones. Extend this when the next column is added, not before.
+ */
+const PROFILE_PREFS_BEFORE_MARK = ["focus", "depth"] as const;
 
 type ProfilePrefsRow = {
   focus: Focus[] | null;
   depth: Depth | null;
+  show_supporter_mark?: boolean | null;
 };
 
 function localSnapshot(): ProfilePrefsRow {
   const focus = readFocus();
-  return { focus: focus.length > 0 ? focus : null, depth: readDepth() };
+  return {
+    focus: focus.length > 0 ? focus : null,
+    depth: readDepth(),
+    show_supporter_mark: readShowSupporterMark(),
+  };
 }
 
 /**
@@ -64,9 +85,22 @@ export async function pushProfilePrefs(): Promise<void> {
     const patch: Partial<ProfilePrefsRow> = {};
     if (local.focus) patch.focus = local.focus;
     if (local.depth) patch.depth = local.depth;
+    // A boolean the reader has actually set. Null is "never chosen" and is
+    // not sent, so a fresh install cannot flip an account's answer.
+    if (typeof local.show_supporter_mark === "boolean") {
+      patch.show_supporter_mark = local.show_supporter_mark;
+    }
     if (Object.keys(patch).length === 0) return;
 
-    await supa.from("profiles").update(patch).eq("id", user.id);
+    const { error } = await supa.from("profiles").update(patch).eq("id", user.id);
+    // Before 20260905_community_author_mark.sql is applied the whole update
+    // is refused for the one unknown key. Send the rest again without it so
+    // focus and depth keep syncing.
+    if (error && isColumnAbsent(error) && "show_supporter_mark" in patch) {
+      delete patch.show_supporter_mark;
+      if (Object.keys(patch).length === 0) return;
+      await supa.from("profiles").update(patch).eq("id", user.id);
+    }
   } catch {
     // Column missing (migration not applied yet), offline, or signed out.
     // All three are survivable: the local preference still works.
@@ -85,12 +119,21 @@ export async function pullProfilePrefs(): Promise<void> {
     } = await supa.auth.getUser();
     if (!user) return;
 
-    const { data, error } = await supa
+    let { data, error } = await supa
       .from("profiles")
       .select(PROFILE_PREFS.join(", "))
       .eq("id", user.id)
       .maybeSingle();
-    // A 42703 (undefined column) means the migration has not been applied.
+    // A 42703 (undefined column) means the newest migration has not been
+    // applied. Read the columns that do exist rather than giving up on all
+    // of them.
+    if (error && isColumnAbsent(error)) {
+      ({ data, error } = await supa
+        .from("profiles")
+        .select(PROFILE_PREFS_BEFORE_MARK.join(", "))
+        .eq("id", user.id)
+        .maybeSingle());
+    }
     // Nothing to do, and nothing to report: the app is fully usable without it.
     if (error || !data) return;
 
@@ -102,6 +145,12 @@ export async function pullProfilePrefs(): Promise<void> {
     }
     if (!local.depth && row.depth) {
       writeDepth(row.depth);
+    }
+    if (
+      local.show_supporter_mark === null &&
+      typeof row.show_supporter_mark === "boolean"
+    ) {
+      writeShowSupporterMark(row.show_supporter_mark);
     }
   } catch {
     /* ignore */

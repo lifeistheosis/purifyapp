@@ -16,6 +16,8 @@
 //        "is this counting accurately?" because every day is its own cell.
 
 import { useLiveData } from "@/lib/admin/useLiveData";
+import { useLatestDay } from "@/lib/admin/latestDayPreference";
+import type { LatestDay } from "@/lib/admin/dayWindow";
 import { Card, KpiCard, ChartFrame } from "../primitives";
 import { LineChart, CalendarHeatmap, SERIES_COLORS, chartColors } from "../charts";
 
@@ -63,7 +65,7 @@ function ymd(iso: string | null): string {
 
 // Small ⓘ that shows a tooltip on hover/focus. Tooltip explains the
 // rolling-window semantics so a drop reads as expected math not data loss.
-function RollingInfo() {
+function RollingInfo({ latest }: { latest: LatestDay }) {
   return (
     <span className="group relative inline-flex items-center align-middle ml-1">
       <button
@@ -74,9 +76,9 @@ function RollingInfo() {
         i
       </button>
       <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-1 w-[220px] rounded-[var(--adm-radius)] border border-paper/15 bg-night p-2 font-sans text-eyebrow text-paper/85 leading-snug opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity z-10 shadow">
-        Sum of the last 14 calendar days. At every UTC midnight, the oldest
-        day rolls off and a fresh day (starts at 0) enters — so this number
-        can drop. The lifetime counters above never do.
+        {latest === "complete"
+          ? "Sum of the last 14 finished days, ending last night. At every UTC midnight the oldest day rolls off and yesterday enters, so this number can drop. The lifetime counters above never do."
+          : "Sum of the last 14 calendar days, including today so far. At every UTC midnight the oldest day rolls off and a fresh day enters at 0, so this number can drop. The lifetime counters above never do."}
       </span>
     </span>
   );
@@ -107,8 +109,17 @@ export function OverviewTab() {
   // never consults that cache: every one of those polls reached Postgres. The
   // interval is now the bound the header was pretending to be.
   const { data: totals } = useLiveData<Totals>("/api/admin/totals", 60_000);
+  // The Traffic hub's "Latest day" toggle picks whether these windows end on
+  // today or last night. The URL carries it, so useLiveData treats the two as
+  // separate feeds and never shows one under the other's label.
+  //
+  // The parameter is added ONLY for "complete". lib/admin/liveStore.ts shares
+  // one timer per exact URL, and Summary and the activity feed poll the plain
+  // "?range=90d". Appending "&latest=now" would mean nothing to the route and
+  // still open a second feed for the same data.
+  const latest = useLatestDay();
   const { data: trafficRes } = useLiveData<{ points?: TrafficPoint[] }>(
-    "/api/admin/traffic?range=90d",
+    latest === "complete" ? "/api/admin/traffic?range=90d&latest=complete" : "/api/admin/traffic?range=90d",
     10_000,
   );
   const traffic = trafficRes?.points ?? [];
@@ -165,7 +176,7 @@ export function OverviewTab() {
         <div className="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
           <p className="font-sans text-detail font-medium text-[color:var(--adm-ink-3)]">
             Rolling 14-day window
-            <RollingInfo />
+            <RollingInfo latest={latest} />
           </p>
           <p className="font-sans text-eyebrow text-paper/40">
             vs. prior 14 days

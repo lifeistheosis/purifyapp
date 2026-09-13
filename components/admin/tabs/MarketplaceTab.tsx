@@ -406,7 +406,7 @@ function CreateStoreForm({ onDone }: { onDone: () => void }) {
   return (
     <form
       onSubmit={submit}
-      className="grid gap-3 rounded-[var(--adm-radius)] border border-gold/25 bg-gold/[0.04] p-4 sm:grid-cols-2"
+      className="grid gap-3 rounded-[var(--adm-radius)] border border-gold/25 p-4 sm:grid-cols-2"
     >
       <label className="block space-y-1">
         <span className={labelCls}>Store name *</span>
@@ -1161,7 +1161,7 @@ function MessagesPanel() {
                   className={
                     "max-w-[75%] rounded-[var(--adm-radius-sm)] border px-3 py-2 " +
                     (m.sender === "seller"
-                      ? "ml-auto border-gold/25 bg-gold/[0.05]"
+                      ? "ml-auto border-gold/25"
                       : "border-paper/10 bg-paper/[0.02]")
                   }
                 >
@@ -1393,7 +1393,7 @@ function RefundsPanel() {
         />
 
         {declining && (
-          <div className="mt-4 flex flex-wrap items-end gap-2 rounded-[var(--adm-radius)] border border-[color-mix(in_oklab,var(--adm-critical),transparent_70%)] bg-[color-mix(in_oklab,var(--adm-critical),transparent_96%)] p-3">
+          <div className="mt-4 flex flex-wrap items-end gap-2 rounded-[var(--adm-radius)] border border-[color-mix(in_oklab,var(--adm-critical),transparent_70%)] p-3">
             <label className="min-w-[260px] flex-1 space-y-1">
               <span className={labelCls}>
                 Why decline? The buyer sees this note. *
