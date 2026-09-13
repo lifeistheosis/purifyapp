@@ -86,14 +86,20 @@ export function StatList({
             <span className="min-w-0 flex-1 truncate font-sans text-[13px]" style={{ color: "var(--adm-ink-2)" }}>
               {r.label}
             </span>
+            {/* Sparkline and delta mask with the value, same as KpiTile: the
+                shape and the percentage of a money row tell its story without
+                the figure. */}
             {r.trend && r.trend.length > 1 ? (
-              <span className="hidden shrink-0 sm:block">
+              <span className={"hidden shrink-0 sm:block" + (r.sensitive ? ` ${SENSITIVE}` : "")}>
                 <Sparkline data={r.trend} width={64} height={24} />
               </span>
             ) : null}
             <span className="flex shrink-0 items-baseline gap-2">
               {r.delta && has ? (
-                <span className="font-sans text-[12px]" style={{ color: deltaColor(tone) }}>
+                <span
+                  className={"font-sans text-[12px]" + (r.sensitive ? ` ${SENSITIVE}` : "")}
+                  style={{ color: deltaColor(tone) }}
+                >
                   {deltaText(r.delta)}
                 </span>
               ) : null}

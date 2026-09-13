@@ -7,7 +7,7 @@
 
 import { useLiveData } from "@/lib/admin/useLiveData";
 import { Freshness } from "../Freshness";
-import { Card, StatCard, ChartFrame } from "../primitives";
+import { Card, StatCard, ChartFrame, Sensitive } from "../primitives";
 import { BarChart, LineChart, SegmentList, SERIES_COLORS, chartColors } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
 import { ReconcileCard } from "../ReconcileCard";
@@ -172,11 +172,18 @@ function RevenuePanel() {
             ? `, as of ${new Date(data.subscriptions.live.lastUpdatedAt).toLocaleString()}`
             : ""}
           . List price alone would have implied{" "}
-          {money(data.subscriptions.estimatedMrrCents)}; the difference is
+          {/* Money inside a sentence never reaches the Odometer, so it cannot
+              mask itself by its currency mark the way every card figure does.
+              Wrapped by hand, or streamer mode shows both amounts in plain
+              text under a panel that says it is hiding money. */}
+          <Sensitive value={money(data.subscriptions.estimatedMrrCents)} />; the difference is
           discounts, regional pricing, annual plans and store commission.
-          {data.subscriptions.live?.annualArpu != null
-            ? ` Real revenue per subscriber: ${money(Math.round(data.subscriptions.live.annualArpu * 100))} a year.`
-            : ""}
+          {data.subscriptions.live?.annualArpu != null ? (
+            <>
+              {" "}Real revenue per subscriber:{" "}
+              <Sensitive value={money(Math.round(data.subscriptions.live.annualArpu * 100))} /> a year.
+            </>
+          ) : null}
         </p>
       ) : (
         <p className="font-sans text-eyebrow text-paper/40">

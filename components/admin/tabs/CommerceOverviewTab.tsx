@@ -171,12 +171,20 @@ export function CommerceOverviewTab() {
         )}
       </Card>
 
+      {/* Both copies of the revenue chart mask under streamer mode. They did
+          not, and this was the graph the owner saw drawn in full on a stream
+          while the figure above it was blurred: the tooltip and axis are
+          dollars, and the line is every sale in the window. The donut and the
+          monthly chart on the Revenue tab were already marked; this one was
+          missed. The title stays readable, which is the point of masking the
+          frame's body rather than the whole card. */}
       <div className="hidden lg:block">
         <ChartFrame
           title="Net revenue, last 30 days"
           subtitle="Paid orders minus refunds, by UTC day."
           isEmpty={chartEmpty}
           empty={chartEmptyCopy}
+          sensitive
         >
           {chart}
         </ChartFrame>
@@ -188,7 +196,7 @@ export function CommerceOverviewTab() {
               {chartEmptyCopy}
             </p>
           ) : (
-            chart
+            <div className={SENSITIVE}>{chart}</div>
           )}
         </Disclosure>
       </div>

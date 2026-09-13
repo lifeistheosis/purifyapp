@@ -169,7 +169,14 @@ export function KpiTile({
           <span aria-hidden className="adm-skeleton block" style={{ width: 64, height: 10 }} />
         ) : delta && hasValue && !error ? (
           <>
-            <span className="font-sans text-[12px] leading-4" style={{ color: deltaColor(tone) }}>
+            {/* The delta masks with the value. "+300%" on a revenue tile is
+                the revenue story told without the number, which is what the
+                mode exists to keep off a stream. The caption beside it only
+                names the comparison, so it stays readable. */}
+            <span
+              className={"font-sans text-[12px] leading-4" + (sensitive ? ` ${SENSITIVE}` : "")}
+              style={{ color: deltaColor(tone) }}
+            >
               {deltaText(delta)}
             </span>
             {caption ? (
@@ -181,7 +188,13 @@ export function KpiTile({
         ) : null}
       </div>
 
-      <div ref={boxRef} className="mt-3 h-9 w-full">
+      {/* THE SPARKLINE WAS THE LEAK. Only the value carried .adm-sensitive, so
+          streamer mode blurred the revenue figure and then drew its shape in
+          full underneath: every spike a sale, every flat stretch a quiet week,
+          readable at any bitrate. A chart of money is money. The class goes on
+          the box rather than the svg so the width measurement on boxRef is
+          untouched. */}
+      <div ref={boxRef} className={"mt-3 h-9 w-full" + (sensitive ? ` ${SENSITIVE}` : "")}>
         {loading ? (
           <span aria-hidden className="adm-skeleton block h-full w-full" />
         ) : trend && trend.length > 1 && hasValue && !error ? (
