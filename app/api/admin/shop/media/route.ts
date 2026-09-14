@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getAdminUser } from "@/lib/admin/access";
+import { SHOP_MEDIA_MAX_BYTES, shopMediaExtension, storeShopImage } from "@/lib/shop/shopMedia";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
@@ -10,16 +11,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * purpose: overwriting an existing path would fight browser and CDN image
  * caches, and a swapped cover must show on the storefront immediately.
  * Service-role writes only; nothing here trusts a client-supplied path.
+ *
+ * The bucket, the size cap and the type list live in lib/shop/shopMedia.ts
+ * because the listing importer writes to the same bucket, and two copies of
+ * that policy would drift the first time one of them was tuned.
  */
-
-const BUCKET = "shop-media";
-const MAX_BYTES = 8 * 1024 * 1024;
-const TYPES: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/avif": "avif",
-};
 
 export async function POST(req: Request) {
   const adminUser = await getAdminUser();
@@ -35,48 +31,27 @@ export async function POST(req: Request) {
   if (!(file instanceof File)) {
     return NextResponse.json({ error: "Missing file." }, { status: 400 });
   }
-  const ext = TYPES[file.type];
-  if (!ext) {
+  if (!shopMediaExtension(file.type)) {
     return NextResponse.json(
       { error: "Use a JPEG, PNG, WebP, or AVIF image." },
       { status: 400 },
     );
   }
-  if (file.size === 0 || file.size > MAX_BYTES) {
+  if (file.size === 0 || file.size > SHOP_MEDIA_MAX_BYTES) {
     return NextResponse.json(
       { error: "Image must be between 1 byte and 8 MB." },
       { status: 400 },
     );
   }
 
-  const admin = createAdminClient();
-
-  // Ensure the bucket exists; "already exists" is the steady state.
-  const { error: bucketError } = await admin.storage.createBucket(BUCKET, {
-    public: true,
-    fileSizeLimit: MAX_BYTES,
-    allowedMimeTypes: Object.keys(TYPES),
-  });
-  if (bucketError && !/already exists/i.test(bucketError.message)) {
-    return NextResponse.json({ error: bucketError.message }, { status: 500 });
+  const stored = await storeShopImage(
+    createAdminClient(),
+    await file.arrayBuffer(),
+    file.type,
+    file.name || "image",
+  );
+  if ("error" in stored) {
+    return NextResponse.json({ error: stored.error }, { status: 500 });
   }
-
-  const base = (file.name || "image")
-    .replace(/\.[a-z0-9]+$/i, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60) || "image";
-  const path = `products/${Date.now()}-${base}.${ext}`;
-
-  const bytes = await file.arrayBuffer();
-  const { error: uploadError } = await admin.storage
-    .from(BUCKET)
-    .upload(path, bytes, { contentType: file.type, upsert: false });
-  if (uploadError) {
-    return NextResponse.json({ error: uploadError.message }, { status: 500 });
-  }
-
-  const { data } = admin.storage.from(BUCKET).getPublicUrl(path);
-  return NextResponse.json({ ok: true, url: data.publicUrl });
+  return NextResponse.json({ ok: true, url: stored.url });
 }

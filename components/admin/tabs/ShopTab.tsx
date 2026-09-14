@@ -10,7 +10,9 @@ import Image from "next/image";
 
 import { invalidateShopCatalog } from "@/lib/shop/catalogClient";
 import { hasSupplierImage, orderedMedia } from "@/lib/shop/imageRights";
+import { slugify, uniqueSlug } from "@/lib/shop/importListing";
 import { ProductMediaManager } from "../ProductMediaManager";
+import { ImportListingPanel, type ImportDraftRequest } from "../ImportListingPanel";
 
 import {
   Card,
@@ -216,7 +218,18 @@ function ProductsPanel() {
   // invisible to shoppers, and that is only knowable by joining the two.
   const [stores, setStores] = useState<{ id: string; status: string }[]>([]);
   const [editing, setEditing] = useState<AdminProduct | "new" | null>(null);
+  /**
+   * A listing read off a distributor's page, waiting to be opened in the
+   * editor. Separate from `editing` because it is not a product yet: it has no
+   * id, nothing has been written, and closing the editor throws it away.
+   */
+  const [draft, setDraftState] = useState<ImportedDraft | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+
+  function setDraft(d: ImportedDraft) {
+    setDraftState(d);
+    setEditing("new");
+  }
   const [version, setVersion] = useState(0);
   const load = () => setVersion((v) => v + 1);
 
@@ -344,6 +357,8 @@ function ProductsPanel() {
   const published =
     products.filter((p) => p.status === "published").length - hiddenByGate;
   const drafts = products.filter((p) => p.status === "draft").length;
+  // So an imported listing cannot land on a slug the shop already uses.
+  const takenSlugs = products.map((p) => p.slug);
   const outOfStock = products.filter(
     (p) => p.inventory_status === "out_of_stock",
   ).length;
@@ -438,6 +453,16 @@ function ProductsPanel() {
           hint={profit > 0 ? `${money(profit)} contribution` : undefined}
         />
       </div>
+
+      {/* Paste a distributor's link, get a draft. The panel does the reading
+          and this owns the one thing it must not: turning what was read into a
+          product the editor can save. */}
+      <Card
+        title="Make a listing from a link"
+        subtitle="Paste a distributor's product page and check what came back"
+      >
+        <ImportListingPanel onDraft={(req) => setDraft(draftFromImport(req, takenSlugs))} />
+      </Card>
 
       <Card
         title="EIKON products"
@@ -721,9 +746,14 @@ function ProductsPanel() {
               ? null
               : (sourcing.find((s) => s.product_id === editing.id) ?? null)
           }
-          onClose={() => setEditing(null)}
+          draft={editing === "new" ? draft : null}
+          onClose={() => {
+            setEditing(null);
+            setDraftState(null);
+          }}
           onSaved={() => {
             setEditing(null);
+            setDraftState(null);
             load();
           }}
           onToggleStatus={(p) =>
@@ -780,6 +810,63 @@ function toPayload(p: AdminProduct, s: Sourcing | null | undefined) {
   };
 }
 
+/** A listing read off a distributor's page, in the shapes this tab edits. */
+type ImportedDraft = {
+  product: AdminProduct;
+  sourcing: Partial<Sourcing>;
+  supplierName: string;
+};
+
+/**
+ * Turn what the importer read into a product the editor can open.
+ *
+ * Only the facts that came off the page are filled in. CATEGORY AND
+ * CLASSIFICATION ARE LEFT AT THEIR DEFAULTS on purpose: a distributor's page
+ * has no idea whether a cross is a feast icon or a prayer corner piece, and a
+ * guess in those two fields is the kind of wrong that reaches the storefront
+ * looking deliberate. The owner picks them, which is one dropdown each.
+ *
+ * The price is what the owner set in the import panel, and the distributor's
+ * own price goes to the sourcing row as the cost, never to the shop price.
+ */
+function draftFromImport(req: ImportDraftRequest, takenSlugs: string[]): ImportedDraft {
+  const { imported, retailCents, ownsImages } = req;
+  const l = imported.listing;
+  const title = (l.title ?? "").slice(0, 200);
+  const alt = title.length >= 3 ? title : "Distributor photo";
+  const urls = ownsImages ? imported.images.map((i) => i.url) : l.images;
+
+  const photoNote = ownsImages
+    ? `Photos copied into our storage from: ${imported.images.map((i) => i.sourceUrl).join(", ")}`
+    : "Photos still point at the distributor's server, so the shop keeps this listing hidden until they are replaced.";
+
+  return {
+    supplierName: imported.supplierHost,
+    product: {
+      ...EMPTY_PRODUCT,
+      slug: uniqueSlug(imported.slug || slugify(title), takenSlugs),
+      title,
+      description_md: l.description,
+      price_cents: retailCents,
+      materials: l.material,
+      dimensions: l.dimensions,
+      maker_name: l.brand,
+      media: urls.slice(0, 8).map((u) => ({ media_url: u, alt_text: alt })),
+      status: "draft",
+    },
+    sourcing: {
+      supplier_sku: l.sku,
+      supplier_cost_cents: l.priceCents,
+      supplier_url: imported.supplierUrl,
+      stock_status: l.availability,
+      // Ticking "copy the photos" in the import panel IS the rights claim, so
+      // it is recorded as one rather than left for the owner to remember.
+      resale_rights_confirmed: ownsImages,
+      internal_notes: `Imported ${new Date().toISOString().slice(0, 10)} from ${imported.supplierUrl}\n${photoNote}`,
+    },
+  };
+}
+
 const EMPTY_PRODUCT: AdminProduct = {
   id: "",
   slug: "",
@@ -817,12 +904,15 @@ const EMPTY_PRODUCT: AdminProduct = {
 function ProductSheet({
   product,
   sourcing,
+  draft,
   onClose,
   onSaved,
   onToggleStatus,
 }: {
   product: AdminProduct | null;
   sourcing: Sourcing | null;
+  /** A listing imported from a distributor's page, not yet saved. */
+  draft?: ImportedDraft | null;
   onClose: () => void;
   onSaved: () => void;
   onToggleStatus: (p: AdminProduct) => void;
@@ -834,8 +924,14 @@ function ProductSheet({
   return (
     <Modal
       wide
-      title={product ? product.title : "New product"}
-      subtitle={product ? product.slug : "Create an EIKON listing"}
+      title={product ? product.title : (draft?.product.title || "New product")}
+      subtitle={
+        product
+          ? product.slug
+          : draft
+            ? `Imported from ${draft.supplierName}. Nothing is saved until you press Save.`
+            : "Create an EIKON listing"
+      }
       onClose={onClose}
       header={
         product ? (
@@ -860,7 +956,7 @@ function ProductSheet({
           onToggleStatus={onToggleStatus}
         />
       ) : (
-        <ProductEditor product={product} sourcing={sourcing} onSaved={onSaved} />
+        <ProductEditor product={product} sourcing={sourcing} draft={draft} onSaved={onSaved} />
       )}
     </Modal>
   );
@@ -1176,10 +1272,13 @@ function ProductOverview({
 function ProductEditor({
   product,
   sourcing,
+  draft,
   onSaved,
 }: {
   product: AdminProduct | null;
   sourcing: Sourcing | null;
+  /** Starting values read off a distributor's page. Nothing is saved yet. */
+  draft?: ImportedDraft | null;
   onSaved: () => void;
 }) {
   const [p, setP] = useState<AdminProduct>(() =>
@@ -1194,10 +1293,10 @@ function ProductEditor({
             alt_text: m.alt_text,
           })),
         }
-      : EMPTY_PRODUCT,
+      : (draft?.product ?? EMPTY_PRODUCT),
   );
-  const [supplierName, setSupplierName] = useState("");
-  const [src, setSrc] = useState<Partial<Sourcing>>(sourcing ?? {});
+  const [supplierName, setSupplierName] = useState(draft?.supplierName ?? "");
+  const [src, setSrc] = useState<Partial<Sourcing>>(sourcing ?? draft?.sourcing ?? {});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   /**
