@@ -14,7 +14,11 @@
 //   node scripts/patch-notes.mjs propose --file draft.json [--summary "..."] [--parent <id>]
 //       Files one revision. draft.json is one note:
 //         { "version": "1.4", "kind": "...", "date": "2026-09-10",
-//           "title": "...", "blurb": "...", "items": ["...", "..."] }
+//           "title": "...", "blurb": "...",
+//           "items": [{ "category": "fixes", "text": "..." }, "..."] }
+//       An item is a plain string or a line filed under one of the Update
+//       Hierarchy's categories: fixes, saints, library, shop, perks, stats.
+//       From 1.4 every release accounts for all six; see docs/UPDATE-HIERARCHY.md.
 //       `date` may also be "September 10, 2026". The live row with the same
 //       version, if any, is snapshotted as `before`. DRY RUN unless --apply.
 //       --summary defaults to "Claude changed <fields> in <version>".
@@ -96,6 +100,30 @@ const displayToIso = (d) => {
 const NOTE_COLUMNS = "id, version, kind, date, title, blurb, items, status, updated_at";
 const FIELDS = ["version", "kind", "date", "title", "blurb"];
 
+// The Update Hierarchy's six category ids. A copy of UPDATE_CATEGORY_IDS in
+// lib/whatsNew/updateHierarchy.ts, because a plain .mjs script cannot import
+// TypeScript; lib/whatsNew/__tests__/updateHierarchy.test.ts reads this file
+// and fails if the two lists ever disagree.
+const CATEGORY_IDS = ["fixes", "saints", "library", "shop", "perks", "stats"];
+
+// One line: a string, or { category, text } filed under the hierarchy. Mirrors
+// normaliseItem there: an unknown category degrades to its text, never "[object
+// Object]" and never a dropped line.
+function normItem(it) {
+  if (typeof it === "string") return it;
+  if (it && typeof it === "object" && typeof it.text === "string") {
+    return CATEGORY_IDS.includes(it.category) ? { category: it.category, text: it.text } : it.text;
+  }
+  if (typeof it === "number" || typeof it === "boolean") return String(it);
+  return null;
+}
+
+function normItems(items) {
+  return Array.isArray(items) ? items.map(normItem).filter((it) => it !== null) : [];
+}
+
+const itemKey = (it) => (it === undefined || it === null ? "" : typeof it === "string" ? it : `${it.category} ${it.text}`);
+
 function shape(row) {
   return {
     version: row.version,
@@ -103,7 +131,7 @@ function shape(row) {
     date: row.date,
     title: row.title ?? "",
     blurb: row.blurb ?? "",
-    items: Array.isArray(row.items) ? row.items.map(String) : [],
+    items: normItems(row.items),
   };
 }
 
@@ -113,7 +141,7 @@ function describe(before, after) {
   for (const f of FIELDS) if ((before[f] ?? "") !== (after[f] ?? "")) parts.push(`the ${f}`);
   const max = Math.max(before.items.length, after.items.length);
   const items = [];
-  for (let i = 0; i < max; i++) if ((before.items[i] ?? "") !== (after.items[i] ?? "")) items.push(i + 1);
+  for (let i = 0; i < max; i++) if (itemKey(before.items[i]) !== itemKey(after.items[i])) items.push(i + 1);
   if (items.length === 1) parts.push(`item ${items[0]}`);
   else if (items.length > 1) parts.push(`items ${items.join(", ")}`);
   if (parts.length === 0) return null;
@@ -233,7 +261,7 @@ if (cmd === "pull") {
     kind: r.kind ?? "",
     date: isoToDisplay(r.date),
     blurb: r.blurb ?? "",
-    items: Array.isArray(r.items) ? r.items.map(String) : [],
+    items: normItems(r.items),
   }));
   const bad = next.find((e) => /—/.test(JSON.stringify(e)));
   if (bad) fail(`live row ${bad.version} carries an em dash; fix it in /admin before pulling`);

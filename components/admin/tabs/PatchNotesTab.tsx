@@ -20,15 +20,57 @@ import { ReleaseDetails } from "@/components/whats-new/ReleaseDetails";
 import { isoToDisplayDate } from "@/lib/whatsNew/dates";
 import { emDashField, type PatchNoteInput } from "@/lib/whatsNew/patchNoteShape";
 import type { PatchNoteRow } from "@/lib/whatsNew/notes";
+import {
+  UPDATE_CATEGORIES,
+  categoryById,
+  coverage,
+  itemCategory,
+  itemText,
+  normaliseItems,
+  type NoteItem,
+  type UpdateCategoryId,
+} from "@/lib/whatsNew/updateHierarchy";
 import type { PatchNotesPayload, RevisionRow } from "@/app/api/admin/patch-notes/route";
 import { Card, DataTable, Email, Modal, Pill, Toolbar, ToolbarButton } from "../primitives";
 import { BoardMessageCard } from "./BoardMessageCard";
 
-type Draft = PatchNoteInput & { id?: string };
+/**
+ * One line as the editor holds it: always an object, so a category can be set
+ * or cleared without the line changing type under the textarea. "" means the
+ * line is not filed under a category, which is how every note before 1.4 reads.
+ */
+type EditorItem = { text: string; category: UpdateCategoryId | "" };
 
-const EMPTY: Draft = { version: "", kind: "", date: "", title: "", blurb: "", items: [""] };
+type Draft = Omit<PatchNoteInput, "items"> & { id?: string; items: EditorItem[] };
+
+const BLANK_ITEM: EditorItem = { text: "", category: "" };
+
+const EMPTY: Draft = { version: "", kind: "", date: "", title: "", blurb: "", items: [BLANK_ITEM] };
 
 const ACTIONS = "/api/admin/patch-notes/actions";
+
+function toEditorItems(items: readonly NoteItem[]): EditorItem[] {
+  const out = items.map((it): EditorItem => ({ text: itemText(it), category: itemCategory(it) ?? "" }));
+  return out.length > 0 ? out : [BLANK_ITEM];
+}
+
+/** Editor lines back to stored items: trimmed, empties dropped, category kept. */
+function toNoteItems(items: readonly EditorItem[]): NoteItem[] {
+  const out: NoteItem[] = [];
+  for (const it of items) {
+    const text = it.text.trim();
+    if (!text) continue;
+    out.push(it.category ? { category: it.category, text } : text);
+  }
+  return out;
+}
+
+/** A line as the review queue shows it, with its category in front. */
+function itemLabel(it: NoteItem | undefined): string {
+  if (it === undefined) return "";
+  const cat = itemCategory(it);
+  return cat ? `[${categoryById(cat).label}] ${itemText(it)}` : itemText(it);
+}
 
 function toDraft(n: PatchNoteRow): Draft {
   return {
@@ -38,7 +80,7 @@ function toDraft(n: PatchNoteRow): Draft {
     date: n.date,
     title: n.title ?? "",
     blurb: n.blurb ?? "",
-    items: n.items.length > 0 ? [...n.items] : [""],
+    items: toEditorItems(n.items),
   };
 }
 
@@ -50,7 +92,7 @@ function toInput(a: Record<string, unknown> | null): PatchNoteInput | null {
     date: String(a.date ?? ""),
     title: String(a.title ?? ""),
     blurb: String(a.blurb ?? ""),
-    items: Array.isArray(a.items) ? a.items.map(String) : [],
+    items: normaliseItems(a.items),
   };
 }
 
@@ -130,7 +172,7 @@ export function PatchNotesTab() {
   const canWrite = !data.tableAbsent && !data.fromFallback;
 
   async function saveDraft(d: Draft, note?: string) {
-    const items = d.items.map((s) => s.trim()).filter(Boolean);
+    const items = toNoteItems(d.items);
     const input: PatchNoteInput = {
       version: d.version.trim(),
       kind: d.kind.trim(),
@@ -217,7 +259,7 @@ export function PatchNotesTab() {
                   const after = toInput(rev.after);
                   if (!after) return;
                   setSuggesting(rev);
-                  setDraft({ ...after, items: after.items.length > 0 ? after.items : [""] });
+                  setDraft({ ...after, items: toEditorItems(after.items) });
                   // The editor is the last card; bring it into view.
                   setTimeout(() => document.getElementById("patch-note-editor")?.scrollIntoView({ block: "start" }), 0);
                 }}
@@ -529,8 +571,8 @@ function RevisionCard({
           <FieldDiff
             key={i}
             label={`Item ${i + 1}`}
-            before={before?.items[i] ?? ""}
-            after={after.items[i] ?? ""}
+            before={itemLabel(before?.items[i])}
+            after={itemLabel(after.items[i])}
             isNew={!before}
             showAll={showAll}
           />
@@ -711,8 +753,8 @@ function NoteEditor({
   // Only in suggest mode: the sentence that goes back to Claude with the rewrite.
   const [note, setNote] = useState("");
   const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setD((p) => ({ ...p, [k]: v }));
-  const setItem = (i: number, v: string) =>
-    setD((p) => ({ ...p, items: p.items.map((it, j) => (j === i ? v : it)) }));
+  const setItem = (i: number, patch: Partial<EditorItem>) =>
+    setD((p) => ({ ...p, items: p.items.map((it, j) => (j === i ? { ...it, ...patch } : it)) }));
   const moveItem = (i: number, dir: -1 | 1) =>
     setD((p) => {
       const j = i + dir;
@@ -722,7 +764,7 @@ function NoteEditor({
       return { ...p, items };
     });
   const removeItem = (i: number) =>
-    setD((p) => ({ ...p, items: p.items.length === 1 ? [""] : p.items.filter((_, j) => j !== i) }));
+    setD((p) => ({ ...p, items: p.items.length === 1 ? [BLANK_ITEM] : p.items.filter((_, j) => j !== i) }));
 
   const fieldCls = "w-full rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[12.5px]";
   const fieldStyle = {
@@ -733,8 +775,13 @@ function NoteEditor({
   const labelCls = "mb-1 block font-sans text-[11.5px]";
   const labelStyle = { color: "var(--adm-ink-3)" } as React.CSSProperties;
 
-  const cleanItems = d.items.map((s) => s.trim()).filter(Boolean);
-  const dash = emDashField({ ...d, items: d.items });
+  const cleanItems = toNoteItems(d.items);
+  const dash = emDashField({ ...d, items: d.items.map((it) => it.text) });
+  // What the Update Hierarchy will ask of this note at release time. Shown,
+  // not enforced here: a draft is allowed to be half written, and the refusal
+  // belongs to the release test, which also reads the skip reasons.
+  const filed = coverage(cleanItems);
+  const anyFiled = UPDATE_CATEGORIES.some((c) => filed[c.id] > 0);
   const versionOk = d.version.trim().length > 0;
   const dateOk = /^\d{4}-\d{2}-\d{2}$/.test(d.date);
   const noteOk = mode !== "suggest" || note.trim().length > 0;
@@ -791,13 +838,29 @@ function NoteEditor({
                 <span className="pt-2 w-6 shrink-0 text-right font-sans text-[11.5px] tabular-nums" style={labelStyle}>
                   {i + 1}
                 </span>
-                <textarea
-                  className={`${fieldCls} py-2 leading-[1.6]`}
-                  style={fieldStyle}
-                  rows={3}
-                  value={it}
-                  onChange={(e) => setItem(i, e.target.value)}
-                />
+                <div className="min-w-0 flex-1 space-y-1">
+                  <select
+                    aria-label={`Category for item ${i + 1}`}
+                    className={`${fieldCls} h-9`}
+                    style={fieldStyle}
+                    value={it.category}
+                    onChange={(e) => setItem(i, { category: e.target.value as EditorItem["category"] })}
+                  >
+                    <option value="">No category</option>
+                    {UPDATE_CATEGORIES.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.emoji} {c.rank}. {c.label}
+                      </option>
+                    ))}
+                  </select>
+                  <textarea
+                    className={`${fieldCls} py-2 leading-[1.6]`}
+                    style={fieldStyle}
+                    rows={3}
+                    value={it.text}
+                    onChange={(e) => setItem(i, { text: e.target.value })}
+                  />
+                </div>
                 <div className="flex shrink-0 flex-col gap-1">
                   <ToolbarButton onClick={() => moveItem(i, -1)} title="Move up">↑</ToolbarButton>
                   <ToolbarButton onClick={() => moveItem(i, 1)} title="Move down">↓</ToolbarButton>
@@ -807,8 +870,43 @@ function NoteEditor({
             ))}
           </div>
           <div className="mt-2">
-            <ToolbarButton onClick={() => setD((p) => ({ ...p, items: [...p.items, ""] }))}>Add item</ToolbarButton>
+            <ToolbarButton onClick={() => setD((p) => ({ ...p, items: [...p.items, BLANK_ITEM] }))}>Add item</ToolbarButton>
           </div>
+        </div>
+
+        {/* The Update Hierarchy, as this draft stands. Each row is shipped (it
+            has lines) or needs a skip reason in the release checklist. */}
+        <div className="md:col-span-12">
+          <span className={labelCls} style={labelStyle}>
+            Update Hierarchy · {UPDATE_CATEGORIES.filter((c) => filed[c.id] > 0).length} of 6 have lines
+          </span>
+          <ul
+            className="grid grid-cols-1 gap-1 rounded-[var(--adm-radius-sm)] border p-2 sm:grid-cols-2"
+            style={{ borderColor: "var(--adm-line)" }}
+          >
+            {UPDATE_CATEGORIES.map((c) => {
+              const n = filed[c.id];
+              return (
+                <li key={c.id} className="flex items-baseline justify-between gap-2 px-1 font-sans text-[12px]">
+                  <span style={{ color: n > 0 ? "var(--adm-ink)" : "var(--adm-ink-3)" }}>
+                    <span aria-hidden className="mr-1">{c.emoji}</span>
+                    {c.rank}. {c.label}
+                  </span>
+                  <span
+                    className="tabular-nums"
+                    style={{ color: n > 0 ? "var(--adm-good)" : "var(--adm-ink-3)" }}
+                  >
+                    {n > 0 ? `${n} line${n === 1 ? "" : "s"}` : "needs a skip reason"}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="mt-1 font-sans text-[11.5px]" style={labelStyle}>
+            {anyFiled
+              ? "Categories with no lines need a reason in data/changelog/checklists/<version>.json before the release bump. Readers never see the reasons."
+              : "No line is filed under a category yet. From 1.4, every release accounts for all six, see docs/UPDATE-HIERARCHY.md."}
+          </p>
         </div>
 
         {mode === "suggest" && (

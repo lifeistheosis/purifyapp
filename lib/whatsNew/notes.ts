@@ -2,6 +2,7 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ENTRIES, type Entry } from "@/lib/whatsNew/entries";
 import { isoToDisplayDate } from "@/lib/whatsNew/dates";
+import { normaliseItems, type NoteItem } from "@/lib/whatsNew/updateHierarchy";
 
 /**
  * The release notes behind /whats-new, and where they came from.
@@ -30,7 +31,7 @@ export type PatchNoteRow = {
   date: string; // ISO YYYY-MM-DD as stored
   title: string;
   blurb: string;
-  items: string[];
+  items: NoteItem[];
   status: "draft" | "published";
   published_at: string | null;
   updated_at: string;
@@ -55,7 +56,9 @@ export function rowToEntry(r: PatchNoteRow): Entry {
     kind: r.kind,
     date: isoToDisplayDate(r.date),
     blurb: r.blurb,
-    items: Array.isArray(r.items) ? r.items.map(String) : [],
+    // Not map(String): a categorised line is an object, and String() on it is
+    // "[object Object]" on a reader's screen.
+    items: normaliseItems(r.items),
   };
 }
 

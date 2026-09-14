@@ -1,5 +1,7 @@
 import entriesJson from "@/data/changelog/entries.json";
 
+import type { NoteItem } from "./updateHierarchy";
+
 /**
  * One release on /whats-new.
  *
@@ -7,13 +9,16 @@ import entriesJson from "@/data/changelog/entries.json";
  * the page nests by. It is a display string on purpose: the grouper reads the
  * year and month back out of it, and a release the parser cannot read still
  * renders under its raw string rather than vanishing.
+ *
+ * `items` are plain strings for every release before 1.4, and from 1.4 may be
+ * lines filed under an Update Hierarchy category, which the page groups.
  */
 export type Entry = {
   version: string;
   kind: string;
   date: string;
   blurb: string;
-  items: string[];
+  items: NoteItem[];
 };
 
 /**

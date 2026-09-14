@@ -51,7 +51,11 @@ Not verified this session (do not claim): AAB behavior on a device (cart, in-app
 - Web prod: `curl -s -o /dev/null -w "%{http_code}" https://purifyapp.net/<route>`
 - Native gate: `npm run build:android` must exit clean and `out/<route>` must exist.
 - Money paths: read `docs/audit/findings.yaml` first; F-01/F-03 status must be current.
-- Versions: the four identifiers in AGENTS.md §Release ritual must agree.
+- Versions: the six identifiers in AGENTS.md §Release ritual must agree
+  (`lib/appUpdate/__tests__/release.test.ts` and `notesAgree.test.ts` hold
+  them), and from 1.4 the release's Update Hierarchy checklist must pass
+  (`lib/whatsNew/__tests__/updateHierarchy.test.ts`). Corrected 2026-09-14
+  from "four".
 
 ---
 

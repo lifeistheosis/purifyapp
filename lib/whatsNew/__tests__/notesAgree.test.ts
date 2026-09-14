@@ -4,6 +4,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { CURRENT_VERSION } from "@/lib/whatsNew/version";
+import { isCategoryId } from "@/lib/whatsNew/updateHierarchy";
 
 /**
  * The release notes are written by hand in two places and nothing kept them
@@ -38,7 +39,10 @@ import { CURRENT_VERSION } from "@/lib/whatsNew/version";
 const ROOT = path.resolve(__dirname, "..", "..", "..");
 
 type Patch = { version: string; date: string; title: string; intro: string };
-type Entry = { version: string; kind: string; date: string; blurb: string; items: string[] };
+// items: strings before 1.4, and { category, text } lines after, see
+// lib/whatsNew/updateHierarchy.ts. Typed loosely here on purpose: this test
+// reads the file as written, not as the app would like it to be.
+type Entry = { version: string; kind: string; date: string; blurb: string; items: unknown[] };
 
 function readPatches(): Patch[] {
   const raw = fs.readFileSync(
@@ -108,6 +112,17 @@ describe("the two release-note sources agree", () => {
       expect(typeof e.date, `date on ${e.version}`).toBe("string");
       expect(typeof e.blurb, `blurb on ${e.version}`).toBe("string");
       expect(Array.isArray(e.items), `items on ${e.version}`).toBe(true);
+      // Every line renders: a string, or a line filed under a real category.
+      // A mistyped category would silently lose its heading on the page.
+      e.items.forEach((it, i) => {
+        const ok =
+          typeof it === "string" ||
+          (!!it &&
+            typeof it === "object" &&
+            typeof (it as { text?: unknown }).text === "string" &&
+            isCategoryId((it as { category?: unknown }).category));
+        expect(ok, `item ${i + 1} on ${e.version} is not a string or a categorised line`).toBe(true);
+      });
     }
   });
 

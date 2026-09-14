@@ -51,6 +51,24 @@ describe("the declared release", () => {
     expect(CURRENT_RELEASE.versionName.replace(/^Beta\s+/, "")).toBe(versions[0]);
   });
 
+  it("agrees with the service worker's CACHE_VERSION about the release", () => {
+    // The sixth identifier, and until 2026-09-14 the only one nothing held.
+    // A release that forgets it ships new pages behind an old HTML cache, and
+    // returning readers keep seeing the last release until the cache ages out.
+    //
+    // Major and minor must match; the patch number is free, because sw.js
+    // invites a cache-only bump ("on substantial UI changes") inside a release,
+    // and purify-1.3.1 under version 1.3 is that, not drift.
+    const sw = fs.readFileSync(path.join(ROOT, "public/sw.js"), "utf8");
+    const m = sw.match(/const\s+CACHE_VERSION\s*=\s*"purify-(\d+)\.(\d+)(?:\.\d+)?"/);
+    expect(m, 'CACHE_VERSION = "purify-X.Y[.Z]" not found in public/sw.js').toBeTruthy();
+    const release = CURRENT_RELEASE.versionName.replace(/^Beta\s+/, "").match(/^(\d+)\.(\d+)/);
+    expect(release, `versionName ${CURRENT_RELEASE.versionName} is not X.Y`).toBeTruthy();
+    expect(`${m![1]}.${m![2]}`, "public/sw.js CACHE_VERSION was not bumped with the release").toBe(
+      `${release![1]}.${release![2]}`,
+    );
+  });
+
   it("has non-negative integer build numbers, where 0 means no prompt", () => {
     for (const [name, value] of [
       ["androidVersionCode", CURRENT_RELEASE.androidVersionCode],
