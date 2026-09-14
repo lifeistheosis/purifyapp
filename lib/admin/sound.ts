@@ -9,11 +9,12 @@
 // in the tree.
 //
 // The reel ratchet is the one exception, and it is an exception on the owner's
-// instruction: a specific recording, asked for by name. The weight objection is
-// answered by trimming rather than by refusing, 156KB down to 1.2KB, and by
-// inlining it in a module the native bundle tree-shakes rather than dropping it
-// in public/ where it would ship to every reader. See lib/admin/clickSample.ts,
-// which also records that the provenance question is NOT settled.
+// instruction: a specific recording, asked for by name. Since 2026-09-13 it is
+// the owner's own pop out of FL Studio, which settles the licence question the
+// first sample left open. The weight objection is answered by trimming rather
+// than by refusing, 78ms of mp3 down to a 1.8KB slice, and by inlining it in a
+// module the native bundle tree-shakes rather than dropping it in public/
+// where it would ship to every reader. See lib/admin/clickSample.ts.
 //
 // OFF BY DEFAULT, and the default matters more than usual. This panel gets
 // opened on a phone in a coffee shop and on a laptop in a room with other
@@ -193,7 +194,7 @@ function synthChaChing(c: AudioContext): void {
 // ── The register recording ──────────────────────────────────────────────────
 //
 // A FILE, NOT A BASE64 MODULE, and that is a deliberate departure from
-// lib/admin/clickSample.ts. Inlining is right for 1.2KB and wrong for 56KB:
+// lib/admin/clickSample.ts. Inlining is right for 1.8KB and wrong for 56KB:
 // base64 costs a third again in size, lands inside a JS chunk that cannot be
 // cached or replaced independently, and would be parsed by every admin page
 // load whether or not sound is even switched on.
@@ -343,8 +344,8 @@ let clickPending: Promise<AudioBuffer | null> | null = null;
  * reasonable; only the sample's own amplitude gave it away.
  *
  * Dividing by this makes CLICK_PEAK mean what it says, an actual output peak,
- * and keeps it meaning that if the sample is ever replaced, which the
- * provenance note in clickSample.ts says it may have to be.
+ * and keeps it meaning that when the sample is replaced, which it was on
+ * 2026-09-13 without a single number in here needing a change.
  */
 let clickNormalise = 1;
 
