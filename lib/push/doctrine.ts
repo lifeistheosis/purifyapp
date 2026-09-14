@@ -97,30 +97,17 @@ function findPhrase(haystack: string, needles: readonly string[]): string | null
 }
 
 /**
- * Check one notification's visible text against the bar.
+ * The half of the bar that is about how a sentence talks to the reader: no
+ * raised voice, no manufactured clock, no measuring them, no praise.
  *
- * Returns every violation rather than the first, because an author fixing one
- * word at a time through four round trips gives up and writes something worse.
+ * Split out on 2026-09-14 so email can hold the same line. Email cannot take
+ * the rest of this file: a receipt needs an order number and a price, so the
+ * digit blanket does not fit it, and the lock-screen lengths mean nothing in an
+ * inbox. What a sentence may SAY is the same in both places, so it is one
+ * function. See lib/email/doctrine.ts.
  */
-export function checkNotificationCopy(copy: {
-  title: string;
-  body: string;
-}): DoctrineViolation[] {
+export function checkPhrasing(visible: string): DoctrineViolation[] {
   const out: DoctrineViolation[] = [];
-  const { title, body } = copy;
-  const visible = `${title} ${body}`;
-
-  // Digits. A count, a countdown, a day number and a price are all digits, and
-  // there is no notification Purify sends that needs one. Written as a
-  // deliberate blanket rather than a list of forbidden numbers, because the
-  // blanket is the part that cannot be argued around at 11pm.
-  const digit = /\d/.exec(visible);
-  if (digit) {
-    out.push({
-      clause: "no digits",
-      reason: `contains the digit "${digit[0]}". A notification that counts anything is counting the reader.`,
-    });
-  }
 
   // Exclamation marks, including the fullwidth and inverted forms, because a
   // copy rule that a keyboard layout can step around is not a rule.
@@ -155,6 +142,37 @@ export function checkNotificationCopy(copy: {
       reason: `contains "${praise}". The application does not congratulate the reader.`,
     });
   }
+
+  return out;
+}
+
+/**
+ * Check one notification's visible text against the bar.
+ *
+ * Returns every violation rather than the first, because an author fixing one
+ * word at a time through four round trips gives up and writes something worse.
+ */
+export function checkNotificationCopy(copy: {
+  title: string;
+  body: string;
+}): DoctrineViolation[] {
+  const out: DoctrineViolation[] = [];
+  const { title, body } = copy;
+  const visible = `${title} ${body}`;
+
+  // Digits. A count, a countdown, a day number and a price are all digits, and
+  // there is no notification Purify sends that needs one. Written as a
+  // deliberate blanket rather than a list of forbidden numbers, because the
+  // blanket is the part that cannot be argued around at 11pm.
+  const digit = /\d/.exec(visible);
+  if (digit) {
+    out.push({
+      clause: "no digits",
+      reason: `contains the digit "${digit[0]}". A notification that counts anything is counting the reader.`,
+    });
+  }
+
+  out.push(...checkPhrasing(visible));
 
   if (title.trim().length === 0) {
     out.push({ clause: "title required", reason: "the title is empty." });

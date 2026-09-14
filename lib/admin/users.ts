@@ -66,6 +66,30 @@ export async function findUserByEmail(
   return hit;
 }
 
+/**
+ * Every account that has an email address, for a send that must reach
+ * everyone, like a terms change.
+ *
+ * `complete` is false when the walk stopped at MAX_PAGES with a full last page,
+ * meaning there are more accounts than this function will read. A caller
+ * sending a legal notice must refuse on that rather than quietly reach the
+ * first ten thousand and report success.
+ */
+export async function allAccountEmails(
+  admin: SupabaseClient,
+): Promise<{ accounts: { id: string; email: string }[]; complete: boolean }> {
+  const accounts: { id: string; email: string }[] = [];
+  let pages = 0;
+  let lastPageFull = false;
+  await walkUsers(admin, (users) => {
+    pages += 1;
+    lastPageFull = users.length === PER_PAGE;
+    for (const u of users) if (u.email) accounts.push({ id: u.id, email: u.email });
+    return true;
+  });
+  return { accounts, complete: !(pages >= MAX_PAGES && lastPageFull) };
+}
+
 /** Reverse map for rendering lists: user id -> email, for the ids given. */
 export async function emailsByUserId(
   admin: SupabaseClient,
