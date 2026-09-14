@@ -25,7 +25,7 @@ export async function sendTicketReceivedEmail(ticket: Ticket, body: string) {
   });
   return sendEmail({
     to: ticket.email,
-    subject: `We got your message — ${num}`,
+    subject: `We got your message, ${num}`,
     html,
   });
 }
@@ -42,7 +42,7 @@ export async function sendTicketReplyEmail(ticket: Ticket, reply: string) {
   });
   return sendEmail({
     to: ticket.email,
-    subject: `Re: your request — ${num}`,
+    subject: `Re: your request ${num}`,
     html,
   });
 }

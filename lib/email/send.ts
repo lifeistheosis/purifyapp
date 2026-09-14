@@ -24,6 +24,14 @@ export async function sendEmail(opts: {
   subject: string;
   html: string;
   replyTo?: string;
+  /**
+   * Extra headers. Exists for List-Unsubscribe and List-Unsubscribe-Post,
+   * which Gmail and Yahoo require on bulk mail and which lib/email/marketing
+   * adds to every marketing send. Transactional mail passes none.
+   */
+  headers?: Record<string, string>;
+  /** A plain-text part. Optional; clients that cannot render HTML use it. */
+  text?: string;
 }): Promise<SendResult> {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
@@ -42,6 +50,8 @@ export async function sendEmail(opts: {
       subject: opts.subject,
       html: opts.html,
       replyTo,
+      ...(opts.headers ? { headers: opts.headers } : {}),
+      ...(opts.text ? { text: opts.text } : {}),
     });
     if (error) {
       console.warn(`[email] send failed: ${error.message}`);
